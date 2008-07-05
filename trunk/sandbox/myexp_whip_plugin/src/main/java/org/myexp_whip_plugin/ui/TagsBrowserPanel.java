@@ -12,11 +12,14 @@ import org.myexp_whip_plugin.MyExperimentClient;
 
 public class TagsBrowserPanel extends JPanel implements ActionListener, ChangeListener {
 	
+	private MainComponent parent;
+	
 	private MyExperimentClient client;
 	
 	private Logger logger;
 	
-	public TagsBrowserPanel(MyExperimentClient client, Logger logger) {
+	public TagsBrowserPanel(MainComponent parent, MyExperimentClient client, Logger logger) {
+		this.parent = parent;
 		this.client = client;
 		this.logger = logger;
 	}

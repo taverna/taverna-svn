@@ -10,7 +10,7 @@ import javax.swing.event.ChangeEvent;
 import org.apache.log4j.Logger;
 import org.myexp_whip_plugin.MyExperimentClient;
 
-public class SearchWorkflowsPanel extends JPanel implements ActionListener, ChangeListener {
+public class ExampleWorkflowsPanel extends JPanel implements ActionListener, ChangeListener {
 	
 	private MainComponent parent;
 	
@@ -18,7 +18,7 @@ public class SearchWorkflowsPanel extends JPanel implements ActionListener, Chan
 	
 	private Logger logger;
 	
-	public SearchWorkflowsPanel(MainComponent parent, MyExperimentClient client, Logger logger) {
+	public ExampleWorkflowsPanel(MainComponent parent, MyExperimentClient client, Logger logger) {
 		this.parent = parent;
 		this.client = client;
 		this.logger = logger;
@@ -32,3 +32,4 @@ public class SearchWorkflowsPanel extends JPanel implements ActionListener, Chan
 		
 	}
 }
+

@@ -199,7 +199,7 @@ public class LatestWorkflowsPanel extends JPanel implements ActionListener,
 				}
 			}
 			
-			//this.listPanel.setPreferredSize(null);
+			//this.listPanel.setPreferredSize(new Dimension(1,1));
 			//this.listPanel.setPreferredSize(new Dimension(1, this.listPanel.getSize().height));
 			
 			this.listScrollPane.getVerticalScrollBar().setValue(0);

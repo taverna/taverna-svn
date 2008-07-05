@@ -32,13 +32,15 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 	
 	private JTabbedPane tabsPane;
 	
+	private ExampleWorkflowsPanel exampleWorkflowsPanel;
+	
 	private LatestWorkflowsPanel latestWorkflowsPanel;
 	
 	private SearchWorkflowsPanel searchWorkflowsPanel;
 	
 	private TagsBrowserPanel tagsBrowserPanel;
 	
-	private CurrentWorkflowPanel currentWorkflowPanel;
+	private WorkflowPreviewPanel workflowPreviewPanel;
 	
 	public MainComponent() {
 		super();
@@ -97,36 +99,19 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 		
 		this.tabsPane = new JTabbedPane();
 		
+		this.exampleWorkflowsPanel = new ExampleWorkflowsPanel(this, this.client, this.logger);
 		this.latestWorkflowsPanel = new LatestWorkflowsPanel(this, this.client, this.logger);
-		JScrollPane leftScrollPane1 = new JScrollPane(this.latestWorkflowsPanel,
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		leftScrollPane1.setBorder(BorderFactory.createEtchedBorder());
+		this.searchWorkflowsPanel = new SearchWorkflowsPanel(this, this.client, this.logger);
+		this.tagsBrowserPanel = new TagsBrowserPanel(this, this.client, this.logger);
+		this.workflowPreviewPanel = new WorkflowPreviewPanel(this, this.client, this.logger);
 		
-		this.searchWorkflowsPanel = new SearchWorkflowsPanel(this.client, this.logger);
-		JScrollPane leftScrollPane2 = new JScrollPane(this.searchWorkflowsPanel,
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		leftScrollPane2.setBorder(BorderFactory.createEtchedBorder());
-		
-		this.tagsBrowserPanel = new TagsBrowserPanel(this.client, this.logger);
-		JScrollPane leftScrollPane3 = new JScrollPane(this.tagsBrowserPanel,
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		leftScrollPane3.setBorder(BorderFactory.createEtchedBorder());
-		
+		this.tabsPane.add("Example Workflow", this.exampleWorkflowsPanel);
 		this.tabsPane.add("Latest Workflows", this.latestWorkflowsPanel);
 		this.tabsPane.add("Search Workflows", this.searchWorkflowsPanel);
 		this.tabsPane.add("Tags Browser", this.tagsBrowserPanel);
 		
-		this.currentWorkflowPanel = new CurrentWorkflowPanel(this.client, this.logger);
-		JScrollPane rightScrollPane = new JScrollPane(this.currentWorkflowPanel,
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		rightScrollPane.setBorder(BorderFactory.createEtchedBorder());
-		
 		this.setLeftComponent(this.tabsPane);
-		this.setRightComponent(rightScrollPane);
+		this.setRightComponent(this.workflowPreviewPanel);
 		
 		this.setResizeWeight(0.5);
 		this.setContinuousLayout(true);
