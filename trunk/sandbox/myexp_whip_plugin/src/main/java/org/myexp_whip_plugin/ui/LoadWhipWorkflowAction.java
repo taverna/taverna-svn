@@ -70,49 +70,47 @@ public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements Artef
         return "Whip Actions";
     }
 
-    public void openWorkflow(Component sourceComponent, String name) {
+    public void openWorkflow(final Component sourceComponent, final String name) throws Exception {
+
         final ScuflModel model = updateModel();
-        boolean workflowOpened = false;
-        InputStream in;
         try {
-            DataBundle db = bundles.get(getValue(NAME));
+            DataBundle db = bundles.get(name);
             if (db == null) {
                 return;
             }
-            in = db.getEntryPoint();
+            InputStream in = db.getEntryPoint();
             if (in == null) {
                 return;
             }
             XScuflParser.populate(in, model, null);
-            workflowOpened = true;
+            ScuflModelSet.getInstance().addModel(model);
+            WorkflowChanges.getInstance().synced(model);
         } catch (Exception ex) {
-            logger.warn("Can't open in online mode " + getValue(NAME), ex);
+            logger.warn("Can't open in online mode " + name, ex);
             model.clear();
             JOptionPane.showMessageDialog(
                     sourceComponent,
                     "Problem opening workflow: \n\n"
                             + ex.getMessage(),
                     "Warning", JOptionPane.WARNING_MESSAGE);
-            firePropertyChange(WORKFLOW_STATUS, getValue(NAME), WORKFLOW_FAILED);
-
-        }
-        if (workflowOpened) {
-            ScuflModelSet.getInstance().addModel(model);
-            WorkflowChanges.getInstance().synced(model);
-            firePropertyChange(WORKFLOW_STATUS, getValue(NAME), WORKFLOW_OPENED);
         }
     }
 
     public void artefactArrived(String s, DataBundle bundle) {
         if (bundle != null) {
-            String entry = bundle.getMetadatDocument().getEntryPoint();
+            final String entry = bundle.getMetadatDocument().getEntryPoint();
             if (entry == null) {
+                owner.setProcessed(((File) bundle.getContent()).getName());
                 return;
             }
             bundles.put(entry, bundle);
             putValue(SMALL_ICON, TavernaIcons.updateRecommendedIcon);
-            // ANDREW: opens workflow immediately in the viewer now. So don't need icon to alert user
-            //openWorkflow(null, entry);
+            try {
+                openWorkflow(null, entry);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            postProcessOpen(entry);
         }
     }
 
@@ -120,19 +118,28 @@ public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements Artef
         return "taverna-1.7";
     }
 
+
+    public void postProcessOpen(String name) {
+        DataBundle db = bundles.remove(name);
+        if (db != null) {
+            owner.setProcessed(((File) db.getContent()).getName());
+        }
+        if (bundles.size() == 0) {
+            putValue(SMALL_ICON, TavernaIcons.updateIcon);
+        }
+    }
+
     public void propertyChange(PropertyChangeEvent event) {
+        logger.info("LoadWhipWorkflowAction.propertyChange bundles size=" + bundles.size());
+
         String key = event.getPropertyName();
         if (key.equals(WORKFLOW_STATUS)) {
+            logger.info("LoadWhipWorkflowAction.propertyChange key is workflow status");
             String op = (String) event.getNewValue();
             if (op.equals(WORKFLOW_OPENED) || op.equals(WORKFLOW_FAILED)) {
+                logger.info("LoadWhipWorkflowAction.propertyChange op=" + op);
                 String name = (String) event.getOldValue();
-                DataBundle db = bundles.remove(name);
-                if (db != null) {
-                    owner.setProcessed(((File) db.getContent()).getName());
-                }
-                if (bundles.size() == 0) {
-                    putValue(SMALL_ICON, TavernaIcons.updateIcon);
-                }
+                postProcessOpen(name);
             }
         }
     }
@@ -157,7 +164,12 @@ public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements Artef
             }
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    openWorkflow(sourceComponent, (String) getValue(NAME));
+                    try {
+                        openWorkflow(sourceComponent, (String) getValue(NAME));
+                        firePropertyChange(WORKFLOW_STATUS, getValue(NAME), WORKFLOW_OPENED);
+                    } catch (Exception e1) {
+                        firePropertyChange(WORKFLOW_STATUS, getValue(NAME), WORKFLOW_FAILED);
+                    }
                 }
             });
         }
