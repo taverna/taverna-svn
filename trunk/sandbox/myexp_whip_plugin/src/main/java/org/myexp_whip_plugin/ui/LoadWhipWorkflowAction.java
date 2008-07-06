@@ -110,9 +110,9 @@ public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements Artef
                 return;
             }
             bundles.put(entry, bundle);
-            //putValue(SMALL_ICON, TavernaIcons.updateRecommendedIcon);
+            putValue(SMALL_ICON, TavernaIcons.updateRecommendedIcon);
             // ANDREW: opens workflow immediately in the viewer now. So don't need icon to alert user
-            openWorkflow(null, entry);
+            //openWorkflow(null, entry);
         }
     }
 
