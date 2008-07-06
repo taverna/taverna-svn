@@ -70,7 +70,7 @@ public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements Artef
         return "Whip Actions";
     }
 
-    public void openWorkflow(Component sourceComponent) {
+    public void openWorkflow(Component sourceComponent, String name) {
         final ScuflModel model = updateModel();
         boolean workflowOpened = false;
         InputStream in;
@@ -112,7 +112,7 @@ public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements Artef
             bundles.put(entry, bundle);
             //putValue(SMALL_ICON, TavernaIcons.updateRecommendedIcon);
             // ANDREW: opens workflow immediately in the viewer now. So don't need icon to alert user
-            openWorkflow(null);
+            openWorkflow(null, entry);
         }
     }
 
@@ -157,7 +157,7 @@ public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements Artef
             }
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    openWorkflow(sourceComponent);
+                    openWorkflow(sourceComponent, (String) getValue(NAME));
                 }
             });
         }
