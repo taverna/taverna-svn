@@ -239,10 +239,9 @@ public class MimeTypeConfig extends JPanel {
 	 * @param mimeTypeList
 	 */
 	public void setMimeTypeList(List<String> mimeTypeList) {
-		this.mimeTypeList = mimeTypeList;
 		for (String mime : mimeTypeList) {
 			userMimeListModel.addElement(mime);
-			mimeTypeList.add(mime);
+			this.mimeTypeList.add(mime);
 		}
 	}
 
