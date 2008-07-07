@@ -25,6 +25,7 @@
   	<module>dataflow-activity</module>
   	<module>dataflow-activity-ui</module>
   	<module>dataflow-activity-translator</module>
+  	<module>localworker-activity</module>
   	<module>localworker-translator</module>
   	<module>localworker-activity-ui</module>
   	<module>rshell-activity</module>
