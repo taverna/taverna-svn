@@ -83,6 +83,37 @@ public interface Edits {
 	public DataflowOutputPort createDataflowOutputPort(String name, Dataflow dataflow);
 	
 	/**
+	 * Builds an instance of an {@link InputPort} for an Activity.
+	 * 
+	 * @param portName
+	 * @param portDepth
+	 * @param allowsLiteralValues
+	 *            whether the input port can cope with literal values
+	 * @param handledReferenceSchemes
+	 *            a list of the reference scheme types that can be legitimately
+	 *            pushed into this input port
+	 * @param translatedElementClass
+	 *            the class desired as result (or elements of collections of
+	 *            results) when interpreted by the data facade
+	 * @return an instance of InputPort
+	 */
+	ActivityInputPort createActivityInputPort(String portName, int portDepth,
+			boolean allowsLiteralValues,
+			List<Class<? extends ExternalReferenceSPI>> handledReferenceSchemes,
+			Class<?> translatedElementClass);
+
+	/**
+	 * Builds an instance of an {@link OutputPort} for an Activity.
+	 * 
+	 * @param portName
+	 * @param portDepth
+	 * @param portGranularDepth
+	 * @return an instance of OutputPort
+	 */
+	OutputPort createActivityOutputPort(String portName, int portDepth,
+			int portGranularDepth);
+	
+	/**
 	 * Builds a new MergeOutputPort.
 	 * 
 	 * @param merge the merge that the port eill be added to
@@ -360,6 +391,26 @@ public interface Edits {
 			DataflowInputPort dataflowInputPort);
 
 	/**
+	 * Returns an edit to add an OutputPort to an Activity.
+	 * 
+	 * @param activity activity to add the port to
+	 * @param activityOutputPort the port to add to the activity
+	 * @return an edit to add an OutputPort to an Activity
+	 */
+	public Edit<Activity<?>> getAddActivityOutputPortEdit(Activity<?> activity,
+			OutputPort activityOutputPort);
+
+	/**
+	 * Returns an edit to add an ActivityInputPort to an Activity.
+	 * 
+	 * @param activity activity to add the port to
+	 * @param activityInputPort the port to add to the activity
+	 * @return an edit to add an ActivityInputPort to an Activity
+	 */
+	public Edit<Activity<?>> getAddActivityInputPortEdit(Activity<?> activity,
+			ActivityInputPort activityInputPort);
+
+	/**
 	 * Returns an edit to add a MergeInputPort to a Merge.
 	 * 
 	 * @param merge merge to add the port to
@@ -428,6 +479,26 @@ public interface Edits {
 			DataflowInputPort dataflowInputPort);
 
 	/**
+	 * Returns an edit to remove an OutputPort from an Activity.
+	 * 
+	 * @param activity activity to remove the port from
+	 * @param activityOutputPort the port to remove from the activity
+	 * @return an edit to remove an OutputPort from an Activity
+	 */
+	public Edit<Activity<?>> getRemoveActivityOutputPortEdit(Activity<?> activity,
+			OutputPort activityOutputPort);
+
+	/**
+	 * Returns an edit to remove an ActivityInputPort from an Activity.
+	 * 
+	 * @param activity activity to remove the port from
+	 * @param activityInputPort the port to remove from the activity
+	 * @return an edit to remove an ActivityInputPort from an Activity
+	 */
+	public Edit<Activity<?>> getRemoveActivityInputPortEdit(Activity<?> activity,
+			ActivityInputPort activityInputPort);
+
+	/**
 	 * Create a condition governing execution of the target processor. The
 	 * target will not consume jobs from any inputs until all control processors
 	 * linked through this edit have completed.
@@ -455,37 +526,6 @@ public interface Edits {
 	public Edit<OrderedPair<Processor>> getRemoveConditionEdit(
 			Processor control, Processor target);
 
-	/**
-	 * Builds an instance of an {@link InputPort} for an Activity.
-	 * 
-	 * @param portName
-	 * @param portDepth
-	 * @param allowsLiteralValues
-	 *            whether the input port can cope with literal values
-	 * @param handledReferenceSchemes
-	 *            a list of the reference scheme types that can be legitimately
-	 *            pushed into this input port
-	 * @param translatedElementClass
-	 *            the class desired as result (or elements of collections of
-	 *            results) when interpreted by the data facade
-	 * @return an instance of InputPort
-	 */
-	ActivityInputPort buildActivityInputPort(String portName, int portDepth,
-			boolean allowsLiteralValues,
-			List<Class<? extends ExternalReferenceSPI>> handledReferenceSchemes,
-			Class<?> translatedElementClass);
-
-	/**
-	 * Builds an instance of an {@link OutputPort} for an Activity.
-	 * 
-	 * @param portName
-	 * @param portDepth
-	 * @param portGranularDepth
-	 * @return an instance of OutputPort
-	 */
-	OutputPort buildActivityOutputPort(String portName, int portDepth,
-			int portGranularDepth);
-	
 	Edit<Dataflow> getUpdateDataflowNameEdit(Dataflow dataflow, String newName);
 	
 	Edit<Dataflow> getUpdateDataflowInternalIdentifierEdit(Dataflow dataflow, String newId);

@@ -194,7 +194,7 @@ public class EditsImpl implements Edits {
 	/**
 	 * Builds an instance of {@link ActivityInputPortImpl}
 	 */
-	public ActivityInputPort buildActivityInputPort(String portName,
+	public ActivityInputPort createActivityInputPort(String portName,
 			int portDepth, boolean allowsLiteralValues,
 			List<Class<? extends ExternalReferenceSPI>> handledReferenceSchemes,
 			Class<?> translatedElementClass) {
@@ -206,7 +206,7 @@ public class EditsImpl implements Edits {
 	/**
 	 * Builds an instance of {@link ActivityOutputPortImpl}
 	 */
-	public OutputPort buildActivityOutputPort(String portName, int portDepth,
+	public OutputPort createActivityOutputPort(String portName, int portDepth,
 			int portGranularDepth) {
 		return new ActivityOutputPortImpl(portName, portDepth,
 				portGranularDepth);
@@ -287,6 +287,26 @@ public class EditsImpl implements Edits {
 	public Edit<Dataflow> getAddDataflowOutputPortEdit(Dataflow dataflow,
 			DataflowOutputPort dataflowOutputPort) {
 		return new AddDataflowOutputPortEdit(dataflow, dataflowOutputPort);
+	}
+
+	public Edit<Activity<?>> getAddActivityInputPortEdit(Activity<?> activity,
+			ActivityInputPort activityInputPort) {
+		return new AddActivityInputPortEdit(activity, activityInputPort);
+	}
+
+	public Edit<Activity<?>> getAddActivityOutputPortEdit(Activity<?> activity,
+			OutputPort activityOutputPort) {
+		return new AddActivityOutputPortEdit(activity, activityOutputPort);
+	}
+
+	public Edit<Activity<?>> getRemoveActivityInputPortEdit(Activity<?> activity,
+			ActivityInputPort activityInputPort) {
+		return new RemoveActivityInputPortEdit(activity, activityInputPort);
+	}
+
+	public Edit<Activity<?>> getRemoveActivityOutputPortEdit(Activity<?> activity,
+			OutputPort activityOutputPort) {
+		return new RemoveActivityOutputPortEdit(activity, activityOutputPort);
 	}
 
 	public Edit<Merge> getAddMergeInputPortEdit(Merge merge,

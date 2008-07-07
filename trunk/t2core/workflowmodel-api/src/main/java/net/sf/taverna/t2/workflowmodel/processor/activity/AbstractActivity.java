@@ -107,7 +107,7 @@ public abstract class AbstractActivity<ConfigType> extends
 			boolean allowsLiteralValues,
 			List<Class<? extends ExternalReferenceSPI>> handledReferenceSchemes,
 			Class<?> translatedElementClass) {
-		inputPorts.add(EditsRegistry.getEdits().buildActivityInputPort(
+		inputPorts.add(EditsRegistry.getEdits().createActivityInputPort(
 				portName, portDepth, allowsLiteralValues,
 				handledReferenceSchemes, translatedElementClass));
 	}
@@ -126,7 +126,7 @@ public abstract class AbstractActivity<ConfigType> extends
 	 *            will emit as outputs.
 	 */
 	protected void addOutput(String portName, int portDepth, int granularDepth) {
-		outputPorts.add(EditsRegistry.getEdits().buildActivityOutputPort(
+		outputPorts.add(EditsRegistry.getEdits().createActivityOutputPort(
 				portName, portDepth, granularDepth));
 	}
 
