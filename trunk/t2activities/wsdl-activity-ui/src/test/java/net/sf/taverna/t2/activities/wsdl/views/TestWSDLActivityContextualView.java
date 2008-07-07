@@ -37,6 +37,6 @@ public class TestWSDLActivityContextualView {
 	
 	public void testConfigurationAction() {
 		WSDLActivityContextualView view = new WSDLActivityContextualView(a);
-		assertNull("WSDL has no configure action, so should be null",view.getConfigureAction());
+		assertNull("WSDL has no configure action, so should be null",view.getConfigureAction(null));
 	}
 }

@@ -39,7 +39,7 @@ public class BeanshellViewer {
 		assertTrue("Was not a  Beanshell view factory", viewFactoryForBeanType instanceof BeanshellActivityViewFactory);
 		ContextualView viewType = viewFactoryForBeanType.getView(beanshellActivity);
 		JButton button = new JButton();
-		button.addActionListener(viewType.getConfigureAction());
+		button.addActionListener(viewType.getConfigureAction(null));
 		frame.add(viewType);
 		frame.add(button);
 		frame.setVisible(true);

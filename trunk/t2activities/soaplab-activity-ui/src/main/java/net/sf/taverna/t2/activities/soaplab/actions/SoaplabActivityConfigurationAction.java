@@ -1,9 +1,10 @@
 package net.sf.taverna.t2.activities.soaplab.actions;
 
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import net.sf.taverna.t2.activities.soaplab.SoaplabActivity;
@@ -15,16 +16,18 @@ public class SoaplabActivityConfigurationAction extends
 		ActivityConfigurationAction<SoaplabActivity> {
 
 	private static final long serialVersionUID = 5076721332542691094L;
+	private final Frame owner;
 
-	public SoaplabActivityConfigurationAction(SoaplabActivity activity) {
+	public SoaplabActivityConfigurationAction(SoaplabActivity activity,Frame owner) {
 		super(activity);
+		this.owner = owner;
 	}
 
 	public void actionPerformed(ActionEvent action) {
 
 		final SoaplabConfigurationPanel panel = new SoaplabConfigurationPanel(
 				getActivity().getConfiguration());
-		final JFrame frame = new JFrame();
+		final JDialog frame = new JDialog(owner,true);
 		frame.getContentPane().add(panel);
 		panel.setOKClickedListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -69,7 +72,7 @@ public class SoaplabActivityConfigurationAction extends
 		});
 
 		frame.pack();
-		//frame.setModal(true);
+		
 		frame.setVisible(true);
 	}
 

@@ -66,7 +66,7 @@ public class BiomobyActivity extends
 
 	private static int qCounter = 0;
 
-	private BiomobyActivityConfigurationBean configurationBean;
+	protected BiomobyActivityConfigurationBean configurationBean;
 
 	private URL endpoint;
 

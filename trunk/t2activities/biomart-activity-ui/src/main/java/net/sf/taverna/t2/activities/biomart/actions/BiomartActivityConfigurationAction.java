@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.activities.biomart.actions;
 
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
@@ -16,15 +17,17 @@ import org.jdom.Element;
 public class BiomartActivityConfigurationAction extends ActivityConfigurationAction<BiomartActivity> {
 
 	private static final long serialVersionUID = 3782223454010961660L;
+	private final Frame owner;
 
-	public BiomartActivityConfigurationAction(BiomartActivity activity) {
+	public BiomartActivityConfigurationAction(BiomartActivity activity,Frame owner) {
 		super(activity);
+		this.owner = owner;
 	}
 
 	@SuppressWarnings("serial")
 	public void actionPerformed(ActionEvent action) {
 		final BiomartConfigurationPanel configurationPanel = new BiomartConfigurationPanel(getActivity().getConfiguration());
-		final JDialog dialog = new JDialog();
+		final JDialog dialog = new JDialog(owner,true);
 		
 		Action okAction = new AbstractAction("OK") {
 

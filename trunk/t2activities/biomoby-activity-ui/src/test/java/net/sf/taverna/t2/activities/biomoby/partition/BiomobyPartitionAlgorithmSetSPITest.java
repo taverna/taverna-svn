@@ -31,7 +31,8 @@ public class BiomobyPartitionAlgorithmSetSPITest {
 	public void getPartitonAlgorithms() {
 		PartitionAlgorithmSetSPI p = new BiomobyPartitionAlgorithmSetSPI();
 		Set<PartitionAlgorithm<?>> set = p.getPartitionAlgorithms();
-		assertEquals("There should be 1 partition algorithm in the set",1,set.size());
+		assertEquals("There should be 2 partition algorithm in the set",2,set.size());
 		assertTrue("should contain an algorithm for 'type'",set.contains(new LiteralValuePartitionAlgorithm("type")));
+		assertTrue("should contain an algorithm for 'authority'",set.contains(new LiteralValuePartitionAlgorithm("authority")));
 	}
 }

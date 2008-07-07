@@ -31,9 +31,11 @@ public class BiomobyPropertyExtractorTest {
 	@Test
 	public void testExtractProperties() {
 		BiomobyActivityItem item = new BiomobyActivityItem();
+		item.setAuthorityName("The BOSS");
 		
 		Map<String,Object> props = new BiomobyPropertyExtractor().extractProperties(item);
 
 		assertEquals("missing or incorrect property","Biomoby",props.get("type"));
+		assertEquals("missing or incorrect property","The BOSS",props.get("authority"));
 	}
 }

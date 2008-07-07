@@ -35,8 +35,8 @@ public class TestStringConstantContextualView {
 	@Test
 	public void testGetConfigureAction() throws Exception {
 		ContextualView view = new StringConstantActivityContextualView(activity);
-		assertNotNull("The action should not be null",view.getConfigureAction());
-		assertTrue("Should be a StringConstantActivityConfigurationAction",view.getConfigureAction() instanceof StringConstantActivityConfigurationAction);
+		assertNotNull("The action should not be null",view.getConfigureAction(null));
+		assertTrue("Should be a StringConstantActivityConfigurationAction",view.getConfigureAction(null) instanceof StringConstantActivityConfigurationAction);
 	}
 	
 }

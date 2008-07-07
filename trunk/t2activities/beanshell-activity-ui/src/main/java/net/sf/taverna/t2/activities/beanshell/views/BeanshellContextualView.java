@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.activities.beanshell.views;
 
+import java.awt.Frame;
+
 import javax.help.CSH;
 import javax.swing.Action;
 
@@ -58,9 +60,9 @@ public class BeanshellContextualView extends
 	}
 
 	@Override
-	public Action getConfigureAction() {
+	public Action getConfigureAction(Frame owner) {
 		return new BeanshellActivityConfigurationAction(
-				(BeanshellActivity) getActivity(), this);
+				(BeanshellActivity) getActivity(), owner);
 	}
 
 }

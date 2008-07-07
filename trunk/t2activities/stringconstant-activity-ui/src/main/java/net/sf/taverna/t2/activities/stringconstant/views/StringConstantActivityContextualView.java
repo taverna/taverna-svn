@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.activities.stringconstant.views;
 
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 
 import javax.swing.Action;
@@ -32,9 +33,9 @@ public class StringConstantActivityContextualView extends HTMLBasedActivityConte
 
 	@SuppressWarnings("serial")
 	@Override
-	public Action getConfigureAction() {
+	public Action getConfigureAction(Frame owner) {
 		
-		return new StringConstantActivityConfigurationAction((StringConstantActivity)getActivity()) {
+		return new StringConstantActivityConfigurationAction((StringConstantActivity)getActivity(),owner) {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {

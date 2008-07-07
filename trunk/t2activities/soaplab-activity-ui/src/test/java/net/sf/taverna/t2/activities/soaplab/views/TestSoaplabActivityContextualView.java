@@ -40,8 +40,8 @@ public class TestSoaplabActivityContextualView {
 	@Ignore("Integration test")
 	public void testConfigureAction() throws Exception {
 		ContextualView view = new SoaplabActivityContextualView(a);
-		assertNotNull("the action should not be null",view.getConfigureAction());
-		assertTrue("The action should be a SoaplabAcitivyConfigurationAction",view.getConfigureAction() instanceof SoaplabActivityConfigurationAction);
+		assertNotNull("the action should not be null",view.getConfigureAction(null));
+		assertTrue("The action should be a SoaplabAcitivyConfigurationAction",view.getConfigureAction(null) instanceof SoaplabActivityConfigurationAction);
 	}
 	
 	private void run() throws Exception

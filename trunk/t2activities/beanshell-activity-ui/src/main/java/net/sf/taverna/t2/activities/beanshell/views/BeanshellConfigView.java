@@ -17,7 +17,6 @@ import javax.help.CSH;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -27,16 +26,7 @@ import javax.swing.JTextField;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
-import net.sf.taverna.t2.annotation.AnnotationAssertion;
-import net.sf.taverna.t2.annotation.AnnotationAssertionImpl;
-import net.sf.taverna.t2.annotation.AnnotationChain;
-import net.sf.taverna.t2.annotation.AnnotationChainImpl;
-import net.sf.taverna.t2.annotation.annotationbeans.MimeType;
-import net.sf.taverna.t2.reference.ExternalReferenceSPI; //import net.sf.taverna.t2.reference.impl.external.file.FileReference;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.MimeTypeConfig;
-import net.sf.taverna.t2.workflowmodel.Edit;
-import net.sf.taverna.t2.workflowmodel.Edits;
-import net.sf.taverna.t2.workflowmodel.EditsRegistry;
+import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
@@ -89,6 +79,7 @@ public class BeanshellConfigView extends JPanel {
 	private JPanel outerOutputPanel;
 	/** parent panel for the inputs */
 	private JPanel outerInputPanel;
+	
 
 	/**
 	 * Stores the {@link BeanshellActivity}, gets its

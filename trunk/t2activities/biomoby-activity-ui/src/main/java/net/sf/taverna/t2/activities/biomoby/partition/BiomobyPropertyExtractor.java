@@ -13,6 +13,7 @@ public class BiomobyPropertyExtractor implements PropertyExtractorSPI {
 		if (target instanceof BiomobyActivityItem) {
 			BiomobyActivityItem item = (BiomobyActivityItem)target;
 			map.put("type", item.getType());
+			map.put("authority", item.getAuthorityName());
 		}
 		return map;
 	}

@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.activities.biomart.views;
 
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 
 import javax.swing.Action;
@@ -51,16 +52,8 @@ public class BiomartActivityContextualView extends HTMLBasedActivityContextualVi
 
 	@SuppressWarnings("serial")
 	@Override
-	public Action getConfigureAction() {
-		return new BiomartActivityConfigurationAction((BiomartActivity)getActivity()) {
-
-			@Override
-			public void actionPerformed(ActionEvent action) {
-				super.actionPerformed(action);
-				refreshView();
-			}
-			
-		};
+	public Action getConfigureAction(Frame owner) {
+		return new BiomartActivityConfigurationAction((BiomartActivity)getActivity(),owner);
 	}
 	
 	

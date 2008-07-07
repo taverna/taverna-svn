@@ -49,8 +49,8 @@ public class TestBiomartActivityContextualView {
 	@Test
 	public void testConfigurationAction() throws Exception {
 		BiomartActivityContextualView view = new BiomartActivityContextualView(activity);
-		assertNotNull("The view should provide a configuration action",view.getConfigureAction());
-		assertTrue("The configuration action should be an instance of BiomartActivityConfigurationAction",view.getConfigureAction() instanceof BiomartActivityConfigurationAction);
+		assertNotNull("The view should provide a configuration action",view.getConfigureAction(null));
+		assertTrue("The configuration action should be an instance of BiomartActivityConfigurationAction",view.getConfigureAction(null) instanceof BiomartActivityConfigurationAction);
 	}
 
 	private Element getQueryElement(String resourceName) throws Exception {

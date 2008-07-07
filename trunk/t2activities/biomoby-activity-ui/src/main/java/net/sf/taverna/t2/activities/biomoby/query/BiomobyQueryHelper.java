@@ -19,6 +19,8 @@ import java.util.Vector;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import net.sf.taverna.raven.appconfig.ApplicationRuntime;
+
 import org.apache.axis.AxisFault;
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
@@ -53,9 +55,11 @@ public class BiomobyQueryHelper {
 				this.REGISTRY_URI = uri;
 			if (url != null)
 				this.REGISTRY_URL = url;
-			String cacheLoc = System.getProperty("taverna.home");
-			if (cacheLoc == null || cacheLoc.trim().length() == 0)
-				cacheLoc = System.getProperty("taverna.repository");
+			String tavernaHome=null;
+			if (ApplicationRuntime.getInstance().getApplicationHomeDir()!=null) {
+				tavernaHome=ApplicationRuntime.getInstance().getApplicationHomeDir().getAbsolutePath();
+			}
+			String cacheLoc = tavernaHome;
 			if (cacheLoc == null || cacheLoc.trim().length() == 0)
 				cacheLoc = "";
 			if (!cacheLoc.endsWith(System.getProperty("file.separator")))
