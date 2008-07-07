@@ -1,6 +1,6 @@
 <plugin>
-	<name>myExperiment and WHIP Plugin</name>
-	<description><!-- add a description here --></description>
+	<name>myExperiment and WHIP Plugin (beta)</name>
+	<description>This plugin provides integration with myExperiment - the social networking and sharing website for scientists, and also provides integration with the WHIP platform.</description>
 	<identifier>org.myexp_whip_plugin</identifier>
 	<version>0.1.1</version>
 	<provider>myexperiment.org</provider>
