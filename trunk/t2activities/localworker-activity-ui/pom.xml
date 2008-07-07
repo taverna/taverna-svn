@@ -33,14 +33,24 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>localworker-activity</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>workflowmodel-impl</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>beanshell-activity-ui</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<!--  <dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>localworker-translator</artifactId>
 			<version>0.3-SNAPSHOT</version>
-		</dependency> -->
+			</dependency> -->
 	</dependencies>
 </project>
 
