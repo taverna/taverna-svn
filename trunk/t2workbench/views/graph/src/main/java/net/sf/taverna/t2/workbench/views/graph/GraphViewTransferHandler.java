@@ -90,15 +90,19 @@ public class GraphViewTransferHandler extends TransferHandler {
 			Object data = transferable.getTransferData(activityDataFlavor);
 			if (data instanceof ActivityAndBeanWrapper) {
 				ActivityAndBeanWrapper activityAndBeanWrapper = (ActivityAndBeanWrapper) data;
+				
 				Activity activity = activityAndBeanWrapper.getActivity();
-				Object bean = activityAndBeanWrapper.getBean();
-				activity.configure(bean);
+				
 				Dataflow dataflow = graphViewComponent.getDataflow();
 				Processor p = Tools.buildFromActivity(activity);
 				String name = activityAndBeanWrapper.getName()
 						.replace(' ', '_');
 				name = Tools.uniqueProcessorName(name, dataflow);
 				List<Edit<?>> editList = new ArrayList<Edit<?>>();
+				Object bean = activityAndBeanWrapper.getBean();
+				
+				edits.getConfigureActivityEdit(activity, bean).doEdit();
+				//editList.add(edits.getConfigureActivityEdit(activity, bean));
 				editList.add(edits.getRenameProcessorEdit(p, name));
 				editList.add(edits.getAddProcessorEdit(dataflow, p));
 				editManager
@@ -111,9 +115,7 @@ public class GraphViewTransferHandler extends TransferHandler {
 			logger.warn("Could not import data : I/O error", e);
 		} catch (EditException e) {
 			logger.warn("Could not add processor : edit error", e);
-		} catch (ActivityConfigurationException e) {
-			logger.warn("Could not configure activity", e);
-		}
+		} 
 		return result;
 	}
 

@@ -26,6 +26,7 @@ import javax.swing.JTextField;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
+import net.sf.taverna.t2.activities.beanshell.actions.BeanshellActivityConfigurationAction;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
@@ -81,6 +82,8 @@ public class BeanshellConfigView extends JPanel {
 	private JPanel outerInputPanel;
 	private JButton button;
 	
+	private boolean configChanged=false;
+	
 
 	/**
 	 * Stores the {@link BeanshellActivity}, gets its
@@ -95,6 +98,14 @@ public class BeanshellConfigView extends JPanel {
 		configuration = activity.getConfiguration();
 		setLayout(new GridBagLayout());
 		initialise();
+	}
+	
+	public BeanshellActivityConfigurationBean getConfiguration() {
+		return configuration;
+	}
+	
+	public boolean isConfigurationChanged() {
+		return configChanged;
 	}
 
 	/**
@@ -166,6 +177,7 @@ public class BeanshellConfigView extends JPanel {
 		JButton cancelButton = new JButton(new AbstractAction() {
 
 			public void actionPerformed(ActionEvent e) {
+				configChanged=false;
 				buttonClicked.actionPerformed(e);
 			}
 		});
@@ -713,12 +725,8 @@ public class BeanshellConfigView extends JPanel {
 				beanshellActivityConfigurationBean
 						.setOutputPortDefinitions(outputBeanList);
 
-				try {
-					activity.configure(beanshellActivityConfigurationBean);
-				} catch (ActivityConfigurationException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				configuration=beanshellActivityConfigurationBean;
+				configChanged=true;
 				setVisible(false);
 				buttonClicked.actionPerformed(e);
 			}

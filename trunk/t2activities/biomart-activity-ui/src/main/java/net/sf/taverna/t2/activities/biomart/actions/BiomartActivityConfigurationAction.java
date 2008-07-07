@@ -35,11 +35,7 @@ public class BiomartActivityConfigurationAction extends ActivityConfigurationAct
 				Element query = configurationPanel.getQuery();
 				BiomartActivityConfigurationBean bean = new BiomartActivityConfigurationBean();
 				bean.setQuery(query);
-				try {
-					getActivity().configure(bean);
-				} catch (ActivityConfigurationException e) {
-					e.printStackTrace();
-				}
+				configureActivity(bean);
 				dialog.setVisible(false);
 			}
 			

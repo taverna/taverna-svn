@@ -1,14 +1,14 @@
 package net.sf.taverna.activities.localworker.actions;
 
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import net.sf.taverna.t2.activities.localworker.LocalworkerActivity;
 import net.sf.taverna.t2.activities.localworker.views.LocalworkerActivityConfigView;
-import net.sf.taverna.t2.activities.localworker.views.LocalworkerActivityContextualView;
 import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationAction;
 
 /**
@@ -19,15 +19,16 @@ import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationActi
  * @author Ian Dunlop
  * 
  */
+@SuppressWarnings("serial")
 public class LocalworkerActivityConfigurationAction extends
 		ActivityConfigurationAction<LocalworkerActivity> {
 
-	private final LocalworkerActivityContextualView localworkerActivityContextualView;
+	private final Frame owner;
 
 	public LocalworkerActivityConfigurationAction(LocalworkerActivity activity,
-			LocalworkerActivityContextualView localworkerActivityContextualView) {
+			Frame owner) {
 		super(activity);
-		this.localworkerActivityContextualView = localworkerActivityContextualView;
+		this.owner = owner;
 	}
 
 	/**
@@ -38,11 +39,25 @@ public class LocalworkerActivityConfigurationAction extends
 		// TODO Auto-generated method stub
 		// tell the use that this is a local worker and if they change it then
 		// to be careful
-		LocalworkerActivityConfigView localworkerConfigView = new LocalworkerActivityConfigView(
+		final LocalworkerActivityConfigView localworkerConfigView = new LocalworkerActivityConfigView(
 				(LocalworkerActivity) getActivity());
-		final JFrame frame = new JFrame();
+		final JDialog frame = new JDialog(owner,true);
 		frame.add(localworkerConfigView);
 		frame.setSize(500, 500);
+		
+		localworkerConfigView.setButtonClickedListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				// FIXME when the user clicks config on a local worker it should
+				// add it as a user defined one to the activity palette
+				frame.setVisible(false);
+				if (localworkerConfigView.isConfigurationChanged()) {
+					configureActivity(localworkerConfigView.getConfiguration());
+				}
+			}
+
+		});
+		
 		Object[] options = { "Continue", "Cancel" };
 		int n = JOptionPane
 				.showOptionDialog(
@@ -52,6 +67,7 @@ public class LocalworkerActivityConfigurationAction extends
 						JOptionPane.QUESTION_MESSAGE, null, // do not use a
 						// custom Icon
 						options, options[0]);
+		
 
 		if (n == 0) {
 			// continue was clicked so prepare for config
@@ -59,18 +75,6 @@ public class LocalworkerActivityConfigurationAction extends
 		} else {
 			// do nothing
 		}
-
-		localworkerConfigView.setButtonClickedListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				// FIXME when the user clicks config on a local worker it should
-				// add it as a user defined one to the activity palette
-				frame.setVisible(false);
-				localworkerActivityContextualView.refreshView();
-
-			}
-
-		});
 	}
 
 }

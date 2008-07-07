@@ -48,15 +48,8 @@ public class SoaplabActivityConfigurationAction extends
 					bean.setPollingInterval(interval);
 					bean.setPollingIntervalMax(intervalMax);
 
-					try {
-						getActivity().configure(bean);
-					} catch (ActivityConfigurationException ex) {
-						JOptionPane.showMessageDialog(null,
-								"There was an error configuring the Soaplab activity with the new settings:"
-										+ ex.getMessage(),
-								"Activity update error",
-								JOptionPane.ERROR_MESSAGE);
-					}
+					configureActivity(bean);
+					
 					frame.setVisible(false);
 				}
 			}

@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.activities.localworker.views;
 
+import java.awt.Frame;
+
 import javax.swing.Action;
 
 import net.sf.taverna.activities.localworker.actions.LocalworkerActivityConfigurationAction;
@@ -41,9 +43,9 @@ public class LocalworkerActivityContextualView extends HTMLBasedActivityContextu
 	}
 	
 	@Override
-	public Action getConfigureAction() {
+	public Action getConfigureAction(Frame owner) {
 		return new LocalworkerActivityConfigurationAction(
-				(LocalworkerActivity) getActivity(), this);
+				(LocalworkerActivity)getActivity(), owner);
 	}
 
 }

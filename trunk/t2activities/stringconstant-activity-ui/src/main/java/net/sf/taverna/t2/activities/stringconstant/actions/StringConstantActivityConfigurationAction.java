@@ -8,7 +8,6 @@ import javax.swing.JOptionPane;
 import net.sf.taverna.t2.activities.stringconstant.StringConstantActivity;
 import net.sf.taverna.t2.activities.stringconstant.StringConstantConfigurationBean;
 import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationAction;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 
 public class StringConstantActivityConfigurationAction extends
 		ActivityConfigurationAction<StringConstantActivity> {
@@ -27,12 +26,7 @@ public class StringConstantActivityConfigurationAction extends
 		String newValue = JOptionPane.showInputDialog(owner,"New string value",value);
 		if (newValue!=null) {
 			bean.setValue(newValue);
-			
-			try {
-				getActivity().configure(bean);
-			} catch (ActivityConfigurationException e1) {
-				//FIXME: handle configuration exception
-			}
+			configureActivity(bean);
 		}
 	}
 
