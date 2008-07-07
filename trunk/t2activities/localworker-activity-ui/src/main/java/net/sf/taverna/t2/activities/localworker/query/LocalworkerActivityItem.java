@@ -7,6 +7,7 @@ import javax.swing.ImageIcon;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
+import net.sf.taverna.t2.activities.localworker.LocalworkerActivity;
 import net.sf.taverna.t2.partition.AbstractActivityItem;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
@@ -29,9 +30,7 @@ public class LocalworkerActivityItem extends AbstractActivityItem {
 	private String operation;
 	private String category;
 	private String provider;
-	
-	
-	
+
 	public String getProvider() {
 		return provider;
 	}
@@ -66,7 +65,8 @@ public class LocalworkerActivityItem extends AbstractActivityItem {
 		bean.setInputPortDefinitions(this.inputPorts);
 		bean.setOutputPortDefinitions(this.outputPorts);
 
-		// FIXME needs some mime types? from the annotations
+		// FIXME needs some mime types from the annotations (done as strings
+		// inside the port at the moment)
 		return bean;
 	}
 
@@ -81,7 +81,7 @@ public class LocalworkerActivityItem extends AbstractActivityItem {
 	 */
 	@Override
 	protected Activity<?> getUnconfiguredActivity() {
-		Activity<?> activity = new BeanshellActivity();
+		Activity<?> activity = new LocalworkerActivity();
 		return activity;
 	}
 

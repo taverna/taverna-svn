@@ -18,6 +18,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.serialization.xml.ActivityXMLDeserializer;
 
 import org.apache.log4j.Logger;
@@ -94,7 +95,8 @@ public class LocalworkerQuery extends ActivityQuery {
 				}
 			}
 		} catch (IOException e1) {
-			logger.warn("Could not read local worker definitions from " + LOCALWORKER_NAMES);
+			logger.warn("Could not read local worker definitions from "
+					+ LOCALWORKER_NAMES);
 		}
 
 	}
@@ -132,51 +134,54 @@ public class LocalworkerQuery extends ActivityQuery {
 		String[] split = line.split("[.]");
 		// get the file from disk
 		String resource = "/" + line;
-		InputStream resourceAsStream = getClass().getResourceAsStream(
-				resource);
-		if (resourceAsStream == null) { 
-			throw new ItemCreationException("Could not find resource " + resource);
+		InputStream resourceAsStream = getClass().getResourceAsStream(resource);
+		if (resourceAsStream == null) {
+			throw new ItemCreationException("Could not find resource "
+					+ resource);
 		}
-		
+
 		SAXBuilder builder = new SAXBuilder();
 		Element detachRootElement = null;
 		try {
 			detachRootElement = builder.build(resourceAsStream)
 					.detachRootElement();
 		} catch (JDOMException e) {
-			throw new ItemCreationException("Could not parse resource " + resource, e);
+			throw new ItemCreationException("Could not parse resource "
+					+ resource, e);
 		} catch (IOException e) {
-			throw new ItemCreationException("Could not read resource " + resource, e);
+			throw new ItemCreationException("Could not read resource "
+					+ resource, e);
 		}
 		Activity<?> activity = null;
 		try {
-			activity = deserializer.deserializeActivity(detachRootElement,
-					new HashMap<String, Element>(), getClass().getClassLoader());
+			activity = deserializer
+					.deserializeActivity(detachRootElement,
+							new HashMap<String, Element>(), getClass()
+									.getClassLoader());
 		} catch (Exception e) {
 			throw new ItemCreationException(e);
 		}
-		Set<ActivityInputPort> inputPorts = activity.getInputPorts();
 		List<ActivityInputPortDefinitionBean> inputPortBeans = new ArrayList<ActivityInputPortDefinitionBean>();
-		for (ActivityInputPort port : inputPorts) {
-			ActivityInputPortDefinitionBean bean = new ActivityInputPortDefinitionBean();
-			bean.setDepth(port.getDepth());
-			bean.setHandledReferenceSchemes(port.getHandledReferenceSchemes());
-			// FIXME bean.setMimeTypes(port.get) needs mime types from
-			// somewhere??
-			bean.setName(port.getName());
-			bean.setTranslatedElementType(port.getTranslatedElementClass());
+		BeanshellActivityConfigurationBean configuration = (BeanshellActivityConfigurationBean) activity
+				.getConfiguration();
+
+		for (ActivityInputPortDefinitionBean bean : configuration
+				.getInputPortDefinitions()) {
+			bean.setDepth(bean.getDepth());
+			bean.setName(bean.getName());
+			bean.setHandledReferenceSchemes(bean.getHandledReferenceSchemes());
+			bean.setTranslatedElementType(bean.getTranslatedElementType());
+			// bean.setMimeTypes(bean.getMimeTypes());
 			inputPortBeans.add(bean);
 		}
-		Set<OutputPort> outputPorts = activity.getOutputPorts();
 		List<ActivityOutputPortDefinitionBean> outputPortBeans = new ArrayList<ActivityOutputPortDefinitionBean>();
-		for (OutputPort port : outputPorts) {
-			ActivityOutputPortDefinitionBean bean = new ActivityOutputPortDefinitionBean();
-			bean.setDepth(port.getDepth());
-			bean.setGranularDepth(port.getGranularDepth());
-			bean.setName(port.getName());
+		for (ActivityOutputPortDefinitionBean bean : configuration
+				.getOutputPortDefinitions()) {
+			bean.setDepth(bean.getDepth());
+			bean.setGranularDepth(bean.getGranularDepth());
+			bean.setName(bean.getName());
+			bean.setMimeTypes(bean.getMimeTypes());
 			outputPortBeans.add(bean);
-			// FIXME bean.setMimeTypes(port.) mime types needed from
-			// annotations
 		}
 
 		String script = ((BeanshellActivity) activity).getConfiguration()
