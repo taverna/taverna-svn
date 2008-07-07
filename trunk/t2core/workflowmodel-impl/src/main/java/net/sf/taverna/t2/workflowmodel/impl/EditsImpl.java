@@ -294,4 +294,11 @@ public class EditsImpl implements Edits {
 		return new AddMergeInputPortEdit(merge, mergeInputPort);
 	}
 
+	public Edit<Activity<?>> getConfigureActivityEdit(Activity<?> activity,
+			Object configurationBean) {
+		return new ConfigureActivityEdit(activity,configurationBean);
+	}
+	
+	
+
 }

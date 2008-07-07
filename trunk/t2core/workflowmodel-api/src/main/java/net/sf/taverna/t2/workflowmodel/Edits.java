@@ -489,4 +489,13 @@ public interface Edits {
 	Edit<Dataflow> getUpdateDataflowNameEdit(Dataflow dataflow, String newName);
 	
 	Edit<Dataflow> getUpdateDataflowInternalIdentifierEdit(Dataflow dataflow, String newId);
+	
+	/**
+	 * Returns an Edit that is responsible for configuring an Acitivity with a given configuration bean.
+	 * 
+	 * @param activity
+	 * @param configurationBean
+	 * @return
+	 */
+	Edit<Activity<?>> getConfigureActivityEdit(Activity<?> activity,Object configurationBean);
 }
