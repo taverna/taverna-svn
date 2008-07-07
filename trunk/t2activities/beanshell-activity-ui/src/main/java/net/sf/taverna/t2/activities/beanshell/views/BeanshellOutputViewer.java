@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -58,6 +59,7 @@ public class BeanshellOutputViewer extends JPanel {
 	
 	private MimeTypeConfig mimeTypeConfig;
 	private JButton addMimeButton;
+	private JFrame mimeFrame;
 
 	/**
 	 * Sets the look and feel of the view through {@link #initView()} and sets
@@ -112,13 +114,21 @@ public class BeanshellOutputViewer extends JPanel {
 		outerConstraint.gridx = 3;
 		
 		outerConstraint.gridx = 4;
-		
+		mimeFrame = new JFrame();
 		mimeTypeConfig = new MimeTypeConfig();
+		if (bean.getMimeTypes() !=null) {
+			mimeTypeConfig.setMimeTypeList(bean.getMimeTypes());
+		}
+		mimeFrame.add(mimeTypeConfig);
+		mimeTypeConfig.setVisible(true);
 		addMimeButton = new JButton("Add mime type");
 		addMimeButton.addActionListener(new AbstractAction() {
 
 			public void actionPerformed(ActionEvent e) {
-				mimeTypeConfig.setVisible(true);
+//				mimeTypeConfig.setVisible(true);
+				mimeFrame.setVisible(true);
+//				mimeTypeConfig.setVisible(true);
+//				mimeTypeConfig.setVisible(true);
 			}
 			
 		});
@@ -233,7 +243,6 @@ public class BeanshellOutputViewer extends JPanel {
 			item.addActionListener(new AbstractAction() {
 
 				public void actionPerformed(ActionEvent arg0) {
-					System.out.println(item.getText());
 					originalMimes.add((String) propertyMap.get(item.getText()));
 					mimeList.revalidate();
 					mimePopup.setVisible(false);
@@ -302,6 +311,10 @@ public class BeanshellOutputViewer extends JPanel {
 
 	public JButton getAddMimeButton() {
 		return addMimeButton;
+	}
+
+	public JFrame getMimeFrame() {
+		return mimeFrame;
 	}
 
 }

@@ -27,9 +27,16 @@ import javax.swing.JTextField;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
-import net.sf.taverna.t2.reference.ExternalReferenceSPI;
-//import net.sf.taverna.t2.reference.impl.external.file.FileReference;
+import net.sf.taverna.t2.annotation.AnnotationAssertion;
+import net.sf.taverna.t2.annotation.AnnotationAssertionImpl;
+import net.sf.taverna.t2.annotation.AnnotationChain;
+import net.sf.taverna.t2.annotation.AnnotationChainImpl;
+import net.sf.taverna.t2.annotation.annotationbeans.MimeType;
+import net.sf.taverna.t2.reference.ExternalReferenceSPI; //import net.sf.taverna.t2.reference.impl.external.file.FileReference;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.MimeTypeConfig;
+import net.sf.taverna.t2.workflowmodel.Edit;
+import net.sf.taverna.t2.workflowmodel.Edits;
+import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
@@ -92,7 +99,10 @@ public class BeanshellConfigView extends JPanel {
 	 *            the {@link BeanshellActivity} that the view is over
 	 */
 	public BeanshellConfigView(BeanshellActivity activity) {
-		CSH.setHelpIDString(this, "net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.BeanshellConfigView");
+		CSH
+				.setHelpIDString(
+						this,
+						"net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.BeanshellConfigView");
 		this.activity = activity;
 		configuration = activity.getConfiguration();
 		setLayout(new GridBagLayout());
@@ -341,7 +351,7 @@ public class BeanshellConfigView extends JPanel {
 				bean.setAllowsLiteralValues(true);
 				bean.setDepth(0);
 				List<Class<? extends ExternalReferenceSPI>> handledReferenceSchemes = new ArrayList<Class<? extends ExternalReferenceSPI>>();
-//				handledReferenceSchemes.add(FileReference.class);
+				// handledReferenceSchemes.add(FileReference.class);
 				bean.setHandledReferenceSchemes(handledReferenceSchemes);
 				List<String> mimeTypes = new ArrayList<String>();
 				mimeTypes.add("text/plain");
@@ -418,8 +428,8 @@ public class BeanshellConfigView extends JPanel {
 	 * {@link BeanshellActivityConfigurationBean} and creates a
 	 * {@link BeanshellOutputViewer} for each one. Displays the name and a
 	 * {@link JSpinner} to change the depth and granular depth for each one and
-	 * a {@link JButton} to remove it. Currently the individual components from a
-	 * {@link BeanshellOutputViewer} are added rather than the
+	 * a {@link JButton} to remove it. Currently the individual components from
+	 * a {@link BeanshellOutputViewer} are added rather than the
 	 * {@link BeanshellOutputViewer} itself
 	 * 
 	 * @return the panel containing the view of the output ports
@@ -465,27 +475,25 @@ public class BeanshellConfigView extends JPanel {
 					.getGranularDepthSpinner();
 			outputEditPanel.add(granularDepthSpinner, outputConstraint);
 			outputConstraint.gridx = 3;
-			final JButton addMimeButton = beanshellOutputViewer.getAddMimeButton();
+			final JButton addMimeButton = beanshellOutputViewer
+					.getAddMimeButton();
+			// final JFrame mimeFrame = new JFrame();
 			outputEditPanel.add(addMimeButton, outputConstraint);
-			final MimeTypeConfig mimeTypeConfig = beanshellOutputViewer.getMimeTypeConfig();
-			final JFrame mimeFrame = new JFrame();
-			mimeFrame.add(mimeTypeConfig);
-			addMimeButton.addActionListener(new AbstractAction() {
-
-				public void actionPerformed(ActionEvent e) {
-					System.out.println("action");
-					
-					mimeFrame.setVisible(true);
-					mimeTypeConfig.addNewMimeListener(new AbstractAction() {
+			beanshellOutputViewer.getMimeTypeConfig().addNewMimeListener(
+					new AbstractAction() {
 
 						public void actionPerformed(ActionEvent e) {
-							mimeFrame.setVisible(false);
+							beanshellOutputViewer.getMimeFrame().setVisible(
+									false);
+							// beanshellOutputViewer.getMimeTypeConfig().setVisible(false);
+							// mimeFrame.setVisible(false);
+
 						}
-						
+
 					});
-				}
-				
-			});
+			// mimeFrame.add(beanshellOutputViewer
+			// .getMimeTypeConfig());
+
 			outputConstraint.gridx = 4;
 			final JButton removeButton = new JButton("remove");
 			removeButton.addActionListener(new AbstractAction() {
@@ -547,23 +555,46 @@ public class BeanshellConfigView extends JPanel {
 							.getGranularDepthSpinner();
 					outputEditPanel.add(granularDepthSpinner, outputConstraint);
 					outputConstraint.gridx = 3;
-					final JButton addMimeButton = beanshellOutputViewer.getAddMimeButton();
+					final JButton addMimeButton = beanshellOutputViewer
+							.getAddMimeButton();
+					// outputEditPanel.add(addMimeButton, outputConstraint);
+					// final MimeTypeConfig mimeTypeConfig =
+					// beanshellOutputViewer
+					// .getMimeTypeConfig();
+					// addMimeButton.addActionListener(new AbstractAction() {
+					//
+					// public void actionPerformed(ActionEvent e) {
+					// mimeTypeConfig.setVisible(true);
+					// mimeTypeConfig
+					// .addNewMimeListener(new AbstractAction() {
+					//
+					// public void actionPerformed(
+					// ActionEvent e) {
+					// mimeTypeConfig.setVisible(false);
+					// }
+					//
+					// });
+					// }
+					//
+					// });
+					// final JFrame mimeFrame = new JFrame();
 					outputEditPanel.add(addMimeButton, outputConstraint);
-					final MimeTypeConfig mimeTypeConfig = beanshellOutputViewer.getMimeTypeConfig();
-					addMimeButton.addActionListener(new AbstractAction() {
-
-						public void actionPerformed(ActionEvent e) {
-							mimeTypeConfig.setVisible(true);
-							mimeTypeConfig.addNewMimeListener(new AbstractAction() {
-
+					beanshellOutputViewer.getMimeTypeConfig()
+							.addNewMimeListener(new AbstractAction() {
+								// hide the mime frame, annotations added whrn
+								// the actual OK button is clicked
 								public void actionPerformed(ActionEvent e) {
-									mimeTypeConfig.setVisible(false);
+									beanshellOutputViewer.getMimeFrame()
+											.setVisible(false);
+
+									// beanshellOutputViewer.getMimeTypeConfig().setVisible(false);
+									// mimeFrame.setVisible(false);
+
 								}
-								
+
 							});
-						}
-						
-					});
+					// mimeFrame.add(beanshellOutputViewer
+					// .getMimeTypeConfig());
 					outputConstraint.gridx = 4;
 					final JButton removeButton = new JButton("remove");
 					removeButton.addActionListener(new AbstractAction() {
@@ -585,7 +616,7 @@ public class BeanshellConfigView extends JPanel {
 
 					outputGridy++;
 				} catch (Exception e1) {
-					System.out.println(e1);
+					// throw it, log it??
 				}
 			}
 
@@ -671,9 +702,15 @@ public class BeanshellConfigView extends JPanel {
 									.getGranularDepthSpinner().getValue());
 					activityOutputPortDefinitionBean.setName(outputView
 							.getNameField().getText());
-					activityOutputPortDefinitionBean.setMimeTypes(outputView.getMimeTypeConfig().getMimeTypeList());
-					//FIXME add all the mime types as an annotation
 					
+					outputView.getMimeTypeConfig().getMimeTypeList();
+					
+//					Edits edits = EditsRegistry.getEdits();
+					
+					
+					
+					// FIXME add all the mime types as an annotation
+
 					outputBeanList.add(activityOutputPortDefinitionBean);
 				}
 				BeanshellActivityConfigurationBean beanshellActivityConfigurationBean = new BeanshellActivityConfigurationBean();
