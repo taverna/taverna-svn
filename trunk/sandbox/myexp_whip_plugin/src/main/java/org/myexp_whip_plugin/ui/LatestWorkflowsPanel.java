@@ -226,10 +226,12 @@ public class LatestWorkflowsPanel extends BasePanel implements ActionListener,
 		this.add(topPanel, BorderLayout.NORTH);
 		
 		this.listPanel = new JPanel();
+		this.listPanel.setBorder(BorderFactory.createEmptyBorder());
 		this.listPanel.setLayout(new BoxLayout(this.listPanel, BoxLayout.Y_AXIS));
 		this.listScrollPane = new JScrollPane(this.listPanel,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		this.listScrollPane.setBorder(BorderFactory.createEmptyBorder());
 		this.add(this.listScrollPane, BorderLayout.CENTER);
 	}
 

@@ -134,9 +134,11 @@ public class WorkflowsListPanel extends BasePanel implements HyperlinkListener {
 		
 		this.listPanel = new JPanel();
 		this.listPanel.setLayout(new BoxLayout(this.listPanel, BoxLayout.Y_AXIS));
+		this.listPanel.setBorder(BorderFactory.createEmptyBorder());
 		this.listScrollPane = new JScrollPane(this.listPanel,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		this.listScrollPane.setBorder(BorderFactory.createEmptyBorder());
 		
 		this.add(this.listScrollPane, BorderLayout.CENTER);
 	}

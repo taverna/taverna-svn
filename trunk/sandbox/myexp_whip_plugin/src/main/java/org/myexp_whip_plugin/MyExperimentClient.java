@@ -49,7 +49,7 @@ public class MyExperimentClient {
 		SearchResults results = new SearchResults();
 		
 		try {
-			URL searchUrl = new URL(baseUrl, "search.xml?query=" + keywords + "&type=workflows");
+			URL searchUrl = new URL(baseUrl, "search.xml?query=" + keywords + "&type=workflow");
 			
 			/*
 			XStream xstream = this.getCustomXStream();
@@ -90,7 +90,6 @@ public class MyExperimentClient {
 					results.getWorkflows().add(r);
 				}
 			}
-			
 		} catch (Exception e) {
 			this.logger.error("Failed to search for workflows", e);
 		}
@@ -100,9 +99,52 @@ public class MyExperimentClient {
 		return results;
 	}
 	
-	public TagCloud getTagCloud() {
+	public TagCloud getTagCloud(int size) {
 		TagCloud tagCloud = new TagCloud();
 		
+		try {
+			String num = "all";
+			if (size > 0) {
+				num = "" + size;
+			}
+				
+			URL searchUrl = new URL(baseUrl, "tag-cloud.xml?num=" + num + "&type=workflow");
+			
+			Document doc = this.getXMLDocument(searchUrl);
+			
+			if (doc != null) {
+				NodeList nodes = doc.getElementsByTagName("tag");
+				for (int i = 0; i < nodes.getLength(); i++) {
+					String title = nodes.item(i).getTextContent();
+					String uri = null;
+					String resource = null;
+					int count = 0;
+					NamedNodeMap attribs = nodes.item(i).getAttributes();
+					for (int j = 0; j < attribs.getLength(); j++) {
+						if (attribs.item(j).getNodeName().equalsIgnoreCase("uri")) {
+							uri = attribs.item(j).getTextContent();
+						}
+						if (attribs.item(j).getNodeName().equalsIgnoreCase("resource")) {
+							resource = attribs.item(j).getTextContent();
+						}
+						if (attribs.item(j).getNodeName().equalsIgnoreCase("count")) {
+							count = Integer.parseInt(attribs.item(j).getTextContent());
+						}
+					}
+					
+					Tag t = new Tag();
+					t.setTitle(title);
+					t.setTagName(title);
+					t.setResource(resource);
+					t.setUri(uri);
+					t.setCount(count);
+					
+					tagCloud.getTags().add(t);
+				}
+			}
+		} catch (Exception e) {
+			this.logger.error("Failed to get tag cloud for workflows", e);
+		}
 		
 		return tagCloud;
 	}
