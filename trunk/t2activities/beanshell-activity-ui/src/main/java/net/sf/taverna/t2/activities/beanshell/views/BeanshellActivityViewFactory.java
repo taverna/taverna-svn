@@ -7,7 +7,9 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 public class BeanshellActivityViewFactory implements ActivityViewFactory<BeanshellActivity>{
 
 	public boolean canHandle(Activity<?> activityClass) {
-		return activityClass instanceof BeanshellActivity;
+		//changed since local worker sub classes beanshell which means instanceof can't be used any more
+		return activityClass.getClass().getName().equalsIgnoreCase(BeanshellActivity.class.getName());
+//		return activityClass instanceof BeanshellActivity;
 	}
 
 	

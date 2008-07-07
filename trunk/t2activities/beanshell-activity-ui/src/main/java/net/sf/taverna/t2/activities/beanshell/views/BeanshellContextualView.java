@@ -28,15 +28,18 @@ public class BeanshellContextualView extends
 
 	public BeanshellContextualView(Activity<?> activity) {
 		super(activity);
+		init();
+	}
+
+	private void init() {
 		CSH
-				.setHelpIDString(
-						this,
-						"net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.BeanshellContextualView");
+		.setHelpIDString(
+				this,
+		"net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.BeanshellContextualView");
 	}
 
 	@Override
 	protected String getRawTableRowsHtml() {
-		// TODO Auto-generated method stub
 		String html = "<tr><th>Input Port Name</th><th>Depth</th></tr>";
 		for (ActivityInputPortDefinitionBean bean : getConfigBean()
 				.getInputPortDefinitions()) {

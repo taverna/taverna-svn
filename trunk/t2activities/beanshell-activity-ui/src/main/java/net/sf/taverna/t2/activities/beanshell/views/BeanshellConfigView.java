@@ -79,6 +79,7 @@ public class BeanshellConfigView extends JPanel {
 	private JPanel outerOutputPanel;
 	/** parent panel for the inputs */
 	private JPanel outerInputPanel;
+	private JButton button;
 	
 
 	/**
@@ -90,10 +91,6 @@ public class BeanshellConfigView extends JPanel {
 	 *            the {@link BeanshellActivity} that the view is over
 	 */
 	public BeanshellConfigView(BeanshellActivity activity) {
-		CSH
-				.setHelpIDString(
-						this,
-						"net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.BeanshellConfigView");
 		this.activity = activity;
 		configuration = activity.getConfiguration();
 		setLayout(new GridBagLayout());
@@ -109,12 +106,16 @@ public class BeanshellConfigView extends JPanel {
 	 * {@link #setPortPanel()}
 	 */
 	private void initialise() {
+		CSH
+		.setHelpIDString(
+				this,
+		"net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.BeanshellConfigView");
 		setSize(500, 500);
 		AbstractAction okAction = getOKAction();
-		JButton OKButton = new JButton(okAction);
-		OKButton.setText("OK");
-		OKButton
-				.setToolTipText("Click to set the beanshell with the new values");
+		button = new JButton(okAction);
+		button.setText("OK");
+		button
+				.setToolTipText("Click to configure with the new values");
 		inputViewList = new ArrayList<BeanshellInputViewer>();
 		outputViewList = new ArrayList<BeanshellOutputViewer>();
 		setBorder(javax.swing.BorderFactory.createTitledBorder(null, null,
@@ -161,7 +162,7 @@ public class BeanshellConfigView extends JPanel {
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout());
 
-		buttonPanel.add(OKButton);
+		buttonPanel.add(button);
 		JButton cancelButton = new JButton(new AbstractAction() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -693,8 +694,8 @@ public class BeanshellConfigView extends JPanel {
 									.getGranularDepthSpinner().getValue());
 					activityOutputPortDefinitionBean.setName(outputView
 							.getNameField().getText());
-					
-					outputView.getMimeTypeConfig().getMimeTypeList();
+					activityOutputPortDefinitionBean.setMimeTypes(outputView.getMimeTypeConfig().getMimeTypeList());
+//					outputView.getMimeTypeConfig().getMimeTypeList();
 					
 //					Edits edits = EditsRegistry.getEdits();
 					
