@@ -48,7 +48,12 @@ public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements Artef
         putValue(NAME, "Whip Actions");
         putValue(SHORT_DESCRIPTION, "Handles Whip Actions");
         owner = new AppService(this);
-        owner.update();
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                owner.update();
+
+            }
+        });
     }
 
     public void actionPerformed(ActionEvent e) {
