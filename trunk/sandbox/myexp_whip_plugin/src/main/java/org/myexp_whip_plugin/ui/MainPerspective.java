@@ -9,7 +9,7 @@ import net.sf.taverna.perspectives.AbstractPerspective;
 
 public class MainPerspective extends AbstractPerspective {
 	
-	static String NAME = "myExperiment";
+	static String NAME = "myExperiment (beta)";
 	
 	public ImageIcon getButtonIcon() {
 		URL iconURL = MainPerspective.class.getResource("/myexp_icon.png");

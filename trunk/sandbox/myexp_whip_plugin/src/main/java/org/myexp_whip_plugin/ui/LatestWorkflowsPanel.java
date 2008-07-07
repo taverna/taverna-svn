@@ -50,16 +50,10 @@ import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 import org.myexp_whip_plugin.MyExperimentClient;
 
-public class LatestWorkflowsPanel extends JPanel implements ActionListener,
+public class LatestWorkflowsPanel extends BasePanel implements ActionListener,
 		ChangeListener, HyperlinkListener {
 	
 	private static final String ACTION_REFRESH = "refresh_latest_workflows"; 
-
-	private MainComponent parent;
-	
-	private MyExperimentClient client;
-
-	private Logger logger;
 
 	private List<SyndEntry> workflows;
 
@@ -72,9 +66,7 @@ public class LatestWorkflowsPanel extends JPanel implements ActionListener,
 	private JPanel listPanel;
 
 	public LatestWorkflowsPanel(MainComponent parent, MyExperimentClient client, Logger logger) {
-		this.parent = parent;
-		this.client = client;
-		this.logger = logger;
+		super(parent, client, logger);
 		
 		this.initialiseUI();
 	}
@@ -89,7 +81,6 @@ public class LatestWorkflowsPanel extends JPanel implements ActionListener,
 
 	}
 	
-	@Override
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 		try {
 			if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
@@ -144,8 +135,9 @@ public class LatestWorkflowsPanel extends JPanel implements ActionListener,
 					
 					StringBuffer content = new StringBuffer();
 					content.append("<div class=\"outer\">");
+					content.append("<div class=\"list\">");
 					content.append("<p class=\"title\">");
-					content.append(ent.getTitle());
+					content.append("<a href='" + ent.getLink() + "'>" + ent.getTitle() + "</a>");
 					content.append("</p>");
 					if (ent.getDescription().getValue().length() > 0) {
 						content.append("<div class=\"desc\">");
@@ -157,15 +149,17 @@ public class LatestWorkflowsPanel extends JPanel implements ActionListener,
 						content.append("<br/>");
 					}
 					content.append("</div>");
+					content.append("</div>");
 					
 					HTMLEditorKit kit = new HTMLEditorKit();
 					HTMLDocument doc = (HTMLDocument) (kit.createDefaultDocument());
 					StyleSheet css = kit.getStyleSheet();
 					
 					css.addRule("body {font-family: arial,helvetica,clean,sans-serif; margin: 0; padding: 0;}");
-					css.addRule("div.outer {display; block; text-align: left; padding-top: 0; padding-bottom: 0; padding-left: 10px; padding-right: 10px;}");
-					css.addRule("p.title {display; block; line-height: 1.0; color: #000066; font-size: large; font-weight: bold; margin-bottom: 0; margin-top; 0; padding: 0;}");
-					css.addRule("div.desc {display; block; font-size: medium; padding-top: 0; padding-bottom: 0; padding-left: 15px; padding-right: 5px;}");
+					//css.addRule("a {color: #000099;}");
+					css.addRule("div.outer {padding-top: 0; padding-bottom: 0; padding-left: 10px; padding-right: 10px;}");
+					css.addRule(".list p.title {text-align: left; line-height: 1.0; color: #000099; font-size: large; font-weight: bold; margin-bottom: 0; margin-top; 0; padding: 0;}");
+					css.addRule(".list div.desc {width: 600px; font-size: medium; padding-top: 0; padding-bottom: 0; padding-left: 15px; padding-right: 5px;}");
 					
 					doc.insertAfterStart(doc.getRootElements()[0].getElement(0), content.toString());
 					
@@ -211,8 +205,10 @@ public class LatestWorkflowsPanel extends JPanel implements ActionListener,
 		this.revalidate();
 	}
 	
-	public void revalidateScrollPane() {
-		this.listScrollPane.revalidate();
+	public void clear() {
+		this.statusLabel.setText("");
+		
+		this.cleanupListPanel();
 	}
 	
 	private void initialiseUI() {

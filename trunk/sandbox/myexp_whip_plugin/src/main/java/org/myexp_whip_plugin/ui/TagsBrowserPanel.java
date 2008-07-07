@@ -10,18 +10,10 @@ import javax.swing.event.ChangeEvent;
 import org.apache.log4j.Logger;
 import org.myexp_whip_plugin.MyExperimentClient;
 
-public class TagsBrowserPanel extends JPanel implements ActionListener, ChangeListener {
-	
-	private MainComponent parent;
-	
-	private MyExperimentClient client;
-	
-	private Logger logger;
+public class TagsBrowserPanel extends BasePanel implements ActionListener, ChangeListener {
 	
 	public TagsBrowserPanel(MainComponent parent, MyExperimentClient client, Logger logger) {
-		this.parent = parent;
-		this.client = client;
-		this.logger = logger;
+		super(parent, client, logger);
 	}
 	
 	public void actionPerformed(ActionEvent event) {
@@ -29,6 +21,21 @@ public class TagsBrowserPanel extends JPanel implements ActionListener, ChangeLi
 	}
 	
 	public void stateChanged(ChangeEvent event) {
+		
+	}
+
+	public void clear() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void refresh() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void repopulate() {
+		// TODO Auto-generated method stub
 		
 	}
 }

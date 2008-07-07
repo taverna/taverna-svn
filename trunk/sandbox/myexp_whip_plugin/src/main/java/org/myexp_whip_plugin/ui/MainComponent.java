@@ -1,15 +1,11 @@
 package org.myexp_whip_plugin.ui;
 
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.ComponentEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
@@ -46,7 +42,7 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 		super();
 		
 		try {
-			this.client = new MyExperimentClient(new URL("http://sandbox.myexperiment.org/"));
+			this.client = new MyExperimentClient(this.logger, new URL("http://sandbox.myexperiment.org/"));
 		} catch (MalformedURLException e) {
 			this.logger.debug("Failed to set baseUrl for myExperimentClient");
 		}
@@ -105,7 +101,7 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 		this.tagsBrowserPanel = new TagsBrowserPanel(this, this.client, this.logger);
 		this.workflowPreviewPanel = new WorkflowPreviewPanel(this, this.client, this.logger);
 		
-		this.tabsPane.add("Example Workflow", this.exampleWorkflowsPanel);
+		this.tabsPane.add("Example Workflows", this.exampleWorkflowsPanel);
 		this.tabsPane.add("Latest Workflows", this.latestWorkflowsPanel);
 		this.tabsPane.add("Search Workflows", this.searchWorkflowsPanel);
 		this.tabsPane.add("Tags Browser", this.tagsBrowserPanel);
@@ -144,8 +140,8 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 		
 		public LoadWorkflowAction(int workflowId) {
                 putValue(SMALL_ICON, TavernaIcons.importIcon);
-                putValue(NAME,"Load");
-                putValue(SHORT_DESCRIPTION,"Download and load this workflow in Taverna");
+                putValue(NAME,"Open");
+                putValue(SHORT_DESCRIPTION,"Download and open this workflow in Design mode");
                 
                 this.workflowId = workflowId;
         }

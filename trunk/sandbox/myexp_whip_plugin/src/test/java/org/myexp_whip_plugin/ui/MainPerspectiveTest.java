@@ -16,7 +16,7 @@ public class MainPerspectiveTest {
 
 	@Test
 	public void testGetText() {
-		assertEquals("myExperiment", perspective.getText());
+		assertEquals("myExperiment (beta)", perspective.getText());
 	}
 
 }
