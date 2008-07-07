@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.workbench.ui.views.contextualviews;
 
 import java.awt.BorderLayout;
+import java.awt.Frame;
 
 import javax.swing.Action;
 import javax.swing.JComponent;
@@ -48,9 +49,10 @@ public abstract class ContextualView extends JPanel {
 	 * return null.
 	 * </p>
 	 * 
+	 * @param owner - the owning dialog to be used when displaying dialogues for configuration options
 	 * @return an action that allows the element being viewed to be configured.
 	 */
-	public Action getConfigureAction() {
+	public Action getConfigureAction(Frame owner) {
 		return null;
 	}
 

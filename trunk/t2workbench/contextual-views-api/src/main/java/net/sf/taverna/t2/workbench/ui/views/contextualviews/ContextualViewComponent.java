@@ -20,6 +20,7 @@ import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.ui.DataflowSelectionMessage;
 import net.sf.taverna.t2.workbench.ui.DataflowSelectionModel;
 import net.sf.taverna.t2.workbench.ui.impl.DataflowSelectionManager;
+import net.sf.taverna.t2.workbench.ui.impl.Workbench;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactory;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactoryRegistry;
 import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
@@ -96,8 +97,8 @@ public class ContextualViewComponent extends JPanel implements UIComponentSPI {
 		views.add(view);
 		
 		panel.add(view,BorderLayout.CENTER);
-		if (view.getConfigureAction()!=null) {
-			configureButton.setAction(view.getConfigureAction());
+		if (view.getConfigureAction(Workbench.getInstance())!=null) {
+			configureButton.setAction(view.getConfigureAction(Workbench.getInstance()));
 			configureButton.setText("Configure");
 			configureButton.setEnabled(true);
 			configureButton.setVisible(true);
