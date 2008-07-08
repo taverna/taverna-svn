@@ -37,7 +37,6 @@ public class MimeTypeConfig extends JPanel {
 
 	private JTextArea mimeTypes;
 	private JTextArea newMimeType;
-	private List<String> mimeTypeList;
 	private ActionListener listener;
 	private Map<String, Object> mimeMap;
 	private DefaultListModel originalMimeListModel;
@@ -63,7 +62,7 @@ public class MimeTypeConfig extends JPanel {
 	private void init() {
 
 		setLayout(new GridBagLayout());
-		
+
 		userMimeListModel = new DefaultListModel();
 		userMimeList = new JList(userMimeListModel);
 		userMimeList.setBorder(BorderFactory
@@ -76,7 +75,6 @@ public class MimeTypeConfig extends JPanel {
 
 		});
 
-		mimeTypeList = new ArrayList<String>();
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		mimeTypes = new JTextArea();
 		mimeTypes.setBorder(BorderFactory
@@ -91,9 +89,10 @@ public class MimeTypeConfig extends JPanel {
 		createButtons();
 		setupDisplay();
 	}
-/**
- * 
- */
+
+	/**
+	 * 
+	 */
 	private void createButtons() {
 		oKbutton = new JButton("OK");
 		oKbutton.addActionListener(new AbstractAction() {
@@ -109,7 +108,6 @@ public class MimeTypeConfig extends JPanel {
 		addOriginalMimeTypeButton.addActionListener(new AbstractAction() {
 
 			public void actionPerformed(ActionEvent e) {
-				mimeTypeList.add(selectedMime);
 				userMimeListModel.addElement(selectedMime);
 			}
 
@@ -136,7 +134,6 @@ public class MimeTypeConfig extends JPanel {
 				// and also the clickable list
 				if (text != "" || text != null) {
 					// TODO regex to check for string/string
-					mimeTypeList.add(text);
 					userMimeListModel.addElement(text);
 					originalMimeListModel.addElement(text);
 				}
@@ -144,25 +141,25 @@ public class MimeTypeConfig extends JPanel {
 
 		});
 		addUserDefinedMimeButton
-		.setToolTipText("Add this mime type to the list");
-		
-		addToMimeConfigButton = new JButton("Add your new mime types to the default list");
+				.setToolTipText("Add this mime type to the list");
+
+		addToMimeConfigButton = new JButton(
+				"Add your new mime types to the default list");
 		addToMimeConfigButton.addActionListener(new AbstractAction() {
 
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 		});
-		//FIXME add some annotations or something?
+		// FIXME add some annotations or something?
 		addToMimeConfigButton.setEnabled(false);
 	}
 
 	private void setupDisplay() {
 
 		// FIXME needs some work - grid bag bleuch
-		
 
 		GridBagConstraints constraint = new GridBagConstraints();
 		constraint.anchor = GridBagConstraints.FIRST_LINE_START;
@@ -221,7 +218,13 @@ public class MimeTypeConfig extends JPanel {
 	 * @return a List of all the mime types
 	 */
 	public List<String> getMimeTypeList() {
-		return mimeTypeList;
+		List<String> returnedMimeList = new ArrayList<String>();
+		Object[] mimeArray = new Object[userMimeListModel.size()];
+		userMimeListModel.copyInto(mimeArray);
+		for (int i = 0; i < mimeArray.length; i++) {
+			returnedMimeList.add((String) mimeArray[i]);
+		}
+		return returnedMimeList;
 	}
 
 	/**
@@ -241,7 +244,6 @@ public class MimeTypeConfig extends JPanel {
 	public void setMimeTypeList(List<String> mimeTypeList) {
 		for (String mime : mimeTypeList) {
 			userMimeListModel.addElement(mime);
-			this.mimeTypeList.add(mime);
 		}
 	}
 
