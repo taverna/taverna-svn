@@ -62,5 +62,10 @@
 			<artifactId>graph</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>file-impl</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>
