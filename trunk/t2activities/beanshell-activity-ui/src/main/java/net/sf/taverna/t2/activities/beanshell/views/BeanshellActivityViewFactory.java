@@ -8,8 +8,7 @@ public class BeanshellActivityViewFactory implements ActivityViewFactory<Beanshe
 
 	public boolean canHandle(Activity<?> activityClass) {
 		//changed since local worker sub classes beanshell which means instanceof can't be used any more
-		return activityClass.getClass().getName().equalsIgnoreCase(BeanshellActivity.class.getName());
-//		return activityClass instanceof BeanshellActivity;
+		return activityClass.getClass().isAssignableFrom(BeanshellActivity.class);
 	}
 
 	
