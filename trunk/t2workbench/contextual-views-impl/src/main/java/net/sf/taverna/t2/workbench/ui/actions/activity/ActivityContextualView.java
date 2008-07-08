@@ -45,4 +45,6 @@ public abstract class ActivityContextualView<ConfigBean> extends ContextualView 
 	protected ConfigBean getConfigBean() {
 		return (ConfigBean)activity.getConfiguration();
 	}
+	
+	public abstract void refreshView();
 }

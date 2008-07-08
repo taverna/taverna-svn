@@ -16,6 +16,8 @@ import net.sf.taverna.t2.lang.observer.Observer;
 import net.sf.taverna.t2.lang.ui.ModelMap;
 import net.sf.taverna.t2.lang.ui.ModelMap.ModelMapEvent;
 import net.sf.taverna.t2.workbench.ModelMapConstants;
+import net.sf.taverna.t2.workbench.edits.EditManager;
+import net.sf.taverna.t2.workbench.edits.EditManager.EditManagerEvent;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.ui.DataflowSelectionMessage;
 import net.sf.taverna.t2.workbench.ui.DataflowSelectionModel;
@@ -33,12 +35,13 @@ public class ContextualViewComponent extends JPanel implements UIComponentSPI {
 
 	private Observer<DataflowSelectionMessage> dataflowSelectionListener = new DataflowSelectionListener();
 	private ModelMapObserver modelMapObserver = new ModelMapObserver();
+	private EditManagerObserver editManagerObserver = new EditManagerObserver();
 	private DataflowSelectionManager dataflowSelectionManager = DataflowSelectionManager
 			.getInstance();
 	private ContextualView view;
 	private FileManager fileManager = FileManager.getInstance();
 	private JButton configureButton = new JButton("Configure");
-	
+
 	/** Keep list of views in case you want to go back or forward between them */
 	private List<ContextualView> views = new ArrayList<ContextualView>();
 	private JPanel panel;
@@ -51,6 +54,7 @@ public class ContextualViewComponent extends JPanel implements UIComponentSPI {
 		selectionModel.addObserver(dataflowSelectionListener);
 
 		ModelMap.getInstance().addObserver(modelMapObserver);
+		EditManager.getInstance().addObserver(editManagerObserver);
 		initialise();
 	}
 
@@ -60,23 +64,22 @@ public class ContextualViewComponent extends JPanel implements UIComponentSPI {
 	}
 
 	public String getName() {
-		// TODO Auto-generated method stub
 		return "Contextual View";
 	}
 
 	private void initialise() {
-		
+
 		setLayout(new BorderLayout());
-		
+
 		panel = new JPanel(new BorderLayout());
-		add(panel,BorderLayout.CENTER);
-		
+		add(panel, BorderLayout.CENTER);
+
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		buttonPanel.add(configureButton);
 		configureButton.setEnabled(false);
 		configureButton.setVisible(false);
-		add(buttonPanel,BorderLayout.SOUTH);
+		add(buttonPanel, BorderLayout.SOUTH);
 	}
 
 	public void onDisplay() {
@@ -95,15 +98,15 @@ public class ContextualViewComponent extends JPanel implements UIComponentSPI {
 		}
 		this.view = view;
 		views.add(view);
-		
-		panel.add(view,BorderLayout.CENTER);
-		if (view.getConfigureAction(Workbench.getInstance())!=null) {
-			configureButton.setAction(view.getConfigureAction(Workbench.getInstance()));
+
+		panel.add(view, BorderLayout.CENTER);
+		if (view.getConfigureAction(Workbench.getInstance()) != null) {
+			configureButton.setAction(view.getConfigureAction(Workbench
+					.getInstance()));
 			configureButton.setText("Configure");
 			configureButton.setEnabled(true);
 			configureButton.setVisible(true);
-		}
-		else {
+		} else {
 			configureButton.setEnabled(false);
 			configureButton.setVisible(false);
 		}
@@ -111,31 +114,40 @@ public class ContextualViewComponent extends JPanel implements UIComponentSPI {
 	}
 
 	public void updateSelection(Object selectedItem) {
-		
+
 		if (selectedItem instanceof Processor) {
-			Processor processor = (Processor)selectedItem;
+			Processor processor = (Processor) selectedItem;
 			Activity<?> activity = processor.getActivityList().get(0);
 			//handleProcessor(processor);
-			handleActivity(activity);	
+			handleActivity(activity);
 		}
 	}
-	
+
+//	private void handleProcessor(Processor processor) {
+//		updateContextualView(new ProcessorContextualView(processor));
+//	}
+
 	public void updateSelection() {
 		Dataflow dataflow = fileManager.getCurrentDataflow();
-		DataflowSelectionModel selectionModel = dataflowSelectionManager.getDataflowSelectionModel(dataflow);
+		DataflowSelectionModel selectionModel = dataflowSelectionManager
+				.getDataflowSelectionModel(dataflow);
 		Set<Object> selection = selectionModel.getSelection();
 		if (selection.isEmpty()) {
 			return;
 		}
 		Iterator<Object> iterator = selection.iterator();
-		
-		//TODO multiple selections, dataflow contextual view, datalink contextual view
+
+		// TODO multiple selections, dataflow contextual view, datalink
+		// contextual view
 		updateSelection(iterator.next());
 	}
 
+	@SuppressWarnings("unchecked")
 	private void handleActivity(Activity<?> activity) {
-		ActivityViewFactoryRegistry reg = ActivityViewFactoryRegistry.getInstance();
-		ActivityViewFactory viewFactoryForBeanType = reg.getViewFactoryForBeanType(activity);
+		ActivityViewFactoryRegistry reg = ActivityViewFactoryRegistry
+				.getInstance();
+		ActivityViewFactory viewFactoryForBeanType = reg
+				.getViewFactoryForBeanType(activity);
 		ContextualView viewType = viewFactoryForBeanType.getView(activity);
 		updateContextualView(viewType);
 	}
@@ -168,6 +180,23 @@ public class ContextualViewComponent extends JPanel implements UIComponentSPI {
 				updateSelection();
 			}
 
+		}
+	}
+
+	private final class EditManagerObserver implements
+			Observer<EditManagerEvent> {
+
+		public void notify(Observable<EditManagerEvent> sender,
+				EditManagerEvent message) throws Exception {
+
+			refreshView();
+		}
+
+	}
+
+	public void refreshView() {
+		if (view != null) {
+			view.refreshView();
 		}
 	}
 }

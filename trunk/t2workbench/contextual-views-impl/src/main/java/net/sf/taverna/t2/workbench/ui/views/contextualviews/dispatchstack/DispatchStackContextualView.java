@@ -11,6 +11,7 @@ import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
 
+@SuppressWarnings("serial")
 public class DispatchStackContextualView extends ContextualView{
 	
 	private DispatchStack stack;
@@ -21,6 +22,11 @@ public class DispatchStackContextualView extends ContextualView{
 		this.stack = stack;
 		initialise();
 		initView();
+	}
+	
+	@Override
+	public void refreshView() {
+		initialise();
 	}
 
 	private void initialise() {
@@ -68,5 +74,4 @@ public class DispatchStackContextualView extends ContextualView{
 	protected String getViewTitle() {
 		return "Dispatch Stack contextual View";
 	}
-
 }

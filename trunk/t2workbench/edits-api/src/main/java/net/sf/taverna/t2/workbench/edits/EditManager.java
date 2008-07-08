@@ -164,7 +164,7 @@ public abstract class EditManager implements Observable<EditManagerEvent> {
 	 * {@link AbstractDataflowEditEvent#getDataFlow()}.
 	 * 
 	 */
-	public static abstract class AbstractDataflowEditEvent extends
+	public static abstract class AbstractDataflowEditEvent implements
 			EditManagerEvent {
 		private final Dataflow dataFlow;
 		private final Edit<?> edit;
@@ -235,8 +235,8 @@ public abstract class EditManager implements Observable<EditManagerEvent> {
 	 * An event given to {@link Observer}s registered with
 	 * {@link Observable#addObserver(Observer)}.
 	 */
-	public static abstract class EditManagerEvent {
-
+	public interface EditManagerEvent {
+		public Edit<?> getEdit();
 	}
 
 }

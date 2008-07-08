@@ -67,5 +67,7 @@ public abstract class ContextualView extends JPanel {
 		add(getMainFrame(), BorderLayout.CENTER);
 		setName(getViewTitle());
 	}
+	
+	public abstract void refreshView();
 
 }
