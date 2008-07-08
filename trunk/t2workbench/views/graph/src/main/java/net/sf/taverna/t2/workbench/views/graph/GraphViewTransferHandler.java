@@ -92,6 +92,9 @@ public class GraphViewTransferHandler extends TransferHandler {
 				ActivityAndBeanWrapper activityAndBeanWrapper = (ActivityAndBeanWrapper) data;
 				
 				Activity activity = activityAndBeanWrapper.getActivity();
+				Object bean = activityAndBeanWrapper.getBean();
+				
+				edits.getConfigureActivityEdit(activity, bean).doEdit();
 				
 				Dataflow dataflow = graphViewComponent.getDataflow();
 				Processor p = Tools.buildFromActivity(activity);
@@ -99,9 +102,7 @@ public class GraphViewTransferHandler extends TransferHandler {
 						.replace(' ', '_');
 				name = Tools.uniqueProcessorName(name, dataflow);
 				List<Edit<?>> editList = new ArrayList<Edit<?>>();
-				Object bean = activityAndBeanWrapper.getBean();
 				
-				edits.getConfigureActivityEdit(activity, bean).doEdit();
 				//editList.add(edits.getConfigureActivityEdit(activity, bean));
 				editList.add(edits.getRenameProcessorEdit(p, name));
 				editList.add(edits.getAddProcessorEdit(dataflow, p));
