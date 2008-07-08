@@ -7,7 +7,12 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
+import net.sf.taverna.t2.annotation.AnnotationAssertion;
+import net.sf.taverna.t2.annotation.AnnotationChain;
+import net.sf.taverna.t2.annotation.annotationbeans.MimeType;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
+import net.sf.taverna.t2.workflowmodel.EditException;
+import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
@@ -103,7 +108,9 @@ public abstract class AbstractActivity<ConfigType> extends
 	 * @param portDepth -
 	 *            the depth of the port to be created.
 	 */
-	protected void addInput(String portName, int portDepth,
+	protected void addInput(
+			String portName,
+			int portDepth,
 			boolean allowsLiteralValues,
 			List<Class<? extends ExternalReferenceSPI>> handledReferenceSchemes,
 			Class<?> translatedElementClass) {
@@ -154,7 +161,10 @@ public abstract class AbstractActivity<ConfigType> extends
 	 * @param configBean
 	 */
 	protected void configurePorts(ActivityPortsDefinitionBean configBean) {
-		//FIXME should use edits to do this
+		configBean.getOutputPortDefinitions();
+		// FIXME should use edits to do this
+		Edits edits = EditsRegistry.getEdits();
+		Set<String> mimeTypes = new HashSet<String>();
 		inputPorts.clear();
 		for (ActivityInputPortDefinitionBean inputDef : configBean
 				.getInputPortDefinitions()) {
@@ -166,12 +176,27 @@ public abstract class AbstractActivity<ConfigType> extends
 			// probably best handled elsewhere though
 		}
 		outputPorts.clear();
+
 		for (ActivityOutputPortDefinitionBean outputDef : configBean
 				.getOutputPortDefinitions()) {
-			addOutput(outputDef.getName(), outputDef.getDepth(), outputDef
+			OutputPort createActivityOutputPort = EditsRegistry.getEdits().createActivityOutputPort(
+					outputDef.getName(), outputDef.getDepth(), outputDef
 					.getGranularDepth());
+//			addOutput(outputDef.getName(), outputDef.getDepth(), outputDef
+//					.getGranularDepth());
+			this.outputPorts.add(createActivityOutputPort);
+			//add the mime types as annotations
+			for (String mimeType:outputDef.getMimeTypes()) {
+				MimeType mimeTypeAnnotation = new MimeType();
+				mimeTypeAnnotation.setText(mimeType);
+				try {
+					EditsRegistry.getEdits().getAddAnnotationChainEdit(createActivityOutputPort, mimeTypeAnnotation).doEdit();
+				} catch (EditException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
-
 	}
 
 }
