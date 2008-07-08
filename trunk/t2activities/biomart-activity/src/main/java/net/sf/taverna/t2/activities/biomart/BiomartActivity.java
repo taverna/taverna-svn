@@ -6,25 +6,17 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.taverna.t2.annotation.Annotated;
-import net.sf.taverna.t2.annotation.AnnotationAssertion;
-import net.sf.taverna.t2.annotation.AnnotationAssertionImpl;
-import net.sf.taverna.t2.annotation.AnnotationBeanSPI;
-import net.sf.taverna.t2.annotation.AnnotationChain;
-import net.sf.taverna.t2.annotation.AnnotationChainImpl;
 import net.sf.taverna.t2.annotation.annotationbeans.MimeType;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceServiceException;
 import net.sf.taverna.t2.reference.T2Reference;
-import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workflowmodel.CompoundEdit;
-import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Edit;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
-import net.sf.taverna.t2.workflowmodel.Port;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
@@ -40,7 +32,6 @@ import org.biomart.martservice.query.Attribute;
 import org.biomart.martservice.query.Dataset;
 import org.biomart.martservice.query.Filter;
 import org.biomart.martservice.query.Query;
-import org.biomart.martservice.query.QueryListener;
 
 /**
  * <p>
