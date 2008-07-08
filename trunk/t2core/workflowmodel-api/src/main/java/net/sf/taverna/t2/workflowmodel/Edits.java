@@ -2,6 +2,7 @@ package net.sf.taverna.t2.workflowmodel;
 
 import java.util.List;
 
+import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.annotation.AnnotationAssertion;
 import net.sf.taverna.t2.annotation.AnnotationBeanSPI;
 import net.sf.taverna.t2.annotation.AnnotationChain;
@@ -226,6 +227,18 @@ public interface Edits {
 	
 	@SuppressWarnings("unchecked")
 	public Edit<AnnotationAssertion> getAddAnnotationSource(AnnotationAssertion annotationAssertion, AnnotationSourceSPI annotationSource);
+	
+	/**
+	 * Returnes an edit that creates an AnnotationAssertion, adds the AnnotationAssertion
+	 * to an AnnotationChain and adds the AnnotationChain to the Annotated.
+	 * 
+	 * @param annotated the Annotated to add an AnnotationChain to
+	 * @param annotation the annotation to add to the chain
+	 * @return an edit that creates and adds an AnnotationChain to an Annotated
+	 */
+	public Edit<?> getAddAnnotationChainEdit(Annotated<?> annotated, AnnotationBeanSPI annotation);
+	
+	
 	/**
 	 * Connect a datalink to its source and sink.
 	 * 

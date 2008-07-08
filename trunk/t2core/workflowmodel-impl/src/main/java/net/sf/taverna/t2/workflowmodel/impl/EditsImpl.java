@@ -1,11 +1,15 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.taverna.t2.annotation.AddAnnotationAssertionEdit;
+import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.annotation.AnnotationAssertion;
+import net.sf.taverna.t2.annotation.AnnotationAssertionImpl;
 import net.sf.taverna.t2.annotation.AnnotationBeanSPI;
 import net.sf.taverna.t2.annotation.AnnotationChain;
+import net.sf.taverna.t2.annotation.AnnotationChainImpl;
 import net.sf.taverna.t2.annotation.AnnotationRole;
 import net.sf.taverna.t2.annotation.AnnotationSourceSPI;
 import net.sf.taverna.t2.annotation.CurationEvent;
@@ -14,6 +18,7 @@ import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.facade.impl.WorkflowInstanceFacadeImpl;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
+import net.sf.taverna.t2.workflowmodel.CompoundEdit;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
@@ -250,6 +255,20 @@ public class EditsImpl implements Edits {
 		return new AddCreatorEdit(annotationAssertion, person);
 	}
 
+	public Edit<?> getAddAnnotationChainEdit(Annotated<?> annotated, AnnotationBeanSPI annotation) {
+		List<Edit<?>> editList = new ArrayList<Edit<?>>();
+
+		AnnotationAssertion<?> annotationAssertion =  new AnnotationAssertionImpl();
+		editList.add(getAddAnnotationBean(annotationAssertion, annotation));
+
+		AnnotationChain annotationChain = new AnnotationChainImpl();
+		editList.add(getAddAnnotationAssertionEdit(annotationChain, annotationAssertion));
+
+		editList.add(annotated.getAddAnnotationEdit(annotationChain));
+
+		return new CompoundEdit(editList);
+	}
+	
 	public Edit<Dataflow> getUpdateDataflowNameEdit(Dataflow dataflow,
 			String newName) {
 		return new UpdateDataflowNameEdit(dataflow,newName);
