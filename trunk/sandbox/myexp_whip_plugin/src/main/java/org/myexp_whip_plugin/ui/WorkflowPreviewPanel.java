@@ -243,13 +243,13 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 			content.append("<p style='text-align: center'><b>Tags</b></p>");
 			content.append("<div style='text-align: center'>");
 			content.append("&nbsp;&nbsp;&nbsp;");
-			content.append("<a href=''>example</a>");
+			content.append("<a href='' style='color: #000066;'>example</a>");
 			content.append("&nbsp;&nbsp;&nbsp;");
-			content.append("<a href=''>mygrid</a>");
+			content.append("<a href='' style='color: #000066;'>mygrid</a>");
 			content.append("&nbsp;&nbsp;&nbsp;");
-			content.append("<a href=''>taverna</a>");
+			content.append("<a href='' style='color: #000066;'>taverna</a>");
 			content.append("&nbsp;&nbsp;&nbsp;");
-			content.append("<a href=''>condition</a>");
+			content.append("<a href='' style='color: #000066;'>condition</a>");
 			content.append("</div>");
 			content.append("<br/>");
 			content.append("<p style='text-align: center'><b>Credits</b></p>");

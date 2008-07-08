@@ -84,7 +84,7 @@ public class MyExperimentClient {
 			Document doc = parser.build(searchUrl);
 			
 			if (doc != null) {
-				List<Element> nodes = doc.getRootElement().getChildren("workflow");
+				List<Element> nodes = doc.getRootElement().getChildren("tag");
 				for (Element e : nodes) {
 					Resource r = new Resource();
 					r.setTitle(e.getText());
@@ -105,7 +105,38 @@ public class MyExperimentClient {
 			this.logger.error("Failed to get tag cloud for workflows", e);
 		}
 		
+		logger.debug("Tag cloud retrieval fetched " + tagCloud.getTags().size() + " tags from myExperiment");
+		
 		return tagCloud;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public SearchResults getTagResults(String tagName) {
+		SearchResults results = new SearchResults();
+		
+		try {
+			URL searchUrl = new URL(baseUrl, "tagged.xml?tag=" + tagName + "&type=workflow");
+			SAXBuilder parser = new SAXBuilder();
+			Document doc = parser.build(searchUrl);
+			
+			if (doc != null) {
+				List<Element> nodes = doc.getRootElement().getChildren("workflow");
+				for (Element e : nodes) {
+					Resource r = new Resource();
+					r.setTitle(e.getText());
+					r.setResource(e.getAttributeValue("resource"));
+					r.setUri(e.getAttributeValue("uri"));
+					
+					results.getWorkflows().add(r);
+				}
+			}
+		} catch (Exception e) {
+			this.logger.error("Failed to search for workflows", e);
+		}
+		
+		logger.debug("Tag search for '" + tagName + "' returned " + results.getWorkflows().size() + " workflows");
+		
+		return results;
 	}
 	
 	private SyndFeed getRSS() throws Exception {

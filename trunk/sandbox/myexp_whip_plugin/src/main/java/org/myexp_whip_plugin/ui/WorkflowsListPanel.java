@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -133,7 +134,7 @@ public class WorkflowsListPanel extends BasePanel implements HyperlinkListener {
 		this.setLayout(new BorderLayout());
 		
 		this.listPanel = new JPanel();
-		this.listPanel.setLayout(new BoxLayout(this.listPanel, BoxLayout.Y_AXIS));
+		this.listPanel.setLayout(new BoxLayout(this.listPanel, BoxLayout.PAGE_AXIS));
 		this.listPanel.setBorder(BorderFactory.createEmptyBorder());
 		this.listScrollPane = new JScrollPane(this.listPanel,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,

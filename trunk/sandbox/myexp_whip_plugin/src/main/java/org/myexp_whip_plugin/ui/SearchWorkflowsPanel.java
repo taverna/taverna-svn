@@ -98,7 +98,7 @@ public class SearchWorkflowsPanel extends BasePanel implements ActionListener, C
 	private void performSearch() {
 		this.searchKeywords = this.searchTextField.getText();
 		
-		if (this.searchKeywords != null && !this.searchKeywords.equalsIgnoreCase("")) {
+		if (this.searchKeywords != null && !this.searchKeywords.equals("")) {
 			this.statusLabel.setText("Searching for workflows from myExperiment...");
 			
 			// Make call to myExperiment API in a different thread

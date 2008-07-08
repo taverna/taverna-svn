@@ -20,14 +20,16 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.myexp_whip_plugin.MyExperimentClient;
 import org.myexp_whip_plugin.SearchResults;
+import org.myexp_whip_plugin.Tag;
 import org.myexp_whip_plugin.TagCloud;
-
-import edu.stanford.ejalbert.BrowserLauncher;
 
 public class TagsBrowserPanel extends BasePanel implements ActionListener, ChangeListener, HyperlinkListener {
 	
@@ -35,9 +37,10 @@ public class TagsBrowserPanel extends BasePanel implements ActionListener, Chang
 	private static final String ACTION_REFRESH_RESULTS = "refresh_results_tags_browser";
 	private static final String ACTION_CLEAR_RESULTS = "clear_results_tags_browser";
 	
-	private String currentTagName = "";
+	private static final int TAGCLOUD_MAX_FONTSIZE = 36;
+	private static final int TAGCLOUD_MIN_FONTSIZE = 14;
 	
-	private int cloudSize = -1;
+	private String currentTagName = "";
 	
 	private TagCloud tagCloudData = new TagCloud();
 	
@@ -72,23 +75,31 @@ public class TagsBrowserPanel extends BasePanel implements ActionListener, Chang
 	}
 	
 	public void actionPerformed(ActionEvent event) {
-		
+		if (ACTION_REFRESH_CLOUD.equals(event.getActionCommand())) {
+			this.refreshCloud();
+		}
+		else if (ACTION_CLEAR_RESULTS.equals(event.getActionCommand())) {
+			this.clearResults();
+		}
+		else if (ACTION_REFRESH_RESULTS.equals(event.getActionCommand())) {
+			this.refreshResults();
+		}
 	}
 	
 	public void stateChanged(ChangeEvent event) {
-		if (event.getSource() == this.cloudSizeSlider) {
-			JSlider source = (JSlider)event.getSource();
-		    if (!source.getValueIsAdjusting()) {
-		        this.cloudSize = source.getValue();
-		    }
-		}
+
 	}
 	
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 		try {
-			if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-				//BrowserLauncher launcher = new BrowserLauncher();
-				//launcher.openURLinBrowser(e.getURL().toString());
+			if (e.getSource() == this.cloudTextPane) {
+				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+					logger.debug("Tag clicked: " + e.getURL());
+					String [] s = e.getURL().toString().split("/");
+					this.currentTagName = s[s.length-1];
+					
+					this.refreshResults();
+				}
 			}
 		} catch (Exception ex) {
 			logger.error("Error occurred whilst clicking a hyperlink", ex);
@@ -102,59 +113,122 @@ public class TagsBrowserPanel extends BasePanel implements ActionListener, Chang
 	}
 
 	public void refresh() {
-		/*
-		this.searchKeywords = this.searchTextField.getText();
+		this.refreshCloud();
+		this.refreshResults();
+	}
+	
+	public void refreshCloud() {
+		this.cloudStatusLabel.setText("Building tag cloud...");
 		
-		if (this.searchKeywords != null && !this.searchKeywords.equalsIgnoreCase("")) {
-			this.statusLabel.setText("Searching for workflows from myExperiment...");
+		// Make call to myExperiment API in a different thread
+		// (then use SwingUtilities.invokeLater to update the UI when ready).
+		new Thread("Get tag cloud data for TagsBrowserPanel") {
+			public void run() {
+				logger.debug("Getting tag cloud data for TagsBrowserPanel");
+
+				try {
+					int size = -1;
+					if (!cloudAllCheckBox.isSelected()) {
+						size = cloudSizeSlider.getValue();
+					}
+					tagCloudData = client.getTagCloud(size);
+
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							repopulateCloud();
+						}
+					});
+				} catch (Exception ex) {
+					logger.error("Failed to get tag cloud data from myExperiment", ex);
+				}
+			}
+		}.start();
+	}
+	
+	public void refreshResults() {
+		if (this.currentTagName != null && !this.currentTagName.equals("")) {
+			this.resultsStatusLabel.setText("Searching for workflows with tag '" + this.currentTagName + "' from myExperiment...");
 			
 			// Make call to myExperiment API in a different thread
 			// (then use SwingUtilities.invokeLater to update the UI when ready).
-			new Thread("Perform search for SearchWorkflowsPanel") {
+			new Thread("Perform tag search for TagsBrowserPanel") {
 				public void run() {
-					logger.debug("Performing search for Search Workflows tab");
+					logger.debug("Performing tag search for Tags Browser tab");
 
 					try {
-						results = client.searchWorkflows(searchKeywords);
+						tagSearchResults = client.getTagResults(currentTagName);
 
 						SwingUtilities.invokeLater(new Runnable() {
 							public void run() {
-								repopulate();
+								repopulateResults();
 							}
 						});
 					} catch (Exception ex) {
-						logger.error("Failed to search for workflows from myExperiment", ex);
+						logger.error("Failed to get tag results from myExperiment", ex);
 					}
 				}
 			}.start();
 		}
 		else {
-			this.statusLabel.setText("Please enter valid keyword(s)");
+			this.clearResults();
 		}
-		*/
-	}
-	
-	public void refreshCloud() {
-		
-	}
-	
-	public void refreshResults() {
-		
 	}
 
 	public void repopulate() {
-		
-		
-		this.revalidate();
-		
+		this.repopulateCloud();
+		this.repopulateResults();
 	}
 	
 	public void repopulateCloud() {
+		logger.debug("Repopulating tag cloud");
 		
+		this.cloudStatusLabel.setText(this.tagCloudData.getTags().size() + " tags found");
+		
+		try {
+			int maxCount = this.getMaxCountOfTags();
+			
+			StringBuffer content = new StringBuffer();
+			content.append("<div class=\"outer\">");
+			content.append("<div class=\"tag_cloud\">");
+			
+			for (Tag t : this.tagCloudData.getTags()) {
+				// Normalise count and use it to obtain a font size value. 
+				// Note: minimum font size should be 10pt;
+				int fontSize = (int) (((double)t.getCount()/maxCount)*TAGCLOUD_MAX_FONTSIZE);
+				if (fontSize < TAGCLOUD_MIN_FONTSIZE) {
+					fontSize = TAGCLOUD_MIN_FONTSIZE;
+				}
+				
+				content.append("<a style='font-size: " + fontSize + "pt; color: #000066;' href='http://tag/" + t.getTagName() + "'>" + t.getTagName() + "</a>");
+				content.append("&nbsp;&nbsp;&nbsp;");
+			}
+			
+			content.append("<br/>");
+			content.append("</div>");
+			content.append("</div>");
+			
+			HTMLEditorKit kit = new HTMLEditorKit();
+			HTMLDocument doc = (HTMLDocument) (kit.createDefaultDocument());
+			StyleSheet css = kit.getStyleSheet();
+			
+			css.addRule("body {font-family: arial,helvetica,clean,sans-serif; margin: 0; padding: 0;}");
+			css.addRule("div.outer {padding-top: 0; padding-bottom: 0; padding-left: 10px; padding-right: 10px;}");
+			css.addRule("div.tag_cloud {text-align: center; line-height: 1.5;}");
+			
+			doc.insertAfterStart(doc.getRootElements()[0].getElement(0), content.toString());
+			
+			this.cloudTextPane.setEditorKit(kit);
+			this.cloudTextPane.setDocument(doc);
+		}
+		catch (Exception e) {
+			logger.error("Failed to populate tag cloud", e);
+		}
+		
+		this.revalidate();
 	}
 	
 	public void repopulateResults() {
-		logger.debug("Repopulating Search Workflows tab");
+		logger.debug("Repopulating tag results pane");
 
 		this.resultsStatusLabel.setText(this.tagSearchResults.getWorkflows().size() + " workflows found for tag '" + this.currentTagName + "'");
 		
@@ -162,13 +236,27 @@ public class TagsBrowserPanel extends BasePanel implements ActionListener, Chang
 		
 		this.resultsClearButton.setEnabled(true);
 		this.resultsRefreshButton.setEnabled(true);
+		
+		this.revalidate();
 	}
 	
 	public void clear() {
+		this.clearCloud();
+		this.clearResults();
+	}
+	
+	public void clearCloud() {
+		this.cloudStatusLabel.setText("");
+		this.cloudTextPane.setDocument(new HTMLDocument());
+		this.revalidate();
+	}
+	
+	public void clearResults() {
 		this.resultsStatusLabel.setText("");
 		this.resultsClearButton.setEnabled(false);
 		this.resultsRefreshButton.setEnabled(false);
 		this.workflowsListPanel.clear();
+		this.revalidate();
 	}
 	
 	private void initialiseUI() {
@@ -187,7 +275,7 @@ public class TagsBrowserPanel extends BasePanel implements ActionListener, Chang
 		JPanel cloudConfigPanel = new JPanel();
 		cloudConfigPanel.setLayout(new BoxLayout(cloudConfigPanel, BoxLayout.LINE_AXIS));
 		this.cloudSizeSlider = new JSlider(1, 100, 50);
-		this.cloudSizeSlider.addChangeListener(this);
+		//this.cloudSizeSlider.addChangeListener(this);
 		this.cloudSizeSlider.setToolTipText("Drag the slider to select how big the tag cloud should be, or check the \"All tags\" box to get the full tag cloud.");
 		cloudConfigPanel.add(this.cloudSizeSlider);
 		this.cloudAllCheckBox = new JCheckBox("All tags", true);
@@ -205,6 +293,8 @@ public class TagsBrowserPanel extends BasePanel implements ActionListener, Chang
 		this.cloudTextPane = new JTextPane();
 		this.cloudTextPane.setBorder(BorderFactory.createEmptyBorder());
 		this.cloudTextPane.setEditable(false);
+		this.cloudTextPane.setContentType("text/html");
+		this.cloudTextPane.addHyperlinkListener(this);
 		this.cloudScrollPane = new JScrollPane(this.cloudTextPane,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -247,5 +337,17 @@ public class TagsBrowserPanel extends BasePanel implements ActionListener, Chang
 		this.mainSplitPane.setBottomComponent(bottomPanel);
 		
 		this.add(this.mainSplitPane, BorderLayout.CENTER);
+	}
+	
+	private int getMaxCountOfTags() {
+		int max = 0;
+		
+		for (Tag t : this.tagCloudData.getTags()) {
+			if (t.getCount() > max) {
+				max = t.getCount();
+			}
+		}
+		
+		return max;
 	}
 }
