@@ -8,6 +8,7 @@ import javax.swing.ImageIcon;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
 import net.sf.taverna.t2.activities.localworker.LocalworkerActivity;
+import net.sf.taverna.t2.activities.localworker.LocalworkerActivityConfigurationBean;
 import net.sf.taverna.t2.partition.AbstractActivityItem;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
@@ -52,7 +53,7 @@ public class LocalworkerActivityItem extends AbstractActivityItem {
 	}
 
 	/**
-	 * Returns a {@link BeanshellActivityConfigurationBean} which represents
+	 * Returns a {@link LocalworkerActivityConfigurationBean} which represents
 	 * this local worker
 	 */
 	@Override
@@ -60,7 +61,7 @@ public class LocalworkerActivityItem extends AbstractActivityItem {
 		// TODO Auto-generated method stub
 		// different bean for each type of localworker, get xml version of bean
 		// and create BeanshellConfig
-		BeanshellActivityConfigurationBean bean = new BeanshellActivityConfigurationBean();
+		LocalworkerActivityConfigurationBean bean = new LocalworkerActivityConfigurationBean();
 		bean.setScript(this.script);
 		bean.setInputPortDefinitions(this.inputPorts);
 		bean.setOutputPortDefinitions(this.outputPorts);
