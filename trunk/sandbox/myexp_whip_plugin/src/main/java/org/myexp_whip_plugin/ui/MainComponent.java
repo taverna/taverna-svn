@@ -117,6 +117,7 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 		this.logger.debug("Initialising myExperiment Perspective data");
 		
 		this.latestWorkflowsPanel.refresh();
+		this.tagsBrowserPanel.refresh();
 	}
 	
 	public class PreviewWorkflowAction extends AbstractAction {

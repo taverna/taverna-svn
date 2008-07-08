@@ -24,6 +24,8 @@ import javax.swing.event.HyperlinkListener;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.myexp_whip_plugin.MyExperimentClient;
+import org.myexp_whip_plugin.SearchResults;
+import org.myexp_whip_plugin.TagCloud;
 
 import edu.stanford.ejalbert.BrowserLauncher;
 
@@ -36,6 +38,10 @@ public class TagsBrowserPanel extends BasePanel implements ActionListener, Chang
 	private String currentTagName = "";
 	
 	private int cloudSize = -1;
+	
+	private TagCloud tagCloudData = new TagCloud();
+	
+	private SearchResults tagSearchResults = new SearchResults();
 	
 	private JSplitPane mainSplitPane;
 	
@@ -88,20 +94,81 @@ public class TagsBrowserPanel extends BasePanel implements ActionListener, Chang
 			logger.error("Error occurred whilst clicking a hyperlink", ex);
 		}
 	}
-
-	public void clear() {
-		// TODO Auto-generated method stub
+	
+	public void setTag(String tagName) {
+		this.currentTagName = tagName;
 		
+		this.refreshResults();
 	}
 
 	public void refresh() {
-		// TODO Auto-generated method stub
+		/*
+		this.searchKeywords = this.searchTextField.getText();
+		
+		if (this.searchKeywords != null && !this.searchKeywords.equalsIgnoreCase("")) {
+			this.statusLabel.setText("Searching for workflows from myExperiment...");
+			
+			// Make call to myExperiment API in a different thread
+			// (then use SwingUtilities.invokeLater to update the UI when ready).
+			new Thread("Perform search for SearchWorkflowsPanel") {
+				public void run() {
+					logger.debug("Performing search for Search Workflows tab");
+
+					try {
+						results = client.searchWorkflows(searchKeywords);
+
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								repopulate();
+							}
+						});
+					} catch (Exception ex) {
+						logger.error("Failed to search for workflows from myExperiment", ex);
+					}
+				}
+			}.start();
+		}
+		else {
+			this.statusLabel.setText("Please enter valid keyword(s)");
+		}
+		*/
+	}
+	
+	public void refreshCloud() {
+		
+	}
+	
+	public void refreshResults() {
 		
 	}
 
 	public void repopulate() {
-		// TODO Auto-generated method stub
 		
+		
+		this.revalidate();
+		
+	}
+	
+	public void repopulateCloud() {
+		
+	}
+	
+	public void repopulateResults() {
+		logger.debug("Repopulating Search Workflows tab");
+
+		this.resultsStatusLabel.setText(this.tagSearchResults.getWorkflows().size() + " workflows found for tag '" + this.currentTagName + "'");
+		
+		this.workflowsListPanel.setWorkflows(this.tagSearchResults.getWorkflows());
+		
+		this.resultsClearButton.setEnabled(true);
+		this.resultsRefreshButton.setEnabled(true);
+	}
+	
+	public void clear() {
+		this.resultsStatusLabel.setText("");
+		this.resultsClearButton.setEnabled(false);
+		this.resultsRefreshButton.setEnabled(false);
+		this.workflowsListPanel.clear();
 	}
 	
 	private void initialiseUI() {

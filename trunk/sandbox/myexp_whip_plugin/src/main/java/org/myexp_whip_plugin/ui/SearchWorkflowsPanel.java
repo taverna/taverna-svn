@@ -39,6 +39,7 @@ public class SearchWorkflowsPanel extends BasePanel implements ActionListener, C
 	
 	private static final String ACTION_SEARCH = "search_workflows_search";
 	private static final String ACTION_CLEAR = "clear_workflows_search";
+	private static final String ACTION_REFRESH = "refresh_workflows_search";
 	
 	private String searchKeywords = "";
 	private SearchResults results = new SearchResults();
@@ -48,6 +49,7 @@ public class SearchWorkflowsPanel extends BasePanel implements ActionListener, C
 	
 	private JLabel statusLabel;
 	private JButton clearButton;
+	private JButton refreshButton;
 	
 	private WorkflowsListPanel workflowsListPanel;
 	
@@ -63,6 +65,9 @@ public class SearchWorkflowsPanel extends BasePanel implements ActionListener, C
 		}
 		else if (ACTION_CLEAR.equals(event.getActionCommand())) {
 			this.clear();
+		}
+		else if (ACTION_REFRESH.equals(event.getActionCommand())) {
+			this.refresh();
 		}
 	}
 	
@@ -133,6 +138,7 @@ public class SearchWorkflowsPanel extends BasePanel implements ActionListener, C
 		this.workflowsListPanel.setWorkflows(this.results.getWorkflows());
 		
 		this.clearButton.setEnabled(true);
+		this.refreshButton.setEnabled(true);
 		
 		this.revalidate();
 	}
@@ -140,6 +146,7 @@ public class SearchWorkflowsPanel extends BasePanel implements ActionListener, C
 	public void clear() {
 		this.statusLabel.setText("");
 		this.clearButton.setEnabled(false);
+		this.refreshButton.setEnabled(false);
 		this.workflowsListPanel.clear();
 	}
 	
@@ -164,14 +171,27 @@ public class SearchWorkflowsPanel extends BasePanel implements ActionListener, C
 		
 		JPanel statusPanel = new JPanel(new BorderLayout());
 		statusPanel.setBorder(BorderFactory.createEtchedBorder());
+		
 		this.statusLabel = new JLabel();
 		statusPanel.add(this.statusLabel, BorderLayout.CENTER);
+		
+		JPanel buttonsPanel = new JPanel();
+		buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.LINE_AXIS));
 		this.clearButton = new JButton("Clear", TavernaIcons.deleteIcon);
 		this.clearButton.setActionCommand(ACTION_CLEAR);
 		this.clearButton.addActionListener(this);
 		this.clearButton.setToolTipText("Click this button to clear any search results");
 		this.clearButton.setEnabled(false);
-		statusPanel.add(this.clearButton, BorderLayout.EAST);
+		buttonsPanel.add(this.clearButton);
+		this.refreshButton = new JButton("Refresh", TavernaIcons.refreshIcon);
+		this.refreshButton.setActionCommand(ACTION_REFRESH);
+		this.refreshButton.addActionListener(this);
+		this.refreshButton.setToolTipText("Click this button to refresh the search results");
+		this.refreshButton.setEnabled(false);
+		buttonsPanel.add(this.refreshButton);
+		
+		statusPanel.add(buttonsPanel, BorderLayout.EAST);
+		
 		mainPanel.add(statusPanel, BorderLayout.NORTH);
 		
 		this.workflowsListPanel = new WorkflowsListPanel(this.parent, this.client, this.logger);
