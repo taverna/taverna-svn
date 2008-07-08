@@ -3,9 +3,15 @@ package net.sf.taverna.t2.activities.stringconstant;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
+import net.sf.taverna.t2.annotation.annotationbeans.MimeType;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceServiceException;
 import net.sf.taverna.t2.reference.T2Reference;
+import net.sf.taverna.t2.workflowmodel.EditException;
+import net.sf.taverna.t2.workflowmodel.EditsRegistry;
+import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
@@ -19,14 +25,19 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCa
  *
  */
 public class StringConstantActivity extends AbstractAsynchronousActivity<StringConstantConfigurationBean>{
+
+	private static final Logger logger = Logger.getLogger(StringConstantActivity.class);
+			
 	private String value;
+	
 	private StringConstantConfigurationBean config=null;
+	
 	@Override
 	public void configure(StringConstantConfigurationBean conf)
 			throws ActivityConfigurationException {
 		this.config=conf;
 		this.value=conf.getValue();
-		addOutput("value", 0);
+		addOutput("value", 0, "text/plain");
 	}
 
 	public String getStringValue() {
@@ -57,6 +68,19 @@ public class StringConstantActivity extends AbstractAsynchronousActivity<StringC
 			
 		});
 		
+	}
+
+	protected void addOutput(String portName, int portDepth, String type) {
+		OutputPort port = EditsRegistry.getEdits().createActivityOutputPort(
+				portName, portDepth, portDepth);
+		MimeType mimeType = new MimeType();
+		mimeType.setText(type);
+		try {
+			EditsRegistry.getEdits().getAddAnnotationChainEdit(port, mimeType).doEdit();
+		} catch (EditException e) {
+			logger.debug("Error adding MimeType annotation to port", e);
+		}
+		outputPorts.add(port);
 	}
 
 }
