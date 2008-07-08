@@ -17,6 +17,7 @@ import javax.help.CSH;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -26,9 +27,7 @@ import javax.swing.JTextField;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
-import net.sf.taverna.t2.activities.beanshell.actions.BeanshellActivityConfigurationAction;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 
@@ -81,9 +80,9 @@ public class BeanshellConfigView extends JPanel {
 	/** parent panel for the inputs */
 	private JPanel outerInputPanel;
 	private JButton button;
-	
-	private boolean configChanged=false;
-	
+
+	private boolean configChanged = false;
+	private JPanel mimes;
 
 	/**
 	 * Stores the {@link BeanshellActivity}, gets its
@@ -99,11 +98,11 @@ public class BeanshellConfigView extends JPanel {
 		setLayout(new GridBagLayout());
 		initialise();
 	}
-	
+
 	public BeanshellActivityConfigurationBean getConfiguration() {
 		return configuration;
 	}
-	
+
 	public boolean isConfigurationChanged() {
 		return configChanged;
 	}
@@ -118,15 +117,14 @@ public class BeanshellConfigView extends JPanel {
 	 */
 	private void initialise() {
 		CSH
-		.setHelpIDString(
-				this,
-		"net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.BeanshellConfigView");
+				.setHelpIDString(
+						this,
+						"net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.BeanshellConfigView");
 		setSize(500, 500);
 		AbstractAction okAction = getOKAction();
 		button = new JButton(okAction);
 		button.setText("OK");
-		button
-				.setToolTipText("Click to configure with the new values");
+		button.setToolTipText("Click to configure with the new values");
 		inputViewList = new ArrayList<BeanshellInputViewer>();
 		outputViewList = new ArrayList<BeanshellOutputViewer>();
 		setBorder(javax.swing.BorderFactory.createTitledBorder(null, null,
@@ -177,7 +175,7 @@ public class BeanshellConfigView extends JPanel {
 		JButton cancelButton = new JButton(new AbstractAction() {
 
 			public void actionPerformed(ActionEvent e) {
-				configChanged=false;
+				configChanged = false;
 				buttonClicked.actionPerformed(e);
 			}
 		});
@@ -307,6 +305,7 @@ public class BeanshellConfigView extends JPanel {
 		inputConstraint.gridx = 0;
 		for (ActivityInputPortDefinitionBean inputBean : configuration
 				.getInputPortDefinitions()) {
+			// FIXME refactor this into a method
 			inputConstraint.gridy = inputGridy;
 			final BeanshellInputViewer beanshellInputViewer = new BeanshellInputViewer(
 					inputBean, true);
@@ -349,7 +348,7 @@ public class BeanshellConfigView extends JPanel {
 				outerPanelConstraint);
 		outerPanelConstraint.weighty = 0;
 		JButton addInputPortButton = new JButton(new AbstractAction() {
-
+			// FIXME refactor this into a method
 			public void actionPerformed(ActionEvent e) {
 				ActivityInputPortDefinitionBean bean = new ActivityInputPortDefinitionBean();
 				bean.setAllowsLiteralValues(true);
@@ -439,6 +438,7 @@ public class BeanshellConfigView extends JPanel {
 	 * @return the panel containing the view of the output ports
 	 */
 	private JPanel setOutputPanel() {
+		mimes = new JPanel();
 		final JPanel outputEditPanel = new JPanel(new GridBagLayout());
 		outputEditPanel.setBorder(BorderFactory.createTitledBorder(
 				BorderFactory.createEtchedBorder(), "Outputs"));
@@ -461,6 +461,7 @@ public class BeanshellConfigView extends JPanel {
 		outputConstraint.gridx = 0;
 		for (ActivityOutputPortDefinitionBean outputBean : configuration
 				.getOutputPortDefinitions()) {
+			// FIXME refactor this into a method
 			outputConstraint.gridy = outputGridy;
 			final BeanshellOutputViewer beanshellOutputViewer = new BeanshellOutputViewer(
 					outputBean, true);
@@ -481,16 +482,27 @@ public class BeanshellConfigView extends JPanel {
 			outputConstraint.gridx = 3;
 			final JButton addMimeButton = beanshellOutputViewer
 					.getAddMimeButton();
+			addMimeButton.addActionListener(new AbstractAction() {
+
+				public void actionPerformed(ActionEvent e) {
+					mimes.add(beanshellOutputViewer.getMimeTypeConfig());
+					mimes.setVisible(true);
+				}
+
+			});
+
 			// final JFrame mimeFrame = new JFrame();
 			outputEditPanel.add(addMimeButton, outputConstraint);
 			beanshellOutputViewer.getMimeTypeConfig().addNewMimeListener(
 					new AbstractAction() {
 
 						public void actionPerformed(ActionEvent e) {
-							beanshellOutputViewer.getMimeFrame().setVisible(
-									false);
+							// beanshellOutputViewer.getMimeFrame().setVisible(
+							// false);
 							// beanshellOutputViewer.getMimeTypeConfig().setVisible(false);
 							// mimeFrame.setVisible(false);
+							mimes.removeAll();
+							mimes.setVisible(false);
 
 						}
 
@@ -530,7 +542,7 @@ public class BeanshellConfigView extends JPanel {
 				outerPanelConstraint);
 		outerPanelConstraint.weighty = 0;
 		JButton addOutputPortButton = new JButton(new AbstractAction() {
-
+			// FIXME refactor this into a method
 			public void actionPerformed(ActionEvent e) {
 				try {
 					ActivityOutputPortDefinitionBean bean = new ActivityOutputPortDefinitionBean();
@@ -561,36 +573,26 @@ public class BeanshellConfigView extends JPanel {
 					outputConstraint.gridx = 3;
 					final JButton addMimeButton = beanshellOutputViewer
 							.getAddMimeButton();
-					// outputEditPanel.add(addMimeButton, outputConstraint);
-					// final MimeTypeConfig mimeTypeConfig =
-					// beanshellOutputViewer
-					// .getMimeTypeConfig();
-					// addMimeButton.addActionListener(new AbstractAction() {
-					//
-					// public void actionPerformed(ActionEvent e) {
-					// mimeTypeConfig.setVisible(true);
-					// mimeTypeConfig
-					// .addNewMimeListener(new AbstractAction() {
-					//
-					// public void actionPerformed(
-					// ActionEvent e) {
-					// mimeTypeConfig.setVisible(false);
-					// }
-					//
-					// });
-					// }
-					//
-					// });
-					// final JFrame mimeFrame = new JFrame();
+					addMimeButton.addActionListener(new AbstractAction() {
+
+						public void actionPerformed(ActionEvent e) {
+							mimes
+									.add(beanshellOutputViewer
+											.getMimeTypeConfig());
+							mimes.setVisible(true);
+						}
+
+					});
 					outputEditPanel.add(addMimeButton, outputConstraint);
 					beanshellOutputViewer.getMimeTypeConfig()
 							.addNewMimeListener(new AbstractAction() {
-								// hide the mime frame, annotations added whrn
+								// hide the mime frame, annotations added when
 								// the actual OK button is clicked
 								public void actionPerformed(ActionEvent e) {
-									beanshellOutputViewer.getMimeFrame()
-											.setVisible(false);
-
+									// beanshellOutputViewer.getMimeFrame()
+									// .setVisible(false);
+									mimes.removeAll();
+									mimes.setVisible(false);
 									// beanshellOutputViewer.getMimeTypeConfig().setVisible(false);
 									// mimeFrame.setVisible(false);
 
@@ -650,6 +652,10 @@ public class BeanshellConfigView extends JPanel {
 		outerPanelConstraint.gridy = 1;
 		outerPanelConstraint.fill = GridBagConstraints.BOTH;
 		outerOutputPanel.add(buttonPanel, outerPanelConstraint);
+		outerPanelConstraint.gridx = 1;
+		outerPanelConstraint.gridy = 0;
+		outerOutputPanel.add(mimes, outerPanelConstraint);
+		mimes.setBorder(BorderFactory.createTitledBorder("Add Mime Types"));
 
 		return outerOutputPanel;
 	}
@@ -706,13 +712,12 @@ public class BeanshellConfigView extends JPanel {
 									.getGranularDepthSpinner().getValue());
 					activityOutputPortDefinitionBean.setName(outputView
 							.getNameField().getText());
-					activityOutputPortDefinitionBean.setMimeTypes(outputView.getMimeTypeConfig().getMimeTypeList());
-//					outputView.getMimeTypeConfig().getMimeTypeList();
-					
-//					Edits edits = EditsRegistry.getEdits();
-					
-					
-					
+					activityOutputPortDefinitionBean.setMimeTypes(outputView
+							.getMimeTypeConfig().getMimeTypeList());
+					// outputView.getMimeTypeConfig().getMimeTypeList();
+
+					// Edits edits = EditsRegistry.getEdits();
+
 					// FIXME add all the mime types as an annotation
 
 					outputBeanList.add(activityOutputPortDefinitionBean);
@@ -725,8 +730,8 @@ public class BeanshellConfigView extends JPanel {
 				beanshellActivityConfigurationBean
 						.setOutputPortDefinitions(outputBeanList);
 
-				configuration=beanshellActivityConfigurationBean;
-				configChanged=true;
+				configuration = beanshellActivityConfigurationBean;
+				configChanged = true;
 				setVisible(false);
 				buttonClicked.actionPerformed(e);
 			}

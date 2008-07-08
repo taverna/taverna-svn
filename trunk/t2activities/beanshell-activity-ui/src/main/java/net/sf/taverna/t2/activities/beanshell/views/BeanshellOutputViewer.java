@@ -122,19 +122,14 @@ public class BeanshellOutputViewer extends JPanel {
 		mimeFrame.add(mimeTypeConfig);
 		mimeTypeConfig.setVisible(true);
 		addMimeButton = new JButton("Add mime type");
-		addMimeButton.addActionListener(new AbstractAction() {
-
-			public void actionPerformed(ActionEvent e) {
-//				mimeTypeConfig.setVisible(true);
-				mimeFrame.setVisible(true);
-//				mimeTypeConfig.setVisible(true);
-//				mimeTypeConfig.setVisible(true);
-			}
-			
-		});
+//		addMimeButton.addActionListener(new AbstractAction() {
+//
+//			public void actionPerformed(ActionEvent e) {
+//				mimeFrame.setVisible(true);
+//			}
+//			
+//		});
 		add(addMimeButton, outerConstraint);
-
-		// add(setMimeTypePanel(), outerConstraint);
 	}
 
 	/**
