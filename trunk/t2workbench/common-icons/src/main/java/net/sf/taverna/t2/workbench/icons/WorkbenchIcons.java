@@ -51,6 +51,8 @@ public class WorkbenchIcons {
 	public static ImageIcon searchIcon;
 	public static ImageIcon pasteIcon;
 	public static ImageIcon copyIcon;
+	public static ImageIcon inputIcon;
+	public static ImageIcon outputIcon;
 
 	static {
 		// Load the image files found in this package into the class.
@@ -120,6 +122,10 @@ public class WorkbenchIcons {
 					.getResource("generic/updateRecommended.png"));
 			uninstallIcon = new ImageIcon(c
 					.getResource("generic/uninstall.png"));
+			inputIcon = new ImageIcon(c
+					.getResource("explorer/input.png"));
+			outputIcon = new ImageIcon(c
+					.getResource("explorer/output.png"));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.out.println(ex.toString());

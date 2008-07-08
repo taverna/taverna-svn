@@ -22,7 +22,7 @@ public class AddDataflowOutputAction extends DataflowEditAction {
 
 	public AddDataflowOutputAction(Dataflow dataflow, Component component) {
 		super(dataflow, component);
-		putValue(SMALL_ICON, WorkbenchIcons.inputValueIcon);
+		putValue(SMALL_ICON, WorkbenchIcons.outputIcon);
 		putValue(NAME, "Create New Output...");		
 	}
 

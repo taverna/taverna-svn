@@ -21,7 +21,7 @@ public class AddDataflowInputAction extends DataflowEditAction {
 
 	public AddDataflowInputAction(Dataflow dataflow, Component component) {
 		super(dataflow, component);
-		putValue(SMALL_ICON, WorkbenchIcons.inputValueIcon);
+		putValue(SMALL_ICON, WorkbenchIcons.inputIcon);
 		putValue(NAME, "Create New Input...");		
 	}
 

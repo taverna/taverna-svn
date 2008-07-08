@@ -5,6 +5,7 @@ import java.awt.Component;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
+import net.sf.taverna.t2.lang.ui.ShadedLabel;
 import net.sf.taverna.t2.workbench.design.actions.AddDataflowInputAction;
 import net.sf.taverna.t2.workbench.design.actions.AddDataflowOutputAction;
 import net.sf.taverna.t2.workbench.design.actions.RemoveDataflowInputPortAction;
@@ -26,18 +27,34 @@ public class ContextMenuFactory {
 		JPopupMenu popupMenu = new JPopupMenu();
 
 		if (dataflowObject instanceof Dataflow) {
+			popupMenu.add(new ShadedLabel("Workflow Inputs", ShadedLabel.GREEN));
+			popupMenu.addSeparator();
 			popupMenu.add(new JMenuItem(new AddDataflowInputAction(dataflow, component)));
+			popupMenu.addSeparator();
+			popupMenu.add(new ShadedLabel("Workflow Outputs", ShadedLabel.GREEN));
+			popupMenu.addSeparator();
 			popupMenu.add(new JMenuItem(new AddDataflowOutputAction(dataflow, component)));
 		} else if (dataflowObject instanceof Processor) {
-			popupMenu.add(new JMenuItem(new RenameProcessorAction(dataflow, (Processor) dataflowObject, component)));
-			popupMenu.add(new JMenuItem(new RemoveProcessorAction(dataflow, (Processor) dataflowObject, component)));
+			Processor processor = (Processor) dataflowObject;
+			popupMenu.add(new ShadedLabel("Processor : " + processor.getLocalName(), ShadedLabel.GREEN));
+			popupMenu.addSeparator();
+			popupMenu.add(new JMenuItem(new RenameProcessorAction(dataflow, processor, component)));
+			popupMenu.add(new JMenuItem(new RemoveProcessorAction(dataflow, processor, component)));
 		} else if (dataflowObject instanceof DataflowInputPort) {
-			popupMenu.add(new JMenuItem(new RenameDataflowInputPortAction(dataflow, (DataflowInputPort) dataflowObject, component)));		
-			popupMenu.add(new JMenuItem(new RemoveDataflowInputPortAction(dataflow, (DataflowInputPort) dataflowObject, component)));		
+			DataflowInputPort dataflowInputPort = (DataflowInputPort) dataflowObject;
+			popupMenu.add(new ShadedLabel("Workflow Input : " + dataflowInputPort.getName(), ShadedLabel.GREEN));
+			popupMenu.addSeparator();
+			popupMenu.add(new JMenuItem(new RenameDataflowInputPortAction(dataflow, dataflowInputPort, component)));		
+			popupMenu.add(new JMenuItem(new RemoveDataflowInputPortAction(dataflow, dataflowInputPort, component)));		
 		} else if (dataflowObject instanceof DataflowOutputPort) {
-			popupMenu.add(new JMenuItem(new RenameDataflowOutputPortAction(dataflow, (DataflowOutputPort) dataflowObject, component)));		
-			popupMenu.add(new JMenuItem(new RemoveDataflowOutputPortAction(dataflow, (DataflowOutputPort) dataflowObject, component)));		
+			DataflowOutputPort dataflowOutputPort = (DataflowOutputPort) dataflowObject;
+			popupMenu.add(new ShadedLabel("Workflow Output : " + dataflowOutputPort.getName(), ShadedLabel.GREEN));
+			popupMenu.addSeparator();
+			popupMenu.add(new JMenuItem(new RenameDataflowOutputPortAction(dataflow, dataflowOutputPort, component)));		
+			popupMenu.add(new JMenuItem(new RemoveDataflowOutputPortAction(dataflow, dataflowOutputPort, component)));		
 		} else if (dataflowObject instanceof Datalink) {
+			popupMenu.add(new ShadedLabel("Link", ShadedLabel.GREEN));
+			popupMenu.addSeparator();
 			popupMenu.add(new JMenuItem(new RemoveDatalinkAction(dataflow, (Datalink) dataflowObject, component)));		
 		}
 		return popupMenu;
