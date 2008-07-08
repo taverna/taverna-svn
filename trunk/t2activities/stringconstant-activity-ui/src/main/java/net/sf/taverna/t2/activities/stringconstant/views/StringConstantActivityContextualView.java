@@ -30,7 +30,6 @@ public class StringConstantActivityContextualView extends HTMLBasedActivityConte
 		return html;
 	}
 
-	@SuppressWarnings("serial")
 	@Override
 	public Action getConfigureAction(Frame owner) {
 		return new StringConstantActivityConfigurationAction((StringConstantActivity)getActivity(),owner);
