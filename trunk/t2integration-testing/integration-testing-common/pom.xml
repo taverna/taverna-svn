@@ -47,6 +47,26 @@
 			<artifactId>junit</artifactId>
 			<version>${depJunit}</version>
 		</dependency>
+				<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>platform</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>t2reference-api</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>t2reference-impl</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>t2reference-core-extensions</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 	
 </project>
