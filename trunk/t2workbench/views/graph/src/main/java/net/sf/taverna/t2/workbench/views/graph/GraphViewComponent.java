@@ -3,8 +3,6 @@ package net.sf.taverna.t2.workbench.views.graph;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,9 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
-import net.sf.taverna.raven.repository.Repository;
-import net.sf.taverna.raven.repository.impl.LocalRepository;
-import net.sf.taverna.t2.compatibility.WorkflowModelTranslator;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 import net.sf.taverna.t2.lang.ui.ModelMap;
@@ -31,6 +26,8 @@ import net.sf.taverna.t2.workbench.ModelMapConstants;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.edits.EditManager.AbstractDataflowEditEvent;
 import net.sf.taverna.t2.workbench.edits.EditManager.EditManagerEvent;
+import net.sf.taverna.t2.workbench.file.impl.T2DataflowOpener;
+import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 import net.sf.taverna.t2.workbench.models.graph.GraphController;
 import net.sf.taverna.t2.workbench.models.graph.Graph.Alignment;
@@ -44,18 +41,7 @@ import org.apache.batik.swing.JSVGCanvas;
 import org.apache.batik.swing.gvt.GVTTreeRendererAdapter;
 import org.apache.batik.swing.gvt.GVTTreeRendererEvent;
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.scufl.ConcurrencyConstraintCreationException;
-import org.embl.ebi.escience.scufl.DataConstraintCreationException;
-import org.embl.ebi.escience.scufl.DuplicateConcurrencyConstraintNameException;
-import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
-import org.embl.ebi.escience.scufl.MalformedNameException;
-import org.embl.ebi.escience.scufl.ProcessorCreationException;
-import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.UnknownPortException;
-import org.embl.ebi.escience.scufl.UnknownProcessorException;
-import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
-import org.embl.ebi.escience.scufl.parser.XScuflParser;
-import org.embl.ebi.escience.utils.TavernaSPIRegistry;
+import org.w3c.dom.Element;
 
 public class GraphViewComponent extends JPanel implements UIComponentSPI {
 
@@ -293,10 +279,11 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 		System.setProperty("raven.eclipse", "true");
 		System.setProperty("taverna.dotlocation", "/Applications/Taverna-1.7.1.app/Contents/MacOS/dot");
 
-		setUpRavenRepository();
 		GraphViewComponent graphView = new GraphViewComponent();
 
-		Dataflow dataflow = WorkflowModelTranslator.doTranslation(loadScufl("nested_iteration.xml"));
+		T2DataflowOpener t2DataflowOpener = new T2DataflowOpener();
+		InputStream stream = GraphViewComponent.class.getResourceAsStream("/nested_iteration.t2flow");
+		Dataflow dataflow = t2DataflowOpener.openDataflow(new T2FlowFileType(), stream).getDataflow();
 
 		graphView.setDataflow(dataflow);
 		
@@ -306,27 +293,6 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 		frame.pack();
 		frame.setVisible(true);
 
-	}
-
-	protected static void setUpRavenRepository() throws IOException {
-		File tmpDir = File.createTempFile("taverna", "raven");
-		tmpDir.delete();
-		tmpDir.mkdir();
-		Repository tempRepository = LocalRepository.getRepository(tmpDir);
-		TavernaSPIRegistry.setRepository(tempRepository);
-	}
-
-	protected static ScuflModel loadScufl(String resourceName)
-			throws UnknownProcessorException, UnknownPortException,
-			ProcessorCreationException, DataConstraintCreationException,
-			DuplicateProcessorNameException, MalformedNameException,
-			ConcurrencyConstraintCreationException,
-			DuplicateConcurrencyConstraintNameException, XScuflFormatException,
-			IOException {
-		ScuflModel model = new ScuflModel();
-		InputStream inStream = GraphViewComponent.class.getResourceAsStream("/"+resourceName);
-		XScuflParser.populate(inStream,model,null);
-		return model;
 	}
 
 	@Override
