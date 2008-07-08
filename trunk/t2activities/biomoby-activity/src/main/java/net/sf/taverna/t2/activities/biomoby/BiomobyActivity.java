@@ -11,11 +11,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import net.sf.taverna.t2.annotation.annotationbeans.MimeType;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.reference.ReferenceContext;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceServiceException;
 import net.sf.taverna.t2.reference.T2Reference;
+import net.sf.taverna.t2.workflowmodel.EditException;
+import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
@@ -848,7 +851,7 @@ public class BiomobyActivity extends
 				simpleName = "(" + simpleName + ")";
 
 				String outputName = simple.getDataType().getName() + simpleName;
-				addOutput(outputName, outputDepth);
+				addOutput(outputName, outputDepth, "text/xml");
 			} else {
 				outputDepth = 1;
 				// collection of items
@@ -860,17 +863,17 @@ public class BiomobyActivity extends
 				for (int y = 0; y < simples.length; y++) {
 					String outputName = simples[y].getDataType().getName()
 							+ "(Collection - '" + collectionName + "')";
-					addOutput(outputName, outputDepth);
+					addOutput(outputName, outputDepth, "text/xml");
 
 					outputName = simples[y].getDataType().getName()
 							+ "(Collection - '" + collectionName
 							+ "' As Simples)";
-					addOutput(outputName, outputDepth);
+					addOutput(outputName, outputDepth, "text/xml");
 				}
 			}
 		}
 
-		addOutput("output", outputDepth);
+		addOutput("output", outputDepth, "text/xml");
 
 	}
 
@@ -1324,6 +1327,19 @@ public class BiomobyActivity extends
 			}
 		}
 		return null;
+	}
+
+	protected void addOutput(String portName, int portDepth, String type) {
+		OutputPort port = EditsRegistry.getEdits().createActivityOutputPort(
+				portName, portDepth, portDepth);
+		MimeType mimeType = new MimeType();
+		mimeType.setText(type);
+		try {
+			EditsRegistry.getEdits().getAddAnnotationChainEdit(port, mimeType).doEdit();
+		} catch (EditException e) {
+			logger.debug("Error adding MimeType annotation to port", e);
+		}
+		outputPorts.add(port);
 	}
 
 }

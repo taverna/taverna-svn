@@ -11,10 +11,13 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceException;
 
+import net.sf.taverna.t2.annotation.annotationbeans.MimeType;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceServiceException;
 import net.sf.taverna.t2.reference.T2Reference;
+import net.sf.taverna.t2.workflowmodel.EditException;
+import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
@@ -314,18 +317,17 @@ public class SoaplabActivity extends
 				// Check to see whether the output is either report or
 				// detailed_status, in
 				// which cases we ignore it, this is soaplab metadata rather
-				// than application
-				// data.
+				// than application data.
 				if ((!output_name.equalsIgnoreCase("detailed_status"))) {
 					// && (!output_name.equalsIgnoreCase("report"))) {
 					if (output_type.equals("string")) {
-						addOutput(output_name, 0);
+						addOutput(output_name, 0, "text/plain");
 					} else if (output_type.equals("string[]")) {
-						addOutput(output_name, 1);
+						addOutput(output_name, 1, "text/plain");
 					} else if (output_type.equals("byte[]")) {
-						addOutput(output_name, 0);
+						addOutput(output_name, 0, "application/octet-stream");
 					} else if (output_type.equals("byte[][]")) {
-						addOutput(output_name, 1);
+						addOutput(output_name, 1, "application/octet-stream");
 					}
 				}
 			}
@@ -350,5 +352,19 @@ public class SoaplabActivity extends
 			generatePorts();
 		}
 	}
+	
+	protected void addOutput(String portName, int portDepth, String type) {
+		OutputPort port = EditsRegistry.getEdits().createActivityOutputPort(
+				portName, portDepth, portDepth);
+		MimeType mimeType = new MimeType();
+		mimeType.setText(type);
+		try {
+			EditsRegistry.getEdits().getAddAnnotationChainEdit(port, mimeType).doEdit();
+		} catch (EditException e) {
+			logger.debug("Error adding MimeType annotation to port", e);
+		}
+		outputPorts.add(port);
+	}
+
 
 }

@@ -7,15 +7,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import net.sf.taverna.t2.annotation.annotationbeans.MimeType;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceServiceException;
 import net.sf.taverna.t2.reference.T2Reference;
+import net.sf.taverna.t2.workflowmodel.EditException;
+import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 
+import org.apache.log4j.Logger;
 import org.biomoby.client.CentralImpl;
 import org.biomoby.client.taverna.plugin.ParseMobyXML;
 import org.biomoby.client.taverna.plugin.XMLUtilities;
@@ -38,6 +42,8 @@ import org.biomoby.shared.NoSuccessException;
  */
 public class MobyParseDatatypeActivity extends AbstractAsynchronousActivity<MobyParseDatatypeActivityConfigurationBean> {
 
+	private static Logger logger = Logger.getLogger(MobyParseDatatypeActivity.class);
+			
 	private MobyParseDatatypeActivityConfigurationBean configurationBean;
 
 	private Central central = null;
@@ -242,15 +248,15 @@ public class MobyParseDatatypeActivity extends AbstractAsynchronousActivity<Moby
 				new ArrayList<Class<? extends ExternalReferenceSPI>>(),
 				String.class);
 		// add the namespace/id ports to the processor
-		addOutput("namespace", 1);
-		addOutput("id", 1);
+		addOutput("namespace", 1, "text/xml");
+		addOutput("id", 1, "text/xml");
 
 		// list contains the output ports i have to create
 		for (Iterator it = list.iterator(); it.hasNext();) {
 			String portName = (String) it.next();
 			if (portName.equals(configurationBean.getArticleNameUsedByService()+"_id") || portName.equals(configurationBean.getArticleNameUsedByService()+"_ns"))
 				continue;
-			addOutput(portName, 1);
+			addOutput(portName, 1, "text/xml");
 		}
 	}
 
@@ -385,4 +391,17 @@ public class MobyParseDatatypeActivity extends AbstractAsynchronousActivity<Moby
 		return false;
 	}
 	
+	protected void addOutput(String portName, int portDepth, String type) {
+		OutputPort port = EditsRegistry.getEdits().createActivityOutputPort(
+				portName, portDepth, portDepth);
+		MimeType mimeType = new MimeType();
+		mimeType.setText(type);
+		try {
+			EditsRegistry.getEdits().getAddAnnotationChainEdit(port, mimeType).doEdit();
+		} catch (EditException e) {
+			logger.debug("Error adding MimeType annotation to port", e);
+		}
+		outputPorts.add(port);
+	}
+
 }

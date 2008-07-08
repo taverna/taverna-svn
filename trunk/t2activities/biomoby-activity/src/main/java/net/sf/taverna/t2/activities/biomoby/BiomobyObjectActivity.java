@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.taverna.t2.annotation.annotationbeans.MimeType;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.T2Reference;
+import net.sf.taverna.t2.workflowmodel.EditException;
+import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
@@ -44,7 +47,7 @@ import org.jdom.Element;
  */
 public class BiomobyObjectActivity extends AbstractAsynchronousActivity<BiomobyObjectActivityConfigurationBean> {
 
-    private static Logger logger = Logger.getLogger(BiomobyActivity.class);
+    private static Logger logger = Logger.getLogger(BiomobyObjectActivity.class);
 
     private BiomobyObjectActivityConfigurationBean configurationBean;
 
@@ -391,7 +394,7 @@ public class BiomobyObjectActivity extends AbstractAsynchronousActivity<BiomobyO
     	}
 
     	//outputs
-		addOutput("mobyData", 0);
+		addOutput("mobyData", 0, "text/xml");
     }
 
     private void extractParentContainerRelationships(String string) {
@@ -489,6 +492,19 @@ public class BiomobyObjectActivity extends AbstractAsynchronousActivity<BiomobyO
 			}
 		}
 		return null;
+	}
+
+	protected void addOutput(String portName, int portDepth, String type) {
+		OutputPort port = EditsRegistry.getEdits().createActivityOutputPort(
+				portName, portDepth, portDepth);
+		MimeType mimeType = new MimeType();
+		mimeType.setText(type);
+		try {
+			EditsRegistry.getEdits().getAddAnnotationChainEdit(port, mimeType).doEdit();
+		} catch (EditException e) {
+			logger.debug("Error adding MimeType annotation to port", e);
+		}
+		outputPorts.add(port);
 	}
 
 }
