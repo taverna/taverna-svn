@@ -30,7 +30,9 @@ public class WSDLActivityTest {
 	public void testBasicInvocation() throws Exception {
 		WSDLActivity activity = initActivity("menagerie-complex-rpc.wsdl", "createPerson");
 		Map<String,Object> inputMap = new HashMap<String,Object>();
-		Map<String,Object> results = ActivityInvoker.invokeAsyncActivity(activity, inputMap, Collections.singletonList("out"));
+		Map<String, Class<?>> outputMap = new HashMap<String, Class<?>>();
+		outputMap.put("out", String.class);
+		Map<String,Object> results = ActivityInvoker.invokeAsyncActivity(activity, inputMap, outputMap);
 		assertEquals(1,results.size());
 		assertNotNull(results.get("out"));
 		assertTrue(results.get("out") instanceof String);
@@ -44,8 +46,9 @@ public class WSDLActivityTest {
 		inputs.add("eco:b0077");
 		inputs.add("eco:b0078");
 		inputMap.put("genes_id_list", inputs);
-		
-		Map<String,Object> results = ActivityInvoker.invokeAsyncActivity(activity, inputMap, Collections.singletonList("return"));
+		Map<String, Class<?>> outputMap = new HashMap<String, Class<?>>();
+		outputMap.put("out", List.class);
+		Map<String,Object> results = ActivityInvoker.invokeAsyncActivity(activity, inputMap, outputMap);
 		assertEquals(1,results.size());
 		assertNotNull(results.get("return"));
 		assertTrue(results.get("return") instanceof List);

@@ -1,15 +1,13 @@
 package net.sf.taverna.t2.testing;
 
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.datamanager.AbstractDataManager;
-import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
-import net.sf.taverna.t2.cloudone.datamanager.DataManager;
-import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
+import net.sf.taverna.platform.spring.RavenAwareClassPathXmlApplicationContext;
 import net.sf.taverna.t2.compatibility.WorkflowModelTranslator;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
@@ -20,6 +18,7 @@ import net.sf.taverna.t2.workflowmodel.TokenProcessingEntity;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 
 import org.junit.Before;
+import org.springframework.context.ApplicationContext;
 
 /**
  * A helper class to support tests for the {@link WorkflowModelTranslator}
@@ -29,19 +28,24 @@ import org.junit.Before;
  */
 public class InvocationTestHelper extends DataflowTranslationHelper {
 
-	protected AbstractDataManager dataManager;
-	protected DataFacade dataFacade;
 	protected InvocationContext context;
 	
 	@SuppressWarnings("unchecked")
 	@Before
 	public void makeDataManager() {
-		dataManager = new InMemoryDataManager("namespace",
-				Collections.EMPTY_SET);
-		dataFacade=new DataFacade(dataManager);
 		context =  new InvocationContext() {
-			public DataManager getDataManager() {
-				return dataManager;
+
+			public ReferenceService getReferenceService() {
+				ApplicationContext context = new RavenAwareClassPathXmlApplicationContext(
+				"inMemoryActivityTestsContext.xml");
+				ReferenceService referenceService = (ReferenceService) context.getBean("t2reference.service.referenceService");
+
+				return referenceService;
+			}
+
+			public <T> List<? extends T> getEntities(Class<T> arg0) {
+				// TODO Auto-generated method stub
+				return null;
 			}
 		};
 	}
@@ -53,7 +57,7 @@ public class InvocationTestHelper extends DataflowTranslationHelper {
 		Map<String, DummyEventHandler> eventHandlers = new HashMap<String, DummyEventHandler>();
 		for (DataflowOutputPort outputPort : dataflow.getOutputPorts()) {
 			DummyEventHandler testOutputEventHandler = new DummyEventHandler(
-					dataManager);
+					context.getReferenceService());
 			eventHandlers.put(outputPort.getName(), testOutputEventHandler);
 			Datalink link = edits.createDatalink(outputPort,
 					testOutputEventHandler);

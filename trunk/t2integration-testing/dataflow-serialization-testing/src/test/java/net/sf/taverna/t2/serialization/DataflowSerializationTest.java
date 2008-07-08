@@ -10,6 +10,7 @@ import java.util.List;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.testing.CaptureResultsListener;
 import net.sf.taverna.t2.testing.InvocationTestHelper;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -89,12 +90,12 @@ public class DataflowSerializationTest extends InvocationTestHelper {
 			
 			WorkflowInstanceFacade facade;
 			facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
-			CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
+			CaptureResultsListener listener = new CaptureResultsListener(dataflow,context.getReferenceService());
 			facade.addResultListener(listener);
 			
 			facade.fire();
 			
-			EntityIdentifier entityId=dataFacade.register(input);
+			T2Reference entityId=context.getReferenceService().register(input, 0, false, null);
 			for (DataflowInputPort port : dataflow.getInputPorts()) {
 				WorkflowDataToken inputToken = new WorkflowDataToken("",new int[]{}, entityId, context);
 				facade.pushData(inputToken, port.getName());
@@ -125,7 +126,7 @@ public class DataflowSerializationTest extends InvocationTestHelper {
 
 		WorkflowInstanceFacade facade;
 		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
-		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context.getReferenceService());
 		facade.addResultListener(listener);
 		
 		facade.fire();
@@ -158,7 +159,7 @@ public class DataflowSerializationTest extends InvocationTestHelper {
 
 		WorkflowInstanceFacade facade;
 		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
-		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context.getReferenceService());
 		facade.addResultListener(listener);
 		
 		facade.fire();

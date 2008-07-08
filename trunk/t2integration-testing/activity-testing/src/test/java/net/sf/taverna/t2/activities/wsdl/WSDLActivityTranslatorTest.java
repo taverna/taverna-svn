@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +21,9 @@ public class WSDLActivityTranslatorTest {
 		WSDLBasedProcessor proc = new WSDLBasedProcessor(null,"test",WSDLTestConstants.WSDL_TEST_BASE+"menagerie-complex-rpc.wsdl","createPerson");
 		WSDLActivity activity = (WSDLActivity) new WSDLActivityTranslator().doTranslation(proc);
 		Map<String,Object> inputMap = new HashMap<String,Object>();
-		Map<String,Object> results = ActivityInvoker.invokeAsyncActivity(activity, inputMap, Collections.singletonList("out"));
+		Map<String, Class<?>> outputMap = new HashMap<String, Class<?>>();
+		outputMap.put("out", String.class);
+		Map<String,Object> results = ActivityInvoker.invokeAsyncActivity(activity, inputMap, outputMap);
 		assertEquals(1,results.size());
 		assertNotNull(results.get("out"));
 		assertTrue(results.get("out") instanceof String);

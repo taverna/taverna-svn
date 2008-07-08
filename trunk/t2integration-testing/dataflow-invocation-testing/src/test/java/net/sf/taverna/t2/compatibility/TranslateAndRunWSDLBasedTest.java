@@ -32,7 +32,7 @@ public class TranslateAndRunWSDLBasedTest extends InvocationTestHelper {
 		
 		WorkflowInstanceFacade facade;
 		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
-		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context.getReferenceService());
 		facade.addResultListener(listener);
 		
 		facade.fire();
@@ -78,7 +78,7 @@ public class TranslateAndRunWSDLBasedTest extends InvocationTestHelper {
 		
 		WorkflowInstanceFacade facade;
 		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
-		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context.getReferenceService());
 		facade.addResultListener(listener);
 		
 		facade.fire();
