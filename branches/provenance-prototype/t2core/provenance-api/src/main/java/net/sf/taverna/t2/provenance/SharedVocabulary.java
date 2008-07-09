@@ -1,9 +1,12 @@
+/**
+ * 
+ */
 package net.sf.taverna.t2.provenance;
 
 /**
-* @author paolo
-*
-*/
+ * @author paolo
+ *
+ */
 public interface SharedVocabulary {
 
 	/**
@@ -27,6 +30,7 @@ public interface SharedVocabulary {
 	public static String WEBSERVICE_EVENT_TYPE = "webservice";
 	public static String WORKFLOW_EVENT_TYPE = "workflow";
 	public static String END_WORKFLOW_EVENT_TYPE = "EOW";
+	
 	
 	
 }

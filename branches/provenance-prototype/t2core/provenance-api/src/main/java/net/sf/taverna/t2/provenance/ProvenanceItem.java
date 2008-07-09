@@ -9,5 +9,7 @@ public interface ProvenanceItem {
 	public Element getAsXML(DataFacade dataFacade);
 	
 	public String getAsString();
+	
+	public String getEventType();
 
 }
