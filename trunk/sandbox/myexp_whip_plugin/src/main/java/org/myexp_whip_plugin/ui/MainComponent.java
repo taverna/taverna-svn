@@ -1,13 +1,16 @@
 package org.myexp_whip_plugin.ui;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
@@ -16,6 +19,7 @@ import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.actions.OpenWorkflowFromFileAction;
+import org.embl.ebi.escience.scuflui.actions.PasswordInput;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.myexp_whip_plugin.MyExperimentClient;
 
@@ -162,13 +166,31 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
         public void actionPerformed(ActionEvent actionEvent) {
         	try {
         		URL url = new URL(baseUrl, "workflows/" + this.workflowId + "/download");
-				URLConnection conn = url.openConnection();
-				
+        		
+        		logger.debug("Downloading and opening workflow from URL: " + url.toString());
+        		
+				HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+				conn.setRequestProperty("Accept", "text/xml");
 				OpenWorkflowFromFileAction action = new OpenWorkflowFromFileAction(MainComponent.this);
 				
-				logger.debug("Downloading workflow from URL: " + url.toString());
-				
-				action.openFromURL(conn);
+                if (conn.getResponseCode() == 401) { //authentication required.
+                        PasswordInput input =  new PasswordInput((JFrame)SwingUtilities.getAncestorOfClass(JFrame.class, MainComponent.this));
+                        input.setUrl(url);
+                        input.setSize(new Dimension(323,222));
+                        input.setLocationRelativeTo(MainComponent.this);
+                        input.setVisible(true);
+                        
+                        if (input.getPassword()!=null && input.getUsername()!=null) {
+                                conn = (HttpURLConnection)url.openConnection();
+                                String userPassword = input.getUsername()+":"+input.getPassword();
+                                String encoding = new sun.misc.BASE64Encoder().encode(userPassword.getBytes());
+                                conn.setRequestProperty("Authorization", "Basic " + encoding);
+                                conn.setRequestProperty("Accept", "text/xml");
+                                action.openFromURL(conn);
+                        }
+                } else {
+                		action.openFromURL(conn);
+                }
 				
 			} catch (IOException e) {
 				logger.error("Failed to open connection to URL to download and open workflow, from myExperiment.");
