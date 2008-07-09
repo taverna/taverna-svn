@@ -53,16 +53,14 @@ import org.myexp_whip_plugin.MyExperimentClient;
 public class LatestWorkflowsPanel extends BasePanel implements ActionListener,
 		ChangeListener, HyperlinkListener {
 	
-	private static final String ACTION_REFRESH = "refresh_latest_workflows"; 
+	private static final String ACTION_REFRESH = "refresh_latest_workflows";
 
 	private List<SyndEntry> workflows;
 
 	private JLabel statusLabel;
-	
 	private JButton refreshButton;
 	
 	private JScrollPane listScrollPane; 
-	
 	private JPanel listPanel;
 
 	public LatestWorkflowsPanel(MainComponent parent, MyExperimentClient client, Logger logger) {

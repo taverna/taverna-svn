@@ -1,39 +1,25 @@
 package org.myexp_whip_plugin.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.security.KeyStore;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
-import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.StyleSheet;
+import javax.swing.event.ChangeListener;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.myexp_whip_plugin.MyExperimentClient;
-import org.myexp_whip_plugin.Resource;
 import org.myexp_whip_plugin.SearchResults;
-import org.myexp_whip_plugin.ui.MainComponent.LoadWorkflowAction;
-import org.myexp_whip_plugin.ui.MainComponent.PreviewWorkflowAction;
-
-import edu.stanford.ejalbert.BrowserLauncher;
 
 public class SearchWorkflowsPanel extends BasePanel implements ActionListener, ChangeListener, KeyListener {
 	
@@ -122,7 +108,11 @@ public class SearchWorkflowsPanel extends BasePanel implements ActionListener, C
 			}.start();
 		}
 		else {
-			this.statusLabel.setText("Please enter valid keyword(s)");
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					statusLabel.setText("Please enter valid keyword(s)");
+				}
+			});
 		}
 	}
 	

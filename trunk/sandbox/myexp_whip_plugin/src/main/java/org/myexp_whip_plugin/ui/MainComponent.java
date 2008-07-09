@@ -118,6 +118,12 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 		
 		this.latestWorkflowsPanel.refresh();
 		this.tagsBrowserPanel.refresh();
+		this.exampleWorkflowsPanel.refresh();
+	}
+	
+	public void browseTag(String tagName) {
+		this.tabsPane.setSelectedComponent(this.tagsBrowserPanel);
+		this.tagsBrowserPanel.setTag(tagName);
 	}
 	
 	public class PreviewWorkflowAction extends AbstractAction {
@@ -132,7 +138,7 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
         }
    
         public void actionPerformed(ActionEvent actionEvent) {
-                        
+        	workflowPreviewPanel.setWorkfowId(this.workflowId);            
         }
 	}
 	
@@ -148,7 +154,7 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
         }
    
         public void actionPerformed(ActionEvent actionEvent) {
-                        
+        	
         }
 	}
 }

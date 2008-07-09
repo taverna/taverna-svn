@@ -26,6 +26,9 @@ import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 import org.myexp_whip_plugin.MyExperimentClient;
+import org.myexp_whip_plugin.Tag;
+import org.myexp_whip_plugin.User;
+import org.myexp_whip_plugin.Workflow;
 
 import edu.stanford.ejalbert.BrowserLauncher;
 
@@ -34,7 +37,9 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 	private static final String ACTION_REFRESH = "refresh_workflow_preview";
 	private static final String ACTION_CLEAR = "clear_workflow_preview";
 
-	private int workflowId = 0;
+	private int currentWorkflowId = 0;
+	
+	private Workflow currentWorkflow = null;
 	
 	private JLabel statusLabel;
 	
@@ -52,7 +57,7 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 		
 		this.initialiseUI();
 		
-		this.populateDummy();
+		//this.populateDummy();
 	}
 	
 	public void actionPerformed(ActionEvent event) {
@@ -71,8 +76,16 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 		try {
 			if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-				BrowserLauncher launcher = new BrowserLauncher();
-				launcher.openURLinBrowser(e.getURL().toString());
+				String url = e.getURL().toString();
+				
+				if (url.startsWith("http://tag/")) {
+					String [] s = e.getURL().toString().split("/");
+					this.parent.browseTag(s[s.length-1]);
+				}
+				else {
+					BrowserLauncher launcher = new BrowserLauncher();
+					launcher.openURLinBrowser(url);
+				}
 			}
 		} catch (Exception ex) {
 			logger.error("Error occurred whilst clicking a hyperlink", ex);
@@ -80,7 +93,7 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 	}
 	
 	public void setWorkfowId(int id) {
-		this.workflowId = id;
+		this.currentWorkflowId = id;
 		
 		this.setLoadAction();
 		
@@ -90,7 +103,7 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 	public void refresh() {
 		this.clearContentTextPane();
 		
-		if (this.workflowId > 0) {
+		if (this.currentWorkflowId > 0) {
 			this.statusLabel.setText("Fetching workflow information from myExperiment...");
 			this.refreshButton.setEnabled(true);
 			
@@ -101,7 +114,7 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 					logger.debug("Refreshing Workflow Preview pane");
 
 					try {
-						//workflows = client.getLatestWorkflows();
+						currentWorkflow = client.getWorkflowInfo(currentWorkflowId);
 
 						SwingUtilities.invokeLater(new Runnable() {
 							public void run() {
@@ -109,36 +122,143 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 							}
 						});
 					} catch (Exception ex) {
-						logger.error("Failed to fetch workflow data from myExperiment", ex);
+						logger.error("Failed to refresh Workflow Preview pane", ex);
 					}
 				}
 			}.start();
 		}
 		else {
-			this.statusLabel.setText("");
-			
-			this.clearButton.setEnabled(false);
-			this.refreshButton.setEnabled(false);
-			this.loadButton.setEnabled(false);
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					statusLabel.setText("");
+					clearContentTextPane();
+					disableButtons();
+				}
+			});
 		}
 	}
 	
 	public void repopulate() {
 		logger.debug("Repopulating Workflow Preview pane");
 		
-		
-		
-		this.clearButton.setEnabled(true);
-		this.refreshButton.setEnabled(true);
-		this.loadButton.setEnabled(true);
-		
-		
+		if (this.currentWorkflow != null) {
+			try {
+				HTMLEditorKit kit = new HTMLEditorKit();
+				HTMLDocument doc = (HTMLDocument) (kit.createDefaultDocument());
+				StyleSheet css = kit.getStyleSheet();
+				
+				StringBuffer content = new StringBuffer();
+				content.append("<div class='outer'>");
+				content.append("<div class='workflow'>");
+				
+				content.append("<p class='title'>");
+				content.append("Workflow Entry: <a href='" + this.currentWorkflow.getResource() + "'>" + this.currentWorkflow.getTitle() + "</a>");
+				content.append("</p>");
+				
+				content.append("<p class='info'>");
+				content.append("<b>Uploader:</b> <a href='" + this.currentWorkflow.getUploader().getResource() + "'>" + this.currentWorkflow.getUploader().getName() + "</a><br/>");
+				content.append("<b>Created at: </b> " + this.currentWorkflow.getCreatedAt() + "<br/>");
+				content.append("<b>License: </b> <a href='" + this.currentWorkflow.getLicense().getLink() + "'>" + this.currentWorkflow.getLicense().getText() + "</a>");
+				content.append("</p>");
+				
+				content.append("<br/>");
+				
+				content.append("<img class='preview' src='" + this.currentWorkflow.getThumbnailBig() + "'></img>");
+				
+				content.append("<br/>");
+				content.append("<br/>");
+				
+				content.append("<div class='desc'>");
+				content.append("<br/>");
+				content.append(this.currentWorkflow.getDescription());
+				content.append("<br/>");
+				content.append("</div>");
+				
+				content.append("<br/>");
+				
+				content.append("<p style='text-align: center;'><b>Tags</b></p>");
+				content.append("<br/>");
+				content.append("<div class='tags'>");
+				content.append("&nbsp;&nbsp;&nbsp;");
+				
+				if (this.currentWorkflow.getTags().size() > 0) {
+					for (Tag t : this.currentWorkflow.getTags()) {
+						content.append("<a href='http://tag/" + t.getTagName() + "' style='color: #000066;'>" + t.getTagName() + "</a>");
+						content.append("&nbsp;&nbsp;&nbsp;");
+					}
+				}
+				else {
+					content.append("<span style='color: #666666; font-style: italic;'>None</span>");
+				}
+				
+				content.append("</div>");
+				
+				content.append("<br/>");
+				content.append("<br/>");
+				
+				content.append("<p style='text-align: center;'><b>Credits</b></p>");
+				content.append("<br/>");
+				content.append("<div class='credits'>");
+				content.append("&nbsp;&nbsp;&nbsp;");
+				
+				if (this.currentWorkflow.getCredits().size() > 0) {
+					for (User u : this.currentWorkflow.getCredits()) {
+						content.append("<a href='" + u.getUri() + "'>" + u.getName() + "</a>");
+						content.append("&nbsp;&nbsp;&nbsp;");
+					}
+				}
+				else {
+					content.append("<span style='color: #666666; font-style: italic;'>None</span>");
+				}
+				
+				content.append("</div>");
+				
+				content.append("</div>");
+				content.append("</div>");
+				
+				css.addRule("body {font-family: arial,helvetica,clean,sans-serif; margin: 0; padding: 0;}");
+				css.addRule("div.outer {padding-top: 0; padding-bottom: 0; padding-left: 10px; padding-right: 10px;}");
+				css.addRule("div.workflow {text-align: center;}");
+				css.addRule(".workflow p.info {text-align: center; line-height: 1.5; color: #333333;}");
+				css.addRule(".workflow p.title {text-align: center; line-height: 1.0; color: #333333; font-size: large; font-weight: bold; margin-bottom: 0; margin-top; 0; padding: 0;}");
+				css.addRule(".workflow img.preview {padding: 5px;}");
+				css.addRule(".workflow div.desc {background-color: #EEEEEE; text-align: left; width: 400px; font-size: medium; padding-left: 8px; padding-right: 8px; padding-top: 0; padding-bottom: 0;}");
+				css.addRule(".workflow div.desc p {padding: 0;");
+				css.addRule(".workflow div.tags {text-align: center; width: 400px;}");
+				css.addRule(".workflow div.credits {text-align: center; width: 400px;}");
+				
+				doc.insertAfterStart(doc.getRootElements()[0].getElement(0), content.toString());
+				
+				this.contentTextPane.setEditorKit(kit);
+				this.contentTextPane.setDocument(doc);
+				
+				this.statusLabel.setText("Workflow information found. Last fetched: " + new Date().toString());
+				
+				this.clearButton.setEnabled(true);
+				this.refreshButton.setEnabled(true);
+				this.loadButton.setEnabled(true);
+			}
+			catch (Exception e) {
+				logger.error("Failed to populate Workflow Preview pane", e);
+			}
+		}
+		else {
+			statusLabel.setText("Could not find information for workflow ID: " + currentWorkflowId);
+			clearContentTextPane();
+			disableButtons();
+		}
 		
 		this.revalidate();
 	}
 	
 	public void clear() {
 		this.setWorkfowId(0);
+	}
+	
+	private void disableButtons() {
+		this.clearButton.setEnabled(false);
+		this.refreshButton.setEnabled(false);
+		this.loadButton.setEnabled(false);
 	}
 	
 	private void initialiseUI() {
@@ -189,6 +309,7 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 		this.contentTextPane = new JTextPane();
 		this.contentTextPane.setBorder(BorderFactory.createEmptyBorder());
 		this.contentTextPane.setEditable(false);
+		this.contentTextPane.addHyperlinkListener(this);
 		this.contentPanel.add(this.contentTextPane, BorderLayout.CENTER);
 		
 		JPanel loadPanel = new JPanel();
@@ -204,7 +325,7 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 	}
 	
 	private void setLoadAction() {
-		this.loadButton.setAction(this.parent.new LoadWorkflowAction(this.workflowId));
+		this.loadButton.setAction(this.parent.new LoadWorkflowAction(this.currentWorkflowId));
 	}
 	
 	private void clearContentTextPane() {
@@ -212,12 +333,6 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 	}
 	
 	private void populateDummy(){
-		this.statusLabel.setText("Last fetched: " + new Date().toString());
-		
-		this.clearButton.setEnabled(true);
-		this.refreshButton.setEnabled(true);
-		this.loadButton.setEnabled(true);
-		
 		try {
 			HTMLEditorKit kit = new HTMLEditorKit();
 			HTMLDocument doc = (HTMLDocument) (kit.createDefaultDocument());
@@ -271,8 +386,12 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 			
 			this.contentTextPane.setEditorKit(kit);
 			this.contentTextPane.setDocument(doc);
-			this.contentTextPane.setContentType("text/html");
-			this.contentTextPane.addHyperlinkListener(this);
+			
+			this.statusLabel.setText("NOTE: dummy data!");
+			
+			this.clearButton.setEnabled(true);
+			this.refreshButton.setEnabled(true);
+			this.loadButton.setEnabled(true);
 		}
 		catch (Exception e) {
 			logger.error("Failed to populate Workflow Preview pane", e);

@@ -1,9 +1,8 @@
 package org.myexp_whip_plugin.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -16,8 +15,8 @@ import javax.swing.JSlider;
 import javax.swing.JSplitPane;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLDocument;
@@ -170,7 +169,11 @@ public class TagsBrowserPanel extends BasePanel implements ActionListener, Chang
 			}.start();
 		}
 		else {
-			this.clearResults();
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					clearResults();
+				}
+			});
 		}
 	}
 
