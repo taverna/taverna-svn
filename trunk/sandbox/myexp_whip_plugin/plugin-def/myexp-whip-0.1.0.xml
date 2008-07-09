@@ -13,6 +13,6 @@
 		<artifact groupId="org.myexp_whip_plugin" artifactId="myexp-whip-plugin" version="0.1.0" />
 	</profile>
 	<taverna>
-		<version>1.7</version>
+		<version>1.7.1.0</version>
 	</taverna>
 </plugin>
