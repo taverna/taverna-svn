@@ -40,7 +40,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGDocument;
-import org.w3c.dom.svg.SVGPathSeg;
 import org.w3c.dom.svg.SVGPoint;
 import org.w3c.dom.svg.SVGPointList;
 
@@ -255,7 +254,9 @@ public class SVGGraphController extends GraphController {
 				svgGraph.setG(gElement);
 				svgGraph.setPolygon(polygon);
 				svgGraph.setText(text);
-				gElement.insertBefore(createProgressPolygon(), text);
+				SVGOMPolygonElement progressPolygon = createProgressPolygon();
+				gElement.insertBefore(progressPolygon, text);
+				svgGraph.setCompletedPolygon(progressPolygon);
 				processorMap.put(title, svgGraph);
 			}
 		}
@@ -360,6 +361,14 @@ public class SVGGraphController extends GraphController {
 			datalinkMap.put(sinkProcessor, new ArrayList<SVGGraphEdge>());
 		}
 		datalinkMap.get(sinkProcessor).add(datalink);
+	}
+
+	public void setEdgeActive(String edgeId, boolean active) {
+		if (datalinkMap.containsKey(edgeId)) {
+			for (GraphEdge datalink : datalinkMap.get(edgeId)) {
+				datalink.setActive(active);
+			}
+		}
 	}
 
 	private void addPortBoxes(SVGOMGElement gElement,

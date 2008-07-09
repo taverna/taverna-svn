@@ -162,7 +162,6 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 		dataflowToProcessorPorts.clear();
 		graphElementMap.clear();
 		return generateGraph(dataflow, "", dataflow.getLocalName(), 0);
-		
 	}
 	
 	public boolean startEdgeCreation(GraphElement graphElement, Point point) {
@@ -627,46 +626,44 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 			node.setDataflowObject(processor);
 		}
 
-		dataflowToGraph.put(processor, node);
+		if (expandNestedDataflows && firstActivity.getConfiguration() instanceof Dataflow) {
+			Dataflow subDataflow = (Dataflow) firstActivity.getConfiguration();
 
-		if (expandNestedDataflows) {
-
-			if (firstActivity.getConfiguration() instanceof Dataflow) {
-				Dataflow subDataflow = (Dataflow) firstActivity.getConfiguration();
-
-				Map<String, String> inputPortMapping = firstActivity.getInputPortMapping();
-				for (ProcessorInputPort processorPort : processor.getInputPorts()) {
-					String activityPortName = inputPortMapping.get(processorPort.getName());
-					for (DataflowInputPort dataflowPort : subDataflow.getInputPorts()) {
-						if (activityPortName.equals(dataflowPort.getName())) {
-							nestedDataflowPorts.put(processorPort, dataflowPort.getInternalOutputPort());
-							dataflowToProcessorPorts.put(dataflowPort, processorPort);
-							break;
-						}
+			Map<String, String> inputPortMapping = firstActivity.getInputPortMapping();
+			for (ProcessorInputPort processorPort : processor.getInputPorts()) {
+				String activityPortName = inputPortMapping.get(processorPort.getName());
+				for (DataflowInputPort dataflowPort : subDataflow.getInputPorts()) {
+					if (activityPortName.equals(dataflowPort.getName())) {
+						nestedDataflowPorts.put(processorPort, dataflowPort.getInternalOutputPort());
+						dataflowToProcessorPorts.put(dataflowPort, processorPort);
+						break;
 					}
 				}
+			}
 
-				Map<String, String> outputPortMapping = firstActivity.getOutputPortMapping();
-				for (ProcessorOutputPort processorPort : processor.getOutputPorts()) {
-					String activityPortName = outputPortMapping.get(processorPort.getName());
-					for (DataflowOutputPort dataflowPort : subDataflow.getOutputPorts()) {
-						if (activityPortName.equals(dataflowPort.getName())) {
-							nestedDataflowPorts.put(processorPort, dataflowPort.getInternalInputPort());
-							dataflowToProcessorPorts.put(dataflowPort, processorPort);
-							break;
-						}
+			Map<String, String> outputPortMapping = firstActivity.getOutputPortMapping();
+			for (ProcessorOutputPort processorPort : processor.getOutputPorts()) {
+				String activityPortName = outputPortMapping.get(processorPort.getName());
+				for (DataflowOutputPort dataflowPort : subDataflow.getOutputPorts()) {
+					if (activityPortName.equals(dataflowPort.getName())) {
+						nestedDataflowPorts.put(processorPort, dataflowPort.getInternalInputPort());
+						dataflowToProcessorPorts.put(dataflowPort, processorPort);
+						break;
 					}
 				}
+			}
 
-				Graph subGraph = generateGraph(subDataflow, node.getId(), processor.getLocalName(), depth + 1);
-				if (depth == 0) {
-					subGraph.setDataflowObject(processor);
-				}
-//				dataflowToGraph.put(processor, subGraph);
-				node.setGraph(subGraph);
-				node.setExpanded(true);
+			Graph subGraph = generateGraph(subDataflow, prefix, processor.getLocalName(), depth + 1);
+			if (depth == 0) {
+				subGraph.setDataflowObject(processor);
+			}
+			node.setGraph(subGraph);
+			node.setExpanded(true);
 
-			} 
+			dataflowToGraph.put(processor, subGraph);
+		} else {
+			graphElementMap.put(node.getId(), node);
+			dataflowToGraph.put(processor, node);
 		}
 
 		for (ProcessorInputPort inputPort : processor.getInputPorts()) {
@@ -698,7 +695,7 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 			node.addSourceNode(portNode);
 			graphElementMap.put(portNode.getId(), portNode);
 		}
-		graphElementMap.put(node.getId(), node);
+
 		return node;
 	}
 
@@ -747,21 +744,12 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 		if (graphElementMap.containsKey(nodeId)) {
 			GraphElement graphElement = graphElementMap.get(nodeId);
 			graphElement.setCompleted(complete);
-			if (graphElement.getDataflowObject() instanceof Processor) {
-				Processor processor = (Processor) graphElement.getDataflowObject();
-				for (ProcessorOutputPort port : processor.getOutputPorts()) {
-					for (Datalink datalink : port.getOutgoingLinks()) {
-						GraphElement element = dataflowToGraph.get(datalink);
-						if (element instanceof GraphEdge) {
-							GraphEdge edge = (GraphEdge) element;
-							edge.setActive(true);
-						}
-					}
-				}
-			}
 		}
 	}
 
+	public void setEdgeActive(String edgeId, boolean active) {
+	}
+	
 	/**
 	 * Returns the alignment.
 	 *
@@ -815,6 +803,26 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 	public void setExpandNestedDataflows(boolean expandNestedDataflows) {
 		this.expandNestedDataflows = expandNestedDataflows;
 	}
+
+//	private boolean isLinked(Processor processor) {
+//		for (ProcessorInputPort port : processor.getInputPorts()) {
+//			if (port.getIncomingLink() != null) {
+//				return true;
+//			}
+//		}
+//		for (ProcessorOutputPort port : processor.getOutputPorts()) {
+//			if (!port.getOutgoingLinks().isEmpty()) {
+//				return true;
+//			}
+//		}
+//		if (!processor.getPreconditionList().isEmpty()) {
+//			return true;
+//		}
+//		if (!processor.getControlledPreconditionList().isEmpty()) {
+//			return true;
+//		}
+//		return false;
+//	}
 
 	public void resetSelection() {
 		if (dataflowSelectionModel != null) {

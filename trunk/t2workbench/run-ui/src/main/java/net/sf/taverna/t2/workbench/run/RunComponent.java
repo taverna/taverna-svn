@@ -62,7 +62,7 @@ public class RunComponent extends JSplitPane {
 		resultsComponent = new ResultViewComponent();
 		setBottomComponent(resultsComponent);
 
-		setDividerLocation(-1);
+		setDividerLocation(300);
 		monitorObserver = monitorViewComponent.setDataflow(dataflow);
 	}
 
@@ -93,12 +93,12 @@ public class RunComponent extends JSplitPane {
 
 		});
 		determineOutputMimeTypes();
-//		try {
-//			resultsComponent.register(facade);
-//		} catch (EditException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
+		try {
+			resultsComponent.register(facade);
+		} catch (EditException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		facade.fire();
 		if (inputs != null) {
 			for (Entry<String, T2Reference> entry : inputs.entrySet()) {

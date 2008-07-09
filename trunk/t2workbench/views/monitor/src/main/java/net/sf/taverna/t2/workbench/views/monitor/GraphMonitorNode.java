@@ -161,7 +161,7 @@ public class GraphMonitorNode implements MonitorNode {
 						((float) (completedJobs)) / (float) totalJobs);
 			}
 			if (sentJobsChanged) {
-//				graphController.fireDatalink(processorId);
+				graphController.setEdgeActive(processorId, true);
 			}
 			if (errorsChanged && errors > 0) {
 //				graphController.setErrors(processorId, errors);				

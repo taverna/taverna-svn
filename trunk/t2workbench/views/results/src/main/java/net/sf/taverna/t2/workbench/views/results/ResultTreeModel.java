@@ -112,10 +112,12 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 		List<String> mimeType = mimeTypes.get(this.portName);
 		int childIndex = parent.getIndex(child);
 		List<String> mimeTypeList = new ArrayList<String>();
-		for (String type : mimeType) {
-			mimeTypeList.add(type);
-		}
-		child = new ResultTreeNode(token, context, mimeTypeList);
+//		for (String type : mimeType) {
+//			mimeTypeList.add(type);
+//		}
+//		child = new ResultTreeNode(token, context, mimeTypeList);
+		child = new ResultTreeNode(token, context, java.util.Collections.singletonList("text/plain"));
+
 		parent.remove(childIndex);
 		parent.insert(child, childIndex);
 
