@@ -13,7 +13,7 @@ import org.jdom.output.XMLOutputter;
 import provenance.ProvenanceLocator;
 import provenance.ProvenancePortType;
 
-public class WebServiceProvenanceConnector implements ProvenanceConnector {
+public class WebServiceProvenanceConnector implements ProvenanceConnector, SharedVocabulary {
 
 	private ArrayList<ProvenanceItem> provenanceCollection;
 
@@ -49,12 +49,17 @@ public class WebServiceProvenanceConnector implements ProvenanceConnector {
 			// get type of provItem and send this info as well
 			if (asString != null) {
 				try {
-					System.out
-							.println("************saving provenance************");
-					provenanceHttpPort.acceptRawProvenanceEvent(asString,
-							"dataflow");
+					System.out.println("************saving provenance with asString != null ************");
+					// System.out.println("even:\n"+asString);
+					System.out.println("event of type: "+provItem.getEventType());
+					provenanceHttpPort.acceptRawProvenanceEvent(provItem.getEventType(),asString);
+				//	System.out
+					//		.println("************saving provenance************");
+				//	provenanceHttpPort.acceptRawProvenanceEvent(asString,
+				//			"dataflow");
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
+					System.out.println("Could not store provenance from xml. Message: " + e);
 					System.out.println("Could not store provenance from xml"
 							+ e);
 				}
@@ -63,12 +68,17 @@ public class WebServiceProvenanceConnector implements ProvenanceConnector {
 				String outputString = outputter.outputString(provItem
 						.getAsXML(dataFacade));
 				try {
-					System.out
-							.println("************saving provenance************");
-					provenanceHttpPort.acceptRawProvenanceEvent(outputString,
-							"dataflow");
+					System.out.println("************saving provenance with asString == null ************");
+					// System.out.println("event:\n"+outputString);
+					System.out.println("event of type: "+provItem.getEventType());
+					provenanceHttpPort.acceptRawProvenanceEvent(provItem.getEventType(), outputString);
+				//	System.out
+				//			.println("************saving provenance************");
+				//	provenanceHttpPort.acceptRawProvenanceEvent(outputString,
+				//			"dataflow");
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
+					System.out.println("Could not store provenance from xml. Message: " + e);
 					System.out.println("Could not store provenance from xml"
 							+ e);
 				}
