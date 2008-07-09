@@ -156,28 +156,28 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 				content.append("</p>");
 				
 				content.append("<p class='info'>");
-				content.append("<b>Uploader:</b> <a href='" + this.currentWorkflow.getUploader().getResource() + "'>" + this.currentWorkflow.getUploader().getName() + "</a><br/>");
-				content.append("<b>Created at: </b> " + this.currentWorkflow.getCreatedAt() + "<br/>");
+				content.append("<b>Uploader:</b> <a href='" + this.currentWorkflow.getUploader().getResource() + "'>" + this.currentWorkflow.getUploader().getName() + "</a><br>");
+				content.append("<b>Created at: </b> " + this.currentWorkflow.getCreatedAt() + "<br>");
 				content.append("<b>License: </b> <a href='" + this.currentWorkflow.getLicense().getLink() + "'>" + this.currentWorkflow.getLicense().getText() + "</a>");
 				content.append("</p>");
 				
-				content.append("<br/>");
+				content.append("<br>");
 				
 				content.append("<img class='preview' src='" + this.currentWorkflow.getThumbnailBig() + "'></img>");
 				
-				content.append("<br/>");
-				content.append("<br/>");
+				content.append("<br>");
+				content.append("<br>");
 				
 				content.append("<div class='desc'>");
-				content.append("<br/>");
+				content.append("<br>");
 				content.append(this.currentWorkflow.getDescription());
-				content.append("<br/>");
+				content.append("<br>");
 				content.append("</div>");
 				
-				content.append("<br/>");
+				content.append("<br>");
 				
 				content.append("<p style='text-align: center;'><b>Tags</b></p>");
-				content.append("<br/>");
+				content.append("<br>");
 				content.append("<div class='tags'>");
 				content.append("&nbsp;&nbsp;&nbsp;");
 				
@@ -193,11 +193,11 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 				
 				content.append("</div>");
 				
-				content.append("<br/>");
-				content.append("<br/>");
+				content.append("<br>");
+				content.append("<br>");
 				
 				content.append("<p style='text-align: center;'><b>Credits</b></p>");
-				content.append("<br/>");
+				content.append("<br>");
 				content.append("<div class='credits'>");
 				content.append("&nbsp;&nbsp;&nbsp;");
 				

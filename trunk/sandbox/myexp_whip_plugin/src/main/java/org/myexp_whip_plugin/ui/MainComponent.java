@@ -1,8 +1,10 @@
 package org.myexp_whip_plugin.ui;
 
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -13,12 +15,15 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.actions.OpenWorkflowFromFileAction;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.myexp_whip_plugin.MyExperimentClient;
 
 public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 
 	private static final long serialVersionUID = 1L;
+	
+	private URL baseUrl;
 
 	private final Logger logger = Logger.getLogger(MainComponent.class);
 
@@ -42,7 +47,8 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 		super();
 		
 		try {
-			this.client = new MyExperimentClient(this.logger, new URL("http://sandbox.myexperiment.org/"));
+			this.baseUrl = new URL("http://sandbox.myexperiment.org/");
+			this.client = new MyExperimentClient(this.logger, this.baseUrl);
 		} catch (MalformedURLException e) {
 			this.logger.debug("Failed to set baseUrl for myExperimentClient");
 		}
@@ -154,7 +160,19 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
         }
    
         public void actionPerformed(ActionEvent actionEvent) {
-        	
+        	try {
+        		URL url = new URL(baseUrl, "workflows/" + this.workflowId + "/download");
+				URLConnection conn = url.openConnection();
+				
+				OpenWorkflowFromFileAction action = new OpenWorkflowFromFileAction(MainComponent.this);
+				
+				logger.debug("Downloading workflow from URL: " + url.toString());
+				
+				action.openFromURL(conn);
+				
+			} catch (IOException e) {
+				logger.error("Failed to open connection to URL to download and open workflow, from myExperiment.");
+			}
         }
 	}
 }
