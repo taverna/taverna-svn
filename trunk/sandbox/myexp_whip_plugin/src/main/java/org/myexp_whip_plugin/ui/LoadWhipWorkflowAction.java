@@ -48,12 +48,7 @@ public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements Artef
         putValue(NAME, "Whip Actions");
         putValue(SHORT_DESCRIPTION, "Handles Whip Actions");
         owner = new AppService(this);
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                owner.update();
-
-            }
-        });
+        owner.update();
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -110,12 +105,16 @@ public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements Artef
             }
             bundles.put(entry, bundle);
             putValue(SMALL_ICON, TavernaIcons.updateRecommendedIcon);
-            try {
-                openWorkflow(null, entry);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            postProcessOpen(entry);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    try {
+                        openWorkflow(null, entry);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    postProcessOpen(entry);
+                }
+            });
         }
     }
 
@@ -127,7 +126,8 @@ public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements Artef
     public void postProcessOpen(String name) {
         DataBundle db = bundles.remove(name);
         if (db != null) {
-            owner.setProcessed(((File) db.getContent()).getName());
+            //owner.setProcessed(((File) db.getContent()).getName());
+            owner.dispose(((File) db.getContent()).getName());
         }
         if (bundles.size() == 0) {
             putValue(SMALL_ICON, TavernaIcons.updateIcon);
