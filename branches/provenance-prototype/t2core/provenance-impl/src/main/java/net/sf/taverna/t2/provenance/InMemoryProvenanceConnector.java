@@ -6,7 +6,6 @@ import java.util.List;
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 
 import org.apache.log4j.Logger;
-import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 
 public class InMemoryProvenanceConnector implements ProvenanceConnector {
@@ -16,6 +15,8 @@ public class InMemoryProvenanceConnector implements ProvenanceConnector {
 	private ArrayList<ProvenanceItem> provenanceCollection;
 	
 	private String provenance;
+	
+	private int storedNumber=0;
 	
 	public InMemoryProvenanceConnector() {
 		provenanceCollection = new ArrayList<ProvenanceItem>();
@@ -35,13 +36,33 @@ public class InMemoryProvenanceConnector implements ProvenanceConnector {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void store(DataFacade dataFacade) {
-		List<ProvenanceItem> copiedList = (List<ProvenanceItem>)provenanceCollection.clone();
-		for (ProvenanceItem item:copiedList) {
-			Element el = item.getAsXML(dataFacade);
-			XMLOutputter outputter = new XMLOutputter();
-			System.out.println(outputter.outputString(el));
+	public synchronized void store(DataFacade dataFacade) {
+
+		int size = provenanceCollection.size();
+		System.out.println("Collection size is " + size);
+		if (size > 0) {
+			// Send the next event in the collection, since
+			// it is asynch other events could have been stored but not
+			// completed.
+			ProvenanceItem provItem = provenanceCollection.get(storedNumber);
+			String asString = provItem.getAsString();
+			System.out.println("Collection item " + storedNumber);
+			if (asString != null) {
+
+				System.out.println(provItem.getEventType() + " " + asString);
+
+			} else {
+				XMLOutputter outputter = new XMLOutputter();
+				String outputString = outputter.outputString(provItem
+						.getAsXML(dataFacade));
+
+				System.out
+						.println(provItem.getEventType() + " " + outputString);
+
+			}
 		}
+		// remember that this one is complete
+		storedNumber++;
 	}
 
 }
