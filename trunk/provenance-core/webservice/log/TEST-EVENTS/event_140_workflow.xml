@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataflow>
+	<name>dataflow(d9a675a5-1b0f-4c84-846a-5644da88aed8)0</name>
+	<processors>
+		<processor name="P1">
+			<activities>
+				<activity>
+					<class>
+						net.sf.taverna.t2.activities.beanshell.BeanshellActivity
+					</class>
+					<inputMap>
+						<map from="P1Vi" to="P1Vi" />
+					</inputMap>
+					<outputMap>
+						<map from="P1Vo" to="P1Vo" />
+					</outputMap>
+					<java version="1.5.0_13"
+						class="java.beans.XMLDecoder">
+						<object
+							class="net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean">
+							<void property="inputPortDefinitions">
+								<void method="add">
+									<object
+										class="net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean">
+										<void
+											property="allowsLiteralValues">
+											<boolean>true</boolean>
+										</void>
+										<void
+											property="handledReferenceSchemes">
+											<object
+												class="java.util.ArrayList" />
+										</void>
+										<void property="mimeTypes">
+											<object
+												class="java.util.ArrayList">
+												<void method="add">
+													<string>
+														'text/plain'
+													</string>
+												</void>
+											</object>
+										</void>
+										<void property="name">
+											<string>P1Vi</string>
+										</void>
+										<void
+											property="translatedElementType">
+											<class>
+												java.lang.String
+											</class>
+										</void>
+									</object>
+								</void>
+							</void>
+							<void property="outputPortDefinitions">
+								<void method="add">
+									<object
+										class="net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean">
+										<void property="mimeTypes">
+											<object
+												class="java.util.ArrayList">
+												<void method="add">
+													<string>
+														'text/plain'
+													</string>
+												</void>
+											</object>
+										</void>
+										<void property="name">
+											<string>P1Vo</string>
+										</void>
+									</object>
+								</void>
+							</void>
+							<void property="script">
+								<string>P1Vo = P1Vi+"_P1";</string>
+							</void>
+						</object>
+					</java>
+				</activity>
+			</activities>
+		</processor>
+		<processor name="P3">
+			<activities>
+				<activity>
+					<class>
+						net.sf.taverna.t2.activities.beanshell.BeanshellActivity
+					</class>
+					<inputMap>
+						<map from="P3Vi" to="P3Vi" />
+					</inputMap>
+					<outputMap>
+						<map from="P3Vo" to="P3Vo" />
+					</outputMap>
+					<java version="1.5.0_13"
+						class="java.beans.XMLDecoder">
+						<object
+							class="net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean">
+							<void property="inputPortDefinitions">
+								<void method="add">
+									<object
+										class="net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean">
+										<void
+											property="allowsLiteralValues">
+											<boolean>true</boolean>
+										</void>
+										<void
+											property="handledReferenceSchemes">
+											<object
+												class="java.util.ArrayList" />
+										</void>
+										<void property="mimeTypes">
+											<object
+												class="java.util.ArrayList">
+												<void method="add">
+													<string>
+														'text/plain'
+													</string>
+												</void>
+											</object>
+										</void>
+										<void property="name">
+											<string>P3Vi</string>
+										</void>
+										<void
+											property="translatedElementType">
+											<class>
+												java.lang.String
+											</class>
+										</void>
+									</object>
+								</void>
+							</void>
+							<void property="outputPortDefinitions">
+								<void method="add">
+									<object
+										class="net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean">
+										<void property="mimeTypes">
+											<object
+												class="java.util.ArrayList">
+												<void method="add">
+													<string>
+														'text/plain'
+													</string>
+												</void>
+											</object>
+										</void>
+										<void property="name">
+											<string>P3Vo</string>
+										</void>
+									</object>
+								</void>
+							</void>
+							<void property="script">
+								<string>P3Vo = P3Vi + "_P3";</string>
+							</void>
+						</object>
+					</java>
+				</activity>
+			</activities>
+		</processor>
+		<processor name="P2">
+			<activities>
+				<activity>
+					<class>
+						net.sf.taverna.t2.activities.beanshell.BeanshellActivity
+					</class>
+					<inputMap>
+						<map from="P2Vi" to="P2Vi" />
+					</inputMap>
+					<outputMap>
+						<map from="P2Vo" to="P2Vo" />
+					</outputMap>
+					<java version="1.5.0_13"
+						class="java.beans.XMLDecoder">
+						<object
+							class="net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean">
+							<void property="inputPortDefinitions">
+								<void method="add">
+									<object
+										class="net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean">
+										<void
+											property="allowsLiteralValues">
+											<boolean>true</boolean>
+										</void>
+										<void property="depth">
+											<int>1</int>
+										</void>
+										<void
+											property="handledReferenceSchemes">
+											<object
+												class="java.util.ArrayList" />
+										</void>
+										<void property="mimeTypes">
+											<object
+												class="java.util.ArrayList">
+												<void method="add">
+													<string>
+														l('text/plain')
+													</string>
+												</void>
+											</object>
+										</void>
+										<void property="name">
+											<string>P2Vi</string>
+										</void>
+										<void
+											property="translatedElementType">
+											<class>
+												java.lang.String
+											</class>
+										</void>
+									</object>
+								</void>
+							</void>
+							<void property="outputPortDefinitions">
+								<void method="add">
+									<object
+										class="net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean">
+										<void property="depth">
+											<int>1</int>
+										</void>
+										<void
+											property="granularDepth">
+											<int>1</int>
+										</void>
+										<void property="mimeTypes">
+											<object
+												class="java.util.ArrayList">
+												<void method="add">
+													<string>
+														l('text/plain')
+													</string>
+												</void>
+											</object>
+										</void>
+										<void property="name">
+											<string>P2Vo</string>
+										</void>
+									</object>
+								</void>
+							</void>
+							<void property="script">
+								<string>
+									P2Vo = new ArrayList();
+
+
+									for (int i=0; i&lt; P2Vi.size();
+									i++) { P2Vo.add(P2Vi.get(i) +
+									"_P2"); }
+
+									// add extra stuff P2Vo.add("x");
+								</string>
+							</void>
+						</object>
+					</java>
+				</activity>
+			</activities>
+		</processor>
+		<processor name="P1_P1Vi_defaultValue">
+			<activities>
+				<activity>
+					<class>
+						net.sf.taverna.t2.activities.stringconstant.StringConstantActivity
+					</class>
+					<inputMap />
+					<outputMap>
+						<map from="value" to="value" />
+					</outputMap>
+					<java version="1.5.0_13"
+						class="java.beans.XMLDecoder">
+						<object
+							class="net.sf.taverna.t2.activities.stringconstant.StringConstantConfigurationBean">
+							<void property="value">
+								<string>a</string>
+							</void>
+						</object>
+					</java>
+				</activity>
+			</activities>
+		</processor>
+	</processors>
+	<inputPorts></inputPorts>
+	<outputPorts>
+		<port>O1</port>
+	</outputPorts>
+	<datalinks>
+		<datalink>
+			<sink>
+				<processor>P1</processor>
+				<inputport>P1Vi</inputport>
+			</sink>
+			<source>
+				<processor>P1_P1Vi_defaultValue</processor>
+				<outputport>value</outputport>
+			</source>
+		</datalink>
+		<datalink>
+			<sink>
+				<processor>P3</processor>
+				<inputport>P3Vi</inputport>
+			</sink>
+			<source>
+				<processor>P2</processor>
+				<outputport>P2Vo</outputport>
+			</source>
+		</datalink>
+		<datalink>
+			<sink>
+				<processor>P2</processor>
+				<inputport>P2Vi</inputport>
+			</sink>
+			<source>
+				<processor>P1</processor>
+				<outputport>P1Vo</outputport>
+			</source>
+		</datalink>
+		<datalink>
+			<sink>
+				<inputport>O1</inputport>
+			</sink>
+			<source>
+				<processor>P3</processor>
+				<outputport>P3Vo</outputport>
+			</source>
+		</datalink>
+	</datalinks>
+</dataflow>

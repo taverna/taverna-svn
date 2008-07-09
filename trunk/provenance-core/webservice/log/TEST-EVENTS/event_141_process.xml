@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process facadeID="facade(b3f821ab-bfbd-4294-9f3f-b203e6780421)0"
+	dataflowID="dataflow(d9a675a5-1b0f-4c84-846a-5644da88aed8)0">
+	<processor id="P1_P1Vi_defaultValue">
+		<activity id="StringConstantActivity">
+			<iteration id="[]">
+				<inputdata />
+				<outputdata>
+					<port name="value">
+						<literal
+							id="urn:t2data:literal://string.literal/a" />
+					</port>
+				</outputdata>
+			</iteration>
+		</activity>
+	</processor>
+</process>

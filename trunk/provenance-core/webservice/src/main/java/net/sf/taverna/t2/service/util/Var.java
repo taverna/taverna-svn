@@ -9,6 +9,8 @@ public class Var {
 	boolean isInput;
 	String wfInstanceRef;
 	String type;
+	int typeNestingLevel = 0;
+	
 	/**
 	 * @return the wfInstanceRef
 	 */
@@ -68,6 +70,18 @@ public class Var {
 	 */
 	public void setType(String type) {
 		this.type = type;
+	}
+	/**
+	 * @return the typeNestingLevel
+	 */
+	public int getTypeNestingLevel() {
+		return typeNestingLevel;
+	}
+	/**
+	 * @param typeNestingLevel the typeNestingLevel to set
+	 */
+	public void setTypeNestingLevel(int typeNestingLevel) {
+		this.typeNestingLevel = typeNestingLevel;
 	}
 
 

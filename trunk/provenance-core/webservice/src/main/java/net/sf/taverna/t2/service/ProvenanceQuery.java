@@ -5,13 +5,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.sf.taverna.t2.service.ProvenanceAnalysis.LineageAnnotation;
 import net.sf.taverna.t2.service.util.Arc;
 import net.sf.taverna.t2.service.util.DBconnections;
 import net.sf.taverna.t2.service.util.ProcBinding;
+import net.sf.taverna.t2.service.util.Processor;
 import net.sf.taverna.t2.service.util.Var;
 import net.sf.taverna.t2.service.util.VarBinding;
 
@@ -49,7 +52,7 @@ public class ProvenanceQuery {
 		StringBuffer q = new StringBuffer(q0);
 
 		boolean first = true;
-		if (queryConstraints.size() > 0) {
+		if (queryConstraints != null && queryConstraints.size() > 0) {
 			q.append(" where ");
 
 			for (Entry<String,String> entry:queryConstraints.entrySet()) {
@@ -73,14 +76,14 @@ public class ProvenanceQuery {
 		
 		List<Var>  result = new ArrayList<Var>();
 		
-		String q0 = "SELECT * FROM Var A ";
+		String q0 = "SELECT * FROM Var V ";
 
 		String q = addWhereClauseToQuery(q0, queryConstraints);
 				
 		Statement stmt;
 		stmt = dbConn.createStatement();
 
-		System.out.println("getVars: executing query\n"+q.toString());
+		// System.out.println("getVars: executing query\n"+q.toString());
 		
 		boolean success = stmt.execute(q.toString());
 
@@ -101,6 +104,7 @@ public class ProvenanceQuery {
 				aVar.setPName(rs.getString("pnameRef"));
 				aVar.setVName(rs.getString("varName"));
 				aVar.setType(rs.getString("type"));
+				aVar.setTypeNestingLevel(rs.getInt("nestingLevel"));
 				
 				result.add(aVar);
 				
@@ -128,7 +132,7 @@ public class ProvenanceQuery {
 		Statement stmt;
 		stmt = dbConn.createStatement();
 
-		System.out.println("getArcs: executing query\n"+q.toString());
+		//System.out.println("getArcs: executing query\n"+q.toString());
 		
 		boolean success = stmt.execute(q.toString());
 		
@@ -206,7 +210,7 @@ public class ProvenanceQuery {
 		System.out.println("getProcBindings: executing: "+q);
 		
 		boolean success = stmt.execute(q);
-		System.out.println("result: "+success);
+		//System.out.println("result: "+success);
 
 		if (success) {
 			ResultSet rs = stmt.getResultSet();
@@ -250,7 +254,7 @@ public class ProvenanceQuery {
 		System.out.println("executing: "+q);
 		
 		boolean success = stmt.execute(q);
-		System.out.println("result: "+success);
+		//System.out.println("result: "+success);
 
 		if (success) {
 			ResultSet rs = stmt.getResultSet();
@@ -274,6 +278,130 @@ public class ProvenanceQuery {
 	}	
 	
 	
+	public List<Processor>  getProcessors(Map<String, String> constraints) throws SQLException {
+		
+		List<Processor> result = new ArrayList<Processor>();
+		
+		String q = "SELECT * FROM Processor P";
+
+		q = addWhereClauseToQuery(q, constraints);
+		
+		Statement stmt;
+		stmt = dbConn.createStatement();
+		
+		System.out.println("executing: "+q);
+		
+		boolean success = stmt.execute(q);
+		// System.out.println("result: "+success);
+
+		if (success) {
+			ResultSet rs = stmt.getResultSet();
+			
+			while (rs.next()) {
+				Processor proc = new Processor();
+				
+				proc.setPname(rs.getString("pname"));
+				proc.setType(rs.getString("type"));
+				proc.setWfInstanceRef(rs.getString("wfInstanceRef"));
+
+				result.add(proc);
+				
+			}
+		}
+		return result;
+	}
 	
+	
+	
+	/**
+	 * takes an annotated path and generates a corresponding SQL query based on the LineageAnnotation info
+	 * @param path
+	 * @return
+	 */
+	public LineageSQLQuery LineageQueryGen(List<LineageAnnotation> path) {
+		
+		LineageSQLQuery lq = new LineageSQLQuery();
+		
+		// this assumes the last annotation has got all we need already...
+		
+		// base query
+		String q1 = "SELECT * FROM VarBinding V ";
+		String q2 = "  JOIN Collection C on C.CollID = V.collIDRef and C.wfInstanceRef = V.wfInstanceRef ";
+		// constraints:
+		Map<String, String>  lineageQueryConstraints = new HashMap<String, String>();
+
+		// open last LA
+		LineageAnnotation aLA = path.get(path.size()-1);
+
+		// this is where we need to retrieve the containing collection
+		if (aLA.getCollectionNesting()>0) {
+			q1 = q1 + q2;
+			lq.setNestingLevel(aLA.getCollectionNesting());  // indicate that collection should be used in the answer
+		}
+
+		if (aLA.getWfInstance() != null)
+			lineageQueryConstraints.put("V.wfInstanceRef", aLA.getWfInstance());
+		
+		if (aLA.getProc() != null) 
+			lineageQueryConstraints.put("V.PNameRef", aLA.getProc());
+
+//		if (aLA.getVar() != null) 
+//			lineageQueryConstraints.put("V.varNameRef", aLA.getVar());
+		
+		if (aLA.getCollectionRef() != null) 
+			lineageQueryConstraints.put("V.collIDRef", aLA.getCollectionRef());
+
+		lineageQueryConstraints.put("V.iteration", Integer.toString(aLA.getIteration()));
+		
+		lineageQueryConstraints.put("V.positionInColl", Integer.toString(aLA.getIic() +1));  // +1: in the DB default is 1 not 0
+		
+		q1 = addWhereClauseToQuery(q1, lineageQueryConstraints);
+		
+		lq.setSQLQuery(q1);
+		
+		return lq;
+		
+	}
+
+
+	public void runLineageQueries(List<LineageSQLQuery> lqList) throws SQLException {
+
+		Statement stmt;
+		stmt = dbConn.createStatement();
+
+		for (LineageSQLQuery lq : lqList) {
+
+			System.out.println("executing lineage query:\n"+lq.SQLQuery+"\n  with nesting level "+lq.getNestingLevel());
+
+			String q            = lq.getSQLQuery();
+			int    nestingLevel = lq.getNestingLevel();
+			
+			boolean success = stmt.execute(q);
+
+			if (success) {
+				ResultSet rs = stmt.getResultSet();
+
+				while (rs.next()) {
+					
+					String proc = rs.getString("V.PNameRef");
+					String var  = rs.getString("V.varNameRef");
+					
+					if (nestingLevel > 0) {  // retrieve collection
+
+						System.out.println("proc ["+proc+"] var ["+var+"] collection: ["+rs.getString("collID")+"]");
+						
+					} else { // retrieve var values
+						
+						System.out.println("proc ["+proc+"] var: ["+var+"] val ["+rs.getString("value")+"]");
+						
+					}
+
+				}
+			}
+		}
+		
+		
+	}
+
 	
 }

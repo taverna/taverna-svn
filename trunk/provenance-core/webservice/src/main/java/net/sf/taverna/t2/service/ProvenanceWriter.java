@@ -153,12 +153,12 @@ public class ProvenanceWriter {
 			       "iteration = \""+pb.getIteration()+"\", "+
 			       "actName = \""+pb.getActName()+"\";";
 
-		System.out.println("executing: "+q);
+		//System.out.println("executing: "+q);
 
 		int result = stmt.executeUpdate(q);
 
-		System.out.println("Processor binding: processor ["+pb.getPNameRef()+"] activity ["+pb.getActName()+"]");
-		System.out.println("*** addProcessorBinding: "+result+ " rows added to DB");
+		//System.out.println("Processor binding: processor ["+pb.getPNameRef()+"] activity ["+pb.getActName()+"]");
+		//System.out.println("*** addProcessorBinding: "+result+ " rows added to DB");
 		
 		
 	}
@@ -240,45 +240,45 @@ public class ProvenanceWriter {
 		Statement stmt = dbConn.createStatement();
 
 		q = "DELETE FROM Workflow;";		
-		System.out.println("executing: "+q);
+		//System.out.println("executing: "+q);
 		result = stmt.executeUpdate(q);
-		System.out.println(result+ " rows removed from DB");
+		//System.out.println(result+ " rows removed from DB");
 
 		q = "DELETE FROM Processor;";		
-		System.out.println("executing: "+q);
+		//System.out.println("executing: "+q);
 		result = stmt.executeUpdate(q);
-		System.out.println(result+ " rows removed from DB");
+		//System.out.println(result+ " rows removed from DB");
 
 		q = "DELETE FROM Arc;";		
-		System.out.println("executing: "+q);
+		//System.out.println("executing: "+q);
 		result = stmt.executeUpdate(q);
-		System.out.println(result+ " rows removed from DB");
+		//System.out.println(result+ " rows removed from DB");
 
 		q = "DELETE FROM Var;";		
-		System.out.println("executing: "+q);
+		//System.out.println("executing: "+q);
 		result = stmt.executeUpdate(q);
-		System.out.println(result+ " rows removed from DB");
+		//System.out.println(result+ " rows removed from DB");
 
 		q = "DELETE FROM WfInstance;";		
-		System.out.println("executing: "+q);
+		//System.out.println("executing: "+q);
 		result = stmt.executeUpdate(q);
-		System.out.println(result+ " rows removed from DB");
+		//System.out.println(result+ " rows removed from DB");
 
 		
 		q = "DELETE FROM ProcBinding;";		
-		System.out.println("executing: "+q);
+		//System.out.println("executing: "+q);
 		result = stmt.executeUpdate(q);
-		System.out.println(result+ " rows removed from DB");
+		//System.out.println(result+ " rows removed from DB");
 
 		q = "DELETE FROM VarBinding;";		
-		System.out.println("executing: "+q);
+		//System.out.println("executing: "+q);
 		result = stmt.executeUpdate(q);
-		System.out.println(result+ " rows removed from DB");
+		//System.out.println(result+ " rows removed from DB");
 
 		q = "DELETE FROM Collection;";		
-		System.out.println("executing: "+q);
+		//System.out.println("executing: "+q);
 		result = stmt.executeUpdate(q);
-		System.out.println(result+ " rows removed from DB");
+		//System.out.println(result+ " rows removed from DB");
 
 		System.out.println(" **** DB cleared ****");
 

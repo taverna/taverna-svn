@@ -22,14 +22,15 @@ public class Provenance implements SharedVocabulary
 	static boolean saveEvent = true;
 	static boolean clearDB  = true;  // facilitates testing
 
-	ProvenanceWriter pw = null;
-	EventProcessor   ep = null;
+	ProvenanceWriter     pw = null;
+	EventProcessor       ep = null;
 	
 	public Provenance() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 	
 		pw = new ProvenanceWriter();  // singleton
 
 		ep = new EventProcessor(pw); // singleton	
+		
 		
 		// clear the DB prior to testing
 		/*
@@ -124,6 +125,9 @@ public class Provenance implements SharedVocabulary
 			System.out.println("Provenance: ************  end of workflow processing");
 			ep.fillInputVarBindings();  // indep. of current event
 			ep.fillOutputVarBindings();
+			
+			// load up any annotations associated with this workflow
+			
 
 		} else {
 			System.out.println("unknown event type");
