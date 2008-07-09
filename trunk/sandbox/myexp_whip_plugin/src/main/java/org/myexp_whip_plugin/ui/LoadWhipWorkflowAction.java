@@ -100,7 +100,7 @@ public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements Artef
         if (bundle != null) {
             final String entry = bundle.getMetadatDocument().getEntryPoint();
             if (entry == null) {
-                owner.setProcessed(((File) bundle.getContent()).getName());
+                owner.dispose(((File) bundle.getContent()).getName());
                 return;
             }
             bundles.put(entry, bundle);
