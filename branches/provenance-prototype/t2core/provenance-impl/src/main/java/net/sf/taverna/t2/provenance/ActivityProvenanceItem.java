@@ -40,4 +40,8 @@ public class ActivityProvenanceItem implements ProvenanceItem {
 		return null;
 	}
 
+	public String getEventType() {
+		return SharedVocabulary.ACTIVITY_EVENT_TYPE;
+	}
+
 }

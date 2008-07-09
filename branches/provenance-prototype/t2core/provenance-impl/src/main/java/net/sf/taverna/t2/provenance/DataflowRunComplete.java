@@ -30,4 +30,8 @@ public class DataflowRunComplete implements ProvenanceItem {
 		return document.getRootElement();
 	}
 
+	public String getEventType() {
+		return SharedVocabulary.END_WORKFLOW_EVENT_TYPE;
+	}
+
 }

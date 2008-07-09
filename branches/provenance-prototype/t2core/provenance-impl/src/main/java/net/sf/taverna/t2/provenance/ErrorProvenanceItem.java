@@ -45,4 +45,10 @@ public class ErrorProvenanceItem implements ProvenanceItem {
 		return null;
 	}
 
+
+
+	public String getEventType() {
+		return SharedVocabulary.ERROR_EVENT_TYPE;
+	}
+
 }

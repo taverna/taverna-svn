@@ -81,4 +81,10 @@ public class IterationProvenanceItem implements ProvenanceItem {
 		return outputDataItem;
 	}
 
+
+
+	public String getEventType() {
+		return SharedVocabulary.ITERATION_EVENT_TYPE;
+	}
+
 }

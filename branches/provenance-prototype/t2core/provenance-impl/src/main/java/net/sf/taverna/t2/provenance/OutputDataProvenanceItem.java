@@ -19,4 +19,8 @@ public class OutputDataProvenanceItem extends DataProvenanceItem {
 		return null;
 	}
 
+	public String getEventType() {
+		return SharedVocabulary.OUTPUTDATA_EVENT_TYPE;
+	}
+
 }
