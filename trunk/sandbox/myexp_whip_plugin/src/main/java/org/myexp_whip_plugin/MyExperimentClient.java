@@ -1,5 +1,6 @@
 package org.myexp_whip_plugin;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.text.DateFormat;
@@ -264,6 +265,10 @@ public class MyExperimentClient {
 		logger.debug(workflows.size() + " example workflows retrieved from myExperiment");
 		
 		return workflows;
+	}
+	
+	public URL getWorkflowDownloadURL(int workflowId) throws MalformedURLException {
+		return new URL(this.baseUrl, "workflows/" + workflowId + "/download");
 	}
 	
 	private SyndFeed getLatestWorkflowsRSS() throws Exception {

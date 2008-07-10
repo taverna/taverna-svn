@@ -51,6 +51,7 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 	private JTextPane contentTextPane;
 	
 	private JButton loadButton;
+	private JButton importButton;
 	
 	public WorkflowPreviewPanel(MainComponent parent, MyExperimentClient client, Logger logger) {
 		super(parent, client, logger);
@@ -95,7 +96,7 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 	public void setWorkfowId(int id) {
 		this.currentWorkflowId = id;
 		
-		this.setLoadAction();
+		this.setLoadAndImportActions();
 		
 		this.refresh();
 	}
@@ -242,6 +243,7 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 				this.clearButton.setEnabled(true);
 				this.refreshButton.setEnabled(true);
 				this.loadButton.setEnabled(true);
+				this.importButton.setEnabled(true);
 			}
 			catch (Exception e) {
 				logger.error("Failed to populate Workflow Preview pane", e);
@@ -264,6 +266,7 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 		this.clearButton.setEnabled(false);
 		this.refreshButton.setEnabled(false);
 		this.loadButton.setEnabled(false);
+		this.importButton.setEnabled(false);
 	}
 	
 	private void initialiseUI() {
@@ -288,13 +291,11 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 		this.clearButton.setActionCommand(ACTION_CLEAR);
 		this.clearButton.addActionListener(this);
 		this.clearButton.setToolTipText("Click this button to clear the Preview Workflow pane");
-		this.clearButton.setEnabled(false);
 		buttonsPanel.add(this.clearButton);
 		this.refreshButton = new JButton("Refresh", TavernaIcons.refreshIcon);
 		this.refreshButton.setActionCommand(ACTION_REFRESH);
 		this.refreshButton.addActionListener(this);
 		this.refreshButton.setToolTipText("Click this button to refresh the Preview Workflow pane");
-		this.refreshButton.setEnabled(false);
 		buttonsPanel.add(this.refreshButton);
 		
 		statusPanel.add(buttonsPanel, BorderLayout.EAST);
@@ -320,17 +321,25 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 		JPanel loadPanel = new JPanel();
 		loadPanel.setLayout(new BoxLayout(loadPanel, BoxLayout.LINE_AXIS));
 		loadPanel.setBorder(BorderFactory.createEmptyBorder());
+		
 		this.loadButton = new JButton();
-		this.setLoadAction();
-		this.loadButton.setEnabled(false);
 		loadPanel.add(this.loadButton);
+		
+		this.importButton = new JButton();
+		loadPanel.add(this.importButton);
+		
+		this.setLoadAndImportActions();
+		
 		mainPanel.add(loadPanel, BorderLayout.SOUTH);
 		
 		this.add(mainPanel, BorderLayout.CENTER);
+		
+		this.disableButtons();
 	}
 	
-	private void setLoadAction() {
+	private void setLoadAndImportActions() {
 		this.loadButton.setAction(this.parent.new LoadWorkflowAction(this.currentWorkflowId));
+		this.importButton.setAction(this.parent.new ImportWorkflowAction(this.currentWorkflowId));
 	}
 	
 	private void clearContentTextPane() {
