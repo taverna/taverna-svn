@@ -63,11 +63,11 @@ public class RunComponent extends JSplitPane {
 		setBottomComponent(resultsComponent);
 
 		setDividerLocation(300);
-		monitorObserver = monitorViewComponent.setDataflow(dataflow);
 	}
 
 	public void run() {
 		
+		monitorObserver = monitorViewComponent.setDataflow(dataflow);
 		InvocationContext context = createContext();
 
 		resultsComponent.setContext(context);
@@ -86,6 +86,8 @@ public class RunComponent extends JSplitPane {
 //						resultsComponent.deregister(facade);
 						facade.removeResultListener(this);
 						MonitorManager.getInstance().removeObserver(monitorObserver);
+						monitorObserver = null;
+						facade.removeResultListener(this);
 						results = 0;
 					}
 				}

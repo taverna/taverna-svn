@@ -159,10 +159,7 @@ public class GraphMonitor implements Observer<MonitorMessage> {
 	public static String getProcessorId(String[] owningProcess) {
 		StringBuffer sb = new StringBuffer();
 		for (int i = 1, skip = 0; i < owningProcess.length; i++, skip--) {
-			if (i <= 2) {
-				sb.append(owningProcess[i]);
-				skip = 3;
-			} else if (skip < 0) {
+			if (i <= 2 || skip < 0) {
 				sb.append(owningProcess[i]);
 				skip = 3;
 			}
