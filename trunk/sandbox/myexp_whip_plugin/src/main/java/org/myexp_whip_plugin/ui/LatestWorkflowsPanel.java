@@ -31,7 +31,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
@@ -79,6 +78,7 @@ public class LatestWorkflowsPanel extends BasePanel implements ActionListener,
 
 	}
 	
+
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 		try {
 			if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {

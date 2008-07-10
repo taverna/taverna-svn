@@ -74,6 +74,7 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 		
 	}
 	
+
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 		try {
 			if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
