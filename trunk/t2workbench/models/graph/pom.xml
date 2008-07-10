@@ -68,7 +68,7 @@
 			<version>0.3-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-svg-dom</artifactId>
@@ -84,6 +84,10 @@
 			<artifactId>batik-util</artifactId>
 			<version>1.7</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>localworker-activity</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>
