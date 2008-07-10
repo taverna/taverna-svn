@@ -149,39 +149,45 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 				content.append("<div class='outer'>");
 				content.append("<div class='workflow'>");
 				
+				content.append("<br/>");
+				
 				content.append("<p class='title'>");
 				content.append("Workflow Entry: <a href='" + this.currentWorkflow.getResource() + "'>" + this.currentWorkflow.getTitle() + "</a>");
 				content.append("</p>");
 				
+				content.append("<br/>");
+				
 				content.append("<p class='info'>");
-				content.append("<b>Uploader:</b> <a href='" + this.currentWorkflow.getUploader().getResource() + "'>" + this.currentWorkflow.getUploader().getName() + "</a><br>");
-				content.append("<b>Created at: </b> " + this.currentWorkflow.getCreatedAt() + "<br>");
+				content.append("<b>Uploader:</b> <a href='" + this.currentWorkflow.getUploader().getResource() + "'>" + this.currentWorkflow.getUploader().getName() + "</a><br/>");
+				content.append("<b>Created at: </b> " + this.currentWorkflow.getCreatedAt() + "<br/>");
 				content.append("<b>License: </b> <a href='" + this.currentWorkflow.getLicense().getLink() + "'>" + this.currentWorkflow.getLicense().getText() + "</a>");
 				content.append("</p>");
 				
-				content.append("<br>");
+				content.append("<br/>");
 				
-				content.append("<img class='preview' src='" + this.currentWorkflow.getThumbnailBig() + "'></img>");
+				content.append("<img class='preview' src='" + this.currentWorkflow.getThumbnailBig() + "'/>");
 				
-				content.append("<br>");
-				content.append("<br>");
+				content.append("<br/>");
+				content.append("<br/>");
 				
-				content.append("<div class='desc'>");
 				if (!this.currentWorkflow.getDescription().equals("")) {
-					content.append("<br>");
+					content.append("<p class='desc'>");
+					content.append("<br/>");
 					content.append(this.currentWorkflow.getDescription());
-					content.append("<br>");
+					content.append("<br/>");
+					content.append("<br/>");
+					content.append("</p>");
 				}
 				else {
 					content.append("<span class='none_text'>No description</span>");
 				}
-				content.append("</div>");
 				
-				content.append("<br>");
+				content.append("<br/>");
+				content.append("<br/>");
 				
 				content.append("<p style='text-align: center;'><b>Tags</b></p>");
-				content.append("<br>");
-				content.append("<div class='tags'>");
+				content.append("<br/>");
+				content.append("<p class='tags'>");
 				content.append("&nbsp;&nbsp;&nbsp;");
 				
 				if (this.currentWorkflow.getTags().size() > 0) {
@@ -192,16 +198,17 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 				}
 				else {
 					content.append("<span class='none_text'>None</span>");
+					content.append("&nbsp;&nbsp;&nbsp;");
 				}
 				
-				content.append("</div>");
+				content.append("</p>");
 				
-				content.append("<br>");
-				content.append("<br>");
+				content.append("<br/>");
+				content.append("<br/>");
 				
 				content.append("<p style='text-align: center;'><b>Credits</b></p>");
-				content.append("<br>");
-				content.append("<div class='credits'>");
+				content.append("<br/>");
+				content.append("<p class='credits'>");
 				content.append("&nbsp;&nbsp;&nbsp;");
 				
 				if (this.currentWorkflow.getCredits().size() > 0) {
@@ -212,9 +219,10 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 				}
 				else {
 					content.append("<span class='none_text'>None</span>");
+					content.append("&nbsp;&nbsp;&nbsp;");
 				}
 				
-				content.append("</div>");
+				content.append("</p>");
 				
 				content.append("</div>");
 				content.append("</div>");

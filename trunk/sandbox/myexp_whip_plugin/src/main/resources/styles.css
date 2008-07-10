@@ -10,6 +10,7 @@ div.outer {
 	padding-bottom: 0px;
 	padding-left: 10px;
 	padding-right: 10px;
+	background: #FFFFFF;
 }
 
 a {
@@ -21,16 +22,17 @@ div.list_item {
 	margin-top: 10px;
 }
 
-.list_item p.title {
+.list_item .title {
 	text-align: left;
 	line-height: 1.0;
 	font-size: 16pt;
 	font-weight: bold;
-	margin-bottom: 0; margin-top; 0;
+	margin-bottom: 0; 
+	margin-top; 0;
 	padding: 0;
 }
 
-.list_item div.desc {
+.list_item .desc {
 	width: 600px;
 	font-size: 12pt;
 	padding-top: 0;
@@ -53,21 +55,24 @@ div.tag_cloud a {
 
 div.workflow {
 	text-align: center;
+	margin: 6px;
+	border-width: 1px solid #333333;
 }
 
-.workflow p.info {
+.workflow .info {
 	text-align: center;
 	line-height: 1.6;
 	color: #333333;
 }
 
-.workflow p.title {
+.workflow .title {
 	text-align: center;
 	line-height: 1.0;
 	color: #333333;
-	font-size: large;
+	font-size: 18pt;
 	font-weight: bold;
-	margin-bottom: 0; margin-top; 0;
+	margin-bottom: 0; 
+	margin-top; 0;
 	padding: 0;
 }
 
@@ -75,33 +80,33 @@ div.workflow {
 	padding: 5px;
 }
 
-.workflow div.desc {
+.workflow .desc {
 	line-height: 1.4;
-	background-color: #EEEEEE;
-	text-align: left;
+	/*background-color: #EEEEEE;*/
+	text-align: center;
 	width: 400px;
-	font-size: medium;
-	padding-left: 8px;
-	padding-right: 8px;
+	font-size: 12pt;
+	padding-left: 12px;
+	padding-right: 12px;
 	padding-top: 0;
 	padding-bottom: 0;
 }
 
-.workflow div.desc p {
+.workflow .desc p {
 	padding: 0;
 }
 
-.workflow div.tags {
+.workflow .tags {
 	text-align: center;
 	width: 400px;
 	line-height: 1.6;
 }
 
-.workflow div.tags a {
+.workflow .tags a {
 	color: #990000;
 }
 
-.workflow div.credits {
+.workflow .credits {
 	text-align: center;
 	width: 400px;
 	line-height: 1.6;

@@ -192,6 +192,7 @@ public class TagsBrowserPanel extends BasePanel implements ActionListener, Chang
 			
 			StringBuffer content = new StringBuffer();
 			content.append("<div class='outer'>");
+			content.append("<br/>");
 			content.append("<div class='tag_cloud'>");
 			
 			for (Tag t : this.tagCloudData.getTags()) {
