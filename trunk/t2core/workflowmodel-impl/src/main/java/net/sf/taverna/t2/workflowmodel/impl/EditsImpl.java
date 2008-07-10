@@ -356,4 +356,9 @@ public class EditsImpl implements Edits {
 		return new RemoveProcessorOutputPortEdit(processor,port);
 	}
 
+	public Edit<Processor> getMapProcessorPortsForActivityEdit(
+			Processor processor) {
+		return new MapProcessorPortsForActivityEdit(processor);
+	}
+
 }

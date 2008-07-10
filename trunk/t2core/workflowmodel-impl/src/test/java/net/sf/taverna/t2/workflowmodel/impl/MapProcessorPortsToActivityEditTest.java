@@ -2,13 +2,12 @@ package net.sf.taverna.t2.workflowmodel.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
-import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
@@ -16,14 +15,13 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.serialization.DummyActivity;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class MapProcessorPortsToActivityEditTest {
 
-	Processor p;
+	ProcessorImpl p;
 	EditsImpl edits = new EditsImpl();
-	MapProcessorPortForActivityEdit edit;
+	MapProcessorPortsForActivityEdit edit;
 	
 	@Before
 	public void setupProcessorAndEdit() throws Exception {
@@ -35,7 +33,7 @@ public class MapProcessorPortsToActivityEditTest {
 		
 		Activity<?> a = new DummyActivity();
 		ActivityInputPort aip1 = edits.createActivityInputPort("inputPort", 1, true, new ArrayList<Class<? extends ExternalReferenceSPI>>(), String.class);
-		ActivityInputPort aip2 = edits.createActivityInputPort("newInptPort", 0, true, new ArrayList<Class<? extends ExternalReferenceSPI>>(), String.class);
+		ActivityInputPort aip2 = edits.createActivityInputPort("newInputPort", 0, true, new ArrayList<Class<? extends ExternalReferenceSPI>>(), String.class);
 		edits.getAddActivityInputPortEdit(a, aip1).doEdit();
 		edits.getAddActivityInputPortEdit(a, aip2).doEdit();
 		
@@ -46,7 +44,10 @@ public class MapProcessorPortsToActivityEditTest {
 		
 		edits.getAddActivityEdit(p, a).doEdit();
 		
-		edit = new MapProcessorPortForActivityEdit(p);
+		new AddActivityInputPortMapping(a,"inputPort","inputPort").doEdit();
+		new AddActivityOutputPortMapping(a,"outputPort","outputPort").doEdit();
+		
+		edit = new MapProcessorPortsForActivityEdit(p);
 	}
 	
 	
@@ -60,7 +61,6 @@ public class MapProcessorPortsToActivityEditTest {
 	}
 	
 	@Test
-	@Ignore
 	public void testDoEdit() throws Exception {
 		edit.doEdit();
 		assertEquals("there should now be 2 input ports",2,p.getInputPorts().size());
@@ -68,11 +68,47 @@ public class MapProcessorPortsToActivityEditTest {
 	}
 	
 	@Test
-	@Ignore
 	public void testUndo() throws Exception {
 		edit.doEdit();
 		edit.undo();
 		assertEquals("there should now be 1 input ports",1,p.getInputPorts().size());
 		assertEquals("there should now be 1 output ports",1,p.getOutputPorts().size());
+	}
+	
+	@Test
+	public void testMapping() throws Exception {
+		Activity<?>a = p.getActivityList().get(0);
+		
+		assertEquals(1,a.getInputPortMapping().size());
+		assertEquals("inputPort",a.getInputPortMapping().get("inputPort"));
+		assertEquals(1,a.getOutputPortMapping().size());
+		assertEquals("outputPort",a.getOutputPortMapping().get("outputPort"));
+		
+		edit.doEdit();
+		
+		assertEquals(2,a.getInputPortMapping().size());
+		
+		assertEquals("inputPort",a.getInputPortMapping().get("inputPort"));
+		assertEquals("newInputPort",a.getInputPortMapping().get("newInputPort"));
+		
+		assertEquals(2,a.getOutputPortMapping().size());
+		assertEquals("outputPort",a.getOutputPortMapping().get("outputPort"));
+		assertEquals("newOutputPort",a.getOutputPortMapping().get("newOutputPort"));
+		
+		edit.undo();
+		
+		assertEquals(1,a.getInputPortMapping().size());
+		assertEquals("inputPort",a.getInputPortMapping().get("inputPort"));
+		assertEquals(1,a.getOutputPortMapping().size());
+		assertEquals("outputPort",a.getOutputPortMapping().get("outputPort"));
+	}
+	
+	@Test 
+	public void testUnchangedPortsRemain() throws Exception {
+		ProcessorOutputPort op1 = p.getOutputPortWithName("outputPort");
+		ProcessorInputPort ip1 = p.getInputPortWithName("inputPort");
+		edit.doEdit();
+		assertSame(ip1,p.getInputPortWithName("inputPort"));
+		assertSame(op1,p.getOutputPortWithName("outputPort"));
 	}
 }

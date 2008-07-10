@@ -577,4 +577,14 @@ public interface Edits {
 	 * @return
 	 */
 	Edit<Activity<?>> getConfigureActivityEdit(Activity<?> activity,Object configurationBean);
+	
+	/**
+	 * Provides an edit that will configure the processors ports to map to those of its internal Activity.
+	 * If there is more than 1 activity then only first activity is used. If there are zero then an EditException will be
+	 * thrown when using the Edit.
+	 * 
+	 * @param processor
+	 * @return
+	 */
+	Edit<Processor> getMapProcessorPortsForActivityEdit(Processor processor);
 }
