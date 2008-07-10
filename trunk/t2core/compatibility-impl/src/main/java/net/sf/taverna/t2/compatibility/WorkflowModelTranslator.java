@@ -2,12 +2,14 @@ package net.sf.taverna.t2.compatibility;
 
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.swing.tree.MutableTreeNode;
 
+import net.sf.taverna.t2.annotation.annotationbeans.MimeType;
 import net.sf.taverna.t2.compatibility.activity.ActivityTranslationException;
 import net.sf.taverna.t2.compatibility.activity.ActivityTranslator;
 import net.sf.taverna.t2.compatibility.activity.ActivityTranslatorFactory;
@@ -117,8 +119,10 @@ public class WorkflowModelTranslator {
 
 		try {
 
-			translator.edits.getUpdateDataflowNameEdit(dataflow, sanitiseName(scuflModel.getDescription().getTitle())).doEdit();
-			
+			translator.edits.getUpdateDataflowNameEdit(dataflow,
+					sanitiseName(scuflModel.getDescription().getTitle()))
+					.doEdit();
+
 			translator.replaceDefaultsWithStringConstants();
 
 			translator.createInputs(dataflow);
@@ -148,7 +152,9 @@ public class WorkflowModelTranslator {
 			}
 			throw new WorkflowTranslationException(msg, e);
 		} catch (ActivityTranslationException e) {
-			throw new WorkflowTranslationException("An error occurred whilst translating T1 processor into a T2 activity", e);
+			throw new WorkflowTranslationException(
+					"An error occurred whilst translating T1 processor into a T2 activity",
+					e);
 		}
 
 		return dataflow;
@@ -171,7 +177,8 @@ public class WorkflowModelTranslator {
 				if (!t1InputPort.isBound()
 						&& t1InputPort.getDefaultValue() != null) {
 					String processorName = t1Processor.getName() + "_"
-							+ sanitiseName(t1InputPort.getName()) + "_defaultValue";
+							+ sanitiseName(t1InputPort.getName())
+							+ "_defaultValue";
 					try {
 						org.embl.ebi.escience.scufl.Processor stringConstantProcessor = new StringConstantProcessor(
 								scuflModel, processorName, t1InputPort
@@ -195,21 +202,22 @@ public class WorkflowModelTranslator {
 	}
 
 	/**
-	 * Checks that the name does not have any characters that are invalid for a processor
-	 * name. 
+	 * Checks that the name does not have any characters that are invalid for a
+	 * processor name.
 	 * 
 	 * The name must contain only the chars[A-Za-z_0-9].
 	 * 
-	 * @param name the original name
+	 * @param name
+	 *            the original name
 	 * @return the sanitised name
 	 */
 	private static String sanitiseName(String name) {
-		String result=name;
+		String result = name;
 		if (Pattern.matches("\\w++", name) == false) {
-			result="";
+			result = "";
 			for (char c : name.toCharArray()) {
-				if (Character.isLetterOrDigit(c) || c=='_') {
-					result+=c;
+				if (Character.isLetterOrDigit(c) || c == '_') {
+					result += c;
 				}
 			}
 		}
@@ -218,11 +226,24 @@ public class WorkflowModelTranslator {
 
 	private void createInputs(Dataflow dataflow) throws EditException {
 		for (Port sourcePort : scuflModel.getWorkflowSourcePorts()) {
+			List typeList = sourcePort.getMetadata().getMIMETypeList();
 			int portDepth = getPortDepth(sourcePort);
 			edits.getCreateDataflowInputPortEdit(dataflow,
 					sourcePort.getName(), portDepth, portDepth).doEdit();
 			for (DataflowInputPort inputPort : dataflow.getInputPorts()) {
 				if (inputPort.getName().equals(sourcePort.getName())) {
+					// add mime types as annotations
+					for (Object mimeType : typeList) {
+						MimeType mimeTypeAnnotation = new MimeType();
+						mimeTypeAnnotation.setText((String) mimeType);
+						try {
+							EditsRegistry.getEdits().getAddAnnotationChainEdit(
+									inputPort, mimeTypeAnnotation).doEdit();
+						} catch (EditException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
 					inputMap.put(sourcePort, inputPort);
 					break;
 				}
@@ -232,11 +253,23 @@ public class WorkflowModelTranslator {
 
 	private void createOutputs(Dataflow dataflow) throws EditException {
 		for (Port sinkPort : scuflModel.getWorkflowSinkPorts()) {
-
+			List typeList = sinkPort.getMetadata().getMIMETypeList();
 			edits.getCreateDataflowOutputPortEdit(dataflow, sinkPort.getName())
 					.doEdit();
 			for (DataflowOutputPort outputPort : dataflow.getOutputPorts()) {
+				// firstly add the mime types to the new port
 				if (outputPort.getName().equals(sinkPort.getName())) {
+					for (Object mimeType : typeList) {
+						MimeType mimeTypeAnnotation = new MimeType();
+						mimeTypeAnnotation.setText((String) mimeType);
+						try {
+							EditsRegistry.getEdits().getAddAnnotationChainEdit(
+									outputPort, mimeTypeAnnotation).doEdit();
+						} catch (EditException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
 					outputMap.put(sinkPort, outputPort);
 					break;
 				}
@@ -389,9 +422,12 @@ public class WorkflowModelTranslator {
 		DispatchLayer<?> invoke = new Invoke();
 
 		int layer = 0;
-		edits.getAddDispatchLayerEdit(dispatchStack, parallelize, layer++).doEdit();
-		edits.getAddDispatchLayerEdit(dispatchStack, errorBounce, layer++).doEdit();
-		edits.getAddDispatchLayerEdit(dispatchStack, failover, layer++).doEdit();
+		edits.getAddDispatchLayerEdit(dispatchStack, parallelize, layer++)
+				.doEdit();
+		edits.getAddDispatchLayerEdit(dispatchStack, errorBounce, layer++)
+				.doEdit();
+		edits.getAddDispatchLayerEdit(dispatchStack, failover, layer++)
+				.doEdit();
 		edits.getAddDispatchLayerEdit(dispatchStack, retry, layer++).doEdit();
 		edits.getAddDispatchLayerEdit(dispatchStack, invoke, layer++).doEdit();
 	}
@@ -405,9 +441,9 @@ public class WorkflowModelTranslator {
 			throws EditException {
 		Set<OutputPort> outputPorts = activity.getOutputPorts();
 		for (OutputPort outputPort : outputPorts) {
-			ProcessorOutputPort port = edits.createProcessorOutputPort(t2Processor, outputPort
-							.getName(), outputPort.getDepth(), outputPort
-							.getGranularDepth());
+			ProcessorOutputPort port = edits.createProcessorOutputPort(
+					t2Processor, outputPort.getName(), outputPort.getDepth(),
+					outputPort.getGranularDepth());
 			Edit<Processor> addOutputPortEdit = edits
 					.getAddProcessorOutputPortEdit(t2Processor, port);
 			addOutputPortEdit.doEdit();
@@ -438,10 +474,10 @@ public class WorkflowModelTranslator {
 			org.embl.ebi.escience.scufl.InputPort t1InputPort = t1InputPorts
 					.get(inputPort.getName());
 			if (t1InputPort.isBound()) {
-				ProcessorInputPort port = edits.createProcessorInputPort(t2Processor, inputPort
-						.getName(), inputPort.getDepth());
+				ProcessorInputPort port = edits.createProcessorInputPort(
+						t2Processor, inputPort.getName(), inputPort.getDepth());
 				Edit<Processor> addInputPortEdit = edits
-						.getAddProcessorInputPortEdit(t2Processor,port);
+						.getAddProcessorInputPortEdit(t2Processor, port);
 				addInputPortEdit.doEdit();
 				activity.getInputPortMapping().put(inputPort.getName(),
 						inputPort.getName());
@@ -540,8 +576,8 @@ public class WorkflowModelTranslator {
 	}
 
 	private void addMergedDatalink(EventForwardingOutputPort sourcePort,
-			EventHandlingInputPort sinkPort, Dataflow targetDataflow) throws EditException,
-			WorkflowTranslationException {
+			EventHandlingInputPort sinkPort, Dataflow targetDataflow)
+			throws EditException, WorkflowTranslationException {
 		Merge merge = null;
 		if (sinkPort.getIncomingLink() == null) {
 			merge = edits.createMerge(sinkPort);
