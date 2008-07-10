@@ -9,7 +9,14 @@ import javax.swing.JOptionPane;
 
 import net.sf.taverna.t2.activities.localworker.LocalworkerActivity;
 import net.sf.taverna.t2.activities.localworker.views.LocalworkerActivityConfigView;
+import net.sf.taverna.t2.annotation.annotationbeans.HostInstitution;
+import net.sf.taverna.t2.lang.ui.ModelMap;
+import net.sf.taverna.t2.workbench.ModelMapConstants;
+import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationAction;
+import net.sf.taverna.t2.workflowmodel.Dataflow;
+import net.sf.taverna.t2.workflowmodel.EditException;
+import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 
 /**
  * The {@link LocalworkerActivity}s have pre-defined scripts, ports etc in a
@@ -41,10 +48,10 @@ public class LocalworkerActivityConfigurationAction extends
 		// to be careful
 		final LocalworkerActivityConfigView localworkerConfigView = new LocalworkerActivityConfigView(
 				(LocalworkerActivity) getActivity());
-		final JDialog frame = new JDialog(owner,true);
+		final JDialog frame = new JDialog(owner, true);
 		frame.add(localworkerConfigView);
 		frame.setSize(500, 500);
-		
+
 		localworkerConfigView.setButtonClickedListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -53,11 +60,12 @@ public class LocalworkerActivityConfigurationAction extends
 				frame.setVisible(false);
 				if (localworkerConfigView.isConfigurationChanged()) {
 					configureActivity(localworkerConfigView.getConfiguration());
+					addAnnotation();
 				}
 			}
 
 		});
-		
+
 		Object[] options = { "Continue", "Cancel" };
 		int n = JOptionPane
 				.showOptionDialog(
@@ -67,13 +75,39 @@ public class LocalworkerActivityConfigurationAction extends
 						JOptionPane.QUESTION_MESSAGE, null, // do not use a
 						// custom Icon
 						options, options[0]);
-		
 
 		if (n == 0) {
 			// continue was clicked so prepare for config
 			frame.setVisible(true);
 		} else {
 			// do nothing
+		}
+	}
+
+	/**
+	 * Annotate the Activity with the name of the Institution or person who
+	 * created the activity. Useful for Localworkers that have been altered by a
+	 * user
+	 */
+	private void addAnnotation() {
+		// FIXME use a more useful name or a different type of annotation, this
+		// is just here as a marker so that
+		// the colour manager works
+		HostInstitution hostInstitutionAnnotation = new HostInstitution();
+		hostInstitutionAnnotation.setText("UserNameHere");
+
+		try {
+			// force the dataflow view to update with the annotation added,
+			// therefore triggering the localworker to be coloured as a
+			// beanshell
+			EditManager.getInstance().doDataflowEdit(
+					(Dataflow) ModelMap.getInstance().getModel(
+							ModelMapConstants.CURRENT_DATAFLOW),
+					EditsRegistry.getEdits().getAddAnnotationChainEdit(
+							getActivity(), hostInstitutionAnnotation));
+		} catch (EditException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
