@@ -128,7 +128,6 @@ public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements Artef
         if (db != null) {
             //owner.setProcessed(((File) db.getContent()).getName());
             String fname = ((File) db.getContent()).getName();
-            System.out.println("trying to delete a file with the name " + fname);
             owner.dispose(fname);
         }
         if (bundles.size() == 0) {
