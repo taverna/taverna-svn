@@ -116,7 +116,7 @@ public class WorkflowModelTranslator {
 
 		try {
 
-			translator.edits.getUpdateDataflowNameEdit(dataflow, scuflModel.getDescription().getTitle()).doEdit();
+			translator.edits.getUpdateDataflowNameEdit(dataflow, sanitiseName(scuflModel.getDescription().getTitle())).doEdit();
 			
 			translator.replaceDefaultsWithStringConstants();
 
@@ -202,7 +202,7 @@ public class WorkflowModelTranslator {
 	 * @param name the original name
 	 * @return the sanitised name
 	 */
-	private String sanitiseName(String name) {
+	private static String sanitiseName(String name) {
 		String result=name;
 		if (Pattern.matches("\\w++", name) == false) {
 			result="";
