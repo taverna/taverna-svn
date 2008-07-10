@@ -1,0 +1,113 @@
+body {
+	font-family: arial, helvetica, clean, sans-serif;
+	margin: 0;
+	padding: 0;
+	background: #FFFFFF;
+}
+
+div.outer {
+	padding-top: 0px;
+	padding-bottom: 0px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+a {
+	color: #000099;
+	text-decoration: none;
+}
+
+div.list_item {
+	margin-top: 10px;
+}
+
+.list_item p.title {
+	text-align: left;
+	line-height: 1.0;
+	font-size: 16pt;
+	font-weight: bold;
+	margin-bottom: 0; margin-top; 0;
+	padding: 0;
+}
+
+.list_item div.desc {
+	width: 600px;
+	font-size: 12pt;
+	padding-top: 0;
+	padding-bottom: 0;
+	padding-left: 15px;
+	padding-right: 5px;
+	margin-top: 6px;
+	margin-bottom: 0;
+	line-height: 1.4;
+}
+
+div.tag_cloud {
+	text-align: center;
+	line-height: 1.6;
+}
+
+div.tag_cloud a {
+	color: #990000;
+}
+
+div.workflow {
+	text-align: center;
+}
+
+.workflow p.info {
+	text-align: center;
+	line-height: 1.6;
+	color: #333333;
+}
+
+.workflow p.title {
+	text-align: center;
+	line-height: 1.0;
+	color: #333333;
+	font-size: large;
+	font-weight: bold;
+	margin-bottom: 0; margin-top; 0;
+	padding: 0;
+}
+
+.workflow img.preview {
+	padding: 5px;
+}
+
+.workflow div.desc {
+	line-height: 1.4;
+	background-color: #EEEEEE;
+	text-align: left;
+	width: 400px;
+	font-size: medium;
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+.workflow div.desc p {
+	padding: 0;
+}
+
+.workflow div.tags {
+	text-align: center;
+	width: 400px;
+	line-height: 1.6;
+}
+
+.workflow div.tags a {
+	color: #990000;
+}
+
+.workflow div.credits {
+	text-align: center;
+	width: 400px;
+	line-height: 1.6;
+}
+
+.none_text {
+	color: #666666; 
+	font-style: italic;
+}

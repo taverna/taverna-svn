@@ -145,10 +145,6 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 		
 		if (this.currentWorkflow != null) {
 			try {
-				HTMLEditorKit kit = new HTMLEditorKit();
-				HTMLDocument doc = (HTMLDocument) (kit.createDefaultDocument());
-				StyleSheet css = kit.getStyleSheet();
-				
 				StringBuffer content = new StringBuffer();
 				content.append("<div class='outer'>");
 				content.append("<div class='workflow'>");
@@ -177,7 +173,7 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 					content.append("<br>");
 				}
 				else {
-					content.append("<span style='color: #666666; font-style: italic;'>No description</span>");
+					content.append("<span class='none_text'>No description</span>");
 				}
 				content.append("</div>");
 				
@@ -190,12 +186,12 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 				
 				if (this.currentWorkflow.getTags().size() > 0) {
 					for (Tag t : this.currentWorkflow.getTags()) {
-						content.append("<a href='http://tag/" + t.getTagName() + "' style='color: #000066;'>" + t.getTagName() + "</a>");
+						content.append("<a href='http://tag/" + t.getTagName() + "'>" + t.getTagName() + "</a>");
 						content.append("&nbsp;&nbsp;&nbsp;");
 					}
 				}
 				else {
-					content.append("<span style='color: #666666; font-style: italic;'>None</span>");
+					content.append("<span class='none_text'>None</span>");
 				}
 				
 				content.append("</div>");
@@ -215,7 +211,7 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 					}
 				}
 				else {
-					content.append("<span style='color: #666666; font-style: italic;'>None</span>");
+					content.append("<span class='none_text'>None</span>");
 				}
 				
 				content.append("</div>");
@@ -223,16 +219,10 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 				content.append("</div>");
 				content.append("</div>");
 				
-				css.addRule("body {font-family: arial,helvetica,clean,sans-serif; margin: 0; padding: 0;}");
-				css.addRule("div.outer {padding-top: 0; padding-bottom: 0; padding-left: 10px; padding-right: 10px;}");
-				css.addRule("div.workflow {text-align: center;}");
-				css.addRule(".workflow p.info {text-align: center; line-height: 1.5; color: #333333;}");
-				css.addRule(".workflow p.title {text-align: center; line-height: 1.0; color: #333333; font-size: large; font-weight: bold; margin-bottom: 0; margin-top; 0; padding: 0;}");
-				css.addRule(".workflow img.preview {padding: 5px;}");
-				css.addRule(".workflow div.desc {background-color: #EEEEEE; text-align: left; width: 400px; font-size: medium; padding-left: 8px; padding-right: 8px; padding-top: 0; padding-bottom: 0;}");
-				css.addRule(".workflow div.desc p {padding: 0;");
-				css.addRule(".workflow div.tags {text-align: center; width: 400px;}");
-				css.addRule(".workflow div.credits {text-align: center; width: 400px;}");
+				HTMLEditorKit kit = new HTMLEditorKit();
+				HTMLDocument doc = (HTMLDocument) (kit.createDefaultDocument());
+
+				kit.setStyleSheet(this.parent.getStyleSheet());
 				
 				doc.insertAfterStart(doc.getRootElements()[0].getElement(0), content.toString());
 				

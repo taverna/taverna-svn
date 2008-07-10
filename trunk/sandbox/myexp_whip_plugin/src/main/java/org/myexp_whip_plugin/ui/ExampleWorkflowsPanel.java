@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.myexp_whip_plugin.MyExperimentClient;
 import org.myexp_whip_plugin.Resource;
+import org.myexp_whip_plugin.Workflow;
 
 import edu.stanford.ejalbert.BrowserLauncher;
 
@@ -30,7 +31,7 @@ public class ExampleWorkflowsPanel extends BasePanel implements ActionListener, 
 	private JLabel statusLabel;
 	private JButton refreshButton;
 	
-	private List<Resource> workflows = new ArrayList<Resource>(); 
+	private List<Workflow> workflows = new ArrayList<Workflow>(); 
 	
 	private WorkflowsListPanel workflowsListPanel;
 	

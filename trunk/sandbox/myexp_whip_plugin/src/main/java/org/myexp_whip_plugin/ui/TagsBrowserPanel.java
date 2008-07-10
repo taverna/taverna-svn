@@ -191,8 +191,8 @@ public class TagsBrowserPanel extends BasePanel implements ActionListener, Chang
 			int maxCount = this.getMaxCountOfTags();
 			
 			StringBuffer content = new StringBuffer();
-			content.append("<div class=\"outer\">");
-			content.append("<div class=\"tag_cloud\">");
+			content.append("<div class='outer'>");
+			content.append("<div class='tag_cloud'>");
 			
 			for (Tag t : this.tagCloudData.getTags()) {
 				// Normalise count and use it to obtain a font size value. 
@@ -202,7 +202,7 @@ public class TagsBrowserPanel extends BasePanel implements ActionListener, Chang
 					fontSize = TAGCLOUD_MIN_FONTSIZE;
 				}
 				
-				content.append("<a style='font-size: " + fontSize + "pt; color: #000066;' href='http://tag/" + t.getTagName() + "'>" + t.getTagName() + "</a>");
+				content.append("<a style='font-size: " + fontSize + "pt;' href='http://tag/" + t.getTagName() + "'>" + t.getTagName() + "</a>");
 				content.append("&nbsp;&nbsp;&nbsp;");
 			}
 			
@@ -212,11 +212,8 @@ public class TagsBrowserPanel extends BasePanel implements ActionListener, Chang
 			
 			HTMLEditorKit kit = new HTMLEditorKit();
 			HTMLDocument doc = (HTMLDocument) (kit.createDefaultDocument());
-			StyleSheet css = kit.getStyleSheet();
-			
-			css.addRule("body {font-family: arial,helvetica,clean,sans-serif; margin: 0; padding: 0;}");
-			css.addRule("div.outer {padding-top: 0; padding-bottom: 0; padding-left: 10px; padding-right: 10px;}");
-			css.addRule("div.tag_cloud {text-align: center; line-height: 1.5;}");
+
+			kit.setStyleSheet(this.parent.getStyleSheet());
 			
 			doc.insertAfterStart(doc.getRootElements()[0].getElement(0), content.toString());
 			

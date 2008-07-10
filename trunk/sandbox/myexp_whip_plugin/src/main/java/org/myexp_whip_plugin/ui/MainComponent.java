@@ -2,6 +2,7 @@ package org.myexp_whip_plugin.ui;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -12,6 +13,8 @@ import javax.swing.JFrame;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
@@ -27,6 +30,8 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 	private static final long serialVersionUID = 1L;
 	
 	private final Logger logger = Logger.getLogger(MainComponent.class);
+	
+	private StyleSheet css;
 
 	private ScuflModel model;
 	
@@ -52,6 +57,14 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 		} catch (MalformedURLException e) {
 			this.logger.debug("Failed to set baseUrl for myExperimentClient");
 		}
+		
+		this.css = new StyleSheet();
+		this.css.importStyleSheet(MainPerspective.class.getResource("/styles.css"));
+		logger.debug("Stylesheet loaded: \n" + this.css.toString());
+		
+		// HACK for a weird stylesheet bug (where the first thing to use the stylesheet doesn't actually get the styles)
+		HTMLEditorKit kit = new HTMLEditorKit();
+		kit.setStyleSheet(this.css);
 		
 		initialiseUI();
 		
@@ -91,10 +104,10 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 	public void onDispose() {
 
 	}
-	
-	//public void componentResized(ComponentEvent e) {
-	//	this.latestWorkflowsPanel.revalidateScrollPane();
-	//}
+
+	public StyleSheet getStyleSheet() {
+		return this.css;
+	}
 
 	private void initialiseUI() {
 		this.logger.debug("Initialising myExperiment Perspective UI components");
@@ -167,7 +180,11 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
         		
         		OpenWorkflowFromFileAction action = new OpenWorkflowFromFileAction(MainComponent.this);
         		
-        		performLoadFromUrl(url, action);
+        		HttpURLConnection conn = setupConnection(url);
+        		
+        		if (conn != null) {
+        			action.openFromURL(conn);
+        		}
 				
 			} catch (Exception e) {
 				logger.error("Failed to open connection to URL to download and open workflow, from myExperiment.", e);
@@ -194,7 +211,11 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
         		
         		ImportWorkflowFromFileAction action = new ImportWorkflowFromFileAction(MainComponent.this);
         		
-        		performLoadFromUrl(url, action);
+        		HttpURLConnection conn = setupConnection(url);
+        		
+        		if (conn != null) {
+        			action.openFromURL(conn);
+        		}
 				
 			} catch (Exception e) {
 				logger.error("Failed to open connection to URL to download and import workflow, from myExperiment.", e);
@@ -202,27 +223,29 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
         }
 	}
 	
-	private void performLoadFromUrl(URL url, OpenWorkflowFromFileAction action) throws Exception {
+	private HttpURLConnection setupConnection(final URL url) throws Exception {
 		HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 		conn.setRequestProperty("Accept", "text/xml");
 		
         if (conn.getResponseCode() == 401) { //authentication required.
-                PasswordInput input =  new PasswordInput((JFrame)SwingUtilities.getAncestorOfClass(JFrame.class, MainComponent.this));
-                input.setUrl(url);
-                input.setSize(new Dimension(323,222));
-                input.setLocationRelativeTo(MainComponent.this);
-                input.setVisible(true);
+            PasswordInput input = new PasswordInput((JFrame)SwingUtilities.getAncestorOfClass(JFrame.class, this));
+            input.setUrl(url);
+            input.setSize(new Dimension(323,222));
+            input.setLocationRelativeTo(MainComponent.this);
+            input.setVisible(true);
                 
-                if (input.getPassword()!=null && input.getUsername()!=null) {
-                        conn = (HttpURLConnection)url.openConnection();
-                        String userPassword = input.getUsername()+":"+input.getPassword();
-                        String encoding = new sun.misc.BASE64Encoder().encode(userPassword.getBytes());
-                        conn.setRequestProperty("Authorization", "Basic " + encoding);
-                        conn.setRequestProperty("Accept", "text/xml");
-                        action.openFromURL(conn);
+                if (input.getPassword() != null && input.getUsername() != null) {
+                	conn = (HttpURLConnection)url.openConnection();
+                    String userPassword = input.getUsername()+":"+input.getPassword();
+                    String encoding = new sun.misc.BASE64Encoder().encode(userPassword.getBytes());
+                    conn.setRequestProperty("Authorization", "Basic " + encoding);
+                    conn.setRequestProperty("Accept", "text/xml");
                 }
-        } else {
-        		action.openFromURL(conn);
+                else {
+                	conn = null;
+                }
         }
+        
+        return conn;
 	}
 }

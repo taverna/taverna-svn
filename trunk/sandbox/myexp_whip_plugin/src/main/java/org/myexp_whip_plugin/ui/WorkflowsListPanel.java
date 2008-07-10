@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -20,8 +19,7 @@ import javax.swing.text.html.StyleSheet;
 import org.apache.log4j.Logger;
 import org.myexp_whip_plugin.MyExperimentClient;
 import org.myexp_whip_plugin.Resource;
-import org.myexp_whip_plugin.ui.MainComponent.LoadWorkflowAction;
-import org.myexp_whip_plugin.ui.MainComponent.PreviewWorkflowAction;
+import org.myexp_whip_plugin.Workflow;
 
 import edu.stanford.ejalbert.BrowserLauncher;
 
@@ -30,7 +28,7 @@ public class WorkflowsListPanel extends BasePanel implements HyperlinkListener {
 	private JScrollPane listScrollPane;
 	private JPanel listPanel;
 	
-	private List<Resource> workflows;
+	private List<Workflow> workflows;
 	
 	public WorkflowsListPanel(MainComponent parent, MyExperimentClient client, Logger logger) {
 		super(parent, client, logger);
@@ -49,7 +47,7 @@ public class WorkflowsListPanel extends BasePanel implements HyperlinkListener {
 		}
 	}
 	
-	public void setWorkflows(List<Resource> workflows) {
+	public void setWorkflows(List<Workflow> workflows) {
 		this.workflows = workflows;
 		
 		this.repopulate();
@@ -69,7 +67,7 @@ public class WorkflowsListPanel extends BasePanel implements HyperlinkListener {
 		if (this.workflows != null) {
 			this.clear();
 			
-			for (Resource workflow : this.workflows) {
+			for (Workflow workflow : this.workflows) {
 				try {
 					JPanel mainPanel = new JPanel(new BorderLayout());
 					mainPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
@@ -79,22 +77,27 @@ public class WorkflowsListPanel extends BasePanel implements HyperlinkListener {
 					infoTextPane.setEditable(false);
 					
 					StringBuffer content = new StringBuffer();
-					content.append("<div class=\"outer\">");
-					content.append("<div class=\"list\">");
-					content.append("<p class=\"title\">");
+					content.append("<div class='outer'>");
+					content.append("<div class='list_item'>");
+					content.append("<p class='title'>");
 					content.append("<a href='" + workflow.getResource() + "'>" + workflow.getTitle() + "</a>");
 					content.append("</p>");
-					content.append("<br/>");
+					if (workflow.getDescription() != null && workflow.getDescription().length() > 0) {
+						content.append("<div class='desc'>");
+						content.append(workflow.getDescription());
+						content.append("</div>");
+						content.append("<br/>");
+					}
+					else {
+						content.append("<br/>");
+					}
 					content.append("</div>");
 					content.append("</div>");
 					
 					HTMLEditorKit kit = new HTMLEditorKit();
 					HTMLDocument doc = (HTMLDocument) (kit.createDefaultDocument());
-					StyleSheet css = kit.getStyleSheet();
-					
-					css.addRule("body {font-family: arial,helvetica,clean,sans-serif; margin: 0; padding: 0;}");
-					css.addRule("div.outer {padding-top: 0; padding-bottom: 0; padding-left: 10px; padding-right: 10px;}");
-					css.addRule(".list p.title {text-align: left; line-height: 1.0; color: #000099; font-size: large; font-weight: bold; margin-bottom: 0; margin-top; 0; padding: 0;}");
+
+					kit.setStyleSheet(this.parent.getStyleSheet());
 					
 					doc.insertAfterStart(doc.getRootElements()[0].getElement(0), content.toString());
 					
@@ -105,19 +108,14 @@ public class WorkflowsListPanel extends BasePanel implements HyperlinkListener {
 
 					mainPanel.add(infoTextPane, BorderLayout.CENTER);
 					
-					// Work out the Workflow ID this entry is referring to:
-					String [] s = workflow.getResource().split("/");
-					int workflowId = Integer.parseInt(s[s.length-1]);
-					logger.debug("Workflow ID: " + workflowId);
-					
 					JPanel buttonsPanel = new JPanel();
 					buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.LINE_AXIS));
 					//buttonsPanel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 					JButton previewButton = new JButton();
-					previewButton.setAction(this.parent.new PreviewWorkflowAction(workflowId));
+					previewButton.setAction(this.parent.new PreviewWorkflowAction(workflow.getId()));
 					buttonsPanel.add(previewButton);
 					JButton loadButton = new JButton();
-					loadButton.setAction(this.parent.new LoadWorkflowAction(workflowId));
+					loadButton.setAction(this.parent.new LoadWorkflowAction(workflow.getId()));
 					buttonsPanel.add(loadButton);
 					mainPanel.add(buttonsPanel, BorderLayout.SOUTH);
 					

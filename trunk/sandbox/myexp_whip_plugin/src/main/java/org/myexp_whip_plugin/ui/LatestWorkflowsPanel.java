@@ -1,53 +1,35 @@
 package org.myexp_whip_plugin.ui;
 
-import com.sun.syndication.feed.synd.*;
-
-import edu.stanford.ejalbert.BrowserLauncher;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.ComponentOrientation;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Scrollbar;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
+import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.List;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JTextPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
-import javax.swing.border.BevelBorder;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
-import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 import org.myexp_whip_plugin.MyExperimentClient;
+
+import com.sun.syndication.feed.synd.SyndEntry;
+
+import edu.stanford.ejalbert.BrowserLauncher;
 
 public class LatestWorkflowsPanel extends BasePanel implements ActionListener,
 		ChangeListener, HyperlinkListener {
@@ -132,16 +114,16 @@ public class LatestWorkflowsPanel extends BasePanel implements ActionListener,
 					infoTextPane.setEditable(false);
 					
 					StringBuffer content = new StringBuffer();
-					content.append("<div class=\"outer\">");
-					content.append("<div class=\"list\">");
-					content.append("<p class=\"title\">");
-					content.append("<a href='" + ent.getLink() + "'>" + ent.getTitle() + "</a>");
+					content.append("<div class='outer'>");
+					content.append("<div class='list_item'>");
+					content.append("<p class='title'>");
+					content.append("<a href='" + ent.getLink() + "'>" + ent.getTitle().trim() + "</a>");
 					content.append("</p>");
 					if (ent.getDescription().getValue().length() > 0) {
-						content.append("<div class=\"desc\">");
-						content.append(ent.getDescription().getValue());
-						content.append("<br/>");
+						content.append("<div class='desc'>");
+						content.append(ent.getDescription().getValue().trim());
 						content.append("</div>");
+						content.append("<br/>");
 					}
 					else {
 						content.append("<br/>");
@@ -151,13 +133,8 @@ public class LatestWorkflowsPanel extends BasePanel implements ActionListener,
 					
 					HTMLEditorKit kit = new HTMLEditorKit();
 					HTMLDocument doc = (HTMLDocument) (kit.createDefaultDocument());
-					StyleSheet css = kit.getStyleSheet();
 					
-					css.addRule("body {font-family: arial,helvetica,clean,sans-serif; margin: 0; padding: 0;}");
-					//css.addRule("a {color: #000099;}");
-					css.addRule("div.outer {padding-top: 0; padding-bottom: 0; padding-left: 10px; padding-right: 10px;}");
-					css.addRule(".list p.title {text-align: left; line-height: 1.0; color: #000099; font-size: large; font-weight: bold; margin-bottom: 0; margin-top; 0; padding: 0;}");
-					css.addRule(".list div.desc {width: 600px; font-size: medium; padding-top: 0; padding-bottom: 0; padding-left: 15px; padding-right: 5px;}");
+					kit.setStyleSheet(this.parent.getStyleSheet());
 					
 					doc.insertAfterStart(doc.getRootElements()[0].getElement(0), content.toString());
 					
@@ -169,9 +146,7 @@ public class LatestWorkflowsPanel extends BasePanel implements ActionListener,
 					mainPanel.add(infoTextPane, BorderLayout.CENTER);
 					
 					// Work out the Workflow ID this entry is referring to:
-					String [] s = ent.getLink().split("/");
-					int workflowId = Integer.parseInt(s[s.length-1]);
-					logger.debug("Workflow ID: " + workflowId);
+					int workflowId = this.client.getWorkflowIdByResourceUrl(ent.getLink());
 					
 					JPanel buttonsPanel = new JPanel();
 					buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.LINE_AXIS));

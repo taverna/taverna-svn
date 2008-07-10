@@ -31,6 +31,9 @@ public class License {
 	}
 	
 	public static License getInstance(String type) {
+		if (type == null)
+			return null;
+		
 		if (type.equalsIgnoreCase("by-nd")) {
 			return new License(type, "Creative Commons Attribution-NoDerivs 3.0 License", "http://creativecommons.org/licenses/by-nd/3.0/");
 		}

@@ -5,9 +5,9 @@ import java.util.List;
 
 public class SearchResults {
 	
-	private List<Resource> workflows = new ArrayList<Resource>();
+	private List<Workflow> workflows = new ArrayList<Workflow>();
 	
-	public List<Resource> getWorkflows() {
+	public List<Workflow> getWorkflows() {
 		return this.workflows;
 	}
 	
