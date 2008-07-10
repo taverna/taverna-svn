@@ -26,7 +26,13 @@ import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.myexp_whip_plugin.MyExperimentClient;
 
 public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
+	
+	private static MainComponent currentMyExperimentComponent = null;
 
+	public static MainComponent getCurrentMyExperimentComponent() {
+		return currentMyExperimentComponent;
+	}
+	
 	private static final long serialVersionUID = 1L;
 	
 	private final Logger logger = Logger.getLogger(MainComponent.class);
@@ -51,6 +57,8 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 	
 	public MainComponent() {
 		super();
+		
+		MainComponent.currentMyExperimentComponent = this;
 		
 		try {
 			this.client = new MyExperimentClient(this.logger, new URL("http://sandbox.myexperiment.org/"));
@@ -107,6 +115,12 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 
 	public StyleSheet getStyleSheet() {
 		return this.css;
+	}
+	
+	public void setCurrentWorkflow(String workflowUrl) {
+		if (workflowUrl != null && !workflowUrl.equals("")) {
+			this.workflowPreviewPanel.setWorkfowId(this.client.getWorkflowIdByResourceUrl(workflowUrl));
+		}
 	}
 
 	private void initialiseUI() {
