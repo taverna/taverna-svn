@@ -18,17 +18,23 @@ import org.springframework.context.ApplicationContext;
  * 
  * @author Tom Oinn
  */
-public class TestInvocationContext implements InvocationContext {
+public class DummyInvocationContext implements InvocationContext {
 
 	private static ApplicationContext context = null;
+	
+	public DummyInvocationContext() {
+		getReferenceService(); //force the context to be created early - otherwise tests seem to randomly fail depending upon the order they are run.
+	}
 
 	public synchronized ReferenceService getReferenceService() {
 		if (context == null) {
 			context = new RavenAwareClassPathXmlApplicationContext(
 					"inMemoryReferenceServiceContext.xml");
+			this.getReferenceService();
 		}
 		ReferenceService rs = (ReferenceService) context
 				.getBean("referenceService");
+		
 		return rs;
 	}
 

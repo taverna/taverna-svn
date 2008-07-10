@@ -16,7 +16,7 @@ import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.impl.ProcessorImpl;
 import net.sf.taverna.t2.workflowmodel.impl.ProcessorInputPortImpl;
 import net.sf.taverna.t2.workflowmodel.impl.Tools;
-import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
+import net.sf.taverna.t2.workflowmodel.invocation.impl.DummyInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 
 import org.jdom.JDOMException;
@@ -34,7 +34,7 @@ public class ProcessorLevelInvocationTest {
 	DiagnosticEventHandler deh;
 	ProcessorImpl processor;
 
-	InvocationContext context = new TestInvocationContext();
+	InvocationContext context = new DummyInvocationContext();
 
 	@Before
 	public void createProcessor() throws EditException, JDOMException,

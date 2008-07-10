@@ -345,7 +345,15 @@ public class EditsImpl implements Edits {
 			Object configurationBean) {
 		return new ConfigureActivityEdit(activity,configurationBean);
 	}
-	
-	
+
+	public Edit<Processor> getRemoveProcessorInputPortEdit(Processor processor,
+			ProcessorInputPort port) {
+		return new RemoveProcessorInputPortEdit(processor,port);
+	}
+
+	public Edit<Processor> getRemoveProcessorOutputPortEdit(
+			Processor processor, ProcessorOutputPort port) {
+		return new RemoveProcessorOutputPortEdit(processor,port);
+	}
 
 }

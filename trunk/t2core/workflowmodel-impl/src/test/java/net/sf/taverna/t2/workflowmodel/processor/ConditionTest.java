@@ -1,8 +1,9 @@
 package net.sf.taverna.t2.workflowmodel.processor;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.UnsupportedEncodingException;
 
-import junit.framework.TestCase;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.reference.ReferenceService;
@@ -11,8 +12,11 @@ import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.impl.Tools;
-import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
+import net.sf.taverna.t2.workflowmodel.invocation.impl.DummyInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
+
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * Test the Condition facility, verify that it does indeed force processors to
@@ -21,7 +25,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationE
  * @author Tom Oinn
  * 
  */
-public class ConditionTest extends TestCase {
+public class ConditionTest {
 
 	private DiagnosticEventHandler deh1, deh2;
 
@@ -29,7 +33,7 @@ public class ConditionTest extends TestCase {
 
 	private Edits edits = new EditsImpl();
 
-	private InvocationContext context = new TestInvocationContext();
+	private InvocationContext context = new DummyInvocationContext();
 
 	private Processor createProcessor() throws ActivityConfigurationException,
 			EditException {
@@ -63,6 +67,7 @@ public class ConditionTest extends TestCase {
 		edits.getConnectProcessorOutputEdit(p2, "output", deh2).doEdit();
 	}
 
+	@Test
 	public void testCreation() throws ActivityConfigurationException,
 			EditException {
 		create();
@@ -70,6 +75,7 @@ public class ConditionTest extends TestCase {
 		assertTrue(p2.getPreconditionList().size() == 1);
 	}
 
+	@Test
 	public void testLock() throws UnsupportedEncodingException,
 			ActivityConfigurationException, EditException {
 		create();
@@ -82,6 +88,7 @@ public class ConditionTest extends TestCase {
 		assertTrue(deh2.getEventCount() == 0);
 	}
 
+	@Test
 	public void testLockUnlock() throws UnsupportedEncodingException,
 			ActivityConfigurationException, EditException, InterruptedException {
 		testLock();
@@ -95,6 +102,7 @@ public class ConditionTest extends TestCase {
 		assertTrue(deh2.getEventCount() == 1);
 	}
 
+	@Test
 	public void testLockUnlockWithDifferentProcess()
 			throws UnsupportedEncodingException,
 			ActivityConfigurationException, EditException, InterruptedException {

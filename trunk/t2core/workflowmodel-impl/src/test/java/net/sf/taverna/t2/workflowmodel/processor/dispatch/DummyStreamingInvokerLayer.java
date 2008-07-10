@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.taverna.t2.reference.T2Reference;
-import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
+import net.sf.taverna.t2.workflowmodel.invocation.impl.DummyInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchCompletionEvent;
@@ -30,7 +30,7 @@ public class DummyStreamingInvokerLayer extends AbstractDispatchLayer<Object> {
 					Thread.sleep(400);
 					for (int i = 0; i < 4; i++) {
 						Map<String, T2Reference> dataMap = new HashMap<String, T2Reference>();
-						dataMap.put("Result1", TestInvocationContext.nextReference());
+						dataMap.put("Result1", DummyInvocationContext.nextReference());
 						int[] newIndex = new int[j.getIndex().length + 1];
 						for (int k = 0; k < j.getIndex().length; k++) {
 							newIndex[k] = j.getIndex()[k];

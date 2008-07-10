@@ -6,7 +6,7 @@ import java.util.List;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.IterationInternalEvent;
 import net.sf.taverna.t2.reference.T2Reference;
-import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
+import net.sf.taverna.t2.workflowmodel.invocation.impl.DummyInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.CrossProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DotProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
@@ -15,7 +15,7 @@ import org.junit.Test;
 
 public class TestStagedIteration {
 
-	public InvocationContext context = new TestInvocationContext();
+	public InvocationContext context = new DummyInvocationContext();
 
 	@SuppressWarnings("unchecked")
 	@Test

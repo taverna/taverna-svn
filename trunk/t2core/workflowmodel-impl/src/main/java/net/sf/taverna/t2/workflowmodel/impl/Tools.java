@@ -46,6 +46,7 @@ import org.jdom.output.XMLOutputter;
  * DispatchLayer.
  * 
  * @author Tom Oinn
+ * @author Stuart Owen
  * 
  */
 public class Tools {

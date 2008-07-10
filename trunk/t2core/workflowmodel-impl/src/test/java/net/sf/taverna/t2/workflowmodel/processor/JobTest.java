@@ -1,6 +1,6 @@
 package net.sf.taverna.t2.workflowmodel.processor;
 
-import static net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext.nextReference;
+import static net.sf.taverna.t2.workflowmodel.invocation.impl.DummyInvocationContext.nextReference;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,12 +8,12 @@ import java.util.Map;
 import junit.framework.TestCase;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.reference.T2Reference;
-import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
+import net.sf.taverna.t2.workflowmodel.invocation.impl.DummyInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 
 public class JobTest extends TestCase {
 
-	InvocationContext context = new TestInvocationContext();
+	InvocationContext context = new DummyInvocationContext();
 	
 	public void testPopPush() {
 		Map<String,T2Reference> dataMap = new HashMap<String,T2Reference>();

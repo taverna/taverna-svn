@@ -3,13 +3,13 @@ package net.sf.taverna.t2.workflowmodel.processor.iteration.impl;
 import junit.framework.TestCase;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
-import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
+import net.sf.taverna.t2.workflowmodel.invocation.impl.DummyInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DiagnosticIterationStrategyNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
 
 public class NamedInputPortNodeTest extends TestCase {
 
-	InvocationContext context = new TestInvocationContext();
+	InvocationContext context = new DummyInvocationContext();
 
 	public void testBasic() {
 		NamedInputPortNode nipn = new NamedInputPortNode("Input", 0);
@@ -19,7 +19,7 @@ public class NamedInputPortNodeTest extends TestCase {
 		is.addInput(nipn);
 		try {
 			is.receiveData("Input", "Process1", new int[] {},
-					TestInvocationContext.nextReference(), context);
+					DummyInvocationContext.nextReference(), context);
 		} catch (WorkflowStructureException e) {
 			fail("Should be able to find input named 'Input' in this test case");
 		}
@@ -34,11 +34,11 @@ public class NamedInputPortNodeTest extends TestCase {
 		is.addInput(nipn);
 		try {
 			is.receiveData("Input", "Process1", new int[] { 0 },
-					TestInvocationContext.nextReference(), context);
+					DummyInvocationContext.nextReference(), context);
 			is.receiveData("Input", "Process1", new int[] { 1 },
-					TestInvocationContext.nextReference(), context);
+					DummyInvocationContext.nextReference(), context);
 			is.receiveData("Input", "Process2", new int[] {},
-					TestInvocationContext.nextReference(), context);
+					DummyInvocationContext.nextReference(), context);
 		} catch (WorkflowStructureException e) {
 			fail("Should be able to find input named 'Input' in this test case");
 		}

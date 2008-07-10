@@ -286,7 +286,7 @@ public class IterationStrategyImpl implements IterationStrategy {
 		}
 	}
 
-	void removeInputByName(String name) {
+	public void removeInputByName(String name) {
 		synchronized (inputs) {
 			NamedInputPortNode removeMe = null;
 			for (NamedInputPortNode nipn : inputs) {

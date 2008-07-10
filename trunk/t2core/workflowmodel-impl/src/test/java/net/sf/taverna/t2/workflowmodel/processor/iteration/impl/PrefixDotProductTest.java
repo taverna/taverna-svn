@@ -2,14 +2,14 @@ package net.sf.taverna.t2.workflowmodel.processor.iteration.impl;
 
 import junit.framework.TestCase;
 import net.sf.taverna.t2.invocation.InvocationContext;
-import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
+import net.sf.taverna.t2.workflowmodel.invocation.impl.DummyInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DiagnosticIterationStrategyNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.PrefixDotProduct;
 
 public class PrefixDotProductTest extends TestCase {
 
-	InvocationContext context = new TestInvocationContext();
+	InvocationContext context = new DummyInvocationContext();
 
 	/**
 	 * Test that the prefix node copes when we feed it two inputs with different
@@ -35,14 +35,14 @@ public class PrefixDotProductTest extends TestCase {
 		String owningProcess = "Process1";
 		for (int i = 0; i < 2; i++) {
 			is.receiveData("a", owningProcess, new int[] { i },
-					TestInvocationContext.nextListReference(1), context);
+					DummyInvocationContext.nextListReference(1), context);
 		}
 		is.receiveCompletion("a", owningProcess, new int[] {}, context);
 
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++) {
 				is.receiveData("b", owningProcess, new int[] { i, j },
-						TestInvocationContext.nextListReference(1), context);
+						DummyInvocationContext.nextListReference(1), context);
 			}
 			is.receiveCompletion("b", owningProcess, new int[] { i }, context);
 		}

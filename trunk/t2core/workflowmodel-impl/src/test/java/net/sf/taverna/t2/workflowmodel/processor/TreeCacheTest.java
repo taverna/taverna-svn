@@ -6,12 +6,12 @@ import junit.framework.TestCase;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.TreeCache;
 import net.sf.taverna.t2.reference.T2Reference;
-import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
+import net.sf.taverna.t2.workflowmodel.invocation.impl.DummyInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 
 public class TreeCacheTest extends TestCase {
 
-	InvocationContext context = new TestInvocationContext();
+	InvocationContext context = new DummyInvocationContext();
 	
 	public void testStoreLoad() {
 		TreeCache tc = new TreeCache();

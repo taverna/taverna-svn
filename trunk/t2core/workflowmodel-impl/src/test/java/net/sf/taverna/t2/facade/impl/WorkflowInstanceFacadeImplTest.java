@@ -16,7 +16,7 @@ import net.sf.taverna.t2.workflowmodel.impl.DummyDataflow;
 import net.sf.taverna.t2.workflowmodel.impl.DummyDataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.impl.DummyDataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.impl.DummyProcessor;
-import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
+import net.sf.taverna.t2.workflowmodel.invocation.impl.DummyInvocationContext;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -26,7 +26,7 @@ public class WorkflowInstanceFacadeImplTest {
 	
 	private DummyDataflow dataflow;
 	private WorkflowInstanceFacadeImpl facade;
-	private InvocationContext context = new TestInvocationContext();
+	private InvocationContext context = new DummyInvocationContext();
 	
 	@Before
 	public void createDataflow() {

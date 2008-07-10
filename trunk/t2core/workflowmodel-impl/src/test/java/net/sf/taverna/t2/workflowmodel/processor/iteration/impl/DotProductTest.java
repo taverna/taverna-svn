@@ -4,14 +4,14 @@ import junit.framework.TestCase;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
-import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
+import net.sf.taverna.t2.workflowmodel.invocation.impl.DummyInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DiagnosticIterationStrategyNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DotProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
 
 public class DotProductTest extends TestCase {
 
-	InvocationContext context = new TestInvocationContext();
+	InvocationContext context = new DummyInvocationContext();
 
 	public void testBasic() {
 		NamedInputPortNode nipn1 = new NamedInputPortNode("Input1", 0);
@@ -27,11 +27,11 @@ public class DotProductTest extends TestCase {
 		is.addInput(nipn2);
 		try {
 			is.receiveData("Input1", "Process1", new int[] { 0 },
-					TestInvocationContext.nextReference(), context);
+					DummyInvocationContext.nextReference(), context);
 			is.receiveCompletion("Input1", "Process1", new int[] {}, context);
 			assertTrue(disn.jobsReceived("Process1") == 0);
 			is.receiveData("Input2", "Process1", new int[] { 0 },
-					TestInvocationContext.nextReference(), context);
+					DummyInvocationContext.nextReference(), context);
 			is.receiveCompletion("Input2", "Process1", new int[] {}, context);
 			assertTrue(disn.jobsReceived("Process1") == 1);
 			System.out.println(disn);
@@ -54,15 +54,15 @@ public class DotProductTest extends TestCase {
 		is.addInput(nipn2);
 		try {
 			is.receiveData("Input1", "Process1", new int[] {},
-					TestInvocationContext.nextReference(), context);
+					DummyInvocationContext.nextReference(), context);
 			assertTrue(disn.jobsReceived("Process1") == 0);
 			is.receiveCompletion("Input1", "Process1", new int[] {}, context);
 			is.receiveData("Input2", "Process2", new int[] {},
-					TestInvocationContext.nextReference(), context);
+					DummyInvocationContext.nextReference(), context);
 			assertTrue(disn.jobsReceived("Process1") == 0);
 
 			is.receiveData("Input2", "Process1", new int[] {},
-					TestInvocationContext.nextReference(), context);
+					DummyInvocationContext.nextReference(), context);
 			assertTrue(disn.jobsReceived("Process1") == 1);
 			is.receiveCompletion("Input2", "Process1", new int[] {}, context);
 			System.out.println(disn);
@@ -87,7 +87,7 @@ public class DotProductTest extends TestCase {
 
 		String owningProcess = "Process1";
 		for (int i = 0; i < 4; i++) {
-			T2Reference listReference = TestInvocationContext
+			T2Reference listReference = DummyInvocationContext
 					.nextListReference(1);
 
 			is.receiveData("a", owningProcess, new int[] { i }, listReference,
@@ -97,7 +97,7 @@ public class DotProductTest extends TestCase {
 
 		for (int i = 0; i < 4; i++) {
 
-			T2Reference listReference = TestInvocationContext
+			T2Reference listReference = DummyInvocationContext
 					.nextListReference(1);
 			is.receiveData("b", owningProcess, new int[] { i }, listReference,
 					context);

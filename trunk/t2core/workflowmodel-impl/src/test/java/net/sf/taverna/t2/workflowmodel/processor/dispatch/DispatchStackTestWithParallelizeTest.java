@@ -13,7 +13,7 @@ import net.sf.taverna.t2.monitor.MonitorableProperty;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.impl.AbstractCrystalizer;
-import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
+import net.sf.taverna.t2.workflowmodel.invocation.impl.DummyInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DispatchStackImpl;
@@ -21,7 +21,7 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize;
 
 public class DispatchStackTestWithParallelizeTest extends TestCase {
 
-	public InvocationContext context = new TestInvocationContext();
+	public InvocationContext context = new DummyInvocationContext();
 	
 	private class BasicDispatchStackImpl extends DispatchStackImpl {
 		
@@ -126,7 +126,7 @@ public class DispatchStackTestWithParallelizeTest extends TestCase {
 		d.addLayer(new Parallelize());
 		d.addLayer(new DummyInvokerLayer());
 		Map<String, T2Reference> dataMap = new HashMap<String, T2Reference>();
-		dataMap.put("SingleJobInput", TestInvocationContext.nextReference());
+		dataMap.put("SingleJobInput", DummyInvocationContext.nextReference());
 		d.receiveEvent(new Job("Process1:processorName", new int[] {}, dataMap, context));
 		try {
 			Thread.sleep(1000);
@@ -147,7 +147,7 @@ public class DispatchStackTestWithParallelizeTest extends TestCase {
 		d.addLayer(new Parallelize());
 		d.addLayer(new DummyStreamingInvokerLayer());
 		Map<String, T2Reference> dataMap = new HashMap<String, T2Reference>();
-		dataMap.put("SingleJobInput", TestInvocationContext.nextReference());
+		dataMap.put("SingleJobInput", DummyInvocationContext.nextReference());
 		d.receiveEvent(new Job("Process1:processorName", new int[] {}, dataMap, context));
 		try {
 			Thread.sleep(2000);
@@ -189,7 +189,7 @@ public class DispatchStackTestWithParallelizeTest extends TestCase {
 		d.addLayer(new Parallelize());
 		d.addLayer(new DummyStreamingInvokerLayer());
 		Map<String, T2Reference> dataMap = new HashMap<String, T2Reference>();
-		dataMap.put("SingleJobInput", TestInvocationContext.nextReference());
+		dataMap.put("SingleJobInput", DummyInvocationContext.nextReference());
 		d.receiveEvent(new Job("Process1:processorName", new int[] {}, dataMap, context));
 		try {
 			Thread.sleep(2000);
@@ -235,7 +235,7 @@ public class DispatchStackTestWithParallelizeTest extends TestCase {
 		List<IterationInternalEvent<?>> events = new ArrayList<IterationInternalEvent<?>>();
 		for (int i = 0; i < jobs; i++) {
 			Map<String, T2Reference> dataMap = new HashMap<String, T2Reference>();
-			dataMap.put("Input1", TestInvocationContext.nextReference());
+			dataMap.put("Input1", DummyInvocationContext.nextReference());
 			events.add(new Job(processID+":processorName", new int[] { i }, dataMap, context));
 		}
 		events.add(new Completion(processID+":processorName", context));

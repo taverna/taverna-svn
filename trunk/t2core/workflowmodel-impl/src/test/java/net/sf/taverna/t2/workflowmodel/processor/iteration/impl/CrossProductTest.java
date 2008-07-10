@@ -3,16 +3,16 @@ package net.sf.taverna.t2.workflowmodel.processor.iteration.impl;
 import junit.framework.TestCase;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
-import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
+import net.sf.taverna.t2.workflowmodel.invocation.impl.DummyInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.CrossProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DiagnosticIterationStrategyNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
 
-import static net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext.nextReference;
+import static net.sf.taverna.t2.workflowmodel.invocation.impl.DummyInvocationContext.nextReference;
 
 public class CrossProductTest extends TestCase {
 
-	InvocationContext context = new TestInvocationContext();
+	InvocationContext context = new DummyInvocationContext();
 		
 	public void testBasic() {
 		NamedInputPortNode nipn1 = new NamedInputPortNode("Input1", 0);

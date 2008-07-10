@@ -345,7 +345,7 @@ public interface Edits {
 			Activity<?> activity);
 
 	/**
-	 * Add an input port a processor, creating matching ports in the
+	 * Provides an Edit to add an input port a processor, creating matching ports in the
 	 * iteration strategy or strategies as a side effect.
 	 * 
 	 * @param processor
@@ -357,7 +357,7 @@ public interface Edits {
 			ProcessorInputPort port);
 
 	/**
-	 * Add a new output port on a processor
+	 * Provides an Edit to add a new output port on a processor
 	 * 
 	 * @param processor
 	 *            processor to add the new output port to
@@ -366,6 +366,21 @@ public interface Edits {
 	 */
 	public Edit<Processor> getAddProcessorOutputPortEdit(
 			Processor processor, ProcessorOutputPort port);
+	
+	/**
+	 * Removes a Processor input port. 
+	 * @param processor
+	 * @param port
+	 * @return
+	 */
+	public Edit<Processor> getRemoveProcessorInputPortEdit(Processor processor, ProcessorInputPort port);
+	
+	/**
+	 * @param processor
+	 * @param port
+	 * @return
+	 */
+	public Edit<Processor> getRemoveProcessorOutputPortEdit(Processor processor, ProcessorOutputPort port);
 
 	/**
 	 * Add an input port to a dataflow.
