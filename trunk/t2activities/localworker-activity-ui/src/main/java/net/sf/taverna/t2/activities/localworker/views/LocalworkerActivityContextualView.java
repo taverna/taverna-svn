@@ -7,12 +7,16 @@ import javax.swing.Action;
 import net.sf.taverna.activities.localworker.actions.LocalworkerActivityConfigurationAction;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
 import net.sf.taverna.t2.activities.localworker.LocalworkerActivity;
+import net.sf.taverna.t2.annotation.AnnotationAssertion;
+import net.sf.taverna.t2.annotation.AnnotationChain;
+import net.sf.taverna.t2.annotation.annotationbeans.HostInstitution;
 import net.sf.taverna.t2.workbench.ui.actions.activity.HTMLBasedActivityContextualView;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 
-public class LocalworkerActivityContextualView extends HTMLBasedActivityContextualView<BeanshellActivityConfigurationBean>{
+public class LocalworkerActivityContextualView extends
+		HTMLBasedActivityContextualView<BeanshellActivityConfigurationBean> {
 
 	public LocalworkerActivityContextualView(Activity<?> activity) {
 		super(activity);
@@ -39,13 +43,32 @@ public class LocalworkerActivityContextualView extends HTMLBasedActivityContextu
 
 	@Override
 	protected String getViewTitle() {
-		return "Local Worker";
+		if (checkAnnotations()) {
+			// this is a user defined localworker so use the correct name
+			return "User Defined Local Worker";
+		} else {
+
+			return "Local Worker";
+		}
 	}
-	
+
+	private boolean checkAnnotations() {
+		for (AnnotationChain chain : getActivity().getAnnotations()) {
+			for (AnnotationAssertion<?> assertion : chain.getAssertions()) {
+				Object detail = assertion.getDetail();
+				System.out.println(detail.getClass().getName());
+				if (detail instanceof HostInstitution) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	@Override
 	public Action getConfigureAction(Frame owner) {
 		return new LocalworkerActivityConfigurationAction(
-				(LocalworkerActivity)getActivity(), owner);
+				(LocalworkerActivity) getActivity(), owner);
 	}
 
 }
