@@ -115,6 +115,27 @@ public interface Edits {
 			int portGranularDepth);
 	
 	/**
+	 * Creates a new ProcessorInputPort
+	 * 
+	 * @param processor the processor to with the port will be added
+	 * @param name
+	 * @param depth
+	 * @return
+	 */
+	ProcessorInputPort createProcessorInputPort(Processor processor,String name,int depth);
+	
+	/**
+	 * Creates a new ProcessorOutputPort
+	 * 
+	 * @param processor
+	 * @param name
+	 * @param depth
+	 * @param granularDepth
+	 * @return
+	 */
+	ProcessorOutputPort createProcessorOutputPort(Processor processor, String name,int depth, int granularDepth);
+	
+	/**
 	 * Builds a new MergeOutputPort.
 	 * 
 	 * @param merge the merge that the port eill be added to
@@ -324,37 +345,27 @@ public interface Edits {
 			Activity<?> activity);
 
 	/**
-	 * Build a new input port on a processor, creating matching ports in the
+	 * Add an input port a processor, creating matching ports in the
 	 * iteration strategy or strategies as a side effect.
 	 * 
 	 * @param processor
 	 *            processor to add the port to
-	 * @param portName
-	 *            name of the port, unique in the set of processor input ports
-	 * @param portDepth
-	 *            the conceptual depth of collections consumed by this input
-	 *            port
+	 * 
+	 * @param port the input port to be added
 	 */
-	public Edit<Processor> getCreateProcessorInputPortEdit(Processor processor,
-			String portName, int portDepth);
+	public Edit<Processor> getAddProcessorInputPortEdit(Processor processor,
+			ProcessorInputPort port);
 
 	/**
-	 * Build a new output port on a processor
+	 * Add a new output port on a processor
 	 * 
 	 * @param processor
 	 *            processor to add the new output port to
-	 * @param portName
-	 *            name of the output port, unique within the set of processor
-	 *            output ports
-	 * @param portDepth
-	 *            conceptual depth of collections emitted from this port
-	 * @param granularDepth
-	 *            granular depth, lowest collection depth that can be emitted
-	 *            within a stream
+	 * 
+	 * @param port the port to be added
 	 */
-	public Edit<Processor> getCreateProcessorOutputPortEdit(
-			Processor processor, String portName, int portDepth,
-			int granularDepth);
+	public Edit<Processor> getAddProcessorOutputPortEdit(
+			Processor processor, ProcessorOutputPort port);
 
 	/**
 	 * Add an input port to a dataflow.

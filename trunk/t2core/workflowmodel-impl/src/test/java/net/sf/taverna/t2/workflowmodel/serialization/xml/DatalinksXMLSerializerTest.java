@@ -10,6 +10,8 @@ import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.Merge;
 import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
+import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 
 import org.jdom.Element;
@@ -28,8 +30,10 @@ public class DatalinksXMLSerializerTest implements XMLSerializationConstants {
 	public void testDatalinks() throws Exception {
 		Processor p = edits.createProcessor("top");
 		Processor p2 = edits.createProcessor("bottom");
-		edits.getCreateProcessorInputPortEdit(p2, "input", 0).doEdit();
-		edits.getCreateProcessorOutputPortEdit(p, "output", 0, 0).doEdit();
+		ProcessorInputPort iPort = edits.createProcessorInputPort(p2, "input", 0);
+		ProcessorOutputPort oPort = edits.createProcessorOutputPort(p, "output", 0, 0);
+		edits.getAddProcessorInputPortEdit(p2, iPort).doEdit();
+		edits.getAddProcessorOutputPortEdit(p, oPort).doEdit();
 		Datalink link = edits.createDatalink(p.getOutputPorts().get(0), p2
 				.getInputPorts().get(0));
 		List<Datalink> links = new ArrayList<Datalink>();
@@ -50,8 +54,10 @@ public class DatalinksXMLSerializerTest implements XMLSerializationConstants {
 		Processor p2 = edits.createProcessor("bottom");
 		edits.getAddProcessorEdit(df, p).doEdit();
 		edits.getAddProcessorEdit(df, p2).doEdit();
-		edits.getCreateProcessorInputPortEdit(p2, "input", 0).doEdit();
-		edits.getCreateProcessorOutputPortEdit(p, "output", 0, 0).doEdit();
+		ProcessorInputPort iPort = edits.createProcessorInputPort(p2, "input", 0);
+		ProcessorOutputPort oPort = edits.createProcessorOutputPort(p, "output", 0, 0);
+		edits.getAddProcessorInputPortEdit(p2, iPort).doEdit();
+		edits.getAddProcessorOutputPortEdit(p, oPort).doEdit();
 		Merge m = edits.createMerge(p2.getInputPorts().get(0));
 		edits.getAddMergeEdit(df, m).doEdit();
 
@@ -77,7 +83,8 @@ public class DatalinksXMLSerializerTest implements XMLSerializationConstants {
 		Dataflow df = edits.createDataflow();
 		edits.getCreateDataflowInputPortEdit(df, "dataflow_in", 0, 0).doEdit();
 		Processor p = edits.createProcessor("p");
-		edits.getCreateProcessorInputPortEdit(p, "p_in", 0).doEdit();
+		ProcessorInputPort port = edits.createProcessorInputPort(p,"p_in",0);
+		edits.getAddProcessorInputPortEdit(p, port).doEdit();
 		Datalink link = edits.createDatalink(df.getInputPorts().get(0)
 				.getInternalOutputPort(), p.getInputPorts().get(0));
 		edits.getConnectDatalinkEdit(link).doEdit();
@@ -116,7 +123,8 @@ public class DatalinksXMLSerializerTest implements XMLSerializationConstants {
 		Dataflow df = edits.createDataflow();
 		edits.getCreateDataflowOutputPortEdit(df, "dataflow_out").doEdit();
 		Processor p = edits.createProcessor("p");
-		edits.getCreateProcessorOutputPortEdit(p, "p_out", 0, 0).doEdit();
+		ProcessorOutputPort port = edits.createProcessorOutputPort(p, "p_out", 0, 0);
+		edits.getAddProcessorOutputPortEdit(p, port).doEdit();
 		Datalink link = edits.createDatalink(p.getOutputPorts().get(0), df
 				.getOutputPorts().get(0).getInternalInputPort());
 		edits.getConnectDatalinkEdit(link).doEdit();
@@ -153,8 +161,10 @@ public class DatalinksXMLSerializerTest implements XMLSerializationConstants {
 	public void testDatalink() throws Exception {
 		Processor p = edits.createProcessor("top");
 		Processor p2 = edits.createProcessor("bottom");
-		edits.getCreateProcessorInputPortEdit(p2, "input", 0).doEdit();
-		edits.getCreateProcessorOutputPortEdit(p, "output", 0, 0).doEdit();
+		ProcessorInputPort iPort = edits.createProcessorInputPort(p2, "input", 0);
+		edits.getAddProcessorInputPortEdit(p2, iPort).doEdit();
+		ProcessorOutputPort oPort = edits.createProcessorOutputPort(p, "output", 0, 0);
+		edits.getAddProcessorOutputPortEdit(p, oPort).doEdit();
 		Datalink link = edits.createDatalink(p.getOutputPorts().get(0), p2.getInputPorts().get(0));
 		edits.getConnectDatalinkEdit(link).doEdit();
 		

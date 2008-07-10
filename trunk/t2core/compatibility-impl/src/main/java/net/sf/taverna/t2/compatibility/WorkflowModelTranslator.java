@@ -8,7 +8,6 @@ import java.util.regex.Pattern;
 
 import javax.swing.tree.MutableTreeNode;
 
-import net.sf.taverna.t2.compatibility.WorkflowTranslationException;
 import net.sf.taverna.t2.compatibility.activity.ActivityTranslationException;
 import net.sf.taverna.t2.compatibility.activity.ActivityTranslator;
 import net.sf.taverna.t2.compatibility.activity.ActivityTranslatorFactory;
@@ -29,6 +28,8 @@ import net.sf.taverna.t2.workflowmodel.MergeOutputPort;
 import net.sf.taverna.t2.workflowmodel.OrderedPair;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
+import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
@@ -404,10 +405,11 @@ public class WorkflowModelTranslator {
 			throws EditException {
 		Set<OutputPort> outputPorts = activity.getOutputPorts();
 		for (OutputPort outputPort : outputPorts) {
-			Edit<Processor> addOutputPortEdit = edits
-					.getCreateProcessorOutputPortEdit(t2Processor, outputPort
+			ProcessorOutputPort port = edits.createProcessorOutputPort(t2Processor, outputPort
 							.getName(), outputPort.getDepth(), outputPort
 							.getGranularDepth());
+			Edit<Processor> addOutputPortEdit = edits
+					.getAddProcessorOutputPortEdit(t2Processor, port);
 			addOutputPortEdit.doEdit();
 			activity.getOutputPortMapping().put(outputPort.getName(),
 					outputPort.getName());
@@ -436,9 +438,10 @@ public class WorkflowModelTranslator {
 			org.embl.ebi.escience.scufl.InputPort t1InputPort = t1InputPorts
 					.get(inputPort.getName());
 			if (t1InputPort.isBound()) {
+				ProcessorInputPort port = edits.createProcessorInputPort(t2Processor, inputPort
+						.getName(), inputPort.getDepth());
 				Edit<Processor> addInputPortEdit = edits
-						.getCreateProcessorInputPortEdit(t2Processor, inputPort
-								.getName(), inputPort.getDepth());
+						.getAddProcessorInputPortEdit(t2Processor,port);
 				addInputPortEdit.doEdit();
 				activity.getInputPortMapping().put(inputPort.getName(),
 						inputPort.getName());

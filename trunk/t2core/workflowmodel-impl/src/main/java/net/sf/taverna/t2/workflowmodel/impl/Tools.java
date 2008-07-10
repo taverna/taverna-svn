@@ -20,6 +20,8 @@ import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
+import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
@@ -322,6 +324,7 @@ public class Tools {
 	 */
 	public static ProcessorImpl buildFromActivity(Activity<?> activity)
 			throws EditException {
+		EditsImpl edits = new EditsImpl();
 		ProcessorImpl processor = new ProcessorImpl();
 		// Add the Activity to the processor
 		processor.activityList.add(activity);
@@ -330,13 +333,14 @@ public class Tools {
 		activity.getInputPortMapping().clear();
 		activity.getOutputPortMapping().clear();
 		for (InputPort ip : activity.getInputPorts()) {
-			new CreateProcessorInputPortEdit(processor, ip.getName(), ip
-					.getDepth()).doEdit();
+			ProcessorInputPort pip = edits.createProcessorInputPort(processor,ip.getName(), ip.getDepth());
+			new AddProcessorInputPortEdit(processor, pip).doEdit();
 			activity.getInputPortMapping().put(ip.getName(), ip.getName());
 		}
 		for (OutputPort op : activity.getOutputPorts()) {
-			new CreateProcessorOutputPortEdit(processor, op.getName(), op
-					.getDepth(), op.getGranularDepth()).doEdit();
+			ProcessorOutputPort pop=edits.createProcessorOutputPort(processor,op.getName(), op
+					.getDepth(), op.getGranularDepth());
+			new AddProcessorOutputPortEdit(processor, pop).doEdit();
 			activity.getOutputPortMapping().put(op.getName(), op.getName());
 		}
 		DispatchStackImpl stack = processor.dispatchStack;

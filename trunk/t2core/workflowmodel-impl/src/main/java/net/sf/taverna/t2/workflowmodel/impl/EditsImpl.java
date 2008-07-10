@@ -32,6 +32,8 @@ import net.sf.taverna.t2.workflowmodel.MergeInputPort;
 import net.sf.taverna.t2.workflowmodel.OrderedPair;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
+import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityInputPortImpl;
@@ -68,6 +70,14 @@ public class EditsImpl implements Edits {
 			return null;
 		}
 	}
+	
+	public ProcessorOutputPort createProcessorOutputPort(Processor processor,String name,int depth, int granularDepth) {
+		return new ProcessorOutputPortImpl((ProcessorImpl)processor,name,depth,granularDepth);
+	}
+	
+	public ProcessorInputPort createProcessorInputPort(Processor processor, String name,int depth) {
+		return new ProcessorInputPortImpl((ProcessorImpl)processor,name,depth);
+	}
 
 	public Edit<Dataflow> getAddProcessorEdit(Dataflow dataflow,
 			Processor processor) {
@@ -95,16 +105,14 @@ public class EditsImpl implements Edits {
 		return new AddActivityEdit(processor, activity);
 	}
 
-	public Edit<Processor> getCreateProcessorInputPortEdit(Processor processor,
-			String portName, int portDepth) {
-		return new CreateProcessorInputPortEdit(processor, portName, portDepth);
+	public Edit<Processor> getAddProcessorInputPortEdit(Processor processor,
+			ProcessorInputPort port) {
+		return new AddProcessorInputPortEdit(processor, port);
 	}
 
-	public Edit<Processor> getCreateProcessorOutputPortEdit(
-			Processor processor, String portName, int portDepth,
-			int granularDepth) {
-		return new CreateProcessorOutputPortEdit(processor, portName,
-				portDepth, granularDepth);
+	public Edit<Processor> getAddProcessorOutputPortEdit(
+			Processor processor, ProcessorOutputPort port) {
+		return new AddProcessorOutputPortEdit(processor, port);
 	}
 
 	public Edit<Dataflow> getCreateDataflowInputPortEdit(Dataflow dataflow,
@@ -140,7 +148,7 @@ public class EditsImpl implements Edits {
 	
 	public Edit<Processor> getConnectProcessorOutputEdit(Processor processor,
 			String outputPortName, EventHandlingInputPort targetPort) {
-		return new ConnectProcessorOutputEdit(processor, outputPortName,
+		return new ConnectProcesorOutputEdit(processor, outputPortName,
 				targetPort);
 	}
 

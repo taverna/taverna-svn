@@ -1,11 +1,12 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
-import org.jdom.Element;
-
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyImpl;
+
+import org.jdom.Element;
 
 /**
  * Build a new input port on a processor, also modifies the processor's
@@ -14,19 +15,16 @@ import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrateg
  * @author Tom Oinn
  * 
  */
-public class CreateProcessorInputPortEdit extends AbstractProcessorEdit {
-
-	String newPortName;
+public class AddProcessorInputPortEdit extends AbstractProcessorEdit {
 
 	Element previousIterationStrategyState = null;
 
-	int newPortDepth;
+	private final ProcessorInputPortImpl port;
 
-	public CreateProcessorInputPortEdit(Processor p, String portName,
-			int portDepth) {
+	public AddProcessorInputPortEdit(Processor p, ProcessorInputPort port) {
 		super(p);
-		this.newPortName = portName;
-		this.newPortDepth = portDepth;
+		this.port = (ProcessorInputPortImpl)port;
+		
 	}
 
 	@Override
@@ -37,17 +35,16 @@ public class CreateProcessorInputPortEdit extends AbstractProcessorEdit {
 		// to the same as the input port, so this won't automatically trigger
 		// iteration staging unless the depth is altered on the iteration
 		// strategy itself.)
-		if (processor.getInputPortWithName(newPortName) != null) {
+		if (processor.getInputPortWithName(port.getName()) != null) {
 			throw new EditException(
 					"Attempt to create duplicate input port with name '"
-							+ newPortName + "'");
+							+ port.getName() + "'");
 		}
 		previousIterationStrategyState = processor.iterationStack.asXML();
-		processor.inputPorts.add(new ProcessorInputPortImpl(processor, newPortName,
-				newPortDepth));
+		processor.inputPorts.add(port);
 		for (IterationStrategyImpl is : processor.iterationStack.getStrategies()) {
-			NamedInputPortNode nipn = new NamedInputPortNode(newPortName,
-					newPortDepth);
+			NamedInputPortNode nipn = new NamedInputPortNode(port.getName(),
+					port.getDepth());
 			is.addInput(nipn);
 			is.connectDefault(nipn);
 		}
@@ -59,7 +56,7 @@ public class CreateProcessorInputPortEdit extends AbstractProcessorEdit {
 		processor.iterationStack
 				.configureFromElement(previousIterationStrategyState);
 		processor.inputPorts
-				.remove(processor.getInputPortWithName(newPortName));
+				.remove(processor.getInputPortWithName(port.getName()));
 	}
 
 }

@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
+import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 
 import org.jdom.Element;
@@ -19,8 +21,10 @@ public class ProcessorXMLSerializerTest implements XMLSerializationConstants {
 	@Test
 	public void testProcessorSerialization() throws Exception {
 		Processor p = edits.createProcessor("fred");
-		edits.getCreateProcessorInputPortEdit(p, "input", 0).doEdit();
-		edits.getCreateProcessorOutputPortEdit(p, "output", 1, 0).doEdit();
+		ProcessorInputPort iPort = edits.createProcessorInputPort(p, "input", 0);
+		ProcessorOutputPort oPort = edits.createProcessorOutputPort(p, "output", 1, 0);
+		edits.getAddProcessorInputPortEdit(p, iPort).doEdit();
+		edits.getAddProcessorOutputPortEdit(p, oPort).doEdit();
 		
 		Element el = serializer.processorToXML(p);
 
