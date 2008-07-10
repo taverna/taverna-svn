@@ -48,6 +48,8 @@ public class AnnotationsLoader {
 		try {
 			d = b.build (new FileReader(annotationFile));
 
+			if (d == null)  return null;
+			
 			Element root = d.getRootElement();
 
 			// look for all processor elements

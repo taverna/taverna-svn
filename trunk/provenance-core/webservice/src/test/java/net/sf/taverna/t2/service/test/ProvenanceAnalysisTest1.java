@@ -67,15 +67,21 @@ public class ProvenanceAnalysisTest1 {
 		Set<String> selectedProcessors = new HashSet<String>();
 
 		// this is what we certainly want to test
-		int targetIteration = 0;
-		String targetProc = "P2";
+		int targetIteration = 2;
+		String targetProc = "P1";
+		
+		// use annotations?
+		boolean useAnnotations = false;
 		
 		selectedProcessors.add(targetProc);
 		
 		// do this for one wfInstances -- there should actually be only one if clear() is used
 		ProvenanceAnalysis pa = new ProvenanceAnalysis();
 		
-		pa.setAnnotationFile(annotationFiles[5]);
+		if (useAnnotations)  pa.setAnnotationFile(annotationFiles[5]);
+		else {
+			System.out.println("WARNING: no annotations have been loaded");
+		}
 		
 		ArrayList<String> IDs = (ArrayList<String>) pa.getWFInstanceIDs();  // ordered by timestamp
 		
@@ -121,7 +127,7 @@ public class ProvenanceAnalysisTest1 {
 			}
 			System.out.println();
 			
-			pa.computeLineagePaths(annotationsFileName, WFID, 
+			pa.computeLineagePaths(WFID, 
 								   outVars.get(0).getVName(), 
 								   outVars.get(0).getPName(), 
 								   targetIteration, 

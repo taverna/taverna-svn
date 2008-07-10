@@ -27,7 +27,7 @@ public class ProvenanceAnalysis {
 	private static final Object IP_ANNOTATION = "index-preserving";
 	
 	ProvenanceQuery pq = null;
-	AnnotationsLoader ap = null;
+	AnnotationsLoader al = null;
 
 	Map<String,List<String>> annotations = null;  // user-made annotations to processors
 	
@@ -35,14 +35,19 @@ public class ProvenanceAnalysis {
 
 		pq = new ProvenanceQuery();		
 
-		ap = new AnnotationsLoader();  // singleton
+		al = new AnnotationsLoader();  // singleton
 
 	}
 
 
 	public void setAnnotationFile(String annotationFile) {
 		
-		annotations = ap.getAnnotations(annotationFile);
+		annotations = al.getAnnotations(annotationFile);
+		
+		if (annotations == null) {
+			System.out.println("WARNING: no annotations have been loaded");
+			return;
+		}
 		
 		System.out.println("processor annotations for lineage refinement: ");
 		for (Map.Entry entry:annotations.entrySet())  {
@@ -64,7 +69,6 @@ public class ProvenanceAnalysis {
 
 
 	public void computeLineagePaths(
-			String annotationFileName,
 			String workflowID,   // context
 			String var,   // target var
 			String proc,   // qualified with its processor name
@@ -303,6 +307,7 @@ public class ProvenanceAnalysis {
 
 			} else if (fromNesting > toNesting) {  // l(s) -> s  (loss of precision) see rule xform/3
 
+				
 				currNode.setIteration(prevNode.getIteration());
 				currNode.setCollectionNesting(prevNode.getCollectionNesting()+1);
 
@@ -316,7 +321,7 @@ public class ProvenanceAnalysis {
 				String procName = currNode.getProc();
 
 				List<String> annotList = null;
-				if ( annotations.containsKey(procName) && annotations.get(procName).contains(IP_ANNOTATION)) {
+				if ( annotations != null && annotations.containsKey(procName) && annotations.get(procName).contains(IP_ANNOTATION)) {
 
 					System.out.println(procName+" is "+IP_ANNOTATION);
 					
@@ -326,7 +331,7 @@ public class ProvenanceAnalysis {
 					
 					System.out.println("xform (fromNesting, toNesting) = ("+fromNesting+","+toNesting+") -- l(s) -> l(s) special rule applied");
 					
-				}  else {
+				}  else {  // default rule, no annotation
 
 					currNode.setCollectionNesting(prevNode.getCollectionNesting()+1);
 					currNode.setIic(0);

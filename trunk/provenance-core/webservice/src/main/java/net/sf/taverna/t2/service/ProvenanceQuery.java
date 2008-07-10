@@ -325,8 +325,10 @@ public class ProvenanceQuery {
 		// this assumes the last annotation has got all we need already...
 		
 		// base query
-		String q1 = "SELECT * FROM VarBinding V ";
-		String q2 = "  JOIN Collection C on C.CollID = V.collIDRef and C.wfInstanceRef = V.wfInstanceRef ";
+		String q1 = "SELECT * FROM VarBinding VB JOIN Var V on "+
+		            "VB.wfInstanceRef = V.wfInstanceRef and VB.PNameRef = V.pnameRef and VB.varNameRef = V.varName";
+		
+		String q2 = "  JOIN Collection C on C.CollID = VB.collIDRef and C.wfInstanceRef = VB.wfInstanceRef ";
 		// constraints:
 		Map<String, String>  lineageQueryConstraints = new HashMap<String, String>();
 
@@ -340,21 +342,23 @@ public class ProvenanceQuery {
 		}
 
 		if (aLA.getWfInstance() != null)
-			lineageQueryConstraints.put("V.wfInstanceRef", aLA.getWfInstance());
+			lineageQueryConstraints.put("VB.wfInstanceRef", aLA.getWfInstance());
 		
 		if (aLA.getProc() != null) 
-			lineageQueryConstraints.put("V.PNameRef", aLA.getProc());
+			lineageQueryConstraints.put("VB.PNameRef", aLA.getProc());
 
 //		if (aLA.getVar() != null) 
 //			lineageQueryConstraints.put("V.varNameRef", aLA.getVar());
 		
 		if (aLA.getCollectionRef() != null) 
-			lineageQueryConstraints.put("V.collIDRef", aLA.getCollectionRef());
+			lineageQueryConstraints.put("VB.collIDRef", aLA.getCollectionRef());
 
-		lineageQueryConstraints.put("V.iteration", Integer.toString(aLA.getIteration()));
+		lineageQueryConstraints.put("VB.iteration", Integer.toString(aLA.getIteration()));
 		
-		lineageQueryConstraints.put("V.positionInColl", Integer.toString(aLA.getIic() +1));  // +1: in the DB default is 1 not 0
+		lineageQueryConstraints.put("VB.positionInColl", Integer.toString(aLA.getIic() +1));  // +1: in the DB default is 1 not 0
 		
+		lineageQueryConstraints.put("V.inputOrOutput", "1");
+
 		q1 = addWhereClauseToQuery(q1, lineageQueryConstraints);
 		
 		lq.setSQLQuery(q1);
@@ -383,8 +387,8 @@ public class ProvenanceQuery {
 
 				while (rs.next()) {
 					
-					String proc = rs.getString("V.PNameRef");
-					String var  = rs.getString("V.varNameRef");
+					String proc = rs.getString("VB.PNameRef");
+					String var  = rs.getString("VB.varNameRef");
 					
 					if (nestingLevel > 0) {  // retrieve collection
 

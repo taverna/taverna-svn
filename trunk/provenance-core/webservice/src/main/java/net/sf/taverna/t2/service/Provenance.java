@@ -67,6 +67,7 @@ public class Provenance implements SharedVocabulary
 	public void acceptRawProvenanceEvent(String eventType, String content) throws SQLException {
 
 		System.out.println("raw event of type " + eventType);
+		//System.out.println("content \n"+content);
 
 //		parse the event into DOM
 		SAXBuilder  b = new SAXBuilder();
@@ -79,6 +80,8 @@ public class Provenance implements SharedVocabulary
 //			saveEvent for debugging / testing
 			if (saveEvent) {
 				ep.saveEvent(d, eventType);
+				
+				System.out.println("event saved");
 			}
 
 			processEvent(d, eventType);
