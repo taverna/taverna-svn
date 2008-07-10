@@ -31,6 +31,14 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.output.XMLOutputter;
 
+/**
+ * Convenience class to convert from T1 localworkers to serialised T2
+ * localworkers. Reads a scufl file with all the T1 localworkers then creates
+ * the T2 equivalent from each one and writes it to disk
+ * 
+ * @author Ian Dunlop
+ * 
+ */
 public class LocalworkerFromScuflTranslator {
 
 	private ScuflModel model;
@@ -47,10 +55,11 @@ public class LocalworkerFromScuflTranslator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		translator = new LocalworkerTranslator();
 		serializer = new ActivityXMLSerializer();
 	}
+
 	protected static void setUpRavenRepository() throws IOException {
 		File tmpDir = File.createTempFile("taverna", "raven");
 		tmpDir.delete();
@@ -84,20 +93,24 @@ public class LocalworkerFromScuflTranslator {
 		} catch (XScuflFormatException e) {
 			System.out.println("Cannot read 9" + e.getMessage());
 		}
-		
-		org.embl.ebi.escience.scufl.Processor[] processors = model.getProcessors();
-		
-		for (org.embl.ebi.escience.scufl.Processor processor:processors) {
+
+		org.embl.ebi.escience.scufl.Processor[] processors = model
+				.getProcessors();
+
+		for (org.embl.ebi.escience.scufl.Processor processor : processors) {
 			try {
-				String workerClassName = translator.getWorkerClassName(processor);
-//				String name = processor.getName();
+				String workerClassName = translator
+						.getWorkerClassName(processor);
+				// String name = processor.getName();
 				System.out.println("processor: " + workerClassName);
-				BeanshellActivityConfigurationBean bean = translator.createConfigType(processor);
+				BeanshellActivityConfigurationBean bean = translator
+						.createConfigType(processor);
 				BeanshellActivity activity = new BeanshellActivity();
 				activity.configure(bean);
 				Element activityToXML = serializer.activityToXML(activity);
 				XMLOutputter outputter = new XMLOutputter();
-				FileOutputStream out = new FileOutputStream(new File(outputDirectory + workerClassName));
+				FileOutputStream out = new FileOutputStream(new File(
+						outputDirectory + workerClassName));
 				outputter.output(activityToXML, out);
 			} catch (ActivityTranslationException e) {
 				System.out.println("oops " + e.toString());
@@ -117,31 +130,27 @@ public class LocalworkerFromScuflTranslator {
 				e.printStackTrace();
 			}
 		}
-		
-		
-		
-		
-		
-//			dataflow = WorkflowModelTranslator
-//			.doTranslation(model);
-//		} catch (WorkflowTranslationException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		for (Processor processor:dataflow.getProcessors()) {
-//			for (Activity activity:processor.getActivityList()) {
-//				
-//			}
-//		}
-		
+
+		// dataflow = WorkflowModelTranslator
+		// .doTranslation(model);
+		// } catch (WorkflowTranslationException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		// for (Processor processor:dataflow.getProcessors()) {
+		// for (Activity activity:processor.getActivityList()) {
+		//				
+		// }
+		// }
+
 	}
-	
-	
+
 	public static void main(String[] args) {
 		LocalworkerFromScuflTranslator trans = new LocalworkerFromScuflTranslator();
 		FileInputStream in = null;
 		try {
-			in = new FileInputStream(new File("/Users/Ian/scratch/localworkers.xml"));
+			in = new FileInputStream(new File(
+					"/Users/Ian/scratch/localworkers.xml"));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
