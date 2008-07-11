@@ -22,7 +22,7 @@ public class BiomartActivityHealthChecker implements HealthChecker<BiomartActivi
 	}
 
 	public HealthReport checkHealth(BiomartActivity activity) {
-		Element biomartQueryElement = activity.getConfiguration().getQuery();
+		Element biomartQueryElement = activity.getConfiguration();
 		MartQuery biomartQuery = MartServiceXMLHandler.elementToMartQuery(biomartQueryElement, null);
 		String location = biomartQuery.getMartService().getLocation();
 		Status status = Status.OK;

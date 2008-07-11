@@ -4,7 +4,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import net.sf.taverna.t2.activities.biomart.BiomartActivity;
-import net.sf.taverna.t2.activities.biomart.BiomartActivityConfigurationBean;
 import net.sf.taverna.t2.partition.AbstractActivityItem;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
@@ -48,9 +47,7 @@ public class BiomartActivityItem extends AbstractActivityItem {
 
 	@Override
 	protected Object getConfigBean() {
-		BiomartActivityConfigurationBean bean = new BiomartActivityConfigurationBean();
-		bean.setQuery(MartServiceXMLHandler.martQueryToElement(biomartQuery, null));
-		return bean;
+		return MartServiceXMLHandler.martQueryToElement(biomartQuery, null);
 	}
 
 	@Override

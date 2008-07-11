@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,10 +31,8 @@ public class BiomartActivityTest {
 	@Test
 	public void simpleQuery() throws Exception {
 		BiomartActivity activity = new BiomartActivity();
-		BiomartActivityConfigurationBean bean = new BiomartActivityConfigurationBean();
 		
-		bean.setQuery(parseQuery("biomart-query.xml"));
-		activity.configure(bean);
+		activity.configure(parseQuery("biomart-query.xml"));
 		
 		assertEquals(3, activity.getInputPorts().size());
 		assertEquals(2, activity.getOutputPorts().size());

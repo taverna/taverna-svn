@@ -1,12 +1,10 @@
 package net.sf.taverna.t2.activities.biomart.views;
 
 import java.awt.Frame;
-import java.awt.event.ActionEvent;
 
 import javax.swing.Action;
 
 import net.sf.taverna.t2.activities.biomart.BiomartActivity;
-import net.sf.taverna.t2.activities.biomart.BiomartActivityConfigurationBean;
 import net.sf.taverna.t2.activities.biomart.actions.BiomartActivityConfigurationAction;
 import net.sf.taverna.t2.workbench.ui.actions.activity.HTMLBasedActivityContextualView;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
@@ -15,8 +13,9 @@ import org.biomart.martservice.MartQuery;
 import org.biomart.martservice.MartServiceXMLHandler;
 import org.biomart.martservice.query.Attribute;
 import org.biomart.martservice.query.Filter;
+import org.jdom.Element;
 
-public class BiomartActivityContextualView extends HTMLBasedActivityContextualView<BiomartActivityConfigurationBean> {
+public class BiomartActivityContextualView extends HTMLBasedActivityContextualView<Element> {
 
 	private static final long serialVersionUID = -33919649695058443L;
 
@@ -26,7 +25,7 @@ public class BiomartActivityContextualView extends HTMLBasedActivityContextualVi
 
 	@Override
 	protected String getRawTableRowsHtml() {
-		MartQuery q = MartServiceXMLHandler.elementToMartQuery(getConfigBean().getQuery(), null);
+		MartQuery q = MartServiceXMLHandler.elementToMartQuery(getConfigBean(), null);
 		String html="<tr><td>URL</td><td>"+q.getMartService().getLocation()+"</td></tr>";
 		html+="<tr><td>Location</td><td>"+q.getMartDataset().getMartURLLocation().getDisplayName() + "</td></tr>";
 		boolean firstFilter=true;

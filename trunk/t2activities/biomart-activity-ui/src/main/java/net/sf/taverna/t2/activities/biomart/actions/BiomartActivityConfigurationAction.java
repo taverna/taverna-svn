@@ -8,9 +8,7 @@ import javax.swing.Action;
 import javax.swing.JDialog;
 
 import net.sf.taverna.t2.activities.biomart.BiomartActivity;
-import net.sf.taverna.t2.activities.biomart.BiomartActivityConfigurationBean;
 import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationAction;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 
 import org.jdom.Element;
 
@@ -33,9 +31,7 @@ public class BiomartActivityConfigurationAction extends ActivityConfigurationAct
 
 			public void actionPerformed(ActionEvent arg0) {
 				Element query = configurationPanel.getQuery();
-				BiomartActivityConfigurationBean bean = new BiomartActivityConfigurationBean();
-				bean.setQuery(query);
-				configureActivity(bean);
+				configureActivity(query);
 				dialog.setVisible(false);
 			}
 			

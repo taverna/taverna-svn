@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.sf.taverna.t2.activities.biomart.BiomartActivity;
-import net.sf.taverna.t2.activities.biomart.BiomartActivityConfigurationBean;
 import net.sf.taverna.t2.activities.testutils.DummyProcessor;
 import net.sf.taverna.t2.activities.testutils.TranslatorTestHelper;
 import net.sf.taverna.t2.compatibility.activity.ActivityTranslationException;
@@ -20,6 +19,7 @@ import net.sf.taverna.t2.workflowmodel.OutputPort;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflworkers.biomart.BiomartProcessor;
+import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -66,10 +66,10 @@ public class BiomartActivityTranslatorTest extends TranslatorTestHelper {
 	@Test
 	public void testCreateConfigTypeProcessor()
 			throws ActivityTranslationException {
-		BiomartActivityConfigurationBean bean = translator
+		Element bean = translator
 				.createConfigType(biomartProcessor);
 		assertNotNull(bean);
-		assertEquals(biomartProcessor.getQueryElement(null).toString(), bean.getQuery().toString());
+		assertEquals(biomartProcessor.getQueryElement(null).toString(), bean.toString());
 	}
 
 	@Test
@@ -83,8 +83,7 @@ public class BiomartActivityTranslatorTest extends TranslatorTestHelper {
 	public void testDoTranslationProcessor() throws Exception {
 		BiomartActivity activity = (BiomartActivity) translator
 				.doTranslation(biomartProcessor);
-		assertEquals(biomartProcessor.getQueryElement(null).toString(), activity.getConfiguration()
-				.getQuery().toString());
+		assertEquals(biomartProcessor.getQueryElement(null).toString(), activity.getConfiguration().toString());
 		assertEquals(inputPortNames.size(), activity.getInputPorts().size());
 		for (InputPort port : activity.getInputPorts()) {
 			assertTrue(inputPortNames.remove(port.getName()));

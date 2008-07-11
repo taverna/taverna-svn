@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import net.sf.taverna.t2.activities.biomart.BiomartActivity;
-import net.sf.taverna.t2.activities.biomart.BiomartActivityConfigurationBean;
 import net.sf.taverna.t2.compatibility.activity.AbstractActivityTranslator;
 import net.sf.taverna.t2.compatibility.activity.ActivityTranslationException;
 import net.sf.taverna.t2.compatibility.activity.ActivityTranslator;
@@ -20,7 +19,7 @@ import org.jdom.Namespace;
  * @see ActivityTranslator
  * @author David Withers
  */
-public class BiomartActivityTranslator extends AbstractActivityTranslator<BiomartActivityConfigurationBean> {
+public class BiomartActivityTranslator extends AbstractActivityTranslator<Element> {
 
 	@Override
 	protected BiomartActivity createUnconfiguredActivity() {
@@ -28,11 +27,9 @@ public class BiomartActivityTranslator extends AbstractActivityTranslator<Biomar
 	}
 
 	@Override
-	protected BiomartActivityConfigurationBean createConfigType(
+	protected Element createConfigType(
 			Processor processor) throws ActivityTranslationException {
-		BiomartActivityConfigurationBean bean = new BiomartActivityConfigurationBean();
-		bean.setQuery(getQueryElement(processor));
-		return bean;
+		return getQueryElement(processor);
 	}
 	
 	private Element getQueryElement(Processor processor) throws ActivityTranslationException {

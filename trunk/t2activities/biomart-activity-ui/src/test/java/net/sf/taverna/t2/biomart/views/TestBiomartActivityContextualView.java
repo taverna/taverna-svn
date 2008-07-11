@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import net.sf.taverna.t2.activities.biomart.BiomartActivity;
-import net.sf.taverna.t2.activities.biomart.BiomartActivityConfigurationBean;
 import net.sf.taverna.t2.activities.biomart.actions.BiomartActivityConfigurationAction;
 import net.sf.taverna.t2.activities.biomart.views.BiomartActivityContextualView;
 import net.sf.taverna.t2.activities.biomart.views.BiomartActivityViewFactory;
@@ -26,10 +25,10 @@ public class TestBiomartActivityContextualView {
 	@Before
 	public void setup() throws Exception {
 		activity = new BiomartActivity();
-		BiomartActivityConfigurationBean biomartConfigBean = new BiomartActivityConfigurationBean();
+		
 		Element el = getQueryElement("biomart-query.xml");
-		biomartConfigBean.setQuery(el);
-		((BiomartActivity)activity).configure(biomartConfigBean);
+		
+		((BiomartActivity)activity).configure(el);
 	}
 	
 	@SuppressWarnings("unchecked")

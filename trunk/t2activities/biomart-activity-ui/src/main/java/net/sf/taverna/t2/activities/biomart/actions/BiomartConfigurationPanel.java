@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.activities.biomart.actions;
 
 import java.awt.FlowLayout;
+import java.io.File;
 
 import javax.swing.Action;
 import javax.swing.Box;
@@ -9,8 +10,9 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import net.sf.taverna.t2.activities.biomart.BiomartActivityConfigurationBean;
+import net.sf.taverna.raven.appconfig.ApplicationConfig;
 
+import org.apache.log4j.Logger;
 import org.biomart.martservice.MartQuery;
 import org.biomart.martservice.MartService;
 import org.biomart.martservice.MartServiceException;
@@ -21,16 +23,18 @@ import org.biomart.martservice.config.ui.QueryConfigUIFactory;
 import org.jdom.Element;
 
 public class BiomartConfigurationPanel extends JPanel {
+	private static Logger logger = Logger
+			.getLogger(BiomartConfigurationPanel.class);
 	
 	private static final long serialVersionUID = 1884045346293327621L;
 	
-	private BiomartActivityConfigurationBean bean;
+	private Element bean;
 	private JButton okButton;
 	private JButton cancelButton;
 
 	private MartQuery biomartQuery;
 
-	public BiomartConfigurationPanel(BiomartActivityConfigurationBean bean) {
+	public BiomartConfigurationPanel(Element bean) {
 		this.bean = bean;
 		initialise();
 	}
@@ -41,12 +45,17 @@ public class BiomartConfigurationPanel extends JPanel {
 		okButton=new JButton("OK");
 		cancelButton=new JButton("Cancel");
 		
-		Element configurationElement = bean.getQuery();
-		biomartQuery = MartServiceXMLHandler.elementToMartQuery(configurationElement, null);
+		biomartQuery = MartServiceXMLHandler.elementToMartQuery(bean, null);
 		MartService service = biomartQuery.getMartService();
 		
-		//FIXME: need to set the cache directory for biomart, read from the configuration.
-		//service.setCacheDirectory(new File(MyGridConfiguratio.getUserDir("taverna-biomart-processor"), "cache"));
+		String homeRoot=ApplicationConfig.getInstance().getApplicationHome();
+		if (homeRoot==null) {
+			logger.warn("unable to determine application home for biomart cache");
+			homeRoot=System.getProperty("java.io.tmpdir");
+		}
+		File cache=new File(homeRoot,"t2-biomart-activity");
+		service.setCacheDirectory(new File(cache,"cache"));
+		logger.info("Biomart is using cache directory:"+cache.getAbsolutePath());
 		
 		QueryConfigController controller = new QueryConfigController(biomartQuery);
 		try {

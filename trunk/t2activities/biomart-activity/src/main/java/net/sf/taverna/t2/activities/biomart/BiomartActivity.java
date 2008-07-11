@@ -32,6 +32,7 @@ import org.biomart.martservice.query.Attribute;
 import org.biomart.martservice.query.Dataset;
 import org.biomart.martservice.query.Filter;
 import org.biomart.martservice.query.Query;
+import org.jdom.Element;
 
 /**
  * <p>
@@ -41,13 +42,13 @@ import org.biomart.martservice.query.Query;
  * @author David Withers
  */
 public class BiomartActivity extends
-		AbstractAsynchronousActivity<BiomartActivityConfigurationBean> {
+		AbstractAsynchronousActivity<Element> {
 
 	private static boolean STREAM_RESULTS = true;
 	
 	private Edits edits = EditsRegistry.getEdits();
 
-	private BiomartActivityConfigurationBean configurationBean;
+	private Element configurationBean;
 
 	private Map<String, OutputPort> outputMap = new HashMap<String, OutputPort>();
 
@@ -60,10 +61,10 @@ public class BiomartActivity extends
 	}
 
 	@Override
-	public void configure(BiomartActivityConfigurationBean configurationBean)
+	public void configure(Element configurationBean)
 			throws ActivityConfigurationException {
 		this.configurationBean = configurationBean;
-		biomartQuery = MartServiceXMLHandler.elementToMartQuery(configurationBean.getQuery(), null);
+		biomartQuery = MartServiceXMLHandler.elementToMartQuery(configurationBean, null);
 		List<Edit<?>> editList = new ArrayList<Edit<?>>();
 		buildInputPorts(editList);
 		buildOutputPorts(editList);
@@ -75,7 +76,7 @@ public class BiomartActivity extends
 	}
 
 	@Override
-	public BiomartActivityConfigurationBean getConfiguration() {
+	public Element getConfiguration() {
 		return configurationBean;
 	}
 
