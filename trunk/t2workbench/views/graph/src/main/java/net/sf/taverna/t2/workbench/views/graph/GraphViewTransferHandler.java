@@ -21,7 +21,6 @@ import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.impl.Tools;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAndBeanWrapper;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 
 import org.apache.log4j.Logger;
 
@@ -106,6 +105,7 @@ public class GraphViewTransferHandler extends TransferHandler {
 				List<Edit<?>> editList = new ArrayList<Edit<?>>();
 				editList.add(edits.getConfigureActivityEdit(activity, bean));
 				Processor p=edits.createProcessor(name);
+				editList.add(edits.getDefaultDispatchStackEdit(p));
 				editList.add(edits.getAddActivityEdit(p, activity));
 				editList.add(edits.getMapProcessorPortsForActivityEdit(p));
 				editList.add(edits.getRenameProcessorEdit(p, name));
