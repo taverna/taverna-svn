@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
 
 import net.sf.taverna.t2.lang.observer.Observer;
 import net.sf.taverna.t2.monitor.MonitorManager.MonitorMessage;
@@ -27,6 +28,7 @@ public class MonitorViewComponent extends JPanel implements UIComponentSPI {
 	
 	public MonitorViewComponent() {
 		super(new BorderLayout());
+		setBorder(LineBorder.createGrayLineBorder());
 		
 		svgCanvas = new JSVGCanvas();
 		svgCanvas.setDocumentState(JSVGCanvas.ALWAYS_DYNAMIC);

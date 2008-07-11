@@ -14,6 +14,8 @@ import net.sf.taverna.t2.reference.ui.WorkflowLaunchPanel;
 import net.sf.taverna.t2.workbench.ModelMapConstants;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 import net.sf.taverna.t2.workbench.run.DataflowRunsComponent;
+import net.sf.taverna.t2.workbench.ui.impl.Workbench;
+import net.sf.taverna.t2.workbench.ui.zaria.PerspectiveSPI;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
@@ -24,13 +26,15 @@ public class RunWorkflowAction extends AbstractAction {
 
 	private DataflowRunsComponent runComponent;
 	
+	private PerspectiveSPI resultsPerspective;
+	
 	public RunWorkflowAction() {
 		runComponent = DataflowRunsComponent.getInstance();
 		putValue(SMALL_ICON, WorkbenchIcons.runIcon);
 		putValue(NAME, "Run workflow...");		
 		putValue(SHORT_DESCRIPTION, "Run the current workflow");
+		
 	}
-	
 	
 	public void actionPerformed(ActionEvent e) {
 		Object model = ModelMap.getInstance().getModel(ModelMapConstants.CURRENT_DATAFLOW);
@@ -42,6 +46,7 @@ public class RunWorkflowAction extends AbstractAction {
 				if (!inputPorts.isEmpty()) {
 					showInputDialog(dataflow);
 				} else {
+					switchToResultsPerspective();
 					runComponent.runDataflow(dataflow, null);
 				}
 			} else {
@@ -50,6 +55,20 @@ public class RunWorkflowAction extends AbstractAction {
 			}
 		}
 		
+	}
+	
+	private void switchToResultsPerspective() {
+		if (resultsPerspective == null) {
+			for (PerspectiveSPI perspective : Workbench.getInstance().getPerspectives().getPerspectives()) {
+				if (perspective.getText().equalsIgnoreCase("results")) {
+					resultsPerspective = perspective;
+					break;
+				}
+			}
+		}
+		if (resultsPerspective != null) {
+			ModelMap.getInstance().setModel(ModelMapConstants.CURRENT_PERSPECTIVE, resultsPerspective);
+		}
 	}
 
 	private void showInputDialog(final Dataflow dataflow) {
@@ -61,6 +80,7 @@ public class RunWorkflowAction extends AbstractAction {
 				runComponent.getReferenceContext()) {
 			@Override
 			public void handleLaunch(Map<String, T2Reference> workflowInputs) {
+				switchToResultsPerspective();
 				runComponent.runDataflow(dataflow, workflowInputs);
 			}
 		};

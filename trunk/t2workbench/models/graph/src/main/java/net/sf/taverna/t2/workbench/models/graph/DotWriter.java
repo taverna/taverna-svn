@@ -6,6 +6,7 @@ import java.io.Writer;
 import java.util.List;
 
 import net.sf.taverna.t2.workbench.models.graph.Graph.Alignment;
+import net.sf.taverna.t2.workbench.models.graph.Graph.LineStyle;
 import net.sf.taverna.t2.workbench.models.graph.GraphNode.Shape;
 
 /**
@@ -103,7 +104,11 @@ public class DotWriter {
 		}
 		if (graph.getLineStyle() != null) {
 			style.append(style.length() == 0 ? "" : ",");
-			style.append(graph.getLineStyle().toString().toLowerCase());
+			if (graph.getLineStyle().equals(LineStyle.NONE)) {
+				style.append("invis");
+			} else {
+				style.append(graph.getLineStyle().toString().toLowerCase());
+			}
 		}
 		writeLine(indent + " style=\"" + style.toString() + "\"");
 

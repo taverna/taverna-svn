@@ -30,7 +30,7 @@ import net.sf.taverna.t2.workflowmodel.EditException;
 
 import org.springframework.context.ApplicationContext;
 
-public class RunComponent extends JSplitPane {
+public class DataflowRun {
 
 	private Dataflow dataflow;
 	
@@ -48,21 +48,13 @@ public class RunComponent extends JSplitPane {
 
 	private int results = 0;
 
-	public RunComponent(Dataflow dataflow, ReferenceService referenceService, Map<String, T2Reference> inputs, Date date) {
+	public DataflowRun(Dataflow dataflow, ReferenceService referenceService, Map<String, T2Reference> inputs, Date date) {
 		this.dataflow = dataflow;
 		this.referenceService = referenceService;
 		this.inputs = inputs;
-		this.date = date;
-		
-		setOrientation(VERTICAL_SPLIT);
-		
+		this.date = date;		
 		monitorViewComponent = new MonitorViewComponent();
-		setTopComponent(monitorViewComponent);
-		
 		resultsComponent = new ResultViewComponent();
-		setBottomComponent(resultsComponent);
-
-		setDividerLocation(300);
 	}
 
 	public void run() {
@@ -94,7 +86,6 @@ public class RunComponent extends JSplitPane {
 			}
 
 		});
-		determineOutputMimeTypes();
 		try {
 			resultsComponent.register(facade);
 		} catch (EditException e1) {
@@ -135,22 +126,6 @@ public class RunComponent extends JSplitPane {
 	}
 
 
-	private void determineOutputMimeTypes() {
-		// FIXME get mime types from annotations on DataflowOutputPorts
-		Map<String, List<String>> mimeTypeMap = new HashMap<String, List<String>>();
-//		for (Port port : this.model.getWorkflowSinkPorts()) {
-//			String name2 = port.getName();
-//			String syntacticType = port.getSyntacticType();
-//			List<String> typeList = port.getMetadata().getMIMETypeList();
-//
-//			if (!typeList.contains(syntacticType)) {
-//				typeList.add(syntacticType);
-//			}
-//			mimeTypeMap.put(name2, typeList);
-//		}
-//		this.resultComponent.setOutputMimeTypes(mimeTypeMap);
-	}
-
 	@Override
 	public String toString() {
 		return dataflow.getLocalName() +  " " + DateFormat.getTimeInstance().format(date);
@@ -174,7 +149,7 @@ public class RunComponent extends JSplitPane {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		final RunComponent other = (RunComponent) obj;
+		final DataflowRun other = (DataflowRun) obj;
 		if (dataflow == null) {
 			if (other.dataflow != null)
 				return false;
@@ -202,6 +177,24 @@ public class RunComponent extends JSplitPane {
 
 	public void setDate(Date date) {
 		this.date = date;
+	}
+
+	/**
+	 * Returns the monitorViewComponent.
+	 *
+	 * @return the monitorViewComponent
+	 */
+	public MonitorViewComponent getMonitorViewComponent() {
+		return monitorViewComponent;
+	}
+
+	/**
+	 * Returns the resultsComponent.
+	 *
+	 * @return the resultsComponent
+	 */
+	public ResultViewComponent getResultsComponent() {
+		return resultsComponent;
 	}
 	
 }

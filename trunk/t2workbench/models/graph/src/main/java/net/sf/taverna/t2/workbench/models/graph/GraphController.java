@@ -426,12 +426,12 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 					edge.setDataflowObject(condition);
 				}
 				dataflowToGraph.put(condition, edge);
+				if (!graphEdgeMap.containsKey(edge.getId())) {
+					graphEdgeMap.put(edge.getId(), new ArrayList<GraphElement>());
+				}
+				graphEdgeMap.get(edge.getId()).add(edge);
 			}
 		}
-		if (!graphEdgeMap.containsKey(edge.getId())) {
-			graphEdgeMap.put(edge.getId(), new ArrayList<GraphElement>());
-		}
-		graphEdgeMap.get(edge.getId()).add(edge);
 		return edge;
 	}
 
