@@ -56,7 +56,8 @@ public interface Edits {
 			Dataflow dataflow, InvocationContext context, String parentProcess);
 
 	/**
-	 * Builds a new instance of a Processor with the given name
+	 * Builds a new instance of a Processor with the given name.
+	 * The processor is setup with a default dispatch stack.
 	 * 
 	 * @param the
 	 *            local name for the processor.
@@ -82,6 +83,8 @@ public interface Edits {
 	 * @return a new DataflowOutputPort
 	 */
 	public DataflowOutputPort createDataflowOutputPort(String name, Dataflow dataflow);
+	
+	
 	
 	/**
 	 * Builds an instance of an {@link InputPort} for an Activity.
@@ -194,21 +197,6 @@ public interface Edits {
 	public Edit<Dataflow> getAddMergeEdit(Dataflow dataflow, Merge processor);
 
 	/**
-	 * Create a new processor in the specified dataflow configured as a default
-	 * Taverna 1 style activity with output and input ports matching those of
-	 * the Activity instance supplied, a default cross product iteration
-	 * strategy and a dispatch stack consisting of a parallelize, failover,
-	 * retry and invoke layer set.
-	 * 
-	 * @param dataflow
-	 *            the dataflow to add this processor to
-	 * @param activity
-	 *            a single activity to build the processor around
-	 */
-	public Edit<Processor> createProcessorFromActivity(Dataflow dataflow,
-			Activity<?> activity);
-
-	/**
 	 * Connect the output port of the specified processor to a target input
 	 * port. To connect multiple inputs use this method multiple times with
 	 * different targetPort arguments.
@@ -269,6 +257,14 @@ public interface Edits {
 	 */
 	public Edit<Datalink> getConnectDatalinkEdit(Datalink datalink);
 
+	/**
+	 * Provides an edit that setup the default dispatch stack on a raw processor.
+	 * 
+	 * @param processor
+	 * @return
+	 */
+	public Edit<Processor> getDefaultDispatchStackEdit(Processor processor);
+	
 	/**
 	 * Disconnect a datalink from its source and sink.
 	 * 

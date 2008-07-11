@@ -88,12 +88,6 @@ public class EditsImpl implements Edits {
 			Merge merge) {
 		return new AddMergeEdit(dataflow, merge);
 	}
-	
-	public Edit<Processor> createProcessorFromActivity(Dataflow dataflow,
-			Activity<?> activity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	public Edit<DispatchStack> getAddDispatchLayerEdit(DispatchStack stack,
 			DispatchLayer<?> layer, int position) {
@@ -359,6 +353,10 @@ public class EditsImpl implements Edits {
 	public Edit<Processor> getMapProcessorPortsForActivityEdit(
 			Processor processor) {
 		return new MapProcessorPortsForActivityEdit(processor);
+	}
+
+	public Edit<Processor> getDefaultDispatchStackEdit(Processor processor) {
+		return new DefaultDispatchStackEdit(processor);
 	}
 
 }

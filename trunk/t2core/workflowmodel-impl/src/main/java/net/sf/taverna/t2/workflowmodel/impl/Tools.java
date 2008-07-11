@@ -69,12 +69,7 @@ public class Tools {
 	@SuppressWarnings("unused")
 	private static final String ANNOTATION = "annotation";
 
-	// Default values for buildFromActivity()
-	private static final int MAX_JOBS = 5;
-	private static final long BACKOFF_FACTOR = (long) 1.1;
-	private static final int MAX_DELAY = 5000;
-	private static final int INITIAL_DELAY = 1000;
-	private static final int MAX_RETRIES = 3;
+	
 
 	/**
 	 * Build a JDOM &lt;activity&gt; Element corresponding to the given
@@ -326,7 +321,8 @@ public class Tools {
 	public static ProcessorImpl buildFromActivity(Activity<?> activity)
 			throws EditException {
 		EditsImpl edits = new EditsImpl();
-		ProcessorImpl processor = new ProcessorImpl();
+		ProcessorImpl processor = (ProcessorImpl)edits.createProcessor("");
+		new DefaultDispatchStackEdit(processor).doEdit();
 		// Add the Activity to the processor
 		processor.activityList.add(activity);
 		// Create processor inputs and outputs corresponding to activity inputs
@@ -344,16 +340,7 @@ public class Tools {
 			new AddProcessorOutputPortEdit(processor, pop).doEdit();
 			activity.getOutputPortMapping().put(op.getName(), op.getName());
 		}
-		DispatchStackImpl stack = processor.dispatchStack;
-		// Top level parallelise layer
-		int layer = 0;
-		new AddDispatchLayerEdit(stack, new Parallelize(MAX_JOBS), layer++)
-				.doEdit();
-		new AddDispatchLayerEdit(stack, new ErrorBounce(), layer++).doEdit();
-		new AddDispatchLayerEdit(stack, new Failover(), layer++).doEdit();
-		new AddDispatchLayerEdit(stack, new Retry(MAX_RETRIES, INITIAL_DELAY,
-				MAX_DELAY, BACKOFF_FACTOR), layer++).doEdit();
-		new AddDispatchLayerEdit(stack, new Invoke(), layer++).doEdit();
+		
 		return processor;
 	}
 
