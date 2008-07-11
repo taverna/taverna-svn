@@ -7,7 +7,7 @@
 	<repositories>
 		<repository>http://www.mygrid.org.uk/maven/repository</repository>
 		<repository>http://www.mygrid.org.uk/maven/snapshot-repository</repository>
-		<repository><http://trianacode.org/maven/repository>
+		<repository>http://trianacode.org/maven/repository></repository>
 	</repositories>
 	<profile>
 		<artifact groupId="org.myexp_whip_plugin" artifactId="myexp-whip-plugin" version="0.1.0" />
