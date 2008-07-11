@@ -24,7 +24,7 @@ import org.myexp_whip_plugin.Workflow;
 
 import edu.stanford.ejalbert.BrowserLauncher;
 
-public class ExampleWorkflowsPanel extends BasePanel implements ActionListener, ChangeListener, HyperlinkListener {
+public class ExampleWorkflowsPanel extends BasePanel implements ActionListener, ChangeListener {
 	
 	private static final String ACTION_REFRESH = "refresh_example_workflows";
 	
@@ -51,18 +51,8 @@ public class ExampleWorkflowsPanel extends BasePanel implements ActionListener, 
 		
 	}
 	
-	public void hyperlinkUpdate(HyperlinkEvent e) {
-		try {
-			if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-				BrowserLauncher launcher = new BrowserLauncher();
-				launcher.openURLinBrowser(e.getURL().toString());
-			}
-		} catch (Exception ex) {
-			logger.error("Error occurred whilst clicking a hyperlink", ex);
-		}
-	}
-
 	public void clear() {
+		this.statusLabel.setText("");
 		this.workflowsListPanel.clear();
 	}
 

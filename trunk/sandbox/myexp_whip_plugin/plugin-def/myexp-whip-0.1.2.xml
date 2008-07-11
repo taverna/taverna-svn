@@ -2,7 +2,7 @@
 	<name>myExperiment and WHIP Plugin (beta)</name>
 	<description>This plugin provides integration with myExperiment - the social networking and sharing website for scientists, and also provides integration with the WHIP platform.</description>
 	<identifier>org.myexp_whip_plugin</identifier>
-	<version>0.1.1</version>
+	<version>0.1.2</version>
 	<provider>myexperiment.org</provider>
 	<repositories>
 		<repository>http://www.mygrid.org.uk/maven/repository</repository>
@@ -10,7 +10,7 @@
 		<repository>http://trianacode.org/maven/repository></repository>
 	</repositories>
 	<profile>
-		<artifact groupId="org.myexp_whip_plugin" artifactId="myexp-whip-plugin" version="0.1.0" />
+		<artifact groupId="org.myexp_whip_plugin" artifactId="myexp-whip-plugin" version="0.1.2" />
 	</profile>
 	<taverna>
 		<version>1.7.1.0</version>

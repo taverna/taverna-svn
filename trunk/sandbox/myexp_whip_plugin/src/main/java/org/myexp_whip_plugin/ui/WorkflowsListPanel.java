@@ -87,20 +87,31 @@ public class WorkflowsListPanel extends BasePanel implements HyperlinkListener {
 					StringBuffer content = new StringBuffer();
 					content.append("<div class='outer'>");
 					content.append("<div class='list_item'>");
+					
 					content.append("<p class='title'>");
-					content.append("<a href='http://workflow/" + workflow.getId() + "'>" + workflow.getTitle() + " (" + workflow.getUploader().getName() + ")</a>");
-					content.append("&nbsp;&nbsp;&nbsp;&nbsp;");
-					content.append("<span class='ext'>(<a class='ext_link' href='" + workflow.getResource() + "'>Open in myExperiment</a>)</span>");
+					content.append("<a href='http://workflow/" + workflow.getId() + "'>" + workflow.getTitle() + " (version " + workflow.getVersion() + ")</a>");
 					content.append("</p>");
+					
+					content.append("<p class='uploader'>");
+					content.append("Uploader: <a href='" + workflow.getUploader().getResource() + "'>" + workflow.getUploader().getName() + "</a>");
+					content.append("</p>");
+					
+					content.append("<div class='desc'>");
+					content.append("<table>");
+					content.append("<tr>");
+					content.append("<td valign='top' style='margin-right: 10px;'>");
+					content.append("<img class='preview' src='" + workflow.getThumbnail() + "'/>");
+					content.append("</td>");
 					if (workflow.getDescription() != null && workflow.getDescription().length() > 0) {
-						content.append("<div class='desc'>");
+						content.append("<td valign='top'>");
 						content.append(workflow.getDescription());
-						content.append("</div>");
-						content.append("<br/>");
+						content.append("</td>");
 					}
-					else {
-						content.append("<br/>");
-					}
+					content.append("</tr>");
+					content.append("</table>");
+					content.append("</div>");
+					content.append("<p style='text-align: right;'><b><a href='" + workflow.getResource() + "'>Open in myExperiment</a></b></p>");
+					content.append("<br/>");
 					content.append("</div>");
 					content.append("</div>");
 					

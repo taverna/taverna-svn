@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -26,23 +27,22 @@ import javax.swing.text.html.StyleSheet;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.myexp_whip_plugin.MyExperimentClient;
+import org.myexp_whip_plugin.Workflow;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 
 import edu.stanford.ejalbert.BrowserLauncher;
 
-public class LatestWorkflowsPanel extends BasePanel implements ActionListener,
-		ChangeListener, HyperlinkListener {
+public class LatestWorkflowsPanel extends BasePanel implements ActionListener, ChangeListener {
 	
 	private static final String ACTION_REFRESH = "refresh_latest_workflows";
-
-	private List<SyndEntry> workflows;
 
 	private JLabel statusLabel;
 	private JButton refreshButton;
 	
-	private JScrollPane listScrollPane; 
-	private JPanel listPanel;
+	private List<Workflow> workflows = new ArrayList<Workflow>(); 
+	
+	private WorkflowsListPanel workflowsListPanel;
 
 	public LatestWorkflowsPanel(MainComponent parent, MyExperimentClient client, Logger logger) {
 		super(parent, client, logger);
@@ -58,26 +58,6 @@ public class LatestWorkflowsPanel extends BasePanel implements ActionListener,
 
 	public void stateChanged(ChangeEvent event) {
 
-	}
-	
-
-	public void hyperlinkUpdate(HyperlinkEvent e) {
-		try {
-			if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-				String url = e.getURL().toString();
-				
-				if (url.startsWith("http://workflow/")) {
-					String [] s = e.getURL().toString().split("/");
-					this.parent.setCurrentWorkflow(s[s.length-1]);
-				}
-				else {
-					BrowserLauncher launcher = new BrowserLauncher();
-					launcher.openURLinBrowser(url);
-				}
-			}
-		} catch (Exception ex) {
-			logger.error("Error occurred whilst clicking a hyperlink", ex);
-		}
 	}
 
 	public void refresh() {
@@ -107,91 +87,16 @@ public class LatestWorkflowsPanel extends BasePanel implements ActionListener,
 	public void repopulate() {
 		logger.debug("Repopulating Latest Workflows tab");
 
-		this.cleanupListPanel();
-
-		if (this.workflows != null) {
-			this.statusLabel.setText(this.workflows.size() + " workflows found");
-			
-			for (SyndEntry ent : this.workflows) {
-				try {
-					JPanel mainPanel = new JPanel(new BorderLayout());
-					mainPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-	
-					JTextPane infoTextPane = new JTextPane();
-					infoTextPane.setBorder(BorderFactory.createEmptyBorder());
-					infoTextPane.setEditable(false);
-					
-					// Work out the Workflow ID this entry is referring to:
-					int workflowId = this.client.getWorkflowIdByResourceUrl(ent.getLink());
-					
-					StringBuffer content = new StringBuffer();
-					content.append("<div class='outer'>");
-					content.append("<div class='list_item'>");
-					content.append("<p class='title'>");
-					content.append("<a href='http://workflow/" + workflowId + "'>" + ent.getTitle() + "</a>");
-					content.append("&nbsp;&nbsp;&nbsp;&nbsp;");
-					content.append("<span class='ext'>(<a class='ext_link' href='" + ent.getLink() + "'>Open in myExperiment</a>)</span>");
-					content.append("</p>");
-					if (ent.getDescription().getValue().length() > 0) {
-						content.append("<div class='desc'>");
-						content.append(ent.getDescription().getValue().trim());
-						content.append("</div>");
-						content.append("<br/>");
-					}
-					else {
-						content.append("<br/>");
-					}
-					content.append("</div>");
-					content.append("</div>");
-					
-					HTMLEditorKit kit = new HTMLEditorKit();
-					HTMLDocument doc = (HTMLDocument) (kit.createDefaultDocument());
-					
-					kit.setStyleSheet(this.parent.getStyleSheet());
-					
-					doc.insertAfterStart(doc.getRootElements()[0].getElement(0), content.toString());
-					
-					infoTextPane.setEditorKit(kit);
-					infoTextPane.setDocument(doc);
-					infoTextPane.setContentType("text/html");
-					infoTextPane.addHyperlinkListener(this);
-	
-					mainPanel.add(infoTextPane, BorderLayout.CENTER);
-					
-					JPanel buttonsPanel = new JPanel();
-					buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.LINE_AXIS));
-					//buttonsPanel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-					JButton previewButton = new JButton();
-					previewButton.setAction(this.parent.new PreviewWorkflowAction(workflowId));
-					buttonsPanel.add(previewButton);
-					JButton loadButton = new JButton();
-					loadButton.setAction(this.parent.new LoadWorkflowAction(workflowId));
-					buttonsPanel.add(loadButton);
-					mainPanel.add(buttonsPanel, BorderLayout.SOUTH);
-					
-					this.listPanel.add(mainPanel);
-				}
-				catch (Exception e) {
-					logger.error("Failed to add item entry to Latest Workflows list", e);
-				}
-			}
-			
-			//this.listPanel.setPreferredSize(new Dimension(1,1));
-			//this.listPanel.setPreferredSize(new Dimension(1, this.listPanel.getSize().height));
-			
-			this.listScrollPane.getVerticalScrollBar().setValue(0);
-		}
-		else {
-			this.statusLabel.setText("No workflows found");
-		}
+		this.statusLabel.setText(this.workflows.size() + " latest workflows found");
+		
+		this.workflowsListPanel.setWorkflows(this.workflows);
 		
 		this.revalidate();
 	}
 	
 	public void clear() {
 		this.statusLabel.setText("");
-		
-		this.cleanupListPanel();
+		this.workflowsListPanel.clear();
 	}
 	
 	private void initialiseUI() {
@@ -208,33 +113,8 @@ public class LatestWorkflowsPanel extends BasePanel implements ActionListener,
 		topPanel.add(this.refreshButton, BorderLayout.EAST);
 		this.add(topPanel, BorderLayout.NORTH);
 		
-		this.listPanel = new JPanel();
-		this.listPanel.setBorder(BorderFactory.createEmptyBorder());
-		this.listPanel.setLayout(new BoxLayout(this.listPanel, BoxLayout.Y_AXIS));
-		this.listScrollPane = new JScrollPane(this.listPanel,
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		this.listScrollPane.setBorder(BorderFactory.createEmptyBorder());
-		this.add(this.listScrollPane, BorderLayout.CENTER);
-	}
-
-	private void cleanupListPanel() {
+		this.workflowsListPanel = new WorkflowsListPanel(this.parent, this.client, this.logger);
 		
-		// Apparently not required...
-		/*
-		for (Component c : this.listPanel.getComponents()) {
-			if (c instanceof JPanel) {
-				for (Component p : ((JPanel)c).getComponents()) {
-					// Remove hyperlink listener to prevent memory leak!
-					if (p instanceof JTextPane) {
-						logger.debug("Removing hyperlink listener from JTextPane");
-						((JTextPane)p).removeHyperlinkListener(this);
-					}
-				}
-			}
-		}
-		*/
-		
-		this.listPanel.removeAll();
+		this.add(this.workflowsListPanel, BorderLayout.CENTER);
 	}
 }

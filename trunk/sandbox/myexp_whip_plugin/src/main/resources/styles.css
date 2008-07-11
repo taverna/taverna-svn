@@ -16,6 +16,7 @@ div.outer {
 a {
 	color: #000099;
 	text-decoration: none;
+	overflow: auto;
 }
 
 div.list_item {
@@ -32,17 +33,15 @@ div.list_item {
 	padding: 0;
 }
 
+.list_item .uploader {
+	font-weight: bold;
+	margin-bottom: 0; 
+	margin-top; 0;
+	padding: 0;
+}
+
 .list_item .title a {
 	color: #990000;
-}
-
-.list_item .title .ext {
-	font-size: 12pt;
-	color: #666666;
-}
-
-.list_item .title .ext_link {
-	color: #000099;
 }
 
 .list_item .desc {

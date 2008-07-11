@@ -48,8 +48,25 @@ public class MyExperimentClient {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<SyndEntry> getLatestWorkflows() throws Exception {
-		return this.getLatestWorkflowsRSS().getEntries();
+	public List<Workflow> getLatestWorkflows() {
+		List<Workflow> workflows = new ArrayList<Workflow>();
+		
+		try {
+			List<SyndEntry> entries = this.getLatestWorkflowsRSS().getEntries();
+			for (SyndEntry e : entries) {
+				int id = this.getWorkflowIdByResourceUrl(e.getLink());
+				URL url = this.getWorkflowShortXMLUrl(id);
+				
+				workflows.add(this.getWorkflowFromXml(id, url));
+			}
+		} catch (Exception e) {
+			this.logger.error("Failed to retrieve latest workflows", e);
+		}
+		
+		logger.debug(workflows.size() + " latest workflows retrieved from myExperiment");
+		
+		return workflows;
+		
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -195,7 +212,7 @@ public class MyExperimentClient {
 	}
 	
 	private URL getWorkflowShortXMLUrl(int workflowId) throws MalformedURLException  {
-		return new URL(baseUrl, "workflow.xml?id=" + workflowId + "&elements=id,title,description,uploader");
+		return new URL(baseUrl, "workflow.xml?id=" + workflowId + "&elements=id,title,description,uploader,thumbnail");
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -218,7 +235,7 @@ public class MyExperimentClient {
 				w.setResource(root.getAttributeValue("resource"));
 				
 				// Version
-				String version = root.getChildText("version");
+				String version = root.getAttributeValue("version");
 				if (version != null && !version.equals("")) {
 					w.setVersion(Integer.parseInt(version));
 				}

@@ -157,7 +157,7 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 				content.append("<br/>");
 				
 				content.append("<p class='title'>");
-				content.append("Workflow Entry: <a href='" + this.currentWorkflow.getResource() + "'>" + this.currentWorkflow.getTitle() + "</a>");
+				content.append("Workflow Entry: <a href='" + this.currentWorkflow.getResource() + "'>" + this.currentWorkflow.getTitle() + "</a> (version" + this.currentWorkflow.getVersion() + ")");
 				content.append("</p>");
 				
 				content.append("<br/>");
