@@ -62,19 +62,17 @@
 	</repositories>
 	<distributionManagement>
 		<repository>
-			<id>my-repository</id>
-			<name>MyRepository</name>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
 			<url>
-			<!-- add the url to the repository you will deploy your plugin to here,
-			e.g. scpexe://www.example.com/local/www/example/maven/repository -->
+				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/repository
 			</url>
 		</repository>
 		<snapshotRepository>
-			<id>my-snapshot-repository</id>
-			<name>My Snapshot Repository</name>
+			<id>mygrid-snapshot-repository</id>
+			<name>myGrid Snapshot Repository</name>
 			<url>
-			<!-- add the url to the repository you will deploy your plugin to here,
-			e.g. scpexe://www.example.com/local/www/example/maven/repository -->
+				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/snapshot-repository
 			</url>
 		</snapshotRepository>
 	</distributionManagement>
