@@ -94,16 +94,20 @@ public class GraphViewTransferHandler extends TransferHandler {
 				Activity activity = activityAndBeanWrapper.getActivity();
 				Object bean = activityAndBeanWrapper.getBean();
 				
-				edits.getConfigureActivityEdit(activity, bean).doEdit();
+				
 				
 				Dataflow dataflow = graphViewComponent.getDataflow();
-				Processor p = Tools.buildFromActivity(activity);
+				
 				String name = activityAndBeanWrapper.getName()
 						.replace(' ', '_');
 				name = Tools.uniqueProcessorName(name, dataflow);
-				List<Edit<?>> editList = new ArrayList<Edit<?>>();
 				
-				//editList.add(edits.getConfigureActivityEdit(activity, bean));
+				
+				List<Edit<?>> editList = new ArrayList<Edit<?>>();
+				editList.add(edits.getConfigureActivityEdit(activity, bean));
+				Processor p=edits.createProcessor(name);
+				editList.add(edits.getAddActivityEdit(p, activity));
+				editList.add(edits.getMapProcessorPortsForActivityEdit(p));
 				editList.add(edits.getRenameProcessorEdit(p, name));
 				editList.add(edits.getAddProcessorEdit(dataflow, p));
 				editManager
