@@ -34,6 +34,7 @@ import edu.stanford.ejalbert.BrowserLauncher;
 
 public class WorkflowPreviewPanel extends BasePanel implements ActionListener, ChangeListener, HyperlinkListener {
 	
+	private static final String ACTION_SYNC = "sync_workflow_preview";
 	private static final String ACTION_REFRESH = "refresh_workflow_preview";
 	private static final String ACTION_CLEAR = "clear_workflow_preview";
 
@@ -50,6 +51,7 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 	private JPanel contentPanel;
 	private JTextPane contentTextPane;
 	
+	private JButton syncButton;
 	private JButton loadButton;
 	private JButton importButton;
 	
@@ -67,6 +69,9 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 		}
 		else if (ACTION_CLEAR.equals(event.getActionCommand())) {
 			this.clear();
+		}
+		else if (ACTION_SYNC.equals(event.getActionCommand())) {
+			this.setWorkfowId(this.client.getWorkflowIdByResourceUrl(LoadWhipWorkflowAction.getCurrentWorkflowId()));
 		}
 	}
 	
@@ -213,7 +218,7 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 				
 				if (this.currentWorkflow.getCredits().size() > 0) {
 					for (User u : this.currentWorkflow.getCredits()) {
-						content.append("<a href='" + u.getUri() + "'>" + u.getName() + "</a>");
+						content.append("<a href='" + u.getResource() + "'>" + u.getName() + "</a>");
 						content.append("&nbsp;&nbsp;&nbsp;");
 					}
 				}
@@ -286,6 +291,11 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 		
 		JPanel buttonsPanel = new JPanel();
 		buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.LINE_AXIS));
+		this.syncButton = new JButton("Sync", TavernaIcons.copyIcon);
+		this.syncButton.setActionCommand(ACTION_SYNC);
+		this.syncButton.addActionListener(this);
+		this.syncButton.setToolTipText("Click this button to try and sync the Preview Workflow pane with the current workflow in the Design section");
+		buttonsPanel.add(this.syncButton);
 		this.clearButton = new JButton("Clear", TavernaIcons.deleteIcon);
 		this.clearButton.setActionCommand(ACTION_CLEAR);
 		this.clearButton.addActionListener(this);

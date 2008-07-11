@@ -34,6 +34,12 @@ public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements Artef
     private static Logger logger = Logger.getLogger(LoadWhipWorkflowAction.class);
 
     private PublishWorkflowAction publish = new PublishWorkflowAction();
+    
+    public static String getCurrentWorkflowId() {
+		return currentWorkflowId;
+	}
+    
+    private static String currentWorkflowId = "";
 
     private AppService owner;
 
@@ -98,7 +104,9 @@ public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements Artef
 
     public void artefactArrived(String s, DataBundle bundle) {
         if (bundle != null) {
-            final String entry = bundle.getMetadatDocument().getEntryPoint();
+        	MetadataDocument doc = bundle.getMetadatDocument();
+            final String entry = doc.getEntryPoint();
+            LoadWhipWorkflowAction.currentWorkflowId = doc.getId();
             if (entry == null) {
                 owner.dispose(((File) bundle.getContent()).getName());
                 return;
@@ -264,5 +272,4 @@ public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements Artef
         return new ScuflModel();
         //return model;
     }
-
 }

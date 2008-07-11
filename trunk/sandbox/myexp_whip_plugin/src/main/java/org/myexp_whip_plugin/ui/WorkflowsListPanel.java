@@ -39,8 +39,16 @@ public class WorkflowsListPanel extends BasePanel implements HyperlinkListener {
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 		try {
 			if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-				BrowserLauncher launcher = new BrowserLauncher();
-				launcher.openURLinBrowser(e.getURL().toString());
+				String url = e.getURL().toString();
+				
+				if (url.startsWith("http://workflow/")) {
+					String [] s = e.getURL().toString().split("/");
+					this.parent.setCurrentWorkflow(s[s.length-1]);
+				}
+				else {
+					BrowserLauncher launcher = new BrowserLauncher();
+					launcher.openURLinBrowser(url);
+				}
 			}
 		} catch (Exception ex) {
 			logger.error("Error occurred whilst clicking a hyperlink", ex);
@@ -80,7 +88,9 @@ public class WorkflowsListPanel extends BasePanel implements HyperlinkListener {
 					content.append("<div class='outer'>");
 					content.append("<div class='list_item'>");
 					content.append("<p class='title'>");
-					content.append("<a href='" + workflow.getResource() + "'>" + workflow.getTitle() + "</a>");
+					content.append("<a href='http://workflow/" + workflow.getId() + "'>" + workflow.getTitle() + " (" + workflow.getUploader().getName() + ")</a>");
+					content.append("&nbsp;&nbsp;&nbsp;&nbsp;");
+					content.append("<span class='ext'>(<a class='ext_link' href='" + workflow.getResource() + "'>Open in myExperiment</a>)</span>");
 					content.append("</p>");
 					if (workflow.getDescription() != null && workflow.getDescription().length() > 0) {
 						content.append("<div class='desc'>");

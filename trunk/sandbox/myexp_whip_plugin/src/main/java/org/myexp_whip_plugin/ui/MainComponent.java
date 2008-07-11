@@ -6,6 +6,7 @@ import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -16,22 +17,20 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 
+import net.sf.taverna.perspectives.PerspectiveRegistry;
+import net.sf.taverna.perspectives.PerspectiveSPI;
+
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.actions.ImportWorkflowFromFileAction;
 import org.embl.ebi.escience.scuflui.actions.OpenWorkflowFromFileAction;
 import org.embl.ebi.escience.scuflui.actions.PasswordInput;
+import org.embl.ebi.escience.scuflui.shared.ModelMap;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.myexp_whip_plugin.MyExperimentClient;
 
 public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
-	
-	private static MainComponent currentMyExperimentComponent = null;
-
-	public static MainComponent getCurrentMyExperimentComponent() {
-		return currentMyExperimentComponent;
-	}
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -58,10 +57,8 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 	public MainComponent() {
 		super();
 		
-		MainComponent.currentMyExperimentComponent = this;
-		
 		try {
-			this.client = new MyExperimentClient(this.logger, new URL("http://sandbox.myexperiment.org/"));
+			this.client = new MyExperimentClient(this.logger, new URL("http://www.myexperiment.org/"));
 		} catch (MalformedURLException e) {
 			this.logger.debug("Failed to set baseUrl for myExperimentClient");
 		}
@@ -118,8 +115,16 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 	}
 	
 	public void setCurrentWorkflow(String workflowUrl) {
+		logger.debug("Trying to set current workflow to workflow from url: " + workflowUrl);
 		if (workflowUrl != null && !workflowUrl.equals("")) {
 			this.workflowPreviewPanel.setWorkfowId(this.client.getWorkflowIdByResourceUrl(workflowUrl));
+		}
+	}
+	
+	public void setCurrentWorkflow(int workflowId) {
+		logger.debug("Trying to set current workflow to workflow with id: " + workflowId);
+		if (workflowId > 0) {
+			this.workflowPreviewPanel.setWorkfowId(workflowId);
 		}
 	}
 
@@ -211,7 +216,7 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 		
 		public ImportWorkflowAction(int workflowId) {
                 putValue(SMALL_ICON, TavernaIcons.importIcon);
-                putValue(NAME,"Import");
+                putValue(NAME,"Import into current workflow");
                 putValue(SHORT_DESCRIPTION,"Download and import this workflow into the current workflow in Design mode");
                 
                 this.workflowId = workflowId;
@@ -229,6 +234,18 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
         		
         		if (conn != null) {
         			action.openFromURL(conn);
+        			
+        			// Switch to the Design perspective
+        			PerspectiveSPI perspective = null;
+        			List<PerspectiveSPI> perspectives = PerspectiveRegistry.getInstance().getPerspectives();
+        			for (PerspectiveSPI p : perspectives) {
+        				if (p.getText().equalsIgnoreCase("design")) {
+        					perspective = p;
+        				}
+        			}
+        			if (perspective != null) {
+        				ModelMap.getInstance().setModel(ModelMap.CURRENT_PERSPECTIVE, perspective);
+        			}
         		}
 				
 			} catch (Exception e) {

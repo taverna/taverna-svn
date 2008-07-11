@@ -64,8 +64,16 @@ public class LatestWorkflowsPanel extends BasePanel implements ActionListener,
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 		try {
 			if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-				BrowserLauncher launcher = new BrowserLauncher();
-				launcher.openURLinBrowser(e.getURL().toString());
+				String url = e.getURL().toString();
+				
+				if (url.startsWith("http://workflow/")) {
+					String [] s = e.getURL().toString().split("/");
+					this.parent.setCurrentWorkflow(s[s.length-1]);
+				}
+				else {
+					BrowserLauncher launcher = new BrowserLauncher();
+					launcher.openURLinBrowser(url);
+				}
 			}
 		} catch (Exception ex) {
 			logger.error("Error occurred whilst clicking a hyperlink", ex);
@@ -113,11 +121,16 @@ public class LatestWorkflowsPanel extends BasePanel implements ActionListener,
 					infoTextPane.setBorder(BorderFactory.createEmptyBorder());
 					infoTextPane.setEditable(false);
 					
+					// Work out the Workflow ID this entry is referring to:
+					int workflowId = this.client.getWorkflowIdByResourceUrl(ent.getLink());
+					
 					StringBuffer content = new StringBuffer();
 					content.append("<div class='outer'>");
 					content.append("<div class='list_item'>");
 					content.append("<p class='title'>");
-					content.append("<a href='" + ent.getLink() + "'>" + ent.getTitle().trim() + "</a>");
+					content.append("<a href='http://workflow/" + workflowId + "'>" + ent.getTitle() + "</a>");
+					content.append("&nbsp;&nbsp;&nbsp;&nbsp;");
+					content.append("<span class='ext'>(<a class='ext_link' href='" + ent.getLink() + "'>Open in myExperiment</a>)</span>");
 					content.append("</p>");
 					if (ent.getDescription().getValue().length() > 0) {
 						content.append("<div class='desc'>");
@@ -144,9 +157,6 @@ public class LatestWorkflowsPanel extends BasePanel implements ActionListener,
 					infoTextPane.addHyperlinkListener(this);
 	
 					mainPanel.add(infoTextPane, BorderLayout.CENTER);
-					
-					// Work out the Workflow ID this entry is referring to:
-					int workflowId = this.client.getWorkflowIdByResourceUrl(ent.getLink());
 					
 					JPanel buttonsPanel = new JPanel();
 					buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.LINE_AXIS));

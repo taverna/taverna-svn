@@ -37,7 +37,7 @@ public class TagsBrowserPanel extends BasePanel implements ActionListener, Chang
 	private static final String ACTION_CLEAR_RESULTS = "clear_results_tags_browser";
 	
 	private static final int TAGCLOUD_MAX_FONTSIZE = 36;
-	private static final int TAGCLOUD_MIN_FONTSIZE = 14;
+	private static final int TAGCLOUD_MIN_FONTSIZE = 12;
 	
 	private String currentTagName = "";
 	
@@ -197,10 +197,13 @@ public class TagsBrowserPanel extends BasePanel implements ActionListener, Chang
 			
 			for (Tag t : this.tagCloudData.getTags()) {
 				// Normalise count and use it to obtain a font size value. 
-				// Note: minimum font size should be 10pt;
-				int fontSize = (int) (((double)t.getCount()/maxCount)*TAGCLOUD_MAX_FONTSIZE);
+				// Also chops off based on min and max.
+				int fontSize = (int) (((double)t.getCount()/(maxCount/4))*TAGCLOUD_MAX_FONTSIZE);
 				if (fontSize < TAGCLOUD_MIN_FONTSIZE) {
 					fontSize = TAGCLOUD_MIN_FONTSIZE;
+				}
+				if (fontSize > TAGCLOUD_MAX_FONTSIZE) {
+					fontSize = TAGCLOUD_MAX_FONTSIZE;
 				}
 				
 				content.append("<a style='font-size: " + fontSize + "pt;' href='http://tag/" + t.getTagName() + "'>" + t.getTagName() + "</a>");

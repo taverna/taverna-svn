@@ -176,8 +176,9 @@ public class MyExperimentClient {
 	}
 	
 	public int getWorkflowIdByResourceUrl(String resourceUrl) {
-		String [] s = resourceUrl.split("/");
-		return Integer.parseInt(s[s.length-1]);
+		String [] s1 = resourceUrl.split("/");
+		String [] s2 = s1[s1.length-1].split("\\?");
+		return Integer.parseInt(s2[0]);
 	}
 	
 	public URL getWorkflowDownloadURL(int workflowId) throws MalformedURLException {
@@ -194,7 +195,7 @@ public class MyExperimentClient {
 	}
 	
 	private URL getWorkflowShortXMLUrl(int workflowId) throws MalformedURLException  {
-		return new URL(baseUrl, "workflow.xml?id=" + workflowId + "&elements=id,title,description");
+		return new URL(baseUrl, "workflow.xml?id=" + workflowId + "&elements=id,title,description,uploader");
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -217,7 +218,10 @@ public class MyExperimentClient {
 				w.setResource(root.getAttributeValue("resource"));
 				
 				// Version
-				w.setVersion(Integer.parseInt(root.getAttributeValue("version")));
+				String version = root.getChildText("version");
+				if (version != null && !version.equals("")) {
+					w.setVersion(Integer.parseInt(version));
+				}
 				
 				// Id
 				String id = root.getChildText("id");
