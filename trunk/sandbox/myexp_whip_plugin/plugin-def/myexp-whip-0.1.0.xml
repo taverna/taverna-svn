@@ -5,9 +5,9 @@
 	<version>0.1.1</version>
 	<provider>myexperiment.org</provider>
 	<repositories>
-		<repository>
-			<!-- add the url to the repository you have deployed your plugin to here, e.g. http://www.example.com/maven/repository -->
-		</repository>
+		<repository>http://www.mygrid.org.uk/maven/repository</repository>
+		<repository>http://www.mygrid.org.uk/maven/snapshot-repository</repository>
+		<repository><http://trianacode.org/maven/repository>
 	</repositories>
 	<profile>
 		<artifact groupId="org.myexp_whip_plugin" artifactId="myexp-whip-plugin" version="0.1.0" />
