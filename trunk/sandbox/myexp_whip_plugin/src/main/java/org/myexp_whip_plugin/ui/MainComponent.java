@@ -1,8 +1,8 @@
+// Copyright (C) 2008 The University of Manchester, University of Southampton and Cardiff University
 package org.myexp_whip_plugin.ui;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,6 +30,9 @@ import org.embl.ebi.escience.scuflui.shared.ModelMap;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.myexp_whip_plugin.MyExperimentClient;
 
+/*
+ * @author Jiten Bhagat
+ */
 public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 	
 	private static final long serialVersionUID = 1L;
@@ -76,7 +79,7 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 		SwingUtilities.invokeLater(new Runnable() {
 		    public void run() {
 		    	setOneTouchExpandable(true);
-				setDividerLocation(0.6);
+				setDividerLocation(0.5);
 				setDoubleBuffered(true);
 		    }
 		});

@@ -1,3 +1,4 @@
+// Copyright (C) 2008 The University of Manchester, University of Southampton and Cardiff University
 package org.myexp_whip_plugin;
 
 import java.net.MalformedURLException;
@@ -18,6 +19,9 @@ import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 
+/*
+ * @author Jiten Bhagat
+ */
 public class MyExperimentClient {
 	
 	private static final DateFormat DATE_FORMATTER = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy");
@@ -212,7 +216,7 @@ public class MyExperimentClient {
 	}
 	
 	private URL getWorkflowShortXMLUrl(int workflowId) throws MalformedURLException  {
-		return new URL(baseUrl, "workflow.xml?id=" + workflowId + "&elements=id,title,description,uploader,thumbnail");
+		return new URL(baseUrl, "workflow.xml?id=" + workflowId + "&elements=id,title,description,uploader,thumbnail,preview");
 	}
 	
 	@SuppressWarnings("unchecked")

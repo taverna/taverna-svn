@@ -1,3 +1,4 @@
+// Copyright (C) 2008 The University of Manchester, University of Southampton and Cardiff University
 package org.myexp_whip_plugin.ui;
 
 import java.awt.BorderLayout;
@@ -32,6 +33,9 @@ import org.myexp_whip_plugin.Workflow;
 
 import edu.stanford.ejalbert.BrowserLauncher;
 
+/*
+ * @author Jiten Bhagat
+ */
 public class WorkflowPreviewPanel extends BasePanel implements ActionListener, ChangeListener, HyperlinkListener {
 	
 	private static final String ACTION_SYNC = "sync_workflow_preview";
@@ -154,44 +158,46 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 				content.append("<div class='outer'>");
 				content.append("<div class='workflow'>");
 				
-				content.append("<br/>");
+				content.append("<br>");
 				
 				content.append("<p class='title'>");
-				content.append("Workflow Entry: <a href='" + this.currentWorkflow.getResource() + "'>" + this.currentWorkflow.getTitle() + "</a> (version" + this.currentWorkflow.getVersion() + ")");
+				content.append("Workflow Entry: <a href='" + this.currentWorkflow.getResource() + "'>" + this.currentWorkflow.getTitle() + "</a> (version " + this.currentWorkflow.getVersion() + ")");
 				content.append("</p>");
 				
-				content.append("<br/>");
+				content.append("<br>");
 				
 				content.append("<p class='info'>");
-				content.append("<b>Uploader:</b> <a href='" + this.currentWorkflow.getUploader().getResource() + "'>" + this.currentWorkflow.getUploader().getName() + "</a><br/>");
-				content.append("<b>Created at: </b> " + this.currentWorkflow.getCreatedAt() + "<br/>");
+				content.append("<b>Uploader:</b> <a href='" + this.currentWorkflow.getUploader().getResource() + "'>" + this.currentWorkflow.getUploader().getName() + "</a><br>");
+				content.append("<b>Created at: </b> " + this.currentWorkflow.getCreatedAt() + "<br>");
 				content.append("<b>License: </b> <a href='" + this.currentWorkflow.getLicense().getLink() + "'>" + this.currentWorkflow.getLicense().getText() + "</a>");
 				content.append("</p>");
 				
-				content.append("<br/>");
+				content.append("<br>");
 				
-				content.append("<img class='preview' src='" + this.currentWorkflow.getThumbnailBig() + "'/>");
+				content.append("<a href='" + this.currentWorkflow.getPreview() + "'>");
+				content.append("<img class='preview' src='" + this.currentWorkflow.getThumbnailBig() + "'></img>");
+				content.append("</a>");
 				
-				content.append("<br/>");
-				content.append("<br/>");
+				content.append("<br>");
+				content.append("<br>");
 				
 				if (!this.currentWorkflow.getDescription().equals("")) {
 					content.append("<p class='desc'>");
-					content.append("<br/>");
+					content.append("<br>");
 					content.append(this.currentWorkflow.getDescription());
-					content.append("<br/>");
-					content.append("<br/>");
+					content.append("<br>");
+					content.append("<br>");
 					content.append("</p>");
 				}
 				else {
 					content.append("<span class='none_text'>No description</span>");
 				}
 				
-				content.append("<br/>");
-				content.append("<br/>");
+				content.append("<br>");
+				content.append("<br>");
 				
 				content.append("<p style='text-align: center;'><b>Tags</b></p>");
-				content.append("<br/>");
+				content.append("<br>");
 				content.append("<p class='tags'>");
 				content.append("&nbsp;&nbsp;&nbsp;");
 				
@@ -208,11 +214,11 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 				
 				content.append("</p>");
 				
-				content.append("<br/>");
-				content.append("<br/>");
+				content.append("<br>");
+				content.append("<br>");
 				
 				content.append("<p style='text-align: center;'><b>Credits</b></p>");
-				content.append("<br/>");
+				content.append("<br>");
 				content.append("<p class='credits'>");
 				content.append("&nbsp;&nbsp;&nbsp;");
 				
@@ -325,6 +331,7 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 		this.contentTextPane.setBorder(BorderFactory.createEmptyBorder());
 		this.contentTextPane.setEditable(false);
 		this.contentTextPane.addHyperlinkListener(this);
+		this.contentTextPane.setContentType("text/html");
 		this.contentPanel.add(this.contentTextPane, BorderLayout.CENTER);
 		
 		JPanel loadPanel = new JPanel();
@@ -368,16 +375,16 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 			content.append("Workflow Entry: <a href='http://sandbox.myexperiment.org/workflows/157'>Example of a conditional execution workflow</a>");
 			content.append("</p>");
 			content.append("<p class='info'>");
-			content.append("<b>Uploader:</b> <a href=''>Alan Williams</a><br/>");
-			content.append("<b>Created at: </b> Wed 5th March 2008 13:55:45<br/>");
+			content.append("<b>Uploader:</b> <a href=''>Alan Williams</a><br>");
+			content.append("<b>Created at: </b> Wed 5th March 2008 13:55:45<br>");
 			content.append("<b>License: </b> <a href=''>Creative Commons Attribution 3.0 License</a>");
 			content.append("</p>");
-			content.append("<br/>");
+			content.append("<br>");
 			content.append("<img class='preview' src='http://sandbox.myexperiment.org/workflow/image/157/example_of_a_conditional_execution_workflow_7882_1.png' />");
 			content.append("<p class='desc'>");
 			content.append("If the input is true then the string 'foo' is emited, if false then 'bar'. Just a simple example to show how the monster works, so to speak.");
 			content.append("</p>");
-			content.append("<br/>");
+			content.append("<br>");
 			content.append("<p style='text-align: center'><b>Tags</b></p>");
 			content.append("<div style='text-align: center'>");
 			content.append("&nbsp;&nbsp;&nbsp;");
@@ -389,7 +396,7 @@ public class WorkflowPreviewPanel extends BasePanel implements ActionListener, C
 			content.append("&nbsp;&nbsp;&nbsp;");
 			content.append("<a href='' style='color: #000066;'>condition</a>");
 			content.append("</div>");
-			content.append("<br/>");
+			content.append("<br>");
 			content.append("<p style='text-align: center'><b>Credits</b></p>");
 			content.append("<div style='text-align: center'>");
 			content.append("<a href=''>Tom Oinn</a>");

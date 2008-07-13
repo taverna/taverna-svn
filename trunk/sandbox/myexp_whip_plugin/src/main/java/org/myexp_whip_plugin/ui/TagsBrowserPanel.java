@@ -1,8 +1,11 @@
+// Copyright (C) 2008 The University of Manchester, University of Southampton and Cardiff University
 package org.myexp_whip_plugin.ui;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -30,6 +33,9 @@ import org.myexp_whip_plugin.SearchResults;
 import org.myexp_whip_plugin.Tag;
 import org.myexp_whip_plugin.TagCloud;
 
+/*
+ * @author Jiten Bhagat
+ */
 public class TagsBrowserPanel extends BasePanel implements ActionListener, ChangeListener, HyperlinkListener {
 	
 	private static final String ACTION_REFRESH_CLOUD = "refresh_cloud_tags_browser";
@@ -86,7 +92,19 @@ public class TagsBrowserPanel extends BasePanel implements ActionListener, Chang
 	}
 	
 	public void stateChanged(ChangeEvent event) {
-
+		if (event.getSource() == this.cloudSizeSlider) {
+			JSlider source = (JSlider)event.getSource();
+		    if (!source.getValueIsAdjusting()) {
+		    	this.cloudAllCheckBox.setSelected(false);
+		    	this.refreshCloud();
+		    }
+		}
+		if (event.getSource() == this.cloudAllCheckBox) {
+			JCheckBox source = (JCheckBox)event.getSource();
+			if (source.getModel().isPressed()) {
+				this.refreshCloud();
+			}
+		}
 	}
 	
 	public void hyperlinkUpdate(HyperlinkEvent e) {
@@ -117,7 +135,7 @@ public class TagsBrowserPanel extends BasePanel implements ActionListener, Chang
 	}
 	
 	public void refreshCloud() {
-		this.cloudStatusLabel.setText("Building tag cloud...");
+		this.cloudStatusLabel.setText("Fetching tag cloud data...");
 		
 		// Make call to myExperiment API in a different thread
 		// (then use SwingUtilities.invokeLater to update the UI when ready).
@@ -183,22 +201,33 @@ public class TagsBrowserPanel extends BasePanel implements ActionListener, Chang
 	}
 	
 	public void repopulateCloud() {
-		logger.debug("Repopulating tag cloud");
+		logger.debug("Building tag cloud...");
 		
 		this.cloudStatusLabel.setText(this.tagCloudData.getTags().size() + " tags found");
 		
 		try {
+			
+			// Set the slider max to the max no of tags
+			if (this.cloudAllCheckBox.isSelected()) {
+				int size = this.tagCloudData.getTags().size();
+				this.cloudSizeSlider.removeChangeListener(this);
+				this.cloudSizeSlider.setMaximum(size);
+				this.cloudSizeSlider.setValue(size);
+				this.cloudSizeSlider.addChangeListener(this);
+			}
+			
+			// For tag cloud font size calculations
 			int maxCount = this.getMaxCountOfTags();
 			
 			StringBuffer content = new StringBuffer();
 			content.append("<div class='outer'>");
-			content.append("<br/>");
+			content.append("<br>");
 			content.append("<div class='tag_cloud'>");
 			
 			for (Tag t : this.tagCloudData.getTags()) {
 				// Normalise count and use it to obtain a font size value. 
 				// Also chops off based on min and max.
-				int fontSize = (int) (((double)t.getCount()/(maxCount/4))*TAGCLOUD_MAX_FONTSIZE);
+				int fontSize = (int) (((double)t.getCount()/((double)maxCount/3))*TAGCLOUD_MAX_FONTSIZE);
 				if (fontSize < TAGCLOUD_MIN_FONTSIZE) {
 					fontSize = TAGCLOUD_MIN_FONTSIZE;
 				}
@@ -210,7 +239,7 @@ public class TagsBrowserPanel extends BasePanel implements ActionListener, Chang
 				content.append("&nbsp;&nbsp;&nbsp;");
 			}
 			
-			content.append("<br/>");
+			content.append("<br>");
 			content.append("</div>");
 			content.append("</div>");
 			
@@ -278,11 +307,12 @@ public class TagsBrowserPanel extends BasePanel implements ActionListener, Chang
 		
 		JPanel cloudConfigPanel = new JPanel();
 		cloudConfigPanel.setLayout(new BoxLayout(cloudConfigPanel, BoxLayout.LINE_AXIS));
-		this.cloudSizeSlider = new JSlider(1, 100, 50);
-		//this.cloudSizeSlider.addChangeListener(this);
+		this.cloudSizeSlider = new JSlider(1, 350, 70);
+		this.cloudSizeSlider.addChangeListener(this);
 		this.cloudSizeSlider.setToolTipText("Drag the slider to select how big the tag cloud should be, or check the \"All tags\" box to get the full tag cloud.");
 		cloudConfigPanel.add(this.cloudSizeSlider);
-		this.cloudAllCheckBox = new JCheckBox("All tags", true);
+		this.cloudAllCheckBox = new JCheckBox("All tags", false);
+		this.cloudAllCheckBox.addChangeListener(this);
 		cloudConfigPanel.add(this.cloudAllCheckBox);
 		this.cloudRefreshButton = new JButton("Refresh", TavernaIcons.refreshIcon);
 		this.cloudRefreshButton.setActionCommand(ACTION_REFRESH_CLOUD);

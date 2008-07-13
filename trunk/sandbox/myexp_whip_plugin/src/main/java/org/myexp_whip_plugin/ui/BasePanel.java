@@ -1,5 +1,9 @@
+// Copyright (C) 2008 The University of Manchester, University of Southampton and Cardiff University
 package org.myexp_whip_plugin.ui;
 
+/*
+ * @author Jiten Bhagat
+ */
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;

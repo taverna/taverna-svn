@@ -1,3 +1,4 @@
+// Copyright (C) 2008 The University of Manchester, University of Southampton and Cardiff University
 package org.myexp_whip_plugin;
 
 import java.net.URI;
@@ -5,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/*
+ * @author Jiten Bhagat
+ */
 public class Workflow extends Resource {
 	
 	private int id;

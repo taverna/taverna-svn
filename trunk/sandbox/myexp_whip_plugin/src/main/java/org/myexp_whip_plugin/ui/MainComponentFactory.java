@@ -1,3 +1,4 @@
+// Copyright (C) 2008 The University of Manchester, University of Southampton and Cardiff University
 package org.myexp_whip_plugin.ui;
 
 import javax.swing.ImageIcon;
@@ -9,6 +10,9 @@ import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 
 import org.myexp_whip_plugin.ui.MainComponent;
 
+/*
+ * @author Jiten Bhagat
+ */
 public class MainComponentFactory implements UIComponentFactorySPI {
 
 	private static Logger logger = Logger.getLogger(MainComponentFactory.class);

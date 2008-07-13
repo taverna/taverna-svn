@@ -1,3 +1,4 @@
+// Copyright (C) 2008 The University of Manchester, University of Southampton and Cardiff University
 package org.myexp_whip_plugin.ui;
 
 import java.awt.BorderLayout;
@@ -21,6 +22,9 @@ import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.myexp_whip_plugin.MyExperimentClient;
 import org.myexp_whip_plugin.SearchResults;
 
+/*
+ * @author Jiten Bhagat
+ */
 public class SearchWorkflowsPanel extends BasePanel implements ActionListener, ChangeListener, KeyListener {
 	
 	private static final String ACTION_SEARCH = "search_workflows_search";

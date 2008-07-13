@@ -1,3 +1,4 @@
+// Copyright (C) 2008 The University of Manchester, University of Southampton and Cardiff University
 package org.myexp_whip_plugin.ui;
 
 import org.apache.log4j.Logger;
@@ -28,6 +29,9 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 
+/*
+ * @author Andrew Harrison
+ */
 @SuppressWarnings("serial")
 public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements ArtefactReceiver, PropertyChangeListener {
 

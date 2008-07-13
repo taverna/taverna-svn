@@ -1,3 +1,4 @@
+// Copyright (C) 2008 The University of Manchester, University of Southampton and Cardiff University
 package org.myexp_whip_plugin.ui;
 
 import java.awt.BorderLayout;
@@ -33,6 +34,9 @@ import com.sun.syndication.feed.synd.SyndEntry;
 
 import edu.stanford.ejalbert.BrowserLauncher;
 
+/*
+ * @author Jiten Bhagat
+ */
 public class LatestWorkflowsPanel extends BasePanel implements ActionListener, ChangeListener {
 	
 	private static final String ACTION_REFRESH = "refresh_latest_workflows";

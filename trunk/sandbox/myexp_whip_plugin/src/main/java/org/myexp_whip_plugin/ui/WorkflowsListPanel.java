@@ -1,3 +1,4 @@
+// Copyright (C) 2008 The University of Manchester, University of Southampton and Cardiff University
 package org.myexp_whip_plugin.ui;
 
 import java.awt.BorderLayout;
@@ -23,6 +24,9 @@ import org.myexp_whip_plugin.Workflow;
 
 import edu.stanford.ejalbert.BrowserLauncher;
 
+/*
+ * @author Jiten Bhagat
+ */
 public class WorkflowsListPanel extends BasePanel implements HyperlinkListener {
 	
 	private JScrollPane listScrollPane;
@@ -63,6 +67,7 @@ public class WorkflowsListPanel extends BasePanel implements HyperlinkListener {
 
 	public void clear() {
 		this.listPanel.removeAll();
+		this.invalidate();
 	}
 
 	public void refresh() {
@@ -97,12 +102,17 @@ public class WorkflowsListPanel extends BasePanel implements HyperlinkListener {
 					content.append("</p>");
 					
 					content.append("<div class='desc'>");
-					content.append("<table>");
+					content.append("<table style='margin-top: 5px; margin-bottom: 5px;'>");
 					content.append("<tr>");
-					content.append("<td valign='top' style='margin-right: 10px;'>");
-					content.append("<img class='preview' src='" + workflow.getThumbnail() + "'/>");
+					content.append("<td valign='top'>");
+					content.append("<a href='" + workflow.getPreview() + "'>");
+					content.append("<img class='preview' src='" + workflow.getThumbnail() + "'></img>");
+					content.append("</a>");
 					content.append("</td>");
 					if (workflow.getDescription() != null && workflow.getDescription().length() > 0) {
+						content.append("<td>");
+						content.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+						content.append("</td>");
 						content.append("<td valign='top'>");
 						content.append(workflow.getDescription());
 						content.append("</td>");
@@ -110,8 +120,8 @@ public class WorkflowsListPanel extends BasePanel implements HyperlinkListener {
 					content.append("</tr>");
 					content.append("</table>");
 					content.append("</div>");
-					content.append("<p style='text-align: right;'><b><a href='" + workflow.getResource() + "'>Open in myExperiment</a></b></p>");
-					content.append("<br/>");
+					content.append("<p style='text-align: left;'><b><a href='" + workflow.getResource() + "'>Open in myExperiment</a></b></p>");
+					content.append("<br>");
 					content.append("</div>");
 					content.append("</div>");
 					
@@ -158,6 +168,8 @@ public class WorkflowsListPanel extends BasePanel implements HyperlinkListener {
 		this.listScrollPane = new JScrollPane(this.listPanel,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		this.listScrollPane.getVerticalScrollBar().setUnitIncrement(10);
+		this.listScrollPane.getHorizontalScrollBar().setUnitIncrement(10);
 		this.listScrollPane.setBorder(BorderFactory.createEmptyBorder());
 		
 		this.add(this.listScrollPane, BorderLayout.CENTER);

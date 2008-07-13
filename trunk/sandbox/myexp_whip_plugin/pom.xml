@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.myexp_whip_plugin</groupId>
 	<artifactId>myexp-whip-plugin</artifactId>
-	<version>0.1.2</version>
+	<version>0.1.3</version>
 	<name>myExperiment and WHIP Plugin</name>
 	<description>
 		A pilot plugin for Taverna to show integration with myExperiment 
