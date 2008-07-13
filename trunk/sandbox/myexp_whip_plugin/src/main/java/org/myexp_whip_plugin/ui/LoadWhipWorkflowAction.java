@@ -54,15 +54,16 @@ public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements Artef
     public static final String WORKFLOW_STATUS = "org.whipplugin.taverna.workflow-status";
 
     public LoadWhipWorkflowAction() {
-        putValue(SMALL_ICON, TavernaIcons.updateIcon);
-        putValue(NAME, "Whip Actions");
-        putValue(SHORT_DESCRIPTION, "Handles Whip Actions");
+        //putValue(SMALL_ICON, TavernaIcons.updateIcon);
+        //putValue(NAME, "Whip Actions");
+        //putValue(SHORT_DESCRIPTION, "Handles Whip Actions");
         owner = new AppService(this);
         owner.update();
     }
 
     public void actionPerformed(ActionEvent e) {
-        JPopupMenu menu = new JPopupMenu("Handle Whip Actions");
+        /*
+    	JPopupMenu menu = new JPopupMenu("Handle Whip Actions");
         menu.add(new JMenuItem(publish));
         if (bundles.size() > 0) {
             menu.addSeparator();
@@ -74,6 +75,7 @@ public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements Artef
         }
         Component sourceComponent = (Component) e.getSource();
         menu.show(sourceComponent, 0, sourceComponent.getHeight());
+        */
     }
 
     public String getLabel() {
