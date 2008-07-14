@@ -120,7 +120,7 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 			MutableTreeNode child, InvocationContext context) {
 
 		int childIndex = parent.getIndex(child);
-		child = new ResultTreeNode(token, context, getMimeTypes(token, context));
+		child = new ResultTreeNode(token, context);
 
 		parent.remove(childIndex);
 		parent.insert(child, childIndex);
@@ -128,44 +128,6 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 		return child;
 	}
 
-	private List<String> getMimeTypes(T2Reference reference, InvocationContext context) {
-		List<String> mimeTypes = new ArrayList<String>();
-		Identified identified = context.getReferenceService().resolveIdentifier(reference, null, context);
-		if (identified instanceof ReferenceSet) {
-			ReferenceSet referenceSet = (ReferenceSet) identified;
-			Set<ExternalReferenceSPI> externalReferences = referenceSet.getExternalReferences();
-			for (ExternalReferenceSPI externalReferenceSPI : externalReferences) {
-				InputStream inputStream = externalReferenceSPI.openStream(context);
-				byte[] bytes = new byte[128];
-				try {
-					inputStream.read(bytes);
-					mimeTypes.add(Magic.getMagicMatch(bytes, true).getMimeType());
-				} catch (IOException e) {
-					e.printStackTrace();
-					logger.debug("Failed to read from stream to determine mimetype", e);
-				} catch (MagicParseException e) {
-					e.printStackTrace();
-					logger.debug("Error calling mime magic", e);
-				} catch (MagicMatchNotFoundException e) {
-					e.printStackTrace();
-					logger.debug("Error calling mime magic", e);
-				} catch (MagicException e) {
-					e.printStackTrace();
-					logger.debug("Error calling mime magic", e);
-				} finally {
-					try {
-						inputStream.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-						logger.debug("Failed to close stream after determining mimetype", e);
-					}
-				}
-			}
-			
-		}
-		return mimeTypes;
-	}
-	
 	private MutableTreeNode getChildAt(MutableTreeNode parent, int i) {
 		int childCount = getChildCount(parent);
 		if (childCount <= i) {

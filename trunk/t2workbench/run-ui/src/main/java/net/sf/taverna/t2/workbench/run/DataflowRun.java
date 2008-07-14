@@ -62,7 +62,7 @@ public class DataflowRun {
 		monitorObserver = monitorViewComponent.setDataflow(dataflow);
 		InvocationContext context = createContext();
 
-		resultsComponent.setContext(context);
+//		resultsComponent.setContext(context);
 		MonitorManager.getInstance().addObserver(monitorObserver);
 		// Use the empty context by default to root this facade on the monitor
 		// tree

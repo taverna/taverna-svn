@@ -87,12 +87,10 @@ public class RendererPopup extends MouseAdapter {
 			JPopupMenu menu = new JPopupMenu();
 			menu.setLabel("Available Renderers:");
 			menu.addSeparator();
-			if (lastSelectedPathComponent instanceof ResultTreeChildNode) {
-				List<String> types = ((ResultTreeChildNode) lastSelectedPathComponent)
-						.getMimeTypes();
+			if (lastSelectedPathComponent instanceof ResultTreeNode) {
+				List<String> types = null;
 				RendererRegistry rendererRegistry = new RendererRegistry();
-				token = ((ResultTreeChildNode) lastSelectedPathComponent)
-						.getT2Reference();
+				token = null;
 
 				List<Renderer> allRenderers = new ArrayList<Renderer>();
 				// if there are no renderers then display these MIME types in a
@@ -208,7 +206,7 @@ public class RendererPopup extends MouseAdapter {
 				// RenderedResultComponent rendererComponent =
 				// RendererResultComponentFactory.getInstance().getRendererComponent();
 				// rendererComponent.setResultComponent(component);
-				renderedResultComponent.setResultComponent(component);
+//				renderedResultComponent.setResultComponent(component);
 			}
 
 		});

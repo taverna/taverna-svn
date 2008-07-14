@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.workbench.views.results;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -22,7 +23,7 @@ public class ResultTreeNode implements MutableTreeNode {
 
 	private List<MutableTreeNode> children = new ArrayList<MutableTreeNode>();
 
-	private final List<String> mimeTypes;
+//	private final List<String> mimeTypes;
 
 	private final T2Reference reference;
 
@@ -32,15 +33,14 @@ public class ResultTreeNode implements MutableTreeNode {
 		return reference;
 	}
 
-	public List<String> getMimeTypes() {
-		return mimeTypes;
-	}
+//	public List<String> getMimeTypes() {
+//		return mimeTypes;
+//	}
 
-	public ResultTreeNode(T2Reference reference, InvocationContext context,
-			List<String> mimeTypes) {
+	public ResultTreeNode(T2Reference reference, InvocationContext context/*, List<String> mimeTypes*/) {
 		this.reference = reference;
 		this.context = context;
-		this.mimeTypes = mimeTypes;
+//		this.mimeTypes = mimeTypes;
 	}
 
 	public Enumeration<MutableTreeNode> children() {
@@ -48,25 +48,25 @@ public class ResultTreeNode implements MutableTreeNode {
 	}
 
 	public boolean getAllowsChildren() {
-		return true;
+		return false;
 	}
 
 	public TreeNode getChildAt(int index) {
-		if (children.size() == 0) {
-			try {
-				// add a node underneath the 'folder' which displays the mime
-				// types and can be right clicked on.  Similar to T1 functionality
-				children.add(new ResultTreeChildNode(mimeTypes, context,
-						reference));
-			} catch (Exception e) {
-
-			}
-		}
+//		if (children.size() == 0) {
+//			try {
+//				// add a node underneath the 'folder' which displays the mime
+//				// types and can be right clicked on.  Similar to T1 functionality
+//				children.add(new ResultTreeChildNode(mimeTypes, context,
+//						reference));
+//			} catch (Exception e) {
+//
+//			}
+//		}
 		return children.get(index);
 	}
 
 	public int getChildCount() {
-		return 1;
+		return 0;
 	}
 
 	public int getIndex(TreeNode node) {
@@ -78,7 +78,7 @@ public class ResultTreeNode implements MutableTreeNode {
 	}
 
 	public boolean isLeaf() {
-		return false;
+		return true;
 	}
 
 	public void insert(MutableTreeNode node, int index) {
