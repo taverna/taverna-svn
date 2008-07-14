@@ -63,7 +63,6 @@ public class SoaplabActivityContextualView extends
 		try {
 			String endpoint = ((SoaplabActivityConfigurationBean) getActivity()
 					.getConfiguration()).getEndpoint();
-			System.out.println("Endpoint: " + endpoint);
 			Call call = (Call) new Service().createCall();
 			call.setTimeout(new Integer(0));
 			call.setTargetEndpointAddress(endpoint);
@@ -74,7 +73,6 @@ public class SoaplabActivityContextualView extends
 			// ColXMLTree tree = new ColXMLTree(metadata);
 			URL sheetURL = SoaplabActivityContextualView.class
 					.getResource("/analysis_metadata_2_html.xsl");
-			System.out.println("Sheet URL: " + sheetURL);
 			TransformerFactory transformerFactory = TransformerFactory
 					.newInstance();
 			Templates stylesheet = transformerFactory
