@@ -30,13 +30,16 @@ public abstract class AbstractXMLDeserializer implements
 	protected Object createBean(Element configElement, ClassLoader cl) {
 		String encoding = configElement.getAttributeValue(BEAN_ENCODING);
 		Object result = null;
-		if (encoding.equals("xstream")) {
+		if (encoding.equals(XSTREAM_ENCODING)) {
 			// FIXME: throw Exception if children.size!=1
 			Element beanElement = (Element) configElement.getChildren().get(0);
 			XStream xstream = new XStream(new DomDriver());
 			xstream.setClassLoader(cl);
 			result = xstream.fromXML(new XMLOutputter()
 					.outputString(beanElement));
+		}
+		if (encoding.equals(JDOMXML_ENCODING)) {
+			result = (Element) configElement.getChildren().get(0);
 		}
 
 		return result;
