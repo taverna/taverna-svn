@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -80,7 +82,6 @@ public class RenderedResultComponent extends JPanel {
 		renderers.setEditable(false);
 		renderers.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				System.out.println("itemStateChanged");
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					int selectedIndex = renderers.getSelectedIndex();
 					Renderer renderer = renderersForMimeType.get(selectedIndex);
@@ -164,8 +165,8 @@ public class RenderedResultComponent extends JPanel {
 	private String getMimeType(ExternalReferenceSPI externalReference, InvocationContext context) {
 		if (!mimeTypes.containsKey(t2Reference)) {
 			InputStream inputStream = externalReference.openStream(context);
-			byte[] bytes = new byte[64];
 			try {
+				byte[] bytes = new byte[64];
 				inputStream.read(bytes);
 				mimeTypes.put(externalReference, Magic.getMagicMatch(bytes, true).getMimeType());
 			} catch (IOException e) {
