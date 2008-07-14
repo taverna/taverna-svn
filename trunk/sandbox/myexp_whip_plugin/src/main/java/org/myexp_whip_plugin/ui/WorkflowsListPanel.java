@@ -151,9 +151,11 @@ public class WorkflowsListPanel extends BasePanel implements HyperlinkListener {
 					mainPanel.add(buttonsPanel, BorderLayout.SOUTH);
 					
 					this.listPanel.add(mainPanel);
+					
+					logger.debug("Added entry in workflow list panel for workflow id: " + workflow.getId());
 				}
 				catch (Exception e) {
-					logger.error("Failed to add item entry to WorkflowsListPanel", e);
+					logger.error("Failed to add item entry to WorkflowsListPanel (workflow id: " + workflow.getId() + ")", e);
 				}
 			}
 		}
