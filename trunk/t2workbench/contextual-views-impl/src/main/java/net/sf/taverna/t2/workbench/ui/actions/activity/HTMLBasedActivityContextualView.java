@@ -78,7 +78,6 @@ public abstract class HTMLBasedActivityContextualView<ConfigBean> extends
 		for (AnnotationChain chain : getActivity().getAnnotations()) {
 			for (AnnotationAssertion<?> assertion : chain.getAssertions()) {
 				Object detail = assertion.getDetail();
-				System.out.println(detail.getClass().getName());
 				if (detail instanceof HostInstitution) {
 					// this is a user defined localworker so use the beanshell
 					// colour!
