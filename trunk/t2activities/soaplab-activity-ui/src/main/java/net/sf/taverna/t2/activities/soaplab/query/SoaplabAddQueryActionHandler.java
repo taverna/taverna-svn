@@ -27,7 +27,7 @@ public class SoaplabAddQueryActionHandler extends AddQueryActionHandler {
 
 	@Override
 	protected String getText() {
-		return "Add Soaploab query...";
+		return "Soaploab...";
 	}
 
 }

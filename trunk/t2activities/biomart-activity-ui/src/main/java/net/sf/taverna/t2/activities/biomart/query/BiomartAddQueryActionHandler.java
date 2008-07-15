@@ -27,7 +27,7 @@ public class BiomartAddQueryActionHandler extends AddQueryActionHandler {
 
 	@Override
 	protected String getText() {
-		return "Add new Biomart location ...";
+		return "Biomart...";
 	}
 
 }

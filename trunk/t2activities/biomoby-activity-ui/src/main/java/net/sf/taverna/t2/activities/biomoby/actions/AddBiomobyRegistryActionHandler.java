@@ -94,7 +94,7 @@ public class AddBiomobyRegistryActionHandler extends AddQueryActionHandler {
 
 	@Override
 	protected String getText() {
-		return "Add new Biomoby registry ...";
+		return "Biomoby...";
 	}
 
 }

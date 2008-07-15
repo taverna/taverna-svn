@@ -28,7 +28,7 @@ public class WSDLAddQueryActionHandler extends AddQueryActionHandler {
 
 	@Override
 	protected String getText() {
-		return "Add new WSDL...";
+		return "WSDL...";
 	}
 
 }

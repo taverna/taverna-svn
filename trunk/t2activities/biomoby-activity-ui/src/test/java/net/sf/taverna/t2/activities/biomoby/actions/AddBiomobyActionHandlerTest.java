@@ -12,6 +12,6 @@ public class AddBiomobyActionHandlerTest {
 		AddBiomobyRegistryActionHandler handler = new AddBiomobyRegistryActionHandler();
 		assertNotNull("The icon must not be null",handler.getIcon());
 		assertNotNull("The text must not be null",handler.getText());
-		assertEquals("The text is wrong","Add new Biomoby registry ...",handler.getText());
+		assertEquals("The text is wrong","Biomoby...",handler.getText());
 	}
 }
