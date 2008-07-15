@@ -6,7 +6,7 @@
 	<packaging>pom</packaging>
 	<name>Taverna 2 build</name>
 	<version>0.3-SNAPSHOT</version>
-	<modules>
+		<modules>
 		<module>../utils</module>
 		<module>../wsdl-generic</module>
 		<module>../t2core</module>
@@ -18,11 +18,12 @@
 		<module>../t2reference</module>
 		<module>../t2reference-testhelpers</module>
 
-		<module>../t2reference-integration-tests</module>
-
+		<!-- <module>../t2reference-integration-tests</module> -->
+		<module>../t2-reference-ui</module>
 		<module>../t2workbench</module>
-		<module>../t2integration-testing</module>
+		<!-- <module>../t2integration-testing</module> -->
 	</modules>
+
 	<distributionManagement>
 		<repository>
 			<id>mygrid-repository</id>
