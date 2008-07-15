@@ -11,8 +11,6 @@ import net.sf.taverna.t2.workbench.configuration.Configurable;
 public class QueryFactoryRegistry extends SPIRegistry<QueryFactory> {
 	
 	private static QueryFactoryRegistry instance = new QueryFactoryRegistry();
-	
-	
 
 	public static QueryFactoryRegistry getInstance() {
 		return instance;
@@ -73,10 +71,10 @@ public class QueryFactoryRegistry extends SPIRegistry<QueryFactory> {
 				List<String> soaplabList = new ArrayList<String>();
 				soaplabList.add("http://www.ebi.ac.uk/soaplab/services/");
 				map.put("taverna.defaultwsdl", wsdlList);
-				map.put("taverna.defaultsoaplab", soaplabList);
+//				map.put("taverna.defaultsoaplab", soaplabList);
 				List<String> biomart = new ArrayList<String>();
 				biomart.add("http://www.biomart.org/biomart");
-//				map.put("taverna.defaultmartregistry",biomart);
+				map.put("taverna.defaultmartregistry",biomart);
 				return map;
 			}
 

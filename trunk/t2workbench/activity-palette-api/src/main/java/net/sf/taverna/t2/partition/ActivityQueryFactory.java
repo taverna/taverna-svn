@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
  * </p>
  * 
  * @author Stuart Owen
+ * 
  * @see QueryFactory
  * @see QueryFactoryRegistry
  * @see Query

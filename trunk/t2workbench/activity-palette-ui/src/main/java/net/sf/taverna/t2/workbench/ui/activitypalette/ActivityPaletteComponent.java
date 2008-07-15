@@ -18,27 +18,24 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeModel;
 
 import net.sf.taverna.t2.partition.ActivityItem;
-import net.sf.taverna.t2.partition.ActivityQueryFactory;
-import net.sf.taverna.t2.partition.AddQueryActionHandler;
 import net.sf.taverna.t2.partition.PartitionAlgorithm;
 import net.sf.taverna.t2.partition.PartitionAlgorithmSetSPI;
 import net.sf.taverna.t2.partition.PartitionAlgorithmSetSPIRegistry;
 import net.sf.taverna.t2.partition.PropertyExtractorRegistry;
 import net.sf.taverna.t2.partition.PropertyExtractorSPIRegistry;
 import net.sf.taverna.t2.partition.Query;
-import net.sf.taverna.t2.partition.QueryFactory;
 import net.sf.taverna.t2.partition.QueryFactoryRegistry;
 import net.sf.taverna.t2.partition.RootPartition;
 import net.sf.taverna.t2.partition.SetModelChangeListener;
@@ -106,6 +103,15 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 
 		add(menuPanel, BorderLayout.PAGE_START);
 		add(new JScrollPane(activityTree), BorderLayout.CENTER);
+	}
+	
+	/**
+	 * Provides access to the root partition of the tree.
+	 * 
+	 * @return the root partition
+	 */
+	public RootPartition<?> getRootPartition() {
+		return rootPartition;
 	}
 
 	/**
@@ -183,8 +189,8 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 			if (algorithm instanceof LiteralValuePartitionAlgorithm) {
 				final LiteralValuePartitionAlgorithm litAlgorithm = (LiteralValuePartitionAlgorithm)algorithm;
 				
-				final JMenuItem item1 = new JRadioButtonMenuItem();
-				final JMenuItem item2 = new JRadioButtonMenuItem();
+				final JMenuItem item1 = new JCheckBoxMenuItem();
+				final JMenuItem item2 = new JCheckBoxMenuItem();
 				
 				firstAlgorithmToMenuItemMap.put(litAlgorithm,item1);
 				secondAlgorithmToMenuItemMap.put(litAlgorithm, item2);
@@ -251,33 +257,9 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 			}
 		}
 		
-		mainMenu.add(createAddActivity());
-		mainMenu.addSeparator();
 		mainMenu.add(firstMenu);
 		mainMenu.add(secondMenu);
 
-	}
-
-	
-
-	private JMenu createAddActivity() {
-		JMenu addQueryMenu = new JMenu("Add...");
-		addQueryMenu.setToolTipText("Open this menu to add a new Query");
-		for (QueryFactory factory : QueryFactoryRegistry.getInstance()
-				.getInstances()) {
-			if (factory instanceof ActivityQueryFactory) {
-				ActivityQueryFactory af = (ActivityQueryFactory) factory;
-				if (af.hasAddQueryActionHandler()) {
-					AddQueryActionHandler handler = af
-							.getAddQueryActionHandler();
-					handler
-							.setSetModelChangeListener((SetModelChangeListener<ActivityItem>) rootPartition
-									.getSetModelChangeListener());
-					addQueryMenu.add(handler);
-				}
-			}
-		}
-		return addQueryMenu;
 	}
 
 	public ImageIcon getIcon() {
