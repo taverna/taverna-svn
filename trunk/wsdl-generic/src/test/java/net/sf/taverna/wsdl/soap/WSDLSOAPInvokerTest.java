@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvokerTest.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-06-25 14:05:18 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2008-07-15 11:27:42 $
+ *               by   $Author: iandunlop $
  * Created on 04-May-2006
  *****************************************************************/
 package net.sf.taverna.wsdl.soap;
@@ -155,7 +155,7 @@ public class WSDLSOAPInvokerTest  implements LocationConstants {
 				thing.getClass());
 
 	}
-
+	@Ignore
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testMultirefWithOutputNamespaced() throws Exception {
