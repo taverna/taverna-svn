@@ -67,8 +67,8 @@ public class ProvenanceAnalysisTest1 {
 		Set<String> selectedProcessors = new HashSet<String>();
 
 		// this is what we certainly want to test
-		int targetIteration = 2;
-		String targetProc = "P1";
+		String targetIteration = "0,1";
+		String targetProc = "P3";
 		
 		// use annotations?
 		boolean useAnnotations = false;
@@ -127,12 +127,12 @@ public class ProvenanceAnalysisTest1 {
 			}
 			System.out.println();
 			
-			pa.computeLineagePaths(WFID, 
-								   outVars.get(0).getVName(), 
-								   outVars.get(0).getPName(), 
-								   targetIteration, 
-								   selectedProcessors);
-			
+			pa.clp2(WFID, 
+			   outVars.get(0).getVName(), 
+			   outVars.get(0).getPName(), 
+			   targetIteration, 
+			   selectedProcessors);
+
 			assertTrue("lineage tree should have been printed above", true);
 		}
 		

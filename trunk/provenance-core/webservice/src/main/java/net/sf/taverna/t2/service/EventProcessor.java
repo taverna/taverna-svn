@@ -207,7 +207,7 @@ public class EventProcessor {
 
 			pb.setPNameRef(processorId);
 			pb.setActName(activityId);
-			pb.setIteration(extractIterationCount(iterationId));
+			pb.setIterationVector(extractIterationVector(iterationId));
 			pb.setExecIDRef(dataflowId);
 
 			pw.addProcessorBinding(pb);
@@ -286,7 +286,7 @@ public class EventProcessor {
 		String valueType  = valueEl.getName();
 		System.out.println("value element for "+processorId+": "+valueType);
 
-		int iterationN = extractIterationCount(iterationId);
+		String iterationVector = extractIterationVector(iterationId);
 
 		VarBinding vb = new VarBinding();
 
@@ -296,7 +296,7 @@ public class EventProcessor {
 		vb.setVarNameRef(portName);
 		vb.setCollIDRef(collIdRef);
 		vb.setPositionInColl(positionInCollection);
-		vb.setIteration(iterationN);		
+		vb.setIterationVector(iterationVector);		
 
 		if (valueType.equals("literal")) {
 
@@ -336,7 +336,7 @@ public class EventProcessor {
 			String collId = valueEl.getAttributeValue("id");
 			try {
 
-				parentCollectionRef = pw.addCollection(processorId, collId, parentCollectionRef, portName, dataflowId);
+				parentCollectionRef = pw.addCollection(processorId, collId, parentCollectionRef, iterationVector, portName, dataflowId);
 
 				// iterate over each list element
 				List<Element> listElements = valueEl.getChildren();
@@ -375,14 +375,22 @@ public class EventProcessor {
 	}
 
 
-	int extractIterationCount(String iteration) {
+	/**
+	 * OBSOLETE: returns the iteration vector x,y,z,...  from [x,y,z,...]<p/>
+	 * now returns the vector itself -- this is still experimental
+	 * @param iteration
+	 * @return
+	 */
+	String extractIterationVector(String iteration) {
 
+//		return iteration;
+		 return iteration.substring(1, iteration.length()-1);
 		// iteration is of the form "[n]" so we extract n
-		String iterationN = iteration.substring(1, iteration.length()-1);
+//		String iterationN = iteration.substring(1, iteration.length()-1);
 
-		if (iterationN.length() == 0) return 0;
+//		if (iterationN.length() == 0) return 0;
 
-		return Integer.parseInt(iterationN);
+//		return Integer.parseInt(iterationN);
 
 	}
 

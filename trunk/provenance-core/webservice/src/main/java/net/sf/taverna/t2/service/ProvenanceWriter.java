@@ -150,7 +150,7 @@ public class ProvenanceWriter {
 		String q = "INSERT INTO ProcBinding SET "+
 		           "pnameRef = \""+pb.getPNameRef()+"\", "+
 			       "execIDRef = \""+pb.getExecIDRef()+"\", "+
-			       "iteration = \""+pb.getIteration()+"\", "+
+			       "iteration = \""+pb.getIterationVector()+"\", "+
 			       "actName = \""+pb.getActName()+"\";";
 
 		//System.out.println("executing: "+q);
@@ -168,6 +168,7 @@ public class ProvenanceWriter {
 	public String addCollection(String processorId, 
 						        String collId, 
 						        String parentCollectionId, 
+						        String iteration,
 						        String portName, 
 						        String dataflowId) throws SQLException {
 		
@@ -186,6 +187,7 @@ public class ProvenanceWriter {
 				   "PNameRef = \""+processorId+"\", "+
 			       "wfInstanceRef = \""+dataflowId+"\",  "+
 			       "varNameRef = \""+portName+"\", "+
+			       "iteration = \""+iteration+"\", "+			       
 			       "parentCollIdRef = \""+parentCollectionId+"\", "+
 			       "collId = \""+collId+"\";";
 		

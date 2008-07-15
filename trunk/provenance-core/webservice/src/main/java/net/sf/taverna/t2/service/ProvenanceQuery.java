@@ -220,7 +220,7 @@ public class ProvenanceQuery {
 				
 				pb.setActName(rs.getString("actName"));
 				pb.setExecIDRef(rs.getString("execIDRef"));
-				pb.setIteration(rs.getInt("iteration"));
+				pb.setIterationVector(rs.getString("iteration"));
 				pb.setPNameRef(rs.getString("pnameRef"));
 				
 				result.add(pb);
@@ -266,7 +266,7 @@ public class ProvenanceQuery {
 				vb.setWfInstanceRef(rs.getString("wfInstanceRef"));
 				vb.setValue(rs.getString("value"));
 				vb.setCollIDRef(rs.getString("collIdRef"));
-				vb.setIteration(rs.getInt("iteration"));
+				vb.setIterationVector(rs.getString("iteration"));
 				vb.setPNameRef(rs.getString("PNameRef"));
 				vb.setPositionInColl(rs.getInt("positionInColl"));
 				
@@ -353,7 +353,7 @@ public class ProvenanceQuery {
 		if (aLA.getCollectionRef() != null) 
 			lineageQueryConstraints.put("VB.collIDRef", aLA.getCollectionRef());
 
-		lineageQueryConstraints.put("VB.iteration", Integer.toString(aLA.getIteration()));
+		lineageQueryConstraints.put("VB.iteration", aLA.getIteration());
 		
 		lineageQueryConstraints.put("VB.positionInColl", Integer.toString(aLA.getIic() +1));  // +1: in the DB default is 1 not 0
 		

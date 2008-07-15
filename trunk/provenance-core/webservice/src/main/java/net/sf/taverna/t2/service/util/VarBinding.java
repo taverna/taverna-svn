@@ -17,7 +17,7 @@ public class VarBinding {
 	String PNameRef;
 	String valueType;
 	String ref;
-	int    iteration;
+	String    iterationVector;
 	
 	
 	public String toString() {
@@ -28,7 +28,7 @@ public class VarBinding {
 			append("wfInstanceRef = "+wfInstanceRef+"\n").
 			append("PNameRef = "+PNameRef+"\n").
 			append("varNameRef = "+varNameRef+"\n").
-			append("iteration = "+iteration+"\n").
+			append("iteration = "+iterationVector+"\n").
 			append("collIdef  " +collIDRef+"\n").
 			append("positionInColl = "+positionInColl+"\n").
 			append("value = "+value+"\n").
@@ -113,14 +113,14 @@ public class VarBinding {
 	/**
 	 * @return the iteration
 	 */
-	public int getIteration() {
-		return iteration;
+	public String getIteration() {
+		return iterationVector;
 	}
 	/**
-	 * @param iteration the iteration to set
+	 * @param iterationVector the iteration to set
 	 */
-	public void setIteration(int iteration) {
-		this.iteration = iteration;
+	public void setIterationVector(String iterationVector) {
+		this.iterationVector = iterationVector;
 	}
 	/**
 	 * @return the value

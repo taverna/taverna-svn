@@ -12,7 +12,7 @@ public class ProcBinding {
 	String pNameRef;
 	String execIDRef;
 	String actName;
-	int    iteration;
+	String iterationVector;
 	
 	
 	public String toString() {
@@ -23,7 +23,7 @@ public class ProcBinding {
 			append("execIDRef = "+execIDRef+"\n").
 			append("PNameRef = "+pNameRef+"\n").
 			append("actName = "+actName+"\n").
-			append("iteration = "+iteration+"\n");
+			append("iteration = "+iterationVector+"\n");
 
 		return sb.toString();
 	}
@@ -67,14 +67,14 @@ public class ProcBinding {
 	/**
 	 * @return the iteration
 	 */
-	public int getIteration() {
-		return iteration;
+	public String getIterationVector() {
+		return iterationVector;
 	}
 	/**
-	 * @param iteration the iteration to set
+	 * @param iterationVector the iteration to set
 	 */
-	public void setIteration(int iteration) {
-		this.iteration = iteration;
+	public void setIterationVector(String iterationVector) {
+		this.iterationVector = iterationVector;
 	}
 	
 	
