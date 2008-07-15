@@ -2,9 +2,9 @@
 net.sf.taverna.t2.workbench.ui.impl.menu.FileMenu
 net.sf.taverna.t2.workbench.ui.impl.menu.ExitAction
 
-net.sf.taverna.t2.workbench.ui.impl.menu.ActivitiesMenu
-
 net.sf.taverna.t2.workbench.ui.impl.menu.EditMenu
+
+net.sf.taverna.t2.workbench.ui.impl.menu.ActivitiesMenu
 
 net.sf.taverna.t2.workbench.ui.impl.menu.AdvancedMenu
 net.sf.taverna.t2.workbench.ui.impl.menu.DisplayPerspectivesMenu
