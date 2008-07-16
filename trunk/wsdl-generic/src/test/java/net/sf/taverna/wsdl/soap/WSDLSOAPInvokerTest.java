@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvokerTest.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-07-15 11:27:42 $
- *               by   $Author: iandunlop $
+ * Last modified on   $Date: 2008-07-16 14:53:17 $
+ *               by   $Author: stain $
  * Created on 04-May-2006
  *****************************************************************/
 package net.sf.taverna.wsdl.soap;
@@ -200,6 +200,7 @@ public class WSDLSOAPInvokerTest  implements LocationConstants {
 		assertEquals("The output should be fred","fred",outputThing);
 	}
 
+	@Ignore("Host is unreachable")
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testDocumentNamespace() throws Exception {
