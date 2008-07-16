@@ -65,6 +65,9 @@
 
 			<artifact groupId="net.sf.taverna.t2.workbench"
 				artifactId="perspective-design" version="1.7-SNAPSHOT" />
+				
+			<artifact groupId="net.sf.taverna.t2.workbench"
+				artifactId="contextual-views-api" version="0.1-SNAPSHOT" />
 			<artifact groupId="net.sf.taverna.t2.workbench"
 				artifactId="contextual-views-impl" version="0.1-SNAPSHOT" />
 
