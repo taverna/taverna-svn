@@ -19,7 +19,7 @@
 		<module>../t2reference-testhelpers</module>
 
 		<!-- <module>../t2reference-integration-tests</module> -->
-		<module>../t2-reference-ui</module>
+		<module>../t2reference-ui</module>
 		<module>../t2workbench</module>
 		<!-- <module>../t2integration-testing</module> -->
 	</modules>
