@@ -10,7 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import net.sf.taverna.raven.appconfig.ApplicationConfig;
+import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 
 import org.apache.log4j.Logger;
 import org.biomart.martservice.MartQuery;
@@ -48,10 +48,10 @@ public class BiomartConfigurationPanel extends JPanel {
 		biomartQuery = MartServiceXMLHandler.elementToMartQuery(bean, null);
 		MartService service = biomartQuery.getMartService();
 		
-		String homeRoot=ApplicationConfig.getInstance().getApplicationHome();
+		File homeRoot=ApplicationRuntime.getInstance().getApplicationHomeDir();
 		if (homeRoot==null) {
-			logger.warn("unable to determine application home for biomart cache");
-			homeRoot=System.getProperty("java.io.tmpdir");
+			logger.error("unable to determine application home for biomart cache");
+			homeRoot=new File(System.getProperty("java.io.tmpdir"));
 		}
 		File cache=new File(homeRoot,"t2-biomart-activity");
 		service.setCacheDirectory(new File(cache,"cache"));
