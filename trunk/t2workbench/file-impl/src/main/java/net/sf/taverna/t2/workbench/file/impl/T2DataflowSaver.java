@@ -124,7 +124,9 @@ public class T2DataflowSaver extends AbstractDataflowPersistenceHandler
 		if (!file.exists()) {
 			return false;
 		}
-
+		if (lastDataflowInfo == null) {
+			return true;
+		}
 		Object lastDestination = lastDataflowInfo.getCanonicalSource();
 		if (!(lastDestination instanceof File)) {
 			return true;

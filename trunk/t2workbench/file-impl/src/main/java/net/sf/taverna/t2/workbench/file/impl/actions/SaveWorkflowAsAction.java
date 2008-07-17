@@ -121,7 +121,7 @@ public class SaveWorkflowAsAction extends AbstractAction {
 								+ file);
 						return true;
 					} catch (OverwriteException ex) {
-						logger.warn("File already exists: " + file, ex);
+						logger.info("File already exists: " + file);
 						String msg = "Are you sure you want to overwrite existing file "
 								+ file + "?";
 						int ret = JOptionPane.showConfirmDialog(
