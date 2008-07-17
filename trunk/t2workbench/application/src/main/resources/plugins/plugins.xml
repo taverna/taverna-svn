@@ -43,9 +43,11 @@
 			<!--  disabled: Bad history
 				<repository>http://mirrors.sunsite.dk/maven2/</repository>
 			-->
-			<repository>
+
+			<!--  disabled: Connection time out 
+				<repository>
 				http://maven2.mirrors.skynet.be/pub/maven2/
-			</repository>
+				</repository>-->
 			<repository>http://ftp.cica.es/mirrors/maven2/</repository>
 			<!--disabled: slow <repository>http://mirrors.redv.com/maven2/</repository>-->
 		</repositories>
@@ -65,7 +67,7 @@
 
 			<artifact groupId="net.sf.taverna.t2.workbench"
 				artifactId="perspective-design" version="1.7-SNAPSHOT" />
-				
+
 			<artifact groupId="net.sf.taverna.t2.workbench"
 				artifactId="contextual-views-api" version="0.1-SNAPSHOT" />
 			<artifact groupId="net.sf.taverna.t2.workbench"
@@ -145,9 +147,10 @@
 			<!--  disabled: Bad history
 				<repository>http://mirrors.sunsite.dk/maven2/</repository>
 			-->
-			<repository>
+			<!--  disabled: Connection time out  
+				<repository>
 				http://maven2.mirrors.skynet.be/pub/maven2/
-			</repository>
+				</repository>-->
 			<repository>http://ftp.cica.es/mirrors/maven2/</repository>
 			<!--disabled: slow <repository>http://mirrors.redv.com/maven2/</repository>-->
 		</repositories>
@@ -208,9 +211,10 @@
 			<!--  disabled: Bad history
 				<repository>http://mirrors.sunsite.dk/maven2/</repository>
 			-->
-			<repository>
+			<!--  disabled: Connection time out
+				<repository>
 				http://maven2.mirrors.skynet.be/pub/maven2/
-			</repository>
+				</repository>-->
 			<repository>http://ftp.cica.es/mirrors/maven2/</repository>
 			<!--disabled: slow <repository>http://mirrors.redv.com/maven2/</repository>-->
 
