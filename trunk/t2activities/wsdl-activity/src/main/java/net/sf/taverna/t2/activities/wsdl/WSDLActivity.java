@@ -22,6 +22,9 @@ import net.sf.taverna.wsdl.parser.UnknownOperationException;
 import net.sf.taverna.wsdl.parser.WSDLParser;
 import net.sf.taverna.wsdl.soap.WSDLSOAPInvoker;
 
+import org.apache.axis.EngineConfiguration;
+import org.apache.axis.configuration.XMLStringProvider;
+import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
 /**
@@ -38,6 +41,8 @@ public class WSDLActivity extends AbstractAsynchronousActivity<WSDLActivityConfi
     private WSDLActivityConfigurationBean configurationBean;
     private WSDLParser parser;
     private Map<String,Integer> outputDepth = new HashMap<String, Integer>();
+    
+    private static Logger logger = Logger.getLogger(WSDLActivity.class);
 
     /**
      * Configures the activity according to the information passed by the configuration bean.<br>
@@ -117,29 +122,14 @@ public class WSDLActivity extends AbstractAsynchronousActivity<WSDLActivityConfi
 					}
 					
 					WSDLSOAPInvoker invoker = new T2WSDLSOAPInvoker(parser,configurationBean.getOperation(),outputNames);
+					WSDLActivityConfigurationBean bean = getConfiguration();
+					EngineConfiguration wssEngineConfiguration=null;
 					
-					/* 
-					 * To call secure services - uncomment the following block and comment out the line after it
-					// Create security configuration
-					 String wssUTProfile = 
-							"<deployment xmlns=\"http://xml.apache.org/axis/wsdd/\" "+
-							"xmlns:java=\"http://xml.apache.org/axis/wsdd/providers/java\"> \n"+
-							"<globalConfiguration> \n" +
-							"<requestFlow>\n" +
-							"<handler type=\"java:net.sf.taverna.security.T2WSDoAllSender\"> \n"+
-							"<parameter name=\"action\" value=\"UsernameToken\"/> \n" +
-							"<parameter name=\"passwordType\" value=\"PasswordText\"/> \n"+
-							"</handler> \n"+
-							"</requestFlow> \n"+
-							"</globalConfiguration> \n"+
-							"<transport name=\"http\" pivot=\"java:org.apache.axis.transport.http.HTTPSender\"/> \n"+
-							"</deployment>\n";
-							
-					XMLStringProvider wssEngineConfiguration = new XMLStringProvider(wssUTProfile);
-														
+					if (bean.getSecurityProfileString()!=null) {
+						wssEngineConfiguration = new XMLStringProvider(bean.getSecurityProfileString());
+					}
+					
 					Map<String,Object> invokerOutputMap = invoker.invoke(invokerInputMap, wssEngineConfiguration);
-					*/
-					Map<String,Object> invokerOutputMap = invoker.invoke(invokerInputMap);
 					
 					for (String outputName : invokerOutputMap.keySet()) {
 						Object value = invokerOutputMap.get(outputName);
@@ -158,9 +148,11 @@ public class WSDLActivity extends AbstractAsynchronousActivity<WSDLActivityConfi
 					}
 				}
 				catch(ReferenceServiceException e) {
+					logger.error("Error finding the input data for "+getConfiguration().getOperation(),e);
 					callback.fail("Unable to find input data",e);
 				}
 				catch(Exception e) {
+					logger.error("Error invoking WSDL service "+getConfiguration().getOperation(),e);
 					callback.fail("An error occurred invoking the WSDLActivity",e);
 				}
 				

@@ -14,5 +14,7 @@ public class WSDLActivityViewFactory implements ActivityViewFactory<WSDLActivity
 	public ActivityContextualView<?> getView(WSDLActivity activity) {
 		return new WSDLActivityContextualView(activity);
 	}
+	
+	
 
 }

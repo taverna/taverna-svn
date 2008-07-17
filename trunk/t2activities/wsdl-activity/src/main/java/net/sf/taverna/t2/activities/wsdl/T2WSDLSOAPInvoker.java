@@ -30,6 +30,14 @@ import java.util.List;
 
 import javax.xml.rpc.ServiceException;
 
+import net.sf.taverna.t2.security.agents.SecurityAgentManager;
+import net.sf.taverna.t2.security.agents.WSSecurityAgent;
+import net.sf.taverna.t2.security.credentialmanager.CMException;
+import net.sf.taverna.t2.security.credentialmanager.CMNotInitialisedException;
+import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
+import net.sf.taverna.t2.security.profiles.WSSecurityProfile;
+import net.sf.taverna.t2.security.requests.SecurityRequest;
+import net.sf.taverna.t2.security.requests.WSSecurityRequest;
 import net.sf.taverna.wsdl.parser.UnknownOperationException;
 import net.sf.taverna.wsdl.parser.WSDLParser;
 import net.sf.taverna.wsdl.soap.WSDLSOAPInvoker;
@@ -113,6 +121,24 @@ public class T2WSDLSOAPInvoker extends WSDLSOAPInvoker{
 //        	}
 //        }
 //		call.setProperty("security_agent", sa);	
+		
+		if (config!=null) {
+			CredentialManager credManager;
+			try {
+				credManager = CredentialManager.getInstance();
+				SecurityAgentManager saManager = credManager.getSecurityAgentManager();
+				WSSecurityRequest wsSecReq = new WSSecurityRequest(getParser().getWSDLLocation(), null);
+	
+		    	WSSecurityAgent sa = (WSSecurityAgent) saManager.getSecurityAgent((SecurityRequest) wsSecReq);
+		    	call.setProperty("security_agent", sa);
+			} catch (CMException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (CMNotInitialisedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		
 		return call;
 	}	

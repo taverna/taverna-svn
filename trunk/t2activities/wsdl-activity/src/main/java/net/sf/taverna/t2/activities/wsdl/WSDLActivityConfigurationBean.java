@@ -10,6 +10,7 @@ package net.sf.taverna.t2.activities.wsdl;
 public class WSDLActivityConfigurationBean {
     private String wsdl;
     private String operation;
+    private String securityProfileString;
     
     /** Creates a new instance of WSDLActivityConfigurationBean */
     public WSDLActivityConfigurationBean() {
@@ -30,4 +31,12 @@ public class WSDLActivityConfigurationBean {
     public void setOperation(String operation) {
         this.operation = operation;
     }
+
+	public String getSecurityProfileString() {
+		return securityProfileString;
+	}
+
+	public void setSecurityProfileString(String securityProfileString) {
+		this.securityProfileString = securityProfileString;
+	}
 }
