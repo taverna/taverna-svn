@@ -107,7 +107,7 @@ public class PreLauncher {
 
 	protected List<URL> buildClassPath() throws IOException {
 		List<URL> classPath = new ArrayList<URL>();
-		File libDir = BootstrapLocation.getBootstrapDir(getClass());
+		File libDir = ClassLocation.getClassLocationDir(getClass());
 
 		// The directory itself, when run from .class files
 		classPath.add(libDir.toURL());
