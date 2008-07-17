@@ -8,7 +8,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
@@ -120,21 +119,8 @@ public class WSSecurityProfileManager {
      */
 	// Private constructor to suppress unauthorized calls to it
 	private WSSecurityProfileManager () throws WSSecurityProfileManagerException {
-		
-    	// Get the resource bundle
-    	try {
-    		res = ResourceBundle.getBundle("net.sf.taverna.t2.security.profiles.resources");
-    	}
-    	catch (MissingResourceException mre){
-            // Could not find the resource bundle
-    		throw new WSSecurityProfileManagerException("WSSecurityProfileManager failed to load the resource bundle.");
-    	}
-    	
-    	if (res == null){
-    		return;
-    	}
     	 
-    	// Quick 'n' dirty - expects the files to be in the right format.
+    	// Quick 'n' dirty - expects the files containing profiles to be in the right format.
     	
     	BufferedReader profilesFileReader = null;
         String line;
@@ -196,7 +182,7 @@ public class WSSecurityProfileManager {
 									.getWSSecurityProfileDescription());
 				}
 			}
- 
+			logger.info("Loaded system-defined WS-Security profiles.");
         }
         /*
 		 * catch(FileNotFoundException ex){ // should not happen - we have
@@ -278,6 +264,7 @@ public class WSSecurityProfileManager {
     	          	wsSecurityProfileDescriptions_UserDefined.add(wsSecurityProfile.getWSSecurityProfileDescription());
     	            }
     	          }
+    	  		logger.info("Loaded user-defined WS-Security profiles.");
     	      }
     	      /*
     	      catch(FileNotFoundException ex){
@@ -285,6 +272,7 @@ public class WSSecurityProfileManager {
     	      }
     	      */
     	      catch(IOException ex){
+    	    	  ex.printStackTrace();
     	    	  String exMessage = "WSSecurityProfileManager failed to read the file with user-defined WS Security profiles.";
     	        throw new WSSecurityProfileManagerException(exMessage);
     	       }
@@ -319,8 +307,9 @@ public class WSSecurityProfileManager {
 		     	 }
 		     	 catch(IOException ex)
 		     	 {
-		      	   String exMessage = "WSSecurityProfileManager failed to create a file for user-defined profiles.";
-		      	   throw new WSSecurityProfileManagerException(exMessage);
+		     		 ex.printStackTrace();
+		     		 String exMessage = "WSSecurityProfileManager failed to create a file for user-defined profiles.";
+		     		 throw new WSSecurityProfileManagerException(exMessage);
 		     	 }
 		      }
 
@@ -352,6 +341,7 @@ public class WSSecurityProfileManager {
 		      	 // Should not happen
 		       }
 		       catch(IOException ex){
+		    	   ex.printStackTrace();
 		    	   String exMessage = "WSSecurityProfileManager failed to save the new user-defined profile.";
 		    	   throw new WSSecurityProfileManagerException(exMessage);
 		       }
@@ -459,8 +449,8 @@ public class WSSecurityProfileManager {
           		 }    
             }
             catch(Exception ex){
+	     		 ex.printStackTrace();
         		 String exMessage = "WSSecurityProfileManager failed to delete the user-defined profile.";
-        		 ex.printStackTrace();
         		 throw (new WSSecurityProfileManagerException(exMessage));                	 
              }
             finally {
@@ -483,8 +473,6 @@ public class WSSecurityProfileManager {
               		}
               	}
              }   
-            
-
 		}
 	}
 	

@@ -81,11 +81,11 @@ public class CredentialManagerGUI extends JFrame {
 
 	/** Credential Manager icon (when frame minimised) */
 	private final Image credManagerIconImage = Toolkit.getDefaultToolkit()
-			.createImage(getClass().getResource("/images/cred_manager.png"));
+			.createImage(CredentialManagerGUI.class.getResource("/images/cred_manager.png"));
 
 	/**
 	 * Credential Manager - manages all operations on the Keystore and
-	 * Truststore
+	 * Truststore.
 	 */
 	public static CredentialManager credManager;
 

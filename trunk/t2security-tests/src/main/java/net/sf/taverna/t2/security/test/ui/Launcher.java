@@ -63,11 +63,13 @@ public class Launcher extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				
 				WSSecurityProfileChooser wssPC = new WSSecurityProfileChooser();
+				if (wssPC.isInitialised()) {
 					wssPC.setVisible(true);
-					
-					WSSecurityProfile wssProfile = wssPC.getWSSecurityProfile();
-					if (wssProfile != null) // user did not cancel
-						System.err.println(wssProfile.getWSSecurityProfileString());
+				}
+
+				WSSecurityProfile wssProfile = wssPC.getWSSecurityProfile();
+				if (wssProfile != null) // user did not cancel
+					System.err.println(wssProfile.getWSSecurityProfileString());
 			}
 		});
 		

@@ -13,6 +13,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import net.sf.taverna.t2.security.profiles.WSSecurityProfile;
+
 
 public class WSSecurityProfileChooserLauncher extends JFrame {
 	
@@ -30,10 +32,14 @@ public class WSSecurityProfileChooserLauncher extends JFrame {
 		jbLaunch.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent e) {
-				WSSecurityProfileChooser wssChooser = new WSSecurityProfileChooser();
-				if (wssChooser.isInitialised()){
-					wssChooser.setVisible(true);
+				WSSecurityProfileChooser wssPC = new WSSecurityProfileChooser();
+				if (wssPC.isInitialised()) {
+					wssPC.setVisible(true);
 				}
+
+				WSSecurityProfile wssProfile = wssPC.getWSSecurityProfile();
+				if (wssProfile != null) // user did not cancel
+					System.err.println(wssProfile.getWSSecurityProfileString());
 			}
 		});
 		

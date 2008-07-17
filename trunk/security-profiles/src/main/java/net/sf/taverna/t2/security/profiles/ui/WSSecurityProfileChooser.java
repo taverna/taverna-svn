@@ -23,7 +23,7 @@ import java.util.Iterator;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JOptionPane;
@@ -52,7 +52,7 @@ import net.sf.taverna.t2.security.profiles.WSSecurityProfileManagerException;
  *
  */
 
-public class WSSecurityProfileChooser extends JDialog
+public class WSSecurityProfileChooser extends JFrame
 {		
 	private static final long serialVersionUID = -2754223284048320958L;
 
@@ -256,6 +256,7 @@ public class WSSecurityProfileChooser extends JDialog
      */
     public WSSecurityProfileChooser()
     {
+    	
     	// Get the WSSecurityProfileManager instance - it will load 
     	// the pre-defined system and saved user-defined security profiles
     	try {
@@ -268,7 +269,8 @@ public class WSSecurityProfileChooser extends JDialog
         	// Initialise GUI components
         	initComponents();
         	
-        	setModal(true);
+        	// Everything is ok
+        	initialised = true;
         	
     	}
     	catch(WSSecurityProfileManagerException wsspme){
@@ -278,11 +280,8 @@ public class WSSecurityProfileChooser extends JDialog
             		wsspme.getMessage(),
             		"WS Security Profile Chooser", 
             		JOptionPane.ERROR_MESSAGE);
-    		closeDialog();
     	}
-   	
-    	// Everything is ok
-    	initialised = true;
+
     }
 	
 	
@@ -1231,7 +1230,7 @@ public class WSSecurityProfileChooser extends JDialog
         {
             public void windowClosing(WindowEvent evt)
             {
-                closeDialog();
+                closeFrame();
             }
         });
         
@@ -1242,7 +1241,6 @@ public class WSSecurityProfileChooser extends JDialog
 
         // Set the frame's icon
         //setIconImage(getResImage("CredentialManagerGUI.Icon.image"));
-        
         
         // Set the frame's title
         setTitle("Security Profile Chooser");
@@ -1302,8 +1300,8 @@ public class WSSecurityProfileChooser extends JDialog
 		// Set the selected profile
 		wsSecurityProfile = new WSSecurityProfile();
 		wsSecurityProfile = wsSecurityProfiles.elementAt(jcmbSecurityProfiles.getSelectedIndex());
-		System.err.println(wsSecurityProfile.getWSSecurityProfileString());
-		closeDialog();
+		logger.info("The selected WS-Security profile: " + wsSecurityProfile.getWSSecurityProfileString());
+		closeFrame();
 	 }
 	
 	/**
@@ -1563,15 +1561,15 @@ public class WSSecurityProfileChooser extends JDialog
             }
     	}   
 
-		System.err.println(profile);
-		closeDialog();			
+		logger.info("The created WS-Security profile:" + profile);
+		closeFrame();			
 	 }
 	
 	
     /**
      * Close the dialog.
      */
-    private void closeDialog()
+    private void closeFrame()
     { 	
         setVisible(false);
         dispose();

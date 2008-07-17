@@ -23,8 +23,6 @@ import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 import java.util.Vector;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -49,9 +47,6 @@ public class CredentialManager {
 	 * Log4J Logger
 	 */
 	private static Logger logger = Logger.getLogger(CredentialManager.class);
-
-	/** Resource bundle */
-	private static ResourceBundle res;
 	
 	/**
 	 * Indicator as to whether the Credential Manager has been initialised (i.e.
@@ -142,18 +137,6 @@ public class CredentialManager {
 	 */
 	private CredentialManager() throws CMException {
 
-		// Get the resource bundle
-		try {
-			res = ResourceBundle
-					.getBundle("net.sf.taverna.t2.security.credentialmanager.resources");
-		} 
-		catch (MissingResourceException mre) {
-			
-			// Could not find the resource bundle
-			String exMessage = "Credential Manager failed to load the resource bundle.";
-			throw new CMException(exMessage);
-		}
-
 		// Get the Bouncy Castle provider
 		try {
 			Provider bcProv = Security.getProvider("BC");
@@ -166,39 +149,40 @@ public class CredentialManager {
 
 				// Add BC as a security provider
 				Security.addProvider(bcProv);
+				
+				logger.info("Added Bouncy Castle security provider.");
 			}
 		} 
 		catch (Exception ex) {
 			
 			// No sign of the provider
 			String exMessage = "Failed to load Bouncy Castle provider.";
+			ex.printStackTrace();
 			throw new CMException(exMessage);
 		}
 
 		// Get the Keystore file
-		String thisURL = CredentialManager.class.getResource(
+		/*String thisURL = CredentialManager.class.getResource(
 				"CredentialManager.class").getPath(); // path to this class
 		final String sep = System.getProperty("file.separator");
 		// Directory this class is located in
-		String thisDir = thisURL.substring(0, thisURL.lastIndexOf(sep) + 1); 
-
+		String thisDir = thisURL.substring(0, thisURL.lastIndexOf(sep) + 1);
 		String keystoreFilePath = thisDir
 				+ res.getString("CredentialManager.Keystore");		
-		// keystoreFile = new File (keystoreFilePath);
+		keystoreFile = new File (keystoreFilePath);*/
 		File configDirectory = getConfigurationDirectory();
 		keystoreFile = new File(configDirectory,"t2keystore.ubr"); 
 
 		// Get the service URLs file (where lists of service urls for private
 		// keys are kept)
-		String serviceURLsFilePath = thisDir
+		/*String serviceURLsFilePath = thisDir
 				+ res.getString("CredentialManager.ServiceURLsFile"); 
-		// serviceURLsFile = new File (serviceURLsFilePath);
+		serviceURLsFile = new File (serviceURLsFilePath);*/
 		serviceURLsFile = new File(configDirectory,"t2serviceURLs.txt"); 
 
 		// Get the Truststore file
-		String truststoreFilePath = thisDir
-				+ res.getString("CredentialManager.Truststore"); 
-		// truststoreFile = new File (truststoreFilePath);
+		/*String truststoreFilePath = thisDir + res.getString("CredentialManager.Truststore"); 
+		truststoreFile = new File (truststoreFilePath);*/
 		truststoreFile = new File(configDirectory,"t2truststore.ubr"); 
 
 		// Credential Manager is not initialised yet 
@@ -229,6 +213,8 @@ public class CredentialManager {
 		// Load the Keystore
 		try {
 			keystore = loadKeystore(keystoreFile, masterPassword);
+			logger.info("Loaded the Keystore.");
+
 		} 
 		catch (CMException cme) {
 			throw new CMException("Problem with loading the Keystore: "
@@ -238,6 +224,8 @@ public class CredentialManager {
 		// Load service URLs associated with private key aliases from a file.
 		try {
 			loadServiceURLs();
+			logger.info("Loaded the Service URLs for private/public key pairs.");
+
 		} 
 		catch (CMException cme) {
 			throw new CMException(
@@ -248,6 +236,8 @@ public class CredentialManager {
 		// Load the Truststore
 		try {
 			truststore = loadKeystore(truststoreFile, masterPassword);
+			logger.info("Loaded the Truststore.");
+
 		} 
 		catch (CMException cme) {
 			throw new CMException("Problem with loading the Truststore: "
@@ -279,14 +269,12 @@ public class CredentialManager {
 			
 			// The requested keystore type is not available from the provider
 			String exMessage = "Failed to insantiate the keystore. Reason: Requested keystore type is not available from the provider.";
-			System.err.println("Credential Manager Error: " + exMessage);
 			throw new CMException(exMessage);
 		} 
 		catch (NoSuchProviderException ex) {
 			
 			// The crypto provider has not been configured
 			String exMessage = "Failed to insantiate the keystore. Reason: the crypto provider has not been configured.";
-			System.err.println("Credential Manager Error: " + exMessage);
 			ex.printStackTrace();
 			throw new CMException(exMessage);
 		}
@@ -307,7 +295,6 @@ public class CredentialManager {
 			catch (Exception ex) {
 				
 				String exMessage = "Failed to load the keystore. Possible reason: incorrect password or corrupted file.";
-				System.err.println("Credential Manager Error: " + exMessage);
 				ex.printStackTrace();
 				throw new CMException(exMessage);
 			} 
@@ -336,7 +323,6 @@ public class CredentialManager {
 			catch (Exception ex) {
 
 				String exMessage = "Failed to create the new keystore.";
-				System.err.println("Credential Manager Error: " + exMessage);
 				ex.printStackTrace();
 				throw new CMException(exMessage);
 			} 
@@ -373,6 +359,7 @@ public class CredentialManager {
 			}
 		} 
 		catch (Exception ex) {
+			ex.printStackTrace();
 			String exMessage = "Failed to get private key aliases when loading service URLs.";
 			throw (new CMException(exMessage));
 		}
@@ -415,6 +402,7 @@ public class CredentialManager {
 				}
 			} 
 			catch (Exception ex) {
+				ex.printStackTrace();
 				String exMessage = "Failed to read the service URLs file.";
 				throw (new CMException(exMessage));
 			} 
@@ -495,6 +483,7 @@ public class CredentialManager {
 			}
 		} 
 		catch (Exception ex) {
+			ex.printStackTrace();
 			String exMessage = "Failed to save the " + ksType + ".";
 			throw (new CMException(exMessage));
 		} 
@@ -617,6 +606,7 @@ public class CredentialManager {
 				serviceURLsFile.createNewFile();
 			} 
 			catch (IOException ex) {
+				ex.printStackTrace();
 				String exMessage = "Failed to create a new service URLs' file.";
 				throw (new CMException(exMessage));
 			}
@@ -657,6 +647,7 @@ public class CredentialManager {
 				// Should not happen
 			} 
 			catch (IOException ex) {
+				ex.printStackTrace();
 				String exMessage = "Failed to save the service URLs to the file.";
 				throw (new CMException(exMessage));
 			} 
@@ -702,6 +693,7 @@ public class CredentialManager {
 			}
 		} 
 		catch (Exception ex) {
+			ex.printStackTrace();
 			String exMessage = "Failed to get the password entry from the Keystore.";
 			throw (new CMException(exMessage));
 		}
@@ -741,6 +733,7 @@ public class CredentialManager {
 			}
 		} 
 		catch (Exception ex) {
+			ex.printStackTrace();
 			String exMessage = "Failed to insert the password entry in the Keystore.";
 			throw (new CMException(exMessage));
 		}
@@ -775,6 +768,7 @@ public class CredentialManager {
 				keystore.setKeyEntry(alias, privateKey, null, certs);
 			}
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			String exMessage = "Failed to insert the key pair entry in the Keystore.";
 			throw (new CMException(exMessage));
 		}
@@ -844,6 +838,7 @@ public class CredentialManager {
 			fos.close();
 		} 
 		catch (Exception ex) {
+			ex.printStackTrace();
 			String exMessage = "Failed to export the key pair from the Keystore.";
 			throw (new CMException(exMessage));
 		} 
@@ -901,8 +896,8 @@ public class CredentialManager {
 			}
 		} 
 		catch (Exception ex) {
-			String exMessage = "Failed to fetch certificate from the " + ksType
-					+ ".";
+			ex.printStackTrace();
+			String exMessage = "Failed to fetch certificate from the " + ksType + ".";
 			throw (new CMException(exMessage));
 		}
 
@@ -939,6 +934,7 @@ public class CredentialManager {
 			}
 		} 
 		catch (Exception ex) {
+			ex.printStackTrace();
 			String exMessage = "Failed to fetch certificate chain for the keypair from the Keystore";
 			throw (new CMException(exMessage));
 		}
@@ -970,6 +966,7 @@ public class CredentialManager {
 			}
 		} 
 		catch (Exception ex) {
+			ex.printStackTrace();
 			String exMessage = "Failed to insert trusted certificate entry in the Truststore.";
 			throw (new CMException(exMessage));
 		}
@@ -997,6 +994,7 @@ public class CredentialManager {
 				return keystore.isKeyEntry(alias);
 			}
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			String exMessage = "Failed to access the key entry in the Keystore.";
 			throw (new CMException(exMessage));
 		}
@@ -1042,8 +1040,8 @@ public class CredentialManager {
 			}
 		} 
 		catch (Exception ex) {
-			String exMessage = "Failed to delete the entry from the " + ksType
-					+ ".";
+			ex.printStackTrace();
+			String exMessage = "Failed to delete the entry from the " + ksType + ".";
 			throw (new CMException(exMessage));
 		}
 	}
@@ -1079,8 +1077,8 @@ public class CredentialManager {
 			}
 		} 
 		catch (Exception ex) {
-			String exMessage = "Failed to access the " + ksType
-					+ " to check if alias exists.";
+			ex.printStackTrace();
+			String exMessage = "Failed to access the " + ksType + " to check if an alias exists.";
 			throw (new CMException(exMessage));
 		}
 
@@ -1118,8 +1116,8 @@ public class CredentialManager {
 			}
 		} 
 		catch (Exception ex) {
-			String exMessage = "Failed to access the " + ksType
-					+ " to get the aliases.";
+			ex.printStackTrace();
+			String exMessage = "Failed to access the " + ksType + " to get the aliases.";
 			throw (new CMException(exMessage));
 		}
 
@@ -1162,8 +1160,8 @@ public class CredentialManager {
 			}
 		} 
 		catch (Exception ex) {
-			String exMessage = "Failed to get the creation date for the entry from the "
-					+ ksType + ".";
+			ex.printStackTrace();
+			String exMessage = "Failed to get the creation date for the entry from the " + ksType + ".";
 			throw (new CMException(exMessage));
 		}
 
@@ -1204,8 +1202,9 @@ public class CredentialManager {
 		return masterPassword.equals(password);
 	}
 
+	
 	/**
-	 * Gets a Securiy Agent Manager instance.
+	 * Gets a Security Agent Manager instance.
 	 */
 	public SecurityAgentManager getSecurityAgentManager() throws CMNotInitialisedException{
 		
