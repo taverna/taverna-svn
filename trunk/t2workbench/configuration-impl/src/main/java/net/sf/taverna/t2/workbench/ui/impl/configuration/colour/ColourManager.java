@@ -1,14 +1,11 @@
 package net.sf.taverna.t2.workbench.ui.impl.configuration.colour;
 
 import java.awt.Color;
-import java.io.File;
+import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.taverna.t2.workbench.configuration.Configurable;
-import net.sf.taverna.t2.workbench.configuration.ConfigurationManager;
-
-import org.apache.log4j.Logger;
+import net.sf.taverna.t2.workbench.configuration.AbstractConfigurable;
 
 /**
  * A factory class that determines the colour that a Colourable UI component
@@ -19,11 +16,9 @@ import org.apache.log4j.Logger;
  * @see Colourable
  * 
  */
-public class ColourManager implements Configurable {
+public class ColourManager extends AbstractConfigurable {
 	
-	private static Logger logger = Logger.getLogger(ColourManager.class);
 	private Map<String, Object> defaultPropertyMap = new HashMap<String, Object>();
-	private Map<String, Object> propertyMap = new HashMap<String, Object>();
 	private static ColourManager instance = new ColourManager();
 	private Map<Object,Color> cachedColours = new HashMap<Object, Color>();
 
@@ -48,13 +43,6 @@ public class ColourManager implements Configurable {
 		return "Colour Management";
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.workbench.configuration.Configurable#getPropertyMap()
-	 */
-	public Map<String, Object> getPropertyMap() {
-		return propertyMap;
-	}
-
 	/**
 	 * Unique identifier for this ColourManager
 	 */
@@ -65,15 +53,8 @@ public class ColourManager implements Configurable {
 	
 
 	private ColourManager() {
+		super();
 		initialiseDefaults();
-		ConfigurationManager manager = ConfigurationManager.getInstance();
-		//FIXME: hardcoded to use the temp dir
-		try {			
-			if (!manager.isBaseLocationSet()) manager.setBaseConfigLocation(new File(System.getProperty("java.io.tmpdir")));
-			manager.populate(this);
-		} catch (Exception e) {
-			logger.error("An error occurred populating the ColourManager configuration, or storing the defaults",e);
-		}
 	}
 
 	private void initialiseDefaults() {
@@ -99,24 +80,24 @@ public class ColourManager implements Configurable {
 	}
 
 	/**
-	 * Builds a Color that has been configured and associated with the given Object type.
+	 * Builds a Color that has been configured and associated with the given String (usually an object type).
 	 * 
 	 * @return the associated Color, or if nothing is associated returns WHITE
 	 *             
 	 */
-	public Color getPreferredColour(Object itemKey) {
+	public Color getPreferredColour(String itemKey) {
 		Color colour = cachedColours.get(itemKey);
 		if (colour == null) {
-			String colourString=(String)getPropertyMap().get(itemKey);
+			String colourString=(String)getProperty(itemKey);
 			colour = colourString==null ? Color.WHITE : Color.decode(colourString);
 			cachedColours.put(itemKey,colour);
 		}
 		return colour;
 	}
 
+	@Override
 	public void restoreDefaults() {
-		propertyMap.clear();
-		propertyMap.putAll(defaultPropertyMap);
+		super.restoreDefaults();
 		cachedColours.clear();
 	}
 

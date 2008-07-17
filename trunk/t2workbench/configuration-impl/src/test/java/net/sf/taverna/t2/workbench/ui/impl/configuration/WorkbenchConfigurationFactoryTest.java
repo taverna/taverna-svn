@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.List;
+import java.util.UUID;
 
 import net.sf.taverna.t2.workbench.configuration.ConfigurationManager;
 import net.sf.taverna.t2.workbench.configuration.ConfigurationUIFactory;
@@ -11,12 +12,17 @@ import net.sf.taverna.t2.workbench.configuration.ConfigurationUIRegistry;
 
 import org.junit.Before;
 import org.junit.Test;
+
+
 public class WorkbenchConfigurationFactoryTest {
 	
 	@Before
 	public void setup() {
 		ConfigurationManager manager = ConfigurationManager.getInstance();
-		manager.setBaseConfigLocation(new File(System.getProperty("java.io.tmpdir")));
+		File f = new File(System.getProperty("java.io.tmpdir"));
+		File d = new File(f,UUID.randomUUID().toString());
+		d.mkdir();
+		manager.setBaseConfigLocation(d);
 	}
 	
 	@Test

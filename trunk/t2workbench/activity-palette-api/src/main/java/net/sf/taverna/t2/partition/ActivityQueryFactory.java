@@ -36,7 +36,7 @@ public abstract class ActivityQueryFactory implements QueryFactory {
 			result.add(createQuery(null));
 		}
 		else {
-			List<String> properties = (List<String>)config.getPropertyMap().get(getPropertyKey());
+			List<String> properties = (List<String>)config.getProperty(getPropertyKey());
 			
 			if (properties!=null) {
 				for (String property : properties) {

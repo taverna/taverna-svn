@@ -37,6 +37,11 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>activity-palette-impl</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
 			<artifactId>ui-api</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>

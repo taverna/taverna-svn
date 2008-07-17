@@ -46,7 +46,7 @@ public class WorkbenchConfigurationUIFactory implements ConfigurationUIFactory {
 			public void actionPerformed(ActionEvent arg0) {
 				Configurable conf = getConfigurable();
 				String dotlocation = dotLocation.getText();
-				conf.getPropertyMap().put("taverna.dotlocation",dotlocation);
+				conf.setProperty("taverna.dotlocation",dotlocation);
 				try {
 					ConfigurationManager.getInstance().store(conf);
 				} catch (Exception e) {
@@ -63,7 +63,7 @@ public class WorkbenchConfigurationUIFactory implements ConfigurationUIFactory {
 		JPanel propertiesPanel = new JPanel();
 		propertiesPanel.setLayout(new BorderLayout());
 		propertiesPanel.add(new JLabel("Dot Location"),BorderLayout.WEST);
-		dotLocation.setText((String)(configurable.getPropertyMap().get("taverna.dotlocation")));
+		dotLocation.setText((String)(configurable.getProperty("taverna.dotlocation")));
 		propertiesPanel.add(dotLocation,BorderLayout.CENTER);
 		return propertiesPanel;
 	}

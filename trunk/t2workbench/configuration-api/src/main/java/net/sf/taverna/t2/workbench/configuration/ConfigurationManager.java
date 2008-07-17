@@ -1,14 +1,13 @@
 package net.sf.taverna.t2.workbench.configuration;
 
 import java.io.File;
-import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
+import net.sf.taverna.raven.appconfig.ApplicationRuntime;
+
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
 /**
@@ -26,10 +25,13 @@ public class ConfigurationManager {
 
 	private static ConfigurationManager configManager;
 
-
-
 	private ConfigurationManager() {
-		
+		File home = ApplicationRuntime.getInstance().getApplicationHomeDir();
+		File config = new File(home,"conf");
+		if (!config.exists()) {
+			config.mkdir();
+		}
+		setBaseConfigLocation(config);
 	}
 
 	/**
@@ -42,7 +44,7 @@ public class ConfigurationManager {
 	public void store(Configurable configurable) throws Exception {
 		try {
 			Map<String, Object> propertyMap = configurable.getPropertyMap();
-			PropertiesConfiguration propConfig = new PropertiesConfiguration();
+			XMLConfiguration propConfig = new XMLConfiguration();
 			for (String key : propertyMap.keySet()) {
 				propConfig.addProperty(key, propertyMap.get(key));
 			}
@@ -57,37 +59,6 @@ public class ConfigurationManager {
 		}
 	}
 
-	private void storeObject(PropertiesConfiguration propConfig, Object object)
-			throws Exception {
-		// TODO don't think this is needed, something similar might be needed on
-		// the loading of the properties
-		if (object instanceof Integer) {
-
-		} else if (object instanceof Object[]) {
-
-		} else if (object instanceof String) {
-
-		} else if (object instanceof List) {
-
-		} else if (object instanceof Long) {
-
-		} else if (object instanceof Boolean) {
-
-		} else if (object instanceof Byte) {
-
-		} else if (object instanceof Short) {
-
-		} else if (object instanceof Float) {
-
-		} else if (object instanceof Double) {
-
-		} else if (object instanceof BigDecimal) {
-
-		} else {
-			throw new Exception("Type of property not recognised");
-		}
-	}
-
 	/**
 	 * Loads the configuration details from disk or from memory
 	 * 
@@ -99,38 +70,32 @@ public class ConfigurationManager {
 	public Map<String, Object> populate(Configurable configurable)
 			throws Exception {
 		try {
-			PropertiesConfiguration propertiesConfig = new PropertiesConfiguration();
-			propertiesConfig.load(new File(baseConfigLocation, configurable
+			XMLConfiguration propertiesConfig = new XMLConfiguration();
+			File configFile = new File(baseConfigLocation, configurable
 					.getUUID()
-					+ ".config"));
-			configurable.getPropertyMap().clear();
-			Iterator keys = propertiesConfig.getKeys();
-			while (keys.hasNext()) {
-				Object next = keys.next();
-				Object property = propertiesConfig
-						.getProperty((String) next);
-				configurable.getPropertyMap().put((String) next, property);
+					+ ".config");
+			if (configFile.exists()) {
+				propertiesConfig.load(configFile);
+				configurable.getPropertyMap().clear();
+				Iterator keys = propertiesConfig.getKeys();
+				while (keys.hasNext()) {
+					Object next = keys.next();
+					Object property = propertiesConfig
+							.getProperty((String) next);
+					configurable.getPropertyMap().put((String) next, property);
+				}
+			}
+			else {
+				logger.info("Config file for "+configurable.getName()+" not yet created. Creating with default values.");
+				configurable.restoreDefaults();
+				store(configurable);
 			}
 			
 		} catch (Exception e) {
-			logger.info("No properties found for "+configurable.getName()+", storing defailts");
+			logger.error("There was a error reading the configuration file for "+configurable.getName()+", using defaults",e);
 			configurable.restoreDefaults();
-			store(configurable);
 		}
 		return configurable.getPropertyMap();
-	}
-
-	private Map<String, Object> restoreObjects(
-			PropertiesConfiguration propertiesConfiguration) {
-		Map<String, Object> propMap = new HashMap<String, Object>();
-		Iterator keys = propertiesConfiguration.getKeys();
-		while (keys.hasNext()) {
-			Object next = keys.next();
-			Object property = propertiesConfiguration
-					.getProperty((String) next);
-			propMap.put((String) next, property);
-		}
-		return propMap;
 	}
 
 	/**

@@ -44,6 +44,7 @@ public abstract class AddQueryActionHandler extends AbstractAction {
 				query.doQuery();
 			}
 		};
+		
 		t.start();
 	}
 

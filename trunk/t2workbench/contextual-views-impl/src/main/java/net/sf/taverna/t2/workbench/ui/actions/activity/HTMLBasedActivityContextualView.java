@@ -63,14 +63,12 @@ public abstract class HTMLBasedActivityContextualView<ConfigBean> extends
 			if (checkAnnotations()) {
 				String colour = (String) ColourManager
 						.getInstance()
-						.getPropertyMap()
-						.get(
+						.getProperty(
 								"net.sf.taverna.t2.activities.beanshell.BeanshellActivity");
 				return colour;
 			}
 		}
-		String colour = (String) ColourManager.getInstance().getPropertyMap()
-				.get(getActivity().getClass().getName());
+		String colour = (String) ColourManager.getInstance().getProperty(getActivity().getClass().getName());
 		return colour == null ? "#ffffff" : colour;
 	}
 

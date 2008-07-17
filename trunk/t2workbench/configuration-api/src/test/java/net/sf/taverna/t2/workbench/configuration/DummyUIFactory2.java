@@ -48,6 +48,16 @@ public class DummyUIFactory2 implements ConfigurationUIFactory {
 			// TODO Auto-generated method stub
 			
 		}
+
+		public Object getProperty(String key) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public void setProperty(String key, Object value) {
+			// TODO Auto-generated method stub
+			
+		}
 		
 	}
 

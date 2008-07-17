@@ -62,7 +62,7 @@ public class SVGUtil {
 		// but that would not include the system property
 		// specified at command line on Windows (runme.bat) 
 		// and OS X (Taverna.app)
-		String dotLocation = (String)WorkbenchConfiguration.getInstance().getPropertyMap().get("taverna.dotlocation");
+		String dotLocation = (String)WorkbenchConfiguration.getInstance().getProperty("taverna.dotlocation");
 		if (dotLocation == null) {
 			dotLocation = "dot";
 		}

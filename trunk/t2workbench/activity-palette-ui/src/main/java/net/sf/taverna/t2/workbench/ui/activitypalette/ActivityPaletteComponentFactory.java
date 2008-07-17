@@ -24,8 +24,7 @@ public class ActivityPaletteComponentFactory implements UIComponentFactorySPI {
 	}
 
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "Activity Palette";
 	}
 
 }

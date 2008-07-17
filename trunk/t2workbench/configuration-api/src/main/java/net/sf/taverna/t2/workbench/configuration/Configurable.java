@@ -14,25 +14,46 @@ public interface Configurable {
 	/**
 	 * @return a Map containing the value/key pairs of the configured properties
 	 */
-	public Map<String,Object> getPropertyMap();
+	Map<String,Object> getPropertyMap();
 	/**
 	 * @return a Map containing the default value/key pairs of the configured properties
 	 */
-	public Map<String,Object> getDefaultPropertyMap();
+	Map<String,Object> getDefaultPropertyMap();
 	/**
 	 * @return a globally unique identifier that ensures that when stored this items configuration details will never clash with another
 	 */
-	public String getUUID();
+	String getUUID();
 	/**
 	 * @return a friendly name for the item
 	 */
-	public String getName();
+	String getName();
 	/**
 	 * @return a String defining the category of configurations that this item belongs to.
 	 */
-	public String getCategory();
+	String getCategory();
 	/**
 	 * Restore the default property map
 	 */
-	public void restoreDefaults();
+	void restoreDefaults();
+	
+	/**
+	 * Looks up the property for the given key. If the value cannot be found in the property
+	 * Map, the the default Map is used which if found is transferred to the property map and stored, otherwise null is returned.
+	 * <br>
+	 * Using this method is preferable to using the property map directly.
+	 * @param key
+	 * @return the Object represented by the key, the default value, or null
+	 */
+	Object getProperty(String key);
+	
+	/**
+	 * Overwrites or applies a new value against the given key in the property map.
+	 * <br>
+	 * If the value is new, or changed, the the property map is stored.
+	 * <br>
+	 * Using this method is preferable to using the property map directly.
+	 * @param key
+	 * @param value
+	 */
+	void setProperty(String key, Object value);
 }

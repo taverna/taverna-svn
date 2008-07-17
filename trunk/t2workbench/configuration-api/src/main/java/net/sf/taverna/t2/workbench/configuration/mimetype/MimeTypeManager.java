@@ -3,9 +3,9 @@ package net.sf.taverna.t2.workbench.configuration.mimetype;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.taverna.t2.workbench.configuration.Configurable;
+import net.sf.taverna.t2.workbench.configuration.AbstractConfigurable;
 
-public class MimeTypeManager implements Configurable {
+public class MimeTypeManager extends AbstractConfigurable {
 	
 	private static MimeTypeManager instance = new MimeTypeManager();
 	
@@ -42,18 +42,8 @@ public class MimeTypeManager implements Configurable {
 		return "Mime Type Manager";
 	}
 
-	public Map<String, Object> getPropertyMap() {
-		// TODO Use the actual mime types stored on disk
-		return getDefaultPropertyMap();
-	}
-
 	public String getUUID() {
 		return "3CBC253F-C62C-4158-AEC6-3017B3C50E59";
-	}
-
-	public void restoreDefaults() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }
