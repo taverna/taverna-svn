@@ -16,7 +16,7 @@ public class LocalworkerActivityConfigView extends BeanshellConfigView{
 		CSH
 		.setHelpIDString(
 				this,
-		"net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.LocalworkerConfigView");
+		"net.sf.taverna.t2.activities.localworker.views.LocalworkerActivityConfigView");
 	}
 
 }
