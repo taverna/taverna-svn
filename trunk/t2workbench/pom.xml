@@ -75,6 +75,7 @@
   </build>
   <modules>
     <module>application</module>
+    <module>credential-manager-ui</module>
     <module>common-icons</module>
     <module>configuration-api</module>
     <module>configuration-impl</module>

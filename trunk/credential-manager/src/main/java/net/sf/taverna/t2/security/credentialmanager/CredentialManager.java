@@ -132,7 +132,7 @@ public class CredentialManager {
 	}
 
 	/**
-	 * Credential Manager constructor. The consltructor is private
+	 * Credential Manager constructor. The constructor is private
 	 * to suppress unauthorized calls to it.
 	 */
 	private CredentialManager() throws CMException {
@@ -142,7 +142,7 @@ public class CredentialManager {
 			Provider bcProv = Security.getProvider("BC");
 
 			if (bcProv == null) {
-
+				//FIXME: Probably won't work with Raven.
 				Class<?> bcProvClass = Class
 						.forName("org.bouncycastle.jce.provider.BouncyCastleProvider");
 				bcProv = (Provider) bcProvClass.newInstance();
