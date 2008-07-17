@@ -3,16 +3,18 @@ package net.sf.taverna.t2.security.profiles;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Vector;
+
+import net.sf.taverna.raven.appconfig.ApplicationRuntime;
+
+import org.apache.log4j.Logger;
 
 
 /**
@@ -22,6 +24,9 @@ import java.util.Vector;
  *
  */
 public class WSSecurityProfileManager {
+	
+	private static Logger logger = Logger
+			.getLogger(WSSecurityProfileManager.class);
 
 	/** Resource bundle */
     private static ResourceBundle res;  
@@ -93,6 +98,19 @@ public class WSSecurityProfileManager {
 		throw new CloneNotSupportedException(); 
 	}
 	
+	private File getConfigurationDirectory() {
+		File home = ApplicationRuntime.getInstance().getApplicationHomeDir();
+		File configDirectory = new File(home,"conf");
+		if (!configDirectory.exists()) {
+			configDirectory.mkdir();
+		}
+		File secConfigDirectory = new File(configDirectory,"security");
+		if (!secConfigDirectory.exists()) {
+			secConfigDirectory.mkdir();
+		}
+		logger.info("Using config directory:"+secConfigDirectory.getAbsolutePath());
+		return secConfigDirectory;
+	}
 	
     /**
      * Credential WSSecurityProfileManager constructor.
@@ -116,17 +134,6 @@ public class WSSecurityProfileManager {
     		return;
     	}
     	   	
-    	//Quick 'n' dirty - expects files to be in correct format.
-    	
-    	// File with pre-defined (system) security profiles
-    	String profilesFileRes = res.getString("T2.WSSecurityProfiles.file");
-    	
-    	// Check if the resource exists (it should do but just in case)
-    	if (WSSecurityProfileManager.class.getResource(profilesFileRes) == null){
-    		// The file does not exist - we cannot continue
-    		throw new WSSecurityProfileManagerException("WSSecurityProfileManager failed to find the file with pre-defined WS Security profiles.");
-    	}
-    	
     	BufferedReader profilesFileReader = null;
     	
         String line;
@@ -137,7 +144,7 @@ public class WSSecurityProfileManager {
         // Read the profiles from the file
         try{
             
-            profilesFileReader = new BufferedReader(new InputStreamReader(WSSecurityProfileManager.class.getResourceAsStream(profilesFileRes)));
+            profilesFileReader = new BufferedReader(new InputStreamReader(WSSecurityProfileManager.class.getResourceAsStream("/profiles/WSSecurity.profiles")));
             
 			while ((line = profilesFileReader.readLine()) != null) {
 				// skip empty lines
@@ -213,12 +220,7 @@ public class WSSecurityProfileManager {
  	    } 
         
         // File with user-defined profiles
-       	String thisURL = getClass().getResource("WSSecurityProfileManager.class").getPath(); //path to this class
-    	final String sep = System.getProperty( "file.separator" );
-    	String thisDir = thisURL.substring(0, thisURL.lastIndexOf(sep) + 1); //directory this class is located in
-    	String usersProfilesFilePath = thisDir + res.getString("User.WSSecurityProfiles.file"); // path to the file with users-defined profile
-    	//profilesFile_UserDefined = new File (usersProfilesFilePath);
-    	profilesFile_UserDefined = new File ("/Users/alex/Desktop/" + res.getString("User.WSSecurityProfiles.file"));
+    	profilesFile_UserDefined = new File (getConfigurationDirectory(),"UserWSSecurity.profiles");
 
         wsSecurityProfiles_UserDefined= new Vector<WSSecurityProfile>();
         wsSecurityProfileNames_UserDefined = new Vector<String>();
