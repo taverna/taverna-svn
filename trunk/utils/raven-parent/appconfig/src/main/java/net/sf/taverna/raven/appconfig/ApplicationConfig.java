@@ -14,8 +14,6 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
-
 import net.sf.taverna.raven.prelauncher.BootstrapLocation;
 
 /**
@@ -36,7 +34,8 @@ import net.sf.taverna.raven.prelauncher.BootstrapLocation;
  */
 public class ApplicationConfig {
 
-	private static final String UNKNOWN_APPLICATION = "unknownApplication-" + UUID.randomUUID().toString();
+	private static final String UNKNOWN_APPLICATION = "unknownApplication-"
+			+ UUID.randomUUID().toString();
 	public static final String PREFIX = "raven.launcher.";
 	public static final String APP_MAIN = PREFIX + "app.main";
 	public static final String APP_NAME = PREFIX + "app.name";
@@ -46,12 +45,10 @@ public class ApplicationConfig {
 			+ "repository.local";
 	public static final String APP_USING_RAVEN = PREFIX + "use_raven";
 	private static final String APP_SHOW_SPLASHSCREEN = PREFIX
-	+ "show_splashscreen";
+			+ "show_splashscreen";
 	public static final String PROPERTIES = "raven-launcher.properties";
 	private static final boolean DEBUG = false;
 
-	private static Logger logger = Logger.getLogger(ApplicationConfig.class);
-	
 	private static ApplicationConfig instance;
 
 	public static synchronized ApplicationConfig getInstance() {
@@ -80,9 +77,11 @@ public class ApplicationConfig {
 	public String getName() {
 		String name = (String) getProperties().get(APP_NAME);
 		if (name == null) {
-			logger .warn("Could not determine application name, using " + UNKNOWN_APPLICATION);
+			System.err
+					.println("ApplicationConfig could not determine application name, using "
+							+ UNKNOWN_APPLICATION);
 			return UNKNOWN_APPLICATION;
-			//throw new IllegalStateException("Can't find application name");
+			// throw new IllegalStateException("Can't find application name");
 		}
 		return name;
 	}
@@ -249,8 +248,8 @@ public class ApplicationConfig {
 	}
 
 	public boolean isShowingSplashscreen() {
-		return Boolean.parseBoolean(getProperties()
-				.getProperty(APP_SHOW_SPLASHSCREEN));		
+		return Boolean.parseBoolean(getProperties().getProperty(
+				APP_SHOW_SPLASHSCREEN));
 	}
 
 }
