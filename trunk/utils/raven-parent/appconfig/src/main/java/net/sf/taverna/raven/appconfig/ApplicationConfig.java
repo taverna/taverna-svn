@@ -14,6 +14,8 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
+
 import net.sf.taverna.raven.prelauncher.BootstrapLocation;
 
 /**
@@ -48,6 +50,8 @@ public class ApplicationConfig {
 	public static final String PROPERTIES = "raven-launcher.properties";
 	private static final boolean DEBUG = false;
 
+	private static Logger logger = Logger.getLogger(ApplicationConfig.class);
+	
 	private static ApplicationConfig instance;
 
 	public static synchronized ApplicationConfig getInstance() {
@@ -76,6 +80,7 @@ public class ApplicationConfig {
 	public String getName() {
 		String name = (String) getProperties().get(APP_NAME);
 		if (name == null) {
+			logger .warn("Could not determine application name, using " + UNKNOWN_APPLICATION);
 			return UNKNOWN_APPLICATION;
 			//throw new IllegalStateException("Can't find application name");
 		}
