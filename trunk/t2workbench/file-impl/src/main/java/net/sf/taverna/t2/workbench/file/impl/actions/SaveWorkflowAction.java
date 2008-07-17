@@ -72,15 +72,14 @@ public class SaveWorkflowAction extends AbstractAction {
 				return true;
 			} catch (OverwriteException ex) {
 				Object dataflowSource = fileManager.getDataflowSource(dataflow);
-				logger
-						.warn("Dataflow was changed on source: "
-								+ dataflowSource, ex);
+				logger.info("Dataflow was changed on source: "
+								+ dataflowSource);
 				fileManager.setCurrentDataflow(dataflow);
 				String msg = "Dataflow destination " + dataflowSource
 						+ " has been changed from elsewhere, "
 						+ "are you sure you want to overwrite?";
 				int ret = JOptionPane.showConfirmDialog(parentComponent, msg,
-						"Dataflow changedk", JOptionPane.YES_NO_CANCEL_OPTION);
+						"Dataflow changedk", JOptionPane.YES_NO_CANCEL_OPTION);	
 				if (ret == JOptionPane.YES_OPTION) {
 					fileManager.saveDataflow(dataflow, false);
 					logger.info("Saved dataflow " + dataflow
