@@ -17,6 +17,18 @@
 			</plugin>
 		</plugins>
 	</build>
+	<repositories>
+		<repository>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<!--  required for the 1.4.0 version of xml-security/xmlsec -->
+			<id>eviware</id>
+			<name>Eviware Repository</name>
+			<url>http://www.eviware.com/repository/maven2/</url>
+		</repository>
+	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>log4j</groupId>
