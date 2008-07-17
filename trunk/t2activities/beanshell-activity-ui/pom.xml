@@ -29,11 +29,11 @@
 			<artifactId>contextual-views-impl</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
-		<dependency>
+		<!--  <dependency>
 			<groupId>net.sf.taverna.t2.workbench</groupId>
 			<artifactId>contextual-views-api</artifactId>
 			<version>0.1-SNAPSHOT</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>javax.help</groupId>
 			<artifactId>javahelp</artifactId>
