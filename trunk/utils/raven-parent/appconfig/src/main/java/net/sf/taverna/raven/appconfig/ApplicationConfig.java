@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.Map.Entry;
 
 import net.sf.taverna.raven.prelauncher.BootstrapLocation;
@@ -33,6 +34,7 @@ import net.sf.taverna.raven.prelauncher.BootstrapLocation;
  */
 public class ApplicationConfig {
 
+	private static final String UNKNOWN_APPLICATION = "unknownApplication-" + UUID.randomUUID().toString();
 	public static final String PREFIX = "raven.launcher.";
 	public static final String APP_MAIN = PREFIX + "app.main";
 	public static final String APP_NAME = PREFIX + "app.name";
@@ -74,7 +76,8 @@ public class ApplicationConfig {
 	public String getName() {
 		String name = (String) getProperties().get(APP_NAME);
 		if (name == null) {
-			throw new IllegalStateException("Can't find application name");
+			return UNKNOWN_APPLICATION;
+			//throw new IllegalStateException("Can't find application name");
 		}
 		return name;
 	}

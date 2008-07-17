@@ -3,12 +3,14 @@ package net.sf.taverna.raven.appconfig;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
+import java.util.UUID;
 
 import net.sf.taverna.raven.appconfig.ApplicationConfig;
 
@@ -35,9 +37,10 @@ public class TestApplicationConfig extends AbstractPropThreadTest {
 				.getTitle());
 	}
 
-	@Test(expected = IllegalStateException.class)
-	public void getNameFails() throws Exception {
-		config.getName();
+	@Test
+	public void getUnknownName() throws Exception {
+		assertTrue("Unexpected name", config.getName().startsWith("unknownApplication-"));
+		assertEquals("Unexpected length of name", config.getName().length(), ("unknownApplication-" + UUID.randomUUID().toString()).length());
 	}
 
 	@Test
@@ -267,10 +270,10 @@ public class TestApplicationConfig extends AbstractPropThreadTest {
 				.invoke(appConfig, (Object[]) null));
 	}
 
-	@Test(expected = IllegalStateException.class)
-	public void getTitleFails() throws Exception {
-		config.getTitle();
-		System.out.println(System.getProperties());
+	@Test
+	public void getUnknownTitle() throws Exception {	
+		assertEquals("Title of unknown application didn't match name", 
+				config.getName(), config.getTitle());		
 	}
 
 	@Before
