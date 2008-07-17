@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Vector;
@@ -126,13 +127,6 @@ public class WSSecurityProfileManager {
     		throw new WSSecurityProfileManagerException("WSSecurityProfileManager failed to find the file with pre-defined WS Security profiles.");
     	}
     	
-    	String profilesFilePath;
-    	profilesFilePath = WSSecurityProfileManager.class.getResource(profilesFileRes).getPath(); 
-    	
-    	profilesFile_SystemDefined = new File ("/Users/alex/Documents/workspace/security-profiles/src/main/resources/profiles/WSSecurity.profiles");
-    	
-    	System.err.println("Path: " + profilesFilePath);
-    	
     	BufferedReader profilesFileReader = null;
     	
         String line;
@@ -142,11 +136,9 @@ public class WSSecurityProfileManager {
 
         // Read the profiles from the file
         try{
-
-        	InputStream profilesFIS_SystemDefined =  WSSecurityProfileManager.class.getResourceAsStream(profilesFileRes);
-        	
-            profilesFileReader = new BufferedReader(new FileReader(
-					profilesFile_SystemDefined));
+            
+            profilesFileReader = new BufferedReader(new InputStreamReader(WSSecurityProfileManager.class.getResourceAsStream(profilesFileRes)));
+            
 			while ((line = profilesFileReader.readLine()) != null) {
 				// skip empty lines
 				while ((line != null) && (line.trim().length() == 0)) {
