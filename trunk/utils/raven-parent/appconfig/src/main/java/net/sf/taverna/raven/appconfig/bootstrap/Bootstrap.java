@@ -17,7 +17,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
-import net.sf.taverna.raven.prelauncher.BootstrapLocation;
+import net.sf.taverna.raven.prelauncher.ClassLocation;
 import net.sf.taverna.raven.prelauncher.PreLauncher;
 
 import org.apache.log4j.Logger;
@@ -169,8 +169,8 @@ public class Bootstrap {
 	 */
 	private static void determineStartup() {
 		try {
-			File startupDir = BootstrapLocation
-					.getBootstrapDir(Bootstrap.class);
+			File startupDir = ClassLocation
+					.getClassLocationDir(Bootstrap.class);
 			if (startupDir != null) {
 				String startup = startupDir.getAbsolutePath();
 				System.setProperty("taverna.startup", startup);

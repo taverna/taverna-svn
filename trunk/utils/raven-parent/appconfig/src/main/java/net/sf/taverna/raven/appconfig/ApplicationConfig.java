@@ -14,7 +14,7 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.Map.Entry;
 
-import net.sf.taverna.raven.prelauncher.BootstrapLocation;
+import net.sf.taverna.raven.prelauncher.ClassLocation;
 
 /**
  * Represent the application config as it has been specified in
@@ -136,7 +136,7 @@ public class ApplicationConfig {
 			return startupDir;
 		}
 		File bootstrapDir;
-		bootstrapDir = BootstrapLocation.getBootstrapDir(getClass());
+		bootstrapDir = ClassLocation.getClassLocationDir(getClass());
 		if (bootstrapDir.getName().equalsIgnoreCase("lib")) {
 			return bootstrapDir.getParentFile();
 		}
