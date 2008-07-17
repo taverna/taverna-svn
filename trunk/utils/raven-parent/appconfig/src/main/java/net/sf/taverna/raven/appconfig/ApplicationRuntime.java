@@ -243,7 +243,7 @@ public class ApplicationRuntime {
 		}
 		File repositoryDir = new File(startupDir, STRING);
 		if (!repositoryDir.isDirectory()) {
-			logger.warn("Could not find plugins directory " + repositoryDir);
+			logger.info("Could not find local repository directory " + repositoryDir);
 			return null;
 		}
 		return repositoryDir;
