@@ -9,6 +9,8 @@ import javax.swing.JOptionPane;
 
 import net.sf.taverna.t2.activities.localworker.LocalworkerActivity;
 import net.sf.taverna.t2.activities.localworker.views.LocalworkerActivityConfigView;
+import net.sf.taverna.t2.annotation.AnnotationAssertion;
+import net.sf.taverna.t2.annotation.AnnotationChain;
 import net.sf.taverna.t2.annotation.annotationbeans.HostInstitution;
 import net.sf.taverna.t2.lang.ui.ModelMap;
 import net.sf.taverna.t2.workbench.ModelMapConstants;
@@ -39,8 +41,9 @@ public class LocalworkerActivityConfigurationAction extends
 	}
 
 	/**
-	 * Pops up a {@link JOptionPane} warning the user that they change things at
-	 * their own risk
+	 * If the localworker has not been changed it pops up a {@link JOptionPane}
+	 * warning the user that they change things at their own risk. Otherwise
+	 * just show the config view
 	 */
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
@@ -67,20 +70,24 @@ public class LocalworkerActivityConfigurationAction extends
 		});
 
 		Object[] options = { "Continue", "Cancel" };
-		int n = JOptionPane
-				.showOptionDialog(
-						frame,
-						"Changing the properties of a Local Worker may affect the behaviour.  Do you want to contine",
-						"WARNING", JOptionPane.YES_NO_OPTION,
-						JOptionPane.QUESTION_MESSAGE, null, // do not use a
-						// custom Icon
-						options, options[0]);
+		if (!checkAnnotations()) {
+			int n = JOptionPane
+					.showOptionDialog(
+							frame,
+							"Changing the properties of a Local Worker may affect the behaviour.  Do you want to contine",
+							"WARNING", JOptionPane.YES_NO_OPTION,
+							JOptionPane.QUESTION_MESSAGE, null, // do not use a
+							// custom Icon
+							options, options[0]);
 
-		if (n == 0) {
-			// continue was clicked so prepare for config
-			frame.setVisible(true);
+			if (n == 0) {
+				// continue was clicked so prepare for config
+				frame.setVisible(true);
+			} else {
+				// do nothing
+			}
 		} else {
-			// do nothing
+			frame.setVisible(true);			
 		}
 	}
 
@@ -109,6 +116,25 @@ public class LocalworkerActivityConfigurationAction extends
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Checks if the user has altered the local worker ie. an annotation has
+	 * been added to it
+	 * 
+	 * @return
+	 */
+	private boolean checkAnnotations() {
+		for (AnnotationChain chain : getActivity().getAnnotations()) {
+			for (AnnotationAssertion<?> assertion : chain.getAssertions()) {
+				Object detail = assertion.getDetail();
+				System.out.println(detail.getClass().getName());
+				if (detail instanceof HostInstitution) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 }
