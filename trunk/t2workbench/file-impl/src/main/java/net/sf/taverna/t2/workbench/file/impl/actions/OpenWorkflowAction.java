@@ -23,25 +23,6 @@ import org.apache.log4j.Logger;
 
 public class OpenWorkflowAction extends AbstractAction {
 
-	private final class FileOpenerThread extends Thread {
-		private final Component parentComponent;
-		private final File[] files;
-		private final FileType fileType;
-
-		private FileOpenerThread(Component parentComponent,
-				File[] selectedFiles, FileType fileType) {
-			super("Opening dataflow(s) " + Arrays.asList(selectedFiles));
-			this.parentComponent = parentComponent;
-			this.files = selectedFiles;
-			this.fileType = fileType;
-		}
-
-		@Override
-		public void run() {
-			openWorkflows(parentComponent, files, fileType);
-		}
-	}
-
 	private static final String OPEN_WORKFLOW = "Open workflow...";
 	private static Logger logger = Logger.getLogger(OpenWorkflowAction.class);
 
@@ -117,6 +98,25 @@ public class OpenWorkflowAction extends AbstractAction {
 
 				return;
 			}
+		}
+	}
+	
+	private final class FileOpenerThread extends Thread {
+		private final Component parentComponent;
+		private final File[] files;
+		private final FileType fileType;
+
+		private FileOpenerThread(Component parentComponent,
+				File[] selectedFiles, FileType fileType) {
+			super("Opening dataflow(s) " + Arrays.asList(selectedFiles));
+			this.parentComponent = parentComponent;
+			this.files = selectedFiles;
+			this.fileType = fileType;
+		}
+
+		@Override
+		public void run() {
+			openWorkflows(parentComponent, files, fileType);
 		}
 	}
 
