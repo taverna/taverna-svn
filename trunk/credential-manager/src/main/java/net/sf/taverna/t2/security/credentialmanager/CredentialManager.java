@@ -1,41 +1,39 @@
 package net.sf.taverna.t2.security.credentialmanager;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.BufferedReader;
 import java.io.FileWriter;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.FileNotFoundException;
-
-import java.security.KeyStore;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.security.Key;
+import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.Provider;
 import java.security.Security;
-import java.security.cert.X509Certificate;
 import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.Vector;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.security.auth.x500.X500Principal;
 
-import java.util.ResourceBundle;
-import java.util.MissingResourceException;
-import java.util.Enumeration;
-import java.util.Date;
-import java.util.Vector;
-import java.util.HashMap;
-
-import java.lang.StringBuffer;
-
-import java.net.URLEncoder;
-import java.net.URLDecoder;
-
+import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.t2.security.agents.SecurityAgentManager;
+
+import org.apache.log4j.Logger;
 
 /**
  * Provides a wrapper for the user's Keystore and Truststore and implements
@@ -46,6 +44,11 @@ import net.sf.taverna.t2.security.agents.SecurityAgentManager;
  */
 
 public class CredentialManager {
+	
+	/**
+	 * Log4J Logger
+	 */
+	private static Logger logger = Logger.getLogger(CredentialManager.class);
 
 	/** Resource bundle */
 	private static ResourceBundle res;
@@ -118,6 +121,20 @@ public class CredentialManager {
 	public Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();
 	}
+	
+	private File getConfigurationDirectory() {
+		File home = ApplicationRuntime.getInstance().getApplicationHomeDir();
+		File configDirectory = new File(home,"conf");
+		if (!configDirectory.exists()) {
+			configDirectory.mkdir();
+		}
+		File secConfigDirectory = new File(configDirectory,"security");
+		if (!secConfigDirectory.exists()) {
+			secConfigDirectory.mkdir();
+		}
+		logger.info("Using config directory:"+secConfigDirectory.getAbsolutePath());
+		return secConfigDirectory;
+	}
 
 	/**
 	 * Credential Manager constructor. The consltructor is private
@@ -168,20 +185,21 @@ public class CredentialManager {
 		String keystoreFilePath = thisDir
 				+ res.getString("CredentialManager.Keystore");		
 		// keystoreFile = new File (keystoreFilePath);
-		keystoreFile = new File("/Users/alex/Desktop/t2keystore.ubr"); 
+		File configDirectory = getConfigurationDirectory();
+		keystoreFile = new File(configDirectory,"t2keystore.ubr"); 
 
 		// Get the service URLs file (where lists of service urls for private
 		// keys are kept)
 		String serviceURLsFilePath = thisDir
 				+ res.getString("CredentialManager.ServiceURLsFile"); 
 		// serviceURLsFile = new File (serviceURLsFilePath);
-		serviceURLsFile = new File("/Users/alex/Desktop/t2serviceURLs.txt"); 
+		serviceURLsFile = new File(configDirectory,"t2serviceURLs.txt"); 
 
 		// Get the Truststore file
 		String truststoreFilePath = thisDir
 				+ res.getString("CredentialManager.Truststore"); 
 		// truststoreFile = new File (truststoreFilePath);
-		truststoreFile = new File("/Users/alex/Desktop/t2truststore.ubr"); 
+		truststoreFile = new File(configDirectory,"t2truststore.ubr"); 
 
 		// Credential Manager is not initialised yet 
 		// (until we load the keystores and service URLs hashmap)

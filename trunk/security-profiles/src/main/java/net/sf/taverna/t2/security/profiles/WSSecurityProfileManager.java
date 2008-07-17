@@ -133,10 +133,12 @@ public class WSSecurityProfileManager {
     	if (res == null){
     		return;
     	}
-    	   	
-    	BufferedReader profilesFileReader = null;
+    	 
+    	// Quick 'n' dirty - expects the files to be in the right format.
     	
+    	BufferedReader profilesFileReader = null;
         String line;
+        
         wsSecurityProfiles_SystemDefined= new Vector<WSSecurityProfile>();
         wsSecurityProfileNames_SystemDefined = new Vector<String>();
         wsSecurityProfileDescriptions_SystemDefined = new Vector<String>();
