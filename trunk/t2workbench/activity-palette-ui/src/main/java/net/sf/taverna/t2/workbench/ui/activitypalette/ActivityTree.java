@@ -16,7 +16,6 @@ import java.awt.dnd.DropTargetListener;
 import java.util.List;
 
 import javax.swing.JTree;
-import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
@@ -25,6 +24,8 @@ import net.sf.taverna.t2.partition.Partition;
 import net.sf.taverna.t2.partition.Query;
 import net.sf.taverna.t2.partition.RootPartition;
 import net.sf.taverna.t2.partition.SetModelChangeListener;
+
+import org.apache.log4j.Logger;
 
 /**
  * Contains all the activities. Has a {@link TreeModel} based on
@@ -40,6 +41,8 @@ import net.sf.taverna.t2.partition.SetModelChangeListener;
 public class ActivityTree extends JTree implements DragGestureListener,
 		DropTargetListener, DragSourceListener {
 
+	private static Logger logger = Logger.getLogger(ActivityTree.class);
+	
 	/** A query for each type of activity */
 	private List<Query<?>> queryList;
 	// private ActivityItem activityItem;
@@ -66,6 +69,7 @@ public class ActivityTree extends JTree implements DragGestureListener,
 	 * 
 	 * @param model
 	 */
+	@SuppressWarnings("unchecked")
 	private void addQueries(TreeModel model) {
 		queryList = ((RootPartition) model).getSetModelChangeListener()
 				.getQueries();
@@ -115,6 +119,10 @@ public class ActivityTree extends JTree implements DragGestureListener,
 	 */
 	public void dragGestureRecognized(DragGestureEvent dge) {
 		TreePath selectionPath = this.getSelectionPath();
+		if (selectionPath == null) {
+			logger.warn("No selection, could not initialise drag");
+			return;
+		}
 		Object lastPathComponent = selectionPath.getLastPathComponent();
 		if (lastPathComponent instanceof ActivityItem) {
 			ActivityItem activityItem = (ActivityItem) lastPathComponent;
