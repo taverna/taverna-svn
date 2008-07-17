@@ -2,6 +2,8 @@ package net.sf.taverna.t2.workbench.file.impl;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
@@ -77,7 +79,8 @@ public class FileManagerImpl extends FileManager {
 		}
 		Set<DataflowPersistenceHandler> handlers = persistanceHandlerRegistry
 				.getSaveHandlersForType(dataflowInfo.getFileType(),
-						dataflowInfo.getDataflowInfo().getCanonicalSource().getClass());
+						dataflowInfo.getDataflowInfo().getCanonicalSource()
+								.getClass());
 		return !handlers.isEmpty();
 	}
 
@@ -141,7 +144,13 @@ public class FileManagerImpl extends FileManager {
 	@Override
 	public List<FileFilter> getOpenFileFilters() {
 		List<FileFilter> fileFilters = new ArrayList<FileFilter>();
-		for (FileType fileType : persistanceHandlerRegistry.getOpenFileTypes()) {
+
+		Set<FileType> fileTypes = persistanceHandlerRegistry.getOpenFileTypes();
+		if (!fileTypes.isEmpty()) {
+			fileFilters.add(new MultipleFileTypes(fileTypes,
+					"All supported workflow types"));
+		}
+		for (FileType fileType : fileTypes) {
 			fileFilters.add(new FileTypeFileFilter(fileType));
 		}
 		return fileFilters;
@@ -204,29 +213,45 @@ public class FileManagerImpl extends FileManager {
 	@Override
 	public Dataflow openDataflow(FileType fileType, Object source)
 			throws OpenException {
-		Set<DataflowPersistenceHandler> handlers = persistanceHandlerRegistry
-				.getOpenHandlersFor(fileType, source.getClass());
+		Set<DataflowPersistenceHandler> handlers;
+		Class<? extends Object> sourceClass = source.getClass();
+		if (fileType != null) {
+			handlers = persistanceHandlerRegistry.getOpenHandlersFor(fileType,
+					sourceClass);
+		} else {
+			handlers = persistanceHandlerRegistry
+					.getOpenHandlersFor(sourceClass);
+		}
+
 		if (handlers.isEmpty()) {
 			throw new OpenException("Unsupported file type or class "
-					+ fileType + " " + source.getClass());
+					+ fileType + " " + sourceClass);
 		}
 		OpenException lastException = null;
 		for (DataflowPersistenceHandler handler : handlers) {
-			try {
-				DataflowInfo openDataflow = handler.openDataflow(fileType,
-						source);
-				Dataflow dataflow = openDataflow.getDataflow();
-				logger.info("Loaded workflow: " + dataflow.getLocalName() + " "
-						+ dataflow.getInternalIdentier() + " from " + source
-						+ " using " + handler);
-				openDataflowInternal(dataflow);
-				getOpenDataflowInfo(dataflow).setOpenedFrom(openDataflow);
-				observers.notify(new OpenedDataflowEvent(dataflow));
-				return dataflow;
-			} catch (OpenException ex) {
-				logger.warn("Could not open from " + source + " using "
-						+ handler);
-				lastException = ex;
+			Collection<FileType> fileTypes;
+			if (fileType == null) {
+				fileTypes = handler.getOpenFileTypes();
+			} else {
+				fileTypes = Collections.singleton(fileType);
+			}
+			for (FileType candidateFileType : fileTypes) {
+				try {
+					DataflowInfo openDataflow = handler.openDataflow(
+							candidateFileType, source);
+					Dataflow dataflow = openDataflow.getDataflow();
+					logger.info("Loaded workflow: " + dataflow.getLocalName()
+							+ " " + dataflow.getInternalIdentier() + " from "
+							+ source + " using " + handler);
+					openDataflowInternal(dataflow);
+					getOpenDataflowInfo(dataflow).setOpenedFrom(openDataflow);
+					observers.notify(new OpenedDataflowEvent(dataflow));
+					return dataflow;
+				} catch (OpenException ex) {
+					logger.warn("Could not open from " + source + " using "
+							+ handler + " of type " + candidateFileType);
+					lastException = ex;
+				}
 			}
 		}
 		throw new OpenException("Could not open " + source, lastException);
@@ -253,11 +278,20 @@ public class FileManagerImpl extends FileManager {
 	@Override
 	public void saveDataflow(Dataflow dataflow, FileType fileType,
 			Object destination, boolean failOnOverwrite) throws SaveException {
-		Set<DataflowPersistenceHandler> handlers = persistanceHandlerRegistry
-				.getSaveHandlersForType(fileType, destination.getClass());
+		Set<DataflowPersistenceHandler> handlers;
+
+		Class<? extends Object> destinationClass = destination.getClass();
+		if (fileType != null) {
+			handlers = persistanceHandlerRegistry.getSaveHandlersForType(
+					fileType, destinationClass);
+		} else {
+			handlers = persistanceHandlerRegistry
+					.getSaveHandlersFor(destinationClass);
+		}
+
 		if (handlers.isEmpty()) {
 			throw new SaveException("Unsupported file type or class "
-					+ fileType + " " + destination.getClass());
+					+ fileType + " " + destinationClass);
 		}
 		SaveException lastException = null;
 

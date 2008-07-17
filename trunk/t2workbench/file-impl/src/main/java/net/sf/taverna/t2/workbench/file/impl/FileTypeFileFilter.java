@@ -20,7 +20,7 @@ public class FileTypeFileFilter extends FileFilter {
 
 	@Override
 	public boolean accept(File file) {
-		return file.getName().toLowerCase().endsWith(
+		return file.isDirectory() || file.getName().toLowerCase().endsWith(
 				"." + fileType.getExtension());
 	}
 

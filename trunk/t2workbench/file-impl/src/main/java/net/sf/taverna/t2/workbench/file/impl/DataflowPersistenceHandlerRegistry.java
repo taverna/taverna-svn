@@ -30,20 +30,22 @@ public class DataflowPersistenceHandlerRegistry extends
 	}
 
 	@SuppressWarnings("unchecked")
-	protected static List<Class<?>> findAllParentClasses(final Class<?> sourceClass) {
+	protected static List<Class<?>> findAllParentClasses(
+			final Class<?> sourceClass) {
 		List<Class<?>> superClasses = new ArrayList<Class<?>>();
 		superClasses.add(sourceClass);
 		superClasses.addAll(ClassUtils.getAllSuperclasses(sourceClass));
 		superClasses.addAll(ClassUtils.getAllInterfaces(sourceClass));
 		return superClasses;
 	}
+
+	private Map<Class<?>, Set<DataflowPersistenceHandler>> openClassToHandlers;
 	private Map<Class<?>, Set<FileType>> openClassToTypes;
 	private Map<FileType, Map<Class<?>, Set<DataflowPersistenceHandler>>> openFileClassToHandler;
-
 	private Map<FileType, Set<DataflowPersistenceHandler>> openFileToHandler;
+	private Map<Class<?>, Set<DataflowPersistenceHandler>> saveClassToHandlers;
 	private Map<Class<?>, Set<FileType>> saveClassToTypes;
 	private Map<FileType, Map<Class<?>, Set<DataflowPersistenceHandler>>> saveFileClassToHandler;
-
 	private Map<FileType, Set<DataflowPersistenceHandler>> saveFileToHandler;
 
 	protected DataflowPersistenceHandlerRegistry() {
@@ -63,6 +65,15 @@ public class DataflowPersistenceHandlerRegistry extends
 			fileTypes.addAll(getOpenClassToTypes().get(candidateClass));
 		}
 		return fileTypes;
+	}
+
+	public Set<DataflowPersistenceHandler> getOpenHandlersFor(
+			Class<? extends Object> sourceClass) {
+		Set<DataflowPersistenceHandler> handlers = new LinkedHashSet<DataflowPersistenceHandler>();
+		for (Class<?> candidateClass : findAllParentClasses(sourceClass)) {
+			handlers.addAll(getOpenClassToHandlers().get(candidateClass));
+		}
+		return handlers;
 	}
 
 	public Set<DataflowPersistenceHandler> getOpenHandlersFor(
@@ -102,6 +113,15 @@ public class DataflowPersistenceHandlerRegistry extends
 		return fileTypes;
 	}
 
+	public Set<DataflowPersistenceHandler> getSaveHandlersFor(
+			Class<? extends Object> destinationClass) {
+		Set<DataflowPersistenceHandler> handlers = new LinkedHashSet<DataflowPersistenceHandler>();
+		for (Class<?> candidateClass : findAllParentClasses(destinationClass)) {
+			handlers.addAll(getSaveClassToHandlers().get(candidateClass));
+		}
+		return handlers;
+	}
+
 	public Set<DataflowPersistenceHandler> getSaveHandlersForType(
 			FileType fileType, Class<?> destinationClass) {
 		Set<DataflowPersistenceHandler> handlers = new LinkedHashSet<DataflowPersistenceHandler>();
@@ -117,10 +137,17 @@ public class DataflowPersistenceHandlerRegistry extends
 		openFileClassToHandler = LazyMap.decorate(new HashMap(), MAP_FACTORY);
 		openFileToHandler = LazyMap.decorate(new HashMap(), SET_FACTORY);
 		openClassToTypes = LazyMap.decorate(new HashMap(), SET_FACTORY);
+		openClassToHandlers = LazyMap.decorate(new HashMap(), SET_FACTORY);
 
 		saveFileClassToHandler = LazyMap.decorate(new HashMap(), MAP_FACTORY);
 		saveFileToHandler = LazyMap.decorate(new HashMap(), SET_FACTORY);
 		saveClassToTypes = LazyMap.decorate(new HashMap(), SET_FACTORY);
+		saveClassToHandlers = LazyMap.decorate(new HashMap(), SET_FACTORY);
+
+	}
+
+	private Map<Class<?>, Set<DataflowPersistenceHandler>> getOpenClassToHandlers() {
+		return openClassToHandlers;
 	}
 
 	private synchronized Map<Class<?>, Set<FileType>> getOpenClassToTypes() {
@@ -133,6 +160,10 @@ public class DataflowPersistenceHandlerRegistry extends
 
 	private Map<FileType, Set<DataflowPersistenceHandler>> getOpenFileToHandler() {
 		return openFileToHandler;
+	}
+
+	private Map<Class<?>, Set<DataflowPersistenceHandler>> getSaveClassToHandlers() {
+		return saveClassToHandlers;
 	}
 
 	private synchronized Map<Class<?>, Set<FileType>> getSaveClassToTypes() {
@@ -156,6 +187,10 @@ public class DataflowPersistenceHandlerRegistry extends
 					openClassToTypes.get(openClass).add(openFileType);
 				}
 			}
+			for (Class<?> openClass : handler.getOpenSourceTypes()) {
+				openClassToHandlers.get(openClass).add(handler);
+			}
+
 			for (FileType saveFileType : handler.getSaveFileTypes()) {
 				saveFileToHandler.get(saveFileType).add(handler);
 				for (Class<?> saveClass : handler.getSaveDestinationTypes()) {
@@ -163,6 +198,9 @@ public class DataflowPersistenceHandlerRegistry extends
 							.add(handler);
 					saveClassToTypes.get(saveClass).add(saveFileType);
 				}
+			}
+			for (Class<?> openClass : handler.getSaveDestinationTypes()) {
+				saveClassToHandlers.get(openClass).add(handler);
 			}
 		}
 	}

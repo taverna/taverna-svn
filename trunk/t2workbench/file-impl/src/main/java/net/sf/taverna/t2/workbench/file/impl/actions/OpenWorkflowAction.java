@@ -23,9 +23,9 @@ import org.apache.log4j.Logger;
 
 public class OpenWorkflowAction extends AbstractAction {
 
-	private static final String OPEN_WORKFLOW = "Open workflow...";
 	private static Logger logger = Logger.getLogger(OpenWorkflowAction.class);
 
+	private static final String OPEN_WORKFLOW = "Open workflow...";
 	private FileManager fileManager = FileManager.getInstance();
 
 	public OpenWorkflowAction() {
@@ -50,6 +50,7 @@ public class OpenWorkflowAction extends AbstractAction {
 		fileChooser.setDialogTitle(OPEN_WORKFLOW);
 
 		fileChooser.resetChoosableFileFilters();
+		fileChooser.setAcceptAllFileFilterUsed(false);
 		List<FileFilter> fileFilters = fileManager.getOpenFileFilters();
 		if (fileFilters.isEmpty()) {
 			logger.warn("No file types found for opening workflow");
@@ -61,6 +62,7 @@ public class OpenWorkflowAction extends AbstractAction {
 		for (FileFilter fileFilter : fileFilters) {
 			fileChooser.addChoosableFileFilter(fileFilter);
 		}
+
 		fileChooser.setFileFilter(fileFilters.get(0));
 
 		fileChooser.setCurrentDirectory(new File(curDir));
@@ -71,10 +73,17 @@ public class OpenWorkflowAction extends AbstractAction {
 			prefs.put("currentDir", fileChooser.getCurrentDirectory()
 					.toString());
 			final File[] selectedFiles = fileChooser.getSelectedFiles();
-			FileTypeFileFilter fileFilter = (FileTypeFileFilter) fileChooser
-					.getFileFilter();
-			new FileOpenerThread(parentComponent, selectedFiles, fileFilter
-					.getFileType()).start();
+			FileFilter fileFilter = fileChooser.getFileFilter();
+			FileType fileType;
+			if (fileFilter instanceof FileTypeFileFilter) {
+				fileType = ((FileTypeFileFilter) fileChooser.getFileFilter())
+						.getFileType();
+			} else {
+				// Unknown filetype, try all of them
+				fileType = null;
+			}
+			new FileOpenerThread(parentComponent, selectedFiles, fileType)
+					.start();
 			return true;
 		}
 		return false;
@@ -100,11 +109,11 @@ public class OpenWorkflowAction extends AbstractAction {
 			}
 		}
 	}
-	
+
 	private final class FileOpenerThread extends Thread {
-		private final Component parentComponent;
 		private final File[] files;
 		private final FileType fileType;
+		private final Component parentComponent;
 
 		private FileOpenerThread(Component parentComponent,
 				File[] selectedFiles, FileType fileType) {
