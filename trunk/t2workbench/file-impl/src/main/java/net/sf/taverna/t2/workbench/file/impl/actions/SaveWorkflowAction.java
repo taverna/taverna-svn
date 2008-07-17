@@ -79,7 +79,7 @@ public class SaveWorkflowAction extends AbstractAction {
 						+ " has been changed from elsewhere, "
 						+ "are you sure you want to overwrite?";
 				int ret = JOptionPane.showConfirmDialog(parentComponent, msg,
-						"Dataflow changedk", JOptionPane.YES_NO_CANCEL_OPTION);	
+						"Dataflow changed", JOptionPane.YES_NO_CANCEL_OPTION);	
 				if (ret == JOptionPane.YES_OPTION) {
 					fileManager.saveDataflow(dataflow, false);
 					logger.info("Saved dataflow " + dataflow
