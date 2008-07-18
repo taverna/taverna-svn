@@ -18,6 +18,7 @@ import net.sf.taverna.t2.security.profiles.WSSecurityProfile;
  * 
  * Test launcher for WSSecurityProfileChooser (so it does not have to be
  * launched from Taverna).
+ * 
  * @author Alexandra Nenadic
  *
  */

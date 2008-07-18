@@ -41,7 +41,9 @@ import javax.security.auth.x500.X500Principal;
 
 import net.sf.taverna.t2.security.credentialmanager.CMException;
 import net.sf.taverna.t2.security.credentialmanager.CMX509Util;
+import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
 
+import org.apache.log4j.Logger;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.DERBitString;
@@ -57,6 +59,12 @@ public class ViewCertDetailsDialog
     extends JDialog
 { 	
 	private static final long serialVersionUID = 4945018031152689088L;
+	
+	/**
+	 * Log4J Logger
+	 */
+	private static Logger logger = Logger.getLogger(ViewCertDetailsDialog.class);
+	
 
 	/** Stores certificate to display */
     private X509Certificate cert;
@@ -320,8 +328,6 @@ public class ViewCertDetailsDialog
             bCert = cert.getEncoded();
         }
         catch (CertificateEncodingException ex) {
-        	System.err.println("Credential Manager Error: Could not get the encoded form of the certificate.");
-        	ex.printStackTrace();
             throw new CMException(
                 "Could not get the encoded form of the certificate.",
                 ex);
@@ -569,7 +575,7 @@ public class ViewCertDetailsDialog
             return str;
         }
         catch(IOException ex){
-        	System.err.println("Credential Manager Error: could not get Netscape Certificate Type extension.");
+        	logger.error("Credential Manager Error: could not get Netscape Certificate Type extension.", ex);
         	return "";
         }
     }

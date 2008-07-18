@@ -8,8 +8,6 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchProviderException;
 
-import org.apache.log4j.Logger;
-
 /**
  * Provides utility methods for loading a keystore from a file.
  * 
@@ -17,11 +15,6 @@ import org.apache.log4j.Logger;
  */
 public class CMUtil {
 	
-	/**
-	 * Log4J Logger
-	 */
-	private static Logger logger = Logger.getLogger(CMUtil.class);
-
 	/**
 	 * Loads a Bouncy Castle "UBER"-type keystore from a file on the disk and
 	 * returns it.
@@ -42,14 +35,12 @@ public class CMUtil {
 			
 			// The requested keystore type is not available from the provider
 			String exMessage = "Failed to insantiate the keystore. Reason: Requested keystore type is not available from the provider.";
-			logger.error(exMessage, ex);
 			throw new CMException(exMessage);
 		} 
 		catch (NoSuchProviderException ex) {
 			
 			// The crypto provider has not been configured
 			String exMessage = "Failed to insantiate the keystore. Reason: the crypto provider has not been configured.";
-			logger.error(exMessage, ex);
 			throw new CMException(exMessage);
 		}
 
@@ -69,7 +60,6 @@ public class CMUtil {
 			catch (Exception ex) {
 				
 				String exMessage = "Failed to load the keystore. Possible reason: incorrect password or corrupted file.";
-				logger.error(exMessage, ex);
 				throw new CMException(exMessage);
 			} 
 			finally {
@@ -97,7 +87,6 @@ public class CMUtil {
 			catch (Exception ex) {
 
 				String exMessage = "Failed to create the new keystore.";
-				logger.error(exMessage, ex);
 				throw new CMException(exMessage);
 			} 
 			finally {

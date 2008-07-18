@@ -188,7 +188,7 @@ public class WSSecurityProfileManager {
 		 */
         catch(Exception ex){
         	String exMessage = "WSSecurityProfileManager failed to read the file with pre-defined WS Security profiles.";
-        	ex.printStackTrace();
+        	logger.error(exMessage, ex);
         	throw new WSSecurityProfileManagerException(exMessage);
         }
         finally {
@@ -268,9 +268,9 @@ public class WSSecurityProfileManager {
     	      }
     	      */
     	      catch(IOException ex){
-    	    	  ex.printStackTrace();
     	    	  String exMessage = "WSSecurityProfileManager failed to read the file with user-defined WS Security profiles.";
-    	        throw new WSSecurityProfileManagerException(exMessage);
+    	    	  logger.error(exMessage, ex);
+    	    	  throw new WSSecurityProfileManagerException(exMessage);
     	       }
     	       finally {
     	        	if (userProfilesFileReader != null)
@@ -303,8 +303,8 @@ public class WSSecurityProfileManager {
 		     	 }
 		     	 catch(IOException ex)
 		     	 {
-		     		 ex.printStackTrace();
 		     		 String exMessage = "WSSecurityProfileManager failed to create a file for user-defined profiles.";
+		     		 logger.error(exMessage, ex);
 		     		 throw new WSSecurityProfileManagerException(exMessage);
 		     	 }
 		      }
@@ -337,8 +337,8 @@ public class WSSecurityProfileManager {
 		      	 // Should not happen
 		       }
 		       catch(IOException ex){
-		    	   ex.printStackTrace();
 		    	   String exMessage = "WSSecurityProfileManager failed to save the new user-defined profile.";
+		    	   logger.error(exMessage, ex);
 		    	   throw new WSSecurityProfileManagerException(exMessage);
 		       }
 		       finally {
@@ -445,8 +445,8 @@ public class WSSecurityProfileManager {
           		 }    
             }
             catch(Exception ex){
-	     		 ex.printStackTrace();
         		 String exMessage = "WSSecurityProfileManager failed to delete the user-defined profile.";
+             		logger.error(exMessage, ex);
         		 throw (new WSSecurityProfileManagerException(exMessage));                	 
              }
             finally {

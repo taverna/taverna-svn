@@ -48,7 +48,7 @@ import net.sf.taverna.t2.security.profiles.WSSecurityProfileManagerException;
 /**
  * Lets the user select a pre-defined or define a new WS Security Profile.
  * 
- * @author Alex Nenadic
+ * @author Alexandra Nenadic
  *
  */
 
@@ -274,8 +274,7 @@ public class WSSecurityProfileChooser extends JFrame
         	
     	}
     	catch(WSSecurityProfileManagerException wsspme){
-    		logger.error("WSSecurityProfileChooser Error: " + wsspme.getMessage());
-    		wsspme.printStackTrace();
+    		logger.error("WSSecurityProfileChooser: " + wsspme.getMessage());
             JOptionPane.showMessageDialog(this,
             		wsspme.getMessage(),
             		"WS Security Profile Chooser", 
@@ -1342,7 +1341,6 @@ public class WSSecurityProfileChooser extends JFrame
 			}
 			catch (WSSecurityProfileManagerException wsspme){
 	     		logger.error("WSSecurityProfileChooser: " + wsspme.getMessage());
-	    		wsspme.printStackTrace();
 
             	JOptionPane.showMessageDialog(
                		this, 
@@ -1550,7 +1548,6 @@ public class WSSecurityProfileChooser extends JFrame
             	}
             	catch (WSSecurityProfileManagerException wsspme){
             		logger.error("WSSecurityProfileChooser: " + wsspme.getMessage());
-            		wsspme.printStackTrace();
 
                 	JOptionPane.showMessageDialog(
                    		this, 

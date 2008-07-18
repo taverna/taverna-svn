@@ -157,7 +157,7 @@ public class CredentialManager {
 			
 			// No sign of the provider
 			String exMessage = "Failed to load Bouncy Castle provider.";
-			logger.error(exMessage, ex);
+			logger.error("Credential Manager: " + exMessage, ex);
 			throw new CMException(exMessage);
 		}
 
@@ -217,6 +217,7 @@ public class CredentialManager {
 
 		} 
 		catch (CMException cme) {
+			logger.error("Credential Manager: " + cme.getMessage(), cme);
 			throw new CMException("Problem with loading the Keystore: "
 					+ cme.getMessage());
 		}
@@ -224,12 +225,13 @@ public class CredentialManager {
 		// Load service URLs associated with private key aliases from a file.
 		try {
 			loadServiceURLs();
-			logger.info("Loaded the Service URLs for private/public key pairs.");
+			logger.info("Loaded the Service URLs for private key pairs.");
 
 		} 
 		catch (CMException cme) {
+			logger.error("Credential Manager: " + cme.getMessage(), cme);
 			throw new CMException(
-					"Problem with loading the private key entries' service URLs: "
+					"Problem with loading the private key entries' service URLs from a file: "
 							+ cme.getMessage());
 		}
 
@@ -240,6 +242,7 @@ public class CredentialManager {
 
 		} 
 		catch (CMException cme) {
+			logger.error("Credential Manager: " + cme.getMessage(), cme);
 			throw new CMException("Problem with loading the Truststore: "
 					+ cme.getMessage());
 		}
@@ -275,7 +278,6 @@ public class CredentialManager {
 			
 			// The crypto provider has not been configured
 			String exMessage = "Failed to insantiate the keystore. Reason: the crypto provider has not been configured.";
-			logger.error(exMessage, ex);
 			throw new CMException(exMessage);
 		}
 
@@ -295,7 +297,6 @@ public class CredentialManager {
 			catch (Exception ex) {
 				
 				String exMessage = "Failed to load the keystore. Possible reason: incorrect password or corrupted file.";
-				logger.error(exMessage, ex);
 				throw new CMException(exMessage);
 			} 
 			finally {
@@ -323,7 +324,6 @@ public class CredentialManager {
 			catch (Exception ex) {
 
 				String exMessage = "Failed to create the new keystore.";
-				logger.error(exMessage, ex);
 				throw new CMException(exMessage);
 			} 
 			finally {
@@ -360,7 +360,6 @@ public class CredentialManager {
 		} 
 		catch (Exception ex) {
 			String exMessage = "Failed to get private key aliases when loading service URLs.";
-			logger.error(exMessage, ex);
 			throw (new CMException(exMessage));
 		}
 
@@ -403,7 +402,6 @@ public class CredentialManager {
 			} 
 			catch (Exception ex) {
 				String exMessage = "Failed to read the service URLs file.";
-				logger.error(exMessage, ex);
 				throw (new CMException(exMessage));
 			} 
 			finally {
@@ -484,7 +482,7 @@ public class CredentialManager {
 		} 
 		catch (Exception ex) {
 			String exMessage = "Failed to save the " + ksType + ".";
-			logger.error(exMessage, ex);
+			logger.error("Credential Manager: " + exMessage, ex);
 			throw (new CMException(exMessage));
 		} 
 		finally {
@@ -607,7 +605,7 @@ public class CredentialManager {
 			} 
 			catch (IOException ex) {
 				String exMessage = "Failed to create a new service URLs' file.";
-				logger.error(exMessage, ex);
+				logger.error("Credential Manager: " + exMessage, ex);
 				throw (new CMException(exMessage));
 			}
 
@@ -648,7 +646,7 @@ public class CredentialManager {
 			} 
 			catch (IOException ex) {
 				String exMessage = "Failed to save the service URLs to the file.";
-				logger.error(exMessage, ex);
+				logger.error("Credential Manager: " + exMessage, ex);
 				throw (new CMException(exMessage));
 			} 
 			finally {
@@ -694,7 +692,7 @@ public class CredentialManager {
 		} 
 		catch (Exception ex) {
 			String exMessage = "Failed to get the password entry from the Keystore.";
-			logger.error(exMessage, ex);
+			logger.error("Credential Manager: " + exMessage, ex);
 			throw (new CMException(exMessage));
 		}
 	}
@@ -734,7 +732,7 @@ public class CredentialManager {
 		} 
 		catch (Exception ex) {
 			String exMessage = "Failed to insert the password entry in the Keystore.";
-			logger.error(exMessage, ex);
+			logger.error("Credential Manager: " + exMessage, ex);
 			throw (new CMException(exMessage));
 		}
 	}
@@ -769,7 +767,7 @@ public class CredentialManager {
 			}
 		} catch (Exception ex) {
 			String exMessage = "Failed to insert the key pair entry in the Keystore.";
-			logger.error(exMessage, ex);
+			logger.error("Credential Manager: " + exMessage, ex);
 			throw (new CMException(exMessage));
 		}
 	}
@@ -839,7 +837,7 @@ public class CredentialManager {
 		} 
 		catch (Exception ex) {
 			String exMessage = "Failed to export the key pair from the Keystore.";
-			logger.error(exMessage, ex);
+			logger.error("Credential Manager: " + exMessage, ex);
 			throw (new CMException(exMessage));
 		} 
 		finally {
@@ -897,7 +895,7 @@ public class CredentialManager {
 		} 
 		catch (Exception ex) {
 			String exMessage = "Failed to fetch certificate from the " + ksType + ".";
-			logger.error(exMessage, ex);
+			logger.error("Credential Manager: " + exMessage, ex);
 			throw (new CMException(exMessage));
 		}
 
@@ -935,7 +933,7 @@ public class CredentialManager {
 		} 
 		catch (Exception ex) {
 			String exMessage = "Failed to fetch certificate chain for the keypair from the Keystore";
-			logger.error(exMessage, ex);
+			logger.error("Credential Manager: " + exMessage, ex);
 			throw (new CMException(exMessage));
 		}
 	}
@@ -967,7 +965,7 @@ public class CredentialManager {
 		} 
 		catch (Exception ex) {
 			String exMessage = "Failed to insert trusted certificate entry in the Truststore.";
-			logger.error(exMessage, ex);
+			logger.error("Credential Manager: " + exMessage, ex);
 			throw (new CMException(exMessage));
 		}
 	}
@@ -995,7 +993,7 @@ public class CredentialManager {
 			}
 		} catch (Exception ex) {
 			String exMessage = "Failed to access the key entry in the Keystore.";
-			logger.error(exMessage, ex);
+			logger.error("Credential Manager: " + exMessage, ex);
 			throw (new CMException(exMessage));
 		}
 	}
@@ -1041,7 +1039,7 @@ public class CredentialManager {
 		} 
 		catch (Exception ex) {
 			String exMessage = "Failed to delete the entry from the " + ksType + ".";
-			logger.error(exMessage, ex);
+			logger.error("Credential Manager: " + exMessage, ex);
 			throw (new CMException(exMessage));
 		}
 	}
@@ -1078,7 +1076,7 @@ public class CredentialManager {
 		} 
 		catch (Exception ex) {
 			String exMessage = "Failed to access the " + ksType + " to check if an alias exists.";
-			logger.error(exMessage, ex);
+			logger.error("Credential Manager: " + exMessage, ex);
 			throw (new CMException(exMessage));
 		}
 
@@ -1117,7 +1115,7 @@ public class CredentialManager {
 		} 
 		catch (Exception ex) {
 			String exMessage = "Failed to access the " + ksType + " to get the aliases.";
-			logger.error(exMessage, ex);
+			logger.error("Credential Manager: " + exMessage, ex);
 			throw (new CMException(exMessage));
 		}
 
@@ -1161,7 +1159,7 @@ public class CredentialManager {
 		} 
 		catch (Exception ex) {
 			String exMessage = "Failed to get the creation date for the entry from the " + ksType + ".";
-			logger.error(exMessage, ex);
+			logger.error("Credential Manager: " + exMessage, ex);
 			throw (new CMException(exMessage));
 		}
 

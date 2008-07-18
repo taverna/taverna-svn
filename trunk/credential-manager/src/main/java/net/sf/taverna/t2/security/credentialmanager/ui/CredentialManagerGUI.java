@@ -212,9 +212,8 @@ public class CredentialManagerGUI extends JFrame {
 		catch (CMException cme) {
 
 			// Failed to instantiate Credential Manager - warn the user and exit
-			String sMessage = cme.getMessage();
+			String sMessage = "Credential Manager GUI: Failed to instantiate Credential Manager. " + cme.getMessage();
 			logger.error(sMessage);
-			cme.printStackTrace();
 			JOptionPane.showMessageDialog(new JFrame(), sMessage,
 					"Credential Manager Error", JOptionPane.ERROR_MESSAGE);
 		}
@@ -270,9 +269,8 @@ public class CredentialManagerGUI extends JFrame {
 					} 
 					catch (CMException cme) {
 						// Failed to initialise Credential Manager - warn the user and exit
-						String sMessage = cme.getMessage();
+						String sMessage = "Credential Manager GUI: Failed to instantiate Credential Manager. " + cme.getMessage();
 						logger.error(sMessage);
-						cme.printStackTrace();
 						JOptionPane.showMessageDialog(this, sMessage, "Credential Manager",
 								JOptionPane.ERROR_MESSAGE);
 					}
@@ -309,8 +307,6 @@ public class CredentialManagerGUI extends JFrame {
 					catch(CMException cme){
 						// Failed to load contents of the Keystore/Truststore - warn the user and exit
 						String sMessage = cme.getMessage();
-						logger.error(sMessage);
-						cme.printStackTrace();
 						JOptionPane.showMessageDialog(this, sMessage, "Credential Manager",
 								JOptionPane.ERROR_MESSAGE);
 					}
@@ -681,8 +677,7 @@ public class CredentialManagerGUI extends JFrame {
 			catch (CMException cme) {
 				// An error occured while accessing the Keystore	
 				String exMessage = "An error occured while reading the Keystore after inserting a new password entry.";
-				logger.error("Credential Manager Error: " + exMessage);
-				cme.printStackTrace();
+				logger.error("Credential Manager GUI: " + exMessage);
 				JOptionPane
 						.showMessageDialog(
 								this,
@@ -811,8 +806,7 @@ public class CredentialManagerGUI extends JFrame {
 				} catch (CMException cme) {
 					// An error occured while accessing the Keystore
 					String exMessage = "An error occured while reading the Keystore after updating a password entry.";
-					logger.error("Credential Manager Error: " + exMessage);
-					cme.printStackTrace();
+					logger.error("Credential Manager GUI: " + exMessage);
 					JOptionPane
 							.showMessageDialog(
 									this,
@@ -862,8 +856,7 @@ public class CredentialManagerGUI extends JFrame {
 			return true;
 		} 
 		catch (CMException cme) {
-			logger.error("Credential Manager Error: " + cme.getMessage());
-			cme.printStackTrace();
+			logger.error("Credential Manager GUI: " + cme.getMessage());
 			return false;
 		} 
 		catch (CMNotInitialisedException cmni) {
@@ -891,8 +884,7 @@ public class CredentialManagerGUI extends JFrame {
 			return true;
 		} 
 		catch (CMException cme) {
-			logger.error("Credential Manager Error: " + cme.getMessage());
-			cme.printStackTrace();
+			logger.error("Credential Manager GUI: " + cme.getMessage());
 			return false;
 		} 
 		catch (CMNotInitialisedException cmni) {
@@ -942,8 +934,7 @@ public class CredentialManagerGUI extends JFrame {
 				return true;
 			} 
 			catch (CMException cme) {
-				logger.error("Credential Manager Error: " + cme.getMessage());
-				cme.printStackTrace();
+				logger.error("Credential Manager GUI: " + cme.getMessage());
 				JOptionPane.showMessageDialog(this, cme.getMessage(),
 						"Credential Manager Error", JOptionPane.ERROR_MESSAGE);
 				return false;
@@ -976,9 +967,8 @@ public class CredentialManagerGUI extends JFrame {
 					return true;
 				} 
 				catch (CMException cme) {
-					logger.error("Credential Manager Error: "
+					logger.error("Credential Manager GUI: "
 							+ cme.getMessage());
-					cme.printStackTrace();
 					JOptionPane.showMessageDialog(this, cme.getMessage(),
 							"Credential Manager Error",
 							JOptionPane.ERROR_MESSAGE);
@@ -1128,8 +1118,7 @@ public class CredentialManagerGUI extends JFrame {
 			String exMessage = "Failed to import the key pair entry to the Keystore. "
 					+ ex.getMessage();
 
-			logger.error("Credential Manager Error: " + exMessage);
-			ex.printStackTrace();
+			logger.error("Credential Manager GUI: " + exMessage);
 			JOptionPane.showMessageDialog(this, exMessage,
 					"Credential Manager Error", JOptionPane.ERROR_MESSAGE);
 
@@ -1189,8 +1178,7 @@ public class CredentialManagerGUI extends JFrame {
 			} 
 			catch (CMException cme) {
 				String exMessage = "Failed to update service URLs for the key pair entry";
-				logger.error("Credential Manager Error: " + exMessage);
-				cme.printStackTrace();
+				logger.error("Credential Manager GUI: " + exMessage);
 				JOptionPane.showMessageDialog(this, exMessage,
 						"Credential Manager Error", JOptionPane.ERROR_MESSAGE);
 				return false;
@@ -1283,8 +1271,7 @@ public class CredentialManagerGUI extends JFrame {
 			return true;
 		} 
 		catch (CMException cme) {
-			logger.error("Credential Manager Error: " + cme.getMessage());
-			cme.printStackTrace();
+			logger.error("Credential Manager GUI: " + cme.getMessage());
 			JOptionPane.showMessageDialog(this, cme.getMessage(),
 					"Credential Manager Error", JOptionPane.ERROR_MESSAGE);
 			return false;
@@ -1318,8 +1305,7 @@ public class CredentialManagerGUI extends JFrame {
 			return true;
 		} 
 		catch (CMException cme) {
-			logger.error("Credential Manager Error: " + cme.getMessage());
-			cme.printStackTrace();
+			logger.error("Credential Manager GUI: " + cme.getMessage());
 			JOptionPane.showMessageDialog(this, cme.getMessage(),
 					"Credential Manager Alert", JOptionPane.ERROR_MESSAGE);
 			return false;
@@ -1482,8 +1468,7 @@ public class CredentialManagerGUI extends JFrame {
 			return true;
 		} 
 		catch (CMException cme) {
-			logger.error("Credential Manager Error: " + cme.getMessage());
-			cme.printStackTrace();
+			logger.error("Credential Manager GUI: " + cme.getMessage());
 			JOptionPane.showMessageDialog(this, cme.getMessage(),
 					"Credential Manager Error", JOptionPane.ERROR_MESSAGE);
 			return false;
@@ -1558,8 +1543,7 @@ public class CredentialManagerGUI extends JFrame {
 		} 
 		catch (Exception ex) {
 			String exMessage = "Failed to export the trusted certificate from the Truststore.";
-			logger.error("Credential Manager Error: " + exMessage);
-			ex.printStackTrace();
+			logger.error("Credential Manager GUI: " + exMessage);
 			JOptionPane.showMessageDialog(
 							this,
 							exMessage,
@@ -1598,8 +1582,7 @@ public class CredentialManagerGUI extends JFrame {
 		catch (CMException ex) {
 			String exMessage = "Failed to delete the trusted certificate entry from the Truststore.";
 			logger
-					.error("Credential Manager Error: " + exMessage);
-			ex.printStackTrace();
+					.error("Credential Manager GUI: " + exMessage);
 			JOptionPane
 					.showMessageDialog(
 							this,
@@ -1858,8 +1841,7 @@ public class CredentialManagerGUI extends JFrame {
 				updateTables();
 			}
 			catch(CMException cme){
-				logger.error("Credential Manager Error: " + cme.getMessage());
-				cme.printStackTrace();
+				logger.error("Credential Manager GUI: " + cme.getMessage());
 				JOptionPane.showMessageDialog(null, cme.getMessage(),
 						"Credential Manager Error", JOptionPane.ERROR_MESSAGE);
 			}
@@ -1994,8 +1976,7 @@ public class CredentialManagerGUI extends JFrame {
 				updateTables();
 			}
 			catch(CMException cme){
-				logger.error("Credential Manager Error: " + cme.getMessage());
-				cme.printStackTrace();
+				logger.error("Credential Manager GUI: " + cme.getMessage());
 				JOptionPane.showMessageDialog(null, cme.getMessage(),
 						"Credential Manager Error", JOptionPane.ERROR_MESSAGE);
 			}
@@ -2129,8 +2110,7 @@ public class CredentialManagerGUI extends JFrame {
 				updateTables();
 			}
 			catch(CMException cme){
-				logger.error("Credential Manager Error: " + cme.getMessage());
-				cme.printStackTrace();
+				logger.error("Credential Manager GUI: " + cme.getMessage());
 				JOptionPane.showMessageDialog(null, cme.getMessage(),
 						"Credential Manager Error", JOptionPane.ERROR_MESSAGE);
 			}

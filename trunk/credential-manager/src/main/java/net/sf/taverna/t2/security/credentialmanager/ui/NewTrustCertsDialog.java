@@ -210,8 +210,6 @@ class NewTrustCertsDialog
             
         }
         catch (Exception ex) {
-            System.err.println("Credential Manager Error: Failed to obtain certificate details to show.");
-            ex.printStackTrace();
             JOptionPane.showMessageDialog(this,
                     "Failed to obtain certificate details to show.", 
                     "Credential Manager Alert",

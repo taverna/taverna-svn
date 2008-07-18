@@ -395,8 +395,6 @@ class NewKeyPairEntryDialog
         }
         catch (Exception ex) {
         	
-            System.err.println("Credential Manager Error: Failed to obtain certificate details to show.");
-            ex.printStackTrace();
             JOptionPane.showMessageDialog(this,
                     "Failed to obtain certificate details to show.", 
                     "Credential Manager Alert",
@@ -429,8 +427,6 @@ class NewKeyPairEntryDialog
             alias = sAlias;
         }
         catch (Exception ex) {
-            System.err.println("Credential Manager Error: Failed to load the private key and certificate chain from PKCS #12 file.");
-            ex.printStackTrace();
             JOptionPane.showMessageDialog(this,
                     "Failed to load the private key and certificate chain from PKCS #12 file.", 
                     "Credential Manager Error",

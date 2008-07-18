@@ -80,7 +80,6 @@ public class TableCellRenderer
             			DateFormat.LONG).format((Date) value));
             	}
             	else {
-            			System.err.println(iCol +" cellrend date: " +value.toString());
             		cell.setText(value.toString());
             	}
             }
