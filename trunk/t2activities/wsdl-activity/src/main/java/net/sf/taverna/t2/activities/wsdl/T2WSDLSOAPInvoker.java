@@ -60,7 +60,7 @@ import org.apache.log4j.Logger;
  */
 public class T2WSDLSOAPInvoker extends WSDLSOAPInvoker{
 	
-	private static Logger logger = Logger.getLogger(WSDLSOAPInvoker.class);
+	private static Logger logger = Logger.getLogger(T2WSDLSOAPInvoker.class);
 
 	public T2WSDLSOAPInvoker(WSDLParser parser, String operationName,
 			List<String> outputNames) {
@@ -80,49 +80,19 @@ public class T2WSDLSOAPInvoker extends WSDLSOAPInvoker{
 	protected Call getCall(EngineConfiguration config)  throws ServiceException, UnknownOperationException, MalformedURLException {
 
 		Call call = super.getCall(config);
-
-		// Call's USERNAME_PROPERTY is here simply used to pass the credential's alias to fetch it  
-		// from the Keystore. As alias value we use wsdlLocation so that the credential 
-		// is tied to a particular service. Once Security Agent picks up the alias, it will 
-		// set the USERNAME_PROPERTY to null or to a proper username.
-		// Note that WSS4J's handler WSDoAllSender expects (which is invoked before our T2DoAllSender takes over) 
-		// the USERNAME_PROPERTY to be set to whatever non-empty value for almost all security operations (even for signing, 
-		// except for encryption), otherwise it raises an Exception.
-		call.setProperty(Call.USERNAME_PROPERTY, getParser().getWSDLLocation()); 
 		
-		/* 
-		 * We also need to pass the security agent(s) (or some kind of a reference to the Peer groupof agents) 
-		 * that will do the actual work on setting WS-SEcurity headers on the SOAP request.
-		 * 
-		*/
-		
-		// Create and initialise a security agent 
-//    	String ksPassword = "uber"; //Keystore master password
-//    	String ksFileName = "/Users/alex/Documents/workspace/credential-manager/bin/net/sf/taverna/credentialmanager/keystore/t2keystore.ubr"; //Keystore file name
-//    	SecurityAgent sa = new SecurityAgent(ksPassword, ksFileName);
-//        try{
-//        	sa.init();
-//        }
-//        catch(Exception ex){
-//
-//        	if ((ex instanceof IOException) || (ex instanceof NoSuchAlgorithmException) || (ex instanceof CertificateException)){
-//            	logger.error("T2WSDLSOAPInvoker: Security Agent could not be initiated - failed to load the Keystore. " +
-//       			"Possible reason: Keystore has been corrupted or the master password supplied was incorrect.");
-//            	//fix me: change exception
-//            	throw new ServiceException("T2WSDLSOAPInvoker: Security Agent could not be initiated - failed to load the Keystore. " +
-//               			"Possible reason: Keystore has been corrupted or the master password supplied was incorrect.");
-//        	}
-//        	else {
-//            	logger.error("T2WSDLSOAPInvoker: Security Agent could not be initiated - failed to load the Keystore. " +
-//               			"Reason: Bouncy Castle provider could not be loaded.");
-//
-//            	throw new ServiceException("T2WSDLSOAPInvoker: Security Agent could not be initiated - failed to load the Keystore. " +
-//               			"Reason: Bouncy Castle provider could not be loaded.");
-//        	}
-//        }
-//		call.setProperty("security_agent", sa);	
-		
-		if (config!=null) {
+		if (config != null) {
+					
+			// Call's USERNAME_PROPERTY is here simply used to pass the credential's alias to fetch it  
+			// from the Keystore. As alias value we use wsdlLocation so that the credential 
+			// is tied to a particular service. Once Security Agent picks up the alias, it will 
+			// set the USERNAME_PROPERTY to null or to a proper username.
+			// Note that WSS4J's handler WSDoAllSender expects (which is invoked before our T2DoAllSender takes over) 
+			// the USERNAME_PROPERTY to be set to whatever non-empty value for almost all security operations (even for signing, 
+			// except for encryption), otherwise it raises an Exception.
+			call.setProperty(Call.USERNAME_PROPERTY, getParser().getWSDLLocation()); 
+			
+			// Get the appropriate security agent
 			CredentialManager credManager;
 			try {
 				credManager = CredentialManager.getInstance();
@@ -131,6 +101,7 @@ public class T2WSDLSOAPInvoker extends WSDLSOAPInvoker{
 	
 		    	WSSecurityAgent sa = (WSSecurityAgent) saManager.getSecurityAgent((SecurityRequest) wsSecReq);
 		    	call.setProperty("security_agent", sa);
+		    	
 			} catch (CMException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -32,52 +32,19 @@ public class WSDLActivityConfigureAction extends ActivityConfigurationAction<WSD
 
 	public void actionPerformed(ActionEvent e) {
 		WSDLActivityConfigurationBean bean = getActivity().getConfiguration();
+			
+		WSSecurityProfileChooser wsSecurityProfileChooser = new WSSecurityProfileChooser(owner);
+		if (wsSecurityProfileChooser.isInitialised()) {
+			wsSecurityProfileChooser.setVisible(true);
+		}
 		
-		WSDLConfigureDialogue configureDialogue=new WSDLConfigureDialogue(owner);
-		configureDialogue.setVisible(true);
-		
-		WSSecurityProfile securityProfile = configureDialogue.getWSSecurityProfile();
-		if (securityProfile!=null) {
-			String profileString = securityProfile.getWSSecurityProfileString();
-			logger.info("WSSecurityProfile String read as:"+profileString);
+		WSSecurityProfile wsSecurityProfile = wsSecurityProfileChooser.getWSSecurityProfile();
+		String profileString;
+		if (wsSecurityProfile != null) { // user did not cancel
+			profileString = wsSecurityProfile.getWSSecurityProfileString();
+			logger.info("WSSecurityProfile string read as:"+profileString);
 			bean.setSecurityProfileString(profileString);
 			configureActivity(bean);
-		}
-	}
-	
-	class WSDLConfigureDialogue extends JDialog {
-		
-		private WSSecurityProfileChooser securityProfileChooser;
-
-		public WSDLConfigureDialogue(Frame owner) {
-			super(owner,true);
-			setLayout(new BorderLayout());
-			securityProfileChooser = new WSSecurityProfileChooser();
-			add(securityProfileChooser.getContentPane(),BorderLayout.CENTER);
-			
-			JPanel buttons = new JPanel();
-			buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			JButton okButton = new JButton("OK");
-			JButton cancelButton = new JButton("Cancel");
-			okButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent arg0) {
-					WSDLConfigureDialogue.this.setVisible(false);
-				}
-			});
-			cancelButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent arg0) {
-					WSDLConfigureDialogue.this.setVisible(false);
-				}
-			});
-			
-			buttons.add(cancelButton);
-			buttons.add(okButton);
-			add(buttons,BorderLayout.SOUTH);
-			pack();
-		}
-		
-		public WSSecurityProfile getWSSecurityProfile() {
-			return securityProfileChooser.getWSSecurityProfile();
 		}
 		
 	}

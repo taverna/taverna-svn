@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.wsdl.WSDLException;
 import javax.xml.parsers.ParserConfigurationException;
 
+import net.sf.taverna.t2.activities.wsdl.wss4j.T2WSDoAllSender;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceServiceException;
@@ -121,7 +122,7 @@ public class WSDLActivity extends AbstractAsynchronousActivity<WSDLActivityConfi
 						outputNames.add(port.getName());
 					}
 					
-					WSDLSOAPInvoker invoker = new T2WSDLSOAPInvoker(parser,configurationBean.getOperation(),outputNames);
+					T2WSDLSOAPInvoker invoker = new T2WSDLSOAPInvoker(parser,configurationBean.getOperation(),outputNames);
 					WSDLActivityConfigurationBean bean = getConfiguration();
 					EngineConfiguration wssEngineConfiguration=null;
 					
