@@ -82,7 +82,11 @@ public class ReferenceServiceTest {
 				int newCount = getCount();
 				long jobsProcessed = (long) (newCount - lastCount);
 				lastCount = newCount;
-				System.out.println((int) (jobsProcessed * 1000 / interval));
+				if (interval == 0) {
+					System.out.println("(infinity) " + jobsProcessed);
+				} else {
+					System.out.println((int) (jobsProcessed * 1000 / interval));
+				}
 			}
 		}, 1000, 1000);
 		long testStartTime = System.currentTimeMillis();
