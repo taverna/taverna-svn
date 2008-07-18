@@ -24,7 +24,7 @@ public class CredentialManagerGUILauncher extends JFrame {
 	
 	private static final long serialVersionUID = 2079805060170251148L;
 	
-	private final ImageIcon launchCMIcon = new ImageIcon(getClass().getResource(
+	private final ImageIcon launchCMIcon = new ImageIcon(CredentialManagerGUILauncher.class.getResource(
 	"/images/cred_manager.png"));
 	
 	public CredentialManagerGUILauncher(){

@@ -20,13 +20,13 @@ public class TableCellRenderer
 {
 	private static final long serialVersionUID = -3983986682794010259L;
 
-	private final ImageIcon passwordEntryIcon = new ImageIcon(getClass().getResource(
+	private final ImageIcon passwordEntryIcon = new ImageIcon(TableCellRenderer.class.getResource(
 	"/images/table/key_entry.png"));
 	
-	private final ImageIcon keypairEntryIcon = new ImageIcon(getClass().getResource(
+	private final ImageIcon keypairEntryIcon = new ImageIcon(TableCellRenderer.class.getResource(
 	"/images/table/keypair_entry.png"));
 	
-	private final ImageIcon trustcertEntryIcon = new ImageIcon(getClass().getResource(
+	private final ImageIcon trustcertEntryIcon = new ImageIcon(TableCellRenderer.class.getResource(
 	"/images/table/trustcert_entry.png"));
 
     /**

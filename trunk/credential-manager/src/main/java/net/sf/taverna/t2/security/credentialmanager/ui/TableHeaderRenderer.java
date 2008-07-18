@@ -19,7 +19,7 @@ public class TableHeaderRenderer
 {
 	private static final long serialVersionUID = -7691713691433621006L;
 	
-	private final ImageIcon entryTypeIcon = new ImageIcon(getClass().getResource(
+	private final ImageIcon entryTypeIcon = new ImageIcon(TableHeaderRenderer.class.getResource(
 	"/images/table/entry_heading.png"));
     
     /**
