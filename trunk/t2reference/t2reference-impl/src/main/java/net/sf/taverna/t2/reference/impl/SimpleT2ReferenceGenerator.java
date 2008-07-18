@@ -1,8 +1,6 @@
 package net.sf.taverna.t2.reference.impl;
 
-import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.reference.T2ReferenceGenerator;
-import net.sf.taverna.t2.reference.T2ReferenceType;
 
 /**
  * Simple implementation of T2ReferenceGenerator intended to be injected into
@@ -16,7 +14,7 @@ import net.sf.taverna.t2.reference.T2ReferenceType;
  * @author Tom Oinn
  * 
  */
-public class SimpleT2ReferenceGenerator implements T2ReferenceGenerator {
+public class SimpleT2ReferenceGenerator extends AbstractT2ReferenceGenerator implements T2ReferenceGenerator {
 
 	private String namespace = "testNS";
 	private String localPrefix = "test";
@@ -39,39 +37,9 @@ public class SimpleT2ReferenceGenerator implements T2ReferenceGenerator {
 		return namespace;
 	}
 
-	private synchronized String getNextLocalPart() {
+	@Override
+	protected synchronized String getNextLocalPart() {
 		return localPrefix + (counter++);
-	}
-
-	public synchronized T2Reference nextReferenceSetReference() {
-		T2ReferenceImpl r = new T2ReferenceImpl();
-		r.setNamespacePart(getNamespace());
-		r.setLocalPart(getNextLocalPart());
-		r.setReferenceType(T2ReferenceType.ReferenceSet);
-		r.setDepth(0);
-		r.setContainsErrors(false);
-		return r;
-	}
-
-	public T2Reference nextListReference(boolean containsErrors, int listDepth) {
-		T2ReferenceImpl r = new T2ReferenceImpl();
-		r.setNamespacePart(getNamespace());
-		r.setLocalPart(getNextLocalPart());
-		r.setReferenceType(T2ReferenceType.IdentifiedList);
-		r.setDepth(listDepth);
-		r.setContainsErrors(containsErrors);
-		return r;
-	}
-
-	public T2Reference nextErrorDocumentReference(int depth) {
-		T2ReferenceImpl r = new T2ReferenceImpl();
-		r.setNamespacePart(getNamespace());
-		r.setLocalPart(getNextLocalPart());
-		r.setReferenceType(T2ReferenceType.ErrorDocument);
-		r.setDepth(depth);
-		// This is an error document, it contains errors by definition
-		r.setContainsErrors(true);
-		return r;
 	}
 
 }
