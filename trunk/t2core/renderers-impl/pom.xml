@@ -19,10 +19,16 @@
 			<artifactId>renderers-api</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
-		<dependency>
+		<!--
+			<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>data-api</artifactId>
 			<version>0.3-SNAPSHOT</version>
+			</dependency>
+		-->
+			<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -40,9 +46,9 @@
 			<version>1.6-1</version>
 		</dependency>
 		<dependency>
-      <groupId>uk.org.mygrid.resources</groupId>
-      <artifactId>seqvista-hacked</artifactId>
-      <version>NO-VERSION</version>
-    </dependency>
+			<groupId>uk.org.mygrid.resources</groupId>
+			<artifactId>seqvista-hacked</artifactId>
+			<version>NO-VERSION</version>
+		</dependency>
 	</dependencies>
 </project>
