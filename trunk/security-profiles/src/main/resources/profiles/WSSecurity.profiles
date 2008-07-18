@@ -6,7 +6,7 @@ Profile=<deployment xmlns="http://xml.apache.org/axis/wsdd/"
 		xmlns:java="http://xml.apache.org/axis/wsdd/providers/java"> 
 		<globalConfiguration>
 		<requestFlow>
-		<handler type="java:net.sf.taverna.security.T2WSDoAllSender"> 
+		<handler type="java:net.sf.taverna.t2.activities.wsdl.wss4j.T2WSDoAllSender"> 
 		<parameter name="action" value="Timestamp"/>
 		</handler> 
 		</requestFlow> 
@@ -22,7 +22,7 @@ Profile=<deployment xmlns="http://xml.apache.org/axis/wsdd/"
 		xmlns:java="http://xml.apache.org/axis/wsdd/providers/java"> 
 		<globalConfiguration>
 		<requestFlow>
-		<handler type="java:net.sf.taverna.security.T2WSDoAllSender"> 
+		<handler type="java:net.sf.taverna.t2.activities.wsdl.wss4j.T2WSDoAllSender"> 
 		<parameter name="action" value="UsernameToken"/>
 		<parameter name="passwordType" value="PasswordText"/> 
 		</handler> 
@@ -39,7 +39,7 @@ Profile=<deployment xmlns="http://xml.apache.org/axis/wsdd/"
 		xmlns:java="http://xml.apache.org/axis/wsdd/providers/java"> 
 		<globalConfiguration>
 		<requestFlow>
-		<handler type="java:net.sf.taverna.security.T2WSDoAllSender"> 
+		<handler type="java:net.sf.taverna.t2.activities.wsdl.wss4jnet.sf.taverna.t2.activities.wsdl.wss4j.T2WSDoAllSender"> 
 		<parameter name="action" value="UsernameToken Timestamp"/>
 		<parameter name="passwordType" value="PasswordText"/> 
 		</handler> 
@@ -56,7 +56,7 @@ Profile=<deployment xmlns="http://xml.apache.org/axis/wsdd/"
 		xmlns:java="http://xml.apache.org/axis/wsdd/providers/java"> 
 		<globalConfiguration>
 		<requestFlow>
-		<handler type="java:net.sf.taverna.security.T2WSDoAllSender"> 
+		<handler type="java:net.sf.taverna.t2.activities.wsdl.wss4j.T2WSDoAllSender"> 
 		<parameter name="action" value="UsernameToken"/>
 		<parameter name="passwordType" value="PasswordDigest"/> 
 		</handler> 
@@ -73,7 +73,7 @@ Profile=<deployment xmlns="http://xml.apache.org/axis/wsdd/"
 		xmlns:java="http://xml.apache.org/axis/wsdd/providers/java"> 
 		<globalConfiguration>
 		<requestFlow>
-		<handler type="java:net.sf.taverna.security.T2WSDoAllSender"> 
+		<handler type="java:net.sf.taverna.t2.activities.wsdl.wss4j.T2WSDoAllSender"> 
 		<parameter name="action" value="UsernameToken Timestamp"/>
 		<parameter name="passwordType" value="PasswordDigest"/> 
 		</handler> 
@@ -90,7 +90,7 @@ Profile=<deployment xmlns="http://xml.apache.org/axis/wsdd/"
 		xmlns:java="http://xml.apache.org/axis/wsdd/providers/java"> 
 		<globalConfiguration>
 		<requestFlow>
-		<handler type="java:net.sf.taverna.security.T2WSDoAllSender"> 
+		<handler type="java:net.sf.taverna.t2.activities.wsdl.wss4j.T2WSDoAllSender"> 
 		<parameter name="action" value="Signature"/>
 		<parameter name="signatureKeyIdentifier" value="DirectReference" />
 		</handler> 
@@ -107,7 +107,7 @@ Profile=<deployment xmlns="http://xml.apache.org/axis/wsdd/"
 		xmlns:java="http://xml.apache.org/axis/wsdd/providers/java"> 
 		<globalConfiguration>
 		<requestFlow>
-		<handler type="java:net.sf.taverna.security.T2WSDoAllSender"> 
+		<handler type="java:net.sf.taverna.t2.activities.wsdl.wss4j.T2WSDoAllSender"> 
 		<parameter name="action" value="Timestamp Signature"/>
 		<parameter name="signatureKeyIdentifier" value="DirectReference" />
 		</handler> 
@@ -118,19 +118,19 @@ Profile=<deployment xmlns="http://xml.apache.org/axis/wsdd/"
 -----END PROFILE-----
 
 -----BEGIN PROFILE-----
-Name=Signed outgoing and incoming message
+Name=Signed outgoing and incoming messages
 Description=Both the bodies of the REQUEST and RESPONSE message will be signed.
 Profile=<deployment xmlns="http://xml.apache.org/axis/wsdd/" 
 		xmlns:java="http://xml.apache.org/axis/wsdd/providers/java"> 
 		<globalConfiguration>
 		<requestFlow>
-		<handler type="java:net.sf.taverna.security.T2WSDoAllSender"> 
+		<handler type="java:net.sf.taverna.t2.activities.wsdl.wss4j.T2WSDoAllSender"> 
 		<parameter name="action" value="Signature"/>
 		<parameter name="signatureKeyIdentifier" value="DirectReference" />
 		</handler> 
 		</requestFlow> 
 		<responseFlow>
-		<handler type="java:net.sf.taverna.security.T2WSDoAllSender"> 
+		<handler type="java:net.sf.taverna.t2.activities.wsdl.wss4j.T2WSDoAllSender"> 
 		<parameter name="action" value="Signature"/>
 		<parameter name="signatureKeyIdentifier" value="DirectReference" />
 		</handler> 
@@ -147,14 +147,14 @@ Profile=<deployment xmlns="http://xml.apache.org/axis/wsdd/"
 		xmlns:java="http://xml.apache.org/axis/wsdd/providers/java"> 
 		<globalConfiguration>
 		<requestFlow>
-		<handler type="java:net.sf.taverna.security.T2WSDoAllSender"> 
-		<parameter name="action" value="Signature"/>
+		<handler type="java:net.sf.taverna.t2.activities.wsdl.wss4j.T2WSDoAllSender"> 
+		<parameter name="action" value="Signature Timestamp"/>
 		<parameter name="signatureKeyIdentifier" value="DirectReference" />
 		</handler> 
 		</requestFlow> 
 		<responseFlow>
-		<handler type="java:net.sf.taverna.security.T2WSDoAllSender"> 
-		<parameter name="action" value="Signature"/>
+		<handler type="java:net.sf.taverna.t2.activities.wsdl.wss4j.T2WSDoAllSender"> 
+		<parameter name="action" value="Signature Timestamp"/>
 		<parameter name="signatureKeyIdentifier" value="DirectReference" />
 		</handler> 
 		</responseFlow> 
@@ -170,13 +170,13 @@ Profile=<deployment xmlns="http://xml.apache.org/axis/wsdd/"
 		xmlns:java="http://xml.apache.org/axis/wsdd/providers/java"> 
 		<globalConfiguration>
 		<requestFlow>
-		<handler type="java:net.sf.taverna.security.T2WSDoAllSender"> 
+		<handler type="java:net.sf.taverna.t2.activities.wsdl.wss4j.T2WSDoAllSender"> 
 		<parameter name="action" value="Encrypt"/>
 		<parameter name="encryptKeyIdentifier" value="DirectReference" />
 		</handler> 
 		</requestFlow> 
 		<responseFlow>
-		<handler type="java:net.sf.taverna.security.T2WSDoAllSender"> 
+		<handler type="java:net.sf.taverna.t2.activities.wsdl.wss4j.T2WSDoAllSender"> 
 		<parameter name="action" value="Encrypt"/>
 		<parameter name="signatureKeyIdentifier" value="DirectReference" />
 		</handler> 
@@ -193,13 +193,13 @@ Profile=<deployment xmlns="http://xml.apache.org/axis/wsdd/"
 		xmlns:java="http://xml.apache.org/axis/wsdd/providers/java"> 
 		<globalConfiguration>
 		<requestFlow>
-		<handler type="java:net.sf.taverna.security.T2WSDoAllSender"> 
+		<handler type="java:net.sf.taverna.t2.activities.wsdl.wss4j.T2WSDoAllSender"> 
 		<parameter name="action" value="Encrypt Timestamp"/>
 		<parameter name="encryptionKeyIdentifier" value="DirectReference" />
 		</handler> 
 		</requestFlow> 
 		<responseFlow>
-		<handler type="java:net.sf.taverna.security.T2WSDoAllSender"> 
+		<handler type="java:net.sf.taverna.t2.activities.wsdl.wss4j.T2WSDoAllSender"> 
 		<parameter name="action" value="Encrypt Timestamp"/>
 		<parameter name="signatureKeyIdentifier" value="DirectReference" />
 		</handler> 

@@ -38,7 +38,7 @@ public class WSSecurityProfileChooserLauncher extends JFrame {
 		jbLaunch.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent e) {
-				WSSecurityProfileChooser wssPC = new WSSecurityProfileChooser();
+				WSSecurityProfileChooser wssPC = new WSSecurityProfileChooser(null);
 				if (wssPC.isInitialised()) {
 					wssPC.setVisible(true);
 				}

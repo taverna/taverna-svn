@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Container; 
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -23,7 +24,7 @@ import java.util.Iterator;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JOptionPane;
@@ -52,7 +53,7 @@ import net.sf.taverna.t2.security.profiles.WSSecurityProfileManagerException;
  *
  */
 
-public class WSSecurityProfileChooser extends JFrame
+public class WSSecurityProfileChooser extends JDialog
 {		
 	private static final long serialVersionUID = -2754223284048320958L;
 
@@ -72,7 +73,7 @@ public class WSSecurityProfileChooser extends JFrame
     private WSSecurityProfile wsSecurityProfile;
 	
 	/**
-	 * List of pre-defined WS Security profiles read from two files: with system and user-defined profiles.
+	 * List of WS Security profiles read from two files: with system and user-defined profiles.
 	 */
 	private Vector<WSSecurityProfile> wsSecurityProfiles = new Vector<WSSecurityProfile>();
 	 
@@ -254,8 +255,9 @@ public class WSSecurityProfileChooser extends JFrame
     /**
      * Creates a new Security Profile Chooser GUI's frame.
      */
-    public WSSecurityProfileChooser()
+    public WSSecurityProfileChooser(Frame owner)
     {
+    	super(owner, true); //create a modal dialog
     	
     	// Get the WSSecurityProfileManager instance - it will load 
     	// the pre-defined system and saved user-defined security profiles
@@ -265,13 +267,14 @@ public class WSSecurityProfileChooser extends JFrame
     		wsSecurityProfiles = wsSecurityProfileManager.getWSSecurityProfiles();
     		wsSecurityProfileNames = wsSecurityProfileManager.getWSSecurityProfileNames();	
     		wsSecurityProfileDescriptions = wsSecurityProfileManager.getWSSecurityProfileDescriptions();
-    		    	
+        	
         	// Initialise GUI components
         	initComponents();
         	
+        	setLocationRelativeTo(owner);
+
         	// Everything is ok
-        	initialised = true;
-        	
+        	initialised = true;        	
     	}
     	catch(WSSecurityProfileManagerException wsspme){
     		logger.error("WSSecurityProfileChooser: " + wsspme.getMessage());
@@ -304,18 +307,7 @@ public class WSSecurityProfileChooser extends JFrame
     	jpSelectProfile.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5,5,5,5)));
     	// Check box for the Select panel's title border (to be added later)
         jchbSelectProfile = new JCheckBox("Select a pre-defined security profile", true); 
-        jchbSelectProfile.addActionListener(new ActionListener(){
 
-			public void actionPerformed(ActionEvent e) {
-					boolean selected =  jchbSelectProfile.isSelected();
-					// Enable/Disable Select panel components
-					toggleComponents(selectProfileComponentList,selected);
-					// Uncheck/check Create panel checkbox
-					jchbCreateProfile.setSelected(!selected);
-					// Disable/enable Create panel components
-					toggleComponents(createProfileComponentList, !selected);
-			}
-        });
         // Initialise the Select panel's components
         // Panel to hold the combobox and its description
         JPanel jpSelectProfileComponents = new JPanel(new BorderLayout(0,5)); 
@@ -352,24 +344,18 @@ public class WSSecurityProfileChooser extends JFrame
 				// TODO viewPressed();				
 			}        	
         });
-        JButton jbSelect = new JButton("Select");
-        jbSelect.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e) {
-				selectPressed();				
-			}        	
-        });
-        JButton jbDelete = new JButton("Delete");
+
+        final JButton jbDelete = new JButton("Delete");
+    	jbDelete.setEnabled(false); // disabled by default
         jbDelete.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				deletePressed();			
 			}        	
         });
         jpSelectButtons.add(jbView);
-        jpSelectButtons.add(jbSelect);
         jpSelectButtons.add(jbDelete);
 
         //selectProfileComponentList.add(jbView);
-        selectProfileComponentList.add(jbSelect);
         selectProfileComponentList.add(jbDelete);
         //// Add all to the Select panel
         jpSelectProfile.add(jchbSelectProfile, BorderLayout.NORTH);
@@ -578,6 +564,26 @@ public class WSSecurityProfileChooser extends JFrame
         jpTransport.add(jlProxyCertDepthDescription,gbc_jlProxyCertDepthDescription);
 
         // Add some action listeners now that all fields are defined
+        jchbSelectProfile.addActionListener(new ActionListener(){
+
+			public void actionPerformed(ActionEvent e) {
+					boolean selected =  jchbSelectProfile.isSelected();
+					// Enable/Disable Select panel components
+					toggleComponents(selectProfileComponentList,selected);
+					// Uncheck/check Create panel checkbox
+					jchbCreateProfile.setSelected(!selected);
+					// Disable/enable Create panel components
+					toggleComponents(createProfileComponentList, !selected);
+					
+					//Fire the ACTIONS on the select profile cobmo box - 
+					//that will make delete button to become enabled/disabled properly
+					if (selected){
+						// This will cause the select profile combo box to fire up
+						// without changing the value of the field
+						jcmbSecurityProfiles.setSelectedIndex(jcmbSecurityProfiles.getSelectedIndex());
+					}
+			}
+        });
         jchbCreateProfile.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent e) {
@@ -588,8 +594,8 @@ public class WSSecurityProfileChooser extends JFrame
 				jchbSelectProfile.setSelected(!selected);
 				// Disable/enable Select panel components
 				toggleComponents(selectProfileComponentList, !selected);
-				
-		        //Fire the ACTIONS on the Protocol field - that will make other fields become enabled/disabled properly
+		        
+				//Fire the ACTIONS on the Protocol field - that will make other fields become enabled/disabled properly
 				if (selected){
 					// This will cause the actionlistener on the Protocol filed to fire up
 					// without changing the value of the field
@@ -599,8 +605,18 @@ public class WSSecurityProfileChooser extends JFrame
         });
         jcmbSecurityProfiles.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
+				// Set the description label
 		        int securityProfileIndex = jcmbSecurityProfiles.getSelectedIndex();
 		        jtaSecurityProfileDescription.setText(wsSecurityProfileDescriptions.elementAt(securityProfileIndex));
+		        
+		        // If selected profile is user-defined, then enable the delete button
+		        if (wsSecurityProfileManager.isUserDefinedProfile((String)jcmbSecurityProfiles.getSelectedItem())){
+		        	jbDelete.setEnabled(true);
+		        }
+		        else{
+		        	jbDelete.setEnabled(false);
+		        }
+		        	
 			}
         });
         jcmbProtocol.addActionListener(new ActionListener(){
@@ -1194,22 +1210,9 @@ public class WSSecurityProfileChooser extends JFrame
         // Add the Create tabbed pane to the list of components to be enabled/disabled
         createProfileComponentList.add(jtpCreateProfile);
         
-        // Panel to hold buttons
-        JPanel jpCreateButton = new JPanel(new FlowLayout(FlowLayout.RIGHT)); 
-        //jpCreateButton.setBorder(new EmptyBorder(5,5,5,5));
-        JButton jbCreate = new JButton("Create");
-        jbCreate.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e) {
-				createPressed();			
-			}        	
-        });
-        jpCreateButton.add(jbCreate);
-       createProfileComponentList.add(jbCreate);
-       // Add all to the Create panel
+        // Add all to the Create panel
        jpCreateProfile.add(jchbCreateProfile, BorderLayout.NORTH);
        jpCreateProfile.add(jspCreateProfile, BorderLayout.CENTER);
-       jpCreateProfile.add(jpCreateButton, BorderLayout.SOUTH);
-
         
         // Main panel to hold the Select and Create panels
         JPanel jpMain = new JPanel(new BorderLayout(0,10));
@@ -1217,9 +1220,7 @@ public class WSSecurityProfileChooser extends JFrame
         
         jpMain.add(jpSelectProfile,BorderLayout.NORTH);
         jpMain.add(jpCreateProfile,BorderLayout.CENTER);
-       
-        getContentPane().add(jpMain);
-        
+               
         // This will cause all fields on the Create panel to initially be disabled
         toggleComponents(createProfileComponentList, false);
 
@@ -1229,22 +1230,37 @@ public class WSSecurityProfileChooser extends JFrame
         {
             public void windowClosing(WindowEvent evt)
             {
-                closeFrame();
+                closeDialog();
             }
         });
         
+        
+        // Put everything on one big panel
+        JPanel jpBig = new JPanel(new BorderLayout());
+        // OK/Cancel button panel
+		JPanel jpButtons = new JPanel();
+		jpButtons.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		JButton okButton = new JButton("OK");
+		JButton cancelButton = new JButton("Cancel");
+		okButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				okPressed();
+			}
+		});
+		cancelButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				cancelPressed();
+			}
+		});
+		
+		jpButtons.add(cancelButton);
+		jpButtons.add(okButton);
+		jpBig.add(jpMain, BorderLayout.CENTER);
+		jpBig.add(jpButtons,BorderLayout.SOUTH);
+        
+        getContentPane().add(jpBig);
+
         pack();
-
-        // Centre the frame in the centre of the desktop
-        setLocationRelativeTo(null);
-
-        // Set the frame's icon
-        //setIconImage(getResImage("CredentialManagerGUI.Icon.image"));
-        
-        // Set the frame's title
-        setTitle("Security Profile Chooser");
-        
-        //setVisible(true);
               
     }
     
@@ -1290,18 +1306,7 @@ public class WSSecurityProfileChooser extends JFrame
 	public WSSecurityProfile getWSSecurityProfile() {
 		return wsSecurityProfile;
 	}
-	
-	/**
-	 * 'Select' button pressed.
-	 */
-	private void selectPressed(){
 
-		// Set the selected profile
-		wsSecurityProfile = new WSSecurityProfile();
-		wsSecurityProfile = wsSecurityProfiles.elementAt(jcmbSecurityProfiles.getSelectedIndex());
-		logger.info("The selected WS-Security profile: " + wsSecurityProfile.getWSSecurityProfileString());
-		closeFrame();
-	 }
 	
 	/**
 	 * 'Delete' button pressed - lets user delete a profile he has saved.
@@ -1359,214 +1364,232 @@ public class WSSecurityProfileChooser extends JFrame
 	 }
 	
 	/**
-	 * 'Create' button pressed.
+	 * 'OK' button pressed.
 	 */
-	private void createPressed(){
+	private void okPressed(){
 
-		// Create a new profile
-
-		WSSecurityProfile wsSecProf = new WSSecurityProfile();
-			
-		// Pick up all defined fields from the form
-		
-		// Transport-level properties
-		TransportProperties tlp = new TransportProperties();
-		tlp.setProperty(TransportProperties.Protocol,(String) jcmbProtocol.getSelectedItem());
-		if (jtfPort.getText() == null || jtfPort.getText().length() == 0){
-			if (((String) jcmbProtocol.getSelectedItem()).contains("HTTPS")) 
-				tlp.setProperty(TransportProperties.Port,"443");
-			else 
-				tlp.setProperty(TransportProperties.Port,"80");
+		if (jchbSelectProfile.isSelected()){
+			// Set the selected profile
+			wsSecurityProfile = new WSSecurityProfile();
+			wsSecurityProfile = wsSecurityProfiles.elementAt(jcmbSecurityProfiles.getSelectedIndex());
+			logger.info("The selected WS-Security profile: " + wsSecurityProfile.getWSSecurityProfileString());
 		}
 		else{
+			// Create a new profile
+			WSSecurityProfile wsSecProf = new WSSecurityProfile();
+				
+			// Pick up all defined fields from the form
 			
-			try{// if the entered value is number
-				Integer.parseInt((String)jtfPort.getText());
-				tlp.setProperty(TransportProperties.Port,(String) jtfPort.getText());
+			// Transport-level properties
+			TransportProperties tlp = new TransportProperties();
+			tlp.setProperty(TransportProperties.Protocol,(String) jcmbProtocol.getSelectedItem());
+			if (jtfPort.getText() == null || jtfPort.getText().length() == 0){
+				if (((String) jcmbProtocol.getSelectedItem()).contains("HTTPS")) 
+					tlp.setProperty(TransportProperties.Port,"443");
+				else 
+					tlp.setProperty(TransportProperties.Port,"80");
 			}
-			catch(NumberFormatException nfe){ // if not number
-				// Port must be a number
-	            JOptionPane.showMessageDialog(this,
-	            		"Port value must be a number",
-	            		"WS Security Profile Chooser", 
-	            		JOptionPane.ERROR_MESSAGE);
-	            return;
+			else{
+				
+				try{// if the entered value is number
+					Integer.parseInt((String)jtfPort.getText());
+					tlp.setProperty(TransportProperties.Port,(String) jtfPort.getText());
+				}
+				catch(NumberFormatException nfe){ // if not number
+					// Port must be a number
+		            JOptionPane.showMessageDialog(this,
+		            		"Port value must be a number",
+		            		"WS Security Profile Chooser", 
+		            		JOptionPane.ERROR_MESSAGE);
+		            return;
+				}
 			}
-		}
-		tlp.setProperty(TransportProperties.AuthNType,(String) jcmbAuthNType.getSelectedItem());
-		if (jcmbRequiresClientCert.isEnabled()){
-				tlp.setProperty(TransportProperties.RequiresClientCert,(String) jcmbRequiresClientCert.getSelectedItem());
-		}
-		if (jcmbProxyCertDepth.isEnabled()){
-			tlp.setProperty(TransportProperties.ProxyCertDepth,(String) jcmbProxyCertDepth.getSelectedItem());
-		}
-		wsSecProf.setTransportProperties(tlp);
-		
-		// Outbound message-level properties
-		WSSecurityMessageProperties omlp = new WSSecurityMessageProperties();
-		if (jtfWSSecPolicyURL.getText()!= null && jtfWSSecPolicyURL.getText().length()!=0)
-			wsSecProf.setWSSecurityPolicyRef(jtfWSSecPolicyURL.getText());
-		String outboundActions = new String();
-		for (int i=0; i<8; i++){
-			if (!jcmbWSSecActionsOutbound[i].getSelectedItem().equals("None")){
-				outboundActions = outboundActions + (String) jcmbWSSecActionsOutbound[i].getSelectedItem() + " ";
-			}		
-		}
-		if (outboundActions.length() != 0) {
-			omlp.setProperty(WSSecurityMessageProperties.Actions, outboundActions.trim());
-		}
+			tlp.setProperty(TransportProperties.AuthNType,(String) jcmbAuthNType.getSelectedItem());
+			if (jcmbRequiresClientCert.isEnabled()){
+					tlp.setProperty(TransportProperties.RequiresClientCert,(String) jcmbRequiresClientCert.getSelectedItem());
+			}
+			if (jcmbProxyCertDepth.isEnabled()){
+				tlp.setProperty(TransportProperties.ProxyCertDepth,(String) jcmbProxyCertDepth.getSelectedItem());
+			}
+			wsSecProf.setTransportProperties(tlp);
+			
+			// Outbound message-level properties
+			WSSecurityMessageProperties omlp = new WSSecurityMessageProperties();
+			if (jtfWSSecPolicyURL.getText()!= null && jtfWSSecPolicyURL.getText().length()!=0)
+				wsSecProf.setWSSecurityPolicyRef(jtfWSSecPolicyURL.getText());
+			String outboundActions = new String();
+			for (int i=0; i<8; i++){
+				if (!jcmbWSSecActionsOutbound[i].getSelectedItem().equals("None")){
+					outboundActions = outboundActions + (String) jcmbWSSecActionsOutbound[i].getSelectedItem() + " ";
+				}		
+			}
+			if (outboundActions.length() != 0) {
+				omlp.setProperty(WSSecurityMessageProperties.Actions, outboundActions.trim());
+			}
 
-		if (outboundActions.contains("UsernameToken")){
-			omlp.setProperty(WSSecurityMessageProperties.PasswordType, (String)jcmbPasswordTypeOutbound.getSelectedItem());
-		} // otherwise ignore password-related fields
+			if (outboundActions.contains("UsernameToken")){
+				omlp.setProperty(WSSecurityMessageProperties.PasswordType, (String)jcmbPasswordTypeOutbound.getSelectedItem());
+			} // otherwise ignore password-related fields
 
-		if (outboundActions.contains("Signature")){
-			if (jtfSignaturePartsOutbound.getText()!= null && jtfSignaturePartsOutbound.getText().length()!=0)
-				omlp.setProperty(WSSecurityMessageProperties.SignatureParts,jtfSignaturePartsOutbound.getText());
-			omlp.setProperty(WSSecurityMessageProperties.SignatureKeyIdentifier, (String)jcmbSignatureKeyIdentifierOutbound.getSelectedItem());
-			omlp.setProperty(WSSecurityMessageProperties.SignatureAlgorithm, WSSecurityMessageProperties.SIGNATURE_ALGORITHMS[jcmbSignatureAlgorithmOutbound.getSelectedIndex()]);
-		}// otherwise ignore signature-related fields
+			if (outboundActions.contains("Signature")){
+				if (jtfSignaturePartsOutbound.getText()!= null && jtfSignaturePartsOutbound.getText().length()!=0)
+					omlp.setProperty(WSSecurityMessageProperties.SignatureParts,jtfSignaturePartsOutbound.getText());
+				omlp.setProperty(WSSecurityMessageProperties.SignatureKeyIdentifier, (String)jcmbSignatureKeyIdentifierOutbound.getSelectedItem());
+				omlp.setProperty(WSSecurityMessageProperties.SignatureAlgorithm, WSSecurityMessageProperties.SIGNATURE_ALGORITHMS[jcmbSignatureAlgorithmOutbound.getSelectedIndex()]);
+			}// otherwise ignore signature-related fields
 
-		if (outboundActions.contains("Encrypt")){
-			if (jtfEncryptionPartsOutbound.getText()!= null && jtfEncryptionPartsOutbound.getText().length()!=0)
-				omlp.setProperty(WSSecurityMessageProperties.EncryptionParts,jtfEncryptionPartsOutbound.getText());
-			omlp.setProperty(WSSecurityMessageProperties.EncryptionKeyIdentifier, (String)jcmbEncryptionKeyIdentifierOutbound.getSelectedItem());
-			omlp.setProperty(WSSecurityMessageProperties.EncryptionAlgorithm, WSSecurityMessageProperties.ENCRYPTION_ALGORITHMS[jcmbEncryptionAlgorithmOutbound.getSelectedIndex()]);
-			omlp.setProperty(WSSecurityMessageProperties.EncryptionKeyTransportAlgorithm, WSSecurityMessageProperties.ENCRYPTION_KEY_TRANSPORT_ALGORITHMS[jcmbEncryptionKeyTransportAlgorithmOutbound.getSelectedIndex()]);
-		}//otherwise ignore encryption-related fields
+			if (outboundActions.contains("Encrypt")){
+				if (jtfEncryptionPartsOutbound.getText()!= null && jtfEncryptionPartsOutbound.getText().length()!=0)
+					omlp.setProperty(WSSecurityMessageProperties.EncryptionParts,jtfEncryptionPartsOutbound.getText());
+				omlp.setProperty(WSSecurityMessageProperties.EncryptionKeyIdentifier, (String)jcmbEncryptionKeyIdentifierOutbound.getSelectedItem());
+				omlp.setProperty(WSSecurityMessageProperties.EncryptionAlgorithm, WSSecurityMessageProperties.ENCRYPTION_ALGORITHMS[jcmbEncryptionAlgorithmOutbound.getSelectedIndex()]);
+				omlp.setProperty(WSSecurityMessageProperties.EncryptionKeyTransportAlgorithm, WSSecurityMessageProperties.ENCRYPTION_KEY_TRANSPORT_ALGORITHMS[jcmbEncryptionKeyTransportAlgorithmOutbound.getSelectedIndex()]);
+			}//otherwise ignore encryption-related fields
 
-		wsSecProf.setOutboundMessageProperties(omlp);
-		
-		// Inbound message-level properties
-		WSSecurityMessageProperties imlp = new WSSecurityMessageProperties();
-		
-		String inboundActions = new String();
-		for (int i=0; i<8; i++){
-			if (!jcmbWSSecActionsInbound[i].getSelectedItem().equals("None")){
-				inboundActions = inboundActions + (String) jcmbWSSecActionsInbound[i].getSelectedItem() + " ";
-			}		
-		}
-		if (inboundActions.length() != 0) {
-			imlp.setProperty(WSSecurityMessageProperties.Actions, inboundActions.trim());
-		}
+			wsSecProf.setOutboundMessageProperties(omlp);
+			
+			// Inbound message-level properties
+			WSSecurityMessageProperties imlp = new WSSecurityMessageProperties();
+			
+			String inboundActions = new String();
+			for (int i=0; i<8; i++){
+				if (!jcmbWSSecActionsInbound[i].getSelectedItem().equals("None")){
+					inboundActions = inboundActions + (String) jcmbWSSecActionsInbound[i].getSelectedItem() + " ";
+				}		
+			}
+			if (inboundActions.length() != 0) {
+				imlp.setProperty(WSSecurityMessageProperties.Actions, inboundActions.trim());
+			}
 
-		if (inboundActions.contains("Signature")){
-			if (jtfSignaturePartsInbound.getText()!= null && jtfSignaturePartsInbound.getText().length()!=0)
-				imlp.setProperty(WSSecurityMessageProperties.SignatureParts,jtfSignaturePartsInbound.getText());
-			imlp.setProperty(WSSecurityMessageProperties.SignatureKeyIdentifier, (String)jcmbSignatureKeyIdentifierInbound.getSelectedItem());
-			imlp.setProperty(WSSecurityMessageProperties.SignatureAlgorithm, WSSecurityMessageProperties.SIGNATURE_ALGORITHMS[jcmbSignatureAlgorithmInbound.getSelectedIndex()]);
-		}// otherwise ignore signature-related fields
+			if (inboundActions.contains("Signature")){
+				if (jtfSignaturePartsInbound.getText()!= null && jtfSignaturePartsInbound.getText().length()!=0)
+					imlp.setProperty(WSSecurityMessageProperties.SignatureParts,jtfSignaturePartsInbound.getText());
+				imlp.setProperty(WSSecurityMessageProperties.SignatureKeyIdentifier, (String)jcmbSignatureKeyIdentifierInbound.getSelectedItem());
+				imlp.setProperty(WSSecurityMessageProperties.SignatureAlgorithm, WSSecurityMessageProperties.SIGNATURE_ALGORITHMS[jcmbSignatureAlgorithmInbound.getSelectedIndex()]);
+			}// otherwise ignore signature-related fields
 
-		if (inboundActions.contains("Encrypt")){
-			if (jtfEncryptionPartsInbound.getText()!= null && jtfEncryptionPartsInbound.getText().length()!=0)
-				imlp.setProperty(WSSecurityMessageProperties.EncryptionParts,jtfEncryptionPartsInbound.getText());
-			imlp.setProperty(WSSecurityMessageProperties.EncryptionKeyIdentifier, (String)jcmbEncryptionKeyIdentifierInbound.getSelectedItem());
-			imlp.setProperty(WSSecurityMessageProperties.EncryptionAlgorithm, WSSecurityMessageProperties.ENCRYPTION_ALGORITHMS[jcmbEncryptionAlgorithmInbound.getSelectedIndex()]);
-			imlp.setProperty(WSSecurityMessageProperties.EncryptionKeyTransportAlgorithm, WSSecurityMessageProperties.ENCRYPTION_KEY_TRANSPORT_ALGORITHMS[jcmbEncryptionKeyTransportAlgorithmInbound.getSelectedIndex()]);
-		}//otherwise ignore encryption-related fields
-		wsSecProf.setInboundMessageProperties(imlp);
+			if (inboundActions.contains("Encrypt")){
+				if (jtfEncryptionPartsInbound.getText()!= null && jtfEncryptionPartsInbound.getText().length()!=0)
+					imlp.setProperty(WSSecurityMessageProperties.EncryptionParts,jtfEncryptionPartsInbound.getText());
+				imlp.setProperty(WSSecurityMessageProperties.EncryptionKeyIdentifier, (String)jcmbEncryptionKeyIdentifierInbound.getSelectedItem());
+				imlp.setProperty(WSSecurityMessageProperties.EncryptionAlgorithm, WSSecurityMessageProperties.ENCRYPTION_ALGORITHMS[jcmbEncryptionAlgorithmInbound.getSelectedIndex()]);
+				imlp.setProperty(WSSecurityMessageProperties.EncryptionKeyTransportAlgorithm, WSSecurityMessageProperties.ENCRYPTION_KEY_TRANSPORT_ALGORITHMS[jcmbEncryptionKeyTransportAlgorithmInbound.getSelectedIndex()]);
+			}//otherwise ignore encryption-related fields
+			wsSecProf.setInboundMessageProperties(imlp);
 
-		// Create the profile configuration string from the defined parameters as well
-		String profile = "<deployment xmlns=\"http://xml.apache.org/axis/wsdd/\" "+
-		"xmlns:java=\"http://xml.apache.org/axis/wsdd/providers/java\"> \n"+
-		"<globalConfiguration> \n" +
-		"<requestFlow>\n" +
-		"<handler type=\"java:net.sf.taverna.security.T2WSDoAllSender\"> \n";
-		try{
-			if (omlp.getProperty(WSSecurityMessageProperties.Actions)!= null) {
-				profile = profile + "<parameter name=\"action\" value=\""+omlp.getProperty(WSSecurityMessageProperties.Actions)+"\"/> \n";
-				HashMap<String,String> parameters = omlp.getProperties();
-				Set<String> set = parameters.keySet();
-				for (Iterator<String> itr=set.iterator(); itr.hasNext(); ){
-					String key = (String) itr.next();
-					if (!key.equals(WSSecurityMessageProperties.Actions)){
-						String value = omlp.getProperty(key);
-						if (value!=null)
-							profile = profile + "<parameter name=\""+ key +"\" value=\""+ value +"\"/> \n";
+			// Create the profile configuration string from the defined parameters as well
+			String profile = "<deployment xmlns=\"http://xml.apache.org/axis/wsdd/\" "+
+			"xmlns:java=\"http://xml.apache.org/axis/wsdd/providers/java\"> \n"+
+			"<globalConfiguration> \n" +
+			"<requestFlow>\n" +
+			"<handler type=\"java:net.sf.taverna.security.T2WSDoAllSender\"> \n";
+			try{
+				if (omlp.getProperty(WSSecurityMessageProperties.Actions)!= null) {
+					profile = profile + "<parameter name=\"action\" value=\""+omlp.getProperty(WSSecurityMessageProperties.Actions)+"\"/> \n";
+					HashMap<String,String> parameters = omlp.getProperties();
+					Set<String> set = parameters.keySet();
+					for (Iterator<String> itr=set.iterator(); itr.hasNext(); ){
+						String key = (String) itr.next();
+						if (!key.equals(WSSecurityMessageProperties.Actions)){
+							String value = omlp.getProperty(key);
+							if (value!=null)
+								profile = profile + "<parameter name=\""+ key +"\" value=\""+ value +"\"/> \n";
+						}
 					}
 				}
 			}
-		}
-		catch(NoSuchSecurityPropertyException nspe){
-			// should not happen as we are only accessing the properties that do exist
-		}
-		profile = profile + "</handler> \n"+
-		"</requestFlow> \n"+
-		"<responseFlow>\n" +
-		"<handler type=\"java:net.sf.taverna.security.T2WSDoAllSender\"> \n";
-		try{
-			if (imlp.getProperty(WSSecurityMessageProperties.Actions)!= null) {
-				profile = profile + "<parameter name=\"action\" value=\""+imlp.getProperty(WSSecurityMessageProperties.Actions)+"\"/> \n";
-				HashMap<String,String> parameters = imlp.getProperties();
-				Set<String> set = parameters.keySet();
-				for (Iterator<String> itr=set.iterator(); itr.hasNext(); ){
-					String key = (String) itr.next();
-					if (!key.equals(WSSecurityMessageProperties.Actions)){
-						String value = imlp.getProperty(key);
-						if (value!=null)
-							profile = profile + "<parameter name=\""+ key +"\" value=\""+ value +"\"/> \n";
+			catch(NoSuchSecurityPropertyException nspe){
+				// should not happen as we are only accessing the properties that do exist
+			}
+			profile = profile + "</handler> \n"+
+			"</requestFlow> \n"+
+			"<responseFlow>\n" +
+			"<handler type=\"java:net.sf.taverna.security.T2WSDoAllSender\"> \n";
+			try{
+				if (imlp.getProperty(WSSecurityMessageProperties.Actions)!= null) {
+					profile = profile + "<parameter name=\"action\" value=\""+imlp.getProperty(WSSecurityMessageProperties.Actions)+"\"/> \n";
+					HashMap<String,String> parameters = imlp.getProperties();
+					Set<String> set = parameters.keySet();
+					for (Iterator<String> itr=set.iterator(); itr.hasNext(); ){
+						String key = (String) itr.next();
+						if (!key.equals(WSSecurityMessageProperties.Actions)){
+							String value = imlp.getProperty(key);
+							if (value!=null)
+								profile = profile + "<parameter name=\""+ key +"\" value=\""+ value +"\"/> \n";
+						}
 					}
 				}
 			}
-		}
-		catch(NoSuchSecurityPropertyException nspe){
-			// should not happen as we are only accessing the properties that do exist
-		}
-		profile = profile + "</handler> \n"+"</handler> \n"+
-		"</responseFlow> \n"+
-		"</globalConfiguration> \n"+
-		// TODO: Transport level handler here will depend on the transport level protocol (i.e. whether it is HTTPS or not)
-		"<transport name=\"http\" pivot=\"java:org.apache.axis.transport.http.HTTPSender\"/> \n"+
-		"</deployment>\n";
-		
-		// Since all is correct - set the newly created profile
-		wsSecurityProfile = new WSSecurityProfile();
-		wsSecurityProfile = wsSecProf;
-		// Set the profile string
-		wsSecurityProfile.setWSSecurityProfileString(profile);
-		// Ask the user if he also wants to save the newly created profile to the file with user-defined profiles
-        int iSelected = JOptionPane.showConfirmDialog(this, 
-        		"Do you also want to save the created profile so you can refer to it later?",
-        		"WS Security Profile Chooser",
-        		JOptionPane.YES_NO_OPTION);
-                
-    	if (iSelected == JOptionPane.YES_OPTION) {
-    		// Give name and description to the profile
-    		GetProfileNameDescriptionDialog dGetNameDesc = new GetProfileNameDescriptionDialog(this,
-        			"WS Security Profile Chooser", 
-        			true);         
-    		dGetNameDesc.setLocationRelativeTo(this);
-    		dGetNameDesc.setVisible(true);
-            String name = dGetNameDesc.getName();
-            String desc = dGetNameDesc.getDescritpion();
-            
-            if (!(name == null)) { //user did not cancel
-            	wsSecurityProfile.setWSSecurityProfileName(name);
-            	wsSecurityProfile.setWSSecurityProfileDescription(desc);
-            	try{
-            		wsSecurityProfileManager.saveProfile(wsSecurityProfile);
-            	}
-            	catch (WSSecurityProfileManagerException wsspme){
-            		logger.error("WSSecurityProfileChooser: " + wsspme.getMessage());
+			catch(NoSuchSecurityPropertyException nspe){
+				// should not happen as we are only accessing the properties that do exist
+			}
+			profile = profile + "</handler> \n"+"</handler> \n"+
+			"</responseFlow> \n"+
+			"</globalConfiguration> \n"+
+			// TODO: Transport level handler here will depend on the transport level protocol (i.e. whether it is HTTPS or not)
+			"<transport name=\"http\" pivot=\"java:org.apache.axis.transport.http.HTTPSender\"/> \n"+
+			"</deployment>\n";
+			
+			// Since all is correct - set the newly created profile
+			wsSecurityProfile = new WSSecurityProfile();
+			wsSecurityProfile = wsSecProf;
+			// Set the profile string
+			wsSecurityProfile.setWSSecurityProfileString(profile);
+			// Ask the user if he also wants to save the newly created profile to the file with user-defined profiles
+	        int iSelected = JOptionPane.showConfirmDialog(this, 
+	        		"Do you also want to save the created profile so you can refer to it later?",
+	        		"WS Security Profile Chooser",
+	        		JOptionPane.YES_NO_OPTION);
+	                
+	    	if (iSelected == JOptionPane.YES_OPTION) {
+	    		// Give name and description to the profile
+	    		GetProfileNameDescriptionDialog dGetNameDesc = new GetProfileNameDescriptionDialog(this,
+	        			"WS Security Profile Chooser", 
+	        			true);         
+	    		dGetNameDesc.setLocationRelativeTo(this);
+	    		dGetNameDesc.setVisible(true);
+	            String name = dGetNameDesc.getName();
+	            String desc = dGetNameDesc.getDescritpion();
+	            
+	            if (!(name == null)) { //user did not cancel
+	            	wsSecurityProfile.setWSSecurityProfileName(name);
+	            	wsSecurityProfile.setWSSecurityProfileDescription(desc);
+	            	try{
+	            		wsSecurityProfileManager.saveProfile(wsSecurityProfile);
+	            	}
+	            	catch (WSSecurityProfileManagerException wsspme){
+	            		logger.error("WSSecurityProfileChooser: " + wsspme.getMessage());
 
-                	JOptionPane.showMessageDialog(
-                   		this, 
-                   		wsspme.getMessage(),
-               			"WS Security Profile Chooser",
-               			JOptionPane.ERROR_MESSAGE);
-            	}
-            }
-    	}   
+	                	JOptionPane.showMessageDialog(
+	                   		this, 
+	                   		wsspme.getMessage(),
+	               			"WS Security Profile Chooser",
+	               			JOptionPane.ERROR_MESSAGE);
+	            	}
+	            }
+	    	}   
 
-		logger.info("The created WS-Security profile:" + profile);
-		closeFrame();			
+			logger.info("The created WS-Security profile:" + profile);
+		}
+
+		closeDialog();			
+	 }
+	
+	
+	/**
+	 * 'Cancel' button pressed.
+	 */
+	private void cancelPressed(){
+
+		wsSecurityProfile = null;
+		closeDialog();
 	 }
 	
 	
     /**
      * Close the dialog.
      */
-    private void closeFrame()
+    private void closeDialog()
     { 	
         setVisible(false);
         dispose();
