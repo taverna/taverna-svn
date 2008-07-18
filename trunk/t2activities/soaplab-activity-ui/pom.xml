@@ -33,6 +33,11 @@
 			<artifactId>contextual-views-api</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>soaplab-activity</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
 
 		<!--  testing dependencies -->
 		<dependency>
@@ -41,10 +46,12 @@
 			<version>4.4</version>
 			<scope>test</scope>
 		</dependency>
+		
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>soaplab-activity</artifactId>
-			<version>0.3-SNAPSHOT</version>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>activity-palette-impl</artifactId>
+			<version>0.1-SNAPSHOT</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>
