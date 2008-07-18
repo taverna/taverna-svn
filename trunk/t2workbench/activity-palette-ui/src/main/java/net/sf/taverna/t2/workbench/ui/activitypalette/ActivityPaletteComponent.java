@@ -238,21 +238,21 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 			
 			JCheckBoxMenuItem result = new JCheckBoxMenuItem(value.toString());
 			
-			if (value == selectedPartitions.get(index)) {
-				result.setSelected(true);
-			}
-			
-			if (isSelected) {
-				result.setBackground(Color.GRAY);
-			}
-			
-			int otherSelectedIndex = index == 0 ? 1 : 0;
-			
-			if (value == selectedPartitions.get(otherSelectedIndex))
-			{
-				result.setEnabled(false);
-				result.setFocusable(false);
-			}
+//			if (value == selectedPartitions.get(index)) {
+//				result.setSelected(true);
+//			}
+//			
+//			if (isSelected) {
+//				result.setBackground(Color.GRAY);
+//			}
+//			
+//			int otherSelectedIndex = index == 0 ? 1 : 0;
+//			
+//			if (value == selectedPartitions.get(otherSelectedIndex))
+//			{
+//				result.setEnabled(false);
+//				result.setFocusable(false);
+//			}
 			return result;
 		}
 	}
