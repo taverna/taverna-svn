@@ -125,8 +125,8 @@ public class GetNewPasswordDialog
         jpPassword.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         JPanel jpButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        jpButtons.add(jbOK);
         jpButtons.add(jbCancel);
+        jpButtons.add(jbOK);
 
         getContentPane().add(jpPassword, BorderLayout.CENTER);
         getContentPane().add(jpButtons, BorderLayout.SOUTH);
