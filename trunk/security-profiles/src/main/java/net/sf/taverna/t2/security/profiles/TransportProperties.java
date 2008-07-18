@@ -20,10 +20,8 @@ public class TransportProperties extends SecurityProperties{
 	/**
 	 * List of PROTOCOLS.
 	 */
-	public static final String[] PROTOCOLS = {"HTTP/1.0",
-			"HTTP/1.1",
-			"HTTPS/1.0",
-			"HTTPS/1.1"
+	public static final String[] PROTOCOLS = {"HTTP",
+			"HTTPS"
 			};	
 	
 	/**

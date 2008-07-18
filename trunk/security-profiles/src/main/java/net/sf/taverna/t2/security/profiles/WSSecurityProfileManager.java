@@ -8,7 +8,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ResourceBundle;
 import java.util.Vector;
 
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
@@ -26,9 +25,6 @@ public class WSSecurityProfileManager {
 	
 	private static Logger logger = Logger
 			.getLogger(WSSecurityProfileManager.class);
-
-	/** Resource bundle */
-    private static ResourceBundle res;  
 	
     /**
      * File with system-defined profiles.

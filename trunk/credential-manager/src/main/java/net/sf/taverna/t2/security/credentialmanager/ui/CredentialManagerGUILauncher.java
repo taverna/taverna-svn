@@ -13,7 +13,13 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
-
+/**
+ * 
+ * Test launcher for Credential Manager GUI (so it does not have to be
+ * launched from Taverna).
+ * @author Alexandra Nenadic
+ *
+ */
 public class CredentialManagerGUILauncher extends JFrame {
 	
 	private static final long serialVersionUID = 2079805060170251148L;

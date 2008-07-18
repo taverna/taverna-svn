@@ -8,12 +8,19 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchProviderException;
 
+import org.apache.log4j.Logger;
+
 /**
  * Provides utility methods for loading a keystore from a file.
  * 
  * @author Alexandra Nenadic
  */
 public class CMUtil {
+	
+	/**
+	 * Log4J Logger
+	 */
+	private static Logger logger = Logger.getLogger(CMUtil.class);
 
 	/**
 	 * Loads a Bouncy Castle "UBER"-type keystore from a file on the disk and
@@ -35,15 +42,14 @@ public class CMUtil {
 			
 			// The requested keystore type is not available from the provider
 			String exMessage = "Failed to insantiate the keystore. Reason: Requested keystore type is not available from the provider.";
-			System.err.println("Credential Manager Error: " + exMessage);
+			logger.error(exMessage, ex);
 			throw new CMException(exMessage);
 		} 
 		catch (NoSuchProviderException ex) {
 			
 			// The crypto provider has not been configured
 			String exMessage = "Failed to insantiate the keystore. Reason: the crypto provider has not been configured.";
-			System.err.println("Credential Manager Error: " + exMessage);
-			ex.printStackTrace();
+			logger.error(exMessage, ex);
 			throw new CMException(exMessage);
 		}
 
@@ -63,8 +69,7 @@ public class CMUtil {
 			catch (Exception ex) {
 				
 				String exMessage = "Failed to load the keystore. Possible reason: incorrect password or corrupted file.";
-				System.err.println("Credential Manager Error: " + exMessage);
-				ex.printStackTrace();
+				logger.error(exMessage, ex);
 				throw new CMException(exMessage);
 			} 
 			finally {
@@ -92,8 +97,7 @@ public class CMUtil {
 			catch (Exception ex) {
 
 				String exMessage = "Failed to create the new keystore.";
-				System.err.println("Credential Manager Error: " + exMessage);
-				ex.printStackTrace();
+				logger.error(exMessage, ex);
 				throw new CMException(exMessage);
 			} 
 			finally {

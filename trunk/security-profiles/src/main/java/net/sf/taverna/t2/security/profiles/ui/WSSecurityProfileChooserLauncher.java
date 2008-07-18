@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -15,7 +14,13 @@ import javax.swing.WindowConstants;
 
 import net.sf.taverna.t2.security.profiles.WSSecurityProfile;
 
-
+/**
+ * 
+ * Test launcher for WSSecurityProfileChooser (so it does not have to be
+ * launched from Taverna).
+ * @author Alexandra Nenadic
+ *
+ */
 public class WSSecurityProfileChooserLauncher extends JFrame {
 	
 	private static final long serialVersionUID = 2079805060170251148L;
