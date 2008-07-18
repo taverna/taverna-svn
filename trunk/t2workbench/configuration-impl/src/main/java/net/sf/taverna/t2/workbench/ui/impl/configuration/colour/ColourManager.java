@@ -18,9 +18,9 @@ import net.sf.taverna.t2.workbench.configuration.AbstractConfigurable;
  */
 public class ColourManager extends AbstractConfigurable {
 	
-	private Map<String, Object> defaultPropertyMap = new HashMap<String, Object>();
+	private Map<String, Object> defaultPropertyMap;
 	private static ColourManager instance = new ColourManager();
-	private Map<Object,Color> cachedColours = new HashMap<Object, Color>();
+	private Map<Object,Color> cachedColours;
 
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.workbench.configuration.Configurable#getCategory()
@@ -33,6 +33,7 @@ public class ColourManager extends AbstractConfigurable {
 	 * @see net.sf.taverna.t2.workbench.configuration.Configurable#getDefaultPropertyMap()
 	 */
 	public Map<String, Object> getDefaultPropertyMap() {
+		if (defaultPropertyMap==null) initialiseDefaults();
 		return defaultPropertyMap;
 	}
 
@@ -58,6 +59,8 @@ public class ColourManager extends AbstractConfigurable {
 	}
 
 	private void initialiseDefaults() {
+		defaultPropertyMap=new HashMap<String, Object>();
+		cachedColours=new HashMap<Object, Color>();
 		defaultPropertyMap.put("net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivity", "#98fb98");//palegreen
 		defaultPropertyMap.put("net.sf.taverna.t2.activities.beanshell.BeanshellActivity", "#deb887");//burlywood2
 		defaultPropertyMap.put("net.sf.taverna.t2.activities.biomart.BiomartActivity", "#d1eeee");//lightcyan2
@@ -98,7 +101,13 @@ public class ColourManager extends AbstractConfigurable {
 	@Override
 	public void restoreDefaults() {
 		super.restoreDefaults();
-		cachedColours.clear();
+		if (cachedColours==null) {
+			cachedColours=new HashMap<Object, Color>();
+		}
+		else {
+			cachedColours.clear();
+		}
+		
 	}
 
 }

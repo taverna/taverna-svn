@@ -73,7 +73,7 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 	 */
 	private JMenu mainMenu;
 	private RootPartition<?> rootPartition;
-	private List<PartitionAlgorithm<?>> selectedPartitions = new ArrayList<PartitionAlgorithm<?>>();
+	private List<PartitionAlgorithm<?>> selectedPartitions = new ArrayList<PartitionAlgorithm<?>>(2);
 	JMenu firstMenu;
 	JMenu secondMenu;
 	Map<PartitionAlgorithm<?>, JMenuItem> firstAlgorithmToMenuItemMap = new HashMap<PartitionAlgorithm<?>, JMenuItem>();
@@ -110,8 +110,8 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 						"net.sf.taverna.t2.workbench.ui.activitypalette.ActivityPaletteComponent");
 		setLayout(new BorderLayout());
 		initialise();
-		createComboBoxes();
 		
+		createComboBoxes();
 		
 		JPanel comboBoxes = new JPanel();
 		comboBoxes.setLayout(new BoxLayout(comboBoxes,BoxLayout.X_AXIS));
@@ -184,6 +184,10 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 	}
 
 	private void createComboBoxes() {
+		
+		//FIXME: currently acts a bit quirky if there are no activities added, since there is an assumption
+		//that there will be at least 1 partiion algorith for "type". There is also an assumption there are 2
+		//combo boxes.
 
 		firstPartitionComboBox = new JComboBox();
 		secondPartitionComboBox = new JComboBox();
@@ -237,22 +241,24 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 				int i, boolean isSelected, boolean cellHasFocus) {
 			
 			JCheckBoxMenuItem result = new JCheckBoxMenuItem(value.toString());
+			if (selectedPartitions.size()>1) {
+				if (value == selectedPartitions.get(index)) {
+					result.setSelected(true);
+				}
+			}
 			
-//			if (value == selectedPartitions.get(index)) {
-//				result.setSelected(true);
-//			}
-//			
-//			if (isSelected) {
-//				result.setBackground(Color.GRAY);
-//			}
-//			
-//			int otherSelectedIndex = index == 0 ? 1 : 0;
-//			
-//			if (value == selectedPartitions.get(otherSelectedIndex))
-//			{
-//				result.setEnabled(false);
-//				result.setFocusable(false);
-//			}
+			if (isSelected) {
+				result.setBackground(Color.GRAY);
+			}
+			
+			int otherSelectedIndex = index == 0 ? 1 : 0;
+			if (selectedPartitions.size()>1) {
+				if (value == selectedPartitions.get(otherSelectedIndex))
+				{
+					result.setEnabled(false);
+					result.setFocusable(false);
+				}
+			}
 			return result;
 		}
 	}

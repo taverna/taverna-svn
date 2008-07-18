@@ -37,8 +37,7 @@ public interface Configurable {
 	void restoreDefaults();
 	
 	/**
-	 * Looks up the property for the given key. If the value cannot be found in the property
-	 * Map, the the default Map is used which if found is transferred to the property map and stored, otherwise null is returned.
+	 * Looks up the property for the given key. 
 	 * <br>
 	 * Using this method is preferable to using the property map directly.
 	 * @param key
@@ -49,6 +48,8 @@ public interface Configurable {
 	/**
 	 * Overwrites or applies a new value against the given key in the property map.
 	 * <br>
+	 * Setting a value to null is equivalent to calling this{@link #deleteProperty(String)}
+	 * <br>
 	 * If the value is new, or changed, the the property map is stored.
 	 * <br>
 	 * Using this method is preferable to using the property map directly.
@@ -56,4 +57,12 @@ public interface Configurable {
 	 * @param value
 	 */
 	void setProperty(String key, Object value);
+	
+	/**
+	 * Deletes a property value for a given key.
+	 * <br>
+	 * Subsequent calls to this{@link #getProperty(String)} will return null.
+	 * @param key
+	 */
+	void deleteProperty(String key);
 }

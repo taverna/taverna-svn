@@ -58,6 +58,11 @@ public class DummyUIFactory1 implements ConfigurationUIFactory {
 			// TODO Auto-generated method stub
 			
 		}
+
+		public void deleteProperty(String key) {
+			// TODO Auto-generated method stub
+			
+		}
 		
 	}
 
