@@ -335,11 +335,6 @@ public class ProvenanceQuery {
 		// open last LA
 		LineageAnnotation aLA = path.get(path.size()-1);
 
-		// this is where we need to retrieve the containing collection
-		if (aLA.getCollectionNesting()>0) {
-			q1 = q1 + q2;
-			lq.setNestingLevel(aLA.getCollectionNesting());  // indicate that collection should be used in the answer
-		}
 
 		if (aLA.getWfInstance() != null)
 			lineageQueryConstraints.put("VB.wfInstanceRef", aLA.getWfInstance());
@@ -347,17 +342,26 @@ public class ProvenanceQuery {
 		if (aLA.getProc() != null) 
 			lineageQueryConstraints.put("VB.PNameRef", aLA.getProc());
 
-//		if (aLA.getVar() != null) 
-//			lineageQueryConstraints.put("V.varNameRef", aLA.getVar());
+		if (aLA.getVar() != null) 
+			lineageQueryConstraints.put("VB.varNameRef", aLA.getVar());
 		
 		if (aLA.getCollectionRef() != null) 
 			lineageQueryConstraints.put("VB.collIDRef", aLA.getCollectionRef());
 
-		lineageQueryConstraints.put("VB.iteration", aLA.getIteration());
+		lineageQueryConstraints.put("VB.iteration", aLA.getIterationVector());  // changed to iteration vector 
 		
 		lineageQueryConstraints.put("VB.positionInColl", Integer.toString(aLA.getIic() +1));  // +1: in the DB default is 1 not 0
 		
 		lineageQueryConstraints.put("V.inputOrOutput", "1");
+
+		// this is where we need to retrieve the containing collection
+		if (aLA.getCollectionNesting()>0) {
+			q1 = q1 + q2;
+			lq.setNestingLevel(aLA.getCollectionNesting());  // indicate that collection should be used in the answer
+
+			lineageQueryConstraints.put("C.iteration", aLA.getIterationVector());
+
+		}
 
 		q1 = addWhereClauseToQuery(q1, lineageQueryConstraints);
 		

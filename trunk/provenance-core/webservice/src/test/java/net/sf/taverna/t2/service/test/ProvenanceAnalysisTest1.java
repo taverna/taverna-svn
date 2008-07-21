@@ -68,12 +68,10 @@ public class ProvenanceAnalysisTest1 {
 
 		// this is what we certainly want to test
 		String targetIteration = "0,1";
-		String targetProc = "P3";
+		String targetProc = "ALL";  // this is a magic keyword -- it stands for "all"
 		
 		// use annotations?
 		boolean useAnnotations = false;
-		
-		selectedProcessors.add(targetProc);
 		
 		// do this for one wfInstances -- there should actually be only one if clear() is used
 		ProvenanceAnalysis pa = new ProvenanceAnalysis();
@@ -112,15 +110,27 @@ public class ProvenanceAnalysisTest1 {
 			procConstraints.put("wfInstanceRef", WFID);
 
 			List<Processor> processors = pq.getProcessors(procConstraints);
-			
-			Random r = new Random();					
-			
-			for (int i=0; i<processors.size() / 2; i++) {
-				int  n = r.nextInt(processors.size());
-				String pname = processors.get(n).getPname();
-				selectedProcessors.add(pname);
+
+			List<String> procNames = new ArrayList<String>();
+			for (Processor p:processors) { procNames.add(p.getPname()); }
+
+			if (targetProc.equals("ALL")) {
+
+				selectedProcessors.addAll(procNames);
+
+			} else {
+
+				selectedProcessors.add(targetProc);
+
+				Random r = new Random();					
+
+				for (int i=0; i<procNames.size() / 2; i++) {
+					int  n = r.nextInt(procNames.size());
+					selectedProcessors.add(procNames.get(n));
+				}
+
 			}
-			
+
 			System.out.println("selected processors:");
 			for (String s:selectedProcessors) {
 				System.out.print(s+" ");

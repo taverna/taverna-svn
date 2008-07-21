@@ -190,7 +190,6 @@ public class ProvenanceAnalysis {
 			List<LineageAnnotation> initialPath,
 			List<LineageSQLQuery>  lqList) throws SQLException  {
 
-
 		/////////////
 		// xform step
 		/////////////
@@ -209,7 +208,11 @@ public class ProvenanceAnalysis {
 		int[] var2NL = new int[10];  // inputVarCnt --> nesting level
 		Map<Var,Var>  sink2source  = new HashMap<Var,Var> ();  // sink node -> source node for an arc 
 
+		
+		///////
+		// lookahead: fetch source vars from the Arcs in order to inspect their nestinglevel
 		// for each input var that is a node sink, retrieve corresponding source var through the arc
+		///////
 		
 		int inputVarCnt = 0;
 		for (Var inputVar: inputVars) {
@@ -217,10 +220,6 @@ public class ProvenanceAnalysis {
 			String procName = inputVar.getPName();
 			String inputVarName  = inputVar.getVName();
 			String inputVarType  = inputVar.getType();
-
-			///////
-			// lookahead: fetch source vars from the Arcs in order to inspect their nestinglevel
-			///////
 			
 			// retrieve all Arcs ending with (var,proc) -- expect exactly one, since no multiple incoming arcs allowed
 			Map<String, String>  arcsQueryConstraints = new HashMap<String, String>();
@@ -258,9 +257,9 @@ public class ProvenanceAnalysis {
 				inputVarCnt++;
 			}
 			
-		}  // end for each input var
+		}  // end LOOKAHEAD for each input var
 
-		// perform xform step and update annotated path -- depth-first recursion
+		// perform xform step on each input var separately and update the annotated path -- depth-first recursion
 		inputVarCnt = 0;
 		for (Var inputVar: inputVars) {
 
@@ -282,7 +281,7 @@ public class ProvenanceAnalysis {
 			LA.setVarType(inputVar.getType());
 			LA.setVarTypeNestingLevel(inputVar.getTypeNestingLevel());	//varTypeNestingLevel
 
-			initialPath.add(LA); // 
+			initialPath.add(LA);
 
 			// **************
 			// process currentPath
@@ -293,21 +292,18 @@ public class ProvenanceAnalysis {
 			int nlDiff = var2NL[inputVarCnt] - inputVar.getTypeNestingLevel();
 			int projectedIterationIndex = -1;
 			
-			if (nlDiff > 0) { 
+			if (nlDiff > 0) { // positive difference means one element of the iteration vector, if any, must be projected on this variable 
 				projectedIterationIndex = inputVarCnt;
 				inputVarCnt++;
-			}
-			
+			}			
 			
 			// updates the path
 			List<LineageAnnotation>  newPath = applyXformRule(initialPath, inputVars, projectedIterationIndex, annotations);								
 
-			// generate SQL if necessary
-			// generate a query if required
+			// generate SQL if necessary -- this assumes SQL can be generated individually for each input var
 			if (selectedProcessors.isEmpty() || selectedProcessors.contains(proc)) {
 
-				// processing done only on input vars -- this means at the end of a xform() step
-				// unless this is a xfer() into INPUT, in this case the output var of _INPT_ is also processed
+				// unless this is a xfer() into INPUT, in this case the output var of _INPUT_ is also processed
 				System.out.println("QueryGen for ["+proc+"] will see:  ");
 
 				int tabs = 0;
@@ -660,25 +656,28 @@ protected List<LineageAnnotation> applyXformRule(List<LineageAnnotation> path,
 	int fromNesting = currNode.getVarTypeNestingLevel();
 	int toNesting   = prevNode.getVarTypeNestingLevel();
 
-	if (fromNesting == 0 && toNesting == 0)  { // s -> s see rule xform/1
-
-		// is iteration involved? 
-		// NOTE: modified to account for cross products
-
-		System.out.println("projectedIterationIndex: "+projectedIterationIndex);
+	// first deal with iteration issues
+	// is this processor iterating over its inputs?
+	System.out.println("projectedIterationIndex: "+projectedIterationIndex);
+	
+	if (projectedIterationIndex == -1) {  // == -1: this input is not involved in iteration
 		
-		if (projectedIterationIndex > -1) {  // == -1: no iteration involved. project iteration vector on this index and use this as next iteration index
+		System.out.println("no iteration involved");
+		currNode.setIteration(prevNode.getIteration());  // propagate any iteration request upwards with no change
+		
+	} else { // this input is involved in iteration -- use index as a selector over the iteration vector
+		
+		String iterationVector[] = prevNode.getIteration().split(",");
 
-			String iterationVector[] = prevNode.getIteration().split(",");
+		currNode.setIteration(iterationVector[projectedIterationIndex]);
+		
+	}
 
-			currNode.setIteration(iterationVector[projectedIterationIndex]);
-
-		} else {
-
-			System.out.println("no iteration involved");
-			currNode.setIteration(prevNode.getIteration());
-
-		}
+	// also save full iteration vector (if any) so it can be used if a query is generated at the end of this xform() step
+	currNode.setIterationVector(prevNode.getIteration());
+	
+	// now apply NL mismatch rules 
+	if (fromNesting == 0 && toNesting == 0)  { // s -> s see rule xform/1
 		
 		currNode.setIic(prevNode.getIic());
 		currNode.setCollectionNesting(prevNode.getCollectionNesting());
@@ -687,15 +686,15 @@ protected List<LineageAnnotation> applyXformRule(List<LineageAnnotation> path,
 
 	}  else if (fromNesting < toNesting) {  // s -> l(s) lossless -- see rule xform/2
 
-		currNode.setIteration(prevNode.getIteration());
+//		currNode.setIteration(prevNode.getIteration());
 		currNode.setIic(0);
+		currNode.setCollectionNesting(prevNode.getCollectionNesting()-1);
 
 		System.out.println("xform (fromNesting, toNesting) = ("+fromNesting+","+toNesting+") -- s -> l(s) rule applied");
 
 	} else if (fromNesting > toNesting) {  // l(s) -> s  (loss of precision) see rule xform/3
 
-
-		currNode.setIteration(prevNode.getIteration());
+//		currNode.setIteration(prevNode.getIteration());
 		currNode.setCollectionNesting(prevNode.getCollectionNesting()+1);  // increase nesting level --> point to enclosing collection
 
 		System.out.println("xform (fromNesting, toNesting) = ("+fromNesting+","+toNesting+") -- l(s) -> s rule applied");
@@ -712,7 +711,7 @@ protected List<LineageAnnotation> applyXformRule(List<LineageAnnotation> path,
 
 			System.out.println(procName+" is "+IP_ANNOTATION);
 
-			currNode.setIteration(prevNode.getIteration());
+//			currNode.setIteration(prevNode.getIteration());
 			currNode.setIic(prevNode.getIic());
 			currNode.setCollectionNesting(prevNode.getCollectionNesting());
 
@@ -773,19 +772,20 @@ protected List<LineageAnnotation>  applyXferRule(List<LineageAnnotation> path, M
 
 		System.out.println("xfer (fromNesting, toNesting) = ("+fromNesting+","+toNesting+") -- s -> l(s) rule applied");
 
-	} else if (fromNesting > toNesting) {  // l(s) -> s  (loss of precision) see rule xfer/3
+	} else if (fromNesting > toNesting) {  // l(s) -> s  (from list to iteration) see rule xfer/3
 
 		// case of implicit iteration
 
-		currNode.setIteration(Integer.toString(prevNode.getIic()));  // CHECK FIXME
+		currNode.setIic(Integer.parseInt(prevNode.getIteration())); // CHECK
+		
+//		currNode.setIteration(Integer.toString(prevNode.getIic()));  // 
 		currNode.setCollectionNesting(prevNode.getCollectionNesting());
-		// currNode.setIic(prevNode.getIic());  // ?? unclear
 
 		System.out.println("xfer (fromNesting, toNesting) = ("+fromNesting+","+toNesting+") -- l(s) -> s rule applied");
 
 	} else { // l(s) -> l(s) see rule xfer/4 
 
-		currNode.setIteration(prevNode.getIteration());
+	//	currNode.setIteration(prevNode.getIteration());
 		currNode.setIic(prevNode.getIic());
 		currNode.setCollectionNesting(prevNode.getCollectionNesting());
 
@@ -811,7 +811,8 @@ class LineageAnnotation {
 
 	boolean isXform = true;
 
-	String iteration = "";  // default is 0
+	String iteration = "";  // this is the iteration projected on a single variable. Used for propagation upwards default is no iteration --
+	String iterationVector = ""; // iteration vector accounts for cross-products. Used to be matched exactly in queries. 
 	int iic = 0;  // index in collection -- default is 0 
 	int collectionNesting = 0;  // n indicates granularity is n levels from leaf. 
 	// This quantifies loss of lineage precision when working with collections
@@ -829,10 +830,11 @@ class LineageAnnotation {
 		if (isXform)  sb.append(" xform: ");
 		else sb.append(" xfer: ");
 
-		sb.append("<PROC/VAR/VARTYPE, IT, IIC, COLLNESTING> = "+
+		sb.append("<PROC/VAR/VARTYPE, IT, IIC, ITVECTOR, COLLNESTING> = "+
 				proc + "/" + var + "/" + varType +
 				"," + "["+iteration +"]"+
 				","+ iic + 
+				", ["+ iterationVector + "]"+
 				","+ varTypeNestingLevel);
 
 		return sb.toString();
@@ -1021,6 +1023,22 @@ class LineageAnnotation {
 	 */
 	public void setCollectionNesting(int collectionNesting) {
 		this.collectionNesting = collectionNesting;
+	}
+
+
+	/**
+	 * @return the iterationVector
+	 */
+	public String getIterationVector() {
+		return iterationVector;
+	}
+
+
+	/**
+	 * @param iterationVector the iterationVector to set
+	 */
+	public void setIterationVector(String iterationVector) {
+		this.iterationVector = iterationVector;
 	}
 }
 
