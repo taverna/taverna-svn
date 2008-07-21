@@ -164,7 +164,7 @@ public class ProvenanceAnalysis {
 		List<LineageSQLQuery>  lqList = new ArrayList<LineageSQLQuery>();  // holds the output
 
 		// initial recursive call
-		computeLineagePaths(workflowID, var, proc, selectedProcessors, initialPath, lqList);
+		computeLineagePaths_OBSOLETE(workflowID, var, proc, selectedProcessors, initialPath, lqList);
 
 		// execute queries in the LineageSQLQuery list
 		pq.runLineageQueries(lqList);
@@ -446,7 +446,7 @@ public class ProvenanceAnalysis {
  * for query generation in phase II
  * @throws SQLException 
  */
-public void computeLineagePaths(
+public void computeLineagePaths_OBSOLETE(
 		String workflowID,   // context
 		String var,   // starting var
 		String proc,   // qualified with its processor name
@@ -537,7 +537,7 @@ public void computeLineagePaths(
 			List<LineageAnnotation>  newPath = applyXferRule(initialPath, annotations);
 
 			// recursive call
-			computeLineagePaths(workflowID, varName, procName, selectedProcessors, newPath, lqList);				
+			computeLineagePaths_OBSOLETE(workflowID, varName, procName, selectedProcessors, newPath, lqList);				
 
 			initialPath.remove(initialPath.size()-1);
 
@@ -619,7 +619,7 @@ public void computeLineagePaths(
 			}
 
 			// recursive call
-			computeLineagePaths(workflowID, varName, procName, selectedProcessors, newPath, lqList);				
+			computeLineagePaths_OBSOLETE(workflowID, varName, procName, selectedProcessors, newPath, lqList);				
 
 			initialPath.remove(initialPath.size()-1);
 
@@ -662,9 +662,12 @@ protected List<LineageAnnotation> applyXformRule(List<LineageAnnotation> path,
 
 	if (fromNesting == 0 && toNesting == 0)  { // s -> s see rule xform/1
 
-		// modified to account for cross products
+		// is iteration involved? 
+		// NOTE: modified to account for cross products
 
-		if (projectedIterationIndex > -1) {  // project iteration vector on this index and use this as next iteration index
+		System.out.println("projectedIterationIndex: "+projectedIterationIndex);
+		
+		if (projectedIterationIndex > -1) {  // == -1: no iteration involved. project iteration vector on this index and use this as next iteration index
 
 			String iterationVector[] = prevNode.getIteration().split(",");
 
@@ -672,6 +675,7 @@ protected List<LineageAnnotation> applyXformRule(List<LineageAnnotation> path,
 
 		} else {
 
+			System.out.println("no iteration involved");
 			currNode.setIteration(prevNode.getIteration());
 
 		}
@@ -692,7 +696,7 @@ protected List<LineageAnnotation> applyXformRule(List<LineageAnnotation> path,
 
 
 		currNode.setIteration(prevNode.getIteration());
-		currNode.setCollectionNesting(prevNode.getCollectionNesting()+1);
+		currNode.setCollectionNesting(prevNode.getCollectionNesting()+1);  // increase nesting level --> point to enclosing collection
 
 		System.out.println("xform (fromNesting, toNesting) = ("+fromNesting+","+toNesting+") -- l(s) -> s rule applied");
 
