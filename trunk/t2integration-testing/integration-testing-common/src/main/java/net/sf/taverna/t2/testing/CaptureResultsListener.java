@@ -12,29 +12,36 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 public class CaptureResultsListener implements ResultListener {
 
 	private int outputCount;
-	private Map<String,Object> resultMap = new HashMap<String,Object>();
+	private Map<String, Object> resultMap = new HashMap<String, Object>();
 	private ReferenceService referenceService;
-	
-	public CaptureResultsListener(Dataflow dataflow, ReferenceService referenceService) {
+
+	public CaptureResultsListener(Dataflow dataflow,
+			ReferenceService referenceService) {
 		this.referenceService = referenceService;
-		outputCount=dataflow.getOutputPorts().size();
+		outputCount = dataflow.getOutputPorts().size();
 	}
-	public void resultTokenProduced(WorkflowDataToken dataToken,
-			String portname) {
-		if (dataToken.getIndex().length==0) {
-			try {
-				resultMap.put(portname, referenceService.renderIdentifier(dataToken.getData(), Object.class, null));
-			} catch (RetrievalException e) {
-				e.printStackTrace();
-			} 
+
+	public void resultTokenProduced(WorkflowDataToken dataToken, String portname) {
+		if (dataToken.getIndex().length == 0) {
+			if (dataToken.getData().containsErrors()) {
+				System.out.println("Received error document for " + portname
+						+ ": " + dataToken.getData());
+			} else {
+				try {
+					resultMap.put(portname, referenceService.renderIdentifier(
+							dataToken.getData(), Object.class, null));
+				} catch (RetrievalException e) {
+					e.printStackTrace();
+				}
+			}
 			outputCount--;
 		}
 	}
-	
+
 	public boolean isFinished() {
-		return outputCount==0;
+		return outputCount == 0;
 	}
-	
+
 	public Object getResult(String outputName) {
 		return resultMap.get(outputName);
 	}
