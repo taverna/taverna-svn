@@ -1,5 +1,6 @@
-package net.sf.taverna.t2.workbench.ui.impl.configuration;
+package net.sf.taverna.t2.workbench.ui.impl.configuration.ui;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.net.URI;
 
@@ -19,12 +20,12 @@ public class WorkbenchConfigurationMenu extends AbstractMenuAction {
 	@SuppressWarnings("serial")
 	@Override
 	protected Action createAction() {
-		return new AbstractAction("Preferences...") {
+		return new AbstractAction("Preferences") {
 			public void actionPerformed(ActionEvent event) {
-				JFrame tempFrame = new JFrame();
-				tempFrame.getContentPane().add(new WorkbenchConfigurationUIFactory().getConfigurationPanel());
-				tempFrame.setSize(300,200);
-				tempFrame.setVisible(true);
+				JFrame frame =  new T2ConfigurationFrame();
+				frame.setSize(new Dimension(700,500));
+				frame.pack();
+				frame.setVisible(true);
 			}
 		};
 	}

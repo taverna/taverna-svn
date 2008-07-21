@@ -7,7 +7,7 @@ import java.util.Map;
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.Logger;
 
 /**
@@ -44,7 +44,7 @@ public class ConfigurationManager {
 	public void store(Configurable configurable) throws Exception {
 		try {
 			Map<String, Object> propertyMap = configurable.getPropertyMap();
-			XMLConfiguration propConfig = new XMLConfiguration();
+			PropertiesConfiguration propConfig = new PropertiesConfiguration();
 			for (String key : propertyMap.keySet()) {
 				propConfig.addProperty(key, propertyMap.get(key));
 			}
@@ -70,7 +70,7 @@ public class ConfigurationManager {
 	public Map<String, Object> populate(Configurable configurable)
 			throws Exception {
 		try {
-			XMLConfiguration propertiesConfig = new XMLConfiguration();
+			PropertiesConfiguration propertiesConfig = new PropertiesConfiguration();
 			File configFile = new File(baseConfigLocation, configurable
 					.getUUID()
 					+ ".config");

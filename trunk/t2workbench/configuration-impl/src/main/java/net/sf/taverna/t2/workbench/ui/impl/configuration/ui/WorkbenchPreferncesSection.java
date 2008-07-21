@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.ui.impl.configuration;
+package net.sf.taverna.t2.workbench.ui.impl.configuration.ui;
 
 import java.net.URI;
 

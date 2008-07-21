@@ -1,7 +1,6 @@
 package net.sf.taverna.t2.workbench.ui.activitypalette;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,11 +37,20 @@ public class ActivityPaletteConfiguration extends AbstractConfigurable {
 //			soaplabList.add("http://www.ebi.ac.uk/soaplab/services/");
 			defaultPropertyMap.put("taverna.defaultwsdl", wsdlList);
 //	//		map.put("taverna.defaultsoaplab", soaplabList);
-//			List<String> biomart = new ArrayList<String>();
-//			biomart.add("http://www.biomart.org/biomart");
-//			defaultPropertyMap.put("taverna.defaultmartregistry",biomart);
+			List<String> biomart = new ArrayList<String>();
+			biomart.add("http://www.biomart.org/biomart");
+			defaultPropertyMap.put("taverna.defaultmartregistry",biomart);
+			
+			//add property names
+			defaultPropertyMap.put("name.taverna.defaultwsdl", "WSDL");
+			defaultPropertyMap.put("name.taverna.defaultsoaplab","Soaplab");
+			defaultPropertyMap.put("name.taverna.defaultmartregistry", "Biomart");
 		}
 		return defaultPropertyMap;
+	}
+	
+	String getPropertyName(String property) {
+		return (String)super.getProperty("name."+property);
 	}
 	
 	/**
@@ -70,7 +78,7 @@ public class ActivityPaletteConfiguration extends AbstractConfigurable {
 	}
 
 	public String getUUID() {
-		return "f8a318b0-5345-11dd-ae16-0800200c9a66";
+		return "8407e1b0-5742-11dd-ae16-0800200c9a66";
 	}
 
 }
