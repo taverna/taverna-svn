@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-compile win32</actionName>
+            <displayName>compile win32</displayName>
+            <goals>
+                <goal>compile</goal>
+            </goals>
+            <activatedProfiles>
+                <activatedProfile>win32</activatedProfile>
+            </activatedProfiles>
+        </action>
+    </actions>

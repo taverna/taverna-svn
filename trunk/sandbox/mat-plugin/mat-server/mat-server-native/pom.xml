@@ -16,7 +16,23 @@
         <!--module>macosx</module-->
         <module>win32</module>
     </modules>
+    <build>
+        <outputDirectory>../target</outputDirectory>
+        <testOutputDirectory>../target</testOutputDirectory>
+    </build>
     <profiles>
+        <profile>
+            <id>win32</id>
+            <activation>
+                <property>
+                    <name>platform</name>
+                    <value>win32</value>
+                </property>
+            </activation>
+            <modules>
+                <module>win32</module>
+            </modules>
+        </profile>
         <profile>
             <id>linux</id>
             <activation>
@@ -41,18 +57,6 @@
                 <module>macosx</module>
             </modules>
         </profile-->
-        <profile>
-            <id>win32</id>
-            <activation>
-                <property>
-                    <name>platform</name>
-                    <value>win32</value>
-                </property>
-            </activation>
-            <modules>
-                <module>win32</module>
-            </modules>
-        </profile>
     </profiles>
     <properties>
         <netbeans.hint.useExternalMaven>true</netbeans.hint.useExternalMaven>

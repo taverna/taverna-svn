@@ -22,7 +22,7 @@
         <dependency>
             <groupId>org.mortbay.jetty</groupId>
             <artifactId>jetty</artifactId>
-            <version>6.0.0</version>
+            <version>6.1.0</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -30,4 +30,22 @@
             <version>2.4</version>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <forkMode>once</forkMode>
+                    <environmentVariables>
+                        <path>${project.build.directory};${java.library.path}</path>
+                    </environmentVariables>
+                    <workingDirectory>${project.build.directory}</workingDirectory>
+                    <argLine>-Djava.library.path="${project.build.directory};${matlabroot}\bin\win32;${java.library.path}"</argLine>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <properties>
+        <matlabroot>C:\MATLAB6p5</matlabroot>
+    </properties>
 </project>

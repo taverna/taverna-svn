@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-test sa lib pathom</actionName>
+            <displayName>test sa lib pathom</displayName>
+            <goals>
+                <goal>test</goal>
+            </goals>
+            <properties>
+                <java.library.path>C:/Documents and Settings/user/My Documents/NetBeansProjects/sandbox/mat-plugin/mat-server/mat-server-native/win32/target</java.library.path>
+            </properties>
+        </action>
+    </actions>
