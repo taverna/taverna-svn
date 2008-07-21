@@ -23,14 +23,24 @@ public class BindingsList extends Resource {
 	/**
 	 * Convencience class shared between the {@link SemanticBindings} and
 	 * {@link SemanticBinding} so the REST calls can get the {@link Map} of all
-	 * the {@link Binding}s
+	 * the {@link Binding}s from the {@link SemanticBindingService}
 	 * 
 	 * @return
 	 */
-	protected Map<String, Binding> getBindingList() {
-		return ((SemanticBindingService) getContext().getAttributes().get(
-				Application.KEY)).getBindingList();
+	protected synchronized void addBinding(String key, String rdf) {
+		((SemanticBindingService) getContext().getAttributes().get(
+				Application.KEY)).addBinding(key, rdf);
 
 	}
+	protected boolean hasBinding(String key) {
+		return ((SemanticBindingService) getContext().getAttributes().get(
+				Application.KEY)).hasBinding(key);
+	}
+	
+	protected Binding getBinding(String key) {
+		return ((SemanticBindingService) getContext().getAttributes().get(
+				Application.KEY)).getBinding(key);
+	}
+	
 
 }

@@ -1,5 +1,8 @@
 package uk.org.mygrid.sogsa.sbs;
 
+import org.restlet.Component;
+import org.restlet.data.Protocol;
+
 /**
  * Starts the {@link SemanticBindingService} RESTFUL server in stand alone mode
  * 
@@ -10,12 +13,19 @@ public class SOGSAServer {
 
 	public static void main(String[] args) {
 
-		SemanticBindingService sbs = new SemanticBindingService();
+		
+		Component component = new Component();
+        // Add a new HTTP server listening on port 8182.
+        component.getServers().add(Protocol.HTTP, 25000);
 
-		// get all the binding keys from the underlying database and fill the
-		// List in SemanticBindings, then start the server
-		try {
-			sbs.start();
+        // Attach the sample application.
+        component.getDefaultHost().attach(
+                new SemanticBindingService(component.getContext()));
+        
+
+        // Start the component.
+        try {
+			component.start();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

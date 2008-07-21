@@ -7,9 +7,19 @@ package uk.org.mygrid.sogsa.sbs;
 public class Binding {
 	
 	private String key;
+	private String rdf;
 
-	public Binding(String key) {
+	public Binding(String key, String rdf) {
 		this.key = key;
+		this.rdf = rdf;
+	}
+
+	public String getKey() {
+		return key;
+	}
+
+	public String getRdf() {
+		return rdf;
 	}
 
 }

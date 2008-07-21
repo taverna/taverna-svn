@@ -1,6 +1,8 @@
 package uk.org.mygrid.sogsa.sbs;
 
 import java.io.IOException;
+import java.util.Map.Entry;
+import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -20,12 +22,16 @@ public class SemanticBinding extends BindingsList {
 
 	public SemanticBinding(Context context, Request request, Response response) {
 		super(context, request, response);
-		this.key = (String) getRequest().getAttributes().get("bindingKey");
+		for (Entry set: getRequest().getAttributes().entrySet()){
+			java.util.logging.Logger.getLogger("org.mortbay.log").log(Level.WARNING, set.getKey() +" " + set.getValue());
+		}
+		this.key = (String) getRequest().getAttributes().get("binding");
 
 		// Check if this binding actually exists
+		
 
-		if (getBindingList().containsKey(key)) {
-			this.binding = getBindingList().get(key);
+		if (hasBinding(key)) {
+			this.binding = getBinding(key);
 			// Define the supported variant.
 			getVariants().add(new Variant(MediaType.TEXT_XML));
 		}
@@ -54,10 +60,11 @@ public class SemanticBinding extends BindingsList {
 	}
 
 	/**
-	 * Return an XML document with the RDf for the binding inside
+	 * Return an XML document with the RDF for the binding inside
 	 */
 	@Override
 	public Representation getRepresentation(Variant variant) {
+		java.util.logging.Logger.getLogger("org.mortbay.log").log(Level.WARNING, "getting a binding");
 		if (MediaType.TEXT_XML.equals(variant.getMediaType())) {
 			// Generate the XML representation of this resource.
 			try {
@@ -66,14 +73,14 @@ public class SemanticBinding extends BindingsList {
 						MediaType.TEXT_XML);
 				Document d = representation.getDocument();
 
-				Element eltItem = d.createElement("item");
+				Element eltItem = d.createElement("binding");
 				d.appendChild(eltItem);
-				Element eltName = d.createElement("name");
-				eltName.appendChild(d.createTextNode(key));
+				Element eltName = d.createElement("key");
+				eltName.appendChild(d.createTextNode(this.binding.getKey()));
 				eltItem.appendChild(eltName);
 
 				Element eltDescription = d.createElement("description");
-				eltDescription.appendChild(d.createTextNode("some rdf"));
+				eltDescription.appendChild(d.createTextNode(this.binding.getRdf()));
 				eltItem.appendChild(eltDescription);
 
 				d.normalizeDocument();
@@ -91,7 +98,7 @@ public class SemanticBinding extends BindingsList {
 
 	@Override
 	public void put(Representation entity) {
-
+		java.util.logging.Logger.getLogger("org.mortbay.log").log(Level.WARNING, "you wanted to add something to me");
 		// get the request, check the database to see if there is some RDF
 		// with the binding key supplied. If so then add it
 
@@ -99,11 +106,11 @@ public class SemanticBinding extends BindingsList {
 
 	@Override
 	public void delete() {
-		// TODO Auto-generated method stub
-		if (binding != null) {
-			// remove from database layer and then from bindingList
-			getBindingList().remove(binding);
-		}
+		java.util.logging.Logger.getLogger("org.mortbay.log").log(Level.WARNING, "you wanted to delete me");
+//		if (binding != null) {
+//			// remove from database layer and then from bindingList
+//			getBindingList().remove(binding);
+//		}
 	}
 
 	@Override
