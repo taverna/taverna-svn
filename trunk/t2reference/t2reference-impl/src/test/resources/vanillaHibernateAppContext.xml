@@ -21,6 +21,15 @@
 		</bean>
 	-->
 
+
+	<!-- Apache Derby rooted at a temporary directory -->
+	<bean id="t2reference.jdbc.temporaryjdbc"
+		class="net.sf.taverna.platform.spring.jdbc.TemporaryJDBC">
+	</bean>
+	<bean id="t2reference.jdbc.url" class="java.lang.String"
+		factory-bean="t2reference.jdbc.temporaryjdbc"
+		factory-method="getTemporaryDerbyJDBC" />
+
 	<!-- At least for testing purposes we use Apache Derby -->
 	<bean id="exampleDataSource"
 		class="net.sf.taverna.platform.spring.jdbc.InterpolatingDriverManagerDataSource">
@@ -28,9 +37,7 @@
 			<value>org.apache.derby.jdbc.EmbeddedDriver</value>
 		</property>
 		<property name="url">
-			<value>
-				jdbc:derby:${user.home}/t2platform/javadb;create=true
-			</value>
+			<ref bean="t2reference.jdbc.url" />
 		</property>
 	</bean>
 
