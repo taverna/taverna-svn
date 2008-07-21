@@ -66,7 +66,7 @@ public class ActivityPaletteConfiguration extends AbstractConfigurable {
 	}
 
 	public String getName() {
-		return "Acitivity Palette";
+		return "Activity Palette";
 	}
 
 	public String getUUID() {
