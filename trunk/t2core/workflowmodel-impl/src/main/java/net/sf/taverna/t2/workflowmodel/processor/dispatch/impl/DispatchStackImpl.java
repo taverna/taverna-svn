@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
  * ordered list with index 0 being the top of the stack.
  * 
  * @author Tom Oinn
+ * @author Stian Soiland-Reyes
  * 
  */
 public abstract class DispatchStackImpl extends
@@ -89,66 +90,7 @@ public abstract class DispatchStackImpl extends
 	 */
 	protected abstract String getProcessName();
 
-
-	private DispatchLayer<Object> topLayer = new AbstractDispatchLayer<Object>() {
-
-		@Override
-		public void receiveResult(DispatchResultEvent resultEvent) {
-			DispatchStackImpl.this.pushEvent(new Job(resultEvent
-					.getOwningProcess(), resultEvent.getIndex(), resultEvent
-					.getData(), resultEvent.getContext()));
-			if (resultEvent.getIndex().length == 0) {
-				sendCachePurge(resultEvent.getOwningProcess());
-			}
-		}
-
-		// TODO - implement top level error handling, if an error bubbles up to
-		// the top layer of the dispatch stack it's trouble and probably fails
-		// this process
-		@Override
-		public void receiveError(DispatchErrorEvent errorEvent) {
-			System.out.println("Error : " + errorEvent.getOwningProcess() + " "
-					+ errorEvent.getMessage() + " "
-					+ Thread.currentThread().getName()
-					+ queues.get(errorEvent.getOwningProcess()).size());
-			logger.error("Error received in dispatch stack on owningProcess:"
-					+ errorEvent.getOwningProcess() + ", msg:"
-					+ errorEvent.getMessage(), errorEvent.getCause());
-			if (errorEvent.getIndex().length == 0) {
-
-				// System.out.println(" - sent purge");
-				sendCachePurge(errorEvent.getOwningProcess());
-			}
-		}
-
-		@Override
-		public void receiveResultCompletion(
-				DispatchCompletionEvent completionEvent) {
-			Completion c = new Completion(completionEvent.getOwningProcess(),
-					completionEvent.getIndex(), completionEvent.getContext());
-			DispatchStackImpl.this.pushEvent(c);
-			if (c.isFinal()) {
-				sendCachePurge(c.getOwningProcess());
-			}
-		}
-
-		private void sendCachePurge(String owningProcess) {
-			for (DispatchLayer<?> layer : dispatchLayers) {
-				layer.finishedWith(owningProcess);
-			}
-			DispatchStackImpl.this.finishedWith(owningProcess);
-		}
-
-		public void configure(Object config) {
-			// TODO Auto-generated method stub
-
-		}
-
-		public Object getConfiguration() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-	};
+	private DispatchLayer<Object> topLayer = new TopLayer();
 
 	/**
 	 * Receive an event to be fed into the top layer of the dispatch stack for
@@ -162,30 +104,30 @@ public abstract class DispatchStackImpl extends
 	 * process identifiers must resemble 'enclosingProcess:processorName' at the
 	 * minimum.
 	 * 
-	 * @param e
+	 * @param event
 	 */
 	@SuppressWarnings("unchecked")
-	public void receiveEvent(IterationInternalEvent e) {
+	public void receiveEvent(IterationInternalEvent event) {
 		BlockingQueue<IterationInternalEvent<? extends IterationInternalEvent<?>>> queue = null;
-		String owningProcess = e.getOwningProcess();
+		String owningProcess = event.getOwningProcess();
 		synchronized (queues) {
 			String enclosingProcess = owningProcess.substring(0, owningProcess
 					.lastIndexOf(':'));
-			if (queues.containsKey(owningProcess) == false) {
+			if (!queues.containsKey(owningProcess)) {
 				queue = new LinkedBlockingQueue<IterationInternalEvent<? extends IterationInternalEvent<?>>>();
 				queues.put(owningProcess, queue);
-				queue.add(e);
+				queue.add(event);
 
 				// If all preconditions are satisfied push the queue to the
 				// dispatch layer
 				if (conditionsSatisfied(enclosingProcess)) {
-					dispatchLayers.get(0).receiveJobQueue(
-							new DispatchJobQueueEvent(owningProcess, e
+					firstLayer().receiveJobQueue(
+							new DispatchJobQueueEvent(owningProcess, event
 									.getContext(), queue, getActivities()));
 				}
 			} else {
 				queue = queues.get(owningProcess);
-				queue.add(e);
+				queue.add(event);
 
 				// If all preconditions are satisfied then notify the queue
 				// addition to any NotifiableLayer instances. If the
@@ -201,6 +143,8 @@ public abstract class DispatchStackImpl extends
 			}
 		}
 	}
+
+
 
 	/**
 	 * Called when a set of conditions which were unsatisfied in the context of
@@ -218,11 +162,11 @@ public abstract class DispatchStackImpl extends
 			String owningProcess = enclosingProcess + ":" + getProcessName();
 			synchronized (queues) {
 				if (queues.containsKey(owningProcess)) {
-					// At least one event has been received with this process ID
-					// and
-					// a queue exists for it.
-
-					dispatchLayers.get(0)
+					/**
+					 * At least one event has been received with this process ID
+					 * and a queue exists for it.
+					 */
+					firstLayer()
 							.receiveJobQueue(
 									new DispatchJobQueueEvent(owningProcess,
 											queues.get(owningProcess).peek()
@@ -230,13 +174,12 @@ public abstract class DispatchStackImpl extends
 													.get(owningProcess),
 											getActivities()));
 				} else {
-					// Do nothing, if the conditions are satisfied before any
-					// jobs
-					// are received this mechanism is effectively redundant and
-					// the
-					// normal notification system for the events will let
-					// everything
-					// work through as per usual
+					/**
+					 * Do nothing, if the conditions are satisfied before any
+					 * jobs are received this mechanism is effectively redundant
+					 * and the normal notification system for the events will
+					 * let everything work through as per usual
+					 */
 				}
 			}
 		}
@@ -300,6 +243,69 @@ public abstract class DispatchStackImpl extends
 		if (layerIndex < dispatchLayers.size() - 1) {
 			return dispatchLayers.get(layerIndex + 1);
 		} else {
+			return null;
+		}
+	}
+	
+	protected DispatchLayer<?> firstLayer() {
+		return dispatchLayers.get(0);
+	}
+
+	protected class TopLayer extends AbstractDispatchLayer<Object> {
+
+		@Override
+		public void receiveResult(DispatchResultEvent resultEvent) {
+			DispatchStackImpl.this.pushEvent(new Job(resultEvent
+					.getOwningProcess(), resultEvent.getIndex(), resultEvent
+					.getData(), resultEvent.getContext()));
+			if (resultEvent.getIndex().length == 0) {
+				sendCachePurge(resultEvent.getOwningProcess());
+			}
+		}
+
+		// TODO - implement top level error handling, if an error bubbles up to
+		// the top layer of the dispatch stack it's trouble and probably fails
+		// this process
+		@Override
+		public void receiveError(DispatchErrorEvent errorEvent) {
+			System.out.println("Error : " + errorEvent.getOwningProcess() + " "
+					+ errorEvent.getMessage() + " "
+					+ Thread.currentThread().getName()
+					+ queues.get(errorEvent.getOwningProcess()).size());
+			logger.error("Error received in dispatch stack on owningProcess:"
+					+ errorEvent.getOwningProcess() + ", msg:"
+					+ errorEvent.getMessage(), errorEvent.getCause());
+			if (errorEvent.getIndex().length == 0) {
+				// System.out.println(" - sent purge");
+				sendCachePurge(errorEvent.getOwningProcess());
+			}
+		}
+
+		@Override
+		public void receiveResultCompletion(
+				DispatchCompletionEvent completionEvent) {
+			Completion c = new Completion(completionEvent.getOwningProcess(),
+					completionEvent.getIndex(), completionEvent.getContext());
+			DispatchStackImpl.this.pushEvent(c);
+			if (c.isFinal()) {
+				sendCachePurge(c.getOwningProcess());
+			}
+		}
+
+		private void sendCachePurge(String owningProcess) {
+			for (DispatchLayer<?> layer : dispatchLayers) {
+				layer.finishedWith(owningProcess);
+			}
+			DispatchStackImpl.this.finishedWith(owningProcess);
+		}
+
+		public void configure(Object config) {
+			// TODO Auto-generated method stub
+
+		}
+
+		public Object getConfiguration() {
+			// TODO Auto-generated method stub
 			return null;
 		}
 	}
