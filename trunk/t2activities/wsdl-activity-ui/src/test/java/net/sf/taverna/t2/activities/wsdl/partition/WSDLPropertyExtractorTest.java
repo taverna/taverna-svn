@@ -45,7 +45,7 @@ public class WSDLPropertyExtractorTest {
 		assertEquals("missing or incorrect property","STYLE",props.get("style"));
 		assertEquals("missing or incorrect property","OPERATION",props.get("operation"));
 		assertEquals("missing or incorrect property","URL",props.get("url"));
-		assertEquals("missing or incorrect property","SOAP",props.get("type"));
+		assertEquals("missing or incorrect property","WSDL",props.get("type"));
 	}
 	
 	@Test

@@ -22,7 +22,7 @@ public class WSDLQueryTest {
 		q.doQuery();
 		assertEquals("The query should be 69 items",69,q.size());
 		WSDLActivityItem i = (WSDLActivityItem)q.toArray()[0];
-		assertEquals("The type shoudl be SOAP","SOAP",i.getType());
+		assertEquals("The type shoudl be WSDL","WSDL",i.getType());
 		assertEquals("The use should be encoded","encoded",i.getUse());
 		assertEquals("The style should be RPC","rpc",i.getStyle());
 		assertNotNull("The operation should be set",i.getOperation());

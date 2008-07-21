@@ -40,7 +40,7 @@ public class WSDLActivityItem extends AbstractActivityItem {
 	}
 
 	public String getType() {
-		return "SOAP";
+		return "WSDL";
 	}
 
 	@Override
