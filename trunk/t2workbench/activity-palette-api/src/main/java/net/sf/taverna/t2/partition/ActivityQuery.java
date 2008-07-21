@@ -10,7 +10,7 @@ import java.util.Iterator;
  * In particular the query takes a property in its constructor that is used by the query. So for example, an WSDLActivity would take a WSDL url as a property.
  * </p>
  * <p>
- * The class that extends this abstract class needs to implement doQuery to perform the query and produce AcitivityItems.<br>
+ * The class that extends this abstract class needs to implement doQuery to perform the query and produce ActivityItems.<br>
  * Each ActivityItem needs to be added to the internal HashSetModel with a call to add(ActivityItem).
  * </p>
  * @author Stuart Owen
