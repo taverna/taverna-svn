@@ -260,6 +260,8 @@ public class ProvenanceAnalysis {
 		}  // end LOOKAHEAD for each input var
 
 		// perform xform step on each input var separately and update the annotated path -- depth-first recursion
+		boolean singleInput = inputVars.size() == 1;
+		
 		inputVarCnt = 0;
 		for (Var inputVar: inputVars) {
 
@@ -272,7 +274,8 @@ public class ProvenanceAnalysis {
 			LA.setWfInstance(workflowID);
 			LA.setProc(inputVar.getPName());
 			LA.setVar(inputVar.getVName());
-
+			LA.setSingleInput(singleInput);
+			
 			String varType = inputVar.getType();
 			if (varType == null) {
 				System.out.println("WARNING: no type info available for ["+inputVar.getPName()+"/"+inputVar.getVName()+"] -- assuming s");
@@ -758,7 +761,10 @@ protected List<LineageAnnotation>  applyXferRule(List<LineageAnnotation> path, M
 
 	if (fromNesting == 0 && toNesting == 0)  { // s -> s see rule xfer/1
 
-		currNode.setIteration(prevNode.getIteration());
+		if (prevNode.isSingleInput()) {
+			currNode.setIteration(prevNode.getIteration());
+		}
+		
 		currNode.setIic(prevNode.getIic());
 		currNode.setCollectionNesting(prevNode.getCollectionNesting());
 
@@ -822,6 +828,7 @@ class LineageAnnotation {
 	String varType = null;   // dtring, XML,... see Taverna type system
 	int varTypeNestingLevel = 0; // default: depth = 0 in type signature (atomic data)
 	String wfInstance;  // TODO generalize to list / time interval?
+	boolean singleInput = true;
 
 	public String toString() {
 
@@ -838,6 +845,15 @@ class LineageAnnotation {
 				","+ varTypeNestingLevel);
 
 		return sb.toString();
+	}
+
+
+	public void setSingleInput(boolean si) {
+		singleInput = si;
+	}
+	
+	public boolean isSingleInput() {
+		return singleInput;
 	}
 
 

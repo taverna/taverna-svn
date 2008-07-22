@@ -67,7 +67,7 @@ public class ProvenanceAnalysisTest1 {
 		Set<String> selectedProcessors = new HashSet<String>();
 
 		// this is what we certainly want to test
-		String targetIteration = "0,1";
+		String targetIteration = "0";
 		String targetProc = "ALL";  // this is a magic keyword -- it stands for "all"
 		
 		// use annotations?
@@ -137,11 +137,15 @@ public class ProvenanceAnalysisTest1 {
 			}
 			System.out.println();
 			
-			pa.clp2(WFID, 
-			   outVars.get(0).getVName(), 
-			   outVars.get(0).getPName(), 
-			   targetIteration, 
-			   selectedProcessors);
+			for (int i=0; i<outVars.size(); i++) {
+
+				pa.clp2(WFID, 
+						outVars.get(i).getVName(), 
+						outVars.get(i).getPName(), 
+						targetIteration, 
+						selectedProcessors);
+
+			}
 
 			assertTrue("lineage tree should have been printed above", true);
 		}
@@ -149,15 +153,5 @@ public class ProvenanceAnalysisTest1 {
 		
 	}
 	
-	/**
-	 * Test method for {@link net.sf.taverna.t2.service.ProvenanceAnalysis#getLineageTree(java.lang.String)}.
-	 * gets all available wfInstanceIDs from the DB, picks one at random to use as the test scope<br/>
-	 * then runs the lineage tree analysis on that instance
-	 * @throws SQLException 
-	 * @throws ClassNotFoundException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
-	 */
-
 
 }
