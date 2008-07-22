@@ -32,10 +32,10 @@ public class BindingsList extends Resource {
 				Application.KEY)).addBinding(key, rdf);
 
 	}
-	protected boolean hasBinding(String key) {
-		return ((SemanticBindingService) getContext().getAttributes().get(
-				Application.KEY)).hasBinding(key);
-	}
+//	protected boolean hasBinding(String key) {
+//		return ((SemanticBindingService) getContext().getAttributes().get(
+//				Application.KEY)).hasBinding(key);
+//	}
 	
 	protected Binding getBinding(String key) {
 		return ((SemanticBindingService) getContext().getAttributes().get(

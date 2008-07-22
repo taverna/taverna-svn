@@ -15,8 +15,6 @@ import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
 public class SemanticBindings extends BindingsList {
-	/** Store binding keys locally for a quick lookup */
-	private static List<String> bindings = new ArrayList<String>();
 
 	public SemanticBindings(Context context, Request request, Response response) {
 		super(context, request, response);

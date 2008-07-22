@@ -30,11 +30,17 @@ public class SemanticBinding extends BindingsList {
 		this.key = (String) getRequest().getAttributes().get("binding");
 
 		// Check if this binding actually exists
-		if (hasBinding(key)) {
+		if (getBinding(key)!= null) {
 			this.binding = getBinding(key);
-			// Define the supported variant.
 			getVariants().add(new Variant(MediaType.TEXT_XML));
 		}
+		
+		
+//		if (hasBinding(key)) {
+//			this.binding = getBinding(key);
+//			// Define the supported variant.
+//			getVariants().add(new Variant(MediaType.TEXT_XML));
+//		}
 
 	}
 

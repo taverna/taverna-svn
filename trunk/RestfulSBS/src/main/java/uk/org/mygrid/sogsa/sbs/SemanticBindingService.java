@@ -36,14 +36,14 @@ import org.restlet.resource.Resource;
 
 public class SemanticBindingService extends Application {
 
-	private List<String> bindingList;
+//	private List<String> bindingList;
 
 	private static DatasetService datasetService;
 
 	public SemanticBindingService(Context parentContext) {
 		super(parentContext);
 		init();
-		bindingList = new ArrayList<String>();
+//		bindingList = new ArrayList<String>();
 	}
 
 	private void init() {
@@ -64,9 +64,11 @@ public class SemanticBindingService extends Application {
 			e.printStackTrace();
 		}
 		datasetService = new DatasetService(embeddedClientProperties);
-		for (URI uri : datasetService.getNamedgraphContainer().getContexts()) {
-			bindingList.add(uri.getLocalName());
-		}
+//		for (URI uri : datasetService.getNamedgraphContainer().getContexts()) {
+//			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+//					Level.WARNING, uri.getLocalName());
+//			bindingList.add(uri.getLocalName());
+//		}
 
 	}
 
@@ -137,7 +139,7 @@ public class SemanticBindingService extends Application {
 	 * @param rdf
 	 */
 	public void addBinding(String key, String rdf) {
-		bindingList.add(key);
+//		bindingList.add(key);
 		// bindingMap.put(key, binding);
 		URI namedGraphURI = datasetService.getValueFactory().createURI(
 				"http://" + key);
@@ -191,10 +193,17 @@ public class SemanticBindingService extends Application {
 
 	}
 
-	public boolean hasBinding(String key) {
-		return bindingList.contains(key);
-		// return bindingMap.containsKey(key);
-	}
+//	public boolean hasBinding(String key) {
+//		java.util.logging.Logger.getLogger("org.mortbay.log").log(
+//				Level.WARNING, "looking for a binding");
+//		if (bindingList.contains(key)) {
+//			return true;
+//		}
+//		java.util.logging.Logger.getLogger("org.mortbay.log").log(
+//				Level.WARNING, "there was no binding");
+//		return false;
+//		// return bindingMap.containsKey(key);
+//	}
 
 	/**
 	 * Retrieve all the RDF for a particular binding and return a
@@ -215,18 +224,22 @@ public class SemanticBindingService extends Application {
 		}
 		String rdf = new String();
 
-		while (statements.hasNext()) {
-			// java.util.logging.Logger.getLogger("org.mortbay.log").log(
-			// Level.WARNING, statements.next().toString());
-			rdf = rdf + statements.next().toString();
-		}
+		if (statements != null) {
 
-		// Statement statement;
-		// while ((statement = statements.next()) != null) {
-		//
-		// rdf = rdf + statement.toString();
-		// }
-		return new Binding(key, rdf);
+			while (statements.hasNext()) {
+				// java.util.logging.Logger.getLogger("org.mortbay.log").log(
+				// Level.WARNING, statements.next().toString());
+				rdf = rdf + statements.next().toString();
+			}
+
+			// Statement statement;
+			// while ((statement = statements.next()) != null) {
+			//
+			// rdf = rdf + statement.toString();
+			// }
+			return new Binding(key, rdf);
+		}
+		return null;
 
 	}
 
