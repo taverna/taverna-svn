@@ -29,8 +29,8 @@ public class SOGSAClient {
 				+ "<foaf:family_name>WOBL</foaf:family_name>"
 				+ "<foaf:phone rdf:resource=\"tel:12345\"/>"
 				+ " <foaf:homepage>        "
-				+ "   <rdf:Description rdf:about=\"http://www.cs.man.ac.uk/~penpecip/\">     "
-				+ "     <dc:title>Pinar ALPERs Research Homepage</dc:title>      "
+				+ "   <rdf:Description rdf:about=\"http://www.a.b.c/stuff/\">     "
+				+ "     <dc:title>Research Homepage</dc:title>      "
 				+ "     <dc:description>My HomePage</dc:description>     "
 				+ "   </rdf:Description> "
 				+ " </foaf:homepage>        "
@@ -46,17 +46,104 @@ public class SOGSAClient {
 				+ "         <dc:description>I previously worked for the UK e-Science pilot project myGrid</dc:description>  "
 				+ "      </rdf:Description>    " + "</foaf:pastProject>"
 				+ "</foaf:Person>" + "</rdf:RDF>";
-		Reference createItem = createItem(rdf, client, itemsUri);
-		if (createItem != null) {
+		
+		String rdf2 = "<rdf:RDF  "
+			+ " xmlns:foaf=\"http://xmlns.com/foaf/0.1/\" "
+			+ " xmlns:dc=\"http://purl.org/dc/elements/1.1/\" "
+			+ " xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"> "
+			+ "<foaf:Person rdf:nodeID=\"me\">"
+			+ "<foaf:name>Person</foaf:name>"
+			+ "<foaf:title>Mr</foaf:title>"
+			+ "<foaf:givenname>JIM</foaf:givenname>"
+			+ "<foaf:family_name>JAM</foaf:family_name>"
+			+ "<foaf:phone rdf:resource=\"tel:12345\"/>"
+			+ " <foaf:homepage>        "
+			+ "   <rdf:Description rdf:about=\"http://www.a.b.c/stuff/\">     "
+			+ "     <dc:title>Research Homepage</dc:title>      "
+			+ "     <dc:description>My HomePage</dc:description>     "
+			+ "   </rdf:Description> "
+			+ " </foaf:homepage>        "
+			+ " <foaf:currentProject>      "
+			+ "  <rdf:Description rdf:about=\"http://www.ontogrid.net/\">    "
+			+ "      <dc:title>OntoGrid</dc:title>        "
+			+ "          <dc:description>Working as an RA in Ontogrid project</dc:description>  "
+			+ "      </rdf:Description>  "
+			+ "</foaf:currentProject>   "
+			+ "<foaf:pastProject>       "
+			+ "  <rdf:Description rdf:about=\"http://www.mygrid.org.uk/\"> "
+			+ "         <dc:title>myGrid</dc:title>        "
+			+ "         <dc:description>I previously worked for the UK e-Science pilot project myGrid</dc:description>  "
+			+ "      </rdf:Description>    " + "</foaf:pastProject>"
+			+ "</foaf:Person>" + "</rdf:RDF>";
+		
+		
+		String rdf3 = "<rdf:RDF  "
+			+ " xmlns:foaf=\"http://xmlns.com/foaf/0.1/\" "
+			+ " xmlns:dc=\"http://purl.org/dc/elements/1.1/\" "
+			+ " xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"> "
+			+ "<foaf:Person rdf:nodeID=\"me\">"
+			+ "<foaf:name>Person</foaf:name>"
+			+ "<foaf:title>Mr</foaf:title>"
+			+ "<foaf:givenname>BLIB</foaf:givenname>"
+			+ "<foaf:family_name>BLOB</foaf:family_name>"
+			+ "<foaf:phone rdf:resource=\"tel:12345\"/>"
+			+ " <foaf:homepage>        "
+			+ "   <rdf:Description rdf:about=\"http://www.a.b.c/stuff/\">     "
+			+ "     <dc:title>Research Homepage</dc:title>      "
+			+ "     <dc:description>My HomePage</dc:description>     "
+			+ "   </rdf:Description> "
+			+ " </foaf:homepage>        "
+			+ " <foaf:currentProject>      "
+			+ "  <rdf:Description rdf:about=\"http://www.ontogrid.net/\">    "
+			+ "      <dc:title>OntoGrid</dc:title>        "
+			+ "          <dc:description>Working as an RA in Ontogrid project</dc:description>  "
+			+ "      </rdf:Description>  "
+			+ "</foaf:currentProject>   "
+			+ "<foaf:pastProject>       "
+			+ "  <rdf:Description rdf:about=\"http://www.mygrid.org.uk/\"> "
+			+ "         <dc:title>myGrid</dc:title>        "
+			+ "         <dc:description>I previously worked for the UK e-Science pilot project myGrid</dc:description>  "
+			+ "      </rdf:Description>    " + "</foaf:pastProject>"
+			+ "</foaf:Person>" + "</rdf:RDF>";
+		
+		Reference createItem1 = createItem(rdf, client, itemsUri);
+		if (createItem1 != null) {
 
 			// Prints the representation of the newly created resource.
 			try {
-				get(client, createItem);
+				get(client, createItem1);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+		
+		Reference createItem2 = createItem(rdf2, client, itemsUri);
+		
+		if (createItem2 != null) {
+
+			// Prints the representation of the newly created resource.
+			try {
+				get(client, createItem2);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		Reference createItem3 = createItem(rdf3, client, itemsUri);
+		
+		if (createItem3 != null) {
+
+			// Prints the representation of the newly created resource.
+			try {
+				get(client, createItem3);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
 
 	}
 

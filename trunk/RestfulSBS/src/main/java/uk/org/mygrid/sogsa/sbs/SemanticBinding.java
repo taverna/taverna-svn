@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import org.restlet.Context;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -22,14 +23,13 @@ public class SemanticBinding extends BindingsList {
 
 	public SemanticBinding(Context context, Request request, Response response) {
 		super(context, request, response);
-		for (Entry set: getRequest().getAttributes().entrySet()){
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(Level.WARNING, set.getKey() +" " + set.getValue());
+		for (Entry set : getRequest().getAttributes().entrySet()) {
+			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+					Level.WARNING, set.getKey() + " " + set.getValue());
 		}
 		this.key = (String) getRequest().getAttributes().get("binding");
 
 		// Check if this binding actually exists
-		
-
 		if (hasBinding(key)) {
 			this.binding = getBinding(key);
 			// Define the supported variant.
@@ -64,7 +64,8 @@ public class SemanticBinding extends BindingsList {
 	 */
 	@Override
 	public Representation getRepresentation(Variant variant) {
-		java.util.logging.Logger.getLogger("org.mortbay.log").log(Level.WARNING, "getting a binding");
+		java.util.logging.Logger.getLogger("org.mortbay.log").log(
+				Level.WARNING, "getting a binding");
 		if (MediaType.TEXT_XML.equals(variant.getMediaType())) {
 			// Generate the XML representation of this resource.
 			try {
@@ -80,7 +81,8 @@ public class SemanticBinding extends BindingsList {
 				eltItem.appendChild(eltName);
 
 				Element eltDescription = d.createElement("description");
-				eltDescription.appendChild(d.createTextNode(this.binding.getRdf()));
+				eltDescription.appendChild(d.createTextNode(this.binding
+						.getRdf()));
 				eltItem.appendChild(eltDescription);
 
 				d.normalizeDocument();
@@ -96,21 +98,23 @@ public class SemanticBinding extends BindingsList {
 
 	}
 
+	/**
+	 * Replace all the RDF in a binding with a new set
+	 */
 	@Override
 	public void put(Representation entity) {
-		java.util.logging.Logger.getLogger("org.mortbay.log").log(Level.WARNING, "you wanted to add something to me");
-		// get the request, check the database to see if there is some RDF
-		// with the binding key supplied. If so then add it
-
+		java.util.logging.Logger.getLogger("org.mortbay.log").log(
+				Level.WARNING, "you wanted to add something to:" + this.key);
+		Form form = new Form(entity);
+		String rdf = form.getFirstValue("rdf");
+		updateRDF(this.key, rdf);
 	}
 
 	@Override
 	public void delete() {
-		java.util.logging.Logger.getLogger("org.mortbay.log").log(Level.WARNING, "you wanted to delete me");
-//		if (binding != null) {
-//			// remove from database layer and then from bindingList
-//			getBindingList().remove(binding);
-//		}
+		java.util.logging.Logger.getLogger("org.mortbay.log").log(
+				Level.WARNING, "you wanted to delete me");
+		removeBinding(this.key);
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import info.aduna.collections.iterators.CloseableIterator;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 
 import org.openanzo.client.DatasetService;
+import org.openanzo.client.RemoteGraph;
 import org.openanzo.common.exceptions.AnzoException;
 import org.openanzo.model.INamedGraph;
 import org.openrdf.model.Statement;
@@ -34,10 +36,6 @@ import org.restlet.resource.Resource;
 
 public class SemanticBindingService extends Application {
 
-	private Component component = null;
-
-	private Map<String, Binding> bindingMap;
-
 	private List<String> bindingList;
 
 	private static DatasetService datasetService;
@@ -45,7 +43,7 @@ public class SemanticBindingService extends Application {
 	public SemanticBindingService(Context parentContext) {
 		super(parentContext);
 		init();
-		bindingMap = new HashMap<String, Binding>();
+		bindingList = new ArrayList<String>();
 	}
 
 	private void init() {
@@ -68,8 +66,6 @@ public class SemanticBindingService extends Application {
 		datasetService = new DatasetService(embeddedClientProperties);
 		for (URI uri : datasetService.getNamedgraphContainer().getContexts()) {
 			bindingList.add(uri.getLocalName());
-			// bindingMap
-			// .put(uri.getLocalName(), new Binding(uri.getLocalName()));
 		}
 
 	}
@@ -146,7 +142,6 @@ public class SemanticBindingService extends Application {
 		URI namedGraphURI = datasetService.getValueFactory().createURI(
 				"http://" + key);
 		boolean createIfNecessary = true;
-		INamedGraph localGraph = null;
 		INamedGraph graph = null;
 		try {
 			graph = datasetService.getRemoteGraph(namedGraphURI,
@@ -170,9 +165,29 @@ public class SemanticBindingService extends Application {
 		} catch (IOException mse) {
 			throw new RuntimeException(mse);
 		}
+		try {
+			datasetService.begin();
+		} catch (AnzoException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		for (Statement statement : sc.getStatements()) {
+			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+					Level.WARNING, statement.toString());
 			graph.add(statement);
 		}
+		try {
+			datasetService.commit();
+		} catch (AnzoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			datasetService.getDatasetReplicator().replicate(true);
+		} catch (AnzoException e) {
+			e.printStackTrace();
+		}
+		graph.close();
 
 	}
 
@@ -193,16 +208,113 @@ public class SemanticBindingService extends Application {
 		try {
 			statements = datasetService.getRemoteGraph(namedGraphURI, false)
 					.getStatements();
+			// datasetService.getRemoteGraph(namedGraphURI, false).
+		} catch (AnzoException e) {
+			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+					Level.WARNING, e.toString());
+		}
+		String rdf = new String();
+
+		while (statements.hasNext()) {
+			// java.util.logging.Logger.getLogger("org.mortbay.log").log(
+			// Level.WARNING, statements.next().toString());
+			rdf = rdf + statements.next().toString();
+		}
+
+		// Statement statement;
+		// while ((statement = statements.next()) != null) {
+		//
+		// rdf = rdf + statement.toString();
+		// }
+		return new Binding(key, rdf);
+
+	}
+
+	public void removeBinding(String key) {
+		// FIXME what should it do? Can you remove a graph or do you just delete
+		// all its statements
+		URI namedGraphURI = datasetService.getValueFactory().createURI(
+				"http://" + key);
+		RemoteGraph remoteGraph = null;
+		try {
+			remoteGraph = datasetService.getRemoteGraph(namedGraphURI, false);
 		} catch (AnzoException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Statement statement;
-		String rdf = new String();
-		while ((statement = statements.next()) != null) {
-
-			rdf = rdf + statement.toString();
+		try {
+			remoteGraph.delete(datasetService.getRemoteGraph(namedGraphURI,
+					false).getStatements());
+		} catch (AnzoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		return new Binding(key, rdf);
 	}
+
+	/**
+	 * Remove all the old statements from the {@link RemoteGraph} and add the
+	 * new ones
+	 * 
+	 * @param key
+	 *            the unique identifier for the {@link RemoteGraph}
+	 * @param rdf
+	 *            the RDF to be added
+	 */
+	public void updateRDF(String key, String rdf) {
+		URI namedGraphURI = datasetService.getValueFactory().createURI(
+				"http://" + key);
+		RemoteGraph remoteGraph = null;
+		try {
+			remoteGraph = datasetService.getRemoteGraph(namedGraphURI, false);
+		} catch (AnzoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			remoteGraph.delete(datasetService.getRemoteGraph(namedGraphURI,
+					false).getStatements());
+		} catch (AnzoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		StatementCollector sc = new StatementCollector();
+		try {
+			RDFParser parser = Rio.createParser(RDFFormat.RDFXML);
+			parser.setRDFHandler(sc);
+			parser.parse(new StringReader(rdf), "");
+		} catch (UnsupportedRDFormatException mse) {
+			throw new RuntimeException(mse);
+		} catch (RDFHandlerException mse) {
+			throw new RuntimeException(mse);
+		} catch (RDFParseException mse) {
+			throw new RuntimeException(mse);
+		} catch (IOException mse) {
+			throw new RuntimeException(mse);
+		}
+		try {
+			datasetService.begin();
+		} catch (AnzoException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		for (Statement statement : sc.getStatements()) {
+			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+					Level.WARNING, statement.toString());
+			remoteGraph.add(statement);
+		}
+		try {
+			datasetService.commit();
+		} catch (AnzoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			datasetService.getDatasetReplicator().replicate(true);
+		} catch (AnzoException e) {
+			e.printStackTrace();
+		}
+		remoteGraph.close();
+
+	}
+
 }

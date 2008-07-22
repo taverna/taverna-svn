@@ -42,5 +42,15 @@ public class BindingsList extends Resource {
 				Application.KEY)).getBinding(key);
 	}
 	
+	protected void removeBinding(String key) {
+		((SemanticBindingService) getContext().getAttributes().get(
+				Application.KEY)).removeBinding(key);
+	}
+	
+	protected void updateRDF(String key, String rdf) {
+		((SemanticBindingService) getContext().getAttributes().get(
+				Application.KEY)).updateRDF(key, rdf);
+	}
+	
 
 }

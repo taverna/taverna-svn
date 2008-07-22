@@ -58,7 +58,8 @@ public class SemanticBindings extends BindingsList {
 		UUID randomUUID = UUID.randomUUID();
 		// use database layer to store the rdf supplied in the request
 		addBinding(randomUUID.toString(), rdf);
-		Representation rep = new StringRepresentation("Item succesfully created",
+		Representation rep = new StringRepresentation("Binding succesfully created " + getRequest().getResourceRef().getIdentifier() + "/"
+				+ randomUUID.toString(),
 				MediaType.TEXT_PLAIN);
 		// Indicates where the new resource is located.
 		rep.setIdentifier(getRequest().getResourceRef().getIdentifier() + "/"
