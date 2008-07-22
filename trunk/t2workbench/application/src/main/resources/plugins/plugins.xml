@@ -25,6 +25,10 @@
 				http://www.mygrid.org.uk/maven/snapshot-repository/
 			</repository>
 
+			<!--  Mirror of official maven repository -->
+			<repository>
+				http://www.mygrid.org.uk/maven/repo1/
+			</repository>
 
 			<!--  BioMoby repository -->
 			<repository>http://moby.ucalgary.ca/moby_maven/</repository>
@@ -129,6 +133,10 @@
 				http://www.mygrid.org.uk/maven/snapshot-repository/
 			</repository>
 
+			<!--  Mirror of official maven repository -->
+			<repository>
+				http://www.mygrid.org.uk/maven/repo1/
+			</repository>
 
 			<!--  BioMoby repository -->
 			<repository>http://moby.ucalgary.ca/moby_maven/</repository>
@@ -193,6 +201,10 @@
 				http://www.mygrid.org.uk/maven/snapshot-repository/
 			</repository>
 
+			<!--  Mirror of official maven repository -->
+			<repository>
+				http://www.mygrid.org.uk/maven/repo1/
+			</repository>
 
 			<!--  BioMoby repository -->
 			<repository>http://moby.ucalgary.ca/moby_maven/</repository>
