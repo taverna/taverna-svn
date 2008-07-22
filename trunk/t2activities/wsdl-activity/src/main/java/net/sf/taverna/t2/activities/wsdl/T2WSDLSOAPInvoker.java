@@ -30,14 +30,6 @@ import java.util.List;
 
 import javax.xml.rpc.ServiceException;
 
-import net.sf.taverna.t2.security.agents.SecurityAgentManager;
-import net.sf.taverna.t2.security.agents.WSSecurityAgent;
-import net.sf.taverna.t2.security.credentialmanager.CMException;
-import net.sf.taverna.t2.security.credentialmanager.CMNotInitialisedException;
-import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
-import net.sf.taverna.t2.security.profiles.WSSecurityProfile;
-import net.sf.taverna.t2.security.requests.SecurityRequest;
-import net.sf.taverna.t2.security.requests.WSSecurityRequest;
 import net.sf.taverna.wsdl.parser.UnknownOperationException;
 import net.sf.taverna.wsdl.parser.WSDLParser;
 import net.sf.taverna.wsdl.soap.WSDLSOAPInvoker;
@@ -83,35 +75,40 @@ public class T2WSDLSOAPInvoker extends WSDLSOAPInvoker{
 		
 		if (config != null) {
 					
-			// Call's USERNAME_PROPERTY is here simply used to pass the credential's alias to fetch it  
-			// from the Keystore. As alias value we use wsdlLocation so that the credential 
-			// is tied to a particular service. Once Security Agent picks up the alias, it will 
-			// set the USERNAME_PROPERTY to null or to a proper username.
-			// Note that WSS4J's handler WSDoAllSender expects (which is invoked before our T2DoAllSender takes over) 
-			// the USERNAME_PROPERTY to be set to whatever non-empty value for almost all security operations (even for signing, 
-			// except for encryption), otherwise it raises an Exception.
-			call.setProperty(Call.USERNAME_PROPERTY, getParser().getWSDLLocation()); 
-			
-			// Get the appropriate security agent
-			CredentialManager credManager;
-			try {
-				credManager = CredentialManager.getInstance();
-				SecurityAgentManager saManager = credManager.getSecurityAgentManager();
-				WSSecurityRequest wsSecReq = new WSSecurityRequest(getParser().getWSDLLocation(), null);
-	
-		    	WSSecurityAgent sa = (WSSecurityAgent) saManager.getSecurityAgent((SecurityRequest) wsSecReq);
-		    	call.setProperty("security_agent", sa);
-		    	
-			} catch (CMException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (CMNotInitialisedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			configureSecurity(call);
 		}
 		
 		return call;
+	}
+
+	private void configureSecurity(Call call) {
+		// Call's USERNAME_PROPERTY is here simply used to pass the credential's alias to fetch it  
+		// from the Keystore. As alias value we use wsdlLocation so that the credential 
+		// is tied to a particular service. Once Security Agent picks up the alias, it will 
+		// set the USERNAME_PROPERTY to null or to a proper username.
+		// Note that WSS4J's handler WSDoAllSender expects (which is invoked before our T2DoAllSender takes over) 
+		// the USERNAME_PROPERTY to be set to whatever non-empty value for almost all security operations (even for signing, 
+		// except for encryption), otherwise it raises an Exception.
+		
+		//call.setProperty(Call.USERNAME_PROPERTY, getParser().getWSDLLocation()); 
+		
+		// Get the appropriate security agent
+//		CredentialManager credManager;
+//		try {
+//			credManager = CredentialManager.getInstance();
+//			SecurityAgentManager saManager = credManager.getSecurityAgentManager();
+//			WSSecurityRequest wsSecReq = new WSSecurityRequest(getParser().getWSDLLocation(), null);
+//
+//			WSSecurityAgent sa = (WSSecurityAgent) saManager.getSecurityAgent((SecurityRequest) wsSecReq);
+//			call.setProperty("security_agent", sa);
+//			
+//		} catch (CMException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (CMNotInitialisedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}	
 	
 }

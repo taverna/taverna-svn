@@ -4,9 +4,7 @@ import java.awt.Frame;
 
 import javax.swing.Action;
 
-import net.sf.taverna.t2.activities.wsdl.WSDLActivity;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
-import net.sf.taverna.t2.activities.wsdl.actions.WSDLActivityConfigureAction;
 import net.sf.taverna.t2.workbench.ui.actions.activity.HTMLBasedActivityContextualView;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
@@ -35,7 +33,8 @@ public class WSDLActivityContextualView extends HTMLBasedActivityContextualView<
 
 	@Override
 	public Action getConfigureAction(Frame owner) {
-		return new WSDLActivityConfigureAction((WSDLActivity)getActivity(),owner);
+		//return new WSDLActivityConfigureAction((WSDLActivity)getActivity(),owner);
+		return null;
 	}
 	
 	
