@@ -4,9 +4,9 @@ import java.net.URI;
 
 import net.sf.taverna.t2.ui.menu.AbstractMenuSection;
 
-public class WorkbenchPreferncesSection extends AbstractMenuSection {
+public class WorkbenchPreferencesSection extends AbstractMenuSection {
 
-	public WorkbenchPreferncesSection() {
+	public WorkbenchPreferencesSection() {
 		super(URI.create("http://taverna.sf.net/2008/t2workbench/menu#file"), 100, URI.create("http://taverna.sf.net/2008/t2workbench/menu#preferences"));
 	}
 
