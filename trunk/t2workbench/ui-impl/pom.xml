@@ -18,6 +18,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>uk.org.mygrid.taverna</groupId>
+			<artifactId>osxapplication</artifactId>
+			<version>1.5.1</version>
+		</dependency>
+		<dependency>
 			<groupId>net.sf.taverna.t2.workbench</groupId>
 			<artifactId>perspective-core</artifactId>
 			<version>1.7-SNAPSHOT</version>
@@ -40,6 +45,16 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.workbench</groupId>
 			<artifactId>file-api</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>file-impl</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+			<dependency>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>configuration-impl</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
