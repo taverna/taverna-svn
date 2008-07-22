@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 
 public class CloseWorkflowAction extends AbstractAction {
 
+	private static final SaveWorkflowAction saveWorkflowAction = new SaveWorkflowAction();
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(CloseWorkflowAction.class);
 	private static final String CLOSE_WORKFLOW = "Close workflow";
@@ -25,18 +26,19 @@ public class CloseWorkflowAction extends AbstractAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		closeWorkflow(e, fileManager.getCurrentDataflow());
+		Component parentComponent = null;
+		if (e.getSource() instanceof Component) {
+			parentComponent = (Component) e.getSource();
+		}
+		closeWorkflow(parentComponent, fileManager.getCurrentDataflow());
 	}
 
-	public boolean closeWorkflow(ActionEvent event, Dataflow dataflow) {
-		Component parentComponent = null;
+	public boolean closeWorkflow(Component parentComponent, Dataflow dataflow) {
 		if (dataflow == null) {
 			logger.warn("Attempted to close a null dataflow");
 			return false;
 		}
-		if (event.getSource() instanceof Component) {
-			parentComponent = (Component) event.getSource();
-		}
+
 		try {
 			fileManager.closeDataflow(dataflow, true);
 			return true;
@@ -58,8 +60,7 @@ public class CloseWorkflowAction extends AbstractAction {
 					return false;
 				}
 			} else if (ret == JOptionPane.YES_OPTION) {
-				new SaveWorkflowAction().actionPerformed(event);
-				return true;
+				return saveWorkflowAction.saveDataflow(parentComponent, dataflow);
 			} else {
 				logger.error("Unknown return from JOptionPane: " + ret);
 				return false;

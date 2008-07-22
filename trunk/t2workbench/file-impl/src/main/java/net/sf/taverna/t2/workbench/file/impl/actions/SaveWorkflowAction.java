@@ -52,12 +52,14 @@ public class SaveWorkflowAction extends AbstractAction {
 		if (ev.getSource() instanceof Component) {
 			parentComponent = (Component) ev.getSource();
 		}
-
-		Dataflow dataflow = fileManager.getCurrentDataflow();
-
-		saveDataflow(parentComponent, dataflow);
-
+		saveCurrentDataflow(parentComponent);
 	}
+	
+	public boolean saveCurrentDataflow(Component parentComponent) {
+		Dataflow dataflow = fileManager.getCurrentDataflow();
+		return saveDataflow(parentComponent, dataflow);
+	}
+	
 
 	public boolean saveDataflow(Component parentComponent, Dataflow dataflow) {
 		if (!fileManager.canSaveWithoutDestination(dataflow)) {

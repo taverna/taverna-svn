@@ -65,9 +65,12 @@ public class SaveWorkflowAsAction extends AbstractAction {
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
+		saveCurrentDataflow(parentComponent);
+	}
 
+	public boolean saveCurrentDataflow(Component parentComponent) {
 		Dataflow dataflow = fileManager.getCurrentDataflow();
-		saveDataflow(parentComponent, dataflow);
+		return saveDataflow(parentComponent, dataflow);
 	}
 
 	public boolean saveDataflow(Component parentComponent, Dataflow dataflow) {
@@ -104,19 +107,20 @@ public class SaveWorkflowAsAction extends AbstractAction {
 				prefs.put("currentDir", fileChooser.getCurrentDirectory()
 						.toString());
 				File file = fileChooser.getSelectedFile();
-				FileTypeFileFilter fileFilter = (FileTypeFileFilter) fileChooser.getFileFilter();
+				FileTypeFileFilter fileFilter = (FileTypeFileFilter) fileChooser
+						.getFileFilter();
 				FileType fileType = fileFilter.getFileType();
 				String extension = "." + fileType.getExtension();
-				if (! file.getName().toLowerCase().endsWith(extension)) {
+				if (!file.getName().toLowerCase().endsWith(extension)) {
 					String newName = file.getName() + extension;
 					file = new File(file.getParentFile(), newName);
 				}
-				
 
 				// TODO: Open in separate thread to avoid hanging UI
 				try {
 					try {
-						fileManager.saveDataflow(dataflow, fileType, file, true);
+						fileManager
+								.saveDataflow(dataflow, fileType, file, true);
 						logger.info("Saved dataflow " + dataflow + " to "
 								+ file);
 						return true;
@@ -128,7 +132,8 @@ public class SaveWorkflowAsAction extends AbstractAction {
 								parentComponent, msg, "File already exists",
 								JOptionPane.YES_NO_CANCEL_OPTION);
 						if (ret == JOptionPane.YES_OPTION) {
-							fileManager.saveDataflow(dataflow, fileType, file, false);
+							fileManager.saveDataflow(dataflow, fileType, file,
+									false);
 							logger.info("Saved dataflow " + dataflow
 									+ " by overwriting " + file);
 							return true;
