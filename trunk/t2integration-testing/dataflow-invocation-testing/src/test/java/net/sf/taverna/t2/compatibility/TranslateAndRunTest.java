@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.reference.T2Reference;
