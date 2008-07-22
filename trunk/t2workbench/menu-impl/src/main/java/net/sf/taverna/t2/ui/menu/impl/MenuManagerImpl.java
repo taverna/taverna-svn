@@ -384,7 +384,7 @@ public class MenuManagerImpl extends MenuManager {
 			uriToMenuElement.put(menuElement.getId(), menuElement);
 			logger.debug("Found menu element " + menuElement.getId() + " "
 					+ menuElement);
-			if (menuElement.getParentId() == null) {
+			if (menuElement.getParentId() == null || ! menuElement.isEnabled()) {
 				continue;
 			}
 			List<MenuComponent> siblings = menuElementTree.get(menuElement
