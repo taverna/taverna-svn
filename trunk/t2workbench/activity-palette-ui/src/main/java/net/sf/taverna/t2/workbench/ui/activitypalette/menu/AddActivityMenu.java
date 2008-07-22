@@ -38,8 +38,8 @@ public class AddActivityMenu extends AbstractMenuCustom {
 	
 	@SuppressWarnings("unchecked")
 	protected Component createCustomComponent() {
-		JMenu addQueryMenu = new JMenu("New Query");
-		addQueryMenu.setToolTipText("Open this menu to add a new Query");
+		JMenu addQueryMenu = new JMenu("New activity");
+		addQueryMenu.setToolTipText("Open this menu to add a new activity");
 		for (QueryFactory factory : QueryFactoryRegistry.getInstance()
 				.getInstances()) {
 			if (factory instanceof ActivityQueryFactory) {
