@@ -1,16 +1,17 @@
+
 ### Properties that may be modified ###
 
 # Connection to the backend database
-org.openanzo.repository.database.user=anzo
+org.openanzo.repository.database.user=
 org.openanzo.repository.database.password=
-org.openanzo.repository.database.url=jdbc:derby:/Users/Ian/scratch/anzoDerby;create=true;upgrade=true
+org.openanzo.repository.database.url=jdbc:mysql://localhost/anzo
 org.openanzo.repository.database.clear=false
-org.openanzo.repository.database.type=ServerDerby
+org.openanzo.repository.database.type=ServerMySQL
 
 
 # the host/port that the server should listen on.
 #org.openanzo.repository.webserver.host = localhost  Only specify to limit listener to one adapter
-org.openanzo.repository.webserver.port = 8080
+org.openanzo.repository.webserver.port = 21212
 org.openanzo.repository.webserver.timeout = 360000
 
 # file of triples to initialize the store with ACLs, roles, users, etc..
