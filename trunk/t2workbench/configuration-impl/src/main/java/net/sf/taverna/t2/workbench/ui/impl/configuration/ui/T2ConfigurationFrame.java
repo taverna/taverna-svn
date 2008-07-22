@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.workbench.ui.impl.configuration.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
@@ -22,6 +23,13 @@ public class T2ConfigurationFrame extends JFrame {
 	private static Logger logger = Logger.getLogger(T2ConfigurationFrame.class);
 	JSplitPane splitPane;
 	
+	public static T2ConfigurationFrame showFrame() {
+		T2ConfigurationFrame frame =  new T2ConfigurationFrame();
+		frame.setSize(new Dimension(700,500));
+		frame.pack();
+		frame.setVisible(true);
+		return frame;
+	}
 	
 	public T2ConfigurationFrame () {
 		setLayout(new BorderLayout());
