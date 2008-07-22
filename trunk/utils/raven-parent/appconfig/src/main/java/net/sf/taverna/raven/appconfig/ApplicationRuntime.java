@@ -182,8 +182,10 @@ public class ApplicationRuntime {
 				"plugins-api", "1.7-SNAPSHOT"));
 		artifacts.add(new BasicArtifact("uk.org.mygrid.taverna.raven",
 				"appconfig", "1.7-SNAPSHOT"));
+		artifacts.add(new BasicArtifact("net.sf.taverna.t2.workbench",
+				"reference-config", "0.1-SNAPSHOT"));
 
-		// External dependencies
+		// External dependencies for Raven
 		artifacts
 				.add(new BasicArtifact("commons-codec", "commons-codec", "1.2"));
 		artifacts.add(new BasicArtifact("commons-httpclient",
@@ -192,6 +194,40 @@ public class ApplicationRuntime {
 				"1.0.4"));
 		artifacts.add(new BasicArtifact("jdom", "jdom", "1.0"));
 		artifacts.add(new BasicArtifact("log4j", "log4j", "1.2.12"));
+
+		// t2reference, Spring and Hibernate (From raven_local.xml)
+		artifacts.add(new BasicArtifact("net.sf.taverna.t2", "t2reference-api",
+				"0.1-SNAPSHOT"));
+		artifacts.add(new BasicArtifact("net.sf.taverna.t2", "platform",
+				"0.1-SNAPSHOT"));
+		artifacts.add(new BasicArtifact("commons-logging", "commons-logging",
+				"1.1.1"));
+
+		artifacts.add(new BasicArtifact("org.springframework", "spring-beans",
+				"2.5.4"));
+		artifacts.add(new BasicArtifact("org.springframework",
+				"spring-context", "2.5.4"));
+		artifacts.add(new BasicArtifact("org.springframework", "spring-core",
+				"2.5.4"));
+		artifacts.add(new BasicArtifact("org.springframework", "spring-jdbc",
+				"2.5.4"));
+		artifacts.add(new BasicArtifact("org.springframework", "spring-orm",
+				"2.5.4"));
+		artifacts.add(new BasicArtifact("org.springframework", "spring-tx",
+				"2.5.4"));
+
+		artifacts.add(new BasicArtifact("aopalliance", "aopalliance", "1.0"));
+		artifacts.add(new BasicArtifact("geronimo-spec", "geronimo-spec-jta",
+				"1.0-M1"));
+
+		artifacts.add(new BasicArtifact("org.hibernate", "hibernate",
+				"3.2.5.ga.raven"));
+		artifacts.add(new BasicArtifact("dom4j", "dom4j", "1.6.1"));
+		artifacts.add(new BasicArtifact("cglib", "cglib", "2.1_3"));
+		artifacts.add(new BasicArtifact("asm", "asm", "1.5.3"));
+		artifacts.add(new BasicArtifact("commons-collections",
+				"commons-collections", "2.1.1"));
+
 		return artifacts;
 	}
 
@@ -243,7 +279,8 @@ public class ApplicationRuntime {
 		}
 		File repositoryDir = new File(startupDir, STRING);
 		if (!repositoryDir.isDirectory()) {
-			logger.info("Could not find local repository directory " + repositoryDir);
+			logger.info("Could not find local repository directory "
+					+ repositoryDir);
 			return null;
 		}
 		return repositoryDir;
