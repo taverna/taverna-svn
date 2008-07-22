@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JFrame;
@@ -14,12 +15,17 @@ import javax.swing.JToolBar;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import net.sf.taverna.osx.OSXAdapter;
+import net.sf.taverna.osx.OSXApplication;
 import net.sf.taverna.raven.SplashScreen;
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.raven.log.ConsoleLog;
 import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.t2.ui.menu.MenuManager;
 import net.sf.taverna.t2.workbench.file.FileManager;
+import net.sf.taverna.t2.workbench.file.exceptions.OpenException;
+import net.sf.taverna.t2.workbench.file.impl.actions.CloseAllWorkflowsAction;
+import net.sf.taverna.t2.workbench.ui.impl.configuration.ui.T2ConfigurationFrame;
 
 import org.apache.log4j.Logger;
 
@@ -42,6 +48,8 @@ public class Workbench extends JFrame {
 
 	private MenuManager menuManager = MenuManager.getInstance();
 
+	private CloseAllWorkflowsAction closeAllWorkflowsAction = new CloseAllWorkflowsAction();
+
 	private WorkbenchPerspectives perspectives;
 
 	private JToolBar perspectiveToolBar;
@@ -58,6 +66,40 @@ public class Workbench extends JFrame {
 				exit();
 			}
 		});
+		
+		OSXApplication.setListener(new OSXAdapter() {
+			@Override
+			public boolean handleQuit() {
+				exit();
+				return false;
+			}
+
+			@Override
+			public boolean hasPreferences() {
+				return true;
+			}
+			
+			@Override
+			public boolean handlePreferences() {
+				T2ConfigurationFrame.showFrame();
+				return true;
+			}
+			
+			@Override
+			public boolean handleOpenFile(String filename) {
+				try {
+					FileManager.getInstance().openDataflow(null,
+							new File(filename));
+					return true;
+				} catch (OpenException e) {
+					logger.warn("Could not open file " + filename, e);
+				} catch (IllegalStateException e) {
+					logger.warn("Could not open file " + filename, e);
+				}
+				return false;
+			}
+		});
+
 		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		setLookAndFeel();
 		setSize(new Dimension(700, 500));
@@ -135,7 +177,10 @@ public class Workbench extends JFrame {
 	}
 
 	public void exit() {
-		System.exit(0);
+		if (closeAllWorkflowsAction.closeAllWorkflows(this)) {
+			System.exit(0);
+		}
+
 	}
 
 	private void setLookAndFeel() {
