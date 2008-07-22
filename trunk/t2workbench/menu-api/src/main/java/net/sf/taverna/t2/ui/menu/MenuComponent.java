@@ -159,6 +159,13 @@ public interface MenuComponent {
 	public MenuType getType();
 
 	/**
+	 * True if this menu component is to be included in the menu/toolbar.
+	 * 
+	 * @return True is this menu component is to be included
+	 */
+	public boolean isEnabled();
+
+	/**
 	 * The type of menu item, such as {@link #action}, {@link #menu} or
 	 * {@link #toolBar}.
 	 * <p>

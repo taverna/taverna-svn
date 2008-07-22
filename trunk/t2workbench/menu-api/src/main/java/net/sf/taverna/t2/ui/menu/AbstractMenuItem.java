@@ -128,5 +128,9 @@ public abstract class AbstractMenuItem implements MenuComponent {
 	public MenuType getType() {
 		return type;
 	}
+	
+	public boolean isEnabled() {
+		return true;
+	}
 
 }
