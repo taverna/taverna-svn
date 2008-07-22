@@ -13,13 +13,15 @@ import net.sf.taverna.t2.workbench.ui.impl.Workbench;
  * Exit the workbench
  * 
  * @author Stian Soiland-Reyes
- *
+ * 
  */
 public class ExitAction extends AbstractMenuAction {
 
+	private static final String MAC_OS_X = "Mac OS X";
+
 	public ExitAction() {
-		super(URI
-				.create("http://taverna.sf.net/2008/t2workbench/menu#file"), 10000);
+		super(URI.create("http://taverna.sf.net/2008/t2workbench/menu#file"),
+				10000);
 	}
 
 	@Override
@@ -29,6 +31,11 @@ public class ExitAction extends AbstractMenuAction {
 				Workbench.getInstance().exit();
 			}
 		};
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return !MAC_OS_X.equalsIgnoreCase(System.getProperty("os.name"));
 	}
 
 }
