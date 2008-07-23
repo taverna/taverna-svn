@@ -52,5 +52,10 @@ public class BindingsList extends Resource {
 				Application.KEY)).updateRDF(key, rdf);
 	}
 	
+	protected void queryBinding(String key, String query) {
+		return ((SemanticBindingService) getContext().getAttributes().get(
+				Application.KEY)).queryBinding(key, query);
+	}
+	
 
 }

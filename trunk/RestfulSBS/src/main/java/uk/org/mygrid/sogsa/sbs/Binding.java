@@ -9,6 +9,7 @@ public class Binding {
 	private String key;
 	private String rdf;
 
+
 	public Binding(String key, String rdf) {
 		this.key = key;
 		this.rdf = rdf;

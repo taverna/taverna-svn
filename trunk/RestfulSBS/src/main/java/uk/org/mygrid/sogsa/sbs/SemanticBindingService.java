@@ -5,7 +5,9 @@ import info.aduna.collections.iterators.CloseableIterator;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +19,10 @@ import org.openanzo.client.DatasetService;
 import org.openanzo.client.RemoteGraph;
 import org.openanzo.common.exceptions.AnzoException;
 import org.openanzo.model.INamedGraph;
+import org.openanzo.model.impl.query.QueryResult;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
+import org.openrdf.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
@@ -36,14 +40,14 @@ import org.restlet.resource.Resource;
 
 public class SemanticBindingService extends Application {
 
-//	private List<String> bindingList;
+	// private List<String> bindingList;
 
 	private static DatasetService datasetService;
 
 	public SemanticBindingService(Context parentContext) {
 		super(parentContext);
 		init();
-//		bindingList = new ArrayList<String>();
+		// bindingList = new ArrayList<String>();
 	}
 
 	private void init() {
@@ -64,19 +68,23 @@ public class SemanticBindingService extends Application {
 			e.printStackTrace();
 		}
 		datasetService = new DatasetService(embeddedClientProperties);
-//		for (URI uri : datasetService.getNamedgraphContainer().getContexts()) {
-//			java.util.logging.Logger.getLogger("org.mortbay.log").log(
-//					Level.WARNING, uri.getLocalName());
-//			bindingList.add(uri.getLocalName());
-//		}
+		// for (URI uri : datasetService.getNamedgraphContainer().getContexts())
+		// {
+		// java.util.logging.Logger.getLogger("org.mortbay.log").log(
+		// Level.WARNING, uri.getLocalName());
+		// bindingList.add(uri.getLocalName());
+		// }
 
 	}
 
 	@Override
 	public Restlet createRoot() {
 		Router router = new Router(getContext());
-
+		// get a binding
 		router.attach("/sbs/{binding}", SemanticBinding.class);
+
+		router.attach("/sbs/{binding}/query", SemanticBinding.class);
+		// create a binding
 		Route sbsRoute = router.attach("/sbs", SemanticBindings.class);
 		// sbsRoute.getTemplate().setMatchingMode(Template.MODE_EQUALS);
 
@@ -139,7 +147,7 @@ public class SemanticBindingService extends Application {
 	 * @param rdf
 	 */
 	public void addBinding(String key, String rdf) {
-//		bindingList.add(key);
+		// bindingList.add(key);
 		// bindingMap.put(key, binding);
 		URI namedGraphURI = datasetService.getValueFactory().createURI(
 				"http://" + key);
@@ -193,17 +201,17 @@ public class SemanticBindingService extends Application {
 
 	}
 
-//	public boolean hasBinding(String key) {
-//		java.util.logging.Logger.getLogger("org.mortbay.log").log(
-//				Level.WARNING, "looking for a binding");
-//		if (bindingList.contains(key)) {
-//			return true;
-//		}
-//		java.util.logging.Logger.getLogger("org.mortbay.log").log(
-//				Level.WARNING, "there was no binding");
-//		return false;
-//		// return bindingMap.containsKey(key);
-//	}
+	// public boolean hasBinding(String key) {
+	// java.util.logging.Logger.getLogger("org.mortbay.log").log(
+	// Level.WARNING, "looking for a binding");
+	// if (bindingList.contains(key)) {
+	// return true;
+	// }
+	// java.util.logging.Logger.getLogger("org.mortbay.log").log(
+	// Level.WARNING, "there was no binding");
+	// return false;
+	// // return bindingMap.containsKey(key);
+	// }
 
 	/**
 	 * Retrieve all the RDF for a particular binding and return a
@@ -217,6 +225,8 @@ public class SemanticBindingService extends Application {
 		try {
 			statements = datasetService.getRemoteGraph(namedGraphURI, false)
 					.getStatements();
+			// datasetService.getRemoteGraph(namedGraphURI,
+			// false).getMetaDataGraph().
 			// datasetService.getRemoteGraph(namedGraphURI, false).
 		} catch (AnzoException e) {
 			java.util.logging.Logger.getLogger("org.mortbay.log").log(
@@ -265,8 +275,7 @@ public class SemanticBindingService extends Application {
 	}
 
 	/**
-	 * Remove all the old statements from the {@link RemoteGraph} and add the
-	 * new ones
+	 * Add new RDF statements to the {@link RemoteGraph}
 	 * 
 	 * @param key
 	 *            the unique identifier for the {@link RemoteGraph}
@@ -283,13 +292,14 @@ public class SemanticBindingService extends Application {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		try {
-			remoteGraph.delete(datasetService.getRemoteGraph(namedGraphURI,
-					false).getStatements());
-		} catch (AnzoException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		//no need to delete the old stuff?
+		// try {
+		// remoteGraph.delete(datasetService.getRemoteGraph(namedGraphURI,
+		// false).getStatements());
+		// } catch (AnzoException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 		StatementCollector sc = new StatementCollector();
 		try {
 			RDFParser parser = Rio.createParser(RDFFormat.RDFXML);
@@ -311,8 +321,8 @@ public class SemanticBindingService extends Application {
 			e1.printStackTrace();
 		}
 		for (Statement statement : sc.getStatements()) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
-					Level.WARNING, statement.toString());
+			// java.util.logging.Logger.getLogger("org.mortbay.log").log(
+			// Level.WARNING, statement.toString());
 			remoteGraph.add(statement);
 		}
 		try {
@@ -328,6 +338,35 @@ public class SemanticBindingService extends Application {
 		}
 		remoteGraph.close();
 
+	}
+
+	public String queryBinding(String key, String query) {
+		// TODO Auto-generated method stub
+		URI namedGraphURI = datasetService.getValueFactory().createURI(
+				"http://" + key);
+		RemoteGraph remoteGraph = null;
+		try {
+			remoteGraph = datasetService.getRemoteGraph(namedGraphURI, false);
+		} catch (AnzoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		QueryResult result = datasetService
+				.execQuery(Collections.singleton(namedGraphURI), Collections
+						.<URI> emptySet(), query);
+		if (result.isAskResult()) {
+			result.getAskResult();
+		} else if (result.isConstructResult()) {
+			result.getConstructResult();
+		} else if (result.isDescribeResult()) {
+			result.getDescribeResult();
+		} else if (result.isSelectResult()) {
+//			result.getSelectResult();
+		}
+//		StringWriter writer = new StringWriter();
+//		new SPARQLResultsXMLWriter(result);
+//		return writer.toString();
+		return null;
 	}
 
 }

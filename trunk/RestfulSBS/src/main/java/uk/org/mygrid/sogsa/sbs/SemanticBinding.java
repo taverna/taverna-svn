@@ -30,17 +30,16 @@ public class SemanticBinding extends BindingsList {
 		this.key = (String) getRequest().getAttributes().get("binding");
 
 		// Check if this binding actually exists
-		if (getBinding(key)!= null) {
+		if (getBinding(key) != null) {
 			this.binding = getBinding(key);
 			getVariants().add(new Variant(MediaType.TEXT_XML));
 		}
-		
-		
-//		if (hasBinding(key)) {
-//			this.binding = getBinding(key);
-//			// Define the supported variant.
-//			getVariants().add(new Variant(MediaType.TEXT_XML));
-//		}
+
+		// if (hasBinding(key)) {
+		// this.binding = getBinding(key);
+		// // Define the supported variant.
+		// getVariants().add(new Variant(MediaType.TEXT_XML));
+		// }
 
 	}
 
@@ -52,6 +51,15 @@ public class SemanticBinding extends BindingsList {
 
 	@Override
 	public boolean allowGet() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	/**
+	 * Post a SPARQL query against this binding
+	 */
+	@Override
+	public boolean allowPost() {
 		// TODO Auto-generated method stub
 		return true;
 	}
@@ -124,8 +132,11 @@ public class SemanticBinding extends BindingsList {
 	}
 
 	@Override
-	public void post(Representation arg0) {
+	public void post(Representation entity) {
 		// TODO Auto-generated method stub
+		Form form = new Form(entity);
+		String query = form.getFirstValue("query");
+		queryBinding(this.key, query);
 		// add new binding to database layer
 	}
 
