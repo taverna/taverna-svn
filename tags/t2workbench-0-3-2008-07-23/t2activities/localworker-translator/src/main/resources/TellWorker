@@ -1,0 +1,5 @@
+import javax.swing.JOptionPane;
+
+JOptionPane.showMessageDialog(null, message, title,	JOptionPane.INFORMATION_MESSAGE);
+
+answer = "answer";

@@ -1,0 +1,3 @@
+net.sf.taverna.t2.workbench.edits.impl.menu.UndoMenuSection
+net.sf.taverna.t2.workbench.edits.impl.menu.UndoMenuAction
+net.sf.taverna.t2.workbench.edits.impl.menu.RedoMenuAction
