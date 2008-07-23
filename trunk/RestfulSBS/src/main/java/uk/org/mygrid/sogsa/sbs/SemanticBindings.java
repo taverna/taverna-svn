@@ -51,6 +51,8 @@ public class SemanticBindings extends BindingsList {
 				Level.WARNING, "posting a binding");
 		Form form = new Form(entity);
 		String rdf = form.getFirstValue("rdf");
+		java.util.logging.Logger.getLogger("org.mortbay.log").log(
+				Level.WARNING, "RDF is: " + rdf);
 
 		// create a binding with RDF inside
 		UUID randomUUID = UUID.randomUUID();
@@ -75,7 +77,6 @@ public class SemanticBindings extends BindingsList {
 	public Representation getRepresentation(Variant variant) {
 		java.util.logging.Logger.getLogger("org.mortbay.log").log(
 				Level.WARNING, "getting a binding");
-		System.out.println("getting a binding");
 		String bindingKey = (String) getRequest().getAttributes().get("key");
 		// work some magic on anzo and pull the rdf and bits back
 		return super.getRepresentation(variant);
