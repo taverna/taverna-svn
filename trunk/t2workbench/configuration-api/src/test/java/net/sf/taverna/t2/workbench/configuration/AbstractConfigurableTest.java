@@ -1,12 +1,16 @@
 package net.sf.taverna.t2.workbench.configuration;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class AbstractConfigurableTest {
 
@@ -102,6 +106,30 @@ public class AbstractConfigurableTest {
 		
 		assertEquals("Should be john","john",DummyConfigurable.getInstance().getProperty("name"));
 		assertEquals("Should be john","blue",DummyConfigurable.getInstance().getProperty("colour"));
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testList() throws Exception {
+		Configurable c = DummyConfigurable.getInstance();
+		c.getPropertyMap().clear();
+		c.setProperty("list", new ArrayList<String>());
+		
+		ConfigurationManager.getInstance().store(c);
+		ConfigurationManager.getInstance().populate(c);
+		
+		assertTrue("Should be an instanceof a list",c.getProperty("list") instanceof List);
+		List<String> list = (List<String>)c.getProperty("list");
+		list.add("fred");
+		c.setProperty("list", list);
+		assertEquals("there should be 1 item",1,((List<String>)c.getProperty("list")).size());
+		
+		ConfigurationManager.getInstance().store(c);
+		ConfigurationManager.getInstance().populate(c);
+		
+		assertEquals("there should be 1 item",1,((List<String>)c.getProperty("list")).size());
+		assertEquals("item should be fred","fred",((List<String>)c.getProperty("list")).get(0));
+		
 	}
 	
 }

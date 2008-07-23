@@ -2,6 +2,7 @@ package net.sf.taverna.t2.workbench.configuration;
 
 import java.io.File;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
@@ -18,6 +19,8 @@ import org.apache.log4j.Logger;
  * 
  */
 public class ConfigurationManager {
+	
+	private static final String DUMMY_LIST_ENTRY="DUMMY_LIST_ENTRY";
 
 	private static Logger logger = Logger.getLogger(ConfigurationManager.class);
 	
@@ -46,10 +49,16 @@ public class ConfigurationManager {
 			Map<String, Object> propertyMap = configurable.getPropertyMap();
 			PropertiesConfiguration propConfig = new PropertiesConfiguration();
 			for (String key : propertyMap.keySet()) {
-				propConfig.addProperty(key, propertyMap.get(key));
+				Object value = propertyMap.get(key);
+				if (value instanceof List) {
+					List<Object> list = (List<Object>)value;
+					while (list.size()<2) {
+						list.add(DUMMY_LIST_ENTRY);
+					}
+				}
+				propConfig.addProperty(key, value);
 			}
-			File configFile = new File(baseConfigLocation, configurable.getUUID()
-					+ ".config");
+			File configFile = new File(baseConfigLocation,generateFilename(configurable));
 			logger.info("Storing configuration for "+configurable.getName()+" to "+configFile.getAbsolutePath());
 			propConfig.save(configFile);
 		} catch (ConfigurationException e) {
@@ -71,9 +80,7 @@ public class ConfigurationManager {
 			throws Exception {
 		try {
 			PropertiesConfiguration propertiesConfig = new PropertiesConfiguration();
-			File configFile = new File(baseConfigLocation, configurable
-					.getUUID()
-					+ ".config");
+			File configFile = new File(baseConfigLocation,generateFilename(configurable));
 			if (configFile.exists()) {
 				propertiesConfig.load(configFile);
 				configurable.getPropertyMap().clear();
@@ -82,6 +89,12 @@ public class ConfigurationManager {
 					Object next = keys.next();
 					Object property = propertiesConfig
 							.getProperty((String) next);
+					if (property instanceof List) {
+						List<Object> list = (List<Object>) property;
+						while(list.contains(DUMMY_LIST_ENTRY)) {
+							list.remove(DUMMY_LIST_ENTRY);
+						}
+					}
 					configurable.getPropertyMap().put((String) next, property);
 				}
 			}
@@ -96,6 +109,10 @@ public class ConfigurationManager {
 			configurable.restoreDefaults();
 		}
 		return configurable.getPropertyMap();
+	}
+
+	private String generateFilename(Configurable configurable) {
+		return configurable.getName()+"-"+configurable.getUUID() + ".config";
 	}
 
 	/**

@@ -46,5 +46,10 @@
 			<artifactId>partition</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2</version>
+		</dependency>
 	</dependencies>
 </project>
