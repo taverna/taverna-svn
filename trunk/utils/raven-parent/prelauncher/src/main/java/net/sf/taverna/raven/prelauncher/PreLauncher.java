@@ -110,14 +110,15 @@ public class PreLauncher {
 		File libDir = ClassLocation.getClassLocationDir(getClass());
 
 		// The directory itself, when run from .class files
-		classPath.add(libDir.toURL());
+		classPath.add(libDir.toURI().toURL());
 
 		File[] jarFiles = libDir.listFiles(new JarFilenameFilter());
 		if (jarFiles == null) {
 			System.err.println("Can't list files of " + libDir);
 		} else {
 			for (File jarFile : jarFiles) {
-				classPath.add(jarFile.toURL());
+				jarFile.toURL();
+				classPath.add(jarFile.toURI().toURL());
 			}
 		}
 		return classPath;

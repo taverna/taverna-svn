@@ -87,7 +87,7 @@ public class Repositories {
 			File repository = new File(startup,"repository");
 			if (repository.exists()) {
 	            try {
-					result = repository.toURL();
+					result = repository.toURI().toURL();
 				} catch (MalformedURLException e) {
 					System.out.println("Malformed URL exception whilst determining startup repository ($taverna.startup/repository/");
 					e.printStackTrace();

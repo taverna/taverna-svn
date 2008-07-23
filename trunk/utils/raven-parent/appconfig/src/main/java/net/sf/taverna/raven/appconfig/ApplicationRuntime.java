@@ -156,7 +156,7 @@ public class ApplicationRuntime {
 		File defaultRepository = getDefaultRepositoryDir();
 		if (defaultRepository != null) {
 			try {
-				repository.addRemoteRepository(defaultRepository.toURL());
+				repository.addRemoteRepository(defaultRepository.toURI().toURL());
 			} catch (MalformedURLException e) {
 				logger.warn("Invalid URL for default repository "
 						+ defaultRepository, e);

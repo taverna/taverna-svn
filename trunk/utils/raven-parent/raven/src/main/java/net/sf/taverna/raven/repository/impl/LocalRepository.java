@@ -5,6 +5,7 @@ package net.sf.taverna.raven.repository.impl;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -848,13 +849,20 @@ public class LocalRepository implements Repository {
 			}
 		}
 		for (URL repository : fileRepositories) {
-			File file = new File(repository.getPath(), repositoryPath);
+			File repositoryDir;
+			try {
+				repositoryDir = new File(repository.toURI());
+			} catch (URISyntaxException e1) {
+				logger.error("Invalid file repository "+ repository, e1);
+				continue;
+			}
+			File file = new File(repositoryDir, repositoryPath);
 			if (!file.canRead()) {
 				continue; // Not found in this repository
 			}
 			// Just to be sure, let's try to really read it
 			try {
-				InputStream stream = file.toURI().toURL().openStream();
+				InputStream stream = new FileInputStream(file);
 				stream.read();
 				stream.close();
 			} catch (IOException e) {
@@ -876,7 +884,7 @@ public class LocalRepository implements Repository {
 	}
 
 	/**
-	 * Utillity function for {@link #pomFile(Artifact)}) and
+	 * Utility function for {@link #pomFile(Artifact)}) and
 	 * {@link #jarFile(Artifact)}. Return {@link File} object from cache, or
 	 * construct a new using {@link #artifactFile(Artifact, String)}
 	 * 
