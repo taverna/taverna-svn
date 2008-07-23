@@ -5,12 +5,7 @@ import info.aduna.collections.iterators.CloseableIterator;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -22,7 +17,6 @@ import org.openanzo.model.INamedGraph;
 import org.openanzo.model.impl.query.QueryResult;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
-import org.openrdf.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
@@ -67,7 +61,12 @@ public class SemanticBindingService extends Application {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		try {
 		datasetService = new DatasetService(embeddedClientProperties);
+		} catch (Exception e) {
+			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+					 Level.WARNING, e.toString());
+		}
 		// for (URI uri : datasetService.getNamedgraphContainer().getContexts())
 		// {
 		// java.util.logging.Logger.getLogger("org.mortbay.log").log(
