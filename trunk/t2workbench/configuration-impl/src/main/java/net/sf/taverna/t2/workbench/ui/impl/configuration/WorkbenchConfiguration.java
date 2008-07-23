@@ -37,11 +37,6 @@ public class WorkbenchConfiguration extends AbstractConfigurable {
 					.getProperty("taverna.dotlocation")
 					: "/Applications/Taverna-1.7.1.app/Contents/MacOS/dot";
 			defaultWorkbenchProperties.put("taverna.dotlocation", dotLocation);
-			defaultWorkbenchProperties
-					.put(
-							"taverna.defaultwsdl",
-							Collections
-									.singletonList("http://www.mygrid.org.uk/taverna-tests/testwsdls/KEGG.wsdl"));
 		}
 		return defaultWorkbenchProperties;
 	}
