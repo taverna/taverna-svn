@@ -73,6 +73,22 @@
 	</description>
 
 	<repositories>
+	
+	<repository>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+				<updatePolicy>never</updatePolicy>
+				<checksumPolicy>fail</checksumPolicy>
+			</snapshots>
+			<id>aduna-repo</id>
+			<name>Aduna Repository</name>
+			<url>http://repository.aduna-software.org/maven2</url>
+		</repository>
 
 		<repository>
 			<snapshots>
@@ -186,6 +202,12 @@
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.0.5</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.openrdf</groupId>
+			<artifactId>openrdf-query</artifactId>
+			<version>2.0-beta5</version>
 		</dependency>
 
 
