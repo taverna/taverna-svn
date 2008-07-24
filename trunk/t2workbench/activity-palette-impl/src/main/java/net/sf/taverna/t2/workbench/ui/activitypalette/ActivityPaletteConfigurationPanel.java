@@ -40,7 +40,7 @@ public class ActivityPaletteConfigurationPanel extends JPanel {
 	private JList propertyListItems;
 	private String selectedKey;
 
-	private JButton removeTypeButton;
+	private JButton deleteTypeButton;
 	
 	
 	public ActivityPaletteConfigurationPanel() {
@@ -61,7 +61,7 @@ public class ActivityPaletteConfigurationPanel extends JPanel {
 				names.put(key, config.getProperty(key).toString());
 			}
 		}
-		removeTypeButton = new JButton("Remove");
+		deleteTypeButton = new JButton("Delete");
 		
 		final JButton addTypeButton = new JButton("Add");
 		final JComboBox comboBox = new JComboBox(model);
@@ -83,7 +83,7 @@ public class ActivityPaletteConfigurationPanel extends JPanel {
 			
 		});
 		
-		removeTypeButton.addActionListener(new ActionListener() {
+		deleteTypeButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 				
@@ -126,10 +126,10 @@ public class ActivityPaletteConfigurationPanel extends JPanel {
 					List<String> selectedList = values.get(selectedKey);
 					populateList(selectedList);
 					if (selectedList.size()==0) {
-						removeTypeButton.setEnabled(true);
+						deleteTypeButton.setEnabled(true);
 					}
 					else {
-						removeTypeButton.setEnabled(false);
+						deleteTypeButton.setEnabled(false);
 					}
 				}
 			}
@@ -141,7 +141,7 @@ public class ActivityPaletteConfigurationPanel extends JPanel {
 		propertySelectionPanel.add(new JLabel("Activity type:"));
 		propertySelectionPanel.add(comboBox);
 		propertySelectionPanel.add(addTypeButton);
-		propertySelectionPanel.add(removeTypeButton);
+		propertySelectionPanel.add(deleteTypeButton);
 		add(propertySelectionPanel,BorderLayout.NORTH);
 		
 		JPanel listPanel = new JPanel();
@@ -212,7 +212,7 @@ public class ActivityPaletteConfigurationPanel extends JPanel {
 				if (value!=null) {
 					listModel.addElement(value);
 					values.get(selectedKey).add(value);
-					removeTypeButton.setEnabled(false);
+					deleteTypeButton.setEnabled(false);
 				}
 			}
 			
@@ -228,7 +228,7 @@ public class ActivityPaletteConfigurationPanel extends JPanel {
 					listModel.removeElement(value);
 					values.get(selectedKey).remove(value);
 					if (values.get(selectedKey).size()==0) {
-						removeTypeButton.setEnabled(true);
+						deleteTypeButton.setEnabled(true);
 					}
 				}
 				
