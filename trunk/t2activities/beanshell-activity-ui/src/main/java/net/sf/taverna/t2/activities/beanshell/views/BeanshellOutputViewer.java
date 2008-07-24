@@ -229,10 +229,10 @@ public class BeanshellOutputViewer extends JPanel {
 			originalMimes.add(mimeType);
 		}
 
-		final Map<String, Object> propertyMap = MimeTypeManager.getInstance()
+		final Map<String, String> propertyMap = MimeTypeManager.getInstance()
 				.getPropertyMap();
-		Set<Entry<String, Object>> mimeTypes = propertyMap.entrySet();
-		for (Entry<String,Object> entry : mimeTypes) {
+		Set<Entry<String, String>> mimeTypes = propertyMap.entrySet();
+		for (Entry<String,String> entry : mimeTypes) {
 			final JMenuItem item = new JMenuItem();
 			item.setText((String) entry.getValue());
 			item.addActionListener(new AbstractAction() {
