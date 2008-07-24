@@ -300,7 +300,7 @@ public class Partition<ItemType extends Comparable, PartitionValueType, ChildPar
 			if (childPartitionOrder == null || children.isEmpty()) {
 				children.add(newPartition);
 				root.treeNodesInserted(new TreeModelEvent(this, getTreePath(),
-						new int[] { children.size() - 1 },
+						new int[] { children.indexOf(newPartition) },
 						new Object[] { newPartition }));
 			} else {
 				boolean foundIndex = false;
@@ -308,11 +308,14 @@ public class Partition<ItemType extends Comparable, PartitionValueType, ChildPar
 					ChildPartitionValueType existingPartitionValue = children
 							.get(i).getPartitionValue();
 					if (childPartitionOrder.compare(pvalue,
-							existingPartitionValue) <= 0) {
-						children.add(i, newPartition);
+							existingPartitionValue) < 0) {
+						children.add(i,newPartition);
 						root.treeNodesInserted(new TreeModelEvent(this,
 								getTreePath(), new int[] { i },
 								new Object[] { newPartition }));
+						if (i!=0) {
+							root.treeStructureChanged(new TreeModelEvent(this,getTreePath()));
+						}
 						foundIndex = true;
 						break;
 					}
@@ -326,7 +329,7 @@ public class Partition<ItemType extends Comparable, PartitionValueType, ChildPar
 					// comparator)
 					children.add(newPartition);
 					root.treeNodesInserted(new TreeModelEvent(this,
-							getTreePath(), new int[] { children.size() - 1 },
+							getTreePath(), new int[] { children.indexOf(newPartition) },
 							new Object[] { newPartition }));
 				}
 			}

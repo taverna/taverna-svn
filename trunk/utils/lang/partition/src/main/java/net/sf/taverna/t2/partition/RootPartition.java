@@ -124,9 +124,6 @@ public class RootPartition<ItemType extends Comparable> extends
 			addOrUpdateItem(item);
 		}
 		sortChildPartitions();
-		
-		
-		
 	}
 
 	/**
@@ -329,7 +326,6 @@ public class RootPartition<ItemType extends Comparable> extends
 	void treeNodesChanged(final TreeModelEvent e) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				// TODO Auto-generated method stub
 				for (TreeModelListener listener : new ArrayList<TreeModelListener>(
 						treeListeners)) {
 					listener.treeNodesChanged(e);
@@ -341,7 +337,6 @@ public class RootPartition<ItemType extends Comparable> extends
 	void treeNodesInserted(final TreeModelEvent e) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				// TODO Auto-generated method stub
 				for (TreeModelListener listener : new ArrayList<TreeModelListener>(
 						treeListeners)) {
 					listener.treeNodesInserted(e);
@@ -353,7 +348,6 @@ public class RootPartition<ItemType extends Comparable> extends
 	void treeNodesRemoved(final TreeModelEvent e) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				// TODO Auto-generated method stub
 				for (TreeModelListener listener : new ArrayList<TreeModelListener>(
 						treeListeners)) {
 					listener.treeNodesRemoved(e);
@@ -365,7 +359,6 @@ public class RootPartition<ItemType extends Comparable> extends
 	void treeStructureChanged(final TreeModelEvent e) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				// TODO Auto-generated method stub
 				for (TreeModelListener listener : new ArrayList<TreeModelListener>(
 						treeListeners)) {
 					listener.treeStructureChanged(e);
