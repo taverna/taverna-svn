@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import net.sf.taverna.t2.workbench.configuration.Configurable;
 import net.sf.taverna.t2.workbench.configuration.ConfigurationManager;
 import net.sf.taverna.t2.workbench.ui.activitypalette.ActivityPaletteConfiguration;
 
@@ -18,7 +17,7 @@ import org.junit.Test;
 
 public class ActivityPaletteConfigurationTest {
 
-	private Configurable conf;
+	private ActivityPaletteConfiguration conf;
 	@Before
 	public void setup() {
 		ConfigurationManager manager = ConfigurationManager.getInstance();
@@ -33,14 +32,14 @@ public class ActivityPaletteConfigurationTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testEmptyList() throws Exception {
-		conf.setProperty("list", new ArrayList<String>());
-		assertTrue("Result was not a list but was:"+conf.getProperty("list"),conf.getProperty("list") instanceof ArrayList);
+		conf.setPropertyStringList("list", new ArrayList<String>());
+		assertTrue("Result was not a list but was:"+conf.getProperty("list"),conf.getPropertyStringList("list") instanceof List);
 		ConfigurationManager.getInstance().store(conf);
 		ConfigurationManager.getInstance().populate(conf);
-		assertTrue("Result was not a list but was:"+conf.getProperty("list"),conf.getProperty("list") instanceof ArrayList);
-		ArrayList list = (ArrayList)conf.getProperty("list");
+		assertTrue("Result was not a list but was:"+conf.getPropertyStringList("list"),conf.getPropertyStringList("list") instanceof List);
+		List<String> list = conf.getPropertyStringList("list");
 		assertEquals("There should be 0 elements",0,list.size());
-		assertEquals("The list should be in the propertyMap now",list,conf.getPropertyMap().get("list"));
+		assertEquals("The list should be in the propertyMap as an empty string now","",conf.getPropertyMap().get("list"));
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -48,12 +47,12 @@ public class ActivityPaletteConfigurationTest {
 	public void testSingleItem() throws Exception {
 		List<String> list = new ArrayList<String>();
 		list.add("fred");
-		conf.setProperty("single", list);
+		conf.setPropertyStringList("single", list);
 		ConfigurationManager.getInstance().store(conf);
 		ConfigurationManager.getInstance().populate(conf);
 		
-		assertTrue("should be an ArrayList",conf.getProperty("single") instanceof ArrayList);
-		ArrayList l = (ArrayList)conf.getProperty("single");
+		assertTrue("should be an ArrayList",conf.getPropertyStringList("single") instanceof List);
+		List<String> l = conf.getPropertyStringList("single");
 		assertEquals("There should be 1 element",1,l.size());
 		assertEquals("Its value should be fred","fred",l.get(0));
 	}
@@ -63,12 +62,12 @@ public class ActivityPaletteConfigurationTest {
 		List<String> list = new ArrayList<String>();
 		list.add("fred");
 		list.add("bloggs");
-		conf.setProperty("list", list);
+		conf.setPropertyStringList("list", list);
 		ConfigurationManager.getInstance().store(conf);
 		ConfigurationManager.getInstance().populate(conf);
 		
-		assertTrue("should be an ArrayList",conf.getProperty("list") instanceof ArrayList);
-		ArrayList l = (ArrayList)conf.getProperty("list");
+		assertTrue("should be an ArrayList",conf.getPropertyStringList("list") instanceof List);
+		List<String> l = conf.getPropertyStringList("list");
 		assertEquals("There should be 1 element",2,l.size());
 		assertEquals("Its value should be fred","fred",l.get(0));
 		assertEquals("Its value should be bloggs","bloggs",l.get(1));

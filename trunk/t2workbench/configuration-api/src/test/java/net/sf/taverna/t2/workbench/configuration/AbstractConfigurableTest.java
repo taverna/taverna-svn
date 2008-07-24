@@ -113,22 +113,78 @@ public class AbstractConfigurableTest {
 	public void testList() throws Exception {
 		Configurable c = DummyConfigurable.getInstance();
 		c.getPropertyMap().clear();
-		c.setProperty("list", new ArrayList<String>());
+		c.setPropertyStringList("list", new ArrayList<String>());
 		
 		ConfigurationManager.getInstance().store(c);
+		assertTrue("Should be an instanceof a list",c.getPropertyStringList("list") instanceof List);
+		assertEquals("there should be 0 items",0,c.getPropertyStringList("list").size());
 		ConfigurationManager.getInstance().populate(c);
 		
-		assertTrue("Should be an instanceof a list",c.getProperty("list") instanceof List);
-		List<String> list = (List<String>)c.getProperty("list");
+		assertTrue("Should be an instanceof a list",c.getPropertyStringList("list") instanceof List);
+		assertEquals("there should be 0 items",0,c.getPropertyStringList("list").size());
+		
+		List<String> list = new ArrayList<String>(c.getPropertyStringList("list"));
 		list.add("fred");
-		c.setProperty("list", list);
-		assertEquals("there should be 1 item",1,((List<String>)c.getProperty("list")).size());
+		c.setPropertyStringList("list", list);
+		assertEquals("there should be 1 item",1,c.getPropertyStringList("list").size());
 		
 		ConfigurationManager.getInstance().store(c);
+		assertEquals("there should be 1 item",1,c.getPropertyStringList("list").size());
 		ConfigurationManager.getInstance().populate(c);
 		
-		assertEquals("there should be 1 item",1,((List<String>)c.getProperty("list")).size());
-		assertEquals("item should be fred","fred",((List<String>)c.getProperty("list")).get(0));
+		assertEquals("there should be 1 item",1,c.getPropertyStringList("list").size());
+		assertEquals("item should be fred","fred",c.getPropertyStringList("list").get(0));
+		
+		c.getPropertyMap().clear();
+		c.setProperty("list", "a,b,c");
+		assertEquals("There should be 3 items in the list",3,c.getPropertyStringList("list").size());
+		assertEquals("Item 1 should be a","a",c.getPropertyStringList("list").get(0));
+		assertEquals("Item 1 should be b","b",c.getPropertyStringList("list").get(1));
+		assertEquals("Item 1 should be c","c",c.getPropertyStringList("list").get(2));
+		
+	}
+	
+	@Test
+	public void testListDelimeters() throws Exception {
+		Configurable c = DummyConfigurable.getInstance();
+		c.getPropertyMap().clear();
+		c.setPropertyStringList("list", new ArrayList<String>());
+		
+		assertTrue("Should be an instanceof a list",c.getPropertyStringList("list") instanceof List);
+		assertEquals("there should be 0 items",0,((List<String>)c.getPropertyStringList("list")).size());
+		
+		List<String> list = new ArrayList<String>(c.getPropertyStringList("list"));
+		list.add("a,b,c");
+		c.setPropertyStringList("list",list);
+		assertEquals("there should be 1 items",1,((List<String>)c.getPropertyStringList("list")).size());
+		
+		list = new ArrayList<String>(c.getPropertyStringList("list"));
+		list.add("d");
+		c.setPropertyStringList("list",list);
+		assertEquals("there should be 2 items",2,((List<String>)c.getPropertyStringList("list")).size());
+		assertEquals("The first item should be a,b,c","a,b,c",c.getPropertyStringList("list").get(0));
+		assertEquals("The second item should be d","d",c.getPropertyStringList("list").get(1));
+		
+		ConfigurationManager.getInstance().store(c);
+		assertEquals("there should be 2 items",2,((List<String>)c.getPropertyStringList("list")).size());
+		assertEquals("The first item should be a,b,c","a,b,c",c.getPropertyStringList("list").get(0));
+		assertEquals("The second item should be d","d",c.getPropertyStringList("list").get(1));
+		
+		ConfigurationManager.getInstance().populate(c);
+		assertEquals("there should be 2 items",2,((List<String>)c.getPropertyStringList("list")).size());
+		
+		assertEquals("The first item should be a,b,c","a,b,c",c.getPropertyStringList("list").get(0));
+		assertEquals("The second item should be d","d",c.getPropertyStringList("list").get(1));
+		
+	}
+	
+	@Test(expected=UnsupportedOperationException.class)
+	public void testUnmodifiable() throws Exception {
+		
+		Configurable c = DummyConfigurable.getInstance();
+		c.getPropertyMap().clear();
+		c.setPropertyStringList("list", new ArrayList<String>());
+		c.getPropertyStringList("list").add("fred");
 		
 	}
 	

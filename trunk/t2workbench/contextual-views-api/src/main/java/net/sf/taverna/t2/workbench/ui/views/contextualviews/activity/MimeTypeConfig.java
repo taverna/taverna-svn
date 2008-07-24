@@ -38,7 +38,7 @@ public class MimeTypeConfig extends JPanel {
 	private JTextArea mimeTypes;
 	private JTextArea newMimeType;
 	private ActionListener listener;
-	private Map<String, Object> mimeMap;
+	private Map<String, String> mimeMap;
 	private DefaultListModel originalMimeListModel;
 	private JList mimeList;
 	protected String selectedMime;

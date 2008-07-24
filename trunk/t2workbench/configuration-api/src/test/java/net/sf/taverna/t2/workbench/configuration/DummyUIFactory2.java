@@ -1,4 +1,5 @@
 package net.sf.taverna.t2.workbench.configuration;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JPanel;
@@ -20,12 +21,17 @@ public class DummyUIFactory2 implements ConfigurationUIFactory {
 	
 	static class DummyConfigurable2 implements Configurable {
 
+		public void deleteProperty(String key) {
+			// TODO Auto-generated method stub
+			
+		}
+
 		public String getCategory() {
 			// TODO Auto-generated method stub
 			return null;
 		}
 
-		public Map<String, Object> getDefaultPropertyMap() {
+		public Map<String, String> getDefaultPropertyMap() {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -35,7 +41,17 @@ public class DummyUIFactory2 implements ConfigurationUIFactory {
 			return null;
 		}
 
-		public Map<String, Object> getPropertyMap() {
+		public String getProperty(String key) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public Map<String, String> getPropertyMap() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public List<String> getPropertyStringList(String key) {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -49,20 +65,17 @@ public class DummyUIFactory2 implements ConfigurationUIFactory {
 			
 		}
 
-		public Object getProperty(String key) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		public void setProperty(String key, Object value) {
+		public void setProperty(String key, String value) {
 			// TODO Auto-generated method stub
 			
 		}
 
-		public void deleteProperty(String key) {
+		public void setPropertyStringList(String key, List<String> value) {
 			// TODO Auto-generated method stub
 			
 		}
+
+		
 		
 	}
 

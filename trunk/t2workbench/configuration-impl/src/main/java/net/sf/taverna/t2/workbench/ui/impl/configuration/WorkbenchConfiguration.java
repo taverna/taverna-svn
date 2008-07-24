@@ -15,7 +15,7 @@ import net.sf.taverna.t2.workbench.configuration.AbstractConfigurable;
  */
 public class WorkbenchConfiguration extends AbstractConfigurable {
 
-	public static String uuid = "ec8b99f0-3313-11dd-bd11-0800200c9a66";
+	public static String uuid = "c14856f0-5967-11dd-ae16-0800200c9a66";
 	private static WorkbenchConfiguration instance = new WorkbenchConfiguration();
 
 	public static WorkbenchConfiguration getInstance() {
@@ -23,16 +23,16 @@ public class WorkbenchConfiguration extends AbstractConfigurable {
 	}
 
 
-	Map<String, Object> defaultWorkbenchProperties = null;
-	Map<String, Object> workbenchProperties = new HashMap<String, Object>();
+	Map<String, String> defaultWorkbenchProperties = null;
+	Map<String, String> workbenchProperties = new HashMap<String, String>();
 
 	public String getCategory() {
 		return "general";
 	}
 
-	public Map<String, Object> getDefaultPropertyMap() {
+	public Map<String, String> getDefaultPropertyMap() {
 		if (defaultWorkbenchProperties == null) {
-			defaultWorkbenchProperties = new HashMap<String, Object>();
+			defaultWorkbenchProperties = new HashMap<String, String>();
 			String dotLocation = System.getProperty("taverna.dotlocation") != null ? System
 					.getProperty("taverna.dotlocation")
 					: "/Applications/Taverna-1.7.1.app/Contents/MacOS/dot";

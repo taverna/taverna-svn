@@ -25,8 +25,8 @@ public class T2ConfigurationFrame extends JFrame {
 	
 	public static T2ConfigurationFrame showFrame() {
 		T2ConfigurationFrame frame =  new T2ConfigurationFrame();
-		frame.setSize(new Dimension(700,500));
 		frame.pack();
+		frame.setSize(new Dimension(700,500));
 		frame.setVisible(true);
 		return frame;
 	}

@@ -1,14 +1,13 @@
 package net.sf.taverna.t2.workbench.configuration;
 
 import java.io.File;
-import java.util.Iterator;
-import java.util.List;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.Map;
+import java.util.Properties;
 
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.Logger;
 
 /**
@@ -46,23 +45,13 @@ public class ConfigurationManager {
 	 */
 	public void store(Configurable configurable) throws Exception {
 		try {
-			Map<String, Object> propertyMap = configurable.getPropertyMap();
-			PropertiesConfiguration propConfig = new PropertiesConfiguration();
-			for (String key : propertyMap.keySet()) {
-				Object value = propertyMap.get(key);
-				if (value instanceof List) {
-					List<Object> list = (List<Object>)value;
-					while (list.size()<2) {
-						list.add(DUMMY_LIST_ENTRY);
-					}
-				}
-				propConfig.addProperty(key, value);
-			}
+
+			Map<String, String> propertyMap = configurable.getPropertyMap();
+			Properties props = new Properties();
+		    props.putAll(propertyMap);
 			File configFile = new File(baseConfigLocation,generateFilename(configurable));
 			logger.info("Storing configuration for "+configurable.getName()+" to "+configFile.getAbsolutePath());
-			propConfig.save(configFile);
-		} catch (ConfigurationException e) {
-			throw new Exception("Failed to store the configuration: " + e);
+			props.store(new FileOutputStream(configFile), "");
 		} catch (Exception e) {
 			throw new Exception("Configuration storage failed: " + e);
 		}
@@ -76,26 +65,16 @@ public class ConfigurationManager {
 	 * @throws Exception
 	 *             if there are no configuration details available
 	 */
-	public Map<String, Object> populate(Configurable configurable)
+	public Map<String, String> populate(Configurable configurable)
 			throws Exception {
 		try {
-			PropertiesConfiguration propertiesConfig = new PropertiesConfiguration();
 			File configFile = new File(baseConfigLocation,generateFilename(configurable));
 			if (configFile.exists()) {
-				propertiesConfig.load(configFile);
+				Properties props = new Properties();
+				props.load(new FileInputStream(configFile));
 				configurable.getPropertyMap().clear();
-				Iterator keys = propertiesConfig.getKeys();
-				while (keys.hasNext()) {
-					Object next = keys.next();
-					Object property = propertiesConfig
-							.getProperty((String) next);
-					if (property instanceof List) {
-						List<Object> list = (List<Object>) property;
-						while(list.contains(DUMMY_LIST_ENTRY)) {
-							list.remove(DUMMY_LIST_ENTRY);
-						}
-					}
-					configurable.getPropertyMap().put((String) next, property);
+				for (Object key : props.keySet()) {
+					configurable.setProperty(key.toString(), props.getProperty(key.toString()));
 				}
 			}
 			else {

@@ -25,8 +25,8 @@ public class ConfigurationManagerTest {
 	public void populateConfigOfColourmanager() {
 		ColourManager manager=ColourManager.getInstance();
 		
-		manager.getPropertyMap().put("colour.first", 25);
-		manager.getPropertyMap().put("colour.second", 223);
+		manager.getPropertyMap().put("colour.first", "25");
+		manager.getPropertyMap().put("colour.second", "223");
 		
 		ConfigurationManager instance = ConfigurationManager.getInstance();
 		instance.setBaseConfigLocation(new File("/Users/Ian/scratch"));
@@ -44,7 +44,7 @@ public class ConfigurationManagerTest {
 			e.printStackTrace();
 		}
 		
-		Map<String, Object> propertyMap = manager2.getPropertyMap();
+		Map<String, String> propertyMap = manager2.getPropertyMap();
 		
 		assertEquals("Properties do not match", propertyMap.get("colour.first"), manager.getPropertyMap().get("colour.first"));
 		assertEquals("Properties do not match", propertyMap.get("colour.second"), manager.getPropertyMap().get("colour.second"));

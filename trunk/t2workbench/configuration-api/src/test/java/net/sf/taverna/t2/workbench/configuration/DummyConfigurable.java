@@ -18,15 +18,15 @@ class DummyConfigurable extends AbstractConfigurable {
 		return instance;
 	}
 	
-	Map<String,Object> defaults = null;
+	Map<String,String> defaults = null;
 	
 	public String getCategory() {
 		return "test";
 	}
 
-	public Map<String, Object> getDefaultPropertyMap() {
+	public Map<String, String> getDefaultPropertyMap() {
 		if (defaults==null) {
-			defaults = new HashMap<String, Object>();
+			defaults = new HashMap<String, String>();
 			defaults.put("name","john");
 			defaults.put("colour","blue");
 		}

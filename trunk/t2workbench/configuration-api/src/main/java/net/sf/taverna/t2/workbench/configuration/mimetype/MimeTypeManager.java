@@ -17,8 +17,8 @@ public class MimeTypeManager extends AbstractConfigurable {
 		return "Mime Type";
 	}
 
-	public Map<String, Object> getDefaultPropertyMap() {
-		HashMap<String, Object> map = new HashMap<String, Object>();
+	public Map<String, String> getDefaultPropertyMap() {
+		HashMap<String, String> map = new HashMap<String, String>();
 		map.put("text/plain", "Plain Text");
 		map.put("text/xml", "XML Text");
 		map.put("text/html", "HTML Text");
@@ -43,7 +43,7 @@ public class MimeTypeManager extends AbstractConfigurable {
 	}
 
 	public String getUUID() {
-		return "3CBC253F-C62C-4158-AEC6-3017B3C50E59";
+		return "b9277fa0-5967-11dd-ae16-0800200c9a66";
 	}
 
 }

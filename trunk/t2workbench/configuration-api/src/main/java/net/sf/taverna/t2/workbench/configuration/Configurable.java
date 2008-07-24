@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.workbench.configuration;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,11 +15,11 @@ public interface Configurable {
 	/**
 	 * @return a Map containing the value/key pairs of the configured properties
 	 */
-	Map<String,Object> getPropertyMap();
+	Map<String,String> getPropertyMap();
 	/**
 	 * @return a Map containing the default value/key pairs of the configured properties
 	 */
-	Map<String,Object> getDefaultPropertyMap();
+	Map<String,String> getDefaultPropertyMap();
 	/**
 	 * @return a globally unique identifier that ensures that when stored this items configuration details will never clash with another
 	 */
@@ -41,9 +42,9 @@ public interface Configurable {
 	 * <br>
 	 * Using this method is preferable to using the property map directly.
 	 * @param key
-	 * @return the Object represented by the key, the default value, or null
+	 * @return the String represented by the key, the default value, or null
 	 */
-	Object getProperty(String key);
+	String getProperty(String key);
 	
 	/**
 	 * Overwrites or applies a new value against the given key in the property map.
@@ -56,7 +57,7 @@ public interface Configurable {
 	 * @param key
 	 * @param value
 	 */
-	void setProperty(String key, Object value);
+	void setProperty(String key, String value);
 	
 	/**
 	 * Deletes a property value for a given key.
@@ -65,4 +66,8 @@ public interface Configurable {
 	 * @param key
 	 */
 	void deleteProperty(String key);
+	
+	public List<String> getPropertyStringList(String key);
+	
+	public void setPropertyStringList(String key, List<String>value);
 }

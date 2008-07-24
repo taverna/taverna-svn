@@ -1,7 +1,6 @@
 package net.sf.taverna.t2.workbench.ui.impl.configuration.colour;
 
 import java.awt.Color;
-import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +17,7 @@ import net.sf.taverna.t2.workbench.configuration.AbstractConfigurable;
  */
 public class ColourManager extends AbstractConfigurable {
 	
-	private Map<String, Object> defaultPropertyMap;
+	private Map<String, String> defaultPropertyMap;
 	private static ColourManager instance = new ColourManager();
 	private Map<Object,Color> cachedColours;
 
@@ -32,7 +31,7 @@ public class ColourManager extends AbstractConfigurable {
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.workbench.configuration.Configurable#getDefaultPropertyMap()
 	 */
-	public Map<String, Object> getDefaultPropertyMap() {
+	public Map<String, String> getDefaultPropertyMap() {
 		if (defaultPropertyMap==null) initialiseDefaults();
 		return defaultPropertyMap;
 	}
@@ -48,7 +47,7 @@ public class ColourManager extends AbstractConfigurable {
 	 * Unique identifier for this ColourManager
 	 */
 	public String getUUID() {
-		return "d13327f0-0c84-11dd-bd0b-0800200c9a66";
+		return "a2148420-5967-11dd-ae16-0800200c9a66";
 	}
 
 	
@@ -59,7 +58,7 @@ public class ColourManager extends AbstractConfigurable {
 	}
 
 	private void initialiseDefaults() {
-		defaultPropertyMap=new HashMap<String, Object>();
+		defaultPropertyMap=new HashMap<String, String>();
 		cachedColours=new HashMap<Object, Color>();
 		defaultPropertyMap.put("net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivity", "#98fb98");//palegreen
 		defaultPropertyMap.put("net.sf.taverna.t2.activities.beanshell.BeanshellActivity", "#deb887");//burlywood2

@@ -34,44 +34,86 @@ public class ActivityPaletteConfigurationPanel extends JPanel {
 			.getLogger(ActivityPaletteConfigurationPanel.class);
 	
 	private Map<String,List<String>> values = new HashMap<String, List<String>>();
+	private Map<String,String> names = new HashMap<String, String>();
 	private DefaultComboBoxModel model;
 	private DefaultListModel listModel;
 	private JList propertyListItems;
 	private String selectedKey;
+
+	private JButton removeTypeButton;
 	
 	
 	public ActivityPaletteConfigurationPanel() {
 		super();
 		
-		Configurable config = ActivityPaletteConfiguration.getInstance();
+		ActivityPaletteConfiguration config = ActivityPaletteConfiguration.getInstance();
 		setLayout(new BorderLayout());
 		
 		model = new DefaultComboBoxModel();
 		for (String key : config.getPropertyMap().keySet()) {
 			if (key.startsWith("taverna.")) {
-				if (config.getProperty(key)!=null) {
+				if (config.getPropertyStringList(key)!=null) {
 					model.addElement(key);
-					values.put(key,(List<String>)config.getProperty(key));
+					values.put(key,new ArrayList<String>(config.getPropertyStringList(key)));
 				}
 			}
+			if (key.startsWith("name.taverna.")) {
+				names.put(key, config.getProperty(key).toString());
+			}
 		}
+		removeTypeButton = new JButton("Remove");
 		
+		final JButton addTypeButton = new JButton("Add");
 		final JComboBox comboBox = new JComboBox(model);
 		comboBox.setRenderer(new DefaultListCellRenderer() {
-
 			
 			@Override
 			public Component getListCellRendererComponent(JList list,
 					Object value, int index, boolean isSelected,
 					boolean cellHasFocus) {
 				if (value!=null && value instanceof String) {
-					String name = ActivityPaletteConfiguration.getInstance().getPropertyName((String)value);
+					String name = names.get("name."+value.toString());
 					if (name!=null) {
 						value=name;
 					}
 				}
 				return super.getListCellRendererComponent(list, value, index, isSelected,
 						cellHasFocus);
+			}
+			
+		});
+		
+		removeTypeButton.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				
+					String displayText=names.get("name."+selectedKey);
+					if (displayText==null) displayText=selectedKey;
+					int ret=JOptionPane.showConfirmDialog(ActivityPaletteConfigurationPanel.this,"Are you sure you wish to remove the type "+displayText+" ?","Confirm removal",JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
+					if (ret==JOptionPane.YES_OPTION) {
+						names.remove("name."+selectedKey);
+						values.remove(selectedKey);
+						model.removeElement(selectedKey);
+						comboBox.setSelectedIndex(0);
+					}
+				
+			}
+			
+		});
+		
+		addTypeButton.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				String key = JOptionPane.showInputDialog(ActivityPaletteConfigurationPanel.this,"Provide the new key","New key",JOptionPane.INFORMATION_MESSAGE);
+				if (key!=null) {
+					String name = JOptionPane.showInputDialog(ActivityPaletteConfigurationPanel.this,"Provide the name for the key: "+key,"Name for the key",JOptionPane.INFORMATION_MESSAGE);
+					if (name!=null) {
+						values.put(key,new ArrayList<String>());
+						names.put("name."+key,name);
+						model.addElement(key);
+						comboBox.setSelectedItem(key);
+					}
+				}
 			}
 			
 		});
@@ -83,6 +125,12 @@ public class ActivityPaletteConfigurationPanel extends JPanel {
 					selectedKey = (String)comboBox.getSelectedItem();
 					List<String> selectedList = values.get(selectedKey);
 					populateList(selectedList);
+					if (selectedList.size()==0) {
+						removeTypeButton.setEnabled(true);
+					}
+					else {
+						removeTypeButton.setEnabled(false);
+					}
 				}
 			}
 			
@@ -92,6 +140,8 @@ public class ActivityPaletteConfigurationPanel extends JPanel {
 		propertySelectionPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		propertySelectionPanel.add(new JLabel("Activity type:"));
 		propertySelectionPanel.add(comboBox);
+		propertySelectionPanel.add(addTypeButton);
+		propertySelectionPanel.add(removeTypeButton);
 		add(propertySelectionPanel,BorderLayout.NORTH);
 		
 		JPanel listPanel = new JPanel();
@@ -130,9 +180,13 @@ public class ActivityPaletteConfigurationPanel extends JPanel {
 
 			public void actionPerformed(ActionEvent e) {
 				Configurable config = ActivityPaletteConfiguration.getInstance();
+				config.getPropertyMap().clear();
 				for (String key : values.keySet()) {
 					List<String> properties = values.get(key);
-					config.setProperty(key, properties);
+					config.setPropertyStringList(key, new ArrayList<String>(properties));
+				}
+				for (String key : names.keySet()) {
+					config.setProperty(key, names.get(key));
 				}
 				try {
 					ConfigurationManager.getInstance().store(config);
@@ -158,6 +212,7 @@ public class ActivityPaletteConfigurationPanel extends JPanel {
 				if (value!=null) {
 					listModel.addElement(value);
 					values.get(selectedKey).add(value);
+					removeTypeButton.setEnabled(false);
 				}
 			}
 			
@@ -172,6 +227,9 @@ public class ActivityPaletteConfigurationPanel extends JPanel {
 				if (ret==JOptionPane.YES_OPTION) {
 					listModel.removeElement(value);
 					values.get(selectedKey).remove(value);
+					if (values.get(selectedKey).size()==0) {
+						removeTypeButton.setEnabled(true);
+					}
 				}
 				
 			}
