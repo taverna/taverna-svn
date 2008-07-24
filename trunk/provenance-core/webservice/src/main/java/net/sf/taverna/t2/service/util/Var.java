@@ -10,6 +10,7 @@ public class Var {
 	String wfInstanceRef;
 	String type;
 	int typeNestingLevel = 0;
+	int actualNestingLevel = 0;
 	
 	/**
 	 * @return the wfInstanceRef
@@ -82,6 +83,18 @@ public class Var {
 	 */
 	public void setTypeNestingLevel(int typeNestingLevel) {
 		this.typeNestingLevel = typeNestingLevel;
+	}
+	/**
+	 * @return the actualNestingLevel
+	 */
+	public int getActualNestingLevel() {
+		return actualNestingLevel;
+	}
+	/**
+	 * @param actualNestingLevel the actualNestingLevel to set
+	 */
+	public void setActualNestingLevel(int actualNestingLevel) {
+		this.actualNestingLevel = actualNestingLevel;
 	}
 
 

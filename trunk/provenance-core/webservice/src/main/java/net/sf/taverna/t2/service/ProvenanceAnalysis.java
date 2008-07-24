@@ -134,42 +134,6 @@ public class ProvenanceAnalysis {
 	}
 
 
-	/**
-	 * OBSOLETE <p/>
-	 * entry point for recursion on workflow structure paths
-	 * @param workflowID
-	 * @param var
-	 * @param proc
-	 * @param targetIteration
-	 * @param selectedProcessors
-	 * @throws SQLException
-	 */
-	public void computeLineagePaths(
-			String workflowID,   // context
-			String var,   // target var
-			String proc,   // qualified with its processor name
-			String targetIteration, 
-			Set<String> selectedProcessors
-	) throws SQLException  {
-
-		LineageAnnotation aLA = new LineageAnnotation();
-		aLA.setIteration(targetIteration);
-		aLA.setProc(proc);
-		aLA.setVar(var);
-		aLA.setWfInstance(workflowID);
-
-		List<LineageAnnotation> initialPath = new ArrayList<LineageAnnotation>();
-		initialPath.add(aLA);
-
-		List<LineageSQLQuery>  lqList = new ArrayList<LineageSQLQuery>();  // holds the output
-
-		// initial recursive call
-		computeLineagePaths_OBSOLETE(workflowID, var, proc, selectedProcessors, initialPath, lqList);
-
-		// execute queries in the LineageSQLQuery list
-		pq.runLineageQueries(lqList);
-
-	}
 
 
 	/**
@@ -212,12 +176,13 @@ public class ProvenanceAnalysis {
 		///////
 		// lookahead: fetch source vars from the Arcs in order to inspect their nestinglevel
 		// for each input var that is a node sink, retrieve corresponding source var through the arc
+		// THIS MAY BE OBSOLETED BY THE DNL-ANL APPROACH
 		///////
 		
-		int inputVarCnt = 0;
+		int inputVarCnt0 = 0;
 		for (Var inputVar: inputVars) {
 
-			String procName = inputVar.getPName();
+			String procName      = inputVar.getPName();
 			String inputVarName  = inputVar.getVName();
 			String inputVarType  = inputVar.getType();
 			
@@ -251,18 +216,55 @@ public class ProvenanceAnalysis {
 				Var sourceVar = sourceVars.get(0);
 				int nestingLevel = sourceVar.getTypeNestingLevel();  // save this in order to complete the xform step
 
-				var2NL[inputVarCnt] = nestingLevel;
+				var2NL[inputVarCnt0] = nestingLevel;
 				sink2source.put(inputVar, sourceVar);
 				
-				inputVarCnt++;
+				inputVarCnt0++;
 			}
 			
 		}  // end LOOKAHEAD for each input var
+		
+		
+		// determine the chunks of iteration vector that need to be allocated to each input var
+		// this is based on the DNL-ANL analysis
+		LineageAnnotation prevNode = initialPath.get(initialPath.size()-2); // previous: refers to one input var of the processor
+		LineageAnnotation currNode = initialPath.get(initialPath.size()-1); // current: refers to one output var of the processor
+
+		String iterationVector[] = prevNode.getIteration().split(",");
+		
+		Map<Var,String> var2ITVector = new HashMap<Var,String>();
+		
+		String[] iterationElements; 
+		
+		int start = 0;
+		for (Var inputVar: inputVars) {
+			
+			// 24/7/08 get DNL (declared nesting level) and ANL (actual nesting level) from VAR
+			int projectedIterationLength = inputVar.getActualNestingLevel() - inputVar.getTypeNestingLevel();			
+
+			if (projectedIterationLength > 0) {
+				
+				iterationElements = new String[projectedIterationLength];
+				
+				for (int i=0; i<projectedIterationLength; i++) {
+					
+					iterationElements[i] = iterationVector[start+i];
+				}		
+				start += projectedIterationLength;
+				
+				StringBuffer iterationFragment = new StringBuffer();
+				for (String s:iterationElements) { iterationFragment.append(s+","); }
+				iterationFragment.deleteCharAt(iterationFragment.length()-1);
+				
+				var2ITVector.put(inputVar, iterationFragment.toString());
+			}
+			
+		}
 
 		// perform xform step on each input var separately and update the annotated path -- depth-first recursion
 		boolean singleInput = inputVars.size() == 1;
 		
-		inputVarCnt = 0;
+		int inputVarCnt = 0;
 		for (Var inputVar: inputVars) {
 
 			System.out.println("xform() from ["+proc+","+outputVar+"] to ["+inputVar.getPName()+","+inputVar.getVName()+"]");
@@ -282,26 +284,16 @@ public class ProvenanceAnalysis {
 				varType = "s";
 			}
 			LA.setVarType(inputVar.getType());
-			LA.setVarTypeNestingLevel(inputVar.getTypeNestingLevel());	//varTypeNestingLevel
+			LA.setDNL(inputVar.getTypeNestingLevel());	//varTypeNestingLevel			
 
 			initialPath.add(LA);
 
 			// **************
 			// process currentPath
 			// **************
-
-			// determine the difference in nesting level between the current input var and the corresponding source var
-			// across the arc
-			int nlDiff = var2NL[inputVarCnt] - inputVar.getTypeNestingLevel();
-			int projectedIterationIndex = -1;
-			
-			if (nlDiff > 0) { // positive difference means one element of the iteration vector, if any, must be projected on this variable 
-				projectedIterationIndex = inputVarCnt;
-				inputVarCnt++;
-			}			
 			
 			// updates the path
-			List<LineageAnnotation>  newPath = applyXformRule(initialPath, inputVars, projectedIterationIndex, annotations);								
+			List<LineageAnnotation>  newPath = applyXformRule(initialPath, inputVars, var2ITVector.get(inputVar), annotations);								
 
 			// generate SQL if necessary -- this assumes SQL can be generated individually for each input var
 			if (selectedProcessors.isEmpty() || selectedProcessors.contains(proc)) {
@@ -408,7 +400,7 @@ public class ProvenanceAnalysis {
 			sourceVarType = "s";
 		}
 		LA.setVarType(sourceVarType);
-		LA.setVarTypeNestingLevel(sourceNestingLevel);	//varTypeNestingLevel
+		LA.setDNL(sourceNestingLevel);	//varTypeNestingLevel
 
 		initialPath.add(LA);
 
@@ -431,204 +423,6 @@ public class ProvenanceAnalysis {
 
 
 
-/**
- * lineage traversal algorithm. This is phase I of the query algorithm. 
- * It takes one input variable (var,proc), whose lineage we want to compute, and an optional set of processors. 
- * It traverses the static workflow graph and computes all paths between the input variable and 
- * each of the processors<br/>
- * Each path is annotated with signature mismatch indications. 
- * These are used in phase II to compile the target queries
- * (one for each path, unless we can prune/optimize)<p/>
- * paths are generated one at a time, in a depth-first fashion
- * @param targetIteration 
- * @return a list of paths. Each path is a list of strings, each string represents one annotated step that can be used 
- * for query generation in phase II
- * @throws SQLException 
- */
-public void computeLineagePaths_OBSOLETE(
-		String workflowID,   // context
-		String var,   // starting var
-		String proc,   // qualified with its processor name
-		Set<String>  selectedProcessors, // processors where the paths end
-		List<LineageAnnotation> initialPath,
-		List<LineageSQLQuery>  lqList
-) throws SQLException  {
-
-	// get (var, proc) from Var  to see if it's input/output
-	Map<String, String>  varQueryConstraints = new HashMap<String, String>();
-
-	varQueryConstraints.put("V.wfInstanceRef", workflowID);
-	varQueryConstraints.put("V.pnameRef", proc);  
-	varQueryConstraints.put("V.varName", var);  
-
-	List<Var> vars = pq.getVars(varQueryConstraints);
-
-	if (vars.isEmpty())  {
-		System.out.println("variable ("+var+","+proc+") not found, lineage query terminated");
-		return;
-	}
-
-	Var v = vars.get(0); 		// expect one record
-
-	List<Var> nextVars = new ArrayList<Var>();
-
-	boolean xform = false;
-	if (v.isInput()) {
-		// if vName is input, then do a xfer() step
-
-		// retrieve all Arcs ending with (var,proc)
-		Map<String, String>  arcsQueryConstraints = new HashMap<String, String>();
-
-		arcsQueryConstraints.put("wfInstanceRef", workflowID);
-		arcsQueryConstraints.put("sinkVarNameRef", var);  
-		arcsQueryConstraints.put("sinkPNameRef", proc);  
-
-		List<Arc> arcs = pq.getArcs(arcsQueryConstraints);
-
-		for (Arc a: arcs) {
-			// get source node
-			String sourceProc = a.getSourcePnameRef();
-			String sourceVar  = a.getSourceVarNameRef();
-
-			// get this var from DB -- this creates a Var object that contains static type info
-			// retrieve all input Vars to the current processor
-			Map<String, String>  varsQueryConstraints = new HashMap<String, String>();
-
-			varsQueryConstraints.put("wfInstanceRef", workflowID);
-			varsQueryConstraints.put("pnameRef", sourceProc);  
-			varsQueryConstraints.put("varName", sourceVar);  
-
-			List<Var> inputVars = pq.getVars(varsQueryConstraints);
-
-			nextVars.addAll(inputVars);
-		}
-
-		// process these vars
-		for (Var nextVar: nextVars) {
-
-			String procName = nextVar.getPName();
-			String varName  = nextVar.getVName();
-			String varType  = nextVar.getType();
-
-			System.out.println("xfer() from ["+v.getPName()+","+v.getVName()+"] to ["+procName+","+varName+"]");
-
-			// produce annotation and add it to the current path
-			LineageAnnotation LA = new LineageAnnotation();
-
-			LA.setXform(false);
-			LA.setWfInstance(workflowID);
-			LA.setProc(procName);
-			LA.setVar(varName);
-
-			if (varType == null) {
-				System.out.println("WARNING: no type info available for ["+procName+"/"+varName+"] -- assuming s");
-				varType = "s";
-			}
-			LA.setVarType(varType);
-			LA.setVarTypeNestingLevel(nextVar.getTypeNestingLevel());	//varTypeNestingLevel
-
-			initialPath.add(LA);
-
-			// **************
-			// process currentPath
-			// **************
-
-			List<LineageAnnotation>  newPath = applyXferRule(initialPath, annotations);
-
-			// recursive call
-			computeLineagePaths_OBSOLETE(workflowID, varName, procName, selectedProcessors, newPath, lqList);				
-
-			initialPath.remove(initialPath.size()-1);
-
-		}  // end for each step
-
-
-		//
-		// xform step
-		//
-	} else { 			
-		xform = true;
-
-		// retrieve all input Vars to the current processor
-		Map<String, String>  varsQueryConstraints = new HashMap<String, String>();
-
-		varsQueryConstraints.put("wfInstanceRef", workflowID);
-		varsQueryConstraints.put("pnameRef", proc);  
-		varsQueryConstraints.put("inputOrOutput", "1");  // FIXME: 1 = input??  CHECK  
-
-		nextVars = pq.getVars(varsQueryConstraints);
-
-		for (Var nextVar: nextVars) {
-
-			String procName = nextVar.getPName();
-			String varName  = nextVar.getVName();
-			String varType  = nextVar.getType();
-
-			System.out.println("xform() from ["+v.getPName()+","+v.getVName()+"] to ["+procName+","+varName+"]");
-
-			// produce annotation and add it to the current path
-			LineageAnnotation LA = new LineageAnnotation();
-
-			LA.setXform(true);
-
-			LA.setWfInstance(workflowID);
-			LA.setProc(procName);
-			LA.setVar(varName);
-
-			if (varType == null) {
-				System.out.println("WARNING: no type info available for ["+procName+"/"+varName+"] -- assuming s");
-				varType = "s";
-			}
-			LA.setVarType(varType);
-			LA.setVarTypeNestingLevel(nextVar.getTypeNestingLevel());	//varTypeNestingLevel
-
-			initialPath.add(LA);
-
-			// **************
-			// process currentPath
-			// **************
-
-			List<LineageAnnotation>  newPath = applyXformRule(initialPath, nextVars, 0, annotations);								
-
-
-			// generate a query if required
-			if (selectedProcessors.isEmpty() || selectedProcessors.contains(procName)) {
-
-				// processing done only on input vars -- this means at the end of a xform() step
-				// unless this is a xfer() into INPUT, in this case the output var of _INPT_ is also processed
-				if (xform || procName.equals("_INPUT_")) {
-
-					System.out.println("QueryGen for ["+procName+"] will see:  ");
-
-					int tabs = 0;
-					for (Iterator<LineageAnnotation> lIt = newPath.iterator(); lIt.hasNext(); tabs++) {
-						String indent = new String();
-						for (int j=0; j<tabs; j++) { indent = indent+"\t"; }
-						System.out.println(indent+lIt.next().toString());
-					}
-
-					LineageSQLQuery lq = pq.LineageQueryGen(newPath);
-
-					lqList.add(lq);
-
-					System.out.println("SQL query:\n"+lq.getSQLQuery());
-
-				}
-
-			}
-
-			// recursive call
-			computeLineagePaths_OBSOLETE(workflowID, varName, procName, selectedProcessors, newPath, lqList);				
-
-			initialPath.remove(initialPath.size()-1);
-
-		}  // end for each var
-
-	}
-
-	return;
-
-}
 
 
 
@@ -636,43 +430,44 @@ public void computeLineagePaths_OBSOLETE(
  * 
  * @param path the path being updated
  * @param inputVars  the entire set of input variables to the processor that does the transformation. 
- * These are needed in order to apportion elements of an iteration vector to corresponding individual inputs
+ * These are needed in order to apportion elements of an iteration vector to corresponding individual inputs.<br/>
+ * This step involves exactly one output var for a processor P, and one input var for the same P
+ * @param projectedIterationLength 
  * @param var2NL 
  * @param annotations
  */
 protected List<LineageAnnotation> applyXformRule(List<LineageAnnotation> path, 
 		                                         List<Var> inputVars, 
-		                                         int projectedIterationIndex, 
+		                                         String iterationVectorFragment,
 		                                         Map<String, 
 		                                         List<String>> annotations) {
 
-	// look up the applicable rule using the varType information for the last two nodes
+	// look up the applicable rule using the DNL and ANL information for the last two nodes
 
 	if (path.size() < 2)  {
 		System.out.println("not enough nodes in the path to apply a rule - terminating");
 		return path;
 	}
 
-	LineageAnnotation prevNode = path.get(path.size()-2); // previous
-	LineageAnnotation currNode = path.get(path.size()-1); // current
+	LineageAnnotation prevNode = path.get(path.size()-2); // previous: refers to one input var of the processor
+	LineageAnnotation currNode = path.get(path.size()-1); // current: refers to one output var of the processor
 
-	int fromNesting = currNode.getVarTypeNestingLevel();
-	int toNesting   = prevNode.getVarTypeNestingLevel();
-
+	int fromNesting = currNode.getDNL();
+	
+	int toNesting   = prevNode.getDNL();
+	
 	// first deal with iteration issues
 	// is this processor iterating over its inputs?
-	System.out.println("projectedIterationIndex: "+projectedIterationIndex);
+	System.out.println("iterationVectorFragment: "+iterationVectorFragment);
 	
-	if (projectedIterationIndex == -1) {  // == -1: this input is not involved in iteration
+	if (iterationVectorFragment == null) {  // this input is not involved in iteration at all
 		
 		System.out.println("no iteration involved");
 		currNode.setIteration(prevNode.getIteration());  // propagate any iteration request upwards with no change
 		
-	} else { // this input is involved in iteration -- use index as a selector over the iteration vector
+	} else { // this input is involved in iteration -- use iterationVectorFragment 
 		
-		String iterationVector[] = prevNode.getIteration().split(",");
-
-		currNode.setIteration(iterationVector[projectedIterationIndex]);
+		currNode.setIteration(iterationVectorFragment);
 		
 	}
 
@@ -756,14 +551,12 @@ protected List<LineageAnnotation>  applyXferRule(List<LineageAnnotation> path, M
 	LineageAnnotation prevNode = path.get(path.size()-2); // previous
 	LineageAnnotation currNode = path.get(path.size()-1); // current
 
-	int fromNesting = currNode.getVarTypeNestingLevel();
-	int toNesting   = prevNode.getVarTypeNestingLevel();
+	int fromNesting = currNode.getDNL();
+	int toNesting   = prevNode.getDNL();
 
 	if (fromNesting == 0 && toNesting == 0)  { // s -> s see rule xfer/1
 
-		if (prevNode.isSingleInput()) {
-			currNode.setIteration(prevNode.getIteration());
-		}
+		currNode.setIteration(prevNode.getIteration());
 		
 		currNode.setIic(prevNode.getIic());
 		currNode.setCollectionNesting(prevNode.getCollectionNesting());
@@ -826,7 +619,10 @@ class LineageAnnotation {
 	String proc;
 	String var;
 	String varType = null;   // dtring, XML,... see Taverna type system
-	int varTypeNestingLevel = 0; // default: depth = 0 in type signature (atomic data)
+	
+	int DNL = 0; // declared nesting level -- copied from VAR
+	int ANL  = 0;  // actual nesting level -- copied from Var
+	
 	String wfInstance;  // TODO generalize to list / time interval?
 	boolean singleInput = true;
 
@@ -842,7 +638,7 @@ class LineageAnnotation {
 				"," + "["+iteration +"]"+
 				","+ iic + 
 				", ["+ iterationVector + "]"+
-				","+ varTypeNestingLevel);
+				","+ collectionNesting);
 
 		return sb.toString();
 	}
@@ -1010,21 +806,6 @@ class LineageAnnotation {
 	}
 
 
-	/**
-	 * @return the varTypeNestingLevel
-	 */
-	public int getVarTypeNestingLevel() {
-		return varTypeNestingLevel;
-	}
-
-
-	/**
-	 * @param varTypeNestingLevel the varTypeNestingLevel to set
-	 */
-	public void setVarTypeNestingLevel(int varTypeNestingLevel) {
-		this.varTypeNestingLevel = varTypeNestingLevel;
-	}
-
 
 	/**
 	 * @return the collectionNesting
@@ -1055,6 +836,38 @@ class LineageAnnotation {
 	 */
 	public void setIterationVector(String iterationVector) {
 		this.iterationVector = iterationVector;
+	}
+
+
+	/**
+	 * @return the dNL
+	 */
+	public int getDNL() {
+		return DNL;
+	}
+
+
+	/**
+	 * @param dnl the dNL to set
+	 */
+	public void setDNL(int dnl) {
+		DNL = dnl;
+	}
+
+
+	/**
+	 * @return the aNL
+	 */
+	public int getANL() {
+		return ANL;
+	}
+
+
+	/**
+	 * @param anl the aNL to set
+	 */
+	public void setANL(int anl) {
+		ANL = anl;
 	}
 }
 

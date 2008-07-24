@@ -105,6 +105,7 @@ public class ProvenanceQuery {
 				aVar.setVName(rs.getString("varName"));
 				aVar.setType(rs.getString("type"));
 				aVar.setTypeNestingLevel(rs.getInt("nestingLevel"));
+				aVar.setActualNestingLevel(rs.getInt("actualNestingLevel"));
 				
 				result.add(aVar);
 				
