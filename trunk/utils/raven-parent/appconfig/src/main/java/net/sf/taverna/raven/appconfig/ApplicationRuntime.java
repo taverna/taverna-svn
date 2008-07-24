@@ -44,7 +44,11 @@ public class ApplicationRuntime {
 	 * Protected constructor, use {@link #getInstance()}.
 	 */
 	protected ApplicationRuntime() {
-		appUserHome = new ApplicationUserHome(appConfig.getName(), appConfig
+		String name = appConfig.getName();
+		if (name.equals(ApplicationConfig.UNKNOWN_APPLICATION)) {
+			name = null;
+		}
+		appUserHome = new ApplicationUserHome(name, appConfig
 				.getApplicationHome());
 	}
 

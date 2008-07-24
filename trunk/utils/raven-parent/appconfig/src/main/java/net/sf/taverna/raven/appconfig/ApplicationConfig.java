@@ -34,7 +34,7 @@ import net.sf.taverna.raven.prelauncher.ClassLocation;
  */
 public class ApplicationConfig {
 
-	private static final String UNKNOWN_APPLICATION = "unknownApplication-"
+	public static final String UNKNOWN_APPLICATION = "unknownApplication-"
 			+ UUID.randomUUID().toString();
 	public static final String PREFIX = "raven.launcher.";
 	public static final String APP_MAIN = PREFIX + "app.main";

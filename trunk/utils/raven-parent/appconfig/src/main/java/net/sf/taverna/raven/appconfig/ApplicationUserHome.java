@@ -123,6 +123,10 @@ public class ApplicationUserHome {
 		if (applicationHome != null) {
 			appHome = new File(applicationHome);
 		} else {
+			if (getApplicationName() == null) {
+				logger.warn("Unknown application name");
+				return null;
+			}
 			File home = new File(System.getProperty("user.home"));
 			if (!home.isDirectory()) {
 				logger.error("User home not a valid directory: " + home);
