@@ -5,9 +5,8 @@ import java.util.Map;
 
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.facade.ResultListener;
-
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
-import net.sf.taverna.t2.reference.Identified;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
@@ -16,7 +15,6 @@ public class CaptureResultsListener implements ResultListener {
 	private int outputCount;
 	private Map<String,Object> resultMap = new HashMap<String,Object>();
 	private final InvocationContext context;
-	
 	
 	public CaptureResultsListener(Dataflow dataflow, InvocationContext context) {
 		
