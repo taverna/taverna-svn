@@ -105,7 +105,13 @@ public abstract class AbstractConfigurable implements Configurable {
 	 * list. For the property to be updated this{@link #setPropertyStringList(String, List)} must be used.
 	 */
 	public List<String> getPropertyStringList(String key) {
-		return Collections.unmodifiableList(fromListText(getProperty(key)));
+		String value = getProperty(key);
+		if (value!=null) {
+			return Collections.unmodifiableList(fromListText(value));
+		}
+		else {
+			return null;
+		}
 	}
 
 	private List<String> fromListText(String property) {

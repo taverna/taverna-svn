@@ -145,6 +145,14 @@ public class AbstractConfigurableTest {
 	}
 	
 	@Test
+	public void testListNotThere() throws Exception {
+		Configurable c = DummyConfigurable.getInstance();
+		c.getPropertyMap().clear();
+		assertNull("the property should be null",c.getProperty("sdflhsdfhsdfjkhsdfkhsdfkhsdfjkh"));
+		assertNull("the list should be null if the property doesn't exist",c.getPropertyStringList("sdflhsdfhsdfjkhsdfkhsdfkhsdfjkh"));
+	}
+	
+	@Test
 	public void testListDelimeters() throws Exception {
 		Configurable c = DummyConfigurable.getInstance();
 		c.getPropertyMap().clear();
