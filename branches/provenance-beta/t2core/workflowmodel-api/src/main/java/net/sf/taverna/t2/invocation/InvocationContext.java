@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.invocation;
 
+import net.sf.taverna.t2.provenance.ProvenanceConnector;
 import net.sf.taverna.t2.reference.ReferenceContext;
 import net.sf.taverna.t2.reference.ReferenceService;
 
@@ -20,5 +21,7 @@ public interface InvocationContext extends ReferenceContext {
 	 *         and register references to data in the workflow
 	 */
 	public ReferenceService getReferenceService();
+
+	public ProvenanceConnector getProvenanceConnector();
 
 }

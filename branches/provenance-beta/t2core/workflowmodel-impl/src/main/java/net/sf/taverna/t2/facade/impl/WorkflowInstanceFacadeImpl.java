@@ -3,6 +3,7 @@ package net.sf.taverna.t2.facade.impl;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 import net.sf.taverna.t2.facade.FailureListener;
@@ -14,6 +15,8 @@ import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.monitor.MonitorManager;
 import net.sf.taverna.t2.monitor.MonitorNode;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
+import net.sf.taverna.t2.provenance.DataflowRunComplete;
+import net.sf.taverna.t2.provenance.WorkflowProvenanceItem;
 import net.sf.taverna.t2.utility.TypedTreeModel;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
@@ -32,10 +35,17 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 	private String localName;
 
 	public WorkflowInstanceFacadeImpl(final Dataflow dataflow,
-			InvocationContext context, String parentProcess) {
+			final InvocationContext context, String parentProcess) {
 		this.dataflow = dataflow;
 		this.context = context;
-		this.localName = "facade" + owningProcessId.getAndIncrement();
+		//FIXME what should the local name be?
+//		this.localName = "facade" + owningProcessId.getAndIncrement();
+		this.localName = "facade(" + UUID.randomUUID() +")"+ owningProcessId.getAndIncrement();
+		WorkflowProvenanceItem worklowItem = new WorkflowProvenanceItem(dataflow);
+		context.getProvenanceConnector().getProvenanceCollection().add(worklowItem);
+//		context.getProvenanceConnector().store(new DataFacade(context.getDataManager()));
+		//FIXME use the new reference service
+		context.getProvenanceConnector().store(context.getReferenceService());
 		if (parentProcess.equals("")) {
 			this.instanceOwningProcessId = localName;
 		} else {
@@ -56,6 +66,11 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 							// un-register this node from the monitor
 							MonitorManager.getInstance().deregisterNode(
 									instanceOwningProcessId.split(":"));
+							 DataflowRunComplete dataflowRunComplete = new DataflowRunComplete();
+							 context.getProvenanceConnector().getProvenanceCollection().add(dataflowRunComplete);
+							 context.getProvenanceConnector().store(context.getReferenceService());
+							 //FIXME use the new reference manager stuff
+//							 context.getProvenanceConnector().store(new DataFacade(context.getDataManager()));
 						}
 					}
 					for (ResultListener resultListener : resultListeners

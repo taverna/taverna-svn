@@ -94,6 +94,8 @@
 		<module>compatibility-impl</module>
 		<module>renderers-api</module>
 		<module>renderers-impl</module>
+		<module>provenance-api</module>
+		<module>provenance-impl</module>
 		<!-- <module>persistent-store</module> -->
 	</modules>
 	<repositories>

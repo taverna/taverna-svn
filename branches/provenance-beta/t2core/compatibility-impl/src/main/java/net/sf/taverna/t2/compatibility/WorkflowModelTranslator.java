@@ -41,6 +41,7 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ErrorBounce;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Provenance;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Retry;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.AbstractIterationStrategyNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.CrossProduct;
@@ -413,7 +414,7 @@ public class WorkflowModelTranslator {
 		int initialDelay = t1Processor.getRetryDelay();
 		int maxDelay = (int) (initialDelay * (Math.pow(backoffFactor,
 				maxRetries)));
-
+		DispatchLayer<?> provenance = new Provenance();
 		DispatchLayer<?> parallelize = new Parallelize(maxJobs);
 		DispatchLayer<?> errorBounce = new ErrorBounce();
 		DispatchLayer<?> failover = new Failover();
@@ -422,6 +423,7 @@ public class WorkflowModelTranslator {
 		DispatchLayer<?> invoke = new Invoke();
 
 		int layer = 0;
+		edits.getAddDispatchLayerEdit(dispatchStack, provenance, layer++).doEdit();
 		edits.getAddDispatchLayerEdit(dispatchStack, parallelize, layer++)
 				.doEdit();
 		edits.getAddDispatchLayerEdit(dispatchStack, errorBounce, layer++)

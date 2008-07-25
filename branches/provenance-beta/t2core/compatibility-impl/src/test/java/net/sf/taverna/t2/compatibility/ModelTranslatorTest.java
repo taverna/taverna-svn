@@ -227,33 +227,33 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 
 			List<DispatchLayer<?>> dispatchLayers = processor
 					.getDispatchStack().getLayers();
-			assertEquals(5, dispatchLayers.size());
-			assertTrue(dispatchLayers.get(0) instanceof Parallelize);
-			assertTrue(dispatchLayers.get(1) instanceof ErrorBounce);
-			assertTrue(dispatchLayers.get(2) instanceof Failover);
-			assertTrue(dispatchLayers.get(3) instanceof Retry);
-			assertTrue(dispatchLayers.get(4) instanceof Invoke);
+			assertEquals(6, dispatchLayers.size());
+			assertTrue(dispatchLayers.get(1) instanceof Parallelize);
+			assertTrue(dispatchLayers.get(2) instanceof ErrorBounce);
+			assertTrue(dispatchLayers.get(3) instanceof Failover);
+			assertTrue(dispatchLayers.get(4) instanceof Retry);
+			assertTrue(dispatchLayers.get(5) instanceof Invoke);
 			if (processor.getLocalName().equals("processor_a")) {
-				assertEquals(1, ((Parallelize) dispatchLayers.get(0))
+				assertEquals(1, ((Parallelize) dispatchLayers.get(1))
 						.getConfiguration().getMaximumJobs());
-				assertEquals(0, ((Retry) dispatchLayers.get(3))
+				assertEquals(0, ((Retry) dispatchLayers.get(4))
 						.getConfiguration().getMaxRetries());
-				assertEquals(0, ((Retry) dispatchLayers.get(3))
+				assertEquals(0, ((Retry) dispatchLayers.get(4))
 						.getConfiguration().getInitialDelay());
-				assertEquals(0, ((Retry) dispatchLayers.get(3))
+				assertEquals(0, ((Retry) dispatchLayers.get(4))
 						.getConfiguration().getMaxDelay());
-				assertEquals(1, ((Retry) dispatchLayers.get(3))
+				assertEquals(1, ((Retry) dispatchLayers.get(4))
 						.getConfiguration().getBackoffFactor(), 0);
 			} else if (processor.getLocalName().equals("processor_b")) {
-				assertEquals(4, ((Parallelize) dispatchLayers.get(0))
+				assertEquals(4, ((Parallelize) dispatchLayers.get(1))
 						.getConfiguration().getMaximumJobs());
-				assertEquals(2, ((Retry) dispatchLayers.get(3))
+				assertEquals(2, ((Retry) dispatchLayers.get(4))
 						.getConfiguration().getMaxRetries());
-				assertEquals(1000, ((Retry) dispatchLayers.get(3))
+				assertEquals(1000, ((Retry) dispatchLayers.get(4))
 						.getConfiguration().getInitialDelay());
-				assertEquals(2250, ((Retry) dispatchLayers.get(3))
+				assertEquals(2250, ((Retry) dispatchLayers.get(4))
 						.getConfiguration().getMaxDelay());
-				assertEquals(1.5, ((Retry) dispatchLayers.get(3))
+				assertEquals(1.5, ((Retry) dispatchLayers.get(4))
 						.getConfiguration().getBackoffFactor(), 0);
 			}
 		}

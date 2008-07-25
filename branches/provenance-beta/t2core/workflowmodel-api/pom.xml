@@ -18,11 +18,11 @@
 	</description>
 	<dependencies>
 		<!-- 
-		<dependency>
+			<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>data-api</artifactId>
 			<version>0.3-SNAPSHOT</version>
-		</dependency> -->
+			</dependency> -->
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>t2reference-api</artifactId>

@@ -4,6 +4,8 @@ import java.util.List;
 
 import net.sf.taverna.platform.spring.RavenAwareClassPathXmlApplicationContext;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.provenance.InMemoryProvenanceConnector;
+import net.sf.taverna.t2.provenance.ProvenanceConnector;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.reference.T2ReferenceGenerator;
@@ -59,6 +61,11 @@ public class DummyInvocationContext implements InvocationContext {
 	public <T> List<? extends T> getEntities(Class<T> arg0) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public ProvenanceConnector getProvenanceConnector() {
+		// TODO Auto-generated method stub
+		return new InMemoryProvenanceConnector();
 	}
 
 }
