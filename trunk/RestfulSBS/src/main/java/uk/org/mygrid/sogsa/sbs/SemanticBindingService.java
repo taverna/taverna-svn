@@ -5,6 +5,10 @@ import info.aduna.collections.iterators.CloseableIterator;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.logging.Handler;
@@ -45,6 +49,18 @@ public class SemanticBindingService extends Application {
 	}
 
 	private void init() {
+		try {
+			Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
+		} catch (InstantiationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IllegalAccessException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		// read all the binding keys from the database and intialise the list
 
@@ -62,10 +78,10 @@ public class SemanticBindingService extends Application {
 			e.printStackTrace();
 		}
 		try {
-		datasetService = new DatasetService(embeddedClientProperties);
+			datasetService = new DatasetService(embeddedClientProperties);
 		} catch (Exception e) {
 			java.util.logging.Logger.getLogger("org.mortbay.log").log(
-					 Level.WARNING, e.toString());
+					Level.WARNING, e.toString());
 		}
 		// for (URI uri : datasetService.getNamedgraphContainer().getContexts())
 		// {
@@ -142,14 +158,38 @@ public class SemanticBindingService extends Application {
 	 * Parse the RDF using {@link Rio} and add to the open anzo database with
 	 * the binding key as the context
 	 * 
-	 * @param key
+	 * @param rdfKey
 	 * @param rdf
 	 */
-	public void addBinding(String key, String rdf) {
+	public void addBinding(String entityKey, String rdfKey, String rdf) {
+		Connection con = null;
+		try {
+			con = DriverManager
+					.getConnection("jdbc:derby:/Users/Ian/scratch/entity");
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		java.sql.Statement sqlStatement = null;
+		try {
+			sqlStatement = con.createStatement();
+		} catch (SQLException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+
+		String sql = "INSERT INTO identifier(entityKey, key) VALUES";
+		try {
+			sqlStatement.executeUpdate(sql);
+		} catch (SQLException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+
 		// bindingList.add(key);
 		// bindingMap.put(key, binding);
 		URI namedGraphURI = datasetService.getValueFactory().createURI(
-				"http://" + key);
+				"http://" + rdfKey);
 		boolean createIfNecessary = true;
 		INamedGraph graph = null;
 		try {
@@ -214,62 +254,117 @@ public class SemanticBindingService extends Application {
 
 	/**
 	 * Retrieve all the RDF for a particular binding and return a
-	 * {@link Binding} object which represents it
+	 * {@link Binding} object which represents it. Get the named graph
+	 * identifier from the database by querying for RDFIDs which match the ID
+	 * represented by the passed in value key. Use this to get all of the rdf
 	 */
 	public Binding getBinding(String key) {
-		// do something with the datasetService to retrieve the rdf for the key
-		URI namedGraphURI = datasetService.getValueFactory().createURI(
-				"http://" + key);
-		CloseableIterator<Statement> statements = null;
-		try {
-			statements = datasetService.getRemoteGraph(namedGraphURI, false)
-					.getStatements();
-			// datasetService.getRemoteGraph(namedGraphURI,
-			// false).getMetaDataGraph().
-			// datasetService.getRemoteGraph(namedGraphURI, false).
-		} catch (AnzoException e) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
-					Level.WARNING, e.toString());
-		}
+
+		ResultSet executeQuery = getBindingForEntityKey(key);
+
 		String rdf = new String();
+		boolean hasRDF = false;
+		try {
+			while (executeQuery.next()) {
+				String uniqueKey = executeQuery.getString(0);
+				URI namedGraphURI = datasetService.getValueFactory().createURI(
+						"http://" + uniqueKey);
+				CloseableIterator<Statement> statements = null;
+				RemoteGraph remoteGraph = null;
+				try {
+					remoteGraph = datasetService.getRemoteGraph(namedGraphURI,
+							false);
 
-		if (statements != null) {
+					// datasetService.getRemoteGraph(namedGraphURI,
+					// false).getMetaDataGraph().
+					// datasetService.getRemoteGraph(namedGraphURI, false).
+				} catch (AnzoException e) {
+					java.util.logging.Logger.getLogger("org.mortbay.log").log(
+							Level.WARNING, e.toString());
+				}
+				if (remoteGraph != null) {
 
-			while (statements.hasNext()) {
-				// java.util.logging.Logger.getLogger("org.mortbay.log").log(
-				// Level.WARNING, statements.next().toString());
-				rdf = rdf + statements.next().toString();
+					if (statements != null) {
+						hasRDF = true;
+						while (statements.hasNext()) {
+							// java.util.logging.Logger.getLogger("org.mortbay.log").log(
+							// Level.WARNING, statements.next().toString());
+							rdf = rdf + statements.next().toString();
+						}
+					}
+				}
 			}
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
-			// Statement statement;
-			// while ((statement = statements.next()) != null) {
-			//
-			// rdf = rdf + statement.toString();
-			// }
+		// do something with the datasetService to retrieve the rdf for the key
+
+		// URI namedGraphURI = datasetService.getValueFactory().createURI(
+		// "http://" + key);
+		// CloseableIterator<Statement> statements = null;
+		// try {
+		// statements = datasetService.getRemoteGraph(namedGraphURI, false)
+		// .getStatements();
+		// // datasetService.getRemoteGraph(namedGraphURI,
+		// // false).getMetaDataGraph().
+		// // datasetService.getRemoteGraph(namedGraphURI, false).
+		// } catch (AnzoException e) {
+		// java.util.logging.Logger.getLogger("org.mortbay.log").log(
+		// Level.WARNING, e.toString());
+		// }
+		// String rdf = new String();
+		//
+		// if (statements != null) {
+		//
+		// while (statements.hasNext()) {
+		// // java.util.logging.Logger.getLogger("org.mortbay.log").log(
+		// // Level.WARNING, statements.next().toString());
+		// rdf = rdf + statements.next().toString();
+		// }
+
+		// Statement statement;
+		// while ((statement = statements.next()) != null) {
+		//
+		// rdf = rdf + statement.toString();
+		// }
+
+		if (hasRDF) {
 			return new Binding(key, rdf);
 		}
 		return null;
-
 	}
 
 	public void removeBinding(String key) {
 		// FIXME what should it do? Can you remove a graph or do you just delete
 		// all its statements
-		URI namedGraphURI = datasetService.getValueFactory().createURI(
-				"http://" + key);
-		RemoteGraph remoteGraph = null;
+		ResultSet executeQuery = getBindingForEntityKey(key);
 		try {
-			remoteGraph = datasetService.getRemoteGraph(namedGraphURI, false);
-		} catch (AnzoException e) {
+			while (executeQuery.next()) {
+				String uniqueKey = executeQuery.getString(0);
+
+				URI namedGraphURI = datasetService.getValueFactory().createURI(
+						"http://" + uniqueKey);
+				RemoteGraph remoteGraph = null;
+				try {
+					remoteGraph = datasetService.getRemoteGraph(namedGraphURI,
+							false);
+				} catch (AnzoException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				try {
+					remoteGraph.delete(datasetService.getRemoteGraph(
+							namedGraphURI, false).getStatements());
+				} catch (AnzoException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			remoteGraph.delete(datasetService.getRemoteGraph(namedGraphURI,
-					false).getStatements());
-		} catch (AnzoException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e1.printStackTrace();
 		}
 	}
 
@@ -291,7 +386,7 @@ public class SemanticBindingService extends Application {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//no need to delete the old stuff?
+		// no need to delete the old stuff?
 		// try {
 		// remoteGraph.delete(datasetService.getRemoteGraph(namedGraphURI,
 		// false).getStatements());
@@ -340,32 +435,71 @@ public class SemanticBindingService extends Application {
 	}
 
 	public String queryBinding(String key, String query) {
-		// TODO Auto-generated method stub
-		URI namedGraphURI = datasetService.getValueFactory().createURI(
-				"http://" + key);
-		RemoteGraph remoteGraph = null;
+		ResultSet executeQuery = getBindingForEntityKey(key);
+		
 		try {
-			remoteGraph = datasetService.getRemoteGraph(namedGraphURI, false);
-		} catch (AnzoException e) {
+			while (executeQuery.next()) {
+				String uniqueKey = executeQuery.getString(0);
+
+				URI namedGraphURI = datasetService.getValueFactory().createURI(
+						"http://" + uniqueKey);
+				RemoteGraph remoteGraph = null;
+				try {
+					remoteGraph = datasetService.getRemoteGraph(namedGraphURI,
+							false);
+				} catch (AnzoException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				QueryResult result = datasetService.execQuery(Collections
+						.singleton(namedGraphURI),
+						Collections.<URI> emptySet(), query);
+				if (result.isAskResult()) {
+					result.getAskResult();
+				} else if (result.isConstructResult()) {
+					result.getConstructResult();
+				} else if (result.isDescribeResult()) {
+					result.getDescribeResult();
+				} else if (result.isSelectResult()) {
+					result.getSelectResult();
+				}
+			}
+		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e1.printStackTrace();
 		}
-		QueryResult result = datasetService
-				.execQuery(Collections.singleton(namedGraphURI), Collections
-						.<URI> emptySet(), query);
-		if (result.isAskResult()) {
-			result.getAskResult();
-		} else if (result.isConstructResult()) {
-			result.getConstructResult();
-		} else if (result.isDescribeResult()) {
-			result.getDescribeResult();
-		} else if (result.isSelectResult()) {
-//			result.getSelectResult();
-		}
-//		StringWriter writer = new StringWriter();
-//		new SPARQLResultsXMLWriter(result);
-//		return writer.toString();
+		// StringWriter writer = new StringWriter();
+		// new SPARQLResultsXMLWriter(result);
+		// return writer.toString();
 		return null;
+	}
+	
+	private ResultSet getBindingForEntityKey(String key) {
+		Connection con = null;
+		try {
+			con = DriverManager
+					.getConnection("jdbc:derby:/Users/Ian/scratch/entity");
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		java.sql.Statement sqlStatement = null;
+		try {
+			sqlStatement = con.createStatement();
+		} catch (SQLException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+
+		String sql = "SELECT rdfid FROM identifier WHERE id=" + key;
+		ResultSet executeQuery = null;
+		try {
+			executeQuery = sqlStatement.executeQuery(sql);
+		} catch (SQLException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		return executeQuery;
 	}
 
 }

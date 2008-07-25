@@ -43,13 +43,15 @@ public class SemanticBindings extends BindingsList {
 	}
 
 	/**
-	 * Create a new binding
+	 * Create a new binding for entity with the id of entityKey and the rdf
+	 * passed in
 	 */
 	@Override
 	public void post(Representation entity) {
 		java.util.logging.Logger.getLogger("org.mortbay.log").log(
 				Level.WARNING, "posting a binding");
 		Form form = new Form(entity);
+		String entityKey = form.getFirstValue("entityKey");
 		String rdf = form.getFirstValue("rdf");
 		java.util.logging.Logger.getLogger("org.mortbay.log").log(
 				Level.WARNING, "RDF is: " + rdf);
@@ -57,10 +59,11 @@ public class SemanticBindings extends BindingsList {
 		// create a binding with RDF inside
 		UUID randomUUID = UUID.randomUUID();
 		// use database layer to store the rdf supplied in the request
-		addBinding(randomUUID.toString(), rdf);
-		Representation rep = new StringRepresentation("Binding succesfully created " + getRequest().getResourceRef().getIdentifier() + "/"
-				+ randomUUID.toString(),
-				MediaType.TEXT_PLAIN);
+		addBinding(entityKey, randomUUID.toString(), rdf);
+		Representation rep = new StringRepresentation(
+				"Binding succesfully created "
+						+ getRequest().getResourceRef().getIdentifier() + "/"
+						+ randomUUID.toString(), MediaType.TEXT_PLAIN);
 		// Indicates where the new resource is located.
 		rep.setIdentifier(getRequest().getResourceRef().getIdentifier() + "/"
 				+ randomUUID.toString());

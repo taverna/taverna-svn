@@ -27,9 +27,9 @@ public class BindingsList extends Resource {
 	 * 
 	 * @return
 	 */
-	protected synchronized void addBinding(String key, String rdf) {
+	protected synchronized void addBinding(String entityKey, String key, String rdf) {
 		((SemanticBindingService) getContext().getAttributes().get(
-				Application.KEY)).addBinding(key, rdf);
+				Application.KEY)).addBinding(entityKey, key, rdf);
 
 	}
 //	protected boolean hasBinding(String key) {
