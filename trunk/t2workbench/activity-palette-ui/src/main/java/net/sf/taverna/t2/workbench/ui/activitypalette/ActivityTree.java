@@ -45,7 +45,7 @@ public class ActivityTree extends JTree implements DragGestureListener,
 	
 	/** A query for each type of activity */
 	private List<Query<?>> queryList;
-	// private ActivityItem activityItem;
+
 	private DragSource dragSource;
 
 	public ActivityTree(TreeModel newModel) {
@@ -86,7 +86,6 @@ public class ActivityTree extends JTree implements DragGestureListener,
 		
 		for (final Query<?> query : queryList) {
 			new Thread("Activity query:"+query.toString()) {
-
 				@Override
 				public void run() {
 					query.doQuery();
