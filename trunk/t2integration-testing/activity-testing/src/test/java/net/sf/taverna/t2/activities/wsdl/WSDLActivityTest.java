@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +46,7 @@ public class WSDLActivityTest {
 		inputs.add("eco:b0078");
 		inputMap.put("genes_id_list", inputs);
 		Map<String, Class<?>> outputMap = new HashMap<String, Class<?>>();
-		outputMap.put("out", List.class);
+		outputMap.put("return", String.class);
 		Map<String,Object> results = ActivityInvoker.invokeAsyncActivity(activity, inputMap, outputMap);
 		assertEquals(1,results.size());
 		assertNotNull(results.get("return"));
