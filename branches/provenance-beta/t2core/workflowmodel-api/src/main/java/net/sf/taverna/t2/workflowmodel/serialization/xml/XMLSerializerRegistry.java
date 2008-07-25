@@ -19,7 +19,7 @@ public class XMLSerializerRegistry extends SPIRegistry<XMLSerializer> {
 		return instance;
 	}
 
-	public static XMLSerializer getSerializer() {
+	public XMLSerializer getSerializer() {
 		List<XMLSerializer> instances = getInstance().getInstances();
 		XMLSerializer result = null;
 		if (instances.size() == 0) {
