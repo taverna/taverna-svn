@@ -67,7 +67,7 @@ public class ProvenanceAnalysisTest1 {
 		Set<String> selectedProcessors = new HashSet<String>();
 
 		// this is what we certainly want to test
-		String targetIteration = "1,0,1";
+		String targetIteration = "0,1,0";
 		String targetProc = "ALL";  // this is a magic keyword -- it stands for "all"
 		
 		// use annotations?

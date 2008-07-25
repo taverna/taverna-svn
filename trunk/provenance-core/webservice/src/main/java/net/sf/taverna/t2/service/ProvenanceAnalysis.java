@@ -8,14 +8,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
 import net.sf.taverna.t2.service.util.Arc;
-import net.sf.taverna.t2.service.util.ProcBinding;
 import net.sf.taverna.t2.service.util.Var;
-import net.sf.taverna.t2.service.util.VarBinding;
 
 /**
  * @author paolo<p/>
@@ -50,7 +47,7 @@ public class ProvenanceAnalysis {
 		}
 
 		System.out.println("processor annotations for lineage refinement: ");
-		for (Map.Entry entry:annotations.entrySet())  {
+		for (Map.Entry<String,List<String>> entry:annotations.entrySet())  {
 
 			System.out.println("annotations for proc "+entry.getKey());
 			for (String ann: (List<String>) entry.getValue()) {
@@ -169,14 +166,10 @@ public class ProvenanceAnalysis {
 
 		inputVars = pq.getVars(varsQueryConstraints);
 
-		int[] var2NL = new int[10];  // inputVarCnt --> nesting level
 		Map<Var,Var>  sink2source  = new HashMap<Var,Var> ();  // sink node -> source node for an arc 
-
 		
 		///////
-		// lookahead: fetch source vars from the Arcs in order to inspect their nestinglevel
-		// for each input var that is a node sink, retrieve corresponding source var through the arc
-		// THIS MAY BE OBSOLETED BY THE DNL-ANL APPROACH
+		// lookahead: fetch source vars from the Arcs . This will be used in the xfer step
 		///////
 		
 		int inputVarCnt0 = 0;
@@ -184,7 +177,6 @@ public class ProvenanceAnalysis {
 
 			String procName      = inputVar.getPName();
 			String inputVarName  = inputVar.getVName();
-			String inputVarType  = inputVar.getType();
 			
 			// retrieve all Arcs ending with (var,proc) -- expect exactly one, since no multiple incoming arcs allowed
 			Map<String, String>  arcsQueryConstraints = new HashMap<String, String>();
@@ -214,9 +206,7 @@ public class ProvenanceAnalysis {
 
 				// expect exactly one source var
 				Var sourceVar = sourceVars.get(0);
-				int nestingLevel = sourceVar.getTypeNestingLevel();  // save this in order to complete the xform step
 
-				var2NL[inputVarCnt0] = nestingLevel;
 				sink2source.put(inputVar, sourceVar);
 				
 				inputVarCnt0++;
@@ -228,7 +218,6 @@ public class ProvenanceAnalysis {
 		// determine the chunks of iteration vector that need to be allocated to each input var
 		// this is based on the DNL-ANL analysis
 		LineageAnnotation prevNode = initialPath.get(initialPath.size()-2); // previous: refers to one input var of the processor
-		LineageAnnotation currNode = initialPath.get(initialPath.size()-1); // current: refers to one output var of the processor
 
 		String iterationVector[] = prevNode.getIteration().split(",");
 		
@@ -262,9 +251,7 @@ public class ProvenanceAnalysis {
 		}
 
 		// perform xform step on each input var separately and update the annotated path -- depth-first recursion
-		boolean singleInput = inputVars.size() == 1;
 		
-		int inputVarCnt = 0;
 		for (Var inputVar: inputVars) {
 
 			System.out.println("xform() from ["+proc+","+outputVar+"] to ["+inputVar.getPName()+","+inputVar.getVName()+"]");
@@ -276,7 +263,6 @@ public class ProvenanceAnalysis {
 			LA.setWfInstance(workflowID);
 			LA.setProc(inputVar.getPName());
 			LA.setVar(inputVar.getVName());
-			LA.setSingleInput(singleInput);
 			
 			String varType = inputVar.getType();
 			if (varType == null) {
@@ -284,7 +270,8 @@ public class ProvenanceAnalysis {
 				varType = "s";
 			}
 			LA.setVarType(inputVar.getType());
-			LA.setDNL(inputVar.getTypeNestingLevel());	//varTypeNestingLevel			
+			LA.setDNL(inputVar.getTypeNestingLevel());	//varTypeNestingLevel	
+			LA.setCollectionNesting(inputVar.getTypeNestingLevel());  
 
 			initialPath.add(LA);
 
@@ -325,7 +312,6 @@ public class ProvenanceAnalysis {
 			initialPath.remove(initialPath.size()-1);
 
 		}  // end for 
-
 }
 
 
@@ -374,8 +360,6 @@ public class ProvenanceAnalysis {
 
 			List<Arc> arcs = pq.getArcs(arcsQueryConstraints);
 
-			List<Var> nextVars = new ArrayList<Var>();
-
 			Arc a = arcs.get(0);
 
 			if (a != null) {
@@ -408,7 +392,7 @@ public class ProvenanceAnalysis {
 		// process currentPath
 		// **************
 
-		List<LineageAnnotation>  newPath = applyXferRule(initialPath, annotations);
+		applyXferRule(initialPath, annotations);
 
 		// recurse on xform
 		xformStep(workflowID, sourceVarName, sourceProcName, selectedProcessors, initialPath, lqList);
@@ -418,12 +402,6 @@ public class ProvenanceAnalysis {
 		
 		return; 
 	}
-
-
-
-
-
-
 
 
 /**
@@ -504,7 +482,6 @@ protected List<LineageAnnotation> applyXformRule(List<LineageAnnotation> path,
 
 		String procName = currNode.getProc();
 
-		List<String> annotList = null;
 		if ( annotations != null && annotations.containsKey(procName) && annotations.get(procName).contains(IP_ANNOTATION)) {
 
 			System.out.println(procName+" is "+IP_ANNOTATION);
@@ -556,7 +533,8 @@ protected List<LineageAnnotation>  applyXferRule(List<LineageAnnotation> path, M
 
 	if (fromNesting == 0 && toNesting == 0)  { // s -> s see rule xfer/1
 
-		currNode.setIteration(prevNode.getIteration());
+		currNode.setIterationVector(prevNode.getIteration());  // old iteration becomes new iteration vector CHECK
+		currNode.setIteration(prevNode.getIteration());  // old iteration becomes new iteration vector CHECK
 		
 		currNode.setIic(prevNode.getIic());
 		currNode.setCollectionNesting(prevNode.getCollectionNesting());
@@ -565,7 +543,10 @@ protected List<LineageAnnotation>  applyXferRule(List<LineageAnnotation> path, M
 
 	} else if (fromNesting < toNesting) {  // s -> l(s) lossless -- see rule xfer/2
 
-		currNode.setCollectionNesting(prevNode.getCollectionNesting() - 1);
+		if (prevNode.getCollectionNesting() > 0 )
+			currNode.setCollectionNesting(prevNode.getCollectionNesting() - 1);
+		else currNode.setCollectionNesting(0);
+		
 		currNode.setIteration(prevNode.getIteration());
 		currNode.setIic(prevNode.getIic());
 
@@ -624,7 +605,6 @@ class LineageAnnotation {
 	int ANL  = 0;  // actual nesting level -- copied from Var
 	
 	String wfInstance;  // TODO generalize to list / time interval?
-	boolean singleInput = true;
 
 	public String toString() {
 
@@ -643,16 +623,7 @@ class LineageAnnotation {
 		return sb.toString();
 	}
 
-
-	public void setSingleInput(boolean si) {
-		singleInput = si;
-	}
 	
-	public boolean isSingleInput() {
-		return singleInput;
-	}
-
-
 	public void addStep(String step) {
 		path.add(step);
 	}

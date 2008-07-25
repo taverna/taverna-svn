@@ -231,7 +231,7 @@ public class EventProcessor {
 			System.out.println("input port for "+processorId+": "+portName);
 
 			// value type may vary
-			List<Element> valueElements = inputport.getChildren();
+			List<Element> valueElements = inputport.getChildren(); // hopefully in the right order...
 			if (valueElements != null && valueElements.size() > 0) {
 
 				Element valueEl = valueElements.get(0); // expect only 1 child
