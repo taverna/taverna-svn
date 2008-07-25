@@ -1,5 +1,9 @@
 package net.sf.taverna.t2.reference;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -17,7 +21,6 @@ import org.springframework.context.ApplicationContext;
  */
 public class RegisterLargeByteArrayTest {
 
-	@SuppressWarnings("unused")
 	private ReferenceContext dummyContext = new ReferenceContext() {
 		public <T> List<? extends T> getEntities(Class<T> arg0) {
 			return new ArrayList<T>();
@@ -49,6 +52,49 @@ public class RegisterLargeByteArrayTest {
 			System.out.println(refIter.next());
 		}
 
+	}
+	
+	@Test
+	public void register1kByteArray() throws Exception {
+		byte[] bytes = readBinaryData("1k.bin");
+		ApplicationContext context = new RavenAwareClassPathXmlApplicationContext(
+				"registrationAndTraversalTestContext.xml");
+		ReferenceService rs = (ReferenceService) context
+				.getBean("t2reference.service.referenceService");
+		T2Reference reference = rs.register(bytes, 0, true, dummyContext);
+		
+		Object returnedObject=rs.renderIdentifier(reference, Object.class,dummyContext);
+		byte [] newbytes=(byte[])returnedObject;
+		assertEquals("There bytes should be of the same length",bytes.length,newbytes.length);
+		assertNotSame("They shouldn't be the same actual object",bytes, newbytes);
+		assertEquals("The bytes should have the same content",bytes,newbytes);
+		
+	}
+	
+	@Test
+	public void register1mByteArray() throws Exception {
+		byte[] bytes = readBinaryData("1m.bin");
+		ApplicationContext context = new RavenAwareClassPathXmlApplicationContext(
+				"registrationAndTraversalTestContext.xml");
+		ReferenceService rs = (ReferenceService) context
+				.getBean("t2reference.service.referenceService");
+		T2Reference reference = rs.register(bytes, 0, true, dummyContext);
+		
+		Object returnedObject=rs.renderIdentifier(reference, Object.class,dummyContext);
+		byte [] newbytes=(byte[])returnedObject;
+		assertEquals("There bytes should be of the same length",bytes.length,newbytes.length);
+		assertNotSame("They shouldn't be the same actual object",bytes, newbytes);
+		assertEquals("The bytes should have the same content",bytes,newbytes);
+		
+	}
+	
+	private byte[] readBinaryData(String resourceName) throws Exception {
+		InputStream instr = RegisterLargeByteArrayTest.class
+				.getResourceAsStream("/data/" + resourceName);
+		int size = instr.available();
+		byte[] result = new byte[size];
+		instr.read(result);
+		return result;
 	}
 
 	private static byte[] getLargeByteArray() {
