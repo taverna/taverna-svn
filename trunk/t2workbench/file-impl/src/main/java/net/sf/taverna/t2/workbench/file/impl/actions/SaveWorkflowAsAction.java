@@ -76,13 +76,14 @@ public class SaveWorkflowAsAction extends AbstractAction {
 	public boolean saveDataflow(Component parentComponent, Dataflow dataflow) {
 		fileManager.setCurrentDataflow(dataflow);
 		JFileChooser fileChooser = new JFileChooser();
-
 		Preferences prefs = Preferences.userNodeForPackage(getClass());
 		String curDir = prefs
 				.get("currentDir", System.getProperty("user.home"));
 		fileChooser.setDialogTitle(SAVE_WORKFLOW_AS);
 
 		fileChooser.resetChoosableFileFilters();
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		
 		List<FileFilter> fileFilters = fileManager
 				.getSaveFileFilters(File.class);
 		if (fileFilters.isEmpty()) {
