@@ -4,32 +4,18 @@
 no iterations
 no type mismatches
 no collections
-
-inputs:
-P1Vi = 'a'</s:workflowdescription>
+but two paths</s:workflowdescription>
   <s:processor name="P1">
-    <s:defaults>
-      <s:default name="P1Vi">a</s:default>
-    </s:defaults>
     <s:beanshell>
-      <s:scriptvalue>P1Vo = P1Vi+"_P1";</s:scriptvalue>
+      <s:scriptvalue>P1Vo = new ArrayList();
+
+P1Vo.add(P1Vi+"_P1");
+P1Vo.add("x");</s:scriptvalue>
       <s:beanshellinputlist>
         <s:beanshellinput s:syntactictype="'text/plain'">P1Vi</s:beanshellinput>
       </s:beanshellinputlist>
       <s:beanshelloutputlist>
-        <s:beanshelloutput s:syntactictype="'text/plain'">P1Vo</s:beanshelloutput>
-      </s:beanshelloutputlist>
-      <s:dependencies s:classloader="iteration" />
-    </s:beanshell>
-  </s:processor>
-  <s:processor name="P3">
-    <s:beanshell>
-      <s:scriptvalue>P3Vo = P3Vi + "_P3";</s:scriptvalue>
-      <s:beanshellinputlist>
-        <s:beanshellinput s:syntactictype="'text/plain'">P3Vi</s:beanshellinput>
-      </s:beanshellinputlist>
-      <s:beanshelloutputlist>
-        <s:beanshelloutput s:syntactictype="'text/plain'">P3Vo</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">P1Vo</s:beanshelloutput>
       </s:beanshelloutputlist>
       <s:dependencies s:classloader="iteration" />
     </s:beanshell>
@@ -46,9 +32,13 @@ P1Vi = 'a'</s:workflowdescription>
       <s:dependencies s:classloader="iteration" />
     </s:beanshell>
   </s:processor>
-  <s:link source="P1:P1Vo" sink="P2:P2Vi" />
-  <s:link source="P2:P2Vo" sink="P3:P3Vi" />
-  <s:link source="P3:P3Vo" sink="O1" />
+  <s:link source="I1" sink="P1:P1Vi" />
+  <s:link source="I2" sink="P2:P2Vi" />
+  <s:link source="P1:P1Vo" sink="O1" />
+  <s:link source="P2:P2Vo" sink="O2" />
+  <s:source name="I1" />
+  <s:source name="I2" />
   <s:sink name="O1" />
+  <s:sink name="O2" />
 </s:scufl>
 

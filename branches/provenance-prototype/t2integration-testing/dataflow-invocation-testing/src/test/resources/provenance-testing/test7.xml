@@ -15,9 +15,6 @@ type mismatch es: s -&gt; l(s) -&gt; s</s:workflowdescription>
     </s:beanshell>
   </s:processor>
   <s:processor name="P1">
-    <s:defaults>
-      <s:default name="P1Vi">a</s:default>
-    </s:defaults>
     <s:beanshell>
       <s:scriptvalue>P1Vo = P1Vi+"_P1";</s:scriptvalue>
       <s:beanshellinputlist>
@@ -50,9 +47,11 @@ P2Vo.add("x");</s:scriptvalue>
       <s:dependencies s:classloader="iteration" />
     </s:beanshell>
   </s:processor>
+  <s:link source="I1" sink="P1:P1Vi" />
   <s:link source="P1:P1Vo" sink="P2:P2Vi" />
   <s:link source="P2:P2Vo" sink="P3:P3Vi" />
   <s:link source="P3:P3Vo" sink="O1" />
+  <s:source name="I1" />
   <s:sink name="O1" />
 </s:scufl>
 
