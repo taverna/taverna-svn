@@ -88,7 +88,8 @@ public class RendererPopup extends MouseAdapter {
 			menu.setLabel("Available Renderers:");
 			menu.addSeparator();
 			if (lastSelectedPathComponent instanceof ResultTreeNode) {
-				List<String> types = null;
+				// TODO: Actually get a list of types
+				List<String> types = new ArrayList<String>();
 				RendererRegistry rendererRegistry = new RendererRegistry();
 				token = null;
 
