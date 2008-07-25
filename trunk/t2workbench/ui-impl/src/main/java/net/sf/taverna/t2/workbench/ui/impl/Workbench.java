@@ -3,11 +3,14 @@ package net.sf.taverna.t2.workbench.ui.impl;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -18,6 +21,7 @@ import javax.swing.WindowConstants;
 import net.sf.taverna.osx.OSXAdapter;
 import net.sf.taverna.osx.OSXApplication;
 import net.sf.taverna.raven.SplashScreen;
+import net.sf.taverna.raven.appconfig.ApplicationConfig;
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.raven.log.ConsoleLog;
 import net.sf.taverna.raven.log.Log;
@@ -38,11 +42,16 @@ import org.apache.log4j.Logger;
  */
 public class Workbench extends JFrame {
 
+	private OSXAppListener osxAppListener = new OSXAppListener();
+
+	private static final String LAUNCHER_LOGO_PNG = "/launcher_logo.png";
+
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(Workbench.class);
 
 	private ApplicationRuntime appRuntime = ApplicationRuntime.getInstance();
+	private ApplicationConfig appConfig = ApplicationConfig.getInstance();
 
 	private static Workbench instance;
 
@@ -60,45 +69,22 @@ public class Workbench extends JFrame {
 
 	private void makeGUI() {
 		setLayout(new GridBagLayout());
+		
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				exit();
 			}
 		});
-		
-		OSXApplication.setListener(new OSXAdapter() {
-			@Override
-			public boolean handleQuit() {
-				exit();
-				return false;
-			}
 
-			@Override
-			public boolean hasPreferences() {
-				return true;
-			}
-			
-			@Override
-			public boolean handlePreferences() {
-				T2ConfigurationFrame.showFrame();
-				return true;
-			}
-			
-			@Override
-			public boolean handleOpenFile(String filename) {
-				try {
-					FileManager.getInstance().openDataflow(null,
-							new File(filename));
-					return true;
-				} catch (OpenException e) {
-					logger.warn("Could not open file " + filename, e);
-				} catch (IllegalStateException e) {
-					logger.warn("Could not open file " + filename, e);
-				}
-				return false;
-			}
-		});
+		URL launcherLogo = getClass().getResource(LAUNCHER_LOGO_PNG);
+		if (launcherLogo != null) {
+			ImageIcon imageIcon = new ImageIcon(launcherLogo);
+			setIconImage(imageIcon.getImage());
+		}
+		setTitle(appConfig.getTitle());
+		
+		OSXApplication.setListener(osxAppListener);
 
 		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		setLookAndFeel();
@@ -235,6 +221,39 @@ public class Workbench extends JFrame {
 
 	public WorkbenchPerspectives getPerspectives() {
 		return perspectives;
+	}
+
+	protected class OSXAppListener extends OSXAdapter {
+		@Override
+		public boolean handleQuit() {
+			exit();
+			return false;
+		}
+
+		@Override
+		public boolean hasPreferences() {
+			return true;
+		}
+
+		@Override
+		public boolean handlePreferences() {
+			T2ConfigurationFrame.showFrame();
+			return true;
+		}
+
+		@Override
+		public boolean handleOpenFile(String filename) {
+			try {
+				FileManager.getInstance()
+						.openDataflow(null, new File(filename));
+				return true;
+			} catch (OpenException e) {
+				logger.warn("Could not open file " + filename, e);
+			} catch (IllegalStateException e) {
+				logger.warn("Could not open file " + filename, e);
+			}
+			return false;
+		}
 	}
 
 }
