@@ -29,17 +29,18 @@ import org.springframework.context.ApplicationContext;
 public class InvocationTestHelper extends DataflowTranslationHelper {
 
 	protected InvocationContext context;
+	private ReferenceService referenceService;
 	
 	@SuppressWarnings("unchecked")
 	@Before
 	public void makeDataManager() {
+		ApplicationContext appContext = new RavenAwareClassPathXmlApplicationContext(
+		"inMemoryActivityTestsContext.xml");
+		referenceService = (ReferenceService) appContext.getBean("t2reference.service.referenceService");
+		
 		context =  new InvocationContext() {
 
 			public ReferenceService getReferenceService() {
-				ApplicationContext context = new RavenAwareClassPathXmlApplicationContext(
-				"inMemoryActivityTestsContext.xml");
-				ReferenceService referenceService = (ReferenceService) context.getBean("t2reference.service.referenceService");
-
 				return referenceService;
 			}
 

@@ -3,7 +3,6 @@ package net.sf.taverna.t2.compatibility;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
@@ -32,7 +31,7 @@ public class TranslateAndRunWSDLBasedTest extends InvocationTestHelper {
 		
 		WorkflowInstanceFacade facade;
 		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
-		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context.getReferenceService());
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context);
 		facade.addResultListener(listener);
 		
 		facade.fire();
@@ -47,7 +46,9 @@ public class TranslateAndRunWSDLBasedTest extends InvocationTestHelper {
 		assertTrue("'fieldName' should be a List", listener.getResult("fieldName") instanceof List);
 		assertTrue("'fieldList' should be a List", listener.getResult("fieldList") instanceof List);
 		assertTrue("'DBDescription' should be a String", listener.getResult("DBDescription") instanceof String);
-		assertTrue("'xmlOutput' should be a ByteArrayInputStream", listener.getResult("xmlOutput") instanceof ByteArrayInputStream);
+		Object result = listener.getResult("xmlOutput");
+		assertNotNull("Result should not be null",result);
+		assertTrue("'xmlOutput' should be a ByteArrayInputStream but was:"+result.getClass(),result instanceof String);
 		
 		//some basic tests the the results were sane
 		List fieldName = (List)listener.getResult("fieldName");
@@ -59,10 +60,7 @@ public class TranslateAndRunWSDLBasedTest extends InvocationTestHelper {
 		
 		String dbDescription = (String)listener.getResult("DBDescription");
 		assertTrue("DBDescription should contain the word pubmed",dbDescription.toLowerCase().contains("pubmed"));
-		
-		ByteArrayInputStream xmlOutput = (ByteArrayInputStream)listener.getResult("xmlOutput");
-		int bytesRead = xmlOutput.read(new byte[5]);
-		assertTrue("the xmlOutput stream should contain something",bytesRead>0);
+	
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -78,7 +76,7 @@ public class TranslateAndRunWSDLBasedTest extends InvocationTestHelper {
 		
 		WorkflowInstanceFacade facade;
 		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
-		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context.getReferenceService());
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context);
 		facade.addResultListener(listener);
 		
 		facade.fire();

@@ -34,7 +34,7 @@ public class TranslateAndRunNestedTest extends InvocationTestHelper {
 		
 		WorkflowInstanceFacade facade;
 		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
-		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context.getReferenceService());
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context);
 		facade.addResultListener(listener);
 		
 		facade.fire();
@@ -70,7 +70,7 @@ public class TranslateAndRunNestedTest extends InvocationTestHelper {
 
 		WorkflowInstanceFacade facade;
 		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
-		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context.getReferenceService());
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context);
 		facade.addResultListener(listener);
 		
 		facade.fire();
@@ -110,7 +110,7 @@ public class TranslateAndRunNestedTest extends InvocationTestHelper {
 
 		WorkflowInstanceFacade facade;
 		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
-		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context.getReferenceService());
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context);
 		facade.addResultListener(listener);
 		
 		facade.fire();

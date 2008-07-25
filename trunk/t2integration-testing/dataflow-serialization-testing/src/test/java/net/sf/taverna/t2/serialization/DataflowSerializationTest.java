@@ -90,12 +90,12 @@ public class DataflowSerializationTest extends InvocationTestHelper {
 			
 			WorkflowInstanceFacade facade;
 			facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
-			CaptureResultsListener listener = new CaptureResultsListener(dataflow,context.getReferenceService());
+			CaptureResultsListener listener = new CaptureResultsListener(dataflow,context);
 			facade.addResultListener(listener);
 			
 			facade.fire();
 			
-			T2Reference entityId=context.getReferenceService().register(input, 0, false, null);
+			T2Reference entityId=context.getReferenceService().register(input, 0, true, context);
 			for (DataflowInputPort port : dataflow.getInputPorts()) {
 				WorkflowDataToken inputToken = new WorkflowDataToken("",new int[]{}, entityId, context);
 				facade.pushData(inputToken, port.getName());
@@ -126,7 +126,7 @@ public class DataflowSerializationTest extends InvocationTestHelper {
 
 		WorkflowInstanceFacade facade;
 		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
-		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context.getReferenceService());
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context);
 		facade.addResultListener(listener);
 		
 		facade.fire();
@@ -159,7 +159,7 @@ public class DataflowSerializationTest extends InvocationTestHelper {
 
 		WorkflowInstanceFacade facade;
 		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
-		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context.getReferenceService());
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context);
 		facade.addResultListener(listener);
 		
 		facade.fire();

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
+import net.sf.taverna.t2.facade.impl.WorkflowInstanceFacadeImpl;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.testing.CaptureResultsListener;
@@ -40,7 +41,7 @@ public class TranslateAndRunTest extends InvocationTestHelper {
 
 		WorkflowInstanceFacade facade;
 		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
-		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context.getReferenceService());
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context);
 		facade.addResultListener(listener);
 		
 		facade.fire();
@@ -76,7 +77,7 @@ public class TranslateAndRunTest extends InvocationTestHelper {
 		
 		WorkflowInstanceFacade facade;
 		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
-		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context.getReferenceService());
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context);
 		facade.addResultListener(listener);
 		
 		facade.fire();
@@ -99,7 +100,7 @@ public class TranslateAndRunTest extends InvocationTestHelper {
 		
 		WorkflowInstanceFacade facade;
 		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
-		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context.getReferenceService());
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context);
 		facade.addResultListener(listener);
 		
 		facade.fire();
@@ -123,7 +124,7 @@ public class TranslateAndRunTest extends InvocationTestHelper {
 		
 		WorkflowInstanceFacade facade;
 		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
-		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context.getReferenceService());
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context);
 		facade.addResultListener(listener);
 		
 		facade.fire();
@@ -147,19 +148,20 @@ public class TranslateAndRunTest extends InvocationTestHelper {
 		
 		List<String> inputs = new ArrayList<String>();
 		inputs.add("one");
-		inputs.add("two");
-		inputs.add("three");
+//		inputs.add("two");
+//		inputs.add("three");
 		
 		for (String input : inputs) {
 			
 			WorkflowInstanceFacade facade;
-			facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
-			CaptureResultsListener listener = new CaptureResultsListener(dataflow,context.getReferenceService());
+			facade = new WorkflowInstanceFacadeImpl(dataflow,context,"");
+			CaptureResultsListener listener = new CaptureResultsListener(dataflow,context);
 			facade.addResultListener(listener);
 			
 			facade.fire();
 			
-			T2Reference entityId=context.getReferenceService().register(input, 0, false, null);
+			T2Reference entityId=context.getReferenceService().register(input, 0, true, context);
+			Object x = context.getReferenceService().renderIdentifier(entityId, Object.class ,context);
 			for (DataflowInputPort port : dataflow.getInputPorts()) {
 				WorkflowDataToken inputToken = new WorkflowDataToken("",new int[]{}, entityId, context);
 				facade.pushData(inputToken, port.getName());

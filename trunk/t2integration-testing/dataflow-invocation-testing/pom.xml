@@ -8,16 +8,19 @@
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>dataflow-invocation-testing</artifactId>
-	<name>Testing of Dataflow invocation after Translation from a ScuflModel</name>
+	<name>
+		Testing of Dataflow invocation after Translation from a
+		ScuflModel
+	</name>
 	<packaging>jar</packaging>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>integration-testing-common</artifactId>
 			<version>${depT2core}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>compatibility-impl</artifactId>
@@ -33,7 +36,7 @@
 			<artifactId>data-impl</artifactId>
 			<version>${depT2core}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.scufl</groupId>
 			<artifactId>scufl-model</artifactId>
@@ -62,7 +65,7 @@
 			<version>${depT2core}</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>biomart-activity-translator</artifactId>
@@ -81,14 +84,14 @@
 			<version>${depTaverna}</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.processors</groupId>
 			<artifactId>taverna-soaplab-processor</artifactId>
 			<version>${depTaverna}</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>soaplab-activity-translator</artifactId>
@@ -101,7 +104,7 @@
 			<version>${depT2core}</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>wsdl-activity-translator</artifactId>
@@ -120,8 +123,8 @@
 			<version>1.7.1.1-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
-		
-		
+
+
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.processors</groupId>
 			<artifactId>taverna-stringconstant-processor</artifactId>
@@ -139,7 +142,7 @@
 			<version>${depT2core}</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.scufl</groupId>
 			<artifactId>scufl-workflow</artifactId>
@@ -158,7 +161,7 @@
 			<version>${depT2core}</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.processors</groupId>
 			<artifactId>taverna-localworkers</artifactId>
@@ -169,7 +172,28 @@
 			<artifactId>localworker-translator</artifactId>
 			<version>${depT2core}</version>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>platform</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>t2reference-api</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>t2reference-impl</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>t2reference-core-extensions</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>activity-test-utils</artifactId>
@@ -177,5 +201,5 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
+
 </project>
