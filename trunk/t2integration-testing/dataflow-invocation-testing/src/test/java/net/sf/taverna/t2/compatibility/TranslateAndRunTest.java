@@ -148,8 +148,8 @@ public class TranslateAndRunTest extends InvocationTestHelper {
 		
 		List<String> inputs = new ArrayList<String>();
 		inputs.add("one");
-//		inputs.add("two");
-//		inputs.add("three");
+		inputs.add("two");
+		inputs.add("three");
 		
 		for (String input : inputs) {
 			

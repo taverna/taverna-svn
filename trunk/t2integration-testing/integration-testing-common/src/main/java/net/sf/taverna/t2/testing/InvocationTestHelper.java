@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.testing;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +18,11 @@ import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.TokenProcessingEntity;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
+import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLDeserializer;
+import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLDeserializerImpl;
 
+import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
 import org.junit.Before;
 import org.springframework.context.ApplicationContext;
 
@@ -143,5 +149,14 @@ public class InvocationTestHelper extends DataflowTranslationHelper {
 							+ "s was exceed waiting for the results");
 			}
 		}
+	}
+	
+	protected Dataflow loadDataflow(String resourceName) throws Exception {
+		XMLDeserializer deserializer = new XMLDeserializerImpl();
+		InputStream inStream = InvocationTestHelper.class.getResourceAsStream("/t2flow/" + resourceName);
+		if (inStream==null) throw new IOException("Unable to find resource for t2 dataflow:"+resourceName);
+		SAXBuilder builder = new SAXBuilder();
+		Element el= builder.build(inStream).detachRootElement();
+		return deserializer.deserializeDataflow(el);
 	}
 }
