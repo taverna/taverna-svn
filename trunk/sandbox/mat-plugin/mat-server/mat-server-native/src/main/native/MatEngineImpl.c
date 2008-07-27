@@ -12,8 +12,11 @@ jclass matArrayClass, matEngineImplClass, jstringClass;
 
 /*MatArray FieldIDs*/
 jfieldID matarray_typeFID, matarray_maxNonZeroFID, matarray_nNonZeroFID, matarray_dimensionsFID,
-matarray_rowIdsFID, matarray_colIdsFID, matarray_data_reFID, matarray_data_imFID,
-matarray_char_dataFID, matarray_logical_dataFID, matarray_cell_dataFID;
+matarray_rowIdsFID, matarray_colIdsFID, matarray_double_data_reFID, matarray_double_data_imFID,
+matarray_char_dataFID, matarray_logical_dataFID, matarray_cell_dataFID, matarray_field_namesFID,
+matarray_single_data_reFID, matarray_single_data_imFID, matarray_int8_data_reFID, matarray_int8_data_imFID,
+matarray_int16_data_reFID, matarray_int16_data_imFID, matarray_int32_data_reFID, matarray_int32_data_imFID,
+matarray_int64_data_reFID, matarray_int64_data_imFID;
 /*MatArray static field IDs*/
 jfieldID matarray_UNKNOWN_TYPE_FID, matarray_STRUCT_TYPE_FID, matarray_CELL_TYPE_FID,
 matarray_LOGICAL_TYPE_FID, matarray_CHAR_TYPE_FID, matarray_DOUBLE_TYPE_FID,
@@ -22,8 +25,8 @@ matarray_INT16_TYPE_FID, matarray_UINT16_TYPE_FID, matarray_INT32_TYPE_FID,
 matarray_UINT32_TYPE_FID, matarray_INT64_TYPE_FID, matarray_UINT64_TYPE_FID,
 matarray_FUNTION_TYPE_FID;
 /*MatArray method ids*/
-jmethodID matarray_isSparseMID, matarray_isNumericMID, matarray_isComplexMID,
-matarray_isCharMID, matarray_contrsuctorMID;
+jmethodID matarray_contrsuctorMID, matarray_isSparseMID, matarray_isNumericMID, matarray_isComplexMID,
+matarray_isCharMID, matarray_getFieldMID;
 
 /*MatEngineImpl method ids*/
 jmethodID matengineimpl_getVarMID, matengineimpl_setVarMID,
@@ -48,6 +51,7 @@ JNIEXPORT void JNICALL Java_net_sf_taverna_matserver_MatEngineImpl_execute(JNIEn
     jobjectArray inputNames, outputNames;
     jint inputLen, outputLen;
     int i;
+    mxArray** inputs;
 
     /*open session*/
     eng = engOpen("");
@@ -63,6 +67,10 @@ JNIEXPORT void JNICALL Java_net_sf_taverna_matserver_MatEngineImpl_execute(JNIEn
     if (inputValues == NULL) return;
     inputLen = (*env)->GetArrayLength(env, inputValues);
 
+    inputs = (mxArray**) malloc(inputLen * sizeof (mxArray*));
+    if (inputs == NULL)
+        return;
+
     for (i = 0; i < inputLen; i++) {
         mxArray *mxarr;
         jobject matArray = (*env)->GetObjectArrayElement(env, inputValues, i);
@@ -77,6 +85,7 @@ JNIEXPORT void JNICALL Java_net_sf_taverna_matserver_MatEngineImpl_execute(JNIEn
 
         name = (*env)->GetStringUTFChars(env, jname, NULL);
         engPutVariable(eng, name, mxarr);
+        inputs[i] = mxarr;
         (*env)->ReleaseStringUTFChars(env, jname, name);
         (*env)->DeleteLocalRef(env, matArray);
         (*env)->DeleteLocalRef(env, jname);
@@ -106,13 +115,17 @@ JNIEXPORT void JNICALL Java_net_sf_taverna_matserver_MatEngineImpl_execute(JNIEn
         (*env)->ReleaseStringUTFChars(env, jname, name);
 
         matArray = createMatArray(env, mxarr);
-        mxFree(mxarr); /*XXX ???*/
+        mxDestroyArray(mxarr); /*XXX ???*/
 
         (*env)->CallVoidMethod(env, this, matengineimpl_setOutputVarMID, jname, matArray);
         (*env)->DeleteLocalRef(env, jname);
         (*env)->DeleteLocalRef(env, matArray);
     }
     /*clean up*/
+    for (i = 0; i < inputLen; i++)
+        if (inputs[i] != NULL)
+            mxDestroyArray(inputs[i]);
+    free(inputs);
     engClose(eng);
 }
 
@@ -241,13 +254,13 @@ mxArray* createMxArrayNumeric(JNIEnv *env, jobject matArray, mxClassID mxclass) 
         mxarr = mxCreateNumericArray(ndims, dims, mxclass, cplxFlag);
     }
 
-    matarray_pr = (jdoubleArray) (*env)->GetObjectField(env, matArray, matarray_data_reFID);
+    matarray_pr = (jdoubleArray) (*env)->GetObjectField(env, matArray, matarray_double_data_reFID);
     len = (*env)->GetArrayLength(env, matarray_pr);
     pr = (jdouble*) calloc(len, sizeof (jdouble));
     (*env)->GetDoubleArrayRegion(env, matarray_pr, 0, len, pr);
     mxSetPr(mxarr, pr);
 
-    matarray_pi = (jdoubleArray) (*env)->GetObjectField(env, matArray, matarray_data_imFID);
+    matarray_pi = (jdoubleArray) (*env)->GetObjectField(env, matArray, matarray_double_data_imFID);
     if (matarray_pi != NULL) {
         len = (*env)->GetArrayLength(env, matarray_pi);
         pi = (jdouble*) calloc(len, sizeof (jdouble));
@@ -329,14 +342,14 @@ jobject createMatArray(JNIEnv* env, mxArray* mxarr) {
             pr = mxGetPr(mxarr);
             jpr = (*env)->NewDoubleArray(env, nelements);
             (*env)->SetDoubleArrayRegion(env, jpr, 0, nelements, pr);
-            (*env)->SetObjectField(env, matArray, matarray_data_reFID, jpr);
+            (*env)->SetObjectField(env, matArray, matarray_double_data_reFID, jpr);
             (*env)->DeleteLocalRef(env, jpr);
 
             if (mxIsComplex(mxarr)) {
                 pi = mxGetPi(mxarr);
                 jpi = (*env)->NewDoubleArray(env, nelements);
                 (*env)->SetDoubleArrayRegion(env, jpi, 0, nelements, pi);
-                (*env)->SetObjectField(env, matArray, matarray_data_imFID, jpi);
+                (*env)->SetObjectField(env, matArray, matarray_double_data_imFID, jpi);
                 (*env)->DeleteLocalRef(env, jpi);
             }
 
@@ -385,7 +398,7 @@ jobject mtojCharArray(JNIEnv *env, mxArray *mxarr) {
     jobjectArray jdata;
     char *data;
     char *dataSeg;
-    int nstrings, i;
+    int nstrings, i, j;
     int nchars, m, n;
 
     matArray = (*env)->NewObject(env, matArrayClass, matarray_contrsuctorMID);
@@ -410,7 +423,11 @@ jobject mtojCharArray(JNIEnv *env, mxArray *mxarr) {
     jdata = (*env)->NewObjectArray(env, nstrings, jstringClass, NULL);
     dataSeg = (char*) calloc(n + 1, sizeof (char));
     for (i = 0; i < nstrings; i++) {
-        strncpy(dataSeg, data + i*n, n);
+        for (j = 0; j < n; j++)
+            dataSeg[j] = data[j * m + i];
+        /*
+                strncpy(dataSeg, data + i*n, n);
+         */
         dataSeg[n] = '\0';
         (*env)->SetObjectArrayElement(env, jdata, i, (*env)->NewStringUTF(env, dataSeg));
     }
@@ -453,17 +470,29 @@ JNIEXPORT void JNICALL Java_net_sf_taverna_matserver_MatEngineImpl_initIDs(JNIEn
     matarray_dimensionsFID = (*env)->GetFieldID(env, matArrayClass, "dims", "[I");
     matarray_rowIdsFID = (*env)->GetFieldID(env, matArrayClass, "rowIds", "[I");
     matarray_colIdsFID = (*env)->GetFieldID(env, matArrayClass, "colIds", "[I");
-    matarray_data_reFID = (*env)->GetFieldID(env, matArrayClass, "data_re", "[D");
-    matarray_data_imFID = (*env)->GetFieldID(env, matArrayClass, "data_im", "[D");
+    matarray_double_data_reFID = (*env)->GetFieldID(env, matArrayClass, "double_data_re", "[D");
+    matarray_double_data_imFID = (*env)->GetFieldID(env, matArrayClass, "double_data_im", "[D");
     matarray_char_dataFID = (*env)->GetFieldID(env, matArrayClass, "char_data", "[Ljava/lang/String;");
     matarray_logical_dataFID = (*env)->GetFieldID(env, matArrayClass, "logical_data", "[Z");
     matarray_cell_dataFID = (*env)->GetFieldID(env, matArrayClass, "cell_data", "[Lnet/sf/taverna/matserver/MatArray;");
+    matarray_field_namesFID = (*env)->GetFieldID(env, matArrayClass, "field_names", "[Ljava/lang/String;");
+    matarray_single_data_reFID=(*env)->GetFieldID(env,matArrayClass, "single_data_re","[F");
+    matarray_single_data_imFID=(*env)->GetFieldID(env,matArrayClass,"single_data_im","[F");
+    matarray_int8_data_reFID=(*env)->GetFieldID(env,matArrayClass,"int8_data_re","[B");
+    matarray_int8_data_imFID=(*env)->GetFieldID(env,matArrayClass,"int8_data_im","[B");
+    matarray_int16_data_reFID=(*env)->GetFieldID(env,matArrayClass,"int16_data_re","[S");
+    matarray_int16_data_imFID=(*env)->GetFieldID(env,matArrayClass,"int16_data_im","[S");
+    matarray_int32_data_reFID=(*env)->GetFieldID(env,matArrayClass,"int32_data_re","[I");
+    matarray_int32_data_imFID=(*env)->GetFieldID(env,matArrayClass,"int32_data_im","[I");
+    matarray_int64_data_reFID=(*env)->GetFieldID(env,matArrayClass,"int64_data_re","[J");
+    matarray_int64_data_imFID=(*env)->GetFieldID(env,matArrayClass,"int64_data_im","[J");
 
+    matarray_contrsuctorMID = (*env)->GetMethodID(env, matArrayClass, "<init>", "()V");
     matarray_isSparseMID = (*env)->GetMethodID(env, matArrayClass, "isSparse", "()Z");
     matarray_isNumericMID = (*env)->GetMethodID(env, matArrayClass, "isNumeric", "()Z");
     matarray_isComplexMID = (*env)->GetMethodID(env, matArrayClass, "isComplex", "()Z");
     matarray_isCharMID = (*env)->GetMethodID(env, matArrayClass, "isChar", "()Z");
-    matarray_contrsuctorMID = (*env)->GetMethodID(env, matArrayClass, "<init>", "()V");
+    matarray_getFieldMID = (*env)->GetMethodID(env, matArrayClass, "getField", "(Ljava/lang/String;I)Lnet/sf/taverna/matserver/MatArray;");
 
     matarray_UNKNOWN_TYPE_FID = (*env)->GetStaticFieldID(env, matArrayClass, "UNKNOWN_TYPE", "Ljava/lang/String;");
     matarray_STRUCT_TYPE_FID = (*env)->GetStaticFieldID(env, matArrayClass, "STRUCT_TYPE", "Ljava/lang/String;");
