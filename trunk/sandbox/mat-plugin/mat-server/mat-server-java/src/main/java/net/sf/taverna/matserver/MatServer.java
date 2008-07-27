@@ -26,7 +26,7 @@ public class MatServer
         xfire.getServiceRegistry().register(service);
         
         server=new XFireHttpServer();
-        server.setPort(8191);
+        server.setPort(8194);
         server.start();
     }
     

@@ -27,7 +27,7 @@ public class MatEngineImplTest extends TestCase {
 
         double[] dre = new double[1];
         dre[0] = 4;
-        X.setData_re(dre);
+        X.setDouble_data_re(dre);
         engine.setVar("X", X);
 
         MatArray S = new MatArray();
@@ -53,7 +53,7 @@ public class MatEngineImplTest extends TestCase {
         
         assertEquals(Y.getType(), MatArray.DOUBLE_TYPE);
         assertNotNull(SO);
-        double[] pr=Y.data_re;
+        double[] pr=Y.double_data_re;
         double[] expectedMagic4=new double[]{16,5,9,4,2,11,7,14,3,10,6,15,13,8,12,1};
         
         for(int i=0; i<4; i++)
@@ -62,8 +62,8 @@ public class MatEngineImplTest extends TestCase {
                 assertEquals(expectedMagic4[4*j+i], pr[4*j+i]);
         }
         //XXX problem with transposed chars!!!
-        //printArr(S.getChar_data());
-        //printArr(SO.char_data);
+        printArr(S.getChar_data());
+        printArr(SO.char_data);
         //XXX*/ assertEquals(S.getChar_data()[0], SO.getChar_data()[0]);
     }
     

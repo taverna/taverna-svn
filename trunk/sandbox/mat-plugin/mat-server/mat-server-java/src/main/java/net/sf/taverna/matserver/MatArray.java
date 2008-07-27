@@ -31,12 +31,23 @@ public class MatArray {
     /** column indexing info for nonzero elements */
     int[] colIds;
     /** real parts */
-    double[] data_re;
+    double[] double_data_re;
     /** imaginary parts */
-    double[] data_im;
+    double[] double_data_im;
+    float[] single_data_re;
+    float[] single_data_im;
+    byte[] int8_data_re;
+    byte[] int8_data_im;
+    short[] int16_data_re;
+    short[] int16_data_im;
+    int[] int32_data_re;
+    int[] int32_data_im;
+    long[] int64_data_re;
+    long[] int64_data_im;
     String[] char_data;
     boolean[] logical_data;
     MatArray[] cell_data;
+    String[] field_names;
     //TODO functionHandles[]...
     public MatArray() {
     }
@@ -65,20 +76,20 @@ public class MatArray {
         this.char_data = char_data;
     }
 
-    public double[] getData_im() {
-        return data_im;
+    public double[] getDouble_data_im() {
+        return double_data_im;
     }
 
-    public void setData_im(double[] data_im) {
-        this.data_im = data_im;
+    public void setDouble_data_im(double[] data_im) {
+        this.double_data_im = data_im;
     }
 
-    public double[] getData_re() {
-        return data_re;
+    public double[] getDouble_data_re() {
+        return double_data_re;
     }
 
-    public void setData_re(double[] data_re) {
-        this.data_re = data_re;
+    public void setDouble_data_re(double[] data_re) {
+        this.double_data_re = data_re;
     }
 
     public int[] getRowIds() {
@@ -132,6 +143,21 @@ public class MatArray {
     public void setType(String type) {
         this.type = type;
     }
+
+    public MatArray getField(String name, int idx) {
+        int j = -1;
+        for (int i = 0; i < field_names.length; i++) {
+            if (field_names[i].equals(name)) {
+                j = i;
+                break;
+            }
+        }
+        if (j != -1) {
+            return cell_data[idx].cell_data[j]; //XXX Ugly as hell, think about it...
+        }
+        return null;
+    }
+
     //<editor-fold desc="type checking methods" defaultstate="collapsed">
     public boolean isNumeric() {
         return (type.equals(DOUBLE_TYPE) || type.equals(SINGLE_TYPE) ||
@@ -142,7 +168,7 @@ public class MatArray {
     }
 
     public boolean isComplex() {
-        return data_im != null;
+        return double_data_im != null;
     }
 
     public boolean isChar() {
