@@ -7,7 +7,7 @@
 
 #include "MatUtils.h"
 
-static jobject createJCellArray(env);
+static jobject createJCellArray(JNIEnv* env);
 
 /* Java to Matlab conversion functions */
 mxArray* jtomArray(JNIEnv* env, jobject matarray) {
@@ -58,8 +58,11 @@ mxArray* jtomArray(JNIEnv* env, jobject matarray) {
             mxarr = jtomUint32Array(env, matarray);
             break;
         case mxINT64_CLASS:
-            mxarr = jtomInt64Array(env, matarray);
-            break;
+            /*
+                        mxarr = jtomInt64Array(env, matarray);
+                        break;
+             */
+        case mxUINT64_CLASS:
         case mxFUNCTION_CLASS:
         default: /*mxUNKNOWN_CLASS and others*/
             mxarr = NULL;
@@ -97,7 +100,9 @@ mxArray* jtomCharArray(JNIEnv* env, jobject matarray) {
         (*env)->GetStringUTFRegion(env, jstr, 0, jstrlen, data[i]);
         (*env)->DeleteLocalRef(env, jstr);
     }
+
     mxarr = mxCreateCharMatrixFromStrings(dims[0], data);
+
     return mxarr;
 }
 
@@ -139,13 +144,13 @@ mxArray* jtomCellArray(JNIEnv* env, jobject matarray) {
 
 mxArray* jtomLogicalArray(JNIEnv* env, jobject matarray) {
     mxArray* mxarr;
-    int nelements
+    int nelements;
     mxLogical* data;
     int ndims, i;
     int* dims;
     jintArray jdims;
     jbooleanArray jdata;
-    jboolean jb, isSparse;
+    jboolean *jbs, isSparse;
 
     jdims = (jintArray) (*env)->GetObjectField(env, matarray, matarray_dimensionsFID);
     ndims = (*env)->GetArrayLength(env, jdims);
@@ -160,12 +165,12 @@ mxArray* jtomLogicalArray(JNIEnv* env, jobject matarray) {
     jdata = (jbooleanArray) (*env)->GetObjectField(env, matarray, matarray_logical_dataFID);
     nelements = (*env)->GetArrayLength(env, jdata);
 
-    isSparse = (*env)->CallBooleanMethod(env, matarray, matarray_isSparseFID);
+    isSparse = (*env)->CallBooleanMethod(env, matarray, matarray_isSparseMID);
     if (isSparse) {
-        int* ir, jc;
-        jintArray jir, jic;
+        int *ir, *jc;
+        jintArray jir, jjc;
         int ncolumns, nrows;
-        int nnz, len;
+        int len;
 
         nrows = dims[0];
         ncolumns = dims[1];
@@ -188,7 +193,7 @@ mxArray* jtomLogicalArray(JNIEnv* env, jobject matarray) {
         mxSetIr(mxarr, ir);
 
         jjc = (jintArray) (*env)->GetObjectField(env, matarray, matarray_colIdsFID);
-        len = (*env)->GetArrayLen(env, jjc);
+        len = (*env)->GetArrayLength(env, jjc);
         jc = (int*) mxCalloc(len, sizeof (int));
         if (jc == NULL) {
             setError(OUT_OF_MEMORY_ERROR);
@@ -200,15 +205,22 @@ mxArray* jtomLogicalArray(JNIEnv* env, jobject matarray) {
     } else
         mxarr = mxCreateLogicalArray(ndims, dims);
 
-    data = (mxLogical*) mxCalloc(nelments, sizeof (mxLogical));
+    data = (mxLogical*) mxCalloc(nelements, sizeof (mxLogical));
     if (data == NULL) {
         setError(OUT_OF_MEMORY_ERROR);
         return NULL;
     }
 
-    for (i = 0; i < nelements; i++)
-        data[i] = jdata[i] ? 1 : 0;
+    jbs = (jboolean*) malloc(nelements * sizeof (jboolean));
+    if (jbs == NULL) {
+        setError(OUT_OF_MEMORY_ERROR);
+        return NULL;
+    }
+    (*env)->GetBooleanArrayRegion(env, jdata, 0, nelements, jbs);
     (*env)->DeleteLocalRef(env, jdata);
+
+    for (i = 0; i < nelements; i++)
+        data[i] = jbs[i] ? 1 : 0;
     mxSetData(mxarr, data);
 
     return mxarr;
@@ -229,7 +241,7 @@ mxArray* jtomStructArray(JNIEnv* env, jobject matarray) {
     ndims = (*env)->GetArrayLength(env, jdims);
     dims = (int*) mxCalloc(ndims, sizeof (int));
     if (dims == NULL) {
-        setErr(OUT_OF_MEMORY_ERROR);
+        setError(OUT_OF_MEMORY_ERROR);
         return NULL;
     }
     (*env)->GetIntArrayRegion(env, jdims, 0, ndims, dims);
@@ -271,7 +283,7 @@ mxArray* jtomStructArray(JNIEnv* env, jobject matarray) {
         for (j = 0; j < nfields; j++) {
             mxArray* tmpMX;
             jobject tmpMA = (*env)->CallObjectMethod(env, tmpStruct, matarray_getFieldMID, fieldnames[j], i);
-            if (tempMA == NULL) {
+            if (tmpMA == NULL) {
                 (*env)->DeleteLocalRef(env, tmpMA);
                 continue;
             }
@@ -298,7 +310,7 @@ mxArray* jtomDoubleArray(JNIEnv* env, jobject matarray) {
     int *ir = NULL, *jc = NULL;
     int matarray_nzmax;
     int len;
-    jintArray jdims;
+    jintArray jdims, matarray_ir, matarray_jc;
     int ndims;
     int *dims;
 
@@ -310,7 +322,7 @@ mxArray* jtomDoubleArray(JNIEnv* env, jobject matarray) {
     ndims = (*env)->GetArrayLength(env, jdims);
     dims = (int*) mxCalloc(ndims, sizeof (int));
     if (dims == NULL) {
-        setErr(OUT_OF_MEMORY_ERROR);
+        setError(OUT_OF_MEMORY_ERROR);
         return NULL;
     }
     (*env)->GetIntArrayRegion(env, jdims, 0, ndims, dims);
@@ -366,16 +378,18 @@ mxArray* jtomDoubleArray(JNIEnv* env, jobject matarray) {
     (*env)->DeleteLocalRef(env, matarray_pr);
     mxSetPr(mxarr, pr);
 
-    matarray_pi = (jdoubleArray) (*env)->GetObjectField(env, matarray, matarray_double_data_imFID);
-    len(*env)->GetArrayLength(env, matarray_pr);
-    pi = (double*) mxCalloc(len, sizeof (double));
-    if (pi == NULL) {
-        setError(OUT_OF_MEMORY_ERROR);
-        return NULL;
+    if (cplxFlag) {
+        matarray_pi = (jdoubleArray) (*env)->GetObjectField(env, matarray, matarray_double_data_imFID);
+        len = (*env)->GetArrayLength(env, matarray_pi);
+        pi = (double*) mxCalloc(len, sizeof (double));
+        if (pi == NULL) {
+            setError(OUT_OF_MEMORY_ERROR);
+            return NULL;
+        }
+        (*env)->GetDoubleArrayRegion(env, matarray_pi, 0, len, pi);
+        (*env)->DeleteLocalRef(env, matarray_pi);
+        mxSetPi(mxarr, pi);
     }
-    (*env)->GetDoubleArrayRegion(env, matarray_pi, 0, len, pi);
-    (*env)->DeleteLocalRef(env, matarray_pi);
-    mxSetPi(mxarr, pi);
 
     return mxarr;
 }
@@ -384,8 +398,8 @@ mxArray* jtomSingleArray(JNIEnv* env, jobject matarray) {
     mxArray* mxarr;
     mxClassID mxclass;
     int cplxFlag;
-    jfloatArray matarray_pr, matarray_pi;
-    float *pr = NULL, *pi = NULL;
+    jfloatArray matarray_pr;
+    float *pr = NULL;
     int len;
     jintArray jdims;
     int ndims;
@@ -399,7 +413,7 @@ mxArray* jtomSingleArray(JNIEnv* env, jobject matarray) {
     ndims = (*env)->GetArrayLength(env, jdims);
     dims = (int*) mxCalloc(ndims, sizeof (int));
     if (dims == NULL) {
-        setErr(OUT_OF_MEMORY_ERROR);
+        setError(OUT_OF_MEMORY_ERROR);
         return NULL;
     }
     (*env)->GetIntArrayRegion(env, jdims, 0, ndims, dims);
@@ -417,19 +431,8 @@ mxArray* jtomSingleArray(JNIEnv* env, jobject matarray) {
     (*env)->GetFloatArrayRegion(env, matarray_pr, 0, len, pr);
     (*env)->DeleteLocalRef(env, matarray_pr);
 
-    mxSetPr(mxarr, pr);
-    if (cplxFlag) {
-        matarray_pi = (jfloatArray) (*env)->GetObjectField(env, matarray, matarray_single_data_imFID);
-        len = (*env)->GetArrayLength(env, matarray_pr);
-        pi = (float*) mxCalloc(len, sizeof (float));
-        if (pi == NULL) {
-            setError(OUT_OF_MEMORY_ERROR);
-            return NULL;
-        }
-        (*env)->GetFloatArrayRegion(env, matarray_pi, 0, len, pi);
-        (*env)->DeleteLocalRef(env, matarray_pi);
-        mxSetPi(mxarr, pi);
-    }
+    mxSetData(mxarr, (void*) pr);
+
     return mxarr;
 }
 
@@ -437,8 +440,8 @@ mxArray* jtomInt8Array(JNIEnv* env, jobject matarray) {
     mxArray* mxarr;
     mxClassID mxclass;
     int cplxFlag;
-    jbyteArray matarray_pr, matarray_pi;
-    char *pr = NULL, *pi = NULL;
+    jbyteArray matarray_pr;
+    char *pr = NULL;
     int len;
     jintArray jdims;
     int ndims;
@@ -452,7 +455,7 @@ mxArray* jtomInt8Array(JNIEnv* env, jobject matarray) {
     ndims = (*env)->GetArrayLength(env, jdims);
     dims = (int*) mxCalloc(ndims, sizeof (int));
     if (dims == NULL) {
-        setErr(OUT_OF_MEMORY_ERROR);
+        setError(OUT_OF_MEMORY_ERROR);
         return NULL;
     }
     (*env)->GetIntArrayRegion(env, jdims, 0, ndims, dims);
@@ -469,33 +472,22 @@ mxArray* jtomInt8Array(JNIEnv* env, jobject matarray) {
     }
     (*env)->GetByteArrayRegion(env, matarray_pr, 0, len, pr);
     (*env)->DeleteLocalRef(env, matarray_pr);
-    mxSetPr(mxarr, pr);
+    mxSetData(mxarr, (void*) pr);
 
-    if (cplxFlag) {
-        matarray_pi = (jbyteArray) (*env)->GetObjectField(env, matarray, matarray_int8_data_imFID);
-        len = (*env)->GetArrayLength(env, matarray_pr);
-        pi = (char*) mxCalloc(len, sizeof (char));
-        if (pi == NULL) {
-            setError(OUT_OF_MEMORY_ERROR);
-            return NULL;
-        }
-        (*env)->GetByteArrayRegion(env, matarray_pi, 0, len, pi);
-        (*env)->DeleteLocalRef(env, matarray_pi);
-        mxSetPi(mxarr, pi);
-    }
     return mxarr;
 }
 
-mxArray* jtomUint8Array(JNIEnv* env, mxArray* mxarr) {
+mxArray* jtomUint8Array(JNIEnv* env, jobject matarray) {
     /*TODO*/
+    return NULL;
 }
 
-mxArray* jtomInt16Array(JNIEnv* env, mxArray* mxarr) {
+mxArray* jtomInt16Array(JNIEnv* env, jobject matarray) {
     mxArray* mxarr;
     mxClassID mxclass;
     int cplxFlag;
-    jshortArray matarray_pr, matarray_pi;
-    short *pr = NULL, *pi = NULL;
+    jshortArray matarray_pr;
+    short *pr = NULL;
     int len;
     jintArray jdims;
     int ndims;
@@ -509,7 +501,7 @@ mxArray* jtomInt16Array(JNIEnv* env, mxArray* mxarr) {
     ndims = (*env)->GetArrayLength(env, jdims);
     dims = (int*) mxCalloc(ndims, sizeof (int));
     if (dims == NULL) {
-        setErr(OUT_OF_MEMORY_ERROR);
+        setError(OUT_OF_MEMORY_ERROR);
         return NULL;
     }
     (*env)->GetIntArrayRegion(env, jdims, 0, ndims, dims);
@@ -526,33 +518,22 @@ mxArray* jtomInt16Array(JNIEnv* env, mxArray* mxarr) {
     }
     (*env)->GetShortArrayRegion(env, matarray_pr, 0, len, pr);
     (*env)->DeleteLocalRef(env, matarray_pr);
-    mxSetPr(mxarr, pr);
+    mxSetData(mxarr, (void*) pr);
 
-    if (cplxFlag) {
-        matarray_pi = (jshortArray) (*env)->GetObjectField(env, matarray, matarray_int16_data_imFID);
-        len = (*env)->GetArrayLength(env, matarray_pr);
-        pi = (char*) mxCalloc(len, sizeof (char));
-        if (pi == NULL) {
-            setError(OUT_OF_MEMORY_ERROR);
-            return NULL;
-        }
-        (*env)->GetShortArrayRegion(env, matarray_pi, 0, len, pi);
-        (*env)->DeleteLocalRef(env, matarray_pi);
-        mxSetPi(mxarr, pi);
-    }
     return mxarr;
 }
 
-mxArray* jtomUint16Array(JNIEnv* env, mxArray* mxarr) {
+mxArray* jtomUint16Array(JNIEnv* env, jobject matarray) {
     /*TODO*/
+    return NULL;
 }
 
-mxArray* jtomInt32Array(JNIEnv* env, mxArray* mxarr) {
+mxArray* jtomInt32Array(JNIEnv* env, jobject matarray) {
     mxArray* mxarr;
     mxClassID mxclass;
     int cplxFlag;
-    jintArray matarray_pr, matarray_pi;
-    int *pr = NULL, *pi = NULL;
+    jintArray matarray_pr;
+    int *pr = NULL;
     int len;
     jintArray jdims;
     int ndims;
@@ -566,7 +547,7 @@ mxArray* jtomInt32Array(JNIEnv* env, mxArray* mxarr) {
     ndims = (*env)->GetArrayLength(env, jdims);
     dims = (int*) mxCalloc(ndims, sizeof (int));
     if (dims == NULL) {
-        setErr(OUT_OF_MEMORY_ERROR);
+        setError(OUT_OF_MEMORY_ERROR);
         return NULL;
     }
     (*env)->GetIntArrayRegion(env, jdims, 0, ndims, dims);
@@ -583,33 +564,23 @@ mxArray* jtomInt32Array(JNIEnv* env, mxArray* mxarr) {
     }
     (*env)->GetIntArrayRegion(env, matarray_pr, 0, len, pr);
     (*env)->DeleteLocalRef(env, matarray_pr);
-    mxSetPr(mxarr, pr);
+    mxSetData(mxarr, (void*) pr);
 
-    if (cplxFlag) {
-        matarray_pi = (jintArray) (*env)->GetObjectField(env, matarray, matarray_int32_data_imFID);
-        len = (*env)->GetArrayLength(env, matarray_pr);
-        pi = (int*) mxCalloc(len, sizeof (int));
-        if (pi == NULL) {
-            setError(OUT_OF_MEMORY_ERROR);
-            return NULL;
-        }
-        (*env)->GetIntArrayRegion(env, matarray_pi, 0, len, pi);
-        (*env)->DeleteLocalRef(env, matarray_pi);
-        mxSetPi(mxarr, pi);
-    }
     return mxarr;
 }
 
-mxArray* jtomUint32Array(JNIEnv* env, mxArray* mxarr) {
+mxArray* jtomUint32Array(JNIEnv* env, jobject matarray) {
     /*TODO*/
+    return NULL;
 }
 
-mxArray* jtomInt64Array(JNIEnv* env, mxArray* mxarr) {
+/*
+mxArray* jtomInt64Array(JNIEnv* env, jobject matarray) {
     mxArray* mxarr;
     mxClassID mxclass;
     int cplxFlag;
-    jlongArray matarray_pr, matarray_pi;
-    long *pr = NULL, *pi = NULL;
+    jlongArray matarray_pr;
+    long *pr = NULL;
     int len;
     jintArray jdims;
     int ndims;
@@ -623,7 +594,7 @@ mxArray* jtomInt64Array(JNIEnv* env, mxArray* mxarr) {
     ndims = (*env)->GetArrayLength(env, jdims);
     dims = (int*) mxCalloc(ndims, sizeof (int));
     if (dims == NULL) {
-        setErr(OUT_OF_MEMORY_ERROR);
+        setError(OUT_OF_MEMORY_ERROR);
         return NULL;
     }
     (*env)->GetIntArrayRegion(env, jdims, 0, ndims, dims);
@@ -640,26 +611,15 @@ mxArray* jtomInt64Array(JNIEnv* env, mxArray* mxarr) {
     }
     (*env)->GetLongArrayRegion(env, matarray_pr, 0, len, pr);
     (*env)->DeleteLocalRef(env, matarray_pr);
-    mxSetPr(mxarr, pr);
+    mxSetData(mxarr, (void*)pr);
 
-    if (cplxFlag) {
-        matarray_pi = (jlongArray) (*env)->GetObjectField(env, matarray, matarray_int64_data_imFID);
-        len = (*env)->GetArrayLength(env, matarray_pr);
-        pi = (long*) mxCalloc(len, sizeof (long));
-        if (pi == NULL) {
-            setError(OUT_OF_MEMORY_ERROR);
-            return NULL;
-        }
-        (*env)->GetLongArrayRegion(env, matarray_pi, 0, len, pi);
-        (*env)->DeleteLocalRef(env, matarray_pi);
-        mxSetPi(mxarr, pi);
-    }
     return mxarr;
 }
-
-mxArray* jtomUint64Array(JNIEnv* env, mxArray* mxarr) {
-    /*TODO*/
-}
+ */
+/*
+mxArray* jtomUint64Array(JNIEnv* env, jobject matarray) {
+    TODO in 64 bit architecture specific sources
+}*/
 
 /* Matlab to Java conversion functions ****************************************/
 jobject mtojArray(JNIEnv* env, mxArray* mxarr) {
@@ -697,7 +657,7 @@ jobject mtojArray(JNIEnv* env, mxArray* mxarr) {
             matarray = mtojInt16Array(env, mxarr);
             break;
         case mxUINT16_CLASS:
-            matarray = mtojUint16Arrat(env, mxarr);
+            matarray = mtojUint16Array(env, mxarr);
             break;
         case mxINT32_CLASS:
             matarray = mtojInt32Array(env, mxarr);
@@ -706,8 +666,11 @@ jobject mtojArray(JNIEnv* env, mxArray* mxarr) {
             matarray = mtojUint32Array(env, mxarr);
             break;
         case mxINT64_CLASS:
-            matarray = mtojInt64Array(env, matarray);
-            break;
+            /*
+                        matarray = mtojInt64Array(env, matarray);
+                        break;
+             */
+        case mxUINT64_CLASS:
         case mxFUNCTION_CLASS:
         default: /*mxUNKNOWN_CLASS and others*/
             matarray = NULL;
@@ -720,7 +683,7 @@ jobject mtojCharArray(JNIEnv* env, mxArray* mxarr) {
     jobject matarray;
     jstring typeStr;
     int ndims;
-    const int* dims
+    const int* dims;
     jintArray jdims;
     int nstrings, nchars, m, n, i, j;
     char* data;
@@ -743,15 +706,16 @@ jobject mtojCharArray(JNIEnv* env, mxArray* mxarr) {
     if (jdims == NULL)
         return NULL;
     (*env)->SetIntArrayRegion(env, jdims, 0, ndims, dims);
-    (*env)->SetObjectField(env, matarray, matarray_dimensionsFID);
+    (*env)->SetObjectField(env, matarray, matarray_dimensionsFID, jdims);
     (*env)->DeleteLocalRef(env, jdims);
 
     m = mxGetM(mxarr);
     n = mxGetN(mxarr);
     nstrings = m;
     nchars = m*n;
-    data = (char*) malloc(nchars + 1);
-    jdata = (*env)->NewObjectArray(env, nstring, jstringClass, NULL);
+    data = (char*) calloc(nchars + 1, sizeof (char));
+    mxGetString(mxarr, data, nchars);
+    jdata = (*env)->NewObjectArray(env, nstrings, jstringClass, NULL);
     if (jdata == NULL)
         return NULL;
     dataSeg = (char*) calloc(n + 1, sizeof (char)); /*XXX mxchars maybe?*/
@@ -762,7 +726,7 @@ jobject mtojCharArray(JNIEnv* env, mxArray* mxarr) {
     for (i = 0; i < nstrings; i++) {
         for (j = 0; j < n; j++)
             dataSeg[j] = data[j * m + i];
-        dataSeg[n] = '\n';
+        dataSeg[n] = '\0';
         (*env)->SetObjectArrayElement(env, jdata, i, (*env)->NewStringUTF(env, dataSeg));
     }
     free(dataSeg);
@@ -801,7 +765,7 @@ jobject mtojCellArray(JNIEnv* env, mxArray* mxarr) {
     (*env)->DeleteLocalRef(env, jdims);
 
     nelements = mxGetNumberOfElements(mxarr);
-    jdata = (*env)->NewObjectArray(env, nelements);
+    jdata = (*env)->NewObjectArray(env, nelements, matArrayClass, NULL);
     if (jdata == NULL)
         return NULL;
 
@@ -813,7 +777,7 @@ jobject mtojCellArray(JNIEnv* env, mxArray* mxarr) {
         (*env)->SetObjectArrayElement(env, jdata, i, tmpMA);
         (*env)->DeleteLocalRef(env, tmpMA);
     }
-    (*env)->SetObjectField(env, matarray, matarray_cell_data_FID, data);
+    (*env)->SetObjectField(env, matarray, matarray_cell_dataFID, jdata);
     (*env)->DeleteLocalRef(env, jdata);
 
     return matarray;
@@ -823,11 +787,12 @@ jobject mtojLogicalArray(JNIEnv* env, mxArray* mxarr) {
     jobject matarray;
     jstring typeStr;
     int ndims;
-    int* dims;
+    const int* dims;
     jintArray jdims;
     int nelements, i;
     jbooleanArray jdata;
     mxLogical* data;
+    jboolean* jbs;
 
     matarray = (*env)->NewObject(env, matArrayClass, matarray_constructorMID);
     if (matarray == NULL)
@@ -850,9 +815,17 @@ jobject mtojLogicalArray(JNIEnv* env, mxArray* mxarr) {
     if (jdata == NULL)
         return NULL;
 
+    jbs = (jboolean*) malloc(nelements * sizeof (jboolean));
+    if (jbs == NULL) {
+        setError(OUT_OF_MEMORY_ERROR);
+        return NULL;
+    }
+
     data = mxGetLogicals(mxarr);
     for (i = 0; i < nelements; i++)
-        (*env)->SetBooleanArrayElement(env, jdata, i, mxIsLogicalScalarTrue(data[i]) ? JNI_TRUE : JNI_FALSE);
+        jbs[i] = data[i] ? JNI_TRUE : JNI_FALSE;
+    (*env)->SetBooleanArrayRegion(env, jdata, 0, nelements, jbs);
+    free(jbs);
 
     (*env)->SetObjectField(env, matarray, matarray_logical_dataFID, jdata);
     (*env)->DeleteLocalRef(env, jdata);
@@ -864,9 +837,9 @@ jobject mtojStructArray(JNIEnv* env, mxArray* mxarr) {
     jobject matarray;
     jstring typeStr;
     int ndims;
-    int* dims;
+    const int* dims;
     jintArray jdims;
-    int nelements, int i;
+    int nelements, i;
     jobjectArray jdata;
     int nfields;
     jobjectArray jfieldnames;
@@ -930,7 +903,7 @@ jobject mtojStructArray(JNIEnv* env, mxArray* mxarr) {
             mxArray* tmpMxVal;
 
             tmpMxVal = mxGetFieldByNumber(mxarr, i, j);
-            tmpVal = mtojArray(env, tmpVal);
+            tmpVal = mtojArray(env, tmpMxVal);
             (*env)->SetObjectArrayElement(env, tmpData, j, tmpVal);
             (*env)->DeleteLocalRef(env, tmpVal);
         }
@@ -951,11 +924,12 @@ jobject mtojDoubleArray(JNIEnv* env, mxArray* mxarr) {
     double *pr, *pi;
     jdoubleArray jpr, jpi;
     int nelements;
+    int ndims;
     const int *dims;
     jintArray jdims;
 
     matarray = (*env)->NewObject(env, matArrayClass, matarray_constructorMID);
-    if (mararray == NULL) {
+    if (matarray == NULL) {
         setError(OUT_OF_MEMORY_ERROR);
         return NULL;
     }
@@ -1022,20 +996,21 @@ jobject mtojDoubleArray(JNIEnv* env, mxArray* mxarr) {
         (*env)->SetObjectField(env, matarray, matarray_colIdsFID, jjc);
         (*env)->DeleteLocalRef(env, jjc);
     }
+
     return matarray;
 }
 
 jobject mtojSingleArray(JNIEnv* env, mxArray* mxarr) {
     jobject matarray;
     jstring typeJString;
-    float *pr, *pi;
-    jfloatArray jpr, jpi;
-    int nelements;
+    float *pr;
+    jfloatArray jpr;
+    int nelements, ndims;
     const int *dims;
     jintArray jdims;
 
     matarray = (*env)->NewObject(env, matArrayClass, matarray_constructorMID);
-    if (mararray == NULL) {
+    if (matarray == NULL) {
         setError(OUT_OF_MEMORY_ERROR);
         return NULL;
     }
@@ -1057,7 +1032,7 @@ jobject mtojSingleArray(JNIEnv* env, mxArray* mxarr) {
 
     nelements = mxGetNumberOfElements(mxarr);
 
-    pr = mxGetPr(mxarr);
+    pr = (float*) mxGetData(mxarr);
     jpr = (*env)->NewFloatArray(env, nelements);
     if (jpr == NULL)
         return NULL;
@@ -1065,15 +1040,17 @@ jobject mtojSingleArray(JNIEnv* env, mxArray* mxarr) {
     (*env)->SetObjectField(env, matarray, matarray_single_data_reFID, jpr);
     (*env)->DeleteLocalRef(env, jpr);
 
-    if (mxIsComplex(mxarr)) {
-        pi = mxGetPi(mxarr);
-        jpi = (*env)->NewFloatArray(env, nelements);
-        if (jpi == NULL)
-            return NULL;
-        (*env)->SetFloatArrayRegion(env, jpi, 0, nelements, pi);
-        (*env)->SetObjectField(env, matarray, matarray_single_data_imFID, jpi);
-        (*env)->DeleteLocalRef(env, jpi);
-    }
+    /*
+        if (mxIsComplex(mxarr)) {
+            pi = mxGetPi(mxarr);
+            jpi = (*env)->NewFloatArray(env, nelements);
+            if (jpi == NULL)
+                return NULL;
+            (*env)->SetFloatArrayRegion(env, jpi, 0, nelements, pi);
+            (*env)->SetObjectField(env, matarray, matarray_single_data_imFID, jpi);
+            (*env)->DeleteLocalRef(env, jpi);
+        }
+     */
 
     return matarray;
 }
@@ -1081,14 +1058,14 @@ jobject mtojSingleArray(JNIEnv* env, mxArray* mxarr) {
 jobject mtojInt8Array(JNIEnv* env, mxArray* mxarr) {
     jobject matarray;
     jstring typeJString;
-    char *pr, *pi;
-    jbyteArray jpr, jpi;
-    int nelements;
+    char *pr;
+    jbyteArray jpr;
+    int nelements, ndims;
     const int *dims;
     jintArray jdims;
 
     matarray = (*env)->NewObject(env, matArrayClass, matarray_constructorMID);
-    if (mararray == NULL) {
+    if (matarray == NULL) {
         setError(OUT_OF_MEMORY_ERROR);
         return NULL;
     }
@@ -1110,42 +1087,45 @@ jobject mtojInt8Array(JNIEnv* env, mxArray* mxarr) {
 
     nelements = mxGetNumberOfElements(mxarr);
 
-    pr = mxGetPr(mxarr);
-    jpr = (*env)->NewBytetArray(env, nelements);
+    pr = (char*) mxGetData(mxarr);
+    jpr = (*env)->NewByteArray(env, nelements);
     if (jpr == NULL)
         return NULL;
     (*env)->SetByteArrayRegion(env, jpr, 0, nelements, pr);
     (*env)->SetObjectField(env, matarray, matarray_int8_data_reFID, jpr);
     (*env)->DeleteLocalRef(env, jpr);
 
-    if (mxIsComplex(mxarr)) {
-        pi = mxGetPi(mxarr);
-        jpi = (*env)->NewByteArray(env, nelements);
-        if (jpi == NULL)
-            return NULL;
-        (*env)->SetByteArrayRegion(env, jpi, 0, nelements, pi);
-        (*env)->SetObjectField(env, matarray, matarray_int8_data_imFID, jpi);
-        (*env)->DeleteLocalRef(env, jpi);
-    }
+    /*
+        if (mxIsComplex(mxarr)) {
+            pi = mxGetPi(mxarr);
+            jpi = (*env)->NewByteArray(env, nelements);
+            if (jpi == NULL)
+                return NULL;
+            (*env)->SetByteArrayRegion(env, jpi, 0, nelements, pi);
+            (*env)->SetObjectField(env, matarray, matarray_int8_data_imFID, jpi);
+            (*env)->DeleteLocalRef(env, jpi);
+        }
+     */
 
     return matarray;
 }
 
 jobject mtojUint8Array(JNIEnv* env, mxArray* mxarr) {
     /*TODO*/
+    return NULL;
 }
 
 jobject mtojInt16Array(JNIEnv* env, mxArray* mxarr) {
     jobject matarray;
     jstring typeJString;
-    short *pr, *pi;
-    jshortArray jpr, jpi;
-    int nelements;
+    short *pr;
+    jshortArray jpr;
+    int nelements, ndims;
     const int *dims;
     jintArray jdims;
 
     matarray = (*env)->NewObject(env, matArrayClass, matarray_constructorMID);
-    if (mararray == NULL) {
+    if (matarray == NULL) {
         setError(OUT_OF_MEMORY_ERROR);
         return NULL;
     }
@@ -1167,7 +1147,7 @@ jobject mtojInt16Array(JNIEnv* env, mxArray* mxarr) {
 
     nelements = mxGetNumberOfElements(mxarr);
 
-    pr = mxGetPr(mxarr);
+    pr = (short*) mxGetData(mxarr);
     jpr = (*env)->NewShortArray(env, nelements);
     if (jpr == NULL)
         return NULL;
@@ -1175,34 +1155,37 @@ jobject mtojInt16Array(JNIEnv* env, mxArray* mxarr) {
     (*env)->SetObjectField(env, matarray, matarray_int16_data_reFID, jpr);
     (*env)->DeleteLocalRef(env, jpr);
 
-    if (mxIsComplex(mxarr)) {
-        pi = mxGetPi(mxarr);
-        jpi = (*env)->NewShortArray(env, nelements);
-        if (jpi == NULL)
-            return NULL;
-        (*env)->SetShortArrayRegion(env, jpi, 0, nelements, pi);
-        (*env)->SetObjectField(env, matarray, matarray_int16_data_imFID, jpi);
-        (*env)->DeleteLocalRef(env, jpi);
-    }
+    /*
+        if (mxIsComplex(mxarr)) {
+            pi = mxGetPi(mxarr);
+            jpi = (*env)->NewShortArray(env, nelements);
+            if (jpi == NULL)
+                return NULL;
+            (*env)->SetShortArrayRegion(env, jpi, 0, nelements, pi);
+            (*env)->SetObjectField(env, matarray, matarray_int16_data_imFID, jpi);
+            (*env)->DeleteLocalRef(env, jpi);
+        }
+     */
 
     return matarray;
 }
 
 jobject mtojUint16Array(JNIEnv* env, mxArray* mxarr) {
     /*TODO*/
+    return NULL;
 }
 
 jobject mtojInt32Array(JNIEnv* env, mxArray* mxarr) {
     jobject matarray;
     jstring typeJString;
-    int *pr, *pi;
-    jintArray jpr, jpi;
-    int nelements;
+    int *pr;
+    jintArray jpr;
+    int nelements, ndims;
     const int *dims;
     jintArray jdims;
 
     matarray = (*env)->NewObject(env, matArrayClass, matarray_constructorMID);
-    if (mararray == NULL) {
+    if (matarray == NULL) {
         setError(OUT_OF_MEMORY_ERROR);
         return NULL;
     }
@@ -1224,7 +1207,7 @@ jobject mtojInt32Array(JNIEnv* env, mxArray* mxarr) {
 
     nelements = mxGetNumberOfElements(mxarr);
 
-    pr = mxGetPr(mxarr);
+    pr = (int*) mxGetData(mxarr);
     jpr = (*env)->NewIntArray(env, nelements);
     if (jpr == NULL)
         return NULL;
@@ -1232,23 +1215,26 @@ jobject mtojInt32Array(JNIEnv* env, mxArray* mxarr) {
     (*env)->SetObjectField(env, matarray, matarray_int32_data_reFID, jpr);
     (*env)->DeleteLocalRef(env, jpr);
 
-    if (mxIsComplex(mxarr)) {
-        pi = mxGetPi(mxarr);
-        jpi = (*env)->NewIntArray(env, nelements);
-        if (jpi == NULL)
-            return NULL;
-        (*env)->SetIntArrayRegion(env, jpi, 0, nelements, pi);
-        (*env)->SetObjectField(env, matarray, matarray_int32_data_imFID, jpi);
-        (*env)->DeleteLocalRef(env, jpi);
-    }
+    /*
+        if (mxIsComplex(mxarr)) {
+            pi = mxGetPi(mxarr);
+            jpi = (*env)->NewIntArray(env, nelements);
+            if (jpi == NULL)
+                return NULL;
+            (*env)->SetIntArrayRegion(env, jpi, 0, nelements, pi);
+            (*env)->SetObjectField(env, matarray, matarray_int32_data_imFID, jpi);
+            (*env)->DeleteLocalRef(env, jpi);
+        }
+     */
 
     return matarray;
 }
 
 jobject mtojUint32Array(JNIEnv* env, mxArray* mxarr) {
     /*TODO*/
+    return NULL;
 }
-
+/*
 jobject mtojInt64Array(JNIEnv* env, mxArray* mxarr) {
     jobject matarray;
     jstring typeJString;
@@ -1259,7 +1245,7 @@ jobject mtojInt64Array(JNIEnv* env, mxArray* mxarr) {
     jintArray jdims;
 
     matarray = (*env)->NewObject(env, matArrayClass, matarray_constructorMID);
-    if (mararray == NULL) {
+    if (matarray == NULL) {
         setError(OUT_OF_MEMORY_ERROR);
         return NULL;
     }
@@ -1301,11 +1287,13 @@ jobject mtojInt64Array(JNIEnv* env, mxArray* mxarr) {
 
     return matarray;
 }
+ */
 
+/*
 jobject mtojUInt64Array(JNIEnv* env, mxArray* mxarr) {
-    /*TODO*/
+    TODO in 64bit architecture specific sources.
 }
-
+ */
 
 /* utilitiy functions */
 
@@ -1364,7 +1352,7 @@ void setError(int err) {
 }
 
 /*MISC*/
-jobject createJCellArray(env) {
+jobject createJCellArray(JNIEnv* env) {
     jobject matarray;
     jstring typeStr;
 

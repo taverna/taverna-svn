@@ -20,7 +20,7 @@ matarray_INT16_TYPE_FID, matarray_UINT16_TYPE_FID, matarray_INT32_TYPE_FID,
 matarray_UINT32_TYPE_FID, matarray_INT64_TYPE_FID, matarray_UINT64_TYPE_FID,
 matarray_FUNTION_TYPE_FID;
 /*MatArray method ids*/
-jmethodID matarray_contrsuctorMID, matarray_isSparseMID, matarray_isNumericMID, matarray_isComplexMID,
+jmethodID matarray_constructorMID, matarray_isSparseMID, matarray_isNumericMID, matarray_isComplexMID,
 matarray_isCharMID, matarray_getFieldMID;
 
 /*MatEngineImpl method ids*/
@@ -37,13 +37,13 @@ mxArray* jtomStructArray(JNIEnv* env, jobject matarray);
 mxArray* jtomDoubleArray(JNIEnv* env, jobject matarray);
 mxArray* jtomSingleArray(JNIEnv* env, jobject matarray);
 mxArray* jtomInt8Array(JNIEnv* env, jobject matarray);
-mxArray* jtomUint8Array(JNIEnv* env, mxArray* mxarr);
-mxArray* jtomInt16Array(JNIEnv* env, mxArray* mxarr);
-mxArray* jtomUint16Array(JNIEnv* env, mxArray* mxarr);
-mxArray* jtomInt32Array(JNIEnv* env, mxArray* mxarr);
-mxArray* jtomUint32Array(JNIEnv* env, mxArray* mxarr);
-mxArray* jtomInt64Array(JNIEnv* env, mxArray* mxarr);
-mxArray* jtomUint64Array(JNIEnv* env, mxArray* mxarr);
+mxArray* jtomUint8Array(JNIEnv* env, jobject matarray);
+mxArray* jtomInt16Array(JNIEnv* env, jobject matarray);
+mxArray* jtomUint16Array(JNIEnv* env, jobject matarray);
+mxArray* jtomInt32Array(JNIEnv* env, jobject matarray);
+mxArray* jtomUint32Array(JNIEnv* env, jobject matarray);
+mxArray* jtomInt64Array(JNIEnv* env, jobject matarray);
+mxArray* jtomUint64Array(JNIEnv* env, jobject matarray);
 
 /* Matlab to Java conversion functions */
 jobject mtojArray(JNIEnv* env, mxArray* mxarr);
@@ -69,8 +69,10 @@ mxClassID getMxClassID(JNIEnv *env, jobject matArray);
 /*Error checking*/
 void setError(int err);
 
-int errorCode = OK;
+#define OK 0
+#define OUT_OF_MEMORY_ERROR 1
+#define DIMENSIONS_ERROR 2
 
-const int OK = 0;
-const int OUT_OF_MEMORY_ERROR = 1;
-const int DIMENSIONS_ERROR = 2;
+int errorCode;
+
+

@@ -1,7 +1,9 @@
 package net.sf.taverna.matserver;
 
 import java.util.Map;
+import java.util.Arrays;
 import junit.framework.TestCase;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -61,12 +63,21 @@ public class MatEngineImplTest extends TestCase {
             for(int j=0; j<4; j++)
                 assertEquals(expectedMagic4[4*j+i], pr[4*j+i]);
         }
+        assertTrue(Arrays.equals(pr,expectedMagic4));
         //XXX problem with transposed chars!!!
         printArr(S.getChar_data());
         printArr(SO.char_data);
+        assertTrue(Arrays.equals(S.char_data, SO.char_data));
         //XXX*/ assertEquals(S.getChar_data()[0], SO.getChar_data()[0]);
     }
     
+//    @Ignore
+//    @Test
+//    public void testDoubles()
+//    {
+//        fail("Not implemented...");
+//    }
+//    
     private void printArr(Object[] oar)
     {
         System.out.println("Array print:");
