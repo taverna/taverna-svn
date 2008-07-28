@@ -27,12 +27,12 @@ public class DataflowActivityItem extends AbstractActivityItem {
 	}
 
 	public String getType() {
-		return "Dataflow";
+		return "Workflow";
 	}
 
 	@Override
 	public String toString() {
-		return getType();
+		return "Nested workflow";
 	}
 	
 	
