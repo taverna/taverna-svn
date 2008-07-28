@@ -2,6 +2,7 @@ package net.sf.taverna.t2.workbench.ui.activitypalette.menu;
 
 import java.awt.Component;
 import java.net.URI;
+import java.util.List;
 
 import javax.swing.JMenu;
 
@@ -40,8 +41,10 @@ public class AddActivityMenu extends AbstractMenuCustom {
 	protected Component createCustomComponent() {
 		JMenu addQueryMenu = new JMenu("New activity");
 		addQueryMenu.setToolTipText("Open this menu to add a new activity");
-		for (QueryFactory factory : QueryFactoryRegistry.getInstance()
-				.getInstances()) {
+		List<QueryFactory> factories = QueryFactoryRegistry.getInstance()
+				.getInstances();
+		boolean isEmpty = true;
+		for (QueryFactory factory : factories) {
 			if (factory instanceof ActivityQueryFactory) {
 				ActivityQueryFactory af = (ActivityQueryFactory) factory;
 				if (af.hasAddQueryActionHandler()) {
@@ -52,8 +55,12 @@ public class AddActivityMenu extends AbstractMenuCustom {
 					handler
 							.setSetModelChangeListener(listener);
 					addQueryMenu.add(handler);
+					isEmpty = false;
 				}
 			}
+		}
+		if (isEmpty) {
+			addQueryMenu.setEnabled(false);
 		}
 		return addQueryMenu;
 	}
