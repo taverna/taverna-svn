@@ -6,7 +6,7 @@
 jclass matArrayClass, matEngineImplClass, jstringClass;
 
 /*MatArray FieldIDs*/
-jfieldID matarray_typeFID, matarray_maxNonZeroFID, matarray_nNonZeroFID, matarray_dimensionsFID,
+jfieldID matarray_typeFID, matarray_maxNonZeroFID, matarray_dimensionsFID,
 matarray_rowIdsFID, matarray_colIdsFID, matarray_double_data_reFID, matarray_double_data_imFID,
 matarray_char_dataFID, matarray_logical_dataFID, matarray_cell_dataFID, matarray_field_namesFID,
 matarray_single_data_reFID, matarray_single_data_imFID, matarray_int8_data_reFID, matarray_int8_data_imFID,

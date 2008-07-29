@@ -17,6 +17,7 @@
         <module>win32</module>
     </modules>
     <build>
+        <directory>../../target</directory>
         <outputDirectory>../target</outputDirectory>
         <testOutputDirectory>../target</testOutputDirectory>
     </build>

@@ -102,7 +102,7 @@ mxArray* jtomCharArray(JNIEnv* env, jobject matarray) {
     }
 
     mxarr = mxCreateCharMatrixFromStrings(dims[0], data);
-
+    
     return mxarr;
 }
 
@@ -313,7 +313,7 @@ mxArray* jtomDoubleArray(JNIEnv* env, jobject matarray) {
     jintArray jdims, matarray_ir, matarray_jc;
     int ndims;
     int *dims;
-
+    
     mxclass = mxDOUBLE_CLASS;
     cplxFlag = (*env)->CallBooleanMethod(env, matarray, matarray_isComplexMID) ? 1 : 0;
     jdims = (jintArray) (*env)->GetObjectField(env, matarray, matarray_dimensionsFID);
@@ -329,7 +329,7 @@ mxArray* jtomDoubleArray(JNIEnv* env, jobject matarray) {
     (*env)->DeleteLocalRef(env, jdims);
 
     isSparse = (*env)->CallBooleanMethod(env, matarray, matarray_isSparseMID);
-    if (isSparse) {
+    if (isSparse) {       
         if (ndims > 2) {
             setError(DIMENSIONS_ERROR);
             return NULL;
@@ -366,31 +366,32 @@ mxArray* jtomDoubleArray(JNIEnv* env, jobject matarray) {
     } else {
         mxarr = mxCreateNumericArray(ndims, dims, mxclass, cplxFlag);
     }
-
+    
     matarray_pr = (jdoubleArray) (*env)->GetObjectField(env, matarray, matarray_double_data_reFID);
-    len = (*env)->GetArrayLength(env, matarray_pr);
-    pr = (double*) mxCalloc(len, sizeof (double));
-    if (pr == NULL) {
-        setError(OUT_OF_MEMORY_ERROR);
-        return NULL;
-    }
-    (*env)->GetDoubleArrayRegion(env, matarray_pr, 0, len, pr);
-    (*env)->DeleteLocalRef(env, matarray_pr);
-    mxSetPr(mxarr, pr);
-
-    if (cplxFlag) {
-        matarray_pi = (jdoubleArray) (*env)->GetObjectField(env, matarray, matarray_double_data_imFID);
-        len = (*env)->GetArrayLength(env, matarray_pi);
-        pi = (double*) mxCalloc(len, sizeof (double));
-        if (pi == NULL) {
+    if (matarray_pr != NULL) {
+        len = (*env)->GetArrayLength(env, matarray_pr);
+        pr = (double*) mxCalloc(len, sizeof (double));
+        if (pr == NULL) {
             setError(OUT_OF_MEMORY_ERROR);
             return NULL;
         }
-        (*env)->GetDoubleArrayRegion(env, matarray_pi, 0, len, pi);
-        (*env)->DeleteLocalRef(env, matarray_pi);
-        mxSetPi(mxarr, pi);
-    }
+        (*env)->GetDoubleArrayRegion(env, matarray_pr, 0, len, pr);
+        (*env)->DeleteLocalRef(env, matarray_pr);
+        mxSetPr(mxarr, pr);
 
+        if (cplxFlag) {
+            matarray_pi = (jdoubleArray) (*env)->GetObjectField(env, matarray, matarray_double_data_imFID);
+            len = (*env)->GetArrayLength(env, matarray_pi);
+            pi = (double*) mxCalloc(len, sizeof (double));
+            if (pi == NULL) {
+                setError(OUT_OF_MEMORY_ERROR);
+                return NULL;
+            }
+            (*env)->GetDoubleArrayRegion(env, matarray_pi, 0, len, pi);
+            (*env)->DeleteLocalRef(env, matarray_pi);
+            mxSetPi(mxarr, pi);
+        }
+    }
     return mxarr;
 }
 
