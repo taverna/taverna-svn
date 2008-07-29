@@ -24,8 +24,10 @@ public class MatServer {
         xfire.getServiceRegistry().register(service);
 
         server = new XFireHttpServer();
+        System.err.println("::cserver created::");
         server.setPort(8194);
         server.start();
+        System.err.println("::Server Started::");
     }
 
     public void stop() throws Exception {

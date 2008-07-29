@@ -1,9 +1,6 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.sf.taverna.matserver;
 
+import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.logging.Level;
@@ -20,7 +17,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author user
+ * @author petarj
  */
 public class MarServerTest {
 
@@ -45,22 +42,24 @@ public class MarServerTest {
     public void tearDown() {
     }
 
-    // TODO add test methods here.
-    // The methods must be annotated with annotation @Test. For example:
-    //
-    // @Test
-    // public void hello() {}
     @Test
-    public void testGeneralFunctionality() {
-        MatServer mserv = new MatServer();
+    public void testGeneralFunctionality() throws MalformedURLException, Exception {
         try {
+            MatServer mserv = new MatServer();
             mserv.start();
             ObjectServiceFactory serviceFactory = new ObjectServiceFactory();
             Service serviceModel = serviceFactory.create(MatEngine.class);
 
             XFireProxyFactory proxyFactory = new XFireProxyFactory();
-            MatEngine engine = (MatEngine) proxyFactory.create(serviceModel, "http://localhost:8194/MatEngine");
-        //--------------------------------------------------copy
+            MatEngine engine;
+
+            try {
+                engine = (MatEngine) proxyFactory.create(serviceModel, "http://localhost:8194/MatEngine");
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(MarServerTest.class.getName()).log(Level.SEVERE, null, ex);
+                throw ex;
+            }
+            //--------------------------------------------------copy
             MatArray X = new MatArray();
             X.setType(MatArray.DOUBLE_TYPE);
             int[] dims = new int[2];
@@ -69,31 +68,31 @@ public class MarServerTest {
 
             double[] dre = new double[1];
             dre[0] = 4;
-            X.setDouble_data_re(dre);
-            engine.setVar("X", X);
-
+            X.setDoubleDataRe(dre);
+            engine.setVar("X1", X);
+            
             MatArray S = new MatArray();
             S.setType(MatArray.CHAR_TYPE);
-            S.setChar_data(new String[]{
+            S.setCharData(new String[]{
                         "Hello world", "Ehlo..."
                     });
             S.setDimensions(new int[]{
                         2, 11
                     });
-            engine.setVar("S", S);
+            engine.setVar("S1", S);
 
             String[] names = new String[2];
-            names[0] = "Y";
-            names[1] = "S";
+            names[0] = "Y1";
+            names[1] = "S1";
             engine.setOutputNames(names);
-            engine.execute("Y=magic(4);");
+            engine.execute("Y1=magic(X1);");
             Map<String, MatArray> outs = engine.getOutputVars();
-            MatArray Y = outs.get("Y");
-            MatArray SO = outs.get("S");
+            MatArray Y = outs.get("Y1");
+            MatArray SO = outs.get("S1");
 
             assertEquals(Y.getType(), MatArray.DOUBLE_TYPE);
             assertNotNull(SO);
-            double[] pr = Y.double_data_re;
+            double[] pr = Y.getDoubleDataRe();
             /*
             16     2     3    13
             5    11    10     8
@@ -103,11 +102,12 @@ public class MarServerTest {
             double[] expectedMagic4 = new double[]{16, 5, 9, 4, 2, 11, 7, 14, 3, 10, 6, 15, 13, 8, 12, 1};
 
             assertTrue(Arrays.equals(pr, expectedMagic4));
-            assertTrue(Arrays.equals(S.char_data, SO.char_data));
+            assertTrue(Arrays.equals(S.getCharData(), SO.getCharData()));
             mserv.stop();
         //----------------------------------------------------------------
-        } catch (Exception ex) {
-            Logger.getLogger(MarServerTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception exc) {
+            Logger.getLogger(MarServerTest.class.getName()).log(Level.SEVERE, null, exc);
+            throw exc;
         }
     }
 }

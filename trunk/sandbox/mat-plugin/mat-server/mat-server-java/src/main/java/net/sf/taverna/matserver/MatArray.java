@@ -1,10 +1,12 @@
 package net.sf.taverna.matserver;
 
+import java.io.Serializable;
+
 /**
  *
  * @author petarj
  */
-public class MatArray {
+public class MatArray implements Serializable {
 
     public static final String UNKNOWN_TYPE = "UNKNOWN";
     public static final String STRUCT_TYPE = "STRUCT";
@@ -22,32 +24,27 @@ public class MatArray {
     public static final String INT64_TYPE = "INT64";
     public static final String UINT64_TYPE = "UINT64";
     public static final String FUNCTION_TYPE = "FUNCTION";
-    String type = UNKNOWN_TYPE;
-    int maxNonZero;
-    int nNonZero;
-    int[] dims;
+    private String type = UNKNOWN_TYPE;
+    private int maxNonZero;
+    //public int NNonZero;
+    private int[] dims;
     /** row indices of nonzero elements */
-    int[] rowIds;
+    private int[] rowIds;
     /** column indexing info for nonzero elements */
-    int[] colIds;
+    private int[] colIds;
     /** real parts */
-    double[] double_data_re;
+    private double[] doubleDataRe;
     /** imaginary parts */
-    double[] double_data_im;
-    float[] single_data_re;
-    float[] single_data_im;
-    byte[] int8_data_re;
-    byte[] int8_data_im;
-    short[] int16_data_re;
-    short[] int16_data_im;
-    int[] int32_data_re;
-    int[] int32_data_im;
-    long[] int64_data_re;
-    long[] int64_data_im;
-    String[] char_data;
-    boolean[] logical_data;
-    MatArray[] cell_data;
-    String[] field_names;
+    private double[] doubleDataIm;
+    private float[] singleDataRe;
+    private byte[] int8DataRe;
+    private short[] int16DataRe;
+    private int[] int32DataRe;
+    private long[] int64DataRe;
+    private String[] charData;
+    private boolean[] logicalData;
+    private MatArray[] cellData;
+    private String[] fieldNames;
     //TODO functionHandles[]...
     public MatArray() {
     }
@@ -60,36 +57,100 @@ public class MatArray {
         this.dims = dimensions;
     }
 
-    public MatArray[] getCell_data() {
-        return cell_data;
+    public MatArray[] getCellData() {
+        return cellData;
     }
 
-    public void setCell_data(MatArray[] cell_data) {
-        this.cell_data = cell_data;
+    public void setCellData(MatArray[] cellData) {
+        this.cellData = cellData;
     }
 
-    public String[] getChar_data() {
-        return char_data;
+    public String[] getCharData() {
+        return charData;
     }
 
-    public void setChar_data(String[] char_data) {
-        this.char_data = char_data;
+    public void setCharData(String[] charData) {
+        this.charData = charData;
     }
 
-    public double[] getDouble_data_im() {
-        return double_data_im;
+    public double[] getDoubleDataIm() {
+        return doubleDataIm;
     }
 
-    public void setDouble_data_im(double[] data_im) {
-        this.double_data_im = data_im;
+    public void setDoubleDataIm(double[] doubleDataIm) {
+        this.doubleDataIm = doubleDataIm;
     }
 
-    public double[] getDouble_data_re() {
-        return double_data_re;
+    public double[] getDoubleDataRe() {
+        return doubleDataRe;
     }
 
-    public void setDouble_data_re(double[] data_re) {
-        this.double_data_re = data_re;
+    public void setDoubleDataRe(double[] doubleDataRe) {
+        this.doubleDataRe = doubleDataRe;
+    }
+
+    public int[] getDims() {
+        return dims;
+    }
+
+    public void setDims(int[] dims) {
+        this.dims = dims;
+    }
+
+    public String[] getFieldNames() {
+        return fieldNames;
+    }
+
+    public void setFieldNames(String[] fieldNames) {
+        this.fieldNames = fieldNames;
+    }
+
+    public short[] getInt16DataRe() {
+        return int16DataRe;
+    }
+
+    public void setInt16DataRe(short[] int16DataRe) {
+        this.int16DataRe = int16DataRe;
+    }
+
+    public int[] getInt32DataRe() {
+        return int32DataRe;
+    }
+
+    public void setInt32DataRe(int[] int32DataRe) {
+        this.int32DataRe = int32DataRe;
+    }
+
+    public long[] getInt64DataRe() {
+        return int64DataRe;
+    }
+
+    public void setInt64DataRe(long[] int64DataRe) {
+        this.int64DataRe = int64DataRe;
+    }
+
+    public byte[] getInt8DataRe() {
+        return int8DataRe;
+    }
+
+    public void setInt8DataRe(byte[] int8DataRe) {
+        this.int8DataRe = int8DataRe;
+    }
+
+    public float[] getSingleDataRe() {
+        return singleDataRe;
+    }
+
+    public void setSingleDataRe(float[] singleDataRe) {
+        this.singleDataRe = singleDataRe;
+    }
+
+    public boolean[] getLogicalData() {
+        return logicalData;
+    }
+
+    public void setLogicalData(boolean[] logicalData) {
+        this.logicalData = logicalData;
     }
 
     public int[] getRowIds() {
@@ -100,7 +161,7 @@ public class MatArray {
         this.rowIds = rowIds;
     }
 
-    public boolean isSparse() {
+    public boolean checkSparse() {
         return rowIds != null;
     }
 
@@ -112,14 +173,6 @@ public class MatArray {
         this.colIds = colIds;
     }
 
-    public boolean[] getLogical_data() {
-        return logical_data;
-    }
-
-    public void setLogical_data(boolean[] logical_data) {
-        this.logical_data = logical_data;
-    }
-
     public int getMaxNonZero() {
         return maxNonZero;
     }
@@ -129,11 +182,16 @@ public class MatArray {
     }
 
     public int getNNonZero() {
+        if (colIds == null) {
+            return 0;
+        }
         return colIds[colIds.length - 1];
     }
 
     public void setNNonZero(int nNonZero) {
-        this.colIds[colIds.length - 1] = nNonZero;
+        if (colIds != null) {
+            this.colIds[colIds.length - 1] = nNonZero;
+        }
     }
 
     public String getType() {
@@ -146,20 +204,20 @@ public class MatArray {
 
     public MatArray getField(String name, int idx) {
         int j = -1;
-        for (int i = 0; i < field_names.length; i++) {
-            if (field_names[i].equals(name)) {
+        for (int i = 0; i < fieldNames.length; i++) {
+            if (fieldNames[i].equals(name)) {
                 j = i;
                 break;
             }
         }
         if (j != -1) {
-            return cell_data[idx].cell_data[j]; //XXX Ugly as hell, think about it...
+            return cellData[idx].cellData[j]; //XXX Ugly as hell, think about it...
         }
         return null;
     }
 
     //<editor-fold desc="type checking methods" defaultstate="collapsed">
-    public boolean isNumeric() {
+    public boolean checkNumeric() {
         return (type.equals(DOUBLE_TYPE) || type.equals(SINGLE_TYPE) ||
                 type.equals(INT8_TYPE) || type.equals(INT16_TYPE) ||
                 type.equals(INT32_TYPE) || type.equals(INT64_TYPE) ||
@@ -167,60 +225,12 @@ public class MatArray {
                 type.equals(UINT32_TYPE) || type.equals(UINT64_TYPE));
     }
 
-    public boolean isComplex() {
-        return double_data_im != null;
+    public boolean checkComplex() {
+        return doubleDataIm != null;
     }
 
-    public boolean isChar() {
+    public boolean checkChar(){
         return type.equals(CHAR_TYPE);
-    }
-
-    public boolean isCell() {
-        return type.equals(CELL_TYPE);
-    }
-
-    public boolean isLogical() {
-        return type.equals(LOGICAL_TYPE);
-    }
-
-    public boolean isDouble() {
-        return type.equals(DOUBLE_TYPE);
-    }
-
-    public boolean isSingle() {
-        return type.equals(SINGLE_TYPE);
-    }
-
-    public boolean isInt8() {
-        return type.equals(INT8_TYPE);
-    }
-
-    public boolean isInt16() {
-        return type.equals(INT16_TYPE);
-    }
-
-    public boolean isInt32() {
-        return type.equals(INT32_TYPE);
-    }
-
-    public boolean isInt64() {
-        return type.equals(INT64_TYPE);
-    }
-
-    public boolean isUint8() {
-        return type.equals(UINT8_TYPE);
-    }
-
-    public boolean isUint16() {
-        return type.equals(UINT16_TYPE);
-    }
-
-    public boolean isUint32() {
-        return type.equals(UINT32_TYPE);
-    }
-
-    public boolean isUint64() {
-        return type.equals(UINT64_TYPE);
     }
     //</editor-fold>
 }

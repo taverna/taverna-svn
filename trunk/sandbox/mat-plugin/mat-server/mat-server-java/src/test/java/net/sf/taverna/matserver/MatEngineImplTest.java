@@ -3,7 +3,6 @@ package net.sf.taverna.matserver;
 import java.util.Map;
 import java.util.Arrays;
 import junit.framework.TestCase;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -29,12 +28,12 @@ public class MatEngineImplTest extends TestCase {
 
         double[] dre = new double[1];
         dre[0] = 4;
-        X.setDouble_data_re(dre);
+        X.setDoubleDataRe(dre);
         engine.setVar("X", X);
 
         MatArray S = new MatArray();
         S.setType(MatArray.CHAR_TYPE);
-        S.setChar_data(new String[]{
+        S.setCharData(new String[]{
                     "Hello world", "Ehlo..."
                 });
         S.setDimensions(new int[]{
@@ -46,14 +45,14 @@ public class MatEngineImplTest extends TestCase {
         names[0] = "Y";
         names[1] = "S";
         engine.setOutputNames(names);
-        engine.execute("Y=magic(4);");
+        engine.execute("Y=magic(X);");
         Map<String, MatArray> outs = engine.getOutputVars();
         MatArray Y = outs.get("Y");
         MatArray SO = outs.get("S");
 
         assertEquals(Y.getType(), MatArray.DOUBLE_TYPE);
         assertNotNull(SO);
-        double[] pr = Y.double_data_re;
+        double[] pr = Y.getDoubleDataRe();
         /*
         16     2     3    13
         5    11    10     8
@@ -63,10 +62,10 @@ public class MatEngineImplTest extends TestCase {
         double[] expectedMagic4 = new double[]{16, 5, 9, 4, 2, 11, 7, 14, 3, 10, 6, 15, 13, 8, 12, 1};
 
         assertTrue(Arrays.equals(pr, expectedMagic4));
-        
-        printArr(S.getChar_data());
-        printArr(SO.char_data);
-        assertTrue(Arrays.equals(S.char_data, SO.char_data));
+
+        printArr(S.getCharData());
+        printArr(SO.getCharData());
+        assertTrue(Arrays.equals(S.getCharData(), SO.getCharData()));
 
     }
 
@@ -77,8 +76,4 @@ public class MatEngineImplTest extends TestCase {
         }
         System.out.println("-----------------------------------");
     }
-    
-    
-    
-    
 }
