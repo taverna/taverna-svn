@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
+import org.apache.commons.codec.binary.Base64;
+
 import net.sf.taverna.t2.reference.AbstractExternalReference;
 import net.sf.taverna.t2.reference.DereferenceException;
 import net.sf.taverna.t2.reference.ReferenceContext;
@@ -17,7 +19,11 @@ import net.sf.taverna.t2.reference.ValueCarryingExternalReference;
  * (yuck). As it uses a fixed character set (UTF-8) to store and load I believe
  * this doesn't break things.
  * 
+ * Unfortunately this does break things (binaries get corrupted) so I've added
+ * base64 encoding of the value as a workaround.
+ * 
  * @author Tom Oinn
+ * @author David Withers
  */
 public class InlineByteArrayReference extends AbstractExternalReference
 		implements ValueCarryingExternalReference<byte[]> {
@@ -45,7 +51,7 @@ public class InlineByteArrayReference extends AbstractExternalReference
 
 	public String getContents() {
 		try {
-			return new String(bytes, charset.toString());
+			return new String(Base64.encodeBase64(bytes), charset.toString());
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -55,7 +61,7 @@ public class InlineByteArrayReference extends AbstractExternalReference
 
 	public void setContents(String contentsAsString) {
 		try {
-			this.bytes = contentsAsString.getBytes(charset.toString());
+			this.bytes = Base64.decodeBase64(contentsAsString.getBytes(charset.toString()));
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
