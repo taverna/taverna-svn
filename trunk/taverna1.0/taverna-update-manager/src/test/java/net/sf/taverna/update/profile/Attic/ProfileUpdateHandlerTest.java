@@ -102,7 +102,7 @@ public class ProfileUpdateHandlerTest extends TestCase {
 		in.close();
 		out.close();
 		
-		return destinationFile.toURL();
+		return destinationFile.toURI().toURL();
 	}
 	
 }
