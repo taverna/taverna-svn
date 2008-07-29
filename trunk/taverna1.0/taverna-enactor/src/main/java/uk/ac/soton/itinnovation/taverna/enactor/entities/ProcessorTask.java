@@ -1,4 +1,3 @@
-
 //� University of Southampton IT Innovation Centre, 2002
 
 //Copyright in this library belongs to the IT Innovation Centre of
@@ -24,8 +23,8 @@
 //Dependencies        :
 
 //Last commit info    :   $Author: stain $
-//$Date: 2007-08-13 14:48:29 $
-//$Revision: 1.10 $
+//$Date: 2008-07-29 13:59:38 $
+//$Revision: 1.11 $
 
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -110,9 +109,8 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 	private Processor activeProcessor = null;
 
 	// The task that was invoked, unique per thread
-	private WeakHashMap<Thread, ProcessorTaskWorker> processorTaskWorkers =
-		new WeakHashMap<Thread, ProcessorTaskWorker>();
-	
+	private WeakHashMap<Thread, ProcessorTaskWorker> processorTaskWorkers = new WeakHashMap<Thread, ProcessorTaskWorker>();
+
 	// The current input mapping
 	private Map activeInputMapping = null;
 
@@ -148,7 +146,8 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 		this.logLevel = new LogLevel(l.getLevel());
 		this.userID = userID;
 		this.userCtx = userCtx;
-		this.eventList = Collections.synchronizedList(new ArrayList<ProcessEvent>());
+		this.eventList = Collections
+				.synchronizedList(new ArrayList<ProcessEvent>());
 		super.setFailFlowOnTaskFailure(p.getCritical());
 		// Add an event to the list for the scheduling operation
 		schedule(p);
@@ -163,35 +162,37 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 	}
 
 	protected ProcessorTaskWorker getProcessorTaskWorker() {
-		ProcessorTaskWorker worker =
-			processorTaskWorkers.get(Thread.currentThread());
+		ProcessorTaskWorker worker = processorTaskWorkers.get(Thread
+				.currentThread());
 		if (worker == null) {
 			logger.error("Attempting to get unknown processor task worker for "
-				+ Thread.currentThread());
+					+ Thread.currentThread());
 			throw new IllegalStateException(
-				"Attempting to get non-existing processor task worker");
+					"Attempting to get non-existing processor task worker");
 		}
-		logger.debug("Retrieved worker " + worker + " for " + Thread.currentThread());
+		logger.debug("Retrieved worker " + worker + " for "
+				+ Thread.currentThread());
 		return worker;
 	}
 
 	protected void setProcessorTaskWorker(
-		ProcessorTaskWorker processorTaskWorker) {
+			ProcessorTaskWorker processorTaskWorker) {
 		synchronized (processorTaskWorkers) {
 			if (processorTaskWorkers.containsKey(Thread.currentThread())) {
 				logger.error("A worker was already registered for "
-					+ Thread.currentThread());
+						+ Thread.currentThread());
 				logger.debug("Existing worker: "
-					+ processorTaskWorkers.get(Thread.currentThread()));
+						+ processorTaskWorkers.get(Thread.currentThread()));
 				logger.debug("New worker: " + processorTaskWorker);
 				throw new IllegalStateException(
-					"A worker was already registered for "
-						+ Thread.currentThread());
+						"A worker was already registered for "
+								+ Thread.currentThread());
 			}
 			processorTaskWorkers.put(Thread.currentThread(),
-				processorTaskWorker);
+					processorTaskWorker);
 		}
-		logger.debug("Set worker " + processorTaskWorker + " for " + Thread.currentThread());
+		logger.debug("Set worker " + processorTaskWorker + " for "
+				+ Thread.currentThread());
 	}
 
 	protected void clearProcessorTaskWorker() {
@@ -215,9 +216,10 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 	 * Set up the next invocation to use the specified alternate processor
 	 */
 	private synchronized void schedule(AlternateProcessor theAlternate) {
+		clearProcessorTaskWorker();
 		activeProcessor = theAlternate.getProcessor();
 		activeInputMapping = theAlternate.getInputMapping();
-		activeOutputMapping = new HashMap<String, String>();
+		activeOutputMapping = new HashMap<String, String>(); 
 		// invert the mapping contained by the alternates object!
 		for (Iterator i = theAlternate.getOutputMapping().keySet().iterator(); i
 				.hasNext();) {
@@ -311,17 +313,17 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 				}
 			}
 			if (getProcessorTaskWorker() instanceof EnactorWorkflowTask) {
-				WorkflowInstance nestedWorkflow =
-					((EnactorWorkflowTask) getProcessorTaskWorker()).getWorkflowInstance();
+				WorkflowInstance nestedWorkflow = ((EnactorWorkflowTask) getProcessorTaskWorker())
+						.getWorkflowInstance();
 				DISPATCHER.fireEvent(new NestedWorkflowFailureEvent(
-					workflowInstance, activeProcessor, ex, inputMap,
-					nestedWorkflow));
+						workflowInstance, activeProcessor, ex, inputMap,
+						nestedWorkflow));
 				if (nestedWorkflow != null) {
 					nestedWorkflow.destroy();
 				}
 			}
-			DISPATCHER.fireEvent(new ProcessFailureEvent(
-					workflowInstance, activeProcessor, ex, inputMap));
+			DISPATCHER.fireEvent(new ProcessFailureEvent(workflowInstance,
+					activeProcessor, ex, inputMap));
 
 		} finally {
 			clearProcessorTaskWorker();
@@ -349,23 +351,24 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 		if (iterationRequired()) {
 			outputMap = invokeWithIteration(inputMap);
 		} else {
-			setProcessorTaskWorker(ProcessorHelper.getTaskWorker(activeProcessor));
+			setProcessorTaskWorker(ProcessorHelper
+					.getTaskWorker(activeProcessor));
 			outputMap = invokeWithoutIteration(inputMap);
 			// Fire a new ProcessCompletionEvent
 			if (getProcessorTaskWorker() instanceof EnactorWorkflowTask) {
-				WorkflowInstance nestedWorkflow =
-					((EnactorWorkflowTask) getProcessorTaskWorker()).getWorkflowInstance();
-				NestedWorkflowCompletionEvent event =
-					new NestedWorkflowCompletionEvent(false, inputMap,
-						outputMap, activeProcessor, workflowInstance,
-						nestedWorkflow);
+				WorkflowInstance nestedWorkflow = ((EnactorWorkflowTask) getProcessorTaskWorker())
+						.getWorkflowInstance();
+				NestedWorkflowCompletionEvent event = new NestedWorkflowCompletionEvent(
+						false, inputMap, outputMap, activeProcessor,
+						workflowInstance, nestedWorkflow);
 				DISPATCHER.fireEvent(event);
 				if (nestedWorkflow != null) {
 					nestedWorkflow.destroy();
 				}
 			} else {
-				DISPATCHER.fireEvent(new ProcessCompletionEvent(false,
-					inputMap, outputMap, activeProcessor, workflowInstance));
+				DISPATCHER
+						.fireEvent(new ProcessCompletionEvent(false, inputMap,
+								outputMap, activeProcessor, workflowInstance));
 			}
 
 		}
@@ -385,17 +388,19 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 					if (ProcessorTask.STORE != null) {
 						try {
 							// Avoid duplicates
-							if (! alreadyStoredThings.contains(outputPortTask.getData())) {
+							if (!alreadyStoredThings.contains(outputPortTask
+									.getData())) {
 								STORE.storeDataThing(outputPortTask.getData(),
-									true);
-								alreadyStoredThings.add(outputPortTask.getData());
+										true);
+								alreadyStoredThings.add(outputPortTask
+										.getData());
 							}
 						} catch (DuplicateLSIDException dple) {
 							//
 						} catch (Exception e) {
 							logger.error(
-								"Exception thrown while trying to store a datathing,\n"
-									+ "disabling further stores.", e);
+									"Exception thrown while trying to store a datathing,\n"
+											+ "disabling further stores.", e);
 							STORE = null;
 						}
 					}
@@ -405,10 +410,10 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 					// contract. This is an error condition and should be
 					// reported as such to the user
 					eventList.add(new ServiceError(new RuntimeException(
-						"Output '" + portName
-							+ "' was declared but never created!")));
+							"Output '" + portName
+									+ "' was declared but never created!")));
 					throw new TaskExecutionException("Output port '" + portName
-						+ "' not populated by service instance");
+							+ "' not populated by service instance");
 				}
 			}
 		}
@@ -424,11 +429,13 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 	 *         being the name of the output port. This implementation also
 	 *         includes the logic to remap the port names in the event of an
 	 *         alternate processor being used with differing names for the
-	 *         inputs and outputs. 
-	 * <p>
-	 * CHANGE - this method was synchronized, was there a reason for this?
+	 *         inputs and outputs.
+	 *         <p>
+	 *         CHANGE - this method was synchronized, was there a reason for
+	 *         this?
 	 */
-	private Map<String, DataThing> invokeOnce(Map<String, DataThing> inputMap) throws TaskExecutionException {
+	private Map<String, DataThing> invokeOnce(Map<String, DataThing> inputMap)
+			throws TaskExecutionException {
 		Map<String, DataThing> output = null;
 
 		if (activeInputMapping == null) {
@@ -439,8 +446,7 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 			Map<String, DataThing> taskInput = new HashMap<String, DataThing>();
 			for (Iterator i = inputMap.keySet().iterator(); i.hasNext();) {
 				String originalInputName = (String) i.next();
-				DataThing inputItem = inputMap
-						.get(originalInputName);
+				DataThing inputItem = inputMap.get(originalInputName);
 				String targetInputName = (String) activeInputMapping
 						.get(originalInputName);
 				if (targetInputName == null) {
@@ -488,7 +494,8 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 	 * Do any post-processor transformations required on output data things.
 	 * Currently just special-case handling of replacelsid... (insert SPI here).
 	 */
-	private void transformOutputDataThings(Map<String, DataThing> inputMap, Map<String, DataThing> outputMap) {
+	private void transformOutputDataThings(Map<String, DataThing> inputMap,
+			Map<String, DataThing> outputMap) {
 		if (outputMap == null)
 			return;
 		HashMap<String, DataThing> newMap = new HashMap<String, DataThing>();
@@ -510,8 +517,8 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 	/**
 	 * Actually call the service instance, handles the retry logic.
 	 */
-	private Map<String, DataThing> doInvocationWithRetryLogic(Map<String, DataThing> inputMap)
-			throws TaskExecutionException {
+	private Map<String, DataThing> doInvocationWithRetryLogic(
+			Map<String, DataThing> inputMap) throws TaskExecutionException {
 		try {
 			// If the first invocation works then great, return it.
 			return runAndGenerateTemplates(inputMap);
@@ -528,7 +535,7 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 			int baseTimeout = activeProcessor.getRetryDelay();
 			double backoff = activeProcessor.getBackoff();
 			for (int i = 0; i < maxRetries; i++) {
-				int waitTime = (int) ( Math.pow(backoff, i) * baseTimeout );
+				int waitTime = (int) (Math.pow(backoff, i) * baseTimeout);
 				try {
 					logger.info(Thread.currentThread() + " about to sleep for "
 							+ waitTime + ", retry " + (i + 1) + " of "
@@ -548,7 +555,9 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 				} catch (TaskExecutionException t) {
 					eventList.add(new ServiceError(t));
 				} catch (RuntimeException ex) {
-					logger.error("Failed while retrying " + activeProcessor, ex);
+					logger
+							.error("Failed while retrying " + activeProcessor,
+									ex);
 				}
 			}
 		}
@@ -560,8 +569,8 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 	 * templates
 	 */
 	@SuppressWarnings("unchecked")
-	private Map<String, DataThing> runAndGenerateTemplates(Map<String, DataThing> inputMap)
-			throws TaskExecutionException {
+	private Map<String, DataThing> runAndGenerateTemplates(
+			Map<String, DataThing> inputMap) throws TaskExecutionException {
 		// Insert any input defaults with no bound values in the map
 		InputPort[] ip = activeProcessor.getInputPorts();
 		for (int i = 0; i < ip.length; i++) {
@@ -571,9 +580,10 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 						.getWrappedDefaultValue()));
 			}
 		}
-		
+
 		// Invoke the service
-		Map<String, DataThing> outputMap = getProcessorTaskWorker().execute(inputMap, this);
+		Map<String, DataThing> outputMap = getProcessorTaskWorker().execute(
+				inputMap, this);
 		// Populate all LSIDs in the output map
 		fillAllLSIDs(outputMap);
 		transformOutputDataThings(inputMap, outputMap);
@@ -636,8 +646,8 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 	/**
 	 * Wrapper to invoke without iteration
 	 */
-	private synchronized Map invokeWithoutIteration(Map<String, DataThing> inputMap)
-			throws TaskExecutionException {
+	private synchronized Map invokeWithoutIteration(
+			Map<String, DataThing> inputMap) throws TaskExecutionException {
 		eventList.add(new Invoking());
 		return invokeOnce(inputMap);
 	}
@@ -666,8 +676,8 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 	/**
 	 * Invoke with iteration
 	 */
-	private synchronized Map<String, DataThing> invokeWithIteration(Map<String, DataThing> inputMap)
-			throws TaskExecutionException {
+	private synchronized Map<String, DataThing> invokeWithIteration(
+			Map<String, DataThing> inputMap) throws TaskExecutionException {
 		if (getProcessor().getIterationStrategy() == null) {
 			// No explicit strategy specified
 			eventList.add(new ConstructingIterator());
@@ -732,15 +742,12 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 		// LSIDs of the output collections, the values are sets of the LSIDs of
 		// the individual result items which have been used to compose these
 		// collections.
-		final Map<String, Set<String>> collectionStructure =
-			new HashMap<String, Set<String>>();
+		final Map<String, Set<String>> collectionStructure = new HashMap<String, Set<String>>();
 		int totalIterations = rootNode.size();
-		final Map<String, String> lsidForNamedOutput =
-			new HashMap<String, String>();
+		final Map<String, String> lsidForNamedOutput = new HashMap<String, String>();
 
 		// Create the output container
-		final Map<String, DataThing> outputMap =
-			new HashMap<String, DataThing>();
+		final Map<String, DataThing> outputMap = new HashMap<String, DataThing>();
 		for (Iterator i = getChildren().iterator(); i.hasNext();) {
 			Task task = (Task) i.next();
 			if (task instanceof PortTask) {
@@ -768,7 +775,8 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 			}
 		}
 
-		/* Create a similar mapping for the input LSIDs, indicate where the
+		/*
+		 * Create a similar mapping for the input LSIDs, indicate where the
 		 * collections have been shredded down to allow for the iteration
 		 * composition. Keys are strings containing the LSIDs of the input
 		 * objects with values being the sets of decomposed datathing LSID
@@ -777,10 +785,8 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 		 * taken place) are removed to avoid redundant information in the
 		 * provenance logs.
 		 */
-		final Map<String, String> inputNameToLSID =
-			new HashMap<String, String>();
-		final Map<String, Set<String>> inputShredding =
-			new HashMap<String, Set<String>>();
+		final Map<String, String> inputNameToLSID = new HashMap<String, String>();
+		final Map<String, Set<String>> inputShredding = new HashMap<String, Set<String>>();
 		for (Iterator i = getParents().iterator(); i.hasNext();) {
 			Task task = (Task) i.next();
 			if (task instanceof PortTask) {
@@ -796,8 +802,7 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 
 		currentIteration = 0;
 		final List<ProcessEvent> finalEventList = eventList;
-		final List<ProcessCompletionEvent> completionEvents =
-			new ArrayList<ProcessCompletionEvent>();
+		final List<ProcessCompletionEvent> completionEvents = new ArrayList<ProcessCompletionEvent>();
 
 		// Different code paths for processors which allow multiple workers...
 		if (activeProcessor.getMaximumWorkers() == 1) {
@@ -815,12 +820,13 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 			}
 			final boolean[] active = new boolean[workers];
 			final Thread manager = Thread.currentThread();
-			// Why an array? So the thread can assign to it.. 
+			// Why an array? So the thread can assign to it..
 			final TaskExecutionException[] exception = new TaskExecutionException[1];
 			for (int i = 0; i < workers; i++) {
 				final int position = i;
 				final ResumableIterator irootNode = rootNode;
-				new Thread("Processor worker " + activeProcessor + " #" + position) {
+				new Thread("Processor worker " + activeProcessor + " #"
+						+ position) {
 					public void run() {
 						try {
 							logger.debug(Thread.currentThread() + " started");
@@ -835,11 +841,11 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 							active[position] = false;
 						} catch (TaskExecutionException tee) {
 							logger.error("Task failed while iterating "
-								+ Thread.currentThread(), tee);
+									+ Thread.currentThread(), tee);
 							exception[0] = tee;
 						} catch (RuntimeException e) {
 							logger.error("Failed while iterating "
-								+ Thread.currentThread(), e);
+									+ Thread.currentThread(), e);
 						} finally {
 							logger.debug(Thread.currentThread() + " completed");
 							active[position] = false;
@@ -849,7 +855,7 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 				}.start();
 			}
 			boolean finished = false;
-			while (! finished) {
+			while (!finished) {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException ie) {
@@ -904,8 +910,11 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 
 	@SuppressWarnings("unchecked")
 	private boolean doSingleIteration(ResumableIterator jobQueue,
-			List<ProcessEvent> eventList, List<ProcessCompletionEvent> completionEvents, Map<String, DataThing> outputMap,
-			Map<String, Set<String>> inputShredding, Map<String, Set<String>> collectionStructure,
+			List<ProcessEvent> eventList,
+			List<ProcessCompletionEvent> completionEvents,
+			Map<String, DataThing> outputMap,
+			Map<String, Set<String>> inputShredding,
+			Map<String, Set<String>> collectionStructure,
 			Map lsidForNamedOutput, Map<String, String> inputNameToLSID)
 			throws TaskExecutionException {
 		setProcessorTaskWorker(ProcessorHelper.getTaskWorker(activeProcessor));
@@ -926,8 +935,7 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 					if (o instanceof InvokingWithIteration) {
 						event = (InvokingWithIteration) o;
 					} else {
-						event =
-							new InvokingWithIteration(currentIteration,
+						event = new InvokingWithIteration(currentIteration,
 								queueSize);
 						eventList.add(event);
 					}
@@ -939,8 +947,8 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 			for (Iterator i = inputSet.keySet().iterator(); i.hasNext();) {
 				String inputName = (String) i.next();
 				DataThing inputThing = inputSet.get(inputName);
-				String inputThingLSID =
-					inputThing.getLSID(inputThing.getDataObject());
+				String inputThingLSID = inputThing.getLSID(inputThing
+						.getDataObject());
 				String primaryLSID = inputNameToLSID.get(inputName);
 				Set<String> shredding = inputShredding.get(primaryLSID);
 				shredding.add(inputThingLSID);
@@ -955,20 +963,19 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 
 			// Fire a new ProcessCompletionEvent
 			if (getProcessorTaskWorker() instanceof EnactorWorkflowTask) {
-				WorkflowInstance nestedWorkflow =
-					((EnactorWorkflowTask) getProcessorTaskWorker()).getWorkflowInstance();
-				NestedWorkflowCompletionEvent completionEvent =
-					new NestedWorkflowCompletionEvent(true, inputSet,
-						outputMap, activeProcessor, workflowInstance,
-						nestedWorkflow);
+				WorkflowInstance nestedWorkflow = ((EnactorWorkflowTask) getProcessorTaskWorker())
+						.getWorkflowInstance();
+				NestedWorkflowCompletionEvent completionEvent = new NestedWorkflowCompletionEvent(
+						true, inputSet, outputMap, activeProcessor,
+						workflowInstance, nestedWorkflow);
 				DISPATCHER.fireEvent(completionEvent);
 				if (nestedWorkflow != null) {
 					nestedWorkflow.destroy();
 				}
 			}
-			ProcessCompletionEvent completionEvent =
-				new ProcessCompletionEvent(true, inputSet, singleResultMap,
-					activeProcessor, workflowInstance);
+			ProcessCompletionEvent completionEvent = new ProcessCompletionEvent(
+					true, inputSet, singleResultMap, activeProcessor,
+					workflowInstance);
 			DISPATCHER.fireEvent(completionEvent);
 			completionEvents.add(completionEvent);
 
@@ -987,7 +994,7 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 
 					// Store the result into the appropriate output collection
 					insertObjectInto(dataObject, targetList, currentLocation,
-						targetThing);
+							targetThing);
 
 					// Copy metadata from the original output into the new one,
 					// preserve LSID hopefully!
@@ -996,11 +1003,12 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 					// Get the LSID of the original output item
 					String originalLSID = outputValue.getLSID(dataObject);
 
-					String collectionLSID =
-						(String) lsidForNamedOutput.get(outputName);
+					String collectionLSID = (String) lsidForNamedOutput
+							.get(outputName);
 
 					synchronized (collectionStructure) {
-						collectionStructure.get(collectionLSID).add(originalLSID);
+						collectionStructure.get(collectionLSID).add(
+								originalLSID);
 					}
 				}
 			}
@@ -1036,7 +1044,6 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 			// if (oldLSID != null) {
 			// theThing.getLSIDMap().remove(l);
 			// }
-			
 			// Walk over the index array to find the enclosing collection
 			for (int i = 0; i < position.length - 1; i++) {
 				int index = position[i];
