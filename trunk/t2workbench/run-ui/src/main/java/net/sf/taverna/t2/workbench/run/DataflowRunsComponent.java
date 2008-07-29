@@ -47,8 +47,8 @@ public class DataflowRunsComponent extends JSplitPane implements UIComponentSPI 
 		super(JSplitPane.VERTICAL_SPLIT);
 		setDividerLocation(400);
 		
-//		ApplicationContext appContext = new RavenAwareClassPathXmlApplicationContext("hibernateReferenceServiceContext.xml");
-		ApplicationContext appContext = new RavenAwareClassPathXmlApplicationContext("inMemoryReferenceServiceContext.xml");
+		ApplicationContext appContext = new RavenAwareClassPathXmlApplicationContext("hibernateReferenceServiceContext.xml");
+//		ApplicationContext appContext = new RavenAwareClassPathXmlApplicationContext("inMemoryReferenceServiceContext.xml");
 		referenceService = (ReferenceService) appContext.getBean("t2reference.service.referenceService");
 		referenceContext = null;
 
