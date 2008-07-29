@@ -54,7 +54,7 @@
                             <directory>${env.JAVA_HOME}\include\win32</directory>
                         </source>
                         <source>
-                            <directory>${matlabrot}\extern\include</directory>
+                            <directory>${matlabroot}\extern\include</directory>
                         </source>
                     </sources>
                     <classifier>${classifier}</classifier>
