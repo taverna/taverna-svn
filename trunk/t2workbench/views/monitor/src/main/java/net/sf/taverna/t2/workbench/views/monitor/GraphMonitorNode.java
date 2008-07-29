@@ -153,7 +153,7 @@ public class GraphMonitorNode implements MonitorNode {
 
 		if (queueSizeChanged || sentJobsChanged || completedJobsChanged || errorsChanged) {
 			if (completedJobsChanged) {
-//				graphController.setIteration(processorId, completedJobs);
+				graphController.setIteration(processorId, completedJobs);
 			}
 			if (completedJobs > 0) {
 				int totalJobs = sentJobs + queueSize;

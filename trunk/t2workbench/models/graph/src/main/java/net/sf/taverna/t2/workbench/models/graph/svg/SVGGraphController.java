@@ -26,6 +26,7 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.apache.batik.bridge.UpdateManager;
 import org.apache.batik.dom.GenericText;
+import org.apache.batik.dom.svg.SVGOMAElement;
 import org.apache.batik.dom.svg.SVGOMEllipseElement;
 import org.apache.batik.dom.svg.SVGOMGElement;
 import org.apache.batik.dom.svg.SVGOMPathElement;
@@ -36,9 +37,12 @@ import org.apache.batik.dom.svg.SVGOMTextElement;
 import org.apache.batik.dom.svg.SVGOMTitleElement;
 import org.apache.batik.util.SVGConstants;
 import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
+import org.w3c.dom.svg.SVGAnimatedString;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGPoint;
 import org.w3c.dom.svg.SVGPointList;
@@ -82,6 +86,7 @@ public class SVGGraphController extends GraphController {
 			StringWriter stringWriter = new StringWriter();
 			DotWriter dotWriter = new DotWriter(stringWriter);
 			dotWriter.writeGraph(graph);
+//			System.out.println(stringWriter.toString());
 			svgDocument = SVGUtil.getSVG(stringWriter.toString());
 			edgeLine = EdgeLine.createAndAdd(svgDocument, this);
 			mapNodes(svgDocument.getChildNodes());
@@ -257,6 +262,13 @@ public class SVGGraphController extends GraphController {
 				SVGOMPolygonElement progressPolygon = createProgressPolygon();
 				gElement.insertBefore(progressPolygon, text);
 				svgGraph.setCompletedPolygon(progressPolygon);
+
+				Element textElement = createIterationTextElement(polygon.getPoints().getItem(2));
+				gElement.appendChild(textElement);
+				Text textNode = svgDocument.createTextNode("");
+				textElement.appendChild(textNode);
+				svgGraph.setIterationText(textNode);
+
 				processorMap.put(title, svgGraph);
 			}
 		}
@@ -304,6 +316,12 @@ public class SVGGraphController extends GraphController {
 				if (svgGraphNode.getShape().equals(Shape.BOX)) {
 					if (text.size() == 1) {
 						svgGraphNode.setText(text.get(0));
+						
+						Element textElement = createIterationTextElement(polygon.getPoints().getItem(0));
+						gElement.appendChild(textElement);
+						Text textNode = svgDocument.createTextNode("");
+						textElement.appendChild(textNode);
+						svgGraphNode.setIterationText(textNode);
 					}
 				} else if (svgGraphNode.getShape().equals(Shape.RECORD)) {
 					addPortBoxes(gElement, polygon, text, lines, svgGraphNode);
@@ -318,6 +336,7 @@ public class SVGGraphController extends GraphController {
 		SVGOMPathElement path = null;
 		SVGOMPolygonElement polygon = null;
 		SVGOMEllipseElement ellipse = null;
+		SVGOMAElement a = null;
 		Node child = node.getFirstChild();
 		while (child != null) {
 			if (child instanceof SVGOMTitleElement) {
@@ -328,25 +347,40 @@ public class SVGGraphController extends GraphController {
 				ellipse = (SVGOMEllipseElement) child;
 			} else if (child instanceof SVGOMPathElement) {
 				path = (SVGOMPathElement) child;
+			} else if (child instanceof SVGOMAElement) {
+				a = (SVGOMAElement) child;
+				Node aChild = a.getFirstChild();
+				while (aChild != null) {
+					if (aChild instanceof SVGOMPolygonElement) {
+						polygon = (SVGOMPolygonElement) aChild;
+					} else if (aChild instanceof SVGOMEllipseElement) {
+						ellipse = (SVGOMEllipseElement) aChild;
+					} else if (aChild instanceof SVGOMPathElement) {
+						path = (SVGOMPathElement) aChild;
+					}
+					Node nextChild = aChild.getNextSibling();
+					a.removeChild(aChild);
+					node.appendChild(aChild);
+					aChild = nextChild;
+				}
+				node.removeChild(a);
 			}
 			child = child.getNextSibling();
 		}
-		if (title != null && path != null
+		if (title != null && path != null && a != null
 				&& (polygon != null || ellipse != null)) {
-			List<GraphElement> graphElementList = graphEdgeMap.get(title);
-			if (graphElementList.size() > 0) {
-				GraphElement graphElement = graphElementList.remove(0);
-				if (graphElement instanceof SVGGraphEdge) {
-					SVGGraphEdge svgGraphEdge = (SVGGraphEdge) graphElement;
-					svgGraphEdge.setGraphController(this);
-					if (polygon != null) {
-						svgGraphEdge.setPolygon(polygon);
-					} else {
-						svgGraphEdge.setEllipse(ellipse);
-					}
-					svgGraphEdge.setPath(path);
-					mapDatalink(title, svgGraphEdge);
+			String ports = a.getHref().getBaseVal();
+			GraphElement graphElement = graphElementMap.get(title + ports);
+			if (graphElement instanceof SVGGraphEdge) {
+				SVGGraphEdge svgGraphEdge = (SVGGraphEdge) graphElement;
+				svgGraphEdge.setGraphController(this);
+				if (polygon != null) {
+					svgGraphEdge.setPolygon(polygon);
+				} else {
+					svgGraphEdge.setEllipse(ellipse);
 				}
+				svgGraphEdge.setPath(path);
+				mapDatalink(title, svgGraphEdge);
 			}
 		}
 	}
@@ -722,6 +756,30 @@ public class SVGGraphController extends GraphController {
 		return polygon;
 	}
 
+	private Element createIterationTextElement(SVGPoint iterationPosition) {
+		Element text = svgDocument.createElementNS(SVGUtil.svgNS, SVGConstants.SVG_TEXT_TAG);
+		text.setAttribute(SVGConstants.SVG_X_ATTRIBUTE,
+				String.valueOf(iterationPosition.getX() - 1.5));
+		text.setAttribute(SVGConstants.SVG_Y_ATTRIBUTE,
+				String.valueOf(iterationPosition.getY() + 5.5));
+		text.setAttribute(SVGConstants.SVG_TEXT_ANCHOR_ATTRIBUTE, "end");
+		text.setAttribute(SVGConstants.SVG_FONT_SIZE_ATTRIBUTE, "5.5");
+		text.setAttribute(SVGConstants.SVG_FONT_FAMILY_ATTRIBUTE, "sans-serif");
+		return text;
+	}
+	/**
+	 * Sets the processor's iteration count.
+	 * 
+	 * @param processorId
+	 *            the id of the processor
+	 * @param iteration
+	 *            the number of iteration count
+	 */
+	public void setIteration(String processorId, int iteration) {
+		if (processorMap.containsKey(processorId)) {
+			processorMap.get(processorId).setIteration(iteration);
+		}
+	}
 	
 	private String getTitle(SVGOMTitleElement titleElement) {
 		String title = null;

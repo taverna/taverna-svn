@@ -140,6 +140,8 @@ public class DotWriter {
 		GraphNode sink = edge.getSink();
 		String sourceId = "\"" + source.getId() + "\"";
 		String sinkId = "\"" + sink.getId() + "\"";
+		String ports = source.getId() + sink.getId();
+		
 		if (source.getParent() instanceof GraphNode) {
 			GraphNode parent = (GraphNode) source.getParent();
 			if (parent.getShape().equals(Shape.RECORD)) {
@@ -162,6 +164,11 @@ public class DotWriter {
 		if (edge.getColor() != null) {
 			writeLine(indent + " color=\"" + getHexValue(edge.getColor()) + "\"");
 		}
+		
+		//hack to force the port names through to the SVG so we can
+		//work out which SVG edge maps to which graph edge
+		writeLine(indent + " URL=\"" + ports + "\"");
+		
 		writeLine(indent + "]");
 	}
 

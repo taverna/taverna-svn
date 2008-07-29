@@ -77,8 +77,8 @@ public interface SVGShape {
 	 */
 	public void setText(SVGOMTextElement text);
 
-//	public void setIteration(final int iteration);
-//
+	public void setIteration(final int iteration);
+
 //	public void setErrors(final int errors);
 //
 //	public void setCompleted(final float complete);

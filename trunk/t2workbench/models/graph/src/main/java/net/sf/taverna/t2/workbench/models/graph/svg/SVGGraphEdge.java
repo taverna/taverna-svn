@@ -8,6 +8,7 @@ import net.sf.taverna.t2.workbench.models.graph.svg.event.SVGMouseClickEventList
 import net.sf.taverna.t2.workbench.models.graph.svg.event.SVGMouseDownEventListener;
 
 import org.apache.batik.bridge.UpdateManager;
+import org.apache.batik.dom.svg.SVGOMAnimateMotionElement;
 import org.apache.batik.dom.svg.SVGOMEllipseElement;
 import org.apache.batik.dom.svg.SVGOMPathElement;
 import org.apache.batik.dom.svg.SVGOMPolygonElement;
@@ -155,6 +156,18 @@ public class SVGGraphEdge extends GraphEdge {
 								if (polygon != null) {
 									polygon.setAttribute(
 											SVGConstants.SVG_STYLE_ATTRIBUTE, selectedPolygonStyle);
+
+//									System.out.println("Path = " +path.getAttribute("d"));
+//									SVGOMAnimateMotionElement animateMotion = (SVGOMAnimateMotionElement) graphController.svgDocument
+//									.createElementNS(SVGUtil.svgNS, SVGConstants.SVG_ANIMATE_MOTION_TAG);
+//									animateMotion.setAttribute("begin", "0s");
+//									animateMotion.setAttribute("dur", "1s");
+//									animateMotion.setAttribute("repeatDur", "indefinite");
+//									animateMotion.setAttribute("path", path.getAttribute("d"));
+//								
+//									polygon.appendChild(animateMotion);
+//									animateMotion.beginElement();
+
 								} else {
 									ellipse.setAttribute(
 											SVGConstants.SVG_STYLE_ATTRIBUTE, selectedEllipseStyle);

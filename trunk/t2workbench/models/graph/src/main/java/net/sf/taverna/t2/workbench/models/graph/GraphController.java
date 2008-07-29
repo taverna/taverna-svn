@@ -122,8 +122,6 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 
 	protected Map<String, GraphElement> graphElementMap = new HashMap<String, GraphElement>();
 
-	protected Map<String, List<GraphElement>> graphEdgeMap = new HashMap<String, List<GraphElement>>();
-
 	protected GraphElement edgeCreationSource;
 	
 	protected GraphElement edgeCreationSink;
@@ -265,8 +263,14 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 				Edit<?> edit = null;
 				if (edgeMoveElement == null) {
 					edit = Tools.getCreateAndConnectDatalinkEdit(dataflow, source, sink);
-				} else if (edgeMoveElement.getSink().getDataflowObject() != sink) {
-					edit = Tools.getMoveDatalinkSinkEdit(dataflow, (Datalink) edgeMoveElement.getDataflowObject(), sink);
+				} else {
+					Object sinkObject = edgeMoveElement.getSink().getDataflowObject();
+					if (sinkObject instanceof DataflowOutputPort) {
+						sinkObject = ((DataflowOutputPort) sinkObject).getInternalInputPort();						
+					}
+					if (sinkObject != sink) {
+						edit = Tools.getMoveDatalinkSinkEdit(dataflow, (Datalink) edgeMoveElement.getDataflowObject(), sink);
+					}
 				}
 				if (edit != null) {
 					try {
@@ -426,10 +430,7 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 					edge.setDataflowObject(condition);
 				}
 				dataflowToGraph.put(condition, edge);
-				if (!graphEdgeMap.containsKey(edge.getId())) {
-					graphEdgeMap.put(edge.getId(), new ArrayList<GraphElement>());
-				}
-				graphEdgeMap.get(edge.getId()).add(edge);
+				graphElementMap.put(edge.getId(), edge);
 			}
 		}
 		return edge;
@@ -460,16 +461,13 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 			if (sinkNode.getParent() instanceof GraphNode) {
 				sinkId = sinkNode.getParent().getId();
 			}
-			edge.setId(sourceId + "->" + sinkId);
+			edge.setId(sourceId + "->" + sinkId + sourceNode.getId() + sinkNode.getId());
 			edge.setLineStyle(LineStyle.SOLID);
 			if (depth == 0) {
 				edge.setDataflowObject(datalink);
 			}
 			dataflowToGraph.put(datalink, edge);
-			if (!graphEdgeMap.containsKey(edge.getId())) {
-				graphEdgeMap.put(edge.getId(), new ArrayList<GraphElement>());
-			}
-			graphEdgeMap.get(edge.getId()).add(edge);
+			graphElementMap.put(edge.getId(), edge);
 		}
 		return edge;
 	}
@@ -835,6 +833,10 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 		}
 	}
 
+	public void setIteration(String processorId, int iteration) {
+		
+	}
+	
 	public void notify(Observable<DataflowSelectionMessage> sender,
 			DataflowSelectionMessage message) throws Exception {
 		GraphElement graphElement = dataflowToGraph.get(message.getElement());

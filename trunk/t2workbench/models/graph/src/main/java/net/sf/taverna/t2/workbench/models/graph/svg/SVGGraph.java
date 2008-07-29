@@ -12,7 +12,11 @@ import org.apache.batik.dom.svg.SVGOMGElement;
 import org.apache.batik.dom.svg.SVGOMPolygonElement;
 import org.apache.batik.dom.svg.SVGOMTextElement;
 import org.apache.batik.util.SVGConstants;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
 import org.w3c.dom.events.EventTarget;
+import org.w3c.dom.svg.SVGPoint;
 import org.w3c.dom.svg.SVGPointList;
 
 /**
@@ -40,10 +44,8 @@ public class SVGGraph extends Graph implements SVGMonitorShape {
 
 	private SVGOMPolygonElement completedPolygon;
 
-//	private Text iterationText;
-//
-//	private SVGPoint iterationPosition;
-//
+	private Text iterationText;
+
 //	private Text errorsText;
 //
 //	private SVGPoint errorsPosition;
@@ -112,7 +114,6 @@ public class SVGGraph extends Graph implements SVGMonitorShape {
 //		errorStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.ERROR_COLOUR + ";");
 		selectedStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.SELECTED_COLOUR + ";" +
 				"stroke-width:2");
-//		iterationPosition = polygon.getPoints().getItem(2);
 	}
 
 	/* (non-Javadoc)
@@ -168,28 +169,23 @@ public class SVGGraph extends Graph implements SVGMonitorShape {
 		}
 	}
 
-//	/* (non-Javadoc)
-//	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGBox#setIteration(int)
-//	 */
-//	public void setIteration(final int iteration) {
-//		if (this.graphController.updateManager != null) {
-//			if (iterationText == null) {
-//				addIterationText();
-//			}
-//			this.graphController.updateManager.getUpdateRunnableQueue().invokeLater(
-//					new Runnable() {
-//						public void run() {
-//							if (iteration > 0) {
-//								iterationText.setData(String
-//										.valueOf(iteration));
-//							} else {
-//								iterationText.setData("");
-//							}
-//						}
-//					});
-//		}
-//	}
-//
+	public void setIteration(final int iteration) {
+		if (iterationText != null && this.graphController.updateManager != null) {
+			this.graphController.updateManager.getUpdateRunnableQueue().invokeLater(
+					new Runnable() {
+						public void run() {
+							if (iteration > 0) {
+								iterationText.setData(String
+										.valueOf(iteration));
+							} else {
+								iterationText.setData("");
+							}
+						}
+					});
+		}
+	}
+
+
 //	/* (non-Javadoc)
 //	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGBox#setErrors(int)
 //	 */
@@ -246,43 +242,7 @@ public class SVGGraph extends Graph implements SVGMonitorShape {
 //		}
 //	}
 //
-//	private void addIterationText() {
-//		if (this.graphController.updateManager != null) {
-//			this.graphController.updateManager.getUpdateRunnableQueue().invokeLater(
-//					new Runnable() {
-//						public void run() {
-//							Element text = SVGGraph.this.graphController.getSvgCanvas().getSVGDocument().createElementNS(
-//									SVGUtil.svgNS, SVGConstants.SVG_TEXT_TAG);
-//							text.setAttribute(SVGConstants.SVG_X_ATTRIBUTE,
-//									String
-//									.valueOf(iterationPosition
-//											.getX() - 1.5));
-//							text.setAttribute(SVGConstants.SVG_Y_ATTRIBUTE,
-//									String
-//									.valueOf(iterationPosition
-//											.getY() + 5.5));
-//							text.setAttribute(
-//									SVGConstants.SVG_TEXT_ANCHOR_ATTRIBUTE,
-//									"end");
-//							text.setAttribute(
-//									SVGConstants.SVG_FONT_SIZE_ATTRIBUTE,
-//									"5.5");
-//							text.setAttribute(
-//									SVGConstants.SVG_FONT_FAMILY_ATTRIBUTE,
-//									"sans-serif");
-//							synchronized (g) {
-//								if (iterationText == null) {
-//									iterationText = SVGGraph.this.graphController.getSvgCanvas().getSVGDocument()
-//									.createTextNode("");
-//									text.appendChild(iterationText);
-//									g.appendChild(text);
-//								}
-//							}
-//						}
-//					});
-//		}
-//	}
-//
+	
 //	private void addErrorsText() {
 //		if (this.graphController.updateManager != null) {
 //			this.graphController.updateManager.getUpdateRunnableQueue().invokeLater(
@@ -430,6 +390,24 @@ public class SVGGraph extends Graph implements SVGMonitorShape {
 		completedPolygon.setAttribute(
 				SVGConstants.SVG_POINTS_ATTRIBUTE,
 				calculatePoints(complete));
+	}
+
+	/**
+	 * Returns the iterationText.
+	 *
+	 * @return the iterationText
+	 */
+	public Text getIterationText() {
+		return iterationText;
+	}
+
+	/**
+	 * Sets the iterationText.
+	 *
+	 * @param iterationText the new iterationText
+	 */
+	public void setIterationText(Text iterationText) {
+		this.iterationText = iterationText;
 	}
 	
 }
