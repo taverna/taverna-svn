@@ -245,6 +245,8 @@ http.proxyPassword = theking</screen>
   </section>
   <xi:include href="section_running_taverna.xml"
               xmlns:xi="http://www.w3.org/2001/XInclude" />
+  <xi:include href="section_examples.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude" />
   <xi:include href="section_custom_perspectives.xml"
               xmlns:xi="http://www.w3.org/2001/XInclude" />            
               
