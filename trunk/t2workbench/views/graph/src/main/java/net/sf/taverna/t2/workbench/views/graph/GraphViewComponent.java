@@ -3,6 +3,9 @@ package net.sf.taverna.t2.workbench.views.graph;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +25,7 @@ import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 import net.sf.taverna.t2.lang.ui.ModelMap;
 import net.sf.taverna.t2.lang.ui.ModelMap.ModelMapEvent;
+import net.sf.taverna.t2.ui.menu.impl.ContextMenuFactory;
 import net.sf.taverna.t2.workbench.ModelMapConstants;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.edits.EditManager.AbstractDataflowEditEvent;
@@ -77,6 +81,13 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 		svgCanvas.addGVTTreeRendererListener(new GVTTreeRendererAdapter() {
 			public void gvtRenderingCompleted(GVTTreeRendererEvent arg0) {
 				graphController.setUpdateManager(svgCanvas.getUpdateManager());
+			}
+		});
+		svgCanvas.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON3 && dataflow != null) {
+					ContextMenuFactory.getContextMenu(dataflow, dataflow, svgCanvas).show(svgCanvas, e.getX(), e.getY());
+				}
 			}
 		});
 		add(svgCanvas, BorderLayout.CENTER);
