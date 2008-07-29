@@ -8,10 +8,10 @@ import net.sourceforge.taverna.baclava.DataThingAdapter;
 /**
  * This class
  * 
- * Last edited by $Author: sowen70 $
+ * Last edited by $Author: stain $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class FileListByExtTaskTest extends TestCase {
 
@@ -30,7 +30,7 @@ public class FileListByExtTaskTest extends TestCase {
         assertFalse("The outputmap was empty",outputMap.isEmpty());
         String[] filelist = outAdapter.getStringArray("filelist");
         
-        assertTrue("The filelist was empty ", filelist != null || filelist.length > 0);        
+        assertTrue("The filelist was empty ", filelist != null && filelist.length > 0);        
     }
 
 }
