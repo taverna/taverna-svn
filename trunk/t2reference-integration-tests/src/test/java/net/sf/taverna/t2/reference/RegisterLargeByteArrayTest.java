@@ -2,9 +2,11 @@ package net.sf.taverna.t2.reference;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -67,7 +69,7 @@ public class RegisterLargeByteArrayTest {
 		byte [] newbytes=(byte[])returnedObject;
 		assertEquals("There bytes should be of the same length",bytes.length,newbytes.length);
 		assertNotSame("They shouldn't be the same actual object",bytes, newbytes);
-		assertEquals("The bytes should have the same content",bytes,newbytes);
+		assertTrue("The bytes should have the same content",Arrays.equals(bytes,newbytes));
 		
 	}
 	
@@ -84,7 +86,7 @@ public class RegisterLargeByteArrayTest {
 		byte [] newbytes=(byte[])returnedObject;
 		assertEquals("There bytes should be of the same length",bytes.length,newbytes.length);
 		assertNotSame("They shouldn't be the same actual object",bytes, newbytes);
-		assertEquals("The bytes should have the same content",bytes,newbytes);
+		assertTrue("The bytes should have the same content",Arrays.equals(bytes,newbytes));
 		
 	}
 	
