@@ -36,6 +36,7 @@ public abstract class AddQueryActionHandler extends AbstractAction {
 		return this.setModelChangeListener;
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected void addQuery(final Query<?> query) {
 		query.addSetModelChangeListener((SetModelChangeListener)getSetModelChangeListener());
 		Thread t = new Thread("Add Query thread") {
