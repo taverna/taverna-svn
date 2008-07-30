@@ -17,7 +17,6 @@ import net.sf.taverna.t2.workbench.configuration.AbstractConfigurable;
  */
 public class WorkbenchConfiguration extends AbstractConfigurable {
 
-
 	public static final String TAVERNA_DOTLOCATION = "taverna.dotlocation";
 	private static final String BIN = "bin";
 	private static final String BUNDLE_CONTENTS = "Contents";
@@ -27,16 +26,20 @@ public class WorkbenchConfiguration extends AbstractConfigurable {
 
 	public static String uuid = "c14856f0-5967-11dd-ae16-0800200c9a66";
 
-	private static WorkbenchConfiguration instance = new WorkbenchConfiguration();
 	private static final String MAC_OS_X = "Mac OS X";
 	private static final String WIN32I386 = "win32i386";
 	private static final String WINDOWS = "Windows";
 
-	public static WorkbenchConfiguration getInstance() {
-		return instance;
+	private static class Singleton {
+		public static WorkbenchConfiguration instance = new WorkbenchConfiguration();
 	}
 
-	private ApplicationConfig appConfig = ApplicationConfig.getInstance();
+	public static WorkbenchConfiguration getInstance() {
+		return Singleton.instance;
+	}
+
+	private static ApplicationConfig appConfig = ApplicationConfig
+			.getInstance();
 
 	Map<String, String> defaultWorkbenchProperties = null;
 	Map<String, String> workbenchProperties = new HashMap<String, String>();
@@ -76,8 +79,10 @@ public class WorkbenchConfiguration extends AbstractConfigurable {
 			if (startupDir.getParentFile() != null) {
 				File contentsDir = startupDir.getParentFile().getParentFile();
 				if (contentsDir != null
-						&& contentsDir.getName().equalsIgnoreCase(BUNDLE_CONTENTS)) {
-					File dot = new File(new File(contentsDir, BUNDLE_MAC_OS), DOT_FALLBACK);
+						&& contentsDir.getName().equalsIgnoreCase(
+								BUNDLE_CONTENTS)) {
+					File dot = new File(new File(contentsDir, BUNDLE_MAC_OS),
+							DOT_FALLBACK);
 					if (dot.exists()) {
 						return dot.getAbsolutePath();
 					}
