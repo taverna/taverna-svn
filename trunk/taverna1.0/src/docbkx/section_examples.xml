@@ -2,7 +2,7 @@
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <section id="example_workflows">
-<title>Example worklows</title>
+<title>Example workflows</title>
 <para>Workflow examples are stored in the 'examples' subdirectory of
       your Taverna installation.  The following workflows are known to have problems:
 </para>
