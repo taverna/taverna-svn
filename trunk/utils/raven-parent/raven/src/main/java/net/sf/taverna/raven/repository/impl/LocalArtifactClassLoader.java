@@ -17,7 +17,6 @@ import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.raven.repository.Repository;
-import sun.misc.CompoundEnumeration;
 
 /**
  * Implementation of ClassLoader that uses the artifact metadata to manage any
@@ -96,7 +95,7 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	/**
+	/*
 	 * Overridden to prevent it checking parents if the parent is the
 	 * URLClassLoader used to bootstrap raven. Otherwise it has to download and
 	 * search each raven.jar for every repository, including mirror
@@ -106,10 +105,7 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 		if (getParent() == null || !isParentRavenClassLoader()) {
 			return super.getResources(name);
 		}
-		Enumeration[] tmp = new Enumeration[2];
-		tmp[1] = findResources(name);
-
-		return new CompoundEnumeration<URL>(tmp);
+		return findResources(name);
 	}
 
 	@Override
