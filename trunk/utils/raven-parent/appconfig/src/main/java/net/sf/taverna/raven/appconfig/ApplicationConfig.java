@@ -18,16 +18,16 @@ import net.sf.taverna.raven.prelauncher.ClassLocation;
 
 /**
  * Represent the application config as it has been specified in
- * {@value #PROPERTIES}. This configuration specifies which application is to
- * be launched by {@link net.sf.taverna.raven.launcher.Launcher}, what is it's
- * name and title, etc.
+ * {@value #PROPERTIES}. This configuration specifies which application is to be
+ * launched by {@link net.sf.taverna.raven.launcher.Launcher}, what is it's name
+ * and title, etc.
  * <p>
  * An application built using {@link net.sf.taverna.raven.launcher.Launcher}
  * would typically provide the {@value #PROPERTIES} file on the classpath under
  * a <code>conf</code> directory, or in a <code>conf</code> directory in the
  * application's distribution directory (assuming that {@link ApplicationConfig}
- * is loaded from a JAR-file placed in the directory <code>lib</code> below
- * the distribution directory).
+ * is loaded from a JAR-file placed in the directory <code>lib</code> below the
+ * distribution directory).
  * 
  * @author Stian Soiland-Reyes
  * 
@@ -49,13 +49,12 @@ public class ApplicationConfig {
 	public static final String PROPERTIES = "raven-launcher.properties";
 	private static final boolean DEBUG = false;
 
-	private static ApplicationConfig instance;
+	private static class Singleton {
+		public final static ApplicationConfig instance = new ApplicationConfig();
+	}
 
-	public static synchronized ApplicationConfig getInstance() {
-		if (instance == null) {
-			instance = new ApplicationConfig();
-		}
-		return instance;
+	public static ApplicationConfig getInstance() {
+		return Singleton.instance;
 	}
 
 	private File startupDir;
