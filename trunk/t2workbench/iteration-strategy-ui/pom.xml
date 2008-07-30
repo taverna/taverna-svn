@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.sf.taverna.t2.workbench</groupId>
+	<version>0.1-SNAPSHOT</version>
+	<artifactId>iteration-strategy-ui</artifactId>
+	<name>Menu generation API</name>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>t2-workbench</artifactId>
+		<version>0.1-SNAPSHOT</version>
+	</parent>
+	<description>An SPI system for building UI menues</description>
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>spi-discovery-api</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+</project>
