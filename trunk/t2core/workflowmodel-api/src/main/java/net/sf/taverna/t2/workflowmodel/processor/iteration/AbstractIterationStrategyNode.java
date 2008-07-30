@@ -50,18 +50,18 @@ public abstract class AbstractIterationStrategyNode implements
 	 */
 	public final synchronized void setParent(IterationStrategyNode newParent) {
 		if (newParent != null) {
-			this.parent = newParent;
-			if (newParent.getChildren().contains(this) == false) {
+			parent = newParent;
+			if (! newParent.getChildren().contains(this)) {
 				newParent.getChildren().add(newParent.getChildCount(), this);
 			}
 		} else {
-			if (this.parent != null) {
+			if (parent != null) {
 				// Remove from the current parent
-				if (this.parent.getChildren().contains(this)) {
-					this.parent.getChildren().remove(this);
+				if (parent.getChildren().contains(this)) {
+					parent.getChildren().remove(this);
 				}
 			}
-			this.parent = null;
+			parent = null;
 		}
 	}
 
@@ -123,8 +123,8 @@ public abstract class AbstractIterationStrategyNode implements
 	/**
 	 * Implement TreeNode
 	 */
-	public final TreeNode getChildAt(int arg0) {
-		return children.get(arg0);
+	public final TreeNode getChildAt(int position) {
+		return children.get(position);
 	}
 
 	/**
@@ -137,8 +137,8 @@ public abstract class AbstractIterationStrategyNode implements
 	/**
 	 * Implement TreeNode
 	 */
-	public final int getIndex(TreeNode arg0) {
-		return children.indexOf(arg0);
+	public final int getIndex(TreeNode node) {
+		return children.indexOf(node);
 	}
 
 	/**
