@@ -2,7 +2,6 @@ package net.sf.taverna.t2.workflowmodel.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import net.sf.taverna.t2.workflowmodel.CompoundEdit;
 import net.sf.taverna.t2.workflowmodel.Datalink;
