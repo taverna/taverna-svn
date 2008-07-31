@@ -161,7 +161,6 @@ public class TranslateAndRunTest extends InvocationTestHelper {
 			facade.fire();
 			
 			T2Reference entityId=context.getReferenceService().register(input, 0, true, context);
-			Object x = context.getReferenceService().renderIdentifier(entityId, Object.class ,context);
 			for (DataflowInputPort port : dataflow.getInputPorts()) {
 				WorkflowDataToken inputToken = new WorkflowDataToken("",new int[]{}, entityId, context);
 				facade.pushData(inputToken, port.getName());
