@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.activities.wsdl.translator;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -10,6 +11,7 @@ import java.util.List;
 
 import net.sf.taverna.t2.activities.testutils.DummyProcessor;
 import net.sf.taverna.t2.activities.testutils.LocationConstants;
+import net.sf.taverna.t2.activities.wsdl.WSDLActivity;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
@@ -24,10 +26,12 @@ import org.junit.Test;
  */
 public class WSDLActivityTranslatorTest  implements LocationConstants {
     private static WSDLBasedProcessor processor = null;
+	private static String wsdlPath;
     
     @BeforeClass
     public static void createProcessor() throws Exception {
-        processor = new WSDLBasedProcessor(null,"test_wsdl",WSDL_TEST_BASE+"DBfetch.wsdl","getSupportedDBs");
+    	wsdlPath = WSDLActivityTranslatorTest.class.getResource("/dbfetch.wsdl").toURI().toURL().toExternalForm();
+        processor = new WSDLBasedProcessor(null,"test_wsdl",wsdlPath ,"getSupportedDBs");
     }
     
     @Test
@@ -47,7 +51,7 @@ public class WSDLActivityTranslatorTest  implements LocationConstants {
         WSDLActivityTranslator translator = new WSDLActivityTranslator();
         WSDLActivityConfigurationBean bean = translator.createConfigType(processor);
         
-        assertEquals("The wsdl in the config bean is wrong",WSDL_TEST_BASE+"DBfetch.wsdl",bean.getWsdl());
+        assertEquals("The wsdl in the config bean is wrong",wsdlPath,bean.getWsdl());
         assertEquals("The operation in the config bean is wrong","getSupportedDBs",bean.getOperation());
     }
     
@@ -71,6 +75,19 @@ public class WSDLActivityTranslatorTest  implements LocationConstants {
         if (!found) {
         	fail("There should be an output port named getSupportedDBsReturn");
         }
+        
+    }
+    
+    @Test
+    public void getTypeDescriptorForPorts() throws Exception {
+    	WSDLActivityTranslator translator = new WSDLActivityTranslator();
+        WSDLActivity activity = (WSDLActivity)translator.doTranslation(processor);
+        assertEquals("no inputs were expected",0,activity.getInputPorts().size());
+        assertEquals("2 outputs were expected (remember 1 extra for attachment list!).",2,activity.getOutputPorts().size());
+       
+        assertNotNull("The descriptor should exist for output getSupportedDBsReturn",activity.getTypeDescriptorForOutputPort("getSupportedDBsReturn"));
+        assertNull("The descriptor should not exist for output fred",activity.getTypeDescriptorForOutputPort("fred"));
+        assertNull("The descriptor should not exist for input getSupportedDBsReturn",activity.getTypeDescriptorForInputPort("getSupportedDBsReturn"));
     }
    
 }

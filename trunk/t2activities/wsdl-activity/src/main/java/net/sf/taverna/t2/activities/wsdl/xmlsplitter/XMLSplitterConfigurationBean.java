@@ -13,6 +13,4 @@ public class XMLSplitterConfigurationBean extends ActivityPortsDefinitionBean {
 	public void setWrappedTypeXML(String wrappedTypeXML) {
 		this.wrappedTypeXML = wrappedTypeXML;
 	}
-	
-	
 }

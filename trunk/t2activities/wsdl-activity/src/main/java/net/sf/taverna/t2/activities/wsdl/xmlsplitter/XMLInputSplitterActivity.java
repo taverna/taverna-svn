@@ -15,6 +15,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousAc
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
+import net.sf.taverna.wsdl.parser.ComplexTypeDescriptor;
 import net.sf.taverna.wsdl.parser.TypeDescriptor;
 import net.sf.taverna.wsdl.xmlsplitter.XMLInputSplitter;
 import net.sf.taverna.wsdl.xmlsplitter.XMLSplitterSerialisationHelper;
@@ -49,7 +50,25 @@ public class XMLInputSplitterActivity extends AbstractAsynchronousActivity<XMLSp
 		}
 		typeDescriptor = XMLSplitterSerialisationHelper.extensionXMLToTypeDescriptor(element);
 	}
-
+	
+	/**
+	 * Returns a TypeDescriptor for the given port name. If the port cannot be found, or is not based upon a complex type, then null is returned.
+	 * @param portName
+	 * @return
+	 */
+	public TypeDescriptor getTypeDescriptorForInputPort(String portName) {
+		TypeDescriptor result = null;
+		if (typeDescriptor instanceof ComplexTypeDescriptor) {
+			for (TypeDescriptor desc : ((ComplexTypeDescriptor)typeDescriptor).getElements()) {
+				if (desc.getName().equals(portName)) {
+					result = desc;
+					break;
+				}
+			}
+		}
+		return result;
+	}
+	
 	@Override
 	public void executeAsynch(final Map<String, T2Reference> data,
 			final AsynchronousActivityCallback callback) {

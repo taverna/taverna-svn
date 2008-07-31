@@ -59,5 +59,6 @@ public class XMLInputSplitterLocalWorkerTranslatorTest implements LocationConsta
 		
 		assertNotNull("configuration should not be null",activity.getConfiguration());
 		assertTrue("configuration should be an XMLSplitterConfigurationBean",activity.getConfiguration() instanceof XMLSplitterConfigurationBean);
+		
 	}
 }

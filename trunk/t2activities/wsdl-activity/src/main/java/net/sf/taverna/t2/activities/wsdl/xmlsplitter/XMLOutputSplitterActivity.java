@@ -16,6 +16,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousAc
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
+import net.sf.taverna.wsdl.parser.ComplexTypeDescriptor;
 import net.sf.taverna.wsdl.parser.TypeDescriptor;
 import net.sf.taverna.wsdl.xmlsplitter.XMLOutputSplitter;
 import net.sf.taverna.wsdl.xmlsplitter.XMLSplitterSerialisationHelper;
@@ -115,6 +116,19 @@ public class XMLOutputSplitterActivity extends AbstractAsynchronousActivity<XMLS
 		});
 	}
 
+	public TypeDescriptor getTypeDescriptorForOutputPort(String portName) {
+		TypeDescriptor result = null;
+		if (typeDescriptor instanceof ComplexTypeDescriptor) {
+			for (TypeDescriptor desc : ((ComplexTypeDescriptor)typeDescriptor).getElements()) {
+				if (desc.getName().equals(portName)) {
+					result = desc;
+					break;
+				}
+			}
+		}
+		return result;
+	}
+	
 	@Override
 	public XMLSplitterConfigurationBean getConfiguration() {
 		return configBean;

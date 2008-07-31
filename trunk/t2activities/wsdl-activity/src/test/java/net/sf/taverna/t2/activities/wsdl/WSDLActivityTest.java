@@ -2,11 +2,11 @@ package net.sf.taverna.t2.activities.wsdl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +14,7 @@ import java.util.Map;
 import net.sf.taverna.t2.activities.testutils.ActivityInvoker;
 import net.sf.taverna.t2.activities.testutils.LocationConstants;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
+import net.sf.taverna.wsdl.parser.ComplexTypeDescriptor;
 
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -41,18 +42,22 @@ public class WSDLActivityTest implements LocationConstants {
 				.getInputPorts().size());
 		assertEquals("There should be 2 output ports", 2, activity
 				.getOutputPorts().size());
-		
+
 		assertEquals("parameters", activity.getInputPorts().iterator().next()
 				.getName());
-		
+
 		List<String> expectedOutputNames = new ArrayList<String>();
 		expectedOutputNames.add("parameters");
 		expectedOutputNames.add("attachmentList");
 		for (OutputPort port : activity.getOutputPorts()) {
-			assertTrue("Unexpected output name:"+port.getName(),expectedOutputNames.contains(port.getName()));
+			assertTrue("Unexpected output name:" + port.getName(),
+					expectedOutputNames.contains(port.getName()));
 			expectedOutputNames.remove(port.getName());
 		}
-		assertEquals("Not all of the expected outputs were found, those remainng are:"+expectedOutputNames.toArray(),0,expectedOutputNames.size());
+		assertEquals(
+				"Not all of the expected outputs were found, those remainng are:"
+						+ expectedOutputNames.toArray(), 0, expectedOutputNames
+						.size());
 	}
 
 	@Test
@@ -78,13 +83,34 @@ public class WSDLActivityTest implements LocationConstants {
 		if (outputMap.get("parameters") instanceof String) {
 			xml = (String) outputMap.get("parameters");
 		} else {
-			byte [] bytes = (byte []) outputMap
-					.get("parameters");
+			byte[] bytes = (byte[]) outputMap.get("parameters");
 			xml = new String(bytes);
 		}
 
 		assertTrue("the xml is not what was expected", xml
 				.contains("<DbName>pubmed</DbName>"));
+	}
+
+	@Test
+	public void testGetTypeDescriptorForOutputPort() throws Exception {
+		assertNotNull("The type for the port 'paremeters' could not be found",
+				activity.getTypeDescriptorForOutputPort("parameters"));
+		assertTrue(
+				"The type for the port 'paremeters' shoule be complex",
+				activity.getTypeDescriptorForOutputPort("parameters") instanceof ComplexTypeDescriptor);
+		assertNull("There should be no type descriptor for 'fred' port",
+				activity.getTypeDescriptorForOutputPort("fred"));
+	}
+
+	@Test
+	public void testGetTypeDescriptorForInputPort() throws Exception {
+		assertNotNull("The type for the port 'parameters' could not be found",
+				activity.getTypeDescriptorForInputPort("parameters"));
+		assertTrue(
+				"The type for the port 'parameters' shoule be complex",
+				activity.getTypeDescriptorForInputPort("parameters") instanceof ComplexTypeDescriptor);
+		assertNull("There should be no type descriptor for 'fred' port",
+				activity.getTypeDescriptorForInputPort("fred"));
 	}
 
 }
