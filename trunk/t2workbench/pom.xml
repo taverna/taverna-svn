@@ -106,6 +106,7 @@
 		<module>views</module>
 		<module>perspective-results</module>
 		<module>reference-config</module>
+		<module>iteration-strategy-ui</module>
 	</modules>
 	<repositories>
 		<repository>
