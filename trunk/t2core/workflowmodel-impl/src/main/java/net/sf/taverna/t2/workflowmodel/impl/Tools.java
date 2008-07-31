@@ -25,13 +25,6 @@ import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
-import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.AddDispatchLayerEdit;
-import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DispatchStackImpl;
-import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ErrorBounce;
-import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover;
-import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke;
-import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize;
-import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Retry;
 
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -126,6 +119,21 @@ public class Tools {
 
 		return activityElem;
 
+	}
+	
+	/**
+	 * Iterates over all the processors in the dataflow, returning the first processor found to contain the given activity.
+	 * @param dataflow
+	 * @param activity
+	 * @return the processor to which the activity is attached, or null if it cannot be found
+	 */
+	public Processor findProcessorForActivity(Dataflow dataflow, Activity<?> activity) {
+		for (Processor p : dataflow.getProcessors()) {
+			for (Activity<?> a : p.getActivityList()) {
+				if (a==activity) return p;
+			}
+		}
+		return null;
 	}
 
 	/**
