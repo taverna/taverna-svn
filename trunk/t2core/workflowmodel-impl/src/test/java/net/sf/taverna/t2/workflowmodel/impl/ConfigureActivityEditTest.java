@@ -13,7 +13,7 @@ public class ConfigureActivityEditTest {
 	DummyActivity activity;
 	
 	@Before
-	public void setup() {
+	public void setup() throws Exception {
 		activity=new DummyActivity();
 	}
 	
@@ -24,6 +24,20 @@ public class ConfigureActivityEditTest {
 		edit.doEdit();
 		assertTrue(activity.isConfigured);
 		assertEquals("bob",activity.getConfiguration());
+	}
+	
+	@Test
+	public void testUndo() throws Exception {
+		String bean = "bob";
+		activity.configure("fred");
+		Edit<?> edit = new ConfigureActivityEdit(activity,bean);
+		edit.doEdit();
+		
+		assertEquals("bob",activity.getConfiguration());
+		edit.undo();
+		
+		assertEquals("fred",activity.getConfiguration());
+		assertFalse(edit.isApplied());
 	}
 	
 	@Test
