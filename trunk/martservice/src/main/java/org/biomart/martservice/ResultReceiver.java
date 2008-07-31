@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ResultReceiver.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-03-04 16:47:57 $
+ * Last modified on   $Date: 2008-07-31 15:06:49 $
  *               by   $Author: davidwithers $
  * Created on Jan 18, 2008
  *****************************************************************/
@@ -48,5 +48,14 @@ public interface ResultReceiver {
 	 * @param resultRow
 	 */
 	public void receiveResult(Object[] resultRow, long index) throws ResultReceiverException;
-		
+	
+	/**
+	 * Receives an error for a single row from the results of executing a Query.
+	 * 
+	 * This method will be called frequently and should not block.
+	 * 
+	 * @param resultRow
+	 */
+	public void receiveError(String errorMessage, long index) throws ResultReceiverException;
+	
 }

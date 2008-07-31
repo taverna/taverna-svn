@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceUtils.java,v $
- * Revision           $Revision: 1.11 $
+ * Revision           $Revision: 1.12 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-03-04 16:43:40 $
+ * Last modified on   $Date: 2008-07-31 15:06:49 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -399,22 +399,26 @@ public class MartServiceUtils {
 						String line = bufferedReader.readLine();
 						for (long i = 0; line != null; line = bufferedReader.readLine(), i++) {
 							String[] tokens = line.split("\t", -1);
-							for (int ri = 0, ti = 0; ri < result.length && ti < tokens.length; ri++) {
-								Attribute attribute = attributes.get(ri);
-								if (attribute.getAttributes() == null) {
-									result[ri] = tokens[ti];
-									ti++;
-								} else {
-									int nestedAttributeCount = attribute.getAttributesCount();
-									List<Object> list = new ArrayList<Object>();
-									for (int j = 0; j < nestedAttributeCount; j++) {
-										list.add(tokens[ti]);
+							if (attributeCount == tokens.length) {
+								for (int ri = 0, ti = 0; ri < result.length && ti < tokens.length; ri++) {
+									Attribute attribute = attributes.get(ri);
+									if (attribute.getAttributes() == null) {
+										result[ri] = tokens[ti];
 										ti++;
+									} else {
+										int nestedAttributeCount = attribute.getAttributesCount();
+										List<Object> list = new ArrayList<Object>();
+										for (int j = 0; j < nestedAttributeCount; j++) {
+											list.add(tokens[ti]);
+											ti++;
+										}
+										result[ri] = list;
 									}
-									result[ri] = list;
 								}
+								resultReceiver.receiveResult(result, i);
+							} else {
+								resultReceiver.receiveError(line, i);
 							}
-							resultReceiver.receiveResult(result, i);
 						}
 					}
 				} else {
