@@ -15,7 +15,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>workflowmodel-api</artifactId>
+			<artifactId>workflowmodel-impl</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>

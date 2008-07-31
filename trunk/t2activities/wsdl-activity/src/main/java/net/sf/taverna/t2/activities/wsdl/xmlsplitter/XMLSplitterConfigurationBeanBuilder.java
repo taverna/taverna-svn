@@ -18,6 +18,7 @@ import net.sf.taverna.wsdl.xmlsplitter.XMLSplitterSerialisationHelper;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.jdom.output.XMLOutputter;
 
 /**
  * A helper class to facilitate in building an XMLSplitter configuration bean
@@ -27,6 +28,18 @@ import org.jdom.input.SAXBuilder;
  * 
  */
 public class XMLSplitterConfigurationBeanBuilder {
+	
+	public static XMLSplitterConfigurationBean buildBeanForInput(TypeDescriptor descriptor) throws JDOMException, IOException {
+		Element el = XMLSplitterSerialisationHelper.typeDescriptorToExtensionXML(descriptor);
+		String xml = new XMLOutputter().outputString(el);
+		return buildBeanForInput(xml);
+	}
+	
+	public static XMLSplitterConfigurationBean buildBeanForOutput(TypeDescriptor descriptor) throws JDOMException, IOException {
+		Element el = XMLSplitterSerialisationHelper.typeDescriptorToExtensionXML(descriptor);
+		String xml = new XMLOutputter().outputString(el);
+		return buildBeanForOutput(xml);
+	}
 
 	public static XMLSplitterConfigurationBean buildBeanForInput(String xml) throws JDOMException, IOException {
 		XMLSplitterConfigurationBean bean = new XMLSplitterConfigurationBean();
