@@ -96,13 +96,13 @@ mxArray* jtomCharArray(JNIEnv* env, jobject matarray) {
     for (i = 0; i < len; i++) {
         jstring jstr = (*env)->GetObjectArrayElement(env, jdata, i);
         int jstrlen = (*env)->GetStringLength(env, jstr);
-        data[i] = (char*) mxCalloc(jstrlen, sizeof (char));
+        data[i] = (char*) mxCalloc(jstrlen + 1, sizeof (char));
         (*env)->GetStringUTFRegion(env, jstr, 0, jstrlen, data[i]);
         (*env)->DeleteLocalRef(env, jstr);
     }
 
     mxarr = mxCreateCharMatrixFromStrings(dims[0], data);
-    
+
     return mxarr;
 }
 
@@ -313,7 +313,7 @@ mxArray* jtomDoubleArray(JNIEnv* env, jobject matarray) {
     jintArray jdims, matarray_ir, matarray_jc;
     int ndims;
     int *dims;
-    
+
     mxclass = mxDOUBLE_CLASS;
     cplxFlag = (*env)->CallBooleanMethod(env, matarray, matarray_isComplexMID) ? 1 : 0;
     jdims = (jintArray) (*env)->GetObjectField(env, matarray, matarray_dimensionsFID);
@@ -329,7 +329,7 @@ mxArray* jtomDoubleArray(JNIEnv* env, jobject matarray) {
     (*env)->DeleteLocalRef(env, jdims);
 
     isSparse = (*env)->CallBooleanMethod(env, matarray, matarray_isSparseMID);
-    if (isSparse) {       
+    if (isSparse) {
         if (ndims > 2) {
             setError(DIMENSIONS_ERROR);
             return NULL;
@@ -366,7 +366,7 @@ mxArray* jtomDoubleArray(JNIEnv* env, jobject matarray) {
     } else {
         mxarr = mxCreateNumericArray(ndims, dims, mxclass, cplxFlag);
     }
-    
+
     matarray_pr = (jdoubleArray) (*env)->GetObjectField(env, matarray, matarray_double_data_reFID);
     if (matarray_pr != NULL) {
         len = (*env)->GetArrayLength(env, matarray_pr);
@@ -713,9 +713,9 @@ jobject mtojCharArray(JNIEnv* env, mxArray* mxarr) {
     m = mxGetM(mxarr);
     n = mxGetN(mxarr);
     nstrings = m;
-    nchars = m*n;
+    nchars = mxGetNumberOfElements(mxarr);
     data = (char*) calloc(nchars + 1, sizeof (char));
-    mxGetString(mxarr, data, nchars);
+    mxGetString(mxarr, data, nchars + 1);
     jdata = (*env)->NewObjectArray(env, nstrings, jstringClass, NULL);
     if (jdata == NULL)
         return NULL;
@@ -762,6 +762,7 @@ jobject mtojCellArray(JNIEnv* env, mxArray* mxarr) {
     jdims = (*env)->NewIntArray(env, ndims);
     if (jdims == NULL)
         return NULL;
+    (*env)->SetIntArrayRegion(env,jdims,0,ndims,dims);
     (*env)->SetObjectField(env, matarray, matarray_dimensionsFID, jdims);
     (*env)->DeleteLocalRef(env, jdims);
 
@@ -983,10 +984,15 @@ jobject mtojDoubleArray(JNIEnv* env, mxArray* mxarr) {
 
         nnz = jc[ncolumns];
 
-        jir = (*env)->NewIntArray(env, nnz);
+        /*
+                (*env)->SetObjectField(env, matarray, matarray_maxNonZeroFID, nzmax);
+         */
+        (*env)->CallVoidMethod(env, matarray, matarray_setMaxNonZeroMID, nzmax);
+
+        jir = (*env)->NewIntArray(env, nzmax);
         if (jir == NULL)
             return NULL;
-        (*env)->SetIntArrayRegion(env, jir, 0, nnz, ir);
+        (*env)->SetIntArrayRegion(env, jir, 0, nzmax, ir);
         (*env)->SetObjectField(env, matarray, matarray_rowIdsFID, jir);
         (*env)->DeleteLocalRef(env, jir);
 

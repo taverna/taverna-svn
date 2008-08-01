@@ -1,6 +1,7 @@
 package net.sf.taverna.matserver;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  *
@@ -216,6 +217,80 @@ public class MatArray implements Serializable {
         return null;
     }
 
+    public int numberOfElements() {
+        if (dims != null) {
+            int n = 1;
+            for (int i = 0; i < dims.length; i++) {
+                n *= dims[i];
+            }
+            return n;
+        }
+        return 0;
+    }
+
+    @Override
+    public boolean equals(Object arg) {
+        boolean eq;
+        MatArray ma = (MatArray) arg;
+
+        eq = type.equals(ma.getType()) && Arrays.equals(dims, ma.getDimensions()) && (maxNonZero == ma.getMaxNonZero()) && Arrays.equals(rowIds, ma.getRowIds()) && Arrays.equals(colIds, ma.getColIds()) && Arrays.deepEquals(cellData, ma.getCellData()) && Arrays.equals(charData, ma.getCharData()) && Arrays.equals(logicalData, ma.getLogicalData()) && Arrays.equals(singleDataRe, singleDataRe) && Arrays.equals(int8DataRe, ma.getInt8DataRe()) && Arrays.equals(int16DataRe, ma.getInt16DataRe()) && Arrays.equals(int32DataRe, ma.getInt32DataRe()) && Arrays.equals(int64DataRe, ma.getInt64DataRe()) && Arrays.deepEquals(fieldNames, ma.getFieldNames());
+
+        if (eq && (doubleDataRe != null)) {
+            if (colIds != null) {
+                for (int i = 0; i < getNNonZero(); i++) {
+                    if (doubleDataRe[i] != ma.getDoubleDataRe()[i]) {
+                        return false;
+                    }
+                }
+            } else {
+                for (int i = 0; i < numberOfElements(); i++) {
+                    if (doubleDataRe[i] != ma.getDoubleDataRe()[i]) {
+                        return false;
+                    }
+                }
+            }
+        }
+        if (eq && (doubleDataIm != null)) {
+            if (colIds != null) {
+                for (int i = 0; i < getNNonZero(); i++) {
+                    if (doubleDataIm[i] != ma.getDoubleDataIm()[i]) {
+                        return false;
+                    }
+                }
+            } else {
+                for (int i = 0; i < numberOfElements(); i++) {
+                    if (doubleDataIm[i] != ma.getDoubleDataIm()[i]) {
+                        return false;
+                    }
+                }
+            }
+
+        }
+        return eq;
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer rep = new StringBuffer();
+        rep.append("type: " + type + "\n");
+        rep.append("dimensions: " + Arrays.toString(dims) + "\n");
+        rep.append("row ids: " + Arrays.toString(rowIds) + "\n");
+        rep.append("col. ids: " + Arrays.toString(colIds) + "\n");
+
+        rep.append("MaxNonZero: " + maxNonZero + "\n");
+        rep.append("char data: " + Arrays.toString(charData) + "\n");
+        rep.append("cell data: " + Arrays.deepToString(cellData) + "\n");
+        rep.append("double im: " + Arrays.toString(doubleDataIm) + "\n");
+        rep.append("single data: " + Arrays.toString(singleDataRe) + "\n");
+        rep.append("int8 data: " + Arrays.toString(int8DataRe) + "\n");
+        rep.append("int16 data: " + Arrays.toString(int16DataRe) + "\n");
+        rep.append("int32 data: " + Arrays.toString(int32DataRe) + "\n");
+        rep.append("int64 data: " + Arrays.toString(int64DataRe) + "\n");
+        rep.append("field names: " + Arrays.deepToString(fieldNames) + "\n");
+        rep.append("double re: " + Arrays.toString(doubleDataRe) + "\n");
+
+        return rep.toString();
+    }
     //<editor-fold desc="type checking methods" defaultstate="collapsed">
     public boolean checkNumeric() {
         return (type.equals(DOUBLE_TYPE) || type.equals(SINGLE_TYPE) ||
@@ -229,7 +304,7 @@ public class MatArray implements Serializable {
         return doubleDataIm != null;
     }
 
-    public boolean checkChar(){
+    public boolean checkChar() {
         return type.equals(CHAR_TYPE);
     }
     //</editor-fold>

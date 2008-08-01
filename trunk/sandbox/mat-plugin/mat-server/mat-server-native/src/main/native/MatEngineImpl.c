@@ -14,15 +14,19 @@ JNIEXPORT void JNICALL Java_net_sf_taverna_matserver_MatEngineImpl_execute(JNIEn
     jobjectArray inputValues;
     jobjectArray inputNames, outputNames;
     jint inputLen, outputLen;
-    int i;
+    int i, r = 0;
     mxArray** inputs;
 
     /*open session*/
     eng = engOpen("");
+/*
+    eng = engOpenSingleUse(NULL, NULL, &r);
+*/
     if (!eng) {
         fprintf(stderr, "\nUnable to start Matlab Engine\n");
         return;
     }
+    engSetVisible(eng, 0);
 
     /*setup workspace*/
     inputNames = (jobjectArray) (*env)->CallObjectMethod(env, this, matengineimpl_getVarNamesMID);
@@ -122,7 +126,7 @@ JNIEXPORT void JNICALL Java_net_sf_taverna_matserver_MatEngineImpl_initIDs(JNIEn
     /*MatArray field ids initialization*/
     matarray_typeFID = (*env)->GetFieldID(env, matArrayClass, "type", "Ljava/lang/String;");
     matarray_maxNonZeroFID = (*env)->GetFieldID(env, matArrayClass, "maxNonZero", "I");
-   // matarray_nNonZeroFID = (*env)->GetFieldID(env, matArrayClass, "NNonZero", "I");
+    // matarray_nNonZeroFID = (*env)->GetFieldID(env, matArrayClass, "NNonZero", "I");
     matarray_dimensionsFID = (*env)->GetFieldID(env, matArrayClass, "dims", "[I");
     matarray_rowIdsFID = (*env)->GetFieldID(env, matArrayClass, "rowIds", "[I");
     matarray_colIdsFID = (*env)->GetFieldID(env, matArrayClass, "colIds", "[I");
@@ -144,6 +148,7 @@ JNIEXPORT void JNICALL Java_net_sf_taverna_matserver_MatEngineImpl_initIDs(JNIEn
     matarray_isComplexMID = (*env)->GetMethodID(env, matArrayClass, "checkComplex", "()Z");
     matarray_isCharMID = (*env)->GetMethodID(env, matArrayClass, "checkChar", "()Z");
     matarray_getFieldMID = (*env)->GetMethodID(env, matArrayClass, "getField", "(Ljava/lang/String;I)Lnet/sf/taverna/matserver/MatArray;");
+    matarray_setMaxNonZeroMID=(*env)->GetMethodID(env,matArrayClass,"setMaxNonZero","(I)V");
 
     matarray_UNKNOWN_TYPE_FID = (*env)->GetStaticFieldID(env, matArrayClass, "UNKNOWN_TYPE", "Ljava/lang/String;");
     matarray_STRUCT_TYPE_FID = (*env)->GetStaticFieldID(env, matArrayClass, "STRUCT_TYPE", "Ljava/lang/String;");

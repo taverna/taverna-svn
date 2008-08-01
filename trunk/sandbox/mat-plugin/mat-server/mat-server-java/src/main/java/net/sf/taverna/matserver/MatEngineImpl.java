@@ -64,13 +64,18 @@ public class MatEngineImpl implements MatEngine {
         outputs.put(name, value);
     }
 
+    public void clearVars() {
+        vars.clear();
+        outputs.clear();
+        outputNames = null;
+    }
+    
     public native void execute(String script);
 
     private static native void initIDs();
     
 
-    static
-    {
+    static {
         System.loadLibrary("MatEngineImpl");
         initIDs();
     }
