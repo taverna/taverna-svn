@@ -30,14 +30,13 @@ import org.junit.Test;
  */
 public class TranslateAndRunTest extends InvocationTestHelper {
 
-	@Ignore("Biomart broken")
 	@Test
 	public void translateAndValidateBiomartAndEMBOSSTest() throws Exception {
-		DataflowImpl dataflow = (DataflowImpl) translateScuflFile("ModifiedBiomartAndEMBOSSAnalysis2.xml");
+		DataflowImpl dataflow = (DataflowImpl) translateScuflFile("ModifiedBiomartAndEMBOSSAnalysis3.xml");
 		DataflowValidationReport report = validateDataflow(dataflow);
-		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().size() == 0);
-		assertTrue("Failed processors found during validation",report.getFailedEntities().size() == 0);
-		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().isEmpty());
+		assertTrue("Failed processors found during validation",report.getFailedEntities().isEmpty());
+		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().isEmpty());
 		assertTrue("Validation failed",report.isValid());
 
 		WorkflowInstanceFacade facade;
