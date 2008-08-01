@@ -23,5 +23,22 @@
 			<artifactId>serializer-api</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>axis</groupId>
+			<artifactId>axis-jaxrpc</artifactId>
+			<version>1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>axis</groupId>
+			<artifactId>axis</artifactId>
+			<version>1.4</version>
+
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.service</groupId>
+			<artifactId>provenance-wsdl</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		
 	</dependencies>
 </project>
