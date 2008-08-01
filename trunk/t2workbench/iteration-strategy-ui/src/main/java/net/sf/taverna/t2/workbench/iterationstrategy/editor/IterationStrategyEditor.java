@@ -34,6 +34,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -563,103 +564,113 @@ public class IterationStrategyEditor extends JTree implements
 			Transferable transferable = e.getTransferable();
 
 			DataFlavor[] flavors = transferable.getTransferDataFlavors();
-			for (int i = 0; i < flavors.length; i++) {
-				DataFlavor flavor = flavors[i];
-				if (flavor
+			for (DataFlavor flavor : flavors) {
+				if (!flavor
 						.isMimeTypeEqual(DataFlavor.javaJVMLocalObjectMimeType)) {
-					try {
+					continue;
+				}
+				try {
 
-						Point pt = e.getLocation();
-						TreePath pathTarget = getClosestPathForLocation(pt.x,
-								pt.y);
-						TreePath pathSource = (TreePath) transferable
-								.getTransferData(flavor);
+					Point pt = e.getLocation();
+					TreePath pathTarget = getClosestPathForLocation(pt.x, pt.y);
+					TreePath pathSource = (TreePath) transferable
+							.getTransferData(flavor);
 
-						System.out.println("DROPPING: "
-								+ pathSource.getLastPathComponent());
-						DefaultTreeModel model = getModel();
+					System.out.println("DROPPING: "
+							+ pathSource.getLastPathComponent());
+					DefaultTreeModel model = getModel();
 
-						IterationStrategyNode draggedNode = (IterationStrategyNode) pathSource
-								.getLastPathComponent();
-						IterationStrategyNode dropNode = (IterationStrategyNode) pathTarget
-								.getLastPathComponent();
-						/**
-						 * if
-						 * (draggedNode.getParent().equals(dropNode.getParent(
-						 * ))) { System.out.println("Not doing anything, parent
-						 * is the same for both nodes"); e.dropComplete(false);
-						 * return; }
-						 */
-						System.out.println("Removing node "
-								+ draggedNode.toString() + " of type "
-								+ draggedNode.getClass().getName());
-						
-						draggedNode.setParent(null);	
-						if (dropNode instanceof NamedInputPortNode
-								|| ((isExpanded(pathTarget) == false) && _nShift <= 0)) {
-							System.out.println("Drop target is a leaf node");
-							IterationStrategyNode newParentNode = (IterationStrategyNode) dropNode
-									.getParent();
-							System.out.println("Drop target parent : "
-									+ newParentNode.toString() + " of type "
-									+ newParentNode.getClass().getName());
-							int index = model.getIndexOfChild(dropNode
-									.getParent(), dropNode);
-							System.out.println("Drop target has index " + index
-									+ " in its parent's child list");
-							newParentNode.getChildren().add(index+1, draggedNode);
-							draggedNode.setParent(newParentNode);
-							System.out.println("Node inserted");
-							System.out.println("New node parent is "
-									+ draggedNode.getParent().toString()
-									+ " of type "
-									+ draggedNode.getParent().getClass()
-											.getName());
-						} else {
-							System.out.println("Drop target is not a leaf");
-							System.out.println("Drop target : "
-									+ dropNode.toString() + " of type "
-									+ dropNode.getClass().getName());
-							dropNode.setParent(draggedNode);
-							System.out.println("Node inserted");
-						}
-						setSelectionPath(new TreePath(model
-								.getPathToRoot(draggedNode)));
+					IterationStrategyNode draggedNode = (IterationStrategyNode) pathSource
+							.getLastPathComponent();
+					IterationStrategyNode dropNode = (IterationStrategyNode) pathTarget
+							.getLastPathComponent();
+					/**
+					 * if (draggedNode.getParent().equals(dropNode.getParent(
+					 * ))) { System.out.println("Not doing anything, parent is
+					 * the same for both nodes"); e.dropComplete(false); return;
+					 * }
+					 */
+					System.out.println("Removing node "
+							+ draggedNode.toString() + " of type "
+							+ draggedNode.getClass().getName());
+					TreeNode oldParent = draggedNode.getParent();
 
-						// If pathTarget is an expanded BRANCH,
-						// then insert source UNDER it (before the first child
-						// if any)
-						// If pathTarget is a collapsed BRANCH (or a LEAF),
-						// then insert source AFTER it
-						// Note: a leaf node is always marked as collapsed
-						// You ask the model to do the copying...
-						// ...and you supply the copyNode method in the model as
-						// well of course.
-						// if (_nShift == 0)
-						// pathNewChild = model.copyNode(pathSource, pathTarget,
-						// isExpanded(pathTarget));
-						// else if (_nShift > 0) // The mouse is being flicked
-						// to the right (so move the node right)
-						// pathNewChild = model.copyNodeRight(pathSource,
-						// pathTarget);
-						// else // The mouse is being flicked to the left (so
-						// move the node left)
-						// pathNewChild = model.copyNodeLeft(pathSource);
+					if (dropNode instanceof NamedInputPortNode
+							|| ((!isExpanded(pathTarget)) && _nShift <= 0)) {
+						System.out.println("Drop target is a leaf node: "
+								+ dropNode);
+						IterationStrategyNode newParentNode = (IterationStrategyNode) dropNode
+								.getParent();
+						System.out.println("Drop target parent : "
+								+ newParentNode + " of type "
+								+ newParentNode.getClass().getName());
+						int index = model.getIndexOfChild(dropNode.getParent(),
+								dropNode);
+						System.out.println("Drop target has index " + index
+								+ " in its parent's child list");
+						draggedNode.setParent(null);
+						List<IterationStrategyNode> newSiblings = newParentNode
+								.getChildren();
+						newSiblings.add(
+								Math.min(index + 1, newSiblings.size()),
+								draggedNode);
+						draggedNode.setParent(newParentNode);
+						System.out.println("Node inserted");
+						System.out.println("New node parent is "
+								+ draggedNode.getParent().toString()
+								+ " of type "
+								+ draggedNode.getParent().getClass().getName());
+						model.nodeStructureChanged(oldParent);
+						model.nodeStructureChanged(newParentNode);
+					} else {
+						System.out.println("Drop target is not a leaf");
+						System.out.println("Drop target : "
+								+ dropNode.toString() + " of type "
+								+ dropNode.getClass().getName());
+						draggedNode.setParent(null);
+						dropNode.getChildren().add(0, dropNode);
+						draggedNode.setParent(dropNode);
+						model.nodeStructureChanged(oldParent);
+						model.nodeStructureChanged(dropNode);
 
-						break; // No need to check remaining flavors
-					} catch (UnsupportedFlavorException ufe) {
-						System.out.println(ufe);
-						e.dropComplete(false);
-						return;
-					} catch (IOException ioe) {
-						System.out.println(ioe);
-						e.dropComplete(false);
-						return;
-					} catch (ClassCastException cce) {
-						System.out.println(cce);
-						e.dropComplete(false);
-						return;
+						System.out.println("Node inserted");
 					}
+					setSelectionPath(new TreePath(model
+							.getPathToRoot(draggedNode)));
+
+					// If pathTarget is an expanded BRANCH,
+					// then insert source UNDER it (before the first child
+					// if any)
+					// If pathTarget is a collapsed BRANCH (or a LEAF),
+					// then insert source AFTER it
+					// Note: a leaf node is always marked as collapsed
+					// You ask the model to do the copying...
+					// ...and you supply the copyNode method in the model as
+					// well of course.
+					// if (_nShift == 0)
+					// pathNewChild = model.copyNode(pathSource, pathTarget,
+					// isExpanded(pathTarget));
+					// else if (_nShift > 0) // The mouse is being flicked
+					// to the right (so move the node right)
+					// pathNewChild = model.copyNodeRight(pathSource,
+					// pathTarget);
+					// else // The mouse is being flicked to the left (so
+					// move the node left)
+					// pathNewChild = model.copyNodeLeft(pathSource);
+
+					break; // No need to check remaining flavors
+				} catch (UnsupportedFlavorException ufe) {
+					System.out.println(ufe);
+					e.dropComplete(false);
+					return;
+				} catch (IOException ioe) {
+					System.out.println(ioe);
+					e.dropComplete(false);
+					return;
+				} catch (ClassCastException cce) {
+					System.out.println(cce);
+					e.dropComplete(false);
+					return;
 				}
 			}
 

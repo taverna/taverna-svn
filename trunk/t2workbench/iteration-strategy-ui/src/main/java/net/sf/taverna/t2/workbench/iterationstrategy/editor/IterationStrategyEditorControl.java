@@ -86,20 +86,31 @@ public class IterationStrategyEditorControl extends JPanel {
 		public void actionPerformed(ActionEvent e) {
 			IterationStrategyNode nodeToBeRemoved = (IterationStrategyNode) selectedNode;
 
+			DefaultTreeModel model = tree.getModel();
+
 			// Now remove the candidate nodes from their parents and
 			// put them back into the root node
 			IterationStrategyNode root = (IterationStrategyNode) tree
 					.getModel().getRoot();
+			boolean rootChanged = false;
 			for (IterationStrategyNode nodeToMove : descendentsOfNode(nodeToBeRemoved)) {
 				nodeToMove.setParent(root);
+				rootChanged = true;
 			}
-
+			TreeNode oldParent = nodeToBeRemoved.getParent();
+			nodeToBeRemoved.setParent(null);
+			if (rootChanged) {
+				model.nodeStructureChanged(root);
+			} else {
+				model.nodeStructureChanged(oldParent);
+			}
 			// Disable the various buttons, as the current selection
 			// is now invalid.
 			remove.setEnabled(false);
 			addCross.setEnabled(false);
 			addDot.setEnabled(false);
 			change.setEnabled(false);
+			selectNode(oldParent);
 		}
 	}
 
@@ -159,10 +170,19 @@ public class IterationStrategyEditorControl extends JPanel {
 				model.nodeStructureChanged(parent);
 			}
 
-			TreeNode[] pathToRoot = tree.getModel().getPathToRoot(newNode);
-			tree.setSelectionPath(new TreePath(pathToRoot));
+			selectNode(newNode);
 			tree.setAllNodesExpanded();
 		}
+
+	}
+
+	protected void selectNode(TreeNode newNode) {
+		DefaultTreeModel model = tree.getModel();
+		if (newNode == null) {
+			newNode = (TreeNode) model.getRoot();
+		}
+		TreeNode[] pathToRoot = model.getPathToRoot(newNode);
+		tree.setSelectionPath(new TreePath(pathToRoot));
 	}
 
 	private final class AddCrossAction implements ActionListener {
