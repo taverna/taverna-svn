@@ -405,6 +405,7 @@ mxArray* jtomSingleArray(JNIEnv* env, jobject matarray) {
     jintArray jdims;
     int ndims;
     int *dims;
+    void* throwAway;
 
     mxclass = mxSINGLE_CLASS;
     cplxFlag = (*env)->CallBooleanMethod(env, matarray, matarray_isComplexMID) ? 1 : 0;
@@ -432,6 +433,8 @@ mxArray* jtomSingleArray(JNIEnv* env, jobject matarray) {
     (*env)->GetFloatArrayRegion(env, matarray_pr, 0, len, pr);
     (*env)->DeleteLocalRef(env, matarray_pr);
 
+    throwAway = mxGetData(mxarr);
+    mxFree(throwAway);
     mxSetData(mxarr, (void*) pr);
 
     return mxarr;
@@ -762,7 +765,7 @@ jobject mtojCellArray(JNIEnv* env, mxArray* mxarr) {
     jdims = (*env)->NewIntArray(env, ndims);
     if (jdims == NULL)
         return NULL;
-    (*env)->SetIntArrayRegion(env,jdims,0,ndims,dims);
+    (*env)->SetIntArrayRegion(env, jdims, 0, ndims, dims);
     (*env)->SetObjectField(env, matarray, matarray_dimensionsFID, jdims);
     (*env)->DeleteLocalRef(env, jdims);
 
@@ -809,6 +812,7 @@ jobject mtojLogicalArray(JNIEnv* env, mxArray* mxarr) {
     jdims = (*env)->NewIntArray(env, ndims);
     if (jdims == NULL)
         return NULL;
+    (*env)->SetIntArrayRegion(env, jdims, 0, ndims, dims);
     (*env)->SetObjectField(env, matarray, matarray_dimensionsFID, jdims);
     (*env)->DeleteLocalRef(env, jdims);
 
@@ -1038,7 +1042,7 @@ jobject mtojSingleArray(JNIEnv* env, mxArray* mxarr) {
     (*env)->DeleteLocalRef(env, jdims);
 
     nelements = mxGetNumberOfElements(mxarr);
-
+    
     pr = (float*) mxGetData(mxarr);
     jpr = (*env)->NewFloatArray(env, nelements);
     if (jpr == NULL)
@@ -1046,7 +1050,7 @@ jobject mtojSingleArray(JNIEnv* env, mxArray* mxarr) {
     (*env)->SetFloatArrayRegion(env, jpr, 0, nelements, pr);
     (*env)->SetObjectField(env, matarray, matarray_single_data_reFID, jpr);
     (*env)->DeleteLocalRef(env, jpr);
-
+    
     /*
         if (mxIsComplex(mxarr)) {
             pi = mxGetPi(mxarr);

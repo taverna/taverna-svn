@@ -83,12 +83,12 @@ JNIEXPORT void JNICALL Java_net_sf_taverna_matserver_MatEngineImpl_execute(JNIEn
         (*env)->ReleaseStringUTFChars(env, jname, name);
         matArray = mtojArray(env, mxarr);
         mxDestroyArray(mxarr); /*XXX ???*/
-
+        
         (*env)->CallVoidMethod(env, this, matengineimpl_setOutputVarMID, jname, matArray);
         (*env)->DeleteLocalRef(env, jname);
         (*env)->DeleteLocalRef(env, matArray);
     }
-
+    
     /*clean up*/
     (*env)->DeleteLocalRef(env, outputNames);
     (*env)->DeleteLocalRef(env, inputNames);

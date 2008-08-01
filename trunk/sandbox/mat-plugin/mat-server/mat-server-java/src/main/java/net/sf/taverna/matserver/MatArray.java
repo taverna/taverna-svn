@@ -280,6 +280,7 @@ public class MatArray implements Serializable {
         rep.append("MaxNonZero: " + maxNonZero + "\n");
         rep.append("char data: " + Arrays.toString(charData) + "\n");
         rep.append("cell data: " + Arrays.deepToString(cellData) + "\n");
+        rep.append("logical data: " + Arrays.toString(logicalData) + "\n");
         rep.append("double im: " + Arrays.toString(doubleDataIm) + "\n");
         rep.append("single data: " + Arrays.toString(singleDataRe) + "\n");
         rep.append("int8 data: " + Arrays.toString(int8DataRe) + "\n");

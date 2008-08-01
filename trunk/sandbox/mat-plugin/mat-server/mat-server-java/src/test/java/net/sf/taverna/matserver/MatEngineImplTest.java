@@ -190,7 +190,7 @@ public class MatEngineImplTest extends TestCase {
         engine.setOutputNames(new String[]{"cellArray", "generated"});
         engine.execute("generated={'a';42}");
         Map<String, MatArray> outs = engine.getOutputVars();
-        
+
         MatArray ca = outs.get("cellArray");
         assertNotNull(ca);
         assertEquals(cellArray, ca);
@@ -202,6 +202,70 @@ public class MatEngineImplTest extends TestCase {
 //        System.out.println("cellArray:________________________\n" + cellArray.toString());
 //        System.out.println("ca:_______________________________\n" + ca.toString());
 //        System.out.println("generated:________________________\n" + generated.toString());
+
+    }
+
+    @Test
+    public void testLogicalArrays() {
+        MatArray logicalArray = new MatArray();
+        logicalArray.setType(MatArray.LOGICAL_TYPE);
+        logicalArray.setDimensions(new int[]{3, 3});
+        logicalArray.setLogicalData(new boolean[]{false, false, true, true, false, true, false, true, true}); //game of life glider
+
+        engine.setVar("glider", logicalArray);
+        engine.setOutputNames(new String[]{"glider", "invGlider"});
+
+        engine.execute("invGlider=~glider");
+
+        Map<String, MatArray> outs = engine.getOutputVars();
+        MatArray gliderFromEngine = outs.get("glider");
+        MatArray invGlider = outs.get("invGlider");
+
+        MatArray expectedInvGlider = new MatArray();
+        expectedInvGlider.setType(MatArray.LOGICAL_TYPE);
+        expectedInvGlider.setDimensions(new int[]{3, 3});
+        expectedInvGlider.setLogicalData(new boolean[]{true, true, false, false, true, false, true, false, false});
+
+        System.out.println("logarr:______________________________________________________________________________\n" + logicalArray);
+        System.out.println("\n___________________________________________________________________________________\n");
+        System.out.println("gliderFromEngine:____________________________________________________________________\n" + gliderFromEngine);
+        System.out.println("\n___________________________________________________________________________________\n");
+
+        assertEquals(logicalArray, gliderFromEngine);
+        assertEquals(expectedInvGlider, invGlider);
+
+    }
+
+    @Test
+    public void testSingleArrays() {
+        MatArray singleArray = new MatArray();
+        singleArray.setType(MatArray.SINGLE_TYPE);
+        singleArray.setDimensions(new int[]{1, 1});
+        singleArray.setSingleDataRe(new float[]{42.2f});
+
+        engine.setVar("input", singleArray);
+        engine.setOutputNames(new String[]{"input" ,"theAnswer"});
+
+        engine.execute("theAnswer=single(double(input)-0.2);");
+
+        Map<String, MatArray> outs = engine.getOutputVars();
+
+        MatArray fromEngine = outs.get("input");
+        MatArray theAnswer = outs.get("theAnswer");
+        MatArray expectedAns = new MatArray();
+        expectedAns.setType(MatArray.SINGLE_TYPE);
+        expectedAns.setDimensions(new int[]{1, 1});
+        expectedAns.setSingleDataRe(new float[]{42.0f});
+
+        System.out.println("input:\n" + singleArray);
+        System.out.println("\n___________________________________________________________________________________\n");
+        System.out.println("fromEngine:\n" + fromEngine);
+        System.out.println("\n___________________________________________________________________________________\n");
+        System.out.println("theAnswer:\n" + theAnswer);
+        System.out.println("\n___________________________________________________________________________________\n");
+
+        assertEquals(singleArray, fromEngine);
+        assertEquals(expectedAns, theAnswer);
 
     }
 }
