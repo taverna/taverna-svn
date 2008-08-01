@@ -6,7 +6,7 @@ import java.util.Set;
 import net.sf.taverna.t2.annotation.AnnotationAssertion;
 import net.sf.taverna.t2.annotation.AnnotationChain;
 import net.sf.taverna.t2.invocation.InvocationContext;
-import net.sf.taverna.t2.provenance.ProvenanceConnector;
+import net.sf.taverna.t2.provenance.connector.ProvenanceConnector;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
@@ -101,7 +101,7 @@ public class Provenance extends AbstractDispatchLayer<ProvenanceConfig>
 				.getProvenanceConnector();
 		//FIXME use the reference service to store the items
 //		provenanceConnector.store(new DataFacade(context.getReferenceService()()));
-		provenanceConnector.store(null);
+		provenanceConnector.store(context.getReferenceService());
 		DispatchLayer above = getAbove();
 		above.receiveResult(resultEvent);
 	}

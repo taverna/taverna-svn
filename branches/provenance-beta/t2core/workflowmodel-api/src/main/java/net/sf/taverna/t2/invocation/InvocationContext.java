@@ -1,6 +1,6 @@
 package net.sf.taverna.t2.invocation;
 
-import net.sf.taverna.t2.provenance.ProvenanceConnector;
+import net.sf.taverna.t2.provenance.connector.ProvenanceConnector;
 import net.sf.taverna.t2.reference.ReferenceContext;
 import net.sf.taverna.t2.reference.ReferenceService;
 

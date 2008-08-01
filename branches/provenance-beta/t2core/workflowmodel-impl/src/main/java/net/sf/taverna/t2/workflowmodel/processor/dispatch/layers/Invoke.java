@@ -12,6 +12,13 @@ import java.util.Set;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.monitor.MonitorManager;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
+import net.sf.taverna.t2.provenance.item.ActivityProvenanceItem;
+import net.sf.taverna.t2.provenance.item.ErrorProvenanceItem;
+import net.sf.taverna.t2.provenance.item.InputDataProvenanceItem;
+import net.sf.taverna.t2.provenance.item.IterationProvenanceItem;
+import net.sf.taverna.t2.provenance.item.OutputDataProvenanceItem;
+import net.sf.taverna.t2.provenance.item.ProcessProvenanceItem;
+import net.sf.taverna.t2.provenance.item.ProcessorProvenanceItem;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.ControlBoundary;
@@ -72,10 +79,26 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 	 */
 	@Override
 	public void receiveJob(final DispatchJobEvent jobEvent) {
+		
+		ProcessProvenanceItem provenanceItem = new ProcessProvenanceItem(jobEvent.getOwningProcess());
+		//FIXME: a nasty hack to get the Processor Name - suitable for the prototype. Not sure if it will work with nested workflows
+		String [] split=jobEvent.getOwningProcess().split(":");
+		String procName=split[split.length-1];
+		System.out.println("Proc name = "+procName);
+		ProcessorProvenanceItem processorProvItem = new ProcessorProvenanceItem(procName);
+		provenanceItem.setProcessorProvenanceItem(processorProvItem);
+		
+		jobEvent.getContext().getProvenanceConnector().getProvenanceCollection().add(provenanceItem);
 
 		for (Activity<?> a : jobEvent.getActivities()) {
 
 			if (a instanceof AsynchronousActivity) {
+				
+				ActivityProvenanceItem activityProvItem = new ActivityProvenanceItem(a);
+				processorProvItem.setActivityProvenanceItem(activityProvItem);
+				final IterationProvenanceItem iterationProvItem = new IterationProvenanceItem(jobEvent.getIndex());
+				iterationProvItem.setInputDataItem(new InputDataProvenanceItem(jobEvent.getData()));
+				activityProvItem.setIterationProvenanceItem(iterationProvItem);
 
 				// Register with the monitor
 				final String invocationProcessIdentifier = jobEvent
@@ -121,6 +144,7 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 							DispatchErrorType errorType) {
 						MonitorManager.getInstance().deregisterNode(
 								invocationProcessIdentifier);
+						iterationProvItem.setErrorItem(new ErrorProvenanceItem(t,message,errorType));
 						getAbove().receiveError(
 								new DispatchErrorEvent(jobEvent
 										.getOwningProcess(), jobEvent
@@ -227,6 +251,8 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 						DispatchResultEvent resultEvent = new DispatchResultEvent(
 								jobEvent.getOwningProcess(), newIndex, jobEvent
 										.getContext(), resultMap, streaming);
+						
+						iterationProvItem.setOutputDataItem(new OutputDataProvenanceItem(resultMap));
 
 						// Push the modified data to the layer above in the
 						// dispatch stack

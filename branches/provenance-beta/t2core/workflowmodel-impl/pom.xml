@@ -27,6 +27,11 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>serializer-api</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>platform</artifactId>
 			<version>0.1-SNAPSHOT</version>
 			<scope>test</scope>
@@ -70,9 +75,9 @@
 			<version>1.2.1</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
+			<groupId>net.sf.taverna.t2.provenance</groupId>
 			<artifactId>provenance-impl</artifactId>
-			<version>0.1.0</version>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>

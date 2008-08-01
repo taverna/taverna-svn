@@ -47,6 +47,13 @@
 			</bean>
 		</property>
 	</bean>
+	
+	<!-- Provenance Connector bean -->
+	<bean id="provenanceConnector"
+		raven:artifact="net.sf.taverna.t2.provenance:provenance-impl:0.0.1-SNAPSHOT"
+		raven:repository="ravenRepository"
+		class="net.sf.taverna.t2.provenance.connector.InMemoryProvenanceConnector">
+	</bean>
 
 	<!-- Raven repository, no remote repositories, uses local .m2 cache -->
 	<repository id="ravenRepository"

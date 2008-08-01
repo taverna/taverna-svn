@@ -2,7 +2,8 @@ package net.sf.taverna.t2.workflowmodel.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 
@@ -10,9 +11,10 @@ import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
+import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
-import net.sf.taverna.t2.workflowmodel.serialization.DummyActivity;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +33,23 @@ public class MapProcessorPortsToActivityEditTest {
 		edits.getAddProcessorOutputPortEdit(p, op1).doEdit();
 		edits.getAddProcessorInputPortEdit(p, ip1).doEdit();
 		
-		Activity<?> a = new DummyActivity();
+		Activity<?> a = new AbstractActivity() {
+
+			private Integer bean=null;
+			
+			@Override
+			public void configure(Object conf)
+					throws ActivityConfigurationException {
+				bean=(Integer) conf;
+				
+			}
+
+			@Override
+			public Object getConfiguration() {
+				return bean;
+			}
+			
+		};
 		ActivityInputPort aip1 = edits.createActivityInputPort("inputPort", 1, true, new ArrayList<Class<? extends ExternalReferenceSPI>>(), String.class);
 		ActivityInputPort aip2 = edits.createActivityInputPort("newInputPort", 0, true, new ArrayList<Class<? extends ExternalReferenceSPI>>(), String.class);
 		edits.getAddActivityInputPortEdit(a, aip1).doEdit();

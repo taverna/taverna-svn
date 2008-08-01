@@ -15,8 +15,8 @@ import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.monitor.MonitorManager;
 import net.sf.taverna.t2.monitor.MonitorNode;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
-import net.sf.taverna.t2.provenance.DataflowRunComplete;
-import net.sf.taverna.t2.provenance.WorkflowProvenanceItem;
+import net.sf.taverna.t2.provenance.item.DataflowRunComplete;
+import net.sf.taverna.t2.provenance.item.WorkflowProvenanceItem;
 import net.sf.taverna.t2.utility.TypedTreeModel;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
@@ -41,8 +41,9 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 		//FIXME what should the local name be?
 //		this.localName = "facade" + owningProcessId.getAndIncrement();
 		this.localName = "facade(" + UUID.randomUUID() +")"+ owningProcessId.getAndIncrement();
-		WorkflowProvenanceItem worklowItem = new WorkflowProvenanceItem(dataflow);
-		context.getProvenanceConnector().getProvenanceCollection().add(worklowItem);
+		WorkflowProvenanceItem workflowItem = new WorkflowProvenanceItem();
+		workflowItem.setDataflow(dataflow);
+		context.getProvenanceConnector().getProvenanceCollection().add(workflowItem);
 //		context.getProvenanceConnector().store(new DataFacade(context.getDataManager()));
 		//FIXME use the new reference service
 		context.getProvenanceConnector().store(context.getReferenceService());

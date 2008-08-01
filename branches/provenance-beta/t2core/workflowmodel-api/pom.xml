@@ -10,19 +10,16 @@
 	<artifactId>workflowmodel-api</artifactId>
 	<version>0.3-SNAPSHOT</version>
 	<name>Workflow Model API</name>
-	<description>
-		Core workflow object model for Taverna 2 workflows. Depends on
-		the data layer but nothing else, intended as lightweight
-		platform for applications using Taverna APIs as well as the core
-		for the new enactor and model.
-	</description>
+	<description> Core workflow object model for Taverna 2 workflows.
+		Depends on the data layer but nothing else, intended as lightweight
+		platform for applications using Taverna APIs as well as the core for
+		the new enactor and model.</description>
 	<dependencies>
-		<!-- 
-			<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>data-api</artifactId>
-			<version>0.3-SNAPSHOT</version>
-			</dependency> -->
+		<!--
+			<dependency> <groupId>net.sf.taverna.t2</groupId>
+			<artifactId>data-api</artifactId> <version>0.3-SNAPSHOT</version>
+			</dependency>
+		-->
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>t2reference-api</artifactId>
@@ -37,6 +34,11 @@
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>security-api</artifactId>
 			<version>0.3-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.provenance</groupId>
+			<artifactId>provenance-api</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
