@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.testing;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +9,7 @@ import java.util.Map;
 import net.sf.taverna.platform.spring.RavenAwareClassPathXmlApplicationContext;
 import net.sf.taverna.t2.compatibility.WorkflowModelTranslator;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.provenance.connector.ProvenanceConnector;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
@@ -16,7 +19,11 @@ import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.TokenProcessingEntity;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
+import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLDeserializer;
+import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLDeserializerImpl;
 
+import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
 import org.junit.Before;
 import org.springframework.context.ApplicationContext;
 
@@ -29,23 +36,31 @@ import org.springframework.context.ApplicationContext;
 public class InvocationTestHelper extends DataflowTranslationHelper {
 
 	protected InvocationContext context;
+	private ReferenceService referenceService;
+	private ProvenanceConnector provenanceConnector;
 	
 	@SuppressWarnings("unchecked")
 	@Before
 	public void makeDataManager() {
+		ApplicationContext appContext = new RavenAwareClassPathXmlApplicationContext(
+		"inMemoryActivityTestsContext.xml");
+		referenceService = (ReferenceService) appContext.getBean("t2reference.service.referenceService");
+		provenanceConnector = (ProvenanceConnector) appContext.getBean("provenanceConnector");
+		
 		context =  new InvocationContext() {
 
-			public ReferenceService getReferenceService() {
-				ApplicationContext context = new RavenAwareClassPathXmlApplicationContext(
-				"inMemoryActivityTestsContext.xml");
-				ReferenceService referenceService = (ReferenceService) context.getBean("t2reference.service.referenceService");
 
+			public ReferenceService getReferenceService() {
 				return referenceService;
 			}
 
 			public <T> List<? extends T> getEntities(Class<T> arg0) {
 				// TODO Auto-generated method stub
 				return null;
+			}
+
+			public ProvenanceConnector getProvenanceConnector() {
+				return provenanceConnector;
 			}
 		};
 	}
@@ -142,5 +157,14 @@ public class InvocationTestHelper extends DataflowTranslationHelper {
 							+ "s was exceed waiting for the results");
 			}
 		}
+	}
+	
+	protected Dataflow loadDataflow(String resourceName) throws Exception {
+		XMLDeserializer deserializer = new XMLDeserializerImpl();
+		InputStream inStream = InvocationTestHelper.class.getResourceAsStream("/t2flow/" + resourceName);
+		if (inStream==null) throw new IOException("Unable to find resource for t2 dataflow:"+resourceName);
+		SAXBuilder builder = new SAXBuilder();
+		Element el= builder.build(inStream).detachRootElement();
+		return deserializer.deserializeDataflow(el);
 	}
 }

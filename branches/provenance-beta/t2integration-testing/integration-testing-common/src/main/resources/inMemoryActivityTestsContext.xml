@@ -17,6 +17,7 @@
 	<import resource="context-parts/dao_inmemory.xml" />
 	<import resource="context-parts/componentservices.xml" />
 	<import resource="context-parts/referenceservice.xml" />
+	<import resource="context-parts/provenanceconnector.xml" />
 
 	<!-- Load core extensions, needed for String to reference support -->
 	<bean
@@ -24,6 +25,7 @@
 		raven:repository="raven.repository"
 		class="net.sf.taverna.t2.reference.impl.core.LoadCoreExtensions">
 	</bean>
+	
 
 
 </beans>

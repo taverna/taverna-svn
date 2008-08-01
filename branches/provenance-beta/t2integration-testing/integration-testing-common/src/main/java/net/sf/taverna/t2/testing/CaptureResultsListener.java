@@ -5,35 +5,32 @@ import java.util.Map;
 
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.facade.ResultListener;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
-import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 public class CaptureResultsListener implements ResultListener {
 
 	private int outputCount;
-	private Map<String, Object> resultMap = new HashMap<String, Object>();
-	private ReferenceService referenceService;
-
-	public CaptureResultsListener(Dataflow dataflow,
-			ReferenceService referenceService) {
-		this.referenceService = referenceService;
-		outputCount = dataflow.getOutputPorts().size();
+	private Map<String,Object> resultMap = new HashMap<String,Object>();
+	private final InvocationContext context;
+	
+	public CaptureResultsListener(Dataflow dataflow, InvocationContext context) {
+		
+		this.context = context;
+		outputCount=dataflow.getOutputPorts().size();
 	}
-
-	public void resultTokenProduced(WorkflowDataToken dataToken, String portname) {
-		if (dataToken.getIndex().length == 0) {
-			if (dataToken.getData().containsErrors()) {
-				System.out.println("Received error document for " + portname
-						+ ": " + dataToken.getData());
-			} else {
-				try {
-					resultMap.put(portname, referenceService.renderIdentifier(
-							dataToken.getData(), Object.class, null));
-				} catch (RetrievalException e) {
-					e.printStackTrace();
-				}
-			}
+	public void resultTokenProduced(WorkflowDataToken dataToken,
+			String portname) {
+		if (dataToken.getIndex().length==0) {
+			try {
+				T2Reference reference = dataToken.getData();
+				System.out.println("Output reference = " + reference);
+				resultMap.put(portname, context.getReferenceService().renderIdentifier(reference, Object.class,context));
+			} catch (RetrievalException e) {
+				e.printStackTrace();
+			} 
 			outputCount--;
 		}
 	}

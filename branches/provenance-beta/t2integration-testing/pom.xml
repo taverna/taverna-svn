@@ -29,8 +29,9 @@
 	<modules>
 		<module>integration-testing-common</module>
 		<module>dataflow-invocation-testing</module>
-		<module>dataflow-serialization-testing</module>
-		<module>activity-testing</module>
+		<!-- removed modules below, not required for provenance testing -->
+		<!-- <module>dataflow-serialization-testing</module> -->
+		<!-- <module>activity-testing</module> -->
 	</modules>
 
 	<licenses>
