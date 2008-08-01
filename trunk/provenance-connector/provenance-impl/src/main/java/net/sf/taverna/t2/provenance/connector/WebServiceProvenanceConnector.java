@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.xml.rpc.ServiceException;
 
+import net.sf.taverna.t2.provenance.item.ProvenanceItem;
 import net.sf.taverna.t2.provenance.vocabularly.SharedVocabulary;
 import net.sf.taverna.t2.reference.ReferenceService;
 
