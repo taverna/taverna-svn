@@ -60,7 +60,7 @@ public class WebServiceProvenanceConnector implements ProvenanceConnector,
 			} else {
 				XMLOutputter outputter = new XMLOutputter();
 				String outputString = outputter.outputString(provItem
-						.getAsXML(dataFacade));
+						.getAsXML(referenceService));
 				try {
 					provenanceHttpPort.acceptRawProvenanceEvent(provItem
 							.getEventType(), outputString);
