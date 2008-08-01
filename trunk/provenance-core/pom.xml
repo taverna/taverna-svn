@@ -62,9 +62,9 @@
 
 	<dependencies>
   		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
+			<groupId>net.sf.taverna.t2.provenance</groupId>
 			<artifactId>provenance-api</artifactId>
-			<version>0.1.0</version>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		 
 		<dependency>

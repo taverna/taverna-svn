@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.sql.SQLException;
 
-import net.sf.taverna.t2.provenance.SharedVocabulary;
+import net.sf.taverna.t2.provenance.vocabularly.SharedVocabulary;
 import net.sf.taverna.t2.service.types.ProvenanceEventType;
 
 import org.jdom.Document;
