@@ -19,9 +19,9 @@ JNIEXPORT void JNICALL Java_net_sf_taverna_matserver_MatEngineImpl_execute(JNIEn
 
     /*open session*/
     eng = engOpen("");
-/*
-    eng = engOpenSingleUse(NULL, NULL, &r);
-*/
+    /*
+        eng = engOpenSingleUse(NULL, NULL, &r);
+     */
     if (!eng) {
         fprintf(stderr, "\nUnable to start Matlab Engine\n");
         return;
@@ -79,6 +79,7 @@ JNIEXPORT void JNICALL Java_net_sf_taverna_matserver_MatEngineImpl_execute(JNIEn
 
         jname = (jstring) (*env)->GetObjectArrayElement(env, outputNames, i);
         name = (*env)->GetStringUTFChars(env, jname, NULL);
+fprintf(stderr,"***%s {\n",name);
         mxarr = engGetVariable(eng, name);
         (*env)->ReleaseStringUTFChars(env, jname, name);
         matArray = mtojArray(env, mxarr);
@@ -87,8 +88,9 @@ JNIEXPORT void JNICALL Java_net_sf_taverna_matserver_MatEngineImpl_execute(JNIEn
         (*env)->CallVoidMethod(env, this, matengineimpl_setOutputVarMID, jname, matArray);
         (*env)->DeleteLocalRef(env, jname);
         (*env)->DeleteLocalRef(env, matArray);
+        fprintf(stderr,"}\n");
     }
-    
+
     /*clean up*/
     (*env)->DeleteLocalRef(env, outputNames);
     (*env)->DeleteLocalRef(env, inputNames);
@@ -147,8 +149,11 @@ JNIEXPORT void JNICALL Java_net_sf_taverna_matserver_MatEngineImpl_initIDs(JNIEn
     matarray_isNumericMID = (*env)->GetMethodID(env, matArrayClass, "checkNumeric", "()Z");
     matarray_isComplexMID = (*env)->GetMethodID(env, matArrayClass, "checkComplex", "()Z");
     matarray_isCharMID = (*env)->GetMethodID(env, matArrayClass, "checkChar", "()Z");
+    matarray_isStructMID = (*env)->GetMethodID(env, matArrayClass, "checkStruct", "()Z");
+    matarray_isCellMID = (*env)->GetMethodID(env, matArrayClass, "checkCell", "()Z");
     matarray_getFieldMID = (*env)->GetMethodID(env, matArrayClass, "getField", "(Ljava/lang/String;I)Lnet/sf/taverna/matserver/MatArray;");
-    matarray_setMaxNonZeroMID=(*env)->GetMethodID(env,matArrayClass,"setMaxNonZero","(I)V");
+    matarray_setMaxNonZeroMID = (*env)->GetMethodID(env, matArrayClass, "setMaxNonZero", "(I)V");
+    matarray_getNumberOfElementsMID = (*env)->GetMethodID(env, matArrayClass, "numberOfElements", "()I"); /*XXX fix naming!!!!*/
 
     matarray_UNKNOWN_TYPE_FID = (*env)->GetStaticFieldID(env, matArrayClass, "UNKNOWN_TYPE", "Ljava/lang/String;");
     matarray_STRUCT_TYPE_FID = (*env)->GetStaticFieldID(env, matArrayClass, "STRUCT_TYPE", "Ljava/lang/String;");

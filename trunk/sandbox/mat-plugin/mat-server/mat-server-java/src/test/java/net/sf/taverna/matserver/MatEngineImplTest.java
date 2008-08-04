@@ -244,7 +244,7 @@ public class MatEngineImplTest extends TestCase {
         singleArray.setSingleDataRe(new float[]{42.2f});
 
         engine.setVar("input", singleArray);
-        engine.setOutputNames(new String[]{"input" ,"theAnswer"});
+        engine.setOutputNames(new String[]{"input", "theAnswer"});
 
         engine.execute("theAnswer=single(double(input)-0.2);");
 
@@ -266,6 +266,138 @@ public class MatEngineImplTest extends TestCase {
 
         assertEquals(singleArray, fromEngine);
         assertEquals(expectedAns, theAnswer);
+
+    }
+
+    @Test
+    public void testStructArrays() {    //TODO: add abstraction layers to make it less tedious...
+        MatArray sentientComputers = new MatArray();
+        sentientComputers.setType(MatArray.STRUCT_TYPE);
+        sentientComputers.setDimensions(new int[]{1, 2});
+        sentientComputers.setFieldNames(new String[]{"name", "song", "someNumber", "someBool"});
+
+        MatArray names = new MatArray();
+        names.setType(MatArray.CELL_TYPE);
+        names.setDimensions(new int[]{1, 2});
+
+        MatArray name1 = new MatArray();
+        name1.setType(MatArray.CHAR_TYPE);
+        name1.setDimensions(new int[]{1, 7});
+        name1.setCharData(new String[]{"HAL9000"});
+
+        MatArray name2 = new MatArray();
+        name2.setType(MatArray.CHAR_TYPE);
+        name2.setDimensions(new int[]{1, 12});
+        name2.setCharData(new String[]{"Deep Thought"});
+
+        names.setCellData(new MatArray[]{name1, name2});
+
+        MatArray songs = new MatArray();
+        songs.setType(MatArray.CELL_TYPE);
+        songs.setDimensions(new int[]{1, 2});
+
+        MatArray song1 = new MatArray();
+        song1.setType(MatArray.CHAR_TYPE);
+        song1.setDimensions(new int[]{1, 10});
+        song1.setCharData(new String[]{"daisy bell"});
+
+        songs.setCellData(new MatArray[]{song1, null});
+
+        MatArray numbers = new MatArray();
+        numbers.setType(MatArray.CELL_TYPE);
+        numbers.setDimensions(new int[]{1, 2});
+
+        MatArray number1 = new MatArray();
+        number1.setType(MatArray.DOUBLE_TYPE);
+        number1.setDimensions(new int[]{1, 1});
+        number1.setDoubleDataRe(new double[]{9000});
+
+        MatArray number2 = new MatArray();
+        number2.setType(MatArray.DOUBLE_TYPE);
+        number2.setDimensions(new int[]{1, 1});
+        number2.setDoubleDataRe(new double[]{42});
+
+        numbers.setCellData(new MatArray[]{number1, number2});
+
+        MatArray booleansArray = new MatArray();
+        booleansArray.setType(MatArray.CELL_TYPE);
+        booleansArray.setDimensions(new int[]{1, 2});
+
+        MatArray b1 = new MatArray();
+        b1.setType(MatArray.LOGICAL_TYPE);
+        b1.setDimensions(new int[]{1, 1});
+        b1.setLogicalData(new boolean[]{true});
+
+        MatArray b2 = new MatArray();
+        b2.setType(MatArray.LOGICAL_TYPE);
+        b2.setDimensions(new int[]{1, 1});
+        b2.setLogicalData(new boolean[]{false});
+
+        booleansArray.setCellData(new MatArray[]{b1, b2});
+
+        sentientComputers.setCellData(new MatArray[]{names, songs, numbers, booleansArray});
+
+        engine.setVar("scs", sentientComputers);
+        String script = "GLaDOS=struct('name','GLaDOS','song','still alive','someNumber',23,'someBool',logical(0));";
+        engine.setOutputNames(new String[]{"scs", "GLaDOS"});
+        engine.execute(script);
+        Map<String, MatArray> outs = engine.getOutputVars();
+
+        MatArray scsFromEngine = outs.get("scs");
+        assertEquals(sentientComputers, scsFromEngine);
+
+        MatArray expGlados = new MatArray();
+        expGlados.setType(MatArray.STRUCT_TYPE);
+        expGlados.setDimensions(new int[]{1, 1});
+        expGlados.setFieldNames(new String[]{"name", "song", "someNumber", "someBool"});
+
+        MatArray ns = new MatArray();
+        ns.setType(MatArray.CELL_TYPE);
+        ns.setDimensions(new int[]{1, 1});
+
+        MatArray name = new MatArray();
+        name.setType(MatArray.CHAR_TYPE);
+        name.setDimensions(new int[]{1, 6});
+        name.setCharData(new String[]{"GLaDOS"});
+
+        ns.setCellData(new MatArray[]{name});
+
+        MatArray ss = new MatArray();
+        ss.setType(MatArray.CELL_TYPE);
+        ss.setDimensions(new int[]{1, 1});
+
+        MatArray song = new MatArray();
+        song.setType(MatArray.CHAR_TYPE);
+        song.setDimensions(new int[]{1, 11});
+        song.setCharData(new String[]{"still alive"});
+
+        ss.setCellData(new MatArray[]{song});
+
+        MatArray sns = new MatArray();
+        sns.setType(MatArray.CELL_TYPE);
+        sns.setDimensions(new int[]{1, 1});
+
+        MatArray someNumber = new MatArray();
+        someNumber.setType(MatArray.DOUBLE_TYPE);
+        someNumber.setDimensions(new int[]{1, 1});
+        someNumber.setDoubleDataRe(new double[]{23});
+
+        sns.setCellData(new MatArray[]{someNumber});
+
+        MatArray sbs = new MatArray();
+        sbs.setType(MatArray.CELL_TYPE);
+        sbs.setDimensions(new int[]{1, 1});
+
+        MatArray someBool = new MatArray();
+        someBool.setType(MatArray.LOGICAL_TYPE);
+        someBool.setDimensions(new int[]{1, 1});
+        someBool.setLogicalData(new boolean[]{false});
+        sbs.setCellData(new MatArray[]{someBool});
+
+        expGlados.setCellData(new MatArray[]{ns, ss, sns, sbs});
+
+        MatArray glados = outs.get("GLaDOS");
+        assertEquals(expGlados, glados);
 
     }
 }

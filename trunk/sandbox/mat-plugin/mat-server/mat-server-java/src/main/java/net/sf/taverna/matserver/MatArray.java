@@ -212,7 +212,7 @@ public class MatArray implements Serializable {
             }
         }
         if (j != -1) {
-            return cellData[idx].cellData[j]; //XXX Ugly as hell, think about it...
+            return cellData[j].cellData[idx]; //XXX Ugly as hell, think about it...
         }
         return null;
     }
@@ -307,6 +307,14 @@ public class MatArray implements Serializable {
 
     public boolean checkChar() {
         return type.equals(CHAR_TYPE);
+    }
+
+    public boolean checkCell() {
+        return type.equals(CELL_TYPE);
+    }
+
+    public boolean checkStruct() {
+        return type.equals(STRUCT_TYPE);
     }
     //</editor-fold>
 }

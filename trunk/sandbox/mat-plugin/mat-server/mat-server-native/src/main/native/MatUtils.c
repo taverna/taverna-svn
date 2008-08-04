@@ -16,6 +16,8 @@ mxArray* jtomArray(JNIEnv* env, jobject matarray) {
     jboolean isNumeric, isChar;
     jstring typeName;
 
+
+    fprintf(stderr, ">>MARK1\n");
     typeName = (jstring) (*env)->GetObjectField(env, matarray, matarray_typeFID);
 
     mxarr_class = getMxClassID(env, matarray);
@@ -234,7 +236,7 @@ mxArray* jtomStructArray(JNIEnv* env, jobject matarray) {
     int* dims;
     jintArray jdims;
     jobjectArray jdata;
-
+    fprintf(stderr, ">>MARK3\n");
     jdims = (jintArray) (*env)->GetObjectField(env, matarray, matarray_dimensionsFID);
     if (jdims == NULL)
         return NULL;
@@ -246,7 +248,7 @@ mxArray* jtomStructArray(JNIEnv* env, jobject matarray) {
     }
     (*env)->GetIntArrayRegion(env, jdims, 0, ndims, dims);
     (*env)->DeleteLocalRef(env, jdims);
-
+    fprintf(stderr, ">>MARK31\n");
     jfieldnames = (jobjectArray) (*env)->GetObjectField(env, matarray, matarray_field_namesFID);
     if (jfieldnames == NULL)
         return NULL;
@@ -269,34 +271,69 @@ mxArray* jtomStructArray(JNIEnv* env, jobject matarray) {
         fieldnames[i][len] = '\0';
         (*env)->DeleteLocalRef(env, jfname);
     }
-    (*env)->DeleteLocalRef(env, jfieldnames);
-
+    /*
+        (*env)->DeleteLocalRef(env, jfieldnames);
+     */
+    fprintf(stderr, ">>MARK32\n");
     mxarr = mxCreateStructArray(ndims, dims, nfields, fieldnames);
-
+    fprintf(stderr, ">>MARK33\n");
     jdata = (jobjectArray) (*env)->GetObjectField(env, matarray, matarray_cell_dataFID);
     /*TODO: mxSetFieldByNumber()...*/
-    nelements = (*env)->GetArrayLength(env, jdata);
-    for (i = 0; i < nelements; i++) {
-        jobject tmpStruct;
+    nelements = (*env)->CallIntMethod(env, matarray, matarray_getNumberOfElementsMID);
+    for (i = 0; i < nfields; i++) {
+        jobject fieldData;
+        fprintf(stderr, ">>MARK34\n");
+        fieldData = (*env)->GetObjectArrayElement(env, jdata, i);
+        if (fieldData == NULL)
+            continue;
+        if ((*env)->CallBooleanMethod(env, fieldData, matarray_isCellMID)) {
+            for (j = 0; j < nelements; j++) {
+                jobject tmpMA;
+                mxArray* tmpMX;
+                fprintf(stderr, ">>MARK35 [%s][%d]\n", fieldnames[i], j);
+                tmpMA = (*env)->CallObjectMethod(env, matarray, matarray_getFieldMID, (jstring) (*env)->GetObjectArrayElement(env, jfieldnames, i), j);
+                fprintf(stderr, ">>MARK351\n");
+                if (tmpMA == NULL) {
+                    (*env)->DeleteLocalRef(env, tmpMA);
+                    continue;
+                }
 
-        tmpStruct = (*env)->GetObjectArrayElement(env, jdata, i);
-        for (j = 0; j < nfields; j++) {
-            mxArray* tmpMX;
-            jobject tmpMA = (*env)->CallObjectMethod(env, tmpStruct, matarray_getFieldMID, fieldnames[j], i);
-            if (tmpMA == NULL) {
+                tmpMX = jtomArray(env, tmpMA);
+                mxSetField(mxarr, j, fieldnames[i], tmpMX);
                 (*env)->DeleteLocalRef(env, tmpMA);
-                continue;
             }
-            tmpMX = jtomArray(env, tmpMA);
-            mxSetField(mxarr, i, fieldnames[j], tmpMX);
-            (*env)->DeleteLocalRef(env, tmpMA);
+        } else {
+            mxArray* tmpMX = jtomArray(env, fieldData); /*TODO error checking*/
+            fprintf(stderr, ">>MARK36\n");
+            for (j = 0; j < nelements; j++) {
+                mxSetField(mxarr, j, fieldnames[i], tmpMX);
+            }
         }
+        (*env)->DeleteLocalRef(env, fieldData);
+        /*
+                jobject tmpStruct;
 
-        (*env)->DeleteLocalRef(env, tmpStruct);
+                tmpStruct = (*env)->GetObjectArrayElement(env, jdata, i);
+                for (j = 0; j < nfields; j++) {
+                    mxArray* tmpMX;
+                    jobject tmpMA = (*env)->CallObjectMethod(env, matarray, matarray_getFieldMID, fieldnames[j], i);
+                    if (tmpMA == NULL) {
+                        (*env)->DeleteLocalRef(env, tmpMA);
+                        continue;
+                    }
+                    tmpMX = jtomArray(env, tmpMA);
+                    mxSetField(mxarr, i, fieldnames[j], tmpMX);
+                    (*env)->DeleteLocalRef(env, tmpMA);
+                }
+
+                (*env)->DeleteLocalRef(env, tmpStruct);
+         */
     }
-
+    (*env)->DeleteLocalRef(env, jfieldnames);
+    fprintf(stderr, ">>MARK37\n");
     (*env)->DeleteLocalRef(env, jdata);
     free(fieldnames);
+    fprintf(stderr, ">>MARK38\n");
     return mxarr;
 }
 
@@ -630,6 +667,7 @@ jobject mtojArray(JNIEnv* env, mxArray* mxarr) {
     jobject matarray;
     mxClassID mxarr_class;
 
+    fprintf(stderr, ">>MARK2\n");
     mxarr_class = mxGetClassID(mxarr);
 
     switch (mxarr_class) {
@@ -845,11 +883,11 @@ jobject mtojStructArray(JNIEnv* env, mxArray* mxarr) {
     int ndims;
     const int* dims;
     jintArray jdims;
-    int nelements, i;
+    int nelements, i, j;
     jobjectArray jdata;
     int nfields;
     jobjectArray jfieldnames;
-
+    fprintf(stderr, ">>MARK4\n");
     matarray = (*env)->NewObject(env, matArrayClass, matarray_constructorMID);
     if (matarray == NULL)
         return NULL;
@@ -863,10 +901,14 @@ jobject mtojStructArray(JNIEnv* env, mxArray* mxarr) {
     jdims = (*env)->NewIntArray(env, ndims);
     if (jdims == NULL)
         return NULL;
+    (*env)->SetIntArrayRegion(env, jdims, 0, ndims, dims);
     (*env)->SetObjectField(env, matarray, matarray_dimensionsFID, jdims);
-    (*env)->DeleteLocalRef(env, jdims);
+    /*
+        (*env)->DeleteLocalRef(env, jdims);
+     */
 
     nfields = mxGetNumberOfFields(mxarr);
+    printf("nfields=%d\n", nfields);
     jfieldnames = (*env)->NewObjectArray(env, nfields, jstringClass, NULL);
     if (jfieldnames == NULL) {
         setError(OUT_OF_MEMORY_ERROR);
@@ -876,6 +918,7 @@ jobject mtojStructArray(JNIEnv* env, mxArray* mxarr) {
         jstring jfname;
         const char* fname;
         fname = mxGetFieldNameByNumber(mxarr, i);
+        fprintf(stderr, ">>fname[%d]=%s\n", i, fname);
         jfname = (*env)->NewStringUTF(env, fname);
         if (jfname == NULL) {
             setError(OUT_OF_MEMORY_ERROR);
@@ -886,41 +929,77 @@ jobject mtojStructArray(JNIEnv* env, mxArray* mxarr) {
     }
     (*env)->SetObjectField(env, matarray, matarray_field_namesFID, jfieldnames);
     (*env)->DeleteLocalRef(env, jfieldnames);
-
+    fprintf(stderr, ">>MARK41\n");
     nelements = mxGetNumberOfElements(mxarr);
-    jdata = (*env)->NewObjectArray(env, nelements, matArrayClass, NULL);
+    jdata = (*env)->NewObjectArray(env, nfields, matArrayClass, NULL);
     if (jdata == NULL) {
         setError(OUT_OF_MEMORY_ERROR);
         return NULL;
     }
-    for (i = 0; i < nelements; i++) {
-        jobject tmpMA;
-        jobjectArray tmpData;
-        int j;
+    for (i = 0; i < nfields; i++) {
+        jobjectArray jdataElement;
+        jobject jfieldCell;
 
-        tmpMA = createJCellArray(env);
-        tmpData = (*env)->NewObjectArray(env, nfields, matArrayClass, NULL);
-        if (tmpData == NULL) {
+        jfieldCell = createJCellArray(env);
+        (*env)->SetObjectField(env, jfieldCell, matarray_dimensionsFID, jdims);
+
+        jdataElement = (*env)->NewObjectArray(env, nelements, matArrayClass, NULL);
+        if (jdataElement == NULL) {
+            fprintf(stderr, "not enough heap space\n");
             setError(OUT_OF_MEMORY_ERROR);
             return NULL;
         }
-        for (j = 0; j < nfields; j++) {
-            jobject tmpVal;
-            mxArray* tmpMxVal;
 
-            tmpMxVal = mxGetFieldByNumber(mxarr, i, j);
-            tmpVal = mtojArray(env, tmpMxVal);
-            (*env)->SetObjectArrayElement(env, tmpData, j, tmpVal);
-            (*env)->DeleteLocalRef(env, tmpVal);
+        fprintf(stderr, ">>MARK42 [%d]\n", i);
+        for (j = 0; j < nelements; j++) {
+            jobject tmpMA;
+            mxArray* tmpMX;
+            fprintf(stderr, ">>MARK43 [%d] [%s]\n", j, mxGetFieldNameByNumber(mxarr, i));
+            tmpMX = mxGetFieldByNumber(mxarr, j, i);
+            if (tmpMX == NULL)
+                continue;
+            tmpMA = mtojArray(env, tmpMX);
+            (*env)->SetObjectArrayElement(env, jdataElement, j, tmpMA);
+            (*env)->DeleteLocalRef(env, tmpMA);
         }
-        (*env)->SetObjectField(env, tmpMA, matarray_cell_dataFID, tmpData);
-        (*env)->DeleteLocalRef(env, tmpData);
-        (*env)->SetObjectArrayElement(env, jdata, i, tmpMA);
-        (*env)->DeleteLocalRef(env, tmpMA);
+        fprintf(stderr, ">>MARK44 %d[\n", i);
+        (*env)->SetObjectField(env, jfieldCell, matarray_cell_dataFID, jdataElement);
+        (*env)->DeleteLocalRef(env, jdataElement);
+        (*env)->SetObjectArrayElement(env, jdata, i, jfieldCell);
+        fprintf(stderr, ">>MARK44 %d]\n", i);
+        (*env)->DeleteLocalRef(env, jfieldCell);
     }
+    /*
+        for (i = 0; i < nelements; i++) {
+            jobject tmpMA;
+            jobjectArray tmpData;
+            int j;
+
+            tmpMA = createJCellArray(env);
+            tmpData = (*env)->NewObjectArray(env, nfields, matArrayClass, NULL);
+            if (tmpData == NULL) {
+                setError(OUT_OF_MEMORY_ERROR);
+                return NULL;
+            }
+            for (j = 0; j < nfields; j++) {
+                jobject tmpVal;
+                mxArray* tmpMxVal;
+
+                tmpMxVal = mxGetFieldByNumber(mxarr, i, j);
+                tmpVal = mtojArray(env, tmpMxVal);
+                (*env)->SetObjectArrayElement(env, tmpData, j, tmpVal);
+                (*env)->DeleteLocalRef(env, tmpVal);
+            }
+            (*env)->SetObjectField(env, tmpMA, matarray_cell_dataFID, tmpData);
+            (*env)->DeleteLocalRef(env, tmpData);
+            (*env)->SetObjectArrayElement(env, jdata, i, tmpMA);
+            (*env)->DeleteLocalRef(env, tmpMA);
+        }
+     */
     (*env)->SetObjectField(env, matarray, matarray_cell_dataFID, jdata);
     (*env)->DeleteLocalRef(env, jdata);
-
+    (*env)->DeleteLocalRef(env,jdims);
+    fprintf(stderr, ">>MARK45\n");
     return matarray;
 }
 
@@ -1042,7 +1121,7 @@ jobject mtojSingleArray(JNIEnv* env, mxArray* mxarr) {
     (*env)->DeleteLocalRef(env, jdims);
 
     nelements = mxGetNumberOfElements(mxarr);
-    
+
     pr = (float*) mxGetData(mxarr);
     jpr = (*env)->NewFloatArray(env, nelements);
     if (jpr == NULL)
@@ -1050,7 +1129,7 @@ jobject mtojSingleArray(JNIEnv* env, mxArray* mxarr) {
     (*env)->SetFloatArrayRegion(env, jpr, 0, nelements, pr);
     (*env)->SetObjectField(env, matarray, matarray_single_data_reFID, jpr);
     (*env)->DeleteLocalRef(env, jpr);
-    
+
     /*
         if (mxIsComplex(mxarr)) {
             pi = mxGetPi(mxarr);

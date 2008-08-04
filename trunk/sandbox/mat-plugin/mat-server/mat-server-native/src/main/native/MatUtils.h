@@ -21,7 +21,8 @@ matarray_UINT32_TYPE_FID, matarray_INT64_TYPE_FID, matarray_UINT64_TYPE_FID,
 matarray_FUNTION_TYPE_FID;
 /*MatArray method ids*/
 jmethodID matarray_constructorMID, matarray_isSparseMID, matarray_isNumericMID, matarray_isComplexMID,
-matarray_isCharMID, matarray_getFieldMID, matarray_setMaxNonZeroMID;
+matarray_isCharMID, matarray_getFieldMID, matarray_setMaxNonZeroMID, matarray_getNumberOfElementsMID,
+matarray_isStructMID, matarray_isCellMID;
 
 /*MatEngineImpl method ids*/
 jmethodID matengineimpl_getVarMID, matengineimpl_setVarMID,
