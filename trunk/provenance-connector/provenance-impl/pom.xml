@@ -23,17 +23,16 @@
 			<artifactId>serializer-api</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>axis</groupId>
 			<artifactId>axis-jaxrpc</artifactId>
 			<version>1.4</version>
-		</dependency>
-		<dependency>
+		</dependency>-->
+		<!--<dependency>
 			<groupId>axis</groupId>
 			<artifactId>axis</artifactId>
 			<version>1.4</version>
-
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>net.sf.taverna.t2.service</groupId>
 			<artifactId>provenance-wsdl</artifactId>
