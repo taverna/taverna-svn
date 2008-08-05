@@ -4,13 +4,13 @@ package uk.org.mygrid.sogsa.sbs;
  * @author Ian Dunlop
  *
  */
-public class Binding {
+public class SemanticBindingInstance {
 	
 	private String key;
 	private String rdf;
 
 
-	public Binding(String key, String rdf) {
+	public SemanticBindingInstance(String key, String rdf) {
 		this.key = key;
 		this.rdf = rdf;
 	}

@@ -22,14 +22,14 @@ public class BindingsList extends Resource {
 
 	/**
 	 * Convencience class shared between the {@link SemanticBindings} and
-	 * {@link SemanticBinding} so the REST calls can get the {@link Map} of all
+	 * {@link SemanticBindingInstance} so the REST calls can get the {@link Map} of all
 	 * the {@link Binding}s from the {@link SemanticBindingService}
 	 * 
 	 * @return
 	 */
-	protected synchronized void addBinding(String entityKey, String key, String rdf) {
+	protected synchronized void addBinding(String entityKey, String rdf) {
 		((SemanticBindingService) getContext().getAttributes().get(
-				Application.KEY)).addBinding(entityKey, key, rdf);
+				Application.KEY)).addBinding(entityKey, rdf);
 
 	}
 //	protected boolean hasBinding(String key) {
@@ -37,9 +37,13 @@ public class BindingsList extends Resource {
 //				Application.KEY)).hasBinding(key);
 //	}
 	
-	protected Binding getBinding(String key) {
-		return ((SemanticBindingService) getContext().getAttributes().get(
-				Application.KEY)).getBinding(key);
+	protected SemanticBindingInstance getBinding(String key) throws Exception {
+		try {
+			return ((SemanticBindingService) getContext().getAttributes().get(
+					Application.KEY)).getBinding(key);
+		} catch (SemanticBindingException e) {
+			throw new Exception(e);
+		}
 	}
 	
 	protected void removeBinding(String key) {
@@ -47,9 +51,14 @@ public class BindingsList extends Resource {
 				Application.KEY)).removeBinding(key);
 	}
 	
-	protected void updateRDF(String key, String rdf) {
-		((SemanticBindingService) getContext().getAttributes().get(
-				Application.KEY)).updateRDF(key, rdf);
+	protected void updateRDF(String key, String rdf) throws Exception {
+		try {
+			((SemanticBindingService) getContext().getAttributes().get(
+					Application.KEY)).updateRDF(key, rdf);
+		} catch (SemanticBindingException e) {
+			
+			throw new Exception(e);
+		}
 	}
 	
 	protected String queryBinding(String key, String query) {

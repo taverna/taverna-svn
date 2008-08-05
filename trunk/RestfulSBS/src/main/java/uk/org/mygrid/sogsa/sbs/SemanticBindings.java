@@ -1,5 +1,10 @@
 package uk.org.mygrid.sogsa.sbs;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -53,21 +58,70 @@ public class SemanticBindings extends BindingsList {
 		Form form = new Form(entity);
 		String entityKey = form.getFirstValue("entityKey");
 		String rdf = form.getFirstValue("rdf");
-		java.util.logging.Logger.getLogger("org.mortbay.log").log(
-				Level.WARNING, "RDF is: " + rdf);
+		
+		if (rdf == null) {
+			String url = form.getFirstValue("url");
+			rdf = loadRDF(url);
+		}
 
 		// create a binding with RDF inside
 		UUID randomUUID = UUID.randomUUID();
 		// use database layer to store the rdf supplied in the request
-		addBinding(entityKey, randomUUID.toString(), rdf);
+		addBinding(entityKey, rdf);
 		Representation rep = new StringRepresentation(
 				"Binding succesfully created "
 						+ getRequest().getResourceRef().getIdentifier() + "/"
-						+ randomUUID.toString(), MediaType.TEXT_PLAIN);
+						+ entityKey, MediaType.TEXT_PLAIN);
 		// Indicates where the new resource is located.
 		rep.setIdentifier(getRequest().getResourceRef().getIdentifier() + "/"
-				+ randomUUID.toString());
+				+ entityKey);
 		getResponse().setEntity(rep);
+	}
+
+	/**
+	 * Load the rdf from the supplied URL
+	 * @param url
+	 * @return
+	 */
+	private String loadRDF(String url) {
+		String rdfString = new String();
+		URL rdfURL = null;
+		try {
+			rdfURL = new URL(url);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		BufferedReader in = null;
+		try {
+			in = new BufferedReader(
+						new InputStreamReader(
+						rdfURL.openStream()));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		String inputLine;
+
+		try {
+			while ((inputLine = in.readLine()) != null)
+			    rdfString = rdfString + inputLine;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		try {
+			in.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// TODO Auto-generated method stub
+		return rdfString;
 	}
 
 	@Override
