@@ -15,12 +15,12 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
  * events up to the parent node.
  * 
  * @author Tom Oinn
+ * @author Stian Soiland-Reyes
  * 
  */
 public abstract class AbstractIterationStrategyNode implements
 		IterationStrategyNode {
 
-	
 	private IterationStrategyNode parent = null;
 
 	private List<IterationStrategyNode> children;
@@ -29,7 +29,6 @@ public abstract class AbstractIterationStrategyNode implements
 		children = new ArrayList<IterationStrategyNode>();
 	}
 
-	
 	/**
 	 * Implements IterationStrategyNode
 	 */
@@ -49,19 +48,15 @@ public abstract class AbstractIterationStrategyNode implements
 	 * Implements IterationStrategyNode
 	 */
 	public final synchronized void setParent(IterationStrategyNode newParent) {
+		if (parent != null) {
+			// Remove from the current parent
+			parent.getChildren().remove(this);
+		}
+		parent = newParent;
 		if (newParent != null) {
-			parent = newParent;
-			if (! newParent.getChildren().contains(this)) {
-				newParent.getChildren().add(newParent.getChildCount(), this);
+			if (!newParent.getChildren().contains(this)) {
+				newParent.getChildren().add(this);
 			}
-		} else {
-			if (parent != null) {
-				// Remove from the current parent
-				if (parent.getChildren().contains(this)) {
-					parent.getChildren().remove(this);
-				}
-			}
-			parent = null;
 		}
 	}
 
