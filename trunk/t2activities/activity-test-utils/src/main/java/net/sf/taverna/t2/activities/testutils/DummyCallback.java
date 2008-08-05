@@ -54,10 +54,10 @@ public class DummyCallback implements AsynchronousActivityCallback {
 		throw new RuntimeException(message, t);
 	}
 	
-	public SecurityAgentManager getLocalSecurityManager() {
+	/*public SecurityAgentManager getLocalSecurityManager() {
 		// TODO Auto-generated method stub
 		return null;
-	}
+	}*/
 
 	public void receiveCompletion(int[] completionIndex) {
 		// TODO Auto-generated method stub
