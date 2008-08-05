@@ -31,15 +31,16 @@ public class SemanticBinding extends BindingsList {
 		this.key = (String) getRequest().getAttributes().get("binding");
 
 		// Check if this binding actually exists
+		SemanticBindingInstance binding = null;
 		try {
-			if (getBinding(key) != null) {
-				this.binding = getBinding(key);
+			if ((binding = getBinding(key)) != null) {
+//				this.binding = getBinding(key);
+				this.binding = binding;
 				getVariants().add(new Variant(MediaType.TEXT_XML));
 			}
 		} catch (Exception e) {
 			java.util.logging.Logger.getLogger("org.mortbay.log").log(
 					Level.WARNING, "problem with the request");
-			
 		}
 
 	}

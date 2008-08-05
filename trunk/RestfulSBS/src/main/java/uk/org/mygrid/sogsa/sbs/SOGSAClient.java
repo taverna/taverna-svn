@@ -118,7 +118,7 @@ public class SOGSAClient {
 		Representation rep = form.getWebRepresentation();
 
 		// Launch the request
-		Response response = client.post(itemsUri, rep);
+		Response response = client.put(itemsUri, rep);
 
 		return response;
 
@@ -145,7 +145,7 @@ public class SOGSAClient {
 		form.add("entityKey", key);
 		Representation rep = form.getWebRepresentation();
 
-		Response response = client.post(itemsUri, rep);
+		Response response = client.put(itemsUri, rep);
 
 		return response;
 	}

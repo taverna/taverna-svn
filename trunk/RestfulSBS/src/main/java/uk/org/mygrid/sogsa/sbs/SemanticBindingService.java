@@ -13,9 +13,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -139,8 +141,16 @@ public class SemanticBindingService extends Application {
 	 * 
 	 * @param rdfKey
 	 * @param rdf
+	 * @throws SQLException 
+	 * @throws RDFHandlerException 
+	 * @throws RDFParseException 
+	 * @throws IOException 
+	 * @throws SemanticBindingException 
+	 * @throws AnzoException 
+	 * @throws Exception 
+	 * @throws Exception
 	 */
-	public void addBinding(String entityKey, String rdf) {
+	public void addBinding(String entityKey, String rdf) throws SQLException, RDFHandlerException, RDFParseException, IOException, SemanticBindingException, AnzoException {
 		java.util.logging.Logger.getLogger("org.mortbay.log").log(
 				Level.WARNING, "key is: " + entityKey);
 		Connection con = null;
@@ -150,6 +160,7 @@ public class SemanticBindingService extends Application {
 		} catch (SQLException e1) {
 			java.util.logging.Logger.getLogger("org.mortbay.log").log(
 					Level.WARNING, e1.toString());
+			throw e1;
 		}
 		URI namedGraphURI = datasetService.getValueFactory().createURI(
 				"http://" + entityKey);
@@ -159,50 +170,59 @@ public class SemanticBindingService extends Application {
 			graph = datasetService.getRemoteGraph(namedGraphURI,
 					createIfNecessary);
 
-		} catch (AnzoException e) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
-					Level.WARNING, e.toString());
-		}
-		StatementCollector sc = new StatementCollector();
-		try {
-			RDFParser parser = Rio.createParser(RDFFormat.RDFXML);
-			parser.setRDFHandler(sc);
-			parser.parse(new StringReader(rdf), "");
-		} catch (UnsupportedRDFormatException mse) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
-					Level.WARNING, mse.toString());
-		} catch (RDFHandlerException mse) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
-					Level.WARNING, mse.toString());
-		} catch (RDFParseException mse) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
-					Level.WARNING, mse.toString());
-		} catch (IOException mse) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
-					Level.WARNING, mse.toString());
-		}
-		try {
-			datasetService.begin();
+			StatementCollector sc = new StatementCollector();
+			try {
+				RDFParser parser = Rio.createParser(RDFFormat.RDFXML);
+				parser.setRDFHandler(sc);
+				parser.parse(new StringReader(rdf), "");
+			} catch (UnsupportedRDFormatException mse) {
+				throw mse;
+			} catch (RDFHandlerException mse) {
+				throw mse;
+			} catch (RDFParseException mse) {
+				throw mse;
+			} catch (IOException mse) {
+				throw mse;
+			}
+			try {
+				datasetService.begin();
+			} catch (AnzoException e) {
+				java.util.logging.Logger.getLogger("org.mortbay.log").log(
+						Level.WARNING, e.toString());
+				throw e;
+			}
+			try {
+				for (Statement statement : sc.getStatements()) {
+					graph.add(statement);
+				}
+			} catch (Exception e) {
+				datasetService.abort();
+				throw new SemanticBindingException(e);
+			}
+			try {
+				datasetService.commit();
+			} catch (AnzoException e) {
+				java.util.logging.Logger.getLogger("org.mortbay.log").log(
+						Level.WARNING, e.toString());
+				throw e;
+			}
+			try {
+				datasetService.getDatasetReplicator().replicate(true);
+			} catch (AnzoException e) {
+				java.util.logging.Logger.getLogger("org.mortbay.log").log(
+						Level.WARNING, e.toString());
+				throw e;
+			}
+
 		} catch (AnzoException e1) {
 			java.util.logging.Logger.getLogger("org.mortbay.log").log(
 					Level.WARNING, e1.toString());
+			throw e1;
+		} finally {
+			if (graph != null) {
+				graph.close();
+			}
 		}
-		for (Statement statement : sc.getStatements()) {
-			graph.add(statement);
-		}
-		try {
-			datasetService.commit();
-		} catch (AnzoException e) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
-					Level.WARNING, e.toString());
-		}
-		try {
-			datasetService.getDatasetReplicator().replicate(true);
-		} catch (AnzoException e) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
-					Level.WARNING, e.toString());
-		}
-		graph.close();
 
 	}
 
@@ -213,12 +233,12 @@ public class SemanticBindingService extends Application {
 	 * represented by the passed in value key. Use this to get all of the rdf
 	 * 
 	 * @throws SemanticBindingException
+	 * @throws AnzoException
+	 * @throws NoRDFFoundException
+	 * @throws SemanticBindingNotFoundException
 	 */
-	public SemanticBindingInstance getBinding(String key)
-			throws SemanticBindingException {
-
-		java.util.logging.Logger.getLogger("org.mortbay.log").log(
-				Level.WARNING, "got key: " + key);
+	public SemanticBindingInstance getBinding(String key) throws AnzoException,
+			NoRDFFoundException, SemanticBindingNotFoundException {
 
 		String rdf = new String();
 		boolean hasRDF = false;
@@ -240,19 +260,22 @@ public class SemanticBindingService extends Application {
 						rdf = rdf + rdfString;
 					}
 				}
+				remoteGraph.close();
+			} else {
+				throw new SemanticBindingNotFoundException(
+						"There was no binding " + key);
 			}
-			remoteGraph.close();
 
 			if (hasRDF) {
 				return new SemanticBindingInstance(key, rdf);
+			} else {
+				// found a binding but no rdf, probably an anzo problem (?)
+				throw new NoRDFFoundException("Binding found but no RDF");
 			}
-			// no binding so if we haven't thrown an exception for some reason
-			// then......
-			return null;
 		} catch (AnzoException e) {
 			java.util.logging.Logger.getLogger("org.mortbay.log").log(
 					Level.WARNING, e.toString());
-			throw new SemanticBindingException(e);
+			throw e;
 		} finally {
 			if (remoteGraph != null) {
 				remoteGraph.close();
@@ -503,6 +526,21 @@ public class SemanticBindingService extends Application {
 					Level.WARNING, e.toString());
 		}
 		return rdfString;
+	}
+
+	public List<URI> getAllBindings() throws SemanticBindingException,
+			SemanticBindingNotFoundException {
+		Collection<URI> contexts = null;
+		try {
+			contexts = datasetService.getNamedgraphContainer().getContexts();
+		} catch (Exception e) {
+			throw new SemanticBindingException(e);
+		}
+		if (contexts != null) {
+			return new ArrayList<URI>(contexts);
+		} else {
+			throw new SemanticBindingNotFoundException();
+		}
 	}
 
 }
