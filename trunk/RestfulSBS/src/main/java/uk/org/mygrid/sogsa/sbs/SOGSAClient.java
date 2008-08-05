@@ -91,6 +91,19 @@ public class SOGSAClient {
 				}
 			}
 		}
+		Reference allBindingsRef = new Reference("http://localhost:25000/sbs");
+		Response allBindings = getAllBindings(client, allBindingsRef);
+		
+		if (allBindings.getStatus().isSuccess()) {
+			System.out.println("success with all bindings");
+			try {
+				allBindings.getEntity().write(System.out);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 
 	}
 
@@ -178,6 +191,11 @@ public class SOGSAClient {
 		Representation rep = form.getWebRepresentation();
 		Response post = client.post(reference, rep);
 		return post;
+	}
+	
+	public static Response getAllBindings(Client client, Reference reference) {
+		Response response = client.get(reference);
+		return response;
 	}
 
 }

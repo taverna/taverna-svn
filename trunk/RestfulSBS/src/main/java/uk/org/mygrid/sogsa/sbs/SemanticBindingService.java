@@ -19,12 +19,14 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 
 import org.openanzo.client.DatasetService;
 import org.openanzo.client.RemoteGraph;
 import org.openanzo.common.exceptions.AnzoException;
+import org.openanzo.model.IDataset;
 import org.openanzo.model.INamedGraph;
 import org.openanzo.model.impl.query.QueryResult;
 import org.openrdf.model.Statement;
@@ -141,16 +143,18 @@ public class SemanticBindingService extends Application {
 	 * 
 	 * @param rdfKey
 	 * @param rdf
-	 * @throws SQLException 
-	 * @throws RDFHandlerException 
-	 * @throws RDFParseException 
-	 * @throws IOException 
-	 * @throws SemanticBindingException 
-	 * @throws AnzoException 
-	 * @throws Exception 
+	 * @throws SQLException
+	 * @throws RDFHandlerException
+	 * @throws RDFParseException
+	 * @throws IOException
+	 * @throws SemanticBindingException
+	 * @throws AnzoException
+	 * @throws Exception
 	 * @throws Exception
 	 */
-	public void addBinding(String entityKey, String rdf) throws SQLException, RDFHandlerException, RDFParseException, IOException, SemanticBindingException, AnzoException {
+	public void addBinding(String entityKey, String rdf) throws SQLException,
+			RDFHandlerException, RDFParseException, IOException,
+			SemanticBindingException, AnzoException {
 		java.util.logging.Logger.getLogger("org.mortbay.log").log(
 				Level.WARNING, "key is: " + entityKey);
 		Connection con = null;
@@ -528,16 +532,19 @@ public class SemanticBindingService extends Application {
 		return rdfString;
 	}
 
-	public List<URI> getAllBindings() throws SemanticBindingException,
+	public Set<URI> getAllBindings() throws SemanticBindingException,
 			SemanticBindingNotFoundException {
-		Collection<URI> contexts = null;
+		Set<URI> storedNamedGraphs = null;
 		try {
-			contexts = datasetService.getNamedgraphContainer().getContexts();
+			storedNamedGraphs = datasetService.getModelService()
+					.getStoredNamedGraphs();
+
 		} catch (Exception e) {
 			throw new SemanticBindingException(e);
 		}
-		if (contexts != null) {
-			return new ArrayList<URI>(contexts);
+
+		if (!storedNamedGraphs.isEmpty()) {
+			return storedNamedGraphs;
 		} else {
 			throw new SemanticBindingNotFoundException();
 		}

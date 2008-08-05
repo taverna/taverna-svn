@@ -88,7 +88,7 @@ public class BindingsList extends Resource {
 		}
 	}
 
-	protected List<URI> getAllBindings() throws SemanticBindingException,
+	protected Iterable<URI> getAllBindings() throws SemanticBindingException,
 			SemanticBindingNotFoundException {
 		try {
 			return ((SemanticBindingService) getContext().getAttributes().get(
