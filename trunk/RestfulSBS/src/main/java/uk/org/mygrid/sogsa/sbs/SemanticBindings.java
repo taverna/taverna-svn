@@ -32,6 +32,18 @@ public class SemanticBindings extends BindingsList {
 	}
 
 	@Override
+	public boolean allowPost() {
+		return true;
+	}
+
+	@Override
+	public void post(Representation entity) {
+		Form form = new Form(entity);
+		String query = form.getFirstValue("query");
+		String queryAllBindings = queryAllBindings(query);
+	}
+
+	@Override
 	public void delete() {
 		// TODO Auto-generated method stub
 		super.delete();
@@ -94,8 +106,6 @@ public class SemanticBindings extends BindingsList {
 	 */
 	@Override
 	public void put(Representation entity) {
-		java.util.logging.Logger.getLogger("org.mortbay.log").log(
-				Level.WARNING, "posting a binding");
 		Form form = new Form(entity);
 		String entityKey = form.getFirstValue("entityKey");
 		String rdf = form.getFirstValue("rdf");

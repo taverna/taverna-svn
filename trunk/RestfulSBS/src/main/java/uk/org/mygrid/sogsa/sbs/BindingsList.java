@@ -121,5 +121,10 @@ public class BindingsList extends Resource {
 		return ((SemanticBindingService) getContext().getAttributes().get(
 				Application.KEY)).queryBinding(key, query);
 	}
+	
+	protected String queryAllBindings(String query) {
+		return ((SemanticBindingService) getContext().getAttributes().get(
+				Application.KEY)).queryAllBindings(query);
+	}
 
 }

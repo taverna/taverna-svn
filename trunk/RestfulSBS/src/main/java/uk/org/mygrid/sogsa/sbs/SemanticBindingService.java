@@ -412,51 +412,67 @@ public class SemanticBindingService extends Application {
 		URI namedGraphURI = datasetService.getValueFactory().createURI(
 				"http://" + key);
 		RemoteGraph remoteGraph = null;
+		QueryResult result = null;
 		try {
 			remoteGraph = datasetService.getRemoteGraph(namedGraphURI, false);
+
+			result = datasetService.execQuery(Collections
+					.singleton(namedGraphURI), Collections.<URI> emptySet(),
+					query);
 		} catch (AnzoException e) {
 			java.util.logging.Logger.getLogger("org.mortbay.log").log(
 					Level.WARNING, e.toString());
+		} finally {
+
 		}
-		QueryResult result = datasetService.execQuery(Collections
-				.singleton(namedGraphURI), Collections.<URI> emptySet(), query);
 		if (result.isAskResult()) {
 			return result.getAskResult().toString();
 		} else if (result.isConstructResult()) {
 			Collection<Statement> constructResult = result.getConstructResult();
-			for (Statement statement : constructResult) {
-				queryResult = queryResult + statement.getSubject() + " "
-						+ statement.getPredicate() + " "
-						+ statement.getObject() + "\n";
+			if (!constructResult.isEmpty()) {
+				for (Statement statement : constructResult) {
+					queryResult = queryResult + statement.getSubject() + " "
+							+ statement.getPredicate() + " "
+							+ statement.getObject() + "\n";
+				}
+				return queryResult;
 			}
-			return queryResult;
 		} else if (result.isDescribeResult()) {
 			Collection<Statement> describeResult = result.getDescribeResult();
-			for (Statement statement : describeResult) {
-				queryResult = queryResult + statement.getSubject() + " "
-						+ statement.getPredicate() + " "
-						+ statement.getObject() + "\n";
+			if (!describeResult.isEmpty()) {
+				for (Statement statement : describeResult) {
+					queryResult = queryResult + statement.getSubject() + " "
+							+ statement.getPredicate() + " "
+							+ statement.getObject() + "\n";
+				}
+				return queryResult;
 			}
-			return queryResult;
 		} else if (result.isSelectResult()) {
 			TupleQueryResult selectResult = result.getSelectResult();
-
 			try {
-				while (selectResult.hasNext()) {
-					BindingSet next = selectResult.next();
-					Iterator<Binding> iterator = next.iterator();
-					while (iterator.hasNext()) {
-						Binding next2 = iterator.next();
-						queryResult = queryResult + "Name: " + next2.getName()
-								+ " Value: " + next2.getValue() + "\n";
-					}
+				if (selectResult.hasNext()) {
+					try {
+						while (selectResult.hasNext()) {
+							BindingSet next = selectResult.next();
+							Iterator<Binding> iterator = next.iterator();
+							while (iterator.hasNext()) {
+								Binding next2 = iterator.next();
+								queryResult = queryResult + "Name: "
+										+ next2.getName() + " Value: "
+										+ next2.getValue() + "\n";
+							}
 
+						}
+					} catch (QueryEvaluationException e1) {
+						java.util.logging.Logger.getLogger("org.mortbay.log").log(
+								Level.WARNING, e1.toString());
+					}
+					return queryResult;
 				}
-			} catch (QueryEvaluationException e1) {
-				java.util.logging.Logger.getLogger("org.mortbay.log").log(
-						Level.WARNING, e1.toString());
+			} catch (QueryEvaluationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			return queryResult;
 		}
 		return null;
 	}
@@ -548,6 +564,59 @@ public class SemanticBindingService extends Application {
 		} else {
 			throw new SemanticBindingNotFoundException();
 		}
+	}
+
+	public String queryAllBindings(String query) {
+		Set<URI> storedNamedGraphs = null;
+		String queryResult = new String();
+		try {
+			storedNamedGraphs = datasetService.getModelService()
+					.getStoredNamedGraphs();
+		} catch (AnzoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		QueryResult result = datasetService.execQuery(storedNamedGraphs,
+				Collections.<URI> emptySet(), query);
+		if (result.isAskResult()) {
+			return result.getAskResult().toString();
+		} else if (result.isConstructResult()) {
+			Collection<Statement> constructResult = result.getConstructResult();
+			for (Statement statement : constructResult) {
+				queryResult = queryResult + statement.getSubject() + " "
+						+ statement.getPredicate() + " "
+						+ statement.getObject() + "\n";
+			}
+			return queryResult;
+		} else if (result.isDescribeResult()) {
+			Collection<Statement> describeResult = result.getDescribeResult();
+			for (Statement statement : describeResult) {
+				queryResult = queryResult + statement.getSubject() + " "
+						+ statement.getPredicate() + " "
+						+ statement.getObject() + "\n";
+			}
+			return queryResult;
+		} else if (result.isSelectResult()) {
+			TupleQueryResult selectResult = result.getSelectResult();
+
+			try {
+				while (selectResult.hasNext()) {
+					BindingSet next = selectResult.next();
+					Iterator<Binding> iterator = next.iterator();
+					while (iterator.hasNext()) {
+						Binding next2 = iterator.next();
+						queryResult = queryResult + "Name: " + next2.getName()
+								+ " Value: " + next2.getValue() + "\n";
+					}
+
+				}
+			} catch (QueryEvaluationException e1) {
+				java.util.logging.Logger.getLogger("org.mortbay.log").log(
+						Level.WARNING, e1.toString());
+			}
+			return queryResult;
+		}
+		return null;
 	}
 
 }
