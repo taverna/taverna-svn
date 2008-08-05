@@ -20,6 +20,7 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -37,6 +38,7 @@ public class SoaplabActivityTranslatorTest extends TranslatorTestHelper {
 
 	private Set<String> outputPortNames;
 
+	@Ignore("Integration test")
 	@Before
 	public void setUp() throws Exception {
 		System.setProperty("raven.eclipse", "true");
@@ -62,6 +64,7 @@ public class SoaplabActivityTranslatorTest extends TranslatorTestHelper {
 		translator = new SoaplabActivityTranslator();
 	}
 
+	@Ignore("Integration test")
 	@Test
 	public void testCreateUnconfiguredActivity() {
 		SoaplabActivity activity = translator.createUnconfiguredActivity();
@@ -69,6 +72,7 @@ public class SoaplabActivityTranslatorTest extends TranslatorTestHelper {
 		assertNull(activity.getConfiguration());
 	}
 
+	@Ignore("Integration test")
 	@Test
 	public void testCreateConfigTypeProcessor() throws Exception {
 		SoaplabActivityConfigurationBean bean = translator
@@ -84,6 +88,7 @@ public class SoaplabActivityTranslatorTest extends TranslatorTestHelper {
 				.getPollingIntervalMax());
 	}
 
+	@Ignore("Integration test")
 	@Test
 	public void testCanHandle() throws Exception {
 		assertTrue(translator.canHandle(soaplabProcessor));
@@ -91,6 +96,7 @@ public class SoaplabActivityTranslatorTest extends TranslatorTestHelper {
 		assertFalse(translator.canHandle(null));
 	}
 
+	@Ignore("Integration test")
 	@Test
 	public void testDoTranslationProcessor() throws Exception {
 		SoaplabActivity activity = (SoaplabActivity) translator

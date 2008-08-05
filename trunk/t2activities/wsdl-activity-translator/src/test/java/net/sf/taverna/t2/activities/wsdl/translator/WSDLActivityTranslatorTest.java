@@ -18,6 +18,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -28,24 +29,28 @@ public class WSDLActivityTranslatorTest  implements LocationConstants {
     private static WSDLBasedProcessor processor = null;
 	private static String wsdlPath;
     
-    @BeforeClass
+    @Ignore("Integration test")
+    //@BeforeClass
     public static void createProcessor() throws Exception {
     	wsdlPath = WSDLActivityTranslatorTest.class.getResource("/dbfetch.wsdl").toURI().toURL().toExternalForm();
         processor = new WSDLBasedProcessor(null,"test_wsdl",wsdlPath ,"getSupportedDBs");
     }
     
+    @Ignore("Integration test")
     @Test
     public void testCanHandleTrue() throws Exception {
         WSDLActivityTranslator translator = new WSDLActivityTranslator();
         assertTrue(translator.canHandle(processor));
     }
     
+    @Ignore("Integration test")
     @Test
     public void testCanHandleFalse() throws Exception {
         WSDLActivityTranslator translator = new WSDLActivityTranslator();
         assertFalse(translator.canHandle(new DummyProcessor()));
     }
     
+    @Ignore("Integration test")
     @Test
     public void testConfig() throws Exception {
         WSDLActivityTranslator translator = new WSDLActivityTranslator();
@@ -55,6 +60,7 @@ public class WSDLActivityTranslatorTest  implements LocationConstants {
         assertEquals("The operation in the config bean is wrong","getSupportedDBs",bean.getOperation());
     }
     
+    @Ignore("Integration test")
     @Test
     public void testSimplePorts() throws Exception {
         WSDLActivityTranslator translator = new WSDLActivityTranslator();

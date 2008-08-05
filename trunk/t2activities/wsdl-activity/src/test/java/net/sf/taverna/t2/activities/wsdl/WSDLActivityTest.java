@@ -27,7 +27,8 @@ public class WSDLActivityTest implements LocationConstants {
 	private static String wsdlLocation = WSDL_TEST_BASE
 			+ "eutils/eutils_lite.wsdl";
 
-	@BeforeClass
+	//@BeforeClass
+    @Ignore("Integration test")
 	public static void setUp() throws Exception {
 		activity = new WSDLActivity();
 		configBean = new WSDLActivityConfigurationBean();
@@ -37,6 +38,7 @@ public class WSDLActivityTest implements LocationConstants {
 	}
 
 	@Test
+    @Ignore("Integration test")
 	public void testConfigureWSDLActivityConfigurationBean() throws Exception {
 		assertEquals("There should be 1 input ports", 1, activity
 				.getInputPorts().size());
@@ -61,6 +63,7 @@ public class WSDLActivityTest implements LocationConstants {
 	}
 
 	@Test
+    @Ignore("Integration test")
 	public void testGetConfiguration() throws Exception {
 		assertSame(configBean, activity.getConfiguration());
 	}

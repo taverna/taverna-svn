@@ -16,6 +16,7 @@ import net.sf.taverna.t2.activities.testutils.ActivityInvoker;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -29,6 +30,7 @@ public class SoaplabActivityTest {
 
 	private SoaplabActivityConfigurationBean configurationBean;
 
+	@Ignore("Integration test")
 	@Before
 	public void setUp() throws Exception {
 		activity = new SoaplabActivity();
@@ -37,6 +39,7 @@ public class SoaplabActivityTest {
 				.setEndpoint("http://www.ebi.ac.uk/soaplab/emboss4/services/utils_misc.embossversion");
 	}
 
+	@Ignore("Integration test")
 	@Test
 	public void testExecuteAsynch() throws Exception {
 		Map<String, Object> inputs = new HashMap<String, Object>();
@@ -67,11 +70,13 @@ public class SoaplabActivityTest {
 		assertTrue(outputs.containsKey("outfile"));
 	}
 
+	@Ignore("Integration test")
 	@Test
 	public void testSoaplabActivity() {
 		assertNotNull(new SoaplabActivity());
 	}
 
+	@Ignore("Integration test")
 	@Test
 	public void testConfigureSoaplabActivityConfigurationBean()
 			throws Exception {
@@ -88,6 +93,7 @@ public class SoaplabActivityTest {
 		}
 	}
 
+	@Ignore("Integration test")
 	@Test
 	public void testIsPollingDefined() throws Exception {
 		assertFalse(activity.isPollingDefined());

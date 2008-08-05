@@ -560,6 +560,7 @@ public class LocalworkerTranslatorTest {
 		}
 	}
 
+    @Ignore("Integration test")
 	@Test
 	public void testDoTranslationWebImageFetcher() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -605,6 +606,7 @@ public class LocalworkerTranslatorTest {
 						.getResourceAsStream("/testimage.gif"))));
 	}
 
+    @Ignore("Integration test")
 	@Test
 	public void testDoTranslationWebPageFetcher() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,

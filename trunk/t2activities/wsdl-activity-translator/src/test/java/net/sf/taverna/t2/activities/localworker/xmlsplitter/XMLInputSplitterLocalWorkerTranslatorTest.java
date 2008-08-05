@@ -14,6 +14,7 @@ import org.embl.ebi.escience.scuflworkers.java.EchoList;
 import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
 import org.embl.ebi.escience.scuflworkers.java.XMLInputSplitter;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class XMLInputSplitterLocalWorkerTranslatorTest implements LocationConstants{
@@ -42,6 +43,7 @@ public class XMLInputSplitterLocalWorkerTranslatorTest implements LocationConsta
 		assertFalse("should not be able to handle the EchoList localworker",translator.canHandle(processor));
 	}
 	
+    @Ignore("Integration test")
 	@Test
 	public void testTranslation() throws Exception {
 		WSDLBasedProcessor wsdlProcessor = new WSDLBasedProcessor(null,"test_wsdl",WSDL_TEST_BASE+"TestServices-wrapped.wsdl","personToString");
