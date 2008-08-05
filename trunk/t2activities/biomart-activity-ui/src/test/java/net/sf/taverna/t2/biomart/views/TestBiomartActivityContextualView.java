@@ -11,8 +11,8 @@ import net.sf.taverna.t2.activities.biomart.actions.BiomartActivityConfiguration
 import net.sf.taverna.t2.activities.biomart.views.BiomartActivityContextualView;
 import net.sf.taverna.t2.activities.biomart.views.BiomartActivityViewFactory;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactory;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactoryRegistry;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactory;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactoryRegistry;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.jdom.Element;
@@ -36,8 +36,8 @@ public class TestBiomartActivityContextualView {
 	public void testDisovery() throws Exception {
 		
 		
-		ActivityViewFactory factory = ActivityViewFactoryRegistry.getInstance()
-				.getViewFactoryForBeanType(activity);
+		ContextualViewFactory factory = ContextualViewFactoryRegistry.getInstance()
+				.getViewFactoryForObject(activity);
 		assertTrue("Factory should be BiomartActivityViewFactory",
 				factory instanceof BiomartActivityViewFactory);
 		ContextualView view = factory.getView(activity);

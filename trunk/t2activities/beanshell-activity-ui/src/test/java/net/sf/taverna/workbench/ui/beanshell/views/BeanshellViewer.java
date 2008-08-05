@@ -10,8 +10,8 @@ import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
 import net.sf.taverna.t2.activities.beanshell.views.BeanshellActivityViewFactory;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactory;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactoryRegistry;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactory;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactoryRegistry;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.MimeTypeConfig;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 
@@ -34,7 +34,7 @@ public class BeanshellViewer {
 			e.printStackTrace();
 		}
 		
-		ActivityViewFactory viewFactoryForBeanType = ActivityViewFactoryRegistry.getInstance().getViewFactoryForBeanType(beanshellActivity);
+		ContextualViewFactory viewFactoryForBeanType = ContextualViewFactoryRegistry.getInstance().getViewFactoryForObject(beanshellActivity);
 		assertNotNull("The beanshsell view factory should not be null",viewFactoryForBeanType);
 		assertTrue("Was not a  Beanshell view factory", viewFactoryForBeanType instanceof BeanshellActivityViewFactory);
 		ContextualView viewType = viewFactoryForBeanType.getView(beanshellActivity);

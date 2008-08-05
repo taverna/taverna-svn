@@ -6,8 +6,8 @@ import net.sf.taverna.t2.activities.biomoby.BiomobyActivity;
 import net.sf.taverna.t2.activities.biomoby.BiomobyActivityConfigurationBean;
 import net.sf.taverna.t2.activities.biomoby.actions.BiomobyActivityConfigurationAction;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactory;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactoryRegistry;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactory;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactoryRegistry;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 
 import org.junit.Before;
@@ -37,7 +37,7 @@ public class BiomobyContextualViewFactoryTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testDisovery() throws Exception {
-		ActivityViewFactory factory = ActivityViewFactoryRegistry.getInstance().getViewFactoryForBeanType(activity);
+		ContextualViewFactory factory = ContextualViewFactoryRegistry.getInstance().getViewFactoryForObject(activity);
 		assertTrue("Factory should be BiomobyActivityContextualViewFactory",factory instanceof BiomobyActivityContextualViewFactory);
 		ContextualView view = factory.getView(activity);
 		assertTrue("The view should be BiomobyActivityContextualView",view instanceof BiomobyActivityContextualView);

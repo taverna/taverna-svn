@@ -23,8 +23,8 @@ import net.sf.taverna.t2.workbench.ui.DataflowSelectionMessage;
 import net.sf.taverna.t2.workbench.ui.DataflowSelectionModel;
 import net.sf.taverna.t2.workbench.ui.impl.DataflowSelectionManager;
 import net.sf.taverna.t2.workbench.ui.impl.Workbench;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactory;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactoryRegistry;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactory;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactoryRegistry;
 import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Processor;
@@ -144,10 +144,10 @@ public class ContextualViewComponent extends JPanel implements UIComponentSPI {
 
 	@SuppressWarnings("unchecked")
 	private void handleActivity(Activity<?> activity) {
-		ActivityViewFactoryRegistry reg = ActivityViewFactoryRegistry
+		ContextualViewFactoryRegistry reg = ContextualViewFactoryRegistry
 				.getInstance();
-		ActivityViewFactory viewFactoryForBeanType = reg
-				.getViewFactoryForBeanType(activity);
+		ContextualViewFactory viewFactoryForBeanType = reg
+				.getViewFactoryForObject(activity);
 		ContextualView viewType = viewFactoryForBeanType.getView(activity);
 		updateContextualView(viewType);
 	}

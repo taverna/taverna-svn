@@ -1,14 +1,14 @@
 package net.sf.taverna.t2.activities.beanshell.views;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactory;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactory;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
-public class BeanshellActivityViewFactory implements ActivityViewFactory<BeanshellActivity>{
+public class BeanshellActivityViewFactory implements ContextualViewFactory<BeanshellActivity>{
 
-	public boolean canHandle(Activity<?> activityClass) {
+	public boolean canHandle(Object object) {
 		//changed since local worker sub classes beanshell which means instanceof can't be used any more
-		return activityClass.getClass().isAssignableFrom(BeanshellActivity.class);
+		return object.getClass().isAssignableFrom(BeanshellActivity.class);
 	}
 
 	

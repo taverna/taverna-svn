@@ -6,8 +6,8 @@ import net.sf.taverna.t2.activities.soaplab.SoaplabActivity;
 import net.sf.taverna.t2.activities.soaplab.SoaplabActivityConfigurationBean;
 import net.sf.taverna.t2.activities.soaplab.actions.SoaplabActivityConfigurationAction;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactory;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactoryRegistry;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactory;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactoryRegistry;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.junit.Before;
@@ -30,7 +30,7 @@ public class TestSoaplabActivityContextualView {
 	@Test
 	@Ignore("Integration test")
 	public void testDisovery() throws Exception {
-		ActivityViewFactory factory = ActivityViewFactoryRegistry.getInstance().getViewFactoryForBeanType(a);
+		ContextualViewFactory factory = ContextualViewFactoryRegistry.getInstance().getViewFactoryForObject(a);
 		assertTrue("Factory should be SoaplabActivityViewFactory",factory instanceof SoaplabActivityViewFactory);
 		ContextualView view = factory.getView(a);
 		assertTrue("The view should be SoaplabActivityContextualView",view instanceof SoaplabActivityContextualView);

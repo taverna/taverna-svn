@@ -12,8 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactory;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactoryRegistry;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactory;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactoryRegistry;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.dispatchstack.DispatchStackContextualView;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.iterationstrategy.IterationStrategyStackContextualView;
 import net.sf.taverna.t2.workflowmodel.Processor;
@@ -136,8 +136,8 @@ public class ProcessorContextualView extends ContextualView {
 		// TODO Auto-generated method stub
 		int gridy = 0;
 		for (Activity activity : processor.getActivityList()) {
-			ActivityViewFactory viewFactoryForBeanType = ActivityViewFactoryRegistry
-					.getInstance().getViewFactoryForBeanType(activity);
+			ContextualViewFactory viewFactoryForBeanType = ContextualViewFactoryRegistry
+					.getInstance().getViewFactoryForObject(activity);
 			ContextualView view = viewFactoryForBeanType.getView(activity);
 			JButton clickActivityView = new JButton(
 					new ClickDispatchStackAction(view));

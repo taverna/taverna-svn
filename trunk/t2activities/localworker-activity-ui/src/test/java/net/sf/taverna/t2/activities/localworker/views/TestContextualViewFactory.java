@@ -5,8 +5,8 @@ import static org.junit.Assert.assertTrue;
 import net.sf.taverna.t2.activities.localworker.LocalworkerActivity;
 import net.sf.taverna.t2.activities.localworker.LocalworkerActivityConfigurationBean;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactory;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactoryRegistry;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactory;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactoryRegistry;
 
 import org.junit.Test;
 
@@ -19,8 +19,8 @@ public class TestContextualViewFactory {
 		LocalworkerActivityConfigurationBean bean = new LocalworkerActivityConfigurationBean();
 		localworkerActivity.configure(bean);
 
-		ActivityViewFactory viewFactoryForBeanType = ActivityViewFactoryRegistry
-				.getInstance().getViewFactoryForBeanType(localworkerActivity);
+		ContextualViewFactory viewFactoryForBeanType = ContextualViewFactoryRegistry
+				.getInstance().getViewFactoryForObject(localworkerActivity);
 		assertNotNull("The localworker view factory should not be null",
 				viewFactoryForBeanType);
 		assertTrue(

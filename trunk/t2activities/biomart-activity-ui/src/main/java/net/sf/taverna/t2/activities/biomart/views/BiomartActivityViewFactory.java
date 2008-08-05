@@ -2,14 +2,13 @@ package net.sf.taverna.t2.activities.biomart.views;
 
 import net.sf.taverna.t2.activities.biomart.BiomartActivity;
 import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityContextualView;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactory;
-import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactory;
 
-public class BiomartActivityViewFactory implements ActivityViewFactory<BiomartActivity> {
+public class BiomartActivityViewFactory implements ContextualViewFactory<BiomartActivity> {
 
 	
-	public boolean canHandle(Activity<?> activity) {
-		return activity instanceof BiomartActivity;
+	public boolean canHandle(Object object) {
+		return object instanceof BiomartActivity;
 	}
 
 	

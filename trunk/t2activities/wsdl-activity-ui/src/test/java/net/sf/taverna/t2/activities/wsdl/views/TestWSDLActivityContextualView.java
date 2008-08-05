@@ -5,8 +5,8 @@ import static org.junit.Assert.assertTrue;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivity;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactory;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactoryRegistry;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactory;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactoryRegistry;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.junit.Before;
@@ -29,7 +29,7 @@ public class TestWSDLActivityContextualView {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testDisovery() throws Exception {
-		ActivityViewFactory factory = ActivityViewFactoryRegistry.getInstance().getViewFactoryForBeanType(a);
+		ContextualViewFactory factory = ContextualViewFactoryRegistry.getInstance().getViewFactoryForObject(a);
 		assertTrue("Factory should be WSDLActivityViewFactory",factory instanceof WSDLActivityViewFactory);
 		ContextualView view = factory.getView(a);
 		assertTrue("The view should be WSDLActivityContextualView",view instanceof WSDLActivityContextualView);
