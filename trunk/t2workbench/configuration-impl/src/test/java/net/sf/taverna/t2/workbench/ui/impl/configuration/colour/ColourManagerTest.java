@@ -15,69 +15,60 @@ import net.sf.taverna.t2.workbench.configuration.ConfigurationManager;
 import org.junit.Before;
 import org.junit.Test;
 
-
 public class ColourManagerTest {
 
 	@Before
 	public void setup() {
 		ConfigurationManager manager = ConfigurationManager.getInstance();
 		File f = new File(System.getProperty("java.io.tmpdir"));
-		File d = new File(f,UUID.randomUUID().toString());
+		File d = new File(f, UUID.randomUUID().toString());
 		d.mkdir();
 		manager.setBaseConfigLocation(d);
 	}
-	
+
 	@Test
 	public void testGetInstance() throws Exception {
-		ColourManager manager=ColourManager.getInstance();
+		ColourManager manager = ColourManager.getInstance();
 		assertNotNull(manager);
-		ColourManager manager2=ColourManager.getInstance();
-		assertSame("They should be the same instance",manager, manager2);
+		ColourManager manager2 = ColourManager.getInstance();
+		assertSame("They should be the same instance", manager, manager2);
 	}
-	
+
 	@Test
 	public void testGetPreferredColourEqualsWhite() throws Exception {
-		String dummy=new String();
-		
+		String dummy = new String();
+
 		Color c = ColourManager.getInstance().getPreferredColour(dummy);
-		assertEquals("The default colour should be WHITE", Color.WHITE,c);
+		assertEquals("The default colour should be WHITE", Color.WHITE, c);
 	}
-	
+
 	@Test
 	public void testConfigurableness() throws Exception {
-		ColourManager manager=ColourManager.getInstance();
+		ColourManager manager = ColourManager.getInstance();
 		assertTrue(manager instanceof Configurable);
-		
-		assertEquals("wrong category","colour", manager.getCategory());
-		assertEquals("wrong name","Colour Management", manager.getName());
-		assertEquals("wrong UUID","a2148420-5967-11dd-ae16-0800200c9a66", manager.getUUID());
-		assertNotNull("there is no default property map",manager.getDefaultPropertyMap());
+
+		assertEquals("wrong category", "colour", manager.getCategory());
+		assertEquals("wrong name", "Colour Management", manager.getName());
+		assertEquals("wrong UUID", "a2148420-5967-11dd-ae16-0800200c9a66",
+				manager.getUUID());
+		assertNotNull("there is no default property map", manager
+				.getDefaultPropertyMap());
 	}
-	
+
 	@Test
-	public void saveAsWrongArrayType() {
+	public void saveAsWrongArrayType() throws Exception {
 		String dummy = "";
-		ColourManager manager=ColourManager.getInstance();
+		ColourManager manager = ColourManager.getInstance();
 		manager.setProperty(dummy.getClass().getCanonicalName(), "#ffffff");
-		
+
 		ConfigurationManager instance = ConfigurationManager.getInstance();
-		instance.setBaseConfigLocation(new File(System.getProperty("java.io.tmpdir")+File.separatorChar+"scratch"));
-		try {
-			instance.store(manager);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-		}
-		
-		try {
-			instance.populate(manager);
-		} catch (Exception e) {
-			
-		}
-		try {
-			manager.getPreferredColour(dummy);
-		} catch (Exception e) {
-			
-		}
+		File baseLoc = File.createTempFile("test", "scratch");
+		baseLoc.delete();
+		assertTrue("Could not make directory " + baseLoc, baseLoc.mkdir());
+		instance.setBaseConfigLocation(baseLoc);
+		instance.store(manager);
+		instance.populate(manager);
+		manager.getPreferredColour(dummy);
 	}
-	
+
 }
