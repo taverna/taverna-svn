@@ -16,7 +16,6 @@ import org.apache.log4j.Logger;
 public class CloseWorkflowAction extends AbstractAction {
 
 	private static final SaveWorkflowAction saveWorkflowAction = new SaveWorkflowAction();
-	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(CloseWorkflowAction.class);
 	private static final String CLOSE_WORKFLOW = "Close workflow";
 	private FileManager fileManager = FileManager.getInstance();
