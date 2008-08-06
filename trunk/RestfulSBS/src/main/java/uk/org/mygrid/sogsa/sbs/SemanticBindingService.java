@@ -3,8 +3,10 @@ package uk.org.mygrid.sogsa.sbs;
 import info.aduna.collections.iterators.CloseableIterator;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.MalformedURLException;
@@ -155,8 +157,9 @@ public class SemanticBindingService extends Application {
 	public void addBinding(String entityKey, String rdf) throws SQLException,
 			RDFHandlerException, RDFParseException, IOException,
 			SemanticBindingException, AnzoException {
-		java.util.logging.Logger.getLogger("org.mortbay.log").log(
-				Level.WARNING, "key is: " + entityKey);
+		if (datasetService == null) {
+			initializeDatabase();
+		}
 		Connection con = null;
 		try {
 			con = DriverManager
@@ -243,7 +246,9 @@ public class SemanticBindingService extends Application {
 	 */
 	public SemanticBindingInstance getBinding(String key) throws AnzoException,
 			NoRDFFoundException, SemanticBindingNotFoundException {
-
+		if (datasetService == null) {
+			initializeDatabase();
+		}
 		String rdf = new String();
 		boolean hasRDF = false;
 
@@ -290,7 +295,9 @@ public class SemanticBindingService extends Application {
 	public void removeBinding(String key) {
 		// FIXME what should it do? Can you remove a graph or do you just delete
 		// all its statements
-
+		if (datasetService == null) {
+			initializeDatabase();
+		}
 		URI namedGraphURI = datasetService.getValueFactory().createURI(key);
 		RemoteGraph remoteGraph = null;
 		try {
@@ -318,6 +325,9 @@ public class SemanticBindingService extends Application {
 	 * @throws Exception
 	 */
 	public void updateRDF(String key, String rdf) throws Exception {
+		if (datasetService == null) {
+			initializeDatabase();
+		}
 		URI namedGraphURI = datasetService.getValueFactory().createURI(
 				"http://" + key);
 		RemoteGraph remoteGraph = null;
@@ -407,7 +417,9 @@ public class SemanticBindingService extends Application {
 
 	public String queryBinding(String key, String query) throws AnzoException,
 			QueryEvaluationException {
-
+		if (datasetService == null) {
+			initializeDatabase();
+		}
 		String queryResult = new String();
 
 		URI namedGraphURI = datasetService.getValueFactory().createURI(
@@ -551,6 +563,9 @@ public class SemanticBindingService extends Application {
 
 	public Set<URI> getAllBindings() throws SemanticBindingException,
 			SemanticBindingNotFoundException {
+		if (datasetService == null) {
+			initializeDatabase();
+		}
 		Set<URI> storedNamedGraphs = null;
 		try {
 			storedNamedGraphs = datasetService.getModelService()
@@ -567,7 +582,11 @@ public class SemanticBindingService extends Application {
 		}
 	}
 
-	public String queryAllBindings(String query) throws AnzoException, QueryEvaluationException {
+	public String queryAllBindings(String query) throws AnzoException,
+			QueryEvaluationException {
+		if (datasetService == null) {
+			initializeDatabase();
+		}
 		Set<URI> storedNamedGraphs = null;
 		String queryResult = new String();
 		try {
@@ -630,6 +649,47 @@ public class SemanticBindingService extends Application {
 			}
 		}
 		return null;
+	}
+
+	public void deleteAll() throws Exception {
+		if (datasetService == null) {
+			initializeDatabase();
+		}
+		StatementCollector sc = new StatementCollector();
+		try {
+			RDFParser parser = Rio.createParser(RDFFormat
+					.forFileName("initializeNew.nt"));
+			InputStream initializationStream = SemanticBindingService.class
+			.getClassLoader().getResourceAsStream(
+					"initializeNew.nt");
+			parser.setRDFHandler(sc);
+			parser.parse(initializationStream, "");
+			datasetService.getModelService().reset(sc.getStatements());
+		} catch (UnsupportedRDFormatException mse) {
+			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+					Level.WARNING, mse.toString());
+			throw mse;
+		} catch (RDFHandlerException mse) {
+			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+					Level.WARNING, mse.toString());
+			throw mse;
+		} catch (RDFParseException mse) {
+			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+					Level.WARNING, mse.toString());
+			throw mse;
+		} catch (IOException mse) {
+			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+					Level.WARNING, mse.toString());
+			throw mse;
+		} catch (AnzoException e) {
+			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+					Level.WARNING, e.toString());
+			throw e;
+		} finally {
+			if (datasetService != null)
+				datasetService.close();
+
+		}
 	}
 
 }

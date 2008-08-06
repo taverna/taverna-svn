@@ -35,6 +35,13 @@ public class SemanticBindings extends BindingsList {
 	public boolean allowPost() {
 		return true;
 	}
+	
+	
+
+	@Override
+	public boolean allowDelete() {
+		return true;
+	}
 
 	@Override
 	public void post(Representation entity) {
@@ -45,14 +52,12 @@ public class SemanticBindings extends BindingsList {
 			queryBinding = queryAllBindings(query);
 			if (queryBinding != null) {
 				getResponse().setStatus(Status.SUCCESS_OK);
-				// TODO put query in the rep
 				Representation rep = new StringRepresentation(queryBinding,
 						MediaType.TEXT_PLAIN);
 				getResponse().setEntity(rep);
 
 			} else {
 				getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
-				// TODO put query in the rep
 				Representation rep = new StringRepresentation(
 						"No query results returned", MediaType.TEXT_PLAIN);
 				getResponse().setEntity(rep);
@@ -67,10 +72,25 @@ public class SemanticBindings extends BindingsList {
 		}
 	}
 
+	/**
+	 * Request to remove all the bindings from the database
+	 */
 	@Override
 	public void delete() {
-		// TODO Auto-generated method stub
-		super.delete();
+		try {
+			deleteAll();
+			getResponse().setStatus(Status.SUCCESS_OK);
+			Representation rep = new StringRepresentation(
+					"All bindings succesfully removed", MediaType.TEXT_PLAIN);
+			getResponse().setEntity(rep);
+
+		} catch (Exception e) {
+			getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+			Representation rep = new StringRepresentation(
+					"Problem with the delete request: " + e,
+					MediaType.TEXT_PLAIN);
+			getResponse().setEntity(rep);
+		}
 	}
 
 	@Override

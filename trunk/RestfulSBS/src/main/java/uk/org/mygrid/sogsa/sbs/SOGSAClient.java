@@ -20,6 +20,7 @@ public class SOGSAClient {
 
 		// The URI of the server
 		Reference itemsUri = new Reference("http://localhost:25000/sbs");
+		Reference deleteUri = new Reference("http://localhost:25000/sbs");
 
 		// create from a http URI
 		String bindingKey = null;
@@ -98,6 +99,17 @@ public class SOGSAClient {
 			System.out.println("success with all bindings");
 			try {
 				allBindings.getEntity().write(System.out);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		Response deleteAllBindings = deleteAllBindings(client, deleteUri);
+		if (deleteAllBindings.getStatus().isSuccess()) {
+			System.out.println("success with deleting all bindings");
+			try {
+				deleteAllBindings.getEntity().write(System.out);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -197,5 +209,11 @@ public class SOGSAClient {
 		Response response = client.get(reference);
 		return response;
 	}
+	
+	public static Response deleteAllBindings(Client client, Reference reference) {
+		Response response = client.delete(reference);
+		return response;
+	}
+	
 
 }

@@ -139,5 +139,14 @@ public class BindingsList extends Resource {
 			throw e;
 		}
 	}
+	
+	protected void deleteAll() throws Exception {
+		 try {
+			((SemanticBindingService) getContext().getAttributes().get(
+						Application.KEY)).deleteAll();
+		} catch (Exception e) {
+			throw e;
+		}
+	}
 
 }
