@@ -4,6 +4,7 @@
 package net.sf.taverna.t2.workbench.iterationstrategy.contextview;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.util.List;
@@ -14,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.FileManager;
@@ -63,17 +65,62 @@ public class IterationStrategyContextualView extends ContextualView {
 			IterationStrategyEditorControl iterationStrategyEditorControl = new IterationStrategyEditorControl(
 					iterationStrategy);
 			dialog.add(iterationStrategyEditorControl, BorderLayout.CENTER);
-			JButton applyButton = new JButton(new ApplyAction(dialog));
-			dialog.add(applyButton, BorderLayout.SOUTH);
-			dialog.setSize(500, 500);
+
+			JPanel buttonPanel = new JPanel();
+			buttonPanel.setLayout(new FlowLayout());
+
+			JButton okButton = new JButton(new OKAction(dialog));
+			buttonPanel.add(okButton);
+
+			JButton resetButton = new JButton(new ResetAction(
+					iterationStrategyEditorControl));
+			buttonPanel.add(resetButton);
+
+			JButton cancelButton = new JButton(new CancelAction(dialog));
+			buttonPanel.add(cancelButton);
+
+			dialog.add(buttonPanel, BorderLayout.SOUTH);
+			dialog.setSize(400, 400);
 			dialog.setVisible(true);
 		}
 
-		private final class ApplyAction extends AbstractAction {
+		private final class ResetAction extends AbstractAction {
+			private final IterationStrategyEditorControl strategyEditorControl;
+
+			private ResetAction(
+					IterationStrategyEditorControl strategyEditorControl) {
+				super("Reset");
+				this.strategyEditorControl = strategyEditorControl;
+			}
+
+			public void actionPerformed(ActionEvent e) {
+				refreshView();
+				strategyEditorControl
+						.setIterationStrategy(getIterationStrategy());
+			}
+
+		}
+
+		private final class CancelAction extends AbstractAction {
 			private final JDialog dialog;
 
-			private ApplyAction(JDialog dialog) {
-				super("Apply");
+			private CancelAction(JDialog dialog) {
+				super("Cancel");
+				this.dialog = dialog;
+			}
+
+			public void actionPerformed(ActionEvent e) {
+				dialog.setVisible(false);
+				refreshView();
+			}
+
+		}
+
+		private final class OKAction extends AbstractAction {
+			private final JDialog dialog;
+
+			private OKAction(JDialog dialog) {
+				super("OK");
 				this.dialog = dialog;
 			}
 
