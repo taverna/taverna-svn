@@ -55,6 +55,7 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.UnknownPortException;
 import org.embl.ebi.escience.scufl.UnknownProcessorException;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -64,6 +65,7 @@ import org.junit.Test;
  */
 public class ModelTranslatorTest extends TranslatorTestHelper {
 
+    @Ignore("Integration test")
 	@Test
 	public void translateAndValidateTest() throws Exception {
 		DataflowImpl dataflow = (DataflowImpl) translateScuflFile("ModifiedBiomartAndEMBOSSAnalysis.xml");
