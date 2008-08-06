@@ -3,7 +3,6 @@ package uk.org.mygrid.sogsa.sbs;
 import info.aduna.collections.iterators.CloseableIterator;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,11 +14,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Handler;
@@ -28,9 +25,9 @@ import java.util.logging.Level;
 import org.openanzo.client.DatasetService;
 import org.openanzo.client.RemoteGraph;
 import org.openanzo.common.exceptions.AnzoException;
-import org.openanzo.model.IDataset;
 import org.openanzo.model.INamedGraph;
 import org.openanzo.model.impl.query.QueryResult;
+import org.openanzo.services.IModelService;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.query.Binding;
@@ -49,7 +46,20 @@ import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.Router;
+import org.restlet.util.Template;
 
+/**
+ * Handles the addition, removal, querying and update of
+ * {@link SemanticBindingInstance}s from the back end OpenAnzo database. Uses an
+ * Apache Derby embedded database which writes to a file on disk, this can be
+ * changed by altering the embeddedclient.properties file and having the correct
+ * AnzoServer.properties file for your database of choice (see
+ * http://www.openanzo.org for more details). It would also require you to
+ * change the database driver in the init method
+ * 
+ * @author Ian Dunlop
+ * 
+ */
 public class SemanticBindingService extends Application {
 
 	private static DatasetService datasetService;
@@ -59,8 +69,13 @@ public class SemanticBindingService extends Application {
 		init();
 	}
 
+	/**
+	 * Load the database driver using Class.forName, ask the logging to start
+	 * and initialize the database
+	 */
 	private void init() {
 		try {
+			// TODO dynamically load based on anzo properties
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
 		} catch (InstantiationException e1) {
 			java.util.logging.Logger.getLogger("org.mortbay.log").log(
@@ -102,27 +117,35 @@ public class SemanticBindingService extends Application {
 		}
 	}
 
+	/**
+	 * Creates all the Routes for the Restlet server. Associates urls with the
+	 * classes which handle them
+	 */
 	@Override
 	public Restlet createRoot() {
 		Router router = new Router(getContext());
+		
+		// query all bindings via http post
+		Route attach = router.attach("/sbs/query", QueryAllBindings.class);
 
 		// get a binding via http get
 		router.attach("/sbs/{binding}", SemanticBinding.class);
 
-		// query a specific binding via http put
+		// query a specific binding via http post
 		router.attach("/sbs/{binding}/query", QueryBinding.class);
 
-		// create a binding via http post
+		// create a binding via http put or delete one with http delete
 		Route sbsRoute = router.attach("/sbs", SemanticBindings.class);
 
-		// query all bindings via http put
-		router.attach("/sbs/{query}", SemanticBindings.class);
-
+//		attach.getTemplate().setMatchingMode(Template.MODE_EQUALS);
 		// sbsRoute.getTemplate().setMatchingMode(Template.MODE_EQUALS);
 
 		return router;
 	}
 
+	/**
+	 * Start the restlet server logging
+	 */
 	private void initializeRestletLogging() {
 
 		Handler[] handlers = java.util.logging.Logger.getLogger("")
@@ -135,6 +158,12 @@ public class SemanticBindingService extends Application {
 
 	}
 
+	/**
+	 * The {@link DatasetService} is the way into an OpenAnzo database. It
+	 * contains all of the URIs which identify groups of triples
+	 * 
+	 * @return
+	 */
 	public static synchronized DatasetService getDatasetService() {
 		return datasetService;
 	}
@@ -415,6 +444,17 @@ public class SemanticBindingService extends Application {
 
 	}
 
+	/**
+	 * Execute a SPARQL query on the binding specified by the key
+	 * 
+	 * @param key
+	 *            - {@link SemanticBindingInstance} to be queried
+	 * @param query
+	 *            - SPARQL query to be executed
+	 * @return - a string representing the query result
+	 * @throws AnzoException
+	 * @throws QueryEvaluationException
+	 */
 	public String queryBinding(String key, String query) throws AnzoException,
 			QueryEvaluationException {
 		if (datasetService == null) {
@@ -490,77 +530,16 @@ public class SemanticBindingService extends Application {
 		return null;
 	}
 
-	private ResultSet getBindingForEntityKey(String key) {
-		Connection con = null;
-		try {
-			con = DriverManager
-					.getConnection("jdbc:derby:/Users/Ian/scratch/entity");
-		} catch (SQLException e1) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
-					Level.WARNING, e1.toString());
-		}
-		java.sql.Statement sqlStatement = null;
-		try {
-			sqlStatement = con.createStatement();
-		} catch (SQLException e2) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
-					Level.WARNING, e2.toString());
-		}
-
-		String sql = "SELECT rdfid FROM identifier WHERE id=" + key;
-		ResultSet executeQuery = null;
-		try {
-			executeQuery = sqlStatement.executeQuery(sql);
-		} catch (SQLException e2) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
-					Level.WARNING, e2.toString());
-		}
-		return executeQuery;
-	}
-
 	/**
-	 * Load the rdf from the supplied URL
+	 * Look at the {@link DatasetService}, get a set of the named graphs (ie all
+	 * the bindings) from the {@link IModelService} inside it and return this
+	 * {@link Set}
 	 * 
-	 * @param url
-	 * @return
+	 * @return a {@link Set} containing {@link URI}s representing all the
+	 *         bindings
+	 * @throws SemanticBindingException
+	 * @throws SemanticBindingNotFoundException
 	 */
-	private String loadRDF(String url) {
-		String rdfString = new String();
-		URL rdfURL = null;
-		try {
-			rdfURL = new URL(url);
-		} catch (MalformedURLException e) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
-					Level.WARNING, e.toString());
-		}
-
-		BufferedReader in = null;
-		try {
-			in = new BufferedReader(new InputStreamReader(rdfURL.openStream()));
-		} catch (IOException e) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
-					Level.WARNING, e.toString());
-		}
-
-		String inputLine;
-
-		try {
-			while ((inputLine = in.readLine()) != null)
-				rdfString = rdfString + inputLine;
-		} catch (IOException e) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
-					Level.WARNING, e.toString());
-		}
-
-		try {
-			in.close();
-		} catch (IOException e) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
-					Level.WARNING, e.toString());
-		}
-		return rdfString;
-	}
-
 	public Set<URI> getAllBindings() throws SemanticBindingException,
 			SemanticBindingNotFoundException {
 		if (datasetService == null) {
@@ -582,17 +561,30 @@ public class SemanticBindingService extends Application {
 		}
 	}
 
-	public String queryAllBindings(String query) throws AnzoException,
-			QueryEvaluationException {
+	/**
+	 * Execute a SPARQL query over all the bindings in the database. Gets the
+	 * {@link Set} of named graph {@link URI}s representing the bindings in the
+	 * database and runs the query over them all
+	 * 
+	 * @param query
+	 *            SPARQL query
+	 * @return a string representing the query result
+	 * @throws Exception 
+	 */
+	public String queryAllBindings(String query) throws Exception {
 		if (datasetService == null) {
 			initializeDatabase();
 		}
+		java.util.logging.Logger.getLogger("org.mortbay.log").log(
+				Level.WARNING, "querying all of the bindings");
 		Set<URI> storedNamedGraphs = null;
 		String queryResult = new String();
 		try {
 			storedNamedGraphs = datasetService.getModelService()
 					.getStoredNamedGraphs();
 		} catch (AnzoException e) {
+			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+					Level.WARNING, e.toString());
 			throw e;
 		}
 		QueryResult result = null;
@@ -600,7 +592,9 @@ public class SemanticBindingService extends Application {
 			result = datasetService.execQuery(storedNamedGraphs, Collections
 					.<URI> emptySet(), query);
 		} catch (Exception e) {
-
+			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+					Level.WARNING, e.toString());
+			throw e;
 		}
 		if (result.isAskResult()) {
 			return result.getAskResult().toString();
@@ -651,6 +645,12 @@ public class SemanticBindingService extends Application {
 		return null;
 	}
 
+	/**
+	 * Remove all the bindings from the database using the OpenAnzo supplied RDF
+	 * script intitializeNew.nt
+	 * 
+	 * @throws Exception
+	 */
 	public void deleteAll() throws Exception {
 		if (datasetService == null) {
 			initializeDatabase();
@@ -660,8 +660,7 @@ public class SemanticBindingService extends Application {
 			RDFParser parser = Rio.createParser(RDFFormat
 					.forFileName("initializeNew.nt"));
 			InputStream initializationStream = SemanticBindingService.class
-			.getClassLoader().getResourceAsStream(
-					"initializeNew.nt");
+					.getClassLoader().getResourceAsStream("initializeNew.nt");
 			parser.setRDFHandler(sc);
 			parser.parse(initializationStream, "");
 			datasetService.getModelService().reset(sc.getStatements());
@@ -685,11 +684,13 @@ public class SemanticBindingService extends Application {
 			java.util.logging.Logger.getLogger("org.mortbay.log").log(
 					Level.WARNING, e.toString());
 			throw e;
-		} finally {
-			if (datasetService != null)
-				datasetService.close();
-
 		}
+		// don't think we need to do this
+		// finally {
+		// if (datasetService != null)
+		// datasetService.close();
+		//
+		// }
 	}
 
 }

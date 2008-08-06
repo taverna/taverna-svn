@@ -46,12 +46,16 @@ public class QueryBinding extends BindingsList {
 
 	@Override
 	public void post(Representation entity) {
+		java.util.logging.Logger.getLogger("org.mortbay.log").log(
+				Level.WARNING, "doing the query");
 		Form form = new Form(entity);
 		String query = form.getFirstValue("query");
 		String queryBinding;
 		try {
 			queryBinding = queryBinding(this.key, query);
 			if (queryBinding != null) {
+				java.util.logging.Logger.getLogger("org.mortbay.log").log(
+						Level.WARNING, "success with query");
 				getResponse().setStatus(Status.SUCCESS_OK);
 				// TODO put query in the rep
 				Representation rep = new StringRepresentation(queryBinding,
@@ -63,6 +67,8 @@ public class QueryBinding extends BindingsList {
 				getResponse().setEntity(rep);
 
 			} else {
+				java.util.logging.Logger.getLogger("org.mortbay.log").log(
+						Level.WARNING, "nothing inside the query");
 				getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
 				// TODO put query in the rep
 				Representation rep = new StringRepresentation(
@@ -75,6 +81,8 @@ public class QueryBinding extends BindingsList {
 
 			}
 		} catch (Exception e) {
+			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+					Level.WARNING, "query broken");
 			getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			Representation rep = new StringRepresentation(
 					"Problem with the query request: " + e,

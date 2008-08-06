@@ -133,9 +133,7 @@ public class BindingsList extends Resource {
 		try {
 			return ((SemanticBindingService) getContext().getAttributes().get(
 					Application.KEY)).queryAllBindings(query);
-		} catch (QueryEvaluationException e) {
-			throw e;
-		} catch (AnzoException e) {
+		} catch (Exception e) {
 			throw e;
 		}
 	}

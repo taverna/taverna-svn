@@ -1,6 +1,10 @@
 package uk.org.mygrid.sogsa.sbs;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
@@ -114,6 +118,12 @@ public class SemanticBinding extends BindingsList {
 				Level.WARNING, "you wanted to add something to:" + this.key);
 		Form form = new Form(entity);
 		String rdf = form.getFirstValue("rdf");
+
+		if (rdf == null) {
+			String url = form.getFirstValue("url");
+			rdf = loadRDF(url);
+		}
+		//TODO needs to handle an exception if the rdf is still null
 		try {
 			updateRDF(this.key, rdf);
 		} catch (Exception e) {
@@ -127,6 +137,51 @@ public class SemanticBinding extends BindingsList {
 		java.util.logging.Logger.getLogger("org.mortbay.log").log(
 				Level.WARNING, "you wanted to delete me");
 		removeBinding(this.key);
+	}
+	
+	/**
+	 * Load the rdf from the supplied URL
+	 * 
+	 * @param url
+	 * @return
+	 */
+	private String loadRDF(String url) {
+		String rdfString = new String();
+		URL rdfURL = null;
+		try {
+			rdfURL = new URL(url);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		BufferedReader in = null;
+		try {
+			in = new BufferedReader(new InputStreamReader(rdfURL.openStream()));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		String inputLine;
+
+		try {
+			while ((inputLine = in.readLine()) != null)
+				rdfString = rdfString + inputLine;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		try {
+			in.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// TODO Auto-generated method stub
+		return rdfString;
 	}
 
 }

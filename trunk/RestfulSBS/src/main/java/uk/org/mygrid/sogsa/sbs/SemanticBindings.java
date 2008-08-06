@@ -31,10 +31,10 @@ public class SemanticBindings extends BindingsList {
 		return true;
 	}
 
-	@Override
-	public boolean allowPost() {
-		return true;
-	}
+//	@Override
+//	public boolean allowPost() {
+//		return true;
+//	}
 	
 	
 
@@ -43,34 +43,34 @@ public class SemanticBindings extends BindingsList {
 		return true;
 	}
 
-	@Override
-	public void post(Representation entity) {
-		Form form = new Form(entity);
-		String query = form.getFirstValue("query");
-		String queryBinding;
-		try {
-			queryBinding = queryAllBindings(query);
-			if (queryBinding != null) {
-				getResponse().setStatus(Status.SUCCESS_OK);
-				Representation rep = new StringRepresentation(queryBinding,
-						MediaType.TEXT_PLAIN);
-				getResponse().setEntity(rep);
-
-			} else {
-				getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
-				Representation rep = new StringRepresentation(
-						"No query results returned", MediaType.TEXT_PLAIN);
-				getResponse().setEntity(rep);
-
-			}
-		} catch (Exception e) {
-			getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-			Representation rep = new StringRepresentation(
-					"Problem with the query request: " + e,
-					MediaType.TEXT_PLAIN);
-			getResponse().setEntity(rep);
-		}
-	}
+//	@Override
+//	public void post(Representation entity) {
+//		Form form = new Form(entity);
+//		String query = form.getFirstValue("query");
+//		String queryBinding;
+//		try {
+//			queryBinding = queryAllBindings(query);
+//			if (queryBinding != null) {
+//				getResponse().setStatus(Status.SUCCESS_OK);
+//				Representation rep = new StringRepresentation(queryBinding,
+//						MediaType.TEXT_PLAIN);
+//				getResponse().setEntity(rep);
+//
+//			} else {
+//				getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
+//				Representation rep = new StringRepresentation(
+//						"No query results returned", MediaType.TEXT_PLAIN);
+//				getResponse().setEntity(rep);
+//
+//			}
+//		} catch (Exception e) {
+//			getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+//			Representation rep = new StringRepresentation(
+//					"Problem with the query request: " + e,
+//					MediaType.TEXT_PLAIN);
+//			getResponse().setEntity(rep);
+//		}
+//	}
 
 	/**
 	 * Request to remove all the bindings from the database
