@@ -29,7 +29,7 @@ public abstract class AbstractProcessorEdit implements Edit<Processor> {
 		if (applied) {
 			throw new EditException("Edit has already been applied!");
 		}
-		if (processor instanceof ProcessorImpl == false) {
+		if (!(processor instanceof ProcessorImpl)) {
 			throw new EditException(
 					"Edit cannot be applied to a Processor which isn't an instance of ProcessorImpl");
 		}
