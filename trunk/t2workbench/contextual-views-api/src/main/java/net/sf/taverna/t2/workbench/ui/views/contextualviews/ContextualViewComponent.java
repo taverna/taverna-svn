@@ -119,8 +119,11 @@ public class ContextualViewComponent extends JPanel implements UIComponentSPI {
 			Processor processor = (Processor) selectedItem;
 			Activity<?> activity = processor.getActivityList().get(0);
 			//handleProcessor(processor);
-			handleActivity(activity);
+			findContextualView(activity);
+		} else {
+			findContextualView(selectedItem);
 		}
+		
 	}
 
 //	private void handleProcessor(Processor processor) {
@@ -143,12 +146,12 @@ public class ContextualViewComponent extends JPanel implements UIComponentSPI {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void handleActivity(Activity<?> activity) {
+	private void findContextualView(Object selection) {
 		ContextualViewFactoryRegistry reg = ContextualViewFactoryRegistry
 				.getInstance();
 		ContextualViewFactory viewFactoryForBeanType = reg
-				.getViewFactoryForObject(activity);
-		ContextualView viewType = viewFactoryForBeanType.getView(activity);
+				.getViewFactoryForObject(selection);
+		ContextualView viewType = viewFactoryForBeanType.getView(selection);
 		updateContextualView(viewType);
 	}
 
