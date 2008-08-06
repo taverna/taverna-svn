@@ -42,6 +42,7 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.AddDispatchLayerEdit;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DeleteDispatchLayerEdit;
+import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategyStack;
 
 public class EditsImpl implements Edits {
 
@@ -357,6 +358,11 @@ public class EditsImpl implements Edits {
 
 	public Edit<Processor> getDefaultDispatchStackEdit(Processor processor) {
 		return new DefaultDispatchStackEdit(processor);
+	}
+
+	public Edit<Processor> getSetIterationStrategyStackEdit(
+			Processor processor, IterationStrategyStack iterationStrategyStack) {
+		return new SetIterationStrategyStackEdit(processor, iterationStrategyStack);
 	}
 
 }
