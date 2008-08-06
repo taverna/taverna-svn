@@ -48,26 +48,40 @@ public class QueryBinding extends BindingsList {
 	public void post(Representation entity) {
 		Form form = new Form(entity);
 		String query = form.getFirstValue("query");
-		String queryBinding = queryBinding(this.key, query);
-		if (queryBinding != null) {
-			getResponse().setStatus(Status.SUCCESS_OK);
-			// TODO put query in the rep
-			Representation rep = new StringRepresentation(queryBinding,
+		String queryBinding;
+		try {
+			queryBinding = queryBinding(this.key, query);
+			if (queryBinding != null) {
+				getResponse().setStatus(Status.SUCCESS_OK);
+				// TODO put query in the rep
+				Representation rep = new StringRepresentation(queryBinding,
+						MediaType.TEXT_PLAIN);
+				// Indicates where is located the new resource.
+				rep
+						.setIdentifier(getRequest().getResourceRef()
+								.getIdentifier());
+				getResponse().setEntity(rep);
+
+			} else {
+				getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
+				// TODO put query in the rep
+				Representation rep = new StringRepresentation(
+						"No query results returned", MediaType.TEXT_PLAIN);
+				// Indicates where is located the new resource.
+				rep
+						.setIdentifier(getRequest().getResourceRef()
+								.getIdentifier());
+				getResponse().setEntity(rep);
+
+			}
+		} catch (Exception e) {
+			getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+			Representation rep = new StringRepresentation(
+					"Problem with the query request: " + e,
 					MediaType.TEXT_PLAIN);
-			// Indicates where is located the new resource.
-			rep.setIdentifier(getRequest().getResourceRef().getIdentifier());
 			getResponse().setEntity(rep);
-			
-		} else {
-			getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
-			// TODO put query in the rep
-			Representation rep = new StringRepresentation("No query results returned",
-					MediaType.TEXT_PLAIN);
-			// Indicates where is located the new resource.
-			rep.setIdentifier(getRequest().getResourceRef().getIdentifier());
-			getResponse().setEntity(rep);
-			
 		}
+
 	}
 
 }

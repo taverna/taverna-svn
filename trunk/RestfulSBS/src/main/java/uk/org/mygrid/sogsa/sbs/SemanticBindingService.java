@@ -405,7 +405,8 @@ public class SemanticBindingService extends Application {
 
 	}
 
-	public String queryBinding(String key, String query) {
+	public String queryBinding(String key, String query) throws AnzoException,
+			QueryEvaluationException {
 
 		String queryResult = new String();
 
@@ -422,8 +423,9 @@ public class SemanticBindingService extends Application {
 		} catch (AnzoException e) {
 			java.util.logging.Logger.getLogger("org.mortbay.log").log(
 					Level.WARNING, e.toString());
+			throw e;
 		} finally {
-
+			remoteGraph.close();
 		}
 		if (result.isAskResult()) {
 			return result.getAskResult().toString();
@@ -464,14 +466,13 @@ public class SemanticBindingService extends Application {
 
 						}
 					} catch (QueryEvaluationException e1) {
-						java.util.logging.Logger.getLogger("org.mortbay.log").log(
-								Level.WARNING, e1.toString());
+						java.util.logging.Logger.getLogger("org.mortbay.log")
+								.log(Level.WARNING, e1.toString());
 					}
 					return queryResult;
 				}
 			} catch (QueryEvaluationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw e;
 			}
 		}
 		return null;
@@ -566,55 +567,67 @@ public class SemanticBindingService extends Application {
 		}
 	}
 
-	public String queryAllBindings(String query) {
+	public String queryAllBindings(String query) throws AnzoException, QueryEvaluationException {
 		Set<URI> storedNamedGraphs = null;
 		String queryResult = new String();
 		try {
 			storedNamedGraphs = datasetService.getModelService()
 					.getStoredNamedGraphs();
 		} catch (AnzoException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw e;
 		}
-		QueryResult result = datasetService.execQuery(storedNamedGraphs,
-				Collections.<URI> emptySet(), query);
+		QueryResult result = null;
+		try {
+			result = datasetService.execQuery(storedNamedGraphs, Collections
+					.<URI> emptySet(), query);
+		} catch (Exception e) {
+
+		}
 		if (result.isAskResult()) {
 			return result.getAskResult().toString();
 		} else if (result.isConstructResult()) {
 			Collection<Statement> constructResult = result.getConstructResult();
-			for (Statement statement : constructResult) {
-				queryResult = queryResult + statement.getSubject() + " "
-						+ statement.getPredicate() + " "
-						+ statement.getObject() + "\n";
+			if (!constructResult.isEmpty()) {
+				for (Statement statement : constructResult) {
+					queryResult = queryResult + statement.getSubject() + " "
+							+ statement.getPredicate() + " "
+							+ statement.getObject() + "\n";
+				}
+				return queryResult;
 			}
-			return queryResult;
 		} else if (result.isDescribeResult()) {
 			Collection<Statement> describeResult = result.getDescribeResult();
-			for (Statement statement : describeResult) {
-				queryResult = queryResult + statement.getSubject() + " "
-						+ statement.getPredicate() + " "
-						+ statement.getObject() + "\n";
+			if (!describeResult.isEmpty()) {
+				for (Statement statement : describeResult) {
+					queryResult = queryResult + statement.getSubject() + " "
+							+ statement.getPredicate() + " "
+							+ statement.getObject() + "\n";
+				}
+				return queryResult;
 			}
-			return queryResult;
 		} else if (result.isSelectResult()) {
 			TupleQueryResult selectResult = result.getSelectResult();
 
 			try {
-				while (selectResult.hasNext()) {
-					BindingSet next = selectResult.next();
-					Iterator<Binding> iterator = next.iterator();
-					while (iterator.hasNext()) {
-						Binding next2 = iterator.next();
-						queryResult = queryResult + "Name: " + next2.getName()
-								+ " Value: " + next2.getValue() + "\n";
-					}
+				if (selectResult.hasNext()) {
+					while (selectResult.hasNext()) {
+						BindingSet next = selectResult.next();
+						Iterator<Binding> iterator = next.iterator();
+						while (iterator.hasNext()) {
+							Binding next2 = iterator.next();
+							queryResult = queryResult + "Name: "
+									+ next2.getName() + " Value: "
+									+ next2.getValue() + "\n";
+						}
 
+					}
+					return queryResult;
 				}
 			} catch (QueryEvaluationException e1) {
 				java.util.logging.Logger.getLogger("org.mortbay.log").log(
 						Level.WARNING, e1.toString());
+				throw e1;
 			}
-			return queryResult;
 		}
 		return null;
 	}

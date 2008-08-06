@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.openanzo.common.exceptions.AnzoException;
 import org.openrdf.model.URI;
+import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.restlet.Application;
@@ -117,14 +118,26 @@ public class BindingsList extends Resource {
 		}
 	}
 
-	protected String queryBinding(String key, String query) {
-		return ((SemanticBindingService) getContext().getAttributes().get(
-				Application.KEY)).queryBinding(key, query);
+	protected String queryBinding(String key, String query) throws Exception {
+		try {
+			return ((SemanticBindingService) getContext().getAttributes().get(
+					Application.KEY)).queryBinding(key, query);
+		} catch (QueryEvaluationException e) {
+			throw e;
+		} catch (AnzoException e) {
+			throw e;
+		}
 	}
 	
-	protected String queryAllBindings(String query) {
-		return ((SemanticBindingService) getContext().getAttributes().get(
-				Application.KEY)).queryAllBindings(query);
+	protected String queryAllBindings(String query) throws Exception{
+		try {
+			return ((SemanticBindingService) getContext().getAttributes().get(
+					Application.KEY)).queryAllBindings(query);
+		} catch (QueryEvaluationException e) {
+			throw e;
+		} catch (AnzoException e) {
+			throw e;
+		}
 	}
 
 }
