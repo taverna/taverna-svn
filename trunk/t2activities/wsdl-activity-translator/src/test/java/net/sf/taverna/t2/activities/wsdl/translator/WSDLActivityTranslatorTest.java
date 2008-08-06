@@ -84,6 +84,7 @@ public class WSDLActivityTranslatorTest  implements LocationConstants {
         
     }
     
+    @Ignore("Integration test")
     @Test
     public void getTypeDescriptorForPorts() throws Exception {
     	WSDLActivityTranslator translator = new WSDLActivityTranslator();

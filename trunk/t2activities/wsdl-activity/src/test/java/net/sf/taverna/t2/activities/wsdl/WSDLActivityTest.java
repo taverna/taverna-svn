@@ -94,6 +94,7 @@ public class WSDLActivityTest implements LocationConstants {
 				.contains("<DbName>pubmed</DbName>"));
 	}
 
+    @Ignore("Integration test")
 	@Test
 	public void testGetTypeDescriptorForOutputPort() throws Exception {
 		assertNotNull("The type for the port 'paremeters' could not be found",
@@ -105,6 +106,7 @@ public class WSDLActivityTest implements LocationConstants {
 				activity.getTypeDescriptorForOutputPort("fred"));
 	}
 
+    @Ignore("Integration test")
 	@Test
 	public void testGetTypeDescriptorForInputPort() throws Exception {
 		assertNotNull("The type for the port 'parameters' could not be found",
