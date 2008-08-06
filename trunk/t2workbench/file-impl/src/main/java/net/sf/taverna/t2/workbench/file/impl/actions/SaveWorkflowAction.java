@@ -102,6 +102,12 @@ public class SaveWorkflowAction extends AbstractAction {
 					"Could not save dataflow: \n\n" + ex.getMessage(),
 					"Warning", JOptionPane.WARNING_MESSAGE);
 			return false;
+		} catch (RuntimeException ex) {
+			logger.warn("Could not save dataflow " + dataflow, ex);
+			JOptionPane.showMessageDialog(parentComponent,
+					"Could not save dataflow: \n\n" + ex.getMessage(),
+					"Warning", JOptionPane.WARNING_MESSAGE);
+			return false;
 		}
 	}
 
