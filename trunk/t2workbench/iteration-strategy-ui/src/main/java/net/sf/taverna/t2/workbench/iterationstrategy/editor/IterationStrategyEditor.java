@@ -2,9 +2,9 @@ package net.sf.taverna.t2.workbench.iterationstrategy.editor;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -32,36 +32,29 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JTree;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
-import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import org.apache.log4j.Logger;
-
 import net.sf.taverna.t2.lang.ui.CArrowImage;
 import net.sf.taverna.t2.lang.ui.CTransferableTreePath;
 import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
-import net.sf.taverna.t2.workflowmodel.processor.iteration.CrossProduct;
-import net.sf.taverna.t2.workflowmodel.processor.iteration.DotProduct;
-import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategy;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategyNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyImpl;
 
-public class IterationStrategyEditor extends JTree implements
+import org.apache.log4j.Logger;
+
+public class IterationStrategyEditor extends IterationStrategyTree implements
 		DragSourceListener, DragGestureListener, Autoscroll, TreeModelListener,
 		UIComponentSPI {
 
@@ -69,22 +62,6 @@ public class IterationStrategyEditor extends JTree implements
 			.getLogger(IterationStrategyEditor.class);
 
 	private static final int AUTOSCROLL_MARGIN = 12;
-
-	static ImageIcon joinIteratorIcon, lockStepIteratorIcon, leafnodeicon;
-
-	static {
-		try {
-			Class c = IterationStrategyEditor.class;
-			joinIteratorIcon = new ImageIcon(c
-					.getResource("../icons/crossproducticon.png"));
-			lockStepIteratorIcon = new ImageIcon(c
-					.getResource("../icons/dotproducticon.png"));
-			leafnodeicon = new ImageIcon(c
-					.getResource("../icons/leafnodeicon.png"));
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
 
 	private BufferedImage imgGhost; // The 'drag image'
 
@@ -94,18 +71,19 @@ public class IterationStrategyEditor extends JTree implements
 
 	private Point ptOffset = new Point(); // Where, in the drag image, the
 
-	private IterationStrategy strategy = null;
-
 	public IterationStrategyEditor() {
 		super();
 		// Make this a drag source
-		DragSource dragSource = DragSource.getDefaultDragSource();
-		dragSource.createDefaultDragGestureRecognizer(this,
-				DnDConstants.ACTION_MOVE, this);
-		// Also, make this JTree a drag target
-		DropTarget dropTarget = new DropTarget(this, new CDropTargetListener());
-		dropTarget.setDefaultActions(DnDConstants.ACTION_MOVE);
-		setCellRenderer(new IterationStrategyCellRenderer());
+		if (!GraphicsEnvironment.isHeadless()) {
+			DragSource dragSource = DragSource.getDefaultDragSource();
+			dragSource.createDefaultDragGestureRecognizer(this,
+					DnDConstants.ACTION_MOVE, this);
+			// Also, make this JTree a drag target
+			DropTarget dropTarget = new DropTarget(this,
+					new CDropTargetListener());
+			dropTarget.setDefaultActions(DnDConstants.ACTION_MOVE);
+		}
+		
 		//
 	}
 
@@ -138,7 +116,7 @@ public class IterationStrategyEditor extends JTree implements
 		Rectangle raOuter = getBounds();
 		// Now decide if the row is at the top of the screen or at the
 		// bottom. We do this to make the previous row (or the next
-		// row) visible as appropriate. If we�re at the absolute top or
+		// row) visible as appropriate. If we're at the absolute top or
 		// bottom, just return the first or last row respectively.
 
 		nRow = (pt.y + raOuter.y <= AUTOSCROLL_MARGIN) // Is row at top of
@@ -262,29 +240,6 @@ public class IterationStrategyEditor extends JTree implements
 						+ AUTOSCROLL_MARGIN);
 	}
 
-	public ImageIcon getIcon() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void onDisplay() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void onDispose() {
-		// detachFromModel();
-	}
-
-	/*
-	 * // Use this method if you want to see the boundaries of the // autoscroll
-	 * active region. Toss it out, otherwise. public void
-	 * paintComponent(Graphics g) { super.paintComponent(g); Rectangle raOuter =
-	 * getBounds(); Rectangle raInner = getParent().getBounds();
-	 * g.setColor(Color.red); g.drawRect(-raOuter.x + 12, -raOuter.y + 12,
-	 * raInner.width - 24, raInner.height - 24); }
-	 */
-
 	public void setAllNodesExpanded() {
 		synchronized (this.getModel()) {
 			expandAll(this, new TreePath(this.getModel().getRoot()), true);
@@ -356,53 +311,6 @@ public class IterationStrategyEditor extends JTree implements
 		int[] nIndex = e.getChildIndices();
 		for (int i = 0; i < nIndex.length; i++) {
 			System.out.println(i + ". " + nIndex[i]);
-		}
-	}
-
-	private void setIterationStrategy(IterationStrategyImpl theStrategy) {
-		if (theStrategy != this.strategy) {
-			this.strategy = theStrategy;
-			TreeNode terminal = theStrategy.getTerminal();
-			setModel(new DefaultTreeModel(terminal));
-			revalidate();
-		}
-	}
-
-	@Override
-	public DefaultTreeModel getModel() {
-		return (DefaultTreeModel) super.getModel();
-	}
-
-	@Override
-	public void setModel(TreeModel newModel) {
-		if (!(newModel instanceof DefaultTreeModel)) {
-			throw new IllegalArgumentException(
-					"Model must be a DefaultTreeModel");
-		}
-		super.setModel(newModel);
-	}
-
-	private final class IterationStrategyCellRenderer extends
-			DefaultTreeCellRenderer {
-		public Component getTreeCellRendererComponent(JTree tree, Object value,
-				boolean selected, boolean expanded, boolean leaf, int row,
-				boolean hasFocus) {
-			super.getTreeCellRendererComponent(tree, value, selected, expanded,
-					leaf, row, hasFocus);
-			if (value instanceof CrossProduct) {
-				setIcon(joinIteratorIcon);
-				setText("Cross product");
-			} else if (value instanceof DotProduct) {
-				setIcon(lockStepIteratorIcon);
-				setText("Dot product");
-			} else if (value instanceof NamedInputPortNode) {
-				setIcon(leafnodeicon);
-				NamedInputPortNode namedInput = (NamedInputPortNode) value;
-				setText(namedInput.getPortName());
-			} else {
-				setText("Iteration strategy");
-			}
-			return this;
 		}
 	}
 

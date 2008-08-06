@@ -29,7 +29,6 @@ import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.CrossProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DotProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategyNode;
-import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyImpl;
 
 /**
@@ -63,11 +62,10 @@ public class IterationStrategyEditorControl extends JPanel {
 				}
 				if (selectedObject instanceof CrossProduct) {
 					change.setText("Change to Dot Product");
-					change
-							.setIcon(IterationStrategyEditor.lockStepIteratorIcon);
+					change.setIcon(IterationStrategyIcons.lockStepIteratorIcon);
 				} else {
 					change.setText("Change to Cross Product");
-					change.setIcon(IterationStrategyEditor.joinIteratorIcon);
+					change.setIcon(IterationStrategyIcons.joinIteratorIcon);
 				}
 				addCross.setEnabled(true);
 				addDot.setEnabled(true);
@@ -84,7 +82,7 @@ public class IterationStrategyEditorControl extends JPanel {
 
 	private final class RemoveAction implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			IterationStrategyNode nodeToBeRemoved = (IterationStrategyNode) selectedNode;
+			IterationStrategyNode nodeToBeRemoved = selectedNode;
 
 			DefaultTreeModel model = tree.getModel();
 
@@ -203,8 +201,6 @@ public class IterationStrategyEditorControl extends JPanel {
 		}
 	}
 
-	private IterationStrategyImpl strategy;
-
 	private IterationStrategyEditor tree;
 
 	private JButton addCross, addDot, normalize, remove, change;
@@ -218,16 +214,13 @@ public class IterationStrategyEditorControl extends JPanel {
 
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-		// Set the strategy object for later access
-		this.strategy = strategy;
-
 		// Create the components
 		tree = new IterationStrategyEditor(strategy);
 		addCross = new JButton("Add Cross",
-				IterationStrategyEditor.joinIteratorIcon);
+				IterationStrategyIcons.joinIteratorIcon);
 		addCross.setHorizontalAlignment(SwingConstants.LEFT);
 		addDot = new JButton("Add Dot",
-				IterationStrategyEditor.lockStepIteratorIcon);
+				IterationStrategyIcons.lockStepIteratorIcon);
 		addDot.setHorizontalAlignment(SwingConstants.LEFT);
 		normalize = new JButton("Normalize");
 		normalize.setHorizontalAlignment(SwingConstants.LEFT);
@@ -235,7 +228,7 @@ public class IterationStrategyEditorControl extends JPanel {
 		remove.setHorizontalAlignment(SwingConstants.LEFT);
 
 		change = new JButton("Switch to...",
-				IterationStrategyEditor.joinIteratorIcon);
+				IterationStrategyIcons.joinIteratorIcon);
 		change.setHorizontalAlignment(SwingConstants.LEFT);
 
 		// Set the default enabled state to off on all buttons other than the

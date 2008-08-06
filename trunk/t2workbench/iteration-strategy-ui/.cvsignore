@@ -1,3 +1,5 @@
 .settings
 target
 target-eclipse
+.classpath
+.project

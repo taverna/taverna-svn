@@ -12,7 +12,7 @@ public class IterationStrategyEditorFactory implements UIComponentFactorySPI {
 	}
 
 	public ImageIcon getIcon() {
-		return IterationStrategyEditor.leafnodeicon;
+		return IterationStrategyIcons.leafnodeicon;
 	}
 
 	public UIComponentSPI getComponent() {
