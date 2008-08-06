@@ -58,6 +58,7 @@ public class IterationStrategyEditor extends IterationStrategyTree implements
 		DragSourceListener, DragGestureListener, Autoscroll, TreeModelListener,
 		UIComponentSPI {
 
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger
 			.getLogger(IterationStrategyEditor.class);
 

@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 
 final class IterationStrategyCellRenderer extends DefaultTreeCellRenderer {
 
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger
 			.getLogger(IterationStrategyCellRenderer.class);
 

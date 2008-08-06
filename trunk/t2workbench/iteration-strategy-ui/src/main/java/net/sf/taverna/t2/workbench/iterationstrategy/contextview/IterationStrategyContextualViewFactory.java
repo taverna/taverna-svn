@@ -13,9 +13,7 @@ public class IterationStrategyContextualViewFactory implements
 	}
 
 	public ContextualView getView(ProcessorInputPort procInpPort) {
-		IterationStrategyStack iterationStrategy = procInpPort.getProcessor()
-				.getIterationStrategy();
-		return new IterationStrategyContextualView(iterationStrategy);
+		return new IterationStrategyContextualView(procInpPort.getProcessor());
 	}
 
 }

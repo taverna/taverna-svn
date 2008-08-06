@@ -36,6 +36,8 @@ import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrateg
  * the tree, removing and adding nodes into the tree based on the context.
  * 
  * @author Tom Oinn
+ * @author Stian Soiland-Reyes
+ * 
  */
 public class IterationStrategyEditorControl extends JPanel {
 
