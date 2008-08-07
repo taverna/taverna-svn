@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.iterationstrategy.editor;
+package net.sf.taverna.t2.workbench.iterationstrategy;
 
 import javax.swing.ImageIcon;
 
@@ -16,11 +16,11 @@ public class IterationStrategyIcons {
 		try {
 			Class<?> c = IterationStrategyIcons.class;
 			joinIteratorIcon = new ImageIcon(c
-					.getResource("../icons/crossproducticon.png"));
+					.getResource("icons/crossproducticon.png"));
 			lockStepIteratorIcon = new ImageIcon(c
-					.getResource("../icons/dotproducticon.png"));
+					.getResource("icons/dotproducticon.png"));
 			leafnodeicon = new ImageIcon(c
-					.getResource("../icons/leafnodeicon.png"));
+					.getResource("icons/leafnodeicon.png"));
 		} catch (Exception ex) {
 			logger.warn("Could not find icon", ex);
 		}

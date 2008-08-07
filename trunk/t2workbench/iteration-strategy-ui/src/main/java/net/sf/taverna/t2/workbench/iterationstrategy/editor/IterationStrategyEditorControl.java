@@ -26,6 +26,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
+import net.sf.taverna.t2.workbench.iterationstrategy.IterationStrategyIcons;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.CrossProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DotProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategyNode;
@@ -236,12 +237,10 @@ public class IterationStrategyEditorControl extends JPanel {
 				model.nodeStructureChanged(newNode);
 				newNode.setParent(null);
 			} else {
-				IterationStrategyNode parent = (IterationStrategyNode) selectedNode
-						.getParent();
+				IterationStrategyNode parent = selectedNode.getParent();
 				int index = parent.getIndex(selectedNode);
-				parent.getChildren().remove(index);
-				parent.getChildren().add(index, newNode);
-				newNode.setParent(parent);
+				selectedNode.setParent(null);
+				parent.insert(newNode, index);
 				model.nodeStructureChanged(parent);
 			}
 
@@ -267,20 +266,17 @@ public class IterationStrategyEditorControl extends JPanel {
 
 			// Now remove the candidate nodes from their parents and
 			// put them back into the root node
-			IterationStrategyNode root = (IterationStrategyNode) tree
-					.getModel().getRoot();
-			boolean rootChanged = false;
+			IterationStrategyNode root = findRoot();
+			if (root == selectedNode) {
+				return;
+			}
+			IterationStrategyNode oldParent = nodeToBeRemoved.getParent();
+
 			for (IterationStrategyNode nodeToMove : descendentsOfNode(nodeToBeRemoved)) {
-				nodeToMove.setParent(root);
-				rootChanged = true;
+				nodeToMove.setParent(oldParent);
 			}
-			TreeNode oldParent = nodeToBeRemoved.getParent();
 			nodeToBeRemoved.setParent(null);
-			if (rootChanged) {
-				model.nodeStructureChanged(root);
-			} else {
-				model.nodeStructureChanged(oldParent);
-			}
+			model.nodeStructureChanged(oldParent);
 			// Disable the various buttons, as the current selection
 			// is now invalid.
 			remove.setEnabled(false);
@@ -289,8 +285,16 @@ public class IterationStrategyEditorControl extends JPanel {
 			change.setEnabled(false);
 			selectNode(oldParent);
 		}
+
 	}
-	
-	
+
+	private IterationStrategyNode findRoot() {
+		IterationStrategyNode root = (IterationStrategyNode) tree.getModel()
+				.getRoot();
+		if (root.getChildCount() > 0) {
+			return root.getChildAt(0);
+		}
+		return root;
+	}
 
 }

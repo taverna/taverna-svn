@@ -33,7 +33,6 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
@@ -84,7 +83,7 @@ public class IterationStrategyEditor extends IterationStrategyTree implements
 					new CDropTargetListener());
 			dropTarget.setDefaultActions(DnDConstants.ACTION_MOVE);
 		}
-		
+
 		//
 	}
 
@@ -275,13 +274,13 @@ public class IterationStrategyEditor extends IterationStrategyTree implements
 	}
 
 	private void expandAll(JTree tree, TreePath parent, boolean expand) {
-		synchronized (this.getModel()) {
+		synchronized (getModel()) {
 			// Traverse children
 			// Ignores nodes who's userObject is a Processor type to
 			// avoid overloading the UI with nodes at startup.
 			TreeNode node = (TreeNode) parent.getLastPathComponent();
 			if (node.getChildCount() >= 0) {
-				for (Enumeration e = node.children(); e.hasMoreElements();) {
+				for (Enumeration<?> e = node.children(); e.hasMoreElements();) {
 					TreeNode n = (TreeNode) e.nextElement();
 					TreePath path = parent.pathByAddingChild(n);
 					expandAll(tree, path, expand);
@@ -508,7 +507,7 @@ public class IterationStrategyEditor extends IterationStrategyTree implements
 							|| ((!isExpanded(pathTarget)) && _nShift <= 0)) {
 						System.out.println("Drop target is a leaf node: "
 								+ dropNode);
-						IterationStrategyNode newParentNode = (IterationStrategyNode) dropNode
+						IterationStrategyNode newParentNode = dropNode
 								.getParent();
 						System.out.println("Drop target parent : "
 								+ newParentNode + " of type "
@@ -517,13 +516,10 @@ public class IterationStrategyEditor extends IterationStrategyTree implements
 								dropNode);
 						System.out.println("Drop target has index " + index
 								+ " in its parent's child list");
-						draggedNode.setParent(null);
-						List<IterationStrategyNode> newSiblings = newParentNode
-								.getChildren();
-						newSiblings.add(
-								Math.min(index + 1, newSiblings.size()),
-								draggedNode);
-						draggedNode.setParent(newParentNode);
+
+						int newIndex = Math.min(index + 1, newParentNode
+								.getChildCount());
+						newParentNode.insert(draggedNode, newIndex);
 						System.out.println("Node inserted");
 						System.out.println("New node parent is "
 								+ draggedNode.getParent().toString()
@@ -536,9 +532,7 @@ public class IterationStrategyEditor extends IterationStrategyTree implements
 						System.out.println("Drop target : "
 								+ dropNode.toString() + " of type "
 								+ dropNode.getClass().getName());
-						draggedNode.setParent(null);
-						dropNode.getChildren().add(0, dropNode);
-						draggedNode.setParent(dropNode);
+						dropNode.insert(draggedNode, 0);
 						model.nodeStructureChanged(oldParent);
 						model.nodeStructureChanged(dropNode);
 

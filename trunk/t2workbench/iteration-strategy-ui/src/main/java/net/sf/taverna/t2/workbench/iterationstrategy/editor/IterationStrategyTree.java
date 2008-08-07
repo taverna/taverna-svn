@@ -6,6 +6,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 
+import net.sf.taverna.t2.workbench.iterationstrategy.IterationStrategyIcons;
 import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategy;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyImpl;
@@ -37,7 +38,7 @@ public class IterationStrategyTree extends JTree implements UIComponentSPI {
 			IterationStrategyImpl theStrategy) {
 		if (theStrategy != this.strategy) {
 			this.strategy = theStrategy;
-			TreeNode terminal = theStrategy.getTerminal();
+			TreeNode terminal = theStrategy.getTerminalNode();
 			setModel(new DefaultTreeModel(terminal));
 			revalidate();
 		}
