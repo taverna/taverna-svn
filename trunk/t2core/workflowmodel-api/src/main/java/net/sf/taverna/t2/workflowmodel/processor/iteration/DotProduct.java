@@ -80,7 +80,7 @@ public class DotProduct extends CompletionHandlingAbstractIterationStrategyNode 
 	public int getIterationDepth(Map<String, Integer> inputDepths)
 			throws IterationTypeMismatchException {
 		// Check that all input depths are the same
-		int depth = getChildren().get(0).getIterationDepth(inputDepths);
+		int depth = getChildAt(0).getIterationDepth(inputDepths);
 		for (IterationStrategyNode childNode : getChildren()) {
 			if (childNode.getIterationDepth(inputDepths) != depth) {
 				throw new IterationTypeMismatchException(

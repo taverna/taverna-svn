@@ -36,7 +36,7 @@ public class TestStagedIteration {
 		DotProduct dp = new DotProduct();
 		nipn1.setParent(dp);
 		nipn2.setParent(dp);
-		dp.setParent(is1.getTerminal());
+		dp.setParent(is1.getTerminalNode());
 
 		IterationStrategyImpl is2 = new IterationStrategyImpl();
 		NamedInputPortNode nipn3 = new NamedInputPortNode("a", 0);
@@ -46,7 +46,7 @@ public class TestStagedIteration {
 		CrossProduct cp = new CrossProduct();
 		nipn3.setParent(cp);
 		nipn4.setParent(cp);
-		cp.setParent(is2.getTerminal());
+		cp.setParent(is2.getTerminalNode());
 
 		iss.addStrategy(is1);
 		iss.addStrategy(is2);

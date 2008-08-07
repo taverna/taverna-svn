@@ -20,7 +20,8 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
  * @author Tom Oinn
  * 
  */
-public class CrossProduct extends CompletionHandlingAbstractIterationStrategyNode {
+public class CrossProduct extends
+		CompletionHandlingAbstractIterationStrategyNode {
 
 	private Map<String, List<Set<Job>>> ownerToCache = new HashMap<String, List<Set<Job>>>();
 

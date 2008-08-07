@@ -24,7 +24,7 @@ public class IterationStrategyStackXMLSerializerTest implements XMLSerialization
 		DotProduct dp = new DotProduct();
 		nipn1.setParent(dp);
 		nipn2.setParent(dp);
-		dp.setParent(strat.getTerminal());
+		dp.setParent(strat.getTerminalNode());
 		IterationStrategyImpl is = new IterationStrategyImpl();
 		is.addInput(nipn1);
 		is.addInput(nipn2);

@@ -13,7 +13,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
  * Iteration strategy node that logs job and completion events for analysis
  * during debugging.
  * 
- * @author Tom
+ * @author Tom Oinn
  * 
  */
 @SuppressWarnings("unchecked") //suppressed to avoid jdk1.5 compilation errors caused by the declaration IterationInternalEvent<? extends IterationInternalEvent<?>> e

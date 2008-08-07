@@ -29,7 +29,7 @@ public class IterationTypeCheckerTest extends TestCase {
 		DotProduct dp = new DotProduct();
 		nipn1.setParent(dp);
 		nipn2.setParent(dp);
-		dp.setParent(is1.getTerminal());
+		dp.setParent(is1.getTerminalNode());
 		return is1;
 	}
 
@@ -42,7 +42,7 @@ public class IterationTypeCheckerTest extends TestCase {
 		CrossProduct cp = new CrossProduct();
 		nipn1.setParent(cp);
 		nipn2.setParent(cp);
-		cp.setParent(is1.getTerminal());
+		cp.setParent(is1.getTerminalNode());
 		return is1;
 	}
 

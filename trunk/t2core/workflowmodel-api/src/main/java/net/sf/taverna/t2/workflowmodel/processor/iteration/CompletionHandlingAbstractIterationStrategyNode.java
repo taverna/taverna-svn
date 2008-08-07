@@ -20,8 +20,8 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
  * completion has been received then emit a final completion, otherwise do
  * nothing.
  * <p>
- * This means that subclasses should not emit final completion events themselves -
- * these will be handled by this superclass and emiting them in the subclass
+ * This means that subclasses should not emit final completion events themselves
+ * - these will be handled by this superclass and emiting them in the subclass
  * will lead to duplicatation.
  * 
  * @author Tom Oinn

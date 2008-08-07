@@ -207,14 +207,14 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 			assertEquals(1, iterationStrategies.getStrategies().size());
 			if (processor.getLocalName().equals("processor_a")) {
 				AbstractIterationStrategyNode terminal = (AbstractIterationStrategyNode) iterationStrategies
-						.getStrategies().get(0).getTerminal();
+						.getStrategies().get(0).getTerminalNode();
 				assertEquals(1, terminal.getChildCount());
 				assertTrue(terminal.getChildAt(0) instanceof NamedInputPortNode);
 				assertEquals("input_1", ((NamedInputPortNode) terminal
 						.getChildAt(0)).getPortName());
 			} else if (processor.getLocalName().equals("processor_b")) {
 				AbstractIterationStrategyNode terminal = (AbstractIterationStrategyNode) iterationStrategies
-						.getStrategies().get(0).getTerminal();
+						.getStrategies().get(0).getTerminalNode();
 				assertEquals(1, terminal.getChildCount());
 				assertTrue(terminal.getChildAt(0) instanceof CrossProduct);
 				assertEquals(2, ((CrossProduct) terminal.getChildAt(0))

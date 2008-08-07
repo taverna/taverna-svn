@@ -27,4 +27,6 @@ public interface IterationStrategy {
 	 */
 	public Map<String, Integer> getDesiredCardinalities();
 
+	public TerminalNode getTerminalNode();
+
 }

@@ -25,6 +25,7 @@ import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategy;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.PrefixDotProduct;
+import net.sf.taverna.t2.workflowmodel.processor.iteration.TerminalNode;
 import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLSerializationConstants;
 
 import org.jdom.Element;
@@ -34,6 +35,7 @@ import org.jdom.Element;
  * combining these into Job objects to be consumed by the dispatch stack
  * 
  * @author Tom Oinn
+ * @author Stian Soiland-Reyes
  * 
  */
 public class IterationStrategyImpl implements IterationStrategy {
@@ -44,7 +46,7 @@ public class IterationStrategyImpl implements IterationStrategy {
 
 	protected IterationStrategyStackImpl stack = null;
 
-	private TerminalNode terminal = new TerminalNode();
+	private TerminalNodeImpl terminal = new TerminalNodeImpl();
 
 	/**
 	 * The terminal node is used internally as the root of the iteration
@@ -52,7 +54,7 @@ public class IterationStrategyImpl implements IterationStrategy {
 	 * iteration strategy itself which can then propogate them to the strategy
 	 * stack.
 	 */
-	class TerminalNode extends AbstractIterationStrategyNode {
+	public class TerminalNodeImpl extends TerminalNode {
 
 		public void receiveCompletion(int inputIndex, Completion completion) {
 			if (wrapping) {
@@ -91,21 +93,21 @@ public class IterationStrategyImpl implements IterationStrategy {
 
 		public int getIterationDepth(Map<String, Integer> inputDepths)
 				throws IterationTypeMismatchException {
-			if (getChildren().isEmpty()) {
+			if (getChildCount() == 0) {
 				return -1;
 			} else {
-				return getChildren().get(0).getIterationDepth(inputDepths);
+				return getChildAt(0).getIterationDepth(inputDepths);
 			}
 		}
 
 	}
 
 	public IterationStrategyImpl() {
-		this.inputs = new HashSet<NamedInputPortNode>();
+		inputs = new HashSet<NamedInputPortNode>();
 	}
 
-	public TerminalNode getTerminal() {
-		return this.terminal;
+	public TerminalNode getTerminalNode() {
+		return terminal;
 	}
 
 	/**
@@ -337,7 +339,7 @@ public class IterationStrategyImpl implements IterationStrategy {
 
 	public int getIterationDepth(Map<String, Integer> inputDepths)
 			throws IterationTypeMismatchException {
-		return getTerminal().getIterationDepth(inputDepths);
+		return getTerminalNode().getIterationDepth(inputDepths);
 	}
 
 	public Map<String, Integer> getDesiredCardinalities() {

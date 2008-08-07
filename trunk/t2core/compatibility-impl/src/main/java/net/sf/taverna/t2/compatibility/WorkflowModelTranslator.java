@@ -45,6 +45,7 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Retry;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.AbstractIterationStrategyNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.CrossProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DotProduct;
+import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategyNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyImpl;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyStackImpl;
@@ -224,18 +225,19 @@ public class WorkflowModelTranslator {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	private void createInputs(Dataflow dataflow) throws EditException {
 		for (Port sourcePort : scuflModel.getWorkflowSourcePorts()) {
-			List typeList = sourcePort.getMetadata().getMIMETypeList();
+			List<String> typeList = sourcePort.getMetadata().getMIMETypeList();
 			int portDepth = getPortDepth(sourcePort);
 			edits.getCreateDataflowInputPortEdit(dataflow,
 					sourcePort.getName(), portDepth, portDepth).doEdit();
 			for (DataflowInputPort inputPort : dataflow.getInputPorts()) {
 				if (inputPort.getName().equals(sourcePort.getName())) {
 					// add mime types as annotations
-					for (Object mimeType : typeList) {
+					for (String mimeType : typeList) {
 						MimeType mimeTypeAnnotation = new MimeType();
-						mimeTypeAnnotation.setText((String) mimeType);
+						mimeTypeAnnotation.setText(mimeType);
 						try {
 							EditsRegistry.getEdits().getAddAnnotationChainEdit(
 									inputPort, mimeTypeAnnotation).doEdit();
@@ -251,17 +253,18 @@ public class WorkflowModelTranslator {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void createOutputs(Dataflow dataflow) throws EditException {
 		for (Port sinkPort : scuflModel.getWorkflowSinkPorts()) {
-			List typeList = sinkPort.getMetadata().getMIMETypeList();
+			List<String> typeList = sinkPort.getMetadata().getMIMETypeList();
 			edits.getCreateDataflowOutputPortEdit(dataflow, sinkPort.getName())
 					.doEdit();
 			for (DataflowOutputPort outputPort : dataflow.getOutputPorts()) {
 				// firstly add the mime types to the new port
 				if (outputPort.getName().equals(sinkPort.getName())) {
-					for (Object mimeType : typeList) {
+					for (String mimeType : typeList) {
 						MimeType mimeTypeAnnotation = new MimeType();
-						mimeTypeAnnotation.setText((String) mimeType);
+						mimeTypeAnnotation.setText(mimeType);
 						try {
 							EditsRegistry.getEdits().getAddAnnotationChainEdit(
 									outputPort, mimeTypeAnnotation).doEdit();
@@ -369,7 +372,7 @@ public class WorkflowModelTranslator {
 		}
 		addIterationNode((MutableTreeNode) t1IterationStrategy.getTreeModel()
 				.getRoot(), t2IterationStrategy, t2IterationStrategy
-				.getTerminal(), t2Processor);
+				.getTerminalNode(), t2Processor);
 
 		iterationStrategyStack.clear();
 		iterationStrategyStack.addStrategy(t2IterationStrategy);
@@ -377,7 +380,7 @@ public class WorkflowModelTranslator {
 
 	private void addIterationNode(MutableTreeNode node,
 			IterationStrategyImpl t2IterationStrategy,
-			AbstractIterationStrategyNode parent, Processor t2Processor) {
+			IterationStrategyNode parent, Processor t2Processor) {
 		if (node instanceof LeafNode) {
 			String nodeName = (String) ((LeafNode) node).getUserObject();
 			for (InputPort ip : t2Processor.getInputPorts()) {

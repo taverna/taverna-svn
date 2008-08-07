@@ -87,4 +87,10 @@ public class NamedInputPortNode extends AbstractIterationStrategyNode {
 		return (depthMismatch > 0 ? depthMismatch : 0);
 	}
 
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + " " + getPortName() + "("
+				+ getCardinality() + ")";
+	}
+
 }
