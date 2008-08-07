@@ -103,10 +103,10 @@ public class IterationStrategyEditor extends IterationStrategyTree implements
 
 	// http://www.oreilly.com/catalog/jswing/chapter/dnd.beta.pdf
 
-	// Ok, we�ve been told to scroll because the mouse cursor is in our
+	// Ok, we've been told to scroll because the mouse cursor is in our
 	// scroll zone.
 	public void autoscroll(Point pt) {
-		// Figure out which row we�re on.
+		// Figure out which row we're on.
 		int nRow = getRowForLocation(pt.x, pt.y);
 
 		// If we are not on a row then ignore this autoscroll request
@@ -327,7 +327,6 @@ public class IterationStrategyEditor extends IterationStrategyTree implements
 
 		private int _nShift = 0;
 
-		// Fields...
 		private TreePath _pathLast = null;
 
 		private Point _ptLast = new Point();
@@ -338,7 +337,6 @@ public class IterationStrategyEditor extends IterationStrategyTree implements
 
 		private javax.swing.Timer _timerHover;
 
-		// Constructor...
 		public CDropTargetListener() {
 			_colorCueLine = new Color(SystemColor.controlShadow.getRed(),
 					SystemColor.controlShadow.getGreen(),
