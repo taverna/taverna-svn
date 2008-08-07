@@ -20,6 +20,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+import javax.swing.border.EmptyBorder;
 
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
@@ -70,7 +71,7 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 	private JToggleButton blobs;
 	private JToggleButton vertical;
 	private JToggleButton horizontal;
-	private JCheckBox expandNested;
+	private JToggleButton expandNested;
 	
 	public GraphViewComponent() {
 		super(new BorderLayout());
@@ -126,22 +127,25 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 		JToolBar toolBar = new JToolBar();
 		
 		resetDiagramButton = new JButton();
+		resetDiagramButton.setBorder(new EmptyBorder(0, 2, 0, 2));
 		zoomInButton = new JButton();
+		zoomInButton.setBorder(new EmptyBorder(0, 2, 0, 2));
 		zoomOutButton = new JButton();
+		zoomOutButton.setBorder(new EmptyBorder(0, 2, 0, 2));
 		
 		Action resetDiagramAction = svgCanvas.new ResetTransformAction();
 		resetDiagramAction.putValue(Action.SHORT_DESCRIPTION, "Reset Diagram");
 		resetDiagramAction.putValue(Action.SMALL_ICON, WorkbenchIcons.refreshIcon);
 		resetDiagramButton.setAction(resetDiagramAction);
+
 		Action zoomInAction = svgCanvas.new ZoomAction(1.2);
-		zoomInAction.putValue(Action.NAME, "+");
 		zoomInAction.putValue(Action.SHORT_DESCRIPTION, "Zoom In");
-		zoomInAction.putValue(Action.SMALL_ICON, WorkbenchIcons.zoomIcon);
+		zoomInAction.putValue(Action.SMALL_ICON, WorkbenchIcons.zoomInIcon);
 		zoomInButton.setAction(zoomInAction);
+
 		Action zoomOutAction = svgCanvas.new ZoomAction(1/1.2);
-		zoomOutAction.putValue(Action.NAME, "-");
 		zoomOutAction.putValue(Action.SHORT_DESCRIPTION, "Zoom Out");
-		zoomOutAction.putValue(Action.SMALL_ICON, WorkbenchIcons.zoomIcon);
+		zoomOutAction.putValue(Action.SMALL_ICON, WorkbenchIcons.zoomOutIcon);
 		zoomOutButton.setAction(zoomOutAction);
 
 		toolBar.add(resetDiagramButton);
@@ -160,7 +164,7 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 		nodeTypeGroup.add(blobs);
 		noPorts.setSelected(true);
 		
-		noPorts.setAction(new AbstractAction("No Ports") {
+		noPorts.setAction(new AbstractAction() {
 
 			public void actionPerformed(ActionEvent arg0) {
 				graphController.setPortStyle(GraphController.PortStyle.NONE);
@@ -169,8 +173,11 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 			}
 			
 		});
+		noPorts.getAction().putValue(Action.SHORT_DESCRIPTION, "Display no processor ports");
+		noPorts.getAction().putValue(Action.SMALL_ICON, WorkbenchIcons.noportIcon);
+		noPorts.setFocusPainted(false);		
 		
-		allPorts.setAction(new AbstractAction("All Ports") {
+		allPorts.setAction(new AbstractAction() {
 
 			public void actionPerformed(ActionEvent arg0) {
 				graphController.setPortStyle(GraphController.PortStyle.ALL);
@@ -179,8 +186,11 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 			}
 			
 		});
+		allPorts.getAction().putValue(Action.SHORT_DESCRIPTION, "Display all processor ports");
+		allPorts.getAction().putValue(Action.SMALL_ICON, WorkbenchIcons.allportIcon);
+		allPorts.setFocusPainted(false);
 		
-		blobs.setAction(new AbstractAction("Blobs") {
+		blobs.setAction(new AbstractAction() {
 
 			public void actionPerformed(ActionEvent arg0) {
 				graphController.setPortStyle(GraphController.PortStyle.BLOB);
@@ -189,6 +199,9 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 			}
 			
 		});
+		blobs.getAction().putValue(Action.SHORT_DESCRIPTION, "Display processors as circles");
+		blobs.getAction().putValue(Action.SMALL_ICON, WorkbenchIcons.blobIcon);
+		blobs.setFocusPainted(false);
 		
 		toolBar.add(noPorts);
 		toolBar.add(allPorts);
@@ -204,7 +217,7 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 		alignmentGroup.add(horizontal);
 		vertical.setSelected(true);
 
-		vertical.setAction(new AbstractAction("Vertical") {
+		vertical.setAction(new AbstractAction() {
 
 			public void actionPerformed(ActionEvent arg0) {
 				graphController.setAlignment(Alignment.VERTICAL);
@@ -213,7 +226,11 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 			}
 			
 		});
-		horizontal.setAction(new AbstractAction("Horizontal") {
+		vertical.getAction().putValue(Action.SHORT_DESCRIPTION, "Align processors vertically");
+		vertical.getAction().putValue(Action.SMALL_ICON, WorkbenchIcons.verticalIcon);
+		vertical.setFocusPainted(false);
+		
+		horizontal.setAction(new AbstractAction() {
 
 			public void actionPerformed(ActionEvent arg0) {
 				graphController.setAlignment(Alignment.HORIZONTAL);
@@ -222,16 +239,19 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 			}
 			
 		});
+		horizontal.getAction().putValue(Action.SHORT_DESCRIPTION, "Align processors horizontally");
+		horizontal.getAction().putValue(Action.SMALL_ICON, WorkbenchIcons.horizontalIcon);
+		horizontal.setFocusPainted(false);
 		
 		toolBar.add(vertical);
 		toolBar.add(horizontal);
 		
 		toolBar.addSeparator();
 
-		expandNested = new JCheckBox();
+		expandNested = new JToggleButton();
 		expandNested.setSelected(true);
 
-		expandNested.setAction(new AbstractAction("Expand Nested Workflows") {
+		expandNested.setAction(new AbstractAction() {
 
 			public void actionPerformed(ActionEvent arg0) {
 				graphController.setExpandNestedDataflows(!graphController.isExpandNestedDataflows());
@@ -240,6 +260,9 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 			}
 			
 		});
+		expandNested.getAction().putValue(Action.SHORT_DESCRIPTION, "Expand Nested Workflows");
+		expandNested.getAction().putValue(Action.SMALL_ICON, WorkbenchIcons.expandNestedIcon);
+		expandNested.setFocusPainted(false);
 		
 		toolBar.add(expandNested);
 		

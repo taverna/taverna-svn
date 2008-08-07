@@ -14,6 +14,8 @@ public class WorkbenchIcons {
 
 	public static ImageIcon deleteIcon;
 	public static ImageIcon zoomIcon;
+	public static ImageIcon zoomInIcon;
+	public static ImageIcon zoomOutIcon;
 	public static ImageIcon webIcon;
 	public static ImageIcon openIcon;
 	public static ImageIcon runIcon;
@@ -53,6 +55,12 @@ public class WorkbenchIcons {
 	public static ImageIcon copyIcon;
 	public static ImageIcon inputIcon;
 	public static ImageIcon outputIcon;
+	public static ImageIcon verticalIcon;
+	public static ImageIcon horizontalIcon;
+	public static ImageIcon noportIcon;
+	public static ImageIcon allportIcon;
+	public static ImageIcon blobIcon;
+	public static ImageIcon expandNestedIcon;
 
 	static {
 		// Load the image files found in this package into the class.
@@ -61,6 +69,8 @@ public class WorkbenchIcons {
 			deleteIcon = new ImageIcon(c
 					.getResource("generic/delete.gif"));
 			zoomIcon = new ImageIcon(c.getResource("generic/zoom.gif"));
+			zoomInIcon = new ImageIcon(c.getResource("generic/zoomin.png"));
+			zoomOutIcon = new ImageIcon(c.getResource("generic/zoomout.png"));
 			webIcon = new ImageIcon(c.getResource("generic/web.gif"));
 			openIcon = new ImageIcon(c.getResource("generic/open.gif"));
 			runIcon = new ImageIcon(c.getResource("generic/run.gif"));
@@ -126,6 +136,19 @@ public class WorkbenchIcons {
 					.getResource("explorer/input.png"));
 			outputIcon = new ImageIcon(c
 					.getResource("explorer/output.png"));
+			
+			verticalIcon = new ImageIcon(c
+					.getResource("graph/vertical.png"));
+			horizontalIcon = new ImageIcon(c
+					.getResource("graph/horizontal.png"));
+			noportIcon = new ImageIcon(c
+					.getResource("graph/noport.png"));
+			allportIcon = new ImageIcon(c
+					.getResource("graph/allport.png"));
+			blobIcon = new ImageIcon(c
+					.getResource("graph/blob.png"));
+			expandNestedIcon = new ImageIcon(c
+					.getResource("graph/expandnested.png"));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.out.println(ex.toString());
