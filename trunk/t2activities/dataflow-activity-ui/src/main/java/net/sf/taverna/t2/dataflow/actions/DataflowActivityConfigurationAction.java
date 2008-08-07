@@ -1,25 +1,20 @@
 package net.sf.taverna.t2.dataflow.actions;
 
-import java.awt.Frame;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.prefs.Preferences;
 
-import javax.swing.JDialog;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
 import net.sf.taverna.t2.activities.dataflow.DataflowActivity;
-import net.sf.taverna.t2.activities.dataflow.views.DataflowActivityConfigView;
 import net.sf.taverna.t2.activities.dataflow.views.DataflowObserver;
-import net.sf.taverna.t2.lang.ui.ModelMap;
-import net.sf.taverna.t2.workbench.ModelMapConstants;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationAction;
@@ -44,14 +39,14 @@ public class DataflowActivityConfigurationAction extends
 	private static Logger logger = Logger
 			.getLogger(DataflowActivityConfigurationAction.class);
 
-	private final Frame owner;
+	private final Component owner;
 
 	private File selectedFile;
 
 	private Processor processor;
 
 	public DataflowActivityConfigurationAction(DataflowActivity activity,
-			Frame owner) {
+			JComponent owner) {
 		super(activity);
 		this.owner = owner;
 	}
@@ -114,7 +109,7 @@ public class DataflowActivityConfigurationAction extends
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
+
 		return null;
 	}
 
@@ -131,15 +126,16 @@ public class DataflowActivityConfigurationAction extends
 		processor = EditsRegistry.getEdits().createProcessor(
 				dataflow.getLocalName());
 		try {
-			EditsRegistry.getEdits().getAddActivityEdit(processor,
-					getActivity()).doEdit();
+			if (!processor.getActivityList().contains(getActivity())) {
+				EditsRegistry.getEdits().getAddActivityEdit(processor,
+						getActivity()).doEdit();
+				DataflowObserver.getInstance().addDataflowObservers(getActivity(),
+						processor);
+			}
 			EditManager.getInstance().doDataflowEdit(
-					(Dataflow) ModelMap.getInstance().getModel(
-							ModelMapConstants.CURRENT_DATAFLOW),
+					FileManager.getInstance().getCurrentDataflow(),
 					EditsRegistry.getEdits()
 							.getMapProcessorPortsForActivityEdit(processor));
-			DataflowObserver.getInstance().addDataflowObservers(getActivity(),
-					processor);
 
 		} catch (EditException e) {
 			// TODO Auto-generated catch block
@@ -189,7 +185,6 @@ public class DataflowActivityConfigurationAction extends
 			prefs.put("currentDir", fileChooser.getCurrentDirectory()
 					.toString());
 			selectedFile = fileChooser.getSelectedFile();
-			System.out.println("File is: " + selectedFile.toString());
 			return true;
 		}
 		return false;

@@ -73,7 +73,7 @@ public class DataflowObserver {
 				if (message instanceof AbstractDataflowEditEvent) {
 					AbstractDataflowEditEvent dataflowEdit = (AbstractDataflowEditEvent) message;
 
-					for (List list : observerList) {
+					for (List list : new ArrayList<List>(observerList)) {
 						if (((DataflowActivity) list.get(0)).getConfiguration()
 								.equals(dataflowEdit.getDataFlow())) {
 							((DataflowActivity) list.get(0))
@@ -98,7 +98,7 @@ public class DataflowObserver {
 				if (message instanceof ClosedDataflowEvent) {
 					ClosedDataflowEvent closedDataflowEvent = (ClosedDataflowEvent) message;
 					closedDataflowEvent.getDataflow();
-					for (List list : observerList) {
+					for (List list : new ArrayList<List>(observerList)) {
 						if (((DataflowActivity) list.get(0)).getConfiguration()
 								.equals(closedDataflowEvent.getDataflow())) {
 							observerList.remove(list);
