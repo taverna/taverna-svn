@@ -128,7 +128,7 @@ public class BiomartActivity extends
 									new ResultReceiver() {
 
 										public void receiveResult(
-												Object[] resultLine, long index) {
+												Object[] resultLine, long index) throws ResultReceiverException {
 											Map<String, T2Reference> partialOutputData = new HashMap<String, T2Reference>();
 											for (int i = 0; i < resultLine.length; i++) {
 												Attribute attribute = attributes
@@ -146,13 +146,41 @@ public class BiomartActivity extends
 													outputLists.get(outputName)
 															.add((int) index, data);
 												} catch (ReferenceServiceException e) {
-													callback.fail("Failure when calling the reference service", e);
+													throw new ResultReceiverException(e);
+//													callback.fail("Failure when calling the reference service", e);
 												}
 											}
 											callback.receiveResult(
 													partialOutputData,
 													new int[] { (int) index });
 										}
+
+										public void receiveError(String message,
+												long index) throws ResultReceiverException {
+											Map<String, T2Reference> partialOutputData = new HashMap<String, T2Reference>();
+											for (Attribute attribute : attributes) {
+												String outputName = attribute
+														.getQualifiedName();
+												int outputDepth = outputMap
+														.get(outputName)
+														.getDepth();
+												try {
+													T2Reference error = referenceService.getErrorDocumentService()
+															.registerError(message, outputDepth - 1).getId();
+													partialOutputData.put(
+															outputName, error);
+													outputLists.get(outputName)
+															.add((int) index, error);
+												} catch (ReferenceServiceException e) {
+													throw new ResultReceiverException(e);
+//													callback.fail("Failure when calling the reference service", e);
+												}
+											}
+											callback.receiveResult(
+													partialOutputData,
+													new int[] { (int) index });
+										}
+										
 									});
 
 							for (Attribute attribute : attributes) {
