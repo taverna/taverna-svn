@@ -7,13 +7,21 @@ import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.Dis
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.taverna.t2.invocation.Event;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
 import net.sf.taverna.t2.monitor.NoSuchPropertyException;
+import net.sf.taverna.t2.reference.ErrorDocument;
+import net.sf.taverna.t2.reference.ErrorDocumentService;
+import net.sf.taverna.t2.reference.IdentifiedList;
+import net.sf.taverna.t2.reference.ListService;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.T2Reference;
+import net.sf.taverna.t2.reference.T2ReferenceType;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
@@ -75,17 +83,21 @@ public class ErrorBounce extends AbstractDispatchLayer<Object> implements
 	 */
 	@Override
 	public void receiveJob(DispatchJobEvent jobEvent) {
+		Set<T2Reference> errorReferences = new HashSet<T2Reference>();
 		for (T2Reference ei : jobEvent.getData().values()) {
 			if (ei.containsErrors()) {
-				getState(jobEvent.getOwningProcess())
-						.incrementErrorsReflected();
-				sendErrorOutput(jobEvent);
-				return;
+				errorReferences.add(ei);
 			}
 		}
+		if (errorReferences.isEmpty()) {
+			// relay the message down...
+			getBelow().receiveJob(jobEvent);
+		} else {
+			getState(jobEvent.getOwningProcess())
+			.incrementErrorsReflected();
+			sendErrorOutput(jobEvent, null, errorReferences);
+		}
 
-		// Got here so relay the message down...
-		getBelow().receiveJob(jobEvent);
 	}
 
 	/**
@@ -95,28 +107,37 @@ public class ErrorBounce extends AbstractDispatchLayer<Object> implements
 	 */
 	@Override
 	public void receiveError(DispatchErrorEvent errorEvent) {
-		getState(errorEvent.getOwningProcess()).incrementErrorsTranslated();
-		sendErrorOutput(errorEvent);
+		getState(errorEvent.getOwningProcess()).incrementErrorsTranslated();this.
+		sendErrorOutput(errorEvent, errorEvent.getCause(), null);
 	}
 
 	/**
 	 * Construct and send a new result message with error documents in place of
 	 * all outputs at the appropriate depth
 	 * 
-	 * @param e
+	 * @param event
+	 * @param cause
+	 * @param errorReferences
 	 */
-	private void sendErrorOutput(Event<?> e) {
-		ReferenceService rs = e.getContext().getReferenceService();
+	private void sendErrorOutput(Event<?> event, Throwable cause, Set<T2Reference> errorReferences) {
+		ReferenceService rs = event.getContext().getReferenceService();
 
-		// DataManager dm = e.getContext().getDataManager();
 		Processor p = dispatchStack.getProcessor();
 		Map<String, T2Reference> outputDataMap = new HashMap<String, T2Reference>();
+		String[] owningProcessArray = event.getOwningProcess().split(":");
+		String processor = owningProcessArray[owningProcessArray.length - 1];
 		for (OutputPort op : p.getOutputPorts()) {
-			outputDataMap.put(op.getName(), rs.getErrorDocumentService()
-					.registerError("No message...", op.getDepth()).getId());
+			String message = processor + ":" + op.getName();
+			if (cause != null) {
+				outputDataMap.put(op.getName(), rs.getErrorDocumentService()
+						.registerError(message, cause, op.getDepth()).getId());
+			} else {
+				outputDataMap.put(op.getName(), rs.getErrorDocumentService()
+						.registerError(message, errorReferences, op.getDepth()).getId());
+			}
 		}
-		DispatchResultEvent dre = new DispatchResultEvent(e.getOwningProcess(),
-				e.getIndex(), e.getContext(), outputDataMap, false);
+		DispatchResultEvent dre = new DispatchResultEvent(event.getOwningProcess(),
+				event.getIndex(), event.getContext(), outputDataMap, false);
 		getAbove().receiveResult(dre);
 	}
 
