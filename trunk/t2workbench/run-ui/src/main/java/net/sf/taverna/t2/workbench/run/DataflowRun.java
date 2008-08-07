@@ -3,16 +3,11 @@ package net.sf.taverna.t2.workbench.run;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.swing.JSplitPane;
-
-import net.sf.taverna.platform.spring.RavenAwareClassPathXmlApplicationContext;
 import net.sf.taverna.t2.facade.ResultListener;
-import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.facade.impl.WorkflowInstanceFacadeImpl;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.TokenOrderException;
@@ -25,10 +20,7 @@ import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workbench.views.monitor.MonitorViewComponent;
 import net.sf.taverna.t2.workbench.views.results.ResultViewComponent;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
-import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.EditException;
-
-import org.springframework.context.ApplicationContext;
 
 public class DataflowRun {
 
