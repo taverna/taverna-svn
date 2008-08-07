@@ -88,7 +88,7 @@ public abstract class AbstractErrorDocumentServiceImpl extends
 
 	public final ErrorDocument registerError(String message, int depth)
 			throws ErrorDocumentServiceException {
-		return registerError(message, null, depth);
+		return registerError(message, (Throwable) null, depth);
 	}
 
 	public final ErrorDocument registerError(Throwable t, int depth)

@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.reference;
 
+import java.util.Set;
+
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +51,24 @@ public interface ErrorDocumentService {
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public ErrorDocument registerError(Throwable t, int depth)
+			throws ErrorDocumentServiceException;
+
+	/**
+	 * Register a new error document
+	 * 
+	 * @param message
+	 *            a free text message describing the error, if available. If
+	 *            there is no message use the empty string here.
+	 * @param errors
+	 *            a set of references that contain error documents.
+	 * @param depth
+	 *            depth of the error, used when returning an error document
+	 *            instead of an identified list.
+	 * @return a new ErrorDocument instance, constructed fully and stored in the
+	 *         underlying storage system
+	 */
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+	public ErrorDocument registerError(String message, Set<T2Reference> errors, int depth)
 			throws ErrorDocumentServiceException;
 
 	/**

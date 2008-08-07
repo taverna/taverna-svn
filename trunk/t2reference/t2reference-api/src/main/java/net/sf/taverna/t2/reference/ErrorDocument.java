@@ -1,12 +1,13 @@
 package net.sf.taverna.t2.reference;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Contains the definition of an error token within the workflow system.
  * 
  * @author Tom Oinn
- * 
+ * @author David Withers
  */
 public interface ErrorDocument extends Identified {
 
@@ -27,5 +28,11 @@ public interface ErrorDocument extends Identified {
 	 * Error documents can carry an arbitrary string message, this returns it.
 	 */
 	public String getMessage();
+	
+	/**
+	 * If the error document is created from set of references that contain error
+	 * documents, this method returns them. 
+	 */
+	public Set<T2Reference> getErrorReferences();
 
 }

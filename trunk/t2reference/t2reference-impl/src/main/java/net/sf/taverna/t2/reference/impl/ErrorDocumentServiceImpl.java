@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.reference.impl;
 
+import java.util.Set;
+
 import net.sf.taverna.t2.reference.ErrorDocument;
 import net.sf.taverna.t2.reference.ErrorDocumentService;
 import net.sf.taverna.t2.reference.ErrorDocumentServiceException;
@@ -75,6 +77,45 @@ public class ErrorDocumentServiceImpl extends AbstractErrorDocumentServiceImpl
 		}
 		return docToReturn;
 
+	}
+
+	public ErrorDocument registerError(String message, Set<T2Reference> errors, int depth) 
+			throws ErrorDocumentServiceException {
+		checkDao();
+		checkGenerator();
+
+		T2Reference ref = t2ReferenceGenerator
+		.nextErrorDocumentReference(depth);
+		T2ReferenceImpl typedId = T2ReferenceImpl.getAsImpl(ref);
+
+		ErrorDocument docToReturn = null;
+		while (depth >= 0) {
+			ErrorDocumentImpl edi = new ErrorDocumentImpl();
+			if (docToReturn == null) {
+				docToReturn = edi;
+			}
+			edi.setTypedId(typedId);
+			if (message != null) {
+				edi.setMessage(message);
+			} else {
+				edi.setMessage("");
+			}
+			if (errors != null) {
+				edi.setErrorReferenceSet(errors);
+			}
+			edi.setExceptionMessage("");
+
+			try {
+				errorDao.store(edi);
+			} catch (Throwable t2) {
+				throw new ErrorDocumentServiceException(t2);
+			}
+			if (depth > 0) {
+				typedId = typedId.getDeeperErrorReference();
+			}
+			depth--;
+		}
+		return docToReturn;
 	}
 
 	public T2Reference getChild(T2Reference errorId)

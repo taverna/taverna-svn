@@ -30,5 +30,16 @@
 				<property name="lineNumber" />
 			</composite-element>
 		</list>
+		<set name="errorReferenceSet" cascade="all" lazy="false">
+			<key column="id" not-null="true"/>
+			<composite-element
+				class="net.sf.taverna.t2.reference.impl.T2ReferenceImpl">
+				<property name="namespacePart" />
+				<property name="localPart" />
+				<property name="containsErrors"/>
+				<property name="depth"/>
+				<property name="referenceType"/>
+			</composite-element>
+		</set>
 	</class>
 </hibernate-mapping>
