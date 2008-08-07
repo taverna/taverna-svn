@@ -2,6 +2,8 @@ package net.sf.taverna.t2.workbench.views.results;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.ByteArrayOutputStream;
@@ -21,10 +23,24 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.JTree;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.TableModelListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreeSelectionModel;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
@@ -36,10 +52,15 @@ import net.sf.jmimemagic.MagicParseException;
 import net.sf.taverna.t2.annotation.annotationbeans.MimeType;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.reference.ErrorDocument;
+import net.sf.taverna.t2.reference.ErrorDocumentService;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.reference.Identified;
+import net.sf.taverna.t2.reference.IdentifiedList;
+import net.sf.taverna.t2.reference.ListService;
 import net.sf.taverna.t2.reference.ReferenceSet;
+import net.sf.taverna.t2.reference.StackTraceElementBean;
 import net.sf.taverna.t2.reference.T2Reference;
+import net.sf.taverna.t2.reference.T2ReferenceType;
 import net.sf.taverna.t2.renderers.Renderer;
 import net.sf.taverna.t2.renderers.RendererException;
 import net.sf.taverna.t2.renderers.RendererRegistry;
@@ -84,34 +105,41 @@ public class RenderedResultComponent extends JPanel {
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					int selectedIndex = renderers.getSelectedIndex();
-					Renderer renderer = renderersForMimeType.get(selectedIndex);
-					JComponent component = null;
-					try {
-						component = renderer.getComponent(context
-								.getReferenceService(), t2Reference);
-					} catch (RendererException e1) {// maybe this should be
-						// Exception
-						// show the user that something unexpected has happened but
-						// continue
-						component = new JTextArea(
-								"Could not render using renderer type "
-								+ renderer.getClass().getName()
-								+ "\n"
-								+ "Please try with a different renderer if available and consult log for details of problem");
-						logger.warn("Couln not render using "
-								+ renderer.getClass().getName(), e1);
+					if (renderersForMimeType != null && renderersForMimeType.size() > selectedIndex) {
+						Renderer renderer = renderersForMimeType.get(selectedIndex);
+						JComponent component = null;
+						try {
+							component = renderer.getComponent(context
+									.getReferenceService(), t2Reference);
+						} catch (RendererException e1) {// maybe this should be
+							// Exception
+							// show the user that something unexpected has happened but
+							// continue
+							component = new JTextArea(
+									"Could not render using renderer type "
+									+ renderer.getClass().getName()
+									+ "\n"
+									+ "Please try with a different renderer if available and consult log for details of problem");
+							logger.warn("Couln not render using "
+									+ renderer.getClass().getName(), e1);
+						}
+						resultPanel.removeAll();
+						resultPanel.add(component, BorderLayout.CENTER);
+						revalidate();
 					}
-					resultPanel.removeAll();
-					resultPanel.add(component, BorderLayout.CENTER);
-					revalidate();
 				}
 			}
 		});
-		add(renderers, BorderLayout.NORTH);
+		
+		JPanel renderersPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		renderersPanel.add(new JLabel("Result Type"));
+		renderersPanel.add(renderers);
+		
+		add(renderersPanel, BorderLayout.NORTH);
 		
 		
 		resultPanel = new JPanel(new BorderLayout());
-		resultPanel.add(new JLabel("To display: select a result from the \"Results Panel\""), BorderLayout.CENTER);
+//		resultPanel.add(new JLabel("Select a result from the \"Results Panel\""), BorderLayout.CENTER);
 		resultPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		add(new JScrollPane(resultPanel), BorderLayout.CENTER);
 	}
@@ -141,25 +169,132 @@ public class RenderedResultComponent extends JPanel {
 					break;
 				}
 			}
+			if (mimeType == null) {
+				mimeType = "text/plain";
+			}
+
+			renderersForMimeType = rendererRegistry.getRenderersForMimeType(context, t2Reference, mimeType);
+			Object[] rendererList = new Object[renderersForMimeType.size()];
+			for (int i = 0; i < rendererList.length; i++) {
+				rendererList[i] = renderersForMimeType.get(i).getType();
+			}
+			renderers.setModel(new DefaultComboBoxModel(rendererList));
+			if (renderersForMimeType.size() > 0) {
+				renderers.setSelectedIndex(-1);
+				renderers.setSelectedIndex(0);
+			}
 		} else if (identified instanceof ErrorDocument) {
 			ErrorDocument errorDocument = (ErrorDocument) identified;
+			renderersForMimeType = null;
 			
-		}
-		if (mimeType == null) {
-			mimeType = "text/plain";
-		}
+			DefaultMutableTreeNode root = new DefaultMutableTreeNode();
+			buildErrorDocumentTree(root, errorDocument);
+			
+			JTree errorTree = new JTree(root);
+			errorTree.setRootVisible(false);
+			errorTree.setCellRenderer(new DefaultTreeCellRenderer() {
 
-		renderersForMimeType = rendererRegistry.getRenderersForMimeType(context, t2Reference, mimeType);
-		Object[] rendererList = new Object[renderersForMimeType.size()];
-		for (int i = 0; i < rendererList.length; i++) {
-			rendererList[i] = renderersForMimeType.get(i).getType();
-		}
-		renderers.setModel(new DefaultComboBoxModel(rendererList));
-		if (renderersForMimeType.size() > 0) {
-			renderers.setSelectedIndex(-1);
-			renderers.setSelectedIndex(0);
+				public Component getTreeCellRendererComponent(JTree tree,
+						Object value, boolean selected, boolean expanded,
+						boolean leaf, int row, boolean hasFocus) {
+					Component renderer = null;
+					if (value instanceof DefaultMutableTreeNode) {
+						DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) value;
+						Object userObject = treeNode.getUserObject();
+						if (userObject instanceof ErrorDocument) {
+							ErrorDocument errorDocument = (ErrorDocument) userObject;
+							renderer = super.getTreeCellRendererComponent(tree,
+									errorDocument.getMessage(),
+									selected, expanded, leaf, row, hasFocus);
+						}
+					}
+					if (renderer == null) {
+						renderer = super.getTreeCellRendererComponent(tree, value,
+							selected, expanded, leaf, row, hasFocus);
+					}
+					if (renderer instanceof JLabel) {
+						JLabel label = (JLabel) renderer;
+						label.setIcon(null);
+					}
+					return renderer;
+				}
+				
+			});
+	
+			renderers.setModel(new DefaultComboBoxModel(new String[] {"Error Document"}));
+			resultPanel.removeAll();
+			resultPanel.add(errorTree, BorderLayout.CENTER);
 		}
 		
+	}
+	
+	private void buildErrorDocumentTree(DefaultMutableTreeNode node, ErrorDocument errorDocument) {
+		DefaultMutableTreeNode child = new DefaultMutableTreeNode(errorDocument);
+		String exceptionMessage = errorDocument.getExceptionMessage();
+		if (exceptionMessage != null && !exceptionMessage.equals("")) {
+			DefaultMutableTreeNode exceptionMessageNode = new DefaultMutableTreeNode(exceptionMessage);
+			child.add(exceptionMessageNode);
+			List<StackTraceElementBean> stackTrace = errorDocument.getStackTraceStrings();
+			if (stackTrace.size() > 0) {
+				for (StackTraceElementBean stackTraceElement : stackTrace) {
+					exceptionMessageNode.add(new DefaultMutableTreeNode(getStackTraceElementString(stackTraceElement)));
+				}
+			}
+
+		}
+		node.add(child);
+
+		Set<T2Reference> errorReferences = errorDocument.getErrorReferences();
+		for (T2Reference reference : errorReferences) {
+			if (reference.getReferenceType().equals(T2ReferenceType.ErrorDocument)) {
+				ErrorDocumentService errorDocumentService = context.getReferenceService().getErrorDocumentService();
+				ErrorDocument causeErrorDocument = errorDocumentService.getError(reference);
+				if (errorReferences.size() == 1) {
+					buildErrorDocumentTree(node, causeErrorDocument);
+				} else {
+					buildErrorDocumentTree(child, causeErrorDocument);
+				}
+			} else if (reference.getReferenceType().equals(T2ReferenceType.IdentifiedList)) {
+				List<ErrorDocument> errorDocuments = getErrorDocuments(reference);
+				for (ErrorDocument errorDocument2 : errorDocuments) {
+					buildErrorDocumentTree(child, errorDocument2);
+				}
+			}
+			
+		}
+
+	}
+	
+	private String getStackTraceElementString(StackTraceElementBean stackTraceElement) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(stackTraceElement.getClassName());
+		sb.append('.');
+		sb.append(stackTraceElement.getMethodName());
+		if (stackTraceElement.getFileName() == null) {
+			sb.append("(unknown file)");
+		} else {
+			sb.append('(');
+			sb.append(stackTraceElement.getFileName());
+			sb.append(':');
+			sb.append(stackTraceElement.getLineNumber());
+			sb.append(')');
+		}
+		return sb.toString();
+	}
+	
+	private List<ErrorDocument> getErrorDocuments(T2Reference reference) {
+		List<ErrorDocument> errorDocuments = new ArrayList<ErrorDocument>();
+		if (reference.getReferenceType().equals(T2ReferenceType.ErrorDocument)) {
+			ErrorDocumentService errorDocumentService = context.getReferenceService().getErrorDocumentService();
+			errorDocuments.add(errorDocumentService.getError(reference));			
+		} else if (reference.getReferenceType().equals(T2ReferenceType.IdentifiedList)) {
+			ListService listService = context.getReferenceService().getListService();
+			IdentifiedList<T2Reference> list = listService.getList(reference);
+			for (T2Reference listReference : list) {
+				errorDocuments.addAll(getErrorDocuments(listReference));
+			}
+		}
+		return errorDocuments;
 	}
 
 	private String getMimeType(ExternalReferenceSPI externalReference, InvocationContext context) {
