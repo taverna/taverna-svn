@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileReader;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -144,6 +145,7 @@ public class LocalworkerTranslatorTest {
 		invoke(activity, inputs, expectedOutputs);
 
 	}
+
 	@Ignore
 	@Test
 	public void testDoTranslationEchoList() throws Exception {
@@ -378,22 +380,22 @@ public class LocalworkerTranslatorTest {
 		Map<String, Object> expectedOutputs = new HashMap<String, Object>();
 		expectedOutputs.put("outputlist", outputList);
 
-//		invoke(activity, inputs, expectedOutputs);
-//		Map<String, Object> outputs = ActivityInvoker.invokeAsyncActivity(
-//				activity, inputs, expectedOutputs.keySet());
-//		assertEquals(1, outputs.size());
-//		
-//		Object output = outputs.get("outputlist");
-//		if (output instanceof List) {
-//			List<String> newList = new ArrayList<String>();
-//			for (Object outputElement : (List) output) {
-//				if (outputElement instanceof byte[]) {
-//					newList.add(new String((byte[]) outputElement));
-//				}
-//			}
-//			output = newList;
-//		}
-//		assertEquals(expectedOutputs.get("outputlist"), output);
+		// invoke(activity, inputs, expectedOutputs);
+		// Map<String, Object> outputs = ActivityInvoker.invokeAsyncActivity(
+		// activity, inputs, expectedOutputs.keySet());
+		// assertEquals(1, outputs.size());
+		//		
+		// Object output = outputs.get("outputlist");
+		// if (output instanceof List) {
+		// List<String> newList = new ArrayList<String>();
+		// for (Object outputElement : (List) output) {
+		// if (outputElement instanceof byte[]) {
+		// newList.add(new String((byte[]) outputElement));
+		// }
+		// }
+		// output = newList;
+		// }
+		// assertEquals(expectedOutputs.get("outputlist"), output);
 	}
 
 	@Test
@@ -560,7 +562,7 @@ public class LocalworkerTranslatorTest {
 		}
 	}
 
-    @Ignore("Integration test")
+	@Ignore("Integration test")
 	@Test
 	public void testDoTranslationWebImageFetcher() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -591,12 +593,12 @@ public class LocalworkerTranslatorTest {
 		inputs = new HashMap<String, Object>();
 		inputs.put("url", "taverna-tests/testwebpage/testimage.gif");
 		inputs.put("base", "http://www.mygrid.org.uk/");
-		
+
 		expectedOutputs = new HashMap<String, Class<?>>();
 		expectedOutputs.put("image", byte[].class);
 
-		outputs = ActivityInvoker.invokeAsyncActivity(
-				activity, inputs, expectedOutputs);
+		outputs = ActivityInvoker.invokeAsyncActivity(activity, inputs,
+				expectedOutputs);
 		assertEquals(1, outputs.size());
 
 		output = outputs.get("image");
@@ -606,7 +608,7 @@ public class LocalworkerTranslatorTest {
 						.getResourceAsStream("/testimage.gif"))));
 	}
 
-    @Ignore("Integration test")
+	@Ignore("Integration test")
 	@Test
 	public void testDoTranslationWebPageFetcher() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -678,8 +680,14 @@ public class LocalworkerTranslatorTest {
 		verifyPorts(processor, activity);
 
 		Map<String, Object> inputs = new HashMap<String, Object>();
-		inputs.put("fileUrl", LocalworkerTranslator.class.getResource(
-				"/AY069118.gb").getFile());
+		URI uri = LocalworkerTranslator.class.getResource("/AY069118.gb")
+				.toURI();
+		File newFile = new File(uri);
+		newFile.getAbsolutePath();
+
+		// inputs.put("fileUrl", LocalworkerTranslator.class.getResource(
+		// "/AY069118.gb").getFile());
+		inputs.put("fileUrl", newFile.getAbsolutePath());
 		String expectedOutput = IOUtils.toString(LocalworkerTranslator.class
 				.getResourceAsStream("/AY069118.xml"));
 
@@ -705,9 +713,14 @@ public class LocalworkerTranslatorTest {
 
 		verifyPorts(processor, activity);
 
+		URI uri = LocalworkerTranslator.class.getResource("/AAC4_HUMAN.sp")
+				.toURI();
+		File newFile = new File(uri);
+		newFile.getAbsolutePath();
 		Map<String, Object> inputs = new HashMap<String, Object>();
-		inputs.put("fileUrl", LocalworkerTranslator.class.getResource(
-				"/AAC4_HUMAN.sp").getFile());
+		// inputs.put("fileUrl", LocalworkerTranslator.class.getResource(
+		// "/AAC4_HUMAN.sp").getFile());
+		inputs.put("fileUrl", newFile.getAbsolutePath());
 		String expectedOutput = IOUtils.toString(LocalworkerTranslator.class
 				.getResourceAsStream("/AAC4_HUMAN.xml"));
 
@@ -775,9 +788,13 @@ public class LocalworkerTranslatorTest {
 
 		verifyPorts(processor, activity);
 
+		URI uri = LocalworkerTranslator.class.getResource("/AAC4_HUMAN.sp")
+				.toURI();
+		File newFile = new File(uri);
 		Map<String, Object> inputs = new HashMap<String, Object>();
-		inputs.put("fileurl", LocalworkerTranslator.class.getResource(
-				"/AAC4_HUMAN.sp").getFile());
+		// inputs.put("fileurl", LocalworkerTranslator.class.getResource(
+		// "/AAC4_HUMAN.sp").getFile());
+		inputs.put("fileurl", newFile.getAbsolutePath());
 		Map<String, Object> expectedOutputs = new HashMap<String, Object>();
 		expectedOutputs.put("filecontents", IOUtils
 				.toString(LocalworkerTranslator.class
@@ -841,19 +858,37 @@ public class LocalworkerTranslatorTest {
 
 		verifyPorts(processor, activity);
 
+		URI inURI = LocalworkerTranslator.class.getResource("/test").toURI();
+		File newFile = new File(inURI);
 		Map<String, Object> inputs = new HashMap<String, Object>();
-		inputs.put("directory", LocalworkerTranslator.class
-				.getResource("/test").getFile());
+		// inputs.put("directory", LocalworkerTranslator.class
+		// .getResource("/test").getFile());
+		inputs.put("directory", newFile.getAbsolutePath());
 		inputs.put("extension", "test");
 		Map<String, Class<?>> expectedOutputs = new HashMap<String, Class<?>>();
 		expectedOutputs.put("filelist", String.class);
 		Set<String> outputList = new HashSet<String>();
-		outputList.add(LocalworkerTranslator.class.getResource(
-				"/test/alpha.test").getFile());
-		outputList.add(LocalworkerTranslator.class.getResource(
-				"/test/beta.test").getFile());
-		outputList.add(LocalworkerTranslator.class.getResource(
-				"/test/gamma.test").getFile());
+
+		URI alpha = LocalworkerTranslator.class.getResource("/test/alpha.test")
+				.toURI();
+		File alphaFile = new File(alpha);
+		URI beta = LocalworkerTranslator.class.getResource("/test/beta.test")
+				.toURI();
+		File betaFile = new File(beta);
+		URI gamma = LocalworkerTranslator.class.getResource("/test/gamma.test")
+				.toURI();
+		File gammaFile = new File(gamma);
+
+		// outputList.add(LocalworkerTranslator.class.getResource(
+		// "/test/alpha.test").getFile());
+		// outputList.add(LocalworkerTranslator.class.getResource(
+		// "/test/beta.test").getFile());
+		// outputList.add(LocalworkerTranslator.class.getResource(
+		// "/test/gamma.test").getFile());
+
+		outputList.add(alphaFile.getAbsolutePath());
+		outputList.add(betaFile.getAbsolutePath());
+		outputList.add(gammaFile.getAbsolutePath());
 
 		Map<String, Object> outputs = ActivityInvoker.invokeAsyncActivity(
 				activity, inputs, expectedOutputs);
@@ -863,7 +898,7 @@ public class LocalworkerTranslatorTest {
 		assertTrue(output instanceof List);
 		List returnedList = (List) output;
 		assertEquals(returnedList.size(), outputList.size());
-		
+
 		for (String outputFile : outputList) {
 			assertTrue(returnedList.remove(outputFile));
 		}
@@ -879,17 +914,27 @@ public class LocalworkerTranslatorTest {
 
 		verifyPorts(processor, activity);
 
+		URI inURI = LocalworkerTranslator.class.getResource("/test").toURI();
+		File inFile = new File(inURI);
+
 		Map<String, Object> inputs = new HashMap<String, Object>();
-		inputs.put("directory", LocalworkerTranslator.class
-				.getResource("/test").getFile());
+		// inputs.put("directory", LocalworkerTranslator.class
+		// .getResource("/test").getFile());
+		inputs.put("directory", inFile.getAbsolutePath());
 		inputs.put("regex", ".+[h|t]a\\.test");
 		Map<String, Class<?>> expectedOutputs = new HashMap<String, Class<?>>();
 		expectedOutputs.put("filelist", String.class);
 		Set<String> outputList = new HashSet<String>();
-		outputList.add(LocalworkerTranslator.class.getResource(
-				"/test/alpha.test").getFile());
-		outputList.add(LocalworkerTranslator.class.getResource(
-				"/test/beta.test").getFile());
+
+		URI alpha = LocalworkerTranslator.class.getResource("/test/alpha.test")
+				.toURI();
+		File alphaFile = new File(alpha);
+		URI beta = LocalworkerTranslator.class.getResource("/test/beta.test")
+				.toURI();
+		File betaFile = new File(beta);
+
+		outputList.add(alphaFile.getAbsolutePath());
+		outputList.add(betaFile.getAbsolutePath());
 
 		Map<String, Object> outputs = ActivityInvoker.invokeAsyncActivity(
 				activity, inputs, expectedOutputs);
@@ -899,19 +944,20 @@ public class LocalworkerTranslatorTest {
 		assertTrue(output instanceof List);
 		List returnedList = (List) output;
 		assertEquals(returnedList.size(), outputList.size());
-		
+
 		for (String outputFile : outputList) {
 			assertTrue(returnedList.remove(outputFile));
 		}
-//		Map<String, Object> outputs = ActivityInvoker.invokeAsyncActivity(
-//				activity, inputs, expectedOutputs.keySet());
-//		assertEquals(expectedOutputs.size(), outputs.size());
-//		for (Map.Entry<String, Object> output : expectedOutputs.entrySet()) {
-//			assertTrue("No output for port " + output.getKey(), outputs
-//					.containsKey(output.getKey()));
-//			assertEquals(output.getValue(), new HashSet<String>((Collection<String>) outputs
-//						.get(output.getKey())));
-//		}
+		// Map<String, Object> outputs = ActivityInvoker.invokeAsyncActivity(
+		// activity, inputs, expectedOutputs.keySet());
+		// assertEquals(expectedOutputs.size(), outputs.size());
+		// for (Map.Entry<String, Object> output : expectedOutputs.entrySet()) {
+		// assertTrue("No output for port " + output.getKey(), outputs
+		// .containsKey(output.getKey()));
+		// assertEquals(output.getValue(), new
+		// HashSet<String>((Collection<String>) outputs
+		// .get(output.getKey())));
+		// }
 	}
 
 	@Test
@@ -949,12 +995,24 @@ public class LocalworkerTranslatorTest {
 
 		verifyPorts(processor, activity);
 
+		URI in1 = LocalworkerTranslator.class.getResource(
+				"/concatenateTestFile1.txt").toURI();
+		File inFile1 = new File(in1);
+
+		URI in2 = LocalworkerTranslator.class.getResource(
+				"/concatenateTestFile2.txt").toURI();
+		File inFile2 = new File(in2);
+
 		File temp = File.createTempFile("temp", null);
 		List<String> inputList = new ArrayList<String>();
-		inputList.add(LocalworkerTranslator.class.getResource(
-				"/concatenateTestFile1.txt").getFile());
-		inputList.add(LocalworkerTranslator.class.getResource(
-				"/concatenateTestFile2.txt").getFile());
+//		inputList.add(LocalworkerTranslator.class.getResource(
+//				"/concatenateTestFile1.txt").getFile());
+//		inputList.add(LocalworkerTranslator.class.getResource(
+//				"/concatenateTestFile2.txt").getFile());
+
+		inputList.add(inFile1.getAbsolutePath());
+		inputList.add(inFile2.getAbsolutePath());
+
 		Map<String, Object> inputs = new HashMap<String, Object>();
 		inputs.put("filelist", inputList);
 		inputs.put("outputfile", temp.getAbsolutePath());
@@ -969,8 +1027,8 @@ public class LocalworkerTranslatorTest {
 		assertEquals(IOUtils.toString(LocalworkerTranslator.class
 				.getResourceAsStream("/concatenateTestOut.txt")), IOUtils
 				.toString(new FileReader(temp)));
-		
-		//test displayresults = false
+
+		// test displayresults = false
 		inputs.put("displayresults", "false");
 		expectedOutputs = new HashMap<String, Object>();
 
@@ -998,7 +1056,8 @@ public class LocalworkerTranslatorTest {
 
 		Object output = outputs.get("properties");
 		assertTrue(output instanceof String);
-		assertTrue(((String) output).startsWith("<?xml version=\"1.0\"?>\n<property-list>\n"));
+		assertTrue(((String) output)
+				.startsWith("<?xml version=\"1.0\"?>\n<property-list>\n"));
 		assertTrue(((String) output).endsWith("</property-list>"));
 	}
 
@@ -1015,7 +1074,8 @@ public class LocalworkerTranslatorTest {
 					}
 					expectedOutput.put(entry.getKey(), element.getClass());
 				} else {
-					expectedOutput.put(entry.getKey(), entry.getValue().getClass());
+					expectedOutput.put(entry.getKey(), entry.getValue()
+							.getClass());
 				}
 			}
 			Map<String, Object> outputs = ActivityInvoker.invokeAsyncActivity(
