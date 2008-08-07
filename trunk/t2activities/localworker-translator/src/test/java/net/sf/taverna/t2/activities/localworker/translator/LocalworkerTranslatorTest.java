@@ -843,7 +843,7 @@ public class LocalworkerTranslatorTest {
 		inputs.put("command", "echo");
 		inputs.put("args", Collections.singletonList("hello"));
 		Map<String, Object> expectedOutputs = new HashMap<String, Object>();
-		expectedOutputs.put("result", "hello\n");
+		expectedOutputs.put("result", "hello" + System.getProperty("line.separator"));
 
 		invoke(activity, inputs, expectedOutputs);
 	}
