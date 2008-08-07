@@ -327,9 +327,18 @@ public class FileManagerImpl extends FileManager {
 
 	@Override
 	public void setCurrentDataflow(Dataflow dataflow) {
+		setCurrentDataflow(dataflow, false);
+	}
+	@Override
+	public void setCurrentDataflow(Dataflow dataflow, boolean openIfNeeded) {
 		if (!isDataflowOpen(dataflow)) {
-			throw new IllegalArgumentException("Dataflow is not open: "
-					+ dataflow);
+			if (openIfNeeded) {
+				openDataflow(dataflow);
+				return;
+			} else {
+				throw new IllegalArgumentException("Dataflow is not open: "
+						+ dataflow);
+			}
 		}
 		modelMap.setModel(ModelMapConstants.CURRENT_DATAFLOW, dataflow);
 	}

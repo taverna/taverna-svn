@@ -183,6 +183,8 @@ public abstract class FileManager implements Observable<FileManagerEvent> {
 
 	public abstract void setCurrentDataflow(Dataflow dataflow);
 
+	public abstract void setCurrentDataflow(Dataflow dataflow, boolean openIfNeeded);
+	
 	public abstract void setDataflowChanged(Dataflow dataflow, boolean isChanged);
 
 	public abstract List<FileFilter> getOpenFileFilters();
