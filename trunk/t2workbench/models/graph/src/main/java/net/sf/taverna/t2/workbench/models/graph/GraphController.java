@@ -666,8 +666,8 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 
 		for (ProcessorInputPort inputPort : processor.getInputPorts()) {
 			GraphNode portNode = graphModelFactory.createGraphNode(graphEventManager);
-			portNode.setId("i" + inputPort.getName());
-			portNode.setLabel(inputPort.getName());
+			portNode.setId("i" + inputPort.getName().replaceAll("\\.", ""));
+			portNode.setLabel(inputPort.getName()/*.replaceAll("\\.", "\\\\n")*/);
 			if (depth == 0) {
 				portNode.setDataflowObject(inputPort);
 			}
@@ -681,8 +681,8 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 
 		for (ProcessorOutputPort outputPort : processor.getOutputPorts()) {
 			GraphNode portNode = graphModelFactory.createGraphNode(graphEventManager);
-			portNode.setId("o" + outputPort.getName());
-			portNode.setLabel(outputPort.getName());
+			portNode.setId("o" + outputPort.getName().replaceAll("\\.", ""));
+			portNode.setLabel(outputPort.getName()/*.replaceAll("\\.", "\\\\n")*/);
 			if (depth == 0) {
 				portNode.setDataflowObject(outputPort);
 			}
