@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvokerTest.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-07-16 14:53:17 $
+ * Last modified on   $Date: 2008-08-08 10:29:01 $
  *               by   $Author: stain $
  * Created on 04-May-2006
  *****************************************************************/
@@ -51,6 +51,7 @@ import org.junit.Test;
 
 public class WSDLSOAPInvokerTest  implements LocationConstants {
 
+	@Ignore("Integration test")
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testPrimitive() throws Exception {
@@ -85,6 +86,7 @@ public class WSDLSOAPInvokerTest  implements LocationConstants {
 
 	}
 
+	@Ignore("Integration test")
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testComplexDocStyle() throws Exception {
@@ -175,6 +177,7 @@ public class WSDLSOAPInvokerTest  implements LocationConstants {
 				.get("getDatabasesWithDetailsReturn"));
 	}
 
+	@Ignore("Integration test")
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testSOAPEncoded() throws Exception {
@@ -225,6 +228,7 @@ public class WSDLSOAPInvokerTest  implements LocationConstants {
 
 	// can't always assume the return will be nested in a tag named the same as
 	// the output message part.
+	@Ignore("Integration test")
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testEncodedDifferentOutputName() throws Exception {

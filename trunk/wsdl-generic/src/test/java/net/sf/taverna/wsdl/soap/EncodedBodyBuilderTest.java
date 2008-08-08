@@ -12,12 +12,13 @@ import net.sf.taverna.wsdl.parser.WSDLParser;
 import net.sf.taverna.wsdl.testutils.LocationConstants;
 
 import org.apache.axis.message.SOAPBodyElement;
+import org.junit.Ignore;
 import org.junit.Test;
 
 
 public class EncodedBodyBuilderTest implements LocationConstants {
 
-	
+	@Ignore("Integration test")
 	@Test
 	public void testSimpleCase() throws Exception {
 		Map<String,Object> inputMap = new HashMap<String, Object>();
@@ -34,6 +35,7 @@ public class EncodedBodyBuilderTest implements LocationConstants {
 		assertTrue("Contents of body are not as expected: actual body:"+xml,xml.contains("<str xsi:type=\"xsd:string\">Roger Ramjet</str>"));
 	}
 	
+	@Ignore("Integration test")
 	@Test
 	public void testStringArray() throws Exception {
 		Map<String,Object> inputMap = new HashMap<String, Object>();
@@ -53,6 +55,7 @@ public class EncodedBodyBuilderTest implements LocationConstants {
 		assertTrue("Contents of body are not as expected: actual body:"+xml,xml.contains("<string>one</string><string>two</string><string>three</string>"));
 	}
 	
+	@Ignore("Integration test")
 	@Test
 	public void testComplexType() throws Exception {
 		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"TestServices-rpcencoded.wsdl", "personToString");

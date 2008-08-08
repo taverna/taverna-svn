@@ -79,15 +79,15 @@ public class XMLSplitterSerialisationHelperTest {
 		assertTrue("wrong type", a instanceof ComplexTypeDescriptor);
 		assertEquals("wrong name", "a", a.getName());
 
-		List a_elements = ((ComplexTypeDescriptor) a).getElements();
+		List<TypeDescriptor> a_elements = ((ComplexTypeDescriptor) a).getElements();
 
 		assertEquals("should be only 1 element", 1, a_elements.size());
 
-		TypeDescriptor b = (TypeDescriptor) a_elements.get(0);
+		TypeDescriptor b = a_elements.get(0);
 
 		assertTrue("wrong type", b instanceof ComplexTypeDescriptor);
 
-		List b_elements = ((ComplexTypeDescriptor) b).getElements();
+		List<TypeDescriptor> b_elements = ((ComplexTypeDescriptor) b).getElements();
 
 		assertEquals("should be only 1 element", 1, b_elements.size());
 

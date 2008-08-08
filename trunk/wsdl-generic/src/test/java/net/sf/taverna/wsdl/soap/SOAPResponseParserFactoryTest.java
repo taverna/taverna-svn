@@ -8,12 +8,14 @@ import java.util.List;
 import net.sf.taverna.wsdl.parser.WSDLParser;
 import net.sf.taverna.wsdl.testutils.LocationConstants;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class SOAPResponseParserFactoryTest  implements LocationConstants {
 
 	//tests that the factory always returns a SOAPResponseLiteralParser regardless of the 
 	//output mime type, if the use is set to 'literal' (unwrapped/literal)
+	@Ignore("Integration test")
 	@Test
 	public void testLiteralUnwrappedParserForNonXMLOutput() throws Exception {
 		SOAPResponseParserFactory factory = SOAPResponseParserFactory.instance();
@@ -26,6 +28,7 @@ public class SOAPResponseParserFactoryTest  implements LocationConstants {
 	}
 	
 	//an additional test using another unwrapped/literal wsdl that returns a primative type
+	@Ignore("Integration test")
 	@Test
 	public void testLiteralUnwrappedAlternativeWSDL() throws Exception {
 		SOAPResponseParserFactory factory = SOAPResponseParserFactory.instance();

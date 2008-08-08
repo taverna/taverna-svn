@@ -13,11 +13,13 @@ import net.sf.taverna.wsdl.parser.WSDLParser;
 import net.sf.taverna.wsdl.testutils.LocationConstants;
 
 import org.apache.axis.message.SOAPBodyElement;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Node;
 
 public class LiteralBodyBuilderTest implements LocationConstants{
 
+	@Ignore("Integration test")
 	@Test
 	public void testUnqualifiedNamespaces() throws Exception {
 		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"whatizit.wsdl", "queryPmid");
@@ -36,6 +38,7 @@ public class LiteralBodyBuilderTest implements LocationConstants{
 		assertTrue("Wrapping element should have its namespace declared",xml.contains("<ns1:queryPmid"));
 	}
 	
+	@Ignore("Integration test")
 	@Test
 	public void testQualifiedUnwrapped() throws Exception {
 		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"TestServices-unwrapped.wsdl", "countString");
@@ -49,6 +52,7 @@ public class LiteralBodyBuilderTest implements LocationConstants{
 		assertEquals("XML should containe qualifed namespace for str",xml,"<ns1:str xmlns:ns1=\"http://testing.org\">bob</ns1:str>");
 	}
 	
+	@Ignore("Integration test")
 	@Test
 	public void testUnwrappedSimple() throws Exception {
 		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"TestServices-unwrapped.wsdl", "countString");
@@ -64,6 +68,7 @@ public class LiteralBodyBuilderTest implements LocationConstants{
 		assertEquals("Value should be 12345:","12345",body.getFirstChild().getNextSibling().getNodeValue());
 	}
 	
+	@Ignore("Integration test")
 	@Test
 	public void testUnwrappedArray() throws Exception {
 		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"TestServices-unwrapped.wsdl", "countStringArray");
@@ -83,6 +88,7 @@ public class LiteralBodyBuilderTest implements LocationConstants{
 		assertEquals("First Array element should have the value '1'. xml = "+xml,"1",itemElement.getFirstChild().getNodeValue());
 	}
 	
+	@Ignore("Integration test")
 	@Test 
 	public void testOperationElementNameEUtils() throws Exception {
 		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"eutils/eutils_lite.wsdl", "run_eInfo");
@@ -120,6 +126,7 @@ public class LiteralBodyBuilderTest implements LocationConstants{
 				body.getQName());
 	}
 	
+	@Ignore("Integration test")
 	@Test
 	public void testRPCLiteral() throws Exception {
 		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"MyService-rpc-literal.wsdl", "countString");

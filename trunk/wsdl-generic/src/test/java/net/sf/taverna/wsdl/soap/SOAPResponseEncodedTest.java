@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseEncodedTest.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-11-30 12:13:37 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2008-08-08 10:29:00 $
+ *               by   $Author: stain $
  * Created on 08-May-2006
  *****************************************************************/
 package net.sf.taverna.wsdl.soap;
@@ -48,11 +48,13 @@ import net.sf.taverna.wsdl.parser.WSDLParser;
 import net.sf.taverna.wsdl.testutils.LocationConstants;
 
 import org.apache.axis.message.SOAPBodyElement;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class SOAPResponseEncodedTest  implements LocationConstants {
 	
+	@Ignore("Integration test")
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testSimpleRPC() throws Exception {

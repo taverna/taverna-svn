@@ -10,10 +10,12 @@ import net.sf.taverna.wsdl.parser.TypeDescriptor;
 import net.sf.taverna.wsdl.parser.WSDLParser;
 import net.sf.taverna.wsdl.testutils.LocationConstants;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class XMLInputSplitterTest implements LocationConstants{
 
+	@Ignore("Integration test")
 	@Test
 	public void testExecute() throws Exception {
 		WSDLParser parser = new WSDLParser(WSDL_TEST_BASE+"eutils/eutils_lite.wsdl");
