@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseEncodedMultiRefParser.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-11-28 16:05:45 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2008-08-08 10:28:09 $
+ *               by   $Author: stain $
  * Created on 05-May-2006
  *****************************************************************/
 package net.sf.taverna.wsdl.soap;
@@ -78,6 +78,7 @@ public class SOAPResponseEncodedMultiRefParser extends
 	 * @param response -
 	 *            List of XML SOAPBodyElement fragments.
 	 */
+	@Override
 	public Map parse(List response) throws Exception, CyclicReferenceException {
 		Map result = new HashMap();
 		generateRefMap(response);
@@ -93,7 +94,7 @@ public class SOAPResponseEncodedMultiRefParser extends
 				String xml;
 				if (getStripAttributes()) {
 					stripAttributes(outputNode);
-					outputNode = (Node) removeNamespace(outputName,
+					outputNode = removeNamespace(outputName,
 							(Element) outputNode);
 				}
 				xml = XMLUtils.ElementToString((Element) outputNode);

@@ -59,6 +59,7 @@ public class LiteralBodyBuilder extends AbstractBodyBuilder {
 		return body;
 	}
 
+	@Override
 	protected Element createSkeletonElementForSingleItem(
 			Map<String, String> namespaceMappings, TypeDescriptor descriptor,
 			String inputName, String typeName) {

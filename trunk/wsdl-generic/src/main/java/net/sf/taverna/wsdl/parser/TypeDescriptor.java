@@ -105,6 +105,7 @@ public class TypeDescriptor {
 		this.unbounded = unbounded;
 	}
 
+	@Override
 	public String toString() {
 		return name + ":" + type;
 	}
@@ -131,7 +132,7 @@ public class TypeDescriptor {
 	public static void retrieveSignature(List<TypeDescriptor> params, String[] names,
 			Class<?>[] types) {
 		for (int i = 0; i < names.length; i++) {
-			TypeDescriptor descriptor = (TypeDescriptor) params.get(i);
+			TypeDescriptor descriptor = params.get(i);
 			names[i] = descriptor.getName();
 			
 			types[i]=determineClassType(descriptor);
@@ -237,7 +238,7 @@ public class TypeDescriptor {
 		else {
 			parents.add(descKey);
 
-			TypeDescriptor elementDescriptor = (TypeDescriptor) descriptor
+			TypeDescriptor elementDescriptor = descriptor
 					.getElementType();
 			if (elementDescriptor instanceof ComplexTypeDescriptor) {
 				result = testForCyclic(

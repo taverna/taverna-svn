@@ -44,7 +44,7 @@ public class EncodedBodyBuilder extends AbstractBodyBuilder {
 		for (Iterator iterator = namespaceMappings.keySet().iterator(); iterator
 				.hasNext();) {
 			String namespaceURI = (String) iterator.next();
-			String ns = (String) namespaceMappings.get(namespaceURI);
+			String ns = namespaceMappings.get(namespaceURI);
 			result.addNamespaceDeclaration(ns, namespaceURI);
 		}
 		result.setAttribute("soapenv:encodingStyle",
@@ -52,6 +52,7 @@ public class EncodedBodyBuilder extends AbstractBodyBuilder {
 		return result;
 	}
 
+	@Override
 	protected Element createSkeletonElementForSingleItem(
 			Map<String, String> namespaceMappings, TypeDescriptor descriptor,
 			String inputName, String typeName) {

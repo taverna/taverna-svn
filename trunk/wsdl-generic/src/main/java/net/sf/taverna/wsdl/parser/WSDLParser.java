@@ -462,7 +462,7 @@ public class WSDLParser {
 	}
 
 	private SymbolTable getSymbolTable() {
-		return (SymbolTable) symbolTableMap.get(getWSDLLocation());
+		return symbolTableMap.get(getWSDLLocation());
 	}
 
 	private List<Operation> determineOperations() {
@@ -577,7 +577,7 @@ public class WSDLParser {
 
 	private BindingOperation getBindingOperation(String operationName)
 			throws UnknownOperationException {
-		BindingOperation result = (BindingOperation) bindingOperations
+		BindingOperation result = bindingOperations
 				.get(operationName);
 		if (result == null) {
 			List bindings = getBinding(operationName).getBindingOperations();
@@ -760,7 +760,7 @@ public class WSDLParser {
 	}
 
 	private ComplexTypeDescriptor copyFromCache(String key) {
-		ComplexTypeDescriptor cached = (ComplexTypeDescriptor) cachedComplexTypes
+		ComplexTypeDescriptor cached = cachedComplexTypes
 				.get(key);
 		ComplexTypeDescriptor result = new ComplexTypeDescriptor();
 		result.setQname(cached.getQname());

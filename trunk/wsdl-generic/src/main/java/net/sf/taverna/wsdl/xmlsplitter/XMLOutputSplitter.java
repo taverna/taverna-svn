@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLOutputSplitter.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-11-28 16:05:45 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2008-08-08 10:28:07 $
+ *               by   $Author: stain $
  * Created on 16-May-2006
  *****************************************************************/
 package net.sf.taverna.wsdl.xmlsplitter;
@@ -46,13 +46,12 @@ import net.sf.taverna.wsdl.parser.BaseTypeDescriptor;
 import net.sf.taverna.wsdl.parser.ComplexTypeDescriptor;
 import net.sf.taverna.wsdl.parser.TypeDescriptor;
 
+import org.apache.axis.encoding.Base64;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
-
-import sun.misc.BASE64Decoder;
 
 public class XMLOutputSplitter {
 
@@ -132,7 +131,7 @@ public class XMLOutputSplitter {
 		result.put(outputNames[0], values);
 	}
 
-	@SuppressWarnings({ "unchecked", "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	private void executeForComplexType(Map<String, Object> result,
 			List<String> outputNameList, List<Element> children)
 			throws IOException {
@@ -159,7 +158,8 @@ public class XMLOutputSplitter {
 						result.put(child.getName(), xmlText);
 					} else if (outputTypes[i]
 							.equals("'application/octet-stream'")) { // base64Binary
-						byte[] data = new BASE64Decoder().decodeBuffer(child
+						
+						byte[] data = Base64.decode(child
 								.getText());
 						result.put(child.getName(), data);
 					} else if (outputTypes[i].equals("l('text/plain')")) { // an

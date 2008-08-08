@@ -12,14 +12,13 @@ import net.sf.taverna.wsdl.parser.BaseTypeDescriptor;
 import net.sf.taverna.wsdl.parser.ComplexTypeDescriptor;
 import net.sf.taverna.wsdl.parser.TypeDescriptor;
 
+import org.apache.axis.encoding.Base64;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
-
-import sun.misc.BASE64Encoder;
 
 public class XMLInputSplitter {
 
@@ -161,7 +160,7 @@ public class XMLInputSplitter {
 									org.jdom.Namespace
 											.getNamespace("xsi",
 													"http://www.w3.org/2001/XMLSchema-instance"));
-					dataObject = new BASE64Encoder()
+					dataObject = Base64
 							.encode(((byte[]) dataObject));
 				}
 				dataElement.setText(dataObject.toString());

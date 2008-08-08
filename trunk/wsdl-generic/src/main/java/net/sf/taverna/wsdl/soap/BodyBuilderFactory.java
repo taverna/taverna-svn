@@ -11,7 +11,6 @@ import net.sf.taverna.wsdl.parser.WSDLParser;
  * @author Stuart Owen
  *
  */
-@SuppressWarnings("unchecked")
 public class BodyBuilderFactory {
 	
 	private static BodyBuilderFactory instance = new BodyBuilderFactory();

@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseEncodedParser.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-11-28 16:05:45 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2008-08-08 10:28:09 $
+ *               by   $Author: stain $
  * Created on 08-May-2006
  *****************************************************************/
 package net.sf.taverna.wsdl.soap;
@@ -80,7 +80,6 @@ public class SOAPResponseEncodedParser implements SOAPResponseParser {
 	 * @param List
 	 * @return Map
 	 */
-	@SuppressWarnings("unchecked")
 	public Map parse(List response) throws Exception {
 
 		Map result = new HashMap();
@@ -95,7 +94,7 @@ public class SOAPResponseEncodedParser implements SOAPResponseParser {
 				
 				if (stripAttributes) {					
 					stripAttributes(outputNode);
-					outputNode = (Node) removeNamespace(outputName,
+					outputNode = removeNamespace(outputName,
 							(Element) outputNode);
 				}
 				
@@ -109,11 +108,11 @@ public class SOAPResponseEncodedParser implements SOAPResponseParser {
 
 	protected Node getOutputNode(Element mainBody, String outputName) {
 		// first try using body namespace ...
-		Node outputNode = (Node) mainBody.getElementsByTagNameNS(
+		Node outputNode = mainBody.getElementsByTagNameNS(
 				mainBody.getNamespaceURI(), outputName).item(0);
 		// ... and if that doesn't work, try without namespace
 		if (outputNode == null) {
-			outputNode = (Node) mainBody.getElementsByTagName(outputName).item(
+			outputNode = mainBody.getElementsByTagName(outputName).item(
 					0);
 		}
 		if (outputNode == null) { // if still null, and there is only 1

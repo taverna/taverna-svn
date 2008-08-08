@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLSplitterSerialisationHelper.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-11-28 16:05:45 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2008-08-08 10:28:08 $
+ *               by   $Author: stain $
  * Created on 16-May-2006
  *****************************************************************/
 package net.sf.taverna.wsdl.xmlsplitter;
@@ -58,9 +58,9 @@ import org.jdom.Namespace;
  */
 
 public class XMLSplitterSerialisationHelper {
-	
+
 	public final static Namespace XScuflNS = Namespace.getNamespace("s",
-	"http://org.embl.ebi.escience/xscufl/0.1alpha");
+			"http://org.embl.ebi.escience/xscufl/0.1alpha");
 
 	private static Logger logger = Logger
 			.getLogger(XMLSplitterSerialisationHelper.class);
@@ -90,7 +90,8 @@ public class XMLSplitterSerialisationHelper {
 	 */
 	public static TypeDescriptor extensionXMLToTypeDescriptor(Element element) {
 		Element child = (Element) element.getChildren().get(0);
-		return buildTypeDescriptorFromElement(child, new HashMap<String,TypeDescriptor>());
+		return buildTypeDescriptorFromElement(child,
+				new HashMap<String, TypeDescriptor>());
 	}
 
 	private static Element constructElementForArrayType(
@@ -160,7 +161,8 @@ public class XMLSplitterSerialisationHelper {
 		element.setAttribute("unbounded", String.valueOf(descriptor
 				.isUnbounded()));
 		if (descriptor instanceof ArrayTypeDescriptor) {
-			element.setAttribute("wrapped",String.valueOf(((ArrayTypeDescriptor)descriptor).isWrapped()));
+			element.setAttribute("wrapped", String
+					.valueOf(((ArrayTypeDescriptor) descriptor).isWrapped()));
 		}
 		element.setAttribute("typename", descriptor.getType());
 		element.setAttribute("name", descriptor.getName() == null ? ""
@@ -169,10 +171,10 @@ public class XMLSplitterSerialisationHelper {
 	}
 
 	private static TypeDescriptor buildTypeDescriptorFromElement(
-			Element element, HashMap<String,TypeDescriptor> existingsTypes) {
+			Element element, HashMap<String, TypeDescriptor> existingsTypes) {
 		TypeDescriptor result = null;
 		if (element.getAttributeValue("id") != null) {
-			TypeDescriptor stored = (TypeDescriptor) existingsTypes.get(element
+			TypeDescriptor stored = existingsTypes.get(element
 					.getAttributeValue("id"));
 			if (stored == null)
 				logger.fatal("Missing reference to parent type with id="
@@ -187,8 +189,7 @@ public class XMLSplitterSerialisationHelper {
 				result = new ComplexTypeDescriptor();
 				populateDescriptor(element, result);
 				existingsTypes.put(result.getQname().toString(), result);
-				Element elements = element
-						.getChild("elements", XScuflNS);
+				Element elements = element.getChild("elements", XScuflNS);
 				for (Iterator<?> iterator = elements.getChildren().iterator(); iterator
 						.hasNext();) {
 					Element childElement = (Element) iterator.next();
@@ -202,19 +203,21 @@ public class XMLSplitterSerialisationHelper {
 				result = new ArrayTypeDescriptor();
 				populateDescriptor(element, result);
 				existingsTypes.put(result.getQname().toString(), result);
-				Element elementType = element.getChild("elementtype",
-						XScuflNS);
+				Element elementType = element.getChild("elementtype", XScuflNS);
 				((ArrayTypeDescriptor) result)
 						.setElementType(buildTypeDescriptorFromElement(
 								(Element) elementType.getChildren().get(0),
 								existingsTypes));
-				if (element.getAttribute("wrapped")!=null) {
-					((ArrayTypeDescriptor)result).setWrapped(element.getAttributeValue("wrapped").equalsIgnoreCase("true"));
-				}
-				else {
-					//prior to the addition of the wrapped attribute, in the majority of cases an array
-					//would not be wrapped if it was flagged as unbounded.
-					((ArrayTypeDescriptor)result).setWrapped(!result.isUnbounded());
+				if (element.getAttribute("wrapped") != null) {
+					((ArrayTypeDescriptor) result).setWrapped(element
+							.getAttributeValue("wrapped").equalsIgnoreCase(
+									"true"));
+				} else {
+					// prior to the addition of the wrapped attribute, in the
+					// majority of cases an array
+					// would not be wrapped if it was flagged as unbounded.
+					((ArrayTypeDescriptor) result).setWrapped(!result
+							.isUnbounded());
 				}
 
 			} else if (element.getName().equalsIgnoreCase("basetype")) {
@@ -253,6 +256,9 @@ public class XMLSplitterSerialisationHelper {
 			complex.setElements(((ComplexTypeDescriptor) descriptor)
 					.getElements());
 			result = complex;
+		} else {
+			throw new IllegalArgumentException("Unexpected type descriptor: "
+					+ descriptor);
 		}
 		result.setType(descriptor.getType());
 

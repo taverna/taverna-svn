@@ -25,6 +25,7 @@ public class ArrayTypeDescriptor extends TypeDescriptor {
 		this.elementType = elementType;
 	}
 
+	@Override
 	public String getName() {
 		String name = super.getName();
 		if (name == null) {
