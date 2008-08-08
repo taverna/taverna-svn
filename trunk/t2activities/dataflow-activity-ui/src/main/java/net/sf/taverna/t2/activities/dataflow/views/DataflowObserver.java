@@ -81,7 +81,7 @@ public class DataflowObserver {
 							// remap the processor
 							EditsRegistry.getEdits()
 									.getMapProcessorPortsForActivityEdit(
-											(Processor) list.get(1));
+											(Processor) list.get(1)).doEdit();
 						}
 					}
 
