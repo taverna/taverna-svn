@@ -12,6 +12,7 @@ import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class AddXMLSplitterEditTest implements LocationConstants {
@@ -23,6 +24,7 @@ public class AddXMLSplitterEditTest implements LocationConstants {
 	+ "eutils/eutils_lite.wsdl";
 	private Edits edits;
 
+	@Ignore("Integration test")
 	@Before
 	public void setUp() throws Exception {
 		activity = new WSDLActivity();
@@ -41,7 +43,7 @@ public class AddXMLSplitterEditTest implements LocationConstants {
 		
 	}
 	
-	
+	@Ignore("Integration test")
 	@Test
 	public void testAddOutputSplitterToWSDLActivity() throws Exception {
 		AddXMLSplitterEdit edit = new AddXMLSplitterEdit(dataflow,activity,"parameters",false);
@@ -67,6 +69,7 @@ public class AddXMLSplitterEditTest implements LocationConstants {
 		assertEquals("There should be 1 datalink",1,dataflow.getLinks().size());
 	}
 	
+	@Ignore("Integration test")
 	@Test
 	public void testUndo() throws Exception {
 		AddXMLSplitterEdit edit = new AddXMLSplitterEdit(dataflow,activity,"parameters",false);
@@ -77,6 +80,7 @@ public class AddXMLSplitterEditTest implements LocationConstants {
 		assertEquals("There should be no datalinks",0,dataflow.getLinks().size());
 	}
 	
+	@Ignore("Integration test")
 	@Test
 	public void testAddInputSplitterToWSDLActivity() throws Exception {
 		AddXMLSplitterEdit edit = new AddXMLSplitterEdit(dataflow,activity,"parameters",true);
