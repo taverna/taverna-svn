@@ -298,6 +298,7 @@ public class IterationStrategyImpl implements IterationStrategy {
 			}
 			if (removeMe != null) {
 				this.inputs.remove(removeMe);
+				removeMe.removeFromParent();
 			}
 		}
 	}
