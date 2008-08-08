@@ -106,6 +106,16 @@
 			<name>myGrid Repository</name>
 			<url>http://www.mygrid.org.uk/maven/repository</url>
 		</repository>
+		<repository>
+			<!-- myGrid release artifacts -->
+			<releases>
+				<enabled>false</enabled>
+            </releases>
+			<snapshots/>
+			<id>mygrid-snapshot-repository</id>
+			<name>myGrid snapshot Repository</name>
+			<url>http://www.mygrid.org.uk/maven/snapshot-repository</url>
+		</repository>
 	</repositories>
 
 </project>
