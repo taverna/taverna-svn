@@ -33,6 +33,7 @@ import net.sf.taverna.t2.workbench.iterationstrategy.IterationStrategyIcons;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.CrossProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DotProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategyNode;
+import net.sf.taverna.t2.workflowmodel.processor.iteration.TerminalNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyImpl;
 
 import org.apache.log4j.Logger;
@@ -365,13 +366,28 @@ public class IterationStrategyEditorControl extends JPanel {
 				return;
 			}
 			IterationStrategyNode selectedParent = selectedNode.getParent();
-			if (selectedParent != null
-					&& selectedParent.equals(aboveNode.getParent())) {
+			IterationStrategyNode aboveParent = aboveNode.getParent();
+			if (selectedParent != null && selectedParent.equals(aboveParent)) {
 				// Siblings
 				int aboveChildIndex = selectedParent.getIndex(aboveNode);
 				selectedParent.insert(selectedNode, aboveChildIndex);
 				model.nodeStructureChanged(selectedParent);
 				selectNode(selectedNode);
+			} else if (aboveNode.equals(selectedParent)) {
+				if (aboveParent instanceof TerminalNode
+						&& selectedNode.getAllowsChildren()) {
+					aboveNode.setParent(selectedNode);
+					selectedNode.setParent(aboveParent);
+					model.nodeStructureChanged(selectedParent);
+					selectNode(selectedNode);
+				} else {
+					int aboveChildIndex = aboveParent.getIndex(aboveNode);
+					aboveParent.insert(selectedNode, aboveChildIndex);
+					model.nodeStructureChanged(aboveParent);
+					selectNode(selectedNode);
+				}
+			} else {
+
 			}
 
 		}
