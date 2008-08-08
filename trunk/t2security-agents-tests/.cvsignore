@@ -2,3 +2,5 @@
 .classpath
 target
 target-eclipse
+bin
+.project
