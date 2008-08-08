@@ -3,21 +3,15 @@ package net.sf.taverna.t2.workbench.ui.impl.configuration;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.util.List;
 import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.filechooser.FileFilter;
 
 import net.sf.taverna.t2.workbench.configuration.Configurable;
 import net.sf.taverna.t2.workbench.configuration.ConfigurationManager;
@@ -31,7 +25,7 @@ public class WorkbenchConfigurationPanel extends JPanel {
 	private static Logger logger = Logger
 			.getLogger(WorkbenchConfigurationUIFactory.class);
 
-	private JTextField dotLocation = new JTextField();
+	private JTextField dotLocation = new JTextField(25);
 
 	public WorkbenchConfigurationPanel() {
 		super();
@@ -68,7 +62,8 @@ public class WorkbenchConfigurationPanel extends JPanel {
 
 	private Component getPropertiesPanel(Configurable configurable) {
 		JPanel result = new JPanel();
-		result.setLayout(new BoxLayout(result,BoxLayout.Y_AXIS));
+		result.setLayout(new BorderLayout());
+		
 		JPanel dotLocationPanel = new JPanel();
 		dotLocationPanel.setLayout(new FlowLayout());
 		dotLocationPanel.add(new JLabel("Dot Location"));
@@ -102,11 +97,8 @@ public class WorkbenchConfigurationPanel extends JPanel {
 		});
 		browseButton.setIcon(WorkbenchIcons.openIcon);
 		
-		result.add(dotLocationPanel);
-		result.add(new JPanel());
-		
-		
-		
+		result.add(dotLocationPanel, BorderLayout.CENTER);
+
 		return result;
 	}
 

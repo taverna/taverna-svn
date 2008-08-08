@@ -204,7 +204,7 @@ public class ActivityPaletteConfigurationPanel extends JPanel {
 	private JPanel listButtons() {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
-		JButton addButton = new JButton("Add");
+		JButton addButton = new JButton("+");
 		addButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -218,7 +218,7 @@ public class ActivityPaletteConfigurationPanel extends JPanel {
 			
 		});
 		
-		JButton deleteButton = new JButton("Delete");
+		JButton deleteButton = new JButton("-");
 		deleteButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
