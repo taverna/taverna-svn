@@ -43,6 +43,7 @@ public class WorkflowProvenanceItem implements ProvenanceItem {
 		return document.getRootElement();
 	}
 
+
 	public String getEventType() {
 		return SharedVocabulary.WORKFLOW_EVENT_TYPE;
 	}

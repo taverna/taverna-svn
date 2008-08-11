@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: net.sf.taverna.t2.workflowmodel.serialization.xml.DataflowXMLDeserializerTest
 -------------------------------------------------------------------------------
-Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.129 sec
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.076 sec

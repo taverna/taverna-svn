@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<b:dataThingMap xmlns:b="http://org.embl.ebi.escience/baclava/0.1alpha">
+  <b:dataThing key="O">
+    <b:myGridDataDocument lsid="" syntactictype="l(l(l('text/plain')))">
+      <s:metadata xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha">
+        <s:mimeTypes>
+          <s:mimeType>text/plain</s:mimeType>
+        </s:mimeTypes>
+      </s:metadata>
+      <b:partialOrder lsid="urn:lsid:net.sf.taverna:dataCollection:d24a80d2-35ee-4869-88d6-b11e9f401774" type="list">
+        <b:relationList>
+          <b:relation parent="0" child="1" />
+        </b:relationList>
+        <b:itemList>
+          <b:partialOrder lsid="urn:lsid:net.sf.taverna:dataCollection:febd8f3a-9289-4b8a-b942-c72436e3647f" type="list" index="0">
+            <b:relationList>
+              <b:relation parent="0" child="1" />
+            </b:relationList>
+            <b:itemList>
+              <b:partialOrder lsid="urn:lsid:net.sf.taverna:dataCollection:d4e4a579-9f26-4fe2-9fbd-57dd512ccb7b" type="list" index="0">
+                <b:relationList>
+                  <b:relation parent="0" child="1" />
+                </b:relationList>
+                <b:itemList>
+                  <b:dataElement lsid="urn:lsid:net.sf.taverna:dataItem:83a8fe5b-6116-49b8-a730-a461f399d0da" index="0">
+                    <b:dataElementData>YVAxLWJQMi0x</b:dataElementData>
+                  </b:dataElement>
+                  <b:dataElement lsid="urn:lsid:net.sf.taverna:dataItem:849b942d-45cf-4dd8-aa40-34caeeecaea8" index="1">
+                    <b:dataElementData>YVAxLXktMQ==</b:dataElementData>
+                  </b:dataElement>
+                </b:itemList>
+              </b:partialOrder>
+              <b:partialOrder lsid="urn:lsid:net.sf.taverna:dataCollection:da0bd1dc-e492-4df4-b510-cc59376521ad" type="list" index="1">
+                <b:relationList>
+                  <b:relation parent="0" child="1" />
+                </b:relationList>
+                <b:itemList>
+                  <b:dataElement lsid="urn:lsid:net.sf.taverna:dataItem:653bc1e7-8ea1-4dd5-afe1-cfce6b265c1e" index="0">
+                    <b:dataElementData>eC1iUDItMQ==</b:dataElementData>
+                  </b:dataElement>
+                  <b:dataElement lsid="urn:lsid:net.sf.taverna:dataItem:90362b11-ace6-4f8a-ba14-c5f5ddc1db9e" index="1">
+                    <b:dataElementData>eC15LTE=</b:dataElementData>
+                  </b:dataElement>
+                </b:itemList>
+              </b:partialOrder>
+            </b:itemList>
+          </b:partialOrder>
+          <b:partialOrder lsid="urn:lsid:net.sf.taverna:dataCollection:888a2a81-1811-4cca-b8bd-6b1c96035c51" type="list" index="1">
+            <b:relationList>
+              <b:relation parent="0" child="1" />
+            </b:relationList>
+            <b:itemList>
+              <b:partialOrder lsid="urn:lsid:net.sf.taverna:dataCollection:8b621724-4719-4f9e-8d4c-5094d912030a" type="list" index="0">
+                <b:relationList>
+                  <b:relation parent="0" child="1" />
+                </b:relationList>
+                <b:itemList>
+                  <b:dataElement lsid="urn:lsid:net.sf.taverna:dataItem:6dfe5b59-c2bf-4a60-a208-e11ddc6084a1" index="0">
+                    <b:dataElementData>YVAxLWJQMi0y</b:dataElementData>
+                  </b:dataElement>
+                  <b:dataElement lsid="urn:lsid:net.sf.taverna:dataItem:59f72f1a-eeee-4b24-92d3-e90f795cdcda" index="1">
+                    <b:dataElementData>YVAxLXktMg==</b:dataElementData>
+                  </b:dataElement>
+                </b:itemList>
+              </b:partialOrder>
+              <b:partialOrder lsid="urn:lsid:net.sf.taverna:dataCollection:1b5b3664-69f3-43f8-996f-4529ddb2b442" type="list" index="1">
+                <b:relationList>
+                  <b:relation parent="0" child="1" />
+                </b:relationList>
+                <b:itemList>
+                  <b:dataElement lsid="urn:lsid:net.sf.taverna:dataItem:40c3f14d-a7fc-4eb4-a643-97f5b086b5c5" index="0">
+                    <b:dataElementData>eC1iUDItMg==</b:dataElementData>
+                  </b:dataElement>
+                  <b:dataElement lsid="urn:lsid:net.sf.taverna:dataItem:d69a59e7-a048-428a-9113-ef4321e03dea" index="1">
+                    <b:dataElementData>eC15LTI=</b:dataElementData>
+                  </b:dataElement>
+                </b:itemList>
+              </b:partialOrder>
+            </b:itemList>
+          </b:partialOrder>
+        </b:itemList>
+      </b:partialOrder>
+    </b:myGridDataDocument>
+  </b:dataThing>
+</b:dataThingMap>
+

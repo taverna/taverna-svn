@@ -41,7 +41,7 @@ public class ActivityProvenanceItem implements ProvenanceItem {
 	}
 
 	public String getEventType() {
+		// TODO Auto-generated method stub
 		return SharedVocabulary.ACTIVITY_EVENT_TYPE;
 	}
-
 }

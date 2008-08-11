@@ -51,5 +51,4 @@ public class ProcessProvenanceItem implements ProvenanceItem {
 	public String getEventType() {
 		return SharedVocabulary.PROCESS_EVENT_TYPE;
 	}
-
 }

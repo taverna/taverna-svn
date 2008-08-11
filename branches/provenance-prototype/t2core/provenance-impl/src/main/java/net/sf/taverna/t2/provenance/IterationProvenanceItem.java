@@ -82,9 +82,7 @@ public class IterationProvenanceItem implements ProvenanceItem {
 	}
 
 
-
 	public String getEventType() {
 		return SharedVocabulary.ITERATION_EVENT_TYPE;
 	}
-
 }

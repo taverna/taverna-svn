@@ -18,7 +18,7 @@ public class OutputDataProvenanceItem extends DataProvenanceItem {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	public String getEventType() {
 		return SharedVocabulary.OUTPUTDATA_EVENT_TYPE;
 	}

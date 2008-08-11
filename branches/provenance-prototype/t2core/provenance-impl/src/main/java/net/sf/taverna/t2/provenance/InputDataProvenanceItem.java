@@ -19,6 +19,7 @@ public class InputDataProvenanceItem extends DataProvenanceItem {
 		return null;
 	}
 
+
 	public String getEventType() {
 		return SharedVocabulary.INPUTDATA_EVENT_TYPE;
 	}

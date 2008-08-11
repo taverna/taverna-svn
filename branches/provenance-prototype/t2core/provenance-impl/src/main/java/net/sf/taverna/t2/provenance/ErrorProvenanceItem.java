@@ -46,7 +46,6 @@ public class ErrorProvenanceItem implements ProvenanceItem {
 	}
 
 
-
 	public String getEventType() {
 		return SharedVocabulary.ERROR_EVENT_TYPE;
 	}

@@ -46,7 +46,6 @@ public class ProcessorProvenanceItem implements ProvenanceItem {
 		return processorID;
 	}
 
-
 	public String getEventType() {
 		return SharedVocabulary.PROCESSOR_EVENT_TYPE;
 	}

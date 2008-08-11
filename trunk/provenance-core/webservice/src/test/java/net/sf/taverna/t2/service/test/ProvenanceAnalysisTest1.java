@@ -14,11 +14,11 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import net.sf.taverna.t2.service.ProvenanceAnalysis;
-import net.sf.taverna.t2.service.ProvenanceQuery;
-import net.sf.taverna.t2.service.util.Arc;
-import net.sf.taverna.t2.service.util.Processor;
-import net.sf.taverna.t2.service.util.Var;
+import net.sf.taverna.t2.lineageService.ProvenanceAnalysis;
+import net.sf.taverna.t2.lineageService.ProvenanceQuery;
+import net.sf.taverna.t2.lineageService.util.Arc;
+import net.sf.taverna.t2.lineageService.util.Processor;
+import net.sf.taverna.t2.lineageService.util.Var;
 
 import org.junit.After;
 import org.junit.Before;
@@ -67,8 +67,8 @@ public class ProvenanceAnalysisTest1 {
 		Set<String> selectedProcessors = new HashSet<String>();
 
 		// this is what we certainly want to test
-		String targetIteration = "0,1,0";
-		String targetProc = "ALL";  // this is a magic keyword -- it stands for "all"
+		String targetIteration = "0,0,1,1";
+		String targetProc = "ALL";  // this is a magic keyword -- it stands for "all" :-)
 		
 		// use annotations?
 		boolean useAnnotations = false;
