@@ -33,16 +33,6 @@
 			<version>${depT2core}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>data-api</artifactId>
-			<version>${depT2core}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>data-impl</artifactId>
-			<version>${depT2core}</version>
-		</dependency>
-		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${depJunit}</version>
