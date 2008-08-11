@@ -87,7 +87,7 @@ public abstract class AbstractXMLSerializer implements XMLSerializationConstants
 
 	private void populateBeanElementForElement(Element el, Element bean) {
 		bean.setAttribute(BEAN_ENCODING, JDOMXML_ENCODING);
-		bean.addContent(el);
+		bean.addContent((Element)el.clone());
 	}
 	
 	protected Element annotationsToXML(Annotated<?> annotated) {
