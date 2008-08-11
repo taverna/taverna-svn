@@ -1,7 +1,6 @@
 package net.sf.taverna.t2.testing;
 
 import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
-import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.workflowmodel.Datalink;
@@ -22,13 +21,8 @@ public class DummyEventHandler extends AbstractAnnotatedThing<Port> implements
 
 	public void receiveEvent(WorkflowDataToken token) {
 		eventCount++;
-		
-		try {
-			result = referenceService.renderIdentifier(token.getData(), Object.class, null);
-		} catch (RetrievalException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} 
+		result = referenceService.renderIdentifier(token.getData(),
+				Object.class, null);
 		System.out.println(token);
 	}
 
@@ -42,7 +36,7 @@ public class DummyEventHandler extends AbstractAnnotatedThing<Port> implements
 
 	public void reset() {
 		this.eventCount = 0;
-		this.result=null;
+		this.result = null;
 	}
 
 	public int getDepth() {

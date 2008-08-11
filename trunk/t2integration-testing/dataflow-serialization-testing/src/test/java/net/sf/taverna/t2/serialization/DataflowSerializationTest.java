@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.reference.T2Reference;
@@ -143,7 +142,7 @@ public class DataflowSerializationTest extends InvocationTestHelper {
 		assertEquals("five-x",result.get(4));
 	}
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "cast" })
 	@Test
 	public void testSerializeNestedRoundTripAndInvoke() throws Exception {
 		Dataflow dataflow = translateScuflFile("less-simple-nested-test.xml");
