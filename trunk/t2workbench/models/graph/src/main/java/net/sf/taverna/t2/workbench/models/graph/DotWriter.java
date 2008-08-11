@@ -87,7 +87,7 @@ public class DotWriter {
 		}
 
 		for(GraphEdge edge : graph.getEdges()) {
-			writeEdges(edge, " ");
+			writeEdges(edge, graph.getAlignment(), " ");
 		}
 
 		writeLine("}");
@@ -129,13 +129,13 @@ public class DotWriter {
 		}
 
 		for(GraphEdge edge : graph.getEdges()) {
-			writeEdges(edge, indent + " ");
+			writeEdges(edge, graph.getAlignment(), indent + " ");
 		}
 
 		writeLine(indent + "}");
 	}
 
-	private void writeEdges(GraphEdge edge, String indent) throws IOException {
+	private void writeEdges(GraphEdge edge, Alignment alignment, String indent) throws IOException {
 		GraphNode source = edge.getSource();
 		GraphNode sink = edge.getSink();
 		String sourceId = "\"" + source.getId() + "\"";
@@ -145,7 +145,12 @@ public class DotWriter {
 		if (source.getParent() instanceof GraphNode) {
 			GraphNode parent = (GraphNode) source.getParent();
 			if (parent.getShape().equals(Shape.RECORD)) {
-				sourceId = "\"" + parent.getId() + "\":" + sourceId;
+				if (alignment.equals(Alignment.HORIZONTAL)) {
+				    //TODO try seting the compass point with a newer version of dot
+					sourceId = "\"" + parent.getId() + "\":" + sourceId;
+				} else {
+					sourceId = "\"" + parent.getId() + "\":" + sourceId;
+				}
 			} else {
 				sourceId = "\"" + parent.getId() + "\"";
 			}
@@ -153,12 +158,16 @@ public class DotWriter {
 		if (sink.getParent() instanceof GraphNode) {
 			GraphNode parent = (GraphNode) sink.getParent();
 			if (parent.getShape().equals(Shape.RECORD)) {
-				sinkId = "\"" + parent.getId() + "\":" + sinkId;
+				if (alignment.equals(Alignment.HORIZONTAL)) {
+					sinkId = "\"" + parent.getId() + "\":" + sinkId;
+				} else {
+					sinkId = "\"" + parent.getId() + "\":" + sinkId;
+				}
 			} else {
 				sinkId = "\"" + parent.getId() + "\"";
 			}
 		}
-		writeLine(indent + sourceId + "->" + sinkId + " [");
+		writeLine(indent + sourceId + " -> " + sinkId + " [");
 		writeLine(indent + " arrowhead=\"" + edge.getArrowHeadStyle().toString().toLowerCase() + "\"");
 		writeLine(indent + " arrowtail=\"" + edge.getArrowTailStyle().toString().toLowerCase() + "\"");
 		if (edge.getColor() != null) {
