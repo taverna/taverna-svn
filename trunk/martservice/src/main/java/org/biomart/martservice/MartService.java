@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartService.java,v $errors/failure.html
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-03-04 16:43:40 $
+ * Last modified on   $Date: 2008-08-11 12:48:29 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -334,7 +334,6 @@ public class MartService {
 
 	private DatasetConfig getDatasetConfigFromCache(MartDataset dataset)
 			throws MartServiceException {
-		System.out.println("lookinf for " + dataset.getName());
 		DatasetConfig datasetConfig = null;
 		MartURLLocation mart = dataset.getMartURLLocation();
 		String path = mart.getHost() + fs + mart.getName() + fs
