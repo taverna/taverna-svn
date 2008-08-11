@@ -12,16 +12,10 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.taverna.t2.invocation.Event;
-import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
 import net.sf.taverna.t2.monitor.NoSuchPropertyException;
-import net.sf.taverna.t2.reference.ErrorDocument;
-import net.sf.taverna.t2.reference.ErrorDocumentService;
-import net.sf.taverna.t2.reference.IdentifiedList;
-import net.sf.taverna.t2.reference.ListService;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.T2Reference;
-import net.sf.taverna.t2.reference.T2ReferenceType;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
@@ -127,7 +121,7 @@ public class ErrorBounce extends AbstractDispatchLayer<Object> implements
 		String[] owningProcessArray = event.getOwningProcess().split(":");
 		String processor = owningProcessArray[owningProcessArray.length - 1];
 		for (OutputPort op : p.getOutputPorts()) {
-			String message = processor + ":" + op.getName();
+			String message = "Processor '" + processor + "' - Port '" + op.getName() + "'";
 			if (cause != null) {
 				outputDataMap.put(op.getName(), rs.getErrorDocumentService()
 						.registerError(message, cause, op.getDepth()).getId());
