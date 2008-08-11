@@ -14,8 +14,11 @@ import net.sf.taverna.t2.activities.wsdl.WSDLActivity;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
 import net.sf.taverna.t2.activities.wsdl.xmlsplitter.AddXMLSplitterEdit;
 import net.sf.taverna.t2.workbench.file.FileManager;
+import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import net.sf.taverna.wsdl.parser.ArrayTypeDescriptor;
+import net.sf.taverna.wsdl.parser.ComplexTypeDescriptor;
 import net.sf.taverna.wsdl.parser.TypeDescriptor;
 import net.sf.taverna.wsdl.parser.UnknownOperationException;
 import net.sf.taverna.wsdl.parser.WSDLParser;
@@ -83,14 +86,29 @@ public class AddXMLInputSplitterAction extends AbstractAction {
 				"Add input XML splitter", JOptionPane.PLAIN_MESSAGE, null,
 				possibilities, possibilities[0]);
 
-		AddXMLSplitterEdit edit = new AddXMLSplitterEdit(FileManager
-				.getInstance().getCurrentDataflow(), activity, s, true);
+		Dataflow currentDataflow = FileManager
+				.getInstance().getCurrentDataflow();
+		
+		TypeDescriptor typeDescriptorForInputPort = null;
 		try {
-			edit.doEdit();
-		} catch (EditException e1) {
+			typeDescriptorForInputPort = activity.getTypeDescriptorForInputPort(s);
+		} catch (UnknownOperationException e2) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e2.printStackTrace();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
 		}
+		if (typeDescriptorForInputPort instanceof ArrayTypeDescriptor|| typeDescriptorForInputPort instanceof ComplexTypeDescriptor) {
+			AddXMLSplitterEdit edit = new AddXMLSplitterEdit(currentDataflow, activity, s, true);
+			try {
+				edit.doEdit();
+			} catch (EditException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}	
+		}
+		
 	}
 
 }
