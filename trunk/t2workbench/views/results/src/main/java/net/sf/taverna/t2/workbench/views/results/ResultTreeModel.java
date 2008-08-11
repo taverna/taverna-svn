@@ -18,6 +18,7 @@ import net.sf.jmimemagic.MagicParseException;
 import net.sf.taverna.t2.facade.ResultListener;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
+import net.sf.taverna.t2.reference.ErrorDocument;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.reference.Identified;
 import net.sf.taverna.t2.reference.IdentifiedList;
@@ -49,8 +50,9 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 	public void resultTokenProduced(WorkflowDataToken dataToken, String portName) {
 		int[] index = dataToken.getIndex();
 		if (this.portName.equals(portName)) {
-			if (depthSeen == -1)
+			if (depthSeen == -1) {
 				depthSeen = index.length;
+			}
 
 			if (index.length >= depthSeen) {
 				T2Reference entityToken = dataToken.getData();
@@ -112,6 +114,16 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 					parent = child;
 				}
 			}
+		} else if (token.getReferenceType() == T2ReferenceType.ErrorDocument) {
+			for (int i = 0; i < depth; i++) {
+				parent = getChildAt(parent, 0);
+				parent.setUserObject("List...");
+				nodeChanged(parent);				
+			}
+			MutableTreeNode child = getChildAt(parent, 0);
+			child = updateChildNodeWithData(token, owningProcess, parent,
+					child, context);
+			nodeChanged(child);
 		}
 	}
 

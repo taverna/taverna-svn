@@ -187,11 +187,10 @@ public class RenderedResultComponent extends JPanel {
 			ErrorDocument errorDocument = (ErrorDocument) identified;
 			renderersForMimeType = null;
 			
-			DefaultMutableTreeNode root = new DefaultMutableTreeNode();
+			DefaultMutableTreeNode root = new DefaultMutableTreeNode("Error Trace");
 			buildErrorDocumentTree(root, errorDocument);
 			
 			JTree errorTree = new JTree(root);
-			errorTree.setRootVisible(false);
 			errorTree.setCellRenderer(new DefaultTreeCellRenderer() {
 
 				public Component getTreeCellRendererComponent(JTree tree,
@@ -256,8 +255,12 @@ public class RenderedResultComponent extends JPanel {
 				}
 			} else if (reference.getReferenceType().equals(T2ReferenceType.IdentifiedList)) {
 				List<ErrorDocument> errorDocuments = getErrorDocuments(reference);
-				for (ErrorDocument errorDocument2 : errorDocuments) {
-					buildErrorDocumentTree(child, errorDocument2);
+				if (errorDocuments.size() == 1) {
+					buildErrorDocumentTree(node, errorDocuments.get(0));
+				} else {
+					for (ErrorDocument errorDocument2 : errorDocuments) {
+						buildErrorDocumentTree(child, errorDocument2);
+					}
 				}
 			}
 			
