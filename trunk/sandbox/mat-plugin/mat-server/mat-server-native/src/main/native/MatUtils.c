@@ -16,8 +16,6 @@ mxArray* jtomArray(JNIEnv* env, jobject matarray) {
     jboolean isNumeric, isChar;
     jstring typeName;
 
-
-    fprintf(stderr, ">>MARK1\n");
     typeName = (jstring) (*env)->GetObjectField(env, matarray, matarray_typeFID);
 
     mxarr_class = getMxClassID(env, matarray);
@@ -236,7 +234,7 @@ mxArray* jtomStructArray(JNIEnv* env, jobject matarray) {
     int* dims;
     jintArray jdims;
     jobjectArray jdata;
-    fprintf(stderr, ">>MARK3\n");
+
     jdims = (jintArray) (*env)->GetObjectField(env, matarray, matarray_dimensionsFID);
     if (jdims == NULL)
         return NULL;
@@ -248,7 +246,7 @@ mxArray* jtomStructArray(JNIEnv* env, jobject matarray) {
     }
     (*env)->GetIntArrayRegion(env, jdims, 0, ndims, dims);
     (*env)->DeleteLocalRef(env, jdims);
-    fprintf(stderr, ">>MARK31\n");
+
     jfieldnames = (jobjectArray) (*env)->GetObjectField(env, matarray, matarray_field_namesFID);
     if (jfieldnames == NULL)
         return NULL;
@@ -274,15 +272,15 @@ mxArray* jtomStructArray(JNIEnv* env, jobject matarray) {
     /*
         (*env)->DeleteLocalRef(env, jfieldnames);
      */
-    fprintf(stderr, ">>MARK32\n");
+
     mxarr = mxCreateStructArray(ndims, dims, nfields, fieldnames);
-    fprintf(stderr, ">>MARK33\n");
+
     jdata = (jobjectArray) (*env)->GetObjectField(env, matarray, matarray_cell_dataFID);
     /*TODO: mxSetFieldByNumber()...*/
     nelements = (*env)->CallIntMethod(env, matarray, matarray_getNumberOfElementsMID);
     for (i = 0; i < nfields; i++) {
         jobject fieldData;
-        fprintf(stderr, ">>MARK34\n");
+
         fieldData = (*env)->GetObjectArrayElement(env, jdata, i);
         if (fieldData == NULL)
             continue;
@@ -290,9 +288,9 @@ mxArray* jtomStructArray(JNIEnv* env, jobject matarray) {
             for (j = 0; j < nelements; j++) {
                 jobject tmpMA;
                 mxArray* tmpMX;
-                fprintf(stderr, ">>MARK35 [%s][%d]\n", fieldnames[i], j);
+
                 tmpMA = (*env)->CallObjectMethod(env, matarray, matarray_getFieldMID, (jstring) (*env)->GetObjectArrayElement(env, jfieldnames, i), j);
-                fprintf(stderr, ">>MARK351\n");
+
                 if (tmpMA == NULL) {
                     (*env)->DeleteLocalRef(env, tmpMA);
                     continue;
@@ -304,7 +302,6 @@ mxArray* jtomStructArray(JNIEnv* env, jobject matarray) {
             }
         } else {
             mxArray* tmpMX = jtomArray(env, fieldData); /*TODO error checking*/
-            fprintf(stderr, ">>MARK36\n");
             for (j = 0; j < nelements; j++) {
                 mxSetField(mxarr, j, fieldnames[i], tmpMX);
             }
@@ -330,10 +327,9 @@ mxArray* jtomStructArray(JNIEnv* env, jobject matarray) {
          */
     }
     (*env)->DeleteLocalRef(env, jfieldnames);
-    fprintf(stderr, ">>MARK37\n");
     (*env)->DeleteLocalRef(env, jdata);
     free(fieldnames);
-    fprintf(stderr, ">>MARK38\n");
+
     return mxarr;
 }
 
@@ -615,19 +611,18 @@ mxArray* jtomUint32Array(JNIEnv* env, jobject matarray) {
     return NULL;
 }
 
-/*
 mxArray* jtomInt64Array(JNIEnv* env, jobject matarray) {
     mxArray* mxarr;
     mxClassID mxclass;
     int cplxFlag;
     jlongArray matarray_pr;
-    long *pr = NULL;
+    jlong *pr = NULL;
     int len;
     jintArray jdims;
     int ndims;
     int *dims;
 
-    mxclass = mxINT16_CLASS;
+    mxclass = mxINT64_CLASS;
     cplxFlag = (*env)->CallBooleanMethod(env, matarray, matarray_isComplexMID) ? 1 : 0;
     jdims = (jintArray) (*env)->GetObjectField(env, matarray, matarray_dimensionsFID);
     if (jdims == NULL)
@@ -645,18 +640,17 @@ mxArray* jtomInt64Array(JNIEnv* env, jobject matarray) {
 
     matarray_pr = (jlongArray) (*env)->GetObjectField(env, matarray, matarray_int64_data_reFID);
     len = (*env)->GetArrayLength(env, matarray_pr);
-    pr = (long*) mxCalloc(len, sizeof (long));
+    pr = (jlong*) mxCalloc(len, sizeof (jlong));
     if (pr == NULL) {
         setError(OUT_OF_MEMORY_ERROR);
         return NULL;
     }
     (*env)->GetLongArrayRegion(env, matarray_pr, 0, len, pr);
     (*env)->DeleteLocalRef(env, matarray_pr);
-    mxSetData(mxarr, (void*)pr);
+    mxSetData(mxarr, (void*) pr);
 
     return mxarr;
 }
- */
 /*
 mxArray* jtomUint64Array(JNIEnv* env, jobject matarray) {
     TODO in 64 bit architecture specific sources
@@ -667,7 +661,6 @@ jobject mtojArray(JNIEnv* env, mxArray* mxarr) {
     jobject matarray;
     mxClassID mxarr_class;
 
-    fprintf(stderr, ">>MARK2\n");
     mxarr_class = mxGetClassID(mxarr);
 
     switch (mxarr_class) {
@@ -887,7 +880,7 @@ jobject mtojStructArray(JNIEnv* env, mxArray* mxarr) {
     jobjectArray jdata;
     int nfields;
     jobjectArray jfieldnames;
-    fprintf(stderr, ">>MARK4\n");
+
     matarray = (*env)->NewObject(env, matArrayClass, matarray_constructorMID);
     if (matarray == NULL)
         return NULL;
@@ -908,7 +901,6 @@ jobject mtojStructArray(JNIEnv* env, mxArray* mxarr) {
      */
 
     nfields = mxGetNumberOfFields(mxarr);
-    printf("nfields=%d\n", nfields);
     jfieldnames = (*env)->NewObjectArray(env, nfields, jstringClass, NULL);
     if (jfieldnames == NULL) {
         setError(OUT_OF_MEMORY_ERROR);
@@ -918,7 +910,6 @@ jobject mtojStructArray(JNIEnv* env, mxArray* mxarr) {
         jstring jfname;
         const char* fname;
         fname = mxGetFieldNameByNumber(mxarr, i);
-        fprintf(stderr, ">>fname[%d]=%s\n", i, fname);
         jfname = (*env)->NewStringUTF(env, fname);
         if (jfname == NULL) {
             setError(OUT_OF_MEMORY_ERROR);
@@ -929,7 +920,7 @@ jobject mtojStructArray(JNIEnv* env, mxArray* mxarr) {
     }
     (*env)->SetObjectField(env, matarray, matarray_field_namesFID, jfieldnames);
     (*env)->DeleteLocalRef(env, jfieldnames);
-    fprintf(stderr, ">>MARK41\n");
+
     nelements = mxGetNumberOfElements(mxarr);
     jdata = (*env)->NewObjectArray(env, nfields, matArrayClass, NULL);
     if (jdata == NULL) {
@@ -950,11 +941,10 @@ jobject mtojStructArray(JNIEnv* env, mxArray* mxarr) {
             return NULL;
         }
 
-        fprintf(stderr, ">>MARK42 [%d]\n", i);
         for (j = 0; j < nelements; j++) {
             jobject tmpMA;
             mxArray* tmpMX;
-            fprintf(stderr, ">>MARK43 [%d] [%s]\n", j, mxGetFieldNameByNumber(mxarr, i));
+
             tmpMX = mxGetFieldByNumber(mxarr, j, i);
             if (tmpMX == NULL)
                 continue;
@@ -962,11 +952,9 @@ jobject mtojStructArray(JNIEnv* env, mxArray* mxarr) {
             (*env)->SetObjectArrayElement(env, jdataElement, j, tmpMA);
             (*env)->DeleteLocalRef(env, tmpMA);
         }
-        fprintf(stderr, ">>MARK44 %d[\n", i);
         (*env)->SetObjectField(env, jfieldCell, matarray_cell_dataFID, jdataElement);
         (*env)->DeleteLocalRef(env, jdataElement);
         (*env)->SetObjectArrayElement(env, jdata, i, jfieldCell);
-        fprintf(stderr, ">>MARK44 %d]\n", i);
         (*env)->DeleteLocalRef(env, jfieldCell);
     }
     /*
@@ -998,8 +986,8 @@ jobject mtojStructArray(JNIEnv* env, mxArray* mxarr) {
      */
     (*env)->SetObjectField(env, matarray, matarray_cell_dataFID, jdata);
     (*env)->DeleteLocalRef(env, jdata);
-    (*env)->DeleteLocalRef(env,jdims);
-    fprintf(stderr, ">>MARK45\n");
+    (*env)->DeleteLocalRef(env, jdims);
+
     return matarray;
 }
 
@@ -1201,8 +1189,46 @@ jobject mtojInt8Array(JNIEnv* env, mxArray* mxarr) {
 }
 
 jobject mtojUint8Array(JNIEnv* env, mxArray* mxarr) {
-    /*TODO*/
-    return NULL;
+    jobject matarray;
+    jstring typeJString;
+    char *pr;
+    jbyteArray jpr;
+    int nelements, ndims;
+    const int *dims;
+    jintArray jdims;
+
+    matarray = (*env)->NewObject(env, matArrayClass, matarray_constructorMID);
+    if (matarray == NULL) {
+        setError(OUT_OF_MEMORY_ERROR);
+        return NULL;
+    }
+
+    typeJString = (*env)->GetStaticObjectField(env, matArrayClass, matarray_INT8_TYPE_FID);
+    if (typeJString == NULL)
+        return NULL;
+    (*env)->SetObjectField(env, matarray, matarray_typeFID, typeJString);
+    (*env)->DeleteLocalRef(env, typeJString);
+
+    ndims = mxGetNumberOfDimensions(mxarr);
+    dims = mxGetDimensions(mxarr);
+    jdims = (*env)->NewIntArray(env, ndims);
+    if (jdims == NULL)
+        return NULL;
+    (*env)->SetIntArrayRegion(env, jdims, 0, ndims, dims);
+    (*env)->SetObjectField(env, matarray, matarray_dimensionsFID, jdims);
+    (*env)->DeleteLocalRef(env, jdims);
+
+    nelements = mxGetNumberOfElements(mxarr);
+
+    pr = (char*) mxGetData(mxarr);
+    jpr = (*env)->NewByteArray(env, nelements);
+    if (jpr == NULL)
+        return NULL;
+    (*env)->SetByteArrayRegion(env, jpr, 0, nelements, pr);
+    (*env)->SetObjectField(env, matarray, matarray_int16_data_reFID, jpr); //FIXME this wont work!!!
+    (*env)->DeleteLocalRef(env, jpr);
+
+    return matarray;
 }
 
 jobject mtojInt16Array(JNIEnv* env, mxArray* mxarr) {
@@ -1324,13 +1350,13 @@ jobject mtojUint32Array(JNIEnv* env, mxArray* mxarr) {
     /*TODO*/
     return NULL;
 }
-/*
+
 jobject mtojInt64Array(JNIEnv* env, mxArray* mxarr) {
     jobject matarray;
     jstring typeJString;
-    long *pr, *pi;
-    jlongArray jpr, jpi;
-    int nelements;
+    jlong *pr;
+    jlongArray jpr;
+    int nelements, ndims;
     const int *dims;
     jintArray jdims;
 
@@ -1357,7 +1383,7 @@ jobject mtojInt64Array(JNIEnv* env, mxArray* mxarr) {
 
     nelements = mxGetNumberOfElements(mxarr);
 
-    pr = mxGetPr(mxarr);
+    pr = (jlong*) mxGetData(mxarr);
     jpr = (*env)->NewLongArray(env, nelements);
     if (jpr == NULL)
         return NULL;
@@ -1365,19 +1391,8 @@ jobject mtojInt64Array(JNIEnv* env, mxArray* mxarr) {
     (*env)->SetObjectField(env, matarray, matarray_int64_data_reFID, jpr);
     (*env)->DeleteLocalRef(env, jpr);
 
-    if (mxIsComplex(mxarr)) {
-        pi = mxGetPi(mxarr);
-        jpi = (*env)->NewLongArray(env, nelements);
-        if (jpi == NULL)
-            return NULL;
-        (*env)->SetLongArrayRegion(env, jpi, 0, nelements, pi);
-        (*env)->SetObjectField(env, matarray, matarray_int64_data_imFID, jpi);
-        (*env)->DeleteLocalRef(env, jpi);
-    }
-
     return matarray;
 }
- */
 
 /*
 jobject mtojUInt64Array(JNIEnv* env, mxArray* mxarr) {

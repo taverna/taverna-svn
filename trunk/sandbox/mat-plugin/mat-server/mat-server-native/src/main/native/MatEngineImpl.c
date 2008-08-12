@@ -79,7 +79,6 @@ JNIEXPORT void JNICALL Java_net_sf_taverna_matserver_MatEngineImpl_execute(JNIEn
 
         jname = (jstring) (*env)->GetObjectArrayElement(env, outputNames, i);
         name = (*env)->GetStringUTFChars(env, jname, NULL);
-fprintf(stderr,"***%s {\n",name);
         mxarr = engGetVariable(eng, name);
         (*env)->ReleaseStringUTFChars(env, jname, name);
         matArray = mtojArray(env, mxarr);
@@ -88,7 +87,6 @@ fprintf(stderr,"***%s {\n",name);
         (*env)->CallVoidMethod(env, this, matengineimpl_setOutputVarMID, jname, matArray);
         (*env)->DeleteLocalRef(env, jname);
         (*env)->DeleteLocalRef(env, matArray);
-        fprintf(stderr,"}\n");
     }
 
     /*clean up*/
