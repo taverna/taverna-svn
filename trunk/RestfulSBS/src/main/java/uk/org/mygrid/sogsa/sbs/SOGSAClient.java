@@ -29,26 +29,49 @@ import org.restlet.resource.Representation;
  */
 public class SOGSAClient {
 
+	private static final String QUERY_URL_SUFFIX = "/query"; //$NON-NLS-1$
+	private static final String HTTP_LOCALHOST_25000_SBS = ClientConfig.getString("SOGSAClient.1"); //$NON-NLS-1$
+	private static final String SAMPLE_SPARQL_QUERY_1 = ClientConfig.getString("SOGSAClient.2"); //$NON-NLS-1$
+	private static final String TEST_RDF_FILE_1 = ClientConfig.getString("SOGSAClient.3"); //$NON-NLS-1$
+	private static final String TEST_RDF_FILE_2 = ClientConfig.getString("SOGSAClient.4"); //$NON-NLS-1$
+
+	
+	/**
+	 * main contains a number of client usage snippets to illustrate a typical sequence: create a SB - 
+	 * incrementally populate SB - query SB - delete SB
+	 * @param args
+	 */
 	public static void main(String[] args) {
 
 		Client client = new Client(Protocol.HTTP);
 
 		// The URI of the server
-		Reference itemsUri = new Reference("http://localhost:25000/sbs");
-		Reference deleteUri = new Reference("http://localhost:25000/sbs");
-		Reference queryAllUri = new Reference(
-				"http://localhost:25000/sbs/query");
+		Reference itemsUri = new Reference(HTTP_LOCALHOST_25000_SBS);
+		Reference deleteUri = new Reference(HTTP_LOCALHOST_25000_SBS);
+		Reference queryAllUri = new Reference(HTTP_LOCALHOST_25000_SBS+QUERY_URL_SUFFIX);
 
-		// create from a http URI
+//////////
+// 1
+// create a new SB from a http URI pointing to the RDF content.
+// (alternatively, you can supply the RDF content inline)
+// the SB consists of the pair (<binding key>, <RDF statements>) where
+// <binding key> Grid Entity key that will be provided by Karma 
+// and corresponds to the "workflow user session", so that all RDF fragments
+// for that session are added to this SB
+//////////
+		
 		String bindingKey = null;
 		URI uri = null;
 		try {
-			uri = new URI("http://localhost/~Ian/samplerdf2.rdf");
+			uri = new URI(TEST_RDF_FILE_1);
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Response createItem2 = createItem(uri, "http://"
+		
+		// the construct "http:"+ UUID.randomUUID().toString()  
+		// stands for the actual binding key provided by Karma
+		Response createItem2 = createItem(uri, "http://" //$NON-NLS-1$
 				+ UUID.randomUUID().toString(), client, itemsUri);
 		if (createItem2 != null) {
 			bindingKey = createItem2.getEntity().getIdentifier().toString();
@@ -68,66 +91,100 @@ public class SOGSAClient {
 			}
 		}
 
-		// add some rdf
-		// URI uri2 = null;
-		// try {
-		// uri2 = new URI("http://localhost/~Ian/samplerdf.rdf");
-		// } catch (URISyntaxException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// try {
-		// Response addRDF = addRDF(client, createItem2.getEntity()
-		// .getIdentifier(), uri2);
-		//
-		// if (addRDF.getStatus().isSuccess()) {
-		// Response response = get(client, createItem2.getEntity()
-		// .getIdentifier());
-		// if (response.getStatus().isSuccess()) {
-		// if (response.isEntityAvailable()) {
-		// response.getEntity().write(System.out);
-		// }
-		// }
-		// }
-		// } catch (IOException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
+		
+//////////
+// 2
+// add more rdf statements to the SB we just created -- note we are referring back to the same SB using the binding key
+// (obtained by createItem2)
+//////////
+		URI uri2 = null;
+		try {
+			uri2 = new URI(TEST_RDF_FILE_2);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			Response addRDF = addRDF(client, createItem2.getEntity()
+					.getIdentifier(), uri2);
 
-		Reference queryReference = new Reference(bindingKey + "/query");
-		String query = "SELECT ?x WHERE { ?x  <http://www.recshop.fake/cd#artist>  \"Bob_Dylan\" }";
+			if (addRDF.getStatus().isSuccess()) {
+				Response response = get(client, createItem2.getEntity()
+						.getIdentifier());
+				if (response.getStatus().isSuccess()) {
+					if (response.isEntityAvailable()) {
+						response.getEntity().write(System.out);
+					}
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		
+//////////
+// 3
+// query the RDF corresponding to our binding key, using SPARQL
+//////////
+		Reference queryReference = new Reference(bindingKey + QUERY_URL_SUFFIX);
+		String query = SAMPLE_SPARQL_QUERY_1;
 		Response queryRDF = queryRDF(client, queryReference, query);
 
 		if (queryRDF.getStatus().isSuccess()) {
-			System.out.println("successful query");
+			System.out.println("successful query"); //$NON-NLS-1$
 			if (queryRDF.isEntityAvailable()) {
-				System.out.println("Entity available");
+				System.out.println("Entity available"); //$NON-NLS-1$
+
+				if (queryRDF.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
+					System.out.println("... but empty response");	 //$NON-NLS-1$
+				} else {
+					try {
+						queryRDF.getEntity().write(System.out);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+
+		
+//////////
+// 4
+// retrieve all available binding keys from the service
+//////////
+		
+		Reference allBindingsRef = new Reference(HTTP_LOCALHOST_25000_SBS);
+		Response allBindings = getAllBindings(client, allBindingsRef);
+
+		if (allBindings.getStatus().isSuccess()) {
+			System.out.println("success with all bindings"); //$NON-NLS-1$
+
+			if (allBindings.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
+				System.out.println("... but empty response");	 //$NON-NLS-1$
+			} else {
 				try {
-					queryRDF.getEntity().write(System.out);
+					allBindings.getEntity().write(System.out);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 		}
-
-		Reference allBindingsRef = new Reference("http://localhost:25000/sbs");
-		Response allBindings = getAllBindings(client, allBindingsRef);
-
-		if (allBindings.getStatus().isSuccess()) {
-			System.out.println("success with all bindings");
-			try {
-				allBindings.getEntity().write(System.out);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		
+		
+//////////
+// 5
+// apply a SPARQL query to all RDF graphs available form the server
+// CHECK there is an issue here that is being discussed with the Anzo people -- should work in Anzo 3.0 but not in 2.5.1
+//////////		
+		query = SAMPLE_SPARQL_QUERY_1;
 		Response queryAllBindings = queryAllBindings(client, queryAllUri, query);
 		if (queryAllBindings.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
-			System.out.println("\nThere were no query results");
+			System.out.println("\nThere were no query results"); //$NON-NLS-1$
 		} else if (queryAllBindings.getStatus().equals(Status.SUCCESS_OK)) {
-			System.out.println("\nsuccessful query");
+			System.out.println("\nsuccessful query"); //$NON-NLS-1$
 			if (queryAllBindings.isEntityAvailable()) {
 				try {
 					queryAllBindings.getEntity().write(System.out);
@@ -137,22 +194,33 @@ public class SOGSAClient {
 				}
 			}
 		} else {
-			System.out.println("\nQuery failed");
+			System.out.println("\nQuery failed"); //$NON-NLS-1$
 		}
 
-		// Response deleteAllBindings = deleteAllBindings(client, deleteUri);
-		// if (deleteAllBindings.getStatus().isSuccess()) {
-		// System.out.println("success with deleting all bindings");
-		// try {
-		// deleteAllBindings.getEntity().write(System.out);
-		// } catch (IOException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// }
+		
+//////////
+// 6
+// zap the database
+//////////						
+		Response deleteAllBindings = deleteAllBindings(client, deleteUri);
+		if (deleteAllBindings.getStatus().isSuccess()) {
+			System.out.println("success with deleting all bindings"); //$NON-NLS-1$
+			try {
+				deleteAllBindings.getEntity().write(System.out);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 
 	}
 
+/////////////
+//  end of client usage snippets
+////////////
+	
+	
+	
 	/**
 	 * Create a new binding with the rdf content in the supplied string
 	 * 
@@ -168,11 +236,11 @@ public class SOGSAClient {
 	 */
 	public static Response createItem(String rdf, String key, Client client,
 			Reference itemsUri) {
-		System.out.println("creating");
+		System.out.println("creating"); //$NON-NLS-1$
 		// Gathering informations into a Web form.
 		Form form = new Form();
-		form.add("rdf", rdf);
-		form.add("entityKey", key);
+		form.add("rdf", rdf); //$NON-NLS-1$
+		form.add("entityKey", key); //$NON-NLS-1$
 		// form.add("description", item.getDescription());
 		Representation rep = form.getWebRepresentation();
 
@@ -200,8 +268,8 @@ public class SOGSAClient {
 			Reference itemsUri) {
 
 		Form form = new Form();
-		form.add("url", uri.toString());
-		form.add("entityKey", key);
+		form.add("url", uri.toString()); //$NON-NLS-1$
+		form.add("entityKey", key); //$NON-NLS-1$
 		Representation rep = form.getWebRepresentation();
 
 		Response response = client.put(itemsUri, rep);
@@ -236,7 +304,7 @@ public class SOGSAClient {
 	 */
 	public static Response addRDF(Client client, String rdf, Reference reference) {
 		Form form = new Form();
-		form.add("rdf", rdf);
+		form.add("rdf", rdf); //$NON-NLS-1$
 		Representation rep = form.getWebRepresentation();
 		Response put = client.put(reference, rep);
 		return put;
@@ -255,7 +323,7 @@ public class SOGSAClient {
 	 */
 	public static Response addRDF(Client client, Reference reference, URI uri) {
 		Form form = new Form();
-		form.add("url", uri.toString());
+		form.add("url", uri.toString()); //$NON-NLS-1$
 		Representation rep = form.getWebRepresentation();
 		Response put = client.put(reference, rep);
 		return put;
@@ -273,7 +341,7 @@ public class SOGSAClient {
 	public static Response queryRDF(Client client, Reference reference,
 			String query) {
 		Form form = new Form();
-		form.add("query", query);
+		form.add("query", query); //$NON-NLS-1$
 		Representation rep = form.getWebRepresentation();
 		Response post = client.post(reference, rep);
 		return post;
@@ -314,7 +382,7 @@ public class SOGSAClient {
 	public static Response queryAllBindings(Client client, Reference reference,
 			String query) {
 		Form form = new Form();
-		form.add("query", query);
+		form.add("query", query); //$NON-NLS-1$
 		Representation rep = form.getWebRepresentation();
 		Response response = client.post(reference, rep);
 		return response;
