@@ -2,21 +2,17 @@ package uk.org.mygrid.sogsa.sbs;
 
 import info.aduna.collections.iterators.CloseableIterator;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Handler;
@@ -46,7 +42,6 @@ import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.Router;
-import org.restlet.util.Template;
 
 /**
  * Handles the addition, removal, querying and update of
@@ -144,7 +139,7 @@ public class SemanticBindingService extends Application {
 		// create a binding via http put or delete one with http delete
 		Route sbsRoute = router.attach(SBS_PUT_DELETE, SemanticBindings.class);
 
-//		attach.getTemplate().setMatchingMode(Template.MODE_EQUALS);
+		// attach.getTemplate().setMatchingMode(Template.MODE_EQUALS);
 		// sbsRoute.getTemplate().setMatchingMode(Template.MODE_EQUALS);
 
 		return router;
@@ -487,47 +482,69 @@ public class SemanticBindingService extends Application {
 			remoteGraph.close();
 		}
 		if (result.isAskResult()) {
-			return result.getAskResult().toString();
+			queryResult = queryResult + "<?xml version=\"1.0\"?><sparql xmlns=\"http://www.w3.org/2005/sparql-results#\"><head></head><boolean>";
+			queryResult = queryResult + result.getAskResult().toString() + "</boolean></sparql>";
+			return queryResult;
 		} else if (result.isConstructResult()) {
 			Collection<Statement> constructResult = result.getConstructResult();
 			if (!constructResult.isEmpty()) {
+				queryResult = queryResult + "<results>";
 				for (Statement statement : constructResult) {
-					queryResult = queryResult + statement.getSubject() + " "
-							+ statement.getPredicate() + " "
-							+ statement.getObject() + "\n";
+					
+					queryResult = queryResult + "<result><subject>" + statement.getSubject() + "</subject> "
+							+ "<predicate>"  + statement.getPredicate() + "</predicate>"
+							+ "<object>" + statement.getObject() + "</object></result>";
 				}
+				queryResult = queryResult + "</results>";
 				return queryResult;
 			}
 		} else if (result.isDescribeResult()) {
 			Collection<Statement> describeResult = result.getDescribeResult();
 			if (!describeResult.isEmpty()) {
+				queryResult = queryResult + "<results>";
 				for (Statement statement : describeResult) {
-					queryResult = queryResult + statement.getSubject() + " "
-							+ statement.getPredicate() + " "
-							+ statement.getObject() + "\n";
-				}
+					queryResult = queryResult + "<result><subject>" + statement.getSubject() + "</subject> "
+					+ "<predicate>"  + statement.getPredicate() + "</predicate>"
+					+ "<object>" + statement.getObject() + "</object></result>";
+		}
+		queryResult = queryResult + "</results>";
 				return queryResult;
 			}
 		} else if (result.isSelectResult()) {
 			TupleQueryResult selectResult = result.getSelectResult();
+			List<String> bindingNames = selectResult.getBindingNames();
+			queryResult = queryResult + "<?xml version=\"1.0\"?><sparql xmlns=\"http://www.w3.org/2005/sparql-results#\">";
+
+			boolean distinct = selectResult.isDistinct();
+			boolean ordered = selectResult.isOrdered();
+			queryResult = queryResult + "<results distinct=\"" + distinct
+					+ "\"" + " ordered=\"" + ordered + "\">";
+			queryResult = queryResult + "<head>";
+			for (String  binding:bindingNames) {
+				queryResult = queryResult + "<variable name=\"" + binding + "\"/>";
+			}
+			queryResult = queryResult + "</head>";
 			try {
 				if (selectResult.hasNext()) {
 					try {
 						while (selectResult.hasNext()) {
 							BindingSet next = selectResult.next();
 							Iterator<Binding> iterator = next.iterator();
+
 							while (iterator.hasNext()) {
 								Binding next2 = iterator.next();
-								queryResult = queryResult + "Name: "
-										+ next2.getName() + " Value: "
-										+ next2.getValue() + "\n";
+								queryResult = queryResult + "<binding name= \""
+										+ next2.getName() + "\"><uri>"
+										+ next2.getValue()
+										+ "</uri></binding>";
 							}
 
 						}
 					} catch (QueryEvaluationException e1) {
-						java.util.logging.Logger.getLogger(LOGGER_NAME)
+						java.util.logging.Logger.getLogger("org.mortbay.log")
 								.log(Level.WARNING, e1.toString());
 					}
+					queryResult = queryResult + "</results></sparql>";
 					return queryResult;
 				}
 			} catch (QueryEvaluationException e) {

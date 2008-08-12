@@ -59,7 +59,7 @@ public class QueryBinding extends BindingsList {
 				getResponse().setStatus(Status.SUCCESS_OK);
 				// TODO put query in the rep
 				Representation rep = new StringRepresentation(queryBinding,
-						MediaType.TEXT_PLAIN);
+						MediaType.TEXT_XML);
 				// Indicates where is located the new resource.
 				rep
 						.setIdentifier(getRequest().getResourceRef()
