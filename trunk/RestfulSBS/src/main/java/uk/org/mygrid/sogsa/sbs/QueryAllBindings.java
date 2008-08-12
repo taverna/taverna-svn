@@ -1,5 +1,7 @@
 package uk.org.mygrid.sogsa.sbs;
 
+import java.util.logging.Level;
+
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -30,12 +32,16 @@ public class QueryAllBindings extends BindingsList{
 		try {
 			queryBinding = queryAllBindings(query);
 			if (queryBinding != null) {
+				java.util.logging.Logger.getLogger("org.mortbay.log").log(
+						Level.WARNING, queryBinding);
 				getResponse().setStatus(Status.SUCCESS_OK);
 				Representation rep = new StringRepresentation(queryBinding,
 						MediaType.TEXT_PLAIN);
 				getResponse().setEntity(rep);
 
 			} else {
+				java.util.logging.Logger.getLogger("org.mortbay.log").log(
+						Level.WARNING, "No contents in all query");
 				getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
 				Representation rep = new StringRepresentation(
 						"No query results returned", MediaType.TEXT_PLAIN);

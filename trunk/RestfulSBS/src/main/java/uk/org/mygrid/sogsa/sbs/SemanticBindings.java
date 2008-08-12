@@ -163,13 +163,15 @@ public class SemanticBindings extends BindingsList {
 		// use database layer to store the rdf supplied in the request
 		try {
 			addBinding(entityKey, rdf);
+			//remove "http://" to the entity url for getting
+			String substring = entityKey.substring(7);
 			Representation rep = new StringRepresentation(
 					"Binding succesfully created "
 							+ getRequest().getResourceRef().getIdentifier()
-							+ "/" + entityKey, MediaType.TEXT_PLAIN);
+							+ "/" + substring, MediaType.TEXT_PLAIN);
 			// Indicates where the new resource is located.
 			rep.setIdentifier(getRequest().getResourceRef().getIdentifier()
-					+ "/" + entityKey);
+					+ "/" + substring);
 			getResponse().setEntity(rep);
 		} catch (Exception e) {
 			Representation rep = new StringRepresentation(

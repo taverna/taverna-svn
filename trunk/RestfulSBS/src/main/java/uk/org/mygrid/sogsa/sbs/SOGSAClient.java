@@ -11,6 +11,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 
 /**
@@ -35,7 +36,8 @@ public class SOGSAClient {
 		// The URI of the server
 		Reference itemsUri = new Reference("http://localhost:25000/sbs");
 		Reference deleteUri = new Reference("http://localhost:25000/sbs");
-		Reference queryAllUri = new Reference("http://localhost:25000/sbs/query");
+		Reference queryAllUri = new Reference(
+				"http://localhost:25000/sbs/query");
 
 		// create from a http URI
 		String bindingKey = null;
@@ -46,8 +48,8 @@ public class SOGSAClient {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Response createItem2 = createItem(uri, UUID.randomUUID().toString(),
-				client, itemsUri);
+		Response createItem2 = createItem(uri, "http://"
+				+ UUID.randomUUID().toString(), client, itemsUri);
 		if (createItem2 != null) {
 			bindingKey = createItem2.getEntity().getIdentifier().toString();
 
@@ -95,7 +97,7 @@ public class SOGSAClient {
 		Reference queryReference = new Reference(bindingKey + "/query");
 		String query = "SELECT ?x WHERE { ?x  <http://www.recshop.fake/cd#artist>  \"Bob_Dylan\" }";
 		Response queryRDF = queryRDF(client, queryReference, query);
-		
+
 		if (queryRDF.getStatus().isSuccess()) {
 			System.out.println("successful query");
 			if (queryRDF.isEntityAvailable()) {
@@ -122,10 +124,11 @@ public class SOGSAClient {
 			}
 		}
 		Response queryAllBindings = queryAllBindings(client, queryAllUri, query);
-		if (queryAllBindings.getStatus().isSuccess()) {
-			System.out.println("successful query");
+		if (queryAllBindings.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
+			System.out.println("\nThere were no query results");
+		} else if (queryAllBindings.getStatus().equals(Status.SUCCESS_OK)) {
+			System.out.println("\nsuccessful query");
 			if (queryAllBindings.isEntityAvailable()) {
-				System.out.println("Entity available");
 				try {
 					queryAllBindings.getEntity().write(System.out);
 				} catch (IOException e) {
@@ -134,28 +137,19 @@ public class SOGSAClient {
 				}
 			}
 		} else {
-			if (queryAllBindings.isEntityAvailable()) {
-				System.out.println("Entity available");
-				try {
-					queryAllBindings.getEntity().write(System.out);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
+			System.out.println("\nQuery failed");
 		}
 
-//		Response deleteAllBindings = deleteAllBindings(client, deleteUri);
-//		if (deleteAllBindings.getStatus().isSuccess()) {
-//			System.out.println("success with deleting all bindings");
-//			try {
-//				deleteAllBindings.getEntity().write(System.out);
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-		
+		// Response deleteAllBindings = deleteAllBindings(client, deleteUri);
+		// if (deleteAllBindings.getStatus().isSuccess()) {
+		// System.out.println("success with deleting all bindings");
+		// try {
+		// deleteAllBindings.getEntity().write(System.out);
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		// }
 
 	}
 

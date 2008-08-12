@@ -199,7 +199,7 @@ public class SemanticBindingService extends Application {
 			throw e1;
 		}
 		URI namedGraphURI = datasetService.getValueFactory().createURI(
-				"http://" + entityKey);
+				entityKey);
 		boolean createIfNecessary = true;
 		INamedGraph graph = null;
 		try {
@@ -578,18 +578,20 @@ public class SemanticBindingService extends Application {
 		java.util.logging.Logger.getLogger("org.mortbay.log").log(
 				Level.WARNING, "querying all of the bindings");
 		Set<URI> storedNamedGraphs = null;
+		URI allGraphs =  datasetService.getValueFactory().createURI(
+				"http://openanzo.org/namedGraphs/reserved/namedGraphs/ALL");
 		String queryResult = new String();
-		try {
-			storedNamedGraphs = datasetService.getModelService()
-					.getStoredNamedGraphs();
-		} catch (AnzoException e) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
-					Level.WARNING, e.toString());
-			throw e;
-		}
+//		try {
+//			storedNamedGraphs = datasetService.getModelService()
+//					.getStoredNamedGraphs();
+//		} catch (AnzoException e) {
+//			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+//					Level.WARNING, e.toString());
+//			throw e;
+//		}
 		QueryResult result = null;
 		try {
-			result = datasetService.execQuery(storedNamedGraphs, Collections
+			result = datasetService.execQuery(Collections.singleton(allGraphs), Collections
 					.<URI> emptySet(), query);
 		} catch (Exception e) {
 			java.util.logging.Logger.getLogger("org.mortbay.log").log(

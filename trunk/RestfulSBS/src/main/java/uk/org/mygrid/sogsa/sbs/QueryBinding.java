@@ -82,7 +82,7 @@ public class QueryBinding extends BindingsList {
 			}
 		} catch (Exception e) {
 			java.util.logging.Logger.getLogger("org.mortbay.log").log(
-					Level.WARNING, "query broken");
+					Level.WARNING, "query broken: " + e);
 			getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			Representation rep = new StringRepresentation(
 					"Problem with the query request: " + e,
