@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- *
+ * TODO check infinite and NaNs
  * @author petarj
  */
 public class MatEngineImplTest extends TestCase {
@@ -61,7 +61,9 @@ public class MatEngineImplTest extends TestCase {
         9     7     6    12
         4    14    15     1
          */
-        double[] expectedMagic4 = new double[]{16, 5, 9, 4, 2, 11, 7, 14, 3, 10, 6, 15, 13, 8, 12, 1};
+        double[] expectedMagic4 = new double[]{16, 5, 9, 4, 2, 11, 7, 14, 3, 10,
+            6, 15, 13, 8, 12, 1
+        };
 
         assertTrue(Arrays.equals(pr, expectedMagic4));
         assertTrue(Arrays.equals(S.getCharData(), SO.getCharData()));
@@ -94,7 +96,9 @@ public class MatEngineImplTest extends TestCase {
         MatArray mmx = new MatArray();
         mmx.setType(MatArray.DOUBLE_TYPE);
         mmx.setDimensions(new int[]{3, 3, 3});
-        mmx.setDoubleDataRe(new double[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27});
+        mmx.setDoubleDataRe(new double[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                    13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27
+                });
 
         //complex array
         MatArray cma = new MatArray();
@@ -108,7 +112,9 @@ public class MatEngineImplTest extends TestCase {
         engine.setVar("sparseMx", sparseMx);
         engine.setVar("cma", cma);
         engine.setVar("mmx", mmx);
-        engine.setOutputNames(new String[]{"Y", "sparseMx", "spTest", "cma", "mmx"});
+        engine.setOutputNames(new String[]{"Y", "sparseMx", "spTest", "cma",
+                    "mmx"
+                });
 
         String script = "Y=ma*theEye;\n" +
                 "spTest=zeros(10,10);\n" +
@@ -210,7 +216,9 @@ public class MatEngineImplTest extends TestCase {
         MatArray logicalArray = new MatArray();
         logicalArray.setType(MatArray.LOGICAL_TYPE);
         logicalArray.setDimensions(new int[]{3, 3});
-        logicalArray.setLogicalData(new boolean[]{false, false, true, true, false, true, false, true, true}); //game of life glider
+        logicalArray.setLogicalData(new boolean[]{false, false, true, true,
+                    false, true, false, true, true
+                }); //game of life glider
 
         engine.setVar("glider", logicalArray);
         engine.setOutputNames(new String[]{"glider", "invGlider"});
@@ -224,12 +232,18 @@ public class MatEngineImplTest extends TestCase {
         MatArray expectedInvGlider = new MatArray();
         expectedInvGlider.setType(MatArray.LOGICAL_TYPE);
         expectedInvGlider.setDimensions(new int[]{3, 3});
-        expectedInvGlider.setLogicalData(new boolean[]{true, true, false, false, true, false, true, false, false});
+        expectedInvGlider.setLogicalData(new boolean[]{true, true, false, false,
+                    true, false, true, false, false
+                });
 
-        System.out.println("logarr:______________________________________________________________________________\n" + logicalArray);
-        System.out.println("\n___________________________________________________________________________________\n");
-        System.out.println("gliderFromEngine:____________________________________________________________________\n" + gliderFromEngine);
-        System.out.println("\n___________________________________________________________________________________\n");
+        System.out.println("logarr:______________________________________________________________________________\n" +
+                logicalArray);
+        System.out.println(
+                "\n___________________________________________________________________________________\n");
+        System.out.println("gliderFromEngine:____________________________________________________________________\n" +
+                gliderFromEngine);
+        System.out.println(
+                "\n___________________________________________________________________________________\n");
 
         assertEquals(logicalArray, gliderFromEngine);
         assertEquals(expectedInvGlider, invGlider);
@@ -258,11 +272,14 @@ public class MatEngineImplTest extends TestCase {
         expectedAns.setSingleDataRe(new float[]{42.0f});
 
         System.out.println("input:\n" + singleArray);
-        System.out.println("\n___________________________________________________________________________________\n");
+        System.out.println(
+                "\n___________________________________________________________________________________\n");
         System.out.println("fromEngine:\n" + fromEngine);
-        System.out.println("\n___________________________________________________________________________________\n");
+        System.out.println(
+                "\n___________________________________________________________________________________\n");
         System.out.println("theAnswer:\n" + theAnswer);
-        System.out.println("\n___________________________________________________________________________________\n");
+        System.out.println(
+                "\n___________________________________________________________________________________\n");
 
         assertEquals(singleArray, fromEngine);
         assertEquals(expectedAns, theAnswer);
@@ -274,7 +291,9 @@ public class MatEngineImplTest extends TestCase {
         MatArray sentientComputers = new MatArray();
         sentientComputers.setType(MatArray.STRUCT_TYPE);
         sentientComputers.setDimensions(new int[]{1, 2});
-        sentientComputers.setFieldNames(new String[]{"name", "song", "someNumber", "someBool"});
+        sentientComputers.setFieldNames(new String[]{"name", "song",
+                    "someNumber", "someBool"
+                });
 
         MatArray names = new MatArray();
         names.setType(MatArray.CELL_TYPE);
@@ -335,7 +354,9 @@ public class MatEngineImplTest extends TestCase {
 
         booleansArray.setCellData(new MatArray[]{b1, b2});
 
-        sentientComputers.setCellData(new MatArray[]{names, songs, numbers, booleansArray});
+        sentientComputers.setCellData(new MatArray[]{names, songs, numbers,
+                    booleansArray
+                });
 
         engine.setVar("scs", sentientComputers);
         String script = "GLaDOS=struct('name','GLaDOS','song','still alive','someNumber',23,'someBool',logical(0));";
@@ -349,7 +370,9 @@ public class MatEngineImplTest extends TestCase {
         MatArray expGlados = new MatArray();
         expGlados.setType(MatArray.STRUCT_TYPE);
         expGlados.setDimensions(new int[]{1, 1});
-        expGlados.setFieldNames(new String[]{"name", "song", "someNumber", "someBool"});
+        expGlados.setFieldNames(new String[]{"name", "song", "someNumber",
+                    "someBool"
+                });
 
         MatArray ns = new MatArray();
         ns.setType(MatArray.CELL_TYPE);

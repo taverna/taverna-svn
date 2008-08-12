@@ -9,6 +9,7 @@ import java.util.Arrays;
  */
 public class MatArray implements Serializable {
 
+    private static final long serialVersionUID = 1937488594685810458L;
     public static final String UNKNOWN_TYPE = "UNKNOWN";
     public static final String STRUCT_TYPE = "STRUCT";
     public static final String CELL_TYPE = "CELL";
