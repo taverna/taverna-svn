@@ -62,6 +62,13 @@ import org.restlet.util.Template;
  */
 public class SemanticBindingService extends Application {
 
+	private static final String LOGGER_NAME = "org.mortbay.log";
+	private static final String SBS_PUT_DELETE = "/sbs";
+	private static final String SBS_BINDING_QUERY_ONE_BINDING = "/sbs/{binding}/query";
+	private static final String SBS_NEW_BINDING = "/sbs/{binding}";
+	private static final String SBS_QUERY_ALL_BINDINGS = "/sbs/query";
+	
+	private static final String JDBC_DERBY_CONNECTIONSTRING = "jdbc:derby:/Users/Paolo/scratch/anzoDerby";
 	private static DatasetService datasetService;
 
 	public SemanticBindingService(Context parentContext) {
@@ -78,13 +85,13 @@ public class SemanticBindingService extends Application {
 			// TODO dynamically load based on anzo properties
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
 		} catch (InstantiationException e1) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 					Level.WARNING, e1.toString());
 		} catch (IllegalAccessException e1) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 					Level.WARNING, e1.toString());
 		} catch (ClassNotFoundException e1) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 					Level.WARNING, e1.toString());
 		}
 
@@ -103,16 +110,16 @@ public class SemanticBindingService extends Application {
 					.getClassLoader().getResourceAsStream(
 							"embeddedclient.properties"));
 		} catch (FileNotFoundException e) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 					Level.WARNING, e.toString());
 		} catch (IOException e) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 					Level.WARNING, e.toString());
 		}
 		try {
 			datasetService = new DatasetService(embeddedClientProperties);
 		} catch (Exception e) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 					Level.WARNING, e.toString());
 		}
 	}
@@ -126,16 +133,16 @@ public class SemanticBindingService extends Application {
 		Router router = new Router(getContext());
 		
 		// query all bindings via http post
-		Route attach = router.attach("/sbs/query", QueryAllBindings.class);
+		Route attach = router.attach(SBS_QUERY_ALL_BINDINGS, QueryAllBindings.class);
 
 		// get a binding via http get
-		router.attach("/sbs/{binding}", SemanticBinding.class);
+		router.attach(SBS_NEW_BINDING, SemanticBinding.class);
 
 		// query a specific binding via http post
-		router.attach("/sbs/{binding}/query", QueryBinding.class);
+		router.attach(SBS_BINDING_QUERY_ONE_BINDING, QueryBinding.class);
 
 		// create a binding via http put or delete one with http delete
-		Route sbsRoute = router.attach("/sbs", SemanticBindings.class);
+		Route sbsRoute = router.attach(SBS_PUT_DELETE, SemanticBindings.class);
 
 //		attach.getTemplate().setMatchingMode(Template.MODE_EQUALS);
 		// sbsRoute.getTemplate().setMatchingMode(Template.MODE_EQUALS);
@@ -153,7 +160,7 @@ public class SemanticBindingService extends Application {
 		for (Handler handler : handlers) {
 			handler.setFormatter(new ReallySimpleFormatter());
 		}
-		java.util.logging.Logger.getLogger("org.mortbay.log").setLevel(
+		java.util.logging.Logger.getLogger(LOGGER_NAME).setLevel(
 				Level.WARNING);
 
 	}
@@ -192,9 +199,9 @@ public class SemanticBindingService extends Application {
 		Connection con = null;
 		try {
 			con = DriverManager
-					.getConnection("jdbc:derby:/Users/Ian/scratch/anzoDerby");
+					.getConnection(JDBC_DERBY_CONNECTIONSTRING);
 		} catch (SQLException e1) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 					Level.WARNING, e1.toString());
 			throw e1;
 		}
@@ -223,7 +230,7 @@ public class SemanticBindingService extends Application {
 			try {
 				datasetService.begin();
 			} catch (AnzoException e) {
-				java.util.logging.Logger.getLogger("org.mortbay.log").log(
+				java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 						Level.WARNING, e.toString());
 				throw e;
 			}
@@ -238,20 +245,20 @@ public class SemanticBindingService extends Application {
 			try {
 				datasetService.commit();
 			} catch (AnzoException e) {
-				java.util.logging.Logger.getLogger("org.mortbay.log").log(
+				java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 						Level.WARNING, e.toString());
 				throw e;
 			}
 			try {
 				datasetService.getDatasetReplicator().replicate(true);
 			} catch (AnzoException e) {
-				java.util.logging.Logger.getLogger("org.mortbay.log").log(
+				java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 						Level.WARNING, e.toString());
 				throw e;
 			}
 
 		} catch (AnzoException e1) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 					Level.WARNING, e1.toString());
 			throw e1;
 		} finally {
@@ -311,7 +318,7 @@ public class SemanticBindingService extends Application {
 				throw new NoRDFFoundException("Binding found but no RDF");
 			}
 		} catch (AnzoException e) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 					Level.WARNING, e.toString());
 			throw e;
 		} finally {
@@ -332,14 +339,14 @@ public class SemanticBindingService extends Application {
 		try {
 			remoteGraph = datasetService.getRemoteGraph(namedGraphURI, false);
 		} catch (AnzoException e) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 					Level.WARNING, e.toString());
 		}
 		try {
 			remoteGraph.delete(datasetService.getRemoteGraph(namedGraphURI,
 					false).getStatements());
 		} catch (AnzoException e) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 					Level.WARNING, e.toString());
 		}
 	}
@@ -377,19 +384,19 @@ public class SemanticBindingService extends Application {
 				parser.setRDFHandler(sc);
 				parser.parse(new StringReader(rdf), "");
 			} catch (UnsupportedRDFormatException mse) {
-				java.util.logging.Logger.getLogger("org.mortbay.log").log(
+				java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 						Level.WARNING, mse.toString());
 				throw new Exception(mse);
 			} catch (RDFHandlerException mse) {
-				java.util.logging.Logger.getLogger("org.mortbay.log").log(
+				java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 						Level.WARNING, mse.toString());
 				throw new Exception(mse);
 			} catch (RDFParseException mse) {
-				java.util.logging.Logger.getLogger("org.mortbay.log").log(
+				java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 						Level.WARNING, mse.toString());
 				throw new Exception(mse);
 			} catch (IOException mse) {
-				java.util.logging.Logger.getLogger("org.mortbay.log").log(
+				java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 						Level.WARNING, mse.toString());
 				throw new Exception(mse);
 			}
@@ -397,7 +404,7 @@ public class SemanticBindingService extends Application {
 			try {
 				datasetService.begin();
 			} catch (AnzoException e1) {
-				java.util.logging.Logger.getLogger("org.mortbay.log").log(
+				java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 						Level.WARNING, e1.toString());
 				throw new Exception(e1);
 			}
@@ -405,7 +412,7 @@ public class SemanticBindingService extends Application {
 				try {
 					remoteGraph.add(statement);
 				} catch (Exception e) {
-					java.util.logging.Logger.getLogger("org.mortbay.log").log(
+					java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 							Level.WARNING,
 							e.toString() + " " + statement.toString());
 					throw new Exception(e);
@@ -414,26 +421,26 @@ public class SemanticBindingService extends Application {
 			try {
 				datasetService.commit();
 			} catch (AnzoException e) {
-				java.util.logging.Logger.getLogger("org.mortbay.log").log(
+				java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 						Level.WARNING, e.toString());
 				throw new Exception(e);
 			}
 			try {
 				datasetService.getDatasetReplicator().replicate(true);
 			} catch (AnzoException e) {
-				java.util.logging.Logger.getLogger("org.mortbay.log").log(
+				java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 						Level.WARNING, e.toString());
 				throw new Exception(e);
 			}
 			try {
 				remoteGraph.close();
 			} catch (Exception e) {
-				java.util.logging.Logger.getLogger("org.mortbay.log").log(
+				java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 						Level.WARNING, e.toString());
 				throw new Exception(e);
 			}
 		} catch (AnzoException e) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 					Level.WARNING, e.toString());
 			throw new SemanticBindingException(e);
 		} finally {
@@ -473,7 +480,7 @@ public class SemanticBindingService extends Application {
 					.singleton(namedGraphURI), Collections.<URI> emptySet(),
 					query);
 		} catch (AnzoException e) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 					Level.WARNING, e.toString());
 			throw e;
 		} finally {
@@ -518,7 +525,7 @@ public class SemanticBindingService extends Application {
 
 						}
 					} catch (QueryEvaluationException e1) {
-						java.util.logging.Logger.getLogger("org.mortbay.log")
+						java.util.logging.Logger.getLogger(LOGGER_NAME)
 								.log(Level.WARNING, e1.toString());
 					}
 					return queryResult;
@@ -575,7 +582,7 @@ public class SemanticBindingService extends Application {
 		if (datasetService == null) {
 			initializeDatabase();
 		}
-		java.util.logging.Logger.getLogger("org.mortbay.log").log(
+		java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 				Level.WARNING, "querying all of the bindings");
 		Set<URI> storedNamedGraphs = null;
 		URI allGraphs =  datasetService.getValueFactory().createURI(
@@ -594,7 +601,7 @@ public class SemanticBindingService extends Application {
 			result = datasetService.execQuery(Collections.singleton(allGraphs), Collections
 					.<URI> emptySet(), query);
 		} catch (Exception e) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 					Level.WARNING, e.toString());
 			throw e;
 		}
@@ -639,7 +646,7 @@ public class SemanticBindingService extends Application {
 					return queryResult;
 				}
 			} catch (QueryEvaluationException e1) {
-				java.util.logging.Logger.getLogger("org.mortbay.log").log(
+				java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 						Level.WARNING, e1.toString());
 				throw e1;
 			}
@@ -667,23 +674,23 @@ public class SemanticBindingService extends Application {
 			parser.parse(initializationStream, "");
 			datasetService.getModelService().reset(sc.getStatements());
 		} catch (UnsupportedRDFormatException mse) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 					Level.WARNING, mse.toString());
 			throw mse;
 		} catch (RDFHandlerException mse) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 					Level.WARNING, mse.toString());
 			throw mse;
 		} catch (RDFParseException mse) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 					Level.WARNING, mse.toString());
 			throw mse;
 		} catch (IOException mse) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 					Level.WARNING, mse.toString());
 			throw mse;
 		} catch (AnzoException e) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
 					Level.WARNING, e.toString());
 			throw e;
 		}
