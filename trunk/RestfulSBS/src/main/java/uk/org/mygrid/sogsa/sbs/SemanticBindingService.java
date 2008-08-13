@@ -26,6 +26,7 @@ import org.openanzo.model.impl.query.QueryResult;
 import org.openanzo.services.IModelService;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
+import org.openanzo.model.Constants;
 import org.openrdf.query.Binding;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
@@ -62,8 +63,8 @@ public class SemanticBindingService extends Application {
 	private static final String SBS_BINDING_QUERY_ONE_BINDING = "/sbs/{binding}/query";
 	private static final String SBS_NEW_BINDING = "/sbs/{binding}";
 	private static final String SBS_QUERY_ALL_BINDINGS = "/sbs/query";
-	
-	private static final String JDBC_DERBY_CONNECTIONSTRING = "jdbc:derby:/Users/Paolo/scratch/anzoDerby";
+
+	private static final String JDBC_DERBY_CONNECTIONSTRING = "jdbc:derby:/Users/Ian/scratch/anzoDerby";
 	private static DatasetService datasetService;
 
 	public SemanticBindingService(Context parentContext) {
@@ -80,14 +81,14 @@ public class SemanticBindingService extends Application {
 			// TODO dynamically load based on anzo properties
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
 		} catch (InstantiationException e1) {
-			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-					Level.WARNING, e1.toString());
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
+					e1.toString());
 		} catch (IllegalAccessException e1) {
-			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-					Level.WARNING, e1.toString());
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
+					e1.toString());
 		} catch (ClassNotFoundException e1) {
-			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-					Level.WARNING, e1.toString());
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
+					e1.toString());
 		}
 
 		initializeRestletLogging();
@@ -105,17 +106,38 @@ public class SemanticBindingService extends Application {
 					.getClassLoader().getResourceAsStream(
 							"embeddedclient.properties"));
 		} catch (FileNotFoundException e) {
-			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-					Level.WARNING, e.toString());
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
+					e.toString());
 		} catch (IOException e) {
-			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-					Level.WARNING, e.toString());
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
+					e.toString());
 		}
 		try {
 			datasetService = new DatasetService(embeddedClientProperties);
 		} catch (Exception e) {
-			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-					Level.WARNING, e.toString());
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
+					e.toString());
+		}
+		openAllGraphs();
+	}
+
+	private void openAllGraphs() {
+		//open all the remote graphs
+		Set<URI> storedNamedGraphs = null;
+		try {
+			storedNamedGraphs = datasetService.getModelService()
+					.getStoredNamedGraphs();
+
+		} catch (Exception e) {
+			
+		}
+		for (URI graph:storedNamedGraphs) {
+			try {
+				datasetService.getRemoteGraph(graph, false);
+			} catch (AnzoException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -126,9 +148,10 @@ public class SemanticBindingService extends Application {
 	@Override
 	public Restlet createRoot() {
 		Router router = new Router(getContext());
-		
+
 		// query all bindings via http post
-		Route attach = router.attach(SBS_QUERY_ALL_BINDINGS, QueryAllBindings.class);
+		Route attach = router.attach(SBS_QUERY_ALL_BINDINGS,
+				QueryAllBindings.class);
 
 		// get a binding via http get
 		router.attach(SBS_NEW_BINDING, SemanticBinding.class);
@@ -155,8 +178,7 @@ public class SemanticBindingService extends Application {
 		for (Handler handler : handlers) {
 			handler.setFormatter(new ReallySimpleFormatter());
 		}
-		java.util.logging.Logger.getLogger(LOGGER_NAME).setLevel(
-				Level.WARNING);
+		java.util.logging.Logger.getLogger(LOGGER_NAME).setLevel(Level.WARNING);
 
 	}
 
@@ -193,11 +215,10 @@ public class SemanticBindingService extends Application {
 		}
 		Connection con = null;
 		try {
-			con = DriverManager
-					.getConnection(JDBC_DERBY_CONNECTIONSTRING);
+			con = DriverManager.getConnection(JDBC_DERBY_CONNECTIONSTRING);
 		} catch (SQLException e1) {
-			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-					Level.WARNING, e1.toString());
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
+					e1.toString());
 			throw e1;
 		}
 		URI namedGraphURI = datasetService.getValueFactory().createURI(
@@ -253,8 +274,8 @@ public class SemanticBindingService extends Application {
 			}
 
 		} catch (AnzoException e1) {
-			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-					Level.WARNING, e1.toString());
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
+					e1.toString());
 			throw e1;
 		} finally {
 			if (graph != null) {
@@ -313,8 +334,8 @@ public class SemanticBindingService extends Application {
 				throw new NoRDFFoundException("Binding found but no RDF");
 			}
 		} catch (AnzoException e) {
-			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-					Level.WARNING, e.toString());
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
+					e.toString());
 			throw e;
 		} finally {
 			if (remoteGraph != null) {
@@ -334,15 +355,15 @@ public class SemanticBindingService extends Application {
 		try {
 			remoteGraph = datasetService.getRemoteGraph(namedGraphURI, false);
 		} catch (AnzoException e) {
-			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-					Level.WARNING, e.toString());
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
+					e.toString());
 		}
 		try {
 			remoteGraph.delete(datasetService.getRemoteGraph(namedGraphURI,
 					false).getStatements());
 		} catch (AnzoException e) {
-			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-					Level.WARNING, e.toString());
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
+					e.toString());
 		}
 	}
 
@@ -435,8 +456,8 @@ public class SemanticBindingService extends Application {
 				throw new Exception(e);
 			}
 		} catch (AnzoException e) {
-			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-					Level.WARNING, e.toString());
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
+					e.toString());
 			throw new SemanticBindingException(e);
 		} finally {
 			if (remoteGraph != null) {
@@ -475,80 +496,105 @@ public class SemanticBindingService extends Application {
 					.singleton(namedGraphURI), Collections.<URI> emptySet(),
 					query);
 		} catch (AnzoException e) {
-			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-					Level.WARNING, e.toString());
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
+					"AnzoException: " + e.toString());
 			throw e;
-		} finally {
+		} catch (IllegalArgumentException e) {
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
+					"IllegalArgumentException: " + e.toString());
+			throw e;
+		}
+		finally {
 			remoteGraph.close();
 		}
-		if (result.isAskResult()) {
-			queryResult = queryResult + "<?xml version=\"1.0\"?><sparql xmlns=\"http://www.w3.org/2005/sparql-results#\"><head></head><boolean>";
-			queryResult = queryResult + result.getAskResult().toString() + "</boolean></sparql>";
-			return queryResult;
-		} else if (result.isConstructResult()) {
-			Collection<Statement> constructResult = result.getConstructResult();
-			if (!constructResult.isEmpty()) {
-				queryResult = queryResult + "<results>";
-				for (Statement statement : constructResult) {
-					
-					queryResult = queryResult + "<result><subject>" + statement.getSubject() + "</subject> "
-							+ "<predicate>"  + statement.getPredicate() + "</predicate>"
-							+ "<object>" + statement.getObject() + "</object></result>";
-				}
-				queryResult = queryResult + "</results>";
+		if (result != null) {
+			if (result.isAskResult()) {
+				queryResult = queryResult
+						+ "<?xml version=\"1.0\"?><sparql xmlns=\"http://www.w3.org/2005/sparql-results#\"><head></head><boolean>";
+				queryResult = queryResult + result.getAskResult().toString()
+						+ "</boolean></sparql>";
 				return queryResult;
-			}
-		} else if (result.isDescribeResult()) {
-			Collection<Statement> describeResult = result.getDescribeResult();
-			if (!describeResult.isEmpty()) {
-				queryResult = queryResult + "<results>";
-				for (Statement statement : describeResult) {
-					queryResult = queryResult + "<result><subject>" + statement.getSubject() + "</subject> "
-					+ "<predicate>"  + statement.getPredicate() + "</predicate>"
-					+ "<object>" + statement.getObject() + "</object></result>";
-		}
-		queryResult = queryResult + "</results>";
-				return queryResult;
-			}
-		} else if (result.isSelectResult()) {
-			TupleQueryResult selectResult = result.getSelectResult();
-			List<String> bindingNames = selectResult.getBindingNames();
-			queryResult = queryResult + "<?xml version=\"1.0\"?><sparql xmlns=\"http://www.w3.org/2005/sparql-results#\">";
+			} else if (result.isConstructResult()) {
+				Collection<Statement> constructResult = result
+						.getConstructResult();
+				if (!constructResult.isEmpty()) {
+					queryResult = queryResult + "<results>";
+					for (Statement statement : constructResult) {
 
-			boolean distinct = selectResult.isDistinct();
-			boolean ordered = selectResult.isOrdered();
-			queryResult = queryResult + "<results distinct=\"" + distinct
-					+ "\"" + " ordered=\"" + ordered + "\">";
-			queryResult = queryResult + "<head>";
-			for (String  binding:bindingNames) {
-				queryResult = queryResult + "<variable name=\"" + binding + "\"/>";
-			}
-			queryResult = queryResult + "</head>";
-			try {
-				if (selectResult.hasNext()) {
-					try {
-						while (selectResult.hasNext()) {
-							BindingSet next = selectResult.next();
-							Iterator<Binding> iterator = next.iterator();
-
-							while (iterator.hasNext()) {
-								Binding next2 = iterator.next();
-								queryResult = queryResult + "<binding name= \""
-										+ next2.getName() + "\"><uri>"
-										+ next2.getValue()
-										+ "</uri></binding>";
-							}
-
-						}
-					} catch (QueryEvaluationException e1) {
-						java.util.logging.Logger.getLogger("org.mortbay.log")
-								.log(Level.WARNING, e1.toString());
+						queryResult = queryResult + "<result><subject>"
+								+ statement.getSubject() + "</subject> "
+								+ "<predicate>" + statement.getPredicate()
+								+ "</predicate>" + "<object>"
+								+ statement.getObject() + "</object></result>";
 					}
-					queryResult = queryResult + "</results></sparql>";
+					queryResult = queryResult + "</results>";
 					return queryResult;
 				}
-			} catch (QueryEvaluationException e) {
-				throw e;
+			} else if (result.isDescribeResult()) {
+				Collection<Statement> describeResult = result
+						.getDescribeResult();
+				if (!describeResult.isEmpty()) {
+					queryResult = queryResult + "<results>";
+					for (Statement statement : describeResult) {
+						queryResult = queryResult + "<result><subject>"
+								+ statement.getSubject() + "</subject> "
+								+ "<predicate>" + statement.getPredicate()
+								+ "</predicate>" + "<object>"
+								+ statement.getObject() + "</object></result>";
+					}
+					queryResult = queryResult + "</results>";
+					return queryResult;
+				}
+			} else if (result.isSelectResult()) {
+				TupleQueryResult selectResult = result.getSelectResult();
+				List<String> bindingNames = selectResult.getBindingNames();
+				queryResult = queryResult
+						+ "<?xml version=\"1.0\"?><sparql xmlns=\"http://www.w3.org/2005/sparql-results#\">";
+
+				boolean distinct = selectResult.isDistinct();
+				boolean ordered = selectResult.isOrdered();
+				queryResult = queryResult + "<results distinct=\"" + distinct
+						+ "\"" + " ordered=\"" + ordered + "\">";
+				queryResult = queryResult + "<head>";
+				for (String binding : bindingNames) {
+					queryResult = queryResult + "<variable name=\"" + binding
+							+ "\"/>";
+				}
+				queryResult = queryResult + "</head>";
+				try {
+					if (selectResult.hasNext()) {
+						try {
+							while (selectResult.hasNext()) {
+								BindingSet next = selectResult.next();
+								Iterator<Binding> iterator = next.iterator();
+
+								while (iterator.hasNext()) {
+									Binding next2 = iterator.next();
+									queryResult = queryResult
+											+ "<binding name= \""
+											+ next2.getName() + "\"><uri>"
+											+ next2.getValue()
+											+ "</uri></binding>";
+								}
+
+							}
+						} catch (QueryEvaluationException e1) {
+							java.util.logging.Logger.getLogger(
+									"org.mortbay.log").log(
+									Level.WARNING,
+									"QueryEvaluationException: "
+											+ e1.toString());
+							throw e1;
+						}
+						queryResult = queryResult + "</results></sparql>";
+						return queryResult;
+					}
+				} catch (QueryEvaluationException e) {
+					java.util.logging.Logger.getLogger("org.mortbay.log").log(
+							Level.WARNING,
+							"QueryEvaluationException: " + e.toString());
+					throw e;
+				}
 			}
 		}
 		return null;
@@ -593,33 +639,34 @@ public class SemanticBindingService extends Application {
 	 * @param query
 	 *            SPARQL query
 	 * @return a string representing the query result
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public String queryAllBindings(String query) throws Exception {
 		if (datasetService == null) {
 			initializeDatabase();
 		}
-		java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-				Level.WARNING, "querying all of the bindings");
+		openAllGraphs();
+		java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
+				"querying all of the bindings");
 		Set<URI> storedNamedGraphs = null;
-		URI allGraphs =  datasetService.getValueFactory().createURI(
+		URI allGraphs = datasetService.getValueFactory().createURI(
 				"http://openanzo.org/namedGraphs/reserved/namedGraphs/ALL");
 		String queryResult = new String();
-//		try {
-//			storedNamedGraphs = datasetService.getModelService()
-//					.getStoredNamedGraphs();
-//		} catch (AnzoException e) {
-//			java.util.logging.Logger.getLogger("org.mortbay.log").log(
-//					Level.WARNING, e.toString());
-//			throw e;
-//		}
+		// try {
+		// storedNamedGraphs = datasetService.getModelService()
+		// .getStoredNamedGraphs();
+		// } catch (AnzoException e) {
+		// java.util.logging.Logger.getLogger("org.mortbay.log").log(
+		// Level.WARNING, e.toString());
+		// throw e;
+		// }
 		QueryResult result = null;
 		try {
-			result = datasetService.execQuery(Collections.singleton(allGraphs), Collections
-					.<URI> emptySet(), query);
+			result = datasetService.execQuery(Collections.singleton(Constants.allNamedGraphsUriURI),
+					Collections.<URI> emptySet(), query);
 		} catch (Exception e) {
-			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-					Level.WARNING, e.toString());
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
+					e.toString());
 			throw e;
 		}
 		if (result.isAskResult()) {
@@ -691,24 +738,24 @@ public class SemanticBindingService extends Application {
 			parser.parse(initializationStream, "");
 			datasetService.getModelService().reset(sc.getStatements());
 		} catch (UnsupportedRDFormatException mse) {
-			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-					Level.WARNING, mse.toString());
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
+					mse.toString());
 			throw mse;
 		} catch (RDFHandlerException mse) {
-			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-					Level.WARNING, mse.toString());
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
+					mse.toString());
 			throw mse;
 		} catch (RDFParseException mse) {
-			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-					Level.WARNING, mse.toString());
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
+					mse.toString());
 			throw mse;
 		} catch (IOException mse) {
-			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-					Level.WARNING, mse.toString());
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
+					mse.toString());
 			throw mse;
 		} catch (AnzoException e) {
-			java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-					Level.WARNING, e.toString());
+			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
+					e.toString());
 			throw e;
 		}
 		// don't think we need to do this
