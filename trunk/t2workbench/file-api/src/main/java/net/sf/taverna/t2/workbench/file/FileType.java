@@ -17,8 +17,13 @@ public abstract class FileType {
 			return false;
 		}
 		FileType other = (FileType) obj;
-		return getExtension().equalsIgnoreCase(other.getExtension())
-				&& getMimeType().equals(other.getMimeType());
+		if (getMimeType() != null && other.getMimeType() != null) {
+			return getMimeType().equalsIgnoreCase(other.getMimeType());
+		}
+		if (getExtension() != null && other.getExtension() != null) {
+			return getExtension().equalsIgnoreCase(other.getExtension());
+		}
+		return false;
 	}
 
 	@Override
