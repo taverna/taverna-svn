@@ -31,15 +31,24 @@ public abstract class AbstractXMLDeserializer implements
 		String encoding = configElement.getAttributeValue(BEAN_ENCODING);
 		Object result = null;
 		if (encoding.equals(XSTREAM_ENCODING)) {
-			// FIXME: throw Exception if children.size!=1
+			if (configElement.getChildren().isEmpty()) {
+				throw new IllegalArgumentException("XStream encoding expected in element");
+			}
 			Element beanElement = (Element) configElement.getChildren().get(0);
 			XStream xstream = new XStream(new DomDriver());
 			xstream.setClassLoader(cl);
 			result = xstream.fromXML(new XMLOutputter()
 					.outputString(beanElement));
-		}
-		if (encoding.equals(JDOMXML_ENCODING)) {
+		} else if (encoding.equals(JDOMXML_ENCODING)) {
+			if (configElement.getChildren().isEmpty()) {
+				throw new IllegalArgumentException("XML encoding expected in element");
+			}
 			result = (Element) configElement.getChildren().get(0);
+		//} else if (encoding.equals(DATAFLOW_ENCODING)) {
+		//	// Oh noe
+		//	System.out.println(configElement);
+		} else {
+			throw new IllegalArgumentException("Unknown encoding " + encoding);
 		}
 
 		return result;
