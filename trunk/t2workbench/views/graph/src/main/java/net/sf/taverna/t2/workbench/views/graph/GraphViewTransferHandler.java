@@ -107,8 +107,8 @@ public class GraphViewTransferHandler extends TransferHandler {
 				Processor p=edits.createProcessor(name);
 				editList.add(edits.getDefaultDispatchStackEdit(p));
 				editList.add(edits.getAddActivityEdit(p, activity));
-				editList.add(edits.getMapProcessorPortsForActivityEdit(p));
-				editList.add(edits.getRenameProcessorEdit(p, name));
+//				editList.add(edits.getMapProcessorPortsForActivityEdit(p));
+//				editList.add(edits.getRenameProcessorEdit(p, name));
 				editList.add(edits.getAddProcessorEdit(dataflow, p));
 				editManager
 						.doDataflowEdit(dataflow, new CompoundEdit(editList));
