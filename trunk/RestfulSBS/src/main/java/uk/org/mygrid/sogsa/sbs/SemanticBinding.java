@@ -28,16 +28,20 @@ public class SemanticBinding extends BindingsList {
 
 	public SemanticBinding(Context context, Request request, Response response) {
 		super(context, request, response);
-		for (Entry set : getRequest().getAttributes().entrySet()) {
-			java.util.logging.Logger.getLogger("org.mortbay.log").log(
-					Level.WARNING, set.getKey() + " " + set.getValue());
-		}
+		java.util.logging.Logger.getLogger("org.mortbay.log").log(
+				Level.WARNING, "doing some stuff");
+//		for (Entry set : getRequest().getAttributes().entrySet()) {
+//			java.util.logging.Logger.getLogger("org.mortbay.log").log(
+//					Level.WARNING, set.getKey() + " " + set.getValue());
+//		}
 		this.key = (String) getRequest().getAttributes().get("binding");
 
 		// Check if this binding actually exists
 		SemanticBindingInstance binding = null;
 		try {
 			if ((binding = getBinding(key)) != null) {
+				java.util.logging.Logger.getLogger("org.mortbay.log").log(
+						Level.WARNING, "there was a binding");
 //				this.binding = getBinding(key);
 				this.binding = binding;
 				getVariants().add(new Variant(MediaType.TEXT_XML));
