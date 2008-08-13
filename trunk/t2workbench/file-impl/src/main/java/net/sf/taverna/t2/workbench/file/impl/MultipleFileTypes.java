@@ -29,6 +29,9 @@ public class MultipleFileTypes extends FileFilter {
 
 		String lowerFileName = file.getName().toLowerCase();
 		for (FileType fileType : fileTypes) {
+			if (fileType.getExtension() == null) {
+				continue;
+			}
 			if (lowerFileName.endsWith(fileType.getExtension())) {
 				return true;
 			}

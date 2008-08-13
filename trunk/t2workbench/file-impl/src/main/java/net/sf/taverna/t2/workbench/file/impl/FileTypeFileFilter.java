@@ -20,7 +20,14 @@ public class FileTypeFileFilter extends FileFilter {
 
 	@Override
 	public boolean accept(File file) {
-		return file.isDirectory() || file.getName().toLowerCase().endsWith(
+		if (file.isDirectory()) {
+			// Don't grey out directories
+			return true;
+		}
+		if (fileType.getExtension() == null) {
+			return false;
+		}
+		return file.getName().toLowerCase().endsWith(
 				"." + fileType.getExtension());
 	}
 
