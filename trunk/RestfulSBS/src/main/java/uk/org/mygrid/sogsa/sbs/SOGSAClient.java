@@ -36,15 +36,19 @@ import org.restlet.resource.Representation;
 public class SOGSAClient {
 
 	private static final String QUERY_URL_SUFFIX = "/query"; //$NON-NLS-1$
-	private static final String HTTP_LOCALHOST_25000_SBS = ClientConfig.getString("SOGSAClient.1"); //$NON-NLS-1$
-	private static final String SAMPLE_SPARQL_QUERY_1 = ClientConfig.getString("SOGSAClient.2"); //$NON-NLS-1$
-	private static final String TEST_RDF_FILE_1 = ClientConfig.getString("SOGSAClient.3"); //$NON-NLS-1$
-	private static final String TEST_RDF_FILE_2 = ClientConfig.getString("SOGSAClient.4"); //$NON-NLS-1$
+	private static final String HTTP_LOCALHOST_25000_SBS = ClientConfig
+			.getString("SOGSAClient.1"); //$NON-NLS-1$
+	private static final String SAMPLE_SPARQL_QUERY_1 = ClientConfig
+			.getString("SOGSAClient.2"); //$NON-NLS-1$
+	private static final String TEST_RDF_FILE_1 = ClientConfig
+			.getString("SOGSAClient.3"); //$NON-NLS-1$
+	private static final String TEST_RDF_FILE_2 = ClientConfig
+			.getString("SOGSAClient.4"); //$NON-NLS-1$
 
-	
 	/**
-	 * main contains a number of client usage snippets to illustrate a typical sequence: create a SB - 
-	 * incrementally populate SB - query SB - delete SB
+	 * main contains a number of client usage snippets to illustrate a typical
+	 * sequence: create a SB - incrementally populate SB - query SB - delete SB
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -54,20 +58,23 @@ public class SOGSAClient {
 		// The URI of the server
 		Reference itemsUri = new Reference(HTTP_LOCALHOST_25000_SBS);
 		Reference deleteUri = new Reference(HTTP_LOCALHOST_25000_SBS);
-		Reference queryAllUri = new Reference(HTTP_LOCALHOST_25000_SBS+QUERY_URL_SUFFIX);
+		Reference queryAllUri = new Reference(HTTP_LOCALHOST_25000_SBS
+				+ QUERY_URL_SUFFIX);
 
-//////////
-// 1
-// create a new SB from a http URI pointing to the RDF content.
-// (alternatively, you can supply the RDF content inline)
-// the SB consists of the pair (<binding key>, <RDF statements>) where
-// <binding key> Grid Entity key that will be provided by Karma 
-// and corresponds to the "workflow user session", so that all RDF fragments
-// for that session are added to this SB
-//////////
-		
-		System.out.println("1: create a new SB from a http URI pointing to the RDF content.");
-		
+		// ////////
+		// 1
+		// create a new SB from a http URI pointing to the RDF content.
+		// (alternatively, you can supply the RDF content inline)
+		// the SB consists of the pair (<binding key>, <RDF statements>) where
+		// <binding key> Grid Entity key that will be provided by Karma
+		// and corresponds to the "workflow user session", so that all RDF
+		// fragments
+		// for that session are added to this SB
+		// ////////
+
+		System.out
+				.println("1: create a new SB from a http URI pointing to the RDF content.");
+
 		String bindingKey = null;
 		URI uri = null;
 		try {
@@ -76,38 +83,58 @@ public class SOGSAClient {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		// the construct "http:"+ UUID.randomUUID().toString()  
+
+		// the construct "http:"+ UUID.randomUUID().toString()
 		// stands for the actual binding key provided by Karma
-		Response createItem2 = createItem(uri, "http://" //$NON-NLS-1$
+		Response createItem2 = createItem(loadRDF(TEST_RDF_FILE_1), "http://" //$NON-NLS-1$
 				+ UUID.randomUUID().toString(), client, itemsUri);
 		if (createItem2 != null) {
+
 			bindingKey = createItem2.getEntity().getIdentifier().toString();
 
 			// Prints the representation of the newly created resource.
 			try {
 				Response response = get(client, createItem2.getEntity()
 						.getIdentifier());
-				if (response.getStatus().isSuccess()) {
-					if (response.isEntityAvailable()) {
-						// System.out.println("here is the RDF for the new SB:");
-						// response.getEntity().write(System.out);
+				try {
+					if (response.getStatus().isSuccess()) {
+						if (response.isEntityAvailable()) {
+							// System.out.println(
+							// "here is the RDF for the new SB:");
+							// response.getEntity().write(System.out);
+						}
 					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} finally {
+					// if you don't get the entity to write out it's stream you
+					// have to close it, otherwise the connection to the server
+					// never closes and you will never get to talk to it again
+					response.getEntity().getStream().close();
 				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+
+			} catch (Exception e) {
+
+			} finally {
+				try {
+					createItem2.getEntity().getStream().close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 
-		
-//////////
-// 2
-// add more rdf statements to the SB we just created -- note we are referring back to the same SB using the binding key
-// (obtained by createItem2)
-//////////
-		
-		System.out.println("2 - add more rdf statements to the SB we just created");
+		// ////////
+		// 2
+		// add more rdf statements to the SB we just created -- note we are
+		// referring back to the same SB using the binding key
+		// (obtained by createItem2)
+		// ////////
+
+		System.out
+				.println("2 - add more rdf statements to the SB we just created");
 		URI uri2 = null;
 		try {
 			uri2 = new URI(TEST_RDF_FILE_2);
@@ -115,166 +142,214 @@ public class SOGSAClient {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		try {
-			Response addRDF = addRDF(client, createItem2.getEntity()
-					.getIdentifier(), uri2);
 
+		System.out.println(createItem2.getEntity().getIdentifier());
+		Response addRDF = addRDF(client, createItem2.getEntity()
+				.getIdentifier(), uri2);
+		try {
 			if (addRDF.getStatus().isSuccess()) {
+				System.out.println("success");
 				Response response = get(client, createItem2.getEntity()
 						.getIdentifier());
-				if (response.getStatus().isSuccess()) {
-					if (response.isEntityAvailable()) {
-						// response.getEntity().write(System.out);
+				try {
+					if (response.getStatus().isSuccess()) {
+						if (response.isEntityAvailable()) {
+							// System.out.println(response.getEntity());
+							// here we have written the contents of the entities
+							// stream out so it is now closed
+							response.getEntity().write(System.out);
+						}
 					}
+				} catch (Exception e) {
+
+				} finally {
+					// response.getEntity().getStream().close();
 				}
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			System.out.println(e);
+		} finally {
+			try {
+				addRDF.getEntity().getStream().close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
-		
-//////////
-// 3
-// query the RDF corresponding to our binding key, using SPARQL
-//////////
-		
-		System.out.println("3: query the RDF corresponding to our binding key, using SPARQL");
+		// ////////
+		// 3
+		// query the RDF corresponding to our binding key, using SPARQL
+		// ////////
+
+		System.out
+				.println("3: query the RDF corresponding to our binding key, using SPARQL");
 
 		Reference queryReference = new Reference(bindingKey + QUERY_URL_SUFFIX);
 		String queryFile = SAMPLE_SPARQL_QUERY_1;
-		InputStream resourceAsStream = SOGSAClient.class.getClassLoader().getResourceAsStream(SAMPLE_SPARQL_QUERY_1);
-		String query = new String();
-		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(resourceAsStream));
+		String query = loadRDF(queryFile);
+		System.out.println("The query is: " + query);
+		// InputStream resourceAsStream = SOGSAClient.class.getClassLoader()
+		// .getResourceAsStream(SAMPLE_SPARQL_QUERY_1);
+		// String query = new String();
+		// try {
+		// BufferedReader br = new BufferedReader(new InputStreamReader(
+		// resourceAsStream));
+		//
+		// String inputLine;
+		//
+		// while ((inputLine = br.readLine()) != null)
+		// query = query + inputLine;
+		//
+		// } catch (FileNotFoundException e1) {
+		// // TODO Auto-generated catch block
+		// System.out.println(e1);
+		// e1.printStackTrace();
+		//
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// System.out.println(e);
+		// e.printStackTrace();
+		// }
 
-			String inputLine;
-
-			while ((inputLine = br.readLine()) != null)
-				query = query + inputLine;
-
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			System.out.println(e1);
-			e1.printStackTrace();
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			System.out.println(e);
-			e.printStackTrace();
-		}
-		
 		Response queryRDF = queryRDF(client, queryReference, query);
+		try {
+			if (queryRDF.getStatus().isSuccess()) {
+				System.out.println("successful query"); //$NON-NLS-1$
+				if (queryRDF.isEntityAvailable()) {
+					System.out.println("Entity available"); //$NON-NLS-1$
 
-		if (queryRDF.getStatus().isSuccess()) {
-			System.out.println("successful query"); //$NON-NLS-1$
-			if (queryRDF.isEntityAvailable()) {
-				System.out.println("Entity available"); //$NON-NLS-1$
-
-				if (queryRDF.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
-					System.out.println("... but empty response");	 //$NON-NLS-1$
-				} else {
-					try {
-						queryRDF.getEntity().write(System.out);
-					} catch (IOException e5) {
-						// TODO Auto-generated catch block
-						e5.printStackTrace();
+					if (queryRDF.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
+						System.out.println("... but empty response"); //$NON-NLS-1$
+					} else {
+						try {
+							queryRDF.getEntity().write(System.out);
+						} catch (IOException e5) {
+							// TODO Auto-generated catch block
+							e5.printStackTrace();
+						}
 					}
 				}
+			} else {
+				System.out.println("query failed");
 			}
+		} catch (Exception e) {
+
+		} finally {
+			// try {
+			// queryRDF.getEntity().getStream().close();
+			// } catch (IOException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
 		}
 
-		
-//////////
-// 4
-// retrieve all available binding keys from the service
-//////////
-		
+		// ////////
+		// 4
+		// retrieve all available binding keys from the service
+		// ////////
+
 		Reference allBindingsRef = new Reference(HTTP_LOCALHOST_25000_SBS);
 		Response allBindings = getAllBindings(client, allBindingsRef);
 
-		if (allBindings.getStatus().isSuccess()) {
-			System.out.println("success with all bindings"); //$NON-NLS-1$
-
-			if (allBindings.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
-				System.out.println("... but empty response");	 //$NON-NLS-1$
-			} else {
-				try {
-					allBindings.getEntity().write(System.out);
-				} catch (IOException e0) {
-					// TODO Auto-generated catch block
-					e0.printStackTrace();
-				}
-			}
-		}
-		
-		
-//////////
-// 5
-// apply a SPARQL query to all RDF graphs available form the server
-// CHECK there is an issue here that is being discussed with the Anzo people -- should work in Anzo 3.0 but not in 2.5.1
-//////////		
-		queryFile = SAMPLE_SPARQL_QUERY_1;
-		
-		query = new String();
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(new File(query)));
+			if (allBindings.getStatus().isSuccess()) {
+				System.out.println("success with all bindings"); //$NON-NLS-1$
 
-			String inputLine;
-
-			while ((inputLine = br.readLine()) != null)
-				query = query + inputLine;
-
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-			
-		Response queryAllBindings = queryAllBindings(client, queryAllUri, query);
-		if (queryAllBindings.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
-			System.out.println("\nThere were no query results"); //$NON-NLS-1$
-		} else if (queryAllBindings.getStatus().equals(Status.SUCCESS_OK)) {
-			System.out.println("\nsuccessful query"); //$NON-NLS-1$
-			if (queryAllBindings.isEntityAvailable()) {
-				try {
-					queryAllBindings.getEntity().write(System.out);
-				} catch (IOException e3) {
-					// TODO Auto-generated catch block
-					e3.printStackTrace();
+				if (allBindings.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
+					System.out.println("... but empty response"); //$NON-NLS-1$
+				} else {
+					try {
+						allBindings.getEntity().write(System.out);
+					} catch (IOException e0) {
+						// TODO Auto-generated catch block
+						e0.printStackTrace();
+					}
 				}
 			}
-		} else {
-			System.out.println("\nQuery failed"); //$NON-NLS-1$
+		} catch (Exception e) {
+
+		} finally {
+			// try {
+			// allBindings.getEntity().getStream().close();
+			// } catch (IOException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
 		}
 
-		
-//////////
-// 6
-// zap the database
-//////////						
-		Response deleteAllBindings = deleteAllBindings(client, deleteUri);
-		if (deleteAllBindings.getStatus().isSuccess()) {
-			System.out.println("success with deleting all bindings"); //$NON-NLS-1$
-			try {
-				deleteAllBindings.getEntity().write(System.out);
-			} catch (IOException e9) {
-				// TODO Auto-generated catch block
-				e9.printStackTrace();
+		// ////////
+		// 5
+		// apply a SPARQL query to all RDF graphs available form the server
+		// CHECK there is an issue here that is being discussed with the Anzo
+		// people -- should work in Anzo 3.0 but not in 2.5.1
+		// ////////
+		queryFile = SAMPLE_SPARQL_QUERY_1;
+		String loadRDF = loadRDF(queryFile);
+
+		Response queryAllBindings = queryAllBindings(client, queryAllUri,
+				loadRDF);
+		try {
+			if (queryAllBindings.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
+				System.out.println("\nThere were no query results"); //$NON-NLS-1$
+			} else if (queryAllBindings.getStatus().equals(Status.SUCCESS_OK)) {
+				System.out.println("\nsuccessful query"); //$NON-NLS-1$
+				if (queryAllBindings.isEntityAvailable()) {
+					try {
+						queryAllBindings.getEntity().write(System.out);
+					} catch (IOException e3) {
+						// TODO Auto-generated catch block
+						e3.printStackTrace();
+					}
+				}
+			} else {
+				System.out.println("\nQuery failed"); //$NON-NLS-1$
 			}
+		} catch (Exception e) {
+
+		} finally {
+			// try {
+			// queryAllBindings.getEntity().getStream().close();
+			// } catch (IOException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
+		}
+
+		// ////////
+		// 6
+		// zap the database
+		// ////////
+		Response deleteAllBindings = deleteAllBindings(client, deleteUri);
+		try {
+			if (deleteAllBindings.getStatus().isSuccess()) {
+				System.out.println("success with deleting all bindings"); //$NON-NLS-1$
+				try {
+					deleteAllBindings.getEntity().write(System.out);
+				} catch (IOException e9) {
+					// TODO Auto-generated catch block
+					e9.printStackTrace();
+				}
+			}
+
+		} catch (Exception e) {
+
+		} finally {
+			// try {
+			// deleteAllBindings.getEntity().getStream().close();
+			// } catch (IOException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
 		}
 
 	}
 
-/////////////
-//  end of client usage snippets
-////////////
-	
-	
-	
+	// ///////////
+	// end of client usage snippets
+	// //////////
+
 	/**
 	 * Create a new binding with the rdf content in the supplied string
 	 * 
@@ -376,10 +451,19 @@ public class SOGSAClient {
 	 * @return
 	 */
 	public static Response addRDF(Client client, Reference reference, URI uri) {
+		System.out.println("add rdf: " + uri.toString());
 		Form form = new Form();
 		form.add("url", uri.toString()); //$NON-NLS-1$
 		Representation rep = form.getWebRepresentation();
-		Response put = client.put(reference, rep);
+		Response put = null;
+		try {
+			System.out.println("making call");
+			put = client.put(reference.toString(), rep);
+			// put = client.put(reference.toString(), rep);
+			System.out.println("hello " + put);
+		} catch (Exception e) {
+			System.out.println(e);
+		}
 		return put;
 	}
 
@@ -440,6 +524,24 @@ public class SOGSAClient {
 		Representation rep = form.getWebRepresentation();
 		Response response = client.post(reference, rep);
 		return response;
+	}
+
+	private static String loadRDF(String file) {
+		InputStream resourceAsStream = SOGSAClient.class.getClassLoader()
+				.getResourceAsStream(file);
+		String rdfString = new String();
+		BufferedReader in = new BufferedReader(new InputStreamReader(
+				resourceAsStream));
+		String inputLine;
+
+		try {
+			while ((inputLine = in.readLine()) != null)
+				rdfString = rdfString + inputLine;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return rdfString;
 	}
 
 }
