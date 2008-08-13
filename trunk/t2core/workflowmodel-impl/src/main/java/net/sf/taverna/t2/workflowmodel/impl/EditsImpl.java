@@ -316,9 +316,19 @@ public class EditsImpl implements Edits {
 		return new AddActivityInputPortEdit(activity, activityInputPort);
 	}
 
+	public Edit<Activity<?>> getAddActivityInputPortMappingEdit(Activity<?> activity,
+			String processorPortName, String activityPortName) {
+		return new AddActivityInputPortMappingEdit(activity, processorPortName, activityPortName);
+	}
+
 	public Edit<Activity<?>> getAddActivityOutputPortEdit(Activity<?> activity,
 			OutputPort activityOutputPort) {
 		return new AddActivityOutputPortEdit(activity, activityOutputPort);
+	}
+
+	public Edit<Activity<?>> getAddActivityOutputPortMappingEdit(Activity<?> activity,
+			String processorPortName, String activityPortName) {
+		return new AddActivityOutputPortMappingEdit(activity, processorPortName, activityPortName);
 	}
 
 	public Edit<Activity<?>> getRemoveActivityInputPortEdit(Activity<?> activity,
@@ -326,9 +336,19 @@ public class EditsImpl implements Edits {
 		return new RemoveActivityInputPortEdit(activity, activityInputPort);
 	}
 
+	public Edit<Activity<?>> getRemoveActivityInputPortMappingEdit(Activity<?> activity,
+			String processorPortName) {
+		return new RemoveActivityInputPortMappingEdit(activity, processorPortName);
+	}
+
 	public Edit<Activity<?>> getRemoveActivityOutputPortEdit(Activity<?> activity,
 			OutputPort activityOutputPort) {
 		return new RemoveActivityOutputPortEdit(activity, activityOutputPort);
+	}
+
+	public Edit<Activity<?>> getRemoveActivityOutputPortMappingEdit(Activity<?> activity,
+			String processorPortName) {
+		return new RemoveActivityOutputPortMappingEdit(activity, processorPortName);
 	}
 
 	public Edit<Merge> getAddMergeInputPortEdit(Merge merge,

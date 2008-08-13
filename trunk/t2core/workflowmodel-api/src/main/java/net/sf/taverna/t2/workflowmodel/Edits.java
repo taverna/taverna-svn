@@ -148,6 +148,23 @@ public interface Edits {
 			ActivityInputPort activityInputPort);
 
 	/**
+	 * Returns an edit to add a ProcessorInputPort to ActivityInputPort mapping
+	 * to an Activity.
+	 * 
+	 * @param activity
+	 *            activity to add the port mapping to
+	 * @param processorPortName
+	 *            the name of the processor port
+	 * @param activityPortName
+	 *            the name of the activity port
+	 * @return an edit to add a ProcessorInputPort to ActivityInputPort mapping
+	 *         to an Activity
+	 */
+	public Edit<Activity<?>> getAddActivityInputPortMappingEdit(
+			Activity<?> activity, String processorPortName,
+			String activityPortName);
+
+	/**
 	 * Returns an edit to add an OutputPort to an Activity.
 	 * 
 	 * @param activity
@@ -158,6 +175,23 @@ public interface Edits {
 	 */
 	public Edit<Activity<?>> getAddActivityOutputPortEdit(Activity<?> activity,
 			OutputPort activityOutputPort);
+
+	/**
+	 * Returns an edit to add a ProcessorOutputPort to OutputPort mapping to an
+	 * Activity.
+	 * 
+	 * @param activity
+	 *            activity to add the port mapping to
+	 * @param processorPortName
+	 *            the name of the processor port
+	 * @param activityPortName
+	 *            the name of the activity port
+	 * @return an edit to add a ProcessorOutputPort to OutputPort mapping to an
+	 *         Activity
+	 */
+	public Edit<Activity<?>> getAddActivityOutputPortMappingEdit(
+			Activity<?> activity, String processorPortName,
+			String activityPortName);
 
 	/**
 	 * Add an {@link AnnotationAssertion} to an {@link AnnotationChain}
@@ -323,9 +357,9 @@ public interface Edits {
 	public Edit<Datalink> getConnectDatalinkEdit(Datalink datalink);
 
 	/**
-	 * Creates and returns an instance of an Edit<Merge> that is responsible for
-	 * generating the links to an from the Merge instance to link together the
-	 * source and sink port via the merge instance.
+	 * Creates and returns an instance of an Edit<Merge> that is responsible
+	 * for generating the links to an from the Merge instance to link together
+	 * the source and sink port via the merge instance.
 	 * 
 	 * @return a new instance of Edit<Merge> constructed from the provided
 	 *         parameters.
@@ -439,7 +473,8 @@ public interface Edits {
 	 * @param processor
 	 * @return
 	 */
-	public Edit<Processor> getMapProcessorPortsForActivityEdit(Processor processor);
+	public Edit<Processor> getMapProcessorPortsForActivityEdit(
+			Processor processor);
 
 	/**
 	 * Returns an edit to remove an ActivityInputPort from an Activity.
@@ -454,6 +489,20 @@ public interface Edits {
 			Activity<?> activity, ActivityInputPort activityInputPort);
 
 	/**
+	 * Returns an edit to remove a ProcessorInputPort to ActivityInputPort mapping
+	 * from an Activity.
+	 * 
+	 * @param activity
+	 *            activity to remove the port mapping from
+	 * @param processorPortName
+	 *            the name of the processor port to remove from the mapping
+	 * @return an edit to remove a ProcessorInputPort to ActivityInputPort mapping
+	 *         from an Activity
+	 */
+	public Edit<Activity<?>> getRemoveActivityInputPortMappingEdit(
+			Activity<?> activity, String processorPortName);
+
+	/**
 	 * Returns an edit to remove an OutputPort from an Activity.
 	 * 
 	 * @param activity
@@ -465,6 +514,20 @@ public interface Edits {
 	public Edit<Activity<?>> getRemoveActivityOutputPortEdit(
 			Activity<?> activity, OutputPort activityOutputPort);
 
+	/**
+	 * Returns an edit to remove a ProcessorOutputPort to OutputPort mapping
+	 * from an Activity.
+	 * 
+	 * @param activity
+	 *            activity to remove the port mapping from
+	 * @param processorPortName
+	 *            the name of the processor port to remove from the mapping
+	 * @return an edit to remove a ProcessorOutputPort to OutputPort mapping
+	 *         from an Activity
+	 */
+	public Edit<Activity<?>> getRemoveActivityOutputPortMappingEdit(
+			Activity<?> activity, String processorPortName);
+	
 	/**
 	 * Remove a condition previously applied to the specified pair of Processor
 	 * instances
@@ -568,19 +631,22 @@ public interface Edits {
 
 	/**
 	 * Provide an edit that will configure a processors's iteration strategy
-	 * stack to the one provided. 
+	 * stack to the one provided.
 	 * 
-	 * @param processor Processor which iteration stack is to be set
-	 * @param iterationStrategyStack The new iteration strategy stack
+	 * @param processor
+	 *            Processor which iteration stack is to be set
+	 * @param iterationStrategyStack
+	 *            The new iteration strategy stack
 	 * @return An Edit that will set the iteration strategy stack of a processor
 	 */
 	public Edit<Processor> getSetIterationStrategyStackEdit(
 			Processor processor, IterationStrategyStack iterationStrategyStack);
 
-	public Edit<Dataflow> getUpdateDataflowInternalIdentifierEdit(Dataflow dataflow,
-			String newId);
+	public Edit<Dataflow> getUpdateDataflowInternalIdentifierEdit(
+			Dataflow dataflow, String newId);
 
-	public Edit<Dataflow> getUpdateDataflowNameEdit(Dataflow dataflow, String newName);
+	public Edit<Dataflow> getUpdateDataflowNameEdit(Dataflow dataflow,
+			String newName);
 
 	/**
 	 * Builds an instance of an {@link InputPort} for an Activity.
