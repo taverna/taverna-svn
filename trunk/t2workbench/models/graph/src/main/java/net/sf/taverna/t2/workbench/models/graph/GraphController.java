@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 
@@ -20,6 +21,7 @@ import net.sf.taverna.t2.workbench.models.graph.GraphEdge.ArrowStyle;
 import net.sf.taverna.t2.workbench.models.graph.GraphNode.Shape;
 import net.sf.taverna.t2.workbench.ui.DataflowSelectionMessage;
 import net.sf.taverna.t2.workbench.ui.DataflowSelectionModel;
+import net.sf.taverna.t2.workflowmodel.CompoundEdit;
 import net.sf.taverna.t2.workflowmodel.Condition;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
@@ -32,6 +34,7 @@ import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 import net.sf.taverna.t2.workflowmodel.EventForwardingOutputPort;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
+import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.Merge;
 import net.sf.taverna.t2.workflowmodel.MergeInputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
@@ -39,8 +42,8 @@ import net.sf.taverna.t2.workflowmodel.Port;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
-import net.sf.taverna.t2.workflowmodel.ProcessorPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 
 import org.apache.log4j.Logger;
 
@@ -95,9 +98,13 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 
 	private Map<Port, Port> nestedDataflowPorts = new HashMap<Port, Port>();
 	
-	private Map<DataflowPort, ProcessorPort> dataflowToProcessorPorts = new HashMap<DataflowPort, ProcessorPort>();
-		
-//	private Edits edits = EditsRegistry.getEdits();
+	private Map<DataflowPort, Port> dataflowToActivityPort = new HashMap<DataflowPort, Port>();
+	
+	private Map<Port, Activity<?>> portToActivity = new HashMap<Port, Activity<?>>();
+	
+	private Map<Port, Processor> portToProcessor = new HashMap<Port, Processor>();
+	
+	private Edits edits = EditsRegistry.getEdits();
 	
 	private EditManager editManager = EditManager.getInstance();
 
@@ -157,20 +164,21 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 		inputControls.clear();
 		outputControls.clear();
 		nestedDataflowPorts.clear();
-		dataflowToProcessorPorts.clear();
+		dataflowToActivityPort.clear();
 		graphElementMap.clear();
+		portToActivity.clear();
 		return generateGraph(dataflow, "", dataflow.getLocalName(), 0);
 	}
 	
 	public boolean startEdgeCreation(GraphElement graphElement, Point point) {
 		if (!edgeCreationFromSource && !edgeCreationFromSink) {
 			Object dataflowObject = graphElement.getDataflowObject();
-			if (dataflowObject instanceof ProcessorOutputPort || dataflowObject instanceof DataflowInputPort) {
-				edgeCreationSource = graphElement;
-				edgeCreationFromSource = true;
-			} else if (dataflowObject instanceof ProcessorInputPort || dataflowObject instanceof DataflowOutputPort) {
+			if (dataflowObject instanceof ActivityInputPort || dataflowObject instanceof DataflowOutputPort) {
 				edgeCreationSink = graphElement;
 				edgeCreationFromSink = true;
+			} else if (dataflowObject instanceof OutputPort || dataflowObject instanceof DataflowInputPort) {
+				edgeCreationSource = graphElement;
+				edgeCreationFromSource = true;
 			} else if (graphElement instanceof GraphEdge) {
 				GraphEdge edge = (GraphEdge) graphElement;
 				edgeCreationSource = edge.getSource();
@@ -186,12 +194,15 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 		Object dataflowObject = graphElement.getDataflowObject();
 		if (edgeCreationFromSink) {
 			if (graphElement instanceof GraphNode) {
-				if (dataflowObject instanceof ProcessorOutputPort) {
-					ProcessorOutputPort processorOutputPort = (ProcessorOutputPort) dataflowObject;
-					//can't connect to same processor
-					if (!processorOutputPort.getProcessor().getInputPorts().contains(edgeCreationSink.getDataflowObject())) {
-						edgeCreationSource = graphElement;
-						edgeValid = true;
+				if (dataflowObject instanceof OutputPort) {
+					OutputPort outputPort = (OutputPort) dataflowObject;
+					Activity<?> activity = portToActivity.get(outputPort);
+					if (activity != null) {
+						//can't connect to same processor
+						if (!activity.getInputPorts().contains(edgeCreationSink.getDataflowObject())) {
+							edgeCreationSource = graphElement;
+							edgeValid = true;
+						}
 					}
 				} else if (dataflowObject instanceof DataflowInputPort) {
 					edgeCreationSource = graphElement;
@@ -209,21 +220,27 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 			}
 		} else if (edgeCreationFromSource) {
 			if (graphElement instanceof GraphNode) {
-				if (dataflowObject instanceof ProcessorInputPort) {
-					ProcessorInputPort processorInputPort = (ProcessorInputPort) dataflowObject;
-					//can't connect to same processor
-					if (!processorInputPort.getProcessor().getOutputPorts().contains(edgeCreationSource.getDataflowObject())) {
-						edgeCreationSink = graphElement;
-						edgeValid = true;
+				if (dataflowObject instanceof ActivityInputPort) {
+					ActivityInputPort activityInputPort = (ActivityInputPort) dataflowObject;
+					Activity<?> activity = portToActivity.get(activityInputPort);
+					if (activity != null) {
+						//can't connect to same processor
+						if (!activity.getOutputPorts().contains(edgeCreationSource.getDataflowObject())) {
+							edgeCreationSink = graphElement;
+							edgeValid = true;
+						}
 					}
 				} else if (dataflowObject instanceof DataflowOutputPort) {
 					edgeCreationSink = graphElement;
 					edgeValid = true;
 				} else if (dataflowObject instanceof Processor) {
 					Processor processor = (Processor) dataflowObject;
-					if (processor.getInputPorts().size() > 0 && !processor.getOutputPorts().contains(edgeCreationSource.getDataflowObject())) {
-						edgeCreationSink = graphElement;
-						edgeValid = true;
+					List<? extends Activity<?>> activities = processor.getActivityList();
+					if (activities.size() > 0) {
+						if (processor.getInputPorts().size() > 0 && !activities.get(0).getOutputPorts().contains(edgeCreationSource.getDataflowObject())) {
+							edgeCreationSink = graphElement;
+							edgeValid = true;
+						}
 					}
 				}
 			} 
@@ -237,39 +254,130 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 	public boolean stopEdgeCreation(GraphElement graphElement, Point point) {
 		boolean edgeCreated = false;
 		if (edgeCreationSource != null && edgeCreationSink != null) {
-			EventForwardingOutputPort source = null;
-			EventHandlingInputPort sink = null;
+			OutputPort source = null;
+			InputPort sink = null;
 			Object sourceDataflowObject = edgeCreationSource.getDataflowObject();
 			Object sinkDataflowObject = edgeCreationSink.getDataflowObject();
-			if (sourceDataflowObject instanceof ProcessorOutputPort) {
-				source = (ProcessorOutputPort) sourceDataflowObject;				
+			if (sourceDataflowObject instanceof OutputPort) {
+				source = (OutputPort) sourceDataflowObject;				
 			} else if (sourceDataflowObject instanceof DataflowInputPort) {
 				DataflowInputPort dataflowInputPort = (DataflowInputPort) sourceDataflowObject;
 				source = dataflowInputPort.getInternalOutputPort();
 			} else if (sourceDataflowObject instanceof Processor) {
-				List<? extends ProcessorOutputPort> ports = ((Processor) sourceDataflowObject).getOutputPorts();
-				source = (ProcessorOutputPort) showPortOptions(ports, "output", componentForPopups, point);
+				List<? extends Activity<?>> activities = ((Processor) sourceDataflowObject).getActivityList();
+				if (activities.size() > 0) {
+					Set<OutputPort> ports = activities.get(0).getOutputPorts();
+					source = (ProcessorOutputPort) showPortOptions(new ArrayList<Port>(ports), "output", componentForPopups, point);
+				}
 			}
-			if (sinkDataflowObject instanceof ProcessorInputPort) {
-				sink = (ProcessorInputPort) sinkDataflowObject;				
+			if (sinkDataflowObject instanceof InputPort) {
+				sink = (InputPort) sinkDataflowObject;				
 			} else if (sinkDataflowObject instanceof DataflowOutputPort) {
 				DataflowOutputPort dataflowOutputPort = (DataflowOutputPort) sinkDataflowObject;
 				sink = dataflowOutputPort.getInternalInputPort();
 			} else if (sinkDataflowObject instanceof Processor) {
-				List<? extends ProcessorInputPort> ports = ((Processor) sinkDataflowObject).getInputPorts();
-				sink = (ProcessorInputPort) showPortOptions(ports, "input", componentForPopups, point);
+				List<? extends Activity<?>> activities = ((Processor) sinkDataflowObject).getActivityList();
+				if (activities.size() > 0) {
+					Set<ActivityInputPort> ports = activities.get(0).getInputPorts();
+					sink = (InputPort) showPortOptions(new ArrayList<Port>(ports), "input", componentForPopups, point);
+				}
 			}
 			if (source != null && sink != null) {
 				Edit<?> edit = null;
 				if (edgeMoveElement == null) {
-					edit = Tools.getCreateAndConnectDatalinkEdit(dataflow, source, sink);
+					EventForwardingOutputPort output = null;
+					Edit<?> addProcessorOutputEdit = null;
+					if (source instanceof EventForwardingOutputPort) {
+						output = (EventForwardingOutputPort) source;
+					} else {
+						//must be an activity port
+						Activity<?> activity = portToActivity.get(source);
+						Processor processor = portToProcessor.get(source);
+						if (activity != null && processor != null) {
+							//check if processor port exists
+							output = Tools.getProcessorOutputPort(processor, activity, source);
+							if (output == null) {
+								//port doesn't exist so create a processor port and map it
+								ProcessorOutputPort processorOutputPort =
+									edits.createProcessorOutputPort(processor, source.getName(),
+											source.getDepth(), source.getGranularDepth());
+								List<Edit<?>> editList = new ArrayList<Edit<?>>();
+								editList.add(edits.getAddProcessorOutputPortEdit(processor, processorOutputPort));
+								editList.add(edits.getAddActivityOutputPortMappingEdit(activity, source.getName(), source.getName()));
+								output = processorOutputPort;
+								addProcessorOutputEdit = new CompoundEdit(editList);
+							}
+						}
+					}
+					EventHandlingInputPort input = null;
+					Edit<?> addProcessorInputEdit = null;
+					if (sink instanceof EventHandlingInputPort) {
+						input = (EventHandlingInputPort) sink;
+					} else {
+						//must be an activity port
+						Activity<?> activity = portToActivity.get(sink);
+						Processor processor = portToProcessor.get(sink);
+						if (activity != null && processor != null) {
+							//check if processor port exists
+							input = Tools.getProcessorInputPort(processor, activity, sink);
+							if (input == null) {
+								//port doesn't exist so create a processor port and map it
+								ProcessorInputPort processorInputPort =
+									edits.createProcessorInputPort(processor, sink.getName(), sink.getDepth());
+								List<Edit<?>> editList = new ArrayList<Edit<?>>();
+								editList.add(edits.getAddProcessorInputPortEdit(processor, processorInputPort));
+								editList.add(edits.getAddActivityInputPortMappingEdit(activity, sink.getName(), sink.getName()));
+								input = processorInputPort;
+								addProcessorInputEdit = new CompoundEdit(editList);
+							}
+						}
+					}
+					if (output != null && input != null) {
+						List<Edit<?>> editList = new ArrayList<Edit<?>>();
+						if (addProcessorOutputEdit != null) {
+							editList.add(addProcessorOutputEdit);
+						}
+						if (addProcessorInputEdit != null) {
+							editList.add(addProcessorInputEdit);
+						}
+						editList.add(Tools.getCreateAndConnectDatalinkEdit(dataflow, output, input));
+						edit = new CompoundEdit(editList);
+					}
 				} else {
 					Object sinkObject = edgeMoveElement.getSink().getDataflowObject();
 					if (sinkObject instanceof DataflowOutputPort) {
 						sinkObject = ((DataflowOutputPort) sinkObject).getInternalInputPort();						
 					}
+					EventHandlingInputPort input = null;
+					Edit<?> addProcessorInputEdit = null;
+					if (sink instanceof EventHandlingInputPort) {
+						input = (EventHandlingInputPort) sink;
+					} else {
+						//must be an activity port
+						Activity<?> activity = portToActivity.get(sink);
+						Processor processor = portToProcessor.get(sink);
+						if (activity != null && processor != null) {
+							//check if processor port exists
+							input = Tools.getProcessorInputPort(processor, activity, sink);
+							if (input == null) {
+								//port doesn't exist so create a processor port and map it
+								ProcessorInputPort processorInputPort =
+									edits.createProcessorInputPort(processor, sink.getName(), sink.getDepth());
+								List<Edit<?>> editList = new ArrayList<Edit<?>>();
+								editList.add(edits.getAddProcessorInputPortEdit(processor, processorInputPort));
+								editList.add(edits.getAddActivityInputPortMappingEdit(activity, sink.getName(), sink.getName()));
+								input = processorInputPort;
+								addProcessorInputEdit = new CompoundEdit(editList);
+							}
+						}
+					}
 					if (sinkObject != sink) {
-						edit = Tools.getMoveDatalinkSinkEdit(dataflow, (Datalink) edgeMoveElement.getDataflowObject(), sink);
+						List<Edit<?>> editList = new ArrayList<Edit<?>>();
+						if (addProcessorInputEdit != null) {
+							editList.add(addProcessorInputEdit);
+						}
+						editList.add(Tools.getMoveDatalinkSinkEdit(dataflow, (Datalink) edgeMoveElement.getDataflowObject(), input));
+						edit = new CompoundEdit(editList);
 					}
 				}
 				if (edit != null) {
@@ -440,6 +548,32 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 		GraphEdge edge = null;
 		Port sourcePort = datalink.getSource();
 		Port sinkPort = datalink.getSink();
+		if (sourcePort instanceof ProcessorOutputPort) {
+			ProcessorOutputPort processorOutputPort = (ProcessorOutputPort) sourcePort;
+			List<? extends Activity<?>> activities = processorOutputPort.getProcessor().getActivityList();
+			if (activities.size() > 0) {
+				String activityPortName = activities.get(0).getOutputPortMapping().get(sourcePort.getName());
+				for (Port port : activities.get(0).getOutputPorts()) {
+					if (port.getName().equals(activityPortName)) {
+						sourcePort = port;
+						break;
+					}
+				}
+			}
+		}
+		if (sinkPort instanceof ProcessorInputPort) {
+			ProcessorInputPort processorInputPort = (ProcessorInputPort) sinkPort;
+			List<? extends Activity<?>> activities = processorInputPort.getProcessor().getActivityList();
+			if (activities.size() > 0) {
+				String activityPortName = activities.get(0).getInputPortMapping().get(sinkPort.getName());
+				for (Port port : activities.get(0).getInputPorts()) {
+					if (port.getName().equals(activityPortName)) {
+						sinkPort = port;
+						break;
+					}
+				}
+			}
+		}
 		if (nestedDataflowPorts.containsKey(sourcePort)) {
 			sourcePort = nestedDataflowPorts.get(sourcePort);
 		}
@@ -506,10 +640,10 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 			inputNode.setFillColor(Color.decode("#87ceeb"));
 			if (depth < 2) {
 				inputNode.setDataflowObject(inputPort);
-				if (dataflowToProcessorPorts.containsKey(inputPort)) {
-					ProcessorPort processorPort = dataflowToProcessorPorts.get(inputPort);
-					inputNode.setDataflowObject(processorPort);
-					dataflowToGraph.put(processorPort, inputNode);
+				if (dataflowToActivityPort.containsKey(inputPort)) {
+					Port port = dataflowToActivityPort.get(inputPort);
+					inputNode.setDataflowObject(port);
+					dataflowToGraph.put(port, inputNode);
 				} else {
 					inputNode.setDataflowObject(inputPort);
 					dataflowToGraph.put(inputPort, inputNode);
@@ -555,11 +689,11 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 			outputNode.setShape(getPortStyle().outputShape());
 			outputNode.setFillColor(Color.decode("#bcd2ee"));
 			if (depth < 2) {
-				if (dataflowToProcessorPorts.containsKey(outputPort)) {
-					outputNode.setDataflowObject(dataflowToProcessorPorts.get(outputPort));
-					ProcessorPort processorPort = dataflowToProcessorPorts.get(outputPort);
-					outputNode.setDataflowObject(processorPort);
-					dataflowToGraph.put(processorPort, outputNode);
+				if (dataflowToActivityPort.containsKey(outputPort)) {
+					outputNode.setDataflowObject(dataflowToActivityPort.get(outputPort));
+					Port port = dataflowToActivityPort.get(outputPort);
+					outputNode.setDataflowObject(port);
+					dataflowToGraph.put(port, outputNode);
 				} else {
 					outputNode.setDataflowObject(outputPort);
 					dataflowToGraph.put(outputPort, outputNode);
@@ -627,25 +761,21 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 		if (expandNestedDataflows && firstActivity.getConfiguration() instanceof Dataflow) {
 			Dataflow subDataflow = (Dataflow) firstActivity.getConfiguration();
 
-			Map<String, String> inputPortMapping = firstActivity.getInputPortMapping();
-			for (ProcessorInputPort processorPort : processor.getInputPorts()) {
-				String activityPortName = inputPortMapping.get(processorPort.getName());
+			for (InputPort inputPort : firstActivity.getInputPorts()) {
 				for (DataflowInputPort dataflowPort : subDataflow.getInputPorts()) {
-					if (activityPortName.equals(dataflowPort.getName())) {
-						nestedDataflowPorts.put(processorPort, dataflowPort.getInternalOutputPort());
-						dataflowToProcessorPorts.put(dataflowPort, processorPort);
+					if (inputPort.getName().equals(dataflowPort.getName())) {
+						nestedDataflowPorts.put(inputPort, dataflowPort.getInternalOutputPort());
+						dataflowToActivityPort.put(dataflowPort, inputPort);
 						break;
 					}
 				}
 			}
 
-			Map<String, String> outputPortMapping = firstActivity.getOutputPortMapping();
-			for (ProcessorOutputPort processorPort : processor.getOutputPorts()) {
-				String activityPortName = outputPortMapping.get(processorPort.getName());
+			for (OutputPort outputPort : firstActivity.getOutputPorts()) {
 				for (DataflowOutputPort dataflowPort : subDataflow.getOutputPorts()) {
-					if (activityPortName.equals(dataflowPort.getName())) {
-						nestedDataflowPorts.put(processorPort, dataflowPort.getInternalInputPort());
-						dataflowToProcessorPorts.put(dataflowPort, processorPort);
+					if (outputPort.getName().equals(dataflowPort.getName())) {
+						nestedDataflowPorts.put(outputPort, dataflowPort.getInternalInputPort());
+						dataflowToActivityPort.put(dataflowPort, outputPort);
 						break;
 					}
 				}
@@ -664,7 +794,7 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 			dataflowToGraph.put(processor, node);
 		}
 
-		for (ProcessorInputPort inputPort : processor.getInputPorts()) {
+		for (InputPort inputPort : firstActivity.getInputPorts()) {
 			GraphNode portNode = graphModelFactory.createGraphNode(graphEventManager);
 			portNode.setId("i" + inputPort.getName().replaceAll("\\.", ""));
 			portNode.setLabel(inputPort.getName()/*.replaceAll("\\.", "\\\\n")*/);
@@ -677,9 +807,11 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 			ports.put(inputPort, portNode);
 			node.addSinkNode(portNode);
 			graphElementMap.put(portNode.getId(), portNode);
+			portToActivity.put(inputPort, firstActivity);
+			portToProcessor.put(inputPort, processor);
 		}
 
-		for (ProcessorOutputPort outputPort : processor.getOutputPorts()) {
+		for (OutputPort outputPort : firstActivity.getOutputPorts()) {
 			GraphNode portNode = graphModelFactory.createGraphNode(graphEventManager);
 			portNode.setId("o" + outputPort.getName().replaceAll("\\.", ""));
 			portNode.setLabel(outputPort.getName()/*.replaceAll("\\.", "\\\\n")*/);
@@ -692,6 +824,8 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 			ports.put(outputPort, portNode);
 			node.addSourceNode(portNode);
 			graphElementMap.put(portNode.getId(), portNode);
+			portToActivity.put(outputPort, firstActivity);
+			portToProcessor.put(outputPort, processor);
 		}
 
 		return node;
