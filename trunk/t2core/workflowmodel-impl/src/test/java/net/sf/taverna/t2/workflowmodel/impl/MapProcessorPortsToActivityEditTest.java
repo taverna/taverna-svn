@@ -26,26 +26,32 @@ public class MapProcessorPortsToActivityEditTest {
 	@Before
 	public void setupProcessorAndEdit() throws Exception {
 		p=new ProcessorImpl();
-		ProcessorInputPort ip1=edits.createProcessorInputPort(p, "inputPort", 1);
-		ProcessorOutputPort op1 = edits.createProcessorOutputPort(p, "outputPort", 1, 1);
+		ProcessorInputPort ip1=edits.createProcessorInputPort(p, "inputPort1", 1);
+		ProcessorInputPort ip2=edits.createProcessorInputPort(p, "inputPort2", 1);
+		ProcessorOutputPort op1 = edits.createProcessorOutputPort(p, "outputPort1", 1, 1);
+		ProcessorOutputPort op2 = edits.createProcessorOutputPort(p, "outputPort2", 1, 1);
 		edits.getAddProcessorOutputPortEdit(p, op1).doEdit();
+		edits.getAddProcessorOutputPortEdit(p, op2).doEdit();
 		edits.getAddProcessorInputPortEdit(p, ip1).doEdit();
+		edits.getAddProcessorInputPortEdit(p, ip2).doEdit();
 		
 		Activity<?> a = new DummyActivity();
-		ActivityInputPort aip1 = edits.createActivityInputPort("inputPort", 1, true, new ArrayList<Class<? extends ExternalReferenceSPI>>(), String.class);
+		ActivityInputPort aip1 = edits.createActivityInputPort("inputPort1", 1, true, new ArrayList<Class<? extends ExternalReferenceSPI>>(), String.class);
 		ActivityInputPort aip2 = edits.createActivityInputPort("newInputPort", 0, true, new ArrayList<Class<? extends ExternalReferenceSPI>>(), String.class);
 		edits.getAddActivityInputPortEdit(a, aip1).doEdit();
 		edits.getAddActivityInputPortEdit(a, aip2).doEdit();
 		
-		OutputPort aop1 = edits.createActivityOutputPort("outputPort", 1, 1);
+		OutputPort aop1 = edits.createActivityOutputPort("outputPort1", 1, 1);
 		OutputPort aop2 = edits.createActivityOutputPort("newOutputPort", 0, 0);
 		edits.getAddActivityOutputPortEdit(a, aop1).doEdit();
 		edits.getAddActivityOutputPortEdit(a, aop2).doEdit();
 		
 		edits.getAddActivityEdit(p, a).doEdit();
 		
-		new AddActivityInputPortMapping(a,"inputPort","inputPort").doEdit();
-		new AddActivityOutputPortMapping(a,"outputPort","outputPort").doEdit();
+		new AddActivityInputPortMappingEdit(a,"inputPort1","inputPort1").doEdit();
+		new AddActivityInputPortMappingEdit(a,"inputPort2","inputPort2").doEdit();
+		new AddActivityOutputPortMappingEdit(a,"outputPort1","outputPort1").doEdit();
+		new AddActivityOutputPortMappingEdit(a,"outputPort2","outputPort2").doEdit();
 		
 		edit = new MapProcessorPortsForActivityEdit(p);
 	}
@@ -63,52 +69,54 @@ public class MapProcessorPortsToActivityEditTest {
 	@Test
 	public void testDoEdit() throws Exception {
 		edit.doEdit();
-		assertEquals("there should now be 2 input ports",2,p.getInputPorts().size());
-		assertEquals("there should now be 2 output ports",2,p.getOutputPorts().size());
+		assertEquals("there should now be 1 input port",1,p.getInputPorts().size());
+		assertEquals("there should now be 1 output port",1,p.getOutputPorts().size());
 	}
 	
 	@Test
 	public void testUndo() throws Exception {
 		edit.doEdit();
 		edit.undo();
-		assertEquals("there should now be 1 input ports",1,p.getInputPorts().size());
-		assertEquals("there should now be 1 output ports",1,p.getOutputPorts().size());
+		assertEquals("there should now be 2 input ports",2,p.getInputPorts().size());
+		assertEquals("there should now be 2 output ports",2,p.getOutputPorts().size());
 	}
 	
 	@Test
 	public void testMapping() throws Exception {
 		Activity<?>a = p.getActivityList().get(0);
 		
-		assertEquals(1,a.getInputPortMapping().size());
-		assertEquals("inputPort",a.getInputPortMapping().get("inputPort"));
-		assertEquals(1,a.getOutputPortMapping().size());
-		assertEquals("outputPort",a.getOutputPortMapping().get("outputPort"));
+		assertEquals(2,a.getInputPortMapping().size());
+		assertEquals("inputPort1",a.getInputPortMapping().get("inputPort1"));
+		assertEquals("inputPort2",a.getInputPortMapping().get("inputPort2"));
+		assertEquals(2,a.getOutputPortMapping().size());
+		assertEquals("outputPort1",a.getOutputPortMapping().get("outputPort1"));
+		assertEquals("outputPort2",a.getOutputPortMapping().get("outputPort2"));
 		
 		edit.doEdit();
 		
-		assertEquals(2,a.getInputPortMapping().size());
+		assertEquals(1,a.getInputPortMapping().size());
 		
-		assertEquals("inputPort",a.getInputPortMapping().get("inputPort"));
-		assertEquals("newInputPort",a.getInputPortMapping().get("newInputPort"));
+		assertEquals("inputPort1",a.getInputPortMapping().get("inputPort1"));
 		
-		assertEquals(2,a.getOutputPortMapping().size());
-		assertEquals("outputPort",a.getOutputPortMapping().get("outputPort"));
-		assertEquals("newOutputPort",a.getOutputPortMapping().get("newOutputPort"));
+		assertEquals(1,a.getOutputPortMapping().size());
+		assertEquals("outputPort1",a.getOutputPortMapping().get("outputPort1"));
 		
 		edit.undo();
 		
-		assertEquals(1,a.getInputPortMapping().size());
-		assertEquals("inputPort",a.getInputPortMapping().get("inputPort"));
-		assertEquals(1,a.getOutputPortMapping().size());
-		assertEquals("outputPort",a.getOutputPortMapping().get("outputPort"));
+		assertEquals(2,a.getInputPortMapping().size());
+		assertEquals("inputPort1",a.getInputPortMapping().get("inputPort1"));
+		assertEquals("inputPort2",a.getInputPortMapping().get("inputPort2"));
+		assertEquals(2,a.getOutputPortMapping().size());
+		assertEquals("outputPort1",a.getOutputPortMapping().get("outputPort1"));
+		assertEquals("outputPort2",a.getOutputPortMapping().get("outputPort2"));
 	}
 	
 	@Test 
 	public void testUnchangedPortsRemain() throws Exception {
-		ProcessorOutputPort op1 = p.getOutputPortWithName("outputPort");
-		ProcessorInputPort ip1 = p.getInputPortWithName("inputPort");
+		ProcessorOutputPort op1 = p.getOutputPortWithName("outputPort1");
+		ProcessorInputPort ip1 = p.getInputPortWithName("inputPort1");
 		edit.doEdit();
-		assertSame(ip1,p.getInputPortWithName("inputPort"));
-		assertSame(op1,p.getOutputPortWithName("outputPort"));
+		assertSame(ip1,p.getInputPortWithName("inputPort1"));
+		assertSame(op1,p.getOutputPortWithName("outputPort1"));
 	}
 }
