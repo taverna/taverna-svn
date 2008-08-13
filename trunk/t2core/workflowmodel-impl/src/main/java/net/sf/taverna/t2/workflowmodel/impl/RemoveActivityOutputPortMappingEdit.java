@@ -4,12 +4,12 @@ import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
-public class RemoveActivityOutputPortMapping extends AbstractActivityEdit {
+public class RemoveActivityOutputPortMappingEdit extends AbstractActivityEdit {
 
 	private final String processorPortName;
 	private String oldValue=null;
 
-	public RemoveActivityOutputPortMapping(Activity<?>activity, String processorPortName) {
+	public RemoveActivityOutputPortMappingEdit(Activity<?>activity, String processorPortName) {
 		super(activity);
 		this.processorPortName = processorPortName;
 		
