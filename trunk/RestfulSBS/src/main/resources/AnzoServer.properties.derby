@@ -3,7 +3,7 @@
 # Connection to the backend database
 org.openanzo.repository.database.user=anzo
 org.openanzo.repository.database.password=
-org.openanzo.repository.database.url=jdbc:derby:/Users/Ian/scratch/anzoDerby;create=true;upgrade=true
+org.openanzo.repository.database.url=jdbc:derby:/Users/Paolo/scratch/anzoDerby;create=true;upgrade=true
 org.openanzo.repository.database.clear=false
 org.openanzo.repository.database.type=ServerDerby
 

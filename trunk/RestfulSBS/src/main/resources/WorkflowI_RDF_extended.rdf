@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE rdf:RDF [
+	 <!ENTITY workflowI 'http://www.cs.indiana.edu/~subramag/workflowI#'>
+	 <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+	 <!ENTITY Karma_RDFS 'http://protege.stanford.edu/rdf/Karma_RDFS#'>
+	 <!ENTITY OPM_RDFS_rdf 'http://www.cs.indiana.edu/~subramag/OPM_RDFS.rdf#'>
+	 <!ENTITY rdfs 'http://www.w3.org/2000/01/rdf-schema#'>
+]>
+<rdf:RDF xmlns:workflowI="&workflowI;"
+	 xmlns:Karma_RDFS="&Karma_RDFS;"
+	 xmlns:rdf="&rdf;"
+	 xmlns:OPM_RDFS_rdf="&OPM_RDFS_rdf;"
+	 xmlns:rdfs="&rdfs;">
+<OPM_RDFS_rdf:Artifact rdf:about="&Karma_RDFS;Entrez_Result"
+	 rdfs:label="Entrez_Result">
+	<OPM_RDFS_rdf:wasGeneratedBy rdf:resource="&workflowI;NCBI_Web_Entrez_Service"/>
+	<OPM_RDFS_rdf:wasDerivedFrom rdf:resource="&workflowI;Query"/>
+</OPM_RDFS_rdf:Artifact>
+<OPM_RDFS_rdf:Artifact rdf:about="&Karma_RDFS;Entrez_Genelookup_Result"
+	 rdfs:label="Entrez_GebeLookup_Result">
+	<OPM_RDFS_rdf:wasGeneratedBy rdf:resource="&workflowI; NCBI_Web_Entrez_GeneLookup_Service"/>
+	<OPM_RDFS_rdf:wasDerivedFrom rdf:resource="&workflowI;GeneLookupQuery"/>
+</OPM_RDFS_rdf:Artifact>
+<OPM_RDFS_rdf:Process rdf:about="&Karma_RDFS;Gene_Browser_Plugin"
+	 rdfs:label="Gene_Browser_Plugin">
+	<OPM_RDFS_rdf:used rdf:resource="&Karma_RDFS;User_Gene_Selection"/>
+</OPM_RDFS_rdf:Process>
+<OPM_RDFS_rdf:Process rdf:about="&Karma_RDFS;Gene_Ontology_Plugin"
+	 rdfs:label="Gene_Ontology_Plugin">
+	<OPM_RDFS_rdf:wasTriggeredBy rdf:resource="&workflowI;Gene_Browser_Plugin"/>
+</OPM_RDFS_rdf:Process>
+<OPM_RDFS_rdf:Process rdf:about="&Karma_RDFS;NCBI_Entrez_Plugin"
+	 rdfs:label="NCBI_Entrez_Plugin">
+	<OPM_RDFS_rdf:wasTriggeredBy rdf:resource="&workflowI;Gene_Browser_Plugin"/>
+</OPM_RDFS_rdf:Process>
+<OPM_RDFS_rdf:Process rdf:about="&Karma_RDFS;NCBI_Web_Entrez_GeneLookup_Service"
+	 rdfs:label="NCBI_Web_Entrez_GeneLookup_Service">
+	<OPM_RDFS_rdf:used rdf:resource="&Karma_RDFS;GeneLookupQuery"/>
+	<OPM_RDFS_rdf:wasTriggeredBy rdf:resource="&workflowI;NCBI_Entrez_Plugin"/>
+</OPM_RDFS_rdf:Process>
+<OPM_RDFS_rdf:Process rdf:about="&Karma_RDFS;NCBI_Web_Entrez_Service"
+	 rdfs:label="NCBI_Web_Entrez_Service">
+	<OPM_RDFS_rdf:used rdf:resource="&Karma_RDFS;Query"/>
+	<OPM_RDFS_rdf:wasTriggeredBy rdf:resource="&workflowI;NCBI_Entrez_Plugin"/>
+</OPM_RDFS_rdf:Process>
+<OPM_RDFS_rdf:Artifact rdf:about="&Karma_RDFS;Query"
+	 rdfs:label="Query">
+	<OPM_RDFS_rdf:wasGeneratedBy rdf:resource="&workflowI;NCBI_Entrez_Plugin"/>
+</OPM_RDFS_rdf:Artifact>
+<OPM_RDFS_rdf:Artifact rdf:about="&Karma_RDFS;GeneLookupQuery"
+	 rdfs:label="GeneLookupQuery">
+	<OPM_RDFS_rdf:wasGeneratedBy rdf:resource="&workflowI;NCBI_Entrez_Plugin"/>
+</OPM_RDFS_rdf:Artifact>
+<OPM_RDFS_rdf:Artifact rdf:about="&Karma_RDFS;User_Gene_Selection"
+	 rdfs:label="User_Gene_Selection"/>
+<rdfs:Resource rdf:about="&workflowI;Gene_Browser_Plugin"
+	 rdfs:label="workflowI:Gene_Browser_Plugin"/>
+<rdfs:Resource rdf:about="&workflowI;NCBI_Entrez_Plugin"
+	 rdfs:label="workflowI:NCBI_Entrez_Plugin"/>
+<rdfs:Resource rdf:about="&workflowI;NCBI_Web_Entrez_Service"
+	 rdfs:label="workflowI:NCBI_Web_Entrez_Service"/>
+<rdfs:Resource rdf:about="&workflowI;Query"
+	 rdfs:label="workflowI:Query"/>
+</rdf:RDF>

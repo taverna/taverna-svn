@@ -1,6 +1,12 @@
 package uk.org.mygrid.sogsa.sbs;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
@@ -60,6 +66,8 @@ public class SOGSAClient {
 // for that session are added to this SB
 //////////
 		
+		System.out.println("1: create a new SB from a http URI pointing to the RDF content.");
+		
 		String bindingKey = null;
 		URI uri = null;
 		try {
@@ -82,7 +90,8 @@ public class SOGSAClient {
 						.getIdentifier());
 				if (response.getStatus().isSuccess()) {
 					if (response.isEntityAvailable()) {
-						response.getEntity().write(System.out);
+						// System.out.println("here is the RDF for the new SB:");
+						// response.getEntity().write(System.out);
 					}
 				}
 			} catch (IOException e) {
@@ -97,6 +106,8 @@ public class SOGSAClient {
 // add more rdf statements to the SB we just created -- note we are referring back to the same SB using the binding key
 // (obtained by createItem2)
 //////////
+		
+		System.out.println("2 - add more rdf statements to the SB we just created");
 		URI uri2 = null;
 		try {
 			uri2 = new URI(TEST_RDF_FILE_2);
@@ -113,13 +124,13 @@ public class SOGSAClient {
 						.getIdentifier());
 				if (response.getStatus().isSuccess()) {
 					if (response.isEntityAvailable()) {
-						response.getEntity().write(System.out);
+						// response.getEntity().write(System.out);
 					}
 				}
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(e);
 		}
 
 		
@@ -127,8 +138,32 @@ public class SOGSAClient {
 // 3
 // query the RDF corresponding to our binding key, using SPARQL
 //////////
+		
+		System.out.println("3: query the RDF corresponding to our binding key, using SPARQL");
+
 		Reference queryReference = new Reference(bindingKey + QUERY_URL_SUFFIX);
-		String query = SAMPLE_SPARQL_QUERY_1;
+		String queryFile = SAMPLE_SPARQL_QUERY_1;
+		InputStream resourceAsStream = SOGSAClient.class.getClassLoader().getResourceAsStream(SAMPLE_SPARQL_QUERY_1);
+		String query = new String();
+		try {
+			BufferedReader br = new BufferedReader(new InputStreamReader(resourceAsStream));
+
+			String inputLine;
+
+			while ((inputLine = br.readLine()) != null)
+				query = query + inputLine;
+
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			System.out.println(e1);
+			e1.printStackTrace();
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.out.println(e);
+			e.printStackTrace();
+		}
+		
 		Response queryRDF = queryRDF(client, queryReference, query);
 
 		if (queryRDF.getStatus().isSuccess()) {
@@ -141,9 +176,9 @@ public class SOGSAClient {
 				} else {
 					try {
 						queryRDF.getEntity().write(System.out);
-					} catch (IOException e) {
+					} catch (IOException e5) {
 						// TODO Auto-generated catch block
-						e.printStackTrace();
+						e5.printStackTrace();
 					}
 				}
 			}
@@ -166,9 +201,9 @@ public class SOGSAClient {
 			} else {
 				try {
 					allBindings.getEntity().write(System.out);
-				} catch (IOException e) {
+				} catch (IOException e0) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					e0.printStackTrace();
 				}
 			}
 		}
@@ -179,7 +214,26 @@ public class SOGSAClient {
 // apply a SPARQL query to all RDF graphs available form the server
 // CHECK there is an issue here that is being discussed with the Anzo people -- should work in Anzo 3.0 but not in 2.5.1
 //////////		
-		query = SAMPLE_SPARQL_QUERY_1;
+		queryFile = SAMPLE_SPARQL_QUERY_1;
+		
+		query = new String();
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(new File(query)));
+
+			String inputLine;
+
+			while ((inputLine = br.readLine()) != null)
+				query = query + inputLine;
+
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+			
 		Response queryAllBindings = queryAllBindings(client, queryAllUri, query);
 		if (queryAllBindings.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
 			System.out.println("\nThere were no query results"); //$NON-NLS-1$
@@ -188,9 +242,9 @@ public class SOGSAClient {
 			if (queryAllBindings.isEntityAvailable()) {
 				try {
 					queryAllBindings.getEntity().write(System.out);
-				} catch (IOException e) {
+				} catch (IOException e3) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					e3.printStackTrace();
 				}
 			}
 		} else {
@@ -207,9 +261,9 @@ public class SOGSAClient {
 			System.out.println("success with deleting all bindings"); //$NON-NLS-1$
 			try {
 				deleteAllBindings.getEntity().write(System.out);
-			} catch (IOException e) {
+			} catch (IOException e9) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				e9.printStackTrace();
 			}
 		}
 
