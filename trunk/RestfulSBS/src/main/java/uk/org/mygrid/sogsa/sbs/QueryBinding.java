@@ -50,15 +50,17 @@ public class QueryBinding extends BindingsList {
 				Level.WARNING, "doing the query");
 		Form form = new Form(entity);
 		String query = form.getFirstValue("query");
-		String queryBinding;
+		java.util.logging.Logger.getLogger("org.mortbay.log").log(
+				Level.WARNING, query);
+		String queryResult = null;
 		try {
-			queryBinding = queryBinding(this.key, query);
-			if (queryBinding != null) {
+			queryResult = queryBinding(this.key, query);
+			if (queryResult != null) {
 				java.util.logging.Logger.getLogger("org.mortbay.log").log(
 						Level.WARNING, "success with query");
 				getResponse().setStatus(Status.SUCCESS_OK);
 				// TODO put query in the rep
-				Representation rep = new StringRepresentation(queryBinding,
+				Representation rep = new StringRepresentation(queryResult,
 						MediaType.TEXT_XML);
 				// Indicates where is located the new resource.
 				rep
