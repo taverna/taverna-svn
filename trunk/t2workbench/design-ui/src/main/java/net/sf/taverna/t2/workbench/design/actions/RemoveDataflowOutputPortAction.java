@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.taverna.t2.workbench.design.Tools;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 import net.sf.taverna.t2.workflowmodel.CompoundEdit;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -37,7 +38,7 @@ public class RemoveDataflowOutputPortAction extends DataflowEditAction {
 				editManager.doDataflowEdit(dataflow, edits.getRemoveDataflowOutputPortEdit(dataflow, port));
 			} else {
 				List<Edit<?>> editList = new ArrayList<Edit<?>>();
-				editList.add(edits.getDisconnectDatalinkEdit(datalink));
+				editList.add(Tools.getDisconnectDatalinkAndRemovePortsEdit(datalink));
 				editList.add(edits.getRemoveDataflowOutputPortEdit(dataflow, port));
 				editManager.doDataflowEdit(dataflow, new CompoundEdit(editList));
 			}			

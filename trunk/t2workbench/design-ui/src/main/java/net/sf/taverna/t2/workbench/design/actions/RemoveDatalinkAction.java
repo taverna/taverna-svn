@@ -3,6 +3,7 @@ package net.sf.taverna.t2.workbench.design.actions;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 
+import net.sf.taverna.t2.workbench.design.Tools;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Datalink;
@@ -27,7 +28,7 @@ public class RemoveDatalinkAction extends DataflowEditAction {
 
 	public void actionPerformed(ActionEvent e) {
 		try {
-			editManager.doDataflowEdit(dataflow, edits.getDisconnectDatalinkEdit(datalink));
+			editManager.doDataflowEdit(dataflow, Tools.getDisconnectDatalinkAndRemovePortsEdit(datalink));
 		} catch (EditException e1) {
 			logger.debug("Remove processor failed", e1);
 		}

@@ -2,6 +2,7 @@ package net.sf.taverna.t2.workbench.design;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import net.sf.taverna.t2.workflowmodel.CompoundEdit;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -11,9 +12,16 @@ import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 import net.sf.taverna.t2.workflowmodel.EventForwardingOutputPort;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
+import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.Merge;
 import net.sf.taverna.t2.workflowmodel.MergeInputPort;
 import net.sf.taverna.t2.workflowmodel.MergeOutputPort;
+import net.sf.taverna.t2.workflowmodel.OutputPort;
+import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
+import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 
 public class Tools {
 
@@ -81,8 +89,77 @@ public class Tools {
 			Datalink datalink, EventHandlingInputPort sink) {
 		List<Edit<?>> editList = new ArrayList<Edit<?>>();		
 		editList.add(edits.getDisconnectDatalinkEdit(datalink));
+		if (datalink.getSink() instanceof ProcessorInputPort) {
+			editList.add(getRemoveProcessorInputPortEdit((ProcessorInputPort) datalink.getSink()));
+		}
 		editList.add(getCreateAndConnectDatalinkEdit(dataflow, datalink.getSource(), sink));
 		return new CompoundEdit(editList);
+	}
+	
+	public static Edit<?> getDisconnectDatalinkAndRemovePortsEdit(Datalink datalink) {
+		List<Edit<?>> editList = new ArrayList<Edit<?>>();		
+		editList.add(edits.getDisconnectDatalinkEdit(datalink));
+		if (datalink.getSource() instanceof ProcessorOutputPort) {
+			editList.add(getRemoveProcessorOutputPortEdit((ProcessorOutputPort) datalink.getSource()));
+		}
+		if (datalink.getSink() instanceof ProcessorInputPort) {
+			editList.add(getRemoveProcessorInputPortEdit((ProcessorInputPort) datalink.getSink()));
+		}
+		return new CompoundEdit(editList);
+	}
+	
+	public static Edit<?> getRemoveProcessorOutputPortEdit(ProcessorOutputPort port) {
+		List<Edit<?>> editList = new ArrayList<Edit<?>>();		
+		Processor processor = port.getProcessor();
+		editList.add(edits.getRemoveProcessorOutputPortEdit(port.getProcessor(), port));
+		for (Activity<?> activity : processor.getActivityList()) {
+			editList.add(edits.getRemoveActivityOutputPortMappingEdit(activity, port.getName()));
+		}
+		return new CompoundEdit(editList);
+	}
+	
+	public static Edit<?> getRemoveProcessorInputPortEdit(ProcessorInputPort port) {
+		List<Edit<?>> editList = new ArrayList<Edit<?>>();
+		Processor processor = port.getProcessor();
+		editList.add(edits.getRemoveProcessorInputPortEdit(port.getProcessor(), port));
+		for (Activity<?> activity : processor.getActivityList()) {
+			editList.add(edits.getRemoveActivityInputPortMappingEdit(activity, port.getName()));
+		}
+		return new CompoundEdit(editList);
+	}
+	
+	public static ProcessorInputPort getProcessorInputPort(Processor processor, Activity<?> activity,
+			InputPort activityInputPort) {
+		ProcessorInputPort result = null;
+		for (Entry<String, String> mapEntry : activity.getInputPortMapping().entrySet()) {
+			if (mapEntry.getValue().equals(activityInputPort.getName())) {
+				for (ProcessorInputPort processorInputPort : processor.getInputPorts()) {
+					if (processorInputPort.getName().equals(mapEntry.getKey())) {
+						result = processorInputPort;
+						break;
+					}
+				}
+				break;
+			}
+		}
+		return result;
+	}
+	
+	public static ProcessorOutputPort getProcessorOutputPort(Processor processor, Activity<?> activity,
+			OutputPort activityOutputPort) {
+		ProcessorOutputPort result = null;
+		for (Entry<String, String> mapEntry : activity.getOutputPortMapping().entrySet()) {
+			if (mapEntry.getValue().equals(activityOutputPort.getName())) {
+				for (ProcessorOutputPort processorOutputPort : processor.getOutputPorts()) {
+					if (processorOutputPort.getName().equals(mapEntry.getKey())) {
+						result = processorOutputPort;
+						break;
+					}
+				}
+				break;
+			}
+		}
+		return result;
 	}
 	
 	private static String getUniqueMergeInputPortName(Merge merge, String name,
