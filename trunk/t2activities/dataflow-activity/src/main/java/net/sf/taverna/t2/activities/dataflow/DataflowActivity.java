@@ -35,10 +35,10 @@ public class DataflowActivity extends
 	private static final Logger logger = Logger
 			.getLogger(DataflowActivity.class);
 
-	private Dataflow dataflow;
-
 	private Edits edits = EditsRegistry.getEdits();
 
+	private Dataflow dataflow;
+	
 	@Override
 	public void configure(Dataflow dataflow)
 			throws ActivityConfigurationException {
