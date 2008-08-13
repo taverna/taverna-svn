@@ -8,6 +8,9 @@ import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
+import org.jdom.Element;
+
 import net.sf.taverna.t2.lang.ui.ModelMap;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.reference.ui.WorkflowLaunchPanel;
@@ -19,11 +22,20 @@ import net.sf.taverna.t2.workbench.ui.zaria.PerspectiveSPI;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
+import net.sf.taverna.t2.workflowmodel.EditException;
+import net.sf.taverna.t2.workflowmodel.serialization.DeserializationException;
+import net.sf.taverna.t2.workflowmodel.serialization.SerializationException;
+import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLDeserializer;
+import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLDeserializerImpl;
+import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLSerializer;
+import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLSerializerImpl;
 
 public class RunWorkflowAction extends AbstractAction {
 
 	private static final long serialVersionUID = 1L;
 
+	private static Logger logger = Logger.getLogger(RunWorkflowAction.class);
+			
 	private DataflowRunsComponent runComponent;
 	
 	private PerspectiveSPI resultsPerspective;
@@ -40,18 +52,36 @@ public class RunWorkflowAction extends AbstractAction {
 		Object model = ModelMap.getInstance().getModel(ModelMapConstants.CURRENT_DATAFLOW);
 		if (model instanceof Dataflow) {
 			Dataflow dataflow = (Dataflow) model;
-			DataflowValidationReport report = dataflow.checkValidity();
-			if (report.isValid()) {
-				List<? extends DataflowInputPort> inputPorts = dataflow.getInputPorts();
-				if (!inputPorts.isEmpty()) {
-					showInputDialog(dataflow);
+			XMLSerializer serialiser = new XMLSerializerImpl();
+			XMLDeserializer deserialiser = new XMLDeserializerImpl();
+			Dataflow dataflowCopy = null;
+			try {
+				dataflowCopy = deserialiser.deserializeDataflow(serialiser.serializeDataflow(dataflow));
+			} catch (SerializationException e1) {
+				logger.error("Unable to copy dataflow", e1);
+			} catch (DeserializationException e1) {
+				logger.error("Unable to copy dataflow", e1);
+			} catch (EditException e1) {
+				logger.error("Unable to copy dataflow", e1);
+			}
+
+			if (dataflowCopy != null) {
+				DataflowValidationReport report = dataflowCopy.checkValidity();
+				if (report.isValid()) {
+					List<? extends DataflowInputPort> inputPorts = dataflowCopy.getInputPorts();
+					if (!inputPorts.isEmpty()) {
+						showInputDialog(dataflowCopy);
+					} else {
+						switchToResultsPerspective();
+						runComponent.runDataflow(dataflowCopy, null);
+					}
 				} else {
-					switchToResultsPerspective();
-					runComponent.runDataflow(dataflow, null);
+					showErrorDialog("Unable to validate workflow",
+					"Workflow validation failed");
 				}
 			} else {
-				showErrorDialog("Unable to validate workflow",
-				"Workflow validation failed");
+				showErrorDialog("Unable to make a copy of the workflow to run",
+				"Workflow copy failed");				
 			}
 		}
 		
