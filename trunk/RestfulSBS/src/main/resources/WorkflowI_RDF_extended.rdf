@@ -18,7 +18,7 @@
 </OPM_RDFS_rdf:Artifact>
 <OPM_RDFS_rdf:Artifact rdf:about="&Karma_RDFS;Entrez_Genelookup_Result"
 	 rdfs:label="Entrez_GebeLookup_Result">
-	<OPM_RDFS_rdf:wasGeneratedBy rdf:resource="&workflowI; NCBI_Web_Entrez_GeneLookup_Service"/>
+	<OPM_RDFS_rdf:wasGeneratedBy rdf:resource="&workflowI;NCBI_Web_Entrez_GeneLookup_Service"/>
 	<OPM_RDFS_rdf:wasDerivedFrom rdf:resource="&workflowI;GeneLookupQuery"/>
 </OPM_RDFS_rdf:Artifact>
 <OPM_RDFS_rdf:Process rdf:about="&Karma_RDFS;Gene_Browser_Plugin"
