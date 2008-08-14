@@ -335,7 +335,6 @@ public class OpenWorkflowAction extends AbstractAction {
 						+ ".couldNotOpenDataflow(File, Exception)", wrapperEx);
 				return false;
 			}
-
 		}
 
 		/**
@@ -343,7 +342,7 @@ public class OpenWorkflowAction extends AbstractAction {
 		 */
 		public void openedDataflow(File file, Dataflow dataflow) {
 			try {
-				openedDataflow(file, dataflow);
+				wrapped.openedDataflow(file, dataflow);
 			} catch (RuntimeException wrapperEx) {
 				logger.warn("Failed OpenCallback " + wrapped
 						+ ".openedDataflow(File, Dataflow)", wrapperEx);
