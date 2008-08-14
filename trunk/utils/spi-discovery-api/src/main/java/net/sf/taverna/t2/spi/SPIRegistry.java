@@ -2,6 +2,7 @@ package net.sf.taverna.t2.spi;
 
 import java.util.List;
 
+import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.log.Log4jLog;
 import net.sf.taverna.raven.repository.Repository;
@@ -116,9 +117,7 @@ public class SPIRegistry<SPI> implements Observable<SPIRegistryEvent> {
 			return ((LocalArtifactClassLoader) getClassLoader())
 					.getRepository();
 		} else {
-			// Do the ugly hack in one place
-			System.setProperty("raven.eclipse", "true");
-			return new EclipseRepository();
+			return ApplicationRuntime.getInstance().getRavenRepository();
 		}
 	}
 
