@@ -2,6 +2,8 @@ package net.sf.taverna.t2.workbench.file.impl.actions;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.util.Collections;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 
@@ -54,7 +56,11 @@ public class SaveAllWorkflowsAction extends AbstractAction {
 	}
 
 	public void saveAllDataflows(Component parentComponent) {
-		for (Dataflow dataflow : fileManager.getOpenDataflows()) {
+		// Save in reverse so we save nested workflows first
+		List<Dataflow> dataflows = fileManager.getOpenDataflows();
+		Collections.reverse(dataflows);
+
+		for (Dataflow dataflow : dataflows) {
 			boolean success = saveWorkflowAction.saveDataflow(parentComponent,
 					dataflow);
 			if (!success) {
