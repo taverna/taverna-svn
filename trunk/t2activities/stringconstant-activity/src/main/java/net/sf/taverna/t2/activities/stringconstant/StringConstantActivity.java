@@ -37,7 +37,9 @@ public class StringConstantActivity extends AbstractAsynchronousActivity<StringC
 			throws ActivityConfigurationException {
 		this.config=conf;
 		this.value=conf.getValue();
-		addOutput("value", 0, "text/plain");
+		if (outputPorts.size() == 0) {
+			addOutput("value", 0, "text/plain");
+		}
 	}
 
 	public String getStringValue() {
