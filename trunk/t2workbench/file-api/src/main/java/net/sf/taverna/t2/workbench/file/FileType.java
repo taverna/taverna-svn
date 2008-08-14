@@ -1,5 +1,19 @@
 package net.sf.taverna.t2.workbench.file;
 
+import net.sf.taverna.t2.workflowmodel.Dataflow;
+
+/**
+ * A filetype to identify a way to (de)serialise a {@link Dataflow} with the
+ * {@link FileManager}.
+ * <p>
+ * Two filetypes are considered equal if they share an extension or mime type or
+ * are the same instance.
+ * </p>
+ * 
+ * @see net.sf.taverna.t2.workbench.file.impl.T2FlowFileType
+ * @author Stian Soiland-Reyes
+ * 
+ */
 public abstract class FileType {
 
 	public abstract String getExtension();
@@ -8,6 +22,9 @@ public abstract class FileType {
 
 	public abstract String getDescription();
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
@@ -26,6 +43,9 @@ public abstract class FileType {
 		return false;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int hashCode() {
 		int hash = 7;

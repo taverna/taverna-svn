@@ -4,12 +4,22 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
-
 import net.sf.taverna.t2.workbench.file.DataflowInfo;
+import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.file.FileType;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
+import org.apache.log4j.Logger;
+
+/**
+ * Information about an open dataflow that was opened from or saved to a
+ * {@link File}.
+ * 
+ * @see DataflowInfo
+ * @see FileManager
+ * @author Stian Soiland-Reyes
+ * 
+ */
 public class FileDataflowInfo extends DataflowInfo {
 	private static Logger logger = Logger.getLogger(FileDataflowInfo.class);
 

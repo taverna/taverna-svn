@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.workbench.file.impl;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,19 +35,28 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Implementation of {@link FileManager}
+ * 
+ * @author Stian Soiland-Reyes
+ * 
+ */
 public class FileManagerImpl extends FileManager {
-	static Logger logger = Logger.getLogger(FileManagerImpl.class);
+	private static Logger logger = Logger.getLogger(FileManagerImpl.class);
 
 	/**
-	 * The last blank dataflow created using #newDataflow() until it has been //
-	 * changed - when this variable will be set to null again. Used to //
-	 * automatically close unmodifieabout:blankd blank dataflows on open
+	 * The last blank dataflow created using #newDataflow() until it has been
+	 * changed - when this variable will be set to null again. Used to
+	 * automatically close unmodified blank dataflows on open.
 	 */
 	private Dataflow blankDataflow = null;
 
 	private EditManager editManager = EditManager.getInstance();
+
 	private EditManagerObserver editManagerObserver = new EditManagerObserver();
+
 	private ModelMap modelMap = ModelMap.getInstance();
+
 	private ModelMapObserver modelMapObserver = new ModelMapObserver();
 
 	/**
@@ -67,10 +75,19 @@ public class FileManagerImpl extends FileManager {
 		modelMap.addObserver(modelMapObserver);
 	}
 
+	/**
+	 * Add an observer to be notified of {@link FileManagerEvent}s, such as
+	 * {@link OpenedDataflowEvent} and {@link SavedDataflowEvent}.
+	 * 
+	 * {@inheritDoc}
+	 */
 	public void addObserver(Observer<FileManagerEvent> observer) {
 		observers.addObserver(observer);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean canSaveWithoutDestination(Dataflow dataflow) {
 		OpenDataflowInfo dataflowInfo = getOpenDataflowInfo(dataflow);
@@ -84,6 +101,9 @@ public class FileManagerImpl extends FileManager {
 		return !handlers.isEmpty();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void closeDataflow(Dataflow dataflow, boolean failOnUnsaved)
 			throws UnsavedException {
@@ -117,30 +137,48 @@ public class FileManagerImpl extends FileManager {
 		observers.notify(new ClosedDataflowEvent(dataflow));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Dataflow getCurrentDataflow() {
 		return (Dataflow) modelMap.getModel(ModelMapConstants.CURRENT_DATAFLOW);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Object getDataflowSource(Dataflow dataflow) {
 		return getOpenDataflowInfo(dataflow).getSource();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public Object getDataflowType(Dataflow dataflow) {
+	public FileType getDataflowType(Dataflow dataflow) {
 		return getOpenDataflowInfo(dataflow).getFileType();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public List<Observer<FileManagerEvent>> getObservers() {
 		return observers.getObservers();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<Dataflow> getOpenDataflows() {
 		return new ArrayList<Dataflow>(openDataflowInfos.keySet());
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<FileFilter> getOpenFileFilters() {
 		List<FileFilter> fileFilters = new ArrayList<FileFilter>();
@@ -156,6 +194,9 @@ public class FileManagerImpl extends FileManager {
 		return fileFilters;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<FileFilter> getOpenFileFilters(Class<?> sourceClass) {
 		List<FileFilter> fileFilters = new ArrayList<FileFilter>();
@@ -166,6 +207,9 @@ public class FileManagerImpl extends FileManager {
 		return fileFilters;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<FileFilter> getSaveFileFilters() {
 		List<FileFilter> fileFilters = new ArrayList<FileFilter>();
@@ -175,6 +219,9 @@ public class FileManagerImpl extends FileManager {
 		return fileFilters;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<FileFilter> getSaveFileFilters(Class<?> destinationClass) {
 		List<FileFilter> fileFilters = new ArrayList<FileFilter>();
@@ -185,15 +232,25 @@ public class FileManagerImpl extends FileManager {
 		return fileFilters;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isDataflowChanged(Dataflow dataflow) {
 		return getOpenDataflowInfo(dataflow).isChanged();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public boolean isDataflowOpen(Dataflow dataflow) {
 		return openDataflowInfos.containsKey(dataflow);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Dataflow newDataflow() {
 		Dataflow dataflow = editManager.getEdits().createDataflow();
@@ -204,12 +261,18 @@ public class FileManagerImpl extends FileManager {
 		return dataflow;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void openDataflow(Dataflow dataflow) {
 		openDataflowInternal(dataflow);
 		observers.notify(new OpenedDataflowEvent(dataflow));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Dataflow openDataflow(FileType fileType, Object source)
 			throws OpenException {
@@ -257,10 +320,16 @@ public class FileManagerImpl extends FileManager {
 		throw new OpenException("Could not open " + source, lastException);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void removeObserver(Observer<FileManagerEvent> observer) {
 		observers.removeObserver(observer);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void saveDataflow(Dataflow dataflow, boolean failOnOverwrite)
 			throws SaveException {
@@ -275,6 +344,9 @@ public class FileManagerImpl extends FileManager {
 				failOnOverwrite);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void saveDataflow(Dataflow dataflow, FileType fileType,
 			Object destination, boolean failOnOverwrite) throws SaveException {
@@ -325,10 +397,17 @@ public class FileManagerImpl extends FileManager {
 				lastException);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setCurrentDataflow(Dataflow dataflow) {
 		setCurrentDataflow(dataflow, false);
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setCurrentDataflow(Dataflow dataflow, boolean openIfNeeded) {
 		if (!isDataflowOpen(dataflow)) {
@@ -343,6 +422,9 @@ public class FileManagerImpl extends FileManager {
 		modelMap.setModel(ModelMapConstants.CURRENT_DATAFLOW, dataflow);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setDataflowChanged(Dataflow dataflow, boolean isChanged) {
 		getOpenDataflowInfo(dataflow).setIsChanged(isChanged);
@@ -351,6 +433,17 @@ public class FileManagerImpl extends FileManager {
 		}
 	}
 
+	/**
+	 * Get the {@link OpenDataflowInfo} for the given dataflow
+	 * 
+	 * @throws NullPointerException
+	 *             if the dataflow was <code>null</code>
+	 * @throws IllegalArgumentException
+	 *             if the dataflow was not open.
+	 * @param dataflow
+	 *            Dataflow which information is to be found
+	 * @return The {@link OpenDataflowInfo} describing the dataflow
+	 */
 	protected synchronized OpenDataflowInfo getOpenDataflowInfo(
 			Dataflow dataflow) {
 		if (dataflow == null) {
@@ -365,6 +458,12 @@ public class FileManagerImpl extends FileManager {
 		}
 	}
 
+	/**
+	 * Mark the dataflow as opened, and close the blank dataflow if needed.
+	 * 
+	 * @param dataflow
+	 *            Dataflow that has been opened
+	 */
 	protected void openDataflowInternal(Dataflow dataflow) {
 		if (dataflow == null) {
 			throw new NullPointerException("Dataflow can't be null");
@@ -388,14 +487,14 @@ public class FileManagerImpl extends FileManager {
 		}
 	}
 
-	protected Dataflow openDataflowInternal(InputStream workflowXMLstream)
-			throws OpenException {
-		Dataflow dataflow = new T2DataflowOpener()
-				.openDataflowStream(workflowXMLstream);
-		openDataflowInternal(dataflow);
-		return dataflow;
-	}
-
+	/**
+	 * Observe the {@link EditManager} for changes to open dataflows. A change
+	 * of an open workflow would set it as changed using
+	 * {@link FileManagerImpl#setDataflowChanged(Dataflow, boolean)}.
+	 * 
+	 * @author Stian Soiland-Reyes
+	 * 
+	 */
 	private final class EditManagerObserver implements
 			Observer<EditManagerEvent> {
 
@@ -414,6 +513,14 @@ public class FileManagerImpl extends FileManager {
 		}
 	}
 
+	/**
+	 * Observes the {@link ModelMap} for the ModelMapConstants.CURRENT_DATAFLOW.
+	 * Make sure that the dataflow is opened and notifies observers with a
+	 * SetCurrentDataflowEvent.
+	 * 
+	 * @author Stian Soiland-Reyes
+	 * 
+	 */
 	private final class ModelMapObserver implements Observer<ModelMapEvent> {
 		public void notify(Observable<ModelMapEvent> sender,
 				ModelMapEvent message) throws Exception {
