@@ -59,8 +59,12 @@ public class CloseWorkflowAction extends AbstractAction {
 					return false;
 				}
 			} else if (ret == JOptionPane.YES_OPTION) {
-				return saveWorkflowAction.saveDataflow(parentComponent, dataflow);
-			} else {
+				boolean saved = saveWorkflowAction.saveDataflow(parentComponent, dataflow);
+				if (! saved) {
+					return false;
+				}
+				return closeWorkflow(parentComponent, dataflow);			
+			} else { 
 				logger.error("Unknown return from JOptionPane: " + ret);
 				return false;
 			}
