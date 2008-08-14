@@ -156,30 +156,30 @@ public class ContextualViewComponent extends JPanel implements UIComponentSPI {
 //	}
 
 	public void updateSelection() {
+		
 		Dataflow dataflow = fileManager.getCurrentDataflow();
 		
 		// If there is no currently opened dataflow, 
-		// make sure the contextual view panel is cleared
+		// clear the contextual view panel
 		if (dataflow == null){
 			clearContextualView();
-			return;
 		}
-		
-		DataflowSelectionModel selectionModel = dataflowSelectionManager
-				.getDataflowSelectionModel(dataflow);
-		Set<Object> selection = selectionModel.getSelection();
-		
-		if (!selection.isEmpty()) {
-			Iterator<Object> iterator = selection.iterator();
-			// TODO multiple selections, dataflow contextual view, datalink
-			// contextual view
-			updateSelection(iterator.next());
-		}
-		// If the dataflow is opened, but no component of the dataflow is selected, 
-		// make sure the contextual view panel is cleared
 		else{
-			clearContextualView();
-			return;
+			DataflowSelectionModel selectionModel = dataflowSelectionManager
+					.getDataflowSelectionModel(dataflow);
+			Set<Object> selection = selectionModel.getSelection();
+
+			// If the dataflow is opened but no component of the dataflow is
+			// selected, clear the contextual view panel
+			if (selection.isEmpty()) {
+				clearContextualView();
+			}
+			else {
+				Iterator<Object> iterator = selection.iterator();
+				// TODO multiple selections, dataflow contextual view, datalink
+				// contextual view
+				updateSelection(iterator.next());
+			}
 		}
 	}
 	
