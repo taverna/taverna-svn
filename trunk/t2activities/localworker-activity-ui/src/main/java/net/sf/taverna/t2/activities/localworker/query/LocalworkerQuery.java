@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,156 @@ public class LocalworkerQuery extends ActivityQuery {
 
 	/** Used to deserialize the Activities stored on disk */
 	private ActivityXMLDeserializer deserializer;
+
+	private static Map<String, String> localWorkerToScript = new HashMap<String, String>();
+
+	static {
+		localWorkerToScript.put(
+				"org.embl.ebi.escience.scuflworkers.java.ByteArrayToString",
+				"Byte Array To String");
+		localWorkerToScript.put(
+				"org.embl.ebi.escience.scuflworkers.java.DecodeBase64",
+				"Decode Base 64 to byte Array");
+		localWorkerToScript.put(
+				"org.embl.ebi.escience.scuflworkers.java.EchoList", "Echo List");
+		localWorkerToScript.put(
+				"org.embl.ebi.escience.scuflworkers.java.EmitLotsOfStrings",
+				"Create Lots Of Strings");
+		localWorkerToScript.put(
+				"org.embl.ebi.escience.scuflworkers.java.EncodeBase64",
+				"Encode Byte Array to Base 64");
+		localWorkerToScript.put(
+				"org.embl.ebi.escience.scuflworkers.java.ExtractImageLinks",
+				"Get image URLs from HTTP document");
+		localWorkerToScript.put(
+				"org.embl.ebi.escience.scuflworkers.java.FailIfFalse",
+				"Fail If False");
+		localWorkerToScript.put(
+				"org.embl.ebi.escience.scuflworkers.java.FailIfTrue",
+				"Fail If True");
+		localWorkerToScript.put(
+				"org.embl.ebi.escience.scuflworkers.java.FilterStringList",
+				"Filter List of Strings by regex");
+		localWorkerToScript.put(
+				"org.embl.ebi.escience.scuflworkers.java.FlattenList",
+				"Flatten List");
+		localWorkerToScript.put(
+				"org.embl.ebi.escience.scuflworkers.java.PadNumber",
+				"Pad numeral with leading 0s");
+		localWorkerToScript
+				.put(
+						"org.embl.ebi.escience.scuflworkers.java.RegularExpressionStringList",
+						"Filter list of strings extracting match to a regex");
+		localWorkerToScript.put(
+				"org.embl.ebi.escience.scuflworkers.java.SendEmail",
+				"Send an Email");
+		localWorkerToScript.put(
+				"org.embl.ebi.escience.scuflworkers.java.SliceList",
+				"Extract Elements from a List");
+		localWorkerToScript.put(
+				"org.embl.ebi.escience.scuflworkers.java.SplitByRegex",
+				"Split string into string list by regular expression");
+		localWorkerToScript.put(
+				"org.embl.ebi.escience.scuflworkers.java.StringConcat",
+				"Concatenate two strings");
+		localWorkerToScript.put(
+				"org.embl.ebi.escience.scuflworkers.java.StringListMerge",
+				"Merge String List to a String");
+		localWorkerToScript.put(
+				"org.embl.ebi.escience.scuflworkers.java.StringSetDifference",
+				"String List Difference");
+		localWorkerToScript
+				.put(
+						"org.embl.ebi.escience.scuflworkers.java.StringSetIntersection",
+						"String List Intersection");
+		localWorkerToScript.put(
+				"org.embl.ebi.escience.scuflworkers.java.StringSetUnion",
+				"String List Union");
+		localWorkerToScript
+				.put(
+						"org.embl.ebi.escience.scuflworkers.java.StringStripDuplicates",
+						"Remove String Duplicates");
+		localWorkerToScript
+				.put(
+						"org.embl.ebi.escience.scuflworkers.java.TestAlwaysFailingProcessor",
+						"Test - Always Fails");
+		localWorkerToScript.put(
+				"org.embl.ebi.escience.scuflworkers.java.WebImageFetcher",
+				"Get Image From URL");
+		localWorkerToScript.put(
+				"org.embl.ebi.escience.scuflworkers.java.WebPageFetcher",
+				"Get Web Page from URL");
+
+		// xml:XPathText
+		localWorkerToScript.put(
+				"net.sourceforge.taverna.scuflworkers.xml.XPathTextWorker",
+				"XPath From Text");
+
+		// biojava
+		localWorkerToScript
+				.put(
+						"net.sourceforge.taverna.scuflworkers.biojava.GenBankParserWorker",
+						"Read Gen Bank File");
+		localWorkerToScript
+				.put(
+						"net.sourceforge.taverna.scuflworkers.biojava.ReverseCompWorker",
+						"Reverse Complement DNA");
+		localWorkerToScript
+				.put(
+						"net.sourceforge.taverna.scuflworkers.biojava.SwissProtParserWorker",
+						"Read Swiss Prot File");
+		localWorkerToScript
+				.put(
+						"net.sourceforge.taverna.scuflworkers.biojava.TranscribeWorker",
+						"Transcribe DNA");
+
+		// io
+		localWorkerToScript.put(
+				"net.sourceforge.taverna.scuflworkers.io.TextFileReader",
+				"Read Text File");
+		localWorkerToScript.put(
+				"net.sourceforge.taverna.scuflworkers.io.TextFileWriter",
+				"Write Text File");
+		localWorkerToScript.put(
+				"net.sourceforge.taverna.scuflworkers.io.LocalCommand",
+				"Execute Command Line App");
+		localWorkerToScript.put(
+				"net.sourceforge.taverna.scuflworkers.io.FileListByExtTask",
+				"List Files by Extension");
+		localWorkerToScript.put(
+				"net.sourceforge.taverna.scuflworkers.io.FileListByRegexTask",
+				"List Files By Regex");
+		localWorkerToScript.put(
+				"net.sourceforge.taverna.scuflworkers.io.DataRangeTask",
+				"Select Data Range From File");
+		localWorkerToScript
+				.put(
+						"net.sourceforge.taverna.scuflworkers.io.ConcatenateFileListWorker",
+						"Concatenate Files");
+		localWorkerToScript.put(
+				"net.sourceforge.taverna.scuflworkers.io.EnvVariableWorker",
+				"Get Environment Variables as XML");
+
+		// ui
+		localWorkerToScript.put(
+				"net.sourceforge.taverna.scuflworkers.ui.AskWorker",
+				"Ask");
+		localWorkerToScript.put(
+				"net.sourceforge.taverna.scuflworkers.ui.SelectWorker",
+				"Select");
+		localWorkerToScript.put(
+				"net.sourceforge.taverna.scuflworkers.ui.ChooseWorker",
+				"Choose");
+		localWorkerToScript.put(
+				"net.sourceforge.taverna.scuflworkers.ui.TellWorker",
+				"Tell");
+		localWorkerToScript.put(
+				"net.sourceforge.taverna.scuflworkers.ui.WarnWorker",
+				"Warn");
+		localWorkerToScript.put(
+				"net.sourceforge.taverna.scuflworkers.ui.SelectFileWorker",
+				"Select File");
+	}
 
 	public LocalworkerQuery(String property) {
 		super(property);
@@ -192,7 +343,10 @@ public class LocalworkerQuery extends ActivityQuery {
 		item.setOutputPorts(outputPortBeans);
 		item.setInputPorts(inputPortBeans);
 		// name is last part of the class name that was split
-		item.setOperation(split[split.length - 1]);
+		String operation = split[split.length - 1];
+		String operationName = localWorkerToScript.get(line);
+		item.setOperation(operationName);
+//		item.setOperation(operation);
 		return item;
 
 	}
