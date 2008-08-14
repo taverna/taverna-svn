@@ -20,6 +20,8 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 
+import uk.org.mygrid.sogsa.sbs.utils.Util;
+
 /**
  * Contains methods to add bindings, update their RDF, SPARQL query individual
  * bindings, SPARQL query over all bindings, get individual bindings with their
@@ -86,7 +88,7 @@ public class SOGSAClient {
 
 		// the construct "http:"+ UUID.randomUUID().toString()
 		// stands for the actual binding key provided by Karma
-		Response createItem2 = createItem(loadRDF(TEST_RDF_FILE_1), "http://" //$NON-NLS-1$
+		Response createItem2 = createItem(Util.textFileToContent(TEST_RDF_FILE_1), "http://" //$NON-NLS-1$
 				+ UUID.randomUUID().toString(), client, itemsUri);
 		if (createItem2 != null) {
 
@@ -188,7 +190,7 @@ public class SOGSAClient {
 
 		Reference queryReference = new Reference(bindingKey + QUERY_URL_SUFFIX);
 		String queryFile = SAMPLE_SPARQL_QUERY_1;
-		String query = loadRDF(queryFile);
+		String query = Util.textFileToContent(queryFile);
 		System.out.println("The query is: " + query);
 		// InputStream resourceAsStream = SOGSAClient.class.getClassLoader()
 		// .getResourceAsStream(SAMPLE_SPARQL_QUERY_1);
@@ -286,7 +288,7 @@ public class SOGSAClient {
 		// people -- should work in Anzo 3.0 but not in 2.5.1
 		// ////////
 		queryFile = SAMPLE_SPARQL_QUERY_1;
-		String loadRDF = loadRDF(queryFile);
+		String loadRDF = Util.textFileToContent(queryFile);
 
 		Response queryAllBindings = queryAllBindings(client, queryAllUri,
 				loadRDF);
@@ -526,22 +528,5 @@ public class SOGSAClient {
 		return response;
 	}
 
-	private static String loadRDF(String file) {
-		InputStream resourceAsStream = SOGSAClient.class.getClassLoader()
-				.getResourceAsStream(file);
-		String rdfString = new String();
-		BufferedReader in = new BufferedReader(new InputStreamReader(
-				resourceAsStream));
-		String inputLine;
-
-		try {
-			while ((inputLine = in.readLine()) != null)
-				rdfString = rdfString + inputLine;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return rdfString;
-	}
 
 }

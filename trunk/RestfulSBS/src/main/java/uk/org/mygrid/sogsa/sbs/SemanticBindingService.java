@@ -44,6 +44,8 @@ import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.Router;
 
+import uk.org.mygrid.sogsa.sbs.semanticAnnotation.OPMGraphAnnotator;
+
 /**
  * Handles the addition, removal, querying and update of
  * {@link SemanticBindingInstance}s from the back end OpenAnzo database. Uses an
@@ -767,4 +769,24 @@ public class SemanticBindingService extends Application {
 		// }
 	}
 
+	/**
+	 * interceptor: takes an input RDF graph (OPM graph) and augments it with semantic annotations<br/>
+	 * The annotations come from prior service annotations<br/>
+	 * this is invoked prior to sending the graph to S-ogsa for storage
+	 * @param rdfContent the original, un-annotated graph -- typically a Karma-generated user event
+	 * @return the input graph, augmented with semantic annotations
+	 */
+	 public String annotateRDF(String rdfContent) {
+	
+		 if (datasetService == null) {
+			 initializeDatabase();
+		 }
+		 
+		 OPMGraphAnnotator annotator = new OPMGraphAnnotator(datasetService);
+		 
+		 return annotator.annotateRDF(rdfContent);
+		 
+		 
+	 }
+	 
 }

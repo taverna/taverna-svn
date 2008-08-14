@@ -1,5 +1,5 @@
 PREFIX IU:      <http://www.cs.indiana.edu/~subramag/workflowI#>
 PREFIX OPM:     <http://www.cs.indiana.edu/~subramag/OPM_RDFS.rdf#>
 
-SELECT ?x ?y
-WHERE {  ?x OPM:wasGeneratedBy ?y . }
+SELECT ?s
+WHERE {  ?s OPM:wasGeneratedBy ?y . }

@@ -1,5 +1,15 @@
 This is a self-contained distribution of the S-OGSA server code that can be deployed locally for testing. 
-It comes with a simple client class SOGSAClient that you can use to test the SBS interface functionality - see below.
+Eventually, the server will be deployed on a stable server that the client can point to -- it can at IU or here in the UK
+
+The distr. comes with a simple client class SOGSAClient that you can use to test the SBS interface functionality.
+
+The client includes a std sequence of server calls:
+
+- 1 create a new SB
+- 2 add more RDF to it
+- 3 query the SB using SPARQL
+- 4 retrieve all avaiable SBs in the server
+- 5 delete a SB
 
 ** configuration **
 the src/main/resources folder contains several config files. Most of the entries are fine, however you will need to change at least the following:
@@ -9,20 +19,27 @@ edit org.openanzo.repository.database.url=jdbc:derby:/Users/Paolo/scratch/anzoDe
 it can point to any local folder (it will be created if non-existent)
 
 - SBSclient.properties:  
-contains refs to a test RDF file and test SPARQL queries.
+contains refs to files containing our example RDF and test SPARQL queries.
 
+** building **
 The easiest way to build this distribution is through maven -- we use eclipse with the maven plugin here but this is not a requirement.
 
 In case you are not familiar: 
  You can download maven 2 for Windows from their site, then move to the root folder of RESTful-SBS and do a 
  mvn install
  
+ that should take care of everything.
  
-
-
-Testing:
-  You can use the supplied SOGSAClient to do all the magic for you or you can use something 
-like cURL to post, get, put, delete bindings.
+ ** running the server **
+ you just execute SOGSAServer as a regular Java app. It will listen on  localhost
+ 
+ ** running the client **
+ once the server is up, just run SOGSAClient as a regular Java app
+ 
+ The client 
+  
+ alternatively, you can use cURL to test the server:
+  to post, get, put, delete bindings.
 
 For example, to post a new binding use something like:
 
@@ -37,6 +54,3 @@ For example, to post a new binding use something like:
  curl  http://localhost:25000/sbs/abcde
  
  notice that bindings are given a unique identifier based on what you supplied as the "entityKey"
- 
- REMEMBER - change the org.openanzo.repository.database.url=jdbc:derby:/Users/Ian/scratch/anzoDerby;create=true;upgrade=true
- to point to the correct database (not mine!!)
