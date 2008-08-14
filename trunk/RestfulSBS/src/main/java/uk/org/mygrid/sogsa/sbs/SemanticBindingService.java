@@ -645,7 +645,7 @@ public class SemanticBindingService extends Application {
 		if (datasetService == null) {
 			initializeDatabase();
 		}
-		openAllGraphs();
+//		openAllGraphs();
 		java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
 				"querying all of the bindings");
 		Set<URI> storedNamedGraphs = null;
@@ -661,9 +661,10 @@ public class SemanticBindingService extends Application {
 		// throw e;
 		// }
 		QueryResult result = null;
-		try {
-			result = datasetService.execQuery(Collections.singleton(Constants.allNamedGraphsUriURI),
-					Collections.<URI> emptySet(), query);
+		try {result = datasetService.getModelService().executeQuery(Collections.singleton(Constants.allNamedGraphsUriURI),
+				Collections.<URI> emptySet(), query);
+//			result = datasetService.execQuery(Collections.singleton(Constants.allNamedGraphsUriURI),
+//					Collections.<URI> emptySet(), query);
 		} catch (Exception e) {
 			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
 					e.toString());
