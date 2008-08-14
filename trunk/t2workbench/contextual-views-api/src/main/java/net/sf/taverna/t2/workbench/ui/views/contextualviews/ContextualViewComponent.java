@@ -40,6 +40,7 @@ public class ContextualViewComponent extends JPanel implements UIComponentSPI {
 			.getInstance();
 	private ContextualView view;
 	private FileManager fileManager = FileManager.getInstance();
+	private JPanel configureButtonPanel = new JPanel();
 	private JButton configureButton = new JButton("Configure");
 
 	/** Keep list of views in case you want to go back or forward between them */
@@ -74,12 +75,11 @@ public class ContextualViewComponent extends JPanel implements UIComponentSPI {
 		panel = new JPanel(new BorderLayout());
 		add(panel, BorderLayout.CENTER);
 
-		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-		buttonPanel.add(configureButton);
+		configureButtonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		configureButtonPanel.add(configureButton);
 		configureButton.setEnabled(false);
 		configureButton.setVisible(false);
-		add(buttonPanel, BorderLayout.SOUTH);
+		add(configureButtonPanel, BorderLayout.SOUTH);
 	}
 
 	public void onDisplay() {
@@ -100,17 +100,42 @@ public class ContextualViewComponent extends JPanel implements UIComponentSPI {
 		views.add(view);
 
 		panel.add(view, BorderLayout.CENTER);
+		
+		// Show/hide the 'Configure' button and its panel as needed
 		if (view.getConfigureAction(Workbench.getInstance()) != null) {
+			
+			configureButtonPanel.setVisible(true);
+
 			configureButton.setAction(view.getConfigureAction(Workbench
 					.getInstance()));
 			configureButton.setText("Configure");
 			configureButton.setEnabled(true);
 			configureButton.setVisible(true);
 		} else {
+			
+			configureButtonPanel.setVisible(false);
+
 			configureButton.setEnabled(false);
 			configureButton.setVisible(false);
 		}
+		
 		revalidate();
+		repaint();
+	}
+	
+	private void clearContextualView() {
+		
+		// Remove the contextual view panel
+		if (this.view != null) {
+			panel.remove(this.view);
+		}
+		
+		// Hide the 'Configure' button and its panel
+		configureButtonPanel.setVisible(false);
+		configureButton.setVisible(false);
+
+		revalidate();
+		repaint();
 	}
 
 	public void updateSelection(Object selectedItem) {
@@ -132,18 +157,32 @@ public class ContextualViewComponent extends JPanel implements UIComponentSPI {
 
 	public void updateSelection() {
 		Dataflow dataflow = fileManager.getCurrentDataflow();
+		
+		// If there is no currently opened dataflow, 
+		// make sure the contextual view panel is cleared
+		if (dataflow == null){
+			clearContextualView();
+			return;
+		}
+		
 		DataflowSelectionModel selectionModel = dataflowSelectionManager
 				.getDataflowSelectionModel(dataflow);
 		Set<Object> selection = selectionModel.getSelection();
-		if (selection.isEmpty()) {
+		
+		if (!selection.isEmpty()) {
+			Iterator<Object> iterator = selection.iterator();
+			// TODO multiple selections, dataflow contextual view, datalink
+			// contextual view
+			updateSelection(iterator.next());
+		}
+		// If the dataflow is opened, but no component of the dataflow is selected, 
+		// make sure the contextual view panel is cleared
+		else{
+			clearContextualView();
 			return;
 		}
-		Iterator<Object> iterator = selection.iterator();
-
-		// TODO multiple selections, dataflow contextual view, datalink
-		// contextual view
-		updateSelection(iterator.next());
 	}
+	
 
 	@SuppressWarnings("unchecked")
 	private void findContextualView(Object selection) {
@@ -172,6 +211,7 @@ public class ContextualViewComponent extends JPanel implements UIComponentSPI {
 					ModelMapConstants.CURRENT_DATAFLOW)) {
 				Dataflow oldFlow = (Dataflow) message.getOldModel();
 				Dataflow newFlow = (Dataflow) message.getNewModel();
+				
 				if (oldFlow != null) {
 					dataflowSelectionManager.getDataflowSelectionModel(oldFlow)
 							.removeObserver(dataflowSelectionListener);

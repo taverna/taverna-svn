@@ -68,7 +68,7 @@ public class ColourManager extends AbstractConfigurable {
 		defaultPropertyMap.put("net.sf.taverna.t2.activities.biomoby.MobyParseDatatypeActivity", "#ffffff");//white
 		defaultPropertyMap.put("net.sf.taverna.t2.activities.dataflow.DataflowActivity", "#ffc0cb");//pink
 		defaultPropertyMap.put("net.sf.taverna.t2.activities.rshell.RshellActivity", "#fafad2");//lightgoldenrodyellow
-		defaultPropertyMap.put("net.sf.taverna.t2.activities.soaplab.SoaplabActivity", "#fafad2");//lightgoldenrodyellow
+		defaultPropertyMap.put("net.sf.taverna.t2.activities.soaplab.SoaplabActivity", "#bdb76b");//darkkhaki
 		defaultPropertyMap.put("net.sf.taverna.t2.activities.stringconstant.StringConstantActivity", "#b0c4de");//lightsteelblue
 		defaultPropertyMap.put("net.sf.taverna.t2.activities.wsdl.WSDLActivity", "#a2cd5a");//darkolivegreen3
 		defaultPropertyMap.put("net.sf.taverna.t2.activities.localworker.LocalworkerActivity", "#d15fee"); //mediumorchid2
