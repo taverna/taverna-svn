@@ -43,7 +43,7 @@ public class DataflowActivityContextualView extends
 	@Override
 	protected JComponent getMainFrame() {
 		JComponent mainFrame = super.getMainFrame();
-		JButton viewWorkflowButton = new JButton("View Workflow");
+		JButton viewWorkflowButton = new JButton("Edit workflow");
 		viewWorkflowButton.addActionListener(new AbstractAction() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -68,10 +68,10 @@ public class DataflowActivityContextualView extends
 			}
 
 		});
-		JButton configureButton = new JButton("Configure Workflow");
+		JButton configureButton = new JButton("Open from file");
 		configureButton
 				.addActionListener(new DataflowActivityConfigurationAction(
-						getActivity(), mainFrame));
+						getActivity()));
 
 		JPanel flowPanel = new JPanel(new FlowLayout());
 		flowPanel.add(viewWorkflowButton);
