@@ -34,7 +34,9 @@ public class CloseAllWorkflowsAction extends AbstractAction {
 	}
 
 	public boolean closeAllWorkflows(Component parentComponent) {
+		// Close in reverse so we can save nested workflows first
 		List<Dataflow> dataflows = fileManager.getOpenDataflows();
+		
 		Collections.reverse(dataflows);
 
 		for (Dataflow dataflow : dataflows) {
