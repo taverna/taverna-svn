@@ -3,11 +3,11 @@ package net.sf.taverna.t2.workbench.design.actions;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 
-import net.sf.taverna.t2.workbench.design.Tools;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.EditException;
+import net.sf.taverna.t2.workflowmodel.utils.Tools;
 
 import org.apache.log4j.Logger;
 

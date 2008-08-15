@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.design;
+package net.sf.taverna.t2.workflowmodel.utils;
 
 import java.util.ArrayList;
 import java.util.List;
