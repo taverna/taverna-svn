@@ -39,13 +39,13 @@ public class SOGSAClient {
 
 	private static final String QUERY_URL_SUFFIX = "/query"; //$NON-NLS-1$
 	private static final String HTTP_LOCALHOST_25000_SBS = ClientConfig
-			.getString("SOGSAClient.1"); //$NON-NLS-1$
+			.getString("SBSEndpoint"); //$NON-NLS-1$
 	private static final String SAMPLE_SPARQL_QUERY_1 = ClientConfig
-			.getString("SOGSAClient.2"); //$NON-NLS-1$
+			.getString("testClientQuery1"); //$NON-NLS-1$
 	private static final String TEST_RDF_FILE_1 = ClientConfig
-			.getString("SOGSAClient.3"); //$NON-NLS-1$
+			.getString("Karma_RDFTest"); //$NON-NLS-1$
 	private static final String TEST_RDF_FILE_2 = ClientConfig
-			.getString("SOGSAClient.4"); //$NON-NLS-1$
+			.getString("additionalRDFTest"); //$NON-NLS-1$
 
 	/**
 	 * main contains a number of client usage snippets to illustrate a typical
@@ -75,21 +75,23 @@ public class SOGSAClient {
 		// ////////
 
 		System.out
-				.println("1: create a new SB from a http URI pointing to the RDF content.");
+				.println("1: create a new SB from a http URI pointing to the RDF content using local file\n"+TEST_RDF_FILE_1);
 
 		String bindingKey = null;
-		URI uri = null;
-		try {
-			uri = new URI(TEST_RDF_FILE_1);
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 		// the construct "http:"+ UUID.randomUUID().toString()
 		// stands for the actual binding key provided by Karma
-		Response createItem2 = createItem(Util.textFileToContent(TEST_RDF_FILE_1), "http://" //$NON-NLS-1$
-				+ UUID.randomUUID().toString(), client, itemsUri);
+		
+		Response createItem2 = null;
+		try {
+			createItem2 = createItem(new URI(TEST_RDF_FILE_1), "http://" + UUID.randomUUID().toString(), client, itemsUri);
+		} catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+//		Response createItem2 = createItem(Util.textFileToContent(TEST_RDF_FILE_1), "http://" + UUID.randomUUID().toString(), client, itemsUri);
+		
 		if (createItem2 != null) {
 
 			bindingKey = createItem2.getEntity().getIdentifier().toString();
@@ -459,10 +461,8 @@ public class SOGSAClient {
 		Representation rep = form.getWebRepresentation();
 		Response put = null;
 		try {
-			System.out.println("making call");
 			put = client.put(reference.toString(), rep);
 			// put = client.put(reference.toString(), rep);
-			System.out.println("hello " + put);
 		} catch (Exception e) {
 			System.out.println(e);
 		}

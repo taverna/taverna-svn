@@ -149,12 +149,6 @@
     
 
 
-    <!-- http://www.w3.org/2002/07/owl#Thing -->
-
-    <owl:Class rdf:about="&owl;Thing"/>
-    
-
-
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -169,17 +163,8 @@
     <!-- http://www.owl-ontologies.com/unnamed.owl#Entrez_Genelookup_Result -->
 
     <OPM_RDFS_rdf_Artifact rdf:about="#Entrez_Genelookup_Result">
-        <OPM_RDFS_rdf_wasDerivedFrom rdf:resource="#workflowI_GeneLookupQuery"/>
-        <OPM_RDFS_rdf_wasGeneratedBy rdf:resource="#workflowI__NCBI_Web_Entrez_GeneLookup_Service"/>
-    </OPM_RDFS_rdf_Artifact>
-    
-
-
-    <!-- http://www.owl-ontologies.com/unnamed.owl#Entrez_Result -->
-
-    <OPM_RDFS_rdf_Artifact rdf:about="#Entrez_Result">
-        <OPM_RDFS_rdf_wasGeneratedBy rdf:resource="#workflowI_NCBI_Web_Entrez_Service"/>
-        <OPM_RDFS_rdf_wasDerivedFrom rdf:resource="#workflowI_Query"/>
+        <OPM_RDFS_rdf_wasDerivedFrom rdf:resource="#GeneLookupQuery"/>
+        <OPM_RDFS_rdf_wasGeneratedBy rdf:resource="#NCBI_Web_Entrez_GeneLookup_Service"/>
     </OPM_RDFS_rdf_Artifact>
     
 
@@ -187,7 +172,7 @@
     <!-- http://www.owl-ontologies.com/unnamed.owl#GeneLookupQuery -->
 
     <OPM_RDFS_rdf_Artifact rdf:about="#GeneLookupQuery">
-        <OPM_RDFS_rdf_wasGeneratedBy rdf:resource="#workflowI_NCBI_Entrez_Plugin"/>
+        <OPM_RDFS_rdf_wasGeneratedBy rdf:resource="#NCBI_Entrez_Plugin"/>
     </OPM_RDFS_rdf_Artifact>
     
 
@@ -203,7 +188,7 @@
     <!-- http://www.owl-ontologies.com/unnamed.owl#Gene_Ontology_Plugin -->
 
     <OPM_RDFS_rdf_Process rdf:about="#Gene_Ontology_Plugin">
-        <OPM_RDFS_rdf_wasTriggeredBy rdf:resource="#workflowI_Gene_Browser_Plugin"/>
+        <OPM_RDFS_rdf_wasTriggeredBy rdf:resource="#Gene_Browser_Plugin"/>
     </OPM_RDFS_rdf_Process>
     
 
@@ -211,7 +196,7 @@
     <!-- http://www.owl-ontologies.com/unnamed.owl#NCBI_Entrez_Plugin -->
 
     <OPM_RDFS_rdf_Process rdf:about="#NCBI_Entrez_Plugin">
-        <OPM_RDFS_rdf_wasTriggeredBy rdf:resource="#workflowI_Gene_Browser_Plugin"/>
+        <OPM_RDFS_rdf_wasTriggeredBy rdf:resource="#Gene_Browser_Plugin"/>
     </OPM_RDFS_rdf_Process>
     
 
@@ -220,7 +205,7 @@
 
     <OPM_RDFS_rdf_Process rdf:about="#NCBI_Web_Entrez_GeneLookup_Service">
         <OPM_RDFS_rdf_used rdf:resource="#GeneLookupQuery"/>
-        <OPM_RDFS_rdf_wasTriggeredBy rdf:resource="#workflowI_NCBI_Entrez_Plugin"/>
+        <OPM_RDFS_rdf_wasTriggeredBy rdf:resource="#NCBI_Entrez_Plugin"/>
     </OPM_RDFS_rdf_Process>
     
 
@@ -228,74 +213,12 @@
     <!-- http://www.owl-ontologies.com/unnamed.owl#NCBI_Web_Entrez_Service -->
 
     <OPM_RDFS_rdf_Process rdf:about="#NCBI_Web_Entrez_Service">
-        <OPM_RDFS_rdf_used rdf:resource="#Query"/>
-        <OPM_RDFS_rdf_wasTriggeredBy rdf:resource="#workflowI_NCBI_Entrez_Plugin"/>
+        <OPM_RDFS_rdf_wasTriggeredBy rdf:resource="#NCBI_Entrez_Plugin"/>
     </OPM_RDFS_rdf_Process>
-    
-
-
-    <!-- http://www.owl-ontologies.com/unnamed.owl#Query -->
-
-    <OPM_RDFS_rdf_Artifact rdf:about="#Query">
-        <OPM_RDFS_rdf_wasGeneratedBy rdf:resource="#workflowI_NCBI_Entrez_Plugin"/>
-    </OPM_RDFS_rdf_Artifact>
     
 
 
     <!-- http://www.owl-ontologies.com/unnamed.owl#User_Gene_Selection -->
 
     <OPM_RDFS_rdf_Artifact rdf:about="#User_Gene_Selection"/>
-    
-
-
-    <!-- http://www.owl-ontologies.com/unnamed.owl#workflowI_GeneLookupQuery -->
-
-    <owl:Thing rdf:about="#workflowI_GeneLookupQuery">
-        <rdfs:label rdf:datatype="&xsd;string"
-            >workflowI:GeneLookupQuery</rdfs:label>
-    </owl:Thing>
-    
-
-
-    <!-- http://www.owl-ontologies.com/unnamed.owl#workflowI_Gene_Browser_Plugin -->
-
-    <owl:Thing rdf:about="#workflowI_Gene_Browser_Plugin">
-        <rdfs:label rdf:datatype="&xsd;string"
-            >workflowI:Gene_Browser_Plugin</rdfs:label>
-    </owl:Thing>
-    
-
-
-    <!-- http://www.owl-ontologies.com/unnamed.owl#workflowI_NCBI_Entrez_Plugin -->
-
-    <owl:Thing rdf:about="#workflowI_NCBI_Entrez_Plugin">
-        <rdfs:label rdf:datatype="&xsd;string"
-            >workflowI:NCBI_Entrez_Plugin</rdfs:label>
-    </owl:Thing>
-    
-
-
-    <!-- http://www.owl-ontologies.com/unnamed.owl#workflowI_NCBI_Web_Entrez_Service -->
-
-    <owl:Thing rdf:about="#workflowI_NCBI_Web_Entrez_Service">
-        <rdfs:label rdf:datatype="&xsd;string"
-            >workflowI:NCBI_Web_Entrez_Service</rdfs:label>
-    </owl:Thing>
-    
-
-
-    <!-- http://www.owl-ontologies.com/unnamed.owl#workflowI_Query -->
-
-    <owl:Thing rdf:about="#workflowI_Query">
-        <rdfs:label rdf:datatype="&xsd;string">workflowI:Query</rdfs:label>
-    </owl:Thing>
-    
-
-
-    <!-- http://www.owl-ontologies.com/unnamed.owl#workflowI__NCBI_Web_Entrez_GeneLookup_Service -->
-
-    <owl:Thing rdf:about="#workflowI__NCBI_Web_Entrez_GeneLookup_Service">
-        <rdfs:label rdf:datatype="&xsd;string"
-            >workflowI: NCBI_Web_Entrez_GeneLookup_Service</rdfs:label>
-    </owl:Thing>
 </rdf:RDF>

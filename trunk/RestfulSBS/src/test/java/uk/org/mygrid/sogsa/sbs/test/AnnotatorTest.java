@@ -8,6 +8,8 @@ import static org.junit.Assert.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.openanzo.client.LocalGraph;
+import org.openanzo.common.exceptions.AnzoException;
 
 import uk.org.mygrid.sogsa.sbs.ClientConfig;
 import uk.org.mygrid.sogsa.sbs.SemanticBindingService;
@@ -39,13 +41,20 @@ public class AnnotatorTest {
 	@Test
 	public final void testAnnotateRDF() {
 		
-		String testRDFFile = ClientConfig.getString("SOGSAClient.3");
+		String testRDFFile = ClientConfig.getString("Karma_RDFTest");
 		
 		SemanticBindingService sbs = new SemanticBindingService(null);  // CHECK this is legal
 		
-		String annotatedRDF = sbs.annotateRDF(Util.textFileToContent(testRDFFile));
+		LocalGraph annotatedRDF;
+		try {
+			annotatedRDF = sbs.annotateRDF(Util.textFileToContent(testRDFFile));
+
+			assertTrue("annotated RDF:\n"+annotatedRDF.toString(), annotatedRDF!=null);
+
+		} catch (AnzoException e) {
+			fail(e.toString());
+		}
 		
-		assertTrue("annotated RDF:\n"+annotatedRDF, annotatedRDF!=null);
 	}
 
 }

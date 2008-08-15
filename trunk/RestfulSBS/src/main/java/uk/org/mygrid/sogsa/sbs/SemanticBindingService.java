@@ -19,6 +19,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 
 import org.openanzo.client.DatasetService;
+import org.openanzo.client.LocalGraph;
 import org.openanzo.client.RemoteGraph;
 import org.openanzo.common.exceptions.AnzoException;
 import org.openanzo.model.INamedGraph;
@@ -60,14 +61,17 @@ import uk.org.mygrid.sogsa.sbs.semanticAnnotation.OPMGraphAnnotator;
  */
 public class SemanticBindingService extends Application {
 
-	private static final String LOGGER_NAME = "org.mortbay.log";
-	private static final String SBS_PUT_DELETE = "/sbs";
-	private static final String SBS_BINDING_QUERY_ONE_BINDING = "/sbs/{binding}/query";
-	private static final String SBS_NEW_BINDING = "/sbs/{binding}";
-	private static final String SBS_QUERY_ALL_BINDINGS = "/sbs/query";
+	private static final String LOGGER_NAME = "org.mortbay.log"; //$NON-NLS-1$
+	private static final String SBS_PUT_DELETE = "/sbs"; //$NON-NLS-1$
+	private static final String SBS_BINDING_QUERY_ONE_BINDING = "/sbs/{binding}/query"; //$NON-NLS-1$
+	private static final String SBS_NEW_BINDING = "/sbs/{binding}"; //$NON-NLS-1$
+	private static final String SBS_QUERY_ALL_BINDINGS = "/sbs/query"; //$NON-NLS-1$
 
-	private static final String JDBC_DERBY_CONNECTIONSTRING = "jdbc:derby:/Users/Ian/scratch/anzoDerby";
+	private static final String JDBC_DERBY_CONNECTIONSTRING = ServerConfig.getString("SemanticBindingService.derbyConnectionString"); //$NON-NLS-1$
+	private static final String performAnnotations = ServerConfig.getString("SemanticBindingService.performAnnotations"); //$NON-NLS-1$
+	private static boolean annotate = false;
 	private static DatasetService datasetService;
+	private static OPMGraphAnnotator annotator; 
 
 	public SemanticBindingService(Context parentContext) {
 		super(parentContext);
@@ -81,7 +85,7 @@ public class SemanticBindingService extends Application {
 	private void init() {
 		try {
 			// TODO dynamically load based on anzo properties
-			Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
+			Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance(); //$NON-NLS-1$
 		} catch (InstantiationException e1) {
 			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
 					e1.toString());
@@ -96,6 +100,12 @@ public class SemanticBindingService extends Application {
 		initializeRestletLogging();
 		initializeDatabase();
 
+		// do we need a semantic annotator?
+		if (performAnnotations.equals("yes"))  {
+			annotate = true; 
+			System.out.println("annotations are turned ON");
+		} //$NON-NLS-1$
+
 	}
 
 	/**
@@ -106,7 +116,7 @@ public class SemanticBindingService extends Application {
 		try {
 			embeddedClientProperties.load(SemanticBindingService.class
 					.getClassLoader().getResourceAsStream(
-							"embeddedclient.properties"));
+					"embeddedclient.properties")); //$NON-NLS-1$
 		} catch (FileNotFoundException e) {
 			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
 					e.toString());
@@ -128,10 +138,10 @@ public class SemanticBindingService extends Application {
 		Set<URI> storedNamedGraphs = null;
 		try {
 			storedNamedGraphs = datasetService.getModelService()
-					.getStoredNamedGraphs();
+			.getStoredNamedGraphs();
 
 		} catch (Exception e) {
-			
+
 		}
 		for (URI graph:storedNamedGraphs) {
 			try {
@@ -175,8 +185,8 @@ public class SemanticBindingService extends Application {
 	 */
 	private void initializeRestletLogging() {
 
-		Handler[] handlers = java.util.logging.Logger.getLogger("")
-				.getHandlers();
+		Handler[] handlers = java.util.logging.Logger.getLogger("") //$NON-NLS-1$
+		.getHandlers();
 		for (Handler handler : handlers) {
 			handler.setFormatter(new ReallySimpleFormatter());
 		}
@@ -210,8 +220,8 @@ public class SemanticBindingService extends Application {
 	 * @throws Exception
 	 */
 	public void addBinding(String entityKey, String rdf) throws SQLException,
-			RDFHandlerException, RDFParseException, IOException,
-			SemanticBindingException, AnzoException {
+	RDFHandlerException, RDFParseException, IOException,
+	SemanticBindingException, AnzoException {
 		if (datasetService == null) {
 			initializeDatabase();
 		}
@@ -231,42 +241,64 @@ public class SemanticBindingService extends Application {
 			graph = datasetService.getRemoteGraph(namedGraphURI,
 					createIfNecessary);
 
-			StatementCollector sc = new StatementCollector();
-			try {
-				RDFParser parser = Rio.createParser(RDFFormat.RDFXML);
-				parser.setRDFHandler(sc);
-				parser.parse(new StringReader(rdf), "");
-			} catch (UnsupportedRDFormatException mse) {
-				throw mse;
-			} catch (RDFHandlerException mse) {
-				throw mse;
-			} catch (RDFParseException mse) {
-				throw mse;
-			} catch (IOException mse) {
-				throw mse;
-			}
-			try {
+
+			///////////
+			//  intercept new RDF and annotate it -- this results in a new localGraph
+			//////////
+			if (annotate) {
+				System.out.println("semantic annotator kicks in!");
+				LocalGraph annotatedRDF = annotateRDF(rdf);		
+
+				// now add the annotatedRDF to the original remoteGraph
+				CloseableIterator<org.openrdf.model.Statement> statements = annotatedRDF.getStatements();
+
+				System.out.println("begin add new RDF transaction");
 				datasetService.begin();
-			} catch (AnzoException e) {
-				java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-						Level.WARNING, e.toString());
-				throw e;
-			}
-			try {
-				for (Statement statement : sc.getStatements()) {
-					graph.add(statement);
+				while (statements.hasNext()) {
+					graph.add(statements.next());
 				}
-			} catch (Exception e) {
-				datasetService.abort();
-				throw new SemanticBindingException(e);
-			}
-			try {
 				datasetService.commit();
-			} catch (AnzoException e) {
-				java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-						Level.WARNING, e.toString());
-				throw e;
+				System.out.println("commit add new RDF transaction");
+				
+			} else {		// annotator not involved -- do the default thing	
+				StatementCollector sc = new StatementCollector();
+				try {
+					RDFParser parser = Rio.createParser(RDFFormat.RDFXML);
+					parser.setRDFHandler(sc);
+					parser.parse(new StringReader(rdf), ""); //$NON-NLS-1$
+				} catch (UnsupportedRDFormatException mse) {
+					throw mse;
+				} catch (RDFHandlerException mse) {
+					throw mse;
+				} catch (RDFParseException mse) {
+					throw mse;
+				} catch (IOException mse) {
+					throw mse;
+				}
+				try {
+					datasetService.begin();
+				} catch (AnzoException e) {
+					java.util.logging.Logger.getLogger(LOGGER_NAME).log(
+							Level.WARNING, e.toString());
+					throw e;
+				}
+				try {
+					for (Statement statement : sc.getStatements()) {
+						graph.add(statement);
+					}
+				} catch (Exception e) {
+					datasetService.abort();
+					throw new SemanticBindingException(e);
+				}
+				try {
+					datasetService.commit();
+				} catch (AnzoException e) {
+					java.util.logging.Logger.getLogger(LOGGER_NAME).log(
+							Level.WARNING, e.toString());
+					throw e;
+				}
 			}
+			
 			try {
 				datasetService.getDatasetReplicator().replicate(true);
 			} catch (AnzoException e) {
@@ -299,7 +331,7 @@ public class SemanticBindingService extends Application {
 	 * @throws SemanticBindingNotFoundException
 	 */
 	public SemanticBindingInstance getBinding(String key) throws AnzoException,
-			NoRDFFoundException, SemanticBindingNotFoundException {
+	NoRDFFoundException, SemanticBindingNotFoundException {
 		if (datasetService == null) {
 			initializeDatabase();
 		}
@@ -307,7 +339,7 @@ public class SemanticBindingService extends Application {
 		boolean hasRDF = false;
 
 		URI namedGraphURI = datasetService.getValueFactory().createURI(
-				"http://" + key);
+				"http://" + key); //$NON-NLS-1$
 		CloseableIterator<Statement> statements = null;
 		RemoteGraph remoteGraph = null;
 		try {
@@ -326,14 +358,14 @@ public class SemanticBindingService extends Application {
 				remoteGraph.close();
 			} else {
 				throw new SemanticBindingNotFoundException(
-						"There was no binding " + key);
+						"There was no binding " + key); //$NON-NLS-1$
 			}
 
 			if (hasRDF) {
 				return new SemanticBindingInstance(key, rdf);
 			} else {
 				// found a binding but no rdf, probably an anzo problem (?)
-				throw new NoRDFFoundException("Binding found but no RDF");
+				throw new NoRDFFoundException("Binding found but no RDF"); //$NON-NLS-1$
 			}
 		} catch (AnzoException e) {
 			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
@@ -370,7 +402,9 @@ public class SemanticBindingService extends Application {
 	}
 
 	/**
-	 * Add new RDF statements to the {@link RemoteGraph}
+	 * Add new RDF statements to the {@link RemoteGraph}<br/>
+	 * added support for semantic annotation of service resources in the graph by means of interceptor {@link #annotateRDF(String)}
+	 * (Paolo)
 	 * 
 	 * @param key
 	 *            the unique identifier for the {@link RemoteGraph}
@@ -383,80 +417,103 @@ public class SemanticBindingService extends Application {
 			initializeDatabase();
 		}
 		URI namedGraphURI = datasetService.getValueFactory().createURI(
-				"http://" + key);
+				"http://" + key); //$NON-NLS-1$
 		RemoteGraph remoteGraph = null;
 		try {
 			remoteGraph = datasetService.getRemoteGraph(namedGraphURI, false);
 
-			// no need to delete the old stuff?
-			// try {
-			// remoteGraph.delete(datasetService.getRemoteGraph(namedGraphURI,
-			// false).getStatements());
-			// } catch (AnzoException e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
-			StatementCollector sc = new StatementCollector();
-			try {
-				RDFParser parser = Rio.createParser(RDFFormat.RDFXML);
-				parser.setRDFHandler(sc);
-				parser.parse(new StringReader(rdf), "");
-			} catch (UnsupportedRDFormatException mse) {
-				java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-						Level.WARNING, mse.toString());
-				throw new Exception(mse);
-			} catch (RDFHandlerException mse) {
-				java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-						Level.WARNING, mse.toString());
-				throw new Exception(mse);
-			} catch (RDFParseException mse) {
-				java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-						Level.WARNING, mse.toString());
-				throw new Exception(mse);
-			} catch (IOException mse) {
-				java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-						Level.WARNING, mse.toString());
-				throw new Exception(mse);
-			}
+			///////////
+			//  intercept new RDF and annotate it -- this results in a new localGraph
+			//////////
+			if (annotate) {
+				System.out.println("semantic annotator kicks in!");
+				LocalGraph annotatedRDF = annotateRDF(rdf);				
 
-			try {
+				// now add the annotatedRDF to the original remoteGraph
+				CloseableIterator<org.openrdf.model.Statement> statements = annotatedRDF.getStatements();
+
+				System.out.println("begin add new RDF transaction");
 				datasetService.begin();
-			} catch (AnzoException e1) {
-				java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-						Level.WARNING, e1.toString());
-				throw new Exception(e1);
-			}
-			for (Statement statement : sc.getStatements()) {
+				while (statements.hasNext()) {
+					remoteGraph.add(statements.next());
+				}
+				datasetService.commit();
+				System.out.println("commit add new RDF transaction");
+				datasetService.getDatasetReplicator().replicate(true);
+				remoteGraph.close();
+			}  else {  // annotator not involved -- do the default thing
+
+				// no need to delete the old stuff?
+				// try {
+				// remoteGraph.delete(datasetService.getRemoteGraph(namedGraphURI,
+				// false).getStatements());
+				// } catch (AnzoException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// }
+				StatementCollector sc = new StatementCollector();
 				try {
-					remoteGraph.add(statement);
-				} catch (Exception e) {
+					RDFParser parser = Rio.createParser(RDFFormat.RDFXML);
+					parser.setRDFHandler(sc);
+					parser.parse(new StringReader(rdf), ""); //$NON-NLS-1$
+				} catch (UnsupportedRDFormatException mse) {
 					java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-							Level.WARNING,
-							e.toString() + " " + statement.toString());
+							Level.WARNING, mse.toString());
+					throw new Exception(mse);
+				} catch (RDFHandlerException mse) {
+					java.util.logging.Logger.getLogger(LOGGER_NAME).log(
+							Level.WARNING, mse.toString());
+					throw new Exception(mse);
+				} catch (RDFParseException mse) {
+					java.util.logging.Logger.getLogger(LOGGER_NAME).log(
+							Level.WARNING, mse.toString());
+					throw new Exception(mse);
+				} catch (IOException mse) {
+					java.util.logging.Logger.getLogger(LOGGER_NAME).log(
+							Level.WARNING, mse.toString());
+					throw new Exception(mse);
+				}
+
+				try {
+					datasetService.begin();
+				} catch (AnzoException e1) {
+					java.util.logging.Logger.getLogger(LOGGER_NAME).log(
+							Level.WARNING, e1.toString());
+					throw new Exception(e1);
+				}
+				for (Statement statement : sc.getStatements()) {
+					try {
+						remoteGraph.add(statement);
+					} catch (Exception e) {
+						java.util.logging.Logger.getLogger(LOGGER_NAME).log(
+								Level.WARNING,
+								e.toString() + " " + statement.toString()); //$NON-NLS-1$
+						throw new Exception(e);
+					}
+				}
+				try {
+					datasetService.commit();
+				} catch (AnzoException e) {
+					java.util.logging.Logger.getLogger(LOGGER_NAME).log(
+							Level.WARNING, e.toString());
 					throw new Exception(e);
 				}
-			}
-			try {
-				datasetService.commit();
-			} catch (AnzoException e) {
-				java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-						Level.WARNING, e.toString());
-				throw new Exception(e);
-			}
-			try {
-				datasetService.getDatasetReplicator().replicate(true);
-			} catch (AnzoException e) {
-				java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-						Level.WARNING, e.toString());
-				throw new Exception(e);
-			}
-			try {
-				remoteGraph.close();
-			} catch (Exception e) {
-				java.util.logging.Logger.getLogger(LOGGER_NAME).log(
-						Level.WARNING, e.toString());
-				throw new Exception(e);
-			}
+				try {
+					datasetService.getDatasetReplicator().replicate(true);
+				} catch (AnzoException e) {
+					java.util.logging.Logger.getLogger(LOGGER_NAME).log(
+							Level.WARNING, e.toString());
+					throw new Exception(e);
+				}
+				try {
+					remoteGraph.close();
+				} catch (Exception e) {
+					java.util.logging.Logger.getLogger(LOGGER_NAME).log(
+							Level.WARNING, e.toString());
+					throw new Exception(e);
+				}
+			} // end if annotator...
+
 		} catch (AnzoException e) {
 			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
 					e.toString());
@@ -481,14 +538,14 @@ public class SemanticBindingService extends Application {
 	 * @throws QueryEvaluationException
 	 */
 	public String queryBinding(String key, String query) throws AnzoException,
-			QueryEvaluationException {
+	QueryEvaluationException {
 		if (datasetService == null) {
 			initializeDatabase();
 		}
 		String queryResult = new String();
 
 		URI namedGraphURI = datasetService.getValueFactory().createURI(
-				"http://" + key);
+				"http://" + key); //$NON-NLS-1$
 		RemoteGraph remoteGraph = null;
 		QueryResult result = null;
 		try {
@@ -499,11 +556,11 @@ public class SemanticBindingService extends Application {
 					query);
 		} catch (AnzoException e) {
 			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
-					"AnzoException: " + e.toString());
+					"AnzoException: " + e.toString()); //$NON-NLS-1$
 			throw e;
 		} catch (IllegalArgumentException e) {
 			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
-					"IllegalArgumentException: " + e.toString());
+					"IllegalArgumentException: " + e.toString()); //$NON-NLS-1$
 			throw e;
 		}
 		finally {
@@ -512,57 +569,57 @@ public class SemanticBindingService extends Application {
 		if (result != null) {
 			if (result.isAskResult()) {
 				queryResult = queryResult
-						+ "<?xml version=\"1.0\"?><sparql xmlns=\"http://www.w3.org/2005/sparql-results#\"><head></head><boolean>";
+				+ "<?xml version=\"1.0\"?><sparql xmlns=\"http://www.w3.org/2005/sparql-results#\"><head></head><boolean>"; //$NON-NLS-1$
 				queryResult = queryResult + result.getAskResult().toString()
-						+ "</boolean></sparql>";
+				+ "</boolean></sparql>"; //$NON-NLS-1$
 				return queryResult;
 			} else if (result.isConstructResult()) {
 				Collection<Statement> constructResult = result
-						.getConstructResult();
+				.getConstructResult();
 				if (!constructResult.isEmpty()) {
-					queryResult = queryResult + "<results>";
+					queryResult = queryResult + "<results>"; //$NON-NLS-1$
 					for (Statement statement : constructResult) {
 
-						queryResult = queryResult + "<result><subject>"
-								+ statement.getSubject() + "</subject> "
-								+ "<predicate>" + statement.getPredicate()
-								+ "</predicate>" + "<object>"
-								+ statement.getObject() + "</object></result>";
+						queryResult = queryResult + "<result><subject>" //$NON-NLS-1$
+						+ statement.getSubject() + "</subject> " //$NON-NLS-1$
+						+ "<predicate>" + statement.getPredicate() //$NON-NLS-1$
+						+ "</predicate>" + "<object>" //$NON-NLS-1$ //$NON-NLS-2$
+						+ statement.getObject() + "</object></result>"; //$NON-NLS-1$
 					}
-					queryResult = queryResult + "</results>";
+					queryResult = queryResult + "</results>"; //$NON-NLS-1$
 					return queryResult;
 				}
 			} else if (result.isDescribeResult()) {
 				Collection<Statement> describeResult = result
-						.getDescribeResult();
+				.getDescribeResult();
 				if (!describeResult.isEmpty()) {
-					queryResult = queryResult + "<results>";
+					queryResult = queryResult + "<results>"; //$NON-NLS-1$
 					for (Statement statement : describeResult) {
-						queryResult = queryResult + "<result><subject>"
-								+ statement.getSubject() + "</subject> "
-								+ "<predicate>" + statement.getPredicate()
-								+ "</predicate>" + "<object>"
-								+ statement.getObject() + "</object></result>";
+						queryResult = queryResult + "<result><subject>" //$NON-NLS-1$
+						+ statement.getSubject() + "</subject> " //$NON-NLS-1$
+						+ "<predicate>" + statement.getPredicate() //$NON-NLS-1$
+						+ "</predicate>" + "<object>" //$NON-NLS-1$ //$NON-NLS-2$
+						+ statement.getObject() + "</object></result>"; //$NON-NLS-1$
 					}
-					queryResult = queryResult + "</results>";
+					queryResult = queryResult + "</results>"; //$NON-NLS-1$
 					return queryResult;
 				}
 			} else if (result.isSelectResult()) {
 				TupleQueryResult selectResult = result.getSelectResult();
 				List<String> bindingNames = selectResult.getBindingNames();
 				queryResult = queryResult
-						+ "<?xml version=\"1.0\"?><sparql xmlns=\"http://www.w3.org/2005/sparql-results#\">";
+				+ "<?xml version=\"1.0\"?><sparql xmlns=\"http://www.w3.org/2005/sparql-results#\">"; //$NON-NLS-1$
 
 				boolean distinct = selectResult.isDistinct();
 				boolean ordered = selectResult.isOrdered();
-				queryResult = queryResult + "<results distinct=\"" + distinct
-						+ "\"" + " ordered=\"" + ordered + "\">";
-				queryResult = queryResult + "<head>";
+				queryResult = queryResult + "<results distinct=\"" + distinct //$NON-NLS-1$
+				+ "\"" + " ordered=\"" + ordered + "\">"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				queryResult = queryResult + "<head>"; //$NON-NLS-1$
 				for (String binding : bindingNames) {
-					queryResult = queryResult + "<variable name=\"" + binding
-							+ "\"/>";
+					queryResult = queryResult + "<variable name=\"" + binding //$NON-NLS-1$
+					+ "\"/>"; //$NON-NLS-1$
 				}
-				queryResult = queryResult + "</head>";
+				queryResult = queryResult + "</head>"; //$NON-NLS-1$
 				try {
 					if (selectResult.hasNext()) {
 						try {
@@ -573,28 +630,28 @@ public class SemanticBindingService extends Application {
 								while (iterator.hasNext()) {
 									Binding next2 = iterator.next();
 									queryResult = queryResult
-											+ "<binding name= \""
-											+ next2.getName() + "\"><uri>"
-											+ next2.getValue()
-											+ "</uri></binding>";
+									+ "<binding name= \"" //$NON-NLS-1$
+									+ next2.getName() + "\"><uri>" //$NON-NLS-1$
+									+ next2.getValue()
+									+ "</uri></binding>"; //$NON-NLS-1$
 								}
 
 							}
 						} catch (QueryEvaluationException e1) {
 							java.util.logging.Logger.getLogger(
-									"org.mortbay.log").log(
-									Level.WARNING,
-									"QueryEvaluationException: "
+									"org.mortbay.log").log( //$NON-NLS-1$
+											Level.WARNING,
+											"QueryEvaluationException: " //$NON-NLS-1$
 											+ e1.toString());
 							throw e1;
 						}
-						queryResult = queryResult + "</results></sparql>";
+						queryResult = queryResult + "</results></sparql>"; //$NON-NLS-1$
 						return queryResult;
 					}
 				} catch (QueryEvaluationException e) {
-					java.util.logging.Logger.getLogger("org.mortbay.log").log(
+					java.util.logging.Logger.getLogger("org.mortbay.log").log( //$NON-NLS-1$
 							Level.WARNING,
-							"QueryEvaluationException: " + e.toString());
+							"QueryEvaluationException: " + e.toString()); //$NON-NLS-1$
 					throw e;
 				}
 			}
@@ -613,14 +670,14 @@ public class SemanticBindingService extends Application {
 	 * @throws SemanticBindingNotFoundException
 	 */
 	public Set<URI> getAllBindings() throws SemanticBindingException,
-			SemanticBindingNotFoundException {
+	SemanticBindingNotFoundException {
 		if (datasetService == null) {
 			initializeDatabase();
 		}
 		Set<URI> storedNamedGraphs = null;
 		try {
 			storedNamedGraphs = datasetService.getModelService()
-					.getStoredNamedGraphs();
+			.getStoredNamedGraphs();
 
 		} catch (Exception e) {
 			throw new SemanticBindingException(e);
@@ -649,10 +706,10 @@ public class SemanticBindingService extends Application {
 		}
 //		openAllGraphs();
 		java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
-				"querying all of the bindings");
+		"querying all of the bindings"); //$NON-NLS-1$
 		Set<URI> storedNamedGraphs = null;
 		URI allGraphs = datasetService.getValueFactory().createURI(
-				"http://openanzo.org/namedGraphs/reserved/namedGraphs/ALL");
+		"http://openanzo.org/namedGraphs/reserved/namedGraphs/ALL"); //$NON-NLS-1$
 		String queryResult = new String();
 		// try {
 		// storedNamedGraphs = datasetService.getModelService()
@@ -665,8 +722,8 @@ public class SemanticBindingService extends Application {
 		QueryResult result = null;
 		try {result = datasetService.getModelService().executeQuery(Collections.singleton(Constants.allNamedGraphsUriURI),
 				Collections.<URI> emptySet(), query);
-//			result = datasetService.execQuery(Collections.singleton(Constants.allNamedGraphsUriURI),
-//					Collections.<URI> emptySet(), query);
+//		result = datasetService.execQuery(Collections.singleton(Constants.allNamedGraphsUriURI),
+//		Collections.<URI> emptySet(), query);
 		} catch (Exception e) {
 			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
 					e.toString());
@@ -678,9 +735,9 @@ public class SemanticBindingService extends Application {
 			Collection<Statement> constructResult = result.getConstructResult();
 			if (!constructResult.isEmpty()) {
 				for (Statement statement : constructResult) {
-					queryResult = queryResult + statement.getSubject() + " "
-							+ statement.getPredicate() + " "
-							+ statement.getObject() + "\n";
+					queryResult = queryResult + statement.getSubject() + " " //$NON-NLS-1$
+					+ statement.getPredicate() + " " //$NON-NLS-1$
+					+ statement.getObject() + "\n"; //$NON-NLS-1$
 				}
 				return queryResult;
 			}
@@ -688,9 +745,9 @@ public class SemanticBindingService extends Application {
 			Collection<Statement> describeResult = result.getDescribeResult();
 			if (!describeResult.isEmpty()) {
 				for (Statement statement : describeResult) {
-					queryResult = queryResult + statement.getSubject() + " "
-							+ statement.getPredicate() + " "
-							+ statement.getObject() + "\n";
+					queryResult = queryResult + statement.getSubject() + " " //$NON-NLS-1$
+					+ statement.getPredicate() + " " //$NON-NLS-1$
+					+ statement.getObject() + "\n"; //$NON-NLS-1$
 				}
 				return queryResult;
 			}
@@ -704,9 +761,9 @@ public class SemanticBindingService extends Application {
 						Iterator<Binding> iterator = next.iterator();
 						while (iterator.hasNext()) {
 							Binding next2 = iterator.next();
-							queryResult = queryResult + "Name: "
-									+ next2.getName() + " Value: "
-									+ next2.getValue() + "\n";
+							queryResult = queryResult + "Name: " //$NON-NLS-1$
+							+ next2.getName() + " Value: " //$NON-NLS-1$
+							+ next2.getValue() + "\n"; //$NON-NLS-1$
 						}
 
 					}
@@ -734,11 +791,11 @@ public class SemanticBindingService extends Application {
 		StatementCollector sc = new StatementCollector();
 		try {
 			RDFParser parser = Rio.createParser(RDFFormat
-					.forFileName("initializeNew.nt"));
+					.forFileName("initializeNew.nt")); //$NON-NLS-1$
 			InputStream initializationStream = SemanticBindingService.class
-					.getClassLoader().getResourceAsStream("initializeNew.nt");
+			.getClassLoader().getResourceAsStream("initializeNew.nt"); //$NON-NLS-1$
 			parser.setRDFHandler(sc);
-			parser.parse(initializationStream, "");
+			parser.parse(initializationStream, ""); //$NON-NLS-1$
 			datasetService.getModelService().reset(sc.getStatements());
 		} catch (UnsupportedRDFormatException mse) {
 			java.util.logging.Logger.getLogger(LOGGER_NAME).log(Level.WARNING,
@@ -775,18 +832,19 @@ public class SemanticBindingService extends Application {
 	 * this is invoked prior to sending the graph to S-ogsa for storage
 	 * @param rdfContent the original, un-annotated graph -- typically a Karma-generated user event
 	 * @return the input graph, augmented with semantic annotations
+	 * @throws AnzoException 
 	 */
-	 public String annotateRDF(String rdfContent) {
-	
-		 if (datasetService == null) {
-			 initializeDatabase();
-		 }
-		 
-		 OPMGraphAnnotator annotator = new OPMGraphAnnotator(datasetService);
-		 
-		 return annotator.annotateRDF(rdfContent);
-		 
-		 
-	 }
-	 
+	public LocalGraph annotateRDF(String rdfContent) throws AnzoException {
+
+		if (datasetService == null) {
+			initializeDatabase();
+		}
+
+		if (annotator == null) annotator = new OPMGraphAnnotator(datasetService);
+
+		return annotator.annotateRDF(rdfContent);
+
+
+	}
+
 }

@@ -18,6 +18,7 @@ public class Util {
 
 	
 	public static String textFileToContent(String file) {
+		
 		InputStream resourceAsStream = SOGSAClient.class.getClassLoader()
 				.getResourceAsStream(file);
 		String rdfString = new String();
