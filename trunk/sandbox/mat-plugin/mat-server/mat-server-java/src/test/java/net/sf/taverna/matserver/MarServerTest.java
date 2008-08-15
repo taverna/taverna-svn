@@ -1,5 +1,7 @@
 package net.sf.taverna.matserver;
 
+import net.sf.taverna.matlabactivity.matserver.api.MatArray;
+import net.sf.taverna.matlabactivity.matserver.api.MatEngine;
 import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.Map;

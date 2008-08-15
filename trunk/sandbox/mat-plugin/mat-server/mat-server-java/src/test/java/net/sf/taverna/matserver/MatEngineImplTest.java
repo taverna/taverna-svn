@@ -1,9 +1,12 @@
 package net.sf.taverna.matserver;
 
+import net.sf.taverna.matlabactivity.matserver.api.MatArray;
+import net.sf.taverna.matlabactivity.matserver.api.MatEngine;
 import java.util.Map;
 import java.util.Arrays;
 import junit.framework.TestCase;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -422,5 +425,129 @@ public class MatEngineImplTest extends TestCase {
         MatArray glados = outs.get("GLaDOS");
         assertEquals(expGlados, glados);
 
+    }
+
+    @Test
+    public void testInt8Arrays() {
+        MatArray ma1 = new MatArray();
+        ma1.setType(MatArray.INT8_TYPE);
+        ma1.setDimensions(new int[]{1, 1});
+        ma1.setInt8DataRe(new byte[]{41});
+
+        engine.setVar("ma1", ma1);
+        engine.setOutputNames(new String[]{"ma1", "ma2"});
+
+        engine.execute("ma2=int8(double(ma1)+1);");
+
+        Map<String, MatArray> outs = engine.getOutputVars();
+
+        assertEquals(ma1, outs.get("ma1"));
+
+        MatArray expectedMa2 = new MatArray();
+        expectedMa2.setType(MatArray.INT8_TYPE);
+        expectedMa2.setDimensions(new int[]{1, 1});
+        expectedMa2.setInt8DataRe(new byte[]{42});
+
+        assertEquals(expectedMa2, outs.get("ma2"));
+    }
+
+    @Test
+    public void testInt16Arrays() {
+        MatArray ma1 = new MatArray();
+        ma1.setType(MatArray.INT16_TYPE);
+        ma1.setDimensions(new int[]{1, 1});
+        ma1.setInt16DataRe(new short[]{41});
+
+        engine.setVar("ma1", ma1);
+        engine.setOutputNames(new String[]{"ma1", "ma2"});
+
+        engine.execute("ma2=int16(double(ma1)+1);");
+
+        Map<String, MatArray> outs = engine.getOutputVars();
+
+        assertEquals(ma1, outs.get("ma1"));
+
+        MatArray expectedMa2 = new MatArray();
+        expectedMa2.setType(MatArray.INT16_TYPE);
+        expectedMa2.setDimensions(new int[]{1, 1});
+        expectedMa2.setInt16DataRe(new short[]{42});
+
+        assertEquals(expectedMa2, outs.get("ma2"));
+    }
+
+    @Test
+    public void testInt32Arrays() {
+        MatArray ma1 = new MatArray();
+        ma1.setType(MatArray.INT32_TYPE);
+        ma1.setDimensions(new int[]{1, 1});
+        ma1.setInt32DataRe(new int[]{41});
+
+        engine.setVar("ma1", ma1);
+        engine.setOutputNames(new String[]{"ma1", "ma2"});
+
+        engine.execute("ma2=int32(double(ma1)+1);");
+
+        Map<String, MatArray> outs = engine.getOutputVars();
+
+        assertEquals(ma1, outs.get("ma1"));
+
+        MatArray expectedMa2 = new MatArray();
+        expectedMa2.setType(MatArray.INT32_TYPE);
+        expectedMa2.setDimensions(new int[]{1, 1});
+        expectedMa2.setInt32DataRe(new int[]{42});
+
+        assertEquals(expectedMa2, outs.get("ma2"));
+    }
+    
+    @Test
+    public void testInt64Arrays() {
+        MatArray ma1 = new MatArray();
+        ma1.setType(MatArray.INT64_TYPE);
+        ma1.setDimensions(new int[]{1, 1});
+        ma1.setInt64DataRe(new long[]{41});
+
+        engine.setVar("ma1", ma1);
+        engine.setOutputNames(new String[]{"ma1", "ma2"});
+
+        engine.execute("ma2=int64(double(ma1)+1);");
+
+        Map<String, MatArray> outs = engine.getOutputVars();
+
+        System.err.println("Ma1:\n"+outs.get("ma1"));
+        System.err.println("Ma2:\n"+outs.get("ma2"));
+        
+        assertEquals(ma1, outs.get("ma1"));
+
+        MatArray expectedMa2 = new MatArray();
+        expectedMa2.setType(MatArray.INT64_TYPE);
+        expectedMa2.setDimensions(new int[]{1, 1});
+        expectedMa2.setInt64DataRe(new long[]{42});
+
+        assertEquals(expectedMa2, outs.get("ma2"));
+    }
+    
+    @Test
+    public void testUint8Arrays() {
+        MatArray ma1=new MatArray();
+        ma1.setType(MatArray.UINT8_TYPE);
+        ma1.setType(MatArray.UINT8_TYPE);
+        ma1.setDimensions(new int[]{1,1});
+        ma1.setInt16DataRe(new short[]{41});
+        
+        engine.setVar("ma1", ma1);
+        engine.setOutputNames(new String[]{"ma1", "ma2"});
+
+        engine.execute("ma2=int64(double(ma1)+1);");
+
+        Map<String, MatArray> outs = engine.getOutputVars();
+
+        assertEquals(ma1, outs.get("ma1"));
+
+        MatArray expectedMa2 = new MatArray();
+        expectedMa2.setType(MatArray.UINT8_TYPE);
+        expectedMa2.setDimensions(new int[]{1, 1});
+        expectedMa2.setInt16DataRe(new short[]{42});
+
+        assertEquals(expectedMa2, outs.get("ma2"));
     }
 }

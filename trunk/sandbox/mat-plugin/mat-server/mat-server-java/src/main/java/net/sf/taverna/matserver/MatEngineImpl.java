@@ -1,5 +1,7 @@
 package net.sf.taverna.matserver;
 
+import net.sf.taverna.matlabactivity.matserver.api.MatEngine;
+import net.sf.taverna.matlabactivity.matserver.api.MatArray;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,6 +51,7 @@ public class MatEngineImpl implements MatEngine {
     }
 
     public Map<String, MatArray> getOutputVars() {
+        System.err.println("Engine: outputs:"+outputs.toString());
         return outputs;
     }
 
