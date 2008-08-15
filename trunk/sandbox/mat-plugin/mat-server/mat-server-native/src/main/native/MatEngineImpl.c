@@ -83,7 +83,7 @@ JNIEXPORT void JNICALL Java_net_sf_taverna_matserver_MatEngineImpl_execute(JNIEn
         (*env)->ReleaseStringUTFChars(env, jname, name);
         matArray = mtojArray(env, mxarr);
         mxDestroyArray(mxarr); /*XXX ???*/
-        
+
         (*env)->CallVoidMethod(env, this, matengineimpl_setOutputVarMID, jname, matArray);
         (*env)->DeleteLocalRef(env, jname);
         (*env)->DeleteLocalRef(env, matArray);
@@ -110,7 +110,7 @@ JNIEXPORT void JNICALL Java_net_sf_taverna_matserver_MatEngineImpl_initIDs(JNIEn
     matEngineImplClass = (*env)->NewGlobalRef(env, tmpClassRef);
     if (matEngineImplClass == NULL)
         return;
-    tmpClassRef = (*env)->FindClass(env, "net/sf/taverna/matserver/MatArray");
+    tmpClassRef = (*env)->FindClass(env, "net/sf/taverna/matlabactivity/matserver/api/MatArray");
     if (tmpClassRef == NULL)
         return;
     matArrayClass = (*env)->NewGlobalRef(env, tmpClassRef);
@@ -134,7 +134,7 @@ JNIEXPORT void JNICALL Java_net_sf_taverna_matserver_MatEngineImpl_initIDs(JNIEn
     matarray_double_data_imFID = (*env)->GetFieldID(env, matArrayClass, "doubleDataIm", "[D");
     matarray_char_dataFID = (*env)->GetFieldID(env, matArrayClass, "charData", "[Ljava/lang/String;");
     matarray_logical_dataFID = (*env)->GetFieldID(env, matArrayClass, "logicalData", "[Z");
-    matarray_cell_dataFID = (*env)->GetFieldID(env, matArrayClass, "cellData", "[Lnet/sf/taverna/matserver/MatArray;");
+    matarray_cell_dataFID = (*env)->GetFieldID(env, matArrayClass, "cellData", "[Lnet/sf/taverna/matlabactivity/matserver/api/MatArray;");
     matarray_field_namesFID = (*env)->GetFieldID(env, matArrayClass, "fieldNames", "[Ljava/lang/String;");
     matarray_single_data_reFID = (*env)->GetFieldID(env, matArrayClass, "singleDataRe", "[F");
     matarray_int8_data_reFID = (*env)->GetFieldID(env, matArrayClass, "int8DataRe", "[B");
@@ -149,7 +149,7 @@ JNIEXPORT void JNICALL Java_net_sf_taverna_matserver_MatEngineImpl_initIDs(JNIEn
     matarray_isCharMID = (*env)->GetMethodID(env, matArrayClass, "checkChar", "()Z");
     matarray_isStructMID = (*env)->GetMethodID(env, matArrayClass, "checkStruct", "()Z");
     matarray_isCellMID = (*env)->GetMethodID(env, matArrayClass, "checkCell", "()Z");
-    matarray_getFieldMID = (*env)->GetMethodID(env, matArrayClass, "getField", "(Ljava/lang/String;I)Lnet/sf/taverna/matserver/MatArray;");
+    matarray_getFieldMID = (*env)->GetMethodID(env, matArrayClass, "getField", "(Ljava/lang/String;I)Lnet/sf/taverna/matlabactivity/matserver/api/MatArray;");
     matarray_setMaxNonZeroMID = (*env)->GetMethodID(env, matArrayClass, "setMaxNonZero", "(I)V");
     matarray_getNumberOfElementsMID = (*env)->GetMethodID(env, matArrayClass, "numberOfElements", "()I"); /*XXX fix naming!!!!*/
 
@@ -172,12 +172,12 @@ JNIEXPORT void JNICALL Java_net_sf_taverna_matserver_MatEngineImpl_initIDs(JNIEn
 
 
     /*MatEngineImpl ids*/
-    matengineimpl_getVarMID = (*env)->GetMethodID(env, matEngineImplClass, "getVar", "(Ljava/lang/String;)Lnet/sf/taverna/matserver/MatArray;");
-    matengineimpl_setVarMID = (*env)->GetMethodID(env, matEngineImplClass, "setVar", "(Ljava/lang/String;Lnet/sf/taverna/matserver/MatArray;)V");
+    matengineimpl_getVarMID = (*env)->GetMethodID(env, matEngineImplClass, "getVar", "(Ljava/lang/String;)Lnet/sf/taverna/matlabactivity/matserver/api/MatArray;");
+    matengineimpl_setVarMID = (*env)->GetMethodID(env, matEngineImplClass, "setVar", "(Ljava/lang/String;Lnet/sf/taverna/matlabactivity/matserver/api/MatArray;)V");
     matengineimpl_getVarNamesMID = (*env)->GetMethodID(env, matEngineImplClass, "getVarNames", "()[Ljava/lang/String;");
-    matengineimpl_getVarValuesMID = (*env)->GetMethodID(env, matEngineImplClass, "getVarValues", "()[Lnet/sf/taverna/matserver/MatArray;");
+    matengineimpl_getVarValuesMID = (*env)->GetMethodID(env, matEngineImplClass, "getVarValues", "()[Lnet/sf/taverna/matlabactivity/matserver/api/MatArray;");
     matengineimpl_getOutputNamesMID = (*env)->GetMethodID(env, matEngineImplClass, "getOutputNames", "()[Ljava/lang/String;");
-    matengineimpl_setOutputVarMID = (*env)->GetMethodID(env, matEngineImplClass, "setOutputVar", "(Ljava/lang/String;Lnet/sf/taverna/matserver/MatArray;)V");
+    matengineimpl_setOutputVarMID = (*env)->GetMethodID(env, matEngineImplClass, "setOutputVar", "(Ljava/lang/String;Lnet/sf/taverna/matlabactivity/matserver/api/MatArray;)V");
 
     setError(OK);
 }

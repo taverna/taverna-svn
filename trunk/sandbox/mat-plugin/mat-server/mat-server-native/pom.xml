@@ -19,7 +19,7 @@
     <build>
         <directory>../../target</directory>
         <!--outputDirectory>../target</outputDirectory-->
-        <testOutputDirectory>../target</testOutputDirectory>
+        <testOutputDirectory>../../target</testOutputDirectory>
     </build>
     <profiles>
         <profile>
