@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.sf.taverna.t2.activities.matlab;
 
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortsDefinitionBean;
@@ -10,29 +6,26 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortsDe
  * A configuration bean specific to the MatPlugin activity.
  * @author petarj
  */
-public class MatActivityConfigurationBean extends ActivityPortsDefinitionBean
-{
+public class MatActivityConfigurationBean extends ActivityPortsDefinitionBean {
 
     private String sctipt;
-    private MatPluginConnectionSettings connectionSettings;
+    private MatActivityConnectionSettings connectionSettings;
 
-    public String getSctipt()
-    {
+
+    public String getSctipt() {
         return sctipt;
     }
 
-    public void setSctipt(String sctipt)
-    {
+    public void setSctipt(String sctipt) {
         this.sctipt = sctipt;
     }
 
-    public MatPluginConnectionSettings getConnectionSettings()
-    {
+    public MatActivityConnectionSettings getConnectionSettings() {
         return connectionSettings;
     }
 
-    public void setConnectionSettings(MatPluginConnectionSettings connectionSettings)
-    {
+    public void setConnectionSettings(
+            MatActivityConnectionSettings connectionSettings) {
         this.connectionSettings = connectionSettings;
     }
 }

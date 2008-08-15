@@ -1,85 +1,117 @@
 package net.sf.taverna.t2.activities.matlab;
 
+import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.sf.taverna.t2.cloudone.datamanager.EmptyListException;
-import net.sf.taverna.t2.cloudone.datamanager.MalformedListException;
-import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
-import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
-import net.sf.taverna.t2.cloudone.datamanager.UnsupportedObjectTypeException;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
+import net.sf.taverna.matlabactivity.matserver.api.MatArray;
+import net.sf.taverna.matlabactivity.matserver.api.MatEngine;
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.ReferenceServiceException;
+import net.sf.taverna.t2.reference.T2Reference;
+import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 
 /**
  * An Activity providing Matlab Engine access functionality.
  * @author petarj
  */
-public class MatActivity extends AbstractAsynchronousActivity<MatActivityConfigurationBean>
-{
+public class MatActivity extends AbstractAsynchronousActivity<MatActivityConfigurationBean> {
 
     private MatActivityConfigurationBean configurationBean;
+    //private MatEngine engine;
+    private MatServerConnectionManager connectionManager;
 
-    public MatActivity()
-    {
+    public MatActivity() {
+        connectionManager = new MatServerConnectionManager();
+        MatActivityConnectionSettings connectionSettings=new MatActivityConnectionSettings();
+        connectionSettings.setHost("localhost");
+        connectionSettings.setPort(MatActivityConnectionSettings.DEFAULT_PORT);
+        
+        connectionManager.configure(connectionSettings);
     }
 
     @Override
-    public void configure(MatActivityConfigurationBean conf) throws ActivityConfigurationException
-    {
+    public void configure(MatActivityConfigurationBean conf) throws
+            ActivityConfigurationException {
         this.configurationBean = conf;
         configurePorts(configurationBean);
     }
 
     @Override
-    public MatActivityConfigurationBean getConfiguration()
-    {
-        return this.configurationBean;
+    public MatActivityConfigurationBean getConfiguration() {
+        return configurationBean;
     }
 
     @Override
-    public void executeAsynch(final Map<String, EntityIdentifier> data, final AsynchronousActivityCallback callback)
-    {
-        callback.requestRun(new Runnable()
-        {
+    public void executeAsynch(final Map<String, T2Reference> data,
+            final AsynchronousActivityCallback callback) {
+        callback.requestRun(new Runnable() {
 
-            DataFacade dataFacade = new DataFacade(callback.getContext().getDataManager());
-            Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
+            public void run() {
+                try {
+                    //synchronized (engine) {
+                        ReferenceService referenceService = callback.getContext().
+                                getReferenceService();
+                        Map<String, T2Reference> outputData = new HashMap<String, T2Reference>();
 
-            public void run()
-            {
-                try
-                {
-                    Object exampleInput = dataFacade.resolve(data.get("example_input"), String.class);
+        System.err.println(">><>>EXECUTE ASYNCH");
+                        MatEngine engine = connectionManager.getEngine();
+if(engine!=null) System.err.println("engine nije null");
+                        for (String inputName : data.keySet()) {
+                            ActivityInputPort inputPort = getInputPort(inputName);
+                            MatArray input = (MatArray) referenceService.
+                                    renderIdentifier(data.get(inputName),
+                                    inputPort.getTranslatedElementClass(),
+                                    callback.getContext());
+System.err.println(">>>>>>>["+inputName+"]:"+input);
+                            engine.setVar(inputName, input);
+                        }
+                        ArrayList<String> outputNamesList = new ArrayList<String>();
+                        for (OutputPort outputPort : getOutputPorts()) {
+                            outputNamesList.add(outputPort.getName());
+                        }
+                        System.err.println("[[[[[[[[[[[["+outputNamesList.toString());
+                        engine.setOutputNames(outputNamesList.toArray(
+                                new String[]{}));
+System.err.println("%%%%%%%%script: "+configurationBean.getSctipt());
+                        engine.execute(configurationBean.getSctipt());
+                        Map<String, MatArray> outs = engine.getOutputVars();
+System.err.println("outs: "+outs);
+                        for (OutputPort outputPort : getOutputPorts()) {
+                            String name = outputPort.getName();
+                            Object value = outs.get(name);
+System.err.println("<<<<<<<<<["+name+"]:"+value);
+                            if (value != null) {
+                                outputData.put(name, referenceService.register(
+                                        value,
+                                        outputPort.getDepth(), true,
+                                        callback.getContext()));
+                            }
+                        }
 
-                    String exampleOutput = exampleInput + "_example";
-
-                    outputData.put("example_output", dataFacade.register(exampleOutput));
-
-                    callback.receiveResult(outputData, new int[0]);
-
-                } catch (EmptyListException ex)
-                {
-                    Logger.getLogger(MatActivity.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (MalformedListException ex)
-                {
-                    Logger.getLogger(MatActivity.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (UnsupportedObjectTypeException ex)
-                {
-                    Logger.getLogger(MatActivity.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (RetrievalException ex)
-                {
-                    Logger.getLogger(MatActivity.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (NotFoundException ex)
-                {
-                    Logger.getLogger(MatActivity.class.getName()).log(Level.SEVERE, null, ex);
+                        engine.clearVars();
+                        callback.receiveResult(outputData, new int[0]);
+                    //}
+                } catch (ReferenceServiceException referenceServiceException) {
+                    callback.fail("Error accessing input/output data",
+                            referenceServiceException);
+                } catch (MalformedURLException ex) {
+                    callback.fail("Error accessing engine", ex);
                 }
-
             }
         });
+    }
+
+    private ActivityInputPort getInputPort(String name) {
+        for (ActivityInputPort port : getInputPorts()) {
+            if (port.getName().equals(name)) {
+                return port;
+            }
+        }
+        return null;
     }
 }

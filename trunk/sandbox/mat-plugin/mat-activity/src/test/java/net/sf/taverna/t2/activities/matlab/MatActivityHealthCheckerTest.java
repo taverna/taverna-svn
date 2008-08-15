@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 
 /**
  * Unit tests for MatActivityHealthCkecker
- * @author user
+ * @author petarj
  */
 public class MatActivityHealthCheckerTest
 {

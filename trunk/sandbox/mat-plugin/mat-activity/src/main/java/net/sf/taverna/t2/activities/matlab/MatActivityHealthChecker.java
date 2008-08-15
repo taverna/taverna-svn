@@ -5,7 +5,7 @@ import net.sf.taverna.t2.workflowmodel.health.HealthReport;
 
 /**
  * A health checker for MatActivity.
- * @author user
+ * @author petarj
  */
 public class MatActivityHealthChecker implements HealthChecker<MatActivity>
 {
