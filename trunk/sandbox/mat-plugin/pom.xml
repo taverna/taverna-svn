@@ -1,23 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.taverna.matlabactivity</groupId>
 	<artifactId>mat-plugin</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>MatActivity and MatServer</name>
-	<description>
-		Execute MATLAB® scripts on a MatServer execution server,
+	<description>Execute MATLAB® scripts on a MatServer execution server,
 		submitted through a MatActivity. MatServer connects to an
 		locally installed MATLAB® installation. Comparable to the RShell
 		activity. MATLAB® is a registered trademark of The MathWorks,
-		Inc.
-	</description>
-	<url>
-		http://code.google.com/soc/2008/omii/appinfo.html?csaid=534273C3E4FFDEAC
-	</url>
+		Inc.</description>
+	<url>http://code.google.com/soc/2008/omii/appinfo.html?csaid=534273C3E4FFDEAC</url>
 	<issueManagement>
 		<system>jira</system>
 		<url>http://www.mygrid.org.uk/dev/issues/</url>
@@ -80,7 +74,7 @@
 	</build>
 	<repositories>
 		<repository>
-			<releases />
+			<releases/>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -92,12 +86,10 @@
 			<releases>
 				<enabled>false</enabled>
 			</releases>
-			<snapshots />
+			<snapshots/>
 			<id>mygrid-snapshot-repository</id>
 			<name>myGrid Snapshot Repository</name>
-			<url>
-				http://www.mygrid.org.uk/maven/snapshot-repository
-			</url>
+			<url>http://www.mygrid.org.uk/maven/snapshot-repository</url>
 		</repository>
 		<repository>
 			<id>mobycentral</id>
@@ -107,7 +99,6 @@
 				<enabled>false</enabled>
 			</snapshots>
 			<releases>
-				<enabled>true</enabled>
 			</releases>
 		</repository>
 
@@ -117,7 +108,7 @@
 			<releases>
 				<enabled>false</enabled>
 			</releases>
-			<snapshots />
+			<snapshots/>
 			<id>Maven Snapshots</id>
 			<url>http://snapshots.maven.codehaus.org/maven2/</url>
 		</pluginRepository>
@@ -125,15 +116,13 @@
 			<releases>
 				<enabled>false</enabled>
 			</releases>
-			<snapshots />
+			<snapshots/>
 			<id>mygrid-snapshot-repository</id>
 			<name>myGrid Snapshot Repository</name>
-			<url>
-				http://www.mygrid.org.uk/maven/snapshot-repository
-			</url>
+			<url>http://www.mygrid.org.uk/maven/snapshot-repository</url>
 		</pluginRepository>
 		<pluginRepository>
-			<releases />
+			<releases/>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -145,9 +134,7 @@
 	<reporting>
 		<plugins>
 			<plugin>
-				<artifactId>
-					maven-project-info-reports-plugin
-				</artifactId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
 				<reportSets>
 					<reportSet>
 						<reports>
@@ -182,27 +169,19 @@
 		</plugins>
 	</reporting>
 	<scm>
-		<connection>
-			scm:cvs:pserver:anonymous@taverna.cvs.sourceforge.net:/cvsroot/taverna:sandbox/matlabactivity
-		</connection>
-		<url>
-			http://taverna.cvs.sourceforge.net/taverna/sandbox/matlabactivity/
-		</url>
+		<connection>scm:cvs:pserver:anonymous@taverna.cvs.sourceforge.net:/cvsroot/taverna:sandbox/matlabactivity</connection>
+		<url>http://taverna.cvs.sourceforge.net/taverna/sandbox/matlabactivity/</url>
 	</scm>
 	<distributionManagement>
 		<repository>
 			<id>mygrid-repository</id>
 			<name>myGrid Repository</name>
-			<url>
-				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/repository
-			</url>
+			<url>scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/repository</url>
 		</repository>
 		<snapshotRepository>
 			<id>mygrid-snapshot-repository</id>
 			<name>myGrid Snapshot Repository</name>
-			<url>
-				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/snapshot-repository
-			</url>
+			<url>scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/snapshot-repository</url>
 		</snapshotRepository>
 	</distributionManagement>
 
@@ -237,9 +216,12 @@
 	</dependencyManagement>
 
 	<modules>
-		<module>mat-server</module>
+		<!--module>mat-server</module-->
 		<module>mat-activity</module>
-		<module>mat-t2-gui</module>
-	</modules>
+		<!--module>mat-t2-gui</module-->
+        <module>mat-activity-ui</module>
+    <!--module>mat-reference</module-->
+    <module>mat-server-api</module>
+  </modules>
 
 </project>
