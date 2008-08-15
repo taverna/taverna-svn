@@ -1587,7 +1587,7 @@ jobject mtojUint32Array(JNIEnv* env, mxArray* mxarr) {
     if (jpr == NULL)
         return NULL;
     (*env)->SetLongArrayRegion(env, jpr, 0, nelements, spr);
-    (*env)->SetObjectField(env, matarray, matarray_int32_data_reFID, jpr);
+    (*env)->SetObjectField(env, matarray, matarray_int64_data_reFID, jpr);
     (*env)->DeleteLocalRef(env, jpr);
 
     return matarray;
