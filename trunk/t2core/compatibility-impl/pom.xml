@@ -10,12 +10,8 @@
 	<artifactId>compatibility-impl</artifactId>
 	<version>0.3-SNAPSHOT</version>
 	<name>Compatibility Implementation</name>
-	<description>
-		Translator between Taverna 1 ScuflModel instances and Taverna 2
-		Dataflow instances
-	</description>
-	
-	
+	<description> Translator between Taverna 1 ScuflModel instances and
+		Taverna 2 Dataflow instances</description>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
@@ -34,9 +30,22 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>beanshell-activity-translator</artifactId>
+			<artifactId>beanshell-activity-translator
+			</artifactId>
 			<version>0.3-SNAPSHOT</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
@@ -46,7 +55,8 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>biomart-activity-translator</artifactId>
+			<artifactId>biomart-activity-translator
+			</artifactId>
 			<version>0.3-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
@@ -58,7 +68,8 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>soaplab-activity-translator</artifactId>
+			<artifactId>soaplab-activity-translator
+			</artifactId>
 			<version>0.3-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
@@ -70,54 +81,151 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>stringconstant-activity-translator</artifactId>
+			<artifactId>stringconstant-activity-translator
+			</artifactId>
 			<version>0.3-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>stringconstant-activity</artifactId>
+			<artifactId>stringconstant-activity
+			</artifactId>
 			<version>0.3-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>uk.org.mygrid.taverna.processors</groupId>
-			<artifactId>taverna-beanshell-processor</artifactId>
+			<groupId>uk.org.mygrid.taverna.processors
+			</groupId>
+			<artifactId>taverna-beanshell-processor
+			</artifactId>
 			<version>1.7.1.0</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>uk.org.mygrid.taverna.processors</groupId>
-			<artifactId>taverna-biomart-processor</artifactId>
+			<groupId>uk.org.mygrid.taverna.processors
+			</groupId>
+			<artifactId>taverna-biomart-processor
+			</artifactId>
 			<version>1.7.1.0</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>uk.org.mygrid.taverna.processors</groupId>
-			<artifactId>taverna-soaplab-processor</artifactId>
+			<groupId>uk.org.mygrid.taverna.processors
+			</groupId>
+			<artifactId>taverna-soaplab-processor
+			</artifactId>
 			<version>1.7.1.0</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>uk.org.mygrid.taverna.processors</groupId>
+			<groupId>uk.org.mygrid.taverna.processors
+			</groupId>
 			<artifactId>taverna-localworkers</artifactId>
 			<version>1.7.1.0</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>uk.org.mygrid.taverna.scufl</groupId>
+			<groupId>uk.org.mygrid.taverna.scufl
+			</groupId>
 			<artifactId>scufl-model</artifactId>
 			<version>1.7.1.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>uk.org.mygrid.taverna.processors</groupId>
-			<artifactId>taverna-stringconstant-processor</artifactId>
+			<groupId>uk.org.mygrid.taverna.processors
+			</groupId>
+			<artifactId>taverna-stringconstant-processor
+			</artifactId>
 			<version>1.7.1.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>uk.org.mygrid.taverna.processors</groupId>
+			<groupId>uk.org.mygrid.taverna.processors
+			</groupId>
 			<artifactId>taverna-java-processor</artifactId>
 			<version>1.7.1.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 </project>
