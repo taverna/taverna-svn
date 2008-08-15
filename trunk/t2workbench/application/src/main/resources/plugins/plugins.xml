@@ -41,8 +41,10 @@
 				disabled: Connection time out
 				<repository>http://maven.sateh.com/repository/</repository>
 			-->
+			<!-- Disabled: Connection time out 
 			<repository>http://mirrors.dotsrc.org/maven2/
 			</repository>
+			-->
 			<!--
 				disabled: Bad history
 				<repository>http://mirrors.sunsite.dk/maven2/</repository>
@@ -145,8 +147,10 @@
 				disabled: Connection time out
 				<repository>http://maven.sateh.com/repository/</repository>
 			-->
+			<!-- Disabled: Connection time out 
 			<repository>http://mirrors.dotsrc.org/maven2/
 			</repository>
+			-->
 			<!--
 				disabled: Bad history
 				<repository>http://mirrors.sunsite.dk/maven2/</repository>
@@ -213,8 +217,10 @@
 				disabled: Connection time out
 				<repository>http://maven.sateh.com/repository/</repository>
 			-->
+			<!-- Disabled: Connection time out 
 			<repository>http://mirrors.dotsrc.org/maven2/
 			</repository>
+			-->
 			<!--
 				disabled: Bad history
 				<repository>http://mirrors.sunsite.dk/maven2/</repository>
