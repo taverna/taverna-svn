@@ -9,7 +9,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 /**
  *
- * @author user
+ * @author petarj
  */
 public class MatActivityItem extends AbstractActivityItem {
 

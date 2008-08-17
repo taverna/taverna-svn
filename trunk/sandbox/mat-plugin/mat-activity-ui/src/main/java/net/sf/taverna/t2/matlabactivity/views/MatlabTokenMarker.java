@@ -24,10 +24,10 @@ public class MatlabTokenMarker extends TokenMarker {
 		int offset = line.offset;
 		lastOffset = offset;
 		lastKeyword = offset;
-		int length = line.count + offset;
+		int len = line.count + offset;
 		boolean backslash = false;
 
-		loop: for (int i = offset; i < length; i++) {
+		loop: for (int i = offset; i < len; i++) {
 			int i1 = (i + 1);
 
 			char c = array[i];
@@ -45,8 +45,8 @@ public class MatlabTokenMarker extends TokenMarker {
 					else {
 						doKeyword(line, i, c);
 						addToken(i - lastOffset, token);
-						addToken(length - i, Token.COMMENT1);
-						lastOffset = lastKeyword = length;
+						addToken(len - i, Token.COMMENT1);
+						lastOffset = lastKeyword = len;
 						break loop;
 					}
 					break;
@@ -85,9 +85,9 @@ public class MatlabTokenMarker extends TokenMarker {
 
 		switch (token) {
 		case Token.NULL:
-			doKeyword(line, length, '\0');
+			doKeyword(line, len, '\0');
 		default:
-			addToken(length - lastOffset, token);
+			addToken(len - lastOffset, token);
 			break;
 		}
 
