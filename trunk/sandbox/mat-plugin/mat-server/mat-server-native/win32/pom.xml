@@ -16,6 +16,11 @@
     <dependencies>
         <dependency>
             <groupId>net.sf.taverna.matlabactivity.matserver</groupId>
+            <artifactId>mat-server-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.taverna.matlabactivity.matserver</groupId>
             <artifactId>mat-server-java</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
@@ -40,7 +45,7 @@
                     <linkerSecondaryOutputExtensions>lib</linkerSecondaryOutputExtensions>
                     <sources>
                         <source>
-                            <directory>..\src\main\native</directory>
+                            <directory>../src/main/native</directory>
                             <fileNames>
                                 <!--fileName>MatEngWrapper.c</fileName-->
                                 <fileName>MatEngineImpl.c</fileName>
@@ -48,13 +53,13 @@
                             </fileNames>
                         </source>
                         <source>
-                            <directory>${env.JAVA_HOME}\include</directory>
+                            <directory>${env.JAVA_HOME}/include</directory>
                         </source>
                         <source>
-                            <directory>${env.JAVA_HOME}\include\win32</directory>
+                            <directory>${env.JAVA_HOME}/include/win32</directory>
                         </source>
                         <source>
-                            <directory>${matlabroot}\extern\include</directory>
+                            <directory>${matlabroot}/extern/include</directory>
                         </source>
                     </sources>
                     <classifier>${classifier}</classifier>

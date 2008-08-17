@@ -19,10 +19,16 @@
             <artifactId>mat-server-java</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>net.sf.taverna.matlabactivity.matserver</groupId>
+            <artifactId>mat-server-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
     <build>
         <finalName>${artifactId}</finalName>
         <testSourceDirectory>../src/test/java</testSourceDirectory>
+        <outputDirectory>../target</outputDirectory>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -35,7 +41,22 @@
                     </compilerStartOptions>
                     <javahOS>linux</javahOS>
                     <sources>
-                        <directory>../src/main/native</directory>
+                        <source>
+                            <directory>../src/main/native</directory>
+                            <fileNames>
+                                <fileName>MatEngineImpl.c</fileName>
+                                <fileName>MatUtils.c</fileName>
+                            </fileNames>
+                        </source>
+                        <source>
+                            <directory>${env.JAVA_HOME}/include</directory>
+                        </source>
+                        <source>
+                            <directory>${env.JAVA_HOME}/include/linux</directory>
+                        </source>
+                        <source>
+                            <directory>${matlabroot}/extern/include</directory>
+                        </source>
                     </sources>
                     <linkerStartOptions>
                         <linkerStartOption>-shared -lc -ldl</linkerStartOption>
@@ -48,9 +69,12 @@
                         <goals>
                             <goal>javah</goal>
                         </goals>
-                        <!--configuration>
-                            classnames...
-                        </configuration-->
+                        <configuration>
+                            <outputDirectory>../src/main/native</outputDirectory>
+                            <classNames>
+                                <className>net.sf.taverna.matserver.MatEngineImpl</className>
+                            </classNames>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -65,4 +89,7 @@
             </plugin>
         </plugins>
     </build>
+    <properties>
+        <matlabroot>/usr/local/matlab7</matlabroot>
+    </properties>
 </project>
