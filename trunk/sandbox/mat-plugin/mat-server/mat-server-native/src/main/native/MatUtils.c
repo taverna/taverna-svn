@@ -778,7 +778,6 @@ mxArray* jtomInt64Array(JNIEnv* env, jobject matarray) {
     len = (*env)->GetArrayLength(env, matarray_pr);
     pr = (jlong*) mxCalloc(len, sizeof (jlong));
     if (pr == NULL) {
-        fprintf(stderr, ">>MARK !\n");
         setError(OUT_OF_MEMORY_ERROR);
         return NULL;
     }
@@ -786,7 +785,6 @@ mxArray* jtomInt64Array(JNIEnv* env, jobject matarray) {
     (*env)->DeleteLocalRef(env, matarray_pr);
     mxSetData(mxarr, (void*) pr);
 
-    fprintf(stderr, ">>MARK15\n");
     return mxarr;
 }
 /*
@@ -1602,13 +1600,12 @@ jobject mtojInt64Array(JNIEnv* env, mxArray* mxarr) {
     const int *dims;
     jintArray jdims;
 
-    fprintf(stderr, ">>MARK1\n");
     matarray = (*env)->NewObject(env, matArrayClass, matarray_constructorMID);
     if (matarray == NULL) {
         setError(OUT_OF_MEMORY_ERROR);
         return NULL;
     }
-    fprintf(stderr, ">>MARK2\n");
+
     typeJString = (*env)->GetStaticObjectField(env, matArrayClass, matarray_INT64_TYPE_FID);
     if (typeJString == NULL)
         return NULL;
@@ -1640,7 +1637,7 @@ jobject mtojInt64Array(JNIEnv* env, mxArray* mxarr) {
 
 /*
 jobject mtojUInt64Array(JNIEnv* env, mxArray* mxarr) {
-    TODO in 64bit architecture specific sources.
+    TODO 64bit unsigned ints in java???
 }
  */
 

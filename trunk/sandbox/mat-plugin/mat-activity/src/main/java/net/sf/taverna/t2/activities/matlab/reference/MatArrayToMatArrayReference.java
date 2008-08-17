@@ -15,13 +15,11 @@ import net.sf.taverna.t2.reference.ValueToReferenceConverterSPI;
 public class MatArrayToMatArrayReference implements ValueToReferenceConverterSPI {
 
     public boolean canConvert(Object o, ReferenceContext context) {
-        System.err.println(">>>>MatArrayToMatArrayReference->canConvert");
         return (o instanceof MatArray);
     }
 
     public ExternalReferenceSPI convert(Object o, ReferenceContext context)
             throws ValueToReferenceConversionException {
-        System.err.println(">>>>MatArrayToMatArrayReference->convert");
         MatArrayReference reference = new MatArrayReference();
         MatArray ma = (MatArray) o;
         XStream xstream = new XStream(new JettisonMappedXmlDriver());

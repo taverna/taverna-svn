@@ -51,7 +51,6 @@ public class MatEngineImpl implements MatEngine {
     }
 
     public Map<String, MatArray> getOutputVars() {
-        System.err.println("Engine: outputs:"+outputs.toString());
         return outputs;
     }
 

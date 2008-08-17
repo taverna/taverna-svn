@@ -57,34 +57,33 @@ public class MatActivity extends AbstractAsynchronousActivity<MatActivityConfigu
                         ReferenceService referenceService = callback.getContext().
                                 getReferenceService();
                         Map<String, T2Reference> outputData = new HashMap<String, T2Reference>();
-
-        System.err.println(">><>>EXECUTE ASYNCH");
+                        
                         MatEngine engine = connectionManager.getEngine();
-if(engine!=null) System.err.println("engine nije null");
+
                         for (String inputName : data.keySet()) {
                             ActivityInputPort inputPort = getInputPort(inputName);
                             MatArray input = (MatArray) referenceService.
                                     renderIdentifier(data.get(inputName),
                                     inputPort.getTranslatedElementClass(),
                                     callback.getContext());
-System.err.println(">>>>>>>["+inputName+"]:"+input);
+
                             engine.setVar(inputName, input);
                         }
                         ArrayList<String> outputNamesList = new ArrayList<String>();
                         for (OutputPort outputPort : getOutputPorts()) {
                             outputNamesList.add(outputPort.getName());
                         }
-                        System.err.println("[[[[[[[[[[[["+outputNamesList.toString());
+
                         engine.setOutputNames(outputNamesList.toArray(
                                 new String[]{}));
-System.err.println("%%%%%%%%script: "+configurationBean.getSctipt());
+
                         engine.execute(configurationBean.getSctipt());
                         Map<String, MatArray> outs = engine.getOutputVars();
-System.err.println("outs: "+outs);
+
                         for (OutputPort outputPort : getOutputPorts()) {
                             String name = outputPort.getName();
                             Object value = outs.get(name);
-System.err.println("<<<<<<<<<["+name+"]:"+value);
+
                             if (value != null) {
                                 outputData.put(name, referenceService.register(
                                         value,

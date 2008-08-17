@@ -30,11 +30,10 @@ public class MatServerConnectionManager {
         ObjectServiceFactory serviceFactory = new ObjectServiceFactory();
         Service serviceModel = serviceFactory.create(MatEngine.class);
         XFireProxyFactory proxyFactory = new XFireProxyFactory();
-System.err.println("AAAAAAAAAAAAAAAAAAAAAAABBBA");
 
         String serviceURL = "http://" + settings.getHost() + ":" + settings.
                 getPort() + "/MatEngine";
-System.err.println("****"+serviceURL);
+
         engine = (MatEngine) proxyFactory.create(serviceModel, serviceURL);
         return engine;
     }

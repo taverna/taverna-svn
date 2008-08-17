@@ -24,7 +24,6 @@ public class MatArrayReference extends AbstractExternalReference implements
     private String contents;
 
     public InputStream openStream(ReferenceContext context) {
-        System.err.println(">>>>MatArrayReference->openStream");
         try {
             return new ByteArrayInputStream(contents.getBytes(getCharset()));
         } catch (UnsupportedEncodingException ex) {
@@ -35,40 +34,33 @@ public class MatArrayReference extends AbstractExternalReference implements
     }
 
     public String getContents() {
-        System.err.println(">>>>MatArrayReference->getContents");
         return contents;
     }
 
     public void setContents(String contents) {
-        System.err.println(">>>>MatArrayReference->setContents");
         this.contents = contents;
     }
 
     @Override
     public ReferencedDataNature getDataNature() {
-        System.err.println(">>>>MatArrayReference->getDataNature");
         return ReferencedDataNature.TEXT;
     }
 
     @Override
     public String getCharset() {
-        System.err.println(">>>>MatArrayReference->getCharset");
         return "UTF-8";
     }
 
     @Override
     public float getResolutionCost() {
-        System.err.println(">>>>MatArrayReference->getResolutionCost");
         return 0.1f; //TODO revise this
     }
 
     public Class<MatArray> getValueType() {
-        System.err.println(">>>>MatArrayReference->getValueType");
         return MatArray.class;
     }
 
     public MatArray getValue() {
-        System.err.println(">>>>MatArrayReference->getValue");
         XStream xstream = new XStream(new JettisonMappedXmlDriver());
         return (MatArray) xstream.fromXML(this.contents);
     }

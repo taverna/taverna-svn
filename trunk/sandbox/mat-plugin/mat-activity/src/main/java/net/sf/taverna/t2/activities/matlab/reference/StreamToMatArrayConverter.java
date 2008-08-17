@@ -33,12 +33,10 @@ public class StreamToMatArrayConverter implements
     }
 
     public Class<MatArray> getPojoClass() {
-        System.err.println(">>>>StreamToMatArrayConverter->getPojoClass");
         return MatArray.class;
     }
 
     public MatArray renderFrom(InputStream stream) {
-        System.err.println(">>>>StreamToMatArrayConverter->renderFrom");
         BufferedReader in = new BufferedReader(new InputStreamReader(stream));
         try {
             String json = readFile(in);
