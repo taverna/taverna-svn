@@ -498,7 +498,7 @@ public class MatEngineImplTest extends TestCase {
 
         assertEquals(expectedMa2, outs.get("ma2"));
     }
-    
+
     @Test
     public void testInt64Arrays() {
         MatArray ma1 = new MatArray();
@@ -513,9 +513,9 @@ public class MatEngineImplTest extends TestCase {
 
         Map<String, MatArray> outs = engine.getOutputVars();
 
-        System.err.println("Ma1:\n"+outs.get("ma1"));
-        System.err.println("Ma2:\n"+outs.get("ma2"));
-        
+        System.err.println("Ma1:\n" + outs.get("ma1"));
+        System.err.println("Ma2:\n" + outs.get("ma2"));
+
         assertEquals(ma1, outs.get("ma1"));
 
         MatArray expectedMa2 = new MatArray();
@@ -525,19 +525,18 @@ public class MatEngineImplTest extends TestCase {
 
         assertEquals(expectedMa2, outs.get("ma2"));
     }
-    
+
     @Test
     public void testUint8Arrays() {
-        MatArray ma1=new MatArray();
+        MatArray ma1 = new MatArray();
         ma1.setType(MatArray.UINT8_TYPE);
-        ma1.setType(MatArray.UINT8_TYPE);
-        ma1.setDimensions(new int[]{1,1});
+        ma1.setDimensions(new int[]{1, 1});
         ma1.setInt16DataRe(new short[]{41});
-        
+
         engine.setVar("ma1", ma1);
         engine.setOutputNames(new String[]{"ma1", "ma2"});
 
-        engine.execute("ma2=int64(double(ma1)+1);");
+        engine.execute("ma2=uint8(double(ma1)+1);");
 
         Map<String, MatArray> outs = engine.getOutputVars();
 
@@ -549,5 +548,94 @@ public class MatEngineImplTest extends TestCase {
         expectedMa2.setInt16DataRe(new short[]{42});
 
         assertEquals(expectedMa2, outs.get("ma2"));
+    }
+
+    @Test
+    public void testUint16Arrays() {
+        MatArray ma1 = new MatArray();
+        ma1.setType(MatArray.UINT16_TYPE);
+        ma1.setDimensions(new int[]{1, 1});
+        ma1.setInt32DataRe(new int[]{41});
+
+        engine.setVar("ma1", ma1);
+        engine.setOutputNames(new String[]{"ma1", "ma2"});
+
+        engine.execute("ma2=uint16(double(ma1)+1);");
+
+        Map<String, MatArray> outs = engine.getOutputVars();
+
+        assertEquals(ma1, outs.get("ma1"));
+
+        MatArray expectedMa2 = new MatArray();
+        expectedMa2.setType(MatArray.UINT16_TYPE);
+        expectedMa2.setDimensions(new int[]{1, 1});
+        expectedMa2.setInt32DataRe(new int[]{42});
+
+        assertEquals(expectedMa2, outs.get("ma2"));
+    }
+
+    @Test
+    public void testUint32Arrays() {
+        MatArray ma1 = new MatArray();
+        ma1.setType(MatArray.UINT32_TYPE);
+        ma1.setDimensions(new int[]{1, 1});
+        ma1.setInt64DataRe(new long[]{41});
+
+        engine.setVar("ma1", ma1);
+        engine.setOutputNames(new String[]{"ma1", "ma2"});
+
+        engine.execute("ma2=uint32(double(ma1)+1);");
+
+        Map<String, MatArray> outs = engine.getOutputVars();
+
+        assertEquals(ma1, outs.get("ma1"));
+
+        MatArray expectedMa2 = new MatArray();
+        expectedMa2.setType(MatArray.UINT32_TYPE);
+        expectedMa2.setDimensions(new int[]{1, 1});
+        expectedMa2.setInt64DataRe(new long[]{42});
+
+        assertEquals(expectedMa2, outs.get("ma2"));
+    }
+
+    public void testInfsAndNaNs() {
+        MatArray doubleInf = new MatArray();
+        doubleInf.setType(MatArray.DOUBLE_TYPE);
+        doubleInf.setDimensions(new int[]{1, 2});
+        doubleInf.setDoubleDataRe(new double[]{Double.POSITIVE_INFINITY,
+                    Double.NEGATIVE_INFINITY
+                });
+
+        MatArray singleInf = new MatArray();
+        singleInf.setType(MatArray.SINGLE_TYPE);
+        singleInf.setDimensions(new int[]{1, 2});
+        singleInf.setSingleDataRe(new float[]{Float.POSITIVE_INFINITY,
+                    Float.NEGATIVE_INFINITY
+                });
+
+        MatArray doubleNaN = new MatArray();
+        doubleNaN.setType(MatArray.DOUBLE_TYPE);
+        doubleNaN.setDimensions(new int[]{1, 1});
+        doubleNaN.setDoubleDataRe(new double[]{Double.NaN});
+
+        MatArray singleNaN = new MatArray();
+        singleNaN.setType(MatArray.SINGLE_TYPE);
+        singleNaN.setDimensions(new int[]{1, 1});
+        singleNaN.setSingleDataRe(new float[]{Float.NaN});
+
+        engine.setVar("doubleInf", doubleInf);
+        engine.setVar("singleInf", singleInf);
+        engine.setVar("doubleNaN", doubleNaN);
+        engine.setVar("singleNaN", singleNaN);
+        engine.setOutputNames(new String[]{"doubleInf", "singleInf", "doubleNaN",
+                    "singleNaN"
+                });
+        engine.execute("disp('hello');");
+        Map<String,MatArray> outs=engine.getOutputVars();
+        
+        assertEquals(doubleInf, outs.get("doubleInf"));
+        assertEquals(singleInf, outs.get("singleInf"));
+        assertTrue(Double.isNaN(outs.get("doubleNaN").getDoubleDataRe()[0]));
+        assertTrue(Float.isNaN(outs.get("singleNaN").getSingleDataRe()[0]));
     }
 }

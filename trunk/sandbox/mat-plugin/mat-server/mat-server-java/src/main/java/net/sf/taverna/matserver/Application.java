@@ -22,30 +22,28 @@ public class Application extends JFrame {
     private JTextField portField;
     private JButton startButton;
     private JButton stopButton;
-    
-    public Application()
-    {
+
+    public Application() {
         super("mat-server");
         init();
-        server=new MatServer();
+        server = new MatServer();
         server.setPort(server.DEFAULT_PORT);
     }
-    
-    private void init()
-    {
+
+    private void init() {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        Container cp=getContentPane();
+        Container cp = getContentPane();
         cp.setLayout(new FlowLayout()); //TODO: make this grid layout
-        
-        portField=new JTextField();
+
+        portField = new JTextField();
         portField.setColumns(10);
         add(portField);
-        
-        startButton=new JButton("Start");
+
+        startButton = new JButton("Start");
         startButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                int port=Integer.parseInt(portField.getText());
+                int port = Integer.parseInt(portField.getText());
                 server.setPort(port);
                 try {
                     server.start();
@@ -56,8 +54,8 @@ public class Application extends JFrame {
             }
         });
         add(startButton);
-        
-        stopButton=new JButton("Stop");
+
+        stopButton = new JButton("Stop");
         stopButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -72,12 +70,12 @@ public class Application extends JFrame {
         add(stopButton);
         pack();
     }
-    
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
 
             public void run() {
-                Application app=new Application();
+                Application app = new Application();
                 app.setVisible(true);
             }
         });
