@@ -10,19 +10,26 @@ import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 import org.jdom.Element;
+import org.springframework.context.ApplicationContext;
 
+import net.sf.taverna.platform.spring.RavenAwareClassPathXmlApplicationContext;
 import net.sf.taverna.t2.lang.ui.ModelMap;
+import net.sf.taverna.t2.reference.ReferenceContext;
+import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.reference.ui.WorkflowLaunchPanel;
 import net.sf.taverna.t2.workbench.ModelMapConstants;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
+import net.sf.taverna.t2.workbench.reference.config.ReferenceConfiguration;
 import net.sf.taverna.t2.workbench.run.DataflowRunsComponent;
 import net.sf.taverna.t2.workbench.ui.impl.Workbench;
 import net.sf.taverna.t2.workbench.ui.zaria.PerspectiveSPI;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
+import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.EditException;
+import net.sf.taverna.t2.workflowmodel.TokenProcessingEntity;
 import net.sf.taverna.t2.workflowmodel.serialization.DeserializationException;
 import net.sf.taverna.t2.workflowmodel.serialization.SerializationException;
 import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLDeserializer;
@@ -68,16 +75,43 @@ public class RunWorkflowAction extends AbstractAction {
 			if (dataflowCopy != null) {
 				DataflowValidationReport report = dataflowCopy.checkValidity();
 				if (report.isValid()) {
+					String context = ReferenceConfiguration.getInstance().getProperty(ReferenceConfiguration.REFERENCE_SERVICE_CONTEXT);
+					ApplicationContext appContext = new RavenAwareClassPathXmlApplicationContext(context);
+					ReferenceService referenceService = (ReferenceService) appContext.getBean("t2reference.service.referenceService");
+					ReferenceContext referenceContext = null;
+
 					List<? extends DataflowInputPort> inputPorts = dataflowCopy.getInputPorts();
 					if (!inputPorts.isEmpty()) {
-						showInputDialog(dataflowCopy);
+						showInputDialog(dataflowCopy, referenceService, referenceContext);
 					} else {
 						switchToResultsPerspective();
-						runComponent.runDataflow(dataflowCopy, null);
+						runComponent.runDataflow(dataflowCopy, referenceService, null);
 					}
 				} else {
-					showErrorDialog("Unable to validate workflow",
-					"Workflow validation failed");
+					StringBuilder sb = new StringBuilder();
+					sb.append("Unable to validate workflow due to:");
+					List<? extends TokenProcessingEntity> unsatisfiedEntities = report.getUnsatisfiedEntities();
+					if (unsatisfiedEntities.size() > 0) {
+						sb.append("\n Missing inputs or cyclic dependencies:");
+						for (TokenProcessingEntity entity : unsatisfiedEntities) {
+							sb.append("\n  " + entity.getLocalName());
+						}
+					}
+					List<? extends DataflowOutputPort> unresolvedOutputs = report.getUnresolvedOutputs();
+					if (unresolvedOutputs.size() > 0) {
+						sb.append("\n Invalid or unconnected outputs:");
+						for (DataflowOutputPort dataflowOutputPort : unresolvedOutputs) {
+							sb.append("\n  " + dataflowOutputPort.getName());
+						}
+					}
+					List<? extends TokenProcessingEntity> failedEntities = report.getFailedEntities();
+					if (failedEntities.size() > 0) {
+						sb.append("\n Type check failure:");
+						for (TokenProcessingEntity entity : failedEntities) {
+							sb.append("\n  " + entity.getLocalName());
+						}
+					}
+					showErrorDialog(sb.toString(), "Workflow validation failed");
 				}
 			} else {
 				showErrorDialog("Unable to make a copy of the workflow to run",
@@ -101,17 +135,16 @@ public class RunWorkflowAction extends AbstractAction {
 		}
 	}
 
-	private void showInputDialog(final Dataflow dataflow) {
+	private void showInputDialog(final Dataflow dataflow, final ReferenceService referenceService, ReferenceContext referenceContext) {
 		// Create and set up the window.
 		JFrame frame = new JFrame("Workflow input builder");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-		WorkflowLaunchPanel wlp = new WorkflowLaunchPanel(runComponent.getReferenceService(),
-				runComponent.getReferenceContext()) {
+		WorkflowLaunchPanel wlp = new WorkflowLaunchPanel(referenceService, referenceContext) {
 			@Override
 			public void handleLaunch(Map<String, T2Reference> workflowInputs) {
 				switchToResultsPerspective();
-				runComponent.runDataflow(dataflow, workflowInputs);
+				runComponent.runDataflow(dataflow, referenceService, workflowInputs);
 			}
 		};
 		wlp.setOpaque(true); // content panes must be opaque
@@ -127,8 +160,8 @@ public class RunWorkflowAction extends AbstractAction {
 		frame.setVisible(true);
 	}
 	
-	private void showErrorDialog(String string, String string2) {
-		JOptionPane.showMessageDialog(runComponent, string, string2, JOptionPane.ERROR_MESSAGE);		
+	private void showErrorDialog(String message, String title) {
+		JOptionPane.showMessageDialog(runComponent, message, title, JOptionPane.ERROR_MESSAGE);		
 	}
 
 }

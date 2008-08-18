@@ -22,6 +22,7 @@ import net.sf.taverna.platform.spring.RavenAwareClassPathXmlApplicationContext;
 import net.sf.taverna.t2.reference.ReferenceContext;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.T2Reference;
+import net.sf.taverna.t2.workbench.reference.config.ReferenceConfiguration;
 import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
@@ -33,10 +34,6 @@ public class DataflowRunsComponent extends JSplitPane implements UIComponentSPI 
 	
 	private static DataflowRunsComponent singletonInstance;
 	
-	private ReferenceService referenceService;
-	
-	private ReferenceContext referenceContext;
-
 	private DefaultListModel runListModel;
 	
 	private JList runList;
@@ -47,11 +44,6 @@ public class DataflowRunsComponent extends JSplitPane implements UIComponentSPI 
 		super(JSplitPane.VERTICAL_SPLIT);
 		setDividerLocation(400);
 		
-		ApplicationContext appContext = new RavenAwareClassPathXmlApplicationContext("hibernateReferenceServiceContext.xml");
-//		ApplicationContext appContext = new RavenAwareClassPathXmlApplicationContext("inMemoryReferenceServiceContext.xml");
-		referenceService = (ReferenceService) appContext.getBean("t2reference.service.referenceService");
-		referenceContext = null;
-
 		topPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		topPanel.setDividerLocation(200);
 		topPanel.setBorder(null);
@@ -118,19 +110,11 @@ public class DataflowRunsComponent extends JSplitPane implements UIComponentSPI 
 		return singletonInstance;
 	}
 	
-	public void runDataflow(final Dataflow dataflow, Map<String, T2Reference> inputs) {
+	public void runDataflow(final Dataflow dataflow, ReferenceService referenceService, Map<String, T2Reference> inputs) {
 		DataflowRun runComponent = new DataflowRun(dataflow, referenceService, inputs, new Date());
 		runListModel.add(0, runComponent);
 		runList.setSelectedIndex(0);
 		runComponent.run();
-	}
-
-	public ReferenceService getReferenceService() {
-		return referenceService;
-	}
-
-	public ReferenceContext getReferenceContext() {
-		return referenceContext;
 	}
 
 	public ImageIcon getIcon() {
