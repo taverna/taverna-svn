@@ -1,10 +1,12 @@
 package net.sf.taverna.t2.facade;
 
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.TokenOrderException;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.monitor.MonitorNode;
 import net.sf.taverna.t2.utility.TypedTreeModel;
 import net.sf.taverna.t2.workflowmodel.ControlBoundary;
+import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 /**
  * The interaction point with a workflow instance. Technically there is no such
@@ -114,5 +116,15 @@ public interface WorkflowInstanceFacade {
 	 *         workflow. Nodes in the tree are instances of MonitorNode
 	 */
 	public TypedTreeModel<MonitorNode> getStateModel();
+
+	/**
+	 * Return the dataflow this facade facades
+	 */
+	public Dataflow getDataflow();
+	
+	/**
+     * Return the invocation context used by this facade
+     */
+	public InvocationContext getContext();
 
 }
