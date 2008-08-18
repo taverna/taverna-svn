@@ -18,6 +18,7 @@ import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
+import net.sf.taverna.t2.workflowmodel.processor.activity.NestedDataflow;
 
 import org.apache.log4j.Logger;
 
@@ -29,7 +30,7 @@ import org.apache.log4j.Logger;
  * @author David Withers
  */
 public class DataflowActivity extends
-		AbstractAsynchronousActivity<Dataflow> {
+		AbstractAsynchronousActivity<Dataflow> implements NestedDataflow{
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger
@@ -116,6 +117,10 @@ public class DataflowActivity extends
 			addOutput(dataflowOutputPort.getName(), dataflowOutputPort
 					.getDepth(), dataflowOutputPort.getGranularDepth());
 		}
+	}
+
+	public Dataflow getNestedDataflow() {
+		return getConfiguration();
 	}
 
 }
