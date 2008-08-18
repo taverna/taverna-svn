@@ -15,6 +15,7 @@ import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EditsRegistry;
+import net.sf.taverna.t2.workflowmodel.InvalidDataflowException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
@@ -60,10 +61,16 @@ public class DataflowActivity extends
 
 			public void run() {
 
-				final WorkflowInstanceFacade facade = edits
-						.createWorkflowInstanceFacade(dataflow, callback
-								.getContext(), callback
-								.getParentProcessIdentifier());
+				final WorkflowInstanceFacade facade;
+				try {
+					facade = edits
+							.createWorkflowInstanceFacade(dataflow, callback
+									.getContext(), callback
+									.getParentProcessIdentifier());
+				} catch (InvalidDataflowException ex) {
+					callback.fail("Invalid dataflow", ex);
+					return;
+				}
 
 				facade.addResultListener(new ResultListener() {
 					int outputPortCount = dataflow.getOutputPorts().size();
