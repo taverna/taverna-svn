@@ -21,7 +21,7 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 import org.apache.log4j.Logger;
 
 public class DataflowActivityConfigurationAction extends
-		ActivityConfigurationAction<DataflowActivity> {
+		ActivityConfigurationAction<DataflowActivity, Dataflow> {
 
 	private static Logger logger = Logger
 			.getLogger(DataflowActivityConfigurationAction.class);

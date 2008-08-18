@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
+import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
 import net.sf.taverna.t2.activities.localworker.LocalworkerActivity;
 import net.sf.taverna.t2.activities.localworker.views.LocalworkerActivityConfigView;
 import net.sf.taverna.t2.annotation.AnnotationAssertion;
@@ -30,7 +31,7 @@ import net.sf.taverna.t2.workflowmodel.EditsRegistry;
  */
 @SuppressWarnings("serial")
 public class LocalworkerActivityConfigurationAction extends
-		ActivityConfigurationAction<LocalworkerActivity> {
+		ActivityConfigurationAction<LocalworkerActivity, BeanshellActivityConfigurationBean> {
 
 	private final Frame owner;
 

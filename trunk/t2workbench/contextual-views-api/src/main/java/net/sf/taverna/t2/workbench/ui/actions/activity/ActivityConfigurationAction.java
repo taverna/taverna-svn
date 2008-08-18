@@ -18,33 +18,37 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.apache.log4j.Logger;
 
-public abstract class ActivityConfigurationAction<A extends Activity<?>> extends AbstractAction {
+public abstract class ActivityConfigurationAction<A extends Activity<ConfigurationBean>, ConfigurationBean>
+		extends AbstractAction {
 
 	private static Logger logger = Logger
 			.getLogger(ActivityConfigurationAction.class);
-	
+
 	private A activity;
-	
+
 	public ActivityConfigurationAction(A activity) {
-		this.activity=activity;
+		this.activity = activity;
 	}
-	
+
 	protected A getActivity() {
 		return activity;
 	}
-	
-	protected void configureActivity(Object configurationBean) {
+
+	protected void configureActivity(ConfigurationBean configurationBean) {
 		Edits edits = EditsRegistry.getEdits();
-		Edit<?> configureActivityEdit = edits.getConfigureActivityEdit(getActivity(),configurationBean);
-		Dataflow currentDataflow = FileManager.getInstance().getCurrentDataflow();
+		Edit<?> configureActivityEdit = edits.getConfigureActivityEdit(
+				getActivity(), configurationBean);
+		Dataflow currentDataflow = FileManager.getInstance()
+				.getCurrentDataflow();
 		try {
 			List<Edit<?>> editList = new ArrayList<Edit<?>>();
 			editList.add(configureActivityEdit);
 			Processor p = findProcessor(currentDataflow);
-			if (p!=null && p.getActivityList().size()==1) {
+			if (p != null && p.getActivityList().size() == 1) {
 				editList.add(edits.getMapProcessorPortsForActivityEdit(p));
 			}
-			EditManager.getInstance().doDataflowEdit(currentDataflow, new CompoundEdit(editList));
+			EditManager.getInstance().doDataflowEdit(currentDataflow,
+					new CompoundEdit(editList));
 		} catch (IllegalStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -52,12 +56,13 @@ public abstract class ActivityConfigurationAction<A extends Activity<?>> extends
 			e.printStackTrace();
 		}
 	}
-	
+
 	protected Processor findProcessor(Dataflow df) {
 		Activity<?> activity = getActivity();
-		
+
 		for (Processor processor : df.getProcessors()) {
-			if (processor.getActivityList().contains(activity)) return processor;
+			if (processor.getActivityList().contains(activity))
+				return processor;
 		}
 		return null;
 	}
