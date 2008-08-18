@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.workflowmodel;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Contains a validation report from a dataflow validation check. Processors are
@@ -56,5 +57,16 @@ public interface DataflowValidationReport {
 	 *         won't run anyway.
 	 */
 	public List<? extends DataflowOutputPort> getUnresolvedOutputs();
+	
+	
+	/**
+	 * An entity will be marked invalid if it depends on a nested dataflow
+	 * which itself is invalid. If this is the case the entity will be
+	 * be present both in {@link #getFailedEntities()} and can be used as
+	 * a key with this method to get the DataflowValidationReport explaining
+	 * how the nested dataflow failed.
+	 * 
+	 */
+	public Map<TokenProcessingEntity, DataflowValidationReport> getInvalidDataflows();
 
 }
