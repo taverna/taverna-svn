@@ -22,6 +22,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeSelectionModel;
 
 import net.sf.taverna.t2.facade.ResultListener;
+import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.facade.impl.WorkflowInstanceFacadeImpl;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
@@ -73,7 +74,7 @@ public class ResultViewComponent extends JSplitPane implements UIComponentSPI {
 
 	}
 
-	public void register(WorkflowInstanceFacadeImpl facade)
+	public void register(WorkflowInstanceFacade facade)
 			throws EditException {
 		clear();
 //		// FIXME do using annotations on the data references

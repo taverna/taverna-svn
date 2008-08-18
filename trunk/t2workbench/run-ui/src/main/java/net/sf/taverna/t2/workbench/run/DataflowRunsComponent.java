@@ -18,15 +18,10 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.sf.taverna.platform.spring.RavenAwareClassPathXmlApplicationContext;
-import net.sf.taverna.t2.reference.ReferenceContext;
-import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.reference.T2Reference;
-import net.sf.taverna.t2.workbench.reference.config.ReferenceConfiguration;
 import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
-import net.sf.taverna.t2.workflowmodel.Dataflow;
-
-import org.springframework.context.ApplicationContext;
+import net.sf.taverna.t2.workflowmodel.InvalidDataflowException;
 
 public class DataflowRunsComponent extends JSplitPane implements UIComponentSPI {
 
@@ -110,8 +105,8 @@ public class DataflowRunsComponent extends JSplitPane implements UIComponentSPI 
 		return singletonInstance;
 	}
 	
-	public void runDataflow(final Dataflow dataflow, ReferenceService referenceService, Map<String, T2Reference> inputs) {
-		DataflowRun runComponent = new DataflowRun(dataflow, referenceService, inputs, new Date());
+	public void runDataflow(WorkflowInstanceFacade facade, Map<String, T2Reference> inputs) {
+		DataflowRun runComponent = new DataflowRun(facade, inputs, new Date());
 		runListModel.add(0, runComponent);
 		runList.setSelectedIndex(0);
 		runComponent.run();

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import net.sf.taverna.t2.facade.ResultListener;
+import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.facade.impl.WorkflowInstanceFacadeImpl;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.TokenOrderException;
@@ -21,12 +22,11 @@ import net.sf.taverna.t2.workbench.views.monitor.MonitorViewComponent;
 import net.sf.taverna.t2.workbench.views.results.ResultViewComponent;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.EditException;
+import net.sf.taverna.t2.workflowmodel.InvalidDataflowException;
 
 public class DataflowRun {
 
-	private Dataflow dataflow;
-	
-	private ReferenceService referenceService;
+	private WorkflowInstanceFacade facade;
 	
 	private Map<String, T2Reference> inputs;
 	
@@ -40,9 +40,11 @@ public class DataflowRun {
 
 	private int results = 0;
 
-	public DataflowRun(Dataflow dataflow, ReferenceService referenceService, Map<String, T2Reference> inputs, Date date) {
-		this.dataflow = dataflow;
-		this.referenceService = referenceService;
+	private Dataflow dataflow;
+
+	public DataflowRun(WorkflowInstanceFacade facade, Map<String, T2Reference> inputs, Date date) {
+		this.facade = facade;
+		this.dataflow = facade.getDataflow();
 		this.inputs = inputs;
 		this.date = date;		
 		monitorViewComponent = new MonitorViewComponent();
@@ -52,13 +54,11 @@ public class DataflowRun {
 	public void run() {
 		
 		monitorObserver = monitorViewComponent.setDataflow(dataflow);
-		InvocationContext context = createContext();
 
 //		resultsComponent.setContext(context);
 		MonitorManager.getInstance().addObserver(monitorObserver);
 		// Use the empty context by default to root this facade on the monitor
 		// tree
-		final WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dataflow, context, "");
 		facade.addResultListener(new ResultListener() {
 
 			public void resultTokenProduced(WorkflowDataToken token,
@@ -92,7 +92,7 @@ public class DataflowRun {
 				int[] index = new int[] {};
 				try {
 					facade.pushData(new WorkflowDataToken("", index,
-							identifier, context), portName);
+							identifier, facade.getContext()), portName);
 				} catch (TokenOrderException e) {
 					e.printStackTrace();
 				}
@@ -101,21 +101,6 @@ public class DataflowRun {
 
 	}
 	
-	private InvocationContext createContext() {
-
-		InvocationContext context = new InvocationContext() {
-
-			public ReferenceService getReferenceService() {
-				return referenceService;
-			}
-
-			public <T> List<? extends T> getEntities(Class<T> arg0) {
-				return new ArrayList<T>();
-			}
-
-		};
-		return context;
-	}
 
 
 	@Override
