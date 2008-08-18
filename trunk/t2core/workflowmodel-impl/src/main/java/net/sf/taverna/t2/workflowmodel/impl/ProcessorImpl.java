@@ -15,11 +15,15 @@ import net.sf.taverna.t2.monitor.MonitorManager;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.Condition;
+import net.sf.taverna.t2.workflowmodel.Dataflow;
+import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
+import net.sf.taverna.t2.workflowmodel.InvalidDataflowException;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
+import net.sf.taverna.t2.workflowmodel.processor.activity.NestedDataflow;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.PropertyContributingDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DispatchStackImpl;
@@ -178,8 +182,23 @@ public final class ProcessorImpl extends AbstractAnnotatedThing<Processor>
 	 * @throws IterationTypeMismatchException
 	 *             if the typing occured but didn't match because of an
 	 *             iteration mismatch
+	 * @throws InvalidDataflowException 
+	 * 			 	if the entity depended on a dataflow that was not valid
 	 */
-	public boolean doTypeCheck() throws IterationTypeMismatchException {
+	public boolean doTypeCheck() throws IterationTypeMismatchException, InvalidDataflowException {
+		
+		// Check for any nested dataflows, they should all be valid
+		for (Activity<?> activity : getActivityList()) {
+			if (activity instanceof NestedDataflow) {
+				NestedDataflow nestedDataflowActivity = (NestedDataflow) activity;
+				Dataflow nestedDataflow = nestedDataflowActivity.getNestedDataflow();
+				DataflowValidationReport validity = nestedDataflow.checkValidity();
+				if (! validity.isValid())  {
+					throw new InvalidDataflowException(nestedDataflow, validity);
+				}
+			}	
+		}
+		
 		// Check whether all our input ports have inbound links
 		Map<String, Integer> inputDepths = new HashMap<String, Integer>();
 		for (ProcessorInputPortImpl input : inputPorts) {
