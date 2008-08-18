@@ -16,6 +16,7 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.Datalink;
+import net.sf.taverna.t2.workflowmodel.Merge;
 import net.sf.taverna.t2.workflowmodel.Processor;
 
 /**
@@ -110,6 +111,11 @@ public class DefaultGraphEventManager implements GraphEventManager {
 				Point p = new Point(screenX, screenY);
 				SwingUtilities.convertPointFromScreen(p, component);
 				menu.show(component, p.x, p.y);
+			} else if (graphElement.getDataflowObject() instanceof Merge) {
+				Dataflow dataflow = graphController.getDataflow();
+				Point p = new Point(screenX, screenY);
+				SwingUtilities.convertPointFromScreen(p, component);
+				ContextMenuFactory.getContextMenu(dataflow, graphElement.getDataflowObject(), component).show(component, p.x, p.y);
 			} else if (graphElement.getDataflowObject() instanceof DataflowInputPort) {
 				Dataflow dataflow = graphController.getDataflow();
 				Point p = new Point(screenX, screenY);

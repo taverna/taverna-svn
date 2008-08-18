@@ -30,7 +30,7 @@ public class RemoveDatalinkAction extends DataflowEditAction {
 		try {
 			editManager.doDataflowEdit(dataflow, Tools.getDisconnectDatalinkAndRemovePortsEdit(datalink));
 		} catch (EditException e1) {
-			logger.debug("Remove processor failed", e1);
+			logger.debug("Remove datalink failed", e1);
 		}
 	}
 

@@ -11,6 +11,7 @@ import net.sf.taverna.t2.workbench.design.actions.AddDataflowOutputAction;
 import net.sf.taverna.t2.workbench.design.actions.RemoveDataflowInputPortAction;
 import net.sf.taverna.t2.workbench.design.actions.RemoveDataflowOutputPortAction;
 import net.sf.taverna.t2.workbench.design.actions.RemoveDatalinkAction;
+import net.sf.taverna.t2.workbench.design.actions.RemoveMergeAction;
 import net.sf.taverna.t2.workbench.design.actions.RemoveProcessorAction;
 import net.sf.taverna.t2.workbench.design.actions.RenameDataflowInputPortAction;
 import net.sf.taverna.t2.workbench.design.actions.RenameDataflowOutputPortAction;
@@ -19,6 +20,7 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.Datalink;
+import net.sf.taverna.t2.workflowmodel.Merge;
 import net.sf.taverna.t2.workflowmodel.Processor;
 
 public class ContextMenuFactory {
@@ -40,6 +42,11 @@ public class ContextMenuFactory {
 			popupMenu.addSeparator();
 			popupMenu.add(new JMenuItem(new RenameProcessorAction(dataflow, processor, component)));
 			popupMenu.add(new JMenuItem(new RemoveProcessorAction(dataflow, processor, component)));
+		} else if (dataflowObject instanceof Merge) {
+			Merge merge = (Merge) dataflowObject;
+			popupMenu.add(new ShadedLabel("Merge : " + merge.getLocalName(), ShadedLabel.GREEN));
+			popupMenu.addSeparator();
+			popupMenu.add(new JMenuItem(new RemoveMergeAction(dataflow, merge, component)));
 		} else if (dataflowObject instanceof DataflowInputPort) {
 			DataflowInputPort dataflowInputPort = (DataflowInputPort) dataflowObject;
 			popupMenu.add(new ShadedLabel("Workflow Input : " + dataflowInputPort.getName(), ShadedLabel.GREEN));

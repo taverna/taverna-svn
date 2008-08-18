@@ -15,6 +15,7 @@ import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
+import net.sf.taverna.t2.workflowmodel.utils.Tools;
 
 import org.apache.log4j.Logger;
 
@@ -43,12 +44,12 @@ public class RemoveProcessorAction extends DataflowEditAction {
 			for (ProcessorInputPort inputPort : inputPorts) {
 				Datalink datalink = inputPort.getIncomingLink();
 				if (datalink != null) {
-					editList.add(edits.getDisconnectDatalinkEdit(datalink));
+					editList.add(Tools.getDisconnectDatalinkAndRemovePortsEdit(datalink));
 				}
 			}
 			for (ProcessorOutputPort outputPort : outputPorts) {
 				for (Datalink datalink : outputPort.getOutgoingLinks()) {
-					editList.add(edits.getDisconnectDatalinkEdit(datalink));
+					editList.add(Tools.getDisconnectDatalinkAndRemovePortsEdit(datalink));
 				}
 			}
 			for (Condition condition : controlledPreconditions) {
