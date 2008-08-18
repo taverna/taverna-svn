@@ -20,6 +20,7 @@ import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
 import net.sf.taverna.t2.workflowmodel.FailureTransmitter;
+import net.sf.taverna.t2.workflowmodel.InvalidDataflowException;
 import net.sf.taverna.t2.workflowmodel.Merge;
 import net.sf.taverna.t2.workflowmodel.NamedWorkflowEntity;
 import net.sf.taverna.t2.workflowmodel.NamingException;
@@ -499,6 +500,7 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 		// changes are made in an iteration
 		boolean finished = false;
 
+		Map<TokenProcessingEntity, DataflowValidationReport> invalidDataflows = new HashMap<TokenProcessingEntity, DataflowValidationReport>();
 		while (!finished) {
 			// We're finished unless something happens later
 			finished = true;
@@ -507,7 +509,8 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 			List<TokenProcessingEntity> removeValidated = new ArrayList<TokenProcessingEntity>();
 			// Keep another list of those that have failed
 			List<TokenProcessingEntity> removeFailed = new ArrayList<TokenProcessingEntity>();
-
+			
+			
 			for (TokenProcessingEntity p : unresolved) {
 				try {
 					// true = checked and valid, false = can't check, the
@@ -518,6 +521,9 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 						removeValidated.add(p);
 					}
 				} catch (IterationTypeMismatchException e) {
+					removeFailed.add(p);
+				} catch (InvalidDataflowException e) {
+					invalidDataflows.put(p, e.getDataflowValidationReport());
 					removeFailed.add(p);
 				}
 			}
@@ -576,7 +582,7 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 		// along with lists of failed and unsatisfied processors and unsatisfied
 		// output ports
 		return new DataflowValidationReportImpl(dataflowValid, failed,
-				unresolved, unresolvedOutputs);
+				unresolved, unresolvedOutputs, invalidDataflows);
 	}
 
 	/**
