@@ -59,7 +59,7 @@ public class ProcessorCrystalizerImpl extends AbstractCrystalizer {
 		int wrappingDepth = parent.resultWrappingDepth;
 		if (wrappingDepth < 0)
 			throw new RuntimeException(
-					"Processor hasn't been configured, cannot emit empty job");
+					"Processor ["+owningProcess+"] hasn't been configured, cannot emit empty job");
 		// The wrapping depth is the length of index array that would be used if
 		// a single item of the output port type were returned. We can examine
 		// the index array for the node we're trying to create and use this to
