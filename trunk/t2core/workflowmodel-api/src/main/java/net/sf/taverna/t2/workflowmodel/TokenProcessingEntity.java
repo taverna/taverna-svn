@@ -31,7 +31,9 @@ public interface TokenProcessingEntity extends NamedWorkflowEntity {
 	 * @throws IterationTypeMismatchException
 	 *             if the typing occurred but didn't match because of an
 	 *             iteration mismatch
+	 * @throws InvalidDataflowException 
+	 * 			 	if the entity depended on a dataflow that was not valid
 	 */
-	public boolean doTypeCheck() throws IterationTypeMismatchException;
+	public boolean doTypeCheck() throws IterationTypeMismatchException, InvalidDataflowException;
 	
 }
