@@ -1,6 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * MatlabTokenMarker.java - matlab token marker
+ *
+ * You may use and modify this package for any purpose. Redistribution is
+ * permitted, in both source and binary form, provided that this notice
+ * remains intact in all source distributions of this package.
  */
 
 package net.sf.taverna.t2.matlabactivity.views;
@@ -10,6 +13,10 @@ import org.syntax.jedit.KeywordMap;
 import org.syntax.jedit.tokenmarker.Token;
 import org.syntax.jedit.tokenmarker.TokenMarker;
 
+/**
+ * 
+ * @author petarj
+ */
 public class MatlabTokenMarker extends TokenMarker {
 
 	private static KeywordMap keywords;
