@@ -162,6 +162,28 @@ public class Tools {
 		return result;
 	}
 	
+	public static ActivityInputPort getActivityInputPort(Activity<?> activity, String portName) {
+		ActivityInputPort activityInputPort = null;
+		for (ActivityInputPort inputPort : activity.getInputPorts()) {
+			if (inputPort.getName().equals(portName)) {
+				activityInputPort = inputPort;
+				break;
+			}
+		}
+		return activityInputPort;
+	}
+	
+	public static OutputPort getActivityOutputPort(Activity<?> activity, String portName) {
+		OutputPort activityOutputPort = null;
+		for (OutputPort outputPort : activity.getOutputPorts()) {
+			if (outputPort.getName().equals(portName)) {
+				activityOutputPort = outputPort;
+				break;
+			}
+		}
+		return activityOutputPort;
+	}
+	
 	private static String getUniqueMergeInputPortName(Merge merge, String name,
 			int count) {
 		String uniqueName = name + count;
