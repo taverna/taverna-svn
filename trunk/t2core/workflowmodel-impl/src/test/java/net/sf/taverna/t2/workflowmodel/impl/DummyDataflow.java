@@ -16,20 +16,17 @@ import net.sf.taverna.t2.workflowmodel.NamedWorkflowEntity;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
 
-public class DummyDataflow extends AbstractAnnotatedThing<Dataflow> implements Dataflow{
+public class DummyDataflow extends AbstractAnnotatedThing<Dataflow> implements
+		Dataflow {
 
-	public  List<DataflowInputPort> inputPorts = new ArrayList<DataflowInputPort>();
-	public  List<DataflowOutputPort> outputPorts = new ArrayList<DataflowOutputPort>();
+	public List<DataflowInputPort> inputPorts = new ArrayList<DataflowInputPort>();
+	public List<DataflowOutputPort> outputPorts = new ArrayList<DataflowOutputPort>();
 	public List<Processor> processors = new ArrayList<Processor>();
 	public List<Merge> merges = new ArrayList<Merge>();
-	
-	
-	
+
 	public DataflowValidationReport checkValidity() {
-		// TODO Auto-generated method stub
-		return null;
+		return new DummyValidationReport(true);
 	}
-	
 
 	public <T extends NamedWorkflowEntity> List<? extends T> getEntities(
 			Class<T> entityType) {
@@ -57,12 +54,10 @@ public class DummyDataflow extends AbstractAnnotatedThing<Dataflow> implements D
 	public List<? extends Merge> getMerges() {
 		return merges;
 	}
-	
 
 	public String getLocalName() {
 		return "test_dataflow";
 	}
-
 
 	public void fire(String owningProcess, InvocationContext context) {
 		String newOwningProcess = owningProcess + ":" + getLocalName();
@@ -73,17 +68,15 @@ public class DummyDataflow extends AbstractAnnotatedThing<Dataflow> implements D
 		}
 	}
 
-
 	public FailureTransmitter getFailureTransmitter() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-
 	public boolean doTypeCheck() throws IterationTypeMismatchException {
-		throw new UnsupportedOperationException("Not implemented for this class");
+		throw new UnsupportedOperationException(
+				"Not implemented for this class");
 	}
-
 
 	public String getInternalIdentier() {
 		return "an id";
