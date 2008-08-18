@@ -101,7 +101,7 @@ public class MatlabTokenMarker extends TokenMarker {
 		byte id = keywords.lookup(line, lastKeyword, len);
 		if (id != Token.NULL) {
 			if (lastKeyword != lastOffset)
-				addToken(lastKeyword - lastOffset, Token.KEYWORD3);
+				addToken(lastKeyword - lastOffset, Token.NULL);
 			addToken(len, id);
 			lastOffset = i;
 		}
