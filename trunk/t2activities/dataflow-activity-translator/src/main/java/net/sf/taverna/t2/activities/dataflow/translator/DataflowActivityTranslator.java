@@ -37,11 +37,14 @@ public class DataflowActivityTranslator extends
 		try {
 			dataflow = WorkflowModelTranslator
 					.doTranslation(getScuflModel(processor));
-			DataflowValidationReport report = dataflow.checkValidity();
-			if (!report.isValid()) {
-				throw new ActivityTranslationException(
-						"Error validating nested workflow");
-			}
+			//I don't think this is the right place to do the validity check
+			//as it means you can't open an invalid workflow (it could be
+			//an unfinished workflow).
+//			DataflowValidationReport report = dataflow.checkValidity();
+//			if (!report.isValid()) {
+//				throw new ActivityTranslationException(
+//						"Error validating nested workflow");
+//			}
 		} catch (WorkflowTranslationException e) {
 			throw new ActivityTranslationException(
 					"Error translating nested workflow", e);
