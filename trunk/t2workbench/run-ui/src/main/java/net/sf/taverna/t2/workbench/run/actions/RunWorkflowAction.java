@@ -99,11 +99,6 @@ public class RunWorkflowAction extends AbstractAction {
 			}
 
 			if (dataflowCopy != null) {
-				DataflowValidationReport report = dataflowCopy.checkValidity();
-				if (!report.isValid()) {
-					invalidDataflow(report);
-					return;
-				}
 				String context = ReferenceConfiguration
 						.getInstance()
 						.getProperty(
