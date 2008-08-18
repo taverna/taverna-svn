@@ -13,7 +13,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivity;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
 import net.sf.taverna.t2.activities.wsdl.xmlsplitter.AddXMLSplitterEdit;
+import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.FileManager;
+import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.wsdl.parser.ArrayTypeDescriptor;
@@ -36,6 +38,7 @@ public class AddXMLOutputSplitterAction extends AbstractAction {
 
 	private WSDLActivity activity;
 	private JComponent owner;
+	private EditManager editManager = EditManager.getInstance();
 
 	public AddXMLOutputSplitterAction(Activity<?> activity, JComponent owner) {
 		this.activity = (WSDLActivity) activity;
@@ -82,9 +85,13 @@ public class AddXMLOutputSplitterAction extends AbstractAction {
 				"Add output XML splitter", JOptionPane.PLAIN_MESSAGE, null,
 				possibilities, possibilities[0]);
 
+		Dataflow currentDataflow = FileManager.getInstance()
+				.getCurrentDataflow();
+
 		TypeDescriptor typeDescriptorForInputPort = null;
 		try {
-			typeDescriptorForInputPort = activity.getTypeDescriptorForInputPort(s);
+			typeDescriptorForInputPort = activity
+					.getTypeDescriptorForInputPort(s);
 		} catch (UnknownOperationException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
@@ -92,17 +99,18 @@ public class AddXMLOutputSplitterAction extends AbstractAction {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
-		if (typeDescriptorForInputPort instanceof ArrayTypeDescriptor|| typeDescriptorForInputPort instanceof ComplexTypeDescriptor) {
-			AddXMLSplitterEdit edit = new AddXMLSplitterEdit(FileManager
-					.getInstance().getCurrentDataflow(), activity, s, false);
+		if (typeDescriptorForInputPort instanceof ArrayTypeDescriptor
+				|| typeDescriptorForInputPort instanceof ComplexTypeDescriptor) {
+			AddXMLSplitterEdit edit = new AddXMLSplitterEdit(currentDataflow,
+					activity, s, false);
 			try {
-				edit.doEdit();
+				editManager.doDataflowEdit(currentDataflow, edit);
 			} catch (EditException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-			}	
+			}
 		}
-		
+
 	}
 
 }
