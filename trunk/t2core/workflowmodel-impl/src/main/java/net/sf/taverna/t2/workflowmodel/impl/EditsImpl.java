@@ -27,6 +27,7 @@ import net.sf.taverna.t2.workflowmodel.Edit;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EventForwardingOutputPort;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
+import net.sf.taverna.t2.workflowmodel.InvalidDataflowException;
 import net.sf.taverna.t2.workflowmodel.Merge;
 import net.sf.taverna.t2.workflowmodel.MergeInputPort;
 import net.sf.taverna.t2.workflowmodel.OrderedPair;
@@ -44,6 +45,10 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.AddDispatchLayerE
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DeleteDispatchLayerEdit;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategyStack;
 
+/**
+ * Implementation of {@link Edits}
+ * 
+ */
 public class EditsImpl implements Edits {
 
 	public Dataflow createDataflow() {
@@ -55,11 +60,13 @@ public class EditsImpl implements Edits {
 		return new DatalinkImpl(source, sink);
 	}
 
-	public DataflowInputPort createDataflowInputPort(String name, int depth, int granularDepth, Dataflow dataflow) {
+	public DataflowInputPort createDataflowInputPort(String name, int depth,
+			int granularDepth, Dataflow dataflow) {
 		return new DataflowInputPortImpl(name, depth, granularDepth, dataflow);
 	}
 
-	public DataflowOutputPort createDataflowOutputPort(String name, Dataflow dataflow) {
+	public DataflowOutputPort createDataflowOutputPort(String name,
+			Dataflow dataflow) {
 		return new DataflowOutputPortImpl(name, dataflow);
 	}
 
@@ -71,13 +78,17 @@ public class EditsImpl implements Edits {
 			return null;
 		}
 	}
-	
-	public ProcessorOutputPort createProcessorOutputPort(Processor processor,String name,int depth, int granularDepth) {
-		return new ProcessorOutputPortImpl((ProcessorImpl)processor,name,depth,granularDepth);
+
+	public ProcessorOutputPort createProcessorOutputPort(Processor processor,
+			String name, int depth, int granularDepth) {
+		return new ProcessorOutputPortImpl((ProcessorImpl) processor, name,
+				depth, granularDepth);
 	}
-	
-	public ProcessorInputPort createProcessorInputPort(Processor processor, String name,int depth) {
-		return new ProcessorInputPortImpl((ProcessorImpl)processor,name,depth);
+
+	public ProcessorInputPort createProcessorInputPort(Processor processor,
+			String name, int depth) {
+		return new ProcessorInputPortImpl((ProcessorImpl) processor, name,
+				depth);
 	}
 
 	public Edit<Dataflow> getAddProcessorEdit(Dataflow dataflow,
@@ -85,8 +96,7 @@ public class EditsImpl implements Edits {
 		return new AddProcessorEdit(dataflow, processor);
 	}
 
-	public Edit<Dataflow> getAddMergeEdit(Dataflow dataflow,
-			Merge merge) {
+	public Edit<Dataflow> getAddMergeEdit(Dataflow dataflow, Merge merge) {
 		return new AddMergeEdit(dataflow, merge);
 	}
 
@@ -105,8 +115,8 @@ public class EditsImpl implements Edits {
 		return new AddProcessorInputPortEdit(processor, port);
 	}
 
-	public Edit<Processor> getAddProcessorOutputPortEdit(
-			Processor processor, ProcessorOutputPort port) {
+	public Edit<Processor> getAddProcessorOutputPortEdit(Processor processor,
+			ProcessorOutputPort port) {
 		return new AddProcessorOutputPortEdit(processor, port);
 	}
 
@@ -131,16 +141,16 @@ public class EditsImpl implements Edits {
 		return new RenameProcessorEdit(processor, newName);
 	}
 
-	public Edit<DataflowInputPort> getRenameDataflowInputPortEdit(DataflowInputPort dataflowInputPort,
-			String newName) {
+	public Edit<DataflowInputPort> getRenameDataflowInputPortEdit(
+			DataflowInputPort dataflowInputPort, String newName) {
 		return new RenameDataflowInputPortEdit(dataflowInputPort, newName);
 	}
 
-	public Edit<DataflowOutputPort> getRenameDataflowOutputPortEdit(DataflowOutputPort dataflowOutputPort,
-			String newName) {
+	public Edit<DataflowOutputPort> getRenameDataflowOutputPortEdit(
+			DataflowOutputPort dataflowOutputPort, String newName) {
 		return new RenameDataflowOutputPortEdit(dataflowOutputPort, newName);
 	}
-	
+
 	public Edit<Processor> getConnectProcessorOutputEdit(Processor processor,
 			String outputPortName, EventHandlingInputPort targetPort) {
 		return new ConnectProcesorOutputEdit(processor, outputPortName,
@@ -150,11 +160,13 @@ public class EditsImpl implements Edits {
 	public Edit<Datalink> getConnectDatalinkEdit(Datalink datalink) {
 		return new ConnectDatalinkEdit(datalink);
 	}
-	
-	
+
 	@SuppressWarnings("unchecked")
-	public Edit<AnnotationChain> getAddAnnotationAssertionEdit(AnnotationChain annotationChain, AnnotationAssertion annotationAssertion) {
-		return new AddAnnotationAssertionEdit(annotationChain, annotationAssertion);
+	public Edit<AnnotationChain> getAddAnnotationAssertionEdit(
+			AnnotationChain annotationChain,
+			AnnotationAssertion annotationAssertion) {
+		return new AddAnnotationAssertionEdit(annotationChain,
+				annotationAssertion);
 	}
 
 	/**
@@ -202,8 +214,10 @@ public class EditsImpl implements Edits {
 	/**
 	 * Builds an instance of {@link ActivityInputPortImpl}
 	 */
-	public ActivityInputPort createActivityInputPort(String portName,
-			int portDepth, boolean allowsLiteralValues,
+	public ActivityInputPort createActivityInputPort(
+			String portName,
+			int portDepth,
+			boolean allowsLiteralValues,
 			List<Class<? extends ExternalReferenceSPI>> handledReferenceSchemes,
 			Class<?> translatedElementClass) {
 		return new ActivityInputPortImpl(portName, portDepth,
@@ -221,7 +235,8 @@ public class EditsImpl implements Edits {
 	}
 
 	public WorkflowInstanceFacade createWorkflowInstanceFacade(
-			Dataflow dataflow, InvocationContext context, String parentProcess) {
+			Dataflow dataflow, InvocationContext context, String parentProcess)
+			throws InvalidDataflowException {
 		return new WorkflowInstanceFacadeImpl(dataflow, context, parentProcess);
 	}
 
@@ -249,7 +264,8 @@ public class EditsImpl implements Edits {
 	public Edit<AnnotationAssertion> getAddAnnotationSource(
 			AnnotationAssertion annotationAssertion,
 			AnnotationSourceSPI annotationSource) {
-		return new AddAnnotationSourceEdit(annotationAssertion, annotationSource);
+		return new AddAnnotationSourceEdit(annotationAssertion,
+				annotationSource);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -258,28 +274,30 @@ public class EditsImpl implements Edits {
 		return new AddCreatorEdit(annotationAssertion, person);
 	}
 
-	public Edit<?> getAddAnnotationChainEdit(Annotated<?> annotated, AnnotationBeanSPI annotation) {
+	public Edit<?> getAddAnnotationChainEdit(Annotated<?> annotated,
+			AnnotationBeanSPI annotation) {
 		List<Edit<?>> editList = new ArrayList<Edit<?>>();
 
-		AnnotationAssertion<?> annotationAssertion =  new AnnotationAssertionImpl();
+		AnnotationAssertion<?> annotationAssertion = new AnnotationAssertionImpl();
 		editList.add(getAddAnnotationBean(annotationAssertion, annotation));
 
 		AnnotationChain annotationChain = new AnnotationChainImpl();
-		editList.add(getAddAnnotationAssertionEdit(annotationChain, annotationAssertion));
+		editList.add(getAddAnnotationAssertionEdit(annotationChain,
+				annotationAssertion));
 
 		editList.add(annotated.getAddAnnotationEdit(annotationChain));
 
 		return new CompoundEdit(editList);
 	}
-	
+
 	public Edit<Dataflow> getUpdateDataflowNameEdit(Dataflow dataflow,
 			String newName) {
-		return new UpdateDataflowNameEdit(dataflow,newName);
+		return new UpdateDataflowNameEdit(dataflow, newName);
 	}
-	
-	public Edit<Dataflow> getUpdateDataflowInternalIdentifierEdit(Dataflow dataflow,
-			String newId) {
-		return new UpdateDataflowInternalIdentifierEdit(dataflow,newId);
+
+	public Edit<Dataflow> getUpdateDataflowInternalIdentifierEdit(
+			Dataflow dataflow, String newId) {
+		return new UpdateDataflowInternalIdentifierEdit(dataflow, newId);
 	}
 
 	public Edit<Datalink> getDisconnectDatalinkEdit(Datalink datalink) {
@@ -316,9 +334,11 @@ public class EditsImpl implements Edits {
 		return new AddActivityInputPortEdit(activity, activityInputPort);
 	}
 
-	public Edit<Activity<?>> getAddActivityInputPortMappingEdit(Activity<?> activity,
-			String processorPortName, String activityPortName) {
-		return new AddActivityInputPortMappingEdit(activity, processorPortName, activityPortName);
+	public Edit<Activity<?>> getAddActivityInputPortMappingEdit(
+			Activity<?> activity, String processorPortName,
+			String activityPortName) {
+		return new AddActivityInputPortMappingEdit(activity, processorPortName,
+				activityPortName);
 	}
 
 	public Edit<Activity<?>> getAddActivityOutputPortEdit(Activity<?> activity,
@@ -326,29 +346,33 @@ public class EditsImpl implements Edits {
 		return new AddActivityOutputPortEdit(activity, activityOutputPort);
 	}
 
-	public Edit<Activity<?>> getAddActivityOutputPortMappingEdit(Activity<?> activity,
-			String processorPortName, String activityPortName) {
-		return new AddActivityOutputPortMappingEdit(activity, processorPortName, activityPortName);
+	public Edit<Activity<?>> getAddActivityOutputPortMappingEdit(
+			Activity<?> activity, String processorPortName,
+			String activityPortName) {
+		return new AddActivityOutputPortMappingEdit(activity,
+				processorPortName, activityPortName);
 	}
 
-	public Edit<Activity<?>> getRemoveActivityInputPortEdit(Activity<?> activity,
-			ActivityInputPort activityInputPort) {
+	public Edit<Activity<?>> getRemoveActivityInputPortEdit(
+			Activity<?> activity, ActivityInputPort activityInputPort) {
 		return new RemoveActivityInputPortEdit(activity, activityInputPort);
 	}
 
-	public Edit<Activity<?>> getRemoveActivityInputPortMappingEdit(Activity<?> activity,
-			String processorPortName) {
-		return new RemoveActivityInputPortMappingEdit(activity, processorPortName);
+	public Edit<Activity<?>> getRemoveActivityInputPortMappingEdit(
+			Activity<?> activity, String processorPortName) {
+		return new RemoveActivityInputPortMappingEdit(activity,
+				processorPortName);
 	}
 
-	public Edit<Activity<?>> getRemoveActivityOutputPortEdit(Activity<?> activity,
-			OutputPort activityOutputPort) {
+	public Edit<Activity<?>> getRemoveActivityOutputPortEdit(
+			Activity<?> activity, OutputPort activityOutputPort) {
 		return new RemoveActivityOutputPortEdit(activity, activityOutputPort);
 	}
 
-	public Edit<Activity<?>> getRemoveActivityOutputPortMappingEdit(Activity<?> activity,
-			String processorPortName) {
-		return new RemoveActivityOutputPortMappingEdit(activity, processorPortName);
+	public Edit<Activity<?>> getRemoveActivityOutputPortMappingEdit(
+			Activity<?> activity, String processorPortName) {
+		return new RemoveActivityOutputPortMappingEdit(activity,
+				processorPortName);
 	}
 
 	public Edit<Merge> getAddMergeInputPortEdit(Merge merge,
@@ -356,19 +380,20 @@ public class EditsImpl implements Edits {
 		return new AddMergeInputPortEdit(merge, mergeInputPort);
 	}
 
-	public Edit<Activity<?>> getConfigureActivityEdit(Activity<?> activity,
-			Object configurationBean) {
-		return new ConfigureActivityEdit(activity,configurationBean);
+	public <ConfigurationBean> Edit<Activity<?>> getConfigureActivityEdit(
+			Activity<ConfigurationBean> activity,
+			ConfigurationBean configurationBean) {
+		return new ConfigureActivityEdit(activity, configurationBean);
 	}
 
 	public Edit<Processor> getRemoveProcessorInputPortEdit(Processor processor,
 			ProcessorInputPort port) {
-		return new RemoveProcessorInputPortEdit(processor,port);
+		return new RemoveProcessorInputPortEdit(processor, port);
 	}
 
 	public Edit<Processor> getRemoveProcessorOutputPortEdit(
 			Processor processor, ProcessorOutputPort port) {
-		return new RemoveProcessorOutputPortEdit(processor,port);
+		return new RemoveProcessorOutputPortEdit(processor, port);
 	}
 
 	public Edit<Processor> getMapProcessorPortsForActivityEdit(
@@ -382,7 +407,8 @@ public class EditsImpl implements Edits {
 
 	public Edit<Processor> getSetIterationStrategyStackEdit(
 			Processor processor, IterationStrategyStack iterationStrategyStack) {
-		return new SetIterationStrategyStackEdit(processor, iterationStrategyStack);
+		return new SetIterationStrategyStackEdit(processor,
+				iterationStrategyStack);
 	}
 
 }
