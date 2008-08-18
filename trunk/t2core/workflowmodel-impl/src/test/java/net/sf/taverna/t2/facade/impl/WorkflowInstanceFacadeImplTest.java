@@ -12,6 +12,7 @@ import net.sf.taverna.t2.facade.FailureListener;
 import net.sf.taverna.t2.facade.ResultListener;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
+import net.sf.taverna.t2.workflowmodel.InvalidDataflowException;
 import net.sf.taverna.t2.workflowmodel.impl.DummyDataflow;
 import net.sf.taverna.t2.workflowmodel.impl.DummyDataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.impl.DummyDataflowOutputPort;
@@ -29,7 +30,7 @@ public class WorkflowInstanceFacadeImplTest {
 	private InvocationContext context = new DummyInvocationContext();
 	
 	@Before
-	public void createDataflow() {
+	public void createDataflow() throws InvalidDataflowException {
 		dataflow=new DummyDataflow();
 		WorkflowInstanceFacadeImpl.owningProcessId = new AtomicLong(0);
 		facade = new WorkflowInstanceFacadeImpl(dataflow, context, "");
@@ -189,7 +190,7 @@ public class WorkflowInstanceFacadeImplTest {
 	}
 
 	@Test
-	public void testRemoveResultListener() {
+	public void testRemoveResultListener() throws InvalidDataflowException {
 		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dataflow, context, "");
 		ResultListener listener = new ResultListener() {
 			public void resultTokenProduced(WorkflowDataToken token,String portName) {	
@@ -215,7 +216,7 @@ public class WorkflowInstanceFacadeImplTest {
 	
 	@Test
 	//tests that the listener is added and removed from the output ports
-	public void testResultListenerAndOutputPorts() {
+	public void testResultListenerAndOutputPorts() throws InvalidDataflowException {
 		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dataflow, context, "");
 		ResultListener listener = new ResultListener() {
 			public void resultTokenProduced(WorkflowDataToken token,String portName) {
