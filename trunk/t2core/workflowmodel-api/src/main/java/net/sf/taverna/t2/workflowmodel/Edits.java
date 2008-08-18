@@ -117,11 +117,12 @@ public interface Edits {
 	 * @param dataflow
 	 * @param context
 	 * @return an instance of a WorkflowInstanceFacade
+	 * @throws InvalidDataflowException if the workflow was not valid
 	 * 
 	 * @see WorkflowInstanceFacade
 	 */
 	public WorkflowInstanceFacade createWorkflowInstanceFacade(
-			Dataflow dataflow, InvocationContext context, String parentProcess);
+			Dataflow dataflow, InvocationContext context, String parentProcess) throws InvalidDataflowException;
 
 	/**
 	 * Add an Activity implementation to the set of activities within a
@@ -337,15 +338,16 @@ public interface Edits {
 			ProcessorOutputPort port);
 
 	/**
-	 * Returns an Edit that is responsible for configuring an Acitivity with a
+	 * Returns an Edit that is responsible for configuring an Activity with a
 	 * given configuration bean.
 	 * 
 	 * @param activity
 	 * @param configurationBean
 	 * @return
 	 */
-	public Edit<Activity<?>> getConfigureActivityEdit(Activity<?> activity,
-			Object configurationBean);
+	public <ConfigurationBean> Edit<Activity<?>> getConfigureActivityEdit(
+			Activity<ConfigurationBean> activity,
+			ConfigurationBean configurationBean);
 
 	/**
 	 * Connect a datalink to its source and sink.
