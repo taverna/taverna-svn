@@ -1,18 +1,24 @@
 package net.sf.taverna.t2.activities.wsdl.translator;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import net.sf.taverna.t2.activities.testutils.ActivityInvoker;
 import net.sf.taverna.t2.activities.testutils.DummyProcessor;
-import net.sf.taverna.t2.activities.testutils.LocationConstants;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivity;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
+import net.sf.taverna.t2.activities.wsdl.WSDLTestConstants;
+import net.sf.taverna.t2.activities.wsdl.translator.WSDLActivityTranslator;
+import net.sf.taverna.t2.activities.wsdl.translator.WSDLActivityTranslatorTest;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
@@ -21,36 +27,43 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-/**
- *
- * @author Stuart Owen
- */
-public class WSDLActivityTranslatorTest  implements LocationConstants {
-    private static WSDLBasedProcessor processor = null;
+public class WSDLActivityTranslatorTest {
+	
+	private static WSDLBasedProcessor processor = null;
 	private static String wsdlPath;
+
+	@Test
+	public void testTranslateAndInvoke() throws Exception {
+		System.setProperty("raven.eclipse", "true");
+		WSDLBasedProcessor proc = new WSDLBasedProcessor(null,"test",WSDLTestConstants.WSDL_TEST_BASE+"menagerie-complex-rpc.wsdl","createPerson");
+		WSDLActivity activity = (WSDLActivity) new WSDLActivityTranslator().doTranslation(proc);
+		Map<String,Object> inputMap = new HashMap<String,Object>();
+		Map<String, Class<?>> outputMap = new HashMap<String, Class<?>>();
+		outputMap.put("out", String.class);
+		Map<String,Object> results = ActivityInvoker.invokeAsyncActivity(activity, inputMap, outputMap);
+		assertEquals(1,results.size());
+		assertNotNull(results.get("out"));
+		assertTrue(results.get("out") instanceof String);
+	}
     
-    @Ignore("Integration test")
-    //@BeforeClass
+    @BeforeClass
     public static void createProcessor() throws Exception {
     	wsdlPath = WSDLActivityTranslatorTest.class.getResource("/dbfetch.wsdl").toURI().toURL().toExternalForm();
         processor = new WSDLBasedProcessor(null,"test_wsdl",wsdlPath ,"getSupportedDBs");
     }
     
-    @Ignore("Integration test")
     @Test
     public void testCanHandleTrue() throws Exception {
         WSDLActivityTranslator translator = new WSDLActivityTranslator();
         assertTrue(translator.canHandle(processor));
     }
     
-    @Ignore("Integration test")
     @Test
     public void testCanHandleFalse() throws Exception {
         WSDLActivityTranslator translator = new WSDLActivityTranslator();
         assertFalse(translator.canHandle(new DummyProcessor()));
     }
     
-    @Ignore("Integration test")
     @Test
     public void testConfig() throws Exception {
         WSDLActivityTranslator translator = new WSDLActivityTranslator();
@@ -60,7 +73,6 @@ public class WSDLActivityTranslatorTest  implements LocationConstants {
         assertEquals("The operation in the config bean is wrong","getSupportedDBs",bean.getOperation());
     }
     
-    @Ignore("Integration test")
     @Test
     public void testSimplePorts() throws Exception {
         WSDLActivityTranslator translator = new WSDLActivityTranslator();
@@ -84,7 +96,6 @@ public class WSDLActivityTranslatorTest  implements LocationConstants {
         
     }
     
-    @Ignore("Integration test")
     @Test
     public void getTypeDescriptorForPorts() throws Exception {
     	WSDLActivityTranslator translator = new WSDLActivityTranslator();
@@ -96,5 +107,5 @@ public class WSDLActivityTranslatorTest  implements LocationConstants {
         assertNull("The descriptor should not exist for output fred",activity.getTypeDescriptorForOutputPort("fred"));
         assertNull("The descriptor should not exist for input getSupportedDBsReturn",activity.getTypeDescriptorForInputPort("getSupportedDBsReturn"));
     }
-   
+	
 }
