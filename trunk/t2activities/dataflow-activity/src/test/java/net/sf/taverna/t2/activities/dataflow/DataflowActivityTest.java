@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
+import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 
@@ -30,6 +31,9 @@ public class DataflowActivityTest {
 		dataflow = edits.createDataflow();
 		edits.getCreateDataflowInputPortEdit(dataflow, "input", 0, 0).doEdit();
 		edits.getCreateDataflowOutputPortEdit(dataflow, "output").doEdit();
+		Datalink datalink = edits.createDatalink(dataflow.getInputPorts().get(0).getInternalOutputPort(), 
+				dataflow.getOutputPorts().get(0).getInternalInputPort());
+		edits.getConnectDatalinkEdit(datalink).doEdit();
 	}
 
 	@Test

@@ -45,6 +45,7 @@ public class DataflowActivity extends
 	public void configure(Dataflow dataflow)
 			throws ActivityConfigurationException {
 		this.dataflow=dataflow;
+		dataflow.checkValidity();
 		buildInputPorts();
 		buildOutputPorts();
 	}
