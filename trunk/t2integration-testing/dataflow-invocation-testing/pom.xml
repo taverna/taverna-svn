@@ -7,20 +7,18 @@
 		<version>0.3-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
-	<artifactId>dataflow-invocation-testing</artifactId>
-	<name>
-		Testing of Dataflow invocation after Translation from a
-		ScuflModel
-	</name>
+	<artifactId>dataflow-invocation-testing
+	</artifactId>
+	<name> Testing of Dataflow invocation after Translation from a
+		ScuflModel</name>
 	<packaging>jar</packaging>
-
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>integration-testing-common</artifactId>
+			<artifactId>integration-testing-common
+			</artifactId>
 			<version>${depT2core}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>compatibility-impl</artifactId>
@@ -32,9 +30,22 @@
 			<version>${depT2core}</version>
 		</dependency>
 		<dependency>
-			<groupId>uk.org.mygrid.taverna.scufl</groupId>
+			<groupId>uk.org.mygrid.taverna.scufl
+			</groupId>
 			<artifactId>scufl-model</artifactId>
 			<version>${depTaverna}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -42,14 +53,29 @@
 			<version>${depJunit}</version>
 		</dependency>
 		<dependency>
-			<groupId>uk.org.mygrid.taverna.processors</groupId>
-			<artifactId>taverna-beanshell-processor</artifactId>
+			<groupId>uk.org.mygrid.taverna.processors
+			</groupId>
+			<artifactId>taverna-beanshell-processor
+			</artifactId>
 			<version>${depTaverna}</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>beanshell-activity-translator</artifactId>
+			<artifactId>beanshell-activity-translator
+			</artifactId>
 			<version>${depT2core}</version>
 			<scope>test</scope>
 		</dependency>
@@ -59,10 +85,10 @@
 			<version>${depT2core}</version>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>biomart-activity-translator</artifactId>
+			<artifactId>biomart-activity-translator
+			</artifactId>
 			<version>${depT2core}</version>
 			<scope>test</scope>
 		</dependency>
@@ -73,22 +99,49 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>uk.org.mygrid.taverna.processors</groupId>
-			<artifactId>taverna-biomart-processor</artifactId>
+			<groupId>uk.org.mygrid.taverna.processors
+			</groupId>
+			<artifactId>taverna-biomart-processor
+			</artifactId>
 			<version>${depTaverna}</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
-
 		<dependency>
-			<groupId>uk.org.mygrid.taverna.processors</groupId>
-			<artifactId>taverna-soaplab-processor</artifactId>
+			<groupId>uk.org.mygrid.taverna.processors
+			</groupId>
+			<artifactId>taverna-soaplab-processor
+			</artifactId>
 			<version>${depTaverna}</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
-
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>soaplab-activity-translator</artifactId>
+			<artifactId>soaplab-activity-translator
+			</artifactId>
 			<version>${depT2core}</version>
 			<scope>test</scope>
 		</dependency>
@@ -98,10 +151,10 @@
 			<version>${depT2core}</version>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>wsdl-activity-translator</artifactId>
+			<artifactId>wsdl-activity-translator
+			</artifactId>
 			<version>${depT2core}</version>
 			<scope>test</scope>
 		</dependency>
@@ -112,40 +165,80 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>uk.org.mygrid.taverna.processors</groupId>
+			<groupId>uk.org.mygrid.taverna.processors
+			</groupId>
 			<artifactId>taverna-wsdl-processor</artifactId>
 			<version>1.7.1.1-SNAPSHOT</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
-
-
 		<dependency>
-			<groupId>uk.org.mygrid.taverna.processors</groupId>
-			<artifactId>taverna-stringconstant-processor</artifactId>
+			<groupId>uk.org.mygrid.taverna.processors
+			</groupId>
+			<artifactId>taverna-stringconstant-processor
+			</artifactId>
 			<version>${depTaverna}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>stringconstant-activity-translator</artifactId>
+			<artifactId>stringconstant-activity-translator
+			</artifactId>
 			<version>${depT2core}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>stringconstant-activity</artifactId>
+			<artifactId>stringconstant-activity
+			</artifactId>
 			<version>${depT2core}</version>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
-			<groupId>uk.org.mygrid.taverna.scufl</groupId>
+			<groupId>uk.org.mygrid.taverna.scufl
+			</groupId>
 			<artifactId>scufl-workflow</artifactId>
 			<version>${depTaverna}</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>dataflow-activity-translator</artifactId>
+			<artifactId>dataflow-activity-translator
+			</artifactId>
 			<version>${depT2core}</version>
 			<scope>test</scope>
 		</dependency>
@@ -155,18 +248,29 @@
 			<version>${depT2core}</version>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
-			<groupId>uk.org.mygrid.taverna.processors</groupId>
+			<groupId>uk.org.mygrid.taverna.processors
+			</groupId>
 			<artifactId>taverna-localworkers</artifactId>
 			<version>${depTaverna}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>localworker-translator</artifactId>
 			<version>${depT2core}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>platform</artifactId>
@@ -184,10 +288,10 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>t2reference-core-extensions</artifactId>
+			<artifactId>t2reference-core-extensions
+			</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
-
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>activity-test-utils</artifactId>
@@ -195,5 +299,4 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
 </project>
