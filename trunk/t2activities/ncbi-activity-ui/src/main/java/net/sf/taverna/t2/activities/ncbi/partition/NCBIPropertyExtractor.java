@@ -17,6 +17,7 @@ public class NCBIPropertyExtractor implements PropertyExtractorSPI {
 			map.put("type", item.getType());
 			map.put("url", item.getUrl());
 			map.put("category", item.getCategory());
+			map.put("operation", item.getOperation());
 		}
 		return map;
 	}
