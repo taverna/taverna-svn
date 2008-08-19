@@ -279,6 +279,14 @@ public class Partition<ItemType extends Comparable, PartitionValueType, ChildPar
 					.get(0);
 			ChildPartitionValueType pvalue = pa.allocate(item, root
 					.getPropertyExtractorRegistry());
+			// FIXME not sure how to do this since you seem to have to add the
+			// items to the partition if you want to then search them again,
+			// maybe you need a non-showing partition or something?
+			// //if it is a failed search then don't bother adding to the
+			// partition
+			// if (pvalue.toString().equalsIgnoreCase("No match")) {
+			// return;
+			// }
 			// See if there's a partition with this value already in the child
 			// partition list
 			for (Partition<ItemType, ChildPartitionValueType, ?> potentialChild : children) {
@@ -309,12 +317,13 @@ public class Partition<ItemType extends Comparable, PartitionValueType, ChildPar
 							.get(i).getPartitionValue();
 					if (childPartitionOrder.compare(pvalue,
 							existingPartitionValue) < 0) {
-						children.add(i,newPartition);
+						children.add(i, newPartition);
 						root.treeNodesInserted(new TreeModelEvent(this,
 								getTreePath(), new int[] { i },
 								new Object[] { newPartition }));
-						if (i!=0) {
-							root.treeStructureChanged(new TreeModelEvent(this,getTreePath()));
+						if (i != 0) {
+							root.treeStructureChanged(new TreeModelEvent(this,
+									getTreePath()));
 						}
 						foundIndex = true;
 						break;
@@ -329,7 +338,8 @@ public class Partition<ItemType extends Comparable, PartitionValueType, ChildPar
 					// comparator)
 					children.add(newPartition);
 					root.treeNodesInserted(new TreeModelEvent(this,
-							getTreePath(), new int[] { children.indexOf(newPartition) },
+							getTreePath(), new int[] { children
+									.indexOf(newPartition) },
 							new Object[] { newPartition }));
 				}
 			}
