@@ -112,7 +112,7 @@ public class RunWorkflowAction extends AbstractAction {
 				WorkflowInstanceFacade facade;
 				try {
 					facade = new EditsImpl().createWorkflowInstanceFacade(
-							dataflow, new InvocationContextImplementation(
+							dataflowCopy, new InvocationContextImplementation(
 									referenceService), "");
 				} catch (InvalidDataflowException ex) {
 					invalidDataflow(ex.getDataflowValidationReport());
@@ -185,7 +185,7 @@ public class RunWorkflowAction extends AbstractAction {
 
 	private void showInputDialog(final WorkflowInstanceFacade facade, ReferenceContext refContext) {
 		// Create and set up the window.
-		JFrame frame = new JFrame("Workflow input builder");
+		final JFrame frame = new JFrame("Workflow input builder");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		WorkflowLaunchPanel wlp = new WorkflowLaunchPanel(facade.getContext()
@@ -194,6 +194,7 @@ public class RunWorkflowAction extends AbstractAction {
 			public void handleLaunch(Map<String, T2Reference> workflowInputs) {
 				switchToResultsPerspective();
 				runComponent.runDataflow(facade, workflowInputs);
+				frame.dispose();
 			
 			}
 		};
