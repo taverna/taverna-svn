@@ -27,18 +27,54 @@
 			<groupId>uk.org.mygrid.taverna.processors</groupId>
 			<artifactId>taverna-java-processor</artifactId>
 			<version>1.7.1.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.processors</groupId>
 			<artifactId>taverna-wsdl-processor</artifactId>
 			<version>1.7.1.1-SNAPSHOT</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.processors</groupId>
 			<artifactId>taverna-localworkers</artifactId>
 			<version>1.7.1.0</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		
 		<dependency>

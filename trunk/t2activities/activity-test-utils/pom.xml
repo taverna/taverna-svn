@@ -40,6 +40,18 @@
 			<groupId>uk.org.mygrid.taverna.scufl</groupId>
 			<artifactId>scufl-model</artifactId>
 			<version>1.7.1.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>		
 	</dependencies>
 </project>

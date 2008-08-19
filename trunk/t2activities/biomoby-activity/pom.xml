@@ -20,16 +20,28 @@
 			<artifactId>t2reference-api</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
-    	<dependency>
+		<dependency>
 			<groupId>biomoby.org</groupId>
 			<artifactId>taverna-biomoby</artifactId>
 			<version>1.7.1.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>biomoby.org</groupId>
 			<artifactId>jmoby</artifactId>
 			<version>1.2</version>
-    	</dependency>
+		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>activity-test-utils</artifactId>
