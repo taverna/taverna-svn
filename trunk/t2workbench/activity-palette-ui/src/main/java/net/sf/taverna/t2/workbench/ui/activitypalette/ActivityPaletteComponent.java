@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -19,15 +18,16 @@ import javax.help.CSH;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeModel;
@@ -45,6 +45,7 @@ import net.sf.taverna.t2.partition.QueryFactory;
 import net.sf.taverna.t2.partition.QueryFactoryRegistry;
 import net.sf.taverna.t2.partition.RootPartition;
 import net.sf.taverna.t2.partition.SetModelChangeListener;
+import net.sf.taverna.t2.partition.algorithms.CustomPartitionAlgorithm;
 import net.sf.taverna.t2.partition.algorithms.LiteralValuePartitionAlgorithm;
 import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
 
@@ -73,7 +74,8 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 	 */
 	private JMenu mainMenu;
 	private RootPartition<?> rootPartition;
-	private List<PartitionAlgorithm<?>> selectedPartitions = new ArrayList<PartitionAlgorithm<?>>(2);
+	private List<PartitionAlgorithm<?>> selectedPartitions = new ArrayList<PartitionAlgorithm<?>>(
+			2);
 	JMenu firstMenu;
 	JMenu secondMenu;
 	Map<PartitionAlgorithm<?>, JMenuItem> firstAlgorithmToMenuItemMap = new HashMap<PartitionAlgorithm<?>, JMenuItem>();
@@ -82,6 +84,8 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 	private static ActivityPaletteComponent instance = new ActivityPaletteComponent();
 	private JComboBox firstPartitionComboBox;
 	private JComboBox secondPartitionComboBox;
+	private JTextField searchBox;
+	private JButton searchButton;
 
 	private static Logger logger = Logger
 			.getLogger(ActivityPaletteComponent.class);
@@ -89,7 +93,7 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 	public static ActivityPaletteComponent getInstance() {
 		return instance;
 	}
-	
+
 	/**
 	 * Provides access to the root partition of the tree.
 	 * 
@@ -100,9 +104,9 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 	}
 
 	/**
-	 * Sets the layout as {@link BorderLayout}. Then calls
-	 * {@link #initialise()} to create the {@link ActivityTree}. Adds a
-	 * {@link JMenuBar} to allow the user to filter the activities
+	 * Sets the layout as {@link BorderLayout}. Then calls {@link #initialise()}
+	 * to create the {@link ActivityTree}. Adds a {@link JMenuBar} to allow the
+	 * user to filter the activities
 	 */
 	private ActivityPaletteComponent() {
 		CSH
@@ -110,22 +114,25 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 						"net.sf.taverna.t2.workbench.ui.activitypalette.ActivityPaletteComponent");
 		setLayout(new BorderLayout());
 		initialise();
-		
+
 		createComboBoxes();
-		
+
 		JPanel comboBoxes = new JPanel();
-		comboBoxes.setLayout(new BoxLayout(comboBoxes,BoxLayout.X_AXIS));
-		JPanel first=new JPanel(new BorderLayout());
-		first.add(firstPartitionComboBox,BorderLayout.SOUTH);
-		
-		JPanel second=new JPanel(new BorderLayout());
-		second.add(secondPartitionComboBox,BorderLayout.SOUTH);
-		
-		
+		comboBoxes.setLayout(new BoxLayout(comboBoxes, BoxLayout.X_AXIS));
+		JPanel first = new JPanel(new BorderLayout());
+		first.add(firstPartitionComboBox, BorderLayout.SOUTH);
+
+		JPanel second = new JPanel(new BorderLayout());
+		second.add(secondPartitionComboBox, BorderLayout.SOUTH);
+
+		JPanel searchPanel = new JPanel(new BorderLayout());
+		searchPanel.add(searchBox, BorderLayout.WEST);
+		searchPanel.add(searchButton, BorderLayout.EAST);
+
 		comboBoxes.add(first);
 		comboBoxes.add(second);
-		
-		
+		comboBoxes.add(searchPanel);
+
 		add(comboBoxes, BorderLayout.NORTH);
 		add(new JScrollPane(activityTree), BorderLayout.CENTER);
 	}
@@ -150,7 +157,6 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 				.setChildPartitionOrder(new Comparator<String>() {
 
 					public int compare(String o1, String o2) {
-						// TODO Auto-generated method stub
 						if (o1.compareTo(o2) > 0) {
 							return 1;
 						}
@@ -166,8 +172,8 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 	 * has. This allows the {@link ActivityTree} to know about the queries and
 	 * re-run them whenever the user selects a different filter. ie. when the
 	 * {@link ActivityTree} is given a new model (remember that the model is a
-	 * {@link RootPartition}. The actual queries do not change but the
-	 * partition does
+	 * {@link RootPartition}. The actual queries do not change but the partition
+	 * does
 	 * 
 	 * @param partition
 	 */
@@ -184,14 +190,16 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 	}
 
 	private void createComboBoxes() {
-		
-		//FIXME: currently acts a bit quirky if there are no activities added, since there is an assumption
-		//that there will be at least 1 partiion algorith for "type". There is also an assumption there are 2
-		//combo boxes.
+
+		// FIXME: currently acts a bit quirky if there are no activities added,
+		// since there is an assumption
+		// that there will be at least 1 partiion algorith for "type". There is
+		// also an assumption there are 2
+		// combo boxes.
 
 		firstPartitionComboBox = new JComboBox();
 		secondPartitionComboBox = new JComboBox();
-		
+
 		firstPartitionComboBox.setToolTipText("Select the first grouping");
 		secondPartitionComboBox.setToolTipText("Select the second grouping");
 
@@ -199,7 +207,14 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 			if (algorithm instanceof LiteralValuePartitionAlgorithm) {
 				LiteralValuePartitionAlgorithm litAlg = (LiteralValuePartitionAlgorithm) algorithm;
 
-				if (!(litAlg instanceof NoneSelectedPartitionAlgorithm)) { //dont add NoneSelected to the first combo box
+				if (!(litAlg instanceof NoneSelectedPartitionAlgorithm)) { // dont
+					// add
+					// NoneSelected
+					// to
+					// the
+					// first
+					// combo
+					// box
 					firstPartitionComboBox.addItem(litAlg);
 				}
 				secondPartitionComboBox.addItem(litAlg);
@@ -226,6 +241,14 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 		secondPartitionComboBox
 				.addActionListener(new PartionComboBoxActionListener(1));
 
+		searchBox = new JTextField("Enter Search here");
+
+		searchBox.setToolTipText("Enter a search term and click the button");
+		searchButton = new JButton("Search");
+		searchButton.setFocusable(true);
+		searchButton.setToolTipText("Search over all the activities and properties");
+		searchButton.addActionListener(new SearchBoxActionListener());
+
 	}
 
 	class PartitionComboxBoxCellRenderer extends DefaultListCellRenderer {
@@ -239,22 +262,21 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 		@Override
 		public Component getListCellRendererComponent(JList list, Object value,
 				int i, boolean isSelected, boolean cellHasFocus) {
-			
+
 			JCheckBoxMenuItem result = new JCheckBoxMenuItem(value.toString());
-			if (selectedPartitions.size()>1) {
+			if (selectedPartitions.size() > 1) {
 				if (value == selectedPartitions.get(index)) {
 					result.setSelected(true);
 				}
 			}
-			
+
 			if (isSelected) {
 				result.setBackground(Color.GRAY);
 			}
-			
+
 			int otherSelectedIndex = index == 0 ? 1 : 0;
-			if (selectedPartitions.size()>1) {
-				if (value == selectedPartitions.get(otherSelectedIndex))
-				{
+			if (selectedPartitions.size() > 1) {
+				if (value == selectedPartitions.get(otherSelectedIndex)) {
 					result.setEnabled(false);
 					result.setFocusable(false);
 				}
@@ -304,11 +326,52 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 					}
 				});
 				return true;
-			}
-			else {
+			} else {
 				return false;
 			}
 		}
+	}
+
+	/**
+	 * Searches over all the activities and each of the properties - "url",
+	 * "operation" etc
+	 * 
+	 * @author Ian Dunlop
+	 * 
+	 */
+	class SearchBoxActionListener implements ActionListener {
+
+		private String text;
+
+		public void actionPerformed(ActionEvent e) {
+			text = searchBox.getText();
+			final RootPartition<ActivityItem> root = (RootPartition<ActivityItem>) activityTree
+					.getModel();
+			if ((text != null) || !(text.equalsIgnoreCase("Enter Search here"))) {
+				final List<PartitionAlgorithm<?>> partitions = new ArrayList<PartitionAlgorithm<?>>();
+				CustomPartitionAlgorithm customAlg = new CustomPartitionAlgorithm();
+				customAlg.setSearchValue(text);
+				for (PartitionAlgorithm<?> algorithm : getAlgorithms()) {
+					if (algorithm instanceof LiteralValuePartitionAlgorithm) {
+	
+						customAlg
+								.addProperty(((LiteralValuePartitionAlgorithm) algorithm)
+										.getPropertyName());
+					}
+				}
+				partitions.add(customAlg);
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						Cursor oldCursor = getCursor();
+						Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+						setCursor(hourglassCursor);
+						root.setPartitionAlgorithmList(partitions);
+						setCursor(oldCursor);
+					}
+				});
+			}
+		}
+
 	}
 
 	private JMenu createAddActivityMenu() {
