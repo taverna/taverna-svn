@@ -31,13 +31,13 @@ public class RenameDataflowOutputPortAction extends DataflowEditAction {
 
 	public void actionPerformed(ActionEvent e) {
 		try {
-			Set<String> usedProcessors = new HashSet<String>();
-			for (Processor usedProcessor : dataflow.getProcessors()) {
-				if (!usedProcessor.getLocalName().equals(port.getName())) {
-					usedProcessors.add(usedProcessor.getLocalName());
+			Set<String> usedOutputPorts = new HashSet<String>();
+			for (DataflowOutputPort usedOutputPort : dataflow.getOutputPorts()) {
+				if (!usedOutputPort.getName().equals(port.getName())) {
+					usedOutputPorts.add(usedOutputPort.getName());
 				}
 			}
-			ValidatingUserInputDialog vuid = new ValidatingUserInputDialog(usedProcessors, "Duplicate output port.",
+			ValidatingUserInputDialog vuid = new ValidatingUserInputDialog(usedOutputPorts, "Duplicate output port.",
 					"[\\p{L}\\p{Digit}_.]+", "Invalid output port name.", "Output Port Name", "Set the output port name.",
 					port.getName());
 			String portName = vuid.show(component);
