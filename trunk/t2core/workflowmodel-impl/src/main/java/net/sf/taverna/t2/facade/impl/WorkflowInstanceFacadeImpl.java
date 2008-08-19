@@ -68,8 +68,6 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 			this.instanceOwningProcessId = parentProcess + ":" + localName;
 		}
 		facadeResultListener = new FacadeResultListener(dataflow);
-		monitorManager.registerNode(this, instanceOwningProcessId.split(":"),
-				new HashSet<MonitorableProperty<?>>());
 	}
 
 	public void addFailureListener(FailureListener listener) {
@@ -89,6 +87,8 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 		if (pushDataCalled)
 			throw new IllegalStateException(
 					"Data has already been pushed, fire must be called first!");
+		monitorManager.registerNode(this, instanceOwningProcessId.split(":"),
+				new HashSet<MonitorableProperty<?>>());
 		dataflow.fire(instanceOwningProcessId, context);
 	}
 
