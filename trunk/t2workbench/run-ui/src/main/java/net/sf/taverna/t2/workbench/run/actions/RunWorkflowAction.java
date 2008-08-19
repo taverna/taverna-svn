@@ -113,7 +113,7 @@ public class RunWorkflowAction extends AbstractAction {
 				try {
 					facade = new EditsImpl().createWorkflowInstanceFacade(
 							dataflow, new InvocationContextImplementation(
-									referenceService), null);
+									referenceService), "");
 				} catch (InvalidDataflowException ex) {
 					invalidDataflow(ex.getDataflowValidationReport());
 					return;
