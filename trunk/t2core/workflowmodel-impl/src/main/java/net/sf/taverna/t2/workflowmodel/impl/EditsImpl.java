@@ -319,6 +319,11 @@ public class EditsImpl implements Edits {
 		return new RemoveProcessorEdit(dataflow, processor);
 	}
 
+	public Edit<Dataflow> getRemoveMergeEdit(Dataflow dataflow,
+			Merge merge) {
+		return new RemoveMergeEdit(dataflow, merge);
+	}
+
 	public Edit<Dataflow> getAddDataflowInputPortEdit(Dataflow dataflow,
 			DataflowInputPort dataflowInputPort) {
 		return new AddDataflowInputPortEdit(dataflow, dataflowInputPort);

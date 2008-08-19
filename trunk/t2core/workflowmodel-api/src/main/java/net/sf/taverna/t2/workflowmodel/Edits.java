@@ -596,6 +596,16 @@ public interface Edits {
 			Processor processor, ProcessorOutputPort port);
 
 	/**
+	 * Removes a merge from the dataflow.
+	 * 
+	 * @param dataflow
+	 * @param processor
+	 * @return
+	 */
+	public Edit<Dataflow> getRemoveMergeEdit(Dataflow dataflow,
+			Merge merge);
+	
+	/**
 	 * Rename a dataflow input port
 	 * 
 	 * @param dataflowInputPort

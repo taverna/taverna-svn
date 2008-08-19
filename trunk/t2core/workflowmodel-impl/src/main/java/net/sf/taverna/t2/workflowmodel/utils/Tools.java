@@ -100,7 +100,10 @@ public class Tools {
 		List<Edit<?>> editList = new ArrayList<Edit<?>>();		
 		editList.add(edits.getDisconnectDatalinkEdit(datalink));
 		if (datalink.getSource() instanceof ProcessorOutputPort) {
-			editList.add(getRemoveProcessorOutputPortEdit((ProcessorOutputPort) datalink.getSource()));
+			ProcessorOutputPort processorOutputPort = (ProcessorOutputPort) datalink.getSource();
+			if (processorOutputPort.getOutgoingLinks().size() == 1) {
+				editList.add(getRemoveProcessorOutputPortEdit(processorOutputPort));
+			}
 		}
 		if (datalink.getSink() instanceof ProcessorInputPort) {
 			editList.add(getRemoveProcessorInputPortEdit((ProcessorInputPort) datalink.getSink()));
