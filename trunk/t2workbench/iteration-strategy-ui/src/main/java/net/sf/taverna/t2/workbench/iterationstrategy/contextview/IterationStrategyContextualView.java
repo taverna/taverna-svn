@@ -35,20 +35,95 @@ import org.apache.log4j.Logger;
 import org.jdom.Element;
 
 /**
+ * Contextual view of an {@link IterationStrategyStack}.
  * 
  * @author Stian Soiland-Reyes
  * 
  */
 public class IterationStrategyContextualView extends ContextualView {
 
+	private static Logger logger = Logger
+			.getLogger(IterationStrategyContextualView.class);
+
 	private EditManager editManager = EditManager.getInstance();
 
 	private FileManager fileManager = FileManager.getInstance();
 
+	private IterationStrategyStackImpl iterationStack;
+
+	private final Processor processor;
+
 	private IterationStrategyTree strategyTree = new IterationStrategyTree();
 
-	private static Logger logger = Logger
-			.getLogger(IterationStrategyContextualView.class);
+	public IterationStrategyContextualView(Processor processor) {
+		if (processor == null || processor.getIterationStrategy() == null) {
+			throw new NullPointerException(
+					"Iteration strategy stack can't be null");
+		}
+		this.processor = processor;
+		refreshIterationStrategyStack();
+		initView();
+	}
+
+	@Override
+	public Action getConfigureAction(final Frame owner) {
+		return new ConfigureIterationStrategyAction(owner);
+	}
+
+	public Processor getProcessor() {
+		return processor;
+	}
+
+	@Override
+	public void refreshView() {
+		refreshIterationStrategyStack();
+		strategyTree.setIterationStrategy(getIterationStrategy());
+	}
+
+	private IterationStrategyStackImpl copyIterationStrategyStack(
+			IterationStrategyStackImpl stack) {
+		Element asXML = stack.asXML();
+		IterationStrategyStackImpl copyStack = new IterationStrategyStackImpl();
+		copyStack.configureFromElement(asXML);
+		return copyStack;
+	}
+
+	private IterationStrategyImpl getIterationStrategy() {
+		List<? extends IterationStrategy> strategies = iterationStack
+				.getStrategies();
+		if (strategies.isEmpty()) {
+			throw new IllegalStateException("Empty iteration stack");
+		}
+		IterationStrategy strategy = strategies.get(0);
+		if (!(strategy instanceof IterationStrategyImpl)) {
+			throw new IllegalStateException(
+					"Can't edit unknown iteration strategy implementation "
+							+ strategy);
+		}
+		return (IterationStrategyImpl) strategy;
+	}
+
+	private void refreshIterationStrategyStack() {
+		IterationStrategyStack originalIterationStrategy = processor
+				.getIterationStrategy();
+		if (!(originalIterationStrategy instanceof IterationStrategyStackImpl)) {
+			throw new IllegalStateException(
+					"Unknown iteration strategy implementation "
+							+ originalIterationStrategy);
+		}
+		this.iterationStack = copyIterationStrategyStack((IterationStrategyStackImpl) originalIterationStrategy);
+	}
+
+	@Override
+	protected JComponent getMainFrame() {
+		refreshView();
+		return strategyTree;
+	}
+
+	@Override
+	protected String getViewTitle() {
+		return "Iteration strategy";
+	}
 
 	private final class ConfigureIterationStrategyAction extends AbstractAction {
 		private final Frame owner;
@@ -82,23 +157,6 @@ public class IterationStrategyContextualView extends ContextualView {
 			dialog.add(buttonPanel, BorderLayout.SOUTH);
 			dialog.setSize(400, 400);
 			dialog.setVisible(true);
-		}
-
-		private final class ResetAction extends AbstractAction {
-			private final IterationStrategyEditorControl strategyEditorControl;
-
-			private ResetAction(
-					IterationStrategyEditorControl strategyEditorControl) {
-				super("Reset");
-				this.strategyEditorControl = strategyEditorControl;
-			}
-
-			public void actionPerformed(ActionEvent e) {
-				refreshView();
-				strategyEditorControl
-						.setIterationStrategy(getIterationStrategy());
-			}
-
 		}
 
 		private final class CancelAction extends AbstractAction {
@@ -151,74 +209,22 @@ public class IterationStrategyContextualView extends ContextualView {
 				}
 			}
 		}
-	}
 
-	private IterationStrategyStackImpl iterationStack;
-	private final Processor processor;
+		private final class ResetAction extends AbstractAction {
+			private final IterationStrategyEditorControl strategyEditorControl;
 
-	public IterationStrategyContextualView(Processor processor) {
-		if (processor == null || processor.getIterationStrategy() == null) {
-			throw new NullPointerException(
-					"Iteration strategy stack can't be null");
+			private ResetAction(
+					IterationStrategyEditorControl strategyEditorControl) {
+				super("Reset");
+				this.strategyEditorControl = strategyEditorControl;
+			}
+
+			public void actionPerformed(ActionEvent e) {
+				refreshView();
+				strategyEditorControl
+						.setIterationStrategy(getIterationStrategy());
+			}
+
 		}
-		this.processor = processor;
-		refreshIterationStrategyStack();
-		initView();
-	}
-
-	@Override
-	protected JComponent getMainFrame() {
-		refreshView();
-		return strategyTree;
-	}
-
-	private IterationStrategyStackImpl copyIterationStrategyStack(
-			IterationStrategyStackImpl stack) {
-		Element asXML = stack.asXML();
-		IterationStrategyStackImpl copyStack = new IterationStrategyStackImpl();
-		copyStack.configureFromElement(asXML);
-		return copyStack;
-	}
-
-	private IterationStrategyImpl getIterationStrategy() {
-		List<? extends IterationStrategy> strategies = iterationStack
-				.getStrategies();
-		if (strategies.isEmpty()) {
-			throw new IllegalStateException("Empty iteration stack");
-		}
-		IterationStrategy strategy = strategies.get(0);
-		if (!(strategy instanceof IterationStrategyImpl)) {
-			throw new IllegalStateException(
-					"Can't edit unknown iteration strategy implementation "
-							+ strategy);
-		}
-		return (IterationStrategyImpl) strategy;
-	}
-
-	@Override
-	public Action getConfigureAction(final Frame owner) {
-		return new ConfigureIterationStrategyAction(owner);
-	}
-
-	@Override
-	protected String getViewTitle() {
-		return "Iteration strategy";
-	}
-
-	@Override
-	public void refreshView() {
-		refreshIterationStrategyStack();
-		strategyTree.setIterationStrategy(getIterationStrategy());
-	}
-
-	private void refreshIterationStrategyStack() {
-		IterationStrategyStack originalIterationStrategy = processor
-				.getIterationStrategy();
-		if (!(originalIterationStrategy instanceof IterationStrategyStackImpl)) {
-			throw new IllegalStateException(
-					"Unknown iteration strategy implementation "
-							+ originalIterationStrategy);
-		}
-		this.iterationStack = copyIterationStrategyStack((IterationStrategyStackImpl) originalIterationStrategy);
 	}
 }
