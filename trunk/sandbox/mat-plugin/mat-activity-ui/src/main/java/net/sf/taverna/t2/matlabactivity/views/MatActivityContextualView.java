@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.sf.taverna.t2.matlabactivity.views;
 
 import java.awt.Frame;
@@ -16,7 +12,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputP
 
 /**
  *
- * @author user
+ * @author petarj
  */
 public class MatActivityContextualView extends HTMLBasedActivityContextualView<MatActivityConfigurationBean> {
 

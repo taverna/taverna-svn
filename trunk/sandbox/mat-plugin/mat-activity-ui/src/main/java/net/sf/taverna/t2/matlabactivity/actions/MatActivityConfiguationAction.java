@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JDialog;
 import net.sf.taverna.t2.activities.matlab.MatActivity;
+import net.sf.taverna.t2.activities.matlab.MatActivityConfigurationBean;
 import net.sf.taverna.t2.matlabactivity.views.MatActivityConfigView;
 import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationAction;
 
@@ -12,7 +13,7 @@ import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationActi
  *
  * @author petarj
  */
-public class MatActivityConfiguationAction extends ActivityConfigurationAction<MatActivity> {
+public class MatActivityConfiguationAction extends ActivityConfigurationAction<MatActivity, MatActivityConfigurationBean> {
 
     private static final long serialVersionUID = -7319085372935246376L;
     private Frame owner;
