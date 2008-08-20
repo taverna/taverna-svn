@@ -209,9 +209,13 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 					edgeValid = true;
 				} else if (dataflowObject instanceof Processor) {
 					Processor processor = (Processor) dataflowObject;
-					if (processor.getOutputPorts().size() > 0 && !processor.getInputPorts().contains(edgeCreationSink.getDataflowObject())) {
-						edgeCreationSource = graphElement;
-						edgeValid = true;
+					List<? extends Activity<?>> activities = processor.getActivityList();
+					if (activities.size() > 0) {
+						Activity<?> activity = activities.get(0);
+						if (activity.getOutputPorts().size() > 0 && !activity.getInputPorts().contains(edgeCreationSink.getDataflowObject())) {
+							edgeCreationSource = graphElement;
+							edgeValid = true;
+						}
 					}
 				}
 			}
@@ -237,7 +241,8 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 					Processor processor = (Processor) dataflowObject;
 					List<? extends Activity<?>> activities = processor.getActivityList();
 					if (activities.size() > 0) {
-						if (processor.getInputPorts().size() > 0 && !activities.get(0).getOutputPorts().contains(edgeCreationSource.getDataflowObject())) {
+						Activity<?> activity = activities.get(0);
+						if (activity.getInputPorts().size() > 0 && !activity.getOutputPorts().contains(edgeCreationSource.getDataflowObject())) {
 							edgeCreationSink = graphElement;
 							edgeValid = true;
 						}
@@ -267,7 +272,7 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 				List<? extends Activity<?>> activities = ((Processor) sourceDataflowObject).getActivityList();
 				if (activities.size() > 0) {
 					Set<OutputPort> ports = activities.get(0).getOutputPorts();
-					source = (ProcessorOutputPort) showPortOptions(new ArrayList<Port>(ports), "output", componentForPopups, point);
+					source = (OutputPort) showPortOptions(new ArrayList<Port>(ports), "output", componentForPopups, point);
 				}
 			}
 			if (sinkDataflowObject instanceof InputPort) {
