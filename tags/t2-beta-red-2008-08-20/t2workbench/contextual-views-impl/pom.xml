@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.sf.taverna.t2.workbench</groupId>
+	<artifactId>contextual-views-impl</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<name>Contextual Views Implementation</name>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>t2-workbench</artifactId>
+		<version>0.1-SNAPSHOT</version>
+	</parent>
+	<description>Contextual views for the activities</description>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<systemProperties>
+						<property>
+							<name>java.awt.headless</name>
+							<value>false</value>
+						</property>
+					</systemProperties>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>contextual-views-api</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>javax.help</groupId>
+			<artifactId>javahelp</artifactId>
+			<version>2.0.02</version>
+		</dependency>
+		
+
+	</dependencies>
+</project>
