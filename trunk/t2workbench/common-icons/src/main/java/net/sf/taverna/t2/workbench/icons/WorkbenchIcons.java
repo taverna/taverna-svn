@@ -53,8 +53,11 @@ public class WorkbenchIcons {
 	public static ImageIcon searchIcon;
 	public static ImageIcon pasteIcon;
 	public static ImageIcon copyIcon;
+	public static ImageIcon datalinkIcon;
 	public static ImageIcon inputIcon;
+	public static ImageIcon inputPortIcon;
 	public static ImageIcon outputIcon;
+	public static ImageIcon outputPortIcon;
 	public static ImageIcon verticalIcon;
 	public static ImageIcon horizontalIcon;
 	public static ImageIcon noportIcon;
@@ -132,11 +135,16 @@ public class WorkbenchIcons {
 					.getResource("generic/updateRecommended.png"));
 			uninstallIcon = new ImageIcon(c
 					.getResource("generic/uninstall.png"));
+			datalinkIcon = new ImageIcon(c
+					.getResource("explorer/datalink.gif"));
 			inputIcon = new ImageIcon(c
 					.getResource("explorer/input.png"));
+			inputPortIcon = new ImageIcon(c
+					.getResource("explorer/inputport.png"));
 			outputIcon = new ImageIcon(c
 					.getResource("explorer/output.png"));
-			
+			outputPortIcon = new ImageIcon(c
+					.getResource("explorer/outputport.png"));
 			verticalIcon = new ImageIcon(c
 					.getResource("graph/vertical.png"));
 			horizontalIcon = new ImageIcon(c
