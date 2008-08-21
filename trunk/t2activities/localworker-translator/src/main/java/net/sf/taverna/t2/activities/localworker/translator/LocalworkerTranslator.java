@@ -11,6 +11,8 @@ import java.util.Map;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
+import net.sf.taverna.t2.activities.localworker.LocalworkerActivity;
+import net.sf.taverna.t2.activities.localworker.LocalworkerActivityConfigurationBean;
 import net.sf.taverna.t2.compatibility.activity.AbstractActivityTranslator;
 import net.sf.taverna.t2.compatibility.activity.ActivityTranslationException;
 import net.sf.taverna.t2.compatibility.activity.ActivityTranslator;
@@ -102,14 +104,14 @@ public class LocalworkerTranslator extends
 	}
 
 	@Override
-	protected BeanshellActivity createUnconfiguredActivity() {
-		return new BeanshellActivity();
+	protected LocalworkerActivity createUnconfiguredActivity() {
+		return new LocalworkerActivity();
 	}
 
 	@Override
-	protected BeanshellActivityConfigurationBean createConfigType(
+	protected LocalworkerActivityConfigurationBean createConfigType(
 			Processor processor) throws ActivityTranslationException {
-		BeanshellActivityConfigurationBean bean = new BeanshellActivityConfigurationBean();
+		LocalworkerActivityConfigurationBean bean = new LocalworkerActivityConfigurationBean();
 		populateConfigurationBeanPortDetails(processor, bean);
 		String workerClassName = getWorkerClassName(processor);
 		bean.setScript(getScript(workerClassName));
