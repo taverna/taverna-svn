@@ -64,6 +64,8 @@ public class WorkbenchIcons {
 	public static ImageIcon allportIcon;
 	public static ImageIcon blobIcon;
 	public static ImageIcon expandNestedIcon;
+	public static ImageIcon advancedModelExplorerIcon;
+
 
 	static {
 		// Load the image files found in this package into the class.
@@ -157,6 +159,8 @@ public class WorkbenchIcons {
 					.getResource("graph/blob.png"));
 			expandNestedIcon = new ImageIcon(c
 					.getResource("graph/expandnested.png"));
+			advancedModelExplorerIcon = new ImageIcon(c
+					.getResource("explorer/advanced-model-explorer.png"));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.out.println(ex.toString());
