@@ -75,7 +75,7 @@ public class LocalworkerActivityConfigurationAction extends
 			int n = JOptionPane
 					.showOptionDialog(
 							frame,
-							"Changing the properties of a Local Worker may affect the behaviour.  Do you want to contine",
+							"Changing the properties of a Local Worker may affect its behaviour. Do you want to continue?",
 							"WARNING", JOptionPane.YES_NO_OPTION,
 							JOptionPane.QUESTION_MESSAGE, null, // do not use a
 							// custom Icon
