@@ -4,7 +4,6 @@ import java.awt.Component;
 import java.util.List;
 
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -50,13 +49,13 @@ public class AdvancedModelExplorerTreeCellRenderer extends
 		Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
 		
 		if (userObject instanceof DataflowInputPort){
-			((JLabel) result).setIcon(WorkbenchIcons.inputIcon);
-			((JLabel) result).setText(((DataflowInputPort) userObject)
+			((AdvancedModelExplorerTreeCellRenderer) result).setIcon(WorkbenchIcons.inputIcon);
+			((AdvancedModelExplorerTreeCellRenderer) result).setText(((DataflowInputPort) userObject)
 					.getName());
 		}
 		else if (userObject instanceof DataflowOutputPort){
-			((JLabel) result).setIcon(WorkbenchIcons.outputIcon);
-			((JLabel) result).setText(((DataflowOutputPort) userObject)
+			((AdvancedModelExplorerTreeCellRenderer) result).setIcon(WorkbenchIcons.outputIcon);
+			((AdvancedModelExplorerTreeCellRenderer) result).setText(((DataflowOutputPort) userObject)
 					.getName());
 		}
 		else if (userObject instanceof Processor) {
@@ -66,63 +65,58 @@ public class AdvancedModelExplorerTreeCellRenderer extends
 			Activity<?> activity = activityList.get(0);
 			
 			if (activity instanceof BeanshellActivity){
-				((JLabel) result).setIcon(new ImageIcon(BeanshellActivityItem.class.getResource("/beanshell.png")));
+				((AdvancedModelExplorerTreeCellRenderer) result).setIcon(new ImageIcon(BeanshellActivityItem.class.getResource("/beanshell.png")));
 			}
 			else if (activity instanceof BiomartActivity){
-				((JLabel) result).setIcon(new ImageIcon(BiomartActivityItem.class.getResource("/biomart.png")));
+				((AdvancedModelExplorerTreeCellRenderer) result).setIcon(new ImageIcon(BiomartActivityItem.class.getResource("/biomart.png")));
 			}
 			else if (activity instanceof BiomobyActivity){
-				((JLabel) result).setIcon(new ImageIcon(BiomobyActivityItem.class.getResource("/registry.gif")));
+				((AdvancedModelExplorerTreeCellRenderer) result).setIcon(new ImageIcon(BiomobyActivityItem.class.getResource("/registry.gif")));
 			}
 			else if (activity instanceof DataflowActivity){
-				((JLabel) result).setIcon(new ImageIcon(DataflowActivityItem.class.getResource("/dataflow.png")));
+				((AdvancedModelExplorerTreeCellRenderer) result).setIcon(new ImageIcon(DataflowActivityItem.class.getResource("/dataflow.png")));
 			}
 			else if (activity instanceof LocalworkerActivity){
-				((JLabel) result).setIcon(new ImageIcon(LocalworkerActivityItem.class.getResource("/localworker.png")));
+				((AdvancedModelExplorerTreeCellRenderer) result).setIcon(new ImageIcon(LocalworkerActivityItem.class.getResource("/localworker.png")));
 			}
 			else if (activity instanceof RshellActivity){
-				((JLabel) result).setIcon(new ImageIcon(RshellActivityItem.class.getResource("/rshell.png")));
+				((AdvancedModelExplorerTreeCellRenderer) result).setIcon(new ImageIcon(RshellActivityItem.class.getResource("/rshell.png")));
 			}
 			else if (activity instanceof SoaplabActivity){
-				((JLabel) result).setIcon(new ImageIcon(SoaplabActivityItem.class.getResource("/soaplab.png")));
+				((AdvancedModelExplorerTreeCellRenderer) result).setIcon(new ImageIcon(SoaplabActivityItem.class.getResource("/soaplab.png")));
 			}
 			else if (activity instanceof StringConstantActivity){
-				((JLabel) result).setIcon(new ImageIcon(StringConstantActivityItem.class.getResource("/stringconstant.png")));
+				((AdvancedModelExplorerTreeCellRenderer) result).setIcon(new ImageIcon(StringConstantActivityItem.class.getResource("/stringconstant.png")));
 			}
 			else if (activity instanceof WSDLActivity){
-				((JLabel) result).setIcon(new ImageIcon(WSDLActivityItem.class.getResource("/wsdl.png")));
+				((AdvancedModelExplorerTreeCellRenderer) result).setIcon(new ImageIcon(WSDLActivityItem.class.getResource("/wsdl.png")));
 			}
 			
-			((JLabel) result).setText(((Processor) userObject).getLocalName());
+			((AdvancedModelExplorerTreeCellRenderer) result).setText(((Processor) userObject).getLocalName());
 		}
 		// A child of a processor node under 'Workflow processors'
 		else if(userObject instanceof ProcessorInputPort){
-			((JLabel) result).setIcon(WorkbenchIcons.inputPortIcon);
-			((JLabel) result).setText(((ProcessorInputPort) userObject)
+			((AdvancedModelExplorerTreeCellRenderer) result).setIcon(WorkbenchIcons.inputPortIcon);
+			((AdvancedModelExplorerTreeCellRenderer) result).setText(((ProcessorInputPort) userObject)
 					.getName());
 		}
 		// A child of a processor node under 'Workflow processors'
 		else if(userObject instanceof ProcessorOutputPort){
-			((JLabel) result).setIcon(WorkbenchIcons.outputPortIcon);
-			((JLabel) result).setText(((ProcessorOutputPort) userObject)
+			((AdvancedModelExplorerTreeCellRenderer) result).setIcon(WorkbenchIcons.outputPortIcon);
+			((AdvancedModelExplorerTreeCellRenderer) result).setText(((ProcessorOutputPort) userObject)
 					.getName());
 		}
 		else if (userObject instanceof Datalink){
-			((JLabel) result).setIcon(WorkbenchIcons.outputPortIcon);
+			((AdvancedModelExplorerTreeCellRenderer) result).setIcon(WorkbenchIcons.outputPortIcon);
 			
 		}
-		/*else if (((AdvancedModelExplorerTreeModel) tree.getModel()).getRoot().equals(value)){
-			// If root
-			((JLabel) result).setIcon(WorkbenchIcons.advancedModelExplorerIcon);
-		}*/
 		else{
-			// If one of the main nodes - inputs, outputs, processors or
-			// datalinks then for a non-expanded node always show the closedIcon
-			// regardless of whether it has children or not
+			// It is the root or one of the main nodes (inputs, outputs, 
+			// processors or datalinks)
 			if (expanded) {
-				((JLabel) result).setIcon(WorkbenchIcons.folderOpenIcon);
+				((AdvancedModelExplorerTreeCellRenderer) result).setIcon(WorkbenchIcons.folderOpenIcon);
 			} else{
-				((JLabel) result).setIcon(WorkbenchIcons.folderClosedIcon);
+				((AdvancedModelExplorerTreeCellRenderer) result).setIcon(WorkbenchIcons.folderClosedIcon);
 			}
 		}
 		

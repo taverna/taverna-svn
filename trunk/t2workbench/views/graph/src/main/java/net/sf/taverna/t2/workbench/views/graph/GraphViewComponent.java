@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
@@ -75,8 +76,10 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 	
 	public GraphViewComponent() {
 		super(new BorderLayout());
+		setBorder(new EmptyBorder(0,10,10,0));
 		
 		svgCanvas = new JSVGCanvas();
+		svgCanvas.setBorder(new EtchedBorder());
 		svgCanvas.setDocumentState(JSVGCanvas.ALWAYS_DYNAMIC);
 
 		svgCanvas.addGVTTreeRendererListener(new GVTTreeRendererAdapter() {

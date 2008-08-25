@@ -26,13 +26,13 @@ public class AdvancedModelExplorerTreeModel extends DefaultTreeModel{
 	private Dataflow dataflow;
 	
 	/* Main tree nodes - inputs, outputs, processors and data links. */
-	static DefaultMutableTreeNode inputsRootNode = new DefaultMutableTreeNode(
+	private DefaultMutableTreeNode inputsRootNode = new DefaultMutableTreeNode(
 	"Workflow inputs");
-	static DefaultMutableTreeNode outputsRootNode = new DefaultMutableTreeNode(
+	private DefaultMutableTreeNode outputsRootNode = new DefaultMutableTreeNode(
 	"Workflow outputs");
-	static DefaultMutableTreeNode processorsRootNode = new DefaultMutableTreeNode(
+	private DefaultMutableTreeNode processorsRootNode = new DefaultMutableTreeNode(
 	"Workflow processors");
-	static DefaultMutableTreeNode datalinksRootNode = new DefaultMutableTreeNode(
+	private DefaultMutableTreeNode datalinksRootNode = new DefaultMutableTreeNode(
 	"Workflow data links");
 	
 	/* Manager of events (edits) on the dataflow. */

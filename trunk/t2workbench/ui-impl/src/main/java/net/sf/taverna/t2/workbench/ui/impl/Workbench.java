@@ -88,7 +88,7 @@ public class Workbench extends JFrame {
 
 		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		setLookAndFeel();
-		setSize(new Dimension(700, 500));
+		setSize(new Dimension(1000, 800));
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;

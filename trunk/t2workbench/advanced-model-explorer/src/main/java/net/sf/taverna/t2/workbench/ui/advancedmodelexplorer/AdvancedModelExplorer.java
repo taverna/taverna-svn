@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.workbench.ui.advancedmodelexplorer;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.util.LinkedHashMap;
 
@@ -13,6 +15,7 @@ import javax.swing.JTree;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.log4j.Logger;
@@ -101,6 +104,12 @@ public class AdvancedModelExplorer extends JPanel implements UIComponentSPI {
 	public AdvancedModelExplorer() {
 
 		// Create a tree that will represent a view over the current dataflow
+		// Initially, there is no dataflow opened, so we create an empty tree,
+		// but immediatelly after all visual components of the Workbench are 
+		// created (including Advanced Model Explorer) a new empty dataflow is 
+		// created, which is represented with a NON-empty JTree with four nodes 
+		// (Inputs, Outputs, Processors, and Data links) that themselves have no
+		// children.
 		ameTree = new JTree(new DefaultMutableTreeNode("No dataflow available"));
 		ameTree.setEditable(false);
 		ameTree.setExpandsSelectedPaths(false);
@@ -108,7 +117,9 @@ public class AdvancedModelExplorer extends JPanel implements UIComponentSPI {
 		ameTree.setScrollsOnExpand(false);
 		ameTree.setCellRenderer(new AdvancedModelExplorerTreeCellRenderer());
 		
+		// Start observing events on the FileManager
 		fileManager.addObserver(fileManagerObserver);
+		
 		initComponents();
 	}
 
@@ -116,20 +127,13 @@ public class AdvancedModelExplorer extends JPanel implements UIComponentSPI {
 	 * Lays out the swing components.
 	 */
 	public void initComponents() {
-
-		// Note that ameTree is initally set to an empty new JTree() - that's in
-		// order not to have a null tree on the scroll pane and happens only for
-		// a brief moment from when the Advanced Model Explorer is initialised
-		// till the new dumy empty dataflow is created (which happens immediatelly 
-		// after all visual components of the Workbench are created). The empty 
-		// dataflow is represented with a NON-empty JTree with four nodes (Inputs, 
-		// Outputs, Processors, and Data links) that themselves have no children.
 		
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(10,10,10,10)));
 		
 		// Title
 		JLabel jlTitle = new JLabel("Advanced Model Explorer");
+		jlTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 		jlTitle.setLabelFor(jspTree);
 		jlTitle.setIcon(WorkbenchIcons.advancedModelExplorerIcon);
 		add(jlTitle);
@@ -169,13 +173,27 @@ public class AdvancedModelExplorer extends JPanel implements UIComponentSPI {
 		
 		// Set the tree view
 		ameTree = tree;
+		// Expand the tree
+		expandAll();
 		
 		// Update the viewport of the scroll pane
 		jspTree.setViewportView(ameTree);
 		
-		revalidate();
-		repaint();
+		jspTree.revalidate();
+		jspTree.repaint();
 		
+	}
+
+	/**
+	 * Expands all nodes in the dataflow tree that have children.
+	 */
+	private void expandAll() {
+		
+	    int row = 0;
+	    while (row < ameTree.getRowCount()) {
+	    	ameTree.expandRow(row);
+	      row++;
+	     }
 	}
 
 	/**
@@ -195,8 +213,8 @@ public class AdvancedModelExplorer extends JPanel implements UIComponentSPI {
 		// Update the viewport of the scroll pane
 		jspTree.setViewportView(ameTree);
 		
-		revalidate();
-		repaint();
+		jspTree.revalidate();
+		jspTree.repaint();
 		
 	}
 

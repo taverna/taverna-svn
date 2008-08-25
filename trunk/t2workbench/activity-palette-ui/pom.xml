@@ -29,7 +29,6 @@
 		</plugins>
 	</build>
 	<dependencies>
-
 		<dependency>
 			<groupId>net.sf.taverna.t2.workbench</groupId>
 			<artifactId>activity-palette-api</artifactId>
@@ -60,7 +59,6 @@
 			<artifactId>menu-api</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
-
 		<dependency>
 			<groupId>javax.help</groupId>
 			<artifactId>javahelp</artifactId>
@@ -71,12 +69,15 @@
 			<artifactId>workflowmodel-api</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>commons-icons</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>
