@@ -16,6 +16,10 @@ import java.awt.dnd.DropTargetListener;
 import java.util.List;
 
 import javax.swing.JTree;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
+import javax.swing.event.TreeWillExpandListener;
+import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
@@ -29,9 +33,9 @@ import org.apache.log4j.Logger;
 
 /**
  * Contains all the activities. Has a {@link TreeModel} based on
- * {@link Partition} (actually a {@link RootPartition}) so that the items in
- * the tree can be filtered and re-ordered. When the {@link TreeModel} is
- * updated the {@link Query}s are rerun which will update the display
+ * {@link Partition} (actually a {@link RootPartition}) so that the items in the
+ * tree can be filtered and re-ordered. When the {@link TreeModel} is updated
+ * the {@link Query}s are rerun which will update the display
  * 
  * @author Ian Dunlop
  * @author Stuart Owen
@@ -42,7 +46,7 @@ public class ActivityTree extends JTree implements DragGestureListener,
 		DropTargetListener, DragSourceListener {
 
 	private static Logger logger = Logger.getLogger(ActivityTree.class);
-	
+
 	/** A query for each type of activity */
 	private List<Query<?>> queryList;
 
@@ -58,14 +62,34 @@ public class ActivityTree extends JTree implements DragGestureListener,
 		setDragEnabled(false);
 		setScrollsOnExpand(false);
 		addQueries(getModel());
+		addTreeWillExpandListener(new TreeWillExpandListener() {
+
+			/**
+			 * If the root partition is double clicked then ignore the event
+			 */
+			public void treeWillCollapse(TreeExpansionEvent event)
+					throws ExpandVetoException {
+				if (event.getPath().getLastPathComponent() instanceof RootPartition) {
+					throw new ExpandVetoException(event,
+							"Activity Palette root not allowed to collapse");
+				}
+			}
+
+			public void treeWillExpand(TreeExpansionEvent event)
+					throws ExpandVetoException {
+				// TODO Auto-generated method stub
+
+			}
+
+		});
 	}
 
 	/**
 	 * When the tree is first created it gets all the {@link Query}s from the
 	 * {@link SetModelChangeListener} belonging to the {@link RootPartition} ie.
-	 * its {@link TreeModel}. This means that when the model is updated ie.
-	 * when the user wants to filter the activities the tree itself can re-fire
-	 * the queries to update the display
+	 * its {@link TreeModel}. This means that when the model is updated ie. when
+	 * the user wants to filter the activities the tree itself can re-fire the
+	 * queries to update the display
 	 * 
 	 * @param model
 	 */
@@ -83,9 +107,9 @@ public class ActivityTree extends JTree implements DragGestureListener,
 	 * user selected filter.
 	 */
 	private void doQueries() {
-		
+
 		for (final Query<?> query : queryList) {
-			new Thread("Activity query:"+query.toString()) {
+			new Thread("Activity query:" + query.toString()) {
 				@Override
 				public void run() {
 					query.doQuery();
@@ -97,7 +121,7 @@ public class ActivityTree extends JTree implements DragGestureListener,
 	}
 
 	@Override
-	/**
+	/*
 	 * Resets the model which means that the user selected filter has probably
 	 * changed
 	 */
