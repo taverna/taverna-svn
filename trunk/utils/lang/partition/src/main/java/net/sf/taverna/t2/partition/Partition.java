@@ -179,8 +179,9 @@ public class Partition<ItemType extends Comparable, PartitionValueType, ChildPar
 			}
 			String queryType = getPartitionAlgorithms().get(0).toString();
 			// return "Activities which match query = " + getItemCount();
-			return "Total number of activities= " + items + ", query by "
-					+ queryType;
+			return "Available activities (" + items + ")";
+			//+ ", query by "
+				//	+ queryType;
 		}
 	}
 
