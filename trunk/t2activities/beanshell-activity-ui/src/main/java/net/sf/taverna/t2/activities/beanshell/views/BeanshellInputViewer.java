@@ -94,6 +94,7 @@ public class BeanshellInputViewer extends JPanel {
 				.getDepth()), new Integer(0), new Integer(100), new Integer(1));
 		depthSpinner = new JSpinner(model);
 		depthSpinner.setEnabled(false);
+		depthSpinner.setToolTipText("A depth of 0 means a simple value, like a string. Depth 1 is a list of simple values, while depth 2 is a list of a list of simple values");
 		// depthSpinner.setValue(bean.getDepth());
 
 		add(depthSpinner, outerConstraint);

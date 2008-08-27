@@ -12,12 +12,12 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.help.CSH;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -28,6 +28,9 @@ import javax.swing.JTextField;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
+import net.sf.taverna.t2.workflowmodel.OutputPort;
+import net.sf.taverna.t2.workflowmodel.Port;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 
@@ -82,7 +85,8 @@ public class BeanshellConfigView extends JPanel {
 	private JButton button;
 
 	private boolean configChanged = false;
-//	private JPanel mimes;
+
+	// private JPanel mimes;
 
 	/**
 	 * Stores the {@link BeanshellActivity}, gets its
@@ -359,7 +363,19 @@ public class BeanshellConfigView extends JPanel {
 				List<String> mimeTypes = new ArrayList<String>();
 				mimeTypes.add("text/plain");
 				bean.setMimeTypes(mimeTypes);
-				bean.setName("newInputPort" + newInputPortNumber);
+
+				String name2 = "in" + newInputPortNumber;
+				boolean nameExists = true;
+				while (nameExists == true) {
+					nameExists = inputPortNameExists(name2, activity
+							.getInputPorts());
+					if (nameExists) {
+						newInputPortNumber++;
+						name2 = "in" + newInputPortNumber;
+					}
+				}
+
+				bean.setName(name2);
 				newInputPortNumber++;
 				bean.setTranslatedElementType(String.class);
 				inputConstraint.gridy = inputGridy;
@@ -438,7 +454,7 @@ public class BeanshellConfigView extends JPanel {
 	 * @return the panel containing the view of the output ports
 	 */
 	private JPanel setOutputPanel() {
-//		mimes = new JPanel();
+		// mimes = new JPanel();
 		final JPanel outputEditPanel = new JPanel(new GridBagLayout());
 		outputEditPanel.setBorder(BorderFactory.createTitledBorder(
 				BorderFactory.createEtchedBorder(), "Outputs"));
@@ -454,8 +470,8 @@ public class BeanshellConfigView extends JPanel {
 		outputEditPanel.add(new JLabel("Name"), outputConstraint);
 		outputConstraint.gridx = 1;
 		outputEditPanel.add(new JLabel("Depth"), outputConstraint);
-		outputConstraint.gridx = 2;
-		outputEditPanel.add(new JLabel("GranularDepth"), outputConstraint);
+		// outputConstraint.gridx = 2;
+		// outputEditPanel.add(new JLabel("GranularDepth"), outputConstraint);
 
 		outputGridy = 1;
 		outputConstraint.gridx = 0;
@@ -476,37 +492,37 @@ public class BeanshellConfigView extends JPanel {
 					.getDepthSpinner();
 			outputEditPanel.add(depthSpinner, outputConstraint);
 			outputConstraint.gridx = 2;
-			final JSpinner granularDepthSpinner = beanshellOutputViewer
-					.getGranularDepthSpinner();
-			outputEditPanel.add(granularDepthSpinner, outputConstraint);
-			outputConstraint.gridx = 3;
-//			final JButton addMimeButton = beanshellOutputViewer
-//					.getAddMimeButton();
-//			addMimeButton.addActionListener(new AbstractAction() {
-//
-//				public void actionPerformed(ActionEvent e) {
-//					mimes.add(beanshellOutputViewer.getMimeTypeConfig());
-//					mimes.setVisible(true);
-//				}
-//
-//			});
+			// final JSpinner granularDepthSpinner = beanshellOutputViewer
+			// .getGranularDepthSpinner();
+			// outputEditPanel.add(granularDepthSpinner, outputConstraint);
+			// outputConstraint.gridx = 3;
+			// final JButton addMimeButton = beanshellOutputViewer
+			// .getAddMimeButton();
+			// addMimeButton.addActionListener(new AbstractAction() {
+			//
+			// public void actionPerformed(ActionEvent e) {
+			// mimes.add(beanshellOutputViewer.getMimeTypeConfig());
+			// mimes.setVisible(true);
+			// }
+			//
+			// });
 
 			// final JFrame mimeFrame = new JFrame();
-//			outputEditPanel.add(addMimeButton, outputConstraint);
-//			beanshellOutputViewer.getMimeTypeConfig().addNewMimeListener(
-//					new AbstractAction() {
-//
-//						public void actionPerformed(ActionEvent e) {
-//							// beanshellOutputViewer.getMimeFrame().setVisible(
-//							// false);
-//							// beanshellOutputViewer.getMimeTypeConfig().setVisible(false);
-//							// mimeFrame.setVisible(false);
-//							mimes.removeAll();
-//							mimes.setVisible(false);
-//
-//						}
-//
-//					});
+			// outputEditPanel.add(addMimeButton, outputConstraint);
+			// beanshellOutputViewer.getMimeTypeConfig().addNewMimeListener(
+			// new AbstractAction() {
+			//
+			// public void actionPerformed(ActionEvent e) {
+			// // beanshellOutputViewer.getMimeFrame().setVisible(
+			// // false);
+			// // beanshellOutputViewer.getMimeTypeConfig().setVisible(false);
+			// // mimeFrame.setVisible(false);
+			// mimes.removeAll();
+			// mimes.setVisible(false);
+			//
+			// }
+			//
+			// });
 			// mimeFrame.add(beanshellOutputViewer
 			// .getMimeTypeConfig());
 
@@ -518,8 +534,8 @@ public class BeanshellConfigView extends JPanel {
 					outputViewList.remove(beanshellOutputViewer);
 					outputEditPanel.remove(nameField);
 					outputEditPanel.remove(depthSpinner);
-					outputEditPanel.remove(granularDepthSpinner);
-//					outputEditPanel.remove(addMimeButton);
+					// outputEditPanel.remove(granularDepthSpinner);
+					// outputEditPanel.remove(addMimeButton);
 					outputEditPanel.remove(removeButton);
 					outputEditPanel.revalidate();
 					outerOutputPanel.revalidate();
@@ -551,7 +567,17 @@ public class BeanshellConfigView extends JPanel {
 					List<String> mimeTypes = new ArrayList<String>();
 					mimeTypes.add("text/plain");
 					bean.setMimeTypes(mimeTypes);
-					bean.setName("newOutput" + newOutputPortNumber);
+					String name2 = "out" + newOutputPortNumber;
+					boolean nameExists = true;
+					while (nameExists == true) {
+						nameExists = outputPortNameExists(name2, activity
+								.getOutputPorts());
+						if (nameExists) {
+							newOutputPortNumber++;
+							name2 = "out" + newOutputPortNumber;
+						}
+					}
+					bean.setName(name2);
 					final BeanshellOutputViewer beanshellOutputViewer = new BeanshellOutputViewer(
 							bean, true);
 					outputViewList.add(beanshellOutputViewer);
@@ -567,38 +593,42 @@ public class BeanshellConfigView extends JPanel {
 							.getDepthSpinner();
 					outputEditPanel.add(depthSpinner, outputConstraint);
 					outputConstraint.gridx = 2;
-					final JSpinner granularDepthSpinner = beanshellOutputViewer
-							.getGranularDepthSpinner();
-					outputEditPanel.add(granularDepthSpinner, outputConstraint);
-					outputConstraint.gridx = 3;
-//					final JButton addMimeButton = beanshellOutputViewer
-//							.getAddMimeButton();
-//					addMimeButton.addActionListener(new AbstractAction() {
-//
-//						public void actionPerformed(ActionEvent e) {
-//							mimes
-//									.add(beanshellOutputViewer
-//											.getMimeTypeConfig());
-//							mimes.setVisible(true);
-//						}
-//
-//					});
-//					outputEditPanel.add(addMimeButton, outputConstraint);
-//					beanshellOutputViewer.getMimeTypeConfig()
-//							.addNewMimeListener(new AbstractAction() {
-//								// hide the mime frame, annotations added when
-//								// the actual OK button is clicked
-//								public void actionPerformed(ActionEvent e) {
-//									// beanshellOutputViewer.getMimeFrame()
-//									// .setVisible(false);
-//									mimes.removeAll();
-//									mimes.setVisible(false);
-//									// beanshellOutputViewer.getMimeTypeConfig().setVisible(false);
-//									// mimeFrame.setVisible(false);
-//
-//								}
-//
-//							});
+					// final JSpinner granularDepthSpinner =
+					// beanshellOutputViewer
+					// .getGranularDepthSpinner();
+					// outputEditPanel.add(granularDepthSpinner,
+					// outputConstraint);
+					// outputConstraint.gridx = 3;
+					// final JButton addMimeButton = beanshellOutputViewer
+					// .getAddMimeButton();
+					// addMimeButton.addActionListener(new AbstractAction() {
+					//
+					// public void actionPerformed(ActionEvent e) {
+					// mimes
+					// .add(beanshellOutputViewer
+					// .getMimeTypeConfig());
+					// mimes.setVisible(true);
+					// }
+					//
+					// });
+					// outputEditPanel.add(addMimeButton, outputConstraint);
+					// beanshellOutputViewer.getMimeTypeConfig()
+					// .addNewMimeListener(new AbstractAction() {
+					// // hide the mime frame, annotations added when
+					// // the actual OK button is clicked
+					// public void actionPerformed(ActionEvent e) {
+					// // beanshellOutputViewer.getMimeFrame()
+					// // .setVisible(false);
+					// mimes.removeAll();
+					// mimes.setVisible(false);
+					// //
+					// beanshellOutputViewer.getMimeTypeConfig().setVisible(false
+					// );
+					// // mimeFrame.setVisible(false);
+					//
+					// }
+					//
+					// });
 					// mimeFrame.add(beanshellOutputViewer
 					// .getMimeTypeConfig());
 					outputConstraint.gridx = 4;
@@ -609,9 +639,9 @@ public class BeanshellConfigView extends JPanel {
 							outputViewList.remove(beanshellOutputViewer);
 							outputEditPanel.remove(nameField);
 							outputEditPanel.remove(depthSpinner);
-							outputEditPanel.remove(granularDepthSpinner);
+							// outputEditPanel.remove(granularDepthSpinner);
 							outputEditPanel.remove(removeButton);
-//							outputEditPanel.remove(addMimeButton);
+							// outputEditPanel.remove(addMimeButton);
 							outputEditPanel.revalidate();
 						}
 
@@ -654,8 +684,8 @@ public class BeanshellConfigView extends JPanel {
 		outerOutputPanel.add(buttonPanel, outerPanelConstraint);
 		outerPanelConstraint.gridx = 1;
 		outerPanelConstraint.gridy = 0;
-//		outerOutputPanel.add(mimes, outerPanelConstraint);
-//		mimes.setBorder(BorderFactory.createTitledBorder("Add Mime Types"));
+		// outerOutputPanel.add(mimes, outerPanelConstraint);
+		// mimes.setBorder(BorderFactory.createTitledBorder("Add Mime Types"));
 
 		return outerOutputPanel;
 	}
@@ -707,9 +737,9 @@ public class BeanshellConfigView extends JPanel {
 					activityOutputPortDefinitionBean
 							.setDepth((Integer) outputView.getDepthSpinner()
 									.getValue());
-					activityOutputPortDefinitionBean
-							.setGranularDepth((Integer) outputView
-									.getGranularDepthSpinner().getValue());
+					// activityOutputPortDefinitionBean
+					// .setGranularDepth((Integer) outputView
+					// .getGranularDepthSpinner().getValue());
 					activityOutputPortDefinitionBean.setName(outputView
 							.getNameField().getText());
 					activityOutputPortDefinitionBean.setMimeTypes(outputView
@@ -737,6 +767,39 @@ public class BeanshellConfigView extends JPanel {
 			}
 
 		};
+	}
+
+	/**
+	 * Check the proposed port name against the set of input ports that the activity
+	 * has
+	 * 
+	 * @param name
+	 * @param set
+	 * @return
+	 */
+	private boolean inputPortNameExists(String name, Set<ActivityInputPort> set) {
+		for (Port port : set) {
+			if (name.equals(port.getName())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	/**
+	 * Check the proposed port name against the set of output ports that the activity
+	 * has
+	 * 
+	 * @param name
+	 * @param set
+	 * @return
+	 */
+	private boolean outputPortNameExists(String name, Set<OutputPort> set) {
+		for (Port port : set) {
+			if (name.equals(port.getName())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

@@ -47,12 +47,16 @@ public class BeanshellContextualView extends
 					+ bean.getDepth() + "</td></tr>";
 		}
 		html = html
-				+ "<tr><th>Output Port Name</th><th>Depth</th><th>Granular Depth</th></tr>";
+				+ "<tr><th>Output Port Name</th>" 
+//					+	"<th>Depth</th><th>Granular Depth</th>" 
+				+"</tr>";
 		for (ActivityOutputPortDefinitionBean bean : getConfigBean()
 				.getOutputPortDefinitions()) {
 			html = html + "<tr></td>" + bean.getName() + "</td><td>"
-					+ bean.getDepth() + "</td><td>" + bean.getGranularDepth()
-					+ "</td></tr>";
+					+ bean.getDepth() + "</td>" 
+//							+ "<td>" + bean.getGranularDepth()
+//					+ "</td>"
+					+ "</tr>";
 		}
 		return html;
 	}
