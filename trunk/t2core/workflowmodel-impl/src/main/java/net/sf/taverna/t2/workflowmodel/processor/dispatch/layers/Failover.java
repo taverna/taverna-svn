@@ -21,6 +21,8 @@ import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.Dis
  * the layer above.
  * 
  * @author Tom Oinn
+ * @author Stian Soiland-Reyes
+ * 
  * 
  */
 @DispatchLayerErrorReaction(emits = { JOB }, relaysUnmodified = true, stateEffects = {
@@ -42,23 +44,13 @@ public class Failover extends AbstractErrorHandlerLayer<Object> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void receiveJob(DispatchJobEvent jobEvent) {
-
-		List<JobState> stateList = null;
-		synchronized (stateMap) {
-			stateList = stateMap.get(jobEvent.getOwningProcess());
-			if (stateList == null) {
-				stateList = new ArrayList<JobState>();
-				stateMap.put(jobEvent.getOwningProcess(), stateList);
-			}
-		}
-		stateList.add(getStateObject(jobEvent));
+		addJobToStateList(jobEvent);
 		List<Activity<?>> newActivityList = new ArrayList<Activity<?>>();
 		newActivityList.add(jobEvent.getActivities().get(0));
 		getBelow().receiveJob(
 				new DispatchJobEvent(jobEvent.getOwningProcess(), jobEvent
 						.getIndex(), jobEvent.getContext(), jobEvent.getData(),
 						newActivityList));
-
 	}
 
 	class FailoverState extends JobState {

@@ -1,9 +1,13 @@
 package net.sf.taverna.t2.workflowmodel.processor.dispatch;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.log4j.Logger;
 
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchCompletionEvent;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorEvent;
@@ -15,27 +19,225 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchResultE
  * failover). Provides generic functionality required by this class of layers.
  * 
  * @author Tom Oinn
+ * @author Stian Soiland-Reyes
  * 
  */
 public abstract class AbstractErrorHandlerLayer<ConfigurationType> extends
 		AbstractDispatchLayer<ConfigurationType> {
+
+	private static Logger logger = Logger
+			.getLogger(AbstractErrorHandlerLayer.class);
+
+	/**
+	 * Compare two arrays of ints, return true if they are the same length and
+	 * if at every index the two integer values are equal
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	private static boolean identicalIndex(int[] a, int[] b) {
+		if (a.length != b.length) {
+			return false;
+		}
+		for (int i = 0; i < a.length; i++) {
+			if (a[i] != b[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Map of process name -> list of state models. Note that all access to this
+	 * map must be synchronized on the stateMap, and access to the lists inside
+	 * it must be synchronized on the list.
+	 * 
+	 * @see #addJobToStateList(DispatchJobEvent)
+	 * @see #removeJob(String, JobState)
+	 * @see #getJobsDefault(String)
+	 * @see #getJobsCopy(String)
+	 */
+	private Map<String, List<JobState>> stateMap = new HashMap<String, List<JobState>>();
 
 	protected AbstractErrorHandlerLayer() {
 		super();
 	}
 
 	/**
-	 * Map of process name -> list of state models
+	 * Clear cached state for the specified process when notified by the
+	 * dispatch stack
 	 */
-	protected Map<String, List<JobState>> stateMap = new HashMap<String, List<JobState>>();
+	@Override
+	public void finishedWith(String owningProcess) {
+		synchronized (stateMap) {
+			stateMap.remove(owningProcess);
+		}
+	}
+
+	/**
+	 * If an error occurs we can either handle the error or send it to the layer
+	 * above for further processing.
+	 */
+	@Override
+	public void receiveError(DispatchErrorEvent errorEvent) {
+		String owningProcess = errorEvent.getOwningProcess();
+		List<JobState> activeJobs = getJobsCopy(owningProcess);
+
+		for (JobState rs : activeJobs) {
+			if (identicalIndex(rs.jobEvent.getIndex(), errorEvent.getIndex())) {
+				boolean handled = rs.handleError();
+				if (!handled) {
+					removeJob(owningProcess, rs);
+					getAbove().receiveError(errorEvent);
+					return;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Receive a job from the layer above, store it for later retries and pass
+	 * it down to the next layer
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public void receiveJob(DispatchJobEvent jobEvent) {
+		addJobToStateList(jobEvent);
+		getBelow().receiveJob(jobEvent);
+	}
+
+	/**
+	 * If we see a result with an index matching one of those in the current
+	 * retry state we can safely forget that state object
+	 */
+	@Override
+	public void receiveResult(DispatchResultEvent j) {
+		forget(j.getOwningProcess(), j.getIndex());
+		getAbove().receiveResult(j);
+	}
+
+	/**
+	 * If we see a completion event with an index matching one of those in the
+	 * current retry state we can safely forget that state object
+	 */
+	@Override
+	public void receiveResultCompletion(DispatchCompletionEvent c) {
+		forget(c.getOwningProcess(), c.getIndex());
+		getAbove().receiveResultCompletion(c);
+	}
+
+	/**
+	 * Remove the specified pending retry job from the cache
+	 * 
+	 * @param owningProcess
+	 *            Owning process identifier as returned by
+	 *            {@link DispatchJobEvent#getOwningProcess()}
+	 * @param index
+	 *            Index of the job as returned by
+	 *            {@link DispatchJobEvent#getIndex()}
+	 */
+	protected void forget(String owningProcess, int[] index) {
+		for (JobState jobState : getJobsCopy(owningProcess)) {
+			if (identicalIndex(jobState.jobEvent.getIndex(), index)) {
+				removeJob(owningProcess, jobState);
+				return;
+			}
+		}
+		logger.error("Could not forget " + Arrays.asList(index));
+	}
+
+	protected void addJobToStateList(DispatchJobEvent jobEvent) {
+		List<JobState> stateList = null;
+		stateList = getJobsDefault(jobEvent.getOwningProcess());
+		synchronized (stateList) {
+			stateList.add(getStateObject(jobEvent));
+		}
+	}
+
+	/**
+	 * Get a copy of the list of {@link JobState}s for the owning process, or an
+	 * empty list if the owning process is unknown or have been
+	 * {@link #forget(String, int[]) forgotten}.
+	 * <p>
+	 * This list can safely be iterated over without synchronizing. If you need
+	 * to modify the list, either synchronize over the returned list from
+	 * {@link #getJobsDefault(String)} or use
+	 * {@link #removeJob(String, JobState)}.
+	 * 
+	 * @param owningProcess
+	 *            Owning process identifier as returned by
+	 *            {@link DispatchJobEvent#getOwningProcess()}
+	 * @return A copy of the list of known JobState {@link JobState}s for the
+	 *         owning process,
+	 */
+	protected List<JobState> getJobsCopy(String owningProcess) {
+		List<JobState> activeJobs;
+		synchronized (stateMap) {
+			activeJobs = stateMap.get(owningProcess);
+		}
+		if (activeJobs == null) {
+			logger.error("Could not find any active jobs for " + owningProcess);
+			return Collections.emptyList();
+		}
+		// Take a copy of the list so we don't modify it while iterating over it
+		List<JobState> activeJobsCopy;
+		synchronized (activeJobs) {
+			activeJobsCopy = new ArrayList<JobState>(activeJobs);
+		}
+		return activeJobsCopy;
+	}
+
+	/**
+	 * Get the list of {@link JobState}s for the owning process, creating and
+	 * adding it to the state map if necessary.
+	 * <p>
+	 * Note that all access to the returned list must be synchronized on the
+	 * list to avoid threading issues.
+	 * <p>
+	 * If you are going to iterate over the list, use
+	 * {@link #getJobsCopy(String)} instead.
+	 * 
+	 * @see #getJobsCopy(String)
+	 * @param owningProcess
+	 *            Owning process identifier as returned by
+	 *            {@link DispatchJobEvent#getOwningProcess()}
+	 * 
+	 * @return List of {@link JobState}s for the owning process
+	 */
+	protected List<JobState> getJobsDefault(String owningProcess) {
+		List<JobState> stateList;
+		synchronized (stateMap) {
+			stateList = stateMap.get(owningProcess);
+			if (stateList == null) {
+				stateList = new ArrayList<JobState>();
+				stateMap.put(owningProcess, stateList);
+			}
+		}
+		return stateList;
+	}
 
 	/**
 	 * Generate an appropriate state object from the specified job event. The
 	 * state object is a concrete subclass of JobState.
-	 *
+	 * 
 	 * @return
 	 */
 	protected abstract JobState getStateObject(DispatchJobEvent jobEvent);
+
+	protected void removeJob(String owningProcess, JobState jobState) {
+		List<JobState> activeJobs;
+		synchronized (stateMap) {
+			activeJobs = stateMap.get(owningProcess);
+		}
+		if (activeJobs == null) {
+			logger.error("Could not find active jobs for " + owningProcess);
+			return;
+		}
+		synchronized (activeJobs) {
+			activeJobs.remove(jobState);
+		}
+	}
 
 	/**
 	 * Abstract superclass of all state models for pending failure handlers.
@@ -43,7 +245,7 @@ public abstract class AbstractErrorHandlerLayer<ConfigurationType> extends
 	 * and represents the current state of the failure handling algorithm on a
 	 * per job basis.
 	 * 
-	 * @author Tom
+	 * @author Tom Oinn
 	 * 
 	 */
 	protected abstract class JobState {
@@ -68,110 +270,6 @@ public abstract class AbstractErrorHandlerLayer<ConfigurationType> extends
 		 */
 		public abstract boolean handleError();
 
-	}
-
-	/**
-	 * Receive a job from the layer above, store it for later retries and pass
-	 * it down to the next layer
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public void receiveJob(DispatchJobEvent jobEvent) {
-
-		List<JobState> stateList = null;
-		synchronized (stateMap) {
-			stateList = stateMap.get(jobEvent.getOwningProcess());
-			if (stateList == null) {
-				stateList = new ArrayList<JobState>();
-				stateMap.put(jobEvent.getOwningProcess(), stateList);
-			}
-		}
-		stateList.add(getStateObject(jobEvent));
-		getBelow().receiveJob(jobEvent);
-	}
-
-	/**
-	 * If an error occurs we can either handle the error or send it to the layer
-	 * above for further processing.
-	 */
-	@Override
-	public void receiveError(DispatchErrorEvent errorEvent) {
-		List<JobState> activeJobs = stateMap.get(errorEvent.getOwningProcess());
-		// Take a copy of the list so we don't modify it while iterating over it
-		for (JobState rs : new ArrayList<JobState>(activeJobs)) {
-			if (identicalIndex(rs.jobEvent.getIndex(), errorEvent.getIndex())) {
-				boolean handled = rs.handleError();
-				if (!handled) {
-					activeJobs.remove(rs);
-					getAbove().receiveError(errorEvent);
-					return;
-				}
-			}
-		}
-	}
-
-	/**
-	 * If we see a result with an index matching one of those in the current
-	 * retry state we can safely forget that state object
-	 */
-	@Override
-	public void receiveResult(DispatchResultEvent j) {
-		forget(j.getOwningProcess(), j.getIndex());
-		getAbove().receiveResult(j);
-	}
-
-	/**
-	 * If we see a completion event with an index matching one of those in the
-	 * current retry state we can safely forget that state object
-	 */
-	@Override
-	public void receiveResultCompletion(DispatchCompletionEvent c) {
-		forget(c.getOwningProcess(), c.getIndex());
-		getAbove().receiveResultCompletion(c);
-	}
-
-	/**
-	 * Clear cached state for the specified process when notified by the
-	 * dispatch stack
-	 */
-	@Override
-	public void finishedWith(String owningProcess) {
-		stateMap.remove(owningProcess);
-	}
-
-	/**
-	 * Remove the specified pending retry job from the cache
-	 * 
-	 * @param owningProcess
-	 * @param index
-	 */
-	private void forget(String owningProcess, int[] index) {
-		List<JobState> activeJobs = stateMap.get(owningProcess);
-		for (JobState rs : new ArrayList<JobState>(activeJobs)) {
-			if (identicalIndex(rs.jobEvent.getIndex(), index)) {
-				activeJobs.remove(rs);
-			}
-		}
-	}
-
-	/**
-	 * Compare two arrays of ints, return true if they are the same length and
-	 * if at every index the two integer values are equal
-	 * 
-	 * @param a
-	 * @param b
-	 * @return
-	 */
-	private static boolean identicalIndex(int[] a, int[] b) {
-		if (a.length != b.length) {
-			return false;
-		}
-		for (int i = 0; i < a.length; i++) {
-			if (a[i] != b[i]) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 }
