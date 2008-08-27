@@ -1,19 +1,25 @@
 package net.sf.taverna.t2.workbench.design.actions;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.util.HashSet;
 import java.util.Set;
 
 import net.sf.taverna.t2.lang.ui.ValidatingUserInputDialog;
+import net.sf.taverna.t2.workbench.design.ui.DataflowOutputPortPanel;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
-import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.EditException;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Action for adding an output port to the dataflow.
+ *
+ * @author David Withers
+ */
 public class AddDataflowOutputAction extends DataflowEditAction {
 
 	private static final long serialVersionUID = 1L;
@@ -28,15 +34,24 @@ public class AddDataflowOutputAction extends DataflowEditAction {
 
 	public void actionPerformed(ActionEvent event) {
 		try {
-			Set<String> usedPorts = new HashSet<String>();
+			Set<String> usedOutputPorts = new HashSet<String>();
 			for (DataflowOutputPort outputPort : dataflow.getOutputPorts()) {
-				usedPorts.add(outputPort.getName());
+				usedOutputPorts.add(outputPort.getName());
 			}
-			ValidatingUserInputDialog vuid = new ValidatingUserInputDialog(usedPorts, "Duplicate output port.",
-					"[\\p{L}\\p{Digit}_.]+", "Invalid port name.", "Workflow Output Port", "Create a new workflow output port", null);
-			String outputName = vuid.show(component);
-			if (outputName != null) {
-				DataflowOutputPort dataflowOutputPort = edits.createDataflowOutputPort(outputName, dataflow);
+
+			DataflowOutputPortPanel inputPanel = new DataflowOutputPortPanel();
+			
+			ValidatingUserInputDialog vuid = new ValidatingUserInputDialog(
+					"Add Workflow Output Port", inputPanel);
+			vuid.addTextComponentValidation(inputPanel.getPortNameField(),
+					"Set the output port name.", usedOutputPorts,
+					"Duplicate output port.", "[\\p{L}\\p{Digit}_.]+",
+					"Invalid output port name.");
+			vuid.setSize(new Dimension(400, 200));
+
+			if (vuid.show(component)) {
+				String portName = inputPanel.getPortName();
+				DataflowOutputPort dataflowOutputPort = edits.createDataflowOutputPort(portName, dataflow);
 				editManager.doDataflowEdit(dataflow, edits.getAddDataflowOutputPortEdit(dataflow, dataflowOutputPort));
 			}
 		} catch (EditException e) {

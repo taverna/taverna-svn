@@ -1,11 +1,13 @@
 package net.sf.taverna.t2.workbench.design.actions;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.util.HashSet;
 import java.util.Set;
 
 import net.sf.taverna.t2.lang.ui.ValidatingUserInputDialog;
+import net.sf.taverna.t2.workbench.design.ui.ProcessorPanel;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.EditException;
@@ -13,6 +15,11 @@ import net.sf.taverna.t2.workflowmodel.Processor;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Action for renaming a processor.
+ * 
+ * @author David Withers
+ */
 public class RenameProcessorAction extends DataflowEditAction {
 
 	private static final long serialVersionUID = 1L;
@@ -36,13 +43,24 @@ public class RenameProcessorAction extends DataflowEditAction {
 					usedProcessors.add(usedProcessor.getLocalName());
 				}
 			}
-			ValidatingUserInputDialog vuid = new ValidatingUserInputDialog(usedProcessors, "Duplicate processor.",
-					"[\\p{L}\\p{Digit}_.]+", "Invalid processor name.", "Processor Name", "Set the processor name.",
-					processor.getLocalName());
-			String processorName = vuid.show(component);
-			if (processorName != null && !processorName.equals(processor.getLocalName())) {
+
+			ProcessorPanel inputPanel = new ProcessorPanel();
+			
+			ValidatingUserInputDialog vuid = new ValidatingUserInputDialog(
+					"Rename Processor", inputPanel);
+			vuid.addTextComponentValidation(inputPanel.getProcessorNameField(),
+					"Set the processor name.", usedProcessors,
+					"Duplicate processor.", "[\\p{L}\\p{Digit}_.]+",
+					"Invalid processor name.");
+			vuid.setSize(new Dimension(400, 200));
+
+			inputPanel.setProcessorName(processor.getLocalName());
+
+			if (vuid.show(component)) {
+				String processorName = inputPanel.getProcessorName();
 				editManager.doDataflowEdit(dataflow, edits.getRenameProcessorEdit(processor, processorName));
 			}
+		
 		} catch (EditException e1) {
 			logger.debug("Rename processor failed", e1);
 		}

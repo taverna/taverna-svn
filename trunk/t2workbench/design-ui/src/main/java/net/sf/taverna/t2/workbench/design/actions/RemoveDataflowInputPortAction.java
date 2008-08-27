@@ -17,6 +17,11 @@ import net.sf.taverna.t2.workflowmodel.utils.Tools;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Action for removing an input port from the dataflow.
+ *
+ * @author David Withers
+ */
 public class RemoveDataflowInputPortAction extends DataflowEditAction {
 
 	private static final long serialVersionUID = 1L;
@@ -29,7 +34,7 @@ public class RemoveDataflowInputPortAction extends DataflowEditAction {
 		super(dataflow, component);
 		this.port = port;
 		putValue(SMALL_ICON, WorkbenchIcons.deleteIcon);
-		putValue(NAME, "Remove Input Port");		
+		putValue(NAME, "Delete Input Port");		
 	}
 
 	public void actionPerformed(ActionEvent e) {

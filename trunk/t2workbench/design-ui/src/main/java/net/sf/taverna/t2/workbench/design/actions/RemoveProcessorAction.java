@@ -19,6 +19,11 @@ import net.sf.taverna.t2.workflowmodel.utils.Tools;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Action for removing a processor from the dataflow.
+ *
+ * @author David Withers
+ */
 public class RemoveProcessorAction extends DataflowEditAction {
 
 	private static final long serialVersionUID = 1L;

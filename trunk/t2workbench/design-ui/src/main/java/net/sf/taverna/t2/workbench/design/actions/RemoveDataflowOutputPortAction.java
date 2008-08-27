@@ -16,6 +16,11 @@ import net.sf.taverna.t2.workflowmodel.utils.Tools;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Action for removing an output port from the dataflow.
+ *
+ * @author David Withers
+ */
 public class RemoveDataflowOutputPortAction extends DataflowEditAction {
 
 	private static final long serialVersionUID = 1L;
@@ -28,7 +33,7 @@ public class RemoveDataflowOutputPortAction extends DataflowEditAction {
 		super(dataflow, component);
 		this.port = port;
 		putValue(SMALL_ICON, WorkbenchIcons.deleteIcon);
-		putValue(NAME, "Remove Output Port");		
+		putValue(NAME, "Delete Output Port");		
 	}
 
 	public void actionPerformed(ActionEvent e) {

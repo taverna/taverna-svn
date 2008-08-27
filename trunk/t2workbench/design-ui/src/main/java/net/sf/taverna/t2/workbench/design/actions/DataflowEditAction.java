@@ -9,6 +9,11 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 
+/**
+ * Abstract superclass of dataflow edit actions.
+ *
+ * @author David Withers
+ */
 public abstract class DataflowEditAction extends AbstractAction {
 
 	protected Edits edits = EditsRegistry.getEdits();

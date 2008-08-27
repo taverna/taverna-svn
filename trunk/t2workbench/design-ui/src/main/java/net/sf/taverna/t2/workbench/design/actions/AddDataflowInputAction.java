@@ -1,11 +1,13 @@
 package net.sf.taverna.t2.workbench.design.actions;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.util.HashSet;
 import java.util.Set;
 
 import net.sf.taverna.t2.lang.ui.ValidatingUserInputDialog;
+import net.sf.taverna.t2.workbench.design.ui.DataflowInputPortPanel;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
@@ -13,6 +15,11 @@ import net.sf.taverna.t2.workflowmodel.EditException;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Action for adding an input port to the dataflow.
+ *
+ * @author David Withers
+ */
 public class AddDataflowInputAction extends DataflowEditAction {
 
 	private static final long serialVersionUID = 1L;
@@ -27,15 +34,29 @@ public class AddDataflowInputAction extends DataflowEditAction {
 
 	public void actionPerformed(ActionEvent event) {
 		try {
-			Set<String> usedPorts = new HashSet<String>();
+			Set<String> usedInputPorts = new HashSet<String>();
 			for (DataflowInputPort inputPort : dataflow.getInputPorts()) {
-				usedPorts.add(inputPort.getName());
+				usedInputPorts.add(inputPort.getName());
 			}
-			ValidatingUserInputDialog vuid = new ValidatingUserInputDialog(usedPorts, "Duplicate input port.",
-					"[\\p{L}\\p{Digit}_.]+", "Invalid port name.", "Workflow Input Port", "Create a new workflow input port", null);
-			String inputName = vuid.show(component);
-			if (inputName != null) {
-				DataflowInputPort dataflowInputPort = edits.createDataflowInputPort(inputName, 0, 0, dataflow);
+
+			DataflowInputPortPanel inputPanel = new DataflowInputPortPanel();
+			
+			ValidatingUserInputDialog vuid = new ValidatingUserInputDialog(
+					"Add Workflow Input Port", inputPanel);
+			vuid.addTextComponentValidation(inputPanel.getPortNameField(),
+					"Set the input port name.", usedInputPorts,
+					"Duplicate input port.", "[\\p{L}\\p{Digit}_.]+",
+					"Invalid input port name.");
+			vuid.addMessageComponent(inputPanel.getSingleValueButton(), "Set the input port type.");
+			vuid.addMessageComponent(inputPanel.getListValueButton(), "Set the input port list depth.");
+			vuid.setSize(new Dimension(400, 250));
+
+			inputPanel.setPortDepth(0);
+
+			if (vuid.show(component)) {
+				String portName = inputPanel.getPortName();
+				int portDepth = inputPanel.getPortDepth();
+				DataflowInputPort dataflowInputPort = edits.createDataflowInputPort(portName, portDepth, portDepth, dataflow);
 				editManager.doDataflowEdit(dataflow, edits.getAddDataflowInputPortEdit(dataflow, dataflowInputPort));
 			}
 		} catch (EditException e) {
