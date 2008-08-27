@@ -117,12 +117,14 @@ public interface Edits {
 	 * @param dataflow
 	 * @param context
 	 * @return an instance of a WorkflowInstanceFacade
-	 * @throws InvalidDataflowException if the workflow was not valid
+	 * @throws InvalidDataflowException
+	 *             if the workflow was not valid
 	 * 
 	 * @see WorkflowInstanceFacade
 	 */
 	public WorkflowInstanceFacade createWorkflowInstanceFacade(
-			Dataflow dataflow, InvocationContext context, String parentProcess) throws InvalidDataflowException;
+			Dataflow dataflow, InvocationContext context, String parentProcess)
+			throws InvalidDataflowException;
 
 	/**
 	 * Add an Activity implementation to the set of activities within a
@@ -273,6 +275,30 @@ public interface Edits {
 	 */
 	public Edit<Dataflow> getAddDataflowOutputPortEdit(Dataflow dataflow,
 			DataflowOutputPort dataflowOutputPort);
+
+	/**
+	 * Returns an edit to change the depth of a DataflowInputPort.
+	 * 
+	 * @param dataflowInputPort
+	 *            the port to change the depth of
+	 * @param depth
+	 *            the new depth
+	 * @return an edit to change the depth of a Dataflow
+	 */
+	public Edit<DataflowInputPort> getChangeDataflowInputPortDepthEdit(
+			DataflowInputPort dataflowInputPort, int depth);
+
+	/**
+	 * Returns an edit to change the granular depth of a DataflowInputPort.
+	 * 
+	 * @param dataflowInputPort
+	 *            the port to change the granular depth of
+	 * @param granularDepth
+	 *            the new granular depth
+	 * @return an edit to change the granular depth of a Dataflow
+	 */
+	public Edit<DataflowInputPort> getChangeDataflowInputPortGranularDepthEdit(
+			DataflowInputPort dataflowInputPort, int granularDepth);
 
 	/**
 	 * Add a new layer to the specified dispatch stack
@@ -491,15 +517,15 @@ public interface Edits {
 			Activity<?> activity, ActivityInputPort activityInputPort);
 
 	/**
-	 * Returns an edit to remove a ProcessorInputPort to ActivityInputPort mapping
-	 * from an Activity.
+	 * Returns an edit to remove a ProcessorInputPort to ActivityInputPort
+	 * mapping from an Activity.
 	 * 
 	 * @param activity
 	 *            activity to remove the port mapping from
 	 * @param processorPortName
 	 *            the name of the processor port to remove from the mapping
-	 * @return an edit to remove a ProcessorInputPort to ActivityInputPort mapping
-	 *         from an Activity
+	 * @return an edit to remove a ProcessorInputPort to ActivityInputPort
+	 *         mapping from an Activity
 	 */
 	public Edit<Activity<?>> getRemoveActivityInputPortMappingEdit(
 			Activity<?> activity, String processorPortName);
@@ -529,7 +555,7 @@ public interface Edits {
 	 */
 	public Edit<Activity<?>> getRemoveActivityOutputPortMappingEdit(
 			Activity<?> activity, String processorPortName);
-	
+
 	/**
 	 * Remove a condition previously applied to the specified pair of Processor
 	 * instances
@@ -602,9 +628,8 @@ public interface Edits {
 	 * @param processor
 	 * @return
 	 */
-	public Edit<Dataflow> getRemoveMergeEdit(Dataflow dataflow,
-			Merge merge);
-	
+	public Edit<Dataflow> getRemoveMergeEdit(Dataflow dataflow, Merge merge);
+
 	/**
 	 * Rename a dataflow input port
 	 * 

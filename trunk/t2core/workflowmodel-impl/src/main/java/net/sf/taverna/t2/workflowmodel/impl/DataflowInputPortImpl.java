@@ -27,6 +27,16 @@ public class DataflowInputPortImpl extends AbstractEventHandlingInputPort
 		return granularInputDepth;
 	}
 
+	void setDepth(int depth) {
+		this.depth = depth;
+		internalOutput.setDepth(depth);
+	}
+	
+	void setGranularDepth(int granularDepth) {
+		this.granularInputDepth = granularDepth;
+		internalOutput.setGranularDepth(granularDepth);
+	}
+	
 	public EventForwardingOutputPort getInternalOutputPort() {
 		return internalOutput;
 	}

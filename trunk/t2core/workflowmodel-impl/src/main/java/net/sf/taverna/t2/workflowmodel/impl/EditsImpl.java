@@ -150,6 +150,17 @@ public class EditsImpl implements Edits {
 			DataflowOutputPort dataflowOutputPort, String newName) {
 		return new RenameDataflowOutputPortEdit(dataflowOutputPort, newName);
 	}
+	
+	public Edit<DataflowInputPort> getChangeDataflowInputPortDepthEdit(
+			DataflowInputPort dataflowInputPort, int depth) {
+		return new ChangeDataflowInputPortDepthEdit(dataflowInputPort, depth);
+	}
+
+	public Edit<DataflowInputPort> getChangeDataflowInputPortGranularDepthEdit(
+			DataflowInputPort dataflowInputPort, int granularDepth) {
+		return new ChangeDataflowInputPortGranularDepthEdit(dataflowInputPort, granularDepth);
+	}
+ 
 
 	public Edit<Processor> getConnectProcessorOutputEdit(Processor processor,
 			String outputPortName, EventHandlingInputPort targetPort) {
