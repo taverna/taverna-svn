@@ -59,7 +59,7 @@ public class ColourManager extends AbstractConfigurable {
 
 	private void initialiseDefaults() {
 		defaultPropertyMap=new HashMap<String, String>();
-		cachedColours=new HashMap<Object, Color>();
+		cachedColours=new HashMap<Object, Color>();	
 		defaultPropertyMap.put("net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivity", "#98fb98");//palegreen
 		defaultPropertyMap.put("net.sf.taverna.t2.activities.beanshell.BeanshellActivity", "#deb887");//burlywood2
 		defaultPropertyMap.put("net.sf.taverna.t2.activities.biomart.BiomartActivity", "#d1eeee");//lightcyan2
@@ -67,8 +67,8 @@ public class ColourManager extends AbstractConfigurable {
 		defaultPropertyMap.put("net.sf.taverna.t2.activities.biomoby.BiomobyObjectActivity", "#ffd700");//gold
 		defaultPropertyMap.put("net.sf.taverna.t2.activities.biomoby.MobyParseDatatypeActivity", "#ffffff");//white
 		defaultPropertyMap.put("net.sf.taverna.t2.activities.dataflow.DataflowActivity", "#ffc0cb");//pink
-		defaultPropertyMap.put("net.sf.taverna.t2.activities.rshell.RshellActivity", "#fafad2");//lightgoldenrodyellow
-		defaultPropertyMap.put("net.sf.taverna.t2.activities.soaplab.SoaplabActivity", "#bdb76b");//darkkhaki
+		defaultPropertyMap.put("net.sf.taverna.t2.activities.rshell.RshellActivity", "#36688B");//steelblue4
+		defaultPropertyMap.put("net.sf.taverna.t2.activities.soaplab.SoaplabActivity", "#fafad2");//lightgoldenrodyellow
 		defaultPropertyMap.put("net.sf.taverna.t2.activities.stringconstant.StringConstantActivity", "#b0c4de");//lightsteelblue
 		defaultPropertyMap.put("net.sf.taverna.t2.activities.wsdl.WSDLActivity", "#a2cd5a");//darkolivegreen3
 		defaultPropertyMap.put("net.sf.taverna.t2.activities.localworker.LocalworkerActivity", "#d15fee"); //mediumorchid2
