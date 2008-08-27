@@ -27,7 +27,7 @@ public class ChangeDataflowInputPortGranularDepthEditTest {
 
 	@Test
 	public void testDoEditAction() throws EditException {
-		int newGranularDepth = depth = 2;
+		int newGranularDepth = 2;
 		ChangeDataflowInputPortGranularDepthEdit edit = new ChangeDataflowInputPortGranularDepthEdit(dataflowInputPort, newGranularDepth);
 		assertEquals(depth, dataflowInputPort.getDepth());
 		assertEquals(granularDepth, dataflowInputPort.getGranularInputDepth());		
@@ -38,7 +38,7 @@ public class ChangeDataflowInputPortGranularDepthEditTest {
 
 	@Test
 	public void testUndoEditAction() throws EditException {
-		int newGranularDepth = depth = 2;
+		int newGranularDepth = 2;
 		ChangeDataflowInputPortGranularDepthEdit edit = new ChangeDataflowInputPortGranularDepthEdit(dataflowInputPort, newGranularDepth);
 		assertEquals(depth, dataflowInputPort.getDepth());
 		assertEquals(granularDepth, dataflowInputPort.getGranularInputDepth());		
