@@ -12,6 +12,7 @@ import javax.swing.ImageIcon;
 public class WorkbenchIcons {
 
 
+	public static ImageIcon resultsPerspectiveIcon;
 	public static ImageIcon deleteIcon;
 	public static ImageIcon zoomIcon;
 	public static ImageIcon zoomInIcon;
@@ -64,13 +65,15 @@ public class WorkbenchIcons {
 	public static ImageIcon allportIcon;
 	public static ImageIcon blobIcon;
 	public static ImageIcon expandNestedIcon;
-	public static ImageIcon advancedModelExplorerIcon;
+	public static ImageIcon workflowExplorerIcon;
 
 
 	static {
 		// Load the image files found in this package into the class.
 		try {
 			Class c = WorkbenchIcons.class;
+			
+			resultsPerspectiveIcon = new ImageIcon(c.getResource("generic/results-perspective.png"));
 			deleteIcon = new ImageIcon(c
 					.getResource("generic/delete.gif"));
 			zoomIcon = new ImageIcon(c.getResource("generic/zoom.gif"));
@@ -159,8 +162,8 @@ public class WorkbenchIcons {
 					.getResource("graph/blob.png"));
 			expandNestedIcon = new ImageIcon(c
 					.getResource("graph/expandnested.png"));
-			advancedModelExplorerIcon = new ImageIcon(c
-					.getResource("explorer/advanced-model-explorer.png"));
+			workflowExplorerIcon = new ImageIcon(c
+					.getResource("explorer/workflow-explorer.png"));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.out.println(ex.toString());
