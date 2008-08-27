@@ -203,6 +203,7 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 		// Note that in this case fileManager.getCurrentDataflow() == df
 
 		// Get the newly selected workflow
+
 		this.dataflow = df;
 		
 		// The current tree becomes the tree of the newly selected workflow
@@ -241,25 +242,40 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 	private final class FileManagerObserver implements
 			Observer<FileManagerEvent> {
 		public void notify(Observable<FileManagerEvent> sender,
-				FileManagerEvent message) throws Exception {
+				final FileManagerEvent message) throws Exception {
 
 			if (message instanceof SetCurrentDataflowEvent){				
 				if (fileManager.getOpenDataflows().size() == openDataflows.size()){	
 					// This is either a case of changing between already opened workflows
 					// or closing a workflow
 					logger.info("WorkflowExplorer: Dataflow changed");
-					setCurrentDataflow(((SetCurrentDataflowEvent) message).getDataflow());
+					new Thread("Workflow Explorer: Set current dataflow") {
+						@Override
+						public void run() {
+							setCurrentDataflow(((SetCurrentDataflowEvent) message).getDataflow());
+						}
+					}.start();
 				}
 				else if (fileManager.getOpenDataflows().size() > openDataflows.size()){
 					// This is a case of opening a new workflow, in which case an 
 					// OpenedDataflowEvent will follow to deal with it so we do nothing here
 					logger.info("WorkflowExplorer: New workflow opened");
-					openDataflow(((SetCurrentDataflowEvent) message).getDataflow());	
+					new Thread("Workflow Explorer: new workflow opened") {
+						@Override
+						public void run() {
+							openDataflow(((SetCurrentDataflowEvent) message).getDataflow());							
+						}
+					}.start();
 				}
 			}
 			else if (message instanceof ClosedDataflowEvent){
 				logger.info("WorkflowExplorer: Workflow closed");
-				closeDataflow(((ClosedDataflowEvent) message).getDataflow());
+				new Thread("Workflow Explorer: close dataflow") {
+					@Override
+					public void run() {
+						closeDataflow(((ClosedDataflowEvent) message).getDataflow());						
+					}
+				}.start();
 			}
 
 		}
