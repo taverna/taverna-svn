@@ -107,7 +107,7 @@
 		<module>perspective-results</module>
 		<module>reference-config</module>
 		<module>iteration-strategy-ui</module>
-		<module>advanced-model-explorer</module>
+		<module>workflow-explorer</module>
 	</modules>
 	<repositories>
 		<repository>

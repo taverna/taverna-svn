@@ -1,133 +1,88 @@
 <basepane>
-	<child>
-		<znode classname="net.sf.taverna.zaria.ZSplitPane">
-			<split ratio="0.4"
-				orientation="horizontal">
-				<right>
-					<znode
-						classname="net.sf.taverna.zaria.ZSplitPane">
-						<split ratio="0.6"
-							orientation="horizontal">
-							<right>
-								<znode
-									classname="net.sf.taverna.zaria.ZRavenComponent">
-									<component scroll="false">
-										<raven>
-											<group>
-												net.sf.taverna.t2.workbench
-											</group>
-											<artifact>
-												advanced-model-explorer
-											</artifact>
-										</raven>
-										<classname>
-											net.sf.taverna.t2.workbench.ui.advancedmodelexplorer.AdvancedModelExplorerFactory
-										</classname>
-										<interface>
-											net.sf.taverna.t2.workbench.ui.zaria.UIComponentFactorySPI
-										</interface>
-									</component>
-								</znode>
-							</right>
-							<left>
-								<znode
-									classname="net.sf.taverna.zaria.ZRavenComponent">
-									<component scroll="false">
-										<raven>
-											<group>
-												net.sf.taverna.t2.workbench.views
-											</group>
-											<artifact>graph</artifact>
-										</raven>
-										<classname>
-											net.sf.taverna.t2.workbench.views.graph.GraphViewComponentFactory
-										</classname>
-										<interface>
-											net.sf.taverna.t2.workbench.ui.zaria.UIComponentFactorySPI
-										</interface>
-									</component>
-								</znode>
-							</left>
-						</split>
-					</znode>
-				</right>
-				<left>
-					<znode
-						classname="net.sf.taverna.zaria.ZSplitPane">
-						<split ratio="0.6"
-							orientation="vertical">
-							<right>
-								<znode
-									classname="net.sf.taverna.zaria.ZRavenComponent">
-									<component scroll="true">
-										<raven>
-											<group>
-												net.sf.taverna.t2.workbench
-											</group>
-											<artifact>
-												contextual-views-api
-											</artifact>
-										</raven>
-										<classname>
-											net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualViewComponentFactory
-										</classname>
-										<interface>
-											net.sf.taverna.t2.workbench.ui.zaria.UIComponentFactorySPI
-										</interface>
-									</component>
-								</znode>
-							</right>
-							<left>
-								<znode
-									classname="net.sf.taverna.zaria.ZRavenComponent">
-									<component scroll="true">
-										<raven>
-											<group>
-												net.sf.taverna.t2.workbench
-											</group>
-											<artifact>
-												activity-palette-ui
-											</artifact>
-										</raven>
-										<classname>
-											net.sf.taverna.t2.workbench.ui.activitypalette.ActivityPaletteComponentFactory
-										</classname>
-										<interface>
-											net.sf.taverna.t2.workbench.ui.zaria.UIComponentFactorySPI
-										</interface>
-									</component>
-								</znode>
-							</left>
-						</split>
-					</znode>
-				</left>
-			</split>
-		</znode>
-	</child>
-	<namedcomponents>
-		<namedcomponent>
-			<groupid>net.sf.taverna.t2.workbench</groupid>
-			<artifact>contextual-views-api</artifact>
-			<classname>
-				net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualViewComponentFactory
-			</classname>
-			<name>contextualview</name>
-		</namedcomponent>
-		<namedcomponent>
-			<groupid>net.sf.taverna.t2.workbench</groupid>
-			<artifact>activity-palette-ui</artifact>
-			<classname>
-				net.sf.taverna.t2.workbench.ui.activitypalette.ActivityPaletteComponentFactory
-			</classname>
-			<name>activitypalette</name>
-		</namedcomponent>
-		<namedcomponent>
-			<groupid>net.sf.taverna.t2.workbench.views</groupid>
-			<artifact>graph</artifact>
-			<classname>
-				net.sf.taverna.t2.workbench.views.graph.GraphViewComponentFactory
-			</classname>
-			<name>graphview</name>
-		</namedcomponent>
-	</namedcomponents>
+  <child>
+    <znode classname="net.sf.taverna.zaria.ZSplitPane">
+      <split ratio="0.4" orientation="horizontal">
+        <right>
+          <znode classname="net.sf.taverna.zaria.ZSplitPane">
+            <split ratio="0.6" orientation="horizontal">
+              <right>
+                <znode classname="net.sf.taverna.zaria.ZRavenComponent">
+                  <component scroll="true">
+                    <raven>
+                      <group>net.sf.taverna.t2.workbench</group>
+                      <artifact>workflow-explorer</artifact>
+                    </raven>
+                    <classname>net.sf.taverna.t2.workbench.ui.workflowexplorer.WorkflowExplorerFactory</classname>
+                    <interface>net.sf.taverna.t2.workbench.ui.zaria.UIComponentFactorySPI</interface>
+                  </component>
+                </znode>
+              </right>
+              <left>
+                <znode classname="net.sf.taverna.zaria.ZRavenComponent">
+                  <component scroll="true">
+                    <raven>
+                      <group>net.sf.taverna.t2.workbench.views</group>
+                      <artifact>graph</artifact>
+                    </raven>
+                    <classname>net.sf.taverna.t2.workbench.views.graph.GraphViewComponentFactory</classname>
+                    <interface>net.sf.taverna.t2.workbench.ui.zaria.UIComponentFactorySPI</interface>
+                  </component>
+                </znode>
+              </left>
+            </split>
+          </znode>
+        </right>
+        <left>
+          <znode classname="net.sf.taverna.zaria.ZSplitPane">
+            <split ratio="0.6" orientation="vertical">
+              <right>
+                <znode classname="net.sf.taverna.zaria.ZRavenComponent">
+                  <component scroll="true">
+                    <raven>
+                      <group>net.sf.taverna.t2.workbench</group>
+                      <artifact>contextual-views-api</artifact>
+                    </raven>
+                    <classname>net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualViewComponentFactory</classname>
+                    <interface>net.sf.taverna.t2.workbench.ui.zaria.UIComponentFactorySPI</interface>
+                  </component>
+                </znode>
+              </right>
+              <left>
+                <znode classname="net.sf.taverna.zaria.ZRavenComponent">
+                  <component scroll="true">
+                    <raven>
+                      <group>net.sf.taverna.t2.workbench</group>
+                      <artifact>activity-palette-ui</artifact>
+                    </raven>
+                    <classname>net.sf.taverna.t2.workbench.ui.activitypalette.ActivityPaletteComponentFactory</classname>
+                    <interface>net.sf.taverna.t2.workbench.ui.zaria.UIComponentFactorySPI</interface>
+                  </component>
+                </znode>
+              </left>
+            </split>
+          </znode>
+        </left>
+      </split>
+    </znode>
+  </child>
+  <namedcomponents>
+    <namedcomponent>
+      <groupid>net.sf.taverna.t2.workbench</groupid>
+      <artifact>contextual-views-api</artifact>
+      <classname>net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualViewComponentFactory</classname>
+      <name>contextualview</name>
+    </namedcomponent>
+    <namedcomponent>
+      <groupid>net.sf.taverna.t2.workbench</groupid>
+      <artifact>activity-palette-ui</artifact>
+      <classname>net.sf.taverna.t2.workbench.ui.activitypalette.ActivityPaletteComponentFactory</classname>
+      <name>activitypalette</name>
+    </namedcomponent>
+    <namedcomponent>
+      <groupid>net.sf.taverna.t2.workbench.views</groupid>
+      <artifact>graph</artifact>
+      <classname>net.sf.taverna.t2.workbench.views.graph.GraphViewComponentFactory</classname>
+      <name>graphview</name>
+    </namedcomponent>
+  </namedcomponents>
 </basepane>
