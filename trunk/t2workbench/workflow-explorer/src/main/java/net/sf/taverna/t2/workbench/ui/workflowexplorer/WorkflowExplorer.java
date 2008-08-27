@@ -20,6 +20,12 @@ import org.apache.log4j.Logger;
 
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
+import net.sf.taverna.t2.lang.ui.ModelMap;
+import net.sf.taverna.t2.lang.ui.ModelMap.ModelMapEvent;
+import net.sf.taverna.t2.workbench.ModelMapConstants;
+import net.sf.taverna.t2.workbench.edits.EditManager;
+import net.sf.taverna.t2.workbench.edits.EditManager.AbstractDataflowEditEvent;
+import net.sf.taverna.t2.workbench.edits.EditManager.EditManagerEvent;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.file.events.ClosedDataflowEvent;
 import net.sf.taverna.t2.workbench.file.events.FileManagerEvent;
@@ -48,7 +54,7 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 	private static FileManager fileManager = FileManager.getInstance();
 	
 	/* Observer of events on the file manager, such as opening or closing of a workflow.*/
-	private final FileManagerObserver fileManagerObserver = new FileManagerObserver();
+//	private final FileManagerObserver fileManagerObserver = new FileManagerObserver();
 		
 	/* The currently selected workflow (to be displayed in the Workflow Explorer). */
 	private Dataflow dataflow;
@@ -116,7 +122,42 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 		ameTree.setCellRenderer(new WorkflowExplorerTreeCellRenderer());
 		
 		// Start observing events on the FileManager
-		fileManager.addObserver(fileManagerObserver);
+//		fileManager.addObserver(fileManagerObserver);
+		ModelMap.getInstance().addObserver(new Observer<ModelMap.ModelMapEvent>() {
+			public void notify(Observable<ModelMapEvent> sender, final ModelMapEvent message) {
+				if (message.getModelName().equals(ModelMapConstants.CURRENT_DATAFLOW)) {
+					if (message.getNewModel() instanceof Dataflow) {
+						new Thread("Workflow Explorer - model map message: open dataflow") {
+							@Override
+							public void run() {
+								openDataflow((Dataflow) message.getNewModel());
+							}
+						}.start();
+					}
+				}
+			}
+		});
+		
+		EditManager.getInstance().addObserver(new Observer<EditManagerEvent>() {
+			public void notify(Observable<EditManagerEvent> sender,
+					final EditManagerEvent message) throws Exception {
+				if (message instanceof AbstractDataflowEditEvent) {
+					AbstractDataflowEditEvent dataflowEditEvent = (AbstractDataflowEditEvent) message;
+					logger.info("WorkflowExplorer: Dataflow changed");
+					//react to changes in the current dataflow
+					if (((AbstractDataflowEditEvent) message).getDataFlow() == dataflow) {
+						new Thread("Workflow Explorer - edit manager message: open dataflow") {
+							@Override
+							public void run() {
+								openDataflow(((AbstractDataflowEditEvent) message).getDataFlow());
+							}
+						}.start();
+					}
+					
+				}
+			}
+		});
+		
 		
 		initComponents();
 	}
