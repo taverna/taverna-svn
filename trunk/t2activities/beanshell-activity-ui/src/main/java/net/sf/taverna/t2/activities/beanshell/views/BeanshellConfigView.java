@@ -167,7 +167,7 @@ public class BeanshellConfigView extends JPanel {
 			}
 
 			public void focusLost(FocusEvent e) {
-				configBean.setScript(scriptText.getText());
+//				configBean.setScript(scriptText.getText());
 			}
 		});
 		scriptEditPanel.add(scriptText, BorderLayout.CENTER);
