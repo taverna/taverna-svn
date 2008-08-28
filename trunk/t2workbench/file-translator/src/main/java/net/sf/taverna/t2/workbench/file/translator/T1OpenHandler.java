@@ -131,7 +131,7 @@ public class T1OpenHandler extends AbstractDataflowPersistenceHandler implements
 		try {
 			dataflow = WorkflowModelTranslator.doTranslation(scuflModel);
 		} catch (WorkflowTranslationException e) {
-			throw new OpenException("Could not translate Scufl file", e);
+			throw new OpenException("Could not translate Scufl file:\n " + e.getMessage().toString(), e);
 		}
 		return dataflow;
 	}
