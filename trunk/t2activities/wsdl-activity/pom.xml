@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<artifactId>activities</artifactId>
@@ -28,19 +27,15 @@
 			<artifactId>wsdl-generic</artifactId>
 			<version>1.2-SNAPSHOT</version>
 		</dependency>
-		
-		<!-- temporarily disabled because of Raven issues 
-		<dependency>
+		<!--
+			temporarily disabled because of Raven issues <dependency>
 			<groupId>credential-manager</groupId>
 			<artifactId>credential-manager</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
+			<version>0.0.1-SNAPSHOT</version> </dependency> <dependency>
 			<groupId>t2security-agents</groupId>
 			<artifactId>t2security-agents</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		 -->
+			<version>0.0.1-SNAPSHOT</version> </dependency>
+		-->
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>partition</artifactId>
@@ -58,6 +53,11 @@
 			<version>0.3-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>jdom</groupId>
+			<artifactId>jdom</artifactId>
+			<version>1.0</version>
+		</dependency>
+		
 	</dependencies>
 </project>
-

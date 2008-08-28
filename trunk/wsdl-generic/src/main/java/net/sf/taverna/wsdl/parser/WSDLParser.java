@@ -51,11 +51,18 @@ import com.ibm.wsdl.extensions.soap.SOAPOperationImpl;
  * services and the required types needed to invoke that particular service.
  * Handles Complex Types and wsdl imports.
  * 
+ * @author Stuart Owen
+ * @author Stian Soiland-Reyes
+ * 
  */
 
 @SuppressWarnings("unchecked")
 public class WSDLParser {
 	
+	private static final String GET_RESOURCE_PROPERTY_METHOD = "GetResourceProperty";
+
+	private static final String GET_RESOURCE_PROPERTY_ACTION = "http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/GetResourceProperty";
+
 	private static Logger logger = Logger.getLogger(WSDLParser.class);
 	
 	private String wsdlLocation;
@@ -87,6 +94,12 @@ public class WSDLParser {
 	private Map<String, BindingOperation> bindingOperations = Collections
 			.synchronizedMap(new HashMap<String, BindingOperation>());
 
+	private boolean isWsrfService;
+
+	public boolean isWsrfService() {
+		return isWsrfService;
+	}
+
 	/**
 	 * Constructor which takes the location of the base wsdl file, and begins to
 	 * process it
@@ -114,7 +127,7 @@ public class WSDLParser {
 			symbolTableMap.put(wsdlLocation, symbolTable);
 			operationMap.put(wsdlLocation, determineOperations());
 		}
-
+		checkWSRF();
 	}
 
 	/**
@@ -461,6 +474,21 @@ public class WSDLParser {
 		return result;
 	}
 
+	/**
+	 * Check if this is a WSRF-resource property supporting binding.
+	 * 
+	 */
+	protected void checkWSRF() {
+		String actionURI;
+		try {
+			actionURI = getSOAPActionURI(GET_RESOURCE_PROPERTY_METHOD);
+		} catch (UnknownOperationException e) {
+			isWsrfService = false;
+			return;
+		}
+		isWsrfService = GET_RESOURCE_PROPERTY_ACTION.equals(actionURI);
+	}
+
 	private SymbolTable getSymbolTable() {
 		return symbolTableMap.get(getWSDLLocation());
 	}
@@ -580,15 +608,18 @@ public class WSDLParser {
 		BindingOperation result = bindingOperations
 				.get(operationName);
 		if (result == null) {
-			List bindings = getBinding(operationName).getBindingOperations();
-			for (Iterator iterator = bindings.iterator(); iterator.hasNext();) {
-				BindingOperation bindingOperation = (BindingOperation) iterator
-						.next();
-				if (bindingOperation.getOperation().getName().equals(
-						operationName)) {
-					result = bindingOperation;
-					bindingOperations.put(operationName, result);
-					break;
+			Binding binding = getBinding(operationName);
+			if (binding != null) {
+				List bindings = binding.getBindingOperations();
+				for (Iterator iterator = bindings.iterator(); iterator.hasNext();) {
+					BindingOperation bindingOperation = (BindingOperation) iterator
+							.next();
+					if (bindingOperation.getOperation().getName().equals(
+							operationName)) {
+						result = bindingOperation;
+						bindingOperations.put(operationName, result);
+						break;
+					}
 				}
 			}
 		}

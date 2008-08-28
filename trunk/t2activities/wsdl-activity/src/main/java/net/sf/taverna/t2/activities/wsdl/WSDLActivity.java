@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.wsdl.WSDLException;
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceServiceException;
 import net.sf.taverna.t2.reference.T2Reference;
@@ -17,6 +16,7 @@ import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
+import net.sf.taverna.t2.workflowmodel.utils.Tools;
 import net.sf.taverna.wsdl.parser.TypeDescriptor;
 import net.sf.taverna.wsdl.parser.UnknownOperationException;
 import net.sf.taverna.wsdl.parser.WSDLParser;
@@ -37,12 +37,20 @@ import org.xml.sax.SAXException;
  * </p>
  * 
  * @author Stuart Owen
+ * @author Stian Soiland-Reyes
  */
 public class WSDLActivity extends
 		AbstractAsynchronousActivity<WSDLActivityConfigurationBean> {
+	private static final String ENDPOINT_REFERENCE = "EndpointReference";
 	private WSDLActivityConfigurationBean configurationBean;
 	private WSDLParser parser;
 	private Map<String, Integer> outputDepth = new HashMap<String, Integer>();
+	private boolean isWsrfService = false;
+	private String endpointReferenceInputPortName;
+
+	public boolean isWsrfService() {
+		return isWsrfService;
+	}
 
 	private static Logger logger = Logger.getLogger(WSDLActivity.class);
 
@@ -58,6 +66,9 @@ public class WSDLActivity extends
 	@Override
 	public void configure(WSDLActivityConfigurationBean bean)
 			throws ActivityConfigurationException {
+		if (this.configurationBean != null) {
+			throw new IllegalStateException("Reconfiguring WSDL activity not yet implemented");
+		}
 		this.configurationBean = bean;
 		try {
 			parseWSDL();
@@ -134,7 +145,6 @@ public class WSDLActivity extends
 	private void parseWSDL() throws ParserConfigurationException,
 			WSDLException, IOException, SAXException, UnknownOperationException {
 		parser = new WSDLParser(configurationBean.getWsdl());
-
 	}
 
 	private void configurePorts() throws UnknownOperationException, IOException {
@@ -144,8 +154,18 @@ public class WSDLActivity extends
 				.getOperationOutputParameters(configurationBean.getOperation());
 		for (TypeDescriptor descriptor : inputDescriptors) {
 			addInput(descriptor.getName(), descriptor.getDepth(), true,
-					new ArrayList<Class<? extends ExternalReferenceSPI>>(),
+					null,
 					String.class);
+		}
+		isWsrfService = parser.isWsrfService();
+		if (isWsrfService) {
+			// Make sure the port name is unique
+			endpointReferenceInputPortName = ENDPOINT_REFERENCE;
+			int counter = 0;
+			while (Tools.getActivityInputPort(this, endpointReferenceInputPortName) != null) {
+				endpointReferenceInputPortName = ENDPOINT_REFERENCE + counter++;
+			}
+			addInput(endpointReferenceInputPortName, 0, true, null, String.class);
 		}
 
 		for (TypeDescriptor descriptor : outputDescriptors) {
@@ -177,10 +197,16 @@ public class WSDLActivity extends
 				Map<String, Object> invokerInputMap = new HashMap<String, Object>();
 
 				try {
+					String endpointReference = null;
 					for (String key : data.keySet()) {
-						invokerInputMap.put(key, referenceService
-								.renderIdentifier(data.get(key), String.class,
-										callback.getContext()));
+						Object renderIdentifier = referenceService
+						.renderIdentifier(data.get(key), String.class,
+								callback.getContext());
+						if (isWsrfService() && key.equals(endpointReferenceInputPortName)) {
+							endpointReference = (String) renderIdentifier;
+						} else {							
+							invokerInputMap.put(key, renderIdentifier);
+						}
 					}
 					List<String> outputNames = new ArrayList<String>();
 					for (OutputPort port : getOutputPorts()) {
@@ -188,7 +214,7 @@ public class WSDLActivity extends
 					}
 
 					T2WSDLSOAPInvoker invoker = new T2WSDLSOAPInvoker(parser,
-							configurationBean.getOperation(), outputNames);
+							configurationBean.getOperation(), outputNames, endpointReference);
 					WSDLActivityConfigurationBean bean = getConfiguration();
 					EngineConfiguration wssEngineConfiguration = null;
 

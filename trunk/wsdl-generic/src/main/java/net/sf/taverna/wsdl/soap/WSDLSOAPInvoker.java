@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvoker.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-05-29 10:22:21 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2008-08-28 19:39:28 $
+ *               by   $Author: stain $
  * Created on 07-Apr-2006
  *****************************************************************/
 package net.sf.taverna.wsdl.soap;
@@ -38,6 +38,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -45,12 +46,15 @@ import java.util.Map;
 
 import javax.activation.DataHandler;
 import javax.wsdl.WSDLException;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
 import javax.xml.soap.SOAPException;
+import org.apache.axis.message.SOAPHeaderElement;
 
 import net.sf.taverna.wsdl.parser.UnknownOperationException;
 import net.sf.taverna.wsdl.parser.WSDLParser;
 
+import org.apache.axis.AxisFault;
 import org.apache.axis.EngineConfiguration;
 import org.apache.axis.attachments.AttachmentPart;
 import org.apache.axis.client.Call;
@@ -58,16 +62,19 @@ import org.apache.axis.message.SOAPBodyElement;
 import org.apache.axis.message.SOAPEnvelope;
 import org.apache.axis.transport.http.HTTPTransport;
 import org.apache.log4j.Logger;
+import org.xml.sax.SAXException;
 
 /**
- * Invokes SOAP based webservices
+ * Invoke SOAP based webservices
  * 
- * @author sowen
+ * @author Stuart Owen
  * 
  */
 @SuppressWarnings("unchecked")
 public class WSDLSOAPInvoker {
 
+	private static final String ATTACHMENT_LIST = "attachmentList";
+	private BodyBuilderFactory bodyBuilderFactory = BodyBuilderFactory.instance();
 	private WSDLParser parser;
 	private String operationName;
 	private List<String> outputNames;
@@ -121,24 +128,17 @@ public class WSDLSOAPInvoker {
 		
 		call.setTimeout(getTimeout());
 
-		BodyBuilder builder = BodyBuilderFactory.instance().create(parser,
-				operationName,
-				parser.getOperationInputParameters(operationName));
-		SOAPBodyElement body = builder.build(inputMap);
-
-		SOAPEnvelope requestEnv = new SOAPEnvelope();
-		
-		requestEnv.addBodyElement(body);
+		SOAPEnvelope requestEnv = makeRequestEnvelope(inputMap);
 		logger.info("Invoking service with SOAP envelope:\n"+requestEnv);
 		
-		SOAPEnvelope responseEnv = call.invoke(requestEnv);
+		SOAPEnvelope responseEnv = invokeCall(call, requestEnv);
 		
-		logger.info("Recieved SOAP response:\n"+responseEnv);
+		logger.info("Received SOAP response:\n"+responseEnv);
 
 		Map<String, Object> result;
 		if (responseEnv == null) {
 			if (outputNames.size() == 1
-					&& outputNames.get(0).equals("attachmentList")) {
+					&& outputNames.get(0).equals(ATTACHMENT_LIST)) {
 				// Could be axis 2 service with no output (TAV-617)
 				result = new HashMap<String, Object>();
 			} else {
@@ -159,9 +159,38 @@ public class WSDLSOAPInvoker {
 			result = parser.parse(response);
 		}
 
-		result.put("attachmentList", extractAttachments(call));
+		result.put(ATTACHMENT_LIST, extractAttachments(call));
 
 		return result;
+	}
+
+	protected SOAPEnvelope makeRequestEnvelope(Map inputMap)
+			throws UnknownOperationException, IOException, WSDLException,
+			ParserConfigurationException, SOAPException, SAXException {
+	
+		SOAPEnvelope requestEnv = new SOAPEnvelope();
+		for (SOAPHeaderElement headerElement : makeSoapHeaders()) {
+			requestEnv.addHeader(headerElement);
+		}
+		requestEnv.addBodyElement(makeSoapBody(inputMap));
+		return requestEnv;
+	}
+
+	protected List<SOAPHeaderElement> makeSoapHeaders() {
+		return Collections.emptyList();
+	}
+
+	protected SOAPBodyElement makeSoapBody(Map inputMap)
+			throws UnknownOperationException, IOException, WSDLException,
+			ParserConfigurationException, SOAPException, SAXException {
+		BodyBuilder builder = bodyBuilderFactory.create(parser,
+				operationName,
+				parser.getOperationInputParameters(operationName));
+		return builder.build(inputMap);
+	}
+
+	protected SOAPEnvelope invokeCall(Call call, SOAPEnvelope requestEnv) throws AxisFault {
+		return call.invoke(requestEnv);
 	}
 
 	/**
@@ -169,7 +198,7 @@ public class WSDLSOAPInvoker {
 	 * 
 	 * @return
 	 */
-	private Integer getTimeout() {
+	protected Integer getTimeout() {
 		int result = 300000;
 		String minutesStr = System.getProperty("taverna.wsdl.timeout");
 
