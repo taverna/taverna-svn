@@ -42,11 +42,14 @@ public class SoaplabActivityConfigurationAction extends
 						backoff = panel.getBackoff();
 					}
 
-					SoaplabActivityConfigurationBean bean = getActivity()
-							.getConfiguration();
+//					SoaplabActivityConfigurationBean bean = getActivity()
+//							.getConfiguration();
+					SoaplabActivityConfigurationBean bean = new SoaplabActivityConfigurationBean();
 					bean.setPollingBackoff(backoff);
 					bean.setPollingInterval(interval);
 					bean.setPollingIntervalMax(intervalMax);
+					String endpoint = getActivity().getConfiguration().getEndpoint();
+					bean.setEndpoint(endpoint);
 
 					configureActivity(bean);
 					
