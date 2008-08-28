@@ -15,6 +15,7 @@ import java.util.Set;
  * In particular it deals with the conversion of arrays to ArrayList
  * </p>
  * @author Stuart Owen
+ * 
  *
  */
 public class ObjectConverter {
@@ -27,6 +28,7 @@ public class ObjectConverter {
 	 * @return
 	 */
 	public static Object convertObject(Object theObject) {
+
 		if (theObject == null) {
 			return null;
 		}
@@ -37,16 +39,68 @@ public class ObjectConverter {
 			if (theObject instanceof byte[]) {
 				// System.out.println("Found a byte[], returning it.");
 				return theObject;
+			} //extra primitive object checks for those fun edge cases!
+			else if (theObject instanceof int[]){
+				List<Object> l = new ArrayList<Object>();
+				for (int i = 0; i<((int[])theObject).length;i++) {
+					Object a = ((int[])theObject)[i];
+					l.add(convertObject(a));
+				}
+				return l;
+			} else if (theObject instanceof short[]){
+				List<Object> l = new ArrayList<Object>();
+				for (int i = 0; i<((short[])theObject).length;i++) {
+					Object a = ((short[])theObject)[i];
+					l.add(convertObject(a));
+				}
+				return l;
+			} else if (theObject instanceof long[]){
+				List<Object> l = new ArrayList<Object>();
+				for (int i = 0; i<((long[])theObject).length;i++) {
+					Object a = ((long[])theObject)[i];
+					l.add(convertObject(a));
+				}
+				return l;
+			} else if (theObject instanceof float[]){
+				List<Object> l = new ArrayList<Object>();
+				for (int i = 0; i<((float[])theObject).length;i++) {
+					Object a = ((float[])theObject)[i];
+					l.add(convertObject(a));
+				}
+				return l;
+			} else if (theObject instanceof double[]){
+				List<Object> l = new ArrayList<Object>();
+				for (int i = 0; i<((double[])theObject).length;i++) {
+					Object a = ((double[])theObject)[i];
+					l.add(convertObject(a));
+				}
+				return l;
+			} else if (theObject instanceof boolean[]){
+				List<Object> l = new ArrayList<Object>();
+				for (int i = 0; i<((boolean[])theObject).length;i++) {
+					Object a = ((boolean[])theObject)[i];
+					l.add(convertObject(a));
+				}
+				return l;
+			} else if (theObject instanceof char[]){
+				List<Object> l = new ArrayList<Object>();
+				for (int i = 0; i<((char[])theObject).length;i++) {
+					Object a = ((char[])theObject)[i];
+					l.add(convertObject(a));
+				}
+				return l;
 			} else {
 				// For all other arrays, create a new
 				// List and iterate over the array,
 				// unpackaging the item and recursively
 				// putting it into the new List after
-				// conversion
-				Object[] theArray = (Object[]) theObject;
+				// conversion				
+				
 				// System.out.println("Found an array length
 				// "+theArray.length+", repacking as List...");
-				List<Object> l = new ArrayList<Object>();
+				
+				List<Object> l = new ArrayList<Object>();				
+				Object[] theArray = (Object[]) theObject;
 				for (int i = 0; i < theArray.length; i++) {
 					l.add(convertObject(theArray[i]));
 				}
