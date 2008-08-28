@@ -27,7 +27,6 @@ import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
-import org.embl.ebi.escience.scuflworkers.java.LocalWorkerRegistry;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 
 public class T1OpenHandler extends AbstractDataflowPersistenceHandler implements
