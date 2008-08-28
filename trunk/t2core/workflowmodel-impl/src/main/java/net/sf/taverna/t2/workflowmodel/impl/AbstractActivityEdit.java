@@ -23,23 +23,23 @@ public abstract class AbstractActivityEdit implements Edit<Activity<?>> {
 			throw new RuntimeException(
 					"Cannot construct a activity edit with null activity");
 		}
-		this.activity = activity;
+		this.setActivity(activity);
 	}
 
 	public final Activity<?> doEdit() throws EditException {
 		if (applied) {
 			throw new EditException("Edit has already been applied!");
 		}
-		if (activity instanceof AbstractActivity == false) {
+		if (getActivity() instanceof AbstractActivity == false) {
 			throw new EditException(
 					"Edit cannot be applied to a Activity which isn't an instance of AbstractActivity");
 		}
-		AbstractActivity<?> abstractActivity = (AbstractActivity<?>) activity;
+		AbstractActivity<?> abstractActivity = (AbstractActivity<?>) getActivity();
 		try {
 			synchronized (abstractActivity) {
 				doEditAction(abstractActivity);
 				applied = true;
-				return this.activity;
+				return this.getActivity();
 			}
 		} catch (EditException ee) {
 			applied = false;
@@ -63,7 +63,7 @@ public abstract class AbstractActivityEdit implements Edit<Activity<?>> {
 	protected abstract void undoEditAction(AbstractActivity<?> activity);
 
 	public final Activity<?> getSubject() {
-		return activity;
+		return getActivity();
 	}
 
 	public final boolean isApplied() {
@@ -75,11 +75,19 @@ public abstract class AbstractActivityEdit implements Edit<Activity<?>> {
 			throw new RuntimeException(
 					"Attempt to undo edit that was never applied");
 		}
-		AbstractActivity<?> abstractActivity = (AbstractActivity<?>) activity;
+		AbstractActivity<?> abstractActivity = (AbstractActivity<?>) getActivity();
 		synchronized (abstractActivity) {
 			undoEditAction(abstractActivity);
 			applied = false;
 		}
 
+	}
+
+	public void setActivity(Activity<?> activity) {
+		this.activity = activity;
+	}
+
+	public Activity<?> getActivity() {
+		return activity;
 	}
 }
