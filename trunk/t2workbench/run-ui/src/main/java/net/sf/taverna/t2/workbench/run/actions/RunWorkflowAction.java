@@ -8,11 +8,6 @@ import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import org.apache.log4j.Logger;
-import org.jdom.Element;
-import org.springframework.context.ApplicationContext;
-
-import net.sf.taverna.platform.spring.RavenAwareClassPathXmlApplicationContext;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.lang.ui.ModelMap;
@@ -22,7 +17,6 @@ import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.reference.ui.WorkflowLaunchPanel;
 import net.sf.taverna.t2.workbench.ModelMapConstants;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
-import net.sf.taverna.t2.workbench.reference.config.ReferenceConfiguration;
 import net.sf.taverna.t2.workbench.run.DataflowRunsComponent;
 import net.sf.taverna.t2.workbench.ui.impl.Workbench;
 import net.sf.taverna.t2.workbench.ui.zaria.PerspectiveSPI;
@@ -31,7 +25,6 @@ import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.EditException;
-import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.InvalidDataflowException;
 import net.sf.taverna.t2.workflowmodel.TokenProcessingEntity;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
@@ -41,6 +34,8 @@ import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLDeserializer;
 import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLDeserializerImpl;
 import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLSerializer;
 import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLSerializerImpl;
+
+import org.apache.log4j.Logger;
 
 public class RunWorkflowAction extends AbstractAction {
 
@@ -99,14 +94,7 @@ public class RunWorkflowAction extends AbstractAction {
 			}
 
 			if (dataflowCopy != null) {
-				String context = ReferenceConfiguration
-						.getInstance()
-						.getProperty(
-								ReferenceConfiguration.REFERENCE_SERVICE_CONTEXT);
-				ApplicationContext appContext = new RavenAwareClassPathXmlApplicationContext(
-						context);
-				final ReferenceService referenceService = (ReferenceService) appContext
-						.getBean("t2reference.service.referenceService");
+				final ReferenceService referenceService = runComponent.getReferenceService();
 				ReferenceContext referenceContext = null;
 
 				WorkflowInstanceFacade facade;

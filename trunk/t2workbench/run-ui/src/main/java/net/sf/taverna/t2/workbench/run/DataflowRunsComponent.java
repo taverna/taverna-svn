@@ -18,8 +18,13 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.springframework.context.ApplicationContext;
+
+import net.sf.taverna.platform.spring.RavenAwareClassPathXmlApplicationContext;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
+import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.T2Reference;
+import net.sf.taverna.t2.workbench.reference.config.ReferenceConfiguration;
 import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
 import net.sf.taverna.t2.workflowmodel.InvalidDataflowException;
 
@@ -28,6 +33,10 @@ public class DataflowRunsComponent extends JSplitPane implements UIComponentSPI 
 	private static final long serialVersionUID = 1L;
 	
 	private static DataflowRunsComponent singletonInstance;
+	
+	private ReferenceService referenceService;
+	
+	private String referenceContext;
 	
 	private DefaultListModel runListModel;
 	
@@ -95,7 +104,9 @@ public class DataflowRunsComponent extends JSplitPane implements UIComponentSPI 
 		
 //		revalidate();
 //		setDividerLocation(.3);
-
+		
+		//force reference service to be constructed now rather than at first workflow run
+		getReferenceService();
 	}
 	
 	public static DataflowRunsComponent getInstance() {
@@ -103,6 +114,20 @@ public class DataflowRunsComponent extends JSplitPane implements UIComponentSPI 
 			singletonInstance = new DataflowRunsComponent();
 		}
 		return singletonInstance;
+	}
+	
+	public ReferenceService getReferenceService() {
+		String context = ReferenceConfiguration.getInstance().getProperty(
+				ReferenceConfiguration.REFERENCE_SERVICE_CONTEXT);
+		if (!context.equals(referenceContext)) {
+			referenceContext = context;
+			ApplicationContext appContext = new RavenAwareClassPathXmlApplicationContext(
+					context);
+			referenceService = (ReferenceService) appContext
+					.getBean("t2reference.service.referenceService");
+		}
+		return referenceService;
+
 	}
 	
 	public void runDataflow(WorkflowInstanceFacade facade, Map<String, T2Reference> inputs) {
