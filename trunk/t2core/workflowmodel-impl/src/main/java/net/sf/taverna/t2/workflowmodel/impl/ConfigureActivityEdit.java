@@ -28,7 +28,6 @@ public class ConfigureActivityEdit extends AbstractActivityEdit {
 
 	private Element serializedBean;
 
-
 	public ConfigureActivityEdit(Activity<?> activity, Object configurationBean) {
 		super(activity);
 		this.configurationBean = configurationBean;
@@ -42,10 +41,21 @@ public class ConfigureActivityEdit extends AbstractActivityEdit {
 		}
 	}
 
+	/**
+	 * Deserialise the activity bean using its classloader if it has one,
+	 * otherwise use the bean deserialisers
+	 * 
+	 */
 	class BeanDeSerialiser extends AbstractXMLDeserializer {
 		public Object createBean(Element configElement) {
-			return super.createBean(configElement, BeanDeSerialiser.class
-					.getClassLoader());
+			ClassLoader beanClassLoader = BeanDeSerialiser.class.getClassLoader();
+			ClassLoader activityClassLoader = getActivity().getConfiguration()
+					.getClass().getClassLoader();
+			if (activityClassLoader != null) {
+				return super.createBean(configElement, activityClassLoader);
+			} else {
+				return super.createBean(configElement, beanClassLoader);
+			}
 		}
 	}
 
