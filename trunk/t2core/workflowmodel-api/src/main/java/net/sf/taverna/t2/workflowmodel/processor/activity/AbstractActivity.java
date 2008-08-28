@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.workflowmodel.processor.activity;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -7,12 +8,9 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
-import net.sf.taverna.t2.annotation.AnnotationAssertion;
-import net.sf.taverna.t2.annotation.AnnotationChain;
 import net.sf.taverna.t2.annotation.annotationbeans.MimeType;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.workflowmodel.EditException;
-import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
@@ -114,6 +112,9 @@ public abstract class AbstractActivity<ConfigType> extends
 			boolean allowsLiteralValues,
 			List<Class<? extends ExternalReferenceSPI>> handledReferenceSchemes,
 			Class<?> translatedElementClass) {
+		if (handledReferenceSchemes == null) {
+			handledReferenceSchemes = Collections.emptyList();
+		}
 		inputPorts.add(EditsRegistry.getEdits().createActivityInputPort(
 				portName, portDepth, allowsLiteralValues,
 				handledReferenceSchemes, translatedElementClass));
@@ -163,8 +164,6 @@ public abstract class AbstractActivity<ConfigType> extends
 	protected void configurePorts(ActivityPortsDefinitionBean configBean) {
 		configBean.getOutputPortDefinitions();
 		// FIXME should use edits to do this
-		Edits edits = EditsRegistry.getEdits();
-		Set<String> mimeTypes = new HashSet<String>();
 		inputPorts.clear();
 		for (ActivityInputPortDefinitionBean inputDef : configBean
 				.getInputPortDefinitions()) {
