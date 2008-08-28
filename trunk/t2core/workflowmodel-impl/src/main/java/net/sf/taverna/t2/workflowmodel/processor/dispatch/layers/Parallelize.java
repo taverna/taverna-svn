@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.log4j.Logger;
+
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.IterationInternalEvent;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
@@ -54,6 +56,8 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		implements NotifiableLayer,
 		PropertyContributingDispatchLayer<ParallelizeConfig> {
 
+	private static Logger logger = Logger.getLogger(Parallelize.class);
+	
 	private Map<String, StateModel> stateMap = new HashMap<String, StateModel>();
 
 	private ParallelizeConfig config = new ParallelizeConfig();
@@ -78,13 +82,20 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 	}
 
 	public void eventAdded(String owningProcess) {
-		if (! stateMap.containsKey(owningProcess)) {
+		StateModel stateModel;
+		synchronized (stateMap) {
+			stateModel = stateMap.get(owningProcess);
+		}
+		if (stateModel == null) {
+			/*
+			 * Should never see this here, it means we've had duplicate
+			 * completion events from upstream
+			 */
 			throw new WorkflowStructureException(
-					"Should never see this here, it means we've had duplicate completion events from upstream");
-		} else {
-			synchronized (stateMap.get(owningProcess)) {
-				stateMap.get(owningProcess).fillFromQueue();
-			}
+					"Unknown owning process " + owningProcess);		
+		}
+		synchronized (stateModel) {
+			stateModel.fillFromQueue();
 		}
 	}
 
@@ -92,7 +103,9 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 	public void receiveJobQueue(DispatchJobQueueEvent queueEvent) {
 		// System.out.println("Creating state for " + owningProcess);
 		StateModel model = new StateModel(queueEvent, config.getMaximumJobs());
-		stateMap.put(queueEvent.getOwningProcess(), model);
+		synchronized(stateMap) {
+			stateMap.put(queueEvent.getOwningProcess(), model);
+		}
 		model.fillFromQueue();
 	}
 
@@ -100,21 +113,38 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		throw new WorkflowStructureException(
 				"Parallelize layer cannot handle job events");
 	}
+	
 
 	@Override
 	public void receiveError(DispatchErrorEvent errorEvent) {
 		// System.out.println(sentJobsCount);
-		StateModel model = stateMap.get(errorEvent.getOwningProcess());
+		StateModel model;
+		String owningProcess = errorEvent.getOwningProcess();
+		synchronized(stateMap) {
+			model = stateMap.get(owningProcess);
+		}
 		getAbove().receiveError(errorEvent);
+		if (model == null) {
+			logger.warn("Error received for unknown owning process: " + owningProcess);
+			return;
+		}
 		model.finishWith(errorEvent.getIndex());
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public void receiveResult(DispatchResultEvent resultEvent) {
-		StateModel model = stateMap.get(resultEvent.getOwningProcess());
+		StateModel model;
+		String owningProcess = resultEvent.getOwningProcess();
+		synchronized(stateMap) {
+			model = stateMap.get(owningProcess);
+		}
 		DispatchLayer above = getAbove();
 		above.receiveResult(resultEvent);
+		if (model == null) {
+			logger.warn("Error received for unknown owning process: " + owningProcess);
+			return;
+		}
 		model.finishWith(resultEvent.getIndex());
 	}
 
@@ -125,172 +155,24 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 	 */
 	@Override
 	public void receiveResultCompletion(DispatchCompletionEvent completionEvent) {
-		StateModel model = stateMap.get(completionEvent.getOwningProcess());
+		StateModel model;
+		String owningProcess = completionEvent.getOwningProcess();
+		synchronized(stateMap) {
+			model = stateMap.get(owningProcess);
+		}
 		getAbove().receiveResultCompletion(completionEvent);
+		if (model == null) {
+			logger.warn("Error received for unknown owning process: " + owningProcess);
+			return;
+		}
 		model.finishWith(completionEvent.getIndex());
 	}
 
 	@Override
 	public void finishedWith(String owningProcess) {
 		// System.out.println("Removing state map for " + owningProcess);
-		stateMap.remove(owningProcess);
-	}
-
-	/**
-	 * Holds the state for a given owning process
-	 * 
-	 * @author Tom
-	 * 
-	 */
-	class StateModel {
-
-		private DispatchJobQueueEvent queueEvent;
-
-		@SuppressWarnings("unchecked")//suppressed to avoid jdk1.5 error messages caused by the declaration IterationInternalEvent<? extends IterationInternalEvent<?>> e
-		private BlockingQueue<IterationInternalEvent> pendingEvents = new LinkedBlockingQueue<IterationInternalEvent>();
-
-		private int activeJobs = 0;
-
-		private int maximumJobs;
-
-		/**
-		 * Construct state model for a particular owning process
-		 * 
-		 * @param owningProcess
-		 *            Process to track parallel execution
-		 * @param queue
-		 *            reference to the queue into which jobs are inserted by the
-		 *            iteration strategy
-		 * @param activities
-		 *            activities to pass along with job events down into the
-		 *            stack below
-		 * @param maxJobs
-		 *            maximum number of concurrent jobs to keep 'hot' at any
-		 *            given point
-		 */
-		protected StateModel(DispatchJobQueueEvent queueEvent, int maxJobs) {
-			this.queueEvent = queueEvent;
-			this.maximumJobs = maxJobs;
-		}
-
-		Integer queueSize() {
-			return queueEvent.getQueue().size();
-		}
-
-		/**
-		 * Poll the queue repeatedly until either the queue is empty or we have
-		 * enough jobs pulled from it. The semantics for this are:
-		 * <ul>
-		 * <li>If the head of the queue is a Job and activeJobs < maximumJobs
-		 * then increment activeJobs, add the Job to the pending events list at
-		 * the end and send the message down the stack
-		 * <li>If the head of the queue is a Completion and the pending jobs
-		 * list is empty then send it to the layer above
-		 * <li>If the head of the queue is a Completion and the pending jobs
-		 * list is not empty then add the Completion to the end of the pending
-		 * jobs list and return
-		 * </ul>
-		 */
-		@SuppressWarnings("unchecked") //suppressed to avoid jdk1.5 error messages caused by the declaration IterationInternalEvent<? extends IterationInternalEvent<?>> e
-		protected void fillFromQueue() {
-			synchronized (this) {
-				while (queueEvent.getQueue().peek() != null
-						&& activeJobs < maximumJobs) {
-					final IterationInternalEvent e = queueEvent
-							.getQueue().remove();
-
-					if (e instanceof Completion && pendingEvents.peek() == null) {
-						new Thread(new Runnable() {
-							public void run() {
-								getAbove().receiveResultCompletion(
-										new DispatchCompletionEvent(e
-												.getOwningProcess(), e
-												.getIndex(), e.getContext()));
-							}
-						}).start();
-						// getAbove().receiveResultCompletion((Completion) e);
-					} else {
-						pendingEvents.add(e);
-					}
-					if (e instanceof Job) {
-						synchronized (this) {
-							activeJobs++;
-						}
-						sentJobsCount++;
-						getBelow()
-								.receiveJob(
-										new DispatchJobEvent(e
-												.getOwningProcess(), e
-												.getIndex(), e.getContext(),
-												((Job) e).getData(), queueEvent
-														.getActivities()));
-					}
-				}
-			}
-		}
-
-		/**
-		 * Returns true if the index matched an existing Job exactly, if this
-		 * method returns false then you have a partial completion event which
-		 * should be sent up the stack without modification.
-		 * 
-		 * @param index
-		 * @return
-		 */
-		@SuppressWarnings("unchecked") //suppressed to avoid jdk1.5 error messages caused by the declaration IterationInternalEvent<? extends IterationInternalEvent<?>> e
-		protected boolean finishWith(int[] index) {
-			synchronized (this) {
-
-				for (IterationInternalEvent e : new ArrayList<IterationInternalEvent>(
-						pendingEvents)) {
-					if (e instanceof Job) {
-						Job j = (Job) e;
-						if (arrayEquals(j.getIndex(), index)) {
-							// Found a job in the pending events list which has
-							// the same index, remove it and decrement the
-							// current count of active jobs
-							pendingEvents.remove(e);
-							activeJobs--;
-							completedJobsCount++;
-							// Now pull any completion events that have reached
-							// the head of the queue - this indicates that all
-							// the job events which came in before them have
-							// been processed and we can emit the completions
-							while (pendingEvents.peek() != null
-									&& pendingEvents.peek() instanceof Completion) {
-								Completion c = (Completion) pendingEvents
-										.remove();
-								getAbove().receiveResultCompletion(
-										new DispatchCompletionEvent(c
-												.getOwningProcess(), c
-												.getIndex(), c.getContext()));
-
-							}
-							// Refresh from the queue; as we've just decremented
-							// the active job count there should be a worker
-							// available
-							fillFromQueue();
-							// Return true to indicate that we removed a job
-							// event from the queue, that is to say that the
-							// index wasn't that of a partial completion.
-							return true;
-						}
-					}
-				}
-			}
-			return false;
-		}
-
-		private boolean arrayEquals(int[] a, int[] b) {
-			if (a.length != b.length) {
-				return false;
-			}
-			for (int i = 0; i < a.length; i++) {
-				if (a[i] != b[i]) {
-					return false;
-				}
-			}
-			return true;
+		synchronized(stateMap) {
+			stateMap.remove(owningProcess);
 		}
 	}
 
@@ -303,13 +185,14 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 	}
 
 	/**
-	 * Injects the following properties into its parent processor's property set :
+	 * Injects the following properties into its parent processor's property set
+	 * :
 	 * <ul>
-	 * <li><code>dispatch.parallelize.queuesize [Integer]</code><br/>The
-	 * current size of the incomming job queue, or -1 if the state isn't defined
-	 * for the registered process identifier (which will be the case if the
-	 * process hasn't started or has had its state purged after a final
-	 * completion of some kind.</li>
+	 * <li><code>dispatch.parallelize.queuesize [Integer]</code><br/>The current
+	 * size of the incomming job queue, or -1 if the state isn't defined for the
+	 * registered process identifier (which will be the case if the process
+	 * hasn't started or has had its state purged after a final completion of
+	 * some kind.</li>
 	 * </ul>
 	 */
 	public void injectPropertiesFor(final String owningProcess) {
@@ -329,7 +212,11 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 			}
 
 			public Integer getValue() throws NoSuchPropertyException {
-				StateModel model = stateMap.get(owningProcess);
+				
+				StateModel model;
+				synchronized(stateMap) {
+					model = stateMap.get(owningProcess);
+				}
 				if (model != null) {
 					return model.queueSize();
 				} else {
@@ -366,7 +253,8 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 			}
 
 			public String[] getName() {
-				return new String[] { "dispatch", "parallelize", "completedjobs" };
+				return new String[] { "dispatch", "parallelize",
+						"completedjobs" };
 			}
 
 			public Integer getValue() throws NoSuchPropertyException {
@@ -377,6 +265,170 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		dispatchStack.receiveMonitorableProperty(completedJobsProperty,
 				owningProcess);
 
+	}
+
+	/**
+	 * Holds the state for a given owning process
+	 * 
+	 * @author Tom Oinn
+	 * 
+	 */
+	class StateModel {
+	
+		private DispatchJobQueueEvent queueEvent;
+	
+		@SuppressWarnings("unchecked")
+		// suppressed to avoid jdk1.5 error messages caused by the declaration
+		// IterationInternalEvent<? extends IterationInternalEvent<?>> e
+		private BlockingQueue<IterationInternalEvent> pendingEvents = new LinkedBlockingQueue<IterationInternalEvent>();
+	
+		private int activeJobs = 0;
+	
+		private int maximumJobs;
+	
+		/**
+		 * Construct state model for a particular owning process
+		 * 
+		 * @param owningProcess
+		 *            Process to track parallel execution
+		 * @param queue
+		 *            reference to the queue into which jobs are inserted by the
+		 *            iteration strategy
+		 * @param activities
+		 *            activities to pass along with job events down into the
+		 *            stack below
+		 * @param maxJobs
+		 *            maximum number of concurrent jobs to keep 'hot' at any
+		 *            given point
+		 */
+		protected StateModel(DispatchJobQueueEvent queueEvent, int maxJobs) {
+			this.queueEvent = queueEvent;
+			this.maximumJobs = maxJobs;
+		}
+	
+		Integer queueSize() {
+			return queueEvent.getQueue().size();
+		}
+	
+		/**
+		 * Poll the queue repeatedly until either the queue is empty or we have
+		 * enough jobs pulled from it. The semantics for this are:
+		 * <ul>
+		 * <li>If the head of the queue is a Job and activeJobs < maximumJobs
+		 * then increment activeJobs, add the Job to the pending events list at
+		 * the end and send the message down the stack
+		 * <li>If the head of the queue is a Completion and the pending jobs
+		 * list is empty then send it to the layer above
+		 * <li>If the head of the queue is a Completion and the pending jobs
+		 * list is not empty then add the Completion to the end of the pending
+		 * jobs list and return
+		 * </ul>
+		 */
+		@SuppressWarnings("unchecked")
+		// suppressed to avoid jdk1.5 error messages caused by the declaration
+		// IterationInternalEvent<? extends IterationInternalEvent<?>> e
+		protected void fillFromQueue() {
+			synchronized (this) {
+				while (queueEvent.getQueue().peek() != null
+						&& activeJobs < maximumJobs) {
+					final IterationInternalEvent e = queueEvent.getQueue()
+							.remove();
+	
+					if (e instanceof Completion && pendingEvents.peek() == null) {
+						new Thread(new Runnable() {
+							public void run() {
+								getAbove().receiveResultCompletion(
+										new DispatchCompletionEvent(e
+												.getOwningProcess(), e
+												.getIndex(), e.getContext()));
+							}
+						}).start();
+						// getAbove().receiveResultCompletion((Completion) e);
+					} else {
+						pendingEvents.add(e);
+					}
+					if (e instanceof Job) {
+						synchronized (this) {
+							activeJobs++;
+						}
+						sentJobsCount++;
+						getBelow()
+								.receiveJob(
+										new DispatchJobEvent(e
+												.getOwningProcess(), e
+												.getIndex(), e.getContext(),
+												((Job) e).getData(), queueEvent
+														.getActivities()));
+					}
+				}
+			}
+		}
+	
+		/**
+		 * Returns true if the index matched an existing Job exactly, if this
+		 * method returns false then you have a partial completion event which
+		 * should be sent up the stack without modification.
+		 * 
+		 * @param index
+		 * @return
+		 */
+		@SuppressWarnings("unchecked")
+		// suppressed to avoid jdk1.5 error messages caused by the declaration
+		// IterationInternalEvent<? extends IterationInternalEvent<?>> e
+		protected boolean finishWith(int[] index) {
+			synchronized (this) {
+	
+				for (IterationInternalEvent e : new ArrayList<IterationInternalEvent>(
+						pendingEvents)) {
+					if (e instanceof Job) {
+						Job j = (Job) e;
+						if (arrayEquals(j.getIndex(), index)) {
+							// Found a job in the pending events list which has
+							// the same index, remove it and decrement the
+							// current count of active jobs
+							pendingEvents.remove(e);
+							activeJobs--;
+							completedJobsCount++;
+							// Now pull any completion events that have reached
+							// the head of the queue - this indicates that all
+							// the job events which came in before them have
+							// been processed and we can emit the completions
+							while (pendingEvents.peek() != null
+									&& pendingEvents.peek() instanceof Completion) {
+								Completion c = (Completion) pendingEvents
+										.remove();
+								getAbove().receiveResultCompletion(
+										new DispatchCompletionEvent(c
+												.getOwningProcess(), c
+												.getIndex(), c.getContext()));
+	
+							}
+							// Refresh from the queue; as we've just decremented
+							// the active job count there should be a worker
+							// available
+							fillFromQueue();
+							// Return true to indicate that we removed a job
+							// event from the queue, that is to say that the
+							// index wasn't that of a partial completion.
+							return true;
+						}
+					}
+				}
+			}
+			return false;
+		}
+	
+		private boolean arrayEquals(int[] a, int[] b) {
+			if (a.length != b.length) {
+				return false;
+			}
+			for (int i = 0; i < a.length; i++) {
+				if (a[i] != b[i]) {
+					return false;
+				}
+			}
+			return true;
+		}
 	}
 
 }
