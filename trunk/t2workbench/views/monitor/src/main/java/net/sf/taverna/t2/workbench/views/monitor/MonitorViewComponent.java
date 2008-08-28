@@ -42,7 +42,11 @@ public class MonitorViewComponent extends JPanel implements UIComponentSPI {
 	}
 	
 	public Observer<MonitorMessage> setDataflow(Dataflow dataflow) {
-		graphController = new SVGGraphController(dataflow, new MonitorGraphEventManager(), this);	
+		graphController = new SVGGraphController(dataflow, new MonitorGraphEventManager(), this) {
+			public void redraw() {
+				svgCanvas.setDocument(graphController.generateSVGDocument());
+			}
+		};	
 		svgCanvas.setDocument(graphController.generateSVGDocument());
 //		revalidate();
 		return new GraphMonitor(graphController);
