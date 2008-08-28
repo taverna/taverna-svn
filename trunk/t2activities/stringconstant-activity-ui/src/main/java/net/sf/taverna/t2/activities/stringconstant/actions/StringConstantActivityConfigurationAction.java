@@ -21,7 +21,7 @@ public class StringConstantActivityConfigurationAction extends
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		StringConstantConfigurationBean bean = getActivity().getConfiguration();
+		StringConstantConfigurationBean bean = new StringConstantConfigurationBean();
 		String value = getActivity().getConfiguration().getValue();
 		String newValue = JOptionPane.showInputDialog(owner,"New string value",value);
 		if (newValue!=null) {
