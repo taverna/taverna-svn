@@ -61,12 +61,16 @@ public class BasicEventForwardingOutputPort extends AbstractOutputPort
 		outgoingLinks.remove(link);
 	}
 
-	void setDepth(int depth) {
+	protected void setDepth(int depth) {
 		this.depth = depth;
 	}
 	
-	void setGranularDepth(int granularDepth) {
+	protected void setGranularDepth(int granularDepth) {
 		this.granularDepth = granularDepth;
+	}
+	
+	protected void setName(String name) {
+		this.name = name;
 	}
 
 }

@@ -27,4 +27,9 @@ public abstract class AbstractEventHandlingInputPort extends AbstractPort
 	protected void setIncomingLink(Datalink newLink) {
 		this.incomingLink = newLink;
 	}
+	
+	protected void setName(String name) {
+		this.name = name;
+	}
+	
 }

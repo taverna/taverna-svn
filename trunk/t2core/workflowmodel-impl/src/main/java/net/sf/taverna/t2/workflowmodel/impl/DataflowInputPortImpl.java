@@ -67,6 +67,7 @@ public class DataflowInputPortImpl extends AbstractEventHandlingInputPort
 	
 	public void setName(String newName) {
 		this.name = newName;
+		internalOutput.setName(newName);
 	}
 	
 }

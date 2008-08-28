@@ -79,6 +79,7 @@ public class DataflowOutputPortImpl extends BasicEventForwardingOutputPort
 	
 	public void setName(String newName) {
 		this.name = newName;
+		internalInput.setName(newName);
 	}
 	
 }
