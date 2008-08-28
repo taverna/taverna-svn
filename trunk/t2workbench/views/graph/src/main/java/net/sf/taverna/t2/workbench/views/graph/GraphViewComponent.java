@@ -3,9 +3,10 @@ package net.sf.taverna.t2.workbench.views.graph;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,13 +16,11 @@ import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
@@ -44,10 +43,11 @@ import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.apache.batik.swing.JSVGCanvas;
+import org.apache.batik.swing.gvt.AbstractPanInteractor;
 import org.apache.batik.swing.gvt.GVTTreeRendererAdapter;
 import org.apache.batik.swing.gvt.GVTTreeRendererEvent;
+import org.apache.batik.swing.gvt.Interactor;
 import org.apache.log4j.Logger;
-import org.w3c.dom.Element;
 
 public class GraphViewComponent extends JPanel implements UIComponentSPI {
 
@@ -76,11 +76,22 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 	
 	public GraphViewComponent() {
 		super(new BorderLayout());
-		setBorder(new EmptyBorder(0,10,10,0));
-		
-		svgCanvas = new JSVGCanvas();
-		svgCanvas.setBorder(new EtchedBorder());
+
+		svgCanvas = new JSVGCanvas(null, true, false);
+		svgCanvas.setEnableZoomInteractor(false);
+		svgCanvas.setEnableRotateInteractor(false);
 		svgCanvas.setDocumentState(JSVGCanvas.ALWAYS_DYNAMIC);
+		
+//		svgCanvas.getInteractors().add(new AbstractPanInteractor() {
+//			public boolean startInteraction(InputEvent ie) {
+//	            int mods = ie.getModifiers();
+//	            return
+//	                ie.getID() == MouseEvent.MOUSE_PRESSED &&
+//	                (mods & InputEvent.BUTTON1_MASK) != 0 &&
+//	                (mods & InputEvent.SHIFT_MASK) != 0;
+//
+//			}
+//		});
 
 		svgCanvas.addGVTTreeRendererListener(new GVTTreeRendererAdapter() {
 			public void gvtRenderingCompleted(GVTTreeRendererEvent arg0) {
@@ -121,9 +132,27 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 				}
 			}
 		});
-		
-		setTransferHandler(new GraphViewTransferHandler(this));
-		
+
+		svgCanvas.setTransferHandler(new GraphViewTransferHandler(this));
+//		try {
+//			svgCanvas.getDropTarget().addDropTargetListener(new DropTargetAdapter() {
+//				public void dragEnter(DropTargetDragEvent dtde) {
+//					System.out.println("dragEnter");
+//					svgCanvas.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+//				}
+//				public void dragExit(DropTargetEvent dte) {
+//					System.out.println("dragExit");
+//					svgCanvas.setCursor(Cursor.getDefaultCursor());
+//				}
+//				public void drop(DropTargetDropEvent dtde) {
+//					System.out.println("drop");
+//					svgCanvas.setCursor(Cursor.getDefaultCursor());
+//				}
+//			});
+//		} catch (TooManyListenersException e1) {
+//			e1.printStackTrace();
+//			logger.debug("Too many DropTargetListeners", e1);
+//		}
 	}
 
 	private JToolBar setupToolbar() {
@@ -257,7 +286,7 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 		expandNested.setAction(new AbstractAction() {
 
 			public void actionPerformed(ActionEvent arg0) {
-				graphController.setExpandNestedDataflows(!graphController.isExpandNestedDataflows());
+				graphController.setExpandNestedDataflows(!graphController.expandNestedDataflows());
 				svgCanvas.setDocument(graphController.generateSVGDocument());
 				revalidate();
 			}
@@ -280,7 +309,12 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 	public void setDataflow(Dataflow dataflow) {
 		this.dataflow = dataflow;
 		if (!graphControllerMap.containsKey(dataflow)) {
-			SVGGraphController graphController = new SVGGraphController(dataflow, this);
+			SVGGraphController graphController = new SVGGraphController(dataflow, this) {
+				public void redraw() {
+					svgCanvas.setDocument(generateSVGDocument());
+					revalidate();
+				}			
+			};
 			graphController.setDataflowSelectionModel(DataflowSelectionManager.getInstance().getDataflowSelectionModel(dataflow));
 			graphControllerMap.put(dataflow, graphController);
 		}

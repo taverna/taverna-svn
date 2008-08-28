@@ -12,12 +12,14 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 import net.sf.taverna.t2.ui.menu.impl.ContextMenuFactory;
+import net.sf.taverna.t2.workbench.models.graph.GraphController.PortStyle;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.Merge;
 import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.processor.activity.NestedDataflow;
 
 /**
  * Manager for handling UI events on GraphElements.
@@ -48,90 +50,132 @@ public class DefaultGraphEventManager implements GraphEventManager {
 	 */
 	public void mouseClicked(final GraphElement graphElement, short button,
 			boolean altKey, boolean ctrlKey, boolean metaKey, final int x, final int y, int screenX, int screenY) {
+		Object dataflowObject = graphElement.getDataflowObject();
 		if (button == 0) {
 			if (graphController.getDataflowSelectionModel() != null) {
-				graphController.getDataflowSelectionModel().addSelection(graphElement.getDataflowObject());
+				graphController.getDataflowSelectionModel().addSelection(dataflowObject);
 			}
 		} else if (button == 2) {
-			if (graphElement instanceof GraphNode && graphElement.getDataflowObject() instanceof Processor) {
-				menu = ContextMenuFactory.getContextMenu(graphController.getDataflow(), graphElement.getDataflowObject(), component);
+			if (dataflowObject instanceof Processor) {
+				final Processor processor = (Processor) dataflowObject;
+				menu = ContextMenuFactory.getContextMenu(graphController.getDataflow(), processor, component);
 				if (menu == null) {
 					menu = new JPopupMenu();
 				}
-//				menu.add(new JLabel(graphElement.getLabel()));
-				menu.addSeparator();
-				GraphNode graphNode = (GraphNode) graphElement;
-				List<GraphNode> sourceNodes = graphNode.getSourceNodes();
-				if (sourceNodes.size() > 0) {
-					if (sourceNodes.size() == 1) {
-						final GraphNode sourceNode = sourceNodes.get(0);
-						menu.add(new JMenuItem(new AbstractAction("Link from output '" + sourceNode.getLabel() + "'") {
+				if (graphElement instanceof GraphNode) {
+					boolean expanded = false;
+					if (graphController.getPortStyle(processor).equals(PortStyle.NONE)) {
+						menu.addSeparator();
+						menu.add(new JMenuItem(new AbstractAction("Show Ports") {
 							public void actionPerformed(ActionEvent arg0) {
-								graphController.startEdgeCreation(sourceNode, new Point(x, y));
+								graphController.setPortStyle(processor, PortStyle.ALL);
+								graphController.redraw();
 							}
-
-						}));	
-					} else {
-						JMenu linkMenu = new JMenu("Link from output...");
-						menu.add(linkMenu);
-						for (final GraphNode sourceNode : sourceNodes) {
-							linkMenu.add(new JMenuItem(new AbstractAction(sourceNode.getLabel()) {
+						}));
+					} else if (graphController.getPortStyle(processor).equals(PortStyle.ALL)) {
+						menu.addSeparator();
+						menu.add(new JMenuItem(new AbstractAction("Hide Ports") {
+							public void actionPerformed(ActionEvent arg0) {
+								graphController.setPortStyle(processor, PortStyle.NONE);
+								graphController.redraw();
+							}
+						}));
+					}
+					if (processor.getActivityList().get(0) instanceof NestedDataflow) {						
+						final NestedDataflow nestedDataflow = (NestedDataflow) processor.getActivityList().get(0);
+						menu.addSeparator();
+						menu.add(new JMenuItem(new AbstractAction("Show Nested Workflow") {
+							public void actionPerformed(ActionEvent arg0) {
+								graphController.setExpandNestedDataflow(nestedDataflow.getNestedDataflow(), true);
+								graphController.redraw();
+							}
+						}));
+					}
+					menu.addSeparator();
+					GraphNode graphNode = (GraphNode) graphElement;
+					List<GraphNode> sourceNodes = graphNode.getSourceNodes();
+					if (sourceNodes.size() > 0) {
+						if (sourceNodes.size() == 1) {
+							final GraphNode sourceNode = sourceNodes.get(0);
+							menu.add(new JMenuItem(new AbstractAction("Link from output '" + sourceNode.getLabel() + "'") {
 								public void actionPerformed(ActionEvent arg0) {
 									graphController.startEdgeCreation(sourceNode, new Point(x, y));
 								}
 
 							}));	
+						} else {
+							JMenu linkMenu = new JMenu("Link from output...");
+							menu.add(linkMenu);
+							for (final GraphNode sourceNode : sourceNodes) {
+								linkMenu.add(new JMenuItem(new AbstractAction(sourceNode.getLabel()) {
+									public void actionPerformed(ActionEvent arg0) {
+										graphController.startEdgeCreation(sourceNode, new Point(x, y));
+									}
+
+								}));	
+							}
 						}
 					}
-				}
-				List<GraphNode> sinkNodes = graphNode.getSinkNodes();
-				if (sinkNodes.size() > 0) {
-					if (sinkNodes.size() == 1) {
-						final GraphNode sinkNode = sinkNodes.get(0);
-						menu.add(new JMenuItem(new AbstractAction("Link to input '" + sinkNode.getLabel() + "'") {
-							public void actionPerformed(ActionEvent arg0) {
-								graphController.startEdgeCreation(sinkNode, new Point(x, y));
-							}
-
-						}));	
-					} else {
-						JMenu linkMenu = new JMenu("Link to input...");
-						menu.add(linkMenu);
-						for (final GraphNode sinkNode : sinkNodes) {
-							linkMenu.add(new JMenuItem(new AbstractAction(sinkNode.getLabel()) {
-
+					List<GraphNode> sinkNodes = graphNode.getSinkNodes();
+					if (sinkNodes.size() > 0) {
+						if (sinkNodes.size() == 1) {
+							final GraphNode sinkNode = sinkNodes.get(0);
+							menu.add(new JMenuItem(new AbstractAction("Link to input '" + sinkNode.getLabel() + "'") {
 								public void actionPerformed(ActionEvent arg0) {
 									graphController.startEdgeCreation(sinkNode, new Point(x, y));
 								}
 
-							}));
+							}));	
+						} else {
+							JMenu linkMenu = new JMenu("Link to input...");
+							menu.add(linkMenu);
+							for (final GraphNode sinkNode : sinkNodes) {
+								linkMenu.add(new JMenuItem(new AbstractAction(sinkNode.getLabel()) {
+
+									public void actionPerformed(ActionEvent arg0) {
+										graphController.startEdgeCreation(sinkNode, new Point(x, y));
+									}
+
+								}));
+							}
 						}
+					}
+				} else if (graphElement instanceof Graph) {
+					if (processor.getActivityList().get(0) instanceof NestedDataflow) {						
+						final NestedDataflow nestedDataflow = (NestedDataflow) processor.getActivityList().get(0);
+						menu.addSeparator();
+						menu.add(new JMenuItem(new AbstractAction("Hide Nested Workflow") {
+							public void actionPerformed(ActionEvent arg0) {
+								graphController.setExpandNestedDataflow(nestedDataflow.getNestedDataflow(), false);
+								graphController.redraw();
+							}
+						}));
 					}
 				}
 				Point p = new Point(screenX, screenY);
 				SwingUtilities.convertPointFromScreen(p, component);
 				menu.show(component, p.x, p.y);
-			} else if (graphElement.getDataflowObject() instanceof Merge) {
+			} else if (dataflowObject instanceof Merge) {
 				Dataflow dataflow = graphController.getDataflow();
 				Point p = new Point(screenX, screenY);
 				SwingUtilities.convertPointFromScreen(p, component);
-				ContextMenuFactory.getContextMenu(dataflow, graphElement.getDataflowObject(), component).show(component, p.x, p.y);
-			} else if (graphElement.getDataflowObject() instanceof DataflowInputPort) {
+				ContextMenuFactory.getContextMenu(dataflow, dataflowObject, component).show(component, p.x, p.y);
+			} else if (dataflowObject instanceof DataflowInputPort) {
 				Dataflow dataflow = graphController.getDataflow();
 				Point p = new Point(screenX, screenY);
 				SwingUtilities.convertPointFromScreen(p, component);
-				ContextMenuFactory.getContextMenu(dataflow, graphElement.getDataflowObject(), component).show(component, p.x, p.y);
-			} else if (graphElement.getDataflowObject() instanceof DataflowOutputPort) {
+				ContextMenuFactory.getContextMenu(dataflow, dataflowObject, component).show(component, p.x, p.y);
+			} else if (dataflowObject instanceof DataflowOutputPort) {
 				Dataflow dataflow = graphController.getDataflow();
 				Point p = new Point(screenX, screenY);
 				SwingUtilities.convertPointFromScreen(p, component);
-				ContextMenuFactory.getContextMenu(dataflow, graphElement.getDataflowObject(), component).show(component, p.x, p.y);
-			} else if (graphElement.getDataflowObject() instanceof Datalink) {
+				ContextMenuFactory.getContextMenu(dataflow, dataflowObject, component).show(component, p.x, p.y);
+			} else if (dataflowObject instanceof Datalink) {
 				Dataflow dataflow = graphController.getDataflow();
 				Point p = new Point(screenX, screenY);
 				SwingUtilities.convertPointFromScreen(p, component);
-				ContextMenuFactory.getContextMenu(dataflow, graphElement.getDataflowObject(), component).show(component, p.x, p.y);
-			} else if (graphElement.getDataflowObject() == null) {
+				ContextMenuFactory.getContextMenu(dataflow, dataflowObject, component).show(component, p.x, p.y);
+			} else if (dataflowObject == null) {
 				Dataflow dataflow = graphController.getDataflow();
 				Point p = new Point(screenX, screenY);
 				SwingUtilities.convertPointFromScreen(p, component);

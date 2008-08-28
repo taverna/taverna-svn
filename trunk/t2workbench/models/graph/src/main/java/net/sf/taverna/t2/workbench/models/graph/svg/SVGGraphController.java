@@ -37,17 +37,15 @@ import org.apache.batik.dom.svg.SVGOMTextElement;
 import org.apache.batik.dom.svg.SVGOMTitleElement;
 import org.apache.batik.util.SVGConstants;
 import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
-import org.w3c.dom.svg.SVGAnimatedString;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGPoint;
 import org.w3c.dom.svg.SVGPointList;
 
-public class SVGGraphController extends GraphController {
+public abstract class SVGGraphController extends GraphController {
 
 	private static Logger logger = Logger.getLogger(SVGGraphController.class);
 
