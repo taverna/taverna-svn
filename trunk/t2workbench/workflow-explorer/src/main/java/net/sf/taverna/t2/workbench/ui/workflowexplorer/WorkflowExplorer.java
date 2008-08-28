@@ -2,19 +2,24 @@ package net.sf.taverna.t2.workbench.ui.workflowexplorer;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.util.LinkedHashMap;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Iterator;
+import java.util.Set;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 
 import org.apache.log4j.Logger;
 
@@ -22,15 +27,16 @@ import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 import net.sf.taverna.t2.lang.ui.ModelMap;
 import net.sf.taverna.t2.lang.ui.ModelMap.ModelMapEvent;
+import net.sf.taverna.t2.ui.menu.impl.ContextMenuFactory;
 import net.sf.taverna.t2.workbench.ModelMapConstants;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.edits.EditManager.AbstractDataflowEditEvent;
 import net.sf.taverna.t2.workbench.edits.EditManager.EditManagerEvent;
 import net.sf.taverna.t2.workbench.file.FileManager;
-import net.sf.taverna.t2.workbench.file.events.ClosedDataflowEvent;
-import net.sf.taverna.t2.workbench.file.events.FileManagerEvent;
-import net.sf.taverna.t2.workbench.file.events.SetCurrentDataflowEvent;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
+import net.sf.taverna.t2.workbench.ui.DataflowSelectionMessage;
+import net.sf.taverna.t2.workbench.ui.DataflowSelectionModel;
+import net.sf.taverna.t2.workbench.ui.impl.DataflowSelectionManager;
 import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
@@ -49,25 +55,15 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 	private static final long serialVersionUID = 586317170453993670L;
 	
 	private static Logger logger = Logger.getLogger(WorkflowExplorer.class);
-
-	/* Manager of currently opened workflows in the workbench. */
-	private static FileManager fileManager = FileManager.getInstance();
 	
-	/* Observer of events on the file manager, such as opening or closing of a workflow.*/
-//	private final FileManagerObserver fileManagerObserver = new FileManagerObserver();
-		
 	/* The currently selected workflow (to be displayed in the Workflow Explorer). */
 	private Dataflow dataflow;
 
 	/* The tree represenatation of the currenlty selected workflow. */
 	private JTree ameTree;
 	
-	/*
-	 * Ordered list of all opened workflows and their corresponding tree
-	 * representations so we can go back and forth. The order corresponds to the
-	 * order in which the workflows were opened.
-	 */
-	private LinkedHashMap<Dataflow, JTree> openDataflows = new LinkedHashMap<Dataflow, JTree>();
+	/* Observer of events on workflow selection model.*/
+	private Observer<DataflowSelectionMessage> workflowSelectionListener = new DataflowSelectionListener();
 
 	/* Scroll pane containing the workflow tree. */
 	private JScrollPane jspTree;
@@ -76,7 +72,7 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 	private static WorkflowExplorer INSTANCE;
 
 	/**
-	 * Returns an WorkflowExplorer instance.
+	 * Returns a WorkflowExplorer instance.
 	 */
 	public static WorkflowExplorer getInstance()  {
 		synchronized (WorkflowExplorer.class) {
@@ -115,22 +111,37 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 		// (Inputs, Outputs, Processors, and Data links) that themselves have no
 		// children.
 		ameTree = new JTree(new DefaultMutableTreeNode("No workflow available"));
-		ameTree.setEditable(false);
-		ameTree.setExpandsSelectedPaths(false);
-		ameTree.setDragEnabled(false);
-		ameTree.setScrollsOnExpand(false);
-		ameTree.setCellRenderer(new WorkflowExplorerTreeCellRenderer());
 		
-		// Start observing events on the FileManager
-//		fileManager.addObserver(fileManagerObserver);
+		// Start observing when current dataflow is changed (e.g. new workflow opened or 
+		// switched between opened workflows). Note that closing a workflow causes either a switch
+		// to another opened workflow or, if it was the last one, opening of a new empty workflow
 		ModelMap.getInstance().addObserver(new Observer<ModelMap.ModelMapEvent>() {
 			public void notify(Observable<ModelMapEvent> sender, final ModelMapEvent message) {
 				if (message.getModelName().equals(ModelMapConstants.CURRENT_DATAFLOW)) {
 					if (message.getNewModel() instanceof Dataflow) {
-						new Thread("Workflow Explorer - model map message: open dataflow") {
+						
+						// Remove the workflow selection model listener from the previous (if any) 
+						// and add to the new workflow (if any)
+						Dataflow oldFlow = (Dataflow) message.getOldModel();
+						Dataflow newFlow = (Dataflow) message.getNewModel();
+						if (oldFlow != null) {
+							DataflowSelectionManager
+							.getInstance().getDataflowSelectionModel(oldFlow)
+									.removeObserver(workflowSelectionListener);
+						}
+
+						if (newFlow != null) {
+							DataflowSelectionManager
+							.getInstance().getDataflowSelectionModel(newFlow)
+									.addObserver(workflowSelectionListener);
+						}
+												
+						// Create a new thread to prevent drawing the current workflow tree
+						// to take over completely
+						new Thread("Workflow Explorer - model map message: current workflow changed.") {
 							@Override
 							public void run() {
-								openDataflow((Dataflow) message.getNewModel());
+								createWorkflowTree((Dataflow) message.getNewModel());
 							}
 						}.start();
 					}
@@ -138,27 +149,32 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 			}
 		});
 		
+		// Start observing events on Edit Manager when current workflow is edited 
+		// (e.g. a node added, deleted or updated)
 		EditManager.getInstance().addObserver(new Observer<EditManagerEvent>() {
 			public void notify(Observable<EditManagerEvent> sender,
 					final EditManagerEvent message) throws Exception {
 				if (message instanceof AbstractDataflowEditEvent) {
 					AbstractDataflowEditEvent dataflowEditEvent = (AbstractDataflowEditEvent) message;
-					logger.info("WorkflowExplorer: Dataflow changed");
-					//react to changes in the current dataflow
-					if (((AbstractDataflowEditEvent) message).getDataFlow() == dataflow) {
-						new Thread("Workflow Explorer - edit manager message: open dataflow") {
+					logger.info("WorkflowExplorer: workflow edited.");
+					//React to edits in the current dataflow
+					if (dataflowEditEvent.getDataFlow() == dataflow) {
+						// Create a new thread to prevent drawing the workflow tree
+						// to take over completely
+						new Thread("Workflow Explorer - edit manager message:  current workflow edited.") {
 							@Override
 							public void run() {
-								openDataflow(((AbstractDataflowEditEvent) message).getDataFlow());
+								// Create a new tree to reflect the changes to the current tree
+								createWorkflowTree(((AbstractDataflowEditEvent) message).getDataFlow());
 							}
 						}.start();
 					}
-					
 				}
 			}
 		});
 		
-		
+			
+		// Draw visual components
 		initComponents();
 	}
 
@@ -187,40 +203,106 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 	}
 	
 	/**
-	 * Gets called when a new workflow is opened or a dummy empty workflow
-	 * created (when there are no other opened workflows) to create and display
-	 * the tree view of the workflow.
+	 * Gets called when current workflow is changed either because a new one is 
+	 * opened or due to switching between opened workflows or because it is edited
+	 * to (re)create and (re)display the tree view of the workflow.
 	 */
-	public void openDataflow(Dataflow df) {
-		
-		// Note that in this case fileManager.getCurrentDataflow() == df
+	public void createWorkflowTree(Dataflow df) {
+						
+		if (df != null){
+			// Set the current workflow
+			dataflow = FileManager.getInstance().getCurrentDataflow();
 				
-		// Get the freshly opened workflow (it can be an empty dummy one)
-		this.dataflow = df;
-			
-		// Create a new tree model and populate it with the new workflow's data
-		WorkflowExplorerTreeModel ameTreeModel = new WorkflowExplorerTreeModel(dataflow);		
-		JTree tree = new JTree(ameTreeModel);	
-		tree.setEditable(false);
-		tree.setExpandsSelectedPaths(false);
-		tree.setDragEnabled(false);
-		tree.setScrollsOnExpand(false);
-		tree.setCellRenderer(new WorkflowExplorerTreeCellRenderer());
+			// Create a new tree model and populate it with the new workflow's data
+			WorkflowExplorerTreeModel ameTreeModel = new WorkflowExplorerTreeModel(dataflow);		
+			ameTree = new JTree(ameTreeModel);	
+			ameTree.setEditable(false);
+			ameTree.setExpandsSelectedPaths(true);
+			ameTree.setDragEnabled(false);
+			ameTree.setScrollsOnExpand(false);
+			ameTree.setCellRenderer(new WorkflowExplorerTreeCellRenderer());
+			ameTree.addMouseListener(new MouseAdapter(){
+				
+				public void mousePressed(MouseEvent evt){
+					
+					 // Discover the row that was selected
+					int selRow = ameTree.getRowForLocation(evt.getX(), evt.getY());
+					if (selRow != -1) {
+						// Get the selection path for the row
+						TreePath selectionPath = ameTree.getPathForLocation(evt.getX(), evt.getY());
+						// Make the node that was clicked on selected 
+						// (in case this was a right click and the node was not previously selected)
+						ameTree.setSelectionPath(selectionPath);
+						// Get the selected node
+						DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectionPath.getLastPathComponent();
 
-		// Add to the list of opened workflows
-		openDataflows.put(dataflow,tree);
+						// If this was a right click (i.e. pop-up menu trigger) - show a pop-up menu
+						if (evt.isPopupTrigger()) {
+							// Show a contextual pop-up menu
+							JPopupMenu menu = ContextMenuFactory.getContextMenu(dataflow,
+									selectedNode.getUserObject(), ameTree);
+							menu.show(evt.getComponent(), evt.getX(), evt.getY());
+						}
+					}
+				}
+				
+				public void mouseReleased(MouseEvent evt) {
+					 // Discover the row that was selected
+					int selRow = ameTree.getRowForLocation(evt.getX(), evt.getY());
+					if (selRow != -1) {
+						// Get the selection path for the row
+						TreePath selectionPath = ameTree.getPathForLocation(evt.getX(), evt.getY());
+
+						// Get the selected node
+						DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectionPath.getLastPathComponent();
+						// If this was a right click (i.e. pop-up menu trigger) - show a pop-up menu
+						if (evt.isPopupTrigger()) {
+							// Show a contextual pop-up menu
+							JPopupMenu menu = ContextMenuFactory.getContextMenu(dataflow,
+									selectedNode.getUserObject(), ameTree);
+							menu.show(evt.getComponent(), evt.getX(), evt.getY());
+						}
+					}
+				}
+			});
+			// Select the nodes that should be selected (if any)
+			setSelectedNodes();
+
+			// Expand the tree
+			expandAll();
+			
+			// Update the viewport of the scroll pane
+			jspTree.setViewportView(ameTree);
+			
+			jspTree.revalidate();
+			jspTree.repaint();
+		}
+	}
+
+	/**
+	 * Sets the currently selected node(s) based on the workflow selection model, i.e.
+	 * the node(s) currently selected in the workflow graph view also become selected 
+	 * in the tree view.
+	 */
+	private void setSelectedNodes() {
 		
-		// Set the tree view
-		ameTree = tree;
-		// Expand the tree
-		expandAll();
+		DataflowSelectionModel selectionModel = DataflowSelectionManager	
+		.getInstance().getDataflowSelectionModel(dataflow);
 		
-		// Update the viewport of the scroll pane
-		jspTree.setViewportView(ameTree);
-		
-		jspTree.revalidate();
-		jspTree.repaint();
-		
+		// List of all selected objects in the graph view
+		Set<Object> selection = selectionModel.getSelection();
+		if (!selection.isEmpty()){
+			// Selection path(s) - can be multiple if more objects are selected
+			int i = selection.size();
+			TreePath[] paths = new TreePath[i];
+			
+			for (Iterator<Object> iterator = selection.iterator(); iterator.hasNext(); ){
+				TreePath path = ((WorkflowExplorerTreeModel) ameTree
+						.getModel()).getPathForObject(iterator.next());
+				paths[--i] = path;
+			}
+			ameTree.setSelectionPaths(paths);
+		}
 	}
 
 	/**
@@ -236,90 +318,17 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 	}
 
 	/**
-	 * Gets called when the user switches to an already opened workflow to
-	 * display this workflow's tree view.
+	 * Observes events on workflow Selection Manager, i.e. when a workflow 
+	 * node is selected in the graph view.
 	 */
-	public void setCurrentDataflow(Dataflow df) {
-		
-		// Note that in this case fileManager.getCurrentDataflow() == df
+	private final class DataflowSelectionListener implements
+			Observer<DataflowSelectionMessage> {
 
-		// Get the newly selected workflow
-
-		this.dataflow = df;
-		
-		// The current tree becomes the tree of the newly selected workflow
-		ameTree = openDataflows.get(dataflow); 
-				
-		// Update the viewport of the scroll pane
-		jspTree.setViewportView(ameTree);
-		
-		jspTree.revalidate();
-		jspTree.repaint();
-		
-	}
-
-	/**
-	 * Gets called when a workflow is closed to remove its tree from the Advanced Model
-	 * Explorer's view.
-	 */
-	public void closeDataflow(Dataflow df) {
-		
-		// Note that in this case fileManager.getCurrentDataflow() != df
-		// as current workflow has already been changed by the FileManager
-		
-		// Just remove the workflow from the list - the new workflow in place 
-		// of the closed one has already been displayed as the 
-		// setCurrentDataflowEvent happended immediately before, 
-		// so we not have to do anything here
-			
-		openDataflows.remove(df);
-		
-	}
-
-
-	/**
-	 * Observes events on FileManager, i.e. when a workflow is opened or closed.
-	 */
-	private final class FileManagerObserver implements
-			Observer<FileManagerEvent> {
-		public void notify(Observable<FileManagerEvent> sender,
-				final FileManagerEvent message) throws Exception {
-
-			if (message instanceof SetCurrentDataflowEvent){				
-				if (fileManager.getOpenDataflows().size() == openDataflows.size()){	
-					// This is either a case of changing between already opened workflows
-					// or closing a workflow
-					logger.info("WorkflowExplorer: Dataflow changed");
-					new Thread("Workflow Explorer: Set current dataflow") {
-						@Override
-						public void run() {
-							setCurrentDataflow(((SetCurrentDataflowEvent) message).getDataflow());
-						}
-					}.start();
-				}
-				else if (fileManager.getOpenDataflows().size() > openDataflows.size()){
-					// This is a case of opening a new workflow, in which case an 
-					// OpenedDataflowEvent will follow to deal with it so we do nothing here
-					logger.info("WorkflowExplorer: New workflow opened");
-					new Thread("Workflow Explorer: new workflow opened") {
-						@Override
-						public void run() {
-							openDataflow(((SetCurrentDataflowEvent) message).getDataflow());							
-						}
-					}.start();
-				}
-			}
-			else if (message instanceof ClosedDataflowEvent){
-				logger.info("WorkflowExplorer: Workflow closed");
-				new Thread("Workflow Explorer: close dataflow") {
-					@Override
-					public void run() {
-						closeDataflow(((ClosedDataflowEvent) message).getDataflow());						
-					}
-				}.start();
-			}
-
+		public void notify(Observable<DataflowSelectionMessage> sender,
+				DataflowSelectionMessage message) throws Exception {
+			setSelectedNodes();
 		}
-	}
 
+	}
+	
 }

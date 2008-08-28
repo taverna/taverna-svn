@@ -2,21 +2,19 @@ package net.sf.taverna.t2.workbench.ui.workflowexplorer;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
-import net.sf.taverna.t2.lang.observer.Observable;
-import net.sf.taverna.t2.lang.observer.Observer;
-import net.sf.taverna.t2.workbench.edits.EditManager;
-import net.sf.taverna.t2.workbench.edits.EditManager.EditManagerEvent;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.Datalink;
+import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
-import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
-import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 
 public class WorkflowExplorerTreeModel extends DefaultTreeModel{
 
@@ -35,12 +33,6 @@ public class WorkflowExplorerTreeModel extends DefaultTreeModel{
 	private DefaultMutableTreeNode datalinksRootNode = new DefaultMutableTreeNode(
 	"Data links");
 	
-	/* Manager of events (edits) on the dataflow. */
-	private static EditManager editManager = EditManager.getInstance();
-	
-	/* Observer of events on the edit manager, such as modifications on an opened dataflow.*/
-	private final EditManagerObserver editManagerObserver = new EditManagerObserver();
-
 	public WorkflowExplorerTreeModel(Dataflow df){
 		
 		super(new DefaultMutableTreeNode(df.getLocalName())); // root node gets named after the dataflow name
@@ -54,19 +46,17 @@ public class WorkflowExplorerTreeModel extends DefaultTreeModel{
 		((DefaultMutableTreeNode) getRoot()).add(datalinksRootNode);
 
 		// Populate the tree model nodes with the data from the dataflow
-		updateInputsNode();
-		updateOutputsNode();
-		updateProcessorsNode();
-		updateDatalinksNode();
+		populateInputNodes();
+		populateOutputNodes();
+		populateProcessorNodes();
+		populateDatalinkNodes();
 				
-		editManager.addObserver(editManagerObserver);
-
 	}
 	
 	/** 
 	 * Populates the nodes containing the dataflow's inputs.
 	 */
-	private void updateInputsNode(){
+	private void populateInputNodes(){
 		
 		List<? extends DataflowInputPort> inputsList = (List<? extends DataflowInputPort>) dataflow
 				.getInputPorts();
@@ -81,7 +71,7 @@ public class WorkflowExplorerTreeModel extends DefaultTreeModel{
 	/** 
 	 * Populates the nodes containing the dataflow's outputs.
 	 */
-	private void updateOutputsNode(){
+	private void populateOutputNodes(){
 
 		List<? extends DataflowOutputPort> outputsList = (List<? extends DataflowOutputPort>) dataflow
 				.getOutputPorts();
@@ -96,7 +86,7 @@ public class WorkflowExplorerTreeModel extends DefaultTreeModel{
 	/** 
 	 * Populates the nodes containing the dataflow's processors.
 	 */
-	private void updateProcessorsNode() {
+	private void populateProcessorNodes() {
 
 		List<? extends Processor> processorsList = (List<? extends Processor>) dataflow
 				.getProcessors();
@@ -108,20 +98,17 @@ public class WorkflowExplorerTreeModel extends DefaultTreeModel{
 						processor);
 				processorsRootNode.add(processorNode);
 
-				// A processor node can have children (e.g. input and output ports)
-				List<? extends ProcessorInputPort> proc_inputsList = (List<? extends ProcessorInputPort>) processor
-						.getInputPorts();
-				List<? extends ProcessorOutputPort> proc_outputsList = (List<? extends ProcessorOutputPort>) processor
-						.getOutputPorts();
-				for (Iterator<? extends ProcessorInputPort> port_it = (Iterator<? extends ProcessorInputPort>) proc_inputsList
-						.iterator();port_it.hasNext(); ) {
-					processorNode.add(new DefaultMutableTreeNode(((ProcessorInputPort) port_it.next())));
+				// A processor node can have children (e.g. input and output ports of its associated activity/activities)
+				// Currently we just look at the first activity in the list.
+				Set<ActivityInputPort> activityInputsList = processor.getActivityList().get(0).getInputPorts();
+				Set<OutputPort> activityOutputsList = processor.getActivityList().get(0).getOutputPorts();
+				for (Iterator<ActivityInputPort> activityInputsIterator = (Iterator<ActivityInputPort>) activityInputsList
+						.iterator(); activityInputsIterator.hasNext(); ) {
+					processorNode.add(new DefaultMutableTreeNode(((ActivityInputPort) activityInputsIterator.next())));
 				}
-			
-				for (Iterator<? extends ProcessorOutputPort> port_it = (Iterator<? extends ProcessorOutputPort>) proc_outputsList
-						.iterator();port_it.hasNext(); ) {
-					processorNode.add(new DefaultMutableTreeNode(((ProcessorOutputPort) port_it.next())));
-					
+				for (Iterator<OutputPort> activityOutputsIterator = (Iterator<OutputPort>) activityOutputsList
+						.iterator(); activityOutputsIterator.hasNext(); ) {
+					processorNode.add(new DefaultMutableTreeNode(((OutputPort) activityOutputsIterator.next())));
 				}
 			}
 		}
@@ -130,7 +117,7 @@ public class WorkflowExplorerTreeModel extends DefaultTreeModel{
 	/** 
 	 * Populates the nodes containing the dataflow's data links.
 	 */
-	private void updateDatalinksNode(){
+	private void populateDatalinkNodes(){
 
 		List<? extends Datalink> datalinksList = (List<? extends Datalink>) dataflow
 				.getLinks();
@@ -141,19 +128,69 @@ public class WorkflowExplorerTreeModel extends DefaultTreeModel{
 			}
 		}
 	}
-	
+
+
 	/**
-	 * Observes edit events on a dataflow, such as
-	 * adding a new processor or a port.
+	 * Returns a path from the root to the node containing the object.
 	 */
-	private final class EditManagerObserver implements
-			Observer<EditManagerEvent> {
-
-		public void notify(Observable<EditManagerEvent> sender,
-				EditManagerEvent message) throws Exception {
-			// TODO Auto-generated method stub
-			
+	public TreePath getPathForObject(Object userObject){
+		
+		if (userObject instanceof DataflowInputPort){
+			for (int i = 0; i< inputsRootNode.getChildCount(); i++){
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) inputsRootNode.getChildAt(i);
+				if (node.getUserObject().equals(userObject)){
+					return new TreePath(node.getPath());
+				}
+			}
 		}
+		else if (userObject instanceof DataflowOutputPort){
+			for (int i = 0; i< outputsRootNode.getChildCount(); i++){
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) outputsRootNode.getChildAt(i);
+				if (node.getUserObject().equals(userObject)){
+					return new TreePath(node.getPath());
+				}
+			}
+		}
+		else if (userObject instanceof Processor){
+			for (int i = 0; i< processorsRootNode.getChildCount(); i++){
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) processorsRootNode.getChildAt(i);
+				if (node.getUserObject().equals(userObject)){
+					return new TreePath(node.getPath());
+				}
+			}
+		}
+		else if (userObject instanceof ActivityInputPort){
+			for (int i = 0; i< processorsRootNode.getChildCount(); i++){
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) processorsRootNode.getChildAt(i);
+				for (int j = 0; j < node.getChildCount(); j++){
+					DefaultMutableTreeNode port_node = (DefaultMutableTreeNode) node.getChildAt(j);
+					if (port_node.getUserObject().equals(userObject)){
+						return new TreePath(port_node.getPath());
+					}
+				}
+			}
+		}
+		else if (userObject instanceof OutputPort){
+			for (int i = 0; i< processorsRootNode.getChildCount(); i++){
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) processorsRootNode.getChildAt(i);
+				for (int j = 0; j < node.getChildCount(); j++){
+					DefaultMutableTreeNode port_node = (DefaultMutableTreeNode) node.getChildAt(j);
+					if (port_node.getUserObject().equals(userObject)){
+						return new TreePath(port_node.getPath());
+					}
+				}
+			}
+		}
+		else if (userObject instanceof Datalink){
+			for (int i = 0; i< datalinksRootNode.getChildCount(); i++){
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) datalinksRootNode.getChildAt(i);
+				if (node.getUserObject().equals(userObject)){
+					return new TreePath(node.getPath());
+				}
+			}
+		}
+		
+		return null; // should not happen really
 	}
-
+	
 }

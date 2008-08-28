@@ -30,10 +30,12 @@ import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.Datalink;
+import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 
 
 public class WorkflowExplorerTreeCellRenderer extends
@@ -94,21 +96,23 @@ public class WorkflowExplorerTreeCellRenderer extends
 			
 			((WorkflowExplorerTreeCellRenderer) result).setText(((Processor) userObject).getLocalName());
 		}
-		// A child of a processor node under 'Workflow processors'
-		else if(userObject instanceof ProcessorInputPort){
+		// Processor's child input port (from the associated activity)
+		else if(userObject instanceof ActivityInputPort){
 			((WorkflowExplorerTreeCellRenderer) result).setIcon(WorkbenchIcons.inputPortIcon);
-			((WorkflowExplorerTreeCellRenderer) result).setText(((ProcessorInputPort) userObject)
+			((WorkflowExplorerTreeCellRenderer) result).setText(((ActivityInputPort) userObject)
 					.getName());
 		}
-		// A child of a processor node under 'Workflow processors'
-		else if(userObject instanceof ProcessorOutputPort){
+		// Processor's child output port (from the associated activity)
+		else if(userObject instanceof OutputPort){
 			((WorkflowExplorerTreeCellRenderer) result).setIcon(WorkbenchIcons.outputPortIcon);
-			((WorkflowExplorerTreeCellRenderer) result).setText(((ProcessorOutputPort) userObject)
+			((WorkflowExplorerTreeCellRenderer) result).setText(((OutputPort) userObject)
 					.getName());
 		}
 		else if (userObject instanceof Datalink){
-			((WorkflowExplorerTreeCellRenderer) result).setIcon(WorkbenchIcons.outputPortIcon);
-			
+			((WorkflowExplorerTreeCellRenderer) result).setIcon(WorkbenchIcons.datalinkIcon);
+			((WorkflowExplorerTreeCellRenderer) result)
+					.setText(((Datalink) userObject).getSource().getName()
+							+ " -> " + ((Datalink) userObject).getSink().getName());
 		}
 		else{
 			// It is the root or one of the main nodes (inputs, outputs, 

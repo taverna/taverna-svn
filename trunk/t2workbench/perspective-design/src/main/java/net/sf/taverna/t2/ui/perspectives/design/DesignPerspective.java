@@ -14,7 +14,7 @@ public class DesignPerspective implements PerspectiveSPI {
 	private boolean visible = true;
 
 	public ImageIcon getButtonIcon() {
-		return WorkbenchIcons.findIcon;
+		return WorkbenchIcons.editIcon;
 	}
 
 	public InputStream getLayoutInputStream() {
