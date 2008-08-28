@@ -141,7 +141,7 @@ public final class ProcessorImpl extends AbstractAnnotatedThing<Processor>
 			 */
 			@Override
 			protected void finishedWith(String owningProcess) {
-				if (controlledConditions.isEmpty() == false) {
+				if (! controlledConditions.isEmpty()) {
 					String enclosingProcess = owningProcess.substring(0,
 							owningProcess.lastIndexOf(':'));
 					for (ConditionImpl ci : controlledConditions) {
