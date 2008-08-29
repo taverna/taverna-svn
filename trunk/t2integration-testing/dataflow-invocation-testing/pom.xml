@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
 	<modelVersion>4.0.0</modelVersion>
+	<description>Testing of Dataflow invocation after Translation from a ScuflModel</description>
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>t2integration-testing</artifactId>
@@ -9,8 +10,7 @@
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>dataflow-invocation-testing
 	</artifactId>
-	<name> Testing of Dataflow invocation after Translation from a
-		ScuflModel</name>
+	<name>Testing of Dataflow invocation</name>
 	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
