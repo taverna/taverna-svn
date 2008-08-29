@@ -52,11 +52,13 @@ public class DefaultGraphEventManager implements GraphEventManager {
 			boolean altKey, boolean ctrlKey, boolean metaKey, final int x, final int y, int screenX, int screenY) {
 		Object dataflowObject = graphElement.getDataflowObject();
 		
+		// For both left and right click - add to selection model
 		if (graphController.getDataflowSelectionModel() != null) {
 			graphController.getDataflowSelectionModel().addSelection(dataflowObject);
 		}
 		
-		if (button == 2) {
+		// If this was a right click - show a pop-up as well
+		if (button == 2) { 
 
 			if (dataflowObject instanceof Processor) {
 				final Processor processor = (Processor) dataflowObject;

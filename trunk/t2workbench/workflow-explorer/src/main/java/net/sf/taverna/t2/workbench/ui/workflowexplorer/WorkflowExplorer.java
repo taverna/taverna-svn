@@ -57,18 +57,18 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 	private static Logger logger = Logger.getLogger(WorkflowExplorer.class);
 	
 	/* The currently selected workflow (to be displayed in the Workflow Explorer). */
-	private Dataflow dataflow;
+	private Dataflow workflow;
 
 	/* The tree represenatation of the currenlty selected workflow. */
 	private JTree ameTree;
-	
-	/* Observer of events on workflow selection model.*/
+
+	/* Current workflow's selection model event observer.*/
 	private Observer<DataflowSelectionMessage> workflowSelectionListener = new DataflowSelectionListener();
 
 	/* Scroll pane containing the workflow tree. */
 	private JScrollPane jspTree;
 	
-	/** WorkflowExplorer singleton */
+	/* WorkflowExplorer singleton. */
 	private static WorkflowExplorer INSTANCE;
 
 	/**
@@ -112,7 +112,7 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 		// children.
 		ameTree = new JTree(new DefaultMutableTreeNode("No workflow available"));
 		
-		// Start observing when current dataflow is changed (e.g. new workflow opened or 
+		// Start observing when current workflow is changed (e.g. new workflow opened or 
 		// switched between opened workflows). Note that closing a workflow causes either a switch
 		// to another opened workflow or, if it was the last one, opening of a new empty workflow
 		ModelMap.getInstance().addObserver(new Observer<ModelMap.ModelMapEvent>() {
@@ -157,8 +157,8 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 				if (message instanceof AbstractDataflowEditEvent) {
 					AbstractDataflowEditEvent dataflowEditEvent = (AbstractDataflowEditEvent) message;
 					logger.info("WorkflowExplorer: workflow edited.");
-					//React to edits in the current dataflow
-					if (dataflowEditEvent.getDataFlow() == dataflow) {
+					//React to edits in the current workflow
+					if (dataflowEditEvent.getDataFlow() == workflow) {
 						// Create a new thread to prevent drawing the workflow tree
 						// to take over completely
 						new Thread("Workflow Explorer - edit manager message:  current workflow edited.") {
@@ -211,10 +211,10 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 						
 		if (df != null){
 			// Set the current workflow
-			dataflow = FileManager.getInstance().getCurrentDataflow();
+			workflow = FileManager.getInstance().getCurrentDataflow();
 				
 			// Create a new tree model and populate it with the new workflow's data
-			WorkflowExplorerTreeModel ameTreeModel = new WorkflowExplorerTreeModel(dataflow);		
+			WorkflowExplorerTreeModel ameTreeModel = new WorkflowExplorerTreeModel(workflow);		
 			ameTree = new JTree(ameTreeModel);	
 			ameTree.setEditable(false);
 			ameTree.setExpandsSelectedPaths(true);
@@ -223,48 +223,32 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 			ameTree.setCellRenderer(new WorkflowExplorerTreeCellRenderer());
 			ameTree.addMouseListener(new MouseAdapter(){
 				
-				public void mousePressed(MouseEvent evt){
+				public void mouseClicked(MouseEvent evt){
 					
-					 // Discover the row that was selected
+					 // Discover the tree row that was clicked on
 					int selRow = ameTree.getRowForLocation(evt.getX(), evt.getY());
 					if (selRow != -1) {
 						// Get the selection path for the row
 						TreePath selectionPath = ameTree.getPathForLocation(evt.getX(), evt.getY());
-						// Make the node that was clicked on selected 
-						// (in case this was a right click and the node was not previously selected)
-						ameTree.setSelectionPath(selectionPath);
 						// Get the selected node
 						DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectionPath.getLastPathComponent();
-
-						// If this was a right click (i.e. pop-up menu trigger) - show a pop-up menu
-						if (evt.isPopupTrigger()) {
+						// For both left and right click - add the workflow object to selection model
+						// This will cause the node to become selected (in the selection listener's code)
+						DataflowSelectionModel selectionModel = DataflowSelectionManager
+						.getInstance().getDataflowSelectionModel(workflow);
+						selectionModel.addSelection(selectedNode.getUserObject());
+						
+						// If this was a right click - show a pop-up menu as well
+						if (evt.getButton() == MouseEvent.BUTTON3) {
 							// Show a contextual pop-up menu
-							JPopupMenu menu = ContextMenuFactory.getContextMenu(dataflow,
-									selectedNode.getUserObject(), ameTree);
-							menu.show(evt.getComponent(), evt.getX(), evt.getY());
-						}
-					}
-				}
-				
-				public void mouseReleased(MouseEvent evt) {
-					 // Discover the row that was selected
-					int selRow = ameTree.getRowForLocation(evt.getX(), evt.getY());
-					if (selRow != -1) {
-						// Get the selection path for the row
-						TreePath selectionPath = ameTree.getPathForLocation(evt.getX(), evt.getY());
-
-						// Get the selected node
-						DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectionPath.getLastPathComponent();
-						// If this was a right click (i.e. pop-up menu trigger) - show a pop-up menu
-						if (evt.isPopupTrigger()) {
-							// Show a contextual pop-up menu
-							JPopupMenu menu = ContextMenuFactory.getContextMenu(dataflow,
+							JPopupMenu menu = ContextMenuFactory.getContextMenu(workflow,
 									selectedNode.getUserObject(), ameTree);
 							menu.show(evt.getComponent(), evt.getX(), evt.getY());
 						}
 					}
 				}
 			});
+			
 			// Select the nodes that should be selected (if any)
 			setSelectedNodes();
 
@@ -287,7 +271,7 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 	private void setSelectedNodes() {
 		
 		DataflowSelectionModel selectionModel = DataflowSelectionManager	
-		.getInstance().getDataflowSelectionModel(dataflow);
+		.getInstance().getDataflowSelectionModel(workflow);
 		
 		// List of all selected objects in the graph view
 		Set<Object> selection = selectionModel.getSelection();
