@@ -59,6 +59,7 @@ public class RemoveMergeAction extends DataflowEditAction {
 				editList.add(edits.getRemoveMergeEdit(dataflow, merge));
 				editManager.doDataflowEdit(dataflow, new CompoundEdit(editList));
 			}
+			dataflowSelectionModel.removeSelection(merge);
 		} catch (EditException e1) {
 			logger.debug("Remove merge failed", e1);
 		}

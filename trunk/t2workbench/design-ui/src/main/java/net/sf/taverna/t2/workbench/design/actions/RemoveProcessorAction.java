@@ -70,6 +70,7 @@ public class RemoveProcessorAction extends DataflowEditAction {
 				editList.add(edits.getRemoveProcessorEdit(dataflow, processor));
 				editManager.doDataflowEdit(dataflow, new CompoundEdit(editList));
 			}
+			dataflowSelectionModel.removeSelection(processor);
 		} catch (EditException e1) {
 			logger.debug("Remove processor failed", e1);
 		}

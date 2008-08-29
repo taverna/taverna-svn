@@ -25,6 +25,16 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>ui-api</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>ui-impl</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
 			<artifactId>commons-icons</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>

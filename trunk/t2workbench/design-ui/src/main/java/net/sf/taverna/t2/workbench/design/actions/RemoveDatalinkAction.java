@@ -34,6 +34,7 @@ public class RemoveDatalinkAction extends DataflowEditAction {
 	public void actionPerformed(ActionEvent e) {
 		try {
 			editManager.doDataflowEdit(dataflow, Tools.getDisconnectDatalinkAndRemovePortsEdit(datalink));
+			dataflowSelectionModel.removeSelection(datalink);
 		} catch (EditException e1) {
 			logger.debug("Remove datalink failed", e1);
 		}

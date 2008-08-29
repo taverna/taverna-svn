@@ -47,6 +47,7 @@ public class RemoveDataflowOutputPortAction extends DataflowEditAction {
 				editList.add(edits.getRemoveDataflowOutputPortEdit(dataflow, port));
 				editManager.doDataflowEdit(dataflow, new CompoundEdit(editList));
 			}			
+			dataflowSelectionModel.removeSelection(port);
 		} catch (EditException e1) {
 			logger.debug("Remove dataflow output port failed", e1);
 		}
