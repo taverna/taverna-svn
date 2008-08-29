@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
@@ -8,10 +9,9 @@
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>activity-testing</artifactId>
-    <version>0.3-SNAPSHOT</version>
+	<version>0.3-SNAPSHOT</version>
 	<name>Testing of Activities</name>
 	<packaging>jar</packaging>
-	
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -19,20 +19,19 @@
 			<version>${depJunit}</version>
 			<scope>test</scope>
 		</dependency>
-		
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.processors</groupId>
 			<artifactId>taverna-wsdl-processor</artifactId>
-			<version>1.7.1.0</version>
+			<version>1.7.1.1-SNAPSHOT</version>
 			<scope>test</scope>
 			<exclusions>
 				<exclusion>
-					<groupId>uk.org.mygrid.taverna.raven
+					<groupId>uk.org.mygrid.taverna.raven 
 					</groupId>
 					<artifactId>raven</artifactId>
 				</exclusion>
 				<exclusion>
-					<groupId>uk.org.mygrid.taverna.raven
+					<groupId>uk.org.mygrid.taverna.raven 
 					</groupId>
 					<artifactId>raven-log4j</artifactId>
 				</exclusion>
@@ -69,5 +68,13 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>net.sf.taverna</groupId>
+				<artifactId>wsdl-generic</artifactId>
+				<version>1.2-SNAPSHOT</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>
