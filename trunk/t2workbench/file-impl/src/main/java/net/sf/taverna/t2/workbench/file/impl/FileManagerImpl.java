@@ -318,7 +318,7 @@ public class FileManagerImpl extends FileManager {
 			}
 		}
 		throw new OpenException("Could not open " + source + "\n"
-				+ lastException.toString(), lastException);
+				+ lastException, lastException);
 	}
 
 	/**
