@@ -10,18 +10,15 @@ import java.util.List;
 import javax.wsdl.Operation;
 import javax.xml.namespace.QName;
 
-import org.junit.Ignore;
+import net.sf.taverna.wsdl.testutils.WSDLTestHelper;
+
 import org.junit.Test;
 
 public class WSDLParserTest {
-
-	public static final String WSDL_TEST_BASE = "http://www.mygrid.org.uk/taverna-tests/testwsdls/";
-
-	@Ignore("Integration test")
+	
 	@Test
 	public void testGetOperations() throws Exception {
-		WSDLParser parser = new WSDLParser(WSDL_TEST_BASE
-				+ "eutils/eutils_lite.wsdl");
+		WSDLParser parser = new WSDLParser(wsdlResourcePath("eutils/eutils_lite.wsdl"));
 		List<Operation> operations = parser.getOperations();
 		assertEquals(
 				"wrong number of operations found (wsdl may have changed)", 12,
@@ -32,28 +29,20 @@ public class WSDLParserTest {
 		assertEquals("wrong style", "document", parser.getStyle());
 	}
 
-	@Ignore("Integration test")
+	private String wsdlResourcePath(String wsdlName) throws Exception {
+		return WSDLTestHelper.wsdlResourcePath(wsdlName);
+	}
+
 	@Test
 	public void testGetActionURI() throws Exception {
-		WSDLParser parser = new WSDLParser(WSDL_TEST_BASE
-				+ "eutils/eutils_lite.wsdl");
+		WSDLParser parser = new WSDLParser(wsdlResourcePath("eutils/eutils_lite.wsdl"));
 		String actionURI = parser.getSOAPActionURI("run_eInfo");
 		assertEquals("action uri is wrong", "einfo", actionURI);
 	}
 
-	@Ignore("Integration test")
-	@Test
-	public void testMissingStyleInBinding() throws Exception {
-		WSDLParser parser = new WSDLParser(WSDL_TEST_BASE + "SBWReader.wsdl");
-		assertEquals("Style should default to document if missing", "document",
-				parser.getStyle());
-	}
-
-	@Ignore("Integration test")
 	@Test
 	public void testComplexTypeFromImport() throws Exception {
-		WSDLParser parser = new WSDLParser(WSDL_TEST_BASE
-				+ "eutils/eutils_lite.wsdl");
+		WSDLParser parser = new WSDLParser(wsdlResourcePath("eutils/eutils_lite.wsdl"));
 
 		List<TypeDescriptor> inputs = parser
 				.getOperationInputParameters("run_eInfo");
@@ -90,10 +79,9 @@ public class WSDLParserTest {
 		assertFalse("email should not be unbounded", typeDesc.isUnbounded());
 	}
 
-	@Ignore("Integration test")
 	@Test
 	public void testNestedComplexTypes() throws Exception {
-		WSDLParser parser = new WSDLParser(WSDL_TEST_BASE + "bind.wsdl");
+		WSDLParser parser = new WSDLParser(wsdlResourcePath("bind.wsdl"));
 
 		List<TypeDescriptor> inputs = parser
 				.getOperationInputParameters("BIVGetComplexRecord");
@@ -150,11 +138,17 @@ public class WSDLParserTest {
 		assertEquals("wrong type for last element", "int",
 				(typeDesc.getElements().get(6)).getType());
 	}
+	
+	@Test
+	public void testMissingStyleInBinding() throws Exception {
+		WSDLParser parser = new WSDLParser(wsdlResourcePath("SBWReader.wsdl"));
+		assertEquals("Style should default to document if missing", "document",
+				parser.getStyle());
+	}
 
-	@Ignore("Integration test")
 	@Test
 	public void testBaseTypes() throws Exception {
-		WSDLParser parser = new WSDLParser(WSDL_TEST_BASE + "bind.wsdl");
+		WSDLParser parser = new WSDLParser(wsdlResourcePath("bind.wsdl"));
 
 		List<TypeDescriptor> inputs = parser
 				.getOperationInputParameters("BIVGetRecord");
@@ -167,10 +161,9 @@ public class WSDLParserTest {
 				.getType());
 	}
 
-	@Ignore("Integration test")
 	@Test
 	public void testArrayType() throws Exception {
-		WSDLParser parser = new WSDLParser(WSDL_TEST_BASE + "bind.wsdl");
+		WSDLParser parser = new WSDLParser(wsdlResourcePath("bind.wsdl"));
 
 		List<TypeDescriptor> inputs = parser
 				.getOperationInputParameters("BIVGetRecords");
@@ -205,10 +198,9 @@ public class WSDLParserTest {
 		assertEquals("wrong type", "BIVRecord", typeDesc.getType());
 	}
 
-	@Ignore("Integration test")
 	@Test
 	public void testGoVizNoOutputs() throws Exception {
-		WSDLParser parser = new WSDLParser(WSDL_TEST_BASE + "GoViz.wsdl");
+		WSDLParser parser = new WSDLParser(wsdlResourcePath("GoViz.wsdl"));
 
 		List<TypeDescriptor> inputs = parser
 				.getOperationInputParameters("destroySession");
@@ -225,38 +217,31 @@ public class WSDLParserTest {
 		assertEquals("wrong type", "string", typeDesc.getType());
 	}
 
-	@Ignore("Integration test")
 	@Test
 	public void testGetUseEncoded() throws Exception {
-		WSDLParser parser = new WSDLParser(WSDL_TEST_BASE + "bind.wsdl");
+		WSDLParser parser = new WSDLParser(wsdlResourcePath("bind.wsdl"));
 		String use = parser.getUse("BIVGetRecords");
 		assertEquals("use should be encoded", "encoded", use);
 	}
 
-	@Ignore("Integration test")
 	@Test
 	public void testGetUseLiteral() throws Exception {
-		WSDLParser parser = new WSDLParser(WSDL_TEST_BASE
-				+ "eutils/eutils_lite.wsdl");
+		WSDLParser parser = new WSDLParser(wsdlResourcePath("eutils/eutils_lite.wsdl"));
 		String use = parser.getUse("run_eInfo");
 		assertEquals("use should be literal", "literal", use);
 	}
 
-	@Ignore("Integration test")
 	@Test
 	public void testGetOperationNamespace() throws Exception {
-		WSDLParser parser = new WSDLParser(WSDL_TEST_BASE
-				+ "CurrencyExchangeService.wsdl");
+		WSDLParser parser = new WSDLParser(wsdlResourcePath("CurrencyExchangeService.wsdl"));
 		String operationNamespace = parser.getOperationNamespaceURI("getRate");
 		assertEquals("operation namespace is wrong",
 				"urn:xmethods-CurrencyExchange", operationNamespace);
 	}
 	
-	@Ignore("Integration test")
 	@Test
 	public void testGetOperationNamespace2() throws Exception {
-		WSDLParser parser = new WSDLParser(WSDL_TEST_BASE
-				+ "eutils/eutils_lite.wsdl");
+		WSDLParser parser = new WSDLParser(wsdlResourcePath("eutils/eutils_lite.wsdl"));
 		String operationNamespace = parser
 				.getOperationNamespaceURI("run_eInfo");
 		assertEquals("operation namespace is wrong",
@@ -264,11 +249,9 @@ public class WSDLParserTest {
 				operationNamespace);
 	}
 
-	@Ignore("Integration test")
 	@Test
 	public void testGetOperationElementQName() throws Exception {
-		WSDLParser parser = new WSDLParser(WSDL_TEST_BASE
-				+ "eutils/eutils_lite.wsdl");
+		WSDLParser parser = new WSDLParser(wsdlResourcePath("eutils/eutils_lite.wsdl"));
 		QName operationQName = parser.getOperationQname("run_eInfo");
 		assertEquals("element name is wrong", "eInfoRequest", operationQName
 				.getLocalPart());
@@ -277,7 +260,6 @@ public class WSDLParserTest {
 						.getNamespaceURI());
 	}
 
-	@Ignore("Integration test")
 	@Test
 	public void testGetOperationElementQName2() throws Exception {
 		URL tav744Url = getClass().getResource(
