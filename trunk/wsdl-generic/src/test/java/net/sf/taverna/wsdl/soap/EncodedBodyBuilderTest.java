@@ -10,20 +10,23 @@ import java.util.Map;
 
 import net.sf.taverna.wsdl.parser.WSDLParser;
 import net.sf.taverna.wsdl.testutils.LocationConstants;
+import net.sf.taverna.wsdl.testutils.WSDLTestHelper;
 
 import org.apache.axis.message.SOAPBodyElement;
-import org.junit.Ignore;
 import org.junit.Test;
 
 
 public class EncodedBodyBuilderTest implements LocationConstants {
+	
+	private String wsdlResourcePath(String wsdlName) throws Exception {
+		return WSDLTestHelper.wsdlResourcePath(wsdlName);
+	}
 
-	@Ignore("Integration test")
 	@Test
 	public void testSimpleCase() throws Exception {
 		Map<String,Object> inputMap = new HashMap<String, Object>();
 		
-		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"TestServices-rpcencoded.wsdl", "countString");
+		BodyBuilder builder = createBuilder(wsdlResourcePath("TestServices-rpcencoded.wsdl"), "countString");
 		
 		assertTrue("Wrong type of builder created",builder instanceof EncodedBodyBuilder);
 		
@@ -35,12 +38,11 @@ public class EncodedBodyBuilderTest implements LocationConstants {
 		assertTrue("Contents of body are not as expected: actual body:"+xml,xml.contains("<str xsi:type=\"xsd:string\">Roger Ramjet</str>"));
 	}
 	
-	@Ignore("Integration test")
 	@Test
 	public void testStringArray() throws Exception {
 		Map<String,Object> inputMap = new HashMap<String, Object>();
 		
-		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"TestServices-rpcencoded.wsdl", "countStringArray");
+		BodyBuilder builder = createBuilder(wsdlResourcePath("TestServices-rpcencoded.wsdl"), "countStringArray");
 		
 		assertTrue("Wrong type of builder created",builder instanceof EncodedBodyBuilder);
 		List<String> array=new ArrayList<String>();
@@ -55,10 +57,9 @@ public class EncodedBodyBuilderTest implements LocationConstants {
 		assertTrue("Contents of body are not as expected: actual body:"+xml,xml.contains("<string>one</string><string>two</string><string>three</string>"));
 	}
 	
-	@Ignore("Integration test")
 	@Test
 	public void testComplexType() throws Exception {
-		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"TestServices-rpcencoded.wsdl", "personToString");
+		BodyBuilder builder = createBuilder(wsdlResourcePath("TestServices-rpcencoded.wsdl"), "personToString");
 		
 		assertTrue("Wrong type of builder created",builder instanceof EncodedBodyBuilder);
 		

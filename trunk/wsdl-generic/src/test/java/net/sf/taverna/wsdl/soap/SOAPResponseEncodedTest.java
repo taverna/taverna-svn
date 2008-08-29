@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseEncodedTest.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-08-08 10:29:00 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2008-08-29 16:15:54 $
+ *               by   $Author: sowen70 $
  * Created on 08-May-2006
  *****************************************************************/
 package net.sf.taverna.wsdl.soap;
@@ -46,20 +46,22 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.sf.taverna.wsdl.parser.WSDLParser;
 import net.sf.taverna.wsdl.testutils.LocationConstants;
+import net.sf.taverna.wsdl.testutils.WSDLTestHelper;
 
 import org.apache.axis.message.SOAPBodyElement;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class SOAPResponseEncodedTest  implements LocationConstants {
+	private String wsdlResourcePath(String wsdlName) throws Exception {
+		return WSDLTestHelper.wsdlResourcePath(wsdlName);
+	}
 	
-	@Ignore("Integration test")
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testSimpleRPC() throws Exception {
 		
-		WSDLParser wsdlParser = new WSDLParser(WSDL_TEST_BASE+"ma.wsdl");
+		WSDLParser wsdlParser = new WSDLParser(wsdlResourcePath("ma.wsdl"));
 
 		String xml1 = "<ns1:whatGeneInStageResponse soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:ns1=\"urn:hgu.webservice.services\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><whatGeneInStageReturn soapenc:arrayType=\"ns2:GeneExpressedQueryShortDetails[0]\" xsi:type=\"soapenc:Array\" xmlns:ns2=\"http://SubmissionQuery.WSDLGenerated.hgu\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><agene xsi:type=\"string\">a gene</agene></whatGeneInStageReturn></ns1:whatGeneInStageResponse>";
 

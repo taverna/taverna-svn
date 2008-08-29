@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseMultiRefTest.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-08-08 10:29:00 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2008-08-29 16:15:54 $
+ *               by   $Author: sowen70 $
  * Created on 08-May-2006
  *****************************************************************/
 package net.sf.taverna.wsdl.soap;
@@ -50,19 +50,22 @@ import net.sf.taverna.wsdl.parser.ComplexTypeDescriptor;
 import net.sf.taverna.wsdl.parser.TypeDescriptor;
 import net.sf.taverna.wsdl.parser.WSDLParser;
 import net.sf.taverna.wsdl.testutils.LocationConstants;
+import net.sf.taverna.wsdl.testutils.WSDLTestHelper;
 
 import org.apache.axis.message.SOAPBodyElement;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class SOAPResponseMultiRefTest  implements LocationConstants {
+	
+	private String wsdlResourcePath(String wsdlName) throws Exception {
+		return WSDLTestHelper.wsdlResourcePath(wsdlName);
+	}
 
-	@Ignore("Integration test")
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testMultiRef() throws Exception {
-		WSDLParser wsdlParser = new WSDLParser(WSDL_TEST_BASE+"TestServices-rpcencoded.wsdl");
+		WSDLParser wsdlParser = new WSDLParser(wsdlResourcePath("TestServices-rpcencoded.wsdl"));
 
 		List response = new ArrayList();
 
@@ -104,11 +107,10 @@ public class SOAPResponseMultiRefTest  implements LocationConstants {
 
 	}
 
-	@Ignore("Integration test")
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testMultiRefReturnNamespaced() throws Exception {
-		WSDLParser wsdlParser = new WSDLParser(WSDL_TEST_BASE+"TestServices-rpcencoded.wsdl");
+		WSDLParser wsdlParser = new WSDLParser(wsdlResourcePath("TestServices-rpcencoded.wsdl"));
 
 		List response = new ArrayList();
 

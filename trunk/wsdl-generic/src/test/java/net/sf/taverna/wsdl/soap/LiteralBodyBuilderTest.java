@@ -11,6 +11,7 @@ import javax.xml.namespace.QName;
 
 import net.sf.taverna.wsdl.parser.WSDLParser;
 import net.sf.taverna.wsdl.testutils.LocationConstants;
+import net.sf.taverna.wsdl.testutils.WSDLTestHelper;
 
 import org.apache.axis.message.SOAPBodyElement;
 import org.junit.Ignore;
@@ -18,11 +19,14 @@ import org.junit.Test;
 import org.w3c.dom.Node;
 
 public class LiteralBodyBuilderTest implements LocationConstants{
+	
+	private String wsdlResourcePath(String wsdlName) throws Exception {
+		return WSDLTestHelper.wsdlResourcePath(wsdlName);
+	}
 
-	@Ignore("Integration test")
 	@Test
 	public void testUnqualifiedNamespaces() throws Exception {
-		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"whatizit.wsdl", "queryPmid");
+		BodyBuilder builder = createBuilder(wsdlResourcePath("whatizit.wsdl"), "queryPmid");
 		
 		assertTrue("Is is the wrong type, it should be LiteralBodyBuilder",builder instanceof LiteralBodyBuilder);
 		
@@ -38,10 +42,9 @@ public class LiteralBodyBuilderTest implements LocationConstants{
 		assertTrue("Wrapping element should have its namespace declared",xml.contains("<ns1:queryPmid"));
 	}
 	
-	@Ignore("Integration test")
 	@Test
 	public void testQualifiedUnwrapped() throws Exception {
-		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"TestServices-unwrapped.wsdl", "countString");
+		BodyBuilder builder = createBuilder(wsdlResourcePath("TestServices-unwrapped.wsdl"), "countString");
 		
 		assertTrue("Is is the wrong type, it should be LiteralBodyBuilder",builder instanceof LiteralBodyBuilder);
 		Map<String,Object>inputMap = new HashMap<String, Object>();
@@ -52,10 +55,9 @@ public class LiteralBodyBuilderTest implements LocationConstants{
 		assertEquals("XML should containe qualifed namespace for str",xml,"<ns1:str xmlns:ns1=\"http://testing.org\">bob</ns1:str>");
 	}
 	
-	@Ignore("Integration test")
 	@Test
 	public void testUnwrappedSimple() throws Exception {
-		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"TestServices-unwrapped.wsdl", "countString");
+		BodyBuilder builder = createBuilder(wsdlResourcePath("TestServices-unwrapped.wsdl"), "countString");
 		
 		assertTrue("Wrong type of builder, it should be Literal based",builder instanceof LiteralBodyBuilder);
 		
@@ -68,10 +70,9 @@ public class LiteralBodyBuilderTest implements LocationConstants{
 		assertEquals("Value should be 12345:","12345",body.getFirstChild().getNextSibling().getNodeValue());
 	}
 	
-	@Ignore("Integration test")
 	@Test
 	public void testUnwrappedArray() throws Exception {
-		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"TestServices-unwrapped.wsdl", "countStringArray");
+		BodyBuilder builder = createBuilder(wsdlResourcePath("TestServices-unwrapped.wsdl"), "countStringArray");
 		
 		assertTrue("Wrong type of builder, it should be Literal based",builder instanceof LiteralBodyBuilder);
 		
@@ -88,10 +89,9 @@ public class LiteralBodyBuilderTest implements LocationConstants{
 		assertEquals("First Array element should have the value '1'. xml = "+xml,"1",itemElement.getFirstChild().getNodeValue());
 	}
 	
-	@Ignore("Integration test")
 	@Test 
 	public void testOperationElementNameEUtils() throws Exception {
-		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"eutils/eutils_lite.wsdl", "run_eInfo");
+		BodyBuilder builder = createBuilder(wsdlResourcePath("eutils/eutils_lite.wsdl"), "run_eInfo");
 
 		assertTrue("Wrong type of builder, it should be Literal based",builder instanceof LiteralBodyBuilder);
 		Map<String,Object> inputMap = new HashMap<String, Object>();
@@ -126,10 +126,9 @@ public class LiteralBodyBuilderTest implements LocationConstants{
 				body.getQName());
 	}
 	
-	@Ignore("Integration test")
 	@Test
 	public void testRPCLiteral() throws Exception {
-		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"MyService-rpc-literal.wsdl", "countString");
+		BodyBuilder builder = createBuilder(wsdlResourcePath("MyService-rpc-literal.wsdl"), "countString");
 		
 		assertTrue("Wrong type of builder, it should be Literal based",builder instanceof LiteralBodyBuilder);
 		
