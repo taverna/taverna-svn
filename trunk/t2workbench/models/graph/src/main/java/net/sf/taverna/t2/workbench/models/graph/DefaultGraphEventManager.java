@@ -51,11 +51,13 @@ public class DefaultGraphEventManager implements GraphEventManager {
 	public void mouseClicked(final GraphElement graphElement, short button,
 			boolean altKey, boolean ctrlKey, boolean metaKey, final int x, final int y, int screenX, int screenY) {
 		Object dataflowObject = graphElement.getDataflowObject();
-		if (button == 0) {
-			if (graphController.getDataflowSelectionModel() != null) {
-				graphController.getDataflowSelectionModel().addSelection(dataflowObject);
-			}
-		} else if (button == 2) {
+		
+		if (graphController.getDataflowSelectionModel() != null) {
+			graphController.getDataflowSelectionModel().addSelection(dataflowObject);
+		}
+		
+		if (button == 2) {
+
 			if (dataflowObject instanceof Processor) {
 				final Processor processor = (Processor) dataflowObject;
 				menu = ContextMenuFactory.getContextMenu(graphController.getDataflow(), processor, component);
