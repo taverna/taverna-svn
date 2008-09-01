@@ -1,132 +1,164 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<wsdl:definitions targetNamespace="urn:provenance" xmlns:tns="urn:provenance" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope" xmlns:ns1="http://types.provenance.service.t2.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc11="http://schemas.xmlsoap.org/soap/encoding/" xmlns:soapenc12="http://www.w3.org/2003/05/soap-encoding" xmlns:soap11="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
-  <wsdl:types>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="urn:provenance">
-<xsd:element name="getString">
-<xsd:complexType/>
-</xsd:element>
-<xsd:element name="getStringResponse">
-<xsd:complexType>
-<xsd:sequence>
-<xsd:element maxOccurs="1" minOccurs="1" name="out" nillable="true" type="xsd:string"/>
-</xsd:sequence>
-</xsd:complexType>
-</xsd:element>
-<xsd:element name="acceptRawProvenanceEvent">
-<xsd:complexType>
+<wsdl:definitions targetNamespace="urn:provenance"
+	xmlns:tns="urn:provenance"
+	xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:soap12="http://www.w3.org/2003/05/soap-envelope"
+	xmlns:ns1="http://types.provenance.service.t2.taverna.sf.net"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:soapenc11="http://schemas.xmlsoap.org/soap/encoding/"
+	xmlns:soapenc12="http://www.w3.org/2003/05/soap-encoding"
+	xmlns:soap11="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+	<wsdl:types>
+		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			attributeFormDefault="qualified" elementFormDefault="qualified"
+			targetNamespace="urn:provenance">
+			<xsd:element name="getString">
+				<xsd:complexType />
+			</xsd:element>
+			<xsd:element name="getStringResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element maxOccurs="1" minOccurs="1"
+							name="out" nillable="true" type="xsd:string" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="acceptRawProvenanceEvent">
+				<xsd:complexType>
 
-<xsd:sequence>
-<xsd:element maxOccurs="1" minOccurs="1" name="eventType" nillable="true" type="xsd:string"/>
-<xsd:element maxOccurs="1" minOccurs="1" name="content" nillable="true" type="xsd:string"/>
-</xsd:sequence>
-</xsd:complexType>
-</xsd:element>
-<xsd:element name="acceptRawProvenanceEventResponse">
-<xsd:complexType/>
-</xsd:element>
-<xsd:element name="acceptProvenanceEvent">
-<xsd:complexType>
-<xsd:sequence>
-<xsd:element maxOccurs="1" minOccurs="1" name="eventType" nillable="true" type="ns1:ProvenanceEventType"/>
-<xsd:element maxOccurs="1" minOccurs="1" name="content" nillable="true" type="xsd:string"/>
-</xsd:sequence>
-</xsd:complexType>
-</xsd:element>
+					<xsd:sequence>
+						<xsd:element maxOccurs="1" minOccurs="1"
+							name="eventType" nillable="true" type="xsd:string" />
+						<xsd:element maxOccurs="1" minOccurs="1"
+							name="content" nillable="true" type="xsd:string" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="acceptRawProvenanceEventResponse">
+				<xsd:complexType />
+			</xsd:element>
+			<xsd:element name="acceptProvenanceEvent">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element maxOccurs="1" minOccurs="1"
+							name="eventType" nillable="true" type="ns1:ProvenanceEventType" />
+						<xsd:element maxOccurs="1" minOccurs="1"
+							name="content" nillable="true" type="xsd:string" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
 
-<xsd:element name="acceptProvenanceEventResponse">
-<xsd:complexType/>
-</xsd:element>
-</xsd:schema>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://types.provenance.service.t2.taverna.sf.net">
-<xsd:complexType name="ProvenanceEventType"/>
-</xsd:schema>
-  </wsdl:types>
-  <wsdl:message name="acceptProvenanceEventResponse">
-    <wsdl:part name="parameters" element="tns:acceptProvenanceEventResponse">
-    </wsdl:part>
-  </wsdl:message>
+			<xsd:element name="acceptProvenanceEventResponse">
+				<xsd:complexType />
+			</xsd:element>
+		</xsd:schema>
+		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			attributeFormDefault="qualified" elementFormDefault="qualified"
+			targetNamespace="http://types.provenance.service.t2.taverna.sf.net">
+			<xsd:complexType name="ProvenanceEventType" />
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="acceptProvenanceEventResponse">
+		<wsdl:part name="parameters"
+			element="tns:acceptProvenanceEventResponse">
+		</wsdl:part>
+	</wsdl:message>
 
-  <wsdl:message name="acceptRawProvenanceEventResponse">
-    <wsdl:part name="parameters" element="tns:acceptRawProvenanceEventResponse">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="acceptProvenanceEventRequest">
-    <wsdl:part name="parameters" element="tns:acceptProvenanceEvent">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getStringResponse">
+	<wsdl:message name="acceptRawProvenanceEventResponse">
+		<wsdl:part name="parameters"
+			element="tns:acceptRawProvenanceEventResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="acceptProvenanceEventRequest">
+		<wsdl:part name="parameters"
+			element="tns:acceptProvenanceEvent">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getStringResponse">
 
-    <wsdl:part name="parameters" element="tns:getStringResponse">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="acceptRawProvenanceEventRequest">
-    <wsdl:part name="parameters" element="tns:acceptRawProvenanceEvent">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getStringRequest">
-    <wsdl:part name="parameters" element="tns:getString">
+		<wsdl:part name="parameters" element="tns:getStringResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="acceptRawProvenanceEventRequest">
+		<wsdl:part name="parameters"
+			element="tns:acceptRawProvenanceEvent">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getStringRequest">
+		<wsdl:part name="parameters" element="tns:getString">
 
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:portType name="ProvenancePortType">
-    <wsdl:operation name="getString">
-      <wsdl:input name="getStringRequest" message="tns:getStringRequest">
-    </wsdl:input>
-      <wsdl:output name="getStringResponse" message="tns:getStringResponse">
-    </wsdl:output>
-    </wsdl:operation>
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:portType name="ProvenancePortType">
+		<wsdl:operation name="getString">
+			<wsdl:input name="getStringRequest"
+				message="tns:getStringRequest">
+			</wsdl:input>
+			<wsdl:output name="getStringResponse"
+				message="tns:getStringResponse">
+			</wsdl:output>
+		</wsdl:operation>
 
-    <wsdl:operation name="acceptRawProvenanceEvent">
-      <wsdl:input name="acceptRawProvenanceEventRequest" message="tns:acceptRawProvenanceEventRequest">
-    </wsdl:input>
-      <wsdl:output name="acceptRawProvenanceEventResponse" message="tns:acceptRawProvenanceEventResponse">
-    </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="acceptProvenanceEvent">
-      <wsdl:input name="acceptProvenanceEventRequest" message="tns:acceptProvenanceEventRequest">
-    </wsdl:input>
+		<wsdl:operation name="acceptRawProvenanceEvent">
+			<wsdl:input name="acceptRawProvenanceEventRequest"
+				message="tns:acceptRawProvenanceEventRequest">
+			</wsdl:input>
+			<wsdl:output name="acceptRawProvenanceEventResponse"
+				message="tns:acceptRawProvenanceEventResponse">
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="acceptProvenanceEvent">
+			<wsdl:input name="acceptProvenanceEventRequest"
+				message="tns:acceptProvenanceEventRequest">
+			</wsdl:input>
 
-      <wsdl:output name="acceptProvenanceEventResponse" message="tns:acceptProvenanceEventResponse">
-    </wsdl:output>
-    </wsdl:operation>
-  </wsdl:portType>
-  <wsdl:binding name="ProvenanceHttpBinding" type="tns:ProvenancePortType">
-    <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-    <wsdl:operation name="getString">
-      <wsdlsoap:operation soapAction=""/>
-      <wsdl:input name="getStringRequest">
+			<wsdl:output name="acceptProvenanceEventResponse"
+				message="tns:acceptProvenanceEventResponse">
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="ProvenanceHttpBinding"
+		type="tns:ProvenancePortType">
+		<wsdlsoap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="getString">
+			<wsdlsoap:operation soapAction="" />
+			<wsdl:input name="getStringRequest">
 
-        <wsdlsoap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output name="getStringResponse">
-        <wsdlsoap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="acceptRawProvenanceEvent">
-      <wsdlsoap:operation soapAction=""/>
-      <wsdl:input name="acceptRawProvenanceEventRequest">
+				<wsdlsoap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getStringResponse">
+				<wsdlsoap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="acceptRawProvenanceEvent">
+			<wsdlsoap:operation soapAction="" />
+			<wsdl:input name="acceptRawProvenanceEventRequest">
 
-        <wsdlsoap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output name="acceptRawProvenanceEventResponse">
-        <wsdlsoap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="acceptProvenanceEvent">
-      <wsdlsoap:operation soapAction=""/>
-      <wsdl:input name="acceptProvenanceEventRequest">
+				<wsdlsoap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="acceptRawProvenanceEventResponse">
+				<wsdlsoap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="acceptProvenanceEvent">
+			<wsdlsoap:operation soapAction="" />
+			<wsdl:input name="acceptProvenanceEventRequest">
 
-        <wsdlsoap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output name="acceptProvenanceEventResponse">
-        <wsdlsoap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-  </wsdl:binding>
-  <wsdl:service name="Provenance">
-    <wsdl:port name="ProvenanceHttpPort" binding="tns:ProvenanceHttpBinding">
+				<wsdlsoap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="acceptProvenanceEventResponse">
+				<wsdlsoap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="Provenance">
+		<wsdl:port name="ProvenanceHttpPort"
+			binding="tns:ProvenanceHttpBinding">
 
-      <wsdlsoap:address location="http://localhost:7070/provenance-webservice/xfire/Provenance"/>
-    </wsdl:port>
-  </wsdl:service>
+			<wsdlsoap:address
+				location="http://localhost:7070/provenance-webservice/xfire/Provenance" />
+		</wsdl:port>
+	</wsdl:service>
 </wsdl:definitions>
