@@ -29,23 +29,24 @@ import org.junit.Test;
 public class ProvenanceCaptureTestNoInput extends InvocationTestHelper {
 	
 	String[] scuflFiles = 
-			{ "provenance-testing/test_iterate_list_of_lists.xml",  //0
+			{ "provenance-testing/test_iterate_list_of_lists.t2flow",  //0
 			  "provenance-testing/test1.t2flow",  //1
-			  "provenance-testing/test2.xml",  //2
-			  "provenance-testing/test3.xml",  //3
-			  "provenance-testing/test4.xml",  //4
-			  "provenance-testing/test5.xml",  //5
+			  "provenance-testing/test2.t2flow",  //2
+			  "provenance-testing/test3.t2flow",  //3
+			  "provenance-testing/test4.t2flow",  //4
+			  "provenance-testing/test5.t2flow",  //5
 			  "",
 			  "",
 			  "",
 			  "",
-			  "provenance-testing/test10.xml",  //10  
-			  "provenance-testing/test11.xml",  //11
-			  "provenance-testing/test12.xml",  //12 
-			  "provenance-testing/test13.xml",  //13
-			  "provenance-testing/test14.xml",  //14
-			  "provenance-testing/test15.xml",   //15
-			  "provenance-testing/test16.xml"   //16
+			  "provenance-testing/test10.t2flow",  //10  
+			  "provenance-testing/test11.t2flow",  //11
+			  "provenance-testing/test12.t2flow",  //12 
+			  "provenance-testing/test13.t2flow",  //13
+			  "provenance-testing/test14.t2flow",  //14
+			  "provenance-testing/test15.t2flow",   //15
+			  "provenance-testing/test16.t2flow",   //16
+			  "provenance-testing/test17.t2flow"   //17
 			  }; 
 	
 	@Test
