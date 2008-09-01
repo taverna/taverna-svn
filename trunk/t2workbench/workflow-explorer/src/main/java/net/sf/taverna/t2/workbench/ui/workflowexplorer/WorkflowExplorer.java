@@ -222,7 +222,7 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 			ameTree.setScrollsOnExpand(false);
 			ameTree.setCellRenderer(new WorkflowExplorerTreeCellRenderer());
 			ameTree.addMouseListener(new MouseAdapter(){
-				
+								
 				public void mouseClicked(MouseEvent evt){
 					
 					 // Discover the tree row that was clicked on
@@ -233,7 +233,7 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 						if (selectionPath != null){
 							// Get the selected node
 							DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectionPath.getLastPathComponent();
-							
+													
 							// For both left and right click - add the workflow object to selection model
 							// This will cause the node to become selected (in the selection listener's code)
 							DataflowSelectionModel selectionModel = DataflowSelectionManager
@@ -286,7 +286,7 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 	 * in the tree view.
 	 */
 	private void setSelectedNodes() {
-		
+					
 		DataflowSelectionModel selectionModel = DataflowSelectionManager	
 		.getInstance().getDataflowSelectionModel(workflow);
 		
@@ -326,6 +326,7 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 
 		public void notify(Observable<DataflowSelectionMessage> sender,
 				DataflowSelectionMessage message) throws Exception {
+			
 			setSelectedNodes();
 		}
 

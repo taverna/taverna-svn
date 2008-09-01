@@ -17,6 +17,8 @@ import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.NestedDataflow;
+import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityInputPortImpl;
+import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityOutputPortImpl;
 
 public class WorkflowExplorerTreeModel extends DefaultTreeModel{
 
@@ -221,12 +223,12 @@ public class WorkflowExplorerTreeModel extends DefaultTreeModel{
 						return tp;				}
 			}
 		}
-		else if (userObject instanceof ActivityInputPort){
+		else if (userObject instanceof ActivityInputPortImpl){
 			// This is an input port of a processor (i.e. its associated activity)
 			// Get the root procesors node
 			DefaultMutableTreeNode processors = (DefaultMutableTreeNode) root.getChildAt(2);
-			for (int i = processors.getChildCount() - 1; i < 0 ; i--){
-				logger.info("Here i: " + i);
+
+			for (int i = processors.getChildCount() - 1; i >= 0 ; i--){
 				// Looping backwards so that nested workflows are checked last
 				DefaultMutableTreeNode processor = (DefaultMutableTreeNode) processors.getChildAt(i);
 				if (isNestedWorkflow((Processor) processor.getUserObject())){ // if this is nested workflow - descend into it
@@ -240,10 +242,8 @@ public class WorkflowExplorerTreeModel extends DefaultTreeModel{
 					// thought the processor's input and output ports,
 					// and see if there is a matching input port
 					for (int j = 0; j < processor.getChildCount(); j++){
-						logger.info("Here j: " + j);
-
 						DefaultMutableTreeNode port_node = (DefaultMutableTreeNode) processor.getChildAt(j);
-						if ((port_node instanceof ActivityInputPort) && 
+						if ((port_node.getUserObject() instanceof ActivityInputPortImpl) && 
 								(((ActivityInputPort) port_node.getUserObject()).equals(userObject))){
 							return new TreePath(port_node.getPath());
 						}
@@ -251,11 +251,11 @@ public class WorkflowExplorerTreeModel extends DefaultTreeModel{
 				}
 			}
 		}
-		else if (userObject instanceof OutputPort){
+		else if (userObject instanceof ActivityOutputPortImpl){
 			// This is an output port of a processor (i.e. its associated activity)
 			// Get the root procesors node
 			DefaultMutableTreeNode processors = (DefaultMutableTreeNode) root.getChildAt(2);
-			for (int i = processors.getChildCount() - 1; i < 0 ; i--){
+			for (int i = processors.getChildCount() - 1; i >= 0 ; i--){
 				// Looping backwards so that nested workflows are checked last
 				DefaultMutableTreeNode processor = (DefaultMutableTreeNode) processors.getChildAt(i);
 				if (isNestedWorkflow((Processor) processor.getUserObject())){ // if this is nested workflow - descend into it
@@ -271,7 +271,7 @@ public class WorkflowExplorerTreeModel extends DefaultTreeModel{
 					for (int j = 0; j < processor.getChildCount(); j++){
 
 						DefaultMutableTreeNode port_node = (DefaultMutableTreeNode) processor.getChildAt(j);
-						if ((port_node instanceof OutputPort) && 
+						if ((port_node.getUserObject() instanceof ActivityOutputPortImpl) && 
 								(((OutputPort) port_node.getUserObject()).equals(userObject))){
 							return new TreePath(port_node.getPath());
 						}
