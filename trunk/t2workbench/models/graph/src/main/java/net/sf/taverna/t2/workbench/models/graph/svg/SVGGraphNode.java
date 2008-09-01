@@ -12,11 +12,8 @@ import org.apache.batik.dom.svg.SVGOMGElement;
 import org.apache.batik.dom.svg.SVGOMPolygonElement;
 import org.apache.batik.dom.svg.SVGOMTextElement;
 import org.apache.batik.util.SVGConstants;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 import org.w3c.dom.events.EventTarget;
-import org.w3c.dom.svg.SVGPoint;
 import org.w3c.dom.svg.SVGPointList;
 
 /**
@@ -24,10 +21,7 @@ import org.w3c.dom.svg.SVGPointList;
  * 
  * @author David Withers
  */
-/**
- * @author David Withers
- *
- */
+
 public class SVGGraphNode extends GraphNode implements SVGMonitorShape {
 
 	private SVGGraphController graphController;

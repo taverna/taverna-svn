@@ -44,6 +44,7 @@ import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.NestedDataflow;
+import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityOutputPortImpl;
 import net.sf.taverna.t2.workflowmodel.utils.Tools;
 
 import org.apache.log4j.Logger;
@@ -1020,7 +1021,21 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 			for (Object dataflowElement : dataflowSelectionModel.getSelection()) {
 				GraphElement graphElement = dataflowToGraph.get(dataflowElement);
 				if (graphElement != null) {
-					graphElement.setSelected(true);
+										
+					// If element is visible then set it to selected, otherwise do nothing. 
+					// For example, a processor port can be selected on the tree view of the 
+					// Workflow Explorer, but if current graph's portStyle is NONE (i.e. no 
+					// port details), then we cannot select the port node on the graph.
+					if ((portStyle.equals(PortStyle.NONE)) && 
+							(dataflowElement instanceof ActivityInputPort || dataflowElement instanceof ActivityOutputPortImpl ))
+					{
+						// Do nothing
+						return;
+					}
+					else{
+						// select the element 
+						graphElement.setSelected(true);
+					}
 				}		
 			}
 		}
@@ -1034,7 +1049,21 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 			DataflowSelectionMessage message) throws Exception {
 		GraphElement graphElement = dataflowToGraph.get(message.getElement());
 		if (graphElement != null) {
-			graphElement.setSelected(message.getType().equals(DataflowSelectionMessage.Type.ADDED));
+			
+			// If element is visible then set it to selected, otherwise do nothing. 
+			// For example, a processor port can be selected on the tree view of the 
+			// Workflow Explorer, but if current graph's portStyle is NONE (i.e. no 
+			// port details), then we cannot select the port node on the graph.
+			if ((portStyle.equals(PortStyle.NONE)) && 
+					(message.getElement() instanceof ActivityInputPort || message.getElement() instanceof ActivityOutputPortImpl ))
+			{
+				// Do nothing
+				return;
+			}
+			else{
+				// select the element 
+				graphElement.setSelected(message.getType().equals(DataflowSelectionMessage.Type.ADDED));
+			}
 		}		
 	}
 

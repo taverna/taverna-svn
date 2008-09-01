@@ -39,7 +39,7 @@ public class IterationStrategyContextualViewFactory implements
 		}
 		if (processors.isEmpty()) {
 			throw new IllegalStateException(
-					"Can't find processor which activity contain input port "
+					"Can't find processor which activity contains input port "
 							+ inputPort);
 		}
 

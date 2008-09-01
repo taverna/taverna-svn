@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.workbench.ui.views.contextualviews.activity;
 
+import org.apache.log4j.Logger;
+
 import net.sf.taverna.t2.spi.SPIRegistry;
 
 /**
@@ -7,7 +9,7 @@ import net.sf.taverna.t2.spi.SPIRegistry;
  * like an {@link net.sf.taverna.t2.workflowmodel.processor.activity.Activity}.
  * <p>
  * For {@link ContextualViewFactory factories} to be found, its full qualified
- * name needs to be defined a the resource file
+ * name needs to be defined as a resource file
  * <code>/META-INF/services/net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualViewFactory</code>
  * </p>
  * 
@@ -47,6 +49,7 @@ public class ContextualViewFactoryRegistry extends
 	 * @see ContextualViewFactory#canHandle(Object)
 	 */
 	public ContextualViewFactory<?> getViewFactoryForObject(Object object) {
+
 		for (ContextualViewFactory<?> factory : getInstances()) {
 			if (factory.canHandle(object)) {
 				return factory;
