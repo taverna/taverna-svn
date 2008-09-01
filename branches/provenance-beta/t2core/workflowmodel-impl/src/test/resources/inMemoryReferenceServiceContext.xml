@@ -114,7 +114,7 @@
 		class="net.sf.taverna.t2.reference.impl.ReferenceSetServiceImpl">
 		<property name="referenceSetDao">
 			<bean id="referenceSetDao"
-				raven:artifact="net.sf.taverna.t2:t2reference-impl:0.1-SNAPSHOT"
+				raven:artifact="net.sf.taverna.t2:t2reference-impl:0.1-SNAPSHOT®"
 				raven:repository="ravenRepository"
 				class="net.sf.taverna.t2.reference.impl.InMemoryReferenceSetDao">
 			</bean>
