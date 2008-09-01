@@ -36,6 +36,7 @@ import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
+import net.sf.taverna.t2.workflowmodel.processor.activity.NestedDataflow;
 
 
 public class WorkflowExplorerTreeCellRenderer extends
@@ -75,7 +76,7 @@ public class WorkflowExplorerTreeCellRenderer extends
 			else if (activity instanceof BiomobyActivity){
 				((WorkflowExplorerTreeCellRenderer) result).setIcon(new ImageIcon(BiomobyActivityItem.class.getResource("/registry.gif")));
 			}
-			else if (activity instanceof DataflowActivity){
+			else if (activity instanceof NestedDataflow){
 				((WorkflowExplorerTreeCellRenderer) result).setIcon(new ImageIcon(DataflowActivityItem.class.getResource("/dataflow.png")));
 			}
 			else if (activity instanceof LocalworkerActivity){

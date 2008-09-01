@@ -230,20 +230,37 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 					if (selRow != -1) {
 						// Get the selection path for the row
 						TreePath selectionPath = ameTree.getPathForLocation(evt.getX(), evt.getY());
-						// Get the selected node
-						DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectionPath.getLastPathComponent();
-						// For both left and right click - add the workflow object to selection model
-						// This will cause the node to become selected (in the selection listener's code)
-						DataflowSelectionModel selectionModel = DataflowSelectionManager
-						.getInstance().getDataflowSelectionModel(workflow);
-						selectionModel.addSelection(selectedNode.getUserObject());
-						
-						// If this was a right click - show a pop-up menu as well
-						if (evt.getButton() == MouseEvent.BUTTON3) {
-							// Show a contextual pop-up menu
-							JPopupMenu menu = ContextMenuFactory.getContextMenu(workflow,
-									selectedNode.getUserObject(), ameTree);
-							menu.show(evt.getComponent(), evt.getX(), evt.getY());
+						if (selectionPath != null){
+							// Get the selected node
+							DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectionPath.getLastPathComponent();
+							
+							// For both left and right click - add the workflow object to selection model
+							// This will cause the node to become selected (in the selection listener's code)
+							DataflowSelectionModel selectionModel = DataflowSelectionManager
+							.getInstance().getDataflowSelectionModel(workflow);
+							
+							// If the node that was clicked on was inputs, outputs, processors or datalinks
+							// root nodes than just make it selected and clear the selection model
+							if(selectedNode.isRoot() ||
+									selectedNode.getUserObject().toString().equals(WorkflowExplorerTreeModel.INPUTS) || 
+									selectedNode.getUserObject().toString().equals(WorkflowExplorerTreeModel.OUTPUTS) ||
+									selectedNode.getUserObject().toString().equals(WorkflowExplorerTreeModel.PROCESSORS) ||
+									selectedNode.getUserObject().toString().equals(WorkflowExplorerTreeModel.DATALINKS)){
+								selectionModel.clearSelection();
+								ameTree.setSelectionPath(selectionPath);
+							}
+							else{
+								selectionModel.addSelection(selectedNode.getUserObject());
+								
+								// If this was a right click - show a pop-up menu as well if there is one defined
+								if (evt.getButton() == MouseEvent.BUTTON3) {
+
+									// Show a contextual pop-up menu
+									JPopupMenu menu = ContextMenuFactory.getContextMenu(workflow,
+											selectedNode.getUserObject(), ameTree);
+									menu.show(evt.getComponent(), evt.getX(), evt.getY());
+								}
+							}
 						}
 					}
 				}
@@ -281,8 +298,7 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 			TreePath[] paths = new TreePath[i];
 			
 			for (Iterator<Object> iterator = selection.iterator(); iterator.hasNext(); ){
-				TreePath path = ((WorkflowExplorerTreeModel) ameTree
-						.getModel()).getPathForObject(iterator.next());
+				TreePath path = WorkflowExplorerTreeModel.getPathForObject(iterator.next(), (DefaultMutableTreeNode) ameTree.getModel().getRoot());
 				paths[--i] = path;
 			}
 			ameTree.setSelectionPaths(paths);
