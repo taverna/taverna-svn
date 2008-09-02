@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- Context providing a full ReferenceService -->
+	<!-- Context providing a full ReferenceService -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:raven="http://taverna.sf.net/schema/artifact-support"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:raven="http://taverna.sf.net/schema/artifact-support"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
 	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd 
 	http://taverna.sf.net/schema/artifact-support 
@@ -11,8 +10,8 @@
 
 	<import resource="context-parts/raven_local.xml" />
 	<!--
-	<import resource="context-parts/hibernateprops_derby.xml" />
-	<import resource="context-parts/dao_hibernate.xml" />
+		<import resource="context-parts/hibernateprops_derby.xml" /> <import
+		resource="context-parts/dao_hibernate.xml" />
 	-->
 	<import resource="context-parts/dao_inmemory.xml" />
 	<import resource="context-parts/componentservices.xml" />
@@ -20,12 +19,19 @@
 	<import resource="context-parts/provenanceconnector.xml" />
 
 	<!-- Load core extensions, needed for String to reference support -->
-	<bean
-		raven:artifact="net.sf.taverna.t2:t2reference-core-extensions:0.1-SNAPSHOT"
+	<bean raven:artifact="net.sf.taverna.t2:t2reference-core-extensions:0.1-SNAPSHOT"
 		raven:repository="raven.repository"
 		class="net.sf.taverna.t2.reference.impl.core.LoadCoreExtensions">
 	</bean>
-	
+
+	<bean id="provenanceConnector"
+		raven:artifact="net.sf.taverna.t2.provenance:provenance-impl:0.0.1-SNAPSHOT"
+		raven:repository="raven.repository"
+		class="net.sf.taverna.t2.provenance.connector.WebServiceProvenanceConnector">
+	</bean>
+
+
+
 
 
 </beans>
