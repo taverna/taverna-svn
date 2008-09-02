@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -30,6 +31,9 @@ public abstract class AbstractConfigurable implements Configurable {
 
 	private static Logger logger = Logger.getLogger(AbstractConfigurable.class);
 	
+	public Set<String> getKeys() {
+		return getInternalPropertyMap().keySet();
+	}
 	
 	/**
 	 * Constructs the AbstractConfigurable by either reading from a previously stored set of properties,
@@ -47,7 +51,14 @@ public abstract class AbstractConfigurable implements Configurable {
 	 * @see net.sf.taverna.t2.workbench.configuration.Configurable#getProperty(java.lang.String)
 	 */
 	public synchronized String getProperty(String key) {
-		return getPropertyMap().get(key);
+		String val = getInternalPropertyMap().get(key);
+		if (val==null) val=getDefaultProperty(key);
+		if (ConfigurationManager.DELETED_VALUE_CODE.equals(val)) val=null;
+		return val;
+	}
+	
+	public String getDefaultProperty(String key) {
+		return getDefaultPropertyMap().get(key);
 	}
 
 	protected void store() {
@@ -58,26 +69,34 @@ public abstract class AbstractConfigurable implements Configurable {
 		}
 	}
 
+	public void clear() {
+		getInternalPropertyMap().clear();
+	}
+	
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.workbench.configuration.Configurable#setProperty(java.lang.String, java.lang.Object)
 	 */
 	public synchronized void setProperty(String key, String value) {
-		Object oldValue = getPropertyMap().get(key);
+		Object oldValue = getInternalPropertyMap().get(key);
 		if (value==null) {
 			deleteProperty(key);
 		}
 		else {
-			getPropertyMap().put(key,value);
+			getInternalPropertyMap().put(key,value);
 		}
 		if (value==null || !value.equals(oldValue)) {
 			store();
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.workbench.configuration.Configurable#getPropertyMap()
+	/**
+	 * Provides access to the internal map.
+	 * <br>
+	 * Note that this map will contain entries for deleted values that also have corresponding default values.
+	 * For this reason using this map directly is discouraged, and  #getProperty(String)} should be used instead.
+	 * @return
 	 */
-	public Map<String, String> getPropertyMap() {
+	public Map<String, String> getInternalPropertyMap() {
 		return propertyMap;
 	}
 
@@ -95,7 +114,12 @@ public abstract class AbstractConfigurable implements Configurable {
 	 * @see net.sf.taverna.t2.workbench.configuration.Configurable#deleteProperty(java.lang.String)
 	 */
 	public void deleteProperty(String key) {
-		propertyMap.remove(key);
+		if (getDefaultPropertyMap().containsKey(key)) {
+			propertyMap.put(key, ConfigurationManager.DELETED_VALUE_CODE);
+		}
+		else {
+			propertyMap.remove(key);
+		}
 	}
 	
 	/**

@@ -39,7 +39,6 @@ public class ActivityPaletteConfigurationTest {
 		assertTrue("Result was not a list but was:"+conf.getPropertyStringList("list"),conf.getPropertyStringList("list") instanceof List);
 		List<String> list = conf.getPropertyStringList("list");
 		assertEquals("There should be 0 elements",0,list.size());
-		assertEquals("The list should be in the propertyMap as an empty string now","",conf.getPropertyMap().get("list"));
 	}
 	
 	@SuppressWarnings("unchecked")

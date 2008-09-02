@@ -2,6 +2,7 @@ package net.sf.taverna.t2.workbench.configuration;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * An interface that defines an Object as being configurable.
@@ -12,10 +13,6 @@ import java.util.Map;
  */
 public interface Configurable {
 	
-	/**
-	 * @return a Map containing the value/key pairs of the configured properties
-	 */
-	Map<String,String> getPropertyMap();
 	/**
 	 * @return a Map containing the default value/key pairs of the configured properties
 	 */
@@ -36,6 +33,27 @@ public interface Configurable {
 	 * Restore the default property map
 	 */
 	void restoreDefaults();
+	
+	/**
+	 * Provides the default property for a given key
+	 * 
+	 * @param key
+	 * @return
+	 */
+	String getDefaultProperty(String key);
+	
+	Set<String> getKeys();
+	
+	void clear();
+	
+	/**
+	 * Provides access to the internal map.
+	 * <br>
+	 * Note that this map may contain internal identifiers for deleted entries for deleted values that also have corresponding default values.
+	 * For this reason using this map directly is discouraged, and  #getProperty(String)} should be used instead.
+	 * @return
+	 */
+	Map<String, String> getInternalPropertyMap();
 	
 	/**
 	 * Looks up the property for the given key. 

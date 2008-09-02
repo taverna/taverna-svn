@@ -2,6 +2,7 @@ package net.sf.taverna.t2.workbench.configuration;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JPanel;
 
@@ -46,7 +47,7 @@ public class DummyUIFactory1 implements ConfigurationUIFactory {
 			return null;
 		}
 
-		public Map<String, String> getPropertyMap() {
+		public Map<String, String> getInternalPropertyMap() {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -73,6 +74,21 @@ public class DummyUIFactory1 implements ConfigurationUIFactory {
 		public void setPropertyStringList(String key, List<String> value) {
 			// TODO Auto-generated method stub
 			
+		}
+
+		public String getDefaultProperty(String key) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public void clear() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public Set<String> getKeys() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 
 		

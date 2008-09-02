@@ -19,9 +19,9 @@ import org.apache.log4j.Logger;
  */
 public class ConfigurationManager {
 	
-	private static final String DUMMY_LIST_ENTRY="DUMMY_LIST_ENTRY";
-
 	private static Logger logger = Logger.getLogger(ConfigurationManager.class);
+	
+	protected static final String DELETED_VALUE_CODE="~~DELETED~~";
 	
 	private File baseConfigLocation;
 
@@ -39,6 +39,8 @@ public class ConfigurationManager {
 	/**
 	 * Write out the properties configuration to disk based on the UUID of the
 	 * {@link Configurable}
+	 * <br>
+	 * Default values are not stored within the file, but only those that have been changed or deleted.
 	 * 
 	 * @param configurable
 	 * @throws Exception 
@@ -46,9 +48,13 @@ public class ConfigurationManager {
 	public void store(Configurable configurable) throws Exception {
 		try {
 
-			Map<String, String> propertyMap = configurable.getPropertyMap();
+			Map<String, String> propertyMap = configurable.getInternalPropertyMap();
 			Properties props = new Properties();
-		    props.putAll(propertyMap);
+		    for (String key : propertyMap.keySet()) {
+		    	if (!propertyMap.get(key).equals(configurable.getDefaultProperty(key))) {
+		    		props.put(key, propertyMap.get(key));
+		    	}
+		    }
 			File configFile = new File(baseConfigLocation,generateFilename(configurable));
 			logger.info("Storing configuration for "+configurable.getName()+" to "+configFile.getAbsolutePath());
 			props.store(new FileOutputStream(configFile), "");
@@ -56,23 +62,25 @@ public class ConfigurationManager {
 			throw new Exception("Configuration storage failed: " + e);
 		}
 	}
+	
+	
 
 	/**
-	 * Loads the configuration details from disk or from memory
+	 * Loads the configuration details from disk or from memory and populates the provided Configurable
 	 * 
 	 * @param configurable
 	 * @return
 	 * @throws Exception
 	 *             if there are no configuration details available
 	 */
-	public Map<String, String> populate(Configurable configurable)
+	public void populate(Configurable configurable)
 			throws Exception {
 		try {
 			File configFile = new File(baseConfigLocation,generateFilename(configurable));
 			if (configFile.exists()) {
 				Properties props = new Properties();
 				props.load(new FileInputStream(configFile));
-				configurable.getPropertyMap().clear();
+				configurable.clear();
 				for (Object key : props.keySet()) {
 					configurable.setProperty(key.toString(), props.getProperty(key.toString()));
 				}
@@ -87,10 +95,9 @@ public class ConfigurationManager {
 			logger.error("There was a error reading the configuration file for "+configurable.getName()+", using defaults",e);
 			configurable.restoreDefaults();
 		}
-		return configurable.getPropertyMap();
 	}
 
-	private String generateFilename(Configurable configurable) {
+	protected String generateFilename(Configurable configurable) {
 		return configurable.getName()+"-"+configurable.getUUID() + ".config";
 	}
 

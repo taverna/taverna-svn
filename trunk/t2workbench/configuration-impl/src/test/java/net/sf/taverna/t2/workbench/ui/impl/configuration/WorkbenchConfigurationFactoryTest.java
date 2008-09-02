@@ -17,10 +17,12 @@ import org.junit.Test;
 public class WorkbenchConfigurationFactoryTest {
 	
 	@Before
-	public void setup() {
+	public void setup() throws Exception {
 		ConfigurationManager manager = ConfigurationManager.getInstance();
 		File f = new File(System.getProperty("java.io.tmpdir"));
-		File d = new File(f,UUID.randomUUID().toString());
+		File configTestsDir = new File(f,"configTests");
+		if (!configTestsDir.exists()) configTestsDir.mkdir();
+		File d = new File(configTestsDir,UUID.randomUUID().toString());
 		d.mkdir();
 		manager.setBaseConfigLocation(d);
 	}

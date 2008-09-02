@@ -5,6 +5,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -248,7 +249,10 @@ public class MimeTypeConfig extends JPanel {
 	}
 
 	private void originalMimes() {
-		mimeMap = MimeTypeManager.getInstance().getPropertyMap();
+		mimeMap=new HashMap<String, String>();
+		for (String key : MimeTypeManager.getInstance().getKeys()) {
+			mimeMap.put(key, MimeTypeManager.getInstance().getProperty(key));
+		}
 	}
 
 }

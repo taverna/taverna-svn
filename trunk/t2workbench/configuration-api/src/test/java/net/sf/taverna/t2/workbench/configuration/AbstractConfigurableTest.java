@@ -13,16 +13,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class AbstractConfigurableTest {
-
-	private File directory;
 	
 	@Before
 	public void setup() throws Exception {
 		ConfigurationManager manager = ConfigurationManager.getInstance();
 		File f = new File(System.getProperty("java.io.tmpdir"));
-		File d = new File(f,UUID.randomUUID().toString());
+		File configTestsDir = new File(f,"configTests");
+		if (!configTestsDir.exists()) configTestsDir.mkdir();
+		File d = new File(configTestsDir,UUID.randomUUID().toString());
 		d.mkdir();
-		directory=d;
 		manager.setBaseConfigLocation(d);
 		DummyConfigurable.getInstance().restoreDefaults();
 	}
@@ -93,16 +92,16 @@ public class AbstractConfigurableTest {
 	
 	@Test
 	public void testRestoreDefaults() {
-		assertEquals("There should be 2 values",2,DummyConfigurable.getInstance().getPropertyMap().size());
+		assertEquals("There should be 2 values",2,DummyConfigurable.getInstance().getInternalPropertyMap().size());
 		
 		DummyConfigurable.getInstance().setProperty("colour", "red");
 		DummyConfigurable.getInstance().setProperty("new", "new value");
 		
-		assertEquals("There should be 3 values",3,DummyConfigurable.getInstance().getPropertyMap().size());
+		assertEquals("There should be 3 values",3,DummyConfigurable.getInstance().getInternalPropertyMap().size());
 		
 		DummyConfigurable.getInstance().restoreDefaults();
 		
-		assertEquals("There should be 2 values",2,DummyConfigurable.getInstance().getPropertyMap().size());
+		assertEquals("There should be 2 values",2,DummyConfigurable.getInstance().getInternalPropertyMap().size());
 		
 		assertEquals("Should be john","john",DummyConfigurable.getInstance().getProperty("name"));
 		assertEquals("Should be john","blue",DummyConfigurable.getInstance().getProperty("colour"));
@@ -111,8 +110,8 @@ public class AbstractConfigurableTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testList() throws Exception {
-		Configurable c = DummyConfigurable.getInstance();
-		c.getPropertyMap().clear();
+		AbstractConfigurable c = DummyConfigurable.getInstance();
+		c.getInternalPropertyMap().clear();
 		c.setPropertyStringList("list", new ArrayList<String>());
 		
 		ConfigurationManager.getInstance().store(c);
@@ -135,7 +134,7 @@ public class AbstractConfigurableTest {
 		assertEquals("there should be 1 item",1,c.getPropertyStringList("list").size());
 		assertEquals("item should be fred","fred",c.getPropertyStringList("list").get(0));
 		
-		c.getPropertyMap().clear();
+		c.getInternalPropertyMap().clear();
 		c.setProperty("list", "a,b,c");
 		assertEquals("There should be 3 items in the list",3,c.getPropertyStringList("list").size());
 		assertEquals("Item 1 should be a","a",c.getPropertyStringList("list").get(0));
@@ -146,16 +145,16 @@ public class AbstractConfigurableTest {
 	
 	@Test
 	public void testListNotThere() throws Exception {
-		Configurable c = DummyConfigurable.getInstance();
-		c.getPropertyMap().clear();
+		AbstractConfigurable c = DummyConfigurable.getInstance();
+		c.getInternalPropertyMap().clear();
 		assertNull("the property should be null",c.getProperty("sdflhsdfhsdfjkhsdfkhsdfkhsdfjkh"));
 		assertNull("the list should be null if the property doesn't exist",c.getPropertyStringList("sdflhsdfhsdfjkhsdfkhsdfkhsdfjkh"));
 	}
 	
 	@Test
 	public void testListDelimeters() throws Exception {
-		Configurable c = DummyConfigurable.getInstance();
-		c.getPropertyMap().clear();
+		AbstractConfigurable c = DummyConfigurable.getInstance();
+		c.getInternalPropertyMap().clear();
 		c.setPropertyStringList("list", new ArrayList<String>());
 		
 		assertTrue("Should be an instanceof a list",c.getPropertyStringList("list") instanceof List);
@@ -189,8 +188,8 @@ public class AbstractConfigurableTest {
 	@Test(expected=UnsupportedOperationException.class)
 	public void testUnmodifiable() throws Exception {
 		
-		Configurable c = DummyConfigurable.getInstance();
-		c.getPropertyMap().clear();
+		AbstractConfigurable c = DummyConfigurable.getInstance();
+		c.getInternalPropertyMap().clear();
 		c.setPropertyStringList("list", new ArrayList<String>());
 		c.getPropertyStringList("list").add("fred");
 		

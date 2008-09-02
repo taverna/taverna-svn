@@ -50,7 +50,7 @@ public class ActivityPaletteConfigurationPanel extends JPanel {
 		setLayout(new BorderLayout());
 		
 		model = new DefaultComboBoxModel();
-		for (String key : config.getPropertyMap().keySet()) {
+		for (String key : config.getInternalPropertyMap().keySet()) {
 			if (key.startsWith("taverna.")) {
 				if (config.getPropertyStringList(key)!=null) {
 					model.addElement(key);
@@ -180,7 +180,7 @@ public class ActivityPaletteConfigurationPanel extends JPanel {
 
 			public void actionPerformed(ActionEvent e) {
 				Configurable config = ActivityPaletteConfiguration.getInstance();
-				config.getPropertyMap().clear();
+				config.getInternalPropertyMap().clear();
 				for (String key : values.keySet()) {
 					List<String> properties = values.get(key);
 					config.setPropertyStringList(key, new ArrayList<String>(properties));
