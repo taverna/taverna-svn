@@ -45,10 +45,10 @@ public class LocalworkerActivityContextualView extends
 	protected String getViewTitle() {
 		if (checkAnnotations()) {
 			// this is a user defined localworker so use the correct name
-			return "User Defined Local Worker";
+			return "User-defined local worker activity";
 		} else {
 
-			return "Local Worker";
+			return "Local worker activity";
 		}
 	}
 

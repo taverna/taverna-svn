@@ -40,7 +40,7 @@ public class BeanshellContextualView extends
 
 	@Override
 	protected String getRawTableRowsHtml() {
-		String html = "<tr><th>Input Port Name</th><th>Depth</th></tr>";
+		String html = "";
 		for (ActivityInputPortDefinitionBean bean : getConfigBean()
 				.getInputPortDefinitions()) {
 			html = html + "<tr><td>" + bean.getName() + "</td><td>"
@@ -63,7 +63,7 @@ public class BeanshellContextualView extends
 
 	@Override
 	protected String getViewTitle() {
-		return "Beanshell contextual view";
+		return "Beanshell activity";
 	}
 
 	@Override

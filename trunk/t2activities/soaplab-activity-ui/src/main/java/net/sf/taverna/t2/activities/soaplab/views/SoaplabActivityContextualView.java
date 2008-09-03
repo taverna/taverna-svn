@@ -33,7 +33,7 @@ public class SoaplabActivityContextualView extends
 
 	@Override
 	protected String getViewTitle() {
-		return "Soaplab";
+		return "Soaplab activity";
 	}
 
 	@Override

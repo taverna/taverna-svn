@@ -50,7 +50,7 @@ public class WSDLActivityContextualView extends
 
 	@Override
 	protected String getViewTitle() {
-		return "WSDL based activity";
+		return "WSDL-based activity";
 	}
 
 	@Override

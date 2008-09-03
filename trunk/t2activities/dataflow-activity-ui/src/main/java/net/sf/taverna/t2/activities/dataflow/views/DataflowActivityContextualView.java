@@ -95,7 +95,7 @@ public class DataflowActivityContextualView extends
 
 	@Override
 	protected String getViewTitle() {
-		return "Dataflow Contextual View";
+		return "Nested workflow";
 	}
 
 	@Override
