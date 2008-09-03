@@ -20,11 +20,10 @@ public class WebServiceProvenanceConnector implements ProvenanceConnector,
 
 	private ArrayList<ProvenanceItem> provenanceCollection;
 
-	// private Provenance provenanceCollector;
-	private ProvenancePortType provenanceHttpPort;
-
 	// * Keep a note of what part of the provenance collection was last sent */
 	private int storedNumber = 0;
+
+	private ProvenancePortType provenanceHttpPort = null; // only initialized once, at first call
 
 	public WebServiceProvenanceConnector() {
 		provenanceCollection = new ArrayList<ProvenanceItem>();
@@ -39,7 +38,8 @@ public class WebServiceProvenanceConnector implements ProvenanceConnector,
 	 * XML version and convert to a string
 	 */
 	public synchronized void store(ReferenceService referenceService) {
-		webServiceConnector();
+		
+		provenanceHttpPort = webServiceConnector(provenanceHttpPort);
 
 		int size = provenanceCollection.size();
 		if (size > 0) {
@@ -50,18 +50,22 @@ public class WebServiceProvenanceConnector implements ProvenanceConnector,
 			String asString = provItem.getAsString();
 			if (asString != null) {
 				try {
+					
+					System.out.println("calling p-service using ["+provenanceHttpPort.getString()+"]");
 					provenanceHttpPort.acceptRawProvenanceEvent(provItem
 							.getEventType(), asString);
 				} catch (RemoteException e) {
 					// TODO Auto-generated c			// get type of provItem and send this info as wellatch block
 					System.out.println("Could not store provenance from xml"
 							+ e);
+					e.printStackTrace();
 				}			// get type of p			// get type of provItem and send this info as wellrovItem and send this info as well
 			} else {
-				XMLOutputter outputter = new XMLOutputter();
-				String outputString = outputter.outputString(provItem
-						.getAsXML(referenceService));
 				try {
+					System.out.println("calling p-service using ["+provenanceHttpPort.getString()+"]");
+					XMLOutputter outputter = new XMLOutputter();
+					String outputString = outputter.outputString(provItem
+							.getAsXML(referenceService));
 					provenanceHttpPort.acceptRawProvenanceEvent(provItem
 							.getEventType(), outputString);
 				} catch (RemoteException e) {
@@ -75,17 +79,20 @@ public class WebServiceProvenanceConnector implements ProvenanceConnector,
 		storedNumber++;
 	}
 
-	private void webServiceConnector() {
+	private ProvenancePortType webServiceConnector(ProvenancePortType provenanceHttpPort) {
+
 		if (provenanceHttpPort == null) {
 			ProvenanceLocator provenanceCollectorService = new ProvenanceLocator();
 
+			System.out.println("setting endpoint to: "+provenanceCollectorService.getProvenanceHttpPortAddress());
+			
 			try {
-				provenanceHttpPort = provenanceCollectorService
-						.getProvenanceHttpPort();
+				return provenanceCollectorService.getProvenanceHttpPort();
 			} catch (ServiceException e) {
 				System.out.println("Could not get provenance service " + e);
+				return null;
 			}
-		}
+		} else return provenanceHttpPort;
 	}
 
 }
