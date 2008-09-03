@@ -4,7 +4,14 @@ import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactory;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 
-public class DatalinkContextualViewFactory implements ContextualViewFactory<Datalink>{
+/**
+ * A factory of contextual views for dataflow's datalinks.
+ * 
+ * @author Alex Nenadic
+ *
+ */
+public class DatalinkContextualViewFactory implements
+		ContextualViewFactory<Datalink> {
 
 	public boolean canHandle(Object object) {
 		return object instanceof Datalink;

@@ -1026,6 +1026,7 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 					// For example, a processor port can be selected on the tree view of the 
 					// Workflow Explorer, but if current graph's portStyle is NONE (i.e. no 
 					// port details), then we cannot select the port node on the graph.
+					// FIXME Fix other port styles as well, e.g. BLOB etc.
 					if ((portStyle.equals(PortStyle.NONE)) && 
 							(dataflowElement instanceof ActivityInputPort || dataflowElement instanceof ActivityOutputPortImpl ))
 					{
@@ -1054,6 +1055,7 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 			// For example, a processor port can be selected on the tree view of the 
 			// Workflow Explorer, but if current graph's portStyle is NONE (i.e. no 
 			// port details), then we cannot select the port node on the graph.
+			// FIXME Fix other port styles as well, e.g. BLOB etc.
 			if ((portStyle.equals(PortStyle.NONE)) && 
 					(message.getElement() instanceof ActivityInputPort || message.getElement() instanceof ActivityOutputPortImpl ))
 			{

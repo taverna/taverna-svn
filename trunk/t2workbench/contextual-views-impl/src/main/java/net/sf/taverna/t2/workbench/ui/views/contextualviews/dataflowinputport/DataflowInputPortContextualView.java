@@ -8,6 +8,12 @@ import javax.swing.border.EmptyBorder;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 import net.sf.taverna.t2.workflowmodel.impl.DataflowInputPortImpl;
 
+/**
+ * Contextual view for dataflow's input ports.
+ * 
+ * @author Alex Nenadic
+ *
+ */
 public class DataflowInputPortContextualView extends ContextualView{
 	
 	private static final long serialVersionUID = -8746856072335775933L;

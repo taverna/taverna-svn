@@ -8,6 +8,12 @@ import javax.swing.border.EmptyBorder;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityOutputPortImpl;
 
+/**
+ * Contextual view for dataflow procerssor's output ports.
+ * 
+ * @author Alex Nenadic
+ *
+ */
 public class OutputPortContextualView extends ContextualView{
 
 	private static final long serialVersionUID = -7743029534480678624L;

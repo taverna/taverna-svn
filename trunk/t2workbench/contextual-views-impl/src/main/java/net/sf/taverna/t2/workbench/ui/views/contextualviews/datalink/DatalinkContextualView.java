@@ -8,6 +8,12 @@ import javax.swing.border.EmptyBorder;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 
+/**
+ * Contextual view for dataflow's datalinks.
+ * 
+ * @author Alex Nenadic
+ *
+ */
 public class DatalinkContextualView extends ContextualView {
 
 	private static final long serialVersionUID = -5031256519235454876L;
