@@ -25,6 +25,7 @@ import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
+import net.sf.taverna.t2.workflowmodel.processor.activity.NestedDataflow;
 
 public class Tools {
 
@@ -239,11 +240,24 @@ public class Tools {
 
 	public static Collection<Processor> getProcessorsWithActivityInputPort(
 			Dataflow dataflow, ActivityInputPort inputPort) {
+		
 		Set<Processor> processors = new HashSet<Processor>();
-		for (Processor processor : dataflow.getProcessors()) {
-			for (Activity<?> activity : processor.getActivityList()) {
-				if (activity.getInputPorts().contains(inputPort)) {
-					processors.add(processor);
+		for (Processor processor : dataflow.getProcessors()) {	
+			// Does it contain a nested workflow?
+			if (processor.getActivityList().get(0) instanceof NestedDataflow){
+				// Get the nested workflow
+				Dataflow nestedWorkflow = ((NestedDataflow) processor.getActivityList().get(0))
+						.getNestedDataflow();
+				Collection<Processor> nested_processors = getProcessorsWithActivityInputPort(
+						nestedWorkflow, inputPort);
+				if (!nested_processors.isEmpty())
+					processors.addAll(nested_processors);
+			}
+			else {
+				for (Activity<?> activity : processor.getActivityList()) {
+					if (activity.getInputPorts().contains(inputPort)) {
+						processors.add(processor);
+					}
 				}
 			}
 		}
