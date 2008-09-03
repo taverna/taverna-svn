@@ -2,28 +2,16 @@ package net.sf.taverna.t2.activities.beanshell.views;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-import java.util.Map.Entry;
 
-import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
-import net.sf.taverna.t2.workbench.configuration.mimetype.MimeTypeManager;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.MimeTypeConfig;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
@@ -51,11 +39,8 @@ public class BeanshellOutputViewer extends JPanel {
 	/** Whether the values in the bean can be edited */
 	private boolean editable;
 	// private final JList mimeDropList = new JList();
-	private JButton addMimeTypeButton;
+	
 	private JPanel mimeTypePanel;
-	private final JPopupMenu mimePopup = new JPopupMenu();
-	private final Vector<String> originalMimes = new Vector<String>();
-	private JList mimeList;
 	
 	private MimeTypeConfig mimeTypeConfig;
 	private JButton addMimeButton;
@@ -220,84 +205,6 @@ public class BeanshellOutputViewer extends JPanel {
 	 * @return
 	 */
 	public JPanel getMimeTypePanel() {
-		return mimeTypePanel;
-	}
-
-	@SuppressWarnings("serial")
-	private JPanel setMimeTypePanel() {
-
-		for (String mimeType : bean.getMimeTypes()) {
-			originalMimes.add(mimeType);
-		}
-
-		final Map<String, String> propertyMap = MimeTypeManager.getInstance()
-				.getPropertyMap();
-		Set<Entry<String, String>> mimeTypes = propertyMap.entrySet();
-		for (Entry<String,String> entry : mimeTypes) {
-			final JMenuItem item = new JMenuItem();
-			item.setText((String) entry.getValue());
-			item.addActionListener(new AbstractAction() {
-
-				public void actionPerformed(ActionEvent arg0) {
-					originalMimes.add((String) propertyMap.get(item.getText()));
-					mimeList.revalidate();
-					mimePopup.setVisible(false);
-				}
-
-			});
-			mimePopup.add(item);
-
-		}
-
-		mimeTypePanel = new JPanel();
-		mimeTypePanel.setLayout(new GridBagLayout());
-		GridBagConstraints mimeConstraint = new GridBagConstraints();
-		mimeConstraint.anchor = GridBagConstraints.FIRST_LINE_START;
-		mimeConstraint.gridx = 0;
-		mimeConstraint.gridy = 0;
-		mimeConstraint.weighty = 0;
-		mimeConstraint.weightx = 0.1;
-		mimeConstraint.fill = GridBagConstraints.BOTH;
-
-		addMimeTypeButton = new JButton();
-		addMimeTypeButton.setText("Add");
-		addMimeTypeButton.addMouseListener(new MouseListener() {
-
-			public void mouseClicked(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
-			public void mouseEntered(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
-			public void mouseExited(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
-			public void mousePressed(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
-			public void mouseReleased(MouseEvent arg0) {
-				mimePopup.show(arg0.getComponent(), arg0.getX(), arg0.getY());
-			}
-
-		});
-		mimeList = new JList(originalMimes);
-
-		mimeTypeText = new JTextArea();
-		String mimes = "";
-		mimeTypeText.setText(mimes);
-		mimeTypeText.setEditable(false);
-
-		mimeTypePanel.add(mimeList, mimeConstraint);
-		mimeConstraint.gridx = 1;
-		mimeTypePanel.add(addMimeTypeButton, mimeConstraint);
 		return mimeTypePanel;
 	}
 
