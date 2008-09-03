@@ -243,9 +243,9 @@ public class Tools {
 		
 		Set<Processor> processors = new HashSet<Processor>();
 		for (Processor processor : dataflow.getProcessors()) {	
-			/*
+			
 			// Does it contain a nested workflow?
-			if (processor.getActivityList().get(0) instanceof NestedDataflow){
+			if (containsNestedWorkflow(processor)) {
 				// Get the nested workflow
 				Dataflow nestedWorkflow = ((NestedDataflow) processor.getActivityList().get(0))
 						.getNestedDataflow();
@@ -254,14 +254,23 @@ public class Tools {
 				if (!nested_processors.isEmpty())
 					processors.addAll(nested_processors);
 			}
-			else {*/
+			else {
 				for (Activity<?> activity : processor.getActivityList()) {
+					
 					if (activity.getInputPorts().contains(inputPort)) {
 						processors.add(processor);
 					}
 				}
-			//}
+			}
 		}
 		return processors;
+	}
+	
+	/**
+	 * Returns true if processor contains a nested workflow.
+	 */
+	public static boolean containsNestedWorkflow(Processor processor){
+		return ((!processor.getActivityList().isEmpty()) &&
+				processor.getActivityList().get(0) instanceof NestedDataflow);
 	}
 }
