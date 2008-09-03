@@ -43,7 +43,7 @@ public class InvocationTestHelper extends DataflowTranslationHelper {
 	@Before
 	public void makeDataManager() {
 		ApplicationContext appContext = new RavenAwareClassPathXmlApplicationContext(
-		"inMemoryActivityTestsContext.xml");
+		"inMemoryIntegrationTestsContext.xml");
 		referenceService = (ReferenceService) appContext.getBean("t2reference.service.referenceService");
 		provenanceConnector = (ProvenanceConnector) appContext.getBean("provenanceConnector");
 		
