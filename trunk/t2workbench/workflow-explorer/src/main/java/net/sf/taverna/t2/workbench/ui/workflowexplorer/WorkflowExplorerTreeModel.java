@@ -12,6 +12,7 @@ import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.utils.Tools;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.NestedDataflow;
 import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityInputPortImpl;
@@ -94,7 +95,7 @@ public class WorkflowExplorerTreeModel extends DefaultTreeModel{
 				processors.add(processorNode);
 				
 				// Nested workflow case
-				if (containsNestedWorkflow(processor)){
+				if (Tools.containsNestedWorkflow(processor)){
 					
 					Dataflow nestedWorkflow = ((NestedDataflow) processor.getActivityList().get(0)).getNestedDataflow();
 					
@@ -144,7 +145,7 @@ public class WorkflowExplorerTreeModel extends DefaultTreeModel{
 			for (int i = 0; i < processors.getChildCount(); i++){
 				DefaultMutableTreeNode processor = (DefaultMutableTreeNode) processors.getChildAt(i);
 				// If this is a nested workflow - descend into it
-				if (containsNestedWorkflow((Processor) processor.getUserObject())){
+				if (Tools.containsNestedWorkflow((Processor) processor.getUserObject())){
 					TreePath tp = getPathForObject(userObject, processor);
 					if (tp != null)
 						return tp;
@@ -165,7 +166,7 @@ public class WorkflowExplorerTreeModel extends DefaultTreeModel{
 			for (int i = 0; i < processors.getChildCount(); i++){
 				DefaultMutableTreeNode processor = (DefaultMutableTreeNode) processors.getChildAt(i);
 				// If this is a nested workflow - descend into it
-				if (containsNestedWorkflow((Processor) processor.getUserObject())){
+				if (Tools.containsNestedWorkflow((Processor) processor.getUserObject())){
 					TreePath tp = getPathForObject(userObject, processor);
 					if (tp != null)
 						return tp;				}
@@ -184,7 +185,7 @@ public class WorkflowExplorerTreeModel extends DefaultTreeModel{
 			for (int i = 0; i < processors.getChildCount(); i++){
 				DefaultMutableTreeNode processor = (DefaultMutableTreeNode) processors.getChildAt(i);
 				// If this is a nested workflow - descend into it
-				if (containsNestedWorkflow((Processor) processor.getUserObject())){
+				if (Tools.containsNestedWorkflow((Processor) processor.getUserObject())){
 					TreePath tp = getPathForObject(userObject, processor);
 					if (tp != null)
 						return tp;				}
@@ -198,7 +199,7 @@ public class WorkflowExplorerTreeModel extends DefaultTreeModel{
 			for (int i = processors.getChildCount() - 1; i >= 0 ; i--){
 				// Looping backwards so that nested workflows are checked last
 				DefaultMutableTreeNode processor = (DefaultMutableTreeNode) processors.getChildAt(i);
-				if (containsNestedWorkflow((Processor) processor.getUserObject())){ // if this is nested workflow - descend into it
+				if (Tools.containsNestedWorkflow((Processor) processor.getUserObject())){ // if this is nested workflow - descend into it
 					TreePath tp = getPathForObject(userObject, processor);
 					if ( tp != null){
 						return tp;
@@ -225,7 +226,7 @@ public class WorkflowExplorerTreeModel extends DefaultTreeModel{
 			for (int i = processors.getChildCount() - 1; i >= 0 ; i--){
 				// Looping backwards so that nested workflows are checked last
 				DefaultMutableTreeNode processor = (DefaultMutableTreeNode) processors.getChildAt(i);
-				if (containsNestedWorkflow((Processor) processor.getUserObject())){ // if this is nested workflow - descend into it
+				if (Tools.containsNestedWorkflow((Processor) processor.getUserObject())){ // if this is nested workflow - descend into it
 					TreePath tp = getPathForObject(userObject, processor);
 					if ( tp != null){
 						return tp;
@@ -260,7 +261,7 @@ public class WorkflowExplorerTreeModel extends DefaultTreeModel{
 			for (int i = 0; i < processors.getChildCount(); i++){
 				DefaultMutableTreeNode processor = (DefaultMutableTreeNode) processors.getChildAt(i);
 				// If this is a nested workflow - descend into it
-				if (containsNestedWorkflow((Processor) processor.getUserObject())){
+				if (Tools.containsNestedWorkflow((Processor) processor.getUserObject())){
 					TreePath tp = getPathForObject(userObject, processor);
 					if (tp != null)
 						return tp;				
@@ -269,13 +270,6 @@ public class WorkflowExplorerTreeModel extends DefaultTreeModel{
 		}
 		
 		return null;
-	}
-	
-	/**
-	 * Returns true if processor contains a nested workflow.
-	 */
-	private static boolean containsNestedWorkflow(Processor processor){
-		return (processor.getActivityList().get(0) instanceof NestedDataflow);
 	}
 	
 }
