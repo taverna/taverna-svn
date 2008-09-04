@@ -241,6 +241,7 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 			ameTree.setDragEnabled(false);
 			ameTree.setScrollsOnExpand(false);
 			ameTree.setCellRenderer(new WorkflowExplorerTreeCellRenderer());
+			ameTree.setSelectionModel(new WorkflowExplorerTreeSelectionModel());
 			ameTree.addMouseListener(new MouseAdapter(){
 								
 				public void mouseClicked(MouseEvent evt){
@@ -267,7 +268,9 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 									selectedNode.getUserObject().toString().equals(WorkflowExplorerTreeModel.PROCESSORS) ||
 									selectedNode.getUserObject().toString().equals(WorkflowExplorerTreeModel.DATALINKS)){
 								selectionModel.clearSelection();
-								ameTree.setSelectionPath(selectionPath);
+								((WorkflowExplorerTreeSelectionModel) ameTree
+										.getSelectionModel())
+										.mySetSelectionPath(selectionPath);
 							}
 							else{
 								selectionModel.addSelection(selectedNode.getUserObject());
