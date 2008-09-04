@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
-
 import net.sf.taverna.t2.workflowmodel.CompoundEdit;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Datalink;
