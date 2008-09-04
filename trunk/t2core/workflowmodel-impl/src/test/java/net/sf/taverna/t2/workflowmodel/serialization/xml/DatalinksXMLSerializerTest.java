@@ -58,7 +58,7 @@ public class DatalinksXMLSerializerTest implements XMLSerializationConstants {
 		ProcessorOutputPort oPort = edits.createProcessorOutputPort(p, "output", 0, 0);
 		edits.getAddProcessorInputPortEdit(p2, iPort).doEdit();
 		edits.getAddProcessorOutputPortEdit(p, oPort).doEdit();
-		Merge m = edits.createMerge(p2.getInputPorts().get(0));
+		Merge m = edits.createMerge(df);
 		edits.getAddMergeEdit(df, m).doEdit();
 
 		edits.getConnectMergedDatalinkEdit(m, p.getOutputPorts().get(0),

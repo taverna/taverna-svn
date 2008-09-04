@@ -22,7 +22,7 @@ public class MergeImpl implements Merge {
 	public MergeImpl(String mergeName) {
 		super();
 		this.name = mergeName;
-		this.output = new MergeOutputPortImpl(this, "merged", 0, 0);
+		this.output = new MergeOutputPortImpl(this, name+"_output", 0, 0);
 	}
 
 	public String getLocalName() {

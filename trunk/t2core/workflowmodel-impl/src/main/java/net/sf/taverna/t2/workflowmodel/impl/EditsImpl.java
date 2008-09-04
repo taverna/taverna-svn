@@ -181,11 +181,29 @@ public class EditsImpl implements Edits {
 	}
 
 	/**
-	 * Creates a MergeImpl instance, using the sinkPort to generate its name,
-	 * which is the name of the port appended with 'Merge'.
+	 * Creates a MergeImpl instance. Merge names are generated as 'Merge0',
+	 * 'Merge1', 'Merge2', etc. The next merge to be added always gets the 
+	 *  name as the previous merge in the list with its index incremented by one.
+	 *  If a merge is deleted, that is not taken into account when generating merges'
+	 *  names.
 	 */
-	public Merge createMerge(EventHandlingInputPort sinkPort) {
-		String mergeName = sinkPort.getName() + "Merge";
+	public Merge createMerge(Dataflow dataflow) {
+
+		String mergeName; 
+		
+		// Get all merges for a workflow
+		List<? extends Merge> merges = (List<? extends Merge>) dataflow.getMerges();
+		
+		if (merges.isEmpty()){
+			mergeName = "Merge0"; //the first merge to be added to the list
+		}
+		else{
+			String lastMergeName = merges.get(merges.size() - 1).getLocalName();
+			// Get the index of the last Merge
+			int lastMergeIndex = Integer.parseInt(lastMergeName.substring(5));
+			mergeName = "Merge" + String.valueOf((lastMergeIndex+1));
+		}
+		
 		return new MergeImpl(mergeName);
 	}
 

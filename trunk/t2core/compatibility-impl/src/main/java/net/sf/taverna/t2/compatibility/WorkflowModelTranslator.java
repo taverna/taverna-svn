@@ -583,7 +583,7 @@ public class WorkflowModelTranslator {
 			throws EditException, WorkflowTranslationException {
 		Merge merge = null;
 		if (sinkPort.getIncomingLink() == null) {
-			merge = edits.createMerge(sinkPort);
+			merge = edits.createMerge(targetDataflow);
 			// Add to the dataflow
 			edits.getAddMergeEdit(targetDataflow, merge).doEdit();
 		} else {

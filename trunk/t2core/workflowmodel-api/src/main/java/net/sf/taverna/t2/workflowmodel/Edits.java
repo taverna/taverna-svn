@@ -80,13 +80,12 @@ public interface Edits {
 			EventHandlingInputPort sink);
 
 	/**
-	 * @param sinkPort
-	 * @return an instance of Merge, using the sink port to generate the Merge
-	 *         name.
+	 * @param dataflow
+	 * @return an instance of Merge
 	 * 
 	 * @see Merge
 	 */
-	public Merge createMerge(EventHandlingInputPort sinkPort);
+	public Merge createMerge(Dataflow dataflow);
 
 	/**
 	 * Builds a new MergeOutputPort.

@@ -64,7 +64,7 @@ public class DatalinksXMLDeserializer extends AbstractXMLDeserializer {
 			if (sinkType.equals(DATALINK_TYPES.MERGE.toString())) {
 				Merge merge;
 				if (sinkPort.getIncomingLink() == null) {
-					merge = edits.createMerge(sinkPort);
+					merge = edits.createMerge(dataflow);
 					edits.getAddMergeEdit(dataflow, merge).doEdit();
 				} else {
 					if (sinkPort.getIncomingLink().getSource() instanceof MergeOutputPort) {

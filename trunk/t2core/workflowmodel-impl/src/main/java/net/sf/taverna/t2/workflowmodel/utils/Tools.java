@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
+
 import net.sf.taverna.t2.workflowmodel.CompoundEdit;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Datalink;
@@ -59,16 +61,17 @@ public class Tools {
 			List<Edit<?>> editList = new ArrayList<Edit<?>>();
 
 			Merge merge = null;
+			int counter = 0; // counter for merge input port names
 			if (incomingLink.getSource() instanceof MergeOutputPort) {
 				merge = ((MergeOutputPort) incomingLink.getSource()).getMerge();
 			} else {
-				merge = edits.createMerge(sink);
+				merge = edits.createMerge(dataflow);
 				editList.add(edits.getAddMergeEdit(dataflow, merge));
 				editList.add(edits.getDisconnectDatalinkEdit(incomingLink));
 				MergeInputPort mergeInputPort = edits.createMergeInputPort(
 						merge, getUniqueMergeInputPortName(merge, incomingLink
 								.getSource().getName()
-								+ "_toMerge", 0), incomingLink.getSink()
+								+ "To" + merge.getLocalName() + "_input", counter++), incomingLink.getSink()
 								.getDepth());
 				editList.add(edits.getAddMergeInputPortEdit(merge,
 						mergeInputPort));
@@ -81,7 +84,7 @@ public class Tools {
 			}
 			MergeInputPort mergeInputPort = edits.createMergeInputPort(merge,
 					getUniqueMergeInputPortName(merge, source.getName()
-							+ "_toMerge", 0), sink.getDepth());
+							+ "To" + merge.getLocalName() + "_input", counter), sink.getDepth());
 			editList.add(edits.getAddMergeInputPortEdit(merge, mergeInputPort));
 			Datalink datalink = edits.createDatalink(source, mergeInputPort);
 			editList.add(edits.getConnectDatalinkEdit(datalink));
