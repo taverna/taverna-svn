@@ -9,7 +9,9 @@ import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
@@ -74,7 +76,11 @@ public class ContextualViewComponent extends JPanel implements UIComponentSPI {
 
 		panel = new JPanel(new BorderLayout());
 		add(panel, BorderLayout.CENTER);
-
+		
+		JLabel title = new JLabel("Contextual View");
+		title.setBorder(new EmptyBorder(0,5,5,5));
+		add(title, BorderLayout.NORTH);
+		
 		configureButtonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		configureButtonPanel.add(configureButton);
 		configureButton.setEnabled(false);
