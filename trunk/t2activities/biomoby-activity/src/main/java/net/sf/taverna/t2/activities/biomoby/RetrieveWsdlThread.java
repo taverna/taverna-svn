@@ -1,3 +1,7 @@
+/*******************************************************************************
+ * This file is a component of the Taverna project, and is licensed  under the
+ *  GNU LGPL. Copyright Edward Kawas, The BioMoby Project
+ ******************************************************************************/
 /*
  * This file is a component of the Taverna project,
  * and is licensed under the GNU LGPL.

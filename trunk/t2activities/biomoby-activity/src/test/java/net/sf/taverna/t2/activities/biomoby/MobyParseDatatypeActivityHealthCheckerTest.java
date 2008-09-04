@@ -1,3 +1,7 @@
+/*******************************************************************************
+ * This file is a component of the Taverna project, and is licensed  under the
+ *  GNU LGPL. Copyright Edward Kawas, The BioMoby Project
+ ******************************************************************************/
 package net.sf.taverna.t2.activities.biomoby;
 
 import static org.junit.Assert.assertFalse;

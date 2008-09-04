@@ -1,3 +1,7 @@
+/*******************************************************************************
+ * This file is a component of the Taverna project, and is licensed  under the
+ *  GNU LGPL. Copyright Edward Kawas, The BioMoby Project
+ ******************************************************************************/
 /*
  * This file is a component of the Taverna project,
  * and is licensed under the GNU LGPL.
@@ -40,7 +44,7 @@ import org.biomoby.shared.MobyException;
  * <p>
  * 
  * @author <A HREF="mailto:martin.senger@gmail.com">Martin Senger</A>
- * @version $Id: CacheImpl.java,v 1.1 2008-06-27 14:44:04 sowen70 Exp $
+ * @version $Id: CacheImpl.java,v 1.2 2008-09-04 13:42:16 sowen70 Exp $
  */
 
 public class CacheImpl {
