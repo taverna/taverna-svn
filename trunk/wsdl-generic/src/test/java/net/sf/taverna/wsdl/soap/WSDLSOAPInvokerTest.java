@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvokerTest.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-08-08 10:29:01 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2008-09-04 11:53:41 $
+ *               by   $Author: sowen70 $
  * Created on 04-May-2006
  *****************************************************************/
 package net.sf.taverna.wsdl.soap;
@@ -51,7 +51,6 @@ import org.junit.Test;
 
 public class WSDLSOAPInvokerTest  implements LocationConstants {
 
-	@Ignore("Integration test")
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testPrimitive() throws Exception {
@@ -86,7 +85,6 @@ public class WSDLSOAPInvokerTest  implements LocationConstants {
 
 	}
 
-	@Ignore("Integration test")
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testComplexDocStyle() throws Exception {
@@ -157,6 +155,7 @@ public class WSDLSOAPInvokerTest  implements LocationConstants {
 				thing.getClass());
 
 	}
+
 	@Ignore
 	@SuppressWarnings("unchecked")
 	@Test
@@ -177,7 +176,6 @@ public class WSDLSOAPInvokerTest  implements LocationConstants {
 				.get("getDatabasesWithDetailsReturn"));
 	}
 
-	@Ignore("Integration test")
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testSOAPEncoded() throws Exception {
@@ -228,7 +226,6 @@ public class WSDLSOAPInvokerTest  implements LocationConstants {
 
 	// can't always assume the return will be nested in a tag named the same as
 	// the output message part.
-	@Ignore("Integration test")
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testEncodedDifferentOutputName() throws Exception {
