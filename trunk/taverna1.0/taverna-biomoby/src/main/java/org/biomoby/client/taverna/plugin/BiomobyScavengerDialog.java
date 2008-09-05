@@ -6,10 +6,16 @@
 package org.biomoby.client.taverna.plugin;
 
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.biomoby.registry.meta.Registries;
+import org.biomoby.registry.meta.RegistriesList;
+import org.biomoby.shared.MobyException;
 import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 
 /**
@@ -28,8 +34,39 @@ public class BiomobyScavengerDialog extends JPanel {
      */
     public BiomobyScavengerDialog() {
         super();
-        GridLayout layout = new GridLayout(3, 2);
+        GridLayout layout = new GridLayout(5, 2);
         setLayout(layout);
+        // a combo box showing known registries
+        final Registries regs = RegistriesList.getInstance();
+        JComboBox regList = new JComboBox (regs.list());
+        regList.setToolTipText ("A selection will fill text fields below");
+	regList.setSelectedItem (Registries.DEFAULT_REGISTRY_SYNONYM);
+	regList.addActionListener (new ActionListener() {
+		public void actionPerformed (ActionEvent e) {
+		    String contents =  (String)((JComboBox)e.getSource()).getSelectedItem();
+		    
+		    org.biomoby.registry.meta.Registry theReg = null;
+		    try {
+			theReg = regs.get (contents);
+		    } catch (MobyException ee) {
+			try {
+			    theReg = regs.get (null);
+			} catch (MobyException ee2) {
+			    
+			}
+		    }
+		    if (theReg != null) {
+			
+			registryEndpoint.setText (theReg.getEndpoint());
+			registryURI.setText (theReg.getNamespace());
+
+		    }
+		}
+	    });
+	add(new ShadedLabel("Choose a registry from the list: ", ShadedLabel.TAVERNA_BLUE, true));
+        add(regList);
+        add(new ShadedLabel("Or enter your own below,", ShadedLabel.TAVERNA_BLUE, true));
+        add(new ShadedLabel("", ShadedLabel.TAVERNA_BLUE, true));
         add(new ShadedLabel("Location (URL) of your BioMoby central registry: ", ShadedLabel.TAVERNA_BLUE, true));
         registryEndpoint.setToolTipText("BioMoby Services will be retrieved from the endpoint that you specify here!");
         add(registryEndpoint);
@@ -40,6 +77,8 @@ public class BiomobyScavengerDialog extends JPanel {
         setPreferredSize(this.getPreferredSize());
         setMinimumSize(this.getPreferredSize());
         setMaximumSize(this.getPreferredSize());
+        
+        
     }
 
     /**

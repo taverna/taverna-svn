@@ -13,7 +13,7 @@ import java.util.Iterator;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.biomoby.client.ui.graphical.applets.shared.Household;
+import org.biomoby.client.taverna.plugin.Household;
 import org.biomoby.shared.MobyException;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;

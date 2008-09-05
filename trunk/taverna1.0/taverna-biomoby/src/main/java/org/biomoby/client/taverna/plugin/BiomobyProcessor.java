@@ -40,7 +40,7 @@ import org.embl.ebi.escience.scuflworkers.HTMLSummarisableProcessor;
  * extant ports at creation time.
  * <p>
  * 
- * @version $Id: BiomobyProcessor.java,v 1.4 2007-12-13 07:32:24 edwardkawas Exp $
+ * @version $Id: BiomobyProcessor.java,v 1.5 2008-09-05 14:34:39 edwardkawas Exp $
  * @author Martin Senger
  */
 public class BiomobyProcessor extends Processor implements java.io.Serializable, HTMLSummarisableProcessor {
@@ -105,6 +105,7 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable,
 		this.serviceName = service.getName();
 		this.authorityName = service.getAuthority();
 		this.mobyService = service;
+		
 		if (this.isOffline() == false) {
 			init();
 		} else {
@@ -226,7 +227,7 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable,
 	public void generatePorts() throws ProcessorCreationException, PortCreationException, DuplicatePortNameException {
 
 		// Wipe the existing port declarations
-		ports = new ArrayList();
+		ports = new ArrayList<Port>();
 
 		// inputs TODO - find a better way to deal with collections
 		MobyData[] serviceInputs = this.mobyService.getPrimaryInputs();

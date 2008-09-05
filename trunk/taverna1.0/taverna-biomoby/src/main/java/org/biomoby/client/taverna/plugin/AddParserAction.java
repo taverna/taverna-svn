@@ -351,7 +351,7 @@ public class AddParserAction extends AbstractProcessorAction {
          * @see org.embl.ebi.escience.scuflui.processoractions.ProcessorActionSPI#getIcon()
          */
     public ImageIcon getIcon() {
-	Class cls = this.getClass();
+	Class<?> cls = this.getClass();
 	URL url = cls.getClassLoader().getResource(
 		"org/biomoby/client/taverna/plugin/Cut24.gif");
 	return new ImageIcon(url);
@@ -371,8 +371,8 @@ public class AddParserAction extends AbstractProcessorAction {
          * @param loc
          *                the location of the image to use as an icon
          */
-    public ImageIcon getIcon(String loc) {
-	Class cls = this.getClass();
+    private ImageIcon getIcon(String loc) {
+	Class<?> cls = this.getClass();
 	URL url = cls.getClassLoader().getResource(loc);
 	return new ImageIcon(url);
     }

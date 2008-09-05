@@ -534,7 +534,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 															.getFrameLocation();
 													Dimension size = BiomobyAction.this
 															.getFrameSize();
-													UIComponentSPI frame = new SimpleFrame(c, bop);
+													UIComponentSPI frame = new SimpleActionFrame(c, BiomobyAction.this, "Moby Object Details");
 													UIUtils.createFrame((ScuflModel) null, frame,
 															(int) loc.getWidth(), (int) loc
 																	.getHeight(), (int) size
@@ -644,7 +644,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 															.getFrameLocation();
 													Dimension size = BiomobyAction.this
 															.getFrameSize();
-													UIComponentSPI frame = new SimpleFrame(c, bop);
+													UIComponentSPI frame = new SimpleActionFrame(c,BiomobyAction.this, "Moby Object Details");
 													UIUtils.createFrame((ScuflModel) null, frame,
 															(int) loc.getWidth(), (int) loc
 																	.getHeight(), (int) size
@@ -790,7 +790,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 		return thePanel;
 	}
 
-	private class SimpleFrame extends JPanel implements UIComponentSPI {
+/*	private class SimpleFrame extends JPanel implements UIComponentSPI {
 
 		private static final long serialVersionUID = -6611234116434482238L;
 
@@ -800,10 +800,6 @@ public class BiomobyAction extends AbstractProcessorAction {
 			super(new BorderLayout());
 			add(c, BorderLayout.CENTER);
 			this.processor = p;
-			// setPreferredSize(c.getPreferredSize());
-			// setMinimumSize(c.getMinimumSize());
-			// setMaximumSize(c.getMaximumSize());
-			// setPreferredSize(new Dimension(0,0));
 		}
 
 		public ImageIcon getIcon() {
@@ -815,7 +811,6 @@ public class BiomobyAction extends AbstractProcessorAction {
 		}
 
 		public void onDisplay() {
-			// TODO Auto-generated method stub
 			
 		}
 
@@ -823,7 +818,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 			BiomobyAction.this.frameClosing();
 		}
 	}
-
+*/
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -848,7 +843,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 	 * @see org.embl.ebi.escience.scuflui.processoractions.ProcessorActionSPI#getIcon()
 	 */
 	public ImageIcon getIcon() {
-		Class cls = this.getClass();
+		Class<?> cls = this.getClass();
 		URL url = cls.getClassLoader().getResource(
 				"org/biomoby/client/taverna/plugin/moby_small.gif");
 		return new ImageIcon(url);
@@ -869,7 +864,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 	 *            the location of the image to use as an icon
 	 */
 	public ImageIcon getIcon(String loc) {
-		Class cls = this.getClass();
+		Class<?> cls = this.getClass();
 		URL url = cls.getClassLoader().getResource(loc);
 		return new ImageIcon(url);
 	}
