@@ -110,7 +110,7 @@ public class DataflowActivityContextualView extends
 	@Override
 	protected String getRawTableRowsHtml() {
 
-		return (getActivity()).getConfiguration().getLocalName();
+		return ("<tr><td colspan=2>" + getActivity().getConfiguration().getLocalName() + "</td></tr>");
 	}
 
 	@Override
