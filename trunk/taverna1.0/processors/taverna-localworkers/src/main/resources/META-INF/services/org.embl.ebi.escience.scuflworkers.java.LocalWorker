@@ -24,4 +24,5 @@ org.embl.ebi.escience.scuflworkers.java.FailIfTrue
 org.embl.ebi.escience.scuflworkers.java.FailIfFalse
 org.embl.ebi.escience.scuflworkers.java.ByteArrayToString
 org.embl.ebi.escience.scuflworkers.java.SliceList
+org.embl.ebi.escience.scuflworkers.java.ReadFilesFromDirectory
 
