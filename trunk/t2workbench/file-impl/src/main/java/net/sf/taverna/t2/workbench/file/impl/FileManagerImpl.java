@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.swing.filechooser.FileFilter;
 
@@ -286,6 +287,7 @@ public class FileManagerImpl extends FileManager {
 	 */
 	@Override
 	public void openDataflow(Dataflow dataflow) {
+		
 		openDataflowInternal(dataflow);
 		observers.notify(new OpenedDataflowEvent(dataflow));
 	}
@@ -296,8 +298,10 @@ public class FileManagerImpl extends FileManager {
 	@Override
 	public Dataflow openDataflow(FileType fileType, Object source)
 			throws OpenException {
+		
 		Set<DataflowPersistenceHandler> handlers;
 		Class<? extends Object> sourceClass = source.getClass();
+		
 		if (fileType != null) {
 			handlers = persistanceHandlerRegistry.getOpenHandlersFor(fileType,
 					sourceClass);
@@ -556,6 +560,18 @@ public class FileManagerImpl extends FileManager {
 				observers.notify(new SetCurrentDataflowEvent(newModel));
 			}
 		}
+	}
+
+	@Override
+	public Dataflow getDataflowBySource(Object source) {
+		for (Entry<Dataflow,OpenDataflowInfo> infoEntry : openDataflowInfos.entrySet()) {
+			OpenDataflowInfo info = infoEntry.getValue();
+			if (source.equals(info.getSource())) {
+				return infoEntry.getKey();
+			}
+		}
+		// Not found
+		return null;
 	}
 
 }

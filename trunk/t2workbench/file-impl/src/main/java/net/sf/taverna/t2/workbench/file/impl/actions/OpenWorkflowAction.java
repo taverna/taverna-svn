@@ -23,6 +23,8 @@ package net.sf.taverna.t2.workbench.file.impl.actions;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -36,6 +38,7 @@ import javax.swing.filechooser.FileFilter;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.file.FileType;
 import net.sf.taverna.t2.workbench.file.exceptions.OpenException;
+import net.sf.taverna.t2.workbench.file.impl.FileDataflowInfo;
 import net.sf.taverna.t2.workbench.file.impl.FileTypeFileFilter;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -50,6 +53,8 @@ import org.apache.log4j.Logger;
  * 
  */
 public class OpenWorkflowAction extends AbstractAction {
+
+	private static final long serialVersionUID = 103237694130052153L;
 
 	private static Logger logger = Logger.getLogger(OpenWorkflowAction.class);
 
@@ -117,7 +122,37 @@ public class OpenWorkflowAction extends AbstractAction {
 		ErrorLoggingOpenCallbackWrapper callback = new ErrorLoggingOpenCallbackWrapper(
 				openCallback);
 		for (final File file : files) {
+
 			try {
+				Object canonicalSource = getCanonical(file);
+				Dataflow alreadyOpen = fileManager.getDataflowBySource(canonicalSource);
+				if (alreadyOpen != null) {
+					// The workflow from the same source is already opened -
+					// ask the user if they want to switch to it or open another copy;
+
+					Object[] options = { "Switch to opened", "Open new copy",
+							"Cancel" };
+					int iSelected = JOptionPane
+							.showOptionDialog(
+									null,
+									"The workflow from the same location is already opened.\n"
+											+ "Do you want to switch to it or open a new copy?",
+									"File Manager Alert",
+									JOptionPane.YES_NO_CANCEL_OPTION,
+									JOptionPane.QUESTION_MESSAGE, null,
+									options, // the titles of buttons
+									options[0]); // default button title
+
+					if (iSelected == JOptionPane.YES_OPTION) {
+						fileManager.setCurrentDataflow(alreadyOpen);
+						return;
+					} else if (iSelected == JOptionPane.CANCEL_OPTION) {
+						// do nothing
+						return;
+					}
+					// else open the workflow as usual
+				}
+
 				callback.aboutToOpenDataflow(file);
 				Dataflow dataflow = fileManager.openDataflow(fileType, file);
 				callback.openedDataflow(file, dataflow);
@@ -369,6 +404,32 @@ public class OpenWorkflowAction extends AbstractAction {
 			}
 		}
 
+	}
+	
+	/**
+	 * Returns the canonical form of the source where the dataflow was opened
+	 * from or saved to. The code for this method was devised based on
+	 * {@link net.sf.taverna.t2.workbench.file.impl.T2DataflowOpener#openDataflow(FileType fileType, Object source)}.
+	 */
+	public static Object getCanonical(Object source) throws IllegalArgumentException{
+		
+		Object canonicalSource = source;
+		
+		if (source instanceof URL){
+			URL url = ((URL) source);
+			if (url.getProtocol().equalsIgnoreCase("file")) {
+				try {
+					canonicalSource = new File(url.toURI());
+				} catch (URISyntaxException e) {
+					logger.warn("Invalid file URI created from " + url);
+				}
+			}
+		}
+		
+		if (canonicalSource instanceof File) {
+			canonicalSource = FileDataflowInfo.canonicalFile((File) canonicalSource);
+		}
+		return canonicalSource;
 	}
 
 }

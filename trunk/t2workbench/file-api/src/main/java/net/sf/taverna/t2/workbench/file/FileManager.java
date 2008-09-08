@@ -189,6 +189,17 @@ public abstract class FileManager implements Observable<FileManagerEvent> {
 	public abstract Dataflow getCurrentDataflow();
 
 	/**
+	 * Get the dataflow that was opened from or last saved to the given source.
+	 * 
+	 * @param source
+	 *            The source as opened with or saved to
+	 *            {@link #openDataflow(FileType, Object)}
+	 * @return The opened {@link Dataflow} or <code>null</code> if no matching
+	 *         dataflow found.
+	 */
+	public abstract Dataflow getDataflowBySource(Object source);
+	
+	/**
 	 * Get the last opened/saved source/destination for the given dataflow.
 	 * <p>
 	 * The source is the last source used with
@@ -280,7 +291,7 @@ public abstract class FileManager implements Observable<FileManagerEvent> {
 	 */
 	public abstract List<FileFilter> getSaveFileFilters(
 			Class<?> destinationClass);
-
+	
 	/**
 	 * Return <code>true</code> if the dataflow has been changed (through the
 	 * {@link EditManager} or {@link #setDataflowChanged(Dataflow, boolean)})

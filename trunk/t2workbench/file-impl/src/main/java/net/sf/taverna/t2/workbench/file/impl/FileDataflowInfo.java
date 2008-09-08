@@ -56,7 +56,7 @@ public class FileDataflowInfo extends DataflowInfo {
 		return new Date(lastModifiedLong);
 	}
 
-	protected static File canonicalFile(File file) {
+	public static File canonicalFile(File file) {
 		try {
 			return file.getCanonicalFile();
 		} catch (IOException e) {
