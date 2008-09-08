@@ -176,7 +176,7 @@ public class Launcher {
 	protected void removeSplashScreenListener() {
 		if (splash != null) {
 			splash.removeListener();
-			splash.setText("Starting application..");
+			splash.setText("Starting application...");
 		}
 	}
 
