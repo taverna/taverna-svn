@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 import net.sf.taverna.t2.activities.dataflow.DataflowActivity;
 import net.sf.taverna.t2.activities.dataflow.filemanager.NestedDataflowSource;
@@ -32,7 +33,7 @@ import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
 import net.sf.taverna.t2.workbench.file.exceptions.UnsavedException;
 import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
-import net.sf.taverna.t2.workbench.file.impl.actions.OpenWorkflowAction;
+import net.sf.taverna.t2.workbench.file.impl.actions.OpenNestedWorkflowAction;
 import net.sf.taverna.t2.workbench.file.impl.actions.OpenWorkflowAction.OpenCallbackAdapter;
 import net.sf.taverna.t2.workbench.file.impl.actions.OpenWorkflowAction.OpenCallback;
 import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationAction;
@@ -43,12 +44,14 @@ import org.apache.log4j.Logger;
 public class DataflowActivityConfigurationAction extends
 		ActivityConfigurationAction<DataflowActivity, Dataflow> {
 
+	private static final long serialVersionUID = 1L;
+
 	private static Logger logger = Logger
 			.getLogger(DataflowActivityConfigurationAction.class);
 
 	private FileManager fileManager = FileManager.getInstance();
 
-	private OpenWorkflowAction openWorkflowAction = new OpenWorkflowAction();
+	private OpenNestedWorkflowAction openNestedWorkflowAction = new OpenNestedWorkflowAction();
 
 	public DataflowActivityConfigurationAction(DataflowActivity activity) {
 		super(activity);
@@ -66,7 +69,23 @@ public class DataflowActivityConfigurationAction extends
 		} else {
 			parentComponent = null;
 		}
-		openWorkflowAction.openWorkflows(parentComponent,
+		NestedDataflowSource nestedDataflowSource = new NestedDataflowSource(
+				fileManager.getCurrentDataflow(), getActivity());
+		
+		Dataflow alreadyOpen = fileManager.getDataflowBySource(nestedDataflowSource);
+		if (alreadyOpen != null) {
+			fileManager.setCurrentDataflow(alreadyOpen);
+			// Warn the user the nested workflow they are trying to replace is already opened
+			JOptionPane.showMessageDialog(
+							null,
+							"The nested workflow you are trying to replace is already opened.\n"
+									+ "Close the opened one first if you wish to continue.",
+							"File Manager Alert",
+							JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+		
+		openNestedWorkflowAction.openWorkflows(parentComponent,
 				new SetNestedWorkflowOpenCallback(fileManager
 						.getCurrentDataflow()));
 	}
@@ -84,6 +103,7 @@ public class DataflowActivityConfigurationAction extends
 		public void openedDataflow(File file, Dataflow dataflow) {
 			NestedDataflowSource nestedDataflowSource = new NestedDataflowSource(
 					owningDataflow, getActivity());
+			
 			try {
 				fileManager.saveDataflow(dataflow, new T2FlowFileType(),
 						nestedDataflowSource, false);

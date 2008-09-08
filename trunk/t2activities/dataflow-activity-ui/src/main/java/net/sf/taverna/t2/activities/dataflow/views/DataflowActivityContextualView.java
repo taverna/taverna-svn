@@ -48,6 +48,8 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 public class DataflowActivityContextualView extends
 		HTMLBasedActivityContextualView<Dataflow> {
 
+	private static final long serialVersionUID = -552783425303398911L;
+
 	private static Logger logger = Logger
 			.getLogger(DataflowActivityContextualView.class);
 
@@ -66,10 +68,19 @@ public class DataflowActivityContextualView extends
 		JButton viewWorkflowButton = new JButton("Edit workflow");
 		viewWorkflowButton.addActionListener(new AbstractAction() {
 
+			private static final long serialVersionUID = -2561346588592416137L;
+
 			public void actionPerformed(ActionEvent e) {
 				NestedDataflowSource nestedDataflowSource = new NestedDataflowSource(
 						fileManager.getCurrentDataflow(), getActivity());
 
+				Dataflow alreadyOpen = fileManager.getDataflowBySource(nestedDataflowSource);
+				if (alreadyOpen != null) {
+					// The nested workflow is already opened - switch to it
+					fileManager.setCurrentDataflow(alreadyOpen);
+					return;
+				}
+				 
 				try {
 					fileManager.openDataflow(T2_FLOW_FILE_TYPE,
 							nestedDataflowSource);

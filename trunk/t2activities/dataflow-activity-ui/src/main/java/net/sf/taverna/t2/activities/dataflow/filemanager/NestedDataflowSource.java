@@ -51,7 +51,42 @@ public class NestedDataflowSource {
 		return dataflowActivity;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime
+				* result
+				+ ((dataflowActivity == null) ? 0 : dataflowActivity.hashCode());
+		result = prime * result
+				+ ((parentDataflow == null) ? 0 : parentDataflow.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final NestedDataflowSource other = (NestedDataflowSource) obj;
+		if (dataflowActivity == null) {
+			if (other.dataflowActivity != null)
+				return false;
+		} else if (!dataflowActivity.equals(other.dataflowActivity))
+			return false;
+		if (parentDataflow == null) {
+			if (other.parentDataflow != null)
+				return false;
+		} else if (!parentDataflow.equals(other.parentDataflow))
+			return false;
+		return true;
+	}
+
 	public Dataflow getParentDataflow() {
 		return parentDataflow;
 	}
+	
 }
