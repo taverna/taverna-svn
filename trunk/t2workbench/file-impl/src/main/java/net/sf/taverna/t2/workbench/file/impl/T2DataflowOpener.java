@@ -75,6 +75,7 @@ public class T2DataflowOpener extends AbstractDataflowPersistenceHandler
 			URL url = ((URL) source);
 			try {
 				URLConnection connection = url.openConnection();
+				connection.setRequestProperty("Accept", "text/xml");
 				inputStream = connection.getInputStream();
 				if (connection.getLastModified() != 0) {
 					lastModified = new Date(connection.getLastModified());

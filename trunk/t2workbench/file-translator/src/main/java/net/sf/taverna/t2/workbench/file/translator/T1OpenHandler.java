@@ -96,6 +96,7 @@ public class T1OpenHandler extends AbstractDataflowPersistenceHandler implements
 			URL url = ((URL) source);
 			try {
 				URLConnection connection = url.openConnection();
+				connection.setRequestProperty("Accept", "text/xml");
 				inputStream = connection.getInputStream();
 				if (connection.getLastModified() != 0) {
 					lastModified = new Date(connection.getLastModified());
