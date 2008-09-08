@@ -45,10 +45,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SplashScreen.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-09-04 14:52:14 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2008-09-08 17:01:54 $
+ *               by   $Author: anenadic $
  * Created on 18 Jan 2007
  *****************************************************************/
 package net.sf.taverna.raven;
@@ -113,7 +113,7 @@ public class SplashScreen extends JWindow {
 		JLabel label = new JLabel(image);
 		getContentPane().add(label, BorderLayout.CENTER);
 		progress.setStringPainted(true);
-		progress.setString("Initializing");
+		progress.setString("Initializing...");
 		// progress.setIndeterminate(true);
 		getContentPane().add(progress, BorderLayout.SOUTH);
 		pack();
