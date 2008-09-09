@@ -1,0 +1,9 @@
+target
+.hg
+.hgignore
+.classpath
+.project
+target-eclipse
+.settings
+doc
+bin
