@@ -267,7 +267,7 @@ public class Tools {
 			
 			// Does it contain a nested workflow?
 			if (containsNestedWorkflow(processor)) {
-				// Get the nested workflow
+				// Get the nested workflow and check all its nested processors
 				Dataflow nestedWorkflow = ((NestedDataflow) processor.getActivityList().get(0))
 						.getNestedDataflow();
 				Collection<Processor> nested_processors = getProcessorsWithActivityInputPort(
@@ -275,12 +275,13 @@ public class Tools {
 				if (!nested_processors.isEmpty())
 					processors.addAll(nested_processors);
 			}
-			else {
-				for (Activity<?> activity : processor.getActivityList()) {
-					
-					if (activity.getInputPorts().contains(inputPort)) {
-						processors.add(processor);
-					}
+			
+			// Check all processor's activities (even if the processor contained a nested workflow,
+			// as its dataflow activity still contains input and output ports)
+			for (Activity<?> activity : processor.getActivityList()) {
+
+				if (activity.getInputPorts().contains(inputPort)) {
+					processors.add(processor);
 				}
 			}
 		}
