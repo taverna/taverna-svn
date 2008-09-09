@@ -23,8 +23,6 @@ package net.sf.taverna.t2.workbench.views.graph;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.InputStream;
@@ -63,10 +61,8 @@ import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.apache.batik.swing.JSVGCanvas;
-import org.apache.batik.swing.gvt.AbstractPanInteractor;
 import org.apache.batik.swing.gvt.GVTTreeRendererAdapter;
 import org.apache.batik.swing.gvt.GVTTreeRendererEvent;
-import org.apache.batik.swing.gvt.Interactor;
 import org.apache.log4j.Logger;
 
 public class GraphViewComponent extends JPanel implements UIComponentSPI {
@@ -118,13 +114,13 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 				graphController.setUpdateManager(svgCanvas.getUpdateManager());
 			}
 		});
-		svgCanvas.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON3 && dataflow != null) {
-					ContextMenuFactory.getContextMenu(dataflow, dataflow, svgCanvas).show(svgCanvas, e.getX(), e.getY());
-				}
-			}
-		});
+//		svgCanvas.addMouseListener(new MouseAdapter() {
+//			public void mouseClicked(MouseEvent e) {
+//				if (e.getButton() == MouseEvent.BUTTON3 && dataflow != null) {
+//					ContextMenuFactory.getContextMenu(dataflow, dataflow, svgCanvas).show(svgCanvas, e.getX(), e.getY());
+//				}
+//			}
+//		});
 		add(svgCanvas, BorderLayout.CENTER);
 		
 		add(setupToolbar(), BorderLayout.NORTH);
@@ -366,6 +362,9 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 		return dataflow;
 	}
 
+	/**
+	 * For testing only
+	 */
 	public static void main(String[] args) throws Exception {
 		System.setProperty("raven.eclipse", "true");
 		System.setProperty("taverna.dotlocation", "/Applications/Taverna-1.7.1.app/Contents/MacOS/dot");
@@ -398,12 +397,10 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 
 	public void onDisplay() {
 		// TODO Auto-generated method stub
-		
 	}
 
 	public void onDispose() {
 		// TODO Auto-generated method stub
-		
 	}
 
 }
