@@ -1041,22 +1041,7 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 			for (Object dataflowElement : dataflowSelectionModel.getSelection()) {
 				GraphElement graphElement = dataflowToGraph.get(dataflowElement);
 				if (graphElement != null) {
-										
-					// If element is visible then set it to selected, otherwise do nothing. 
-					// For example, a processor port can be selected on the tree view of the 
-					// Workflow Explorer, but if current graph's portStyle is NONE (i.e. no 
-					// port details), then we cannot select the port node on the graph.
-					// FIXME Fix other port styles as well, e.g. BLOB etc.
-					if ((portStyle.equals(PortStyle.NONE)) && 
-							(dataflowElement instanceof ActivityInputPort || dataflowElement instanceof ActivityOutputPortImpl ))
-					{
-						// Do nothing
-						return;
-					}
-					else{
-						// select the element 
 						graphElement.setSelected(true);
-					}
 				}		
 			}
 		}
@@ -1070,22 +1055,7 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 			DataflowSelectionMessage message) throws Exception {
 		GraphElement graphElement = dataflowToGraph.get(message.getElement());
 		if (graphElement != null) {
-			
-			// If element is visible then set it to selected, otherwise do nothing. 
-			// For example, a processor port can be selected on the tree view of the 
-			// Workflow Explorer, but if current graph's portStyle is NONE (i.e. no 
-			// port details), then we cannot select the port node on the graph.
-			// FIXME Fix other port styles as well, e.g. BLOB etc.
-			if ((portStyle.equals(PortStyle.NONE)) && 
-					(message.getElement() instanceof ActivityInputPort || message.getElement() instanceof ActivityOutputPortImpl ))
-			{
-				// Do nothing
-				return;
-			}
-			else{
-				// select the element 
 				graphElement.setSelected(message.getType().equals(DataflowSelectionMessage.Type.ADDED));
-			}
 		}		
 	}
 

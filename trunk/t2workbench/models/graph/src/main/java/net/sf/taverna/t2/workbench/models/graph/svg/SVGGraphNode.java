@@ -180,30 +180,32 @@ public class SVGGraphNode extends GraphNode implements SVGMonitorShape {
 	 */
 	public void setSelected(final boolean selected) {
 		super.setSelected(selected);
-		UpdateManager updateManager = this.graphController.updateManager;
-		if (updateManager != null) {
-			updateManager.getUpdateRunnableQueue().invokeLater(
-					new Runnable() {
-						public void run() {
-							if (selected) {
-								if (polygon != null) {
-									polygon.setAttribute(
-											SVGConstants.SVG_STYLE_ATTRIBUTE, selectedStyle);
+		if (this.graphController != null) {
+			UpdateManager updateManager = this.graphController.updateManager;
+			if (updateManager != null) {
+				updateManager.getUpdateRunnableQueue().invokeLater(
+						new Runnable() {
+							public void run() {
+								if (selected) {
+									if (polygon != null) {
+										polygon.setAttribute(
+												SVGConstants.SVG_STYLE_ATTRIBUTE, selectedStyle);
+									} else {
+										ellipse.setAttribute(
+												SVGConstants.SVG_STYLE_ATTRIBUTE, selectedStyle);
+									}
 								} else {
-									ellipse.setAttribute(
-											SVGConstants.SVG_STYLE_ATTRIBUTE, selectedStyle);
-								}
-							} else {
-								if (polygon != null) {
-									polygon.setAttribute(
-											SVGConstants.SVG_STYLE_ATTRIBUTE, originalStyle);	
-								} else {
-									ellipse.setAttribute(
-											SVGConstants.SVG_STYLE_ATTRIBUTE, originalStyle);	
+									if (polygon != null) {
+										polygon.setAttribute(
+												SVGConstants.SVG_STYLE_ATTRIBUTE, originalStyle);	
+									} else {
+										ellipse.setAttribute(
+												SVGConstants.SVG_STYLE_ATTRIBUTE, originalStyle);	
+									}
 								}
 							}
-						}
-					});
+						});
+			}
 		}
 	}
 
