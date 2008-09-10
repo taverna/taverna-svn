@@ -38,13 +38,13 @@
 			<artifactId>contextual-views-api</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
-		<!-- temporarily disabled due to Raven issues 
+		 
 		<dependency>
 			<groupId>security-profiles</groupId>
 			<artifactId>security-profiles</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		 -->
+		
 
 		<!--  testing dependencies -->
 		<dependency>

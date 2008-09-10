@@ -45,6 +45,10 @@
 
 package net.sf.taverna.t2.activities.wsdl;
 
+import net.sf.taverna.t2.security.credentialmanager.*;
+import net.sf.taverna.t2.security.agents.*;
+import net.sf.taverna.t2.security.requests.*;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
@@ -171,29 +175,29 @@ public class T2WSDLSOAPInvoker extends WSDLSOAPInvoker {
 		// almost all security operations (even for signing,
 		// except for encryption), otherwise it raises an Exception.
 
-		// call.setProperty(Call.USERNAME_PROPERTY,
-		// getParser().getWSDLLocation());
+		 call.setProperty(Call.USERNAME_PROPERTY,
+		 getParser().getWSDLLocation());
 
-		// Get the appropriate security agent
-		// CredentialManager credManager;
-		// try {
-		// credManager = CredentialManager.getInstance();
-		// SecurityAgentManager saManager =
-		// credManager.getSecurityAgentManager();
-		// WSSecurityRequest wsSecReq = new
-		// WSSecurityRequest(getParser().getWSDLLocation(), null);
-		//
-		// WSSecurityAgent sa = (WSSecurityAgent)
-		// saManager.getSecurityAgent((SecurityRequest) wsSecReq);
-		// call.setProperty("security_agent", sa);
-		//			
-		// } catch (CMException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// } catch (CMNotInitialisedException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
+		 // Get the appropriate security agent
+		 CredentialManager credManager;
+		 try {
+		 credManager = CredentialManager.getInstance();
+		 SecurityAgentManager saManager =
+		 credManager.getSecurityAgentManager();
+		 WSSecurityRequest wsSecReq = new
+		 WSSecurityRequest(getParser().getWSDLLocation(), null);
+		
+		 WSSecurityAgent sa = (WSSecurityAgent)
+		 saManager.getSecurityAgent((SecurityRequest) wsSecReq);
+		 call.setProperty("security_agent", sa);
+					
+		 } catch (CMException e) {
+		 // TODO Auto-generated catch block
+		 e.printStackTrace();
+		 } catch (CMNotInitialisedException e) {
+		 // TODO Auto-generated catch block
+		 e.printStackTrace();
+		 }
 	}
 
 	/**

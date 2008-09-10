@@ -125,7 +125,6 @@
 				local repository while developing
 				<repository>file:///Users/stain/.m2/repository/</repository>
 			-->
-
 			<!-- myGrid repositories and mirrors  -->
 			<repository>
 				http://www.mygrid.org.uk/maven/repository/
@@ -192,7 +191,7 @@
 	</plugin>
 	<plugin>
 		<name>all-activity-translators</name>
-		<description>Taverna 2 Workbench</description>
+		<description>All Taverna 2 activity translators</description>
 		<identifier>
 			net.sf.taverna.t2.all-activity-translators
 		</identifier>
@@ -204,7 +203,6 @@
 				local repository while developing
 				<repository>file:///Users/stain/.m2/repository/</repository>
 			-->
-
 			<!-- myGrid repositories and mirrors  -->
 			<repository>
 				http://www.mygrid.org.uk/maven/repository/
@@ -264,6 +262,82 @@
 				artifactId="all-activity-translators" version="0.3-SNAPSHOT" />
 			<artifact groupId="net.sf.taverna.t2.workbench"
 				artifactId="file-translator" version="0.1-SNAPSHOT" />
+		</profile>
+		<application>
+			<version>2.0</version>
+		</application>
+	</plugin>
+	<plugin>
+		<name>credential-manager</name>
+		<description>Taverna 2 Credential Manager</description>
+		<identifier>
+			net.sf.taverna.t2.credential-manager
+		</identifier>
+		<version>0.3-SNAPSHOT</version>
+		<provider>taverna.sf.net</provider>
+		<enabled>true</enabled>
+		<repositories>
+			<!--
+				local repository while developing
+				<repository>file:///Users/stain/.m2/repository/</repository>
+			-->
+			<!-- myGrid repositories and mirrors  -->
+			<repository>
+				http://www.mygrid.org.uk/maven/repository/
+			</repository>
+			<repository>
+				http://bioinf.ncl.ac.uk/mirror/maven/repository/
+			</repository>
+			<repository>
+				http://mirror.omii.ac.uk/maven/repository/
+			</repository>
+			<repository>
+				http://www.mygrid.org.uk/maven/snapshot-repository/
+			</repository>
+
+			<!--  Mirror of official maven repository -->
+			<repository>
+				http://www.mygrid.org.uk/maven/repo1/
+			</repository>
+
+			<!--  BioMoby repository -->
+			<repository>http://moby.ucalgary.ca/moby_maven/</repository>
+			<!--
+				Maven mirrors from
+				http://maven.apache.org/guides/mini/guide-mirror-settings.html
+			-->
+			<!--
+				disabled: Connection time out <repository>
+				http://mirrors.ibiblio.org/pub/mirrors/maven2/ </repository>
+			-->
+			<repository>
+				http://ibiblio.lsu.edu/main/pub/packages/maven2/
+			</repository>
+			<!--
+				disabled: Connection time out
+				<repository>http://maven.sateh.com/repository/</repository>
+			-->
+			<!-- Disabled: Connection time out 
+				<repository>http://mirrors.dotsrc.org/maven2/
+				</repository>
+			-->
+			<!--
+				disabled: Bad history
+				<repository>http://mirrors.sunsite.dk/maven2/</repository>
+			-->
+			<!--
+				disabled: Connection time out <repository>
+				http://maven2.mirrors.skynet.be/pub/maven2/ </repository>
+			-->
+			<repository>http://ftp.cica.es/mirrors/maven2/</repository>
+			<!--
+				disabled: slow
+				<repository>http://mirrors.redv.com/maven2/</repository>
+			-->
+		</repositories>
+		<profile>
+			<artifact groupId="credential-manager"
+				artifactId="credential-manager" version="0.0.1-SNAPSHOT" />
 		</profile>
 		<application>
 			<version>2.0</version>

@@ -27,15 +27,23 @@
 			<artifactId>wsdl-generic</artifactId>
 			<version>1.2-SNAPSHOT</version>
 		</dependency>
-		<!--
-			temporarily disabled because of Raven issues <dependency>
+
+		<dependency>
 			<groupId>credential-manager</groupId>
 			<artifactId>credential-manager</artifactId>
-			<version>0.0.1-SNAPSHOT</version> </dependency> <dependency>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>t2security-agents</groupId>
 			<artifactId>t2security-agents</artifactId>
-			<version>0.0.1-SNAPSHOT</version> </dependency>
-		-->
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ws.security</groupId>
+			<artifactId>wss4j</artifactId>
+			<version>1.5.4</version>
+		</dependency>
+
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>partition</artifactId>
@@ -58,6 +66,6 @@
 			<artifactId>jdom</artifactId>
 			<version>1.0</version>
 		</dependency>
-		
+
 	</dependencies>
 </project>

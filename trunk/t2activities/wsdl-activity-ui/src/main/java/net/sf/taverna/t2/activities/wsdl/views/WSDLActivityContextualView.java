@@ -29,9 +29,11 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import net.sf.taverna.t2.activities.wsdl.WSDLActivity;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
 import net.sf.taverna.t2.activities.wsdl.actions.AddXMLInputSplitterAction;
 import net.sf.taverna.t2.activities.wsdl.actions.AddXMLOutputSplitterAction;
+import net.sf.taverna.t2.activities.wsdl.actions.WSDLActivityConfigureAction;
 import net.sf.taverna.t2.workbench.ui.actions.activity.HTMLBasedActivityContextualView;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
@@ -87,9 +89,7 @@ public class WSDLActivityContextualView extends
 
 	@Override
 	public Action getConfigureAction(Frame owner) {
-		// return new
-		// WSDLActivityConfigureAction((WSDLActivity)getActivity(),owner);
-		return null;
+		return new WSDLActivityConfigureAction((WSDLActivity)getActivity(),owner);
 	}
 
 }
