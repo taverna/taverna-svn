@@ -260,13 +260,10 @@ public class WorkflowExplorer extends JPanel implements UIComponentSPI {
 							DataflowSelectionModel selectionModel = DataflowSelectionManager
 							.getInstance().getDataflowSelectionModel(workflow);
 							
-							// If the node that was clicked on was inputs, outputs, processors or datalinks
-							// root nodes than just make it selected and clear the selection model
-							if(selectedNode.isRoot() ||
-									selectedNode.getUserObject().toString().equals(WorkflowExplorerTreeModel.INPUTS) || 
-									selectedNode.getUserObject().toString().equals(WorkflowExplorerTreeModel.OUTPUTS) ||
-									selectedNode.getUserObject().toString().equals(WorkflowExplorerTreeModel.PROCESSORS) ||
-									selectedNode.getUserObject().toString().equals(WorkflowExplorerTreeModel.DATALINKS)){
+							// If the node that was clicked on was an inputs, outputs, processors,
+							// datalinks or nested workflow root node than just make it selected 
+							// and clear the selection model
+							if(selectedNode.getUserObject() instanceof String){
 								selectionModel.clearSelection();
 								((WorkflowExplorerTreeSelectionModel) ameTree
 										.getSelectionModel())

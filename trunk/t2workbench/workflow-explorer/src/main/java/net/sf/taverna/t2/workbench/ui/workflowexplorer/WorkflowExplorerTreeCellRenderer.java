@@ -140,7 +140,7 @@ public class WorkflowExplorerTreeCellRenderer extends
 		}
 		else{
 			// It is the root or one of the main nodes (inputs, outputs, 
-			// processors or datalinks)
+			// processors, datalinks) or a nested workflow node
 			if (expanded) {
 				((WorkflowExplorerTreeCellRenderer) result).setIcon(WorkbenchIcons.folderOpenIcon);
 			} else{
