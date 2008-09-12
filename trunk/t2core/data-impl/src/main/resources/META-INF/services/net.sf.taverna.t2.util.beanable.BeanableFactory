@@ -1,4 +1,0 @@
-net.sf.taverna.t2.cloudone.entity.impl.DataDocumentFactory
-net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceSchemeFactory
-net.sf.taverna.t2.cloudone.refscheme.file.FileReferenceSchemeFactory
-net.sf.taverna.t2.cloudone.refscheme.blob.BlobReferenceSchemeFactory
