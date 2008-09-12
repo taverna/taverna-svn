@@ -236,7 +236,7 @@ public class Tools {
 		return activityOutputPort;
 	}
 
-	private static String getUniqueMergeInputPortName(Merge merge, String name,
+	public static String getUniqueMergeInputPortName(Merge merge, String name,
 			int count) {
 		String uniqueName = name + count;
 		for (MergeInputPort mergeInputPort : merge.getInputPorts()) {

@@ -46,7 +46,7 @@ public class ConnectMergedDatalinkEditTest {
 	
 	@Before
 	public void setup() throws Exception {
-		merge = new MergeImpl("the merge");
+		merge = new MergeImpl("theMerge");
 		ProcessorImpl p1 = new ProcessorImpl();
 		ProcessorImpl p2 = new ProcessorImpl();
 		sourcePort=new ProcessorOutputPortImpl(p1,"source_port",0,0);
@@ -66,7 +66,7 @@ public class ConnectMergedDatalinkEditTest {
 		theEdit.doEdit();
 		assertEquals(1,merge.getInputPorts().size());
 		assertTrue(merge.getInputPorts().get(0) instanceof MergeInputPort);
-		assertEquals("source_port_tomerge",merge.getInputPorts().get(0).getName());
+		assertEquals("source_portTotheMerge_input0",merge.getInputPorts().get(0).getName());
 		assertSame(sourcePort,merge.getInputPorts().get(0).getIncomingLink().getSource());
 		
 		assertEquals(1,merge.getOutputPort().getOutgoingLinks().size());
@@ -87,7 +87,7 @@ public class ConnectMergedDatalinkEditTest {
 		assertEquals(1,merge.getOutputPort().getOutgoingLinks().size());
 		assertEquals(2,merge.getInputPorts().size());
 		assertTrue(merge.getInputPorts().get(1) instanceof MergeInputPort);
-		assertEquals("source_port2_tomerge",merge.getInputPorts().get(1).getName());
+		assertEquals("source_port2TotheMerge_input0",merge.getInputPorts().get(1).getName());
 		assertSame(sourcePort2,merge.getInputPorts().get(1).getIncomingLink().getSource());
 	}
 	

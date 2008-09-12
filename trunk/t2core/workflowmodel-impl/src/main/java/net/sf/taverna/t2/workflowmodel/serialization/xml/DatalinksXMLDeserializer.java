@@ -100,8 +100,13 @@ public class DatalinksXMLDeserializer extends AbstractXMLDeserializer {
 					throw new DeserializationException(
 							"Unable to find or create Merge for "
 									+ elementToString(datalink));
-				edits.getConnectMergedDatalinkEdit(merge, sourcePort, sinkPort)
-						.doEdit();
+				try {
+					edits.getConnectMergedDatalinkEdit(merge, sourcePort, sinkPort)
+					.doEdit();
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+				}
 			} else {
 				Datalink link = edits.createDatalink(sourcePort, sinkPort);
 				edits.getConnectDatalinkEdit(link).doEdit();

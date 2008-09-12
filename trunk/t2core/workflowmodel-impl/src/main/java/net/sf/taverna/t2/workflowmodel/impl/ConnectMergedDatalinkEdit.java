@@ -27,6 +27,7 @@ import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EventForwardingOutputPort;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
 import net.sf.taverna.t2.workflowmodel.Merge;
+import net.sf.taverna.t2.workflowmodel.utils.Tools;
 
 /**
  * <p>
@@ -73,7 +74,8 @@ public class ConnectMergedDatalinkEdit extends AbstractMergeEdit {
 	@Override
 	protected void doEditAction(MergeImpl mergeImpl) throws EditException {
 		Edits edits = new EditsImpl();
-		mergeInputPort = new MergeInputPortImpl(mergeImpl,sourcePort.getName()+"_tomerge",sinkPort.getDepth());
+		String name = Tools.getUniqueMergeInputPortName(mergeImpl, sourcePort.getName()+"To" + merge.getLocalName() + "_input", 0);
+		mergeInputPort = new MergeInputPortImpl(mergeImpl,name,sinkPort.getDepth());
 		inLink = edits.createDatalink(sourcePort, mergeInputPort);
 		connectInLinkEdit=edits.getConnectDatalinkEdit(inLink);
 		if (mergeImpl.getOutputPort().getOutgoingLinks().size()==0) {
@@ -100,5 +102,6 @@ public class ConnectMergedDatalinkEdit extends AbstractMergeEdit {
 		connectInLinkEdit.undo();
 		mergeImpl.removeInputPort(mergeInputPort);
 	}
+	
 	
 }
