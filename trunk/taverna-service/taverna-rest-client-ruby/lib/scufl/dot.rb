@@ -83,7 +83,7 @@ module Scufl
       write_source_cluster(stream, model.sources, prefix)
       write_sink_cluster(stream, model.sinks, prefix)
       model.links.each {|link| write_link(stream, link, model, prefix)}
-      model.coordinations.each {|coordination| write_coordination(stream, coordination, prefix)}
+      model.coordinations.each {|coordination| write_coordination(stream, coordination, model, prefix)}
       if name != ""
         stream.puts '}'
       end
@@ -193,8 +193,19 @@ module Scufl
       stream.puts ' ];'
     end
     
-    def write_coordination(stream, coordination, prefix)
-      stream.puts " \"#{prefix}#{coordination.controller}\"->\"#{prefix}#{coordination.target}\" ["
+    def write_coordination(stream, coordination, model, prefix)
+      stream.write " \"#{prefix}#{coordination.controller}"
+      processor = model.processors.select{|p| p.name == coordination.controller}[0]
+      if processor.model
+        stream.write 'WORKFLOWINTERNALSINKCONTROL'
+      end
+      stream.write '"->"'
+      stream.write "#{prefix}#{coordination.target}\""
+      processor = model.processors.select{|p| p.name == coordination.target}[0]
+      if processor.model
+        stream.write 'WORKFLOWINTERNALSOURCECONTROL'
+      end
+      stream.puts ' ['
       stream.puts '  color="gray",'
       stream.puts '  arrowhead="odot",'
       stream.puts '  arrowtail="none"'
