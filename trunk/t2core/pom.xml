@@ -81,19 +81,9 @@
 		</plugins>
 	</build>
 	<modules>
-    <!--
-		<module>data-api</module>
-		<module>data-impl</module>
-		<module>data-http</module>
-		<module>data-gui</module>
-        -->
 		<module>workflowmodel-api</module>
 		<module>workflowmodel-impl</module>
 		<module>security-api</module>
-        <!--
-		<module>drizzle-api</module>
-		<module>drizzle-impl</module>
-        -->
 		<module>compatibility-api</module>
 		<module>compatibility-impl</module>
 		<module>renderers-api</module>
