@@ -266,18 +266,20 @@ public class WSDLActivity extends
 							}
 						}
 					}
+					callback.receiveResult(outputData, new int[0]);
 				} catch (ReferenceServiceException e) {
 					logger.error("Error finding the input data for "
 							+ getConfiguration().getOperation(), e);
 					callback.fail("Unable to find input data", e);
+					return;
 				} catch (Exception e) {
 					logger.error("Error invoking WSDL service "
 							+ getConfiguration().getOperation(), e);
 					callback.fail(
 							"An error occurred invoking the WSDLActivity", e);
+					return;
 				}
 
-				callback.receiveResult(outputData, new int[0]);
 			}
 
 		});
