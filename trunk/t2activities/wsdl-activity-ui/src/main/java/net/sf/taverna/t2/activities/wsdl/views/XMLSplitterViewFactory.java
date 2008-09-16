@@ -20,21 +20,22 @@
  ******************************************************************************/
 package net.sf.taverna.t2.activities.wsdl.views;
 
-import net.sf.taverna.t2.activities.wsdl.InputPortTypeDescriptorActivity;
-import net.sf.taverna.t2.activities.wsdl.WSDLActivity;
-import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityContextualView;
+import net.sf.taverna.t2.activities.wsdl.xmlsplitter.XMLInputSplitterActivity;
+import net.sf.taverna.t2.activities.wsdl.xmlsplitter.XMLOutputSplitterActivity;
+import net.sf.taverna.t2.activities.wsdl.xmlsplitter.XMLSplitterConfigurationBean;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactory;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
-public class WSDLActivityViewFactory implements ContextualViewFactory<WSDLActivity>{
+public class XMLSplitterViewFactory implements ContextualViewFactory<Activity<XMLSplitterConfigurationBean>>{
 
 	public boolean canHandle(Object object) {
-		return object instanceof WSDLActivity;
+		return object instanceof XMLInputSplitterActivity || object instanceof XMLOutputSplitterActivity;
 	}
 
-	public ActivityContextualView<?> getView(WSDLActivity activity) {
-		return new WSDLActivityContextualView(activity);
+	public ContextualView getView(
+			Activity<XMLSplitterConfigurationBean> activity) {
+		return new XMLSplitterContextualView(activity);		
 	}
-	
-	
 
 }

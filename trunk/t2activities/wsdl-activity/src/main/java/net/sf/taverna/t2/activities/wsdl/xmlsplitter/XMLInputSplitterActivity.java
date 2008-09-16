@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.taverna.t2.activities.wsdl.InputPortTypeDescriptorActivity;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceServiceException;
 import net.sf.taverna.t2.reference.T2Reference;
@@ -37,6 +38,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCa
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.wsdl.parser.ComplexTypeDescriptor;
 import net.sf.taverna.wsdl.parser.TypeDescriptor;
+import net.sf.taverna.wsdl.parser.UnknownOperationException;
 import net.sf.taverna.wsdl.xmlsplitter.XMLInputSplitter;
 import net.sf.taverna.wsdl.xmlsplitter.XMLSplitterSerialisationHelper;
 
@@ -50,7 +52,7 @@ import org.jdom.input.SAXBuilder;
  * @author Stuart Owen
  *
  */
-public class XMLInputSplitterActivity extends AbstractAsynchronousActivity<XMLSplitterConfigurationBean> {
+public class XMLInputSplitterActivity extends AbstractAsynchronousActivity<XMLSplitterConfigurationBean> implements InputPortTypeDescriptorActivity {
 
 	XMLSplitterConfigurationBean configBean;
 	TypeDescriptor typeDescriptor;
@@ -69,24 +71,6 @@ public class XMLInputSplitterActivity extends AbstractAsynchronousActivity<XMLSp
 			throw new ActivityConfigurationException("Error reading xml for XMLInputSplitter",e);
 		}
 		typeDescriptor = XMLSplitterSerialisationHelper.extensionXMLToTypeDescriptor(element);
-	}
-	
-	/**
-	 * Returns a TypeDescriptor for the given port name. If the port cannot be found, or is not based upon a complex type, then null is returned.
-	 * @param portName
-	 * @return
-	 */
-	public TypeDescriptor getTypeDescriptorForInputPort(String portName) {
-		TypeDescriptor result = null;
-		if (typeDescriptor instanceof ComplexTypeDescriptor) {
-			for (TypeDescriptor desc : ((ComplexTypeDescriptor)typeDescriptor).getElements()) {
-				if (desc.getName().equals(portName)) {
-					result = desc;
-					break;
-				}
-			}
-		}
-		return result;
 	}
 	
 	@Override
@@ -151,5 +135,38 @@ public class XMLInputSplitterActivity extends AbstractAsynchronousActivity<XMLSp
 	@Override
 	public XMLSplitterConfigurationBean getConfiguration() {
 		return configBean;
+	}
+
+	/**
+	 * Returns a TypeDescriptor for the given port name. If the port cannot be found, or is not based upon a complex type, then null is returned.
+	 * @param portName
+	 * @return
+	 */
+	public TypeDescriptor getTypeDescriptorForInputPort(String portName) {
+		TypeDescriptor result = null;
+		if (typeDescriptor instanceof ComplexTypeDescriptor) {
+			for (TypeDescriptor desc : ((ComplexTypeDescriptor)typeDescriptor).getElements()) {
+				if (desc.getName().equals(portName)) {
+					result = desc;
+					break;
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 */
+	public Map<String, TypeDescriptor> getTypeDescriptorsForInputPorts()
+			throws UnknownOperationException, IOException {
+		Map<String, TypeDescriptor> descriptors = new HashMap<String, TypeDescriptor>();
+		if (typeDescriptor instanceof ComplexTypeDescriptor) {
+			for (TypeDescriptor desc : ((ComplexTypeDescriptor)typeDescriptor).getElements()) {
+				descriptors.put(desc.getName(), desc);
+			}
+		}
+		return descriptors;
 	}
 }

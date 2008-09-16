@@ -22,33 +22,26 @@ package net.sf.taverna.t2.activities.wsdl.views;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 
-import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import net.sf.taverna.t2.activities.wsdl.WSDLActivity;
-import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
+import net.sf.taverna.t2.activities.wsdl.InputPortTypeDescriptorActivity;
+import net.sf.taverna.t2.activities.wsdl.OutputPortTypeDescriptorActivity;
 import net.sf.taverna.t2.activities.wsdl.actions.AddXMLInputSplitterAction;
 import net.sf.taverna.t2.activities.wsdl.actions.AddXMLOutputSplitterAction;
-import net.sf.taverna.t2.activities.wsdl.actions.WSDLActivityConfigureAction;
+import net.sf.taverna.t2.activities.wsdl.xmlsplitter.XMLSplitterConfigurationBean;
 import net.sf.taverna.t2.workbench.ui.actions.activity.HTMLBasedActivityContextualView;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
-public class WSDLActivityContextualView extends
-		HTMLBasedActivityContextualView<WSDLActivityConfigurationBean> {
+public class XMLSplitterContextualView extends
+		HTMLBasedActivityContextualView<XMLSplitterConfigurationBean> {
 
 	private static final long serialVersionUID = -4329643934083676113L;
 
-	public WSDLActivityContextualView(Activity<?> activity) {
+	public XMLSplitterContextualView(Activity<XMLSplitterConfigurationBean> activity) {
 		super(activity);
-	}
-	
-	@Override
-	protected WSDLActivity getActivity() {
-		return (WSDLActivity) super.getActivity();
 	}
 
 	/**
@@ -58,39 +51,31 @@ public class WSDLActivityContextualView extends
 	@Override
 	protected JComponent getMainFrame() {
 		final JComponent mainFrame = super.getMainFrame();
-
-		AddXMLInputSplitterAction inputSplitterAction = new AddXMLInputSplitterAction(
-				getActivity(), mainFrame);
-		AddXMLOutputSplitterAction outputSplitterAction = new AddXMLOutputSplitterAction(
-				getActivity(), mainFrame);
-
 		JPanel flowPanel = new JPanel(new FlowLayout());
-		flowPanel.add(new JButton(inputSplitterAction));
-		flowPanel.add(new JButton(outputSplitterAction));
+		
+		if (getActivity() instanceof InputPortTypeDescriptorActivity) {
+			AddXMLInputSplitterAction inputSplitterAction = new AddXMLInputSplitterAction(
+					(InputPortTypeDescriptorActivity)getActivity(), mainFrame);
+			flowPanel.add(new JButton(inputSplitterAction));
+		} 
+		if (getActivity() instanceof OutputPortTypeDescriptorActivity) {
+			AddXMLOutputSplitterAction outputSplitterAction = new AddXMLOutputSplitterAction(
+					(OutputPortTypeDescriptorActivity)getActivity(), mainFrame);
+			flowPanel.add(new JButton(outputSplitterAction));
+		}
 		mainFrame.add(flowPanel, BorderLayout.SOUTH);
 		return mainFrame;
 	}
 
 	@Override
 	protected String getViewTitle() {
-		return "WSDL-based activity";
+		return "XML splitter";
 	}
 
 	@Override
 	protected String getRawTableRowsHtml() {
-		String summary = "<tr><td>WSDL</td><td>" + getConfigBean().getWsdl();
-		summary += "</td></tr><tr><td>Operation</td><td>"
-				+ getConfigBean().getOperation() + "</td></tr>";
-		boolean securityConfigured = getConfigBean().getSecurityProfileString() != null;
-		summary += "<tr><td>Secured?</td><td>"
-				+ Boolean.toString(securityConfigured) + "</td></tr>";
-		summary += "</tr>";
-		return summary;
+		return "";
 	}
 
-	@Override
-	public Action getConfigureAction(Frame owner) {
-		return new WSDLActivityConfigureAction(getActivity(),owner);
-	}
 
 }

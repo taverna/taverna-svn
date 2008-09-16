@@ -49,7 +49,6 @@ public class AddXMLSplitterEdit extends AbstractDataflowEdit {
 	private final Activity<?> activity;
 	private final String portName;
 	private final boolean isInput;
-	private final Object oldBean = null;
 	private CompoundEdit compoundEdit1 = null;
 	private Edit<?> linkUpEdit;
 
@@ -75,8 +74,6 @@ public class AddXMLSplitterEdit extends AbstractDataflowEdit {
 		Processor sinkProcessor = null;
 		Activity<?> sinkActivity = null;
 
-		String name = Tools.uniqueProcessorName(portName + "XML", dataflow);
-		Processor splitterProcessor = edits.createProcessor(name);
 
 		Processor activityProcessor = findProcessorForActivity(dataflow,
 				activity);
@@ -84,6 +81,32 @@ public class AddXMLSplitterEdit extends AbstractDataflowEdit {
 			throw new EditException(
 					"Cannot find the processor that the activity belongs to");
 		}
+
+		
+		String displayName = portName;
+		if (portName.equals("parameters")) {
+			displayName = isInput ? "input" : "output";
+		}
+		String processorName = activityProcessor.getLocalName();		
+		String candidateName;
+		if (displayName.startsWith(processorName)) {
+			// No need to make GetRequest_GetRequestResponse
+			candidateName = displayName;
+		} else {
+			// Combine with processor name
+			String displayProcessorName;
+			if (activity instanceof XMLOutputSplitterActivity || activity instanceof XMLInputSplitterActivity) {
+				// For splitters on splitters - avoid adding up blah_bluh_blih_more_stuff
+				String[] processorNameSplit = processorName.replace("_input", "").replace("_output", "").split("_");
+				displayProcessorName = processorNameSplit[processorNameSplit.length-1];
+			} else {
+				displayProcessorName = activityProcessor.getLocalName();
+			}
+			candidateName = displayProcessorName + "_" + displayName;
+		}		
+		String name = Tools.uniqueProcessorName(candidateName, dataflow);
+		Processor splitterProcessor = edits.createProcessor(name);
+		
 		try {
 			if (activity instanceof XMLInputSplitterActivity) {
 				if (!isInput) {
@@ -105,12 +128,11 @@ public class AddXMLSplitterEdit extends AbstractDataflowEdit {
 				TypeDescriptor descriptor = ((XMLOutputSplitterActivity) activity)
 						.getTypeDescriptorForOutputPort(portName);
 				XMLSplitterConfigurationBean bean = XMLSplitterConfigurationBeanBuilder
-						.buildBeanForInput(descriptor);
-				splitter = new XMLInputSplitterActivity();
+						.buildBeanForOutput(descriptor);
+				splitter = new XMLOutputSplitterActivity();
 				editList.add(edits.getConfigureActivityEdit(splitter, bean));
 				
 			} else if (activity instanceof WSDLActivity) {
-
 				if (isInput) {
 					TypeDescriptor descriptor = ((WSDLActivity) activity)
 							.getTypeDescriptorForInputPort(portName);
