@@ -105,7 +105,8 @@ public class DefaultGraphEventManager implements GraphEventManager {
 							}
 						}));
 					}
-					if (processor.getActivityList().get(0) instanceof NestedDataflow) {						
+					if (!processor.getActivityList().isEmpty() && 
+							processor.getActivityList().get(0) instanceof NestedDataflow) {						
 						final NestedDataflow nestedDataflow = (NestedDataflow) processor.getActivityList().get(0);
 						menu.addSeparator();
 						menu.add(new JMenuItem(new AbstractAction("Show Nested Workflow") {
@@ -165,7 +166,8 @@ public class DefaultGraphEventManager implements GraphEventManager {
 						}
 					}
 				} else if (graphElement instanceof Graph) {
-					if (processor.getActivityList().get(0) instanceof NestedDataflow) {						
+					if (!processor.getActivityList().isEmpty() && 
+							processor.getActivityList().get(0) instanceof NestedDataflow) {						
 						final NestedDataflow nestedDataflow = (NestedDataflow) processor.getActivityList().get(0);
 						menu.addSeparator();
 						menu.add(new JMenuItem(new AbstractAction("Hide Nested Workflow") {
