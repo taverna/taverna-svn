@@ -32,13 +32,13 @@ public class InMemoryProvenanceConnector implements ProvenanceConnector {
 	}
 
 	public List<ProvenanceItem> getProvenanceCollection() {
-		System.out.println("***********ADD PROVENANCE*************");
+		System.out.println("***********ADD PROVENANCE *************");
 		return provenanceCollection;
 	}
 
 	@SuppressWarnings("unchecked")
 	public synchronized void store(ReferenceService referenceService) {
-		System.out.println("**********STORE************");
+		System.out.println("********** STORE PROVENANCE ************");
 
 		int size = provenanceCollection.size();
 		System.out.println("Collection size is " + size + " , stored " + storedNumber);
