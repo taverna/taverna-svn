@@ -3,8 +3,10 @@ package net.sf.taverna.t2.lineageService;
 import java.io.IOException;
 import java.io.StringReader;
 import java.sql.SQLException;
+import java.util.Map;
 
 import net.sf.taverna.t2.lineageService.types.ProvenanceEventType;
+import net.sf.taverna.t2.lineageService.util.ProvenanceProcessor;
 import net.sf.taverna.t2.provenance.vocabularly.SharedVocabulary;
 
 import org.jdom.Document;
@@ -43,7 +45,7 @@ public class Provenance implements SharedVocabulary
 	}
 
 	public String getString(){
-		return "Hello World!";
+		return "Paolo's provenance service";
 	}
 
 	/**
@@ -107,7 +109,10 @@ public class Provenance implements SharedVocabulary
 			}
 			
 			System.out.println("Provenance: ************  processing event of type "+SharedVocabulary.WORKFLOW_EVENT_TYPE);
-			ep.processWorkflowStructure(content);
+			String wfinstanceRef = ep.processWorkflowStructure(content);
+			
+			// add propagation of anl code here
+			ep.propagateANL(wfinstanceRef);   // operates on the DB
 			
 		} else if (eventType.equals(SharedVocabulary.PROCESS_EVENT_TYPE)) {
 			
@@ -143,6 +148,7 @@ public class Provenance implements SharedVocabulary
 	}
 
 
+	
 	public void clearDB() throws SQLException {
 		pw.clearDB();
 	}

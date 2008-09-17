@@ -14,10 +14,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.taverna.t2.lineageService.util.Arc;
 import net.sf.taverna.t2.lineageService.util.ProcBinding;
+import net.sf.taverna.t2.lineageService.util.ProvenanceProcessor;
 import net.sf.taverna.t2.lineageService.util.Var;
 import net.sf.taverna.t2.lineageService.util.VarBinding;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -34,6 +37,8 @@ import net.sf.taverna.t2.workflowmodel.impl.ProcessorOutputPortImpl;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.serialization.DeserializationException;
 import net.sf.taverna.t2.workflowmodel.serialization.xml.DataflowXMLDeserializer;
+import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLDeserializer;
+import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLDeserializerImpl;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -51,7 +56,7 @@ public class EventProcessor {
 	private static final String OUTPUT_CONTAINER_PROCESSOR = "_OUTPUT_";
 	private static final String INPUT_CONTAINER_PROCESSOR = "_INPUT_";
 	private static final String TEST_EVENTS_FOLDER  = "webservice/log/TEST-EVENTS/event";
-	
+
 
 	static     	int eventCnt = 0;
 
@@ -76,53 +81,56 @@ public class EventProcessor {
 	}
 
 
-	
+
 	/**
 	 * this is the new version that makes use of the T2 deserializer
-	 * @param content is a serialized dataflow (XML) -- this is parsed using the T2 Deserializer 
+	 * @param content is a serialized dataflow (XML) -- this is parsed using the T2 Deserializer
+	 * @return the wfInstanceRef for this workflow structure 
 	 */
-	public void processWorkflowStructure(String content)  {
+	public String processWorkflowStructure(String content)  {
 
-		DataflowXMLDeserializer deserializer = DataflowXMLDeserializer.getInstance();
-		
+//		System.out.println("incoming workflow structure:\n"+content);
+
+		XMLDeserializer deserializer = new XMLDeserializerImpl();
+
 		SAXBuilder builder = new SAXBuilder();
 		Element el;
 		try {
 
 			el = builder.build(new StringReader(content)).detachRootElement();
-			
-			Dataflow df = deserializer.deserializeDataflow(el,new HashMap<String, Element>());
+
+			Dataflow df = deserializer.deserializeDataflow(el); // ,new HashMap<String, Element>());
 
 			List<Var> vars = new ArrayList<Var>();
 
 			////////
 			// add workflow instance ID  -- this will come from the dataflow header
 			///////
-			
+
 			wfInstanceID = df.getInternalIdentier();
 
 			pw.addWFId(wfInstanceID);
 			pw.addWFInstanceId(wfInstanceID);
-			
+
 			// CHECK whether there is now a distinction b/w instanceID and dataflow name
-			
+
 			////////
 			//  add processors along with their variables
 			///////
 			List<? extends Processor> processors = df.getProcessors();
-			
+
 			for (Processor p: processors) {
-				
+
 				String pName = p.getLocalName();
 				pw.addProcessor(pName, wfInstanceID);
-				
+
 				/////
 				// add all input ports for this processor as input variables
 				/////
 				List<? extends ProcessorInputPort> inputs = p.getInputPorts();
-				
+
 				for (ProcessorInputPort ip: inputs) {
-					
+
 					Var inputVar = new Var();					
 
 					inputVar.setPName(pName);
@@ -132,14 +140,14 @@ public class EventProcessor {
 					inputVar.setInput(true);
 					vars.add(inputVar);
 				}
-				
+
 				/////
 				// add all output ports for this processor as output variables
 				/////
 				List<? extends ProcessorOutputPort> outputs = p.getOutputPorts();
-				
+
 				for (ProcessorOutputPort op: outputs) {
-					
+
 					Var outputVar = new Var();					
 
 					outputVar.setPName(pName);
@@ -149,19 +157,19 @@ public class EventProcessor {
 					outputVar.setInput(false);
 					vars.add(outputVar);
 				}
-				
+
 			} // end for each processor
-			
+
 			//////
 			// add inputs to entire dataflow
 			//////
-			
+
 			String pName = INPUT_CONTAINER_PROCESSOR;
-			
+
 			List<? extends DataflowInputPort> inputPorts = df.getInputPorts();
-			
+
 			for (DataflowInputPort ip: inputPorts) {
-				
+
 				Var inputVar = new Var();					
 
 				inputVar.setPName(pName);
@@ -172,16 +180,16 @@ public class EventProcessor {
 				vars.add(inputVar);
 			}
 
-			
+
 			//////
 			// add outputs of entire dataflow
 			//////
 			pName = OUTPUT_CONTAINER_PROCESSOR;
-			
+
 			List<? extends DataflowOutputPort> outputPorts = df.getOutputPorts();
-			
+
 			for (DataflowOutputPort op: outputPorts) {
-				
+
 				Var outputVar = new Var();					
 
 				outputVar.setPName(pName);
@@ -192,25 +200,60 @@ public class EventProcessor {
 				vars.add(outputVar);
 			}
 
+			pw.addVariables(vars, wfInstanceID);
 
-			
 			//////
 			// add arc records using the dataflow links
+			// retrieving the processor names requires navigating from links to source/sink and from there to the processors
 			//////
 			List<? extends Datalink> links = df.getLinks();
-			
+
 			for (Datalink l: links)  {
-				
-				String sourcePname = ((ProcessorOutputPort) l.getSource()).getProcessor().getLocalName(); 
-				String sinkPname = ((ProcessorInputPort) l.getSink()).getProcessor().getLocalName(); 
-				
-				pw.addArc(l.getSource().getName(), sourcePname, 
-						  l.getSink().getName(), sinkPname, 
-						  wfInstanceID);
-				
-			}
-			
-			
+
+				// TODO cover the case of arcs from an input and to an output to the entire dataflow
+
+				String sourcePname = null;
+				String sinkPname = null;
+
+				if (l.getSource() instanceof ProcessorOutputPort) {
+					sourcePname = ((ProcessorOutputPort) l.getSource()).getProcessor().getLocalName();
+				} else {
+					System.out.println("found link from dataflow input");
+				}
+
+				if (l.getSink() instanceof ProcessorInputPort) {
+					sinkPname = ((ProcessorInputPort) l.getSink()).getProcessor().getLocalName(); 
+				} else {
+					System.out.println("found link to dataflow output");
+				}
+
+				if (sourcePname != null && sinkPname != null) {
+					System.out.println("adding regular internal arc");
+
+					pw.addArc(l.getSource().getName(), sourcePname, 
+							l.getSink().getName(), sinkPname, 
+							wfInstanceID);
+
+				} else if ( sourcePname == null) {
+					// link is from dataflow input 
+
+					System.out.println("adding arc from dataflow input");
+
+					pw.addArc(l.getSource().getName(), INPUT_CONTAINER_PROCESSOR, 
+							l.getSink().getName(), sinkPname, 
+							wfInstanceID);
+
+				} else if  (sinkPname == null) {
+					// link is to dataflow output
+
+					System.out.println("adding arc to dataflow output");
+
+					pw.addArc(l.getSource().getName(), sourcePname, 
+							l.getSink().getName(), OUTPUT_CONTAINER_PROCESSOR, 
+							wfInstanceID);
+				}
+			}			
+
 		} catch (JDOMException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -221,11 +264,13 @@ public class EventProcessor {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		return wfInstanceID;
 	}
-	
-	
+
+
 	/**
-	 * populate static portion of the DB
+	 * populate static portion of the DB -- OBSOLETE
 	 * @param d
 	 * @throws SQLException 
 	 */
@@ -477,7 +522,7 @@ public class EventProcessor {
 				System.out.println(" ==>> "+e.getMessage());
 			}
 
-		} else if (valueType.equals("dataDocument")) {
+		} else if (valueType.equals("referenceSet")) {
 
 			String refValue = null;
 			String ref   = null;   // used for non-literal values that need de-referencing
@@ -550,7 +595,7 @@ public class EventProcessor {
 	String extractIterationVector(String iteration) {
 
 //		return iteration;
-		 return iteration.substring(1, iteration.length()-1);
+		return iteration.substring(1, iteration.length()-1);
 		// iteration is of the form "[n]" so we extract n
 //		String iterationN = iteration.substring(1, iteration.length()-1);
 
@@ -587,8 +632,8 @@ public class EventProcessor {
 		System.out.println("saved as file "+fname);
 	}
 
-	
-	
+
+
 	/**
 	 * assume content is XML but this is really immaterial
 	 * @param content
@@ -605,7 +650,7 @@ public class EventProcessor {
 		fw.write(content);
 		fw.flush();
 		fw.close();
-		
+
 		System.out.println("saved as file "+fname);
 	}
 
@@ -690,21 +735,109 @@ public class EventProcessor {
 
 				System.out.println("found binding to propagate:");
 				System.out.println(vb.getPNameRef()+"/"+vb.getVarNameRef()+"/"+vb.getWfInstanceRef()+"/"+vb.getIteration());
-				
+
 				vb.setPNameRef(aArc.getSinkPnameRef());
 				vb.setVarNameRef(aArc.getSinkVarNameRef());
 				// all other attributes are the same --> CHECK!!
 
 				System.out.println(vb.toString());
-				
+
 				pw.addVarBinding(vb);	 // DB UPDATE			
 			}
 
 		}
-
-
 	}
 
+
+
+	/**
+	 * propagates anl() through the graph, using a toposort alg
+	 * @throws SQLException 
+	 */
+	public void propagateANL(String wfInstanceRef) throws SQLException {
+
+		////////////////////////
+		// PHASE I: toposort the processors in the whole graph
+		////////////////////////
+
+		// fetch processors along with the count of their predecessors		
+		Map<String, Integer> processorsLinks = pq.getProcessorsIncomingLinks(wfInstanceRef);
+
+		// holds sorted elements
+		List<String> L = new ArrayList<String>();
+
+		// temp queue
+		List<String> Q = new ArrayList<String>();
+
+//		System.out.println("propagateANL: processors in the graph");
+
+		// init Q with root nodes
+		for (Map.Entry<String, Integer> entry : processorsLinks.entrySet()) {
+
+//			System.out.println(entry.getKey()+" has "+entry.getValue().intValue()+" predecessors");
+
+			if (entry.getValue().intValue() == 0) { Q.add(entry.getKey()); }
+		}		
+
+		while (!Q.isEmpty())  {
+
+			String current = Q.remove(0);
+			L.add(current);
+
+			List<String> successors = pq.getSuccProcessors(current, wfInstanceRef);
+
+			for (String succ: successors) {
+				// decrease edge count for each successor processor
+
+				Integer cnt = processorsLinks.get(succ); 
+
+				processorsLinks.put(succ, new Integer(cnt.intValue()-1));
+
+				if (cnt.intValue() == 1) {
+					Q.add(succ);
+				}
+			}
+		} // end loop on Q
+
+		System.out.println("toposort:");
+		for (String p:L) { System.out.println(p); }
+
+		// sorted processor names in L at this point		
+		// process them in order
+		for (String pname: L) {
+
+			// process pname's inputs -- set ANL to be the DNL if not set in prior steps
+			List<Var> inputs = pq.getInputVars(pname, wfInstanceRef);
+
+			int totalANL = 0;
+			for (Var iv: inputs) {
+				if (iv.isANLset() == false) {
+					iv.setActualNestingLevel(iv.getTypeNestingLevel());
+					iv.setANLset(true);					
+					pq.updateVar(iv);
+				}
+				totalANL += iv.getActualNestingLevel() - iv.getTypeNestingLevel();
+			}
+
+			// process pname's outputs -- set ANL based on the sum formula (see paper)
+			List<Var> outputs = pq.getOutputVars(pname, wfInstanceRef);
+			for (Var ov: outputs) {
+
+				ov.setActualNestingLevel(ov.getTypeNestingLevel() + totalANL);
+				ov.setANLset(true);		
+				pq.updateVar(ov);
+
+				// propagate this through all the links from this var
+				List<Var> successors = pq.getSuccVars(pname, ov.getVName(), wfInstanceRef);
+				
+				for (Var v: successors) {
+					v.setActualNestingLevel(ov.getActualNestingLevel());
+					v.setANLset(true);
+					pq.updateVar(v);
+				}
+			}			
+		}
+	}
 
 
 }

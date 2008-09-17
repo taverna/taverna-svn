@@ -1,0 +1,22 @@
+MAVEN_OPTS="-Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=8000" mvn tomcat:run
+
+
+then attach a debugger to port 8000 from eclipse:
+
+from Stian:
+
+Start Tomcat with
+-Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=8000 and you
+can attach to it from the debug mode in Eclipse on port 8000.
+
+In Chicago we even managed to do this with the Globus container, which
+was a great help!
+
+(You can set it to suspend=y if you want the container to pause until
+Eclipse is attached).
+
+The only thing left then is to add various source folders in the debug
+mode. (You should be able to get the source of the JAR by
+right-clicking on the project and say Maven->Get source code or
+something)
+

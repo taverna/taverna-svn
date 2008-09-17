@@ -4,7 +4,7 @@ package net.sf.taverna.t2.lineageService.util;
  * a Var that has no pName is either a WF input or output, depending on isInput
  * @author paolo
  */
-public class Processor {
+public class ProvenanceProcessor {
 
 	String pname;
 	String wfInstanceRef;

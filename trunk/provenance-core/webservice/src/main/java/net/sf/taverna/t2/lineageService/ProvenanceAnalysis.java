@@ -66,7 +66,7 @@ public class ProvenanceAnalysis {
 
 
 	/**
-	 * new compute lineage path accounts for cross products
+	 * new compute lineage path -- accounts for cross products
 	 * @param workflowID
 	 * @param var
 	 * @param proc

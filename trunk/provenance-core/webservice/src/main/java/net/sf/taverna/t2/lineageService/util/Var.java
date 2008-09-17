@@ -11,6 +11,7 @@ public class Var {
 	String type;
 	int typeNestingLevel = 0;
 	int actualNestingLevel = 0;
+	boolean isANLset = false;  // set to true when the ANL has been set 
 	
 	/**
 	 * @return the wfInstanceRef
@@ -95,6 +96,18 @@ public class Var {
 	 */
 	public void setActualNestingLevel(int actualNestingLevel) {
 		this.actualNestingLevel = actualNestingLevel;
+	}
+	/**
+	 * @return the isANLset
+	 */
+	public boolean isANLset() {
+		return isANLset;
+	}
+	/**
+	 * @param isANLset the isANLset to set
+	 */
+	public void setANLset(boolean isANLset) {
+		this.isANLset = isANLset;
 	}
 
 

@@ -52,9 +52,11 @@ public class ProvenanceWriter {
 			
 			int isInput = v.isInput() ? 1 : 0;
 
-			q = "INSERT INTO Var SET varname = \""+v.getVName()+"\", "+
+			q = "INSERT INTO Var "+
+			"SET varname = \""+v.getVName()+"\", "+
 			"pNameRef = \""+v.getPName()+"\", "+
-			"inputOrOutput = \""+isInput+"\", "+			
+			"inputOrOutput = \""+isInput+"\", "+
+			"nestingLevel = \""+( v.getTypeNestingLevel() >= 0 ? v.getTypeNestingLevel() : 0 )+"\", "+
 			"wfInstanceRef = \""+wfId+"\";";
 			
 			System.out.println("executing: "+q);
@@ -100,6 +102,18 @@ public class ProvenanceWriter {
 	public void addArc(String sourceVarName, String sourceProcName, String sinkVarName, String sinkProcName, String wfId) 
 	throws SQLException {
 
+		Statement stmt = dbConn.createStatement();
+
+		String q = "INSERT INTO Arc SET wfInstanceRef = \""+wfId+"\", " +
+		           "sourcePNameRef = \""+sourceProcName+"\", " +
+		           "sourceVarNameRef = \""+sourceVarName+"\", " +
+		           "sinkPNameRef = \""+sinkProcName+"\", " +
+		           "sinkVarNameRef = \""+sinkVarName+"\";"; 		           
+
+		System.out.println("executing: "+q);
+		int result = stmt.executeUpdate(q);
+		System.out.println("workflow id: "+result+" rows added to DB");
+		
 	}
 	
 	
@@ -295,5 +309,6 @@ public class ProvenanceWriter {
 	}
 
 
+	
 	
 }

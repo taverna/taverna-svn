@@ -17,7 +17,7 @@ import java.util.Set;
 import net.sf.taverna.t2.lineageService.ProvenanceAnalysis;
 import net.sf.taverna.t2.lineageService.ProvenanceQuery;
 import net.sf.taverna.t2.lineageService.util.Arc;
-import net.sf.taverna.t2.lineageService.util.Processor;
+import net.sf.taverna.t2.lineageService.util.ProvenanceProcessor;
 import net.sf.taverna.t2.lineageService.util.Var;
 
 import org.junit.After;
@@ -109,10 +109,10 @@ public class ProvenanceAnalysisTest1 {
 
 			procConstraints.put("wfInstanceRef", WFID);
 
-			List<Processor> processors = pq.getProcessors(procConstraints);
+			List<ProvenanceProcessor> processors = pq.getProcessors(procConstraints);
 
 			List<String> procNames = new ArrayList<String>();
-			for (Processor p:processors) { procNames.add(p.getPname()); }
+			for (ProvenanceProcessor p:processors) { procNames.add(p.getPname()); }
 
 			if (targetProc.equals("ALL")) {
 

@@ -1,5 +1,5 @@
-<beans xmlns="">
-  <service>
+<beans >
+  <service xmlns="http://xfire.codehaus.org/config/1.0">
     <name>Provenance</name>
     <namespace>urn:provenance</namespace>
     <serviceClass>net.sf.taverna.t2.lineageService.Provenance</serviceClass>
