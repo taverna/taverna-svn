@@ -21,9 +21,11 @@
 package net.sf.taverna.t2.compatibility;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
+import java.util.List;
 
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.facade.impl.WorkflowInstanceFacadeImpl;
@@ -35,6 +37,7 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class RunTaverna2Test extends InvocationTestHelper {
@@ -154,6 +157,56 @@ public class RunTaverna2Test extends InvocationTestHelper {
 		assertEquals(bytes, listener.getResult("output"));
 	}
 
+	@Test
+	@Ignore("Doesn't finish due to missing completion event")
+	public void test2Merges() throws Exception {
+		//tests a dataflow that has 2 merges in it, and includes the same named output ports connected to an 
+		//input port (all the source ports are called 'value')
+		Dataflow dataflow = loadDataflow("2-merges.t2flow");
+		DataflowValidationReport report = validateDataflow(dataflow);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedEntities().size() == 0);
+		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
+		assertTrue("Validation failed",report.isValid());
+		
+		WorkflowInstanceFacade facade;
+		facade = new WorkflowInstanceFacadeImpl(dataflow,context,"");
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context);
+		facade.addResultListener(listener);
+		
+		facade.fire();
+				
+		waitForCompletion(listener,5);
+	}
+	
+	@Test
+	public void testListOut() throws Exception {
+		//a very basic test that generates a list and then sounds it to an output.
+		//tests whether the correct completion event is received on the output
+		Dataflow dataflow = loadDataflow("list-out.t2flow");
+		DataflowValidationReport report = validateDataflow(dataflow);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedEntities().size() == 0);
+		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
+		assertTrue("Validation failed",report.isValid());
+		
+		WorkflowInstanceFacade facade;
+		facade = new WorkflowInstanceFacadeImpl(dataflow,context,"");
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,context);
+		facade.addResultListener(listener);
+		
+		facade.fire();
+				
+		waitForCompletion(listener,5);
+		Object o = listener.getResult("out");
+		assertNotNull("There should be an output 'out'",o);
+		assertTrue("the output should be a list",o instanceof List);
+		List<?>ol = (List<?>)o;
+		assertEquals("There should be 3 items in the list",3, ol.size());
+	}
+	
+	
+	
 	private byte[] readBinaryData(String resourceName) throws Exception {
 		InputStream instr = RunTaverna2Test.class.getResourceAsStream("/binary/"+resourceName);
 		int size=instr.available();
@@ -161,5 +214,7 @@ public class RunTaverna2Test extends InvocationTestHelper {
 		instr.read(result);
 		return result;
 	}
+	
+	
 	
 }
