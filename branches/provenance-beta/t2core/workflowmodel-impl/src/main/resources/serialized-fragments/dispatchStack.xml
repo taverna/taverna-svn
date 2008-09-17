@@ -1,4 +1,16 @@
 <dispatchStack xmlns="http://taverna.sf.net/2008/xml/t2flow">
+
+
+<!--  Paolo 17/9/08 -->	
+    <dispatchLayer>
+		<class>
+			net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Provenance
+		</class>
+		<configBean encoding="xstream">
+			<null xmlns="" />
+		</configBean>
+	</dispatchLayer>
+
 	<dispatchLayer>
 		<class>
 			net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize
@@ -40,6 +52,7 @@
 			</net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.RetryConfig>
 		</configBean>
 	</dispatchLayer>
+
 	<dispatchLayer>
 		<class>
 			net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke
@@ -48,4 +61,6 @@
 			<null xmlns="" />
 		</configBean>
 	</dispatchLayer>
-</dispatchStack>
+	
+	
+	</dispatchStack>

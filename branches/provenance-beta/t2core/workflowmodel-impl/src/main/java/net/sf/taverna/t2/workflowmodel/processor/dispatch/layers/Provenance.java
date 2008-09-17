@@ -33,6 +33,7 @@ public class Provenance extends AbstractDispatchLayer<ProvenanceConfig>
 	public Provenance(int maxJobs) {
 		super();
 		config.setMaxJobs(maxJobs);
+		System.out.println("provenance config: maxjobs = "+config.getMaxJobs());
 	}
 
 	public ProvenanceConfig getConfiguration() {
@@ -46,7 +47,7 @@ public class Provenance extends AbstractDispatchLayer<ProvenanceConfig>
 	@Override
 	public void receiveError(DispatchErrorEvent errorEvent) {
 		logger.info("Provenance layer received error event");
-		// System.out.println("Provenance layer received error event");
+		System.out.println("Provenance layer received error event");
 
 		InvocationContext context = errorEvent.getContext();
 		ProvenanceConnector provenanceManager = context.getProvenanceConnector();
@@ -72,7 +73,7 @@ public class Provenance extends AbstractDispatchLayer<ProvenanceConfig>
 	@Override
 	public void receiveJob(DispatchJobEvent jobEvent) {
 		logger.info("Provenance layer received job event");
-		// System.out.println("Provenance layer received job event");
+		System.out.println("Provenance layer received job event");
 		InvocationContext context = jobEvent.getContext();
 		// get something from job event and write to provenance manager?
 		// push down
@@ -94,8 +95,7 @@ public class Provenance extends AbstractDispatchLayer<ProvenanceConfig>
 	@Override
 	public void receiveResult(DispatchResultEvent resultEvent) {
 		logger.info("Provenance layer received result event");
-//		System.out.println("Provenance layer received result event");
-		// System.out.println("Provenance layer received result event");
+		System.out.println("Provenance layer received result event");
 		InvocationContext context = resultEvent.getContext();
 		ProvenanceConnector provenanceConnector = context
 				.getProvenanceConnector();
@@ -109,6 +109,7 @@ public class Provenance extends AbstractDispatchLayer<ProvenanceConfig>
 	@Override
 	public void receiveResultCompletion(DispatchCompletionEvent completionEvent) {
 		logger.info("Provenance layer received completion event");
+		System.out.println("Provenance layer received completion event");
 		InvocationContext context = completionEvent.getContext();
 		getAbove().receiveResultCompletion(completionEvent);
 	}

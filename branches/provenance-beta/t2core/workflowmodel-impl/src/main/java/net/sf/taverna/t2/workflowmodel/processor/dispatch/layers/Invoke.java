@@ -88,6 +88,7 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 		ProcessorProvenanceItem processorProvItem = new ProcessorProvenanceItem(procName);
 		provenanceItem.setProcessorProvenanceItem(processorProvItem);
 		
+		System.out.println("getProvenanceConnector invoked in Invoke::receiveJob");
 		jobEvent.getContext().getProvenanceConnector().getProvenanceCollection().add(provenanceItem);
 
 		for (Activity<?> a : jobEvent.getActivities()) {

@@ -46,6 +46,8 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 		context.getProvenanceConnector().getProvenanceCollection().add(workflowItem);
 //		context.getProvenanceConnector().store(new DataFacade(context.getDataManager()));
 		//FIXME use the new reference service
+		
+		System.out.println("getProvenanceConnector invoked from WorkflowInstanceFacadeImpl");
 		context.getProvenanceConnector().store(context.getReferenceService());
 		if (parentProcess.equals("")) {
 			this.instanceOwningProcessId = localName;
