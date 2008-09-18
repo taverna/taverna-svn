@@ -8,18 +8,17 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
-
 import net.sf.taverna.t2.activities.wsdl.InputPortTypeDescriptorActivity;
 import net.sf.taverna.t2.activities.wsdl.OutputPortTypeDescriptorActivity;
 import net.sf.taverna.t2.activities.wsdl.actions.AbstractAddXMLSplitterAction;
 import net.sf.taverna.t2.activities.wsdl.actions.AddXMLInputSplitterAction;
 import net.sf.taverna.t2.activities.wsdl.actions.AddXMLOutputSplitterAction;
-import net.sf.taverna.t2.activities.wsdl.xmlsplitter.XMLSplitterConfigurationBean;
 import net.sf.taverna.t2.workbench.ui.actions.activity.HTMLBasedActivityContextualView;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.wsdl.parser.TypeDescriptor;
 import net.sf.taverna.wsdl.parser.UnknownOperationException;
+
+import org.apache.log4j.Logger;
 
 public abstract class AbstractXMLSplitterActionView<BeanType> extends
 		HTMLBasedActivityContextualView<BeanType> {
