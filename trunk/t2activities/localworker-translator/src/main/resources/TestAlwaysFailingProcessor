@@ -1,1 +1,1 @@
-this script fails
+throw new Exception("This processor always fails");
