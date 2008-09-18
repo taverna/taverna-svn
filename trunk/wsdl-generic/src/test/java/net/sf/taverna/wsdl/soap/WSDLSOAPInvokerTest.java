@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvokerTest.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-09-04 11:53:41 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2008-09-18 10:37:21 $
+ *               by   $Author: stain $
  * Created on 04-May-2006
  *****************************************************************/
 package net.sf.taverna.wsdl.soap;
@@ -53,6 +53,7 @@ public class WSDLSOAPInvokerTest  implements LocationConstants {
 
 	@SuppressWarnings("unchecked")
 	@Test
+    @Ignore("Integration test")
 	public void testPrimitive() throws Exception {
 
 		WSDLParser wsdlParser = new WSDLParser(WSDL_TEST_BASE
@@ -87,6 +88,7 @@ public class WSDLSOAPInvokerTest  implements LocationConstants {
 
 	@SuppressWarnings("unchecked")
 	@Test
+    @Ignore("Integration test")
 	public void testComplexDocStyle() throws Exception {
 
 		WSDLParser wsdlParser = new WSDLParser(WSDL_TEST_BASE
@@ -178,8 +180,8 @@ public class WSDLSOAPInvokerTest  implements LocationConstants {
 
 	@SuppressWarnings("unchecked")
 	@Test
+    @Ignore("Integration test")
 	public void testSOAPEncoded() throws Exception {
-
 		WSDLParser wsdlParser = new WSDLParser(
 				"http://www.mygrid.org.uk/menagerie/xfire/Primatives-re?wsdl");
 		List<String> outputNames = new ArrayList<String>();
@@ -228,6 +230,7 @@ public class WSDLSOAPInvokerTest  implements LocationConstants {
 	// the output message part.
 	@SuppressWarnings("unchecked")
 	@Test
+    @Ignore("Integration test")
 	public void testEncodedDifferentOutputName() throws Exception {
 		System.setProperty("taverna.wsdl.timeout", "1");
 		WSDLParser wsdlParser = new WSDLParser(
