@@ -94,7 +94,7 @@ public abstract class AbstractXMLSplitterActionView<BeanType> extends
 				e.printStackTrace();
 			}
 			if (descriptors != null && ! descriptors.isEmpty()) {
-				html.append("<tr><th colspan='2'>Inputs</th></tr>");
+				html.append("<tr><th colspan='2' align='left'>Inputs</th></tr>");
 				descriptorsHtml(html, descriptors);
 			}
 		}
@@ -112,7 +112,7 @@ public abstract class AbstractXMLSplitterActionView<BeanType> extends
 			}
 
 			if (descriptors != null && ! descriptors.isEmpty()) {
-				html.append("<tr><th colspan='2'>Outputs</th></tr>");
+				html.append("<tr><th colspan='2' align='left'>Outputs</th></tr>");
 				descriptorsHtml(html, descriptors);
 			}
 		}
@@ -129,19 +129,19 @@ public abstract class AbstractXMLSplitterActionView<BeanType> extends
 			if (!typeDescriptor.getName().equals(entry.getKey())) {
 				html.append("Original name: <code>");
 				html.append(typeDescriptor);
-				html.append("</code><br />");
+				html.append("</code><br>");
 			}
 			// html.append(typeDescriptor.getName());
 			if (typeDescriptor.isOptional()) {
-				html.append("<em>optional</em><br />");
+				html.append("<em>optional</em><br>");
 			}
 			html.append("Depth: ");
 			html.append(typeDescriptor.getDepth());
-			html.append("<br />");
+			html.append("<br>");
 
 			html.append("<code>");
 			html.append(typeDescriptor.getQname());
-			html.append("</code><br />");
+			html.append("</code><br>");
 			html.append("</td></tr>");
 		}
 	}
