@@ -25,20 +25,17 @@ import java.awt.FlowLayout;
 import java.awt.Frame;
 
 import javax.swing.Action;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import net.sf.taverna.t2.activities.wsdl.WSDLActivity;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
-import net.sf.taverna.t2.activities.wsdl.actions.AddXMLInputSplitterAction;
-import net.sf.taverna.t2.activities.wsdl.actions.AddXMLOutputSplitterAction;
 import net.sf.taverna.t2.activities.wsdl.actions.WSDLActivityConfigureAction;
 import net.sf.taverna.t2.workbench.ui.actions.activity.HTMLBasedActivityContextualView;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 public class WSDLActivityContextualView extends
-		HTMLBasedActivityContextualView<WSDLActivityConfigurationBean> {
+	AbstractXMLSplitterActionView<WSDLActivityConfigurationBean> {
 
 	private static final long serialVersionUID = -4329643934083676113L;
 
@@ -58,15 +55,11 @@ public class WSDLActivityContextualView extends
 	@Override
 	protected JComponent getMainFrame() {
 		final JComponent mainFrame = super.getMainFrame();
-
-		AddXMLInputSplitterAction inputSplitterAction = new AddXMLInputSplitterAction(
-				getActivity(), mainFrame);
-		AddXMLOutputSplitterAction outputSplitterAction = new AddXMLOutputSplitterAction(
-				getActivity(), mainFrame);
-
 		JPanel flowPanel = new JPanel(new FlowLayout());
-		flowPanel.add(new JButton(inputSplitterAction));
-		flowPanel.add(new JButton(outputSplitterAction));
+
+		addInputSplitter(mainFrame, flowPanel);
+		addOutputSplitter(mainFrame, flowPanel);
+		
 		mainFrame.add(flowPanel, BorderLayout.SOUTH);
 		return mainFrame;
 	}
@@ -83,8 +76,9 @@ public class WSDLActivityContextualView extends
 				+ getConfigBean().getOperation() + "</td></tr>";
 		boolean securityConfigured = getConfigBean().getSecurityProfileString() != null;
 		summary += "<tr><td>Secured?</td><td>"
-				+ Boolean.toString(securityConfigured) + "</td></tr>";
+				+ securityConfigured + "</td></tr>";
 		summary += "</tr>";
+		summary += describePorts();
 		return summary;
 	}
 

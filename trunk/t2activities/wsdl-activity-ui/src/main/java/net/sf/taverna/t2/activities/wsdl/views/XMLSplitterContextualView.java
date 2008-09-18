@@ -23,26 +23,26 @@ package net.sf.taverna.t2.activities.wsdl.views;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import net.sf.taverna.t2.activities.wsdl.InputPortTypeDescriptorActivity;
-import net.sf.taverna.t2.activities.wsdl.OutputPortTypeDescriptorActivity;
-import net.sf.taverna.t2.activities.wsdl.actions.AddXMLInputSplitterAction;
-import net.sf.taverna.t2.activities.wsdl.actions.AddXMLOutputSplitterAction;
 import net.sf.taverna.t2.activities.wsdl.xmlsplitter.XMLSplitterConfigurationBean;
 import net.sf.taverna.t2.workbench.ui.actions.activity.HTMLBasedActivityContextualView;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
+import org.apache.log4j.Logger;
+
 public class XMLSplitterContextualView extends
-		HTMLBasedActivityContextualView<XMLSplitterConfigurationBean> {
+		AbstractXMLSplitterActionView<XMLSplitterConfigurationBean> {
 
 	private static final long serialVersionUID = -4329643934083676113L;
 
-	public XMLSplitterContextualView(Activity<XMLSplitterConfigurationBean> activity) {
+	public XMLSplitterContextualView(
+			Activity<XMLSplitterConfigurationBean> activity) {
 		super(activity);
 	}
+
+	static Logger logger = Logger.getLogger(XMLSplitterContextualView.class);
 
 	/**
 	 * Gets the component from the {@link HTMLBasedActivityContextualView} and
@@ -52,17 +52,9 @@ public class XMLSplitterContextualView extends
 	protected JComponent getMainFrame() {
 		final JComponent mainFrame = super.getMainFrame();
 		JPanel flowPanel = new JPanel(new FlowLayout());
-		
-		if (getActivity() instanceof InputPortTypeDescriptorActivity) {
-			AddXMLInputSplitterAction inputSplitterAction = new AddXMLInputSplitterAction(
-					(InputPortTypeDescriptorActivity)getActivity(), mainFrame);
-			flowPanel.add(new JButton(inputSplitterAction));
-		} 
-		if (getActivity() instanceof OutputPortTypeDescriptorActivity) {
-			AddXMLOutputSplitterAction outputSplitterAction = new AddXMLOutputSplitterAction(
-					(OutputPortTypeDescriptorActivity)getActivity(), mainFrame);
-			flowPanel.add(new JButton(outputSplitterAction));
-		}
+
+		addInputSplitter(mainFrame, flowPanel);
+		addOutputSplitter(mainFrame, flowPanel);
 		mainFrame.add(flowPanel, BorderLayout.SOUTH);
 		return mainFrame;
 	}
@@ -74,8 +66,7 @@ public class XMLSplitterContextualView extends
 
 	@Override
 	protected String getRawTableRowsHtml() {
-		return "";
+		return describePorts();
 	}
-
 
 }

@@ -24,8 +24,10 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
@@ -85,6 +87,9 @@ public abstract class AbstractAddXMLSplitterAction<ActivityType> extends Abstrac
 					+ activity, ex);
 			return;
 		}
+		
+		typeDescriptors = filterDescriptors(typeDescriptors);
+		
 		possibilities = new ArrayList<String>(typeDescriptors.keySet());
 		if (possibilities.isEmpty()) {
 			logger.warn("No type descriptors found for activity " + activity);
@@ -115,6 +120,18 @@ public abstract class AbstractAddXMLSplitterAction<ActivityType> extends Abstrac
 		} else {
 			logger.warn("Unknown typedescriptor for " + portName);
 		}
+	}
+
+	public static Map<String, TypeDescriptor> filterDescriptors(
+			Map<String, TypeDescriptor> descriptors) {
+		Map<String, TypeDescriptor> filtered = new HashMap<String, TypeDescriptor>();
+		for (Entry<String, TypeDescriptor> entry : descriptors.entrySet()) {
+			TypeDescriptor descriptor = entry.getValue();
+			if (descriptor.getMimeType().contains("'text/xml'")) {
+				filtered.put(entry.getKey(), descriptor);
+			}
+		}
+		return filtered;		
 	}
 
 	protected abstract boolean isInput();
