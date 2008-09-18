@@ -45,10 +45,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SplashScreen.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-09-08 17:01:54 $
- *               by   $Author: anenadic $
+ * Last modified on   $Date: 2008-09-18 10:37:45 $
+ *               by   $Author: stain $
  * Created on 18 Jan 2007
  *****************************************************************/
 package net.sf.taverna.raven;
@@ -56,8 +56,6 @@ package net.sf.taverna.raven;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
@@ -150,7 +148,7 @@ public class SplashScreen extends JWindow {
 		} else {
 			timedOut = true;
 		}
-
+		setAlwaysOnTop(false);
 		setVisible(true);
 
 	}
