@@ -19,10 +19,10 @@ public class Workflow extends AbstractOwned {
 	public static final String NAMED_QUERY_ALL = "allWorkflows";
 
 	/*
-	 * Maximum size of Scufl
+	 * Maximum size of Scufl: 20 MB
 	 * 
 	 */
-	public static final int SCUFL_MAX = 65535;
+	public static final int SCUFL_MAX = 20 * 1024 * 1024;
 
 	@Lob
 	@Column(length = Workflow.SCUFL_MAX)
