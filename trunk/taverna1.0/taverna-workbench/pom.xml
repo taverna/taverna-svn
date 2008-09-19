@@ -2,13 +2,13 @@
   <parent>
     <artifactId>taverna</artifactId>
     <groupId>uk.org.mygrid.taverna</groupId>
-    <version>1.7.1.0</version>
+    <version>1.7.2.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.org.mygrid.taverna</groupId>
   <artifactId>taverna-workbench</artifactId>
   <name>Taverna Workbench</name>
-  <version>1.7.1.0</version>
+  <version>1.7.2.0</version>
   <build>
    
   </build>
@@ -16,57 +16,57 @@
     <dependency>
       <groupId>uk.org.mygrid.taverna</groupId>
       <artifactId>zaria</artifactId>
-      <version>1.7.1.0</version>
+      <version>1.7-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna</groupId>
       <artifactId>taverna-bootstrap</artifactId>
-      <version>1.7.1.0</version>
+      <version>1.7.2.0</version>
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna</groupId>
       <artifactId>taverna-core</artifactId>
-      <version>1.7.1.0</version>
+      <version>1.7.2.0</version>
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna</groupId>
       <artifactId>taverna-enactor</artifactId>
-      <version>1.7.1.0</version>
+      <version>1.7.2.0</version>
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna</groupId>
       <artifactId>taverna-scavenger-ui</artifactId>
-      <version>1.7.1.0</version>
+      <version>1.7.2.0</version>
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna</groupId>
       <artifactId>taverna-update-manager</artifactId>
-      <version>1.7.1.0</version>
+      <version>1.7.2.0</version>
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna.scufl</groupId>
       <artifactId>scufl-model</artifactId>
-      <version>1.7.1.0</version>
+      <version>1.7.2.0</version>
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna.scufl</groupId>
       <artifactId>scufl-ui-api</artifactId>
-      <version>1.7.1.0</version>
+      <version>1.7.2.0</version>
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna.raven</groupId>
       <artifactId>raven</artifactId>
-      <version>1.7.1.0</version>
+      <version>1.7-SNAPSHOT</version>
     </dependency>
     <dependency>
     	<groupId>uk.org.mygrid.taverna.scufl.scufl-ui-components</groupId>
     	<artifactId>enactor-invocation</artifactId>    	
-    	<version>1.7.1.0</version>
+    	<version>1.7.2.0</version>
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna.perspectives</groupId>
       <artifactId>perspective-core</artifactId>
-      <version>1.7.1.0</version>
+      <version>1.7.2.0</version>
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna</groupId>

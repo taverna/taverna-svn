@@ -3,13 +3,13 @@
   <parent>
     <artifactId>taverna</artifactId>
     <groupId>uk.org.mygrid.taverna</groupId>
-    <version>1.7.1.0</version>
+    <version>1.7.2.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.org.mygrid.taverna</groupId>
   <artifactId>taverna-tools</artifactId>
   <name>Taverna tools</name>
-  <version>1.7.1.0</version>
+  <version>1.7.2.0</version>
   <build>
   <!--
     <plugins>
@@ -30,17 +30,17 @@
       <dependency>
         <groupId>uk.org.mygrid.taverna</groupId>
         <artifactId>taverna-core</artifactId>
-        <version>1.7.1.0</version>
+        <version>1.7.2.0</version>
       </dependency>
       <dependency>
         <groupId>uk.org.mygrid.taverna</groupId>
         <artifactId>taverna-scavenger</artifactId>
-        <version>1.7.1.0</version>
+        <version>1.7.2.0</version>
       </dependency>
       <dependency>
         <groupId>uk.org.mygrid.taverna</groupId>
         <artifactId>taverna-scavenger-ui</artifactId>
-        <version>1.7.1.0</version>
+        <version>1.7.2.0</version>
       </dependency>
       <dependency>
        <groupId>xerces</groupId>

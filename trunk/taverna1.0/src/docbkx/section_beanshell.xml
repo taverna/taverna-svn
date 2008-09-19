@@ -437,7 +437,7 @@
       <programlisting>@echo off
 
 <emphasis role="bold">rem Set to %~dp0\lib for shared installations
-</emphasis><emphasis role="bold">set LIB_PATH="%APP_DATA\Taverna-1.7.1\lib"
+</emphasis><emphasis role="bold">set LIB_PATH="%APP_DATA\Taverna-1.7.2\lib"
 set PATH=%PATH%:%LIB_PATH%
 
 set ARGS=-Xmx300m "-Djava.library.path=%LIB_PATH"

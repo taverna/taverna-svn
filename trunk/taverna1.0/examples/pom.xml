@@ -3,14 +3,14 @@
   <parent>
     <artifactId>taverna</artifactId>
     <groupId>uk.org.mygrid.taverna</groupId>
-    <version>1.7.1.0</version>
+    <version>1.7.2.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.org.mygrid.taverna</groupId>
   <artifactId>examples</artifactId>
   <packaging>pom</packaging>
   <name>Example code</name>
-  <version>1.7.1.0</version>
+  <version>1.7.2.0</version>
   <modules>
     <module>workflowlauncher</module>
   </modules>

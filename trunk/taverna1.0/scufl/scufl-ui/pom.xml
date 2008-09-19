@@ -2,59 +2,59 @@
   <parent>
     <artifactId>scufl</artifactId>
     <groupId>uk.org.mygrid.taverna</groupId>
-    <version>1.7.1.0</version>
+    <version>1.7.2.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.org.mygrid.taverna.scufl</groupId>
   <artifactId>scufl-ui</artifactId>
   <name>Scufl UI</name>
-  <version>1.7.1.0</version>
+  <version>1.7.2.0</version>
   <dependencies>
   	<!-- Dependency on extension APIs -->
   	<dependency>
   	  <groupId>uk.org.mygrid.taverna.scufl</groupId>
   	  <artifactId>scufl-ui-api</artifactId>
-  	  <version>1.7.1.0</version>
+  	  <version>1.7.2.0</version>
   	</dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna</groupId>
       <artifactId>taverna-core</artifactId>
-      <version>1.7.1.0</version>
+      <version>1.7.2.0</version>
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna</groupId>
       <artifactId>taverna-enactor</artifactId>
-      <version>1.7.1.0</version>
+      <version>1.7.2.0</version>
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna</groupId>
       <artifactId>taverna-scavenger</artifactId>
-      <version>1.7.1.0</version>
+      <version>1.7.2.0</version>
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna.baclava</groupId>
       <artifactId>baclava-core</artifactId>
-      <version>1.7.1.0</version>
+      <version>1.7.2.0</version>
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna.baclava</groupId>
       <artifactId>baclava-store-implementation</artifactId>
-      <version>1.7.1.0</version>
+      <version>1.7.2.0</version>
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna.baclava</groupId>
       <artifactId>baclava-ui</artifactId>
-      <version>1.7.1.0</version>
+      <version>1.7.2.0</version>
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna.scufl</groupId>
       <artifactId>scufl-model</artifactId>
-      <version>1.7.1.0</version>
+      <version>1.7.2.0</version>
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna.scufl.scufl-ui-components</groupId>
       <artifactId>semantic-markup-editor</artifactId>
-      <version>1.7.1.0</version>
+      <version>1.7.2.0</version>
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.resources</groupId>

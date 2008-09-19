@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!ENTITY VERSION "1.7.1">
+<!ENTITY VERSION "1.7.2">

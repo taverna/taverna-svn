@@ -3,18 +3,18 @@
   <parent>
     <artifactId>baclava</artifactId>
     <groupId>uk.org.mygrid.taverna</groupId>
-    <version>1.7.1.0</version>
+    <version>1.7.2.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.org.mygrid.taverna.baclava</groupId>
   <artifactId>baclava-store-implementation</artifactId>
   <name>Baclava Store Implementations</name>
-  <version>1.7.1.0</version>
+  <version>1.7.2.0</version>
   <dependencies>
     <dependency>
       <groupId>uk.org.mygrid.taverna.baclava</groupId>
       <artifactId>baclava-core</artifactId>
-      <version>1.7.1.0</version>
+      <version>1.7.2.0</version>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
