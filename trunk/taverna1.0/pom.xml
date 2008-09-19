@@ -150,6 +150,7 @@
 					</systemProperties>
 				</configuration>
 			</plugin>
+            <!--
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.2-svn-SNAPSHOT</version>
@@ -161,6 +162,7 @@
 					</descriptors>
 				</configuration>
 			</plugin>
+            -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
@@ -257,6 +259,7 @@
 				</property>
 			</activation>
 			<build>
+                <!--
 				<plugins>
 					<plugin>
 						<artifactId>maven-assembly-plugin</artifactId>
@@ -269,6 +272,7 @@
 						</configuration>
 					</plugin>
 				</plugins>
+                -->
 			</build>
 			<modules>
 				<module>taverna-bootstrap</module>
@@ -283,6 +287,7 @@
 				</property>
 			</activation>
 			<build>
+                <!--
 				<plugins>
 					<plugin>
 						<artifactId>maven-assembly-plugin</artifactId>
@@ -300,6 +305,7 @@
 						</configuration>
 					</plugin>
 				</plugins>
+                -->
 			</build>
 			<distributionManagement>
 				<site>

@@ -24,7 +24,6 @@
     </plugins>
   </build>
   <dependencies>
-  <!-- Should be NONE except for test-scope -->
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
