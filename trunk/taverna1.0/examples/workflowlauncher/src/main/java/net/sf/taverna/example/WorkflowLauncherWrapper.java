@@ -56,19 +56,18 @@ import org.jdom.JDOMException;
  * <p>
  * For instance, if you are constructing a new workflow using the API, and you
  * need access to a
- * {@link org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor}, you
- * will need to both list taverna-soaplab-processor as a system artifact and
- * include it and its dependencies in your application's classpath.
+ * {@link org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor}, you will
+ * need to both list taverna-soaplab-processor as a system artifact and include
+ * it and its dependencies in your application's classpath.
  * </p>
  * <p>
  * The external artifacts relate to artifacts that exist outside of the
  * application as SPI plugin points, ie. artifacts that are <strong>not</strong>
  * on the application's classpath. For the purpose of this example this is the
- * {@link Processor}s that are needed during workflow execution. These
- * artifacts are defined in
- * {@link WorkflowLauncherWrapper#buildExternalArtifactSet()}. Depending on
- * which parts of Taverna's API you are invoking, you might have to include more
- * artifacts from Taverna's distribution profile.
+ * {@link Processor}s that are needed during workflow execution. These artifacts
+ * are defined in {@link WorkflowLauncherWrapper#buildExternalArtifactSet()}.
+ * Depending on which parts of Taverna's API you are invoking, you might have to
+ * include more artifacts from Taverna's distribution profile.
  * </p>
  * <p>
  * Because these artifacts are not defined in the application they, and their
@@ -85,30 +84,29 @@ import org.jdom.JDOMException;
  * The key to this approach is initialising a {@link Repository} using the API
  * call:
  * </p>
- *
+ * 
  * <pre>
- * Repository repository =
- * 	LocalRepository.getRepository(localrepository, applicationClassloader,
- * 		systemArtifacts);
+ * Repository repository = LocalRepository.getRepository(localrepository,
+ * 		applicationClassloader, systemArtifacts);
  * </pre>
- *
+ * 
  * <p>
  * Then making sure the local repository is up to date with a call:
  * </p>
- *
+ * 
  * <pre>
  * repository.update();
  * </pre>
- *
+ * 
  * <p>
  * The repository is then registered with the {@link TavernaSPIRegistry} with
  * the call:
  * </p>
- *
+ * 
  * <pre>
  * TavernaSPIRegistry.setRepository(repository);
  * </pre>
- *
+ * 
  * <p>
  * This all takes place within
  * {@link WorkflowLauncherWrapper#initialiseRepository()}
@@ -130,18 +128,22 @@ import org.jdom.JDOMException;
  * <p>
  * First build using maven together with the appassembler plugin:
  * </p>
- * <pre>mvn package appassembler:assemble</pre>
+ * 
+ * <pre>
+ * mvn package appassembler:assemble
+ * </pre>
  * <p>
- * Then navigate to the <code>target/appassembler/bin</code> directory
- * and run the <code>runme[.bat]</code> command:
+ * Then navigate to the <code>target/appassembler/bin</code> directory and run
+ * the <code>runme[.bat]</code> command:
  * </p>
+ * 
  * <pre>
  * runme [-inputdoc &lt;path to input doc&gt;
  *        -outputdoc &lt;path to output doc&gt;
  *        -basedir &lt;path to local repository download dir&gt;]
  *        -workflow &lt;path to workflow scufl file&gt;.
  * </pre>
- *
+ * 
  * @author Stuart Owen
  * @author Stian Soiland
  */
@@ -156,15 +158,15 @@ public class WorkflowLauncherWrapper {
 	 * {@link org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor} can
 	 * be in version <code>1.6.2.1</code>, the core components listed by
 	 * {@link #buildSystemArtifactSet()} would still be <code>1.6.2.0</code>,
-	 * and thus this constant would also be <code>1.6.2.0</code>. You might
-	 * have to update use of <code>TAVERNA_BASE_VERSION</code> in
+	 * and thus this constant would also be <code>1.6.2.0</code>. You might have
+	 * to update use of <code>TAVERNA_BASE_VERSION</code> in
 	 * {@link #buildExternalArtifactSet()} if you want a newer version of a
 	 * processor or similar.)
 	 * <p>
 	 * This version has to match the version of the real dependency you have to
 	 * Taverna libraries on your classpath (ie. the pom.xml dependencies).
 	 */
-	public static final String TAVERNA_BASE_VERSION = "1.7.1.0";
+	public static final String TAVERNA_BASE_VERSION = "1.7.2.0";
 
 	String workflowName;
 
@@ -174,8 +176,8 @@ public class WorkflowLauncherWrapper {
 
 	String baseDirName;
 
-	private static Logger logger =
-		Logger.getLogger(WorkflowLauncherWrapper.class);
+	private static Logger logger = Logger
+			.getLogger(WorkflowLauncherWrapper.class);
 
 	public static void main(String[] args) {
 		try {
@@ -188,15 +190,17 @@ public class WorkflowLauncherWrapper {
 
 	/**
 	 * The execution entry point, called by {@link #main(String[])}
-	 *
+	 * 
 	 * @param args
 	 *            the arguments as passed to {@link #main(String[])}
-	 * @throws Exception if anything goes wrong
+	 * @throws Exception
+	 *             if anything goes wrong
 	 */
 	public void run(String[] args) throws Exception {
 		processArgs(args);
 		if (workflowName == null) {
-			logger.error("You must specify a workflow with the argument -workflow");
+			logger
+					.error("You must specify a workflow with the argument -workflow");
 			logger.error("e.g. runme.bat -workflow C:/myworkflow.xml");
 			System.exit(2);
 		}
@@ -215,9 +219,9 @@ public class WorkflowLauncherWrapper {
 
 		Map<String, DataThing> outputs = launcher.execute(inputs);
 		if (outputDocumentName == null) {
-			logger.warn("No -outputdoc defined to save results. " +
-				"Results returned contained "
-				+ outputs.size() + " outputs.");
+			logger.warn("No -outputdoc defined to save results. "
+					+ "Results returned contained " + outputs.size()
+					+ " outputs.");
 		} else {
 			saveOutputDocument(outputs);
 		}
@@ -225,13 +229,13 @@ public class WorkflowLauncherWrapper {
 	}
 
 	/**
-	 * Open an input stream to the workflow defined by the value of the
-	 * argument <code>-workflow</code>
-	 *
+	 * Open an input stream to the workflow defined by the value of the argument
+	 * <code>-workflow</code>
+	 * 
 	 * @return The workflow {@link InputStream}
 	 * @throws FileNotFoundException
-	 *             if the <code>-workflow</code> argument does not represent a valid path to
-	 *             an existing file.
+	 *             if the <code>-workflow</code> argument does not represent a
+	 *             valid path to an existing file.
 	 */
 	protected InputStream getWorkflowInputStream() throws FileNotFoundException {
 		return new FileInputStream(new File(workflowName));
@@ -245,18 +249,21 @@ public class WorkflowLauncherWrapper {
 	 * <p>
 	 * This involves first defining the artifacts that exist within the
 	 * application classpath, external plugin artifacts required during workflow
-	 * execution (processors) and a location to download these artifacts to.</p>
+	 * execution (processors) and a location to download these artifacts to.
+	 * </p>
 	 * <p>
 	 * Based upon this information the repository is updated, causing any
 	 * external artifacts to be downloaded to the local repository location
 	 * defined by <code>-basedir</code> if required.
-	 *
+	 * 
 	 * @return The initialised {@link Repository} instance
 	 * @throws IOException
 	 */
 	protected Repository initialiseRepository() throws IOException {
 
-		System.setProperty("raven.profile","http://www.mygrid.org.uk/taverna/updates/1.7.1/taverna-1.7.1.0-profile.xml");
+		System
+				.setProperty("raven.profile",
+						"http://www.mygrid.org.uk/taverna/updates/1.7.2/taverna-1.7.2.0-profile.xml");
 
 		// this line is necessary if working with Taverna 1.5.2 or earlier:
 		// Bootstrap.properties = new Properties();
@@ -270,9 +277,8 @@ public class WorkflowLauncherWrapper {
 		if (myLoader == null) {
 			myLoader = ClassLoader.getSystemClassLoader();
 		}
-		Repository repository =
-			LocalRepository.getRepository(base,
-				myLoader, systemArtifacts);
+		Repository repository = LocalRepository.getRepository(base, myLoader,
+				systemArtifacts);
 		for (Artifact artifact : externalArtifacts) {
 			repository.addArtifact(artifact);
 		}
@@ -290,11 +296,11 @@ public class WorkflowLauncherWrapper {
 	 * containing required artifacts. This should contain at a minimum:
 	 * <ul>
 	 * <li>http://www.mygrid.org.uk/maven/repository/ - the myGrid artifact
-	 * repository</li>
-	 * <li>http://moby.ucalgary.ca/moby/moby_maven/ - Biomoby specific
-	 * artifacts</li>
-	 * <li>http://www.ibiblio.org/maven2/ - the central Maven repository and/or
-	 * any mirrors</li>
+	 * repository</li> <li>
+	 * http://moby.ucalgary.ca/moby/moby_maven/ - Biomoby specific artifacts
+	 * </li> <li>
+	 * http://www.ibiblio.org/maven2/ - the central Maven repository and/or any
+	 * mirrors</li>
 	 * </ul>
 	 * <p>
 	 * The repositories will be searched in order.
@@ -302,12 +308,13 @@ public class WorkflowLauncherWrapper {
 	 * <p>
 	 * Although the URLs are hard-coded in this example, it is advisable to
 	 * store these in a separate file in a real application.
-	 *
+	 * 
 	 * @return A {@link List} containing the list of URL locations
-	 * @throws MalformedURLException if the programmer entered an invalid URL :-)
+	 * @throws MalformedURLException
+	 *             if the programmer entered an invalid URL :-)
 	 */
 	protected List<URL> buildRepositoryLocationSet()
-		throws MalformedURLException {
+			throws MalformedURLException {
 		List<URL> result = new ArrayList<URL>();
 
 		// Guess local Maven2 repository is in ~/.m2/repository
@@ -320,11 +327,12 @@ public class WorkflowLauncherWrapper {
 		}
 
 		result.add(new URL("http://www.mygrid.org.uk/maven/repository/"));
+		result.add(new URL("http://www.mygrid.org.uk/maven/repo1/"));
 		result.add(new URL("http://mirrors.sunsite.dk/maven2/"));
 		result.add(new URL("http://www.ibiblio.org/maven2/"));
 		result.add(new URL("http://moby.ucalgary.ca/moby/moby_maven/"));
 		result.add(new URL(
-			"http://www.mygrid.org.uk/maven/snapshot-repository/"));
+				"http://www.mygrid.org.uk/maven/snapshot-repository/"));
 		return result;
 	}
 
@@ -338,32 +346,62 @@ public class WorkflowLauncherWrapper {
 	 * These are used to let Raven know that these classes already exist and
 	 * prevents it creating duplicate classes from its own classloaders leading
 	 * to a potential ClassCastException or similar.
-	 *
+	 * 
 	 * @return Set<Artifact> containing the list of system {@link Artifact}s
 	 */
 	protected Set<Artifact> buildSystemArtifactSet() {
 
 		Set<Artifact> systemArtifacts = new HashSet<Artifact>();
-		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
-			"taverna-core", TAVERNA_BASE_VERSION));
-		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
-			"taverna-enactor", TAVERNA_BASE_VERSION));
-		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
-			"taverna-tools", TAVERNA_BASE_VERSION));
+		systemArtifacts.add(new BasicArtifact("commons-codec", "commons-codec",
+				"1.2"));
+		systemArtifacts.add(new BasicArtifact("commons-discovery",
+				"commons-discovery", "0.2"));
+		systemArtifacts.add(new BasicArtifact("commons-httpclient",
+				"commons-httpclient", "3.0"));
+		systemArtifacts
+				.add(new BasicArtifact("commons-io", "commons-io", "1.2"));
+		systemArtifacts.add(new BasicArtifact("commons-logging",
+				"commons-logging", "1.0.3"));
+
+		systemArtifacts.add(new BasicArtifact("jdom", "jdom", "1.0"));
+
+		systemArtifacts.add(new BasicArtifact("junit", "junit", "3.8.1"));
+
+		systemArtifacts.add(new BasicArtifact("log4j", "log4j", "1.2.12"));
+
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.resources",
+				"freefluo", "NO-VERSION"));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.resources",
+				"freefluo-taverna-exts", "1.7.1"));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.resources",
+				"Jmol", "NO-VERSION"));
 
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.baclava",
-			"baclava-core", TAVERNA_BASE_VERSION));
-		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.baclava",
-			"baclava-tools", TAVERNA_BASE_VERSION));
+				"baclava-core", TAVERNA_BASE_VERSION));
+
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.examples",
+				"workflowlauncher", "0.1.2"));
+
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.raven",
+				"raven", TAVERNA_BASE_VERSION));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.raven",
+				"raven-log4j", TAVERNA_BASE_VERSION));
 
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
-			"scufl-core", TAVERNA_BASE_VERSION));
+				"scufl-model", TAVERNA_BASE_VERSION));
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
-			"scufl-model", TAVERNA_BASE_VERSION));
+				"scufl-tools", TAVERNA_BASE_VERSION));
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
-			"scufl-tools", TAVERNA_BASE_VERSION));
-		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
-			"scufl-workflow", TAVERNA_BASE_VERSION));
+				"scufl-ui-api", TAVERNA_BASE_VERSION));
+
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
+				"taverna-bootstrap", TAVERNA_BASE_VERSION));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
+				"taverna-core", TAVERNA_BASE_VERSION));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
+				"taverna-enactor", TAVERNA_BASE_VERSION));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
+				"taverna-update-manager", TAVERNA_BASE_VERSION));
 
 		return systemArtifacts;
 	}
@@ -386,7 +424,7 @@ public class WorkflowLauncherWrapper {
 	 * Although hard-coded for this example it would be advisable to define
 	 * these artifacts in an external file.
 	 * </p>
-	 *
+	 * 
 	 * @return Set<Artifact> containing the list of external artifacts.
 	 */
 	protected Set<Artifact> buildExternalArtifactSet() {
@@ -395,35 +433,35 @@ public class WorkflowLauncherWrapper {
 		String groupId = "uk.org.mygrid.taverna.processors";
 
 		externalArtifacts.add(new BasicArtifact(groupId,
-			"taverna-beanshell-processor", TAVERNA_BASE_VERSION));
+				"taverna-beanshell-processor", TAVERNA_BASE_VERSION));
 
 		externalArtifacts.add(new BasicArtifact(groupId,
-			"taverna-biomart-processor", TAVERNA_BASE_VERSION));
+				"taverna-biomart-processor", TAVERNA_BASE_VERSION));
 
 		externalArtifacts.add(new BasicArtifact("biomoby.org",
-			"taverna-biomoby", TAVERNA_BASE_VERSION));
+				"taverna-biomoby", TAVERNA_BASE_VERSION));
 
 		externalArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
-			"taverna-contrib", TAVERNA_BASE_VERSION));
+				"taverna-contrib", TAVERNA_BASE_VERSION));
 
 		externalArtifacts.add(new BasicArtifact(groupId,
-			"taverna-java-processor", TAVERNA_BASE_VERSION));
+				"taverna-java-processor", TAVERNA_BASE_VERSION));
 
 		externalArtifacts.add(new BasicArtifact(groupId,
-			"taverna-localworkers", TAVERNA_BASE_VERSION));
+				"taverna-localworkers", TAVERNA_BASE_VERSION));
 
 		externalArtifacts.add(new BasicArtifact(groupId,
-			"taverna-notification-processor", TAVERNA_BASE_VERSION));
+				"taverna-notification-processor", TAVERNA_BASE_VERSION));
 
 		externalArtifacts.add(new BasicArtifact(groupId,
-			"taverna-soaplab-processor", TAVERNA_BASE_VERSION));
+				"taverna-soaplab-processor", TAVERNA_BASE_VERSION));
 
 		externalArtifacts.add(new BasicArtifact(groupId,
-			"taverna-stringconstant-processor", TAVERNA_BASE_VERSION));
+				"taverna-stringconstant-processor", TAVERNA_BASE_VERSION));
 
 		externalArtifacts.add(new BasicArtifact(groupId,
-			"taverna-wsdl-processor", TAVERNA_BASE_VERSION));
-		
+				"taverna-wsdl-processor", TAVERNA_BASE_VERSION));
+
 		externalArtifacts.add(new BasicArtifact(groupId,
 				"taverna-biomoby-processor", TAVERNA_BASE_VERSION));
 
@@ -433,13 +471,16 @@ public class WorkflowLauncherWrapper {
 	/**
 	 * <p>
 	 * Provide a {@link File} representation of the local repository directory
-	 * that external artifacts and their dependencies will be downloaded to.</p>
+	 * that external artifacts and their dependencies will be downloaded to.
+	 * </p>
 	 * <p>
 	 * This is defined by the argument <code>-basedir</code>. If this is not
-	 * defined a temporary directory is created.</p>
-	 *
+	 * defined a temporary directory is created.
+	 * </p>
+	 * 
 	 * @return a {@link File} representation
-	 * @throws IOException if the base directory could not be accessed
+	 * @throws IOException
+	 *             if the base directory could not be accessed
 	 */
 	protected File getRepositoryBaseFile() throws IOException {
 		if (baseDirName != null) {
@@ -449,7 +490,7 @@ public class WorkflowLauncherWrapper {
 			temp.delete();
 			temp.mkdir();
 			logger.warn("No -basedir defined, so using temporary location of:"
-				+ temp.getAbsolutePath());
+					+ temp.getAbsolutePath());
 			return temp;
 		}
 	}
@@ -457,15 +498,18 @@ public class WorkflowLauncherWrapper {
 	/**
 	 * Load an XML input document, if defined by the argument
 	 * <code>-inputdoc</code>.
-	 *
-	 * @return The {@link Map} of input {@link DataThing}s, or
-	 *         <code>null</code> if <code>-inputdoc</code> was not specified
-	 * @throws FileNotFoundException If the input document can't be found
-	 * @throws JDOMException If the input document is invalid XML
-	 * @throws IOException If the input document can't be read
+	 * 
+	 * @return The {@link Map} of input {@link DataThing}s, or <code>null</code>
+	 *         if <code>-inputdoc</code> was not specified
+	 * @throws FileNotFoundException
+	 *             If the input document can't be found
+	 * @throws JDOMException
+	 *             If the input document is invalid XML
+	 * @throws IOException
+	 *             If the input document can't be read
 	 */
-	protected Map<String, DataThing> loadInputDocument() throws FileNotFoundException,
-		JDOMException, IOException {
+	protected Map<String, DataThing> loadInputDocument()
+			throws FileNotFoundException, JDOMException, IOException {
 		if (inputDocumentName == null) {
 			return null;
 		}
@@ -476,11 +520,14 @@ public class WorkflowLauncherWrapper {
 	/**
 	 * Save an XML output document for the results of running the workflow to
 	 * the location defined by <code>-outputdoc</code>, if specified.
-	 *
-	 * @param outputs The {@link Map} of results to be saved
-	 * @throws IOException If the results could not be saved
+	 * 
+	 * @param outputs
+	 *            The {@link Map} of results to be saved
+	 * @throws IOException
+	 *             If the results could not be saved
 	 */
-	protected void saveOutputDocument(Map<String, DataThing> outputs) throws IOException {
+	protected void saveOutputDocument(Map<String, DataThing> outputs)
+			throws IOException {
 		if (outputDocumentName != null) {
 			File file = new File(outputDocumentName);
 			WorkflowLauncher.saveOutputDoc(outputs, file);
@@ -491,8 +538,9 @@ public class WorkflowLauncherWrapper {
 	/**
 	 * Process command line argument and set attributes for input/output
 	 * document, basedir and workflow.
-	 *
-	 * @param args The list of arguments from {@link #main(String[])}
+	 * 
+	 * @param args
+	 *            The list of arguments from {@link #main(String[])}
 	 */
 	private void processArgs(String[] args) {
 		// TODO: Use org.apache.commons.cli instead of manual parsing
@@ -518,7 +566,7 @@ public class WorkflowLauncherWrapper {
 			}
 			if (!handled) {
 				logger.error("Unrecognised argument:" + param + " with value:"
-					+ value);
+						+ value);
 			}
 		}
 	}
