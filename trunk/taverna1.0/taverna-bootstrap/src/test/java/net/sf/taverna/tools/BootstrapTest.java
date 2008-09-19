@@ -1,18 +1,23 @@
 package net.sf.taverna.tools;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-public class BootstrapTest extends TestCase {
+public class BootstrapTest {
 
 	private String realHome;
 	private File tempHome;
 	private String realOS;
 	private String realTavHome;
 
-	@Override
+	@Before
 	public void setUp() throws IOException {
 		realHome = System.getProperty("user.home");
 		realOS = System.getProperty("os.name");
@@ -27,7 +32,7 @@ public class BootstrapTest extends TestCase {
 		// Needs to be blank to be able to auto-detect
 	}
 
-	@Override
+	@After
 	public void tearDown() throws IOException {
 		System.setProperty("user.home", realHome);
 		System.setProperty("os.name", realOS);
@@ -39,6 +44,7 @@ public class BootstrapTest extends TestCase {
 		// FileUtils.deleteDirectory(tempHome);
 	}
 
+	@Test
 	public void testSetUpMadeTempHome() {
 		String home = System.getProperty("user.home");
 		assertTrue(home.contains(".tmp"));
@@ -47,13 +53,14 @@ public class BootstrapTest extends TestCase {
 	/**
 	 * Test that findUserDir() works on the actual OS
 	 */
+	@Test
 	public void testFindUserDir() {
 		Bootstrap.findUserDir();
 		File userDir = new File(System.getProperty("taverna.home"));
 		assertTrue(userDir.isDirectory());
 		// Can't check getParent(), would fail on Windows
 		assertTrue(userDir.getAbsolutePath().startsWith(
-		        tempHome.getAbsolutePath()));
+				tempHome.getAbsolutePath()));
 		// Ignore T/t
 		assertTrue(userDir.getName().contains("averna"));
 	}
@@ -61,12 +68,13 @@ public class BootstrapTest extends TestCase {
 	/**
 	 * Test that findUserDir() works as expected on OS X
 	 */
+	@Test
 	public void testFindUserDirMac() {
 		System.setProperty("os.name", "Mac OS X");
 		Bootstrap.findUserDir();
 		File dir = new File(System.getProperty("taverna.home"));
 		File shouldBe = new File(tempHome,
-		        "Library/Application Support/Taverna-" + Bootstrap.VERSION);
+				"Library/Application Support/Taverna-" + Bootstrap.VERSION);
 		assertEquals(shouldBe, dir);
 		assertTrue(dir.isDirectory());
 
@@ -75,6 +83,7 @@ public class BootstrapTest extends TestCase {
 	/**
 	 * Test that findUserDir() works as expected on Windows
 	 */
+	@Test
 	public void testFindUserDirWindows() {
 		System.setProperty("os.name", "Windows XP");
 		Bootstrap.findUserDir();
@@ -94,13 +103,14 @@ public class BootstrapTest extends TestCase {
 	/**
 	 * Test that findUserDir() works as expected on Unix
 	 */
+	@Test
 	public void testFindUserDirUnix() {
 		// Anything else is UNIX style
 		System.setProperty("os.name", "Linn0x");
 		Bootstrap.findUserDir();
 		File dir = new File(System.getProperty("taverna.home"));
 		File shouldBe = new File(tempHome, ".taverna-"
-		        + Bootstrap.VERSION.toLowerCase());
+				+ Bootstrap.VERSION.toLowerCase());
 		assertEquals(shouldBe, dir);
 		assertTrue(dir.isDirectory());
 	}

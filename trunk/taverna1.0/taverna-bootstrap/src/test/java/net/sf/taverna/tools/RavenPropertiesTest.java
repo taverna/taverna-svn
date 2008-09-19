@@ -25,35 +25,45 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: RavenPropertiesTest.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-05-25 13:51:40 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2008-09-19 12:14:24 $
+ *               by   $Author: stain $
  * Created on 23 Nov 2006
  *****************************************************************/
 package net.sf.taverna.tools;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Properties;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
-public class RavenPropertiesTest extends TestCase {	
-	
+public class RavenPropertiesTest {
+
 	String realTavHome;
-	
-	@Override
-	protected void setUp() throws Exception {
-		realTavHome=System.getProperty("taverna.home");
-		String resourcePath = RavenPropertiesTest.class.getResource("/conf/raven.properties").toExternalForm();
-		resourcePath=resourcePath.replaceAll("file:","");
-		resourcePath=resourcePath.replaceAll("conf/raven.properties", "");
-		System.out.println("Looking for conf/raven.properties in: "+resourcePath);
+
+	@Before
+	public void setUp() throws Exception {
+		realTavHome = System.getProperty("taverna.home");
+		String resourcePath = RavenPropertiesTest.class.getResource(
+				"/conf/raven.properties").toExternalForm();
+		resourcePath = resourcePath.replaceAll("file:", "");
+		resourcePath = resourcePath.replaceAll("conf/raven.properties", "");
+		System.out.println("Looking for conf/raven.properties in: "
+				+ resourcePath);
 		System.setProperty("taverna.home", resourcePath);
 	}
-	
-	@Override
-	protected void tearDown() throws Exception {
-		if (realTavHome!=null)
+
+	@After
+	public void tearDown() throws Exception {
+		if (realTavHome != null)
 			System.setProperty("taverna.home", realTavHome);
 		else
 			System.clearProperty("taverna.home");
@@ -62,51 +72,89 @@ public class RavenPropertiesTest extends TestCase {
 		System.clearProperty("raven.profile");
 	}
 
+	@Test
 	public void testRavenProperties() throws Exception {
-		
-		System.setProperty("raven.splashscreen","a splashscreen");
-		
-		Properties props = RavenProperties.getInstance().getProperties();		
-		
-		assertNotNull("No raven.loader.groupid defined",props.getProperty("raven.loader.groupid"));
-		assertNotNull("No raven.loader.artifactid defined",props.getProperty("raven.loader.artifactid"));
-		assertNotNull("No raven.loader.version defined",props.getProperty("raven.loader.version"));
-		assertNotNull("No raven.loader.class defined",props.getProperty("raven.loader.class"));
-		assertNotNull("No raven.loader.method defined",props.getProperty("raven.loader.method"));
-		assertNotNull("No raven.repository.11 defined",props.getProperty("raven.repository.11"));		
-		assertNotNull("No raven.splashscreen defined",props.getProperty("raven.splashscreen"));
-		assertNotNull("No raven.splashscreen.timeout defined",props.getProperty("raven.splashscreen.timeout"));		
-		assertNotNull("No raven.target.groupid defined",props.getProperty("raven.target.groupid"));
-		assertNotNull("No raven.target.artifactid defined",props.getProperty("raven.target.artifactid"));
-		assertNotNull("No raven.target.version defined",props.getProperty("raven.target.version"));
-		assertNotNull("No raven.target.class defined",props.getProperty("raven.target.class"));
-		assertNotNull("No raven.target.method defined",props.getProperty("raven.target.method"));
-		
-		//test System overide
-		assertEquals("overidden value should be 'a splashscreen'","a splashscreen",props.getProperty("raven.splashscreen"));		
+
+		System.setProperty("raven.splashscreen", "a splashscreen");
+
+		Properties props = RavenProperties.getInstance().getProperties();
+
+		assertNotNull("No raven.loader.groupid defined", props
+				.getProperty("raven.loader.groupid"));
+		assertNotNull("No raven.loader.artifactid defined", props
+				.getProperty("raven.loader.artifactid"));
+		assertNotNull("No raven.loader.version defined", props
+				.getProperty("raven.loader.version"));
+		assertNotNull("No raven.loader.class defined", props
+				.getProperty("raven.loader.class"));
+		assertNotNull("No raven.loader.method defined", props
+				.getProperty("raven.loader.method"));
+		assertNotNull("No raven.repository.11 defined", props
+				.getProperty("raven.repository.11"));
+		assertNotNull("No raven.splashscreen defined", props
+				.getProperty("raven.splashscreen"));
+		assertNotNull("No raven.splashscreen.timeout defined", props
+				.getProperty("raven.splashscreen.timeout"));
+		assertNotNull("No raven.target.groupid defined", props
+				.getProperty("raven.target.groupid"));
+		assertNotNull("No raven.target.artifactid defined", props
+				.getProperty("raven.target.artifactid"));
+		assertNotNull("No raven.target.version defined", props
+				.getProperty("raven.target.version"));
+		assertNotNull("No raven.target.class defined", props
+				.getProperty("raven.target.class"));
+		assertNotNull("No raven.target.method defined", props
+				.getProperty("raven.target.method"));
+
+		// test System overide
+		assertEquals("overidden value should be 'a splashscreen'",
+				"a splashscreen", props.getProperty("raven.splashscreen"));
 	}
-	
+
+	@Ignore("Integration test")
+	@Test
 	public void testAvailableForUpdatesTrue() {
-		System.setProperty("raven.profilelist",ProfileSelectorTest.PROFILE_BASE_URL+"test-profilelist.xml");
-		assertTrue("updates should be allowed",RavenProperties.getInstance().configuredForUpdates());
+		System.setProperty("raven.profilelist",
+				ProfileSelectorTest.PROFILE_BASE_URL + "test-profilelist.xml");
+		assertTrue("updates should be allowed", RavenProperties.getInstance()
+				.configuredForUpdates());
 	}
-	
+
+	@Test
 	public void testAvailableForUpdatesFalse() {
-		RavenProperties.getInstance().getProperties().remove("raven.profilelist");
-		assertFalse("updates should not be be available", RavenProperties.getInstance().configuredForUpdates());
+		RavenProperties.getInstance().getProperties().remove(
+				"raven.profilelist");
+		assertFalse("updates should not be be available", RavenProperties
+				.getInstance().configuredForUpdates());
 	}
-	
+
+	@Ignore("Integration test")
+	@Test
 	public void testProfileMirrorList() {
-		System.setProperty("raven.profile", "http://somedodgyurl.com/profile.xml "+ProfileSelectorTest.PROFILE_BASE_URL+"taverna-1.5.0.0-profile.xml");
-		String profile = RavenProperties.getInstance().getRavenProfileLocation();
-		
-		assertEquals("List should have been resolved down to 1 that works",profile,ProfileSelectorTest.PROFILE_BASE_URL+"taverna-1.5.0.0-profile.xml");
+		System.setProperty("raven.profile",
+				"http://35E62FF5-324C-4C1B-AB24-4FF6BE7D1C0E.not/profile.xml "
+						+ ProfileSelectorTest.PROFILE_BASE_URL
+						+ "taverna-1.5.0.0-profile.xml");
+		String profile = RavenProperties.getInstance()
+				.getRavenProfileLocation();
+
+		assertEquals("List should have been resolved down to 1 that works",
+				profile, ProfileSelectorTest.PROFILE_BASE_URL
+						+ "taverna-1.5.0.0-profile.xml");
 	}
-	
+
+	@Ignore("Integration test")
+	@Test
 	public void testProfileListMirrorList() {
-		System.setProperty("raven.profilelist", "http://somedodgyurl.com/profilelist.xml "+ProfileSelectorTest.PROFILE_BASE_URL+"test-profilelist.xml");
-		String profileList = RavenProperties.getInstance().getRavenProfileListLocation();
-		
-		assertEquals("list should have been resolved down to 1 that works",profileList,ProfileSelectorTest.PROFILE_BASE_URL+"test-profilelist.xml");
+		System.setProperty("raven.profilelist",
+				"http://35E62FF5-324C-4C1B-AB24-4FF6BE7D1C0E.not/profilelist.xml "
+						+ ProfileSelectorTest.PROFILE_BASE_URL
+						+ "test-profilelist.xml");
+		String profileList = RavenProperties.getInstance()
+				.getRavenProfileListLocation();
+
+		assertEquals("list should have been resolved down to 1 that works",
+				profileList, ProfileSelectorTest.PROFILE_BASE_URL
+						+ "test-profilelist.xml");
 	}
 }
