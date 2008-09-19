@@ -1,5 +1,10 @@
 package org.embl.ebi.escience.scuflworkers.java;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,30 +16,31 @@ import org.embl.ebi.escience.scuflworkers.testhelpers.WSDLBasedTestCase;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * Tests the XMLInputSplitter local worker, which is used for splitting complex
  * types for processor inputs.
  * 
- * @author sowen
+ * @author Stuart Owen
  * 
  */
-
-public class XMLInputSplitterTest extends WSDLBasedTestCase {	
+@SuppressWarnings("unchecked")
+public class XMLInputSplitterTest extends WSDLBasedTestCase {
 
 	/**
 	 * a general all round test of the XMLInputSplitter class
 	 * 
 	 * @throws Exception
 	 */
-
+	@Ignore("Integration test")
+	@Test
 	public void testSplitter() throws Exception {
 		XMLInputSplitter splitter = new XMLInputSplitter();
 		ScuflModel model = new ScuflModel();
-		WSDLBasedProcessor processor = new WSDLBasedProcessor(
-				model,
-				"testProc",
-				TESTWSDL_BASE+"eutils/eutils_lite.wsdl",
+		WSDLBasedProcessor processor = new WSDLBasedProcessor(model,
+				"testProc", TESTWSDL_BASE + "eutils/eutils_lite.wsdl",
 				"run_eSpell");
 		splitter.setUpInputs(processor.getInputPorts()[0]);
 
@@ -56,7 +62,7 @@ public class XMLInputSplitterTest extends WSDLBasedTestCase {
 		assertEquals("wrong name", "output", splitter.outputNames()[0]);
 		assertEquals("wrong type", "'text/xml'", splitter.outputTypes()[0]);
 
-		Map<String,DataThing>inputMap = new HashMap<String,DataThing>();
+		Map<String, DataThing> inputMap = new HashMap<String, DataThing>();
 		inputMap.put("db", new DataThing("a database"));
 		inputMap.put("tool", new DataThing("a tool"));
 
@@ -71,20 +77,21 @@ public class XMLInputSplitterTest extends WSDLBasedTestCase {
 				outputString);
 	}
 
+	@Ignore("Integration test")
+	@Test
 	public void testProvideXML() throws Exception {
 		XMLInputSplitter splitter = new XMLInputSplitter();
 		ScuflModel model = new ScuflModel();
-		WSDLBasedProcessor processor = new WSDLBasedProcessor(
-				model,
-				"testProc",
-				TESTWSDL_BASE+"eutils/eutils_lite.wsdl",
+		WSDLBasedProcessor processor = new WSDLBasedProcessor(model,
+				"testProc", TESTWSDL_BASE + "eutils/eutils_lite.wsdl",
 				"run_eSpell");
 		splitter.setUpInputs(processor.getInputPorts()[0]);
 
 		String xml = new XMLOutputter().outputString(splitter.provideXML());
-		assertEquals("The xml generated is not as expected",eInfoXML(), xml);
+		assertEquals("The xml generated is not as expected", eInfoXML(), xml);
 	}
 
+	@Test
 	public void testConsumeXML() throws Exception {
 		XMLInputSplitter splitter = new XMLInputSplitter();
 		splitter.consumeXML(new SAXBuilder()
@@ -108,7 +115,7 @@ public class XMLInputSplitterTest extends WSDLBasedTestCase {
 		assertEquals("wrong name", "output", splitter.outputNames()[0]);
 		assertEquals("wrong type", "'text/xml'", splitter.outputTypes()[0]);
 
-		Map<String,DataThing>inputMap = new HashMap<String,DataThing>();
+		Map<String, DataThing> inputMap = new HashMap<String, DataThing>();
 		inputMap.put("db", new DataThing("a database"));
 		inputMap.put("tool", new DataThing("a tool"));
 
@@ -127,19 +134,17 @@ public class XMLInputSplitterTest extends WSDLBasedTestCase {
 		return "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"eSpellRequest\" name=\"parameters\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/espell}eSpellRequest\"><s:elements><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"db\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/espell}&gt;eSpellRequest&gt;db\" /><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"term\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/espell}&gt;eSpellRequest&gt;term\" /><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"tool\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/espell}&gt;eSpellRequest&gt;tool\" /><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"email\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/espell}&gt;eSpellRequest&gt;email\" /></s:elements></s:complextype></s:extensions>";
 	}
 
-
-
+	@Ignore("Integration test")
+	@Test
 	public void testOrderPreserved() throws Exception {
 		XMLInputSplitter splitter = new XMLInputSplitter();
 		ScuflModel model = new ScuflModel();
-		WSDLBasedProcessor processor = new WSDLBasedProcessor(
-				model,
-				"testProc",
-				TESTWSDL_BASE+"eutils/eutils_lite.wsdl",
+		WSDLBasedProcessor processor = new WSDLBasedProcessor(model,
+				"testProc", TESTWSDL_BASE + "eutils/eutils_lite.wsdl",
 				"run_eSpell");
 		splitter.setUpInputs(processor.getInputPorts()[0]);
 
-		Map<String,DataThing>inputMap = new HashMap<String,DataThing>();
+		Map<String, DataThing> inputMap = new HashMap<String, DataThing>();
 		inputMap.put("tool", new DataThing("a tool"));
 		inputMap.put("email", new DataThing("an email"));
 		inputMap.put("db", new DataThing("a database"));
@@ -156,16 +161,16 @@ public class XMLInputSplitterTest extends WSDLBasedTestCase {
 
 	}
 
+	@Ignore("Integration test")
+	@Test
 	public void testOrderPreserved2() throws Exception {
 		XMLInputSplitter splitter = new XMLInputSplitter();
 		ScuflModel model = new ScuflModel();
 		WSDLBasedProcessor processor = new WSDLBasedProcessor(model,
-				"testProc",
-				TESTWSDL_BASE+"GMService.wsdl",
-				"getReport");
+				"testProc", TESTWSDL_BASE + "GMService.wsdl", "getReport");
 		splitter.setUpInputs(processor.getInputPorts()[0]);
 
-		Map<String,DataThing> inputMap = new HashMap<String,DataThing>();
+		Map<String, DataThing> inputMap = new HashMap<String, DataThing>();
 		inputMap.put("in0", new DataThing(new String[] { "0" }));
 		inputMap.put("in1", new DataThing(new String[] { "1" }));
 		inputMap.put("in6", new DataThing("true"));
@@ -181,8 +186,8 @@ public class XMLInputSplitterTest extends WSDLBasedTestCase {
 		assertNotNull("'output' did not exist in output map", output);
 		String xmlOutput = output.getDataObject().toString();
 
-		xmlOutput=xmlOutput.replaceAll(" xmlns=\"\"", "");
-		
+		xmlOutput = xmlOutput.replaceAll(" xmlns=\"\"", "");
+
 		assertTrue(
 				"xml returned is unexpected, element order should be same as defined by the webservice",
 				xmlOutput
@@ -195,30 +200,29 @@ public class XMLInputSplitterTest extends WSDLBasedTestCase {
 	 * 
 	 * @throws Exception
 	 */
+	@Test
+	@Ignore("Integration test")
 	public void testForNil() throws Exception {
 		XMLInputSplitter splitter = new XMLInputSplitter();
 		ScuflModel model = new ScuflModel();
 		WSDLBasedProcessor processor = new WSDLBasedProcessor(model,
-				"testProc",
-				TESTWSDL_BASE+"GMService.wsdl",
-				"getReport");
+				"testProc", TESTWSDL_BASE + "GMService.wsdl", "getReport");
 		splitter.setUpInputs(processor.getInputPorts()[0]);
-		Map<String,DataThing>inputMap = new HashMap<String,DataThing>();
+		Map<String, DataThing> inputMap = new HashMap<String, DataThing>();
 		inputMap.put("in2", new DataThing("nil"));
 
 		Map outputMap = splitter.execute(inputMap);
 		DataThing output = (DataThing) outputMap.get("output");
 		String xmlOutput = output.getDataObject().toString();
-		xmlOutput=xmlOutput.replaceAll(" xmlns=\"\"", "");
-		assertTrue(
-				"xml incorrect",
-				xmlOutput
-						.indexOf("<in2 nil=\"true\" />") != -1);
+		xmlOutput = xmlOutput.replaceAll(" xmlns=\"\"", "");
+		assertTrue("xml incorrect",
+				xmlOutput.indexOf("<in2 nil=\"true\" />") != -1);
 	}
 
+	@Test
 	public void testBase64EncodeInputData() throws Exception {
 		XMLInputSplitter splitter = new XMLInputSplitter();
-		Map<String,DataThing>inputMap = new HashMap<String,DataThing>();
+		Map<String, DataThing> inputMap = new HashMap<String, DataThing>();
 
 		String xml = "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"SomeData\" name=\"data\" qname=\"{http://testing.org}SomeData\"><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"base64binary\" name=\"binaryData\" qname=\"{http://testing.org}base64Binary\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"value\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /></s:elements></s:complextype></s:extensions>";
 
@@ -242,122 +246,153 @@ public class XMLInputSplitterTest extends WSDLBasedTestCase {
 						.contains("<binaryData xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"xsd:base64Binary\">AQIDBAU=</binaryData>"));
 	}
 
+	@Ignore("Integration test")
+	@Test
 	public void testForSimpleTypeEnumeration() throws Exception {
 		XMLInputSplitter splitter = new XMLInputSplitter();
-		WSDLBasedProcessor processor = createProcessor(TESTWSDL_BASE+"omii-graph.wsdl", "makePlot_x");
-		
-		splitter.setUpInputs(processor.getInputPorts()[1]);	
-		
-		String type=null;
-		int i=0;
+		WSDLBasedProcessor processor = createProcessor(TESTWSDL_BASE
+				+ "omii-graph.wsdl", "makePlot_x");
+
+		splitter.setUpInputs(processor.getInputPorts()[1]);
+
+		String type = null;
+		int i = 0;
 		for (String inName : splitter.inputNames()) {
 			if (inName.equals("Smooth")) {
-				type=splitter.inputTypes()[i];
+				type = splitter.inputTypes()[i];
 				break;
 			}
 			i++;
 		}
-		
-		assertNotNull("Input named Smooth not found",type);
-		assertEquals("type should be type text/plain","'text/plain'",type);
-		
-		Map<String,DataThing>inputMap = new HashMap<String,DataThing>();
+
+		assertNotNull("Input named Smooth not found", type);
+		assertEquals("type should be type text/plain", "'text/plain'", type);
+
+		Map<String, DataThing> inputMap = new HashMap<String, DataThing>();
 		inputMap.put("Smooth", DataThingFactory.bake("thing"));
-		
+
 		Map outputs = splitter.execute(inputMap);
-		DataThing output = (DataThing)outputs.get("output");
-		
+		DataThing output = (DataThing) outputs.get("output");
+
 		String xml = output.getDataObject().toString();
-		
-		assertFalse("There should be no <value> element in the result",xml.contains("value"));
-		assertTrue("Error in the xml generated",xml.contains("<Smooth xmlns=\"\">thing</Smooth>"));
+
+		assertFalse("There should be no <value> element in the result", xml
+				.contains("value"));
+		assertTrue("Error in the xml generated", xml
+				.contains("<Smooth xmlns=\"\">thing</Smooth>"));
 	}
-	
+
+	@Ignore("Integration test")
+	@Test
 	public void testForSimpleTypeRestricted() throws Exception {
 		XMLInputSplitter splitter = new XMLInputSplitter();
-		WSDLBasedProcessor processor = createProcessor(TESTWSDL_BASE+"whatizit.wsdl", "search");
-		
-		splitter.setUpInputs(processor.getInputPorts()[0]);	
-		
-		String type=null;
-		int i=0;
+		WSDLBasedProcessor processor = createProcessor(TESTWSDL_BASE
+				+ "whatizit.wsdl", "search");
+
+		splitter.setUpInputs(processor.getInputPorts()[0]);
+
+		String type = null;
+		int i = 0;
 		for (String inName : splitter.inputNames()) {
 			if (inName.equals("limit")) {
-				type=splitter.inputTypes()[i];
+				type = splitter.inputTypes()[i];
 				break;
 			}
 			i++;
 		}
-		
-		assertNotNull("Input named limit not found",type);
-		assertEquals("type should be type text/plain","'text/plain'",type);
-		
-		Map<String,DataThing>inputMap = new HashMap<String,DataThing>();
+
+		assertNotNull("Input named limit not found", type);
+		assertEquals("type should be type text/plain", "'text/plain'", type);
+
+		Map<String, DataThing> inputMap = new HashMap<String, DataThing>();
 		inputMap.put("limit", DataThingFactory.bake("5"));
-		
+
 		Map outputs = splitter.execute(inputMap);
-		DataThing output = (DataThing)outputs.get("output");
-		
+		DataThing output = (DataThing) outputs.get("output");
+
 		String xml = output.getDataObject().toString();
-		
-		assertFalse("There should be no <value> element in the result",xml.contains("value"));
-		assertTrue("Error in the xml generated, xml:"+xml,xml.contains("<limit xmlns=\"\">5</limit>"));
+
+		assertFalse("There should be no <value> element in the result", xml
+				.contains("value"));
+		assertTrue("Error in the xml generated, xml:" + xml, xml
+				.contains("<limit xmlns=\"\">5</limit>"));
 	}
-	
+
+	@Ignore("Integration test")
+	@Test
 	public void testUnqualified() throws Exception {
-		WSDLBasedProcessor processor = createProcessor(TESTWSDL_BASE+"whatizit.wsdl", "queryPmid");
+		WSDLBasedProcessor processor = createProcessor(TESTWSDL_BASE
+				+ "whatizit.wsdl", "queryPmid");
 		XMLInputSplitter splitter = new XMLInputSplitter();
 		splitter.setUpInputs(processor.getInputPorts()[0]);
-		
-		Map<String,DataThing>inputMap = new HashMap<String, DataThing>();
+
+		Map<String, DataThing> inputMap = new HashMap<String, DataThing>();
 		inputMap.put("pipelineName", DataThingFactory.bake("pipeline"));
-		
+
 		Map outputs = splitter.execute(inputMap);
-		DataThing output = (DataThing)outputs.get("output");
+		DataThing output = (DataThing) outputs.get("output");
 		String xml = output.getDataObject().toString();
-		
-		assertTrue("Content of xml is not as expected:"+xml,xml.contains("<pipelineName xmlns=\"\">pipeline</pipelineName>"));
+
+		assertTrue("Content of xml is not as expected:" + xml, xml
+				.contains("<pipelineName xmlns=\"\">pipeline</pipelineName>"));
 	}
-	
+
+	@Ignore("Integration test")
+	@Test
 	public void testQualified() throws Exception {
-		WSDLBasedProcessor processor = createProcessor(TESTWSDL_BASE+"TestServices-wrapped.wsdl", "countString");
+		WSDLBasedProcessor processor = createProcessor(TESTWSDL_BASE
+				+ "TestServices-wrapped.wsdl", "countString");
 		XMLInputSplitter splitter = new XMLInputSplitter();
 		splitter.setUpInputs(processor.getInputPorts()[0]);
-		
-		Map<String,DataThing>inputMap = new HashMap<String, DataThing>();
+
+		Map<String, DataThing> inputMap = new HashMap<String, DataThing>();
 		inputMap.put("str", DataThingFactory.bake("a string"));
 		Map outputs = splitter.execute(inputMap);
-		DataThing output = (DataThing)outputs.get("output");
+		DataThing output = (DataThing) outputs.get("output");
 		String xml = output.getDataObject().toString();
-		
-		assertEquals("Content of xml is not as expected",xml,"<parameters xmlns=\"http://testing.org\"><str>a string</str></parameters>");
+
+		assertEquals("Content of xml is not as expected", xml,
+				"<parameters xmlns=\"http://testing.org\"><str>a string</str></parameters>");
 	}
-	
+
+	@Ignore("Integration test")
+	@Test
 	public void testQualifiedArray() throws Exception {
-		WSDLBasedProcessor processor = createProcessor(TESTWSDL_BASE+"TestServices-wrapped.wsdl", "countStringArray");
+		WSDLBasedProcessor processor = createProcessor(TESTWSDL_BASE
+				+ "TestServices-wrapped.wsdl", "countStringArray");
 		XMLInputSplitter splitter = new XMLInputSplitter();
 		splitter.setUpInputs(processor.getInputPorts()[0]);
-		
-		Map<String,DataThing>inputMap = new HashMap<String, DataThing>();
-		inputMap.put("array", DataThingFactory.bake(new String[] {"a","b","c"}));
+
+		Map<String, DataThing> inputMap = new HashMap<String, DataThing>();
+		inputMap.put("array", DataThingFactory.bake(new String[] { "a", "b",
+				"c" }));
 		Map outputs = splitter.execute(inputMap);
-		DataThing output = (DataThing)outputs.get("output");
+		DataThing output = (DataThing) outputs.get("output");
 		String xml = output.getDataObject().toString();
-		
-		assertEquals("Content of xml is not as expected",xml,"<parameters xmlns=\"http://testing.org\"><array>a</array><array>b</array><array>c</array></parameters>");
+
+		assertEquals(
+				"Content of xml is not as expected",
+				xml,
+				"<parameters xmlns=\"http://testing.org\"><array>a</array><array>b</array><array>c</array></parameters>");
 	}
-	
+
+	@Ignore("Integration test")
+	@Test
 	public void testQualified2() throws Exception {
-		WSDLBasedProcessor processor = createProcessor(TESTWSDL_BASE+"eutils/eutils_lite.wsdl", "run_eInfo");
+		WSDLBasedProcessor processor = createProcessor(TESTWSDL_BASE
+				+ "eutils/eutils_lite.wsdl", "run_eInfo");
 		XMLInputSplitter splitter = new XMLInputSplitter();
 		splitter.setUpInputs(processor.getInputPorts()[0]);
-		
-		Map<String,DataThing>inputMap = new HashMap<String, DataThing>();
+
+		Map<String, DataThing> inputMap = new HashMap<String, DataThing>();
 		inputMap.put("db", DataThingFactory.bake("pubmed"));
 		Map outputs = splitter.execute(inputMap);
-		DataThing output = (DataThing)outputs.get("output");
+		DataThing output = (DataThing) outputs.get("output");
 		String xml = output.getDataObject().toString();
-		
-		assertEquals("Content of xml is not as expected",xml,"<parameters xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/einfo\"><db>pubmed</db></parameters>");
+
+		assertEquals(
+				"Content of xml is not as expected",
+				xml,
+				"<parameters xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/einfo\"><db>pubmed</db></parameters>");
 	}
 }

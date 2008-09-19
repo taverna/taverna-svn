@@ -1,18 +1,21 @@
 package org.biomoby.client.taverna.plugin;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.biomoby.client.CentralImpl;
 import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.junit.Ignore;
+import org.junit.Test;
 
 
-public class BiomobyObjectProcessorTest extends TestCase {
+public class BiomobyObjectProcessorTest {
 
-	public BiomobyObjectProcessorTest() {
-		super();
-	}
 
+	@Ignore("Integration test")
+	@Test
 	public void testCreation() {
 		try {
 			ScuflModel model = new ScuflModel();

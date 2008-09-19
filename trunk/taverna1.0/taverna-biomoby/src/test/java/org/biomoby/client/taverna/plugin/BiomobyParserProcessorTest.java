@@ -1,10 +1,10 @@
 package org.biomoby.client.taverna.plugin;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-;
-
-public class BiomobyParserProcessorTest extends TestCase {
+public class BiomobyParserProcessorTest {
+	
+	@Test
 	public void testCreation() {
 
 	}

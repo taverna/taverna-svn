@@ -6,20 +6,19 @@ import java.util.Map;
 import net.sourceforge.taverna.baclava.DataThingAdapter;
 
 import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.w3c.dom.Element;
 
 import junit.framework.TestCase;
 
 /**
- * This class
- * 
- * Last edited by $Author: sowen70 $
- * 
  * @author Mark
- * @version $Revision: 1.2 $
  */
-public class ProteinGBSeqWorkerTest extends AbstractXmlWorkerTest {
+public abstract class ProteinGBSeqWorkerTest extends AbstractXmlWorkerTest {
 
+	@Ignore("Integration test")
+	@Test
     public void testExecute() throws Exception{
         LocalWorker worker = new ProteinGBSeqWorker();
         Map inputMap = new HashMap();

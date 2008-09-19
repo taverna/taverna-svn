@@ -1,19 +1,23 @@
 package org.embl.ebi.escience.scuflworkers.wsdl;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scuflworkers.testhelpers.WSDLBasedTestCase;
+import org.junit.Ignore;
+import org.junit.Test;
 
 public class WSDLBasedProcessorTest extends WSDLBasedTestCase {
-	
-	
+
+	@Ignore("Integration test")
+	@Test
 	public void testCreation() throws Exception {
 
 		Processor processor = new WSDLBasedProcessor(null, "test",
-				TESTWSDL_BASE+"DBfetch.wsdl",
-				"getSupportedDBs");
+				TESTWSDL_BASE + "DBfetch.wsdl", "getSupportedDBs");
 
 		assertEquals("invalid name", "test", processor.getName());
 		assertEquals("incorrect number of outputs", 2, processor
@@ -27,6 +31,7 @@ public class WSDLBasedProcessorTest extends WSDLBasedTestCase {
 
 	}
 
+	@Test
 	public void testCreationFailureBadAddress() {
 		try {
 			new WSDLBasedProcessor(null, "fail", "http://invalidaddress",
@@ -39,11 +44,12 @@ public class WSDLBasedProcessorTest extends WSDLBasedTestCase {
 		}
 	}
 
+	@Ignore("Integration test")
+	@Test
 	public void testCreationFailureBadService() {
 		try {
 			new WSDLBasedProcessor(null, "fail",
-					TESTWSDL_BASE+"DBfetch.wsdl",
-					"invalidservice");
+					TESTWSDL_BASE + "DBfetch.wsdl", "invalidservice");
 			fail("an exception should have been thrown");
 		} catch (Exception e) {
 			assertTrue(
@@ -52,12 +58,11 @@ public class WSDLBasedProcessorTest extends WSDLBasedTestCase {
 		}
 	}
 
+	@Ignore("Integration test")
+	@Test
 	public void testDocumentPortType() throws Exception {
-		Processor processor = new WSDLBasedProcessor(
-				null,
-				"test",
-				TESTWSDL_BASE+"eutils/eutils_lite.wsdl",
-				"run_eGquery");
+		Processor processor = new WSDLBasedProcessor(null, "test",
+				TESTWSDL_BASE + "eutils/eutils_lite.wsdl", "run_eGquery");
 
 		assertEquals("invalid name", "test", processor.getName());
 		assertEquals("incorrect number of outputs", 2, processor

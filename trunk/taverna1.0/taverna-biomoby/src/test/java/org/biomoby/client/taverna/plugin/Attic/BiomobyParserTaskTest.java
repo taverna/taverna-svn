@@ -1,5 +1,8 @@
 package org.biomoby.client.taverna.plugin;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,15 +14,17 @@ import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.ScuflModel;
-
-import junit.framework.TestCase;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * The tests for parsing moby datatypes.
+ * 
  * @author Edward Kawas
  *
  */
-public class BiomobyParserTaskTest extends TestCase {
+@SuppressWarnings({"unchecked", "null"})
+public class BiomobyParserTaskTest {
 	// TODO - really should check for all the individual values in the xml rather than print them out
 	private ScuflModel model;
 	public BiomobyParserTaskTest() {
@@ -32,6 +37,9 @@ public class BiomobyParserTaskTest extends TestCase {
 		
 	}
 
+
+	@Ignore("Integration test")
+    @Test
 	public void testObject(){
 		System.out.println("Test Object:");
 		createNewModel();
@@ -94,7 +102,9 @@ public class BiomobyParserTaskTest extends TestCase {
 			System.out.println("\t" + key + ":-> " + list);
 		}
 	}
-	
+    
+    @Ignore("Integration test")
+    @Test
 	public void testObjectCollection(){
 		System.out.println("Test Object Collection:");
 		createNewModel();
@@ -155,7 +165,9 @@ public class BiomobyParserTaskTest extends TestCase {
 			System.out.println("\t" + key + ":-> " + list);
 		}
 	}
-	
+    
+    @Ignore("Integration test")
+    @Test
 	public void testObjectList(){
 		System.out.println("Test Object List:");
 		createNewModel();
@@ -223,7 +235,10 @@ public class BiomobyParserTaskTest extends TestCase {
 			System.out.println("\t" + key + ":-> " + list);
 		}
 	}
-	
+    
+    
+	@Ignore("Integration test")
+    @Test
 	public void testObjectCollectionList(){
 		System.out.println("Test Object Collection List:");
 		createNewModel();
@@ -291,6 +306,9 @@ public class BiomobyParserTaskTest extends TestCase {
 	}
 	
 	// MIM messages
+
+    @Ignore("Integration test")
+    @Test
 	public void testObjectMIM(){
 		System.out.println("Test Object MIM:");
 		createNewModel();
@@ -353,7 +371,9 @@ public class BiomobyParserTaskTest extends TestCase {
 			System.out.println("\t" + key + ":-> " + list);
 		}
 	}
-	
+    
+    @Ignore("Integration test")
+    @Test
 	public void testObjectCollectionMIM(){
 		System.out.println("Test Object Collection MIM:");
 		createNewModel();
@@ -414,7 +434,9 @@ public class BiomobyParserTaskTest extends TestCase {
 			System.out.println("\t" + key + ":-> " + list);
 		}
 	}
-	
+    
+    @Ignore("Integration test")
+    @Test
 	public void testObjectListMIM(){
 		System.out.println("Test Object List MIM:");
 		createNewModel();
@@ -482,7 +504,9 @@ public class BiomobyParserTaskTest extends TestCase {
 			System.out.println("\t" + key + ":-> " + list);
 		}
 	}
-	
+    
+    @Ignore("Integration test")
+    @Test
 	public void testObjectCollectionListMIM(){
 		System.out.println("Test Object Collection List MIM:");
 		createNewModel();
@@ -548,7 +572,9 @@ public class BiomobyParserTaskTest extends TestCase {
 			System.out.println("\t" + key + ":-> " + list);
 		}
 	}
-	
+    
+    @Ignore("Integration test")
+    @Test
 	public void testPrimitiveString(){
 		System.out.println("Test primitive String:");
 		createNewModel();
@@ -612,7 +638,9 @@ public class BiomobyParserTaskTest extends TestCase {
 			System.out.println("\t" +key + ":-> " + list);
 		}
 	}
-	
+    
+    @Ignore("Integration test")
+    @Test
 	public void testPrimitiveStringCollection(){
 		System.out.println("Test primitive String Collection:");
 		createNewModel();
@@ -673,7 +701,9 @@ public class BiomobyParserTaskTest extends TestCase {
 			System.out.println("\t" +key + ":-> " + list);
 		}
 	}
-	
+    
+    @Ignore("Integration test")
+    @Test
 	public void testPrimitiveStringCollectionList(){
 		System.out.println("Test primitive String Collection List:");
 		createNewModel();
@@ -739,6 +769,9 @@ public class BiomobyParserTaskTest extends TestCase {
 			System.out.println("\t" +key + ":-> " + list);
 		}
 	}
+    
+    @Ignore("Integration test")
+    @Test
 	public void testPrimitiveStringList(){
 		System.out.println("Test primitive String List:");
 		createNewModel();
@@ -806,6 +839,8 @@ public class BiomobyParserTaskTest extends TestCase {
 	}
 	
 	// test mim
+    @Ignore("Integration test")
+    @Test
 	public void testPrimitiveStringMIM(){
 		System.out.println("Test primitive String MIM:");
 		createNewModel();
@@ -870,6 +905,8 @@ public class BiomobyParserTaskTest extends TestCase {
 		}
 	}
 	
+    @Ignore("Integration test")
+    @Test
 	public void testPrimitiveStringCollectionMIM(){
 		System.out.println("Test primitive String Collection MIM:");
 		createNewModel();
@@ -931,6 +968,8 @@ public class BiomobyParserTaskTest extends TestCase {
 		}
 	}
 	
+    @Ignore("Integration test")
+    @Test
 	public void testPrimitiveStringCollectionListMIM(){
 		System.out.println("Test primitive String Collection List MIM:");
 		createNewModel();
@@ -996,6 +1035,8 @@ public class BiomobyParserTaskTest extends TestCase {
 			System.out.println("\t" +key + ":-> " + list);
 		}
 	}
+    @Ignore("Integration test")
+    @Test
 	public void testPrimitiveStringListMIM(){
 		System.out.println("Test primitive String List MIM:");
 		createNewModel();
@@ -1062,6 +1103,8 @@ public class BiomobyParserTaskTest extends TestCase {
 		}
 	}
 
+    @Ignore("Integration test")
+    @Test
 	public void testCompositeGoTerm(){
 		System.out.println("Test Composite GO_Term:");
 		createNewModel();
@@ -1123,6 +1166,8 @@ public class BiomobyParserTaskTest extends TestCase {
 		}
 	}
 	
+    @Ignore("Integration test")
+    @Test
 	public void testCompositeGoTermList(){
 		System.out.println("Test Composite GO_Term List:");
 		createNewModel();
@@ -1188,6 +1233,8 @@ public class BiomobyParserTaskTest extends TestCase {
 		}
 	}
 	
+    @Ignore("Integration test")
+    @Test
 	public void testCompositeGoTermCollection(){
 		System.out.println("Test Composite GO_Term Collection:");
 		createNewModel();
@@ -1249,6 +1296,8 @@ public class BiomobyParserTaskTest extends TestCase {
 		}
 	}
 
+    @Ignore("Integration test")
+    @Test
 	public void testCompositeGoTermCollectionList(){
 		System.out.println("Test Composite GO_Term Collection List:");
 		createNewModel();
@@ -1316,6 +1365,8 @@ public class BiomobyParserTaskTest extends TestCase {
 	}
 	
 	// test mim
+    @Ignore("Integration test")
+    @Test
 	public void testCompositeGoTermMIM(){
 		System.out.println("Test Composite GO_Term MIM:");
 		createNewModel();
@@ -1376,7 +1427,9 @@ public class BiomobyParserTaskTest extends TestCase {
 			System.out.println("\t" +key + ":-> " + list);
 		}
 	}
-	
+    
+    @Ignore("Integration test")
+    @Test
 	public void testCompositeGoTermListMIM(){
 		System.out.println("Test Composite GO_Term List MIM:");
 		createNewModel();
@@ -1442,6 +1495,8 @@ public class BiomobyParserTaskTest extends TestCase {
 		}
 	}
 	
+    @Ignore("Integration test")
+    @Test
 	public void testCompositeGoTermCollectionMIM(){
 		System.out.println("Test Composite GO_Term Collection MIM:");
 		createNewModel();
@@ -1503,6 +1558,8 @@ public class BiomobyParserTaskTest extends TestCase {
 		}
 	}
 
+    @Ignore("Integration test")
+    @Test
 	public void testCompositeGoTermCollectionListMIM(){
 		System.out.println("Test Composite GO_Term Collection List MIM:");
 		createNewModel();
@@ -1570,7 +1627,8 @@ public class BiomobyParserTaskTest extends TestCase {
 	}
 	
 
-	
+    @Ignore("Integration test")
+    @Test
 	public void testPubmed(){
 		System.out.println("Test Pubmed:");
 		createNewModel();
@@ -1631,7 +1689,9 @@ public class BiomobyParserTaskTest extends TestCase {
 			System.out.println("\t" +key + ":-> " + list);
 		}
 	}
-	
+    
+    @Ignore("Integration test")
+    @Test
 	public void testPubmedCollection(){
 		System.out.println("Test Pubmed Collection:");
 		createNewModel();
@@ -1692,7 +1752,9 @@ public class BiomobyParserTaskTest extends TestCase {
 			System.out.println("\t" +key + ":-> " + list);
 		}
 	}
-	
+    
+    @Ignore("Integration test")
+    @Test
 	public void testPubmedCollectionList(){
 		System.out.println("Test Pubmed Collection List:");
 		createNewModel();
@@ -1758,6 +1820,9 @@ public class BiomobyParserTaskTest extends TestCase {
 			System.out.println("\t" +key + ":-> " + list);
 		}
 	}
+    
+    @Ignore("Integration test")
+    @Test
 	public void testPubmedList(){
 		System.out.println("Test Pubmed List:");
 		createNewModel();
@@ -1823,8 +1888,10 @@ public class BiomobyParserTaskTest extends TestCase {
 			System.out.println("\t" +key + ":-> " + list);
 		}
 	}
-	
-	// test mim
+    
+    // test mim
+    @Ignore("Integration test")
+    @Test
 	public void testPubmedMIM(){
 		System.out.println("Test Pubmed MIM:");
 		createNewModel();
@@ -1885,7 +1952,9 @@ public class BiomobyParserTaskTest extends TestCase {
 			System.out.println("\t" +key + ":-> " + list);
 		}
 	}
-	
+    
+    @Ignore("Integration test")
+    @Test
 	public void testPubmedCollectionMIM(){
 		System.out.println("Test Pubmed Collection MIM:");
 		createNewModel();
@@ -1946,7 +2015,9 @@ public class BiomobyParserTaskTest extends TestCase {
 			System.out.println("\t" +key + ":-> " + list);
 		}
 	}
-	
+    
+    @Ignore("Integration test")
+    @Test
 	public void testPubmedCollectionListMIM(){
 		System.out.println("Test Pubmed Collection List MIM:");
 		createNewModel();
@@ -2012,6 +2083,9 @@ public class BiomobyParserTaskTest extends TestCase {
 			System.out.println("\t" +key + ":-> " + list);
 		}
 	}
+    
+    @Ignore("Integration test")
+    @Test
 	public void testPubmedListMIM(){
 		System.out.println("Test Pubmed List MIM:");
 		createNewModel();

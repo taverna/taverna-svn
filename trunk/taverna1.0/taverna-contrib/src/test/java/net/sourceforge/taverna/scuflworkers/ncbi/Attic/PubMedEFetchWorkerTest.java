@@ -1,27 +1,22 @@
 package net.sourceforge.taverna.scuflworkers.ncbi;
 
-import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sourceforge.taverna.baclava.DataThingAdapter;
+
 import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.w3c.dom.Element;
 
-import net.sourceforge.taverna.baclava.DataThingAdapter;
-import net.sourceforge.taverna.io.TransmitterException;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-import junit.framework.TestCase;
-
 /**
- * This class
- * 
- * Last edited by $Author: sowen70 $
- * 
  * @author Mark
- * @version $Revision: 1.2 $
  */
-public class PubMedEFetchWorkerTest extends AbstractXmlWorkerTest {
+public abstract class PubMedEFetchWorkerTest extends AbstractXmlWorkerTest {
 
+	@Ignore("Integration test")
+	@Test
     public void testExecute() throws Exception{
         LocalWorker worker = new PubMedEFetchWorker();
         Map inputMap = new HashMap();

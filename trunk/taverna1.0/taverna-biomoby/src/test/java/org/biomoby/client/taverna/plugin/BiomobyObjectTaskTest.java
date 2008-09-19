@@ -1,9 +1,10 @@
 package org.biomoby.client.taverna.plugin;
 
-import junit.framework.TestCase;;
+import org.junit.Test;
 
-public class BiomobyObjectTaskTest extends TestCase {
+public class BiomobyObjectTaskTest {
 
+	@Test
 	public void test() {
 		
 	}

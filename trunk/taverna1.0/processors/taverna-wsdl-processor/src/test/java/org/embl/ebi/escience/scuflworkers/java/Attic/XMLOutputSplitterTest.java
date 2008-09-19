@@ -25,21 +25,23 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLOutputSplitterTest.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-05-11 15:34:17 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2008-09-19 13:18:23 $
+ *               by   $Author: stain $
  * Created on 16-May-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.java;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import junit.framework.TestCase;
 
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.ScuflModel;
@@ -48,16 +50,18 @@ import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
+import org.junit.Ignore;
+import org.junit.Test;
 
+@SuppressWarnings("unchecked")
 public class XMLOutputSplitterTest extends WSDLBasedTestCase {
-
+	@Ignore("Integration test")
+	@Test
 	public void testSplitter() throws Exception {
 		XMLOutputSplitter splitter = new XMLOutputSplitter();
 		ScuflModel model = new ScuflModel();
-		WSDLBasedProcessor processor = new WSDLBasedProcessor(
-				model,
-				"testProc",
-				TESTWSDL_BASE+"eutils/eutils_lite.wsdl",
+		WSDLBasedProcessor processor = new WSDLBasedProcessor(model,
+				"testProc", TESTWSDL_BASE + "eutils/eutils_lite.wsdl",
 				"run_eInfo");
 		splitter.setUpOutputs(processor.getOutputPorts()[1]);
 
@@ -112,23 +116,24 @@ public class XMLOutputSplitterTest extends WSDLBasedTestCase {
 				"<DbInfo><info>some info</info></DbInfo>", outputString);
 	}
 
+	@Ignore("Integration test")
+	@Test
 	public void testProvideXML() throws Exception {
 		XMLOutputSplitter splitter = new XMLOutputSplitter();
 		ScuflModel model = new ScuflModel();
-		WSDLBasedProcessor processor = new WSDLBasedProcessor(
-				model,
-				"testProc",
-				TESTWSDL_BASE+"TestServices-rpcencoded.wsdl",
+		WSDLBasedProcessor processor = new WSDLBasedProcessor(model,
+				"testProc", TESTWSDL_BASE + "TestServices-rpcencoded.wsdl",
 				"getPerson");
 		splitter.setUpOutputs(processor.getOutputPorts()[1]);
 		Element element = splitter.provideXML();
 		String xml = new XMLOutputter().outputString(element);
 
 		System.out.println(xml);
-		String expectedXML="<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"Person\" name=\"getPersonReturn\" qname=\"{http://testing.org}Person\"><s:elements><s:complextype optional=\"false\" unbounded=\"false\" typename=\"Address\" name=\"address\" qname=\"Person&gt;address\"><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"city\" qname=\"Address&gt;city\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"int\" name=\"number\" qname=\"Address&gt;number\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"road\" qname=\"Address&gt;road\" /></s:elements></s:complextype><s:basetype optional=\"false\" unbounded=\"false\" typename=\"int\" name=\"age\" qname=\"Person&gt;age\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"name\" qname=\"Person&gt;name\" /></s:elements></s:complextype></s:extensions>";
+		String expectedXML = "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"Person\" name=\"getPersonReturn\" qname=\"{http://testing.org}Person\"><s:elements><s:complextype optional=\"false\" unbounded=\"false\" typename=\"Address\" name=\"address\" qname=\"Person&gt;address\"><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"city\" qname=\"Address&gt;city\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"int\" name=\"number\" qname=\"Address&gt;number\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"road\" qname=\"Address&gt;road\" /></s:elements></s:complextype><s:basetype optional=\"false\" unbounded=\"false\" typename=\"int\" name=\"age\" qname=\"Person&gt;age\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"name\" qname=\"Person&gt;name\" /></s:elements></s:complextype></s:extensions>";
 		assertEquals(expectedXML, xml);
 	}
 
+	@Test
 	public void testConsumeXML() throws Exception {
 		XMLOutputSplitter splitter = new XMLOutputSplitter();
 		splitter.consumeXML(new SAXBuilder().build(
@@ -185,6 +190,7 @@ public class XMLOutputSplitterTest extends WSDLBasedTestCase {
 				"<DbInfo><info>some info</info></DbInfo>", outputString);
 	}
 
+	@Test
 	public void testArraysBasic() throws Exception {
 		String splitterXML = "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:arraytype optional=\"true\" unbounded=\"true\" typename=\"string\" name=\"DbName\"><s:elementtype><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"\" /></s:elementtype></s:arraytype></s:extensions>";
 		XMLOutputSplitter splitter = new XMLOutputSplitter();
@@ -216,6 +222,7 @@ public class XMLOutputSplitterTest extends WSDLBasedTestCase {
 		assertEquals("unexpected value", "item 3", elements.get(2));
 	}
 
+	@Test
 	public void testArraysComplex() throws Exception {
 		String splitterXML = "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:arraytype optional=\"true\" unbounded=\"true\" typename=\"string\" name=\"People\"><s:elementtype><s:complextype optional=\"false\" unbounded=\"false\" typename=\"Person\" name=\"\" ><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Name\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"int\" name=\"Age\" /></s:elements></s:complextype></s:elementtype></s:arraytype></s:extensions>";
 		XMLOutputSplitter splitter = new XMLOutputSplitter();
@@ -245,44 +252,47 @@ public class XMLOutputSplitterTest extends WSDLBasedTestCase {
 				"<item><Name>mary</Name><Age>57</Age></item>", elements.get(1));
 	}
 
+	@Test
 	public void testArrayWithinComplex() throws Exception {
 		String splitterXML = "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"eSearchResult\" name=\"parameters\"><s:elements><s:arraytype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"AList\"><s:elementtype><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"\" /></s:elementtype></s:arraytype><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Base\"/></s:elements></s:complextype></s:extensions>";
 		XMLOutputSplitter splitter = new XMLOutputSplitter();
 		splitter.consumeXML(new SAXBuilder().build(
 				new StringReader(splitterXML)).getRootElement());
-		
-		assertEquals("should be 2 outputs",2,splitter.outputTypes().length);
-		assertEquals("should be l('text/plain')","l('text/plain')",splitter.outputTypes()[0]);
-		assertEquals("should be 'text/plain'","'text/plain'",splitter.outputTypes()[1]);
-		
-		String inputXML="<parameters><AList><id>1</id><id>2</id><id>3</id></AList><Base>a string</Base></parameters>";
+
+		assertEquals("should be 2 outputs", 2, splitter.outputTypes().length);
+		assertEquals("should be l('text/plain')", "l('text/plain')", splitter
+				.outputTypes()[0]);
+		assertEquals("should be 'text/plain'", "'text/plain'", splitter
+				.outputTypes()[1]);
+
+		String inputXML = "<parameters><AList><id>1</id><id>2</id><id>3</id></AList><Base>a string</Base></parameters>";
 		Map inputMap = new HashMap();
 		inputMap.put("input", new DataThing(inputXML));
-		
+
 		Map outputMap = splitter.execute(inputMap);
-		
-		assertNotNull("no output for the list",outputMap.get("AList"));
-		assertNotNull("no output for the base type",outputMap.get("Base"));
-		
-		Object data = ((DataThing)outputMap.get("AList")).getDataObject();
-		
-		assertEquals("Should be an ArrayList",ArrayList.class,data.getClass());
-		
-		ArrayList list = (ArrayList)data;
-		
-		assertEquals("Should be 3 items",3,list.size());
-		assertEquals("item 1 should be 1","1",list.get(0));
-		assertEquals("item 2 should be 2","2",list.get(1));
-		assertEquals("item 3 should be 3","3",list.get(2));
-		
-		data = ((DataThing)outputMap.get("Base")).getDataObject();
-		assertEquals("Should be a String",String.class,data.getClass());				
-		
-		assertEquals("Should equals 'a string'","a string",data);
-				
+
+		assertNotNull("no output for the list", outputMap.get("AList"));
+		assertNotNull("no output for the base type", outputMap.get("Base"));
+
+		Object data = ((DataThing) outputMap.get("AList")).getDataObject();
+
+		assertEquals("Should be an ArrayList", ArrayList.class, data.getClass());
+
+		ArrayList list = (ArrayList) data;
+
+		assertEquals("Should be 3 items", 3, list.size());
+		assertEquals("item 1 should be 1", "1", list.get(0));
+		assertEquals("item 2 should be 2", "2", list.get(1));
+		assertEquals("item 3 should be 3", "3", list.get(2));
+
+		data = ((DataThing) outputMap.get("Base")).getDataObject();
+		assertEquals("Should be a String", String.class, data.getClass());
+
+		assertEquals("Should equals 'a string'", "a string", data);
+
 	}
-	
-	
+
+	@Test
 	public void testEmptyOutputs() throws Exception {
 		// missing optional outputs are populated with an empty string
 		XMLOutputSplitter splitter = new XMLOutputSplitter();
@@ -306,6 +316,7 @@ public class XMLOutputSplitterTest extends WSDLBasedTestCase {
 		assertEquals("", thingy.getDataObject().toString());
 	}
 
+	@Test
 	public void testEmptyOutputsForArray() throws Exception {
 		String procXML = "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"eInfoResult\" name=\"parameters\"><s:elements><s:arraytype optional=\"true\" unbounded=\"true\" typename=\"arrayofstring\" name=\"AnArray\"><s:elementtype><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"\" /></s:elementtype></s:arraytype></s:elements></s:complextype></s:extensions>";
 		XMLOutputSplitter splitter = new XMLOutputSplitter();
@@ -335,6 +346,7 @@ public class XMLOutputSplitterTest extends WSDLBasedTestCase {
 		return "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"eInfoResult\" name=\"parameters\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/einfo}eInfoResult\"><s:elements><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"ERROR\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:complextype optional=\"true\" unbounded=\"false\" typename=\"DbListType\" name=\"DbList\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/einfo}DbListType\"><s:elements><s:arraytype optional=\"true\" unbounded=\"true\" typename=\"string\" name=\"DbName\" qname=\"{http://www.w3.org/2001/XMLSchema}string[0,unbounded]\"><s:elementtype><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /></s:elementtype></s:arraytype></s:elements></s:complextype><s:complextype optional=\"true\" unbounded=\"false\" typename=\"DbInfoType\" name=\"DbInfo\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/einfo}DbInfoType\"><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"DbName\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"MenuName\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Description\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Count\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"LastUpdate\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:arraytype optional=\"false\" unbounded=\"false\" typename=\"FieldListType\" name=\"FieldList\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/einfo}FieldListType\"><s:elementtype><s:complextype optional=\"false\" unbounded=\"false\" typename=\"FieldType\" name=\"\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/einfo}FieldType\"><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Name\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Description\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"TermCount\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"IsDate\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"IsNumerical\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"SingleToken\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Hierarchy\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /></s:elements></s:complextype></s:elementtype></s:arraytype><s:arraytype optional=\"true\" unbounded=\"false\" typename=\"LinkListType\" name=\"LinkList\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/einfo}LinkListType\"><s:elementtype><s:complextype optional=\"false\" unbounded=\"false\" typename=\"LinkType\" name=\"\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/einfo}LinkType\"><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Name\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Menu\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Description\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"DbTo\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /></s:elements></s:complextype></s:elementtype></s:arraytype></s:elements></s:complextype></s:elements></s:complextype></s:extensions>";
 	}
 
+	@Test
 	public void testBase64Decoding() throws Exception {
 		String procXML = "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"SomeData\" name=\"data\" qname=\"{http://testing.org}SomeData\"><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"base64binary\" name=\"binaryData\" qname=\"{http://www.w3.org/2001/XMLSchema}base64Binary\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"value\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /></s:elements></s:complextype></s:extensions>";
 		XMLOutputSplitter splitter = new XMLOutputSplitter();

@@ -8,19 +8,18 @@ import net.sourceforge.taverna.scuflworkers.ncbi.AbstractXmlWorkerTest;
 import net.sourceforge.taverna.scuflworkers.ncbi.ProteinGBSeqWorker;
 
 import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
- * This class depends on JDK1.5
- * 
- * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
  */
-public class XQueryWorkerTest extends AbstractXmlWorkerTest {
+public abstract class XQueryWorkerTest extends AbstractXmlWorkerTest {
       
     
-    
+	@Ignore("Integration test")
+	@Test
     public void testExecute() throws Exception{
     	// fetch a protein sequence needed for testing.
         LocalWorker protworker = new ProteinGBSeqWorker();
