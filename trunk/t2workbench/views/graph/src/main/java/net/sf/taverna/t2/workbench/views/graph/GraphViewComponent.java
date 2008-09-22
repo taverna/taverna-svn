@@ -23,6 +23,8 @@ package net.sf.taverna.t2.workbench.views.graph;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +44,7 @@ import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 import net.sf.taverna.t2.lang.ui.ModelMap;
 import net.sf.taverna.t2.lang.ui.ModelMap.ModelMapEvent;
+import net.sf.taverna.t2.ui.menu.impl.ContextMenuFactory;
 import net.sf.taverna.t2.workbench.ModelMapConstants;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.edits.EditManager.AbstractDataflowEditEvent;
@@ -111,13 +114,13 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 				graphController.setUpdateManager(svgCanvas.getUpdateManager());
 			}
 		});
-//		svgCanvas.addMouseListener(new MouseAdapter() {
-//			public void mouseClicked(MouseEvent e) {
-//				if (e.getButton() == MouseEvent.BUTTON3 && dataflow != null) {
-//					ContextMenuFactory.getContextMenu(dataflow, dataflow, svgCanvas).show(svgCanvas, e.getX(), e.getY());
-//				}
-//			}
-//		});
+		svgCanvas.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON3 && dataflow != null) {
+					ContextMenuFactory.getContextMenu(dataflow, dataflow, svgCanvas).show(svgCanvas, e.getX(), e.getY());
+				}
+			}
+		});
 		add(svgCanvas, BorderLayout.CENTER);
 		
 		add(setupToolbar(), BorderLayout.NORTH);
@@ -365,6 +368,7 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 	public static void main(String[] args) throws Exception {
 		System.setProperty("raven.eclipse", "true");
 		System.setProperty("taverna.dotlocation", "/Applications/Taverna-1.7.1.app/Contents/MacOS/dot");
+//		System.setProperty("taverna.dotlocation", "/opt/local/bin/dot");
 
 		GraphViewComponent graphView = new GraphViewComponent();
 
