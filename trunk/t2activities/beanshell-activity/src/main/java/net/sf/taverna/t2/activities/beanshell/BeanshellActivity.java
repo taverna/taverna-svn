@@ -132,10 +132,10 @@ public class BeanshellActivity extends
 					}
 					callback.receiveResult(outputData, new int[0]);
 				} catch (EvalError e) {
-					callback.fail("Error evaluating the beanshell script", e);
+					callback.fail("Error evaluating the beanshell script " + this, e);
 				} catch (ReferenceServiceException e) {
 					callback.fail(
-							"Error accessing beanshell input/output data", e);
+							"Error accessing beanshell input/output data for " + this, e);
 				}
 			}
 			
