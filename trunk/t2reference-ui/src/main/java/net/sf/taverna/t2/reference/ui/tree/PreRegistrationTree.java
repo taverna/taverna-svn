@@ -24,9 +24,11 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.dnd.Autoscroll;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.EventObject;
 import java.util.List;
 
 import javax.swing.JTree;
@@ -88,11 +90,12 @@ public class PreRegistrationTree extends JTree implements Autoscroll {
 		model = new PreRegistrationTreeModel(depth);
 		setModel(model);
 		setEditable(true);
-
+		setInvokesStopCellEditing(true);
+		
 		getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
 		DefaultTreeCellRenderer renderer = new PreRegistrationTreeCellRenderer();
-		TreeCellEditor editor = new DefaultTreeCellEditor(this, renderer) {
+		TreeCellEditor editor = new DefaultTreeCellEditor(this, renderer, new PreRegistrationCellEditor()) {
 			@Override
 			protected void determineOffset(JTree tree, Object value,
 					boolean isSelected, boolean expanded, boolean leaf, int row) {
@@ -106,7 +109,18 @@ public class PreRegistrationTree extends JTree implements Autoscroll {
 					offset = renderer.getIconTextGap();
 				}
 			}
+			@Override
+		    protected boolean canEditImmediately(EventObject event) {
+				if((event instanceof MouseEvent) &&
+						SwingUtilities.isLeftMouseButton((MouseEvent)event)) {
+					MouseEvent me = (MouseEvent)event;
+					return ((me.getClickCount() > 1) &&
+							inHitRegion(me.getX(), me.getY()));
+				}
+				return (event == null);
+			}
 		};
+		setRowHeight(0);
 		setCellRenderer(renderer);
 		setCellEditor(editor);
 		new PreRegistrationTreeDnDHandler(this) {

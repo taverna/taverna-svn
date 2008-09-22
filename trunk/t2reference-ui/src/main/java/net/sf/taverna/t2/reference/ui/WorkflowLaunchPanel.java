@@ -40,22 +40,15 @@ import net.sf.taverna.t2.reference.T2Reference;
 
 /**
  * A simple workflow launch panel, uses a tabbed layout to display a set of
- * named InputConstructionPanel instances, and enables a 'run workflow' button
- * when all have been registered and locked.
+ * named InputConstructionPanel instances, and a 'run workflow' button.
  * 
  * @author Tom Oinn
- * 
+ * @author David Withers
  */
 public abstract class WorkflowLaunchPanel extends JPanel {
 
 	private final ImageIcon launchIcon = new ImageIcon(getClass().getResource(
 			"/icons/start_task.gif"));
-
-	private final ImageIcon notReadyIcon = new ImageIcon(getClass()
-			.getResource("/icons/invalid_build_tool.gif"));
-
-	private final ImageIcon readyIcon = new ImageIcon(getClass().getResource(
-			"/icons/complete_status.gif"));
 
 	// An action enabled when all inputs are enabled and used to trigger the
 	// handleLaunch method
@@ -65,7 +58,7 @@ public abstract class WorkflowLaunchPanel extends JPanel {
 	private final Map<String, T2Reference> inputMap = new HashMap<String, T2Reference>();
 
 	private final JTabbedPane tabs;
-	private final Map<String, Component> tabComponents = new HashMap<String, Component>();
+	private final Map<String, RegistrationPanel> tabComponents = new HashMap<String, RegistrationPanel>();
 
 	private final ReferenceService referenceService;
 	private final ReferenceContext referenceContext;
@@ -79,6 +72,7 @@ public abstract class WorkflowLaunchPanel extends JPanel {
 
 		launchAction = new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
+				registerInputs();
 				handleLaunch(inputMap);
 			}
 		};
@@ -103,26 +97,10 @@ public abstract class WorkflowLaunchPanel extends JPanel {
 		if (inputMap.containsKey(inputName)) {
 			return;
 		} else {
-			InputConstructionPanel inputPanel = new InputConstructionPanel(
-					inputDepth, referenceService, referenceContext) {
-				@Override
-				public void inputDataCleared() {
-					inputMap.put(inputName, null);
-					tabs.setIconAt(tabs.indexOfTab(inputName), notReadyIcon);
-					checkLaunchValid();
-				}
-
-				@Override
-				public void inputDataRegistered(T2Reference reference) {
-					inputMap.put(inputName, reference);
-					tabs.setIconAt(tabs.indexOfTab(inputName), readyIcon);
-					checkLaunchValid();
-				}
-			};
+			RegistrationPanel inputPanel = new RegistrationPanel(inputDepth);
 			inputMap.put(inputName, null);
 			tabComponents.put(inputName, inputPanel);
-			tabs.addTab(inputName, notReadyIcon, inputPanel);
-			checkLaunchValid();
+			tabs.addTab(inputName, inputPanel);
 		}
 	}
 
@@ -135,23 +113,18 @@ public abstract class WorkflowLaunchPanel extends JPanel {
 			tabComponents.remove(inputName);
 			inputMap.remove(inputName);
 			tabs.remove(component);
-			checkLaunchValid();
 		}
 	}
 
-	/**
-	 * We can enable the launch if and only if all keys in the inputMap have
-	 * non-null entries.
-	 */
-	private synchronized void checkLaunchValid() {
-		boolean enabled = true;
-		for (T2Reference ref : inputMap.values()) {
-			if (ref == null) {
-				enabled = false;
-				break;
-			}
+	private void registerInputs() {
+		for (String input : inputMap.keySet()) {
+			RegistrationPanel registrationPanel = tabComponents.get(input);
+			Object userInput = registrationPanel.getUserInput();
+			int inputDepth = registrationPanel.getDepth();
+			T2Reference reference = referenceService.register(userInput,
+					inputDepth, true, referenceContext);
+			inputMap.put(input, reference);
 		}
-		launchAction.setEnabled(enabled);
 	}
 
 	/**
