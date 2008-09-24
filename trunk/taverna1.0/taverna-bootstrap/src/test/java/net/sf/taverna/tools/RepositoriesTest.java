@@ -20,7 +20,7 @@ public class RepositoriesTest {
 	@Before
 	public void setUp() throws Exception {
 
-		String resourcePath = RavenPropertiesTest.class.getResource(
+		String resourcePath = getClass().getResource(
 				"/conf/raven.properties").toExternalForm();
 		resourcePath = resourcePath.replaceAll("file:", "");
 		resourcePath = resourcePath.replaceAll("conf/raven.properties", "");
@@ -58,7 +58,7 @@ public class RepositoriesTest {
 			throw e;
 		}
 		tempFile.delete();
-		assert tempFile.mkdir();
+		assertTrue("Could not create " + tempFile, tempFile.mkdir());
 		return tempFile;
 	}
 
@@ -91,7 +91,7 @@ public class RepositoriesTest {
 	public void testStartupRepositoryDefinedAndExists() throws Exception {
 		System.setProperty("taverna.startup", dir.getAbsolutePath());
 		boolean createdStatus = repositoryDir.mkdir();
-		assertTrue("Unable to create repository directory", createdStatus);
+		assertTrue("Unable to create repository directory " + repositoryDir, createdStatus);
 		URL[] urls = new Repositories().find();
 
 		boolean found = false;
