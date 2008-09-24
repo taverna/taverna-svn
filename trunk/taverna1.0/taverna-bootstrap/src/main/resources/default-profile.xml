@@ -9,7 +9,7 @@
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-soaplab-processor" version="1.7.2.0"/>
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-wsdl-processor" version="1.7.2.0"/>
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-apiconsumer-processor" version="1.7.2.0"/>
-	<artifact groupId="biomoby.org" artifactId="taverna-biomoby" version="1.7.2.0"/>	
+	<artifact groupId="org.biomoby" artifactId="taverna-biomoby" version="1.7.2.0"/>	
 	<artifact groupId="uk.org.mygrid.taverna" artifactId="taverna-scavenger" version="1.7.2.0"/>
 
 	<artifact groupId="uk.org.mygrid.taverna.scufl" artifactId="scufl-workflow" version="1.7.2.0"/>
