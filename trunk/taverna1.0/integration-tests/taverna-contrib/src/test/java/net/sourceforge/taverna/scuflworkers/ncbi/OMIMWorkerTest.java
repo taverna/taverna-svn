@@ -1,5 +1,7 @@
 package net.sourceforge.taverna.scuflworkers.ncbi;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +10,6 @@ import net.sourceforge.taverna.io.TransmitterException;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Element;
 
@@ -17,11 +18,10 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 /**
  * @author Mark
  */
-public abstract class OMIMWorkerTest extends AbstractXmlWorkerTest {
+public class OMIMWorkerTest extends AbstractXmlWorkerTest {
 
 	private static Logger logger = Logger.getLogger(OMIMWorkerTest.class);
 
-	@Ignore("Integration test")
 	@Test
 	public void testExecute() throws Exception {
 		LocalWorker worker = new OMIMWorker();

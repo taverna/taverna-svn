@@ -1,5 +1,7 @@
 package net.sourceforge.taverna.scuflworkers.xml;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,17 +10,14 @@ import net.sourceforge.taverna.scuflworkers.ncbi.AbstractXmlWorkerTest;
 import net.sourceforge.taverna.scuflworkers.ncbi.ProteinGBSeqWorker;
 
 import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  * 
  * @author Mark
  */
-public abstract class XQueryWorkerTest extends AbstractXmlWorkerTest {
+public class XQueryWorkerTest extends AbstractXmlWorkerTest {
       
-    
-	@Ignore("Integration test")
 	@Test
     public void testExecute() throws Exception{
     	// fetch a protein sequence needed for testing.

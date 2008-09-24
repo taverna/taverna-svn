@@ -1,5 +1,7 @@
 package net.sourceforge.taverna.scuflworkers.ncbi;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,26 +16,27 @@ import org.w3c.dom.Element;
  * 
  * @author Mark
  */
-public abstract class NucleotideINSDSeqXMLWorkerTest extends AbstractXmlWorkerTest {
+public class INSDSeqXMLWorkerTest extends AbstractXmlWorkerTest {
 
-	@Ignore("Integration test")
+	@Ignore("Null pointer exception")
 	@Test
     public void testExecute() throws Exception{
-        LocalWorker worker = new NucleotideINSDSeqXMLWorker();
+        LocalWorker worker = new INSDSeqXMLWorker();
         Map inputMap = new HashMap();
         DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
-        inAdapter.putString("id","NM_000059");
+        inAdapter.putString("term","brca2");
         
         Map outputMap = worker.execute(inputMap);
         DataThingAdapter outAdapter = new DataThingAdapter(outputMap);
         
-        String results = outAdapter.getString("outputText");
-        assertNotNull("The results were null", results);        
+        String results = outAdapter.getString("resultsXml");
+        assertNotNull("The results were null", results);
+        System.out.println(results);
         
-        this.writeFile("test_nuc_insd.xml", results);
+        this.writeFile("INSDSeqXMLWorker_test.xml", results);
         Element root = this.parseXml(results);
         this.testXmlNotEmpty(root);
-
+        
 
     }
 

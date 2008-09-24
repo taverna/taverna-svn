@@ -1,13 +1,12 @@
 package net.sourceforge.taverna.scuflworkers.ncbi;
 
-import java.io.File;
-import java.io.FileWriter;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.io.StringReader;
 
 import javax.xml.parsers.DocumentBuilderFactory;
-
-import junit.framework.TestCase;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -16,14 +15,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 /**
- * This class
- * 
- * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
  */
-public abstract class AbstractXmlWorkerTest extends TestCase {
+public abstract class AbstractXmlWorkerTest {
     
     public abstract void testExecute() throws Exception;
     
@@ -48,7 +43,8 @@ public abstract class AbstractXmlWorkerTest extends TestCase {
      */
     public void testXmlParsing(String xml) throws Exception{
         try {
-            Element root = parseXml(xml);
+            @SuppressWarnings("unused")
+			Element root = parseXml(xml);
             
         }catch (Exception ex){
             ex.printStackTrace();

@@ -1,44 +1,38 @@
 package net.sourceforge.taverna.scuflworkers.ncbi;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import net.sourceforge.taverna.baclava.DataThingAdapter;
 
 import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
+import org.junit.Test;
 import org.w3c.dom.Element;
 
 /**
- * This class
- * 
- * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
  */
-public class INSDSeqXMLWorkerTest extends AbstractXmlWorkerTest {
+public abstract class ProteinINSDSeqXMLWorkerTest extends AbstractXmlWorkerTest {
 
+	@Test
     public void testExecute() throws Exception{
-        System.out.println("INSDSeqXMLWorkerTest.executeTest() skipped");
-        return;
-    	/** TEST FAILS WITH NULL POINTER EXCEPTION
-        LocalWorker worker = new INSDSeqXMLWorker();
+        LocalWorker worker = new ProteinINSDSeqXMLWorker();
         Map inputMap = new HashMap();
         DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
-        inAdapter.putString("term","brca2");
+        inAdapter.putString("id","NP_000050");
         
         Map outputMap = worker.execute(inputMap);
         DataThingAdapter outAdapter = new DataThingAdapter(outputMap);
         
-        String results = outAdapter.getString("resultsXml");
-        assertNotNull("The results were null", results);
-        System.out.println(results);
-        
-        this.writeFile("INSDSeqXMLWorker_test.xml", results);
+        String results = outAdapter.getString("outputText");
+        assertNotNull("The results were null", results);        
+               
+        this.writeFile("test_prot_gbseq.xml", results);
         Element root = this.parseXml(results);
         this.testXmlNotEmpty(root);
-        
-        **/
 
     }
 
