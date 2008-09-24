@@ -3,6 +3,7 @@ package net.sf.taverna.tools;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,7 +16,6 @@ import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ProfileSelectorTest {
@@ -49,7 +49,7 @@ public class ProfileSelectorTest {
 			throw e;
 		}
 		tempFile.delete();
-		assert tempFile.mkdir();
+		assertTrue("Could not create directory " + tempFile, tempFile.mkdir());
 		return tempFile;
 	}
 
@@ -92,12 +92,11 @@ public class ProfileSelectorTest {
 	}
 
 	@Test
-	@Ignore("Integration test")
 	public void testUseCurrentIfAvaliableWhenListDefined() throws Exception {
 		properties.setProperty("raven.profilelist", PROFILE_BASE_URL
 				+ "test-profilelist.xml");
 
-		File current = new File(confdir, ProfileSelector.CURRENT_PROFILE);
+		File current = new File(confdir, ProfileSelector.CURRENT_PROFILE);		
 		current.createNewFile();
 
 		ProfileSelector selector = new ProfileSelector(properties);
@@ -112,7 +111,6 @@ public class ProfileSelectorTest {
 	}
 
 	@Test
-	@Ignore("Integration test")
 	public void testProfileList() {
 		properties.setProperty("raven.profilelist", PROFILE_BASE_URL
 				+ "test-profilelist.xml");
@@ -131,7 +129,6 @@ public class ProfileSelectorTest {
 	 * check that current-profile-1.5.2.xml is not overwritten if it already
 	 */
 	@Test
-	@Ignore("Integration test")
 	public void testCurrentNotOverwritten() throws Exception {
 		File current = new File(confdir, "current-profile-1.5.2.xml");
 		current.createNewFile();
@@ -160,7 +157,6 @@ public class ProfileSelectorTest {
 	}
 
 	@Test
-	@Ignore("Integration test")
 	public void testProfileInStartupConf() throws Exception {
 		properties.setProperty("raven.profilelist", PROFILE_BASE_URL
 				+ "test-profilelist.xml");
@@ -179,7 +175,6 @@ public class ProfileSelectorTest {
 	}
 
 	@Test
-	@Ignore("Integration test")
 	public void testProfileOverridesList() throws Exception {
 		properties.setProperty("raven.profilelist", PROFILE_BASE_URL
 				+ "test-profilelist.xml");
@@ -198,7 +193,6 @@ public class ProfileSelectorTest {
 	}
 
 	@Test
-	@Ignore("Integration test")
 	public void testUseCurrentWhenNotDefined() throws Exception {
 		properties.setProperty("raven.profilelist", PROFILE_BASE_URL
 				+ "test-profilelist.xml");
@@ -219,7 +213,6 @@ public class ProfileSelectorTest {
 	 * test for space separated list of URLs
 	 */
 	@Test
-	@Ignore("Integration test")
 	public void testProfileMirrorList() {
 		properties.setProperty("raven.profile",
 				"http://35E62FF5-324C-4C1B-AB24-4FF6BE7D1C0E.not/profile.xml "
@@ -234,7 +227,6 @@ public class ProfileSelectorTest {
 	}
 
 	@Test
-	@Ignore("Integration test")
 	public void testProfileListMirrorList() {
 		properties.setProperty("raven.profilelist",
 				"http://35E62FF5-324C-4C1B-AB24-4FF6BE7D1C0E.not/profile.xml "

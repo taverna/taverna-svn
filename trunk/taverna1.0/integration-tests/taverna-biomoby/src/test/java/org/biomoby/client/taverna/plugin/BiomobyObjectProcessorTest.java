@@ -7,14 +7,11 @@ import static org.junit.Assert.fail;
 import org.biomoby.client.CentralImpl;
 import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.junit.Ignore;
 import org.junit.Test;
 
 
 public class BiomobyObjectProcessorTest {
 
-
-	@Ignore("Integration test")
 	@Test
 	public void testCreation() {
 		try {

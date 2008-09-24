@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: RavenPropertiesTest.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-09-19 12:14:24 $
+ * Last modified on   $Date: 2008-09-24 13:05:14 $
  *               by   $Author: stain $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -42,7 +42,6 @@ import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class RavenPropertiesTest {
@@ -52,8 +51,8 @@ public class RavenPropertiesTest {
 	@Before
 	public void setUp() throws Exception {
 		realTavHome = System.getProperty("taverna.home");
-		String resourcePath = RavenPropertiesTest.class.getResource(
-				"/conf/raven.properties").toExternalForm();
+		String resourcePath = getClass().getResource("/conf/raven.properties")
+				.toExternalForm();
 		resourcePath = resourcePath.replaceAll("file:", "");
 		resourcePath = resourcePath.replaceAll("conf/raven.properties", "");
 		System.out.println("Looking for conf/raven.properties in: "
@@ -111,7 +110,6 @@ public class RavenPropertiesTest {
 				"a splashscreen", props.getProperty("raven.splashscreen"));
 	}
 
-	@Ignore("Integration test")
 	@Test
 	public void testAvailableForUpdatesTrue() {
 		System.setProperty("raven.profilelist",
@@ -128,7 +126,6 @@ public class RavenPropertiesTest {
 				.getInstance().configuredForUpdates());
 	}
 
-	@Ignore("Integration test")
 	@Test
 	public void testProfileMirrorList() {
 		System.setProperty("raven.profile",
@@ -143,7 +140,6 @@ public class RavenPropertiesTest {
 						+ "taverna-1.5.0.0-profile.xml");
 	}
 
-	@Ignore("Integration test")
 	@Test
 	public void testProfileListMirrorList() {
 		System.setProperty("raven.profilelist",

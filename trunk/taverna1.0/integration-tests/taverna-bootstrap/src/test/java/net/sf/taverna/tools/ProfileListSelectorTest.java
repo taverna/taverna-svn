@@ -8,19 +8,16 @@ import java.net.URL;
 
 import net.sf.taverna.tools.ProfileListSelector.ProfileDef;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ProfileListSelectorTest {
 
-	@Ignore("Integration test")
 	@Test
 	public void testReadingOfProfile() throws Exception {
 		URL url = new URL(ProfileSelectorTest.PROFILE_BASE_URL
 				+ "test-profilelist.xml");
 		ProfileListSelector list = new ProfileListSelector(url);
 
-		
 		assertEquals(9, list.getProfileList().size());
 
 		assertEquals("1.5.0.0", list.getProfileList().get(0).version);
@@ -35,7 +32,6 @@ public class ProfileListSelectorTest {
 				+ "taverna-1.5.1.6-profile.xml", last.location);
 	}
 
-	@Ignore("Integration test")
 	@Test
 	public void testStoreFirst() throws Exception {
 		URL url = new URL(ProfileSelectorTest.PROFILE_BASE_URL

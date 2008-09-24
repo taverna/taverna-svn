@@ -1,17 +1,16 @@
 package org.embl.ebi.escience.scuflworkers.soaplab;
 
-import static org.junit.Assert.*;
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class SoaplabProcessorTest {
 
 	@Test
-	@Ignore("Integration test")
 	public void testCreation() throws Exception {
 		SoaplabProcessor proc = new SoaplabProcessor(null, "processor",
 				"http://www.ebi.ac.uk/soaplab/services/utils_misc.embossversion");
