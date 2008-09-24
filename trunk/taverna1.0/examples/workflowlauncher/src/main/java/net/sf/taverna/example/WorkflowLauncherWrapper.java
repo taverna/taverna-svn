@@ -327,12 +327,16 @@ public class WorkflowLauncherWrapper {
 		}
 
 		result.add(new URL("http://www.mygrid.org.uk/maven/repository/"));
+		result.add(new URL("http://moby.ucalgary.ca/moby_maven/"));
+		result.add(new URL("http://repository.jboss.com/maven2/"));
 		result.add(new URL("http://www.mygrid.org.uk/maven/repo1/"));
 		result.add(new URL("http://mirrors.sunsite.dk/maven2/"));
-		result.add(new URL("http://www.ibiblio.org/maven2/"));
-		result.add(new URL("http://moby.ucalgary.ca/moby/moby_maven/"));
+		result.add(new URL("http://mirrors.ibiblio.org/maven2/"));
+		result.add(new URL("http://bioinf.ncl.ac.uk/mirror/maven/repository/"));
+		result.add(new URL("http://mirror.omii.ac.uk/maven/repository/"));
 		result.add(new URL(
 				"http://www.mygrid.org.uk/maven/snapshot-repository/"));
+
 		return result;
 	}
 
