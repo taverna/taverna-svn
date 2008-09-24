@@ -224,6 +224,7 @@
 				<module>taverna-contrib</module>
 				<module>taverna-update-manager</module>
 				<module>examples</module>
+				<!--<module>integration-tests</module> -->
 			</modules>
 		</profile>
 		<profile>
@@ -343,6 +344,14 @@
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>jboss</id>
+			<name>JBoss repository</name>
+			<url>http://repository.jboss.org/maven2/</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
