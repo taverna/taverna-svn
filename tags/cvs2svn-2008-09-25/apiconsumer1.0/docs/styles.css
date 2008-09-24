@@ -1,0 +1,19 @@
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	text-align: justify;
+}
+h1 {
+	text-align: center;
+}
+pre {
+	border: thin solid;
+	background-color: #CCE6FF;
+	padding: 4px;
+
+}
+h6 {
+	font-size: small;
+}
+h5 {
+	font-size: small;
+}

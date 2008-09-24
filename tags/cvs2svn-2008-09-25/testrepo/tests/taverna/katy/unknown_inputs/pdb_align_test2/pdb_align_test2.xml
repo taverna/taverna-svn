@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:5CPLMH54L10" author="" title="" />
+  <s:processor name="3DNeighboursFromGi">
+    <s:description>Retrieves a list of protein BLAST neighbours possessing 3-D
+ structure. Uses redundancy information for the query protein.
+ This means that if the query fails for the input gi identifier,
+ then the query will be retried for all other gi identifiers that
+ belong to the same redundant group.
+ The BLAST protein neighbours were calculated using
+ 0.01 maximum E-value cutoff.</s:description>
+    <s:seqhound>
+      <s:method>SHound3DNeighboursFromGi</s:method>
+      <s:server>seqhound.blueprint.org</s:server>
+      <s:jseqremserver>skinner.blueprint.org:8080</s:jseqremserver>
+      <s:path>/cgi-bin/seqrem</s:path>
+      <s:jseqrempath>/jseqhound/jseqrem</s:jseqrempath>
+    </s:seqhound>
+  </s:processor>
+  <s:processor name="evalue" boring="true">
+    <s:stringconstant>0.01</s:stringconstant>
+  </s:processor>
+  <s:processor name="GetFasta">
+    <s:description>The FASTA format is widely used in bioinformatics community;
+ it consists of a definition line, new line followed by a
+ sequence terminated by a second new line.</s:description>
+    <s:seqhound>
+      <s:method>SHoundGetFasta</s:method>
+      <s:server>seqhound.blueprint.org</s:server>
+      <s:jseqremserver>skinner.blueprint.org:8080</s:jseqremserver>
+      <s:path>/cgi-bin/seqrem</s:path>
+      <s:jseqrempath>/jseqhound/jseqrem</s:jseqrempath>
+    </s:seqhound>
+  </s:processor>
+  <s:processor name="analyzeSimple">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://xml.nig.ac.jp/wsdl/ClustalW.wsdl</s:wsdl>
+      <s:operation>analyzeSimple</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="Merge_string_list_to_string">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringListMerge</s:local>
+  </s:processor>
+  <s:processor name="seperator" boring="true">
+    <s:stringconstant />
+  </s:processor>
+  <s:link source="GI_in" sink="3DNeighboursFromGi:gi" />
+  <s:link source="3DNeighboursFromGi:result" sink="GetFasta:gi" />
+  <s:link source="alignmentSeqs" sink="analyzeSimple:query" />
+  <s:link source="GetFasta:result" sink="Merge_string_list_to_string:stringlist" />
+  <s:link source="3DNeighboursFromGi:result" sink="neigbourBlast" />
+  <s:link source="GetFasta:result" sink="fastaSeqs" />
+  <s:link source="Merge_string_list_to_string:concatenated" sink="stringList" />
+  <s:link source="evalue:value" sink="3DNeighboursFromGi:eValue" />
+  <s:link source="seperator:value" sink="Merge_string_list_to_string:seperator" />
+  <s:link source="analyzeSimple:Result" sink="alignment" />
+  <s:source name="GI_in" />
+  <s:source name="alignmentSeqs" />
+  <s:sink name="neigbourBlast" />
+  <s:sink name="fastaSeqs" />
+  <s:sink name="alignment" />
+  <s:sink name="stringList" />
+</s:scufl>
+
+

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:6G6ZEGYU960" author="" title="" />
+  <s:processor name="getCartilageAnalysis">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/processCartScript.jws?wsdl</s:wsdl>
+      <s:operation>getCartilageAnalysis</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getDescription">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/findSegFile.jws?wsdl</s:wsdl>
+      <s:operation>getDescription</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getSegmentation">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/uploadSeg.jws?wsdl</s:wsdl>
+      <s:operation>getSegmentation</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="emailAddress" boring="true">
+    <s:stringconstant>katy@bioinf.man.ac.uk</s:stringconstant>
+  </s:processor>
+  <s:processor name="title" boring="true">
+    <s:stringconstant>ConnectionsFile</s:stringconstant>
+  </s:processor>
+  <s:processor name="getConnsFile">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/returnConnections.jws?wsdl</s:wsdl>
+      <s:operation>getConnsFile</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="comment" boring="true">
+    <s:stringconstant>please edit files using the gui</s:stringconstant>
+  </s:processor>
+  <s:processor name="retrieve">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://rpc53.cs.man.ac.uk:8080/formatMetadata/services/SegmentationPortType?wsdl</s:wsdl>
+      <s:operation>retrieve</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="titleForEdges" boring="true">
+    <s:stringconstant>inner outer edges</s:stringconstant>
+  </s:processor>
+  <s:processor name="getCrnFile">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/returnCrn.jws?wsdl</s:wsdl>
+      <s:operation>getCrnFile</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getSurfFile">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/returnSurface.jws?wsdl</s:wsdl>
+      <s:operation>getSurfFile</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="examineEdges">
+    <s:description>Accept or reject a single item of data</s:description>
+    <s:interaction>
+      <s:baseurl>http://cartman.smb.man.ac.uk:8080/interaction-service-0.1/patterns.xml</s:baseurl>
+      <s:patternname>base.AcceptReject</s:patternname>
+    </s:interaction>
+  </s:processor>
+  <s:processor name="examineConnections">
+    <s:description>Accept or reject a single item of data</s:description>
+    <s:interaction>
+      <s:baseurl>http://cartman.smb.man.ac.uk:8080/interaction-service-0.1/patterns.xml</s:baseurl>
+      <s:patternname>base.AcceptReject</s:patternname>
+    </s:interaction>
+  </s:processor>
+  <s:link source="GetSegmentationFileFromStore" sink="retrieve:graphName" />
+  <s:link source="emailAddress:value" sink="examineConnections:emailAddress" />
+  <s:link source="emailAddress:value" sink="examineEdges:emailAddress" />
+  <s:link source="examineConnections:decision" sink="decision" />
+  <s:link source="examineEdges:decision" sink="edgeDecision" />
+  <s:link source="getConnsFile:getConnsFileReturn" sink="examineConnections:data" />
+  <s:link source="getSurfFile:getSurfFileReturn" sink="CartilageSurfaces" />
+  <s:link source="getSurfFile:getSurfFileReturn" sink="examineEdges:data" />
+  <s:link source="getSegmentation:getSegmentationReturn" sink="segFile" />
+  <s:link source="retrieve:retrieveReturn" sink="getSegmentation:segFile" />
+  <s:link source="segFileName" sink="getDescription:segFile" />
+  <s:link source="getCartilageAnalysis:getCartilageAnalysisReturn" sink="logFileLocation" />
+  <s:link source="getConnsFile:getConnsFileReturn" sink="connsFile" />
+  <s:link source="getCrnFile:getCrnFileReturn" sink="CartilageSurfacesFile" />
+  <s:link source="getCrnFile:getCrnFileReturn" sink="crnFile" />
+  <s:link source="getDescription:getDescriptionReturn" sink="matlabScript" />
+  <s:source name="GetSegmentationFileFromStore" />
+  <s:source name="segFileName" />
+  <s:sink name="matlabScript" />
+  <s:sink name="segFile" />
+  <s:sink name="logFileLocation" />
+  <s:sink name="CartilageSurfaces" />
+  <s:sink name="decision" />
+  <s:sink name="connsFile" />
+  <s:sink name="edgeDecision" />
+  <s:sink name="crnFile" />
+  <s:sink name="CartilageSurfacesFile" />
+  <s:coordination name="getCartilageAnalysis_BLOCKON_getSegmentation">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>getSegmentation</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>getCartilageAnalysis</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="getCartilageAnalysis_BLOCKON_getDescription">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>getDescription</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>getCartilageAnalysis</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="getConnsFile_BLOCKON_getCartilageAnalysis">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>getCartilageAnalysis</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>getConnsFile</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="getCrnFile_BLOCKON_getCartilageAnalysis">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>getCartilageAnalysis</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>getCrnFile</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="getSurfFile_BLOCKON_getCartilageAnalysis">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>getCartilageAnalysis</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>getSurfFile</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+</s:scufl>
+
+

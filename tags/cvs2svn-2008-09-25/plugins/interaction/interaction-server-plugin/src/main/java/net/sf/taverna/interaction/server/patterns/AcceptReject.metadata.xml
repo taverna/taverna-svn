@@ -1,0 +1,5 @@
+<pattern name="base.AcceptReject">
+  <description>Accept or reject a single item of data</description>
+  <input name="data" type="'text/plain'"/>
+  <output name="decision" type="'text/plain'"/>
+</pattern>

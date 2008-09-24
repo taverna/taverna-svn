@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+     Copyright 2003, Victoria University of Manchester.
+
+     This file is part of myGrid.  Further information, and
+     the latest version, can be found at http://www.mygrid.info
+
+     myGrid is free software; you can redistribute it and/or modify
+     it under the terms of the GNU Lesser General Public License as
+     published by the Free Software Foundation; either version 2.1
+     of the License, or (at your option) any later version.
+
+     myGrid is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU Lesser General Public License for more details.
+
+     You should have received a copy of the GNU Lesser General Public
+     License along with Antmerge; if not, write to the Free Software
+     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+     Author: Nick Sharman, Victoria University of Manchester
+     Revision: $Id: common.xsd,v 1.1 2007-12-14 12:47:50 stain Exp $
+
+     This file supports myGrid's nightly build process for the describer module.
+ -->
+<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Chris Wroe (University of Manchester) -->
+<xs:schema targetNamespace="pd" xmlns="pd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:uddi="urn:uddi-org:api_v2" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="serviceDescriptions">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="serviceDescription" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="serviceDescription">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="serviceName" type="xs:string" minOccurs="0"/>
+				<xs:element ref="organisation" minOccurs="0"/>
+				<xs:element name="author" type="xs:string" minOccurs="0"/>
+				<xs:element name="locationURL" type="xs:anyURI" minOccurs="0"/>
+				<xs:element name="interfaceWSDL" type="xs:anyURI" minOccurs="0"/>
+				<xs:element name="serviceDescriptionText" type="xs:string" minOccurs="0"/>
+				<xs:element ref="operations" minOccurs="0"/>
+				<xs:element name="serviceType" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Soaplab service"/>
+						<xs:enumeration value="WSDL service"/>
+						<xs:enumeration value="Workflow service"/>							
+						<xs:enumeration value="BioMOBY service"/>	
+						<xs:enumeration value="SeqHound service"/>	
+						<xs:enumeration value="Local JAVA Widget"/>	
+						<xs:enumeration value="Talisman Service"/>							
+						<xs:enumeration value="BioMart Service"/>
+						<xs:enumeration value="BeanShell Service"/>						
+						<xs:enumeration value="Inferno Service"/>												
+					</xs:restriction>
+				</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="serviceOperation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="operationName" type="xs:string" minOccurs="0"/>
+				<xs:element name="operationSpec" type="xs:string" minOccurs="0"/>
+				<xs:element name="operationDescriptionText" type="xs:string" minOccurs="0"/>
+				<xs:element ref="operationInputs" minOccurs="0"/>
+				<xs:element ref="operationOutputs" minOccurs="0"/>
+				<xs:element name="operationTask" type="xs:string" minOccurs="0"/>
+				<xs:element name="operationResource" type="xs:string" minOccurs="0"/>
+				<xs:element name="operationMethod" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="parameter">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="parameterName" type="xs:string" minOccurs="0"/>
+				<xs:element name="messageName" type="xs:string" minOccurs="0"/>
+				<xs:element name="parameterDescription" type="xs:string" minOccurs="0"/>
+				<xs:element name="defaultValue" type="xs:string" minOccurs="0"/>
+				<xs:element name="isConfigurationParameter" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="semanticType" type="xs:string" minOccurs="0"/>
+				<xs:element name="XMLSchemaTypeName" type="xs:string" minOccurs="0"/>
+				<xs:element name="XMLSchemaURI" type="xs:anyURI" minOccurs="0"/>
+				<xs:element name="parameterFormat" type="xs:string" minOccurs="0"/>
+				<xs:element name="transportDataType" type="xs:string" minOccurs="0"/>
+				<xs:element name="collectionSemanticType" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="operations">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="serviceOperation" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="operationInputs">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="operationOutputs">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+		
+	<xs:element name="contacts">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="contact" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="contact">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="contactType" type="xs:string" minOccurs="0"/>
+				<xs:element name="personName" type="xs:string" minOccurs="0"/>
+				<xs:element name="description" type="xs:string" minOccurs="0"/>
+				<xs:element name="phone" type="xs:string" minOccurs="0" />
+				<xs:element name="email" type="xs:string" minOccurs="0" />
+				<xs:element name="address" type="xs:string" minOccurs="0" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="organisation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="authorizedName" type="xs:string" minOccurs="0"/>
+				<xs:element name="organisationName" type="xs:string" minOccurs="0"/>
+				<xs:element name="organisationDescriptionText" type="xs:string" minOccurs="0"/>
+				<xs:element name="organisationKey" type="xs:string" minOccurs="0"/>
+				<xs:element ref="contacts" minOccurs="0" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

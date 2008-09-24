@@ -1,0 +1,16 @@
+net.sf.taverna.t2.drizzle.decoder.processorfactory.APIConsumerProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.decoder.processorfactory.APProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.decoder.processorfactory.BeanshellProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.decoder.processorfactory.BiomartProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.decoder.processorfactory.BiomobyProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.decoder.processorfactory.BiomobyProcessor2FactoryDecoder
+net.sf.taverna.t2.drizzle.decoder.processorfactory.BiomobyObjectProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.decoder.processorfactory.LocalServiceProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.decoder.processorfactory.NotificationProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.decoder.processorfactory.RshellProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.decoder.processorfactory.SoaplabProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.decoder.processorfactory.StringConstantProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.decoder.processorfactory.WorkflowProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.decoder.processorfactory.WSDLBasedProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.decoder.scavenger.ScavengerDecoder
+net.sf.taverna.t2.drizzle.decoder.bean.ActivitySetModelBeanDecoder

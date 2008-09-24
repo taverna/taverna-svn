@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:OBRWZP2ZPF27" author="" title="" />
+  <s:processor name="needle">
+    <s:description>Needleman-Wunsch global alignment.</s:description>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/alignment_global.needle</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="water">
+    <s:description>Smith-Waterman local alignment.</s:description>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/alignment_local.water</s:soaplabwsdl>
+  </s:processor>
+  <s:link source="FirstProtein" sink="needle:asequence_direct_data" />
+  <s:link source="FirstProtein" sink="water:asequence_direct_data" />
+  <s:link source="SecondProtein" sink="needle:bsequence_direct_data" />
+  <s:link source="SecondProtein" sink="water:bsequence_direct_data" />
+  <s:link source="needle:outfile" sink="GlobalAlignment" />
+  <s:link source="water:outfile" sink="Local Alignment" />
+  <s:source name="FirstProtein" />
+  <s:source name="SecondProtein" />
+  <s:sink name="GlobalAlignment" />
+  <s:sink name="Local Alignment" />
+</s:scufl>
+
+
+
+
+

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.1" log="0">
+  <s:processor name="getDotFromViz">
+    <s:arbitrarywsdl maxretries="0" retrydelay="0" retrybackoff="1.0">
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>getDot</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="createVizSession">
+    <s:arbitrarywsdl maxretries="0" retrydelay="0" retrybackoff="1.0">
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>createSession</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="addTermToViz">
+    <s:arbitrarywsdl maxretries="0" retrydelay="0" retrybackoff="1.0">
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>addTerm</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="destroyVizSession">
+    <s:arbitrarywsdl maxretries="0" retrydelay="0" retrybackoff="1.0">
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>destroySession</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="GetGOIds">
+    <s:arbitrarywsdl maxretries="0" retrydelay="0" retrybackoff="1.0">
+      <s:wsdl>http://biryani.med.yale.edu:8081/axis/services/GORPC?wsdl</s:wsdl>
+      <s:operation>getGOByGenBankId</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="GenbankID">
+    <s:stringconstant maxretries="0" retrydelay="0" retrybackoff="1.0">BC001810</s:stringconstant>
+  </s:processor>
+  <s:link>
+    <s:input>destroyVizSession:sessionID</s:input>
+    <s:output>createVizSession:createSessionReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>addTermToViz:sessionID</s:input>
+    <s:output>createVizSession:createSessionReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getDotFromViz:sessionID</s:input>
+    <s:output>createVizSession:createSessionReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>goDiagram</s:input>
+    <s:output>getDotFromViz:getDotReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>addTermToViz:geneOntologyID</s:input>
+    <s:output>GetGOIds:getGOByGenBankIdReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>GetGOIds:id</s:input>
+    <s:output>GenbankID:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>GoIds</s:input>
+    <s:output>GetGOIds:getGOByGenBankIdReturn</s:output>
+  </s:link>
+  <s:sink>
+    GoIds
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    goDiagram
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/x-graphviz</s:mimeType>
+      </s:mimeTypes>
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+  <s:coordination name="getDotFromViz_BLOCKON_addTermToViz">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>addTermToViz</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>getDotFromViz</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="destroyVizSession_BLOCKON_getDotFromViz">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>getDotFromViz</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>destroyVizSession</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+</s:scufl>
+
+

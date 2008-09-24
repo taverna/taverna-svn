@@ -1,0 +1,4 @@
+org.embl.ebi.escience.scuflui.results.SaveAsDataThingDocument
+org.embl.ebi.escience.scuflui.results.SaveToFileSystem
+org.embl.ebi.escience.scuflui.results.SaveToFileSystemMappingLSIDs
+org.embl.ebi.escience.scuflui.results.SaveAsExcel

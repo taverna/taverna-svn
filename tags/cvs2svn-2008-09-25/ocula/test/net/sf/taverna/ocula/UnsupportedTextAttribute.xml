@@ -1,0 +1,8 @@
+<page>
+	<header />
+	<contents>
+		<simpleinput>
+			<text name="test" type="any" />
+		</simpleinput>
+	</contents>
+</page>

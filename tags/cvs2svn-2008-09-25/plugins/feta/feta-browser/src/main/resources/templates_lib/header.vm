@@ -1,0 +1,32 @@
+<h2>
+	<a href="$uriFactory.getRoot()">
+	<img src="http://www.mygrid.org.uk/themes/omii/img/logo.gif" id="mygridLogo" />
+	Feta browser</a>
+</h2>
+
+<ul class="menu">
+	<li>
+		<a href="$uriFactory.getRoot()">Home</a>
+	</li>
+	<li>
+		<a href="$uriFactory.URIForTasks">Tasks</a>
+	</li>
+	<li>
+		<a href="$uriFactory.URIForTypes">Types</a>
+	</li>
+	<li>
+		<a href="$uriFactory.URIForNamespaces">Namespaces</a>
+	</li>
+	<li>
+		<a href="$uriFactory.URIForOrganisations">Providers</a>
+	</li>
+	<li>
+		<a href="$uriFactory.URIForResources">Resources</a>
+	</li>
+	<li>
+		<a href="$uriFactory.URIForMethods">Methods</a>
+	</li>
+</ul>
+
+
+<h1>$pageTitle</h1>

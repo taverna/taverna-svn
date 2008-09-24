@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section id="spi">
+  <title>Extending Taverna using a Service Provider Interface (SPI).</title>
+
+  <para>Taverna contains numerous Classes or Interfaces that can be extended
+  and packaged as a <link linkend="plugins">Plugin</link> to provide
+  additional functionality for a specific purpose. Taverna uses a mechanism
+  that mimics the <ulink
+  url="http://jakarta.apache.org/commons/discovery/">Apache Commons
+  Discovery</ulink> libraries to discover SPI's.</para>
+
+  <section id="available_spi">
+    <title>Available SPI's.</title>
+
+    <para>Below is a list of the interfaces that can be used to add extensions
+    to Taverna. The descriptions are a brief outline and far from
+    comprehensive. By far the best source of reference when learning to use an
+    SPI is the Taverna <link linkend="getting_the_code">sourcecode</link>
+    itself.</para>
+
+    <table id="spi_table">
+      <title>SPIs</title>
+
+      <tgroup cols="3">
+        <thead>
+          <row>
+            <entry>Interface</entry>
+
+            <entry>Description</entry>
+
+            <entry>ArtifactId</entry>
+          </row>
+        </thead>
+
+        <tbody>
+          <row>
+            <entry>org.embl.ebi.escience.scuflworkers.java.LocalWorker</entry>
+
+            <entry>A simple type of processor that doesn't require the full
+            invocation infrastructure.It appears as a Local Java Widget in the
+            Service Panel and works on a set of inputs to produce a set of
+            outputs.</entry>
+
+            <entry>taverna-java-processor</entry>
+          </row>
+
+          <row>
+            <entry>net.sf.taverna.perspectives.PerspectiveSPI</entry>
+
+            <entry>Defines a perspective which describes a Workbench layout
+            comprising of a set of UI components.</entry>
+
+            <entry>perspective-core</entry>
+          </row>
+
+          <row>
+            <entry>org.embl.ebi.escience.scuflui.spi.ProcessorActionSPI</entry>
+
+            <entry>Defines an action that can be performed on a Processor or
+            set of Processors. These actions are gathered and presented within
+            the menu when rightclicking on that Processor in the Advanced
+            Model Explorer, such as Processor configuration, metadata handling
+            etc.</entry>
+
+            <entry>scufl-ui-api</entry>
+          </row>
+
+          <row>
+            <entry>org.embl.ebi.escience.scuflworkers.ProcessorInfoBean</entry>
+
+            <entry>Defines information about a Processor component.</entry>
+
+            <entry>scufl-model</entry>
+          </row>
+
+          <row>
+            <entry>org.embl.ebi.escience.scuflui.spi.RendererSPI</entry>
+
+            <entry>Provides Rendering capability for a particular type of data
+            object, such as displaying a Graph or an Image.</entry>
+
+            <entry>scufl-ui-api</entry>
+          </row>
+
+          <row>
+            <entry>org.embl.ebi.escience.scuflui.spi.ResultMapSaveSPI</entry>
+
+            <entry>Provides customisation capability for saving a collection
+            of DataThing objects that result from running a workflow, for
+            example Saving to an Excel file.</entry>
+
+            <entry>scufl-ui-api</entry>
+          </row>
+
+          <row>
+            <entry>org.embl.ebi.escience.scuflui.workbench.scavenger.spi.ScavengerActionSPI</entry>
+
+            <entry>Provides actions capabable of being operated upon a
+            Scavenger object in the Service Panel, such as Scavenger
+            configuration.</entry>
+
+            <entry>taverna-scavenger</entry>
+          </row>
+
+          <row>
+            <entry>org.embl.ebi.escience.scuflworkers.ScavengerHelper</entry>
+
+            <entry>Provides the ability to add a Scavenger to the Service
+            Panel that requires additional information before being added,
+            such as providing a WSDL url when adding a WSDL processor. This
+            appears as a menu item when right-clicking on Active Processors in
+            the Service Panel.</entry>
+
+            <entry>taverna-scavenger</entry>
+          </row>
+
+          <row>
+            <entry>org.embl.ebi.escience.scuflui.workbench.Scavenger</entry>
+
+            <entry>A Scavenger is created by the ScavengerHelper, but also can
+            be defined as an SPI. If defined as an SPI it appears in the
+            Service Panel under Local Services, for example String
+            Constant.</entry>
+
+            <entry>taverna-scavenger</entry>
+          </row>
+
+          <row>
+            <entry>org.embl.ebi.escience.scuflui.actions.ScuflModelActionSPI</entry>
+
+            <entry>Defines an action that can be performed on the ScuflModel,
+            and appear on the Advanced Model Explorer toolbar. Add Nested
+            Workflow is an example.</entry>
+
+            <entry>scufl-ui-api</entry>
+          </row>
+
+          <row>
+            <entry>org.embl.ebi.escience.scufl.enactor.WorkflowEventListener</entry>
+
+            <entry>Provides the ability to listen to events occuring as a
+            workflow whilst its running. The LogBook plugin uses this SPI to
+            gather Provenance.</entry>
+
+            <entry>taverna-enactor</entry>
+          </row>
+
+          <row>
+            <entry>org.embl.ebi.escience.scuflui.spi.UIComponentFactorySPI</entry>
+
+            <entry>A factory to a UIComponentSPI. These are toplevel UI
+            components that appear within a layout and can be added to a
+            workbench layout as part of a perspective. The Service Panel, and
+            the Advanced Model Explorerer are UIComponentSPI's that are
+            discoved through its own UIComponentFactorySPI.</entry>
+
+            <entry>scufl-ui-api</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+
+    <tip>
+      <para>In Eclipse, pressing F4 whilst having an SPI class open will
+      display a hierarchical display of all classes that extend it. This can
+      be a useful way of finding examples of current implementations of SPI's
+      within the Taverna source code, which can be a good starting point when
+      creating your own.</para>
+    </tip>
+  </section>
+
+  <section id="declaring_spi">
+    <title>Declaring your SPI.</title>
+
+    <para>Writing your code to extend an SPI is not all that is required for
+    it to be discovered within Taverna. You also need to declare it as an
+    available SPI. This is achieved by creating a file
+    META-INF/services/&lt;spi interface&gt; within your packaged artifact.
+    Using Maven this will automatically become part of your jar file if you
+    place it in the directory src/main/resources/. So, for example if you have
+    created a new RendererSPI you will create the file</para>
+
+    <screen>src/main/resources/META-INF/services/org.embl.ebi.escience.scuflui.spi.RendererSPI</screen>
+
+    <para>Within this file you simply declare the fully qualified name of your
+    new class. For example:</para>
+
+    <screen>elvis:&gt;cat src/main/resources/META-INF/services/org.embl.ebi.escience.scuflui.spi.RendererSPI
+
+org.myproject.renderers.MyFancyRenderer</screen>
+  </section>
+</section>

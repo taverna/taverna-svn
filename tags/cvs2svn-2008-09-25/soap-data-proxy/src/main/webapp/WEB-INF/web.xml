@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="2.4"
+	xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>Webservice Data Proxy</display-name>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+
+	<!-- Uncomment and modify the value to define the location that the configuration file
+		is stored. Without this parameter it is stored in the root of the webapp context.  
+		<context-param>
+		<param-name>ConfigFileLocation</param-name>
+		<param-value>/tmp/config.xml</param-value>
+		</context-param>
+	-->
+	
+	
+
+	<!-- Uncomment and modify if necessary to control access to the configuration pages
+		 You can define roles and users/passwords in the tomcat-users.xml of your tomcat installation. 
+	<security-constraint> 
+		<web-resource-collection>
+			<web-resource-name>Configuration</web-resource-name>
+			<url-pattern>/config/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>administrator</role-name>
+		</auth-constraint>
+	</security-constraint>
+	-->
+	
+	<!-- Blocks anybody reading the config.xml file if stored within the webapp context
+		 due to ConfigFileLocation not being defined (see above) -->
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Configuration File</web-resource-name>
+			<url-pattern>/config.xml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>administrator</role-name>
+		</auth-constraint>		
+	</security-constraint>
+	
+	<security-role>
+		<role-name>administrator</role-name>
+	</security-role>
+	
+	
+	<login-config>
+   		<auth-method>BASIC</auth-method>
+   		<realm-name>WebService data proxy administration</realm-name>
+	</login-config>	 		
+	
+
+	<servlet>
+		<servlet-name>Data</servlet-name>
+		<servlet-class>
+			uk.org.mygrid.dataproxy.web.servlet.DataServlet
+		</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>Data</servlet-name>
+		<url-pattern>/data</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>Proxy</servlet-name>
+		<servlet-class>
+			uk.org.mygrid.dataproxy.web.servlet.ProxyServlet
+		</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>Proxy</servlet-name>
+		<url-pattern>/proxy</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>ViewWSDL</servlet-name>
+		<servlet-class>
+			uk.org.mygrid.dataproxy.web.servlet.ViewWSDLServlet
+		</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>ViewWSDL</servlet-name>
+		<url-pattern>/viewwsdl</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
+		<servlet-name>WingS</servlet-name>
+		<servlet-class>org.wings.session.WingServlet</servlet-class>
+		<init-param>
+			<param-name>wings.mainclass</param-name>
+			<param-value>
+				uk.org.mygrid.dataproxy.web.wings.Configuration
+			</param-value>
+		</init-param>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>WingS</servlet-name>
+		<url-pattern>/config/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>ViewSchema</servlet-name>
+		<servlet-class>
+			uk.org.mygrid.dataproxy.web.servlet.ViewSchemaServlet
+		</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>ViewSchema</servlet-name>
+		<url-pattern>/schema</url-pattern>
+	</servlet-mapping>
+
+	<mime-mapping>
+		<extension>xsd</extension>
+		<mime-type>text/xml</mime-type>
+	</mime-mapping>
+
+	<mime-mapping>
+		<extension>wsdl</extension>
+		<mime-type>text/xml</mime-type>
+	</mime-mapping>
+
+</web-app>

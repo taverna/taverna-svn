@@ -1,0 +1,69 @@
+<page title="Simple example">
+	<header>
+		<init>
+			<run extract="repository,inputHandler">
+				import net.sf.taverna.ocula.example.*; repository = new
+				Repository(); inputHandler = new InputHandler();
+			</run>
+		</init>
+	</header>
+	<contents>
+		<input name="Personal Information" icon="password" cols="4">
+			<text name="nameField" label="Name" />
+			<text name="phoneField" label="Phone" />
+			<text name="emailField" label="Email" />
+			<text name="countryField" label="Country" />
+			<!-- the text of the button -->
+			<button name="Clear">
+				<action>
+					<!-- The "all" mode clears all the fields. You may also
+					specify "explicit" if you want to clear only some
+					fields. -->
+					<clearfields mode="all" />
+				</action>
+			</button>
+			<button name="Submit">
+				<action>
+				<!-- the target attribute takes the key of an object in the default
+					context. This object must implement the Processor interface.
+					By using explicit mode, you specify which fields you want
+					to process. You may also use "all" to process all of the
+					fields within the <input> or <simpleinput> -->
+					<processfields mode="explicit" target="inputHandler">
+						<name>nameField</name>
+						<name>phoneField</name>
+						<name>countryField</name>
+					</processfields>
+				</action>
+			</button>
+		</input>
+		<simpleinput>
+			<!-- Introduces a panel with the given height -->
+			<separator height="5" />
+			<!-- One script can optionally be run here to retrieve data that can be
+				used in the text tags and labels below. Only the first one will be run.-->
+			<script>repository.getPersonDocument();</script>
+			<!-- This will create a Label and a TextField located next to each 
+				other. The label will contain the string of the label attribute
+				and the textfield will either be empty or contain the text within
+				the element. Note that since a <script> can be inside the <text>
+				element, it is possible to populate it dynamically. If there is a 
+				script and static text, only the text resulting from running the
+				script will be used. -->
+			<text name="userNameField" label="User name">
+				Type your user name here
+			</text>
+			<text name="secondEmailField" label="Email address">
+				<!-- The first item returned from the script will be used. All the other
+					ones will be ignored. A warning will be written to the log
+					if this happens.-->
+				<script>value.getEmail()</script>
+			</text>
+			<!-- Using type "password" causes the text field to display an echo
+				character instead of what is typed. It is also possible to have
+				a value inserted into the field statically or by using a script.
+				The value will be rendered as the echo character. -->
+			<text name="passwordField" type="password" label="Password" />
+		</simpleinput>
+	</contents>
+</page>

@@ -1,0 +1,133 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<title>Apache-Axis</title>
+<style type="text/css">
+<!--
+body {
+	font-family: Arial, Helvetica, sans-serif;
+}
+-->
+</style>
+</head>
+
+<body bgcolor="#FFFFFF">
+<h1 align="justify">GoViz - Gene Ontology Visualisation Service</h1>
+<p align="justify"><em><a href="mailto:tmo@ebi.ac.uk">tmo@ebi.ac.uk</a></em>, 
+  28<sup>th</sup> November 2003</p>
+<hr align="JUSTIFY">
+<p align="justify">This is the index page for the Gene Ontology Visualisation 
+  SOAP service. This service is built on top of Apache Axis version 1.1 final, 
+  and uses the simple .jws deployment mechanism. You should be able to view the 
+  WSDL to interact with the service by going <a href="GoViz.jws?wsdl">here</a>. 
+  It has been written to be used within the Taverna workflow framework, see <a href="http://taverna.sf.net">taverna.sf.net</a> 
+  for more information about that project.</p>
+<p align="justify">If the service does not appear to be operational then you might 
+  like to check the built in <a href="happyaxis.jsp">Axis Test Page</a> which 
+  can report some common configuration problems with the server this software 
+  is running on. The other point is that this server will not run on hosts external 
+  to the EBI, as it requires direct access to our Oracle installations.</p>
+<p align="justify">Any questions about this service please email Tom Oinn (<a href="mailto:tmo@ebi.ac.uk">tmo@ebi.ac.uk</a>)</p>
+<hr align="JUSTIFY">
+<h2 align="justify">Simple API Documentation</h2>
+<p align="justify">The GoViz service consists of both stateful and stateless operations. 
+  The stateful operations are used to build a server side state containing a subgraph 
+  of the Gene Ontology which may then be used to visualise predicted functions, 
+  locations etc. The stateless operations are intended as utility functions, especially 
+  in conjunction with the colouring methods in the stateful part of the service.</p>
+<h3 align="justify">Stateful Service Methods</h3>
+<div align="justify">
+  <table width="90%" border="1" align="center" cellpadding="4" cellspacing="1">
+    <tr bgcolor="#6699FF"> 
+      <td width="28%" valign="top"><strong><font color="#000000">Method name</font></strong></td>
+      <td width="72%" valign="top"><strong><font color="#000000">Description</font></strong></td>
+    </tr>
+    <tr> 
+      <td valign="top">String <em>createSession</em>()</td>
+      <td valign="top"> <div align="justify">Create a new GoViz session on the 
+          server, this returns a session identifier that can be used in subsequent 
+          calls.</div></td>
+    </tr>
+    <tr> 
+      <td valign="top">void <em>destroySession</em>(String sessionID)</td>
+      <td valign="top">Remove a session from the server, identified by the session 
+        ID returned by the createSession call.</td>
+    </tr>
+    <tr> 
+      <td valign="top">void <em>addTerm</em>(String sessionID, String GOID)</td>
+      <td valign="top"> <div align="justify">Add a GO term to the visualisation, 
+          updating the state of the named session.</div></td>
+    </tr>
+    <tr> 
+      <td valign="top">String <em>getDot</em>(String sessionID)</td>
+      <td valign="top"> <div align="justify">Return the DOT text specifying the 
+          subgraph of the GO that contains all the terms that have been added 
+          to this session using addTerm() calls plus all the ancestors of such 
+          terms.</div></td>
+    </tr>
+    <tr> 
+      <td valign="top">void <em>markTerm</em>(String sessionID, String GOID, String 
+        colour)</td>
+      <td valign="top">Adds a specific colour parameter to the supplied term. 
+        If this term is not part of the state of the given session then this method 
+        does nothing.</td>
+    </tr>
+    <tr> 
+      <td valign="top">void <em>clearColours</em>(String sessionID)</td>
+      <td valign="top">Removes any colour information added to this session, restoring 
+        the default colouring behaviour.</td>
+    </tr>
+  </table>
+</div>
+<h3 align="justify">Stateless Service Methods</h3>
+<div align="justify"> 
+  <table width="90%" border="1" align="center" cellpadding="4" cellspacing="1">
+    <tr bgcolor="#6699FF"> 
+      <td width="28%" valign="top"><strong><font color="#000000">Method name</font></strong></td>
+      <td width="72%" valign="top"><strong><font color="#000000">Description</font></strong></td>
+    </tr>
+    <tr> 
+      <td valign="top">String[] <em>getAncestors</em>(String GOID)</td>
+      <td valign="top"> <div align="justify">Return the IDs of all ancestors of 
+          the specified term.</div></td>
+    </tr>
+    <tr> 
+      <td valign="top">String[] <em>getParents</em>(String GOID)</td>
+      <td valign="top">Return the IDs of all immediate parent terms of the specified 
+        term. </td>
+    </tr>
+    <tr> 
+      <td height="29" valign="top">String[] <em>getChildren</em>(String GOID)</td>
+      <td valign="top"> <div align="justify">Return the IDs of all immediate children 
+          of the specified term. </div></td>
+    </tr>
+  </table>
+</div>
+<p align="justify">There is no provision for adding multiple terms in one operation 
+  as this is taken care of by Taverna's implicit iteration handlers; the service 
+  is written with the assumption that it is to be used from a workflow engine.</p>
+<hr align="JUSTIFY">
+<h2 align="justify">Output Format</h2>
+<p align="justify">GoViz provides output in the form of a DOT format text string. 
+  This is the native format for the tools from the GraphViz package from AT&amp;T 
+  research, the homepage for which is <a href="http://www.research.att.com/sw/tools/graphviz/">here</a>. 
+  If using Taverna, you should set an additional MIME type of '<em>text/x-graphviz</em>' 
+  for any DOT format outputs and the result browser will automatically use a local 
+  installation of the dot tool to render the files, otherwise you'll just see 
+  the DOT text.</p>
+<h2 align="justify">ID Format</h2>
+<p align="justify">The various operations that take a Gene Ontology identifier 
+  expect it to be of the form 'GO:0007601' (this example should be the term for 
+  'vision'), the leading zeros must be included as must the initial 'GO:' constant. 
+  If the service is not behaving how you'd expect, you can test whether the terms 
+  in question are what you think they are by visiting the EBI's GO search engine 
+  <a href="http://www.ebi.ac.uk/ego/">here</a>.</p>
+<h2 align="justify">Colours</h2>
+<p align="justify">The colours supplied to the markTerm method can be anything 
+  that is a valid colour within the dot file format. For a list of colours that 
+  are defined by name you can go <a href="http://www.research.att.com/%7Eerg/graphviz/info/colors.html">here</a>.</p>
+<hr align="JUSTIFY">
+</body>
+</html>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:6G6ZEGYU960" author="" title="" />
+  <s:processor name="retrieve">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://rpc53.cs.man.ac.uk:8080/formatMetadata/services/SurfacePortType?wsdl</s:wsdl>
+      <s:operation>retrieve</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getCartilageAnalysis">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/processCartScript.jws?wsdl</s:wsdl>
+      <s:operation>getCartilageAnalysis</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getDescription">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/findSegFile.jws?wsdl</s:wsdl>
+      <s:operation>getDescription</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getSegmentation">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/uploadSeg.jws?wsdl</s:wsdl>
+      <s:operation>getSegmentation</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="examineResults">
+    <s:description>Review a single genome annotation flatfile (EMBL, GenBank, GFF etc.)</s:description>
+    <s:interaction>
+      <s:baseurl>http://phoebus.cs.man.ac.uk:1977/interaction-service-0.1/patterns.xml</s:baseurl>
+      <s:patternname>annotation.GenomeAnnotationFlatfile</s:patternname>
+    </s:interaction>
+  </s:processor>
+  <s:processor name="emailAddress" boring="true">
+    <s:stringconstant>katy@cs.man.ac.uk</s:stringconstant>
+  </s:processor>
+  <s:processor name="title" boring="true">
+    <s:stringconstant>ConnectionsFile</s:stringconstant>
+  </s:processor>
+  <s:processor name="getConnsFile">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/returnConnections.jws?wsdl</s:wsdl>
+      <s:operation>getConnsFile</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="comment" boring="true">
+    <s:stringconstant>please edit files using the gui</s:stringconstant>
+  </s:processor>
+  <s:link source="GetSegmentationFileFromStore" sink="retrieve:graphName" />
+  <s:link source="comment:value" sink="examineResults:comment" />
+  <s:link source="emailAddress:value" sink="examineResults:emailAddress" />
+  <s:link source="examineResults:decision" sink="decision" />
+  <s:link source="examineResults:modified" sink="modification" />
+  <s:link source="examineResults:review_notes" sink="notes" />
+  <s:link source="getConnsFile:getConnsFileReturn" sink="examineResults:annotation" />
+  <s:link source="examineResults:reviewed_result" sink="CartilageSurfaces" />
+  <s:link source="getCartilageAnalysis:getCartilageAnalysisReturn" sink="logFileLocation" />
+  <s:link source="getConnsFile:getConnsFileReturn" sink="connsFile" />
+  <s:link source="title:value" sink="examineResults:title" />
+  <s:link source="getDescription:getDescriptionReturn" sink="matlabScript" />
+  <s:link source="getSegmentation:getSegmentationReturn" sink="segFile" />
+  <s:link source="retrieve:retrieveReturn" sink="getDescription:segFile" />
+  <s:link source="retrieve:retrieveReturn" sink="getSegmentation:segFile" />
+  <s:source name="GetSegmentationFileFromStore" />
+  <s:sink name="matlabScript" />
+  <s:sink name="segFile" />
+  <s:sink name="logFileLocation" />
+  <s:sink name="CartilageSurfaces" />
+  <s:sink name="modification" />
+  <s:sink name="decision" />
+  <s:sink name="notes" />
+  <s:sink name="connsFile" />
+  <s:coordination name="getCartilageAnalysis_BLOCKON_getSegmentation">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>getSegmentation</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>getCartilageAnalysis</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="getCartilageAnalysis_BLOCKON_getDescription">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>getDescription</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>getCartilageAnalysis</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="getConnsFile_BLOCKON_getCartilageAnalysis">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>getCartilageAnalysis</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>getConnsFile</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+</s:scufl>
+
+

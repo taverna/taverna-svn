@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.1" log="3">
+  <s:processor name="keggorg">
+    <s:stringconstant>hsa</s:stringconstant>
+  </s:processor>
+  <s:processor name="emblAccNumber">
+    <s:stringconstant>embl-AccNumber:AA326664</s:stringconstant>
+  </s:processor>
+  <s:processor name="GetPathwayPage">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.WebPageFetcher</s:local>
+  </s:processor>
+  <s:processor name="GetPathwayURLs">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.ExtractImageLinks</s:local>
+  </s:processor>
+  <s:processor name="GetPathwayDiagrams">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.WebImageFetcher</s:local>
+  </s:processor>
+  <s:processor name="BaseURLForKEGG">
+    <s:stringconstant>http://soap.genome.ad.jp/</s:stringconstant>
+  </s:processor>
+  <s:processor name="getEmblEntry">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/SrsEbiQuery?wsdl</s:wsdl>
+      <s:operation>queryById</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getHsaIds">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/keggmapper?wsdl</s:wsdl>
+      <s:operation>getHsaIds</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getKeggEntry">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://soap.genome.ad.jp/KEGG.wsdl</s:wsdl>
+      <s:operation>get_entries</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getPathways">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://soap.genome.ad.jp/KEGG.wsdl</s:wsdl>
+      <s:operation>mark_all_pathways_by_genes</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link>
+    <s:input>getPathways:oids</s:input>
+    <s:output>getHsaIds:getHsaIdsReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getPathways:abbr</s:input>
+    <s:output>keggorg:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getKeggEntry:kids</s:input>
+    <s:output>getHsaIds:getHsaIdsReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>GeneEntries</s:input>
+    <s:output>getKeggEntry:return</s:output>
+  </s:link>
+  <s:link>
+    <s:input>EmblRecord</s:input>
+    <s:output>getEmblEntry:queryByIdReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getHsaIds:query</s:input>
+    <s:output>emblAccNumber:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getEmblEntry:usa</s:input>
+    <s:output>emblAccNumber:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>GetPathwayPage:url</s:input>
+    <s:output>getPathways:return</s:output>
+  </s:link>
+  <s:link>
+    <s:input>GetPathwayURLs:document</s:input>
+    <s:output>GetPathwayPage:contents</s:output>
+  </s:link>
+  <s:link>
+    <s:input>GetPathwayDiagrams:url</s:input>
+    <s:output>GetPathwayURLs:imagelinks</s:output>
+  </s:link>
+  <s:link>
+    <s:input>pathways</s:input>
+    <s:output>GetPathwayDiagrams:image</s:output>
+  </s:link>
+  <s:link>
+    <s:input>GetPathwayDiagrams:base</s:input>
+    <s:output>BaseURLForKEGG:value</s:output>
+  </s:link>
+  <s:sink>
+    pathways
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    GeneEntries
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    EmblRecord
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+
+

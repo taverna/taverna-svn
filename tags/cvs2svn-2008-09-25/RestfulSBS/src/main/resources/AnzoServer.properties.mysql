@@ -1,0 +1,79 @@
+
+### Properties that may be modified ###
+
+# Connection to the backend database
+org.openanzo.repository.database.user=
+org.openanzo.repository.database.password=
+org.openanzo.repository.database.url=jdbc:mysql://localhost/anzo
+org.openanzo.repository.database.clear=false
+org.openanzo.repository.database.type=ServerMySQL
+
+
+# the host/port that the server should listen on.
+#org.openanzo.repository.webserver.host = localhost  Only specify to limit listener to one adapter
+org.openanzo.repository.webserver.port = 21212
+org.openanzo.repository.webserver.timeout = 360000
+
+# file of triples to initialize the store with ACLs, roles, users, etc..
+org.openanzo.repository.initFile=resource:/org/openanzo/model/initializeNew.nt
+# whether or not the reset operation should be allowed.
+org.openanzo.repository.reset.enabled=true
+org.openanzo.repository.reset.hardReset=false
+# the provider of authentication
+org.openanzo.repository.authenticationProvider = org.openanzo.model.security.AuthenticationProvider
+
+### Notification system wiring, not for modification ###
+
+# the host/port that the built-in ActiveMQ server should listen on.
+org.openanzo.repository.notification.broker.enabled=true
+org.openanzo.repository.notification.broker.host = tcp://localhost
+org.openanzo.repository.notification.broker.port = 61616
+
+# this login is used to pubish updates to the JMS cloud to reach other users.
+org.openanzo.repository.notification.publisher.jmsProviderClass = org.openanzo.common.jms.ActiveMqProvider
+org.openanzo.repository.notification.publisher.user = sysadmin
+org.openanzo.repository.notification.publisher.password = 123
+org.openanzo.repository.notification.publisher.host = tcp://localhost
+org.openanzo.repository.notification.publisher.port = 61616
+
+# The notification service uses an Embedded Model Service to authenticate users
+org.openanzo.modelService.transportClass = org.openanzo.model.embedded.EmbeddedModelService
+# The notification service must login to this Embedded Model Service and it use these credentials
+org.openanzo.modelService.user = sysadmin
+org.openanzo.modelService.password = 123
+
+# this login is used by the notification and authentication service to receive updates.
+org.openanzo.notification.enabled = true
+org.openanzo.notification.user = sysadmin
+org.openanzo.notification.password = 123
+org.openanzo.notification.host = tcp://localhost
+org.openanzo.notification.port = 61616
+org.openanzo.notification.jmsProviderClass = org.openanzo.common.jms.ActiveMqProvider
+
+# Add the following lines to AnzoServer.properties to activate indexing.
+org.openanzo.indexer.enabled = false
+org.openanzo.indexer.indexerFactoryType = org.openanzo.model.indexer.lucene.ModelIndexerFactory
+
+# Path to the directory where you want the index to be stored on disk.
+org.openanzo.indexer.lucene.indexLocation = /tmp/openanzo/index.lucene
+
+# True if you want to clear the index on startup.
+org.openanzo.indexer.indexClear = true
+
+# True if you want the index to be rebuilt on startup.
+org.openanzo.indexer.rebuildIndex = false
+
+# Properties used by the Anzo Atom endpoint
+# The default user for unauthenticated requests
+org.openanzo.atom.publicuser = webuser
+org.openanzo.atom.publicpassword = webuser
+
+org.openanzo.atom.cache = org.openanzo.atom.cache.LRUAtomCache
+#org.openanzo.atom.cache = org.openanzo.atom.memcached.MemcachedAtomCache
+#org.openanzo.atom.memcached.host = 192.168.240.129
+#org.openanzo.atom.memcached.port = 11211
+
+org.openanzo.atom.binary.store = org.openanzo.atom.binary.SimpleFileSystemStore
+org.openanzo.atom.binary.location = /tmp/store
+
+#org.openanzo.docroot = /tmp/web

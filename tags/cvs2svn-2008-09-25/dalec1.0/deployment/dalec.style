@@ -1,0 +1,16 @@
+<?xml version="1.0" standalone="yes"?>
+
+<DASSTYLE>
+  <STYLESHEET>
+    <CATEGORY id="default">
+      <TYPE id="net.sf.taverna.dalec.configurator.DalecModel">
+        <GLYPH>
+	  <TICK>
+	    <HEIGHT>15</HEIGHT>
+	    <COLOR>black</COLOR>
+	  </TICK>
+	</GLYPH>
+      </TYPE>
+    </CATEGORY>
+  </STYLESHEET>
+</DASSTYLE>

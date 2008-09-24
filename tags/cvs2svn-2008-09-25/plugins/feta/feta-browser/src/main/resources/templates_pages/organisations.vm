@@ -1,0 +1,10 @@
+
+		<ul>
+		#foreach($organisation in $organisations)
+			<li>
+				<a href="$uriFactory.getURIForOrganisation($organisation)">
+					$organisation
+				</a>
+			</li>
+		#end
+		</ul>

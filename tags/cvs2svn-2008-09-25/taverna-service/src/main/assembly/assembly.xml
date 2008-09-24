@@ -1,0 +1,41 @@
+<assembly>
+	<id>bin</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<!--<fileSets>
+		<fileSet>
+			<directory>target</directory>
+			<outputDirectory>/</outputDirectory>
+			<includes>
+				<include>*-engine.jar</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>workbench</directory>
+			<outputDirectory>/</outputDirectory>
+			<excludes>
+				<exclude>pom.xml</exclude>
+			</excludes>
+		</fileSet>
+	</fileSets>-->
+	<moduleSets>
+		<moduleSet>
+			<includes>
+				<include>
+					uk.org.mygrid.tavernaservice:taverna-rest
+				</include>
+				<include>
+					uk.org.mygrid.tavernaservice:taverna-engine
+				</include>
+			</includes>
+			<binaries>
+				<outputDirectory>lib</outputDirectory>
+				<includeDependencies>true</includeDependencies>
+				<unpack>false</unpack>
+			</binaries>
+		</moduleSet>
+	</moduleSets>
+</assembly>
+
+

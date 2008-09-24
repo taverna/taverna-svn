@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:b953c8b3-1c96-43cb-9ec8-73d57260f4dc" author="" title="KEGG-list_organisms" />
+  <s:processor name="list_organisms">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://soap.genome.jp/KEGG.wsdl</s:wsdl>
+      <s:operation>list_organisms</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="returnXML">
+    <s:local>
+      org.embl.ebi.escience.scuflworkers.java.XMLOutputSplitter
+      <s:extensions>
+        <s:arraytype optional="false" unbounded="false" wrapped="false" typename="ArrayOfDefinition" name="return" qname="{SOAP/KEGG}ArrayOfDefinition">
+          <s:elementtype>
+            <s:complextype optional="false" unbounded="false" typename="Definition" name="" qname="{SOAP/KEGG}Definition">
+              <s:elements>
+                <s:basetype optional="false" unbounded="false" typename="string" name="entry_id" qname="Definition&gt;entry_id" />
+                <s:basetype optional="false" unbounded="false" typename="string" name="definition" qname="Definition&gt;definition" />
+              </s:elements>
+            </s:complextype>
+          </s:elementtype>
+        </s:arraytype>
+      </s:extensions>
+    </s:local>
+  </s:processor>
+  <s:processor name="returnXML1">
+    <s:local>
+      org.embl.ebi.escience.scuflworkers.java.XMLOutputSplitter
+      <s:extensions>
+        <s:complextype optional="false" unbounded="false" typename="Definition" name="" qname="{SOAP/KEGG}Definition">
+          <s:elements>
+            <s:basetype optional="false" unbounded="false" typename="string" name="entry_id" qname="Definition&gt;entry_id" />
+            <s:basetype optional="false" unbounded="false" typename="string" name="definition" qname="Definition&gt;definition" />
+          </s:elements>
+        </s:complextype>
+      </s:extensions>
+    </s:local>
+  </s:processor>
+  <s:link source="list_organisms:return" sink="returnXML:input" />
+  <s:link source="returnXML1:definition" sink="out" />
+  <s:link source="returnXML:return" sink="returnXML1:input" />
+  <s:sink name="out" />
+</s:scufl>
+

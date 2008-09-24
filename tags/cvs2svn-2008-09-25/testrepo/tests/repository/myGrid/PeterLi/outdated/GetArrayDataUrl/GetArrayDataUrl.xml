@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.1" log="0">
+  <s:processor name="getArrayDataUrl">
+    <s:arbitrarywsdl maxretries="0" retrydelay="0" retrybackoff="1.0">
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/MicroarrayDatabaseWS?wsdl</s:wsdl>
+      <s:operation>getArrayDataByMageId</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="MageId">
+    <s:stringconstant maxretries="0" retrydelay="0" retrybackoff="1.0">755</s:stringconstant>
+  </s:processor>
+  <s:link>
+    <s:input>getArrayDataUrl:mageIds</s:input>
+    <s:output>MageId:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>ArrayDataUrl</s:input>
+    <s:output>getArrayDataUrl:getArrayDataByMageIdReturn</s:output>
+  </s:link>
+  <s:sink>
+    ArrayDataUrl
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+
+

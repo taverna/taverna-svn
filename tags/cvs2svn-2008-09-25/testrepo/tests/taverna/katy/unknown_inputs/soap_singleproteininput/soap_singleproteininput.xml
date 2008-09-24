@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:OBRWZP2ZPF43" author="" title="" />
+  <s:processor name="blastx_ddbj">
+    <s:description>Blast service at XML Central of DDBJ http://xml.nig.ac.jp/wsdl/index.jsp
+Documentation http://xml.nig.ac.jp/doc/Blast.txt</s:description>
+    <s:arbitrarywsdl>
+      <s:wsdl>http://xml.nig.ac.jp/wsdl/Blast.wsdl</s:wsdl>
+      <s:operation>searchSimple</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="blast_db_pdb" boring="true">
+    <s:stringconstant>PDB</s:stringconstant>
+  </s:processor>
+  <s:processor name="blast_prog_pdb" boring="true">
+    <s:stringconstant>blastp</s:stringconstant>
+  </s:processor>
+  <s:processor name="searchSimple1">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://xml.nig.ac.jp/wsdl/Fasta.wsdl</s:wsdl>
+      <s:operation>searchSimple</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="searchSimple">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://xml.nig.ac.jp/wsdl/Blast.wsdl</s:wsdl>
+      <s:operation>searchSimple</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="Fasta_program" boring="true">
+    <s:stringconstant>fasta34</s:stringconstant>
+  </s:processor>
+  <s:processor name="blast_program" boring="true">
+    <s:stringconstant>blastp</s:stringconstant>
+  </s:processor>
+  <s:processor name="blast_db" boring="true">
+    <s:stringconstant>SWISS</s:stringconstant>
+  </s:processor>
+  <s:processor name="fasta_db" boring="true">
+    <s:stringconstant>ddbj</s:stringconstant>
+  </s:processor>
+  <s:processor name="tmap">
+    <s:description>Displays membrane spanning regions</s:description>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/protein_2d_structure.tmap</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="helixturnhelix">
+    <s:description>Report nucleic acid binding motifs</s:description>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/protein_2d_structure.helixturnhelix</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="patmatmotifs">
+    <s:description>Search a PROSITE motif database with a
+                  protein sequence</s:description>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/protein_motifs.patmatmotifs</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="garnier">
+    <s:description>Predicts protein secondary structure</s:description>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/protein_2d_structure.garnier</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="pscan">
+    <s:description>Scans proteins using PRINTS</s:description>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/protein_motifs.pscan</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="pepcoil">
+    <s:description>Predicts coiled coil regions</s:description>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/protein_2d_structure.pepcoil</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="hmoment">
+    <s:description>Hydrophobic moment calculation</s:description>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/protein_2d_structure.hmoment</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="proteinraw">
+    <s:description>InterProScan with output in TXT format, for protein</s:description>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/interproscan.proteinraw</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="runHMMPfam">
+    <s:description>Searches a HMM profile database (Pfam) with a query sequence. Use this if you are trying to annotate an unknown sequence.</s:description>
+    <s:biomobywsdl>
+      <s:mobyEndpoint>http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl</s:mobyEndpoint>
+      <s:serviceName>runHMMPfam</s:serviceName>
+      <s:authorityName>org.inab.upc</s:authorityName>
+    </s:biomobywsdl>
+    <s:alternate>
+      <s:biomobywsdl>
+        <s:mobyEndpoint>http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl</s:mobyEndpoint>
+        <s:serviceName>search_Pfam</s:serviceName>
+        <s:authorityName>moby.ucalgary.ca</s:authorityName>
+      </s:biomobywsdl>
+      <s:outputmap key="output" value="output" />
+      <s:inputmap key="input" value="input" />
+    </s:alternate>
+  </s:processor>
+  <s:link source="blast_db:value" sink="searchSimple:database" />
+  <s:link source="blast_db_pdb:value" sink="blastx_ddbj:database" />
+  <s:link source="blast_prog_pdb:value" sink="blastx_ddbj:program" />
+  <s:link source="protein_input" sink="garnier:sequence_direct_data" />
+  <s:link source="protein_input" sink="helixturnhelix:sequence_direct_data" />
+  <s:link source="protein_input" sink="hmoment:seqall_direct_data" />
+  <s:link source="protein_input" sink="patmatmotifs:sequence_direct_data" />
+  <s:link source="protein_input" sink="pepcoil:sequence_direct_data" />
+  <s:link source="protein_input" sink="proteinraw:sequence" />
+  <s:link source="protein_input" sink="pscan:sequence_direct_data" />
+  <s:link source="protein_input" sink="runHMMPfam:input" />
+  <s:link source="protein_input" sink="searchSimple1:query" />
+  <s:link source="protein_input" sink="searchSimple:query" />
+  <s:link source="protein_input" sink="tmap:sequences_direct_data" />
+  <s:link source="Fasta_program:value" sink="searchSimple1:program" />
+  <s:link source="blast_program:value" sink="searchSimple:program" />
+  <s:link source="fasta_db:value" sink="searchSimple1:database" />
+  <s:link source="protein_input" sink="blastx_ddbj:query" />
+  <s:link source="blastx_ddbj:Result" sink="blast_result_ddbj" />
+  <s:link source="garnier:outfile" sink="prot2dstruc" />
+  <s:link source="helixturnhelix:outfile" sink="NAbindingmotif" />
+  <s:link source="hmoment:outfile" sink="hydrophobicmoment" />
+  <s:link source="patmatmotifs:outfile" sink="regex_results" />
+  <s:link source="pepcoil:outfile" sink="coiledregions" />
+  <s:link source="proteinraw:result" sink="interpro_results" />
+  <s:link source="pscan:outfile" sink="prints_output" />
+  <s:link source="runHMMPfam:output" sink="Pfam_output" />
+  <s:link source="searchSimple1:Result" sink="fasta_output" />
+  <s:link source="searchSimple:Result" sink="BLAST_results" />
+  <s:link source="tmap:Graphics_in_PNG" sink="membranespanning" />
+  <s:source name="protein_input" />
+  <s:sink name="blast_result_ddbj">
+    <s:metadata>
+      <s:description>BLAST report</s:description>
+    </s:metadata>
+  </s:sink>
+  <s:sink name="Pfam_output" />
+  <s:sink name="fasta_output" />
+  <s:sink name="interpro_results" />
+  <s:sink name="prints_output" />
+  <s:sink name="regex_results" />
+  <s:sink name="hydrophobicmoment" />
+  <s:sink name="prot2dstruc" />
+  <s:sink name="membranespanning">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>image/png</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink name="coiledregions" />
+  <s:sink name="NAbindingmotif" />
+  <s:sink name="BLAST_results" />
+</s:scufl>
+
+
+
+
+

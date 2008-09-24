@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workflowReport workflowID="0" workflowStatus="COMPLETE">
+  <processorList>
+    <processor name="String_list_union">
+      <ProcessComplete TimeStamp="May 15, 2006 9:31:33 AM" />
+      <Invoking TimeStamp="May 15, 2006 9:31:33 AM" />
+      <ProcessScheduled TimeStamp="May 15, 2006 9:31:33 AM">
+        <s:local xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha">org.embl.ebi.escience.scuflworkers.java.StringSetUnion</s:local>
+      </ProcessScheduled>
+    </processor>
+  </processorList>
+</workflowReport>
+

@@ -1,0 +1,10 @@
+<page>
+	<header />
+	<contents>
+		<simpleinput>
+		<text name="test">
+			<script> ee </script>
+	    </text>
+		</simpleinput>
+	</contents>
+</page>

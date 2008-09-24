@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.1" log="3">
+  <s:processor name="databaseid">
+    <s:description>An identifier to a database in SRS to be cross-referenced </s:description>
+    <s:stringconstant>MEDLINE</s:stringconstant>
+  </s:processor>
+  <s:processor name="srsebi_getmedlineid">
+    <s:description>Retrieves the MEDLINE Ids linked to a given EMBL accession number</s:description>
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/SrsEbiQuery?wsdl</s:wsdl>
+      <s:operation>queryByXRef</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="affymapper_getemblaccnumber">
+    <s:description>Retrieves the EMBL accession number associated with a given Affymetrix probe set Id</s:description>
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/affymapper?wsdl</s:wsdl>
+      <s:operation>getAccessionNumber</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link>
+    <s:input>affymapper_getemblaccnumber:probeSetId</s:input>
+    <s:output>probesetid</s:output>
+  </s:link>
+  <s:link>
+    <s:input>srsebi_getmedlineid:usa</s:input>
+    <s:output>affymapper_getemblaccnumber:getAccessionNumberReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>medlineid</s:input>
+    <s:output>srsebi_getmedlineid:queryByXRefReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>srsebi_getmedlineid:XRefDatabankId</s:input>
+    <s:output>databaseid:value</s:output>
+  </s:link>
+  <s:source>
+    probesetid
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description>An affymetrix probe set Id from the U95A array chip.  Try 134_at as a test</s:description>
+      <s:semanticType>http://www.mygrid.org.uk/ontology#Affymetrix_probe_set_id</s:semanticType>
+    </s:metadata>
+  </s:source>
+  <s:sink>
+    medlineid
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description>An array of MEDLINE Ids</s:description>
+      <s:semanticType>http://www.mygrid.org.uk/ontology#biological_concept_unique_ID</s:semanticType>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+
+

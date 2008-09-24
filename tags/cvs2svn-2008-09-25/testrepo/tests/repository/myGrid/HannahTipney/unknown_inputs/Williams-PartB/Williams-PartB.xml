@@ -1,0 +1,589 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:processor name="EST_MOUSE">
+    <s:stringconstant>est_mouse</s:stringconstant>
+  </s:processor>
+  <s:processor name="EST">
+    <s:stringconstant>est</s:stringconstant>
+  </s:processor>
+  <s:processor name="SixFrameTranslation">
+    <s:stringconstant>true</s:stringconstant>
+  </s:processor>
+  <s:processor name="ENTREZ_MUS_MUSCULUS">
+    <s:stringconstant>Mouse[ORGN]</s:stringconstant>
+  </s:processor>
+  <s:processor name="species">
+    <s:stringconstant>Human</s:stringconstant>
+  </s:processor>
+  <s:processor name="Entrez_MMusculus">
+    <s:stringconstant>mouse[ORGN]</s:stringconstant>
+  </s:processor>
+  <s:processor name="max_length_5000">
+    <s:stringconstant>5000</s:stringconstant>
+  </s:processor>
+  <s:processor name="2000">
+    <s:stringconstant>2000</s:stringconstant>
+  </s:processor>
+  <s:processor name="webpage_from_tableUrl">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.WebPageFetcher</s:local>
+  </s:processor>
+  <s:processor name="Webpage_from_annotatedUrl">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.WebPageFetcher</s:local>
+  </s:processor>
+  <s:processor name="webpage_from_poissonUrl">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.WebPageFetcher</s:local>
+  </s:processor>
+  <s:processor name="webpage_from_modelUrl">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.WebPageFetcher</s:local>
+  </s:processor>
+  <s:processor name="Masker">
+    <s:description>Screens for low complexity DNA sequences and interspersed repeats</s:description>
+    <s:soaplabwsdl>http://phoebus.cs.man.ac.uk:8081/axis/services/seq_analysis::repeatmasker</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="GenScan">
+    <s:description>Runs genscan on the input sequence</s:description>
+    <s:soaplabwsdl>http://phoebus.cs.man.ac.uk:8081/axis/services/seq_analysis::genscan</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="genecomparer">
+    <s:description>script to compare Genescan and Twinscan predictions</s:description>
+    <s:soaplabwsdl>http://phoebus.cs.man.ac.uk:8081/axis/services/seq_analysis::genecomparer</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="BLASTN_nr_variable">
+    <s:description>Wrapper for BLAST at NCBI</s:description>
+    <s:soaplabwsdl>http://phoebus.cs.man.ac.uk:8081/axis/services/seq_analysis::blastwrapper2</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="BLASTN_est_variable">
+    <s:description>Wrapper for BLAST at NCBI</s:description>
+    <s:soaplabwsdl>http://phoebus.cs.man.ac.uk:8081/axis/services/seq_analysis::blastwrapper2</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="copyright">
+    <s:description>script to generate copyright statement</s:description>
+    <s:soaplabwsdl>http://phoebus.cs.man.ac.uk:8081/axis/services/documentation::copyright</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="maxlength1">
+    <s:description>splits input sequence into defined lengths</s:description>
+    <s:soaplabwsdl>http://phoebus.cs.man.ac.uk:8081/axis/services/seq_analysis::maxlength</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="genscnsplitter">
+    <s:description>Runs genscan on the input sequence</s:description>
+    <s:soaplabwsdl>http://phoebus.cs.man.ac.uk:8081/axis/services/seq_analysis::genscansplitter</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="tess">
+    <s:description>wrapper to run Tess</s:description>
+    <s:soaplabwsdl>http://phoebus.cs.man.ac.uk:8081/axis/services/seq_analysis::tess</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="signalscan">
+    <s:description>wrapper to run SignalScan</s:description>
+    <s:soaplabwsdl>http://phoebus.cs.man.ac.uk:8081/axis/services/seq_analysis::signalscan</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="RepeatMasker">
+    <s:description>Screens for low complexity DNA sequences and interspersed repeats</s:description>
+    <s:soaplabwsdl>http://phoebus.cs.man.ac.uk:8081/axis/services/seq_analysis::repeatmasker</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="maxlength">
+    <s:description>splits input sequence into defined lengths</s:description>
+    <s:soaplabwsdl>http://phoebus.cs.man.ac.uk:8081/axis/services/seq_analysis::maxlength</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="promotorscan">
+    <s:description>wrapper to run PromotorScan</s:description>
+    <s:soaplabwsdl>http://phoebus.cs.man.ac.uk:8081/axis/services/seq_analysis::promotorscan</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="blastn_nr">
+    <s:description>Wrapper for BLAST at NCBI</s:description>
+    <s:soaplabwsdl>http://phoebus.cs.man.ac.uk:8081/axis/services/seq_analysis::blastwrapper2</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="CpGREPORT">
+    <s:description>Reports all CpG rich regions</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/nucleic_cpg_islands::cpgreport</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="twinscanparser">
+    <s:description>wrapper to run and parser TWINSCAN</s:description>
+    <s:soaplabwsdl>http://phoebus.cs.man.ac.uk:8081/axis/services/seq_analysis::twinscanparser</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="blastn_est">
+    <s:description>Wrapper for BLAST at NCBI</s:description>
+    <s:soaplabwsdl>http://phoebus.cs.man.ac.uk:8081/axis/services/seq_analysis::blastwrapper2</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="lister1">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/FastaLister.jws?wsdl</s:wsdl>
+      <s:operation>lister</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="FastaLister">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/FastaLister.jws?wsdl</s:wsdl>
+      <s:operation>lister</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="lister">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/FastaLister.jws?wsdl</s:wsdl>
+      <s:operation>lister</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="NIX">
+    <s:description>wrapper to interact with NIX at HGMP</s:description>
+    <s:soaplabwsdl>http://phoebus.cs.man.ac.uk:8081/axis/services/seq_analysis::nixparser</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="PrettySeq">
+    <s:description>Output sequence with translated ranges</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/display::prettyseq</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="TRANSEQ">
+    <s:description>Translate nucleic acid sequences</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/nucleic_translation::transeq</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="RESTRICT">
+    <s:description>Finds restriction enzyme cleavage sites</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/nucleic_restriction::restrict</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="SixPack">
+    <s:description>Display a DNA sequence with 6-frame translation and ORFs</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/display::sixpack</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="max_5000">
+    <s:stringconstant>5000</s:stringconstant>
+  </s:processor>
+  <s:processor name="maxlength2">
+    <s:description>splits input sequence into defined lengths</s:description>
+    <s:soaplabwsdl>http://phoebus.cs.man.ac.uk:8081/axis/services/seq_analysis::maxlength</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="lister2">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/FastaLister.jws?wsdl</s:wsdl>
+      <s:operation>lister</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link source="genscnsplitter:coding" sink="CDS" />
+  <s:link source="genscnsplitter:peptide" sink="peptide" />
+  <s:link source="genscnsplitter:scanreport" sink="GS_Report" />
+  <s:link source="FastaLister:listerReturn" sink="ListerOut" />
+  <s:link source="RepeatMasker:masked" sink="RM_masked" />
+  <s:link source="RepeatMasker:out" sink="RM_out" />
+  <s:link source="RepeatMasker:tbl" sink="Rtbl" />
+  <s:link source="FastaLister:listerReturn" sink="RepeatMasker:sequence_direct_data" />
+  <s:link source="FastaLister:listerReturn" sink="SixPack:sequence_direct_data" />
+  <s:link source="SixPack:outfile" sink="PrettyORFs" />
+  <s:link source="SixPack:outseq" sink="All_ORFs" />
+  <s:link source="FastaLister:listerReturn" sink="CpGREPORT:sequence_direct_data" />
+  <s:link source="CpGREPORT:outfile" sink="CpG_Islands" />
+  <s:link source="CpGREPORT:featout" sink="CpG_Composition" />
+  <s:link source="FastaLister:listerReturn" sink="PrettySeq:sequence_direct_data" />
+  <s:link source="PrettySeq:outfile" sink="PrettyTranslation" />
+  <s:link source="FastaLister:listerReturn" sink="RESTRICT:sequence_direct_data" />
+  <s:link source="RESTRICT:outfile" sink="Restriction_Map" />
+  <s:link source="FastaLister:listerReturn" sink="TRANSEQ:sequence_direct_data" />
+  <s:link source="SixFrameTranslation:value" sink="TRANSEQ:frame_6" />
+  <s:link source="TRANSEQ:outseq" sink="6ORF_Translation" />
+  <s:link source="fasta_out" sink="Masker:sequence_direct_data" />
+  <s:link source="Masker:masked" sink="GenScan:sequence_direct_data" />
+  <s:link source="GenScan:output" sink="genscnsplitter:scanrecord_direct_data" />
+  <s:link source="blastn_est:output" sink="Blastn_est_out" />
+  <s:link source="EST:value" sink="blastn_est:database" />
+  <s:link source="FastaLister:listerReturn" sink="blastn_est:query_file_direct_data" />
+  <s:link source="FastaLister:listerReturn" sink="blastn_nr:query_file_direct_data" />
+  <s:link source="blastn_nr:output" sink="Blastn_nr_out" />
+  <s:link source="FastaLister:listerReturn" sink="BLASTN_nr_variable:query_file_direct_data" />
+  <s:link source="Entrez_MMusculus:value" sink="BLASTN_nr_variable:entrez_query" />
+  <s:link source="BLASTN_nr_variable:output" sink="Blastn_nr_mouse_out" />
+  <s:link source="FastaLister:listerReturn" sink="BLASTN_est_variable:query_file_direct_data" />
+  <s:link source="ENTREZ_MUS_MUSCULUS:value" sink="BLASTN_est_variable:entrez_query" />
+  <s:link source="EST_MOUSE:value" sink="BLASTN_est_variable:database" />
+  <s:link source="BLASTN_est_variable:output" sink="Blastn_est_mouse_out" />
+  <s:link source="fasta_out" sink="NIX:seqfile_direct_data" />
+  <s:link source="HGMP_ID" sink="NIX:hgmpid" />
+  <s:link source="HGMP_PW" sink="NIX:hgmppw" />
+  <s:link source="NIX:coding" sink="NIX_Results" />
+  <s:link source="species:value" sink="NIX:species" />
+  <s:link source="description" sink="NIX:description" />
+  <s:link source="email" sink="NIX:email" />
+  <s:link source="copyright:out" sink="COPYRIGHT" />
+  <s:link source="signalscan:ouput" sink="signalscan_out" />
+  <s:link source="max_length_5000:value" sink="maxlength:length" />
+  <s:link source="fasta_out" sink="maxlength:seqfile_direct_data" />
+  <s:link source="maxlength:out" sink="lister:file" />
+  <s:link source="lister:listerReturn" sink="promotorscan:seqfile_direct_data" />
+  <s:link source="promotorscan:ouput" sink="Promotorscan_out" />
+  <s:link source="fasta_out" sink="twinscanparser:seqfile_direct_data" />
+  <s:link source="species:value" sink="twinscanparser:species" />
+  <s:link source="email" sink="twinscanparser:email" />
+  <s:link source="twinscanparser:pdf_url" sink="TS_out_pdf" />
+  <s:link source="twinscanparser:table" sink="TS_out_table" />
+  <s:link source="twinscanparser:cds" sink="TW_out_cds" />
+  <s:link source="twinscanparser:peptide" sink="TW_out_peptide" />
+  <s:link source="fasta_out" sink="genecomparer:seqfile_direct_data" />
+  <s:link source="twinscanparser:table" sink="genecomparer:in1_direct_data" />
+  <s:link source="genscnsplitter:scanreport" sink="genecomparer:in2_direct_data" />
+  <s:link source="genecomparer:out1" sink="comparer_gene" />
+  <s:link source="genecomparer:out2" sink="comparer_cds" />
+  <s:link source="genecomparer:out2" sink="FastaLister:file" />
+  <s:link source="fasta_out" sink="maxlength1:seqfile_direct_data" />
+  <s:link source="maxlength1:out" sink="lister1:file" />
+  <s:link source="2000:value" sink="maxlength1:length" />
+  <s:link source="lister1:listerReturn" sink="tess:seqfile_direct_data" />
+  <s:link source="tess:tesstabular" sink="Tess_tableUrl" />
+  <s:link source="tess:tessannotated" sink="Tess_annotatedUrl" />
+  <s:link source="tess:tessbigjava" sink="Tess_bigAppletUrl" />
+  <s:link source="tess:tesssmalljava" sink="Tess_smalAppletUrl" />
+  <s:link source="tess:tesspoisson" sink="Tess_poissonUrl" />
+  <s:link source="tess:tessmodel" sink="Tess_modelUrl" />
+  <s:link source="tess:tesstabular" sink="webpage_from_tableUrl:url" />
+  <s:link source="tess:tessannotated" sink="Webpage_from_annotatedUrl:url" />
+  <s:link source="tess:tesspoisson" sink="webpage_from_poissonUrl:url" />
+  <s:link source="tess:tessmodel" sink="webpage_from_modelUrl:url" />
+  <s:link source="webpage_from_tableUrl:contents" sink="Tess_tableOut" />
+  <s:link source="Webpage_from_annotatedUrl:contents" sink="Tess_annotatedOut" />
+  <s:link source="webpage_from_poissonUrl:contents" sink="Tess_PoissonOut" />
+  <s:link source="webpage_from_modelUrl:contents" sink="Tess_modelOut" />
+  <s:link source="max_5000:value" sink="maxlength2:length" />
+  <s:link source="maxlength2:out" sink="lister2:file" />
+  <s:link source="lister2:listerReturn" sink="signalscan:seqfile_direct_data" />
+  <s:link source="fasta_out" sink="maxlength2:seqfile_direct_data" />
+  <s:source>
+    fasta_out
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:source>
+  <s:source>
+    HGMP_ID
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:source>
+  <s:source>
+    HGMP_PW
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:source>
+  <s:source>
+    description
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:source>
+  <s:source>
+    email
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:source>
+  <s:sink>
+    Blastn_est_out
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    peptide
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    CDS
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    GS_Report
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    ListerOut
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    Blastn_nr_out
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    RM_masked
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    RM_out
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    Rtbl
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    PrettyORFs
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    All_ORFs
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    CpG_Islands
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    CpG_Composition
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    PrettyTranslation
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    Restriction_Map
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    6ORF_Translation
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    Blastn_nr_mouse_out
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    Blastn_est_mouse_out
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    NIX_Results
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    COPYRIGHT
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    signalscan_out
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    Promotorscan_out
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    TS_out_pdf
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    TS_out_table
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    TW_out_cds
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    TW_out_peptide
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    comparer_gene
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    comparer_cds
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    Tess_tableUrl
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    Tess_tableOut
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain,text/html</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    Tess_annotatedOut
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain,text/html</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    Tess_annotatedUrl
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    Tess_bigAppletUrl
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    Tess_smalAppletUrl
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    Tess_poissonUrl
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    Tess_PoissonOut
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain,text/html</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    Tess_modelOut
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain,text/html</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    Tess_modelUrl
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+
+

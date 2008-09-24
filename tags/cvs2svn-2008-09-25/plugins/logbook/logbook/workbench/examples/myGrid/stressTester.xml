@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:660KZBTN7D2" author="Daniele Turi" title="Workflow to stress test the provenance plugin">Workflow to stress test the provenance plugin derived from Khalid's long iteration example.</s:workflowdescription>
+  <s:processor name="uniprot2GO">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://rpc178.cs.man.ac.uk:8080/axis/services/GO_WS?wsdl</s:wsdl>
+      <s:operation>uniprot2GO</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="identifyUniprotProtein">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://rpc178.cs.man.ac.uk:8080/axis/services/imprint?wsdl</s:wsdl>
+      <s:operation>identifyUniprotProtein</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link source="Database" sink="identifyUniprotProtein:in9" />
+  <s:link source="Enzyme" sink="identifyUniprotProtein:in6" />
+  <s:link source="Error" sink="identifyUniprotProtein:in1" />
+  <s:link source="FixedModifications" sink="identifyUniprotProtein:in7" />
+  <s:link source="Masses" sink="identifyUniprotProtein:in0" />
+  <s:link source="NumberOfHits" sink="identifyUniprotProtein:in2" />
+  <s:link source="P" sink="identifyUniprotProtein:in3" />
+  <s:link source="ResultFile" sink="identifyUniprotProtein:in10" />
+  <s:link source="ScoringSystem" sink="identifyUniprotProtein:in4" />
+  <s:link source="TypeOfMasses" sink="identifyUniprotProtein:in5" />
+  <s:link source="VariableModifications" sink="identifyUniprotProtein:in8" />
+  <s:link source="identifyUniprotProtein:identifyUniprotProteinReturn" sink="uniprot2GO:in0" />
+  <s:link source="uniprot2GO:uniprot2GOReturn" sink="GOId" />
+  <s:source name="Masses" />
+  <s:source name="Error" />
+  <s:source name="NumberOfHits" />
+  <s:source name="P" />
+  <s:source name="ScoringSystem" />
+  <s:source name="TypeOfMasses" />
+  <s:source name="Enzyme" />
+  <s:source name="FixedModifications" />
+  <s:source name="VariableModifications" />
+  <s:source name="Database" />
+  <s:source name="ResultFile" />
+  <s:sink name="GOId" />
+</s:scufl>
+
