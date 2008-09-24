@@ -1,17 +1,16 @@
 package net.sourceforge.taverna.scuflworkers.io;
 
+import java.io.File;
 import java.util.HashMap;
 
 import junit.framework.TestCase;
 import net.sourceforge.taverna.baclava.DataThingAdapter;
 
 /**
- * This class
- * 
- * Last edited by $Author: stain $
+ * Test {@link FileListByExtTask}
  * 
  * @author Mark
- * @version $Revision: 1.3 $
+ * @author Stian Soiland-Reyes
  */
 public class FileListByExtTaskTest extends TestCase {
 
@@ -19,10 +18,14 @@ public class FileListByExtTaskTest extends TestCase {
         FileListByExtTask task = new FileListByExtTask();
         HashMap inputMap = new HashMap();
         DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
-        String home = System.getProperty("user.home");
-        inAdapter.putString("directory", home);
+        File tempDir = File.createTempFile(getClass().getSimpleName(), "test");
+        tempDir.delete();
+        assertTrue("Could not create temporary directory" + tempDir, tempDir.mkdir());
+        inAdapter.putString("directory", tempDir.getAbsolutePath());
         inAdapter.putString("extension","xml");
         
+        File xmlFile = new File(tempDir, "fish.xml");
+		assertTrue("Could not create file " + xmlFile, xmlFile.createNewFile());
         
         HashMap outputMap = (HashMap)task.execute(inputMap);
         DataThingAdapter outAdapter = new DataThingAdapter(outputMap);
@@ -30,7 +33,8 @@ public class FileListByExtTaskTest extends TestCase {
         assertFalse("The outputmap was empty",outputMap.isEmpty());
         String[] filelist = outAdapter.getStringArray("filelist");
         
-        assertTrue("The filelist was empty ", filelist != null && filelist.length > 0);        
+        assertTrue("The filelist was null or unexpected length ", filelist != null && filelist.length == 1);        
+        assertEquals("Did not list " + xmlFile, xmlFile.getAbsolutePath(), filelist[0]);
     }
 
 }
