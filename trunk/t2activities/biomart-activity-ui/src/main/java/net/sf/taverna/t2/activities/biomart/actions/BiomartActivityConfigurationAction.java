@@ -12,7 +12,7 @@ import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationActi
 
 import org.jdom.Element;
 
-public class BiomartActivityConfigurationAction extends ActivityConfigurationAction<BiomartActivity> {
+public class BiomartActivityConfigurationAction extends ActivityConfigurationAction<BiomartActivity, Element> {
 
 	private static final long serialVersionUID = 3782223454010961660L;
 	private final Frame owner;

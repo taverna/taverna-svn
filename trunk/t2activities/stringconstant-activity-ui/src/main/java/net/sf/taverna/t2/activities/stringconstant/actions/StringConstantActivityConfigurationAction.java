@@ -10,7 +10,7 @@ import net.sf.taverna.t2.activities.stringconstant.StringConstantConfigurationBe
 import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationAction;
 
 public class StringConstantActivityConfigurationAction extends
-		ActivityConfigurationAction<StringConstantActivity> {
+		ActivityConfigurationAction<StringConstantActivity, StringConstantConfigurationBean> {
 
 	private static final long serialVersionUID = 2518716617809186972L;
 	private final Frame owner;

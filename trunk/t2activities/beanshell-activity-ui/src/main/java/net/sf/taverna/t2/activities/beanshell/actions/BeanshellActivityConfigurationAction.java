@@ -7,11 +7,12 @@ import java.awt.event.ActionListener;
 import javax.swing.JDialog;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
+import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
 import net.sf.taverna.t2.activities.beanshell.views.BeanshellConfigView;
 import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationAction;
 
 @SuppressWarnings("serial")
-public class BeanshellActivityConfigurationAction extends ActivityConfigurationAction<BeanshellActivity>{
+public class BeanshellActivityConfigurationAction extends ActivityConfigurationAction<BeanshellActivity, BeanshellActivityConfigurationBean>{
 
 	private final Frame owner;
 

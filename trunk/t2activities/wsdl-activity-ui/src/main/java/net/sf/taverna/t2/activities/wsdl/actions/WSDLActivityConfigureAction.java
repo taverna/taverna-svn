@@ -4,12 +4,13 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 
 import net.sf.taverna.t2.activities.wsdl.WSDLActivity;
+import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
 import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationAction;
 
 import org.apache.log4j.Logger;
 
 @SuppressWarnings("serial")
-public class WSDLActivityConfigureAction extends ActivityConfigurationAction<WSDLActivity> {
+public class WSDLActivityConfigureAction extends ActivityConfigurationAction<WSDLActivity, WSDLActivityConfigurationBean> {
 
 	private final Frame owner;
 	private static Logger logger = Logger

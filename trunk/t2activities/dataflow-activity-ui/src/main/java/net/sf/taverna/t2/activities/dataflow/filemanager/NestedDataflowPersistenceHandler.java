@@ -127,7 +127,7 @@ public class NestedDataflowPersistenceHandler extends
 			throw new SaveException("Could not recreate dataflow " + dataflow,
 					e);
 		}
-		Edit<Activity<?>> configureEdit = edits.getConfigureActivityEdit(
+		Edit<Activity<Dataflow>> configureEdit = edits.getConfigureActivityEdit(
 				dataflowActivity, dataflowCopy);
 		try {
 			editManager.doDataflowEdit(nestedDataflowDestination

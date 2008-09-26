@@ -13,7 +13,7 @@ import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationActi
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 
 public class SoaplabActivityConfigurationAction extends
-		ActivityConfigurationAction<SoaplabActivity> {
+		ActivityConfigurationAction<SoaplabActivity, SoaplabActivityConfigurationBean> {
 
 	private static final long serialVersionUID = 5076721332542691094L;
 	private final Frame owner;

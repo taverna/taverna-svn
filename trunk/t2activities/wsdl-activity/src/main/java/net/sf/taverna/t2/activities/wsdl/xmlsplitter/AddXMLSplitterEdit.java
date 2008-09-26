@@ -46,7 +46,7 @@ public class AddXMLSplitterEdit extends AbstractDataflowEdit {
 	protected void doEditAction(DataflowImpl dataflow) throws EditException {
 		List<Edit<?>> editList = new ArrayList<Edit<?>>();
 
-		Activity<?> splitter = null;
+		Activity<XMLSplitterConfigurationBean> splitter = null;
 		String sourcePortName = "";
 		Processor sourceProcessor = null;
 		Activity<?> sourceActivity = null;
