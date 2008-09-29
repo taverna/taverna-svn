@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>	
+	<groupId>uk.org.mygrid.taverna.processors</groupId>
+	<artifactId>taverna-gt4-processor</artifactId>
+	<name>GT4 Processor</name>
+	<version>1.7.1.0</version>
+	<developers>
+		<developer>
+			<id>weitan</id>
+			<name>Wei Tan</name>
+			<organization>Argonne National Labs, MCS division</organization>
+			<organizationUrl>
+				http://www.mcs.anl.gov/
+			</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>-6</timezone>
+		</developer>
+		<developer>
+			<id>rmadduri</id>
+			<name>Ravi Madduri</name>
+			<organization>Argonne National Labs, MCS division</organization>
+			<organizationUrl>
+				http://www.mcs.anl.gov/
+			</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>-6</timezone>
+		</developer>
+	</developers>
+	<dependencies>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna</groupId>
+			<artifactId>taverna-scavenger</artifactId>
+			<version>1.7.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.baclava</groupId>
+			<artifactId>baclava-core</artifactId>
+			<version>1.7.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.processors</groupId>
+			<artifactId>taverna-java-processor</artifactId>
+			<version>1.7.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna</groupId>
+			<artifactId>taverna-core</artifactId>
+			<version>1.7.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.scufl</groupId>
+			<artifactId>scufl-model</artifactId>
+			<version>1.7.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.scufl</groupId>
+			<artifactId>scufl-ui-api</artifactId>
+			<version>1.7.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.4</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna</groupId>
+			<artifactId>taverna-enactor</artifactId>
+			<version>1.7.1.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.raven</groupId>
+			<artifactId>raven</artifactId>
+			<version>1.7.1.0</version>
+			<!--<scope>test</scope> dependencies already define scope 'compile' -->
+		</dependency>
+		<!-- the generic wsdl parsing and invocation code has been moved to a 
+			seperate CVS repository: wsdl-generic -->
+		<dependency>
+			<groupId>net.sf.taverna</groupId>
+			<artifactId>wsdl-generic</artifactId>
+			<version>1.1</version>
+		</dependency>
+		<dependency>
+      		<groupId>caGrid</groupId>
+     		 <artifactId>caGrid-package</artifactId>
+      		<version>1.2</version>   		
+    	</dependency>
+	</dependencies>
+	<repositories>
+		<repository>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+		</repository>
+		<repository>
+			<id>caGrid-repository</id>
+			<name>caGrid Repository</name>
+			<url>http://127.0.0.1/repo/</url>
+		</repository>
+	
+	</repositories>
+ 
+</project>
