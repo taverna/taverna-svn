@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<description>Implementation of the provenance connector
+		and events</description>
+	<parent>
+		<groupId>net.sf.taverna.t2.provenance</groupId>
+		<artifactId>provenance</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<groupId>net.sf.taverna.t2.provenance</groupId>
+	<artifactId>provenance-impl</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>Provenance Impl</name>
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.taverna.t2.provenance</groupId>
+			<artifactId>provenance-api</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>serializer-api</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
+		<!--<dependency>
+			<groupId>axis</groupId>
+			<artifactId>axis-jaxrpc</artifactId>
+			<version>1.4</version>
+		</dependency>-->
+		<!--<dependency>
+			<groupId>axis</groupId>
+			<artifactId>axis</artifactId>
+			<version>1.4</version>
+		</dependency>-->
+		<dependency>
+			<groupId>net.sf.taverna.t2.lineageService</groupId>
+			<artifactId>provenance-wsdl</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		
+	</dependencies>
+</project>
