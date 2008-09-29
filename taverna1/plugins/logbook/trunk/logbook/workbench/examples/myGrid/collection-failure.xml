@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:G601NUC0PH6" author="Daniele Turi" title="Collection Failure Example" />
+  <s:processor name="a" boring="true">
+    <s:stringconstant>a</s:stringconstant>
+  </s:processor>
+  <s:processor name="b" boring="true">
+    <s:stringconstant>b</s:stringconstant>
+  </s:processor>
+  <s:processor name="CollectionFailure">
+    <s:local>uk.ac.man.cs.img.mygrid.scuflworkers.CollectionFailureTester</s:local>
+  </s:processor>
+  <s:processor name="String_list_union">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringSetUnion</s:local>
+  </s:processor>
+  <s:link source="CollectionFailure:output" sink="out" />
+  <s:link source="String_list_union:union" sink="CollectionFailure:input" />
+  <s:link source="a:value" sink="CollectionFailure:dummy" />
+  <s:link source="a:value" sink="String_list_union:list1" />
+  <s:link source="b:value" sink="String_list_union:list2" />
+  <s:sink name="out" />
+</s:scufl>
+
+

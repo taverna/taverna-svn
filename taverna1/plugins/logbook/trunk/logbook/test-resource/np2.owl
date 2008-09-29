@@ -1,0 +1,33 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://www.mygrid.org.uk/provenance#" >
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#String_Constant_out_value">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#OutputDataName"/>
+    <j.0:dataSyntacticType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/plain</j.0:dataSyntacticType>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process_property#1170769429599">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#ProcessProperty"/>
+    <j.0:key rdf:datatype="http://www.w3.org/2001/XMLSchema#string">String Value</j.0:key>
+    <j.0:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string">aabb;skl;jk</j.0:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#String_Constant">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#Process"/>
+    <j.0:className rdf:datatype="http://www.w3.org/2001/XMLSchema#string">org.embl.ebi.escience.scuflworkers.stringconstant.StringConstantProcessor</j.0:className>
+    <j.0:hasProperty rdf:resource="urn:www.mygrid.org.uk/process_property#1170769429599"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:b31d7dab-6798-4191-a626-0a56431262b1">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#AtomicData"/>
+    <j.0:outputDataHasName rdf:resource="urn:www.mygrid.org.uk/process#String_Constant_out_value"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process_run#1170769429589">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#ProcessRun"/>
+    <j.0:endTime>"2007-02-06T13:43:49.599Z"^^http://www.w3.org/2001/XMLSchema#dateTime</j.0:endTime>
+    <j.0:runsProcess rdf:resource="urn:www.mygrid.org.uk/process#String_Constant"/>
+    <j.0:processOutput rdf:resource="urn:lsid:net.sf.taverna:dataItem:b31d7dab-6798-4191-a626-0a56431262b1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#value">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataName"/>
+    <j.0:mimeType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/plain</j.0:mimeType>
+  </rdf:Description>
+</rdf:RDF>
+
