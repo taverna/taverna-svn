@@ -1,0 +1,27 @@
+## List services
+## Requires $uriFactory and $services
+
+<p>$services.size() services found</p>
+<ul class="services">
+#set($lastInterface = "unknown")
+#foreach ($service in $services)
+	#if ($service.hasInterfaceLocations.isEmpty())
+	   #set($interface = "")
+	#else   
+		#set($interface = $service.hasInterfaceLocations.iterator().next())
+	#end
+	#if ($interface != ($lastInterface))
+		#if($lastInterface != "unknown")
+				</ul>
+			</li>
+		#end
+		#set($lastInterface = $interface)
+		<li class="interface">$interface
+		<ul>
+	#end
+			<li class="service">
+			  <a href="$uriFactory.getURI($service)" class="serviceName">$service.hasServiceNameTexts</a>
+			  <span class="serviceDescription">$service.hasServiceDescriptionTexts</span>
+			</li>
+#end
+</ul>

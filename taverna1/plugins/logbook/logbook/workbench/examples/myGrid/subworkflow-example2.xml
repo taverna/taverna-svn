@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:F3A9LEOZFX14:2" author="Daniele Turi" title="Subworkflow Example 2" />
+  <s:processor name="String_Constant" boring="true">
+    <s:stringconstant>aabb;skl;jk</s:stringconstant>
+  </s:processor>
+  <s:processor name="Split_string_into_string_list_by_regular_expression">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+  </s:processor>
+  <s:processor name="String_Constant2" boring="true">
+    <s:stringconstant>aabb;skl;jk</s:stringconstant>
+  </s:processor>
+  <s:processor name="NestedWorkflow">
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:IW2ESU3GQR6:2" author="Daniele Turi" title="Collection Example Subworkflow 2" />
+        <s:processor name="Split_string_into_string_list_by_regular_expression">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+        </s:processor>
+        <s:processor name="Reg_exp" boring="true">
+          <s:stringconstant>;</s:stringconstant>
+        </s:processor>
+        <s:link source="Reg_exp:value" sink="Split_string_into_string_list_by_regular_expression:regex" />
+        <s:link source="Split_string_into_string_list_by_regular_expression:split" sink="subworkflowOut" />
+        <s:sink name="subworkflowOut" />
+        <s:source name="input" />
+        <s:link source="input" sink="Split_string_into_string_list_by_regular_expression:string"/>
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:link source="NestedWorkflow:subworkflowOut" sink="Split_string_into_string_list_by_regular_expression:regex" />
+  <s:link source="Split_string_into_string_list_by_regular_expression:split" sink="list" />
+  <s:link source="String_Constant:value" sink="Split_string_into_string_list_by_regular_expression:string" />
+  <s:link source="String_Constant2:value" sink="NestedWorkflow:input" />
+  <s:sink name="list" />
+</s:scufl>
+
+

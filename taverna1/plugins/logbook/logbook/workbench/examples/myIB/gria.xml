@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="" author="" title="" />
+  <s:processor name="Upload">
+    <gria-upload>
+      <upload-settings openAuth="false" serviceProvider="https://griademo.it-innovation.soton.ac.uk/GRIA/services/">
+        <stager>
+          <policy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="java:java.lang.String">create-new</policy>
+          <existing alias="" id="" portName="">
+            <policy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="java:java.lang.String">id</policy>
+          </existing>
+        </stager>
+        <allocation>
+          <policy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="java:java.lang.String">create-new</policy>
+          <existing alias="" id="" port-name="">
+            <policy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="java:java.lang.String">auto</policy>
+          </existing>
+          <new alias="">
+            <requirements download-data-volume="10485760" memory="1073741824" rel-machine-performance="1.0" store-data-volume="1073741824" upload-data-volume="10485760" work="0.0">
+              <duration days="0" hours="0" milliSeconds="0" minutes="30" seconds="0" />
+            </requirements>
+            <lifetime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="java:java.lang.String">outlive</lifetime>
+            <account alias="" id="">
+              <policy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="java:java.lang.String">auto</policy>
+            </account>
+          </new>
+        </allocation>
+      </upload-settings>
+    </gria-upload>
+  </s:processor>
+  <s:processor name="paint">
+    <gria-job>
+      <application name="http://it-innovation.soton.ac.uk/grid/imagemagick/paint" version="1.0.0">
+        <description>Application to render an image into painting</description>
+        <input name="inputImage" type="image">
+          <description>image file of any type</description>
+        </input>
+        <output name="outputImage" type="image">
+          <description>painted image of the same type as input type</description>
+        </output>
+      </application>
+      <settings openAuth="false">
+        <application name="http://it-innovation.soton.ac.uk/grid/imagemagick/paint" service-provider="https://griademo.it-innovation.soton.ac.uk/GRIA/services/" version="1.0.0" />
+        <command-line cmd="" port-name="">
+          <policy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="java:java.lang.String">static</policy>
+        </command-line>
+        <job cpu-seconds="10.0" />
+        <allocation>
+          <policy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="java:java.lang.String">create-new</policy>
+          <existing alias="" id="" port-name="">
+            <policy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="java:java.lang.String">auto</policy>
+          </existing>
+          <new alias="">
+            <requirements download-data-volume="10485760" memory="1073741824" rel-machine-performance="1.0" store-data-volume="1073741824" upload-data-volume="10485760" work="30.0">
+              <duration days="0" hours="0" milliSeconds="0" minutes="30" seconds="0" />
+            </requirements>
+            <lifetime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="java:java.lang.String">outlive</lifetime>
+            <account alias="" id="">
+              <policy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="java:java.lang.String">auto</policy>
+            </account>
+          </new>
+        </allocation>
+      </settings>
+    </gria-job>
+  </s:processor>
+  <s:processor name="swirl">
+    <gria-job>
+      <application name="http://it-innovation.soton.ac.uk/grid/imagemagick/swirl" version="1.0.0">
+        <description>Application to swirl an image</description>
+        <input name="inputImage" type="image">
+          <description>image file of any type</description>
+        </input>
+        <output name="outputImage" type="image">
+          <description>swirled image of the same type as input type</description>
+        </output>
+      </application>
+      <settings openAuth="false">
+        <application name="http://it-innovation.soton.ac.uk/grid/imagemagick/swirl" service-provider="https://griademo.it-innovation.soton.ac.uk/GRIA/services/" version="1.0.0" />
+        <command-line cmd="" port-name="">
+          <policy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="java:java.lang.String">static</policy>
+        </command-line>
+        <job cpu-seconds="10.0" />
+        <allocation>
+          <policy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="java:java.lang.String">create-new</policy>
+          <existing alias="" id="" port-name="">
+            <policy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="java:java.lang.String">auto</policy>
+          </existing>
+          <new alias="">
+            <requirements download-data-volume="10485760" memory="1073741824" rel-machine-performance="1.0" store-data-volume="1073741824" upload-data-volume="10485760" work="30.0">
+              <duration days="0" hours="0" milliSeconds="0" minutes="30" seconds="0" />
+            </requirements>
+            <lifetime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="java:java.lang.String">outlive</lifetime>
+            <account alias="" id="">
+              <policy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="java:java.lang.String">auto</policy>
+            </account>
+          </new>
+        </allocation>
+      </settings>
+    </gria-job>
+  </s:processor>
+  <s:processor name="Download">
+    <gria-download />
+  </s:processor>
+  <s:processor name="inputFile" boring="true">
+    <s:stringconstant>/local/dturi/software/gria/gria-client-4.2.0/image.jpg</s:stringconstant>
+  </s:processor>
+  <s:processor name="outputFile" boring="true">
+    <s:stringconstant>/tmp/out.txt</s:stringconstant>
+  </s:processor>
+  <s:link source="Upload:dataStager" sink="paint:inputImage" />
+  <s:link source="inputFile:value" sink="Upload:localFile" />
+  <s:link source="outputFile:value" sink="Download:localFile" />
+  <s:link source="paint:outputImage" sink="swirl:inputImage" />
+  <s:link source="swirl:outputImage" sink="Download:dataStager" />
+</s:scufl>
+
+

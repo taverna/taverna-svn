@@ -1,0 +1,6 @@
+	<ul>
+	#foreach ($method in $methods)
+		<li><a href="$uriFactory.getURIForMethod($method)">$method</a></li>
+	#end
+	</ul>
+

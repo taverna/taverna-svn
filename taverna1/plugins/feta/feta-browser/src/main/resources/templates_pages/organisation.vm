@@ -1,0 +1,12 @@
+
+		<ul class="menu">
+			<li>
+				<a href="$uriFactory.getURIForOrganisations()">
+					All organisations
+				</a>
+			</li>
+		</ul>
+		
+		<h2>Provides services</h2>
+		#parse("templates_lib/list_services.vm")
+

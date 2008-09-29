@@ -1,0 +1,5 @@
+Single
+Collection
+	Ordered Collection
+	Set
+	Map

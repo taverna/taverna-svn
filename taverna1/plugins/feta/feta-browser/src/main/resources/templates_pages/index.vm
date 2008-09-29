@@ -1,0 +1,71 @@
+<p>Browse services by:</p>
+<ul>
+	<li>
+		<a href="$uriFactory.URIForTasks">Tasks</a>
+		performed
+	</li>
+	<li>
+		<a href="$uriFactory.URIForTypes">Types</a>
+		produced or consumed
+	</li>
+	<li>
+		<a href="$uriFactory.URIForNamespaces">Namespaces</a>
+		produced or consumed
+	</li>
+	<li>
+		<a href="$uriFactory.URIForOrganisations">Organisations</a>
+		providing services
+	</li>
+	<li>
+		<a href="$uriFactory.URIForResources">Resources</a>
+		used by services
+	</li>
+	<li>
+		<a href="$uriFactory.URIForMethods">Methods</a>
+		used by services
+	</li>
+</ul>
+<p>
+	Or list
+	<a href="$uriFactory.URIForServices">all services</a>
+	.
+</p>
+<!-- Google CSE Search Box Begins  -->
+<form action="http://www.google.com/cse" id="searchbox_010260900301646126041:qsgudfnacz4">
+  <input type="hidden" name="cx" value="010260900301646126041:qsgudfnacz4" />
+  <input type="text" name="q" size="25" />
+  <input type="submit" name="sa" value="Search" />
+</form>
+<script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=searchbox_010260900301646126041%3Aqsgudfnacz4&lang=en"></script>
+<!-- Google CSE Search Box Ends -->
+
+
+<p>
+	This is a web presentation of all
+	<a
+		href="http://www.mygrid.org.uk/index.php?module=pagemaster&PAGE_user_op=view_page&PAGE_id=57">
+	feta
+		</a>-described web services that have been annotated. These services be used from
+		<a href="http://taverna.sourceforge.net/">Taverna</a>. This is a browsable alternative to
+		the <a href="http://www.mygrid.org.uk/usermanual1.7/taverna_plugins.html#feta">feta plugin</a>
+		for Taverna.
+</p>
+
+<hr />
+<p>
+	This browser was last synchronised against the Feta installation at
+	<a href="http://www.mygrid.org.uk/fetaEngine/services/feta?wsdl">
+		www.mygrid.org.uk/fetaEngine
+	</a>
+	on $lastUpdated.
+</p>
+<address>
+	Services annotated by Franck Tanoh of the
+	<a href="http://www.mygrid.org.uk/">myGrid</a>
+	team. (To suggest a service to be annotated, first check the
+	<a
+		href="http://www.mygrid.org.uk/wiki/Mygrid/BiologicalWebServices">
+		list of known services
+	</a>
+	). Web adaption by Stian Soiland.
+</address>
