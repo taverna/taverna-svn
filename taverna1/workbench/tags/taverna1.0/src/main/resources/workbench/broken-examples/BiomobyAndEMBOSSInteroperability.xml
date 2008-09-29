@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:VI9FMF5HBQ6" author="Tom Oinn" title="Show Biomoby and Soaplab service interoperability">Starts with a DNA sequence identifier, uses a biomoby service to fetch the sequence itself, then uses soaplab to backtranslate and run a restriction digest analysis while simultaneously using another biomoby service to run a BLAST versus arabidopsis coding regions.</s:workflowdescription>
+  <s:processor name="163483" boring="true">
+    <s:stringconstant>163483</s:stringconstant>
+  </s:processor>
+  <s:processor name="NCBI_gi" boring="true">
+    <s:stringconstant>NCBI_gi</s:stringconstant>
+  </s:processor>
+  <s:processor name="FASTA_to_Seq_Object">
+    <s:description>This service consumes a FASTA formatted sequence (FASTA or child object) and converts it into a child of Generic Sequence based on the type of sequence in the FATSA file.  This is guessed using the BioPerl _guess_alphabet subroutine.  The output is either a DNASequence, RNASequence, or AminoAcidSequence object, as appropriate.</s:description>
+    <s:biomobywsdl>
+      <s:mobyEndpoint>http://moby.ucalgary.ca/moby/MOBY-Central.pl</s:mobyEndpoint>
+      <s:serviceName>FASTA2HighestGenericSequenceObject</s:serviceName>
+      <s:authorityName>bioinfo.icapture.ubc.ca</s:authorityName>
+    </s:biomobywsdl>
+  </s:processor>
+  <s:processor name="Blast_against_Snapdragon">
+    <s:description>Perform blast analysis against the Dragon database using fasta text as input.</s:description>
+    <s:biomobywsdl>
+      <s:mobyEndpoint>http://moby.ucalgary.ca/moby/MOBY-Central.pl</s:mobyEndpoint>
+      <s:serviceName>getDragonBlastText</s:serviceName>
+      <s:authorityName>antirrhinum.net</s:authorityName>
+      <s:Parameter s:name="evalue">10</s:Parameter>
+    </s:biomobywsdl>
+  </s:processor>
+  <s:processor name="MOBYSHoundGetGenBankFasta">
+    <s:description>consumes a NCBI_Acc, NCBI_gi, PIR, SwissProt, Embl, 
+or PDB identifier and returns the equivalent genbank record as a 
+FASTA object</s:description>
+    <s:biomobywsdl>
+      <s:mobyEndpoint>http://moby.ucalgary.ca/moby/MOBY-Central.pl</s:mobyEndpoint>
+      <s:serviceName>MOBYSHoundGetGenBankFasta</s:serviceName>
+      <s:authorityName>bioinfo.icapture.ubc.ca</s:authorityName>
+    </s:biomobywsdl>
+  </s:processor>
+  <s:processor name="Object">
+    <s:description>an object</s:description>
+    <s:biomobyobject>
+      <s:mobyEndpoint>http://moby.ucalgary.ca/moby/MOBY-Central.pl</s:mobyEndpoint>
+      <s:serviceName>Object</s:serviceName>
+      <s:authorityName />
+    </s:biomobyobject>
+  </s:processor>
+  <s:processor name="Parse_MOBY_FASTA">
+    <s:description>Processor to parse the datatype FASTA</s:description>
+    <s:biomobyparser>
+      <s:endpoint>http://moby.ucalgary.ca/moby/MOBY-Central.pl</s:endpoint>
+      <s:datatype>FASTA</s:datatype>
+      <s:articleName>fasta</s:articleName>
+      <s:description>Processor to parse the datatype FASTA</s:description>
+    </s:biomobyparser>
+  </s:processor>
+  <s:processor name="Parse_Moby_Data_GenericSequence">
+    <s:description>Processor to parse the datatype GenericSequence</s:description>
+    <s:biomobyparser>
+      <s:endpoint>http://moby.ucalgary.ca/moby/MOBY-Central.pl</s:endpoint>
+      <s:datatype>GenericSequence</s:datatype>
+      <s:articleName>sequence_object</s:articleName>
+      <s:description>Processor to parse the datatype GenericSequence</s:description>
+    </s:biomobyparser>
+  </s:processor>
+  <s:processor name="Parse_Moby_Data_NCBI_BLAST_Text">
+    <s:description>Processor to parse the datatype NCBI_BLAST_Text</s:description>
+    <s:biomobyparser>
+      <s:endpoint>http://moby.ucalgary.ca/moby/MOBY-Central.pl</s:endpoint>
+      <s:datatype>NCBI_BLAST_Text</s:datatype>
+      <s:articleName>blast</s:articleName>
+      <s:description>Processor to parse the datatype NCBI_BLAST_Text</s:description>
+    </s:biomobyparser>
+  </s:processor>
+  <s:processor name="backtranseq">
+    <s:description>Back translate a protein sequence</s:description>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/emboss4/services/nucleic_translation.backtranseq</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="restrict">
+    <s:description>Finds restriction enzyme cleavage sites</s:description>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/emboss4/services/nucleic_restriction.restrict</s:soaplabwsdl>
+  </s:processor>
+  <s:link source="163483:value" sink="Object:id" />
+  <s:link source="Blast_against_Snapdragon:NCBI_BLAST_Text(blast)" sink="Parse_Moby_Data_NCBI_BLAST_Text:mobyData('NCBI_BLAST_Text')" />
+  <s:link source="FASTA_to_Seq_Object:GenericSequence(sequence_object)" sink="Parse_Moby_Data_GenericSequence:mobyData('GenericSequence')" />
+  <s:link source="MOBYSHoundGetGenBankFasta:FASTA(fasta)" sink="Blast_against_Snapdragon:FASTA(sequence)" />
+  <s:link source="MOBYSHoundGetGenBankFasta:FASTA(fasta)" sink="FASTA_to_Seq_Object:FASTA(input_fasta)" />
+  <s:link source="MOBYSHoundGetGenBankFasta:FASTA(fasta)" sink="Parse_MOBY_FASTA:mobyData('FASTA')" />
+  <s:link source="NCBI_gi:value" sink="Object:namespace" />
+  <s:link source="Object:mobyData" sink="MOBYSHoundGetGenBankFasta:Object(identifier)" />
+  <s:link source="Object:mobyData" sink="MOBYSHoundGetGenBankFasta:Object(identifier)" />
+  <s:link source="Parse_MOBY_FASTA:fasta_'content'" sink="backtranseq:sequence_direct_data" />
+  <s:link source="backtranseq:outfile" sink="restrict:sequence_direct_data" />
+  <s:link source="Parse_Moby_Data_GenericSequence:sequence_object_'SequenceString'" sink="sequence" />
+  <s:link source="Parse_Moby_Data_NCBI_BLAST_Text:blast_'content'" sink="value" />
+  <s:link source="Parse_Moby_Data_NCBI_BLAST_Text:id" sink="id" />
+  <s:link source="Parse_Moby_Data_NCBI_BLAST_Text:namespace" sink="namespace" />
+  <s:link source="restrict:outfile" sink="restrictout" />
+  <s:sink name="id" />
+  <s:sink name="namespace" />
+  <s:sink name="value" />
+  <s:sink name="restrictout" />
+  <s:sink name="sequence" />
+</s:scufl>
+

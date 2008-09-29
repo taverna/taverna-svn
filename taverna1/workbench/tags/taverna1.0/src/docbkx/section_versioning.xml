@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section id="versioning">
+  <title>Taverna versioning guidelines.</title>
+
+  <para>Taverna releases use the following versioning
+  rules.</para>
+
+  <itemizedlist>
+    <listitem>
+      <para>1st order: X - A signifact change in the Taverna API, and its
+      internal architecture. Taverna 2.0 will be a significant new
+      release.</para>
+    </listitem>
+
+    <listitem>
+      <para>2nd order: 1.x- A significant change that includes large pieces of
+      new functionality and also some possible minor changes to the API.
+      Plugins may need their code modifying to continue to work
+      correctly.</para>
+    </listitem>
+
+    <listitem>
+      <para>3rd order: 1.5.x - A change that affects the key core artifacts of
+      Taverna. Changes these core artifacts require that Plugins need to have
+      their dependencies updated to continue to work correctly, though minimal
+      code changes.</para>
+    </listitem>
+
+    <listitem>
+      <para>4th order: 1.5.1.x - A minor update, that contains bugfixes that
+      do not affact Taverna core artifacts. A Plugin will be compatible across
+      different versions without requiring any changes.</para>
+    </listitem>
+  </itemizedlist>
+
+  <para>Taverna artifacts for a given release will follow the 3rd order version of
+  Taverna. So all artifacts in Taverna 1.5.1 will have the version 1.5.1.x.
+  When a new Taverna release is made that affects the 3rd order version number, all
+  artifacts will have their versions updated to remain synchronised.</para>
+</section>

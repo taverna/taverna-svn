@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section id="remote_execution">
+  <title>Taverna Remote Execution</title>
+
+  <para>The Taverna Remote Execution plugin is a plugin for Taverna that
+  allows workflows to be run on a Remote Execution Server.</para>
+
+  <para>To install the Remote Execution plugin use the Plugin Manager in the
+  Tools Menu.</para>
+
+  <para>Remote execution from Taverna depends upon the presence of Remote
+  Execution Servers already installed on the web. A default Remote Execution
+  Server is available in the Taverna Utilities subsection under downloads on
+  the Taverna sourceforge site.</para>
+
+  <section id="remote_execution_in_taverna">
+    <title>Specifying Remote Execution Servers</title>
+
+    <para>After installation of the Remote Execution plugin, a new perspective
+    "Execute Remotely" is available. Within the perspective, the user can
+    select from the set of Remote Execution Servers on which workflows may be
+    run. When specifying a new Remote Execution Server, the user should enter
+    the details given by the owner of the server.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/add_remote_execution_server.png" />
+      </imageobject>
+    </mediaobject>
+
+    <para>The Remote Execution Server on which a workflow is to be run can be
+    chosen from the selection menu. If a valid connection is made to the
+    server, for example MyServer, then a message "Loaded jobs from MyServer"
+    will appear in the log window at the bottom of the perspective. If a valid
+    connection cannot be made then the message "Could not load jobs from
+    MyServer" will appear.</para>
+
+    <para>The chosen Remote Execution Server is periodically polled and the
+    updated status messages will appear in the log window.</para>
+  </section>
+
+  <section>
+    <title>Running a workflow remotely</title>
+
+    <para>To run a workflow remotely, edit or load the workflow design as
+    normal. Switch to the "Execute Remotely" perspective. if necessary, choose
+    a Remote Execution Server from the menu. Press the "Run workflow remotely"
+    button. If any inputs are required for the workflow run then they can be
+    entered as normal.</para>
+
+    <para>Once a workflow has been sumitted to a Remote Execution Server, it
+    is placed in a queue. The status of the queue is monitored every twenty
+    seconds. When a submitted workflow reaches the front of the queue, when
+    the Remote Execution Server has free resources, the workflow will enter a
+    DEQUEUED state during which the server is initialized to run the workflow.
+    Once the workflow has started running, its progress can be viewed by
+    clicking on its entry in the list of jobs and clicking the View Progress
+    button. Once the workflow has finished running, it will be marked as
+    COMPLETE. The results can be viewed by clicking on the workflow's entry
+    and then on the View Results button.</para>
+  </section>
+</section>

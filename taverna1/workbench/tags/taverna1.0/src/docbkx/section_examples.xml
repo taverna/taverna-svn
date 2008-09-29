@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section id="example_workflows">
+<title>Example workflows</title>
+<para>Workflow examples are stored in the 'examples' subdirectory of
+      your Taverna installation.  The following workflows are known to have problems:
+</para>
+   <itemizedlist>
+      <listitem>
+        <para>AlternateExample.xml</para>
+        </listitem>
+        <listitem>
+        <para>FetchDailyDilbertComic.xml</para>
+        </listitem>
+        <listitem>
+        <para>FetchGbrowseImageSelectTracks.xml</para>
+        </listitem>
+   </itemizedlist>
+<para>An up-to-date set of workflow examples can be found in the Taverna 1.7.2 starter pack on http://www.myexperiment.org/packs/14</para>
+<para>Additional workflows can be found by browsing on http://www.myexperiment.org</para> 
+
+</section>

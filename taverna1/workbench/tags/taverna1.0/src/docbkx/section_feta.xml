@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section id="feta">
+  <title>Semantic search of services with Feta</title>
+
+  <para>In addition to the Scavenging Functionality built into Taverna,
+  services can be discovered by exploiting their semantic descriptions. Feta
+  is the component within myGrid responsible for semantic service search. Feta
+  is composed of two components, namely Feta Client and Feta Engine. The Feta
+  Client is a GUI-plug-in to Taverna which is used to search for services
+  descriptions of which are provided by the Feta Engine. Tavern Feta Plug-in
+  connects to an instance of the Feta Engine web service and allows users
+  to:</para>
+
+  <itemizedlist>
+    <listitem>
+      <para>Create domain specific semantic queries for desired services to be
+      sent to the Feta Engine </para>
+    </listitem>
+
+    <listitem>
+      <para>Display information about the resulting services for the
+      queries</para>
+    </listitem>
+
+    <listitem>
+      <para>Integrate the resulting services to the workflow via right
+      click</para>
+    </listitem>
+  </itemizedlist>
+
+  <para>Taverna Feta Plug-in can be launched from within the myGrid Taverna
+  workbench, via the 'Discover' tab (located next to the ‘Design’ and
+  ‘Results’ tabs when the plug in has been installed). To Install the Feta,
+  select the ‘plugin manger’ from the ‘tools’ menu and select ‘Find New
+  Plugins’. Install Feta by clicking the checkbox and selecting
+  ‘Install’</para>
+
+  <section id="feta_create_search">
+    <title>Creating service search requests</title>
+
+    <para>Service search requests are created using the Query Panel of Feta
+    plug-in. The query panel of the Feta plug-in is shown below. The query
+    interface enables the user to build a composite service search request
+    that is made up of the canned queries that the Feta engine
+    supports.</para>
+
+    <para>Feta helps users create service search requests of the following
+    pre-defined kinds:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Find an operation (correspond to Taverna’s processors) that
+        accepts input of semantic type X or something more general.</para>
+      </listitem>
+
+      <listitem>
+        <para>Find an operation that produces output of semantic type Y or
+        something more specific.</para>
+      </listitem>
+
+      <listitem>
+        <para>Find an operation that performs task X or something more
+        specific.</para>
+      </listitem>
+
+      <listitem>
+        <para>Find an operation that uses method X or something more
+        specific.</para>
+      </listitem>
+
+      <listitem>
+        <para>Find an operation that is function of application/toolkit X or
+        something more specific.</para>
+      </listitem>
+
+      <listitem>
+        <para>Find an operation that is of certain type eg. WSDL processor,
+        Soaplab processor etc.</para>
+      </listitem>
+
+      <listitem>
+        <para>Find an operation whose name/description contains a certain
+        phrase.</para>
+      </listitem>
+    </itemizedlist>
+
+    <screenshot>
+      <screeninfo></screeninfo>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/feta_search.png" />
+        </imageobject>
+      </mediaobject>
+    </screenshot>
+
+    <para>Using the query panel the users can create as many canned queries as
+    they want. A canned query is built by first pressing the “+” button which
+    will add a new criteria type combo box and value field to the panel.
+    Afterwards the canned query type (i.e. name contains, is function of
+    performs task etc.) is selected from the left hand side combo, depending
+    on the criteria type the value field is either displayed as a combo box or
+    a free-text entry field.</para>
+
+    <para>Search requests on service name and description would allow you to
+    enter criteria values as free text however when other canned query types
+    (i.e. input/output, method, resource etc.) are selected the value field
+    will be displayed as a combo box providing the set of terms that can be
+    used as criteria values. The above screenshot of Feta Query Panel displays
+    the list of bioinformatics applications that can be provided as criteria
+    values to the canned query type “accepts input” given in the form of a
+    hierarchy of ontology terms that could have been used during the
+    annotation of a service to denote the toolkit/application package it
+    belongs to.</para>
+
+    <para>The service search request is a conjunctive composite of all
+    individual canned query requests created by the user. “-” button on the
+    right side of each criterion can be used to remove the corresponding
+    criteria from the composite search request. When all desired query
+    criteria is created the “Find Service” button should be pressed.</para>
+  </section>
+
+  <section id="feta_results">
+    <title>Results displayed and integration into the workflow</title>
+
+    <para>The results of the search are displayed in the Feta Results Panel as
+    seen below. The results are the list of service entities that may be used
+    as an operational step within a workflow. </para>
+
+    <screenshot>
+      <screeninfo></screeninfo>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/feta_search_results.png" />
+        </imageobject>
+      </mediaobject>
+    </screenshot>
+
+    <para>The left hand side of the Result Panel displays the resulting
+    services using the same colour coding scheme of Taverna Scavenger Pane
+    according to this scheme:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Green icons are WSDL based service operations</para>
+      </listitem>
+
+      <listitem>
+        <para>Yellow icons are SOAPLAB operations</para>
+      </listitem>
+
+      <listitem>
+        <para>Orange icons are BioMoby operations</para>
+      </listitem>
+
+      <listitem>
+        <para>Purple icons are Local operations</para>
+      </listitem>
+
+    </itemizedlist>
+
+    <para>In addition to the colour coded list of services the result panel
+    also displays additional information for each entity such as: the
+    operation’s name, textual description, inputs and outputs description, the
+    location of its Feta description, service end point location and service
+    type (as can also been identified by the colour coding), provider
+    organization's name, and service's low level interface description
+    document's location. </para>
+
+    <para>To incorporate the resulting services into the workflow, right-click
+    the desired service and select ‘add to model’. </para>
+
+    <para>The result pane also contains a button at the bottom labelled “List
+    All Operations”. This returns all the services that have been annotated
+    from the registry.</para>
+  </section>
+</section>

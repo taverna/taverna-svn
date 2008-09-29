@@ -1,0 +1,19 @@
+<archetype>
+  <id>archetype-perspective</id>
+  <sources>
+    <source>src/main/java/ExampleComponent.java</source>
+    <source>src/main/java/ExampleComponentFactory.java</source>
+    <source>src/main/java/ExamplePerspective.java</source>
+  </sources>
+  <resources>
+    <resource>src/main/resources/META-INF/services/net.sf.taverna.perspectives.PerspectiveSPI</resource>
+    <resource>src/main/resources/META-INF/services/org.embl.escience.scuflui.spi.UIComponentFactorySPI</resource>
+    <resource>src/main/resources/META-INF/services/org.embl.escience.scuflui.spi.WorkflowModelViewSPI</resource>
+    <resource>src/main/resources/example-perspective.xml</resource>
+    <resource>plugin-def/example-0.1.0.xml</resource>
+    <resource>plugin-def/pluginlist.xml</resource>
+  </resources>
+  <testSources>
+    <source>src/test/java/ExamplePerspectiveTest.java</source>
+  </testSources>
+</archetype>

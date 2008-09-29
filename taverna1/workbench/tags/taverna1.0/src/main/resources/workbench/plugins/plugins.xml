@@ -1,0 +1,75 @@
+<plugins>
+	<plugin>
+		<name>Taverna 2</name>
+		<description>Preview of Taverna 2 enactment</description>
+		<identifier>
+			uk.org.mygrid.taverna.plugins.t2.execute
+		</identifier>
+		<version>0.2.0</version>
+		<provider>mygrid.org.uk</provider>
+		<enabled>true</enabled>
+		<repositories>
+			<repository>
+				http://www.mygrid.org.uk/maven/repository/
+			</repository>
+		</repositories>
+		<profile>
+			<!-- Plugin for Taverna Workbench -->
+			<artifact groupId="net.sf.taverna.t2" artifactId="t2-plugin"
+				version="0.2.0" />
+
+			<!-- Activities and translators -->
+			<artifact groupId="net.sf.taverna.t2"
+				artifactId="apiconsumer-activity" version="0.2.0" />
+			<artifact groupId="net.sf.taverna.t2"
+				artifactId="apiconsumer-activity-translator" version="0.2.0" />
+			<artifact groupId="net.sf.taverna.t2"
+				artifactId="beanshell-activity" version="0.2.0" />
+			<artifact groupId="net.sf.taverna.t2"
+				artifactId="beanshell-activity-translator" version="0.2.0" />
+			<artifact groupId="net.sf.taverna.t2"
+				artifactId="biomart-activity" version="0.2.0" />
+			<artifact groupId="net.sf.taverna.t2"
+				artifactId="biomart-activity-translator" version="0.2.0" />
+			<artifact groupId="net.sf.taverna.t2"
+				artifactId="biomoby-activity" version="0.2.0" />
+			<artifact groupId="net.sf.taverna.t2"
+				artifactId="biomoby-activity-translator" version="0.2.0" />
+			<artifact groupId="net.sf.taverna.t2"
+				artifactId="dataflow-activity-translator" version="0.2.0" />
+			<artifact groupId="net.sf.taverna.t2"
+				artifactId="dataflow-activity" version="0.2.0" />
+			<artifact groupId="net.sf.taverna.t2"
+				artifactId="localworker-translator" version="0.2.0" />
+			<artifact groupId="net.sf.taverna.t2"
+				artifactId="soaplab-activity" version="0.2.0" />
+			<artifact groupId="net.sf.taverna.t2"
+				artifactId="soaplab-activity-translator" version="0.2.0" />
+			<artifact groupId="net.sf.taverna.t2"
+				artifactId="stringconstant-activity" version="0.2.0" />
+			<artifact groupId="net.sf.taverna.t2"
+				artifactId="stringconstant-activity-translator" version="0.2.0" />
+			<artifact groupId="net.sf.taverna.t2"
+				artifactId="wsdl-activity" version="0.2.0" />
+			<artifact groupId="net.sf.taverna.t2"
+				artifactId="wsdl-activity-translator" version="0.2.0" />
+			<artifact groupId="net.sf.taverna.t2"
+				artifactId="rshell-activity" version="0.2.0" />
+			<artifact groupId="net.sf.taverna.t2"
+				artifactId="rshell-activity-translator" version="0.2.0" />
+
+			<!--  System artifacts for JAXB -->
+			<artifact groupId="com.sun.xml.bind" artifactId="jaxb-impl"
+				version="2.0.3" system="true" />
+			<artifact groupId="javax.xml.bind" artifactId="jaxb-api"
+				version="2.0" system="true" />
+			<artifact groupId="javax.activation" artifactId="activation"
+				version="1.1" system="true" />
+			<artifact groupId="javax.xml.stream" artifactId="stax-api"
+				version="1.0-2" system="true" />
+		</profile>
+		<taverna>
+			<version>1.7.1</version>
+		</taverna>
+	</plugin>
+</plugins>

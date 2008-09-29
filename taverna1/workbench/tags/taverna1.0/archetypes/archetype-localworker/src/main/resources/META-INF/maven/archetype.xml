@@ -1,0 +1,15 @@
+<archetype>
+  <id>archetype-localworker</id>
+  <sources>
+    <source>src/main/java/MyLocalWorker.java</source>
+  </sources>
+  <resources>
+    <resource>src/main/resources/localworkers.properties</resource>
+    <resource>src/main/resources/META-INF/services/org.embl.ebi.escience.scuflworkers.java.LocalWorker</resource>
+    <resource>plugin-def/pluginlist.xml</resource>
+    <resource>plugin-def/mylocalworker.xml</resource>
+  </resources>
+  <testSources>
+    <source>src/test/java/MyLocalWorkerTest.java</source>
+  </testSources>
+</archetype>

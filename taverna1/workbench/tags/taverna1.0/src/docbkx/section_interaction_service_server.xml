@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section id="interaction_service_server">
+  <title>Interaction Service Server</title>
+
+  <para>The Interaction Service Server is a web application that hosts the web
+  services to support Interaction Services. An example Interaction Service
+  Server may be downloaded from the Taverna Utilities section of the Taverna
+  download page.</para>
+
+  <section id="interaction_service_server_setup">
+    <title>Setup</title>
+
+    <para>The zip file containing the Interaction Service Server should be
+    downloaded and un-zipped. It is necessary to edit the web.xml file within
+    the WEB-INF subdirectory. Details of what and how to change are given in
+    the readme.html file. Once web.xml has been configured then the
+    Interaction Service Server can be deployed within a web environment, for
+    example Apache Tomcat.</para>
+  </section>
+</section>

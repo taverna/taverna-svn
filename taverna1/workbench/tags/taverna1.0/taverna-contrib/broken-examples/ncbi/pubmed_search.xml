@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:MA9EEB84DP2" author="" title="PubMed Search test" />
+  <s:processor name="terms">
+    <s:stringconstant>brca2</s:stringconstant>
+  </s:processor>
+  <s:processor name="Search_PubMed_XML">
+    <s:local>net.sourceforge.taverna.scuflworkers.ncbi.PubMedESearchWorker</s:local>
+  </s:processor>
+  <s:processor name="field">
+    <s:stringconstant>title</s:stringconstant>
+  </s:processor>
+  <s:processor name="XPath_From_Text">
+    <s:local>net.sourceforge.taverna.scuflworkers.xml.XPathTextWorker</s:local>
+  </s:processor>
+  <s:processor name="xpath">
+    <s:stringconstant>edit me!</s:stringconstant>
+  </s:processor>
+  <s:processor name="Get_PubMed_XML_By_PMID">
+    <s:local>net.sourceforge.taverna.scuflworkers.ncbi.PubMedEFetchWorker</s:local>
+  </s:processor>
+  <s:processor name="Merge_string_list_to_string">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringListMerge</s:local>
+  </s:processor>
+  <s:processor name="separator">
+    <s:stringconstant>,</s:stringconstant>
+  </s:processor>
+  <s:link source="terms:value" sink="Search_PubMed_XML:term" />
+  <s:link source="Search_PubMed_XML:outputText" sink="pubmed_results" />
+  <s:link source="field:value" sink="Search_PubMed_XML:field" />
+  <s:link source="Search_PubMed_XML:outputText" sink="XPath_From_Text:xml-text" />
+  <s:link source="xpath:value" sink="XPath_From_Text:xpath" />
+  <s:link source="XPath_From_Text:nodelist" sink="Merge_string_list_to_string:stringlist" />
+  <s:link source="separator:value" sink="Merge_string_list_to_string:seperator" />
+  <s:link source="Merge_string_list_to_string:concatenated" sink="Get_PubMed_XML_By_PMID:id" />
+  <s:link source="Get_PubMed_XML_By_PMID:outputText" sink="pubmed_articles" />
+  <s:sink name="pubmed_results" />
+  <s:sink name="pubmed_articles" />
+</s:scufl>
+
+
