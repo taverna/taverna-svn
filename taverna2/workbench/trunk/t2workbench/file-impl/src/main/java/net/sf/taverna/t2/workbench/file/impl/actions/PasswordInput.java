@@ -26,6 +26,10 @@ import java.net.URL;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import org.apache.commons.codec.binary.Base64;
+
+import com.thoughtworks.xstream.core.util.Base64Encoder;
+
 /**
  * Simple dialogue to handle username/password input for workflow URL requiring http authentication.
  *
@@ -136,8 +140,9 @@ public class PasswordInput extends javax.swing.JDialog {
                 try {
                         connection = (HttpURLConnection) url.openConnection();
                         String userPassword = username+":"+password;
-                        String encoding = new sun.misc.BASE64Encoder().encode (userPassword.getBytes());
-                        connection.setRequestProperty ("Authorization", "Basic " + encoding);
+                        // TODO: Use getBytes(encoding)
+                        byte[] encoding = Base64.encodeBase64(userPassword.getBytes());
+                        connection.setRequestProperty ("Authorization", "Basic " + new String(encoding, "ascii"));
                         connection.setRequestProperty("Accept", "text/xml");
                         int code=connection.getResponseCode();
                         
