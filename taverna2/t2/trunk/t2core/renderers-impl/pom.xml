@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>core</artifactId>
+		<version>0.3-SNAPSHOT</version>
+	</parent>
+	<groupId>net.sf.taverna.t2</groupId>
+	<artifactId>renderers-impl</artifactId>
+	<version>0.3-SNAPSHOT</version>
+	<name>Renderers Implementation</name>
+	<description>
+
+	</description>
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>renderers-api</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
+		<!--
+			<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>data-api</artifactId>
+			<version>0.3-SNAPSHOT</version>
+			</dependency>
+		-->
+			<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.resources</groupId>
+			<artifactId>Jmol</artifactId>
+			<version>NO-VERSION</version>
+		</dependency>
+		<dependency>
+			<groupId>batik</groupId>
+			<artifactId>batik-swing</artifactId>
+			<version>1.6-1</version>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.resources</groupId>
+			<artifactId>seqvista-hacked</artifactId>
+			<version>NO-VERSION</version>
+		</dependency>
+	</dependencies>
+</project>
