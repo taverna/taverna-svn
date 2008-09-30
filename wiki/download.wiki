@@ -1,0 +1,10 @@
+#summary Download Taverna
+
+= Download =
+
+Visit our [http://taverna.sourceforge.net/download download page] to download the Taverna workbench, manuals or related software. Also find [http://www.mygrid.org.uk/tools/taverna/ more information about Taverna] on the myGrid site.
+
+
+= Taverna 2 betas =
+
+If you want to try out the Taverna 2 beta, you can join our [http://www.myexperiment.org/groups/98 beta tester programme] on myExperiment. 
