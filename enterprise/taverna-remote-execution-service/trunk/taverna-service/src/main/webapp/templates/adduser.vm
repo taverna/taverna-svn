@@ -1,0 +1,41 @@
+
+#include("uservalidate.js")
+<script language="javascript">
+	
+	function validateDetails(form) {
+		var name=form.name.value;
+		var password=form.password.value;
+		var confirm=form.confirm.value;
+		var email=form.email.value;
+		
+		if (validateName(name) && validatePasswords(password,confirm) && validateEmail(email))
+		{
+			return true;
+		}
+		
+		return false;
+	}
+</script>
+	
+	
+<center><h3>Add New User</h3>
+#if($isAdmin)
+	#if ($errorMsg)
+	Error: $errorMsg<br>
+	#end
+	
+	<form name="adduser" method="POST">
+	<table>
+	<tr><td>Username:</td><td><input type="text" name="name" value="$!name"/></td></tr>
+	<tr><td>Password:</td><td><input type="password" name="password" value="$!password"/></td></tr>
+	<tr><td>Confirm password:</td><td><input type="password" name="confirm" value="$!confirm"/></td></tr>
+	<tr><td>Email:</td><td><input type="text" name="email" value="$!email"/></td></tr>
+	<tr><td></td><td><input type="submit" value="Add" onClick="return validateDetails(this.form)"/></td><td></td></tr>
+	</table>
+	</form>
+#else
+	<h2>You need to be an administrator to view this page.</h2>
+	<script language="javascript">alert("Sorry, but this page is restricted to administrator users only!")</script>
+#end
+
+</center>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://taverna.sf.net/2008/service/linked" elementFormDefault="qualified" attributeFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:linked="http://taverna.sf.net/2008/service/linked" xsi:schemaLocation="http://www.w3.org/1999/xlink xlink.xsd ">
+
+	<!-- <import namespace="http://www.w3.org/1999/xlink"
+		schemaLocation="http://www.loc.gov/standards/mets/xlink.xsd" />
+	-->
+	<xsd:annotation>
+		<xsd:documentation>
+			An abstract Linked schema type that can be used in a RESTful
+			service that uses partial XML elements. (In general, an
+			element type that is extending type Linked will have all or
+			most of it's elements optional. In a "short" version there
+			will only be the mandatory elements and the xlink:href
+			attribute. Following the link in xlink:href should give the
+			"full" version, except that subelements might also be
+			Linked.
+		</xsd:documentation>
+	</xsd:annotation>
+	<xsd:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd" />
+
+	<xsd:complexType name="Linked" abstract="true">
+		<xsd:annotation>
+			<xsd:documentation>
+				An (abstract) complex type of any element that can
+				potentially be linked using xlink:href. In general an
+				empty element with an xlink:href means that the content
+				of the resource is available in another document at that
+				location. So for instance:
+
+				GET /users/stain &lt;user&gt;
+				&lt;username>stain&lt;/username&gt;
+				&lt;email>spam@soiland.no&lt;/email&gt; &lt;jobs
+				xlink:href="/users/stain/jobs" /&gt; &lt;/user&gt;
+
+				will not contain a full Jobs element, but only a link to
+				the full document, which would be something like:
+
+				GET /users/stain/jobs &lt;jobs&gt; &lt;job
+				xlink:href="/jobs/13"&gt;
+				&lt;status&gt;FINISHED&lt;/status&gt; &lt;/job&gt;
+				&lt;job xlink:href="/jobs/15"&gt;
+				&lt;status&gt;RUNNING&lt;/status&gt; &lt;/job&gt;
+				&lt;/jobs&gt;
+
+				An element that is xlinked might provide a limited view
+				of the resource that is useful for display purposes, for
+				instance an xlink-ed User in the owner element of Job
+				might contain &lt;username&gt;, while the full content
+				of that element is retrieved by following the link.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute ref="xlink:href" use="optional" />
+	</xsd:complexType>
+</xsd:schema>

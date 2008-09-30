@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+	targetNamespace="http://taverna.sf.net/2008/t2/cloudone/rest/"
+	elementFormDefault="qualified"
+	attributeFormDefault="qualified"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:cloudone="http://taverna.sf.net/2008/t2/cloudone/rest/"
+	xmlns:linked="http://taverna.sf.net/2008/service/linked"
+	xsi:schemaLocation="http://taverna.sf.net/2008/t2/cloudone/rest/ cloudone.xsd http://taverna.sf.net/2008/service/linked linked.xsd ">
+
+	<xsd:import namespace="http://taverna.sf.net/2008/service/linked"
+		schemaLocation="linked.xsd">
+	</xsd:import>
+	<xsd:complexType name="EntityList">
+		<xsd:complexContent>
+			<xsd:extension base="cloudone:Entity">
+				<xsd:sequence>
+                    <xsd:element name="entities" maxOccurs="1" minOccurs="0">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="entity" type="cloudone:Entity" maxOccurs="unbounded" minOccurs="0">
+								</xsd:element>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+                    <xsd:element name="items" type="cloudone:NonNegativeLong" maxOccurs="1" minOccurs="0"/>
+				</xsd:sequence>
+				<xsd:attribute name="depth" type="cloudone:NonNegativeLong"></xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="Entity" abstract="true">
+		<xsd:complexContent>
+			<xsd:extension base="linked:Linked">
+				<xsd:attribute name="urn" type="xsd:anyURI"></xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="DataDocument">
+		<xsd:complexContent>
+			<xsd:extension base="cloudone:Entity"></xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="Literal" abstract="true">
+		<xsd:complexContent>
+			<xsd:extension base="cloudone:Entity">
+				<xsd:sequence>
+                    <xsd:element name="value" type="xsd:anySimpleType" maxOccurs="1" minOccurs="0"></xsd:element>
+                </xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="ErrorDocument">
+		<xsd:complexContent>
+			<xsd:extension base="cloudone:Entity">
+				<xsd:sequence>
+					<xsd:element name="message" type="xsd:string"></xsd:element>
+					<xsd:element name="stackTrace" type="xsd:string"></xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="DataMap">
+		<xsd:complexContent>
+			<xsd:extension base="linked:Linked">
+				<xsd:sequence>
+					<xsd:element name="entry" type="cloudone:MapEntry"
+						maxOccurs="unbounded" minOccurs="0">
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="MapEntry">
+		<xsd:sequence>
+			<xsd:element name="entity" type="cloudone:Entity"></xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="key" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:element name="dataMap" type="cloudone:DataMap"></xsd:element>
+
+
+
+	<xsd:element name="entityList" type="cloudone:EntityList"></xsd:element>
+
+	<xsd:element name="dataDocument" type="cloudone:DataDocument"></xsd:element>
+
+	<xsd:element name="errorDocument" type="cloudone:ErrorDocument"></xsd:element>
+
+	<xsd:element name="literal" type="cloudone:Literal"></xsd:element>
+
+	<xsd:simpleType name="NonNegativeLong">
+		<xsd:restriction base="xsd:long">
+			<xsd:minInclusive value="0"></xsd:minInclusive>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:complexType name="StringLiteral">
+		<xsd:complexContent>
+			<xsd:restriction base="cloudone:Literal">
+				<xsd:sequence>
+					<xsd:element name="value" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+				</xsd:sequence>
+			</xsd:restriction>
+		</xsd:complexContent>
+	</xsd:complexType>
+</xsd:schema>
