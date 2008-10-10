@@ -43,4 +43,88 @@
 		<module>ui</module>
 		<module>io</module>
 	</modules>
+
+
+	<build>
+		<plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+
+		</plugins>
+	</build>
+	<repositories>
+		<repository>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+		</repository>
+		<repository>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots />
+			<id>mygrid-snapshot-repository</id>
+			<name>myGrid Snapshot Repository</name>
+			<url>
+				http://www.mygrid.org.uk/maven/snapshot-repository
+			</url>
+		</repository>
+	</repositories>
+	<reporting>
+		<plugins>
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<minmemory>128m</minmemory>
+					<maxmemory>512</maxmemory>
+					<aggregate>true</aggregate>
+					<links>
+						<link>
+							http://www.mygrid.org.uk/taverna/api/
+						</link>
+						<link>
+							http://java.sun.com/j2se/1.5.0/docs/api/
+						</link>
+					</links>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</reporting>
+	<distributionManagement>
+		<repository>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>
+				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/repository
+			</url>
+		</repository>
+		<snapshotRepository>
+			<id>mygrid-snapshot-repository</id>
+			<name>myGrid Snapshot Repository</name>
+			<url>
+				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/snapshot-repository
+			</url>
+		</snapshotRepository>
+		<site>
+			<id>website</id>
+			<url>${siteurl}</url>
+		</site>
+	</distributionManagement>
+	<scm>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna2/t2/tags/spi-discovery-api-0.3</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna2/t2/tags/spi-discovery-api-0.3</developerConnection>
+		<url>http://taverna.googlecode.com/svn/taverna2/t2/tags/spi-discovery-api-0.3</url>
+	</scm>
 </project>
