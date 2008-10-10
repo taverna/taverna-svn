@@ -2,11 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<parent>
-		<groupId>net.sf.taverna</groupId>
-		<artifactId>utils</artifactId>
-		<version>1.0-SNAPSHOT</version>
-	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<name>Taverna 2 language extensions</name>
 	<groupId>net.sf.taverna.t2</groupId>
@@ -47,6 +42,15 @@
 
 	<build>
 		<plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-site-plugin</artifactId>
+            <version>2.0-beta-7</version>
+            <configuration>
+                <generateReports>false</generateReports>
+            </configuration>
+        </plugin>
+
         <!--
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -96,10 +100,6 @@
 				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/snapshot-repository
 			</url>
 		</snapshotRepository>
-		<site>
-			<id>website</id>
-			<url>${siteurl}</url>
-		</site>
 	</distributionManagement>
 	<scm>
 		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna2/t2/tags/spi-discovery-api-0.3</connection>
