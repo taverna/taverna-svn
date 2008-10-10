@@ -51,7 +51,6 @@
             </configuration>
         </plugin>
 
-        <!--
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
@@ -59,7 +58,6 @@
                     <target>1.5</target>
                 </configuration>
             </plugin>
-            -->
 
 		</plugins>
 	</build>
