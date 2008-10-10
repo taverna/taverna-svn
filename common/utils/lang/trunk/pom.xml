@@ -1,11 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<name>Taverna 2 language extensions</name>
 	<groupId>net.sf.taverna.t2</groupId>
-	<version>0.3-SNAPSHOT</version>
+	<version>0.3</version>
 	<artifactId>lang</artifactId>
 	<packaging>pom</packaging>
 	<dependencyManagement>
@@ -100,8 +97,8 @@
 		</snapshotRepository>
 	</distributionManagement>
 	<scm>
-		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna2/t2/tags/spi-discovery-api-0.3</connection>
-		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna2/t2/tags/spi-discovery-api-0.3</developerConnection>
-		<url>http://taverna.googlecode.com/svn/taverna2/t2/tags/spi-discovery-api-0.3</url>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna2/t2/tags/lang-0.3</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna2/t2/tags/lang-0.3</developerConnection>
+		<url>http://taverna.googlecode.com/svn/taverna2/t2/tags/lang-0.3</url>
 	</scm>
 </project>
