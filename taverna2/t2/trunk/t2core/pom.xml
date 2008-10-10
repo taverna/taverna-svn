@@ -242,13 +242,4 @@
 			<url>${siteurl}</url>
 		</site>
 	</distributionManagement>
-	<scm>
-		<connection>
-			scm:cvs:pserver:anonymous@taverna.cvs.sourceforge.net:/cvsroot/taverna:t2core
-		</connection>
-		<developerConnection>
-			scm:cvs:ext:taverna.cvs.sourceforge.net:/cvsroot/taverna:t2core
-		</developerConnection>
-		<url>http://taverna.cvs.sourceforge.net/taverna/t2core/</url>
-	</scm>
 </project>
