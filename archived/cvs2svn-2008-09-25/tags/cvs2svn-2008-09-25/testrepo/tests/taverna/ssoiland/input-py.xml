@@ -1,2 +1,0 @@
-<ns0:dataThingMap xmlns:ns0="http://org.embl.ebi.escience/baclava/0.1alpha"><ns0:dataThing key="in"><ns0:myGridDataDocument lsid="" syntactictype="&apos;text/plain&apos;"><ns1:metadata xmlns:ns1="http://org.embl.ebi.escience/xscufl/0.1alpha"><ns1:mimeTypes><ns1:mimeType>text/plain</ns1:mimeType></ns1:mimeTypes></ns1:metadata><ns0:dataElement lsid=""><ns0:dataElementData>U29tZSBvdGhlciBkYXRhIGhlcmU=
-</ns0:dataElementData></ns0:dataElement></ns0:myGridDataDocument></ns0:dataThing></ns0:dataThingMap>

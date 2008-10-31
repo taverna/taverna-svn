@@ -1,3 +1,0 @@
-if ("false".equals(test)) {
-  throw new EvalError("Test matches, aborting downstream processors");
-}

@@ -1,8 +1,0 @@
-<page>
-	<header />
-	<contents>
-		<input cols="any">
-			<text name="test"/>
-		</input>
-	</contents>
-</page>

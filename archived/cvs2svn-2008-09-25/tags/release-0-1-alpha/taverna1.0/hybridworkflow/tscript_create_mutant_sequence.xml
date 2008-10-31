@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="iso-8859-1" ?>
-<tscript url="http://www.cyclonic.org/workflow/talisman_application.xml"
-         trigger="trigger:create_mutant_sequence">
-  <input name="sequence">field:inputsequence</input>
-  <input name="snplist">field:snplist</input>
-  <output name="originalsequence">field:inputsequence</output>
-  <output name="mutantsequence">field:mutantsequence</output>
-</tscript>

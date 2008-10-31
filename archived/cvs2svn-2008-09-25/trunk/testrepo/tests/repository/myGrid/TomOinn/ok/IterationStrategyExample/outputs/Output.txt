@@ -1,8 +1,0 @@
-square red cat
-square greenrabbit
-
-circular red cat
-circular greenrabbit
-
-triangularred cat
-triangulargreenrabbit

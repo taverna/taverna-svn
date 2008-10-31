@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="iso-8859-1" ?>
-<tscript url="http://www.cyclonic.org/workflow/talisman_application.xml"
-         trigger="trigger:compare_restrict">
-  <input name="report1">field:restrictreport1</input>
-  <input name="report2">field:restrictreport2</input>
-  <output name="output">field:comparison</output>
-</tscript>

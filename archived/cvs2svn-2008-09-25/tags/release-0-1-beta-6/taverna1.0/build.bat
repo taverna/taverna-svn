@@ -1,1 +1,0 @@
-ant -buildfile build.xml -logfile build_report.text all

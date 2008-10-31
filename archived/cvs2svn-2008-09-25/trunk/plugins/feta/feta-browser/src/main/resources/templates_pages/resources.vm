@@ -1,5 +1,0 @@
-		<ul>
-		#foreach ($resource in $resources)
-			<li><a href="$uriFactory.getURIForResource($resource)">$resource</a></li>
-		#end
-		</ul>

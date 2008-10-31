@@ -1,5 +1,0 @@
-#taverna.processor.rserv.scavenger = org.embl.ebi.escience.scuflworkers.rserv.RservScavenger
-org.embl.ebi.escience.scuflworkers.java.LocalServiceScavenger
-org.embl.ebi.escience.scuflworkers.stringconstant.StringConstantScavenger
-org.embl.ebi.escience.scuflworkers.beanshell.BeanshellScavenger
-org.embl.ebi.escience.scuflworkers.notification.NotificationScavenger

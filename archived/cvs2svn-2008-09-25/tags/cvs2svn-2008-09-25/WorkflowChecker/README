@@ -1,8 +1,0 @@
-Downloads latest workflows highlighted in the myExperiment RSS feed.  Trys to load them into a SCUFL model and then translates them
-using the T2 translator.
-
-Must be started with myExpUserName myExpPassword as arguments
-
-Package using mvn package appassembler:assemble
-
-Run using sh target/appassembler/bin/workflowtranslator password username

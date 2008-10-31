@@ -1,5 +1,0 @@
-<tscript url="http://localhost:8080/talisman/realpages/demo_basic/regex.xml"
-         trigger="Do Substitution">
-  <input name="inputString">field:SourceField</input>
-  <output name="outputString">field:SourceField</output>
-</tscript>

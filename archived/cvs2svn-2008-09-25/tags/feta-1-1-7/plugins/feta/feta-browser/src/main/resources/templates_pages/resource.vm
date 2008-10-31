@@ -1,9 +1,0 @@
-<ul class="menu">
-	<li>
-		<a href="$uriFactory.getURIForResources()">All resources</a>
-	</li>
-</ul>
-<h2>Services using resource</h2>
-
-#parse("templates_lib/list_services.vm")
-

@@ -1,7 +1,0 @@
-user=
-password=
-#if using mysql you have to create this database manually first time
-#databaseURL=jdbc:mysql://localhost/blobstore
-#driver=com.mysql.jdbc.Driver
-databaseURL=jdbc:derby:blobStore;create=true;upgrade=true
-driver=org.apache.derby.jdbc.EmbeddedDriver

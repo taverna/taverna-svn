@@ -1,6 +1,0 @@
-<config>
-	<contextPath></contextPath>
-	<store>
-		<baseURL>file:/tmp/data/</baseURL>
-	</store>	
-</config>

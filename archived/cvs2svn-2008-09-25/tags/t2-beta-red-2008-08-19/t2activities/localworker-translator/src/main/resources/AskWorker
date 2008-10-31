@@ -1,4 +1,0 @@
-import javax.swing.JOptionPane;
-
-answer = JOptionPane.showInputDialog(null, message, title, JOptionPane.QUESTION_MESSAGE);
-

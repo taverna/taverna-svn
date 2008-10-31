@@ -1,7 +1,0 @@
-net.sf.taverna.ocula.frame.GridFrameBuilder
-net.sf.taverna.ocula.frame.TableFrameBuilder
-net.sf.taverna.ocula.frame.InputFrameBuilder
-net.sf.taverna.ocula.frame.SimpleInputFrameBuilder
-net.sf.taverna.ocula.frame.HTMLFrameBuilder
-net.sf.taverna.ocula.frame.SimpleHTMLFrameBuilder
-net.sf.taverna.ocula.frame.CompoundFrameBuilder

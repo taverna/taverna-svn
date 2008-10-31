@@ -1,1 +1,0 @@
-mvn deploy:deploy-file -Dfile=martj-0.6.jar -DpomFile=martj-0.6.pom -Durl=scpexe://phoebus.cs.man.ac.uk/disk1/maven/repository -DrepositoryId=mygrid-repository

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
-  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:IYPNT93L2G6" author="" title="" />
-  <s:processor name="Get_internal_LSID_of_input">
-    <s:local>org.embl.ebi.escience.scuflworkers.java.GetLSID</s:local>
-  </s:processor>
-</s:scufl>
-
-

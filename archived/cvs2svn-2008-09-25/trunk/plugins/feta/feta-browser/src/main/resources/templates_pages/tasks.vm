@@ -1,6 +1,0 @@
-
-		<ul>
-		#foreach ($task in $tasks)
-			<li><a href="$uriFactory.getURIForTask($task)">$task</a></li>
-		#end
-		</ul>

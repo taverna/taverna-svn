@@ -1,5 +1,0 @@
-org.embl.ebi.escience.scuflworkers.soaplab.SoaplabDescriberPanel
-org.embl.ebi.escience.scuflui.processoractions.SetBoringAction
-org.embl.ebi.escience.scuflui.processoractions.UnsetBoringAction
-org.biomoby.client.taverna.plugin.BiomobyAction
-org.biomoby.client.taverna.plugin.BiomobyObjectAction

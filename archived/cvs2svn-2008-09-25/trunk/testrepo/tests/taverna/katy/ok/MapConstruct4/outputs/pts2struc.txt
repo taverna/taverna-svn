@@ -1,8 +1,0 @@
-% Corresponded Thickness Maps
-% Convert EndPoint pts file to matlab bone structure
-% Creates B_*.mat
-addpath /disk1/newsoaplab/bone_thickness/TWilliams/Code/new
-% Move to directory where pts files are
-cd /disk1/newsoaplab/bone_thickness/TWilliams/Code/Data/Models
-% Supply pts file name in parameter set
-pts_2_struct('trial','OA16','pts_search_string','z013_1_7.pts','shapeTesselations',0,'compartment','Fem');

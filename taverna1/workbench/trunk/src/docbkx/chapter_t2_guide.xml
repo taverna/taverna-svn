@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<chapter id="t2_guide">
-  <title>Taverna 2 Preview User Guide.</title>
-    <xi:include href="section_t2_data_management_user_guide.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
- </chapter>

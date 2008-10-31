@@ -1,3 +1,0 @@
-import org.apache.commons.codec.binary.Base64;
-
-base64 = new String(Base64.encodeBase64(bytes));

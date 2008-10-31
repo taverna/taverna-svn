@@ -1,3 +1,0 @@
-net.sf.taverna.ocula.example.PersonRenderer
-net.sf.taverna.ocula.renderer.TextRenderer
-net.sf.taverna.ocula.renderer.FallbackObjectRenderer
