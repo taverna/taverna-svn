@@ -1,13 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>t2reference</artifactId>
-	<version>0.2-SNAPSHOT</version>
+	<version>0.2</version>
 
 	<packaging>pom</packaging>
 	<name>T2 Reference Manager</name>
@@ -19,9 +16,9 @@
 		tracking through error tokens.
 	</description>
     <scm>
-        <connection>scm:svn:http://taverna.googlecode.com/svn/taverna2/core/net.sf.taverna.t2.t2reference/trunk/</connection>
-        <developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna2/core/net.sf.taverna.t2.t2reference/trunk/</developerConnection>
-        <url>http://code.google.com/p/taverna/source/browse/taverna2/core/net.sf.taverna.t2.t2reference/trunk/</url>
+        <connection>scm:svn:http://taverna.googlecode.com/svn/taverna2/core/net.sf.taverna.t2.t2reference/tags/0.2</connection>
+        <developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna2/core/net.sf.taverna.t2.t2reference/tags/0.2</developerConnection>
+        <url>http://code.google.com/p/taverna/source/browse/taverna2/core/net.sf.taverna.t2.t2reference/tags/0.2</url>
     </scm>
 
 	<build>
