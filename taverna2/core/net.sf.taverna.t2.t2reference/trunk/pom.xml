@@ -18,6 +18,11 @@
 		externally to the enactor, collection management and error
 		tracking through error tokens.
 	</description>
+    <scm>
+        <connection>scm:svn:http://taverna.googlecode.com/svn/taverna2/core/net.sf.taverna.t2.t2reference/trunk/</connection>
+        <developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna2/core/net.sf.taverna.t2.t2reference/trunk/</developerConnection>
+        <url>http://code.google.com/p/taverna/source/browse/taverna2/core/net.sf.taverna.t2.t2reference/trunk/</url>
+    </scm>
 
 	<build>
 		<plugins>
@@ -71,14 +76,14 @@
 			<id>mygrid-repository</id>
 			<name>myGrid Repository</name>
 			<url>
-				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/repository
+				file:///tmp/fish/
 			</url>
 		</repository>
 		<snapshotRepository>
 			<id>mygrid-snapshot-repository</id>
 			<name>myGrid Snapshot Repository</name>
 			<url>
-				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/snapshot-repository
+				file:///tmp/fish-snapshot/
 			</url>
 		</snapshotRepository>
 	</distributionManagement>
