@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project>
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>t2reference</artifactId>
-		<version>0.2</version>
+		<version>0.2-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>t2reference-core-extensions</artifactId>
-	<version>0.2</version>
+	<version>0.2-SNAPSHOT</version>
 	<name>Implementation of core extension points</name>
 	<description>
 		Implementations of certain SPIs to provide a core set of
@@ -25,7 +25,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>t2reference-api</artifactId>
-			<version>0.2</version>
+			<version>0.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-httpclient</groupId>
