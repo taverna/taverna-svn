@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<groupId>net.sf.taverna</groupId>
+		<artifactId>raven-parent</artifactId>
+		<version>1.9-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>uk.org.mygrid.taverna.raven</groupId>
+	<artifactId>helloworld-launcher</artifactId>
+	<name>Hello world launcher example</name>
+	<description>
+		Launches Hello world example using Launcher
+	</description>
+	<dependencies>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.raven</groupId>
+			<artifactId>launcher</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.raven</groupId>
+			<artifactId>prelauncher</artifactId>
+		</dependency>
+
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<index>true</index>
+						<manifest>
+							<mainClass>
+								net.sf.taverna.raven.prelauncher.PreLauncher
+							</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<!--<plugin>
+				<groupId>com.akathist.maven.plugins.launch4j</groupId>
+				<artifactId>launch4j-maven-plugin</artifactId>
+				<executions>
+				<execution>
+				<id>l4j-clui</id>
+				<phase>package</phase>
+				<goals>
+				<goal>launch4j</goal>
+				</goals>
+				<configuration>
+				<headerType>console</headerType>
+				<outfile>target/helloworld.exe</outfile>
+				<jar>target/helloworld-launcher-1.9-SNAPSHOT.jar</jar>
+				<errTitle>helloworld</errTitle>
+				<classPath>
+				<mainClass>
+				net.sf.taverna.raven.prelauncher.PreLauncher
+				</mainClass>
+				<addDependencies>true</addDependencies>
+				<preCp>anything</preCp>
+				</classPath>
+				<jre>
+				<minVersion>1.5.0</minVersion>
+				</jre>
+				<versionInfo>
+				<fileVersion>1.2.3.4</fileVersion>
+				<txtFileVersion>
+				txt file version?
+				</txtFileVersion>
+				<fileDescription>
+				a description
+				</fileDescription>
+				<copyright>my copyright</copyright>
+				<productVersion>4.3.2.1</productVersion>
+				<txtProductVersion>
+				txt product version
+				</txtProductVersion>
+				<productName>E-N-C-C</productName>
+				<internalName>ccne</internalName>
+				<originalFilename>
+				original
+				</originalFilename>
+				</versionInfo>
+				</configuration>
+				</execution>
+				</executions>
+				</plugin>-->
+
+		</plugins>
+
+	</build>
+</project>

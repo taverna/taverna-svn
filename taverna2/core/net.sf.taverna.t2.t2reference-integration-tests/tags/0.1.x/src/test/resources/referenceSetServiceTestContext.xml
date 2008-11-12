@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!-- Full SPI driven test context for the HibernateReferenceSetDao -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:raven="http://taverna.sf.net/schema/artifact-support"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd 
+	http://taverna.sf.net/schema/artifact-support 
+	http://taverna.sf.net/schema/artifact-support/artifact-support.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+
+	<import resource="context-parts/raven_local.xml" />
+	<import resource="context-parts/hibernateprops_derby.xml" />
+	<import resource="context-parts/dao_hibernate_transactional.xml" />
+	<import resource="context-parts/componentservices.xml" />
+	<import resource="context-parts/cachesupport.xml" />
+
+	<bean id="exampleFileBean"
+		raven:artifact="net.sf.taverna.t2:t2reference-core-extensions:0.1"
+		raven:repository="raven.repository"
+		class="net.sf.taverna.t2.reference.impl.external.file.FileReference">
+		<property name="filePath" value="C:\Home\Tom\langs.model.xml" />
+		<property name="charset" value="UTF9" />
+	</bean>
+
+	<bean id="exampleUrlBean"
+		raven:artifact="net.sf.taverna.t2:t2reference-core-extensions:0.1"
+		raven:repository="raven.repository"
+		class="net.sf.taverna.t2.reference.impl.external.http.HttpReference">
+		<property name="httpUrlString" value="http://www.dilbert.com" />
+	</bean>
+
+
+</beans>

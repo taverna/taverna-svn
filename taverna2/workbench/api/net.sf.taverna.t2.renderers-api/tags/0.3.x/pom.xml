@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>core</artifactId>
+		<version>0.3</version>
+	</parent>
+	<groupId>net.sf.taverna.t2</groupId>
+	<artifactId>renderers-api</artifactId>
+	<version>0.3</version>
+	<name>Renderers API</name>
+	<description>
+
+	</description>
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>spi-discovery-api</artifactId>
+			<version>0.3</version>
+		</dependency>
+        
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>workflowmodel-api</artifactId>
+			<version>0.3</version>
+		</dependency>
+	</dependencies>
+</project>

@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://taverna.sf.net/pluginDescription"
+	xmlns:tns="http://taverna.sf.net/pluginDescription"
+	xmlns:author="http://taverna.sf.net/authorDescription"
+	xmlns:gjava="http://taverna.sf.net/genericJava"
+	elementFormDefault="qualified"
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+	jxb:extensionBindingPrefixes="xjc"
+	xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.1">
+
+	<!-- Top level plugin description schema, used to generate files -->
+	<!-- in the net.sf.taverna.t2.platform.plugin.generated package  -->
+	<!-- Tom Oinn, tomoinn@crypticsquid.com, 27th October 2008       -->
+
+	<xsd:annotation>
+		<xsd:appinfo>
+			<jxb:globalBindings generateValueClass="false">
+				<xjc:simple />
+			</jxb:globalBindings>
+			<jxb:package
+				name="net.sf.taverna.t2.platform.plugin.generated" />
+		</xsd:appinfo>
+		<xsd:documentation>
+			Schema for the T2Platform plug-in description, 13th October
+			2008, Tom Oinn, tomoinn@crypticsquid.com
+		</xsd:documentation>
+	</xsd:annotation>
+
+	<!-- Include author sub-schema -->
+	<xsd:import namespace="http://taverna.sf.net/authorDescription"
+		schemaLocation="./author-description.xsd" />
+
+	<!-- Include simple type mappings for URL, URI and Class -->
+	<xsd:import namespace="http://taverna.sf.net/genericJava"
+		schemaLocation="./generic-java.xsd" />
+
+	<xsd:element name="plugin" type="tns:pluginType" />
+
+	<xsd:complexType name="pluginType">
+
+		<xsd:annotation>
+			<xsd:appinfo>
+				<jxb:class name="PluginDescription">
+					<jxb:javadoc>
+						Description of a plug-in package
+					</jxb:javadoc>
+				</jxb:class>
+				<xjc:simple />
+			</xsd:appinfo>
+		</xsd:annotation>
+
+		<xsd:sequence>
+
+			<xsd:element name="name" type="xsd:string" minOccurs="1"
+				maxOccurs="1">
+			</xsd:element>
+
+			<xsd:element name="description" type="xsd:string"
+				minOccurs="1" maxOccurs="1">
+			</xsd:element>
+
+			<xsd:element name="id" type="gjava:pluginIdentifier"
+				minOccurs="1" maxOccurs="1">
+			</xsd:element>
+
+			<xsd:element name="quality" type="tns:qualityType"
+				minOccurs="1" maxOccurs="1">
+			</xsd:element>
+
+			<xsd:element name="author" type="author:authorType"
+				minOccurs="1" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<jxb:property name="authorList" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+
+			<xsd:element name="tag" minOccurs="0" maxOccurs="unbounded"
+				type="tns:tagType">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<jxb:property name="tagList" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+
+			<xsd:element name="url" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:anyURI">
+						<xsd:pattern value="http(s?).*" />
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+
+			<xsd:element name="link" type="tns:linkType" minOccurs="0"
+				maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<jxb:property name="linkList" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+
+			<xsd:element name="icon" type="gjava:pngImageHttpURL"
+				minOccurs="0" maxOccurs="1" />
+
+			<xsd:element name="backgroundimage" minOccurs="0"
+				maxOccurs="1" type="gjava:pngImageHttpURL">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<jxb:property name="backgroundImage" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+
+
+			<xsd:element name="spi" type="tns:spiType" minOccurs="0"
+				maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<jxb:property name="spiList" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+
+			<xsd:element name="repository-url" minOccurs="0"
+				maxOccurs="unbounded" type="gjava:httpURL">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<jxb:property name="repositoryList" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+
+			<xsd:element name="jar-url" minOccurs="0"
+				maxOccurs="unbounded" type="gjava:httpURL">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<jxb:property name="jarList" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+
+			<xsd:element name="artifact" type="gjava:artifactIdentifier"
+				minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<jxb:property name="artifactList" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+
+			<xsd:element name="target" minOccurs="1" maxOccurs="1"
+				type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>
+						The target property defines the set of APIs
+						which this plug-in is coded against. A plug-in
+						manager should be aware of the targets
+						appropriate in a given context, for example we
+						will have a target representing version 1 of the
+						Taverna 2.0 core APIs. Targets are effectively
+						opaque identifiers.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+
+		</xsd:sequence>
+	</xsd:complexType>
+
+
+	<xsd:complexType name="linkType">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<jxb:class name="ExternalLink">
+					<jxb:javadoc>
+						Link to an external URI for more information on
+						this plug-in, the URI can be resolvable directly
+						but can also be an external form such as a DOI
+						or any other unique ID in URI form.
+					</jxb:javadoc>
+				</jxb:class>
+			</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="linkdescription" type="xsd:string"
+				minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<jxb:property name="linkDescription" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="link" type="gjava:anyURI" minOccurs="1"
+				maxOccurs="1" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="spiType">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<jxb:class name="SpiImplementation">
+					<jxb:javadoc>
+						Description of a single implementation of one of
+						the core SPIs. Plug-in bundles can contain
+						multiple implementations of many SPIs.
+					</jxb:javadoc>
+				</jxb:class>
+			</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="interface" minOccurs="1" maxOccurs="1"
+				type="gjava:qualifiedJavaType">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<jxb:property name="implementedInterface">
+							<jxb:javadoc>
+								The SPI implemented by this part of the
+								plug-in
+							</jxb:javadoc>
+						</jxb:property>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="class" minOccurs="1" maxOccurs="1"
+				type="gjava:qualifiedJavaType">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<jxb:property name="implementationClass">
+							<jxb:javadoc>
+								Fully qualified class name of the SPI
+								implementation
+							</jxb:javadoc>
+						</jxb:property>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="name" type="xsd:string" minOccurs="1"
+				maxOccurs="1">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<jxb:property name="name">
+							<jxb:javadoc>
+								A short name for this part of the
+								plug-in
+							</jxb:javadoc>
+						</jxb:property>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="description" type="xsd:string"
+				minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<jxb:property name="description">
+							<jxb:javadoc>
+								A longer description of this part of the
+								plug-in
+							</jxb:javadoc>
+						</jxb:property>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:simpleType name="tagType">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="[a-zA-Z0-9]+" />
+			<xsd:minLength value="3" />
+			<xsd:maxLength value="50" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="qualityType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="alpha" />
+			<xsd:enumeration value="beta" />
+			<xsd:enumeration value="stable" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+</xsd:schema>

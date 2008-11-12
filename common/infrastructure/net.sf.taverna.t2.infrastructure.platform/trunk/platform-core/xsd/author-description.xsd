@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://taverna.sf.net/authorDescription"
+	xmlns:tns="http://taverna.sf.net/authorDescription"
+	xmlns:gjava="http://taverna.sf.net/genericJava"
+	elementFormDefault="qualified"
+	xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.1">
+
+	<!-- Include simple type mappings for URL, URI and Class -->
+	<xsd:import namespace="http://taverna.sf.net/genericJava"
+		schemaLocation="./generic-java.xsd" />
+
+	<xsd:complexType name="authorType">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<jxb:class name="AuthorDescription">
+					<jxb:javadoc>
+						Description for a single author
+					</jxb:javadoc>
+				</jxb:class>
+			</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="name" type="xsd:string" minOccurs="1"
+				maxOccurs="1" />
+			<xsd:element name="affiliation" type="xsd:string"
+				minOccurs="0" maxOccurs="1" />
+			<xsd:element name="email" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:annotation>
+						<xsd:documentation>
+							The email address is matched to a regular
+							expression to attempt to ensure validity -
+							this is not a complete guarantee but should
+							help avoid common mistakes.
+						</xsd:documentation>
+					</xsd:annotation>
+					<xsd:restriction base="xsd:string">
+						<xsd:pattern
+							value="[a-z0-9._%+-]+@[a-z0-9.-]+\.([a-z]{2}|com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum)" />
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="url" minOccurs="0" maxOccurs="1"
+				type="gjava:httpURL" />
+			<xsd:element name="icon" minOccurs="0" maxOccurs="1"
+				type="gjava:pngImageHttpURL" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+</xsd:schema>

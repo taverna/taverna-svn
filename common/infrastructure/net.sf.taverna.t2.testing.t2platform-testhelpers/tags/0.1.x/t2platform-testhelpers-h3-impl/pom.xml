@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sf.taverna.t2.testing</groupId>
+		<artifactId>t2platform-testhelpers</artifactId>
+		<version>0.1</version>
+	</parent>
+	<groupId>net.sf.taverna.t2.testing</groupId>
+	<artifactId>t2platform-testhelpers-h3-impl</artifactId>
+	<version>0.1</version>
+	<name>Example implementations for Hibernate 3 tests</name>
+	<description>
+		Implementation beans extending the interfaces defined in the
+		corresponding API package.
+	</description>
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.taverna.t2.testing</groupId>
+			<artifactId>t2platform-testhelpers-h3-api</artifactId>
+			<version>0.1</version>
+		</dependency>
+	</dependencies>
+</project>

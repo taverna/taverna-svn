@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Context providing a full ReferenceService backed by in-memory Dao implementations -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:raven="http://taverna.sf.net/schema/artifact-support"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd 
+	http://taverna.sf.net/schema/artifact-support 
+	http://taverna.sf.net/schema/artifact-support/artifact-support.xsd">
+
+	<!-- Load core extensions, needed for String to reference support -->
+	<bean
+		raven:artifact="net.sf.taverna.t2:t2reference-core-extensions:0.1"
+		raven:repository="ravenRepository"
+		class="net.sf.taverna.t2.reference.impl.core.LoadCoreExtensions">
+	</bean>
+
+	<!-- Reference service bean -->
+	<bean id="referenceService"
+		raven:artifact="net.sf.taverna.t2:t2reference-impl:0.1"
+		raven:repository="ravenRepository"
+		class="net.sf.taverna.t2.reference.impl.ReferenceServiceImpl">
+		<property name="referenceSetService">
+			<ref local="referenceSetService" />
+		</property>
+		<property name="listService">
+			<ref local="listService" />
+		</property>
+		<property name="errorDocumentService">
+			<ref local="errorDocumentService" />
+		</property>
+		<property name="converterRegistry">
+			<bean id="converterRegistry"
+				class="net.sf.taverna.platform.spring.InstanceRegistryFactoryBean">
+				<property name="spiRegistry">
+					<bean
+						class="net.sf.taverna.platform.spring.SpiRegistryFactoryBean">
+						<property name="repository">
+							<ref bean="ravenRepository" />
+						</property>
+						<property name="spiClassName"
+							value="net.sf.taverna.t2.reference.ValueToReferenceConverterSPI" />
+					</bean>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<!-- Raven repository, no remote repositories, uses local .m2 cache -->
+	<repository id="ravenRepository"
+		xmlns="http://taverna.sf.net/schema/artifact-support"
+		base="${user.home}/.m2/repository/">
+		<repositories />
+		<system>
+
+			<!-- T2Reference API -->
+			<sys
+				artifact="net.sf.taverna.t2:t2reference-api:0.1" />
+
+			<!-- T2 Enactor API -->
+			<sys
+				artifact="net.sf.taverna.t2:workflowmodel-api:0.3" />
+			<sys artifact="jdom:jdom:1.0" />
+
+			<!-- For test cases enactor implementation is on classpath -->
+			<sys
+				artifact="net.sf.taverna.t2:workflowmodel-impl:0.3" />
+			<sys artifact="com.thoughtworks.xstream:xstream:1.2.1" />
+			<sys artifact="xpp3:xpp3_min:1.1.3.4.O" />
+
+			<!-- T2Platform -->
+			<sys artifact="net.sf.taverna.t2:platform:0.1" />
+			<sys artifact="commons-logging:commons-logging:1.1.1" />
+
+			<!-- Raven -->
+			<sys
+				artifact="uk.org.mygrid.taverna.raven:raven:1.8" />
+			<sys
+				artifact="uk.org.mygrid.taverna.raven:raven-log4j:1.8" />
+			<sys
+				artifact="net.sf.taverna.t2:spi-discovery-api:0.3" />
+			<sys artifact="net.sf.taverna.t2:observer:0.3" />
+
+			<!-- Spring + Essential External Modules without ORM support -->
+			<sys artifact="org.springframework:spring-beans:2.5.4" />
+			<sys artifact="org.springframework:spring-core:2.5.4" />
+			<sys artifact="org.springframework:spring-context:2.5.4" />
+			<sys artifact="aopalliance:aopalliance:1.0" />
+
+		</system>
+	</repository>
+
+	<!-- t2 reference generator -->
+	<bean id="referenceGenerator"
+		raven:artifact="net.sf.taverna.t2:t2reference-impl:0.1"
+		raven:repository="ravenRepository"
+		class="net.sf.taverna.t2.reference.impl.SimpleT2ReferenceGenerator">
+		<property name="namespace" value="testNamespace" />
+	</bean>
+
+	<!-- reference set service -->
+	<bean id="referenceSetService"
+		raven:artifact="net.sf.taverna.t2:t2reference-impl:0.1"
+		raven:repository="ravenRepository"
+		class="net.sf.taverna.t2.reference.impl.ReferenceSetServiceImpl">
+		<property name="referenceSetDao">
+			<bean id="referenceSetDao"
+				raven:artifact="net.sf.taverna.t2:t2reference-impl:0.1"
+				raven:repository="ravenRepository"
+				class="net.sf.taverna.t2.reference.impl.InMemoryReferenceSetDao">
+			</bean>
+		</property>
+		<property name="t2ReferenceGenerator">
+			<ref local="referenceGenerator" />
+		</property>
+		<property name="referenceSetAugmentor">
+			<ref local="referenceSetAugmentor" />
+		</property>
+	</bean>
+
+	<!-- error document service -->
+	<bean id="errorDocumentService"
+		raven:artifact="net.sf.taverna.t2:t2reference-impl:0.1"
+		raven:repository="ravenRepository"
+		class="net.sf.taverna.t2.reference.impl.ErrorDocumentServiceImpl">
+		<property name="errorDao">
+			<bean id="errorDocumentDao"
+				raven:artifact="net.sf.taverna.t2:t2reference-impl:0.1"
+				raven:repository="ravenRepository"
+				class="net.sf.taverna.t2.reference.impl.InMemoryErrorDocumentDao">
+			</bean>
+		</property>
+		<property name="t2ReferenceGenerator">
+			<ref local="referenceGenerator" />
+		</property>
+	</bean>
+
+	<!-- list service -->
+	<bean id="listService"
+		raven:artifact="net.sf.taverna.t2:t2reference-impl:0.1"
+		raven:repository="ravenRepository"
+		class="net.sf.taverna.t2.reference.impl.ListServiceImpl">
+		<property name="listDao">
+			<bean id="listDao"
+				raven:artifact="net.sf.taverna.t2:t2reference-impl:0.1"
+				raven:repository="ravenRepository"
+				class="net.sf.taverna.t2.reference.impl.InMemoryListDao">
+			</bean>
+		</property>
+		<property name="t2ReferenceGenerator">
+			<ref local="referenceGenerator" />
+		</property>
+	</bean>
+
+	<!-- Reference translator instance registry -->
+	<bean id="translatorRegistry"
+		class="net.sf.taverna.platform.spring.InstanceRegistryFactoryBean">
+		<property name="spiRegistry">
+			<bean
+				class="net.sf.taverna.platform.spring.SpiRegistryFactoryBean">
+				<property name="repository">
+					<ref bean="ravenRepository" />
+				</property>
+				<property name="spiClassName"
+					value="net.sf.taverna.t2.reference.ExternalReferenceTranslatorSPI" />
+			</bean>
+		</property>
+	</bean>
+
+	<!-- Reference builder instance registry -->
+	<bean id="builderRegistry"
+		class="net.sf.taverna.platform.spring.InstanceRegistryFactoryBean">
+		<property name="spiRegistry">
+			<bean
+				class="net.sf.taverna.platform.spring.SpiRegistryFactoryBean">
+				<property name="repository">
+					<ref bean="ravenRepository" />
+				</property>
+				<property name="spiClassName"
+					value="net.sf.taverna.t2.reference.ExternalReferenceBuilderSPI" />
+			</bean>
+		</property>
+	</bean>
+
+	<!-- Reference set augmentor -->
+	<bean id="referenceSetAugmentor"
+		class="net.sf.taverna.t2.reference.impl.ReferenceSetAugmentorImpl"
+		raven:artifact="net.sf.taverna.t2:t2reference-impl:0.1"
+		raven:repository="ravenRepository">
+		<property name="builderRegistry">
+			<ref bean="builderRegistry" />
+		</property>
+		<property name="translatorRegistry">
+			<ref bean="translatorRegistry" />
+		</property>
+	</bean>
+
+</beans>
