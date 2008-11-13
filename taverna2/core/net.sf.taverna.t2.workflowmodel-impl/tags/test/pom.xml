@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sf.taverna</groupId>
+		<artifactId>parent</artifactId>
+		<version>0.1.2008-11-03</version>
+	</parent>
+	<groupId>net.sf.taverna.t2</groupId>
+	<artifactId>workflowmodel-impl</artifactId>
+	<version>0.3</version>
+	<name>Workflow Model Impl.</name>
+	<description> Implementation of the core workflow object model for
+		Taverna 2 workflows including concrete instances of the workflow
+		definition objects and enactment behaviours.</description>
+	<repositories>
+		<repository>
+			<id>mygrid-repository</id>
+			<name>myGrid</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+			<releases>
+				<updatePolicy>daily</updatePolicy>
+			</releases>
+		</repository>
+	</repositories>
+	<dependencies>
+		<dependency>
+			<groupId>jdom</groupId>
+			<artifactId>jdom</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>workflowmodel-api</artifactId>
+			<version>0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>provenanceconnector-api</artifactId>
+			<version>0.3</version>
+		</dependency>
+        
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>provenanceconnector-impl</artifactId>
+			<version>0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>platform</artifactId>
+			<version>0.1</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.hibernate</groupId>
+					<artifactId>hibernate</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-jdbc</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-orm</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>geronimo-spec</groupId>
+					<artifactId>geronimo-spec-jta</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>security-api</artifactId>
+			<version>0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.4</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>1.2.1</version>
+		</dependency>
+	</dependencies>
+</project>
