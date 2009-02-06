@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.sf.taverna.t2</groupId>
+	<artifactId>spi-discovery-api</artifactId>
+	<version>0.5-SNAPSHOT</version>
+	<name>SPI Discovery API</name>
+	<parent>
+		<groupId>net.sf.taverna</groupId>
+		<artifactId>parent</artifactId>
+		<version>0.1.2008-11-03</version>
+	</parent>
+	<description>Handles SPI discovery through Raven.</description>
+    <properties>
+        <raven.version>1.10-SNAPSHOT</raven.version>
+    </properties>
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>observer</artifactId>
+			<version>0.5-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.raven</groupId>
+			<artifactId>raven</artifactId>
+			<version>${raven.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.raven</groupId>
+			<artifactId>raven-log4j</artifactId>
+			<version>${raven.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.raven</groupId>
+			<artifactId>appconfig</artifactId>
+			<version>${raven.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.4</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+    <repositories>
+        <repository>
+            <releases />
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>mygrid-repository</id>
+            <name>myGrid Repository</name>
+            <url>http://www.mygrid.org.uk/maven/repository</url>
+        </repository>
+    </repositories>
+
+</project>
