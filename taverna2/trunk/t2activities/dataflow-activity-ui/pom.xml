@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<artifactId>activities</artifactId>
+		<groupId>net.sf.taverna.t2</groupId>
+		<version>0.5-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.sf.taverna.t2.activities</groupId>
+	<artifactId>dataflow-activity-ui</artifactId>
+	<name>Taverna 2 Dataflow Activity UI</name>
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>activity-icons</artifactId>
+			<version>${t2.workbench.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>activity-palette-api</artifactId>
+			<version>${t2.workbench.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>contextual-views-api</artifactId>
+			<version>${t2.workbench.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>contextual-views-impl</artifactId>
+			<version>${t2.workbench.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.help</groupId>
+			<artifactId>javahelp</artifactId>
+			<version>2.0.02</version>
+		</dependency>
+
+		<!--  testing dependencies -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.activities</groupId>
+			<artifactId>dataflow-activity</artifactId>
+			<version>${t2.activities.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>helper</artifactId>
+			<version>${t2.workbench.version}</version>
+		</dependency>	</dependencies>
+</project>
+
