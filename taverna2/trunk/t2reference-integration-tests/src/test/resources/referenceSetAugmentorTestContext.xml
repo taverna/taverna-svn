@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- SPI driven test context for the reference set augmentor -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:raven="http://taverna.sf.net/schema/artifact-support"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd 
+	http://taverna.sf.net/schema/artifact-support 
+	http://taverna.sf.net/schema/artifact-support/artifact-support.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+
+	<import resource="context-parts/raven_local.xml" />
+	<import resource="context-parts/dao_inmemory.xml" />
+	<import resource="context-parts/componentservices.xml" />
+	
+	<bean id="testBeanId"
+		class="net.sf.taverna.t2.reference.impl.T2ReferenceImpl"
+		raven:artifact="net.sf.taverna.t2:t2reference-impl:0.3-SNAPSHOT"
+		raven:repository="raven.repository">
+		<property name="localPart" value="testLocal" />
+		<property name="namespacePart" value="testNS" />
+	</bean>
+
+	<bean id="referenceSet"
+		class="net.sf.taverna.t2.reference.impl.ReferenceSetImpl"
+		raven:artifact="net.sf.taverna.t2:t2reference-impl:0.3-SNAPSHOT"
+		raven:repository="raven.repository">
+		<property name="typedId">
+			<ref bean="testBeanId" />
+		</property>
+		<property name="externalReferences">
+			<set>
+				<ref bean="blueBean" />
+			</set>
+		</property>
+	</bean>
+
+	<bean id="blueBean"
+		raven:artifact="net.sf.taverna.t2.testing:t2reference-testhelpers:0.3-SNAPSHOT"
+		raven:repository="raven.repository"
+		class="net.sf.taverna.t2referencetest.BlueReference">
+		<property name="contents" value="foo" />
+	</bean>
+
+	<bean id="redBean"
+		raven:artifact="net.sf.taverna.t2.testing:t2reference-testhelpers:0.3-SNAPSHOT"
+		raven:repository="raven.repository"
+		class="net.sf.taverna.t2referencetest.RedReference">
+		<property name="contents" value="" />
+	</bean>
+
+</beans>
