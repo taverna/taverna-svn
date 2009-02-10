@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:20fe0011-c469-470e-abbb-59d16727f3f8" author="" title="translation_test_merge" />
+  <s:processor name="a_processor">
+    <s:beanshell>
+      <s:scriptvalue>String output=input_1 + input_2</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">input_1</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">input_2</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">output</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+    <s:mergemode input="input_1" mode="merge" />
+  </s:processor>
+  <s:link source="workflow_input_1" sink="a_processor:input_1" />
+  <s:link source="workflow_input_2" sink="a_processor:input_1" />
+  <s:link source="workflow_input_3" sink="a_processor:input_2" />
+  <s:link source="a_processor:output" sink="workflow_output" />
+  <s:source name="workflow_input_1" />
+  <s:source name="workflow_input_2" />
+  <s:source name="workflow_input_3" />
+  <s:sink name="workflow_output" />
+</s:scufl>
+
