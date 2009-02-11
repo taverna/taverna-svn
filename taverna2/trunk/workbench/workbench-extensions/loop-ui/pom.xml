@@ -1,0 +1,39 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<name>Loop layer contextual view</name>
+	<parent>
+		<groupId>net.sf.taverna.t2.workbench.extensions</groupId>
+		<artifactId>t2-workbench-extensions</artifactId>
+		<version>0.3-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.sf.taverna.t2.workbench.extensions</groupId>
+	<artifactId>loop-ui</artifactId>
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>contextual-views-impl</artifactId>
+			<version>${t2.workbench.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>file-impl</artifactId>
+			<version>${t2.workbench.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>edits-impl</artifactId>
+			<version>${t2.workbench.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.activities</groupId>
+			<artifactId>beanshell-activity-ui</artifactId>
+			<version>${t2.activities.version}</version>
+		</dependency>
+		<dependency>
+	<groupId>net.sf.taverna.t2.workbench</groupId>
+	<artifactId>helper</artifactId>
+	<version>${t2.workbench.version}</version>
+	</dependency>
+	</dependencies>
+</project>
