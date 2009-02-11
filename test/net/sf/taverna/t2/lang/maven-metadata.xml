@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?><metadata>
+  <groupId>net.sf.taverna.t2</groupId>
+  <artifactId>lang</artifactId>
+  <version>0.5-SNAPSHOT</version>
+  <versioning>
+    <versions>
+      <version>0.5-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20090211182354</lastUpdated>
+  </versioning>
+</metadata>
