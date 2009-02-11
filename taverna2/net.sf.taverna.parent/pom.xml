@@ -163,6 +163,9 @@
 		</plugins>
 	</reporting>
 	<scm>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna2/net.sf.taverna.parent/</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna2/net.sf.taverna.parent/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna2/net.sf.taverna.parent</url>
 	</scm>
 	<distributionManagement>
 		<repository>
