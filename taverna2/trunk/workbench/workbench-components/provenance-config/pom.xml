@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<parent>
+		<artifactId>t2-workbench</artifactId>
+		<groupId>net.sf.taverna.t2</groupId>
+		<version>0.3-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.sf.taverna.t2.workbench
+	</groupId>
+	<artifactId>provenance-config</artifactId>
+	<name>provenance-config</name>
+	<url>http://maven.apache.org</url>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.workbench
+			</groupId>
+			<artifactId>configuration-api</artifactId>
+			<version>${t2.workbench.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>provenanceconnector-api
+			</artifactId>
+			<version>${t2.core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.workbench
+			</groupId>
+			<artifactId>contextual-views-api</artifactId>
+			<version>${t2.workbench.version}</version>
+		</dependency>
+	</dependencies>
+</project>
