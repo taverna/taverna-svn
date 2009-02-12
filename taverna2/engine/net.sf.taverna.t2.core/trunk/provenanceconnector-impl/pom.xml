@@ -5,9 +5,9 @@
 	<parent>
 		<artifactId>core</artifactId>
 		<groupId>net.sf.taverna.t2</groupId>
-		<version>0.5-SNAPSHOT</version>
+		<version>0.6-SNAPSHOT</version>
 	</parent>
-	<groupId>net.sf.taverna.t2</groupId>
+	<groupId>net.sf.taverna.t2.core</groupId>
 	<artifactId>provenanceconnector-impl
 	</artifactId>
 	<name>Provenance connector implementation</name>
@@ -29,13 +29,13 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
+			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>provenanceconnector-api
 			</artifactId>
 			<version>${t2.core.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
+			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>workflowmodel-api</artifactId>
 			<version>${t2.core.version}</version>
 		</dependency>
@@ -43,16 +43,27 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 		</dependency>
-		<!--
-			<dependency> <groupId>org.apache.derby</groupId>
-			<artifactId>derby</artifactId> <version>10.2.2.0</version>
-			</dependency> <dependency> <groupId>org.apache.derby</groupId>
-			<artifactId>derbynet</artifactId> <version>${derby.version}</version>
-			</dependency> <dependency> <groupId>org.apache.derby</groupId>
-			<artifactId>derbytools</artifactId> <version>10.2.2.0</version>
-			</dependency> <dependency> <groupId>org.apache.derby</groupId>
-			<artifactId>derbyclient</artifactId> <version>10.2.2.0</version>
-			</dependency>
-		-->
-	</dependencies>
+		
+		
+		<!--<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derby</artifactId>
+			<version>${derby.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derbynet</artifactId>
+			<version>${derby.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derbytools</artifactId>
+			<version>${derby.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derbyclient</artifactId>
+			<version>${derby.version}</version>
+		</dependency>
+	--></dependencies>
 </project>

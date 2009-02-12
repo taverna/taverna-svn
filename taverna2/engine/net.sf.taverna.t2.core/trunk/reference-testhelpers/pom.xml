@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>net.sf.taverna</groupId>
-		<artifactId>parent</artifactId>
-		<version>0.1.2008-11-03</version>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>core</artifactId>
+		<version>0.6-SNAPSHOT</version>
 	</parent>
-	<groupId>net.sf.taverna.t2.testing</groupId>
-	<artifactId>t2reference-testhelpers</artifactId>
-	<version>0.3-SNAPSHOT</version>
+	<groupId>net.sf.taverna.t2.core</groupId>
+	<artifactId>reference-testhelpers</artifactId>
 
 	<name>T2reference dummy implementations for testing</name>
 
@@ -29,33 +27,9 @@
 	<dependencies>
 		<!-- Only depend on the t2reference API package here -->
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>t2reference-api</artifactId>
-			<version>0.3-SNAPSHOT</version>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>reference-api</artifactId>
+			<version>${t2.core.version}</version>
 		</dependency>
 	</dependencies>
-
-	<repositories>
-		<repository>
-			<!-- myGrid release artifacts -->
-			<releases />
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<id>mygrid-repository</id>
-			<name>myGrid Repository</name>
-			<url>http://www.mygrid.org.uk/maven/repository</url>
-		</repository>
-		<repository>
-			<!-- myGrid release artifacts -->
-			<releases>
-				<enabled>false</enabled>
-            </releases>
-			<snapshots/>
-			<id>mygrid-snapshot-repository</id>
-			<name>myGrid snapshot Repository</name>
-			<url>http://www.mygrid.org.uk/maven/snapshot-repository</url>
-		</repository>
-	</repositories>
-
 </project>

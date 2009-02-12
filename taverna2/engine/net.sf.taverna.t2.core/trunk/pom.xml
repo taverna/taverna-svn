@@ -5,12 +5,12 @@
 	<parent>
 		<artifactId>parent</artifactId>
 		<groupId>net.sf.taverna</groupId>
-		<version>0.1.2008-11-03</version>
+		<version>0.1.2009-02-12</version>
 	</parent>
 
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>core</artifactId>
-	<version>0.5-SNAPSHOT</version>
+	<version>0.6-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Taverna 2 Core</name>
@@ -37,25 +37,10 @@
 	</build>
 	
 	<properties>
-		<t2.platform.version>0.3-SNAPSHOT</t2.platform.version>
-		<t2.reference.version>0.3-SNAPSHOT</t2.reference.version>
-		<t2.core.version>0.5-SNAPSHOT</t2.core.version>
-
-		<t2.io.version>0.5-SNAPSHOT</t2.io.version>
-		<t2.observer.version>0.5-SNAPSHOT</t2.observer.version>
-
-		<t2.partition.version>0.5-SNAPSHOT</t2.partition.version>
-		<t2.spidiscovery.version>0.5-SNAPSHOT</t2.spidiscovery.version>
-		<raven.version>1.10-SNAPSHOT</raven.version>
-		<t2.security.version>0.5-SNAPSHOT</t2.security.version>
-
-		<taverna.version>1.7.2.1-SNAPSHOT</taverna.version>
-
-		<!--
-			Note: Because of build/deploy order this must be the PREVIOUS version
-			of t2 activities
-		-->
-		<t2.activities.version.old>0.3</t2.activities.version.old>
+		<t2.infrastructure.version>1.10-SNAPSHOT</t2.infrastructure.version>
+		<t2.core.version>0.6-SNAPSHOT</t2.core.version>
+		<t2.lang.version>0.5-SNAPSHOT</t2.lang.version>
+		
 	</properties>
 	
 	
