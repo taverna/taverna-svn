@@ -34,7 +34,7 @@
 			<artifactId>provenanceconnector-impl</artifactId>
 			<version>${t2.core.version}</version>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>net.sf.taverna.t2.infrastructure</groupId>
 			<artifactId>platform</artifactId>
 			<version>${t2.infrastructure.version}</version>
@@ -61,7 +61,7 @@
 					<artifactId>raven</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
+		</dependency>-->
 		<!--<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>security-api</artifactId>
