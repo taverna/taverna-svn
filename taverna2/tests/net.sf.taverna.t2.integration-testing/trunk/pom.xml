@@ -46,6 +46,7 @@
         <module>reference-integration-tests</module>
         <module>raven-integration-testing</module>
         <module>platform-integration-testing</module>
+        <module>workflowmodel-integration-testing</module>
 	</modules>
 
 	<licenses>
