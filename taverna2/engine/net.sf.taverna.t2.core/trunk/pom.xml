@@ -60,18 +60,15 @@
 	
 	
 	<modules>
+		<module>reference-api</module>
+	   	<module>reference-impl</module>
+	   	<module>reference-testhelpers</module>
    
 		<module>workflowmodel-api</module>
-		<module>workflowmodel-impl</module>
-		<module>security-api</module>
-      
-		<module>compatibility-api</module>
-		<module>compatibility-impl</module>
-		<module>renderers-api</module>
-		<module>renderers-impl</module>
-		
+		<module>workflowmodel-impl</module>   
 		<module>provenanceconnector-api</module>
 		<module>provenanceconnector-impl</module>
+		
 	</modules>
 	<repositories>
 		<repository>

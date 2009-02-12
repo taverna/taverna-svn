@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sf.taverna</groupId>
+		<artifactId>parent</artifactId>
+		<version>0.1.2008-11-03</version>
+	</parent>
+	<groupId>net.sf.taverna.t2.testing</groupId>
+	<artifactId>t2reference-testhelpers</artifactId>
+	<version>0.3-SNAPSHOT</version>
+
+	<name>T2reference dummy implementations for testing</name>
+
+	<description>
+		In order to properly test the raven-aware functionality within
+		the t2reference modules we need a module that is entire external
+		to t2reference and to the test cases. If the test
+		implementations are included in either the api, core
+		implementation or test modules they will be loaded by the root
+		classloader of the test runner - by putting them in an
+		independent artifact we allow them to be loaded through raven's
+		various SPI discovery mechanisms as they would be in a 'real'
+		environment.
+	</description>
+
+	<dependencies>
+		<!-- Only depend on the t2reference API package here -->
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>t2reference-api</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<!-- myGrid release artifacts -->
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+		</repository>
+		<repository>
+			<!-- myGrid release artifacts -->
+			<releases>
+				<enabled>false</enabled>
+            </releases>
+			<snapshots/>
+			<id>mygrid-snapshot-repository</id>
+			<name>myGrid snapshot Repository</name>
+			<url>http://www.mygrid.org.uk/maven/snapshot-repository</url>
+		</repository>
+	</repositories>
+
+</project>
