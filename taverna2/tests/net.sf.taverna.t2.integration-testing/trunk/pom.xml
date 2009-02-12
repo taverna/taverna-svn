@@ -5,8 +5,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<groupId>net.sf.taverna.t2</groupId>
-	<artifactId>t2integration-testing</artifactId>
-	<version>0.4-SNAPSHOT</version>
+	<artifactId>integration-testing</artifactId>
+	<version>0.5-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	
 	<name>Taverna 2 Integration Testing</name>
@@ -24,6 +24,8 @@
 		<depCommonsCLI>1.0</depCommonsCLI>
 		<depJdom>1.0</depJdom>
 		
+		<t2.infrastructure.version>1.10-SNAPSHOT</t2.infrastructure.version>
+		
 		<t2.platform.version>0.3-SNAPSHOT</t2.platform.version>
 		<t2.reference.version>0.3-SNAPSHOT</t2.reference.version>
 		<t2.core.version>0.5-SNAPSHOT</t2.core.version>
@@ -37,12 +39,13 @@
 	</properties>
 	
 	<modules>
-		<module>integration-testing-common</module>
-		<module>dataflow-invocation-testing</module>
-		<module>dataflow-serialization-testing</module>
-		<module>activity-testing</module>
+        <module>integration-testing-common</module>
+        <module>dataflow-invocation-testing</module>
+        <module>dataflow-serialization-testing</module>
+        <module>activity-testing</module>
         <module>reference-integration-tests</module>
         <module>raven-integration-testing</module>
+        <module>platform-integration-testing</module>
 	</modules>
 
 	<licenses>
