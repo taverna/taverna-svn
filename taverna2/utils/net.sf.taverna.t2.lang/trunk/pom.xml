@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>net.sf.taverna</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.1.2009-02-09</version>
+		<version>0.1.2009-02-12</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<name>Taverna 2 language extensions</name>
@@ -56,4 +56,9 @@
 		<module>ui</module>
 		<module>io</module>
 	</modules>
+	<scm>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna2/utils/net.sf.taverna.t2.lang/trunk/</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna2/utils/net.sf.taverna.t2.lang/trunk/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna2/utils/net.sf.taverna.t2.lang/trunk/</url>
+	</scm>
 </project>
