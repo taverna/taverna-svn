@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>parent</artifactId>
 		<groupId>net.sf.taverna</groupId>
-		<version>0.1.2009-02-09</version>
+		<version>0.1.2009-02-12</version>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>infrastructure</artifactId>
@@ -18,6 +18,11 @@
 		<xmlbeans.version>2.4.0</xmlbeans.version>
 		<t2.lang.version>0.5-SNAPSHOT</t2.lang.version>
 	</properties>
+	<scm>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna2/engine/net.sf.taverna.t2.infrastructure/trunk/</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna2/engine/net.sf.taverna.t2.infrastructure/trunk/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna2/engine/net.sf.taverna.t2.infrastructure/trunk</url>
+	</scm>
 	<build>
 		<plugins>
 			<plugin>
