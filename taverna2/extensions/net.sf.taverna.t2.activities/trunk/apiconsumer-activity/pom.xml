@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<parent>
-		<artifactId>activities</artifactId>
-		<groupId>net.sf.taverna.t2</groupId>
-		<version>0.5-SNAPSHOT</version>
-	</parent>
 	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>activities</artifactId>
+		<version>0.6-SNAPSHOT</version>
+	</parent>
 	<groupId>net.sf.taverna.t2.activities</groupId>
 	<artifactId>apiconsumer-activity</artifactId>
 	<name>Taverna 2 API Consumer Activity</name>
@@ -18,19 +17,19 @@
 			<version>${t2.activities.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
+			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>workflowmodel-api</artifactId>
 			<version>${t2.core.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
+			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>workflowmodel-impl</artifactId>
 			<version>${t2.core.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>t2reference-core-extensions</artifactId>
-			<version>${t2.reference.version}</version>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>reference-core-extensions</artifactId>
+			<version>${t2.core.refexts.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
