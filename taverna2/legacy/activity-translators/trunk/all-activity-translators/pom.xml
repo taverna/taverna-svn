@@ -3,64 +3,62 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
-		<artifactId>activities</artifactId>
 		<groupId>net.sf.taverna.t2</groupId>
-		<version>0.5-SNAPSHOT</version>
+		<artifactId>translators</artifactId>
+		<version>0.6-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.sf.taverna.t2.activities</groupId>
+	<groupId>net.sf.taverna.t2.translators</groupId>
 	<artifactId>all-activity-translators</artifactId>
-	<name>
-		Taverna 2 All official Activity Translators (meta artifact)
-	</name>
+	<name>Taverna 2 All official translators (meta)</name>
 	<dependencies>
 		<dependency>
-			<groupId>net.sf.taverna.t2.activities</groupId>
+			<groupId>net.sf.taverna.t2.translators</groupId>
 			<artifactId>apiconsumer-activity-translator</artifactId>
 			<version>${t2.activities.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.activities</groupId>
+			<groupId>net.sf.taverna.t2.translators</groupId>
 			<artifactId>beanshell-activity-translator</artifactId>
 			<version>${t2.activities.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.activities</groupId>
+			<groupId>net.sf.taverna.t2.translators</groupId>
 			<artifactId>biomart-activity-translator</artifactId>
 			<version>${t2.activities.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.activities</groupId>
+			<groupId>net.sf.taverna.t2.translators</groupId>
 			<artifactId>biomoby-activity-translator</artifactId>
 			<version>${t2.activities.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.activities</groupId>
+			<groupId>net.sf.taverna.t2.translators</groupId>
 			<artifactId>dataflow-activity-translator</artifactId>
 			<version>${t2.activities.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.activities</groupId>
+			<groupId>net.sf.taverna.t2.translators</groupId>
 			<artifactId>localworker-translator</artifactId>
 			<version>${t2.activities.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.activities</groupId>
+			<groupId>net.sf.taverna.t2.translators</groupId>
 			<artifactId>rshell-activity-translator</artifactId>
 			<version>${t2.activities.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.activities</groupId>
+			<groupId>net.sf.taverna.t2.translators</groupId>
 			<artifactId>soaplab-activity-translator</artifactId>
 			<version>${t2.activities.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.activities</groupId>
+			<groupId>net.sf.taverna.t2.translators</groupId>
 			<artifactId>stringconstant-activity-translator</artifactId>
 			<version>${t2.activities.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.activities</groupId>
+			<groupId>net.sf.taverna.t2.translators</groupId>
 			<artifactId>wsdl-activity-translator</artifactId>
 			<version>${t2.activities.version}</version>
 		</dependency>

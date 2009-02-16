@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.sf.taverna.t2.activities</groupId>
-	<artifactId>apiconsumer-activity-translator</artifactId>
-	<name>Taverna 2 API Consumer Activity Translator</name>
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
-		<artifactId>activities</artifactId>
-		<version>0.5-SNAPSHOT</version>
+		<artifactId>translators</artifactId>
+		<version>0.6-SNAPSHOT</version>
 	</parent>
+	<groupId>net.sf.taverna.t2.translators</groupId>
+	<artifactId>apiconsumer-activity-translator</artifactId>
+	<name>Taverna 2 API Consumer Activity Translator</name>
 	<dependencies>
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
+			<groupId>net.sf.taverna.t2.compatibility</groupId>
 			<artifactId>compatibility-api</artifactId>
-			<version>${t2.core.version}</version>
+			<version>${t2.compatibility.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
@@ -23,6 +24,7 @@
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.scufl</groupId>
 			<artifactId>scufl-model</artifactId>
+			<version>${taverna.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
