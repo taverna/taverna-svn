@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>uk.ac.ncl.cs.instantsoap</groupId>
+  <artifactId>instantsoap</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>instantsoap</name>
+  <description>Instantly expose legacy and new code as SOAP web services.</description>
+  <url>http://bioinf.ncl.ac.uk/instantsoap/</url>
+  <inceptionYear>2006</inceptionYear>
+  <licenses>
+    <license>
+      <name>Lesser GNU Public License</name>
+      <url>http://www.gnu.org/licenses/lgpl-3.0.txt</url>
+      <distribution>repo</distribution>
+      <comments>A buisness-friendly OSS license.</comments>
+    </license>
+  </licenses>
+
+  <mailingLists>
+    <mailingList>
+      <name>InstantSoap</name>
+      <post>instantsoap@newcastle.ac.uk</post>
+      <archive>http://lists.ncl.ac.uk/wws/arc/instantsoap</archive>
+      <subscribe>http://lists.ncl.ac.uk/wws/compose_mail/instantsoap</subscribe>
+      <unsubscribe>http://lists.ncl.ac.uk/wws/signoff/instantsoap</unsubscribe>
+    </mailingList>
+  </mailingLists>
+  <modules>
+    <module>archetype-client</module>
+    <module>archetype-escience-tool</module>
+    <module>instantsoap-activity</module>
+    <module>instantsoap-api</module>
+    <module>instantsoap-commandline-processor</module>
+    <module>instantsoap-container</module>
+<!--    <module>instantsoap-gui</module> -->
+    <module>instantsoap-map-processor</module>
+    <module>instantsoap-string-processor</module>
+    <module>instantsoap-ws-cxf</module>
+    <module>instantsoap-ws-echotest</module>
+    <module>taverna-instantsoap-processor</module>
+    <module>test-utils</module>
+  </modules>
+
+  <distributionManagement>
+    <site>
+      <id>instantsoap-website</id>
+      <name>instantsoap-website</name>
+      <url>scp://bioinf.ncl.ac.uk/Users/louis/Sites</url>
+    </site>
+    <repository>
+      <id>fluxions</id>
+      <name>Fluxion repository</name>
+      <url>scp://metagenome.ncl.ac.uk/var/www/fluxions/repo/</url>
+    </repository>
+    <snapshotRepository>
+      <id>fluxions-snapshot</id>
+      <name>Fluxion snapshot repository</name>
+      <url>scp://metagenome.ncl.ac.uk/var/www/fluxions/repo-snapshot/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <scm>
+    <connection>scm:svn:http://metagenome.ncl.ac.uk/subversion/instantsoap/</connection>
+    <developerConnection>scm:svn:https://metagenome.ncl.ac.uk/subversion/instantsoap/</developerConnection>
+    <url>http://metagenome.ncl.ac.uk/websvn/</url>
+  </scm>
+
+  <issueManagement>
+    <system>mantis</system>
+    <url>http://bioinf.ncl.ac.uk/instantsoap/issuetracker/</url>
+  </issueManagement>
+
+  <dependencies>
+    <!-- jaxb dependencies -->
+    <dependency><groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <version>2.1.3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.4</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!--
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+          <executable>apt</executable>
+          <fork>true</fork>
+          <compilerArguments>
+            <s>${project.build.directory}</s> <!-- a hack for apt not generating directories -->
+            <sourcepath>${basedir}/src/main/java</sourcepath> <!-- a hack for apt bug -->
+          </compilerArguments>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.3</version>
+      </plugin>
+    </plugins>
+  </build>
+
+  <repositories>
+    <repository>
+      <id>fluxion</id>
+      <name>Fluxion repository</name>
+      <url>http://metagenome.ncl.ac.uk/fluxions/repo</url>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>fluxion</id>
+      <name>Fluxion repository</name>
+      <url>http://metagenome.ncl.ac.uk/fluxions/repo</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>dependencies</report>
+              <report>mailing-list</report>
+              <report>issue-tracking</report>
+              <report>license</report>
+              <report>scm</report>
+              <report>index</report>
+              <report>javadoc</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
+
+</project>
