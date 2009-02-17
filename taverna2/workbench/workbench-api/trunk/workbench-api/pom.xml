@@ -8,21 +8,18 @@
 		<version>0.4-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.ui-api</groupId>
-	<artifactId>perspective-core</artifactId>
-	<name>Perspective Core</name>
+	<artifactId>workbench-api</artifactId>
+	<name>Workbench API</name>
+	<description>The main workbench ui</description>
 	<dependencies>
 		<dependency>
-			<groupId>net.sf.taverna.t2.ui-api</groupId>
-			<artifactId>workbench-api</artifactId>
-			<version>${t2.ui.api.version}</version>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>jdom</groupId>
 			<artifactId>jdom</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.infrastructure</groupId>
@@ -31,13 +28,8 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.infrastructure</groupId>
-			<artifactId>appconfig</artifactId>
+			<artifactId>launcher-api</artifactId>
 			<version>${t2.infrastructure.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2.ui-api</groupId>
-			<artifactId>common-icons</artifactId>
-			<version>${t2.ui.api.version}</version>
 		</dependency>
 	</dependencies>
 </project>

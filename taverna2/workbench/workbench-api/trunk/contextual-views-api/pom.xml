@@ -1,71 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.sf.taverna.t2.workbench</groupId>
-	<artifactId>contextual-views-api</artifactId>
-	<name>Contextual Views API</name>
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
-		<artifactId>t2-workbench</artifactId>
-		<version>0.3-SNAPSHOT</version>
+		<artifactId>ui-api</artifactId>
+		<version>0.4-SNAPSHOT</version>
 	</parent>
+	<groupId>net.sf.taverna.t2.ui-api</groupId>
+	<artifactId>contextual-views-api</artifactId>
+	<name>Contextual Views API</name>
 	<description>Contextual views for the activities</description>
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<systemProperties>
-						<property>
-							<name>java.awt.headless</name>
-							<value>false</value>
-						</property>
-					</systemProperties>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+	<!--
+		<build> <plugins> <plugin>
+		<artifactId>maven-surefire-plugin</artifactId> <configuration>
+		<systemProperties> <property> <name>java.awt.headless</name>
+		<value>false</value> </property> </systemProperties> </configuration>
+		</plugin> </plugins> </build>
+	-->
 	<dependencies>
-	
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
+			<groupId>net.sf.taverna.t2.infrastructure</groupId>
 			<artifactId>spi-discovery-api</artifactId>
-			<version>${t2.spidiscovery.version}</version>
+			<version>${t2.infrastructure.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.workbench</groupId>
-			<artifactId>configuration-impl</artifactId>
-			<version>${t2.workbench.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
+			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>workflowmodel-api</artifactId>
 			<version>${t2.core.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.workbench</groupId>
-			<artifactId>ui-api</artifactId>
-			<version>${t2.workbench.version}</version>
+			<groupId>net.sf.taverna.t2.ui-api</groupId>
+			<artifactId>configuration-api</artifactId>
+			<version>${t2.ui.api.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-api</groupId>
+			<artifactId>workbench-api</artifactId>
+			<version>${t2.ui.api.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.lang</groupId>
 			<artifactId>ui</artifactId>
-			<version>${t2.ui.version}</version>
+			<version>${t2.lang.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.workbench</groupId>
-			<artifactId>ui-impl</artifactId>
-			<version>${t2.workbench.version}</version>
+			<groupId>net.sf.taverna.t2.ui-api</groupId>
+			<artifactId>workbench-api</artifactId>
+			<version>${t2.ui.api.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<groupId>net.sf.taverna.t2.ui-api</groupId>
 			<artifactId>file-api</artifactId>
-			<version>${t2.workbench.version}</version>
+			<version>${t2.ui.api.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-api</groupId>
+			<artifactId>common-icons</artifactId>
+			<version>${t2.ui.api.version}</version>
 		</dependency>
 
 	</dependencies>

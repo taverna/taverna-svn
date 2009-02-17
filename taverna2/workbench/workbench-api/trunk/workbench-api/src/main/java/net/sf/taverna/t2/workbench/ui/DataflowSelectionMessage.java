@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2007-2008 The University of Manchester   
+ * Copyright (C) 2007 The University of Manchester   
  * 
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
@@ -18,25 +18,48 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
-package net.sf.taverna.t2.workbench.ui.views.contextualviews;
+package net.sf.taverna.t2.workbench.ui;
 
-import javax.swing.ImageIcon;
+/**
+ * A message about the selection of a dataflow object.
+ * 
+ * @author David Withers
+ */
+public class DataflowSelectionMessage {
 
-import net.sf.taverna.t2.workbench.ui.zaria.UIComponentFactorySPI;
-import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
-
-public class ContextualViewComponentFactory implements UIComponentFactorySPI{
-
-	public UIComponentSPI getComponent() {
-		return new ContextualViewComponent();
+	public enum Type {ADDED, REMOVED}
+	
+	private Type type;
+	
+	private Object element;
+	
+	/**
+	 * Constructs a new instance of DataflowSelectionMessage.
+	 *
+	 * @param type
+	 * @param element
+	 */
+	public DataflowSelectionMessage(Type type, Object element) {
+		this.type = type;
+		this.element = element;
 	}
 
-	public ImageIcon getIcon() {
-		return null;
+	/**
+	 * Returns the type of the message.
+	 *
+	 * @return the type of the message
+	 */
+	public Type getType() {
+		return type;
 	}
 
-	public String getName() {
-		return "Contextual View";
+	/**
+	 * Returns the subject of the message.
+	 *
+	 * @return the  of the message
+	 */
+	public Object getElement() {
+		return element;
 	}
-
+	
 }

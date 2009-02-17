@@ -78,7 +78,7 @@ public class CustomPerspective implements PerspectiveSPI {
 	}
 
 	/**
-	 * returns 101 by default but is generally irrevelevant as
+	 * returns 101 by default but is generally irrelevant as
 	 * CustomPerspectives are always added after built in and plugin
 	 * perspectives anyway.
 	 */
