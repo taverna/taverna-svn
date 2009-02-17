@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>translators</artifactId>
+		<version>0.6-SNAPSHOT</version>
+	</parent>
+	<groupId>net.sf.taverna.t2.translators</groupId>
+	<artifactId>beanshell-activity-translator</artifactId>
+	<name>Taverna 2 Beanshell Activity Translator</name>	
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.taverna.t2.compatibility</groupId>
+			<artifactId>compatibility-api</artifactId>
+			<version>${t2.compatibility.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.activities</groupId>
+			<artifactId>beanshell-activity</artifactId>
+			<version>${t2.activities.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.scufl</groupId>
+			<artifactId>scufl-model</artifactId>
+			<version>${taverna.version}</version>
+		</dependency>
+		
+		<!--  required for tests  -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>workflowmodel-impl</artifactId>
+			<version>${t2.core.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.processors</groupId>
+			<artifactId>taverna-beanshell-processor</artifactId>
+			<version>${taverna.version}</version>
+			<!-- <scope>test</scope> -->
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+	</dependencies>
+</project>
