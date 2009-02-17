@@ -1,0 +1,30 @@
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+
+ButtonGroup group = new ButtonGroup();
+JPanel messagePanel = new JPanel();
+messagePanel.setLayout(new BoxLayout(messagePanel,BoxLayout.Y_AXIS));
+
+messagePanel.add(new JLabel(message));
+		
+JRadioButton[] buttonArray = new JRadioButton[selectionValues.size()];
+for (int i = 0; i < buttonArray.length; i++) {			
+	buttonArray[i] = new JRadioButton(selectionValues.get(i));
+	if (i==0) buttonArray[i].setSelected(true);
+	group.add(buttonArray[i]);
+	messagePanel.add(buttonArray[i]);
+}				
+
+JOptionPane.showOptionDialog(null, messagePanel, title,
+		JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, new Object[]{"OK"}, null);
+		
+String answer="";
+for (JRadioButton button : buttonArray) {
+	if (button.isSelected()) {
+		answer=button.getText();
+	}
+}
