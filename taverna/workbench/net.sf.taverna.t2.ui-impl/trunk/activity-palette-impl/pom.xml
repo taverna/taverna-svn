@@ -1,32 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.sf.taverna.t2.workbench</groupId>
-	<artifactId>activity-palette-impl</artifactId>
-	<name>Activity Palette Impl</name>
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
-		<artifactId>t2-workbench</artifactId>
-		<version>0.3-SNAPSHOT</version>
+		<artifactId>ui-impl</artifactId>
+		<version>0.4-SNAPSHOT</version>
 	</parent>
+	<groupId>net.sf.taverna.t2.ui-impl</groupId>
+	<artifactId>activity-palette-impl</artifactId>
+	<name>Activity Palette Impl</name>
 	<description>Activity Palette Implementation</description>
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<systemProperties>
-						<property>
-							<name>java.awt.headless</name>
-							<value>false</value>
-						</property>
-					</systemProperties>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -35,15 +19,15 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<groupId>net.sf.taverna.t2.ui-api</groupId>
 			<artifactId>activity-palette-api</artifactId>
-			<version>${t2.workbench.version}</version>
+			<version>${t2.ui.api.version}</version>
 		</dependency>
 		
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
+			<groupId>net.sf.taverna.t2.lang</groupId>
 			<artifactId>partition</artifactId>
-			<version>${t2.partition.version}</version>
+			<version>${t2.lang.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-collections</groupId>

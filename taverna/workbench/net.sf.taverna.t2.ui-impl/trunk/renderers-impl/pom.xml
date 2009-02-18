@@ -1,24 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
-		<artifactId>core</artifactId>
-		<version>0.5-SNAPSHOT</version>
+		<artifactId>ui-impl</artifactId>
+		<version>0.4-SNAPSHOT</version>
 	</parent>
-	<groupId>net.sf.taverna.t2</groupId>
+	<groupId>net.sf.taverna.t2.ui-impl</groupId>
 	<artifactId>renderers-impl</artifactId>
 	<name>Renderers Implementation</name>
-	<description>
-
-	</description>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>renderers-api</artifactId>
 			<version>${t2.core.version}</version>
 		</dependency>
-	    <dependency>
+		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 		</dependency>

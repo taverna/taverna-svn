@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
-		<artifactId>t2-workbench</artifactId>
-		<version>0.3-SNAPSHOT</version>
+		<artifactId>ui-impl</artifactId>
+		<version>0.4-SNAPSHOT</version>
 	</parent>
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.sf.taverna.t2.workbench</groupId>
+	<groupId>net.sf.taverna.t2.ui-impl</groupId>
 	<artifactId>perspective-design</artifactId>
-	<version>${t2.workbench.perspective.version}</version>
 	<name>Design perspective</name>
 	<dependencies>
 		<dependency>

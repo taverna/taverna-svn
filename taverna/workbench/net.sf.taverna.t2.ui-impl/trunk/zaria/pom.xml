@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<parent>
-		<groupId>net.sf.taverna</groupId>
-		<artifactId>raven-parent</artifactId>
-		<version>1.10-SNAPSHOT</version>
-	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>uk.org.mygrid.taverna</groupId>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>ui-impl</artifactId>
+		<version>0.4-SNAPSHOT</version>
+	</parent>
+	<groupId>net.sf.taverna.t2.ui-impl</groupId>
 	<artifactId>zaria</artifactId>
 	<name>Zaria</name>
 	<dependencies>
@@ -26,8 +25,9 @@
 			<artifactId>log4j</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>uk.org.mygrid.taverna.raven</groupId>
+			<groupId>net.sf.taverna.t2.infrastructure</groupId>
 			<artifactId>raven</artifactId>
+			<version>${t2.infrastructure.version}</version>
 		</dependency>
 	</dependencies>
 </project>
