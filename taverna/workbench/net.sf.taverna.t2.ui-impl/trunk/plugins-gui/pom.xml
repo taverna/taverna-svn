@@ -13,7 +13,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2.infrastructure</groupId>
-			<artifactId>plugins-impl</artifactId>
+			<artifactId>plugins-api</artifactId>
 			<version>${t2.infrastructure.version}</version>
 		</dependency>
 		<dependency>

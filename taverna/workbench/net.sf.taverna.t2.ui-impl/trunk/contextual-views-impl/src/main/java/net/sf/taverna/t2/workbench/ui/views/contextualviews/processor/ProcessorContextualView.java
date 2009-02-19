@@ -47,6 +47,7 @@ import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 import net.sf.taverna.t2.workbench.iterationstrategy.contextview.IterationStrategyContextualView;
+import net.sf.taverna.t2.workbench.ui.Utils;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.AddLayerFactorySPI;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualViewComponent;
@@ -167,7 +168,7 @@ public class ProcessorContextualView extends ContextualView {
 			view.add(contextualView, gbc);
 			gbc.gridy++;
 
-			Frame frame = ContextualViewComponent.getParentFrame(this);
+			Frame frame = Utils.getParentFrame(this);
 			Action configureAction = contextualView.getConfigureAction(frame);
 			if (configureAction != null) {
 				JButton configureButton = new JButton(configureAction);
@@ -245,7 +246,7 @@ public class ProcessorContextualView extends ContextualView {
 			constraints.anchor = GridBagConstraints.CENTER;
 			constraints.fill = GridBagConstraints.HORIZONTAL;
 			activitiesPanel.add(view, constraints);
-			Frame frame = ContextualViewComponent.getParentFrame(this);
+			Frame frame = Utils.getParentFrame(this);
 			Action configureAction = view.getConfigureAction(frame);
 			if (configureAction != null) {
 				constraints.gridy++;
@@ -332,7 +333,7 @@ public class ProcessorContextualView extends ContextualView {
 		iterationStrategyPanel.add(view, gbc);
 		gbc.gridy++;
 
-		Frame frame = ContextualViewComponent.getParentFrame(this);
+		Frame frame = Utils.getParentFrame(this);
 		Action configureAction = view.getConfigureAction(frame);
 		if (configureAction != null) {
 			JButton configureButton = new JButton(configureAction);

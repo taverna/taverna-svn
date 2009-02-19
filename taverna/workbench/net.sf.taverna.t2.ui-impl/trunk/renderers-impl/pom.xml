@@ -12,9 +12,9 @@
 	<name>Renderers Implementation</name>
 	<dependencies>
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
+			<groupId>net.sf.taverna.t2.ui-api</groupId>
 			<artifactId>renderers-api</artifactId>
-			<version>${t2.core.version}</version>
+			<version>${t2.ui.api.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -24,21 +24,6 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>uk.org.mygrid.resources</groupId>
-			<artifactId>Jmol</artifactId>
-			<version>NO-VERSION</version>
-		</dependency>
-		<dependency>
-			<groupId>batik</groupId>
-			<artifactId>batik-swing</artifactId>
-			<version>1.6-1</version>
-		</dependency>
-		<dependency>
-			<groupId>uk.org.mygrid.resources</groupId>
-			<artifactId>seqvista-hacked</artifactId>
-			<version>NO-VERSION</version>
-		</dependency>
+		</dependency>		
 	</dependencies>
 </project>

@@ -31,7 +31,7 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-api</groupId>
-			<artifactId>ui-api</artifactId>
+			<artifactId>workbench-api</artifactId>
 			<version>${t2.ui.api.version}</version>
 		</dependency>
 		<dependency>
@@ -50,9 +50,9 @@
 			<version>${t2.lang.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.ui-impl</groupId>
-			<artifactId>commons-icons</artifactId>
-			<version>${t2.ui.impl.version}</version>
+			<groupId>net.sf.taverna.t2.ui-api</groupId>
+			<artifactId>common-icons</artifactId>
+			<version>${t2.ui.api.version}</version>
 		</dependency>
 	</dependencies>
 </project>
