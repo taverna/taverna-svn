@@ -4,33 +4,27 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
-		<artifactId>ui-components</artifactId>
+		<artifactId>ui-impl</artifactId>
 		<version>0.4-SNAPSHOT</version>
 	</parent>
-	<groupId>net.sf.taverna.t2.ui-components</groupId>
-	<artifactId>activity-palette-ui</artifactId>
-	<name>Activity Palette UI Component</name>
-	<description>Activity Palette UI</description>
+	<groupId>net.sf.taverna.t2.ui-impl</groupId>
+	<artifactId>perspective-design</artifactId>
+	<name>Design perspective</name>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-api</groupId>
-			<artifactId>activity-palette-api</artifactId>
+			<artifactId>perspective-core</artifactId>
 			<version>${t2.ui.api.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.ui-impl</groupId>
-			<artifactId>activity-palette-impl</artifactId>
-			<version>${t2.ui.impl.version}</version>
+			<groupId>net.sf.taverna.t2.infrastructure</groupId>
+			<artifactId>appconfig</artifactId>
+			<version>${t2.infrastructure.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-api</groupId>
-			<artifactId>workbench-api</artifactId>
+			<artifactId>common-icons</artifactId>
 			<version>${t2.ui.api.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2.ui-impl</groupId>
-			<artifactId>activity-palette-impl</artifactId>
-			<version>${t2.ui.impl.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-api</groupId>
@@ -38,29 +32,24 @@
 			<version>${t2.ui.api.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>net.sf.taverna.t2.lang</groupId>
+			<artifactId>ui</artifactId>
+			<version>${t2.lang.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>net.sf.taverna.t2.ui-api</groupId>
-			<artifactId>commons-icons</artifactId>
+			<artifactId>workbench-api</artifactId>
 			<version>${t2.ui.api.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
-			<artifactId>workflowmodel-api</artifactId>
+			<artifactId>workflowmodel-impl</artifactId>
 			<version>${t2.core.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.lang</groupId>
-			<artifactId>partition</artifactId>
-			<version>${t2.lang.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2.ui-impl</groupId>
-			<artifactId>helper</artifactId>
+			<groupId>net.sf.taverna.t2.ui-impl.views</groupId>
+			<artifactId>graph</artifactId>
 			<version>${t2.ui.impl.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>
