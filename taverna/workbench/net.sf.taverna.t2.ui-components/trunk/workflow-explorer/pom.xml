@@ -2,55 +2,55 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.sf.taverna.t2.workbench</groupId>
-	<artifactId>workflow-explorer</artifactId>
-	<name>Workflow Explorer</name>
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
-		<artifactId>t2-workbench</artifactId>
-		<version>0.3-SNAPSHOT</version>
+		<artifactId>ui-components</artifactId>
+		<version>0.4-SNAPSHOT</version>
 	</parent>
+	<groupId>net.sf.taverna.t2.ui-components</groupId>
+	<artifactId>workflow-explorer</artifactId>
+	<name>Workflow Explorer</name>
 	<description>Workflow Explorer</description>
 	<dependencies>
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
+			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>workflowmodel-api</artifactId>
 			<version>${t2.core.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
+			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>workflowmodel-impl</artifactId>
 			<version>${t2.core.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.workbench</groupId>
-			<artifactId>ui-api</artifactId>
-			<version>${t2.workbench.version}</version>
+			<groupId>net.sf.taverna.t2.ui-api</groupId>
+			<artifactId>workbench-api</artifactId>
+			<version>${t2.ui.api.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<groupId>net.sf.taverna.t2.ui-api</groupId>
 			<artifactId>file-api</artifactId>
-			<version>${t2.workbench.version}</version>
+			<version>${t2.ui.api.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<groupId>net.sf.taverna.t2.ui-api</groupId>
 			<artifactId>commons-icons</artifactId>
-			<version>${t2.workbench.version}</version>
+			<version>${t2.ui.api.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<groupId>net.sf.taverna.t2.ui-impl</groupId>
 			<artifactId>menu-impl</artifactId>
-			<version>${t2.workbench.version}</version>
+			<version>${t2.ui.impl.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<groupId>net.sf.taverna.t2.ui-components</groupId>
 			<artifactId>activity-icons</artifactId>
-			<version>${t2.workbench.version}</version>
+			<version>${t2.ui.components.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<groupId>net.sf.taverna.t2.ui-impl</groupId>
 			<artifactId>helper</artifactId>
-			<version>${t2.workbench.version}</version>
+			<version>${t2.ui.impl.version}</version>
 		</dependency>
 	</dependencies>
 </project>

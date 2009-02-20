@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.sf.taverna.t2.workbench</groupId>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>ui-components</artifactId>
+		<version>0.4-SNAPSHOT</version>
+	</parent>
+	<groupId>net.sf.taverna.t2.ui-components</groupId>
 	<artifactId>models</artifactId>
 	<packaging>pom</packaging>
 	<name>Workflow models</name>
-	<parent>
-		<groupId>net.sf.taverna.t2</groupId>
-		<artifactId>t2-workbench</artifactId>
-		<version>0.3-SNAPSHOT</version>
-	</parent>
 	<description>Models over a workflow</description>
 	<modules>
 		<module>graph</module>

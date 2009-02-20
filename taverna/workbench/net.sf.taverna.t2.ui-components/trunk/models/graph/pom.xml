@@ -2,14 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.sf.taverna.t2.workbench.models</groupId>
+	<parent>
+		<groupId>net.sf.taverna.t2.ui-components</groupId>
+		<artifactId>models</artifactId>
+		<version>0.4-SNAPSHOT</version>
+	</parent>
+	<groupId>net.sf.taverna.t2.ui-components.models</groupId>
 	<artifactId>graph</artifactId>
 	<name>Graph Model</name>
-	<parent>
-		<groupId>net.sf.taverna.t2.workbench</groupId>
-		<artifactId>models</artifactId>
-		<version>0.3-SNAPSHOT</version>
-	</parent>
 	<build>
 		<plugins>
 			<plugin>
@@ -41,56 +41,56 @@
 			<artifactId>log4j</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
+			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>workflowmodel-api</artifactId>
 			<version>${t2.core.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<groupId>net.sf.taverna.t2.ui-api</groupId>
 			<artifactId>ui-api</artifactId>
-			<version>${t2.workbench.version}</version>
+			<version>${t2.ui.api.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<groupId>net.sf.taverna.t2.ui-impl</groupId>
 			<artifactId>ui-impl</artifactId>
-			<version>${t2.workbench.version}</version>
+			<version>${t2.ui.impl.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<groupId>net.sf.taverna.t2.ui-impl</groupId>
 			<artifactId>menu-impl</artifactId>
-			<version>${t2.workbench.version}</version>
+			<version>${t2.ui.impl.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<groupId>net.sf.taverna.t2.ui-impl</groupId>
 			<artifactId>configuration-impl</artifactId>
-			<version>${t2.workbench.version}</version>
+			<version>${t2.ui.impl.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
+			<groupId>net.sf.taverna.t2.lang</groupId>
 			<artifactId>observer</artifactId>
-			<version>${t2.observer.version}</version>
+			<version>${t2.lang.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.lang</groupId>
 			<artifactId>io</artifactId>
-			<version>${t2.io.version}</version>
+			<version>${t2.lang.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>all-activities</artifactId>
-			<version>${t2.activities.version.old}</version>
+			<version>${t2.activities.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>all-activity-translators</artifactId>
-			<version>${t2.activities.version.old}</version>
+			<version>${t2.activities.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>activity-test-utils</artifactId>
-			<version>${t2.activities.version.old}</version>
+			<version>${t2.activities.version}</version>
 			<scope>test</scope>
 		</dependency>
 

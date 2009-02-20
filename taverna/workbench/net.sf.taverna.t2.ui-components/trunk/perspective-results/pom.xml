@@ -4,10 +4,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
-		<artifactId>ui-impl</artifactId>
+		<artifactId>ui-components</artifactId>
 		<version>0.4-SNAPSHOT</version>
 	</parent>
-	<groupId>net.sf.taverna.t2.ui-impl</groupId>
+	<groupId>net.sf.taverna.t2.ui-components</groupId>
 	<artifactId>perspective-results</artifactId>
 	<name>Results Perspective</name>
 	<description>Results component for inputs and  outputs of a workflow run</description>

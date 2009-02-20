@@ -34,11 +34,12 @@
 		<module>activity-palette-ui</module>
 		<module>credential-manager-ui</module>
 		
-		<!--
-		<module>activity-uis</module>
+        <module>activity-icons</module>
+        <module>activity-palette-ui</module>
 		<module>contextual-views</module>
+        <module>credential-manager-ui</module>
+        <module>design-ui</module>
 		<module>iteration-strategy-ui</module>
-		<module>menu-items</module>
 		<module>models</module>
 		<module>perspective-design</module>
 		<module>perspective-results</module>
@@ -46,11 +47,9 @@
 		<module>reference-config</module>
 		<module>reference-ui</module>
 		<module>run-ui</module>
-		<module>t2reference-ui</module>
 		<module>views</module>
 		<module>workflow-explorer</module>
-
-	--></modules>
+    </modules>
 	<repositories>
 		<repository>
 			<releases />

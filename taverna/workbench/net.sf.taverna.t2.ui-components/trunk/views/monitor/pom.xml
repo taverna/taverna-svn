@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.sf.taverna.t2.workbench.views
-	</groupId>
+	<parent>
+		<groupId>net.sf.taverna.t2.ui-components</groupId>
+		<artifactId>views</artifactId>
+		<version>0.4-SNAPSHOT</version>
+	</parent>
+	<groupId>net.sf.taverna.t2.ui-components.views</groupId>
 	<artifactId>monitor</artifactId>
 	<name>Monitor View</name>
-	<parent>
-		<groupId>net.sf.taverna.t2.workbench
-		</groupId>
-		<artifactId>views</artifactId>
-		<version>0.3-SNAPSHOT</version>
-	</parent>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -22,21 +21,19 @@
 			<artifactId>log4j</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
+			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>workflowmodel-api</artifactId>
 			<version>${t2.core.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.workbench.models
-			</groupId>
+			<groupId>net.sf.taverna.t2.ui-components.models</groupId>
 			<artifactId>graph</artifactId>
-			<version>${t2.workbench.version}</version>
+			<version>${t2.ui.components.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.workbench
-			</groupId>
+			<groupId>net.sf.taverna.t2.ui-components</groupId>
 			<artifactId>provenance-config</artifactId>
-			<version>${t2.workbench.version}</version>
+			<version>${t2.components.version}</version>
 		</dependency>
 		<!--
 			<dependency> <groupId>net.sf.taverna.t2</groupId>
