@@ -1,10 +1,8 @@
 package net.sf.taverna.t2.workbench.ui.views.contextualviews;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
