@@ -31,9 +31,6 @@
 	</properties>
 
 	<modules>
-		<module>activity-palette-ui</module>
-		<module>credential-manager-ui</module>
-		
         <module>activity-icons</module>
         <module>activity-palette-ui</module>
 		<module>contextual-views</module>
