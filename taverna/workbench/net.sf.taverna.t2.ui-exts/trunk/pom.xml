@@ -9,12 +9,12 @@
 	</parent>
 
 	<groupId>net.sf.taverna.t2</groupId>
-	<artifactId>ui-impl</artifactId>
+	<artifactId>ui-exts</artifactId>
 	<version>0.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>Taverna 2 UI implementations</name>
-	<description>Implementations for the Taverna 2 workbench libraries</description>
+	<name>Taverna 2 UI extensions</name>
+	<description>Extensions for the Taverna 2 workbench libraries</description>
 
 	<properties>
 		<t2.ui.impl.version>${project.version}</t2.ui.impl.version>
