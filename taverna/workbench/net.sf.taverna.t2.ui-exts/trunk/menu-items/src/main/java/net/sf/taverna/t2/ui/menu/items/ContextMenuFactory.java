@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (C) 2007 The University of Manchester   
+/**********************************************************************
+ * Copyright (C) 2007-2009 The University of Manchester   
  * 
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
@@ -17,8 +17,8 @@
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- ******************************************************************************/
-package net.sf.taverna.t2.ui.menu.impl;
+ **********************************************************************/
+package net.sf.taverna.t2.ui.menu.items;
 
 import java.awt.Component;
 import java.util.ArrayList;
@@ -44,7 +44,6 @@ import net.sf.taverna.t2.workbench.design.actions.RemoveMergeAction;
 import net.sf.taverna.t2.workbench.design.actions.RemoveProcessorAction;
 import net.sf.taverna.t2.workbench.design.actions.RenameProcessorAction;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
-//import net.sf.taverna.t2.workbench.views.graph.actions.AddInputPortDefaultValueAction;
 import net.sf.taverna.t2.workflowmodel.Condition;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
@@ -52,7 +51,6 @@ import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.Merge;
 import net.sf.taverna.t2.workflowmodel.Processor;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 
 public class ContextMenuFactory {
 

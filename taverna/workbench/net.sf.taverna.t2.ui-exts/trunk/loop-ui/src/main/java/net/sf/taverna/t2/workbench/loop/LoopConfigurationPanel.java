@@ -49,6 +49,7 @@ import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.helper.Helper;
 import net.sf.taverna.t2.workbench.loop.comparisons.Comparison;
+import net.sf.taverna.t2.workbench.ui.Utils;
 import net.sf.taverna.t2.workbench.ui.impl.DataflowSelectionManager;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualViewComponent;
 import net.sf.taverna.t2.workflowmodel.Edits;
@@ -214,7 +215,7 @@ public class LoopConfigurationPanel extends JPanel {
 
 			final BeanshellActivity beanshellActivity = (BeanshellActivity) configuration.getCondition();
 
-			Frame owner = ContextualViewComponent
+			Frame owner = Utils
 					.getParentFrame(LoopConfigurationPanel.this);
 
 			final BeanshellConfigView beanshellConfigView = new BeanshellConfigView(
