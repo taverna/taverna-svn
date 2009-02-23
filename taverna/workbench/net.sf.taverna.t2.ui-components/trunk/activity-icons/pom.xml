@@ -12,12 +12,12 @@
 	<name>Activity icons</name>
 	<dependencies>
 		<dependency>
-			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<groupId>net.sf.taverna.t2.ui-impl</groupId>
 			<artifactId>activity-palette-impl</artifactId>
-			<version>${t2.workbench.version}</version>
+			<version>${t2.ui.impl.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
+			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>workflowmodel-api</artifactId>
 			<version>${t2.core.version}</version>
 		</dependency>
