@@ -26,6 +26,12 @@
 			<artifactId>activity-palette-api</artifactId>
 			<version>${t2.ui.api.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-impl</groupId>
+			<artifactId>file-impl</artifactId>
+			<version>${t2.ui.impl.version}</version>
+			<scope>test</scope>
+		</dependency>
 
 		<!--  testing dependencies -->
 		<dependency>
@@ -53,11 +59,11 @@
 			<artifactId>beanshell-activity-ui</artifactId>
 			<version>${t2.ui.activities.version}</version>
 		</dependency>
-		<!--  <dependency>
-			<groupId>net.sf.taverna.t2</groupId>
+		<!--
+			<dependency> <groupId>net.sf.taverna.t2</groupId>
 			<artifactId>localworker-translator</artifactId>
-			<version>0.3</version>
-			</dependency> -->
+			<version>0.3</version> </dependency>
+		-->
 	</dependencies>
 </project>
 
