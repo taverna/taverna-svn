@@ -11,12 +11,38 @@
 	<artifactId>contextual-views</artifactId>
 	<name>Contextual views</name>
 	<dependencies>
-		
 
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>workflowmodel-api</artifactId>
+			<version>${t2.core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-api</groupId>
+			<artifactId>contextual-views-api</artifactId>
+			<version>${t2.ui.api.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-api</groupId>
+			<artifactId>edits-api</artifactId>
+			<version>${t2.ui.api.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-api</groupId>
+			<artifactId>file-api</artifactId>
+			<version>${t2.ui.api.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-components</groupId>
+			<artifactId>iteration-strategy-ui</artifactId>
+			<version>${t2.ui.components.version}</version>
+		</dependency>
+
+
 	</dependencies>
 </project>

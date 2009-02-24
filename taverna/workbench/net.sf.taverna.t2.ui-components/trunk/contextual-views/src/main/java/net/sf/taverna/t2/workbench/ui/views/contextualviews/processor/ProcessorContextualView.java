@@ -50,7 +50,6 @@ import net.sf.taverna.t2.workbench.iterationstrategy.contextview.IterationStrate
 import net.sf.taverna.t2.workbench.ui.Utils;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.AddLayerFactorySPI;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualViewComponent;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactory;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactoryRegistry;
 import net.sf.taverna.t2.workflowmodel.Edit;

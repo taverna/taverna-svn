@@ -47,12 +47,12 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-api</groupId>
-			<artifactId>ui-api</artifactId>
+			<artifactId>workbench-api</artifactId>
 			<version>${t2.ui.api.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-impl</groupId>
-			<artifactId>ui-impl</artifactId>
+			<artifactId>workbench-impl</artifactId>
 			<version>${t2.ui.impl.version}</version>
 		</dependency>
 		<dependency>
@@ -82,9 +82,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.activities</groupId>
+			<groupId>net.sf.taverna.t2.translators</groupId>
 			<artifactId>all-activity-translators</artifactId>
-			<version>${t2.activities.version}</version>
+			<version>${t2.translators.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
