@@ -22,7 +22,7 @@
 			<version>${t2.ui.api.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.ui.api</groupId>
+			<groupId>net.sf.taverna.t2.ui-api</groupId>
 			<artifactId>menu-api</artifactId>
 			<version>${t2.ui.api.version}</version>
 		</dependency>
@@ -49,7 +49,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.infrastructure</groupId>
 			<artifactId>appconfig</artifactId>
-			<version>${infrastructure.version}</version>
+			<version>${t2.infrastructure.version}</version>
 		</dependency>
 	</dependencies>
 </project>

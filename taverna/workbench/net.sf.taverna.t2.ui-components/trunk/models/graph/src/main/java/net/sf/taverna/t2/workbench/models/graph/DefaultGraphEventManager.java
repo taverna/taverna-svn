@@ -31,7 +31,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
-import net.sf.taverna.t2.ui.menu.impl.ContextMenuFactory;
+import net.sf.taverna.t2.ui.menu.MenuManager;
 import net.sf.taverna.t2.workbench.models.graph.GraphController.PortStyle;
 import net.sf.taverna.t2.workflowmodel.Condition;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -55,6 +55,8 @@ public class DefaultGraphEventManager implements GraphEventManager {
 	private Component component;
 
 	private JPopupMenu menu;
+	
+	private MenuManager menuManager = MenuManager.getInstance();
 
 	/**
 	 * Constructs a new instance of GraphEventManager.
@@ -84,7 +86,7 @@ public class DefaultGraphEventManager implements GraphEventManager {
 			menu = null;
 			if (dataflowObject instanceof Processor) {
 				final Processor processor = (Processor) dataflowObject;
-				menu = ContextMenuFactory.getContextMenu(graphController.getDataflow(), processor, component);
+				menu = menuManager.createContextMenu(graphController.getDataflow(), processor, component);
 				if (menu == null) {
 					menu = new JPopupMenu();
 				}
@@ -182,25 +184,25 @@ public class DefaultGraphEventManager implements GraphEventManager {
 				}
 			} else if (dataflowObject instanceof Merge) {
 				Dataflow dataflow = graphController.getDataflow();
-				menu = ContextMenuFactory.getContextMenu(dataflow, dataflowObject, component);
+				menu = menuManager.createContextMenu(dataflow, dataflowObject, component);
 			} else if (dataflowObject instanceof DataflowInputPort) {
 				Dataflow dataflow = graphController.getDataflow();
-				menu = ContextMenuFactory.getContextMenu(dataflow, dataflowObject, component);
+				menu = menuManager.createContextMenu(dataflow, dataflowObject, component);
 			} else if (dataflowObject instanceof DataflowOutputPort) {
 				Dataflow dataflow = graphController.getDataflow();
-				menu = ContextMenuFactory.getContextMenu(dataflow, dataflowObject, component);
+				menu = menuManager.createContextMenu(dataflow, dataflowObject, component);
 			} else if (dataflowObject instanceof ActivityInputPort) {
 				Dataflow dataflow = graphController.getDataflow();
-				menu = ContextMenuFactory.getContextMenu(dataflow, dataflowObject, component);
+				menu = menuManager.createContextMenu(dataflow, dataflowObject, component);
 			} else if (dataflowObject instanceof Datalink) {
 				Dataflow dataflow = graphController.getDataflow();
-				menu = ContextMenuFactory.getContextMenu(dataflow, dataflowObject, component);
+				menu = menuManager.createContextMenu(dataflow, dataflowObject, component);
 			} else if (dataflowObject instanceof Condition) {
 				Dataflow dataflow = graphController.getDataflow();
-				menu = ContextMenuFactory.getContextMenu(dataflow, dataflowObject, component);
+				menu = menuManager.createContextMenu(dataflow, dataflowObject, component);
 			} else if (dataflowObject instanceof Dataflow || dataflowObject == null) {
 				Dataflow dataflow = graphController.getDataflow();
-				menu = ContextMenuFactory.getContextMenu(dataflow, dataflow, component);
+				menu = menuManager.createContextMenu(dataflow, dataflow, component);
 			}
 			if (menu != null) {
 				final Point p = new Point(screenX, screenY);

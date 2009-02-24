@@ -33,7 +33,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-components</groupId>
 			<artifactId>provenance-config</artifactId>
-			<version>${t2.components.version}</version>
+			<version>${t2.ui.components.version}</version>
 		</dependency>
 		<!--
 			<dependency> <groupId>net.sf.taverna.t2</groupId>

@@ -17,13 +17,13 @@
 			<version>${t2.ui.api.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.ui-componens.views</groupId>
+			<groupId>net.sf.taverna.t2.ui-components.views</groupId>
 			<artifactId>monitor</artifactId>
 			<version>${t2.ui.components.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-api</groupId>
-			<artifactId>commons-icons</artifactId>
+			<artifactId>common-icons</artifactId>
 			<version>${t2.ui.api.version}</version>
 		</dependency>
 		<dependency>
@@ -37,9 +37,9 @@
 			<version>${t2.ui.components.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.ui-components</groupId>
+			<groupId>net.sf.taverna.t2.ui-impl</groupId>
 			<artifactId>httpproxy-config</artifactId>
-			<version>${t2.ui.components.version}</version>
+			<version>${t2.ui.impl.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-components</groupId>
