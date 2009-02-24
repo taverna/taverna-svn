@@ -51,8 +51,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TestContextualViewFactory {
-	FileManager fileManager = FileManager.getInstance();
 	EditManager editManager = EditManager.getInstance();
+	FileManager fileManager = FileManager.getInstance();
 	private Dataflow dataflow;
 	private Processor proc1;
 	private ActivityInputPort activityInputPort;

@@ -49,6 +49,12 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>net.sf.taverna.t2.ui-impl</groupId>
+			<artifactId>edits-impl</artifactId>
+			<version>${t2.ui.impl.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>net.sf.taverna.t2.ui-api</groupId>
 			<artifactId>contextual-views-api</artifactId>
 			<version>${t2.ui.api.version}</version>
