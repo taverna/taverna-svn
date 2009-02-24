@@ -41,6 +41,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
@@ -53,6 +54,9 @@ import net.sf.taverna.t2.spi.SPIRegistry;
 import net.sf.taverna.t2.spi.SPIRegistry.SPIRegistryEvent;
 import net.sf.taverna.t2.ui.menu.AbstractMenuAction;
 import net.sf.taverna.t2.ui.menu.AbstractMenuOptionGroup;
+import net.sf.taverna.t2.ui.menu.ContextualMenuComponent;
+import net.sf.taverna.t2.ui.menu.ContextualSelection;
+import net.sf.taverna.t2.ui.menu.DefaultContextualMenu;
 import net.sf.taverna.t2.ui.menu.DefaultMenuBar;
 import net.sf.taverna.t2.ui.menu.DefaultToolBar;
 import net.sf.taverna.t2.ui.menu.MenuComponent;
@@ -249,14 +253,15 @@ public class MenuManagerImpl extends MenuManager {
 	 *            True if the list of components is to be added to a toolbar
 	 */
 	private void addMenu(List<Component> components,
-			MenuComponent menuComponent, boolean isToolbar) {
+			MenuComponent menuComponent, MenuOptions menuOptions) {
 		URI menuId = menuComponent.getId();
-		if (isToolbar) {
+		if (menuOptions.isToolbar()) {
 			logger.warn("Can't have menu " + menuComponent
 					+ " within toolBar element");
 			return;
 		}
-		List<Component> subComponents = makeComponents(menuId, false, false);
+		MenuOptions childOptions = new MenuOptions(menuOptions);
+		List<Component> subComponents = makeComponents(menuId, childOptions);
 		if (subComponents.isEmpty()) {
 			logger.warn("No sub components found for menu " + menuId);
 			return;
@@ -275,9 +280,9 @@ public class MenuManagerImpl extends MenuManager {
 	}
 
 	/**
-	 * Add <code>null</code> to the list of components, meaning that a
-	 * separator is to be created. Subsequent separators are ignored, and if
-	 * there are no components on the list already no separator will be added.
+	 * Add <code>null</code> to the list of components, meaning that a separator
+	 * is to be created. Subsequent separators are ignored, and if there are no
+	 * components on the list already no separator will be added.
 	 * 
 	 * @param components
 	 *            List of components
@@ -306,8 +311,11 @@ public class MenuManagerImpl extends MenuManager {
 	 *            True if the option group is to be added to a toolbar
 	 */
 	private void addOptionGroup(List<Component> components, URI optionGroupId,
-			boolean isToolbar) {
-		List<Component> buttons = makeComponents(optionGroupId, isToolbar, true);
+			MenuOptions menuOptions) {
+		MenuOptions childOptions = new MenuOptions(menuOptions);
+		childOptions.setOptionGroup(true);
+
+		List<Component> buttons = makeComponents(optionGroupId, childOptions);
 		addNullSeparator(components);
 		if (buttons.isEmpty()) {
 			logger.warn("No sub components found for option group "
@@ -340,15 +348,12 @@ public class MenuManagerImpl extends MenuManager {
 	 *            List of components
 	 * @param sectionId
 	 *            The {@link URI} identifying the section
-	 * @param isToolbar
-	 *            True if the list of components are to be added to a toolbar
-	 * @param isOptionGroup
-	 *            True if the section is part of an option group
+	 * @param menuOptions
+	 *            {@link MenuOptions options} for creating the menu
 	 */
 	private void addSection(List<Component> components, URI sectionId,
-			boolean isToolbar, boolean isOptionGroup) {
-		List<Component> childComponents = makeComponents(sectionId, isToolbar,
-				isOptionGroup);
+			MenuOptions menuOptions) {
+		List<Component> childComponents = makeComponents(sectionId, menuOptions);
 		addNullSeparator(components);
 		if (childComponents.isEmpty()) {
 			logger.warn("No sub components found for section " + sectionId);
@@ -404,7 +409,7 @@ public class MenuManagerImpl extends MenuManager {
 			uriToMenuElement.put(menuElement.getId(), menuElement);
 			logger.debug("Found menu element " + menuElement.getId() + " "
 					+ menuElement);
-			if (menuElement.getParentId() == null || ! menuElement.isEnabled()) {
+			if (menuElement.getParentId() == null) {
 				continue;
 			}
 			List<MenuComponent> siblings = menuElementTree.get(menuElement
@@ -444,18 +449,25 @@ public class MenuManagerImpl extends MenuManager {
 	 * 
 	 * @param id
 	 *            The {@link URI} of the parent which children are to be made
-	 * @param isToolbar
-	 *            True if the list of components will be added to a toolbar
-	 * @param isOptionGroup
-	 *            True if the list of components will be added to an option
-	 *            group
+	 * @param menuOptions
+	 *            Options of the created menu, for instance
+	 *            {@link MenuOptions#isToolbar()}.
 	 * @return A {@link List} of {@link Component}s that can be added to a
 	 *         {@link JMenuBar}, {@link JMenu} or {@link JToolBar}.
 	 */
-	protected List<Component> makeComponents(URI id, boolean isToolbar,
-			boolean isOptionGroup) {
+	protected List<Component> makeComponents(URI id, MenuOptions menuOptions) {
 		List<Component> components = new ArrayList<Component>();
 		for (MenuComponent childElement : getChildren(id)) {
+			if (childElement instanceof ContextualMenuComponent) {
+				((ContextualMenuComponent) childElement)
+						.setContextualSelection(menuOptions
+								.getContextualSelection());
+			}
+			// Important - check this AFTER setContextualSelection so the item
+			// can change it's enabled-state if needed.
+			if (!childElement.isEnabled()) {
+				continue;
+			}
 			MenuType type = childElement.getType();
 			Action action = childElement.getAction();
 			URI childId = childElement.getId();
@@ -467,15 +479,15 @@ public class MenuManagerImpl extends MenuManager {
 				}
 
 				Component actionComponent;
-				if (isOptionGroup) {
-					if (isToolbar) {
+				if (menuOptions.isOptionGroup()) {
+					if (menuOptions.isToolbar()) {
 						actionComponent = new JToggleButton(action);
 						toolbarizeButton((AbstractButton) actionComponent);
 					} else {
 						actionComponent = new JRadioButtonMenuItem(action);
 					}
 				} else {
-					if (isToolbar) {
+					if (menuOptions.isToolbar()) {
 						actionComponent = new JButton(action);
 						toolbarizeButton((AbstractButton) actionComponent);
 
@@ -492,7 +504,7 @@ public class MenuManagerImpl extends MenuManager {
 					continue;
 				}
 				Component toggleComponent;
-				if (isToolbar) {
+				if (menuOptions.isToolbar()) {
 					toggleComponent = new JToggleButton(action);
 				} else {
 					toggleComponent = new JCheckBoxMenuItem(action);
@@ -509,11 +521,11 @@ public class MenuManagerImpl extends MenuManager {
 				registerComponent(childId, customComponent);
 				components.add(customComponent);
 			} else if (type.equals(MenuType.optionGroup)) {
-				addOptionGroup(components, childId, isToolbar);
+				addOptionGroup(components, childId, menuOptions);
 			} else if (type.equals(MenuType.section)) {
-				addSection(components, childId, isToolbar, isOptionGroup);
+				addSection(components, childId, menuOptions);
 			} else if (type.equals(MenuType.menu)) {
-				addMenu(components, childElement, isToolbar);
+				addMenu(components, childElement, menuOptions);
 			} else {
 				logger.warn("Skipping invalid/unknown type " + type + " for "
 						+ id);
@@ -546,11 +558,48 @@ public class MenuManagerImpl extends MenuManager {
 			throw new IllegalArgumentException("Element " + id
 					+ " is not a menu, but a " + menuDef.getType());
 		}
-		for (Component component : makeComponents(id, false, false)) {
+		MenuOptions menuOptions = new MenuOptions();
+		for (Component component : makeComponents(id, menuOptions)) {
 			if (component == null) {
 				logger.warn("Ignoring separator in menu bar " + id);
 			} else {
 				menuBar.add(component);
+			}
+		}
+	}
+
+	/**
+	 * Fill the specified menu bar with the menu elements that have the given
+	 * URI as their parent.
+	 * <p>
+	 * Existing elements on the menu bar will be removed.
+	 * </p>
+	 * 
+	 * @param popupMenu
+	 *            The {@link JPopupMenu} to update
+	 * @param id
+	 *            The {@link URI} of the menu bar
+	 * @param contextualSelection
+	 *            The current selection for the context menu
+	 */
+	protected void populateContextMenu(JPopupMenu popupMenu, URI id,
+			ContextualSelection contextualSelection) {
+		popupMenu.removeAll();
+		MenuComponent menuDef = uriToMenuElement.get(id);
+		if (menuDef == null) {
+			throw new IllegalArgumentException("Unknown menuBar " + id);
+		}
+		if (!menuDef.getType().equals(MenuType.menu)) {
+			throw new IllegalArgumentException("Element " + id
+					+ " is not a menu, but a " + menuDef.getType());
+		}
+		MenuOptions menuOptions = new MenuOptions();
+		menuOptions.setContextualSelection(contextualSelection);
+		for (Component component : makeComponents(id, menuOptions)) {
+			if (component == null) {
+				logger.warn("Ignoring separator in menu bar " + id);
+			} else {
+				popupMenu.add(component);
 			}
 		}
 	}
@@ -583,7 +632,9 @@ public class MenuManagerImpl extends MenuManager {
 		} else {
 			toolbar.setName("");
 		}
-		for (Component component : makeComponents(id, true, false)) {
+		MenuOptions menuOptions = new MenuOptions();
+		menuOptions.setToolbar(true);
+		for (Component component : makeComponents(id, menuOptions)) {
 			if (component == null) {
 				toolbar.addSeparator();
 			} else {
@@ -618,8 +669,8 @@ public class MenuManagerImpl extends MenuManager {
 	 * @param component
 	 *            The {@link Component} that was created.
 	 * @param published
-	 *            <code>true</code> if the component has been published
-	 *            through {@link #createMenuBar()} or similar, and is to be
+	 *            <code>true</code> if the component has been published through
+	 *            {@link #createMenuBar()} or similar, and is to be
 	 *            automatically updated by later calls to {@link #update()}.
 	 */
 	protected synchronized void registerComponent(URI id, Component component,
@@ -635,7 +686,6 @@ public class MenuManagerImpl extends MenuManager {
 			}
 			publishedComponents.add(new WeakReference<Component>(component));
 		}
-
 		setHelpStringForComponent(component, id);
 	}
 
@@ -743,6 +793,71 @@ public class MenuManagerImpl extends MenuManager {
 			if (message.equals(SPIRegistry.UPDATED)) {
 				update();
 			}
+		}
+	}
+
+	@Override
+	public JPopupMenu createContextMenu(Object parent, Object selection,
+			Component relativeToComponent) {
+		ContextualSelection contextualSelection = new ContextualSelection(
+				parent, selection, relativeToComponent);
+		JPopupMenu popupMenu = new JPopupMenu();
+		populateContextMenu(popupMenu,
+				DefaultContextualMenu.DEFAULT_CONTEXT_MENU, contextualSelection);
+		registerComponent(DefaultContextualMenu.DEFAULT_CONTEXT_MENU,
+				popupMenu, true);
+		return popupMenu;
+	}
+
+	/**
+	 * Various options for
+	 * {@link MenuManagerImpl#makeComponents(URI, MenuOptions)} and friends.
+	 * 
+	 * @author Stian Soiland-Reyes
+	 * 
+	 */
+	public static class MenuOptions {
+		private boolean isToolbar = false;
+		private boolean isOptionGroup = false;
+		private ContextualSelection contextualSelection = null;
+
+		public ContextualSelection getContextualSelection() {
+			return contextualSelection;
+		}
+
+		public void setContextualSelection(
+				ContextualSelection contextualSelection) {
+			this.contextualSelection = contextualSelection;
+		}
+
+		public MenuOptions(MenuOptions original) {
+			this.isOptionGroup = original.isOptionGroup();
+			this.isToolbar = original.isToolbar();
+			this.contextualSelection = original.getContextualSelection();
+		}
+
+		public MenuOptions() {
+		}
+
+		@Override
+		protected MenuOptions clone() {
+			return new MenuOptions(this);
+		}
+
+		public boolean isToolbar() {
+			return isToolbar;
+		}
+
+		public void setToolbar(boolean isToolbar) {
+			this.isToolbar = isToolbar;
+		}
+
+		public boolean isOptionGroup() {
+			return isOptionGroup;
+		}
+
+		public void setOptionGroup(boolean isOptionGroup) {
+			this.isOptionGroup = isOptionGroup;
 		}
 	}
 

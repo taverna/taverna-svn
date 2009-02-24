@@ -26,6 +26,7 @@ import java.net.URI;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 
 import net.sf.taverna.t2.lang.observer.Observable;
@@ -68,8 +69,8 @@ import net.sf.taverna.t2.ui.menu.MenuManager.MenuManagerEvent;
  * called.
  * </p>
  * <p>
- * See the package level documentation for
- * more information about how to specify menu elements.
+ * See the package level documentation for more information about how to specify
+ * menu elements.
  * </p>
  * 
  * @author Stian Soiland-Reyes
@@ -199,8 +200,8 @@ public abstract class MenuManager implements Observable<MenuManagerEvent> {
 	 * last call to {@link #update()} - which could have happened because the
 	 * SPI registry was updated. To be notified when
 	 * {@link #getComponentByURI(URI)} might return a new Component because the
-	 * menues have been reconstructed,
-	 * {@link #addObserver(Observer) add an observer} to the MenuManager.
+	 * menues have been reconstructed, {@link #addObserver(Observer) add an
+	 * observer} to the MenuManager.
 	 * </p>
 	 * <p>
 	 * If the URI is unknown, has not yet been rendered as a {@link Component},
@@ -254,8 +255,8 @@ public abstract class MenuManager implements Observable<MenuManagerEvent> {
 	/**
 	 * Update and rebuild the menu structure.
 	 * <p>
-	 * Rebuild menu structure as defined by the {@link MenuComponent}s
-	 * retrieved from the MenuComponent {@link SPIRegistry}.
+	 * Rebuild menu structure as defined by the {@link MenuComponent}s retrieved
+	 * from the MenuComponent {@link SPIRegistry}.
 	 * </p>
 	 * <p>
 	 * Rebuilds previously published menubars and toolbars created with
@@ -288,6 +289,37 @@ public abstract class MenuManager implements Observable<MenuManagerEvent> {
 	 * </pre>
 	 */
 	public abstract void update();
+
+	/**
+	 * Create a contextual menu for a selected object.
+	 * <p>
+	 * Items for the contextual menues are discovered in a similar to fashion as
+	 * with {@link #createMenuBar()}, but using {@link DefaultContextualMenu} as
+	 * the root.
+	 * <p>
+	 * Additionally, items implementing {@link ContextualMenuComponent} will be
+	 * {@link ContextualMenuComponent#setContextualSelection(Object, Object, Component)
+	 * informed} about what is the current selection, as passed to this method.
+	 * <p>
+	 * Thus, the items can choose if they want to be
+	 * {@link MenuComponent#isEnabled() visible} or not for a given selection,
+	 * and return an action that is bound it to the selection.
+	 * 
+	 * @param parent
+	 *            The parent object of the selected object, for instance a
+	 *            {@link net.sf.taverna.t2.workflowmodel.Dataflow Dataflow}.
+	 * @param selection
+	 *            The selected object which actions in the contextual menu
+	 *            relate to, for instance a Processor
+	 * @param relativeToComponent
+	 *            A UI component which the returned JPopupMenu (and it's
+	 *            actions) is to be relative to, for instance as a parent of
+	 *            pop-up dialogues.
+	 * @return An empty or populated JPopupMenu depending on the selected
+	 *         objects.
+	 */
+	public abstract JPopupMenu createContextMenu(Object parent,
+			Object selection, Component relativeToComponent);
 
 	/**
 	 * Abstract class for events sent to {@link Observer observers} of the menu
