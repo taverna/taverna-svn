@@ -19,9 +19,9 @@
 		<t2.lang.version>0.5-SNAPSHOT</t2.lang.version>
 	</properties>
 	<scm>
-		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna2/engine/net.sf.taverna.t2.infrastructure/trunk/</connection>
-		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna2/engine/net.sf.taverna.t2.infrastructure/trunk/</developerConnection>
-		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna2/engine/net.sf.taverna.t2.infrastructure/trunk</url>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.infrastructure/trunk/</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.infrastructure/trunk/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/engine/net.sf.taverna.t2.infrastructure/trunk</url>
 	</scm>
 	<build>
 		<plugins>

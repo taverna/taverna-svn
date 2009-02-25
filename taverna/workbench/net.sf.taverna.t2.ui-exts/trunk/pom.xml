@@ -48,8 +48,12 @@
 			<name>myGrid Repository</name>
 			<url>http://www.mygrid.org.uk/maven/repository</url>
 		</repository>
-
 	</repositories>
+	<scm>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/workbench/net.sf.taverna.t2.ui-exts/trunk/</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/workbench/net.sf.taverna.t2.ui-exts/trunk/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/workbench/net.sf.taverna.t2.ui-exts/trunk/</url>
+	</scm>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>

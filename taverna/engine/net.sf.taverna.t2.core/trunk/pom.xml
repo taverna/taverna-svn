@@ -40,20 +40,16 @@
 		<t2.infrastructure.version>1.10-SNAPSHOT</t2.infrastructure.version>
 		<t2.core.version>0.6-SNAPSHOT</t2.core.version>
 		<t2.lang.version>0.5-SNAPSHOT</t2.lang.version>
-		
 	</properties>
-	
 	
 	<modules>
 		<module>reference-api</module>
 	   	<module>reference-impl</module>
 	   	<module>reference-testhelpers</module>
-   
 		<module>workflowmodel-api</module>
 		<module>workflowmodel-impl</module>   
 		<module>provenanceconnector-api</module>
 		<module>provenanceconnector-impl</module>
-		
 	</modules>
 	<repositories>
 		<repository>
@@ -108,6 +104,11 @@
 			</plugin>
 		</plugins>
 	</reporting>
+	<scm>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.core/trunk/</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.core/trunk/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/engine/net.sf.taverna.t2.core/trunk</url>
+	</scm>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>

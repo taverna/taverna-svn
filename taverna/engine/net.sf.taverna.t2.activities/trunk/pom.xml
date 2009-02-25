@@ -115,17 +115,17 @@
 				<enabled>true</enabled>
 			</releases>
 		</repository>-->
-		    <repository>
-        <id>biomoby</id>
-        <name>Biomoby.org Repository</name>
-        <url>http://biomoby.org/m2repo/</url>
-        <snapshots>
-            <enabled>false</enabled>
-        </snapshots>
-        <releases>
-            <enabled>true</enabled>
-        </releases>
-    </repository>
+	    <repository>
+	        <id>biomoby</id>
+	        <name>Biomoby.org Repository</name>
+	        <url>http://biomoby.org/m2repo/</url>
+	        <snapshots>
+	            <enabled>false</enabled>
+	        </snapshots>
+	        <releases>
+	            <enabled>true</enabled>
+	        </releases>
+   		</repository>
         <repository>
             <id>jboss</id>
             <name>JBoss repository</name>
@@ -149,6 +149,11 @@
             </releases>
         </repository>
 	</repositories>
+	<scm>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.activities/trunk/</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.activities/trunk/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/engine/net.sf.taverna.t2.activities/trunk</url>
+	</scm>
 	<dependencyManagement>
 		<dependencies>			
 			<dependency>
