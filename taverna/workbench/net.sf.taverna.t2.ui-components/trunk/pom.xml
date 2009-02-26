@@ -43,7 +43,6 @@
 		<module>perspective-design</module>
 		<module>perspective-results</module>
 		<module>provenance-config</module>
-		<module>reference-config</module>
 		<module>reference-ui</module>
 		<module>run-ui</module>
 		<module>views</module>
