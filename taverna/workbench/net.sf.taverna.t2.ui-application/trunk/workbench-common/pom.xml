@@ -8,7 +8,7 @@
 		<version>2.1-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.ui-application</groupId>
-	<artifactId>workbench</artifactId>
+	<artifactId>workbench-common</artifactId>
 	<name>Taverna activity translators plugin</name>
 	<dependencies>
 		<dependency>
