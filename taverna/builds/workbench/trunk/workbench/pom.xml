@@ -14,10 +14,11 @@
 
 	<name>Virtual build tree for the workbench modules</name>
 	<modules>
-		<module>net.sf.taverna.t2.ui-activities</module>
 		<module>net.sf.taverna.t2.ui-api</module>
-		<module>net.sf.taverna.t2.ui-components</module>
-		<module>net.sf.taverna.t2.ui-exts</module>
 		<module>net.sf.taverna.t2.ui-impl</module>
+		<module>net.sf.taverna.t2.ui-components</module>
+		<module>net.sf.taverna.t2.ui-activities</module>
+		<module>net.sf.taverna.t2.ui-exts</module>
+		<module>net.sf.taverna.t2.ui-application</module>
 	</modules>
 </project>
