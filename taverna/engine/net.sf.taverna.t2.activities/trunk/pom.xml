@@ -26,7 +26,7 @@
 		<t2.infrastructure.version>1.10-SNAPSHOT</t2.infrastructure.version>
 		<t2.core.version>0.6-SNAPSHOT</t2.core.version>
 		<t2.lang.version>0.5-SNAPSHOT</t2.lang.version>
-		<t2.security.version>0.3-SNAPSHOT</t2.security.version>
+		<t2.security.version>0.4-SNAPSHOT</t2.security.version>
 		<t2.core.refexts.version>0.4-SNAPSHOT</t2.core.refexts.version>
 	</properties>
 

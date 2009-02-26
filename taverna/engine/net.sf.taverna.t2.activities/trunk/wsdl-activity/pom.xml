@@ -34,7 +34,7 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.security</groupId>
-			<artifactId>t2security-agents</artifactId>
+			<artifactId>security-agents</artifactId>
 			<version>${t2.security.version}</version>
 		</dependency>
 		<dependency>
