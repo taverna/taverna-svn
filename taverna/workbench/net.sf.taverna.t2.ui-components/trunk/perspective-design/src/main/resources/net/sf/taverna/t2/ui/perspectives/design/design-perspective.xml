@@ -47,25 +47,25 @@
   </child>
   <namedcomponents>
     <namedcomponent>
-      <groupid>net.sf.taverna.t2.workbench</groupid>
+      <groupid>net.sf.taverna.t2.ui-api</groupid>
       <artifact>contextual-views-api</artifact>
       <classname>net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualViewComponentFactory</classname>
       <name>contextualview</name>
     </namedcomponent>
     <namedcomponent>
-      <groupid>net.sf.taverna.t2.workbench</groupid>
+      <groupid>net.sf.taverna.t2.ui-components</groupid>
       <artifact>activity-palette-ui</artifact>
       <classname>net.sf.taverna.t2.workbench.ui.activitypalette.ActivityPaletteComponentFactory</classname>
       <name>activitypalette</name>
     </namedcomponent>
     <namedcomponent>
-      <groupid>net.sf.taverna.t2.workbench.views</groupid>
+      <groupid>net.sf.taverna.t2.ui-components.views</groupid>
       <artifact>graph</artifact>
       <classname>net.sf.taverna.t2.workbench.views.graph.GraphViewComponentFactory</classname>
       <name>graphview</name>
     </namedcomponent>
     <namedcomponent>
-      <groupid>net.sf.taverna.t2.workbench</groupid>
+      <groupid>net.sf.taverna.t2.ui-components</groupid>
       <artifact>workflow-explorer</artifact>
       <classname>net.sf.taverna.t2.workbench.ui.workflowexplorer.WorkflowExplorerFactory</classname>
       <name>workflowexplorer</name>

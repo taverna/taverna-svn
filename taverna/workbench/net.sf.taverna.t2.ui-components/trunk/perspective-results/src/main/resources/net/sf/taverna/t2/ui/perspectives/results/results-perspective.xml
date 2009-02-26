@@ -8,7 +8,7 @@
   </child>
   <namedcomponents>
     <namedcomponent>
-      <groupid>net.sf.taverna.t2.workbench</groupid>
+      <groupid>net.sf.taverna.t2.ui-components</groupid>
       <artifact>run-ui</artifact>
       <classname>net.sf.taverna.t2.workbench.run.DataflowRunsComponentFactory</classname>
       <name>Dataflow Runs</name>
