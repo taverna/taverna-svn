@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>ui-application</artifactId>
+		<groupId>net.sf.taverna.t2</groupId>
+		<version>2.1-SNAPSHOT</version>
+	</parent>
+	<groupId>net.sf.taverna.t2.ui-application</groupId>
+	<artifactId>translators-plugin</artifactId>
+	<name>Taverna activity translators plugin</name>
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.taverna.t2.translators</groupId>
+			<artifactId>all-activity-translators</artifactId>
+			<version>0.6-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-exts</groupId>
+			<artifactId>file-translator</artifactId>
+			<version>0.4-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+</project>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>parent</artifactId>
+		<groupId>net.sf.taverna</groupId>
+		<version>0.1.2009-02-12</version>
+	</parent>
+	<groupId>net.sf.taverna.t2</groupId>
+	<artifactId>ui-application</artifactId>
+	<version>2.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>Taverna workbench application</name>
+	<properties>
+		<t2.infrastructure.version>1.10-SNAPSHOT</t2.infrastructure.version>
+		<t2.core.version>0.6-SNAPSHOT</t2.core.version>
+		<t2.ui.application.version>${project.version}</t2.ui.application.version>
+		<t2.activities.version>0.6-SNAPSHOT</t2.activities.version>
+		<t2.ui.api.version>0.4-SNAPSHOT</t2.ui.api.version>
+		<t2.ui.impl.version>0.4-SNAPSHOT</t2.ui.impl.version>
+		<t2.ui.components.version>0.4-SNAPSHOT</t2.ui.components.version>
+		<t2.ui.activities.version>0.6-SNAPSHOT</t2.ui.activities.version>
+		<t2.ui.exts.version>0.4-SNAPSHOT</t2.ui.exts.version>
+		<taverna.version>1.7.2.0</taverna.version>
+	</properties>
+	<repositories>
+		<repository>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+		</repository>
+	</repositories>
+	<modules>
+		<module>activities-plugin</module>
+		<module>translators-plugin</module>
+		<module>workbench-plugin</module>
+		<module>workbench</module>
+		<module>workbench-testing</module>
+	</modules>
+</project>
