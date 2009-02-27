@@ -37,9 +37,9 @@
 		</repository>
 	</repositories>
 	<modules>
-        <module>plugins</module>
-        <module>workbench-common</module>
-        <module>workbench-dev</module>
-        <module>workbench-distro</module>
+		<module>plugins</module>
+		<module>workbench-common</module>
+		<module>workbench-dev</module>
+		<module>workbench-distro</module>
 	</modules>
 </project>

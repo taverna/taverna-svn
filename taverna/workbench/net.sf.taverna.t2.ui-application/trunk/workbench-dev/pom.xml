@@ -13,25 +13,15 @@
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-application</groupId>
-			<artifactId>workbench-common</artifactId>
+			<artifactId>workbench-repository</artifactId>
 			<version>${t2.ui.application.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>net.sf.taverna.t2.ui-application</groupId>
+					<artifactId>translators-plugin</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
-		<!--<dependency>
-			<groupId>net.sf.taverna.t2.ui-application</groupId>
-			<artifactId>translators-plugin</artifactId>
-			<version>${t2.ui.application.version}</version>
-		</dependency>
-		-->
-		<dependency>
-			<groupId>net.sf.taverna.t2.ui-application.plugins</groupId>
-			<artifactId>activities-plugin</artifactId>
-			<version>${t2.ui.application.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2.ui-application.plugins</groupId>
-			<artifactId>components-plugin</artifactId>
-			<version>${t2.ui.application.version}</version>
-		</dependency>
 	</dependencies>
 </project>
