@@ -3,11 +3,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<artifactId>ui-application</artifactId>
-		<groupId>net.sf.taverna.t2</groupId>
+		<groupId>net.sf.taverna.t2.ui-application</groupId>
+		<artifactId>plugins</artifactId>
 		<version>2.1-SNAPSHOT</version>
 	</parent>
-	<groupId>net.sf.taverna.t2.ui-application</groupId>
+	<groupId>net.sf.taverna.t2.ui-application.plugins</groupId>
 	<artifactId>translators-plugin</artifactId>
 	<name>Taverna activity translators plugin</name>
 	<dependencies>
