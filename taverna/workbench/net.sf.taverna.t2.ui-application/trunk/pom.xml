@@ -36,10 +36,12 @@
 		</repository>
 	</repositories>
 	<modules>
-		<module>activities-plugin</module>
-		<module>translators-plugin</module>
-		<module>workbench-plugin</module>
-		<module>workbench</module>
-		<module>workbench-testing</module>
+        <module>activities-plugin</module>
+        <module>plugins</module>
+        <module>translators-plugin</module>
+        <module>workbench-common</module>
+        <module>workbench-dev</module>
+        <module>workbench-distro</module>
+        <module>workbench-plugin</module>
 	</modules>
 </project>

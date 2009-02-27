@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>net.sf.taverna.t2.ui-application</groupId>
 	<artifactId>workbench-common</artifactId>
-	<name>Taverna activity translators plugin</name>
+	<name>Taverna workbench common runtime</name>
 	<dependencies>
 		<dependency>
 			<groupId>commons-httpclient</groupId>

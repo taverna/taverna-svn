@@ -8,8 +8,8 @@
 		<version>2.1-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.ui-application</groupId>
-	<artifactId>workbench-testing</artifactId>
-	<name>Taverna activity translators plugin</name>
+	<artifactId>workbench-distro</artifactId>
+	<name>Taverna workbench distribution</name>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-application</groupId>
