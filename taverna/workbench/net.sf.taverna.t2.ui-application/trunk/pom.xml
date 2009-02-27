@@ -40,6 +40,5 @@
         <module>workbench-common</module>
         <module>workbench-dev</module>
         <module>workbench-distro</module>
-        <module>workbench-plugin</module>
 	</modules>
 </project>
