@@ -36,9 +36,7 @@
 		</repository>
 	</repositories>
 	<modules>
-        <module>activities-plugin</module>
         <module>plugins</module>
-        <module>translators-plugin</module>
         <module>workbench-common</module>
         <module>workbench-dev</module>
         <module>workbench-distro</module>
