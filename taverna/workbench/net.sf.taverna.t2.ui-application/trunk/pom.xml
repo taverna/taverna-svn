@@ -13,6 +13,7 @@
 	<packaging>pom</packaging>
 	<name>Taverna workbench application</name>
 	<properties>
+		<t2.ui.application.version>${project.version}</t2.ui.application.version>
 		<t2.infrastructure.version>1.10-SNAPSHOT</t2.infrastructure.version>
 		<t2.core.version>0.6-SNAPSHOT</t2.core.version>
 		<t2.ui.application.version>${project.version}</t2.ui.application.version>

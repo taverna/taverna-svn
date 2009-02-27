@@ -10,6 +10,38 @@
 	<groupId>net.sf.taverna.t2.ui-application</groupId>
 	<artifactId>workbench-distro</artifactId>
 	<name>Taverna workbench distribution</name>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>dependencycopy</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<copyPom>true</copyPom>
+							<useRepositoryLayout>true</useRepositoryLayout>
+							<overWriteReleases>true</overWriteReleases>
+							<overWriteSnapshots>true</overWriteSnapshots>
+							
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>src/main/assembly/assembly.xml</descriptor>
+					</descriptors>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-application</groupId>
