@@ -4,4 +4,4 @@ java -Xmx300m -Draven.profile=file:conf/current-profile.xml \
   -Djava.system.class.loader=net.sf.taverna.raven.prelauncher.BootstrapClassLoader \
   -Dapple.laf.useScreenMenuBar=true \
   -Dsun.swing.enableImprovedDragGesture \
-  -jar lib/prelauncher-1.10-SNAPSHOT.jar
+  -jar lib/prelauncher-*.jar

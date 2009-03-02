@@ -16,7 +16,7 @@ set ARGS=%ARGS% -Dsun.swing.enableImprovedDragGesture
 REM set ARGS=%ARGS% "-Dtaverna.startup=%~dp0"
 set ARGS=%ARGS% "-Dtaverna.startup=."
 
-java %ARGS% -jar lib\prelauncher-1.10-SNAPSHOT.jar
+java %ARGS% -jar lib\prelauncher-*.jar
 
 REM restore current directory
 popd
