@@ -124,7 +124,7 @@ public class AnnotatedContextualView extends ContextualView {
 	 * getMainFrame()
 	 */
 	@Override
-	protected JComponent getMainFrame() {
+	public JComponent getMainFrame() {
 		refreshView();
 		annotatedView.setVisible(true);
 		annotatedView.requestFocus();
@@ -138,7 +138,7 @@ public class AnnotatedContextualView extends ContextualView {
 	 * getViewTitle()
 	 */
 	@Override
-	protected String getViewTitle() {
+	public String getViewTitle() {
 		return "Workflow";
 	}
 

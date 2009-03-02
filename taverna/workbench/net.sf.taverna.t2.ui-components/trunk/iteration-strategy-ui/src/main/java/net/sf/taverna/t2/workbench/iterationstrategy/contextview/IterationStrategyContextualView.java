@@ -136,13 +136,13 @@ public class IterationStrategyContextualView extends ContextualView {
 	}
 
 	@Override
-	protected JComponent getMainFrame() {
+	public JComponent getMainFrame() {
 		refreshView();
 		return strategyTree;
 	}
 
 	@Override
-	protected String getViewTitle() {
+	public String getViewTitle() {
 		return "List handling";
 	}
 

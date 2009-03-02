@@ -48,13 +48,13 @@ public class DatalinkContextualView extends ContextualView {
 	}
 
 	@Override
-	protected JComponent getMainFrame() {
+	public JComponent getMainFrame() {
 		refreshView();
 		return datalinkView;
 	}
 
 	@Override
-	protected String getViewTitle() {
+	public String getViewTitle() {
 		return "Data link";
 	}
 

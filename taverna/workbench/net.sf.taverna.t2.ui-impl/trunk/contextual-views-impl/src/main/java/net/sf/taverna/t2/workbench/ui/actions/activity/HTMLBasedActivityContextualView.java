@@ -44,7 +44,7 @@ public abstract class HTMLBasedActivityContextualView<ConfigBean> extends
 	}
 
 	@Override
-	protected JComponent getMainFrame() {
+	public JComponent getMainFrame() {
 		return panelForHtml(buildHtml());
 	}
 

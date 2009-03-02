@@ -55,7 +55,7 @@ public class IterationStrategyContextualView extends ContextualView{
 //	}
 
 	@Override
-	protected JComponent getMainFrame() {
+	public JComponent getMainFrame() {
 		String html = buildHtml();
 		String style = getStyle();
 		return panelForHtml(style + html);
@@ -130,7 +130,7 @@ public class IterationStrategyContextualView extends ContextualView{
 	}
 
 	@Override
-	protected String getViewTitle() {
+	public String getViewTitle() {
 		return "Iteration Strategy Contextual View";
 	}
 

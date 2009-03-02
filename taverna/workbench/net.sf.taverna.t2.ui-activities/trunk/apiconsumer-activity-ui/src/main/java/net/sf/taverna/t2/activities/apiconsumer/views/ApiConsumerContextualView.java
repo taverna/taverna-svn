@@ -97,7 +97,7 @@ public class ApiConsumerContextualView extends
 	}
 
 	@Override
-	protected String getViewTitle() {
+	public String getViewTitle() {
 		return "API consumer activity";
 	}
 

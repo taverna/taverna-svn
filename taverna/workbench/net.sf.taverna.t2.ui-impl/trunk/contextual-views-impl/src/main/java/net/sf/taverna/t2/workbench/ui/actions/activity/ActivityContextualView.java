@@ -57,12 +57,12 @@ public abstract class ActivityContextualView<ConfigBean> extends ContextualView 
 		initView();
 	}
 
-	protected Activity<?> getActivity() {
+	public Activity<?> getActivity() {
 		return this.activity;
 	}
 
 	@SuppressWarnings("unchecked")
-	protected ConfigBean getConfigBean() {
+	public ConfigBean getConfigBean() {
 		return (ConfigBean)activity.getConfiguration();
 	}
 	

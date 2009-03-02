@@ -39,7 +39,7 @@ public class StringConstantActivityContextualView extends HTMLBasedActivityConte
 	}
 
 	@Override
-	protected String getViewTitle() {
+	public String getViewTitle() {
 		return "String constant activity";
 	}
 

@@ -46,13 +46,13 @@ public class DataflowInputPortContextualView extends ContextualView{
 	}
 
 	@Override
-	protected JComponent getMainFrame() {
+	public JComponent getMainFrame() {
 		refreshView();
 		return dataflowInputPortView;
 	}
 
 	@Override
-	protected String getViewTitle() {
+	public String getViewTitle() {
 		return "Dataflow input port";
 	}
 

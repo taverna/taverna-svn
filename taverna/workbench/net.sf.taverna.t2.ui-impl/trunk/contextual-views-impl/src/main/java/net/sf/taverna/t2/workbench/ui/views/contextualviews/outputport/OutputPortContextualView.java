@@ -47,13 +47,13 @@ public class OutputPortContextualView extends ContextualView{
 	}
 
 	@Override
-	protected JComponent getMainFrame() {
+	public JComponent getMainFrame() {
 		refreshView();
 		return outputPortView;
 	}
 
 	@Override
-	protected String getViewTitle() {
+	public String getViewTitle() {
 		return " Output port";
 	}
 

@@ -348,12 +348,12 @@ public class ProcessorContextualView extends ContextualView {
 	}
 
 	@Override
-	protected JComponent getMainFrame() {
+	public JComponent getMainFrame() {
 		return new JScrollPane(mainPanel);
 	}
 
 	@Override
-	protected String getViewTitle() {
+	public String getViewTitle() {
 		return "Processor " + processor.getLocalName();
 	}
 

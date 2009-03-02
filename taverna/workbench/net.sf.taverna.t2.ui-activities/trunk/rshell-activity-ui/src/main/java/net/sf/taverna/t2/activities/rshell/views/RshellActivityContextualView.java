@@ -119,7 +119,7 @@ public class RshellActivityContextualView extends
 	}
 
 	@Override
-	protected String getViewTitle() {
+	public String getViewTitle() {
 		return "Rshell activity";
 	}
 

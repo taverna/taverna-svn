@@ -86,12 +86,12 @@ public class DispatchStackContextualView extends ContextualView{
 	}
 
 	@Override
-	protected JComponent getMainFrame() {
+	public JComponent getMainFrame() {
 		return panel;
 	}
 
 	@Override
-	protected String getViewTitle() {
+	public String getViewTitle() {
 		return "Dispatch Stack contextual View";
 	}
 }

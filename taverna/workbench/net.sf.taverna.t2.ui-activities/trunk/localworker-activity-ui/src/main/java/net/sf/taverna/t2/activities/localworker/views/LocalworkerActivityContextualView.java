@@ -64,7 +64,7 @@ public class LocalworkerActivityContextualView extends
 	}
 
 	@Override
-	protected String getViewTitle() {
+	public String getViewTitle() {
 		if (checkAnnotations()) {
 			// this is a user defined localworker so use the correct name
 			return "User-defined local worker activity";

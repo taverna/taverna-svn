@@ -65,7 +65,7 @@ public class BiomartActivityContextualView extends HTMLBasedActivityContextualVi
 	}
 
 	@Override
-	protected String getViewTitle() {
+	public String getViewTitle() {
 		return "Biomart activity";
 	}
 

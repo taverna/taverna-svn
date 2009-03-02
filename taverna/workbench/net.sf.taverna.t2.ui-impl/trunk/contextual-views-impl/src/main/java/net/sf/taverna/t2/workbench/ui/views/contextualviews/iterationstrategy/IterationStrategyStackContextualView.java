@@ -94,12 +94,12 @@ public class IterationStrategyStackContextualView extends ContextualView {
 	}
 
 	@Override
-	protected JComponent getMainFrame() {
+	public JComponent getMainFrame() {
 		return panel;
 	}
 
 	@Override
-	protected String getViewTitle() {
+	public String getViewTitle() {
 		return "Iteration Strategy contextual View";
 	}
 

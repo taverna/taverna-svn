@@ -57,12 +57,12 @@ public class DataflowActivityContextualView extends
 	private FileManager fileManager = FileManager.getInstance();
 
 	@Override
-	protected DataflowActivity getActivity() {
+	public DataflowActivity getActivity() {
 		return (DataflowActivity) super.getActivity();
 	}
 
 	@Override
-	protected JComponent getMainFrame() {
+	public JComponent getMainFrame() {
 		JComponent mainFrame = super.getMainFrame();
 		JButton viewWorkflowButton = new JButton("Edit workflow");
 		viewWorkflowButton.addActionListener(new AbstractAction() {
@@ -121,7 +121,7 @@ public class DataflowActivityContextualView extends
 	}
 
 	@Override
-	protected String getViewTitle() {
+	public String getViewTitle() {
 		return "Nested workflow";
 	}
 

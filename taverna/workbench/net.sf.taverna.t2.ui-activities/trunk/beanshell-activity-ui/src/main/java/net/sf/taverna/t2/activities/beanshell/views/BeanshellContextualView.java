@@ -81,7 +81,7 @@ public class BeanshellContextualView extends
 	}
 
 	@Override
-	protected String getViewTitle() {
+	public String getViewTitle() {
 		return "Beanshell activity";
 	}
 

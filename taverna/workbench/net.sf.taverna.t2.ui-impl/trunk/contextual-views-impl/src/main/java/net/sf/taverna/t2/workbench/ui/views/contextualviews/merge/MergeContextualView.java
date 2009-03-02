@@ -53,13 +53,13 @@ public class MergeContextualView extends ContextualView{
 	}
 
 	@Override
-	protected JComponent getMainFrame() {
+	public JComponent getMainFrame() {
 		refreshView();
 		return mergeView;
 	}
 
 	@Override
-	protected String getViewTitle() {
+	public String getViewTitle() {
 		return "Data link";
 	}
 

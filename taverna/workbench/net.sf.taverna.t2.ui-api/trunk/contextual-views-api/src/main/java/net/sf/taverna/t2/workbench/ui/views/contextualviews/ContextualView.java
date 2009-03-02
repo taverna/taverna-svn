@@ -53,12 +53,12 @@ public abstract class ContextualView extends JPanel {
 	 * 
 	 * @return a JComponent that represents the dataflow element.
 	 */
-	protected abstract JComponent getMainFrame();
+	public abstract JComponent getMainFrame();
 
 	/**
 	 * @return a String providing a title for the view
 	 */
-	protected abstract String getViewTitle();
+	public abstract String getViewTitle();
 
 	/**
 	 * Allows the item to be configured, but returning an action handler that
@@ -82,7 +82,7 @@ public abstract class ContextualView extends JPanel {
 	 * contextual view. If you don't do this you will get a very empty frame
 	 * popping up!
 	 */
-	protected void initView() {
+	public void initView() {
 		setLayout(new BorderLayout());
 		add(getMainFrame(), BorderLayout.CENTER);
 		setName(getViewTitle());

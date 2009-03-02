@@ -59,7 +59,7 @@ public class BiomobyObjectActivityContextualView extends
 	}
 
 	@Override
-	protected String getViewTitle() {
+	public String getViewTitle() {
 		return "Biomoby Object activity";
 	}
 
@@ -68,7 +68,7 @@ public class BiomobyObjectActivityContextualView extends
 	 * adds buttons to it allowing Moby object details
 	 */
 	@Override
-	protected JComponent getMainFrame() {
+	public JComponent getMainFrame() {
 		final JComponent mainFrame = super.getMainFrame();
 		BiomobyObjectActivity activity = (BiomobyObjectActivity) getActivity();
 		if (activity.getMobyObject() != null) {

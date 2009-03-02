@@ -55,7 +55,7 @@ public class BiomobyActivityContextualView extends HTMLBasedActivityContextualVi
 	}
 
 	@Override
-	protected String getViewTitle() {
+	public String getViewTitle() {
 		return "Biomoby activity";
 	}
 	
@@ -64,7 +64,7 @@ public class BiomobyActivityContextualView extends HTMLBasedActivityContextualVi
 	 * adds buttons to it allowing Moby service details
 	 */
 	@Override
-	protected JComponent getMainFrame() {
+	public JComponent getMainFrame() {
 		final JComponent mainFrame = super.getMainFrame();
 		JPanel flowPanel = new JPanel(new FlowLayout());
 		
