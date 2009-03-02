@@ -75,14 +75,12 @@
 			<scope>test</scope>
 
 		</dependency>
-		<!--
 			<dependency>
 				<groupId>net.sf.taverna.t2.ui-application.plugins</groupId>
 				<artifactId>translators-plugin</artifactId>
 				<version>${t2.ui.application.version}</version>
 				<scope>test</scope>
 			</dependency>
-		-->
 
 	</dependencies>
 </project>
