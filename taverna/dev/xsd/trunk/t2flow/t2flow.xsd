@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://taverna.sf.net/2008/xml/t2flow"
+	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tav="http://taverna.sf.net/2008/xml/t2flow">
+
+	<annotation>
+		<documentation>This is a descriptive, informative XML Schema
+			describing the serialisation format of Taverna 2 workflows, as of
+			Taverna 2.0. Such workflows are commonly served with the extension
+			.t2flow and served using the content-type
+			application/vnd.taverna.t2flow+xml Draft as of 2009-03-03 by Stian
+			Soiland-Reyes, does NOT currently correctly describe workflows as
+			saved from Taverna.</documentation>	</annotation>
+	<element name="workflow" type="tav:Workflow"></element>
+
+	<complexType name="Workflow">
+		<sequence>
+			<element name="dataflow" type="tav:Dataflow" maxOccurs="unbounded"
+				minOccurs="1">
+			</element>
+		</sequence>
+		<attribute name="version" type="string"></attribute>
+	</complexType>
+
+	<complexType name="Dataflow">
+		<sequence>
+			<element name="name" type="string"></element>
+			<element name="inputPorts" type="tav:Ports"></element>
+			<element name="outputPorts" type="tav:Ports"></element>
+			<element name="processors" type="tav:Processors"></element>
+			<element name="conditions" type="tav:Conditions"></element>
+			<element name="datalinks" type="tav:Datalinks"></element>
+			<element name="annotations" type="tav:Annotations"></element>
+		</sequence>
+		<attribute name="id" type="tav:uuid" use="required"></attribute>
+		<attribute name="role" type="tav:role" use="optional"></attribute>
+	</complexType>
+
+	<simpleType name="uuid">
+		<restriction base="string">
+			<pattern
+				value="[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}">
+			</pattern>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="role">
+		<restriction base="string">
+			<enumeration value="top"></enumeration>
+		</restriction>
+	</simpleType>
+
+	<complexType name="Ports">
+		<sequence>
+			<element name="port" type="tav:Port" maxOccurs="unbounded"
+				minOccurs="0"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="Processors">
+		<sequence>
+			<element name="processor" type="tav:Processor"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="Conditions"></complexType>
+
+	<complexType name="Datalinks">
+		<sequence>
+			<element name="datalink" type="tav:DataLink" maxOccurs="unbounded"
+				minOccurs="0"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="Port">
+		<sequence>
+			<element name="name" type="string"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="Processor">
+		<sequence>
+			<element name="name" type="string"></element>
+			<element name="inputPorts" type="tav:DepthPorts"></element>
+			<element name="outputPorts" type="tav:GranularDepthPorts"></element>
+			<element name="annotations" type="tav:Annotations"></element>
+			<element name="activities" type="tav:Activities"></element>
+			<element name="dispatchStack" type="tav:DispatchStack"></element>
+			<element name="iterationStrategyStack"
+				type="tav:IterationStrategyStack">
+			</element>
+		</sequence>
+	</complexType>
+
+	<complexType name="Annotations"></complexType>
+
+	<complexType name="Activities">
+		<sequence>
+			<element name="activity" type="tav:Activity"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="Activity">
+		<sequence>
+			<element name="raven" type="tav:Raven" maxOccurs="1"
+				minOccurs="0">
+			</element>
+			<element name="class" type="string"></element>
+			<element name="inputMap" type="tav:Map"></element>
+			<element name="outputMap" type="tav:Map"></element>
+			<element name="configBean" type="tav:ConfigBean"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="Raven">
+		<sequence>
+			<element name="group" type="string"></element>
+			<element name="artifact" type="string"></element>
+			<element name="version" type="string"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="Mapping">
+		<sequence>
+		</sequence>
+		<attribute name="from" type="string"></attribute>
+		<attribute name="to" type="string"></attribute>
+	</complexType>
+
+	<complexType name="ConfigBean">
+		<sequence>
+			<any namespace="##any" processContents="lax"></any>
+		</sequence>
+		<attribute name="encoding" type="string"></attribute>
+	</complexType>
+
+	<complexType name="DispatchStack">
+		<sequence>
+			<element name="dispatchLayer" type="tav:DispatchLayer"
+				maxOccurs="unbounded" minOccurs="0"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="DispatchLayer">
+		<sequence>
+			<element name="raven" type="tav:Raven" maxOccurs="1"
+				minOccurs="0">
+			</element>
+			<element name="class" type="string"></element>
+			<element name="configBean" type="tav:ConfigBean"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="IterationStrategyStack">
+		<sequence>
+			<element name="iteration" type="tav:Iteration"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="Iteration">
+		<sequence>
+			<element name="strategy" type="tav:IterationNode"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="IterationNode">
+		<choice>
+			<element name="NewElement" type="string"></element>
+		</choice>
+	</complexType>
+
+	<complexType name="DepthPort">
+		<complexContent>
+			<extension base="tav:Port">
+				<sequence>
+					<element name="depth" type="int"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="GranularDepthPort">
+		<complexContent>
+			<extension base="tav:DepthPort">
+				<sequence>
+					<element name="granularDepth" type="int"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="GranularDepthPorts">
+		<sequence>
+			<element name="port" type="tav:GranularDepthPort" maxOccurs="unbounded"
+				minOccurs="0"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="Map">
+		<sequence>
+			<element name="map" type="tav:Mapping" maxOccurs="unbounded"
+				minOccurs="0"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="DataLink">
+		<sequence>
+			<element name="sink" type="tav:Link"></element>
+
+			<element name="source" type="tav:Link"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="Link">
+		<sequence>
+			<element name="processor" type="string" maxOccurs="1"
+				minOccurs="0">
+			</element>
+			<element name="port" type="string"></element>
+		</sequence>
+
+		<attribute name="type" type="tav:LinkType"></attribute>
+	</complexType>
+
+	<simpleType name="LinkType">
+		<restriction base="string">
+			<enumeration value="dataflow"></enumeration>
+			<enumeration value="processor"></enumeration>
+		</restriction>
+	</simpleType>
+
+
+	<complexType name="DepthPorts">
+		<sequence>
+			<element name="port" type="tav:DepthPort"
+				maxOccurs="unbounded" minOccurs="0">
+			</element>
+		</sequence>
+	</complexType>
+
+	<complexType name="CrossProduct">
+		<sequence>
+			<element name="cross" type="tav:Products"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="Products">
+		<sequence>
+			<element name="port" type="tav:PortProduct"
+				maxOccurs="unbounded" minOccurs="0">
+			</element>
+		</sequence>
+	</complexType>
+
+	<complexType name="PortProduct">
+		<attribute name="name" type="string"></attribute>
+		<attribute name="depth" type="int"></attribute>
+	</complexType>
+</schema>
