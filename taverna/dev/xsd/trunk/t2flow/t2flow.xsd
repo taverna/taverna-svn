@@ -11,7 +11,10 @@
 			application/vnd.taverna.t2flow+xml Draft as of 2009-03-03 by Stian
 			Soiland-Reyes, does NOT currently correctly describe workflows as
 			saved from Taverna.</documentation>	</annotation>
-	<element name="workflow" type="tav:Workflow"></element>
+	<element name="workflow" type="tav:Workflow">
+		<annotation>
+			<documentation></documentation>
+		</annotation></element>
 
 	<complexType name="Workflow">
 		<sequence>
@@ -25,12 +28,12 @@
 	<complexType name="Dataflow">
 		<sequence>
 			<element name="name" type="string"></element>
-			<element name="inputPorts" type="tav:Ports"></element>
+			<element name="inputPorts" type="tav:GranularDepthPorts"></element>
 			<element name="outputPorts" type="tav:Ports"></element>
 			<element name="processors" type="tav:Processors"></element>
 			<element name="conditions" type="tav:Conditions"></element>
 			<element name="datalinks" type="tav:Datalinks"></element>
-			<element name="annotations" type="tav:Annotations"></element>
+			<element name="annotations" type="tav:Annotations" maxOccurs="1" minOccurs="0"></element>
 		</sequence>
 		<attribute name="id" type="tav:uuid" use="required"></attribute>
 		<attribute name="role" type="tav:role" use="optional"></attribute>
@@ -47,6 +50,7 @@
 	<simpleType name="role">
 		<restriction base="string">
 			<enumeration value="top"></enumeration>
+			<enumeration value="nested"></enumeration>
 		</restriction>
 	</simpleType>
 
@@ -59,7 +63,7 @@
 
 	<complexType name="Processors">
 		<sequence>
-			<element name="processor" type="tav:Processor"></element>
+			<element name="processor" type="tav:Processor" maxOccurs="unbounded" minOccurs="0"></element>
 		</sequence>
 	</complexType>
 
@@ -89,10 +93,17 @@
 			<element name="iterationStrategyStack"
 				type="tav:IterationStrategyStack">
 			</element>
+			<element name="annotations" type="tav:Annotations" maxOccurs="1" minOccurs="0"></element>
 		</sequence>
 	</complexType>
 
-	<complexType name="Annotations"></complexType>
+	<complexType name="Annotations">
+		<sequence>
+			<element name="annotation_chain"
+				type="tav:AnnotationChain" maxOccurs="unbounded" minOccurs="0">
+			</element>
+		</sequence>
+	</complexType>
 
 	<complexType name="Activities">
 		<sequence>
@@ -109,6 +120,7 @@
 			<element name="inputMap" type="tav:Map"></element>
 			<element name="outputMap" type="tav:Map"></element>
 			<element name="configBean" type="tav:ConfigBean"></element>
+			<element name="annotations" type="tav:Annotations" maxOccurs="1" minOccurs="0"></element>
 		</sequence>
 	</complexType>
 
@@ -164,8 +176,10 @@
 	</complexType>
 
 	<complexType name="IterationNode">
-		<choice>
-			<element name="NewElement" type="string"></element>
+		<choice maxOccurs="unbounded" minOccurs="0">
+			<element name="cross" type="tav:IterationNode"></element>
+			<element name="dot" type="tav:IterationNode"></element>			
+			<element name="port" type="tav:PortProduct"></element>
 		</choice>
 	</complexType>
 
@@ -226,6 +240,7 @@
 		<restriction base="string">
 			<enumeration value="dataflow"></enumeration>
 			<enumeration value="processor"></enumeration>
+			<enumeration value="merge"></enumeration>
 		</restriction>
 	</simpleType>
 
@@ -255,5 +270,12 @@
 	<complexType name="PortProduct">
 		<attribute name="name" type="string"></attribute>
 		<attribute name="depth" type="int"></attribute>
+	</complexType>
+
+	<complexType name="AnnotationChain">
+		<sequence>
+			<any namespace="##any" processContents="lax"></any>
+		</sequence>
+		<attribute name="encoding" type="string"></attribute>
 	</complexType>
 </schema>
