@@ -17,7 +17,7 @@
 	
 	<bean id="testBeanId"
 		class="net.sf.taverna.t2.reference.impl.T2ReferenceImpl"
-		raven:artifact="net.sf.taverna.t2:t2reference-impl:0.3-SNAPSHOT"
+		raven:artifact="net.sf.taverna.t2.core:reference-impl:0.6-SNAPSHOT"
 		raven:repository="raven.repository">
 		<property name="localPart" value="testLocal" />
 		<property name="namespacePart" value="testNS" />
@@ -25,7 +25,7 @@
 
 	<bean id="referenceSet"
 		class="net.sf.taverna.t2.reference.impl.ReferenceSetImpl"
-		raven:artifact="net.sf.taverna.t2:t2reference-impl:0.3-SNAPSHOT"
+		raven:artifact="net.sf.taverna.t2.core:reference-impl:0.6-SNAPSHOT"
 		raven:repository="raven.repository">
 		<property name="typedId">
 			<ref bean="testBeanId" />
@@ -38,14 +38,14 @@
 	</bean>
 
 	<bean id="blueBean"
-		raven:artifact="net.sf.taverna.t2.testing:t2reference-testhelpers:0.3-SNAPSHOT"
+		raven:artifact="net.sf.taverna.t2.core:reference-testhelpers:0.6-SNAPSHOT"
 		raven:repository="raven.repository"
 		class="net.sf.taverna.t2referencetest.BlueReference">
 		<property name="contents" value="foo" />
 	</bean>
 
 	<bean id="redBean"
-		raven:artifact="net.sf.taverna.t2.testing:t2reference-testhelpers:0.3-SNAPSHOT"
+		raven:artifact="net.sf.taverna.t2.core:reference-testhelpers:0.6-SNAPSHOT"
 		raven:repository="raven.repository"
 		class="net.sf.taverna.t2referencetest.RedReference">
 		<property name="contents" value="" />

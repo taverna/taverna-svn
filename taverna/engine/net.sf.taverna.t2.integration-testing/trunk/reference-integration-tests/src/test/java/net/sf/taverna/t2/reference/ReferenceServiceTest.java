@@ -28,6 +28,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import net.sf.taverna.platform.spring.RavenAwareClassPathXmlApplicationContext;
+import net.sf.taverna.t2.reference.T2Reference;
 
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -85,8 +86,8 @@ public class ReferenceServiceTest {
 		final URL testUrl = new URL("http://www.ebi.ac.uk/~tmo/patterns.xml");
 		ApplicationContext context = new RavenAwareClassPathXmlApplicationContext(
 				"referenceServiceTestContext.xml");
-		//ApplicationContext context = new RavenAwareClassPathXmlApplicationContext(
-		//				"inMemoryReferenceServiceContextWithCoreExtensions.xml");
+//		ApplicationContext context = new RavenAwareClassPathXmlApplicationContext(
+//		"inMemoryReferenceServiceTestContext.xml");
 		final ReferenceService rs = (ReferenceService) context
 				.getBean("t2reference.service.referenceService");
 		Timer timer = new Timer();
@@ -118,6 +119,8 @@ public class ReferenceServiceTest {
 					public void run() {
 						for (int k = 0; k < jobsPerThread; k++) {
 							try {
+//								T2Reference ref = rs.register("test", 0, true,
+//										dummyContext);
 								T2Reference ref = rs.register(testUrl, 0, true,
 										dummyContext);
 								@SuppressWarnings("unused")
@@ -152,6 +155,8 @@ public class ReferenceServiceTest {
 						+ (long) ((getCount() * 1000) / (System
 								.currentTimeMillis() - testStartTime))
 						+ " jobs per second averaged over test run");
+		System.out.println((System.currentTimeMillis() - testStartTime));
+		System.out.println((System.currentTimeMillis() - testStartTime) / (float) (jobsPerThread * joinPoints));
 	}
 
 	private int counter = 0;

@@ -48,8 +48,8 @@ public class BaseContextTest {
 
 		Repository rep = (Repository) context.getBean("raven.repository");
 
-		Artifact a = new BasicArtifact("net.sf.taverna.t2", "t2reference-impl",
-				"0.3-SNAPSHOT");
+		Artifact a = new BasicArtifact("net.sf.taverna.t2.core", "reference-impl",
+		                               "0.6-SNAPSHOT");
 
 		rep.addRepositoryListener(new RepositoryListener() {
 

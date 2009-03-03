@@ -4,13 +4,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>net.sf.taverna</groupId>
-		<artifactId>parent</artifactId>
-		<version>0.1.2008-11-03</version>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>integration-testing</artifactId>
+		<version>0.5-SNAPSHOT</version>
 	</parent>
-	<groupId>net.sf.taverna.t2</groupId>
-	<artifactId>t2reference-integration-tests</artifactId>
-	<version>0.3-SNAPSHOT</version>
+	<groupId>net.sf.taverna.t2.integration-testing</groupId>
+	<artifactId>reference-integration-tests</artifactId>
 	
 	<name>T2 reference manager integration tests</name>
 	<description>
@@ -51,9 +50,9 @@
 	<dependencies>
 
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>t2reference-api</artifactId>
-			<version>0.3-SNAPSHOT</version>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>reference-api</artifactId>
+			<version>0.6-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
@@ -80,9 +79,9 @@
 
 
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
+			<groupId>net.sf.taverna.t2.infrastructure</groupId>
 			<artifactId>platform</artifactId>
-			<version>0.3-SNAPSHOT</version>
+			<version>1.10-SNAPSHOT</version>
 		</dependency>
 
 
