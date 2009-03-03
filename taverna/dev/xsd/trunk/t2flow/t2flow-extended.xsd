@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://taverna.sf.net/2008/xml/t2flow"
+	xmlns:tav="http://taverna.sf.net/2008/xml/t2flow"
+	elementFormDefault="qualified"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:layers="http://taverna.sf.net/2008/xml/t2layers">	
+	<xsd:import namespace="http://taverna.sf.net/2008/xml/t2layers" schemaLocation="t2layers.xsd"></xsd:import>
+	<xsd:redefine schemaLocation="t2flow.xsd">
+		<xsd:complexType name="ConfigBean">
+			<xsd:complexContent>
+				<xsd:restriction base="tav:ConfigBean">
+					<xsd:choice>
+						<xsd:element 
+							ref="layers:net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.RetryConfig" />
+						<!--
+							<xsd:sequence> <xsd:any namespace="##other"
+							processContents="lax"></xsd:any> </xsd:sequence>
+						-->
+						
+					</xsd:choice>
+				</xsd:restriction>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:redefine>
+
+</xsd:schema>
