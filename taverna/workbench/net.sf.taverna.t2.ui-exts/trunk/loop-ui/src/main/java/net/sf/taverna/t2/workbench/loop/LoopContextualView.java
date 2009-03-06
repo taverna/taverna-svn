@@ -112,12 +112,12 @@ public class LoopContextualView extends ContextualView {
 	}
 
 	@Override
-	protected JComponent getMainFrame() {
+	public JComponent getMainFrame() {
 		return panel;
 	}
 
 	@Override
-	protected String getViewTitle() {
+	public String getViewTitle() {
 		return "Loop of " + processor.getLocalName();
 	}
 
