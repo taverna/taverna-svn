@@ -77,8 +77,8 @@
       <name>workflowexplorer</name>
     </namedcomponent>
     <namedcomponent>
-      <groupid>net.sf.taverna.t2.ui-components.views</groupid>
-      <artifact>graph</artifact>
+      <groupid>net.sf.taverna.t2.ui-components</groupid>
+      <artifact>graph-view</artifact>
       <version>0.4-SNAPSHOT</version>
       <classname>net.sf.taverna.t2.workbench.views.graph.GraphViewComponentFactory</classname>
       <name>graphview</name>

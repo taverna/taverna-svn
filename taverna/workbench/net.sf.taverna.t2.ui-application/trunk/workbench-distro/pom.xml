@@ -961,6 +961,14 @@
 									<outputDirectory>${project.build.directory}/repository/activation/activation/1.0.2</outputDirectory>
 								</artifactItem>
 								<artifactItem>
+									<groupId>activation</groupId>
+									<artifactId>activation</artifactId>
+									<version>1.0.2</version>
+									<type>jar</type>
+									<outputDirectory>${project.build.directory}/repository/activation/activation/1.0.2</outputDirectory>
+								</artifactItem>
+								
+								<artifactItem>
 									<groupId>avalon-framework</groupId>
 									<artifactId>avalon-framework</artifactId>
 									<version>4.1.3</version>

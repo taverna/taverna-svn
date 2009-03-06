@@ -47,8 +47,8 @@
 			<version>${t2.core.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.ui-components.views</groupId>
-			<artifactId>graph</artifactId>
+			<groupId>net.sf.taverna.t2.ui-components</groupId>
+			<artifactId>graph-view</artifactId>
 			<version>${t2.ui.impl.version}</version>
 		</dependency>
 	</dependencies>

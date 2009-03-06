@@ -20,6 +20,15 @@
 				<exclude>plugins/plugin-sites.xml</exclude>
 			</excludes>
 		</fileSet>
+		<fileSet>
+			<!--
+				Note - this is the partial "manual" bit of the repository built by
+				maven-dependency-plugin in the pom.xml - the rest is made by the
+				<repositories> section below
+			-->
+			<directory>${project.build.directory}/repository</directory>
+			<outputDirectory>/repository</outputDirectory>
+		</fileSet>
 	</fileSets>
 	<files>
 		<file>

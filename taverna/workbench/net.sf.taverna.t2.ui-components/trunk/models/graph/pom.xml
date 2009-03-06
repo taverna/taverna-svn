@@ -3,12 +3,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>net.sf.taverna.t2.ui-components</groupId>
-		<artifactId>models</artifactId>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>ui-components</artifactId>
 		<version>0.4-SNAPSHOT</version>
 	</parent>
-	<groupId>net.sf.taverna.t2.ui-components.models</groupId>
-	<artifactId>graph</artifactId>
+	<groupId>net.sf.taverna.t2.ui-components</groupId>
+	<artifactId>graph-model</artifactId>
 	<name>Graph Model</name>
 	<build>
 		<plugins>
