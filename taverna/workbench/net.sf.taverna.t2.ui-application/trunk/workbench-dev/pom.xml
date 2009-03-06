@@ -13,7 +13,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-application</groupId>
-			<artifactId>workbench-repository</artifactId>
+			<artifactId>workbench-common</artifactId>
 			<version>${t2.ui.application.version}</version>
 			<exclusions>
 				<exclusion>
@@ -22,6 +22,5 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 	</dependencies>
 </project>

@@ -35,6 +35,48 @@
 			<name>myGrid Repository</name>
 			<url>http://www.mygrid.org.uk/maven/repository</url>
 		</repository>
+		<repository>
+			<id>eviware</id>
+			<name>Eviware repository</name>
+			<url>http://www.eviware.com/repository/maven2/</url>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>wsZones</id>
+			<name>Apache WS Zones repository</name>
+			<url>http://ws.zones.apache.org/repository2/</url>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>biomoby</id>
+			<url>http://biomoby.org/m2repo/</url>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>java.net</id>
+			<url>http://download.java.net/maven/2/</url>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>jboss.org</id>
+			<url>http://repository.jboss.org/maven2/</url>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
 	</repositories>
 	<modules>
 		<module>plugins</module>
