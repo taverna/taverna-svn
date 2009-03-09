@@ -193,14 +193,9 @@ public class PluginManager implements PluginListener {
 			sortPlugins();
 			for (String repositoryURL : plugin.getRepositories()) {
 				try {
-					if (repository instanceof LocalRepository) {
-						// fix for TAV-684, but didn't want to change the
-						// Repository interface API.
-						((LocalRepository) repository)
-								.prependRemoteRepository(new URL(repositoryURL));
-					} else {
-						repository.addRemoteRepository(new URL(repositoryURL));
-					}
+					// T2-338 - always add to the end - do not use
+					// prependRemoteRepository
+					repository.addRemoteRepository(new URL(repositoryURL));
 				} catch (MalformedURLException e) {
 					logger.warn("Invalid remote repository URL - "
 							+ repositoryURL);
