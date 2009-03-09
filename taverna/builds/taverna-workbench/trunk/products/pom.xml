@@ -8,13 +8,11 @@
 		<version>2.1-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.builds.taverna-workbench</groupId>
-	<artifactId>compatibility</artifactId>
+	<artifactId>products</artifactId>
 	<packaging>pom</packaging>
 
-	<name>Virtual build tree for the compatibility modules</name>
-
+	<name>Virtual build tree for the products modules</name>
 	<modules>
-		<module>net.sf.taverna.t2.compatibility</module>
-		<module>net.sf.taverna.t2.translators</module>
+		<module>net.sf.taverna.t2.taverna-workbench</module>
 	</modules>
 </project>

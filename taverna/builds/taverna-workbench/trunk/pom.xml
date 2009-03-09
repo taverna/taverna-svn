@@ -3,14 +3,14 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<artifactId>parent</artifactId>
 		<groupId>net.sf.taverna</groupId>
+		<artifactId>parent</artifactId>
 		<version>0.1.2009-02-12</version>
 		<relativePath>parent/pom.xml</relativePath>
 	</parent>
 
 	<groupId>net.sf.taverna.t2.builds</groupId>
-	<artifactId>workbench</artifactId>
+	<artifactId>taverna-workbench</artifactId>
 	<packaging>pom</packaging>
 
 	<name>Taverna 2 workbench virtual build tree</name>
@@ -24,10 +24,11 @@
 	</description>
 
 	<modules>
-		<module>parent</module>
-		<module>utils</module>
-		<module>engine</module>
 		<module>compatibility</module>
-		<module>workbench</module>
+		<module>engine</module>
+		<module>parent</module>
+		<module>products</module>
+		<module>ui</module>
+		<module>utils</module>
 	</modules>
 </project>
