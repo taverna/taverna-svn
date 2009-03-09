@@ -38,14 +38,17 @@
 		<module>contextual-views</module>
 		<module>credential-manager-ui</module>
 		<module>design-ui</module>
+		<module>graph-model</module>
+		<module>graph-view</module>
+		<module>inputs-view</module>
 		<module>iteration-strategy-ui</module>
-		<module>models</module>
+		<module>monitor-view</module>
 		<module>perspective-design</module>
 		<module>perspective-results</module>
 		<module>provenance-config</module>
 		<module>reference-ui</module>
+		<module>results-view</module>
 		<module>run-ui</module>
-		<module>views</module>
 		<module>workflow-explorer</module>
 	</modules>
 	<repositories>
