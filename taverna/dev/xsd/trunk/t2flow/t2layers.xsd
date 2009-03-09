@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema targetNamespace="http://taverna.sf.net/2008/xml/t2layers"
-	xmlns:tav="http://taverna.sf.net/2008/xml/t2layers" elementFormDefault="unqualified"
+	xmlns:layers="http://taverna.sf.net/2008/xml/t2layers" elementFormDefault="unqualified"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-
 	<xsd:complexType name="RetryConfig"></xsd:complexType>
-	<xsd:element
-		name="net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.RetryConfig"
-		type="tav:RetryConfig"></xsd:element>
+	<xsd:complexType name="ParallelizeConfig"></xsd:complexType>
+
 
 </xsd:schema>
