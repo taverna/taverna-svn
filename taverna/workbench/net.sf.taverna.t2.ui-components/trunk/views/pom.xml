@@ -13,9 +13,9 @@
 	<name>Workflow views</name>
 	<description>Views over a workflow</description>
 	<modules>
-		<module>graph</module>
-		<module>inputs</module>
-		<module>monitor</module>
-		<module>results</module>
+		<module>graph-view</module>
+		<module>inputs-view</module>
+		<module>monitor-view</module>
+		<module>results-view</module>
 	</modules>
 </project>

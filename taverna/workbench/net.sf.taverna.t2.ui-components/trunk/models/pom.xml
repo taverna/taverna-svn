@@ -13,6 +13,6 @@
 	<name>Workflow models</name>
 	<description>Models over a workflow</description>
 	<modules>
-		<module>graph</module>
+		<module>graph-model</module>
 	</modules>
 </project>
