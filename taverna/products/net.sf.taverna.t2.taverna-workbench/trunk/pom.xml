@@ -2,21 +2,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<description>net.sf.taverna.t2.taverna-workbench</description>
 	<parent>
 		<artifactId>parent</artifactId>
 		<groupId>net.sf.taverna</groupId>
 		<version>0.1.2009-02-12</version>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
-	<artifactId>ui-application</artifactId>
+	<artifactId>taverna-workbench</artifactId>
 	<version>2.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Taverna workbench application</name>
 	<properties>
-		<t2.ui.application.version>${project.version}</t2.ui.application.version>
+		<t2.taverna.workbench.version>${project.version}</t2.taverna.workbench.version>
 		<t2.infrastructure.version>1.10-SNAPSHOT</t2.infrastructure.version>
 		<t2.core.version>0.6-SNAPSHOT</t2.core.version>
-		<t2.ui.application.version>${project.version}</t2.ui.application.version>
 		<t2.activities.version>0.6-SNAPSHOT</t2.activities.version>
 		<t2.ui.api.version>0.4-SNAPSHOT</t2.ui.api.version>
 		<t2.ui.impl.version>0.4-SNAPSHOT</t2.ui.impl.version>

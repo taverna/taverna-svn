@@ -11,6 +11,7 @@
 		<description>Taverna 2 workbench components</description>
 		<enabled>true</enabled>
 		<repositories>
+			${m2Repository}
 			<repository>http://www.mygrid.org.uk/maven/snapshot-repository/</repository>
 			<repository>http://www.mygrid.org.uk/maven/repository/</repository>
 			<repository>http://bioinf.ncl.ac.uk/mirror/maven/repository/</repository>
@@ -26,7 +27,7 @@
 		</repositories>
 		<profile>
 			<dependency>
-				<groupId>net.sf.taverna.t2.ui-application.plugins</groupId>
+				<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
 				<artifactId>components-plugin</artifactId>
 				<version>${project.version}</version>
 			</dependency>
@@ -59,6 +60,7 @@
 		<description>Taverna 2 services (WSDL, SoapLab, etc)</description>
 		<enabled>true</enabled>
 		<repositories>
+			${m2Repository}
 			<repository>http://www.mygrid.org.uk/maven/snapshot-repository/</repository>
 			<repository>http://www.mygrid.org.uk/maven/repository/</repository>
 			<repository>http://bioinf.ncl.ac.uk/mirror/maven/repository/</repository>
@@ -74,7 +76,7 @@
 		</repositories>
 		<profile>
 			<dependency>
-				<groupId>net.sf.taverna.t2.ui-application.plugins</groupId>
+				<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
 				<artifactId>activities-plugin</artifactId>
 				<version>${project.version}</version>
 			</dependency>
@@ -93,6 +95,7 @@
 		<description>Taverna 1 compatibility</description>
 		<enabled>true</enabled>
 		<repositories>
+			${m2Repository}
 			<repository>http://www.mygrid.org.uk/maven/snapshot-repository/</repository>
 			<repository>http://www.mygrid.org.uk/maven/repository/</repository>
 			<repository>http://bioinf.ncl.ac.uk/mirror/maven/repository/</repository>
@@ -108,7 +111,7 @@
 		</repositories>
 		<profile>
 			<dependency>
-				<groupId>net.sf.taverna.t2.ui-application.plugins</groupId>
+				<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
 				<artifactId>translators-plugin</artifactId>
 				<version>${project.version}</version>
 			</dependency>
