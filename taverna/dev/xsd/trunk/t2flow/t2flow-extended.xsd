@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema targetNamespace="http://taverna.sf.net/2008/xml/t2flow"
 	xmlns:tav="http://taverna.sf.net/2008/xml/t2flow" elementFormDefault="qualified"
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-	xmlns:layers="http://taverna.sf.net/2008/xml/t2layers"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:layers="http://taverna.sf.net/2008/xml/t2layers"
 	xmlns:activities="http://taverna.sf.net/2008/xml/t2activities">
 	<xsd:import namespace="http://taverna.sf.net/2008/xml/t2layers"
 		schemaLocation="t2layers.xsd"></xsd:import>
@@ -62,18 +61,10 @@
 							type="activities:BioMartConfig">
 						</xsd:element>
 
-						<xsd:element name="dataflow"
-							type="activities:DataflowConfig">
+						<xsd:element name="dataflow" type="activities:DataflowConfig">
 						</xsd:element>
-
-						<!--
-							<xsd:sequence> <xsd:any namespace="##other"
-							processContents="lax"></xsd:any> </xsd:sequence>
-						-->
-
 					</xsd:choice>
-					<xsd:attribute name="encoding" use="required"
-						type="tav:Encoding" />
+					<xsd:attribute name="encoding" use="required" type="tav:Encoding" />
 				</xsd:restriction>
 			</xsd:complexContent>
 		</xsd:complexType>
