@@ -22,7 +22,7 @@
 				minOccurs="1">
 			</element>
 		</sequence>
-		<attribute name="version" type="string"></attribute>
+		<attribute use="required" name="version" type="string"></attribute>
 	</complexType>
 
 	<complexType name="Dataflow">
@@ -126,30 +126,30 @@
 
 	<complexType name="Raven">
 		<sequence>
-			<element name="group" type="string"></element>
-			<element name="artifact" type="string"></element>
-			<element name="version" type="string"></element>
+			<element name="group" type="string" />
+			<element name="artifact" type="string" />
+			<element name="version" type="string" />
 		</sequence>
 	</complexType>
 
 	<complexType name="Mapping">
 		<sequence>
 		</sequence>
-		<attribute name="from" type="string"></attribute>
-		<attribute name="to" type="string"></attribute>
+		<attribute use="required" name="from" type="string" />
+		<attribute use="required" name="to" type="string" />
 	</complexType>
 
 	<complexType name="ConfigBean">
 		<sequence>
 			<any namespace="##any" processContents="lax"></any>
 		</sequence>
-		<attribute name="encoding" type="string"></attribute>
+		<attribute name="encoding" type="string" use="required" />
 	</complexType>
 
 	<complexType name="DispatchStack">
 		<sequence>
 			<element name="dispatchLayer" type="tav:DispatchLayer"
-				maxOccurs="unbounded" minOccurs="0"></element>
+				maxOccurs="unbounded" minOccurs="0" />
 		</sequence>
 	</complexType>
 
@@ -233,7 +233,7 @@
 			<element name="port" type="string"></element>
 		</sequence>
 
-		<attribute name="type" type="tav:LinkType"></attribute>
+		<attribute use="required" name="type" type="tav:LinkType"></attribute>
 	</complexType>
 
 	<simpleType name="LinkType">
@@ -268,14 +268,14 @@
 	</complexType>
 
 	<complexType name="PortProduct">
-		<attribute name="name" type="string"></attribute>
-		<attribute name="depth" type="int"></attribute>
+		<attribute use="required" name="name" type="string"></attribute>
+		<attribute use="required" name="depth" type="int"></attribute>
 	</complexType>
 
 	<complexType name="AnnotationChain">
 		<sequence>
 			<any namespace="##any" processContents="lax"></any>
 		</sequence>
-		<attribute name="encoding" type="string"></attribute>
+		<attribute use="required" name="encoding" type="string"></attribute>
 	</complexType>
 </schema>

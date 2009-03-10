@@ -1,9 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema targetNamespace="http://taverna.sf.net/2008/xml/t2layers"
-	xmlns:layers="http://taverna.sf.net/2008/xml/t2layers" elementFormDefault="unqualified"
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-	<xsd:complexType name="RetryConfig"></xsd:complexType>
-	<xsd:complexType name="ParallelizeConfig"></xsd:complexType>
+	xmlns:layers="http://taverna.sf.net/2008/xml/t2layers"
+	elementFormDefault="unqualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:complexType name="AnyConfig">
+		<xsd:sequence>
+			<xsd:any namespace="##any" processContents="lax" maxOccurs="unbounded"></xsd:any>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="RetryConfig">
+		<xsd:sequence>
+			<xsd:element name="backoffFactor" type="xsd:double" />
+			<xsd:element name="initialDelay" type="xsd:double" />
+			<xsd:element name="maxDelay" type="xsd:double" />
+			<xsd:element name="maxRetries" type="xsd:long" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ParallelizeConfig">
+		<xsd:sequence>
+			<xsd:element name="maxJobs" type="xsd:long"></xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
 
 
 </xsd:schema>
