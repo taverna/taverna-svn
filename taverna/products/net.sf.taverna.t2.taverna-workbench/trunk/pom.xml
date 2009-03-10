@@ -78,6 +78,11 @@
 			</snapshots>
 		</repository>
 	</repositories>
+	<scm>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/products/net.sf.taverna.t2.taverna-workbench/trunk/</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/products/net.sf.taverna.t2.taverna-workbench/trunk/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/products/net.sf.taverna.t2.taverna-workbench/trunk/</url>
+	</scm>
 	<modules>
 		<module>plugins</module>
 		<module>workbench-common</module>

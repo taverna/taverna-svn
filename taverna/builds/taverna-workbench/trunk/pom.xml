@@ -22,6 +22,11 @@
 		Hudson at http://www.mygrid.org.uk/hudson/ and deployed to our
 		snapshot repository at http://www.mygrid.org.uk/maven/snapshot-repository/.
 	</description>
+	<scm>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/builds/taverna-workbench/trunk/</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/builds/taverna-workbench/trunk/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/builds/taverna-workbench/trunk/</url>
+	</scm>
 
 	<modules>
 		<module>compatibility</module>

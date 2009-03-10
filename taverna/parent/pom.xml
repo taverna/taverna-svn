@@ -160,9 +160,9 @@
 		</plugins>
 	</reporting>
 	<scm>
-		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna2/parent/</connection>
-		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna2/parent/</developerConnection>
-		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna2/parent</url>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/parent/</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/parent/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/parent</url>
 	</scm>
 	<distributionManagement>
 		<repository>
