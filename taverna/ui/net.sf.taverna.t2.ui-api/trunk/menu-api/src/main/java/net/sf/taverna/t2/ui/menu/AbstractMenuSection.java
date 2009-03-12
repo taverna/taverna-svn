@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2007 The University of Manchester   
+ * Copyright (C) 2007-2009 The University of Manchester   
  * 
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
@@ -22,6 +22,9 @@ package net.sf.taverna.t2.ui.menu;
 
 import java.net.URI;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+
 /**
  * A {@link MenuComponent} of the type
  * {@link net.sf.taverna.t2.ui.menu.MenuComponent.MenuType#section}.
@@ -29,8 +32,8 @@ import java.net.URI;
  * Subclass to create an SPI implementation for the {@link MenuManager} of a
  * section. A section is a part of an {@link AbstractMenu menu} or
  * {@link AbstractToolBar toolbar} that group together
- * {@link AbstractMenuAction actions} or {@link AbstractMenuToggle toggles},
- * and separates them from siblings using separators if needed.
+ * {@link AbstractMenuAction actions} or {@link AbstractMenuToggle toggles}, and
+ * separates them from siblings using separators if needed.
  * </p>
  * <p>
  * Menu components are linked together using URIs, avoiding the need for compile
@@ -38,8 +41,8 @@ import java.net.URI;
  * use the {@link URI} identifying this section as their parent id.
  * </p>
  * <p>
- * <strong>Note:</strong>To avoid conflicts with other plugins, use a unique
- * URI root that is related to the Java package name, for instance
+ * <strong>Note:</strong>To avoid conflicts with other plugins, use a unique URI
+ * root that is related to the Java package name, for instance
  * <code>http://cs.university.ac.uk/myplugin/2008/menu</code>, and use hash
  * identifiers for each menu item, for instance
  * <code>http://cs.university.ac.uk/myplugin/2008/menu#run</code> for a "Run"
@@ -69,7 +72,8 @@ public abstract class AbstractMenuSection extends AbstractMenuItem {
 	 *            should be of type
 	 *            {@link net.sf.taverna.t2.ui.menu.MenuComponent.MenuType#menu}
 	 *            or
-	 *            {@link net.sf.taverna.t2.ui.menu.MenuComponent.MenuType#toolBar}.
+	 *            {@link net.sf.taverna.t2.ui.menu.MenuComponent.MenuType#toolBar}
+	 *            .
 	 * @param positionHint
 	 *            The position hint to determine the position of this section
 	 *            among its siblings in the parent menu. For extensibility, use
@@ -83,6 +87,36 @@ public abstract class AbstractMenuSection extends AbstractMenuItem {
 	public AbstractMenuSection(URI parentId, int positionHint, URI id) {
 		super(MenuType.section, parentId, id);
 		this.positionHint = positionHint;
+	}
+
+	@Override
+	public synchronized Action getAction() {
+		if (action == null) {
+			action = createAction();
+		}
+		return action;
+	}
+
+	/**
+	 * (Optionally) create the {@link Action} that labels this section.
+	 * <p>
+	 * The actual action will be ignored, but the label and/or icon will be used
+	 * as a section header in the menu.
+	 * <p>
+	 * The default implementation of this method returns <code>null</code>,
+	 * meaning that no section header will be created - instead a simple line
+	 * will separate this section from the items above (if needed).
+	 * </p>
+	 * <p>
+	 * Implementations might use {@link AbstractAction} as a superclass for menu
+	 * actions.
+	 * </p>
+	 * 
+	 * @return A configured {@link Action} that should at least have a label or
+	 *         icon.
+	 */
+	protected Action createAction() {
+		return null;
 	}
 
 }

@@ -60,10 +60,10 @@ public interface MenuComponent {
 	 * 
 	 * </p>
 	 * <p>
-	 * This action is ignored and should be <code>null</code> for items of
-	 * type {@link MenuType#section}, {@link MenuType#optionGroup} and
-	 * {@link MenuType#custom}. The action is optional for
-	 * {@link MenuType#toolBar}, where the action's name would be used
+	 * This action is ignored and should be <code>null</code> for items of type
+	 * {@link MenuType#optionGroup} and {@link MenuType#custom}. The action is
+	 * optional for {@link MenuType#toolBar} and {@link MenuType#section}, where
+	 * the action's name would be used as a label.
 	 * </p>
 	 * 
 	 * @return The {@link Action} describing this menu item, or

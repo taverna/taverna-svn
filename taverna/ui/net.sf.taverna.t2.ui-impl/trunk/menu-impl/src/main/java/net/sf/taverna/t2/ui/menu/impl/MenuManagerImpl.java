@@ -50,6 +50,7 @@ import javax.swing.border.EmptyBorder;
 import net.sf.taverna.t2.lang.observer.MultiCaster;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
+import net.sf.taverna.t2.lang.ui.ShadedLabel;
 import net.sf.taverna.t2.spi.SPIRegistry;
 import net.sf.taverna.t2.spi.SPIRegistry.SPIRegistryEvent;
 import net.sf.taverna.t2.ui.menu.AbstractMenuAction;
@@ -354,7 +355,22 @@ public class MenuManagerImpl extends MenuManager {
 	private void addSection(List<Component> components, URI sectionId,
 			MenuOptions menuOptions) {
 		List<Component> childComponents = makeComponents(sectionId, menuOptions);
-		addNullSeparator(components);
+		
+
+		MenuComponent sectionDef = uriToMenuElement.get(sectionId);
+		Action sectionAction = sectionDef.getAction();
+		if (sectionAction != null) {
+			String sectionLabel = (String) sectionAction.getValue(Action.NAME);
+			if (sectionLabel != null) {
+				ShadedLabel label = new ShadedLabel(sectionLabel, ShadedLabel.GREEN);
+				components.add(label);
+			} else {
+				addNullSeparator(components);
+			}
+		} else {
+			addNullSeparator(components);
+		}
+
 		if (childComponents.isEmpty()) {
 			logger.warn("No sub components found for section " + sectionId);
 			return;
