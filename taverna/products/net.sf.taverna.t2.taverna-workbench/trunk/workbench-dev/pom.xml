@@ -15,12 +15,22 @@
 			<groupId>net.sf.taverna.t2.taverna-workbench</groupId>
 			<artifactId>workbench-common</artifactId>
 			<version>${t2.taverna.workbench.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>net.sf.taverna.t2.taverna-workbench</groupId>
-					<artifactId>translators-plugin</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
+			<artifactId>activities-plugin</artifactId>
+			<version>${t2.taverna.workbench.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
+			<artifactId>components-plugin</artifactId>
+			<version>${t2.taverna.workbench.version}</version>
+		</dependency>
+		
+		<!--<dependency>
+			<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
+			<artifactId>translators-plugin</artifactId>
+			<version>${t2.taverna.workbench.version}</version>
+		</dependency>-->
 	</dependencies>
 </project>
