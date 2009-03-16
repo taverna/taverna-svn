@@ -561,10 +561,10 @@ public class BeanshellConfigView extends JPanel {
 		portEditPanel.add(inputScroller, panelConstraint);
 
 		panelConstraint.gridy = 1;
-		ports.add("Inputs Ports", inputScroller);
+		ports.add("Input ports", inputScroller);
 		JScrollPane outputScroller = new JScrollPane(getOutputPanel());
 		portEditPanel.add(outputScroller, panelConstraint);
-		ports.add("Output Ports", outputScroller);
+		ports.add("Output ports", outputScroller);
 
 		return ports;
 	}
