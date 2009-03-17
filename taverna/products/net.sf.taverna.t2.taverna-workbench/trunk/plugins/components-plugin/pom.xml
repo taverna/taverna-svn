@@ -48,7 +48,11 @@
 			<artifactId>workbench-impl</artifactId>
 			<version>${t2.ui.impl.version}</version>
 		</dependency>
-
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-impl</groupId>
+			<artifactId>renderers-impl</artifactId>
+			<version>${t2.ui.impl.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-components</groupId>
@@ -108,6 +112,11 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-exts</groupId>
 			<artifactId>menu-items</artifactId>
+			<version>${t2.ui.exts.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-exts</groupId>
+			<artifactId>renderers-exts</artifactId>
 			<version>${t2.ui.exts.version}</version>
 		</dependency>
 
