@@ -8,7 +8,7 @@
 describing the serialisation format of Taverna 2 workflows, as of
 Taverna 2.0. Such workflows are commonly served with the extension
 .t2flow and served using the content-type
-application/vnd.taverna.t2flow+xml Draft as of 2009-03-16 by Stian
+application/vnd.taverna.t2flow+xml Draft as of 2009-03-17 by Stian
 Soiland-Reyes, should correctly describe workflows as
 saved from Taverna, but as this schema has been made in retrospect no guarantees are made.To test the schema against the examples, try xmllint: <code>xmllint --noout --schema t2flow.xsd examples/*t2flow</code></documentation>	</annotation>
 	<element name="workflow" type="tav:Workflow">

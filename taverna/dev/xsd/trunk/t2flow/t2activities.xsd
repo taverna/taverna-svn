@@ -8,12 +8,21 @@
 		schemaLocation="t2flow.xsd" />
 
 	<xsd:complexType name="DataflowConfig">
-		<xsd:attribute name="ref" type="tav:uuid"></xsd:attribute>
+        <xsd:annotation>
+        	<xsd:documentation>Configuration for the nested dataflow activity. The actual nested dataflow is referenced by uuid to identify the dataflow element of the workflow container.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="ref" type="tav:uuid"></xsd:attribute>
 	</xsd:complexType>
 
 	<xsd:complexType name="BeanshellConfig">
-		<xsd:sequence>
-			<xsd:element name="script" type="xsd:string" />
+        <xsd:annotation>
+        	<xsd:documentation>Configuration for the Beanshell activity.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+			<xsd:element name="script" type="xsd:string" >
+				<xsd:annotation>
+					<xsd:documentation>A Beanshell script</xsd:documentation>
+				</xsd:annotation></xsd:element>
 			<xsd:element name="dependencies" type="layers:Dependencies" />
 			<xsd:element name="classLoaderSharing" type="layers:ClassLoaderSharing" />
 			<xsd:element name="localDependencies" type="xsd:string" />
@@ -49,9 +58,18 @@
 		</xsd:sequence>
 	</xsd:complexType>
 	<xsd:complexType name="WSDLConfig">
-		<xsd:sequence>
-			<xsd:element name="wsdl" type="xsd:anyURI" />
-			<xsd:element name="operation" type="xsd:string" />
+        <xsd:annotation>
+        	<xsd:documentation>Configuration for the WSDL activity.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+			<xsd:element name="wsdl" type="xsd:anyURI" >
+				<xsd:annotation>
+					<xsd:documentation>Location of WSDL specification as an URL.</xsd:documentation>
+				</xsd:annotation></xsd:element>
+			<xsd:element name="operation" type="xsd:string" >
+				<xsd:annotation>
+					<xsd:documentation>Name of operation within the WSDL specification.</xsd:documentation>
+				</xsd:annotation></xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 	<xsd:complexType name="XMLSplitterConfig">

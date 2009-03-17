@@ -8,6 +8,14 @@
 	<xsd:import namespace="http://taverna.sf.net/2008/xml/t2activities"
 		schemaLocation="t2activities.xsd"></xsd:import>
 
+	<xsd:annotation>
+		<xsd:documentation>
+			Restricting schema of t2flow.xsd that describes the
+			configuration beans for the
+			dispatch stack layers and activities,
+			given the shipped Taverna 2.0
+			with no additional plugins installed.		</xsd:documentation>
+	</xsd:annotation>
 	<xsd:redefine schemaLocation="t2flow.xsd">
 		<xsd:complexType name="ConfigBean">
 			<xsd:complexContent>
@@ -30,6 +38,11 @@
 							name="net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ParallelizeConfig"
 							type="layers:ParallelizeConfig">
 						</xsd:element>
+						<xsd:element form="unqualified"
+							name="net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.LoopConfiguration"
+							type="layers:LoopConfig">
+						</xsd:element>
+
 
 
 						<!--  activity beans -->
