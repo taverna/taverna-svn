@@ -31,7 +31,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 public class StringConstantActivityItem extends AbstractActivityItem {
 
 	public String getType() {
-		return "String Constant";
+		return "String constant";
 	}
 
 	@Override
