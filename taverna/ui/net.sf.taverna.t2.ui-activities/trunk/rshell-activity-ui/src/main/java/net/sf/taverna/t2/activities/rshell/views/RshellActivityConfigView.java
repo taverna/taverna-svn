@@ -243,6 +243,7 @@ public class RshellActivityConfigView extends JPanel {
 		});
 
 		final JCheckBox rVersionCheck = new JCheckBox("R1.6+");
+		rVersionCheck.setEnabled(false);
 		rVersionCheck.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
