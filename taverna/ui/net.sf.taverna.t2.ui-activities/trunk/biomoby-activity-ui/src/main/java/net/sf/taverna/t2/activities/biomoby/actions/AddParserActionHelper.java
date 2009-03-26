@@ -178,7 +178,7 @@ public class AddParserActionHelper  {
 					"Add parser for " + selectedObject
 						+ " to the workflow");
 				item3
-					.setIcon(getIcon("org/biomoby/client/taverna/plugin/Cut24.gif"));
+					.setIcon(getIcon("/Cut24.gif"));
 				item3.addActionListener(new ActionListener() {
 
 				    public void actionPerformed(ActionEvent ae) {
@@ -259,7 +259,7 @@ public class AddParserActionHelper  {
     public ImageIcon getIcon() {
 	Class<?> cls = this.getClass();
 	URL url = cls.getClassLoader().getResource(
-		"org/biomoby/client/taverna/plugin/Cut24.gif");
+		"/Cut24.gif");
 	return new ImageIcon(url);
     }
 
