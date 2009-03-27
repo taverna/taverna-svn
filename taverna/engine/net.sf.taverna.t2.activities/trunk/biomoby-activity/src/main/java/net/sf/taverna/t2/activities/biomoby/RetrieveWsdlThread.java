@@ -10,7 +10,6 @@
 
 package net.sf.taverna.t2.activities.biomoby;
 
-import java.awt.Component;
 import org.biomoby.shared.MobyService;
 import org.biomoby.shared.Central;
 
