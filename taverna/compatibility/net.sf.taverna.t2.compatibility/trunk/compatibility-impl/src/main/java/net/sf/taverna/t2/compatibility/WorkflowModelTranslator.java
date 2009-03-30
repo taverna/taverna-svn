@@ -163,7 +163,7 @@ public class WorkflowModelTranslator {
 			translator.connectDataLinks(dataflow);
 
 			translator.connectConditions();
-			
+
 			translator.createAnnotations(dataflow, translator);
 
 		} catch (EditException e) {
@@ -192,12 +192,14 @@ public class WorkflowModelTranslator {
 	}
 
 	/**
-	 * Add annotations to the dataflow corresponding to the metadata of the workflow
+	 * Add annotations to the dataflow corresponding to the metadata of the
+	 * workflow
 	 * 
 	 * @param dataflow
 	 * @param translator
 	 */
-	private void createAnnotations(Dataflow dataflow, WorkflowModelTranslator translator) {
+	private void createAnnotations(Dataflow dataflow,
+			WorkflowModelTranslator translator) {
 		WorkflowDescription wd = scuflModel.getDescription();
 		String description = wd.getText();
 		FreeTextDescription ftd = new FreeTextDescription();
@@ -207,11 +209,11 @@ public class WorkflowModelTranslator {
 		DescriptiveTitle title = new DescriptiveTitle();
 		title.setText(wd.getTitle());
 		try {
-			List<Edit<?>> listEdits = new ArrayList<Edit<?>> ();
+			List<Edit<?>> listEdits = new ArrayList<Edit<?>>();
 			listEdits.add(EditsRegistry.getEdits().getAddAnnotationChainEdit(
-							dataflow, ftd));
+					dataflow, ftd));
 			listEdits.add(EditsRegistry.getEdits().getAddAnnotationChainEdit(
-							dataflow, author));
+					dataflow, author));
 			listEdits.add(EditsRegistry.getEdits().getAddAnnotationChainEdit(
 					dataflow, title));
 			CompoundEdit edits = new CompoundEdit(listEdits);
@@ -219,7 +221,7 @@ public class WorkflowModelTranslator {
 		} catch (EditException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}		
+		}
 	}
 
 	/**
@@ -430,7 +432,8 @@ public class WorkflowModelTranslator {
 		IterationStrategyImpl t2IterationStrategy = new IterationStrategyImpl();
 		if (t1IterationStrategy == null) {
 			t1IterationStrategy = new IterationStrategy(t1Processor) {
-				public void normalize() {}
+				public void normalize() {
+				}
 			};
 		}
 		addIterationNode((MutableTreeNode) t1IterationStrategy.getTreeModel()
@@ -539,7 +542,9 @@ public class WorkflowModelTranslator {
 		for (InputPort inputPort : inputPorts) {
 			org.embl.ebi.escience.scufl.InputPort t1InputPort = t1InputPorts
 					.get(inputPort.getName());
-			if (t1InputPort.isBound()) {
+			// t1InputPort could be null if extra input ports are exposed within
+			// T2. An example of this appears to be WSRL services.
+			if ((t1InputPort != null) && t1InputPort.isBound()) {
 				ProcessorInputPort port = edits.createProcessorInputPort(
 						t2Processor, inputPort.getName(), inputPort.getDepth());
 				Edit<Processor> addInputPortEdit = edits
