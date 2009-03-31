@@ -1,3 +1,5 @@
 #summary One-sentence summary of this page.
 
-However, we mainly prefer you to report bugs to our [http://www.mygrid.org.uk/tools/taverna/taverna-mailing-lists/ mailing list]. As a rule of thumb - use the list {{{taverna-hackers}}} for anyting to do with the source code, APIs or building services for Taverna. On the other hand, use the list {{{taverna-users}}} for questions about the user interface, building workflows, finding services, etc.
+To discuss Taverna, report bugs, get help, or any other issue, feel free to sign up to our [http://www.mygrid.org.uk/tools/taverna/taverna-mailing-lists/ mailing lists]. 
+
+As a rule of thumb - use the list {{{taverna-hackers}}} for anything to do with the source code, APIs or building services for Taverna. On the other hand, use the list {{{taverna-users}}} for questions about the user interface, building workflows, finding services, etc.
