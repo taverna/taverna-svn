@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary Taverna mailing lists
 
 To discuss Taverna, report bugs, get help, or any other issue, feel free to sign up to our [http://www.mygrid.org.uk/tools/taverna/taverna-mailing-lists/ mailing lists]. 
 
