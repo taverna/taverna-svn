@@ -1,5 +1,3 @@
-
-
 = Issues =
 
 We keep track of any bugs and issues using myGrid's [http://www.mygrid.org.uk/dev/issues/browse/T2 Jira] installation.
