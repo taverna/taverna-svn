@@ -3,3 +3,10 @@
 = Download =
 
 Visit our [http://taverna.sourceforge.net/download download page] to download the Taverna workbench, manuals or related software. Also find [http://www.mygrid.org.uk/tools/taverna/ more information about Taverna] on the myGrid site.
+
+
+== Nightly snapshots ==
+
+Our [http://www.mygrid.org.uk/hudson/ automatic build system] makes a nightly build of the current snapshot of the Taverna workbench. You may try the nightly builds to get a feeling of what are the latest features, but be warned, various things might not work or be in flux! Download the latest {{{-bin.zip}}} file from [http://www.mygrid.org.uk/hudson/job/net.sf.taverna.t2.taverna-workbench.nightly/lastStableBuild/net.sf.taverna.t2.taverna-workbench$workbench-distro/ last nightly build], unzip it and run {{{run.sh}}} or {{{run.bat}}}. 
+
+Note that on OS X you will have to go to *Preferences* and set the location of the {{{dot}}} binary from Graphviz - if you don't have this installed you can find it inside an existing download of a Taverna release, such as in {{{/Applications/Taverna.app/Contents/MacOS/dot}}}
