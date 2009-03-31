@@ -1,4 +1,4 @@
-#summary it is
+#summary Bugs and issues are tracked in Jira
 
 = Issues =
 
