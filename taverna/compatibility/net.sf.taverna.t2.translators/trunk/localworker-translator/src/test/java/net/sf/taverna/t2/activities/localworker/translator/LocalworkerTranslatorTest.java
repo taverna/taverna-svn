@@ -1168,6 +1168,17 @@ public class LocalworkerTranslatorTest {
 		temp.delete();
 	}
 
+	/**
+	 * Check if a String starts with xml
+	 * 
+	 * @param text
+	 * @return
+	 */
+	private boolean xmlStartToString(final String text) {
+		String alteredText = text.replaceAll("\\<\\?xml(\\s)+version=\"1\\.0\"(\\s)*\\?\\>", "xxxx");
+		return alteredText.startsWith("xxxx");
+	}
+	
 	@Test
 	public void testDoTranslationEnvVariableWorker() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -1188,8 +1199,7 @@ public class LocalworkerTranslatorTest {
 
 		Object output = outputs.get("properties");
 		assertTrue(output instanceof String);
-		assertTrue(((String) output)
-				.startsWith("<?xml version=\"1.0\"?>\n<property-list>\n"));
+		assertTrue(xmlStartToString((String)output));
 		assertTrue(((String) output).endsWith("</property-list>"));
 	}
 
@@ -1234,7 +1244,7 @@ public class LocalworkerTranslatorTest {
 		
 		Object outputText = outputs.get("outputText");
 		assertTrue(outputText instanceof String);
-		assertTrue(((String)outputText).startsWith("<?xml version=\"1.0\"?>"));
+		assertTrue(xmlStartToString((String)outputText));
 		assertTrue((String) outputText, ((String)outputText).contains("<GBSeqid>gi|18450186</GBSeqid>"));
 	}
 
@@ -1257,7 +1267,7 @@ public class LocalworkerTranslatorTest {
 		
 		Object outputText = outputs.get("outputText");
 		assertTrue(outputText instanceof String);
-		assertTrue(((String)outputText).startsWith("<?xml version=\"1.0\"?>"));
+		assertTrue(xmlStartToString((String)outputText));
 		assertTrue((String) outputText, ((String)outputText).contains("<INSDSeqid>gi|18450186</INSDSeqid>"));
 	}
 	
@@ -1280,7 +1290,7 @@ public class LocalworkerTranslatorTest {
 		
 		Object outputText = outputs.get("outputText");
 		assertTrue(outputText instanceof String);
-		assertTrue(((String)outputText).startsWith("<?xml version=\"1.0\"?>"));
+		assertTrue(xmlStartToString((String)outputText));
 		assertTrue((String) outputText, ((String)outputText).contains("<TSeq_gi>18450186</TSeq_gi>"));
 	}
 	
@@ -1325,7 +1335,7 @@ public class LocalworkerTranslatorTest {
 		
 		Object outputText = outputs.get("outputText");
 		assertTrue(outputText instanceof String);
-		assertTrue(((String)outputText).startsWith("<?xml version=\"1.0\"?>"));
+		assertTrue(xmlStartToString((String)outputText));
 		assertTrue((String) outputText, ((String)outputText).contains("<GBSeqid>gi|18450186</GBSeqid>"));
 	}
 
@@ -1348,7 +1358,7 @@ public class LocalworkerTranslatorTest {
 		
 		Object outputText = outputs.get("outputText");
 		assertTrue(outputText instanceof String);
-		assertTrue(((String)outputText).startsWith("<?xml version=\"1.0\"?>"));
+		assertTrue(xmlStartToString((String)outputText));
 		assertTrue((String) outputText, ((String)outputText).contains("<INSDSeqid>gi|18450186</INSDSeqid>"));
 	}
 	
@@ -1371,7 +1381,7 @@ public class LocalworkerTranslatorTest {
 		
 		Object outputText = outputs.get("outputText");
 		assertTrue(outputText instanceof String);
-		assertTrue(((String)outputText).startsWith("<?xml version=\"1.0\"?>"));
+		assertTrue(xmlStartToString((String)outputText));
 		assertTrue((String) outputText, ((String)outputText).contains("<TSeq_gi>18450186</TSeq_gi>"));
 	}
 	
@@ -1395,7 +1405,7 @@ public class LocalworkerTranslatorTest {
 		
 		Object outputText = outputs.get("outputText");
 		assertTrue(outputText instanceof String);
-		assertTrue((String) outputText, ((String)outputText).startsWith("<?xml version=\"1.0\"?>"));
+		assertTrue((String) outputText, xmlStartToString((String)outputText));
 		assertTrue((String) outputText, ((String)outputText).contains("<PMID>18450186</PMID>"));
 	}
 	
@@ -1419,7 +1429,7 @@ public class LocalworkerTranslatorTest {
 		
 		Object outputText = outputs.get("outputText");
 		assertTrue(outputText instanceof String);
-		assertTrue((String) outputText, ((String)outputText).startsWith("<?xml version=\"1.0\"?>"));
+		assertTrue((String) outputText, xmlStartToString((String)outputText));
 		assertTrue((String) outputText, ((String)outputText).contains("<Id>18450186</Id>"));
 	}
 	
