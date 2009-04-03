@@ -13,6 +13,16 @@
 		<version>0.5-SNAPSHOT</version>
 	</parent>
 	
+	<properties>
+		<t2.activities.version>0.6-SNAPSHOT</t2.activities.version>
+		<t2.infrastructure.version>1.10-SNAPSHOT</t2.infrastructure.version>
+		<t2.core.version>0.6-SNAPSHOT</t2.core.version>
+		<t2.lang.version>0.5-SNAPSHOT</t2.lang.version>
+		<t2.compatibility.version>0.6-SNAPSHOT</t2.compatibility.version>
+		<t2.translators.version>0.6-SNAPSHOT</t2.translators.version>
+		<taverna.version>1.7.2.0</taverna.version>
+	</properties>
+	
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -32,27 +42,27 @@
 		</dependency>
 
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
+			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>provenanceconnector-api</artifactId>
-			<version>0.4</version>
+			<version>${t2.core.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>t2reference-impl</artifactId>
-			<version>0.2</version>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>reference-impl</artifactId>
+			<version>${t2.core.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
+			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>workflowmodel-impl</artifactId>
-			<version>0.4</version>
+			<version>${t2.core.version}</version>
 		</dependency>
 
 		<!--<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>all-activities</artifactId>
-			<version>0.4</version>
+			<version>${t2.activities.version}</version>
 			</dependency>
 			
 		--><!-- 		<dependency>
@@ -62,15 +72,15 @@
 			</dependency>
 		-->
 		<dependency>
-			<groupId>uk.org.mygrid.taverna.raven</groupId>
-			<artifactId>plugins-impl</artifactId>
-			<version>1.8</version>
+			<groupId>net.sf.taverna.t2.infrastructure</groupId>
+			<artifactId>plugins-api</artifactId>
+			<version>${t2.infrastructure.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>mysql-provenance</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>provenance-mysql</artifactId>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
 
 

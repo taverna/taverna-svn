@@ -5,12 +5,28 @@
 	<parent>
 		<groupId>net.sf.taverna</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.1-2009-03-12</version>
+		<version>0.1.2009-02-12</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.core</groupId>
 	<artifactId>provenance-mysql</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<name>mySQL provenance</name>
+	
+	<properties>
+		<t2.activities.version>0.6-SNAPSHOT</t2.activities.version>
+		<t2.infrastructure.version>1.10-SNAPSHOT</t2.infrastructure.version>
+		<t2.core.version>0.6-SNAPSHOT</t2.core.version>
+		<t2.lang.version>0.5-SNAPSHOT</t2.lang.version>
+		<t2.compatibility.version>0.6-SNAPSHOT</t2.compatibility.version>
+		<t2.translators.version>0.6-SNAPSHOT</t2.translators.version>
+		<t2.ui.api.version>0.4-SNAPSHOT</t2.ui.api.version>
+		<t2.ui.impl.version>0.4-SNAPSHOT</t2.ui.impl.version>
+		<t2.ui.components.version>0.4-SNAPSHOT</t2.ui.components.version>
+		<t2.ui.activities.version>0.6-SNAPSHOT</t2.ui.activities.version>
+		
+		<taverna.version>1.7.2.0</taverna.version>
+	</properties>
+	
 	<repositories>
 		<repository>
 			<releases />
@@ -30,9 +46,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
+			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>provenanceconnector-impl</artifactId>
-			<version>0.4</version>
+			<version>${t2.core.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
@@ -40,14 +56,14 @@
 			<version>5.1.5</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<groupId>net.sf.taverna.t2.ui-api</groupId>
 			<artifactId>contextual-views-api</artifactId>
-			<version>0.2</version>
+			<version>${t2.ui.api.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<groupId>net.sf.taverna.t2.ui-components</groupId>
 			<artifactId>provenance-config</artifactId>
-			<version>0.2</version>
+			<version>${t2.ui.components.version}</version>
 		</dependency>
 	</dependencies>
 </project>

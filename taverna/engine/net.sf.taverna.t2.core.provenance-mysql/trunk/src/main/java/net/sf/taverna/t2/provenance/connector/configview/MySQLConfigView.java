@@ -30,13 +30,13 @@ public class MySQLConfigView extends ContextualView{
 	private JTextField dbURL;
 
 	@Override
-	protected JComponent getMainFrame() {
+	public JComponent getMainFrame() {
 		refreshView();
 		return panel;
 	}
 
 	@Override
-	protected String getViewTitle() {
+	public String getViewTitle() {
 		return "My SQL Config View";
 	}
 

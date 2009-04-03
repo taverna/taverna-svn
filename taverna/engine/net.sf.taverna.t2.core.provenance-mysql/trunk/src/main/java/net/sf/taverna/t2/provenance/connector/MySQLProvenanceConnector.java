@@ -361,7 +361,7 @@ public class MySQLProvenanceConnector implements ProvenanceConnector {
 
 		getClass().getClassLoader().loadClass("com.mysql.jdbc.Driver")
 				.newInstance();
-		System.out.println("connection");
+		System.out.println("connection made");
 
 		try {
 			dbConn = DriverManager.getConnection(connection);
