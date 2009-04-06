@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.activities.beanshell.menu;
+package net.sf.taverna.t2.workbench.activitytools;
 
 import java.awt.Frame;
 import java.net.URI;
@@ -15,7 +15,7 @@ public abstract class AbstractConfigureActivityMenuAction<ActivityClass extends 
 
 	private static final URI configureSection = URI
 			.create("http://taverna.sf.net/2009/contextMenu/configureSection");
-	
+
 	protected final Class<ActivityClass> activityClass;
 
 	public AbstractConfigureActivityMenuAction(
@@ -52,7 +52,7 @@ public abstract class AbstractConfigureActivityMenuAction<ActivityClass extends 
 		return Utils.getParentFrame(getContextualSelection()
 				.getRelativeToComponent());
 	}
-	
+
 	protected void addMenuDots(Action configAction) {
 		String oldName = (String) configAction.getValue(Action.NAME);
 		if (!oldName.endsWith("..")) {
