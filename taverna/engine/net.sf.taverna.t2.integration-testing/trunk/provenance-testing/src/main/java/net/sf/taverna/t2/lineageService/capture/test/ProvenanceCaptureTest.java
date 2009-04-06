@@ -63,7 +63,7 @@ public class ProvenanceCaptureTest extends ProvenanceCaptureTestHelper  {
 
 				if ( entity != null ) {
 
-					System.out.println("populating port "+port.getName()+" with input" +entity.toString());
+					System.out.println("populating port "+port.getName()+" with input " +entity.toString());
 
 					WorkflowDataToken inputToken = new WorkflowDataToken("",new int[]{}, entity, context);
 					helper.getFacade().pushData(inputToken, port.getName());

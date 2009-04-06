@@ -82,6 +82,7 @@ public class ProvenanceCaptureTestHelper {
 		
 		referenceService = (ReferenceService) appContext.getBean("t2reference.service.referenceService"); //$NON-NLS-1$
 		
+		
 		if (clearDB != null)  isClearDB = Boolean.parseBoolean(clearDB);
 
 		provenanceConnector = new MySQLProvenanceConnector();
@@ -188,12 +189,8 @@ public class ProvenanceCaptureTestHelper {
 
 		System.out.println("input workflow: ["+T2File+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 
-		try {
-			dataflow = loadDataflow(T2File);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		dataflow = loadDataflow(T2File);
+
 		
 		dataflow.checkValidity();
 		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,""); //$NON-NLS-1$
@@ -238,6 +235,22 @@ public class ProvenanceCaptureTestHelper {
 	 */
 	public void setFacade(WorkflowInstanceFacade facade) {
 		this.facade = facade;
+	}
+
+
+	/**
+	 * @return the context
+	 */
+	public InvocationContext getContext() {
+		return context;
+	}
+
+
+	/**
+	 * @return the referenceService
+	 */
+	public ReferenceService getReferenceService() {
+		return referenceService;
 	}
 
 
