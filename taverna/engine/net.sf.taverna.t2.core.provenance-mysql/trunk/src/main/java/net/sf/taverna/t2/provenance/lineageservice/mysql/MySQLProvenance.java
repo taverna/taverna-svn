@@ -64,7 +64,7 @@ public class MySQLProvenance implements Provenance, SharedVocabulary
 		setEp(new EventProcessor(getPw(),getPq())); // singleton	
 		
 		
-		// clear the DB prior to testing  
+		// clear the DB prior to collecting new provenance  
 		if (isClearDB) {
 			System.out.println("clearing DB");
 			pw.clearDBStatic();
@@ -90,8 +90,18 @@ public class MySQLProvenance implements Provenance, SharedVocabulary
 //		System.out.println("received raw event of type " + eventType);
 		//System.out.println("content \n"+content);
 
-			processEvent(content, eventType);
+		processEvent(content, eventType, null);
 	}
+
+	
+
+	public void acceptRawProvenanceEvent(String eventType, String content,
+			Object context) throws SQLException, IOException {
+
+		processEvent(content, eventType, context);
+		
+	}
+
 
 	/**
 	 * parse d and generate SQL insert calls into the provenance DB
@@ -101,7 +111,7 @@ public class MySQLProvenance implements Provenance, SharedVocabulary
 	 * @throws IOException 
 	 */
 	@SuppressWarnings("unchecked")
-	private void processEvent(String content, String eventType) throws SQLException, IOException {
+	private void processEvent(String content, String eventType, Object context) throws SQLException, IOException {
 
 //		saveEvent for debugging / testing
 		if (saveEvents != null && saveEvents.equals("all")) {
@@ -135,7 +145,7 @@ public class MySQLProvenance implements Provenance, SharedVocabulary
 			try {
 				d = b.build (new StringReader(content));
 			
-			getEp().processProcessEvent(d);
+			getEp().processProcessEvent(d, context);
 			
 			} catch (JDOMException e) {
 				e.printStackTrace();
@@ -202,7 +212,6 @@ public class MySQLProvenance implements Provenance, SharedVocabulary
 	public void setSaveEvents(String saveEvents) {
 		MySQLProvenance.saveEvents = saveEvents;
 	}
-
 
 
 

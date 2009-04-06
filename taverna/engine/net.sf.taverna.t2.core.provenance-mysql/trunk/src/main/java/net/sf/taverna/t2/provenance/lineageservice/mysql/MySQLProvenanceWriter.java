@@ -20,16 +20,24 @@
  ******************************************************************************/
 package net.sf.taverna.t2.provenance.lineageservice.mysql;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProcBinding;
 import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
 import net.sf.taverna.t2.provenance.lineageservice.utils.VarBinding;
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.ReferenceServiceException;
+import net.sf.taverna.t2.reference.T2Reference;
+import net.sf.taverna.t2.reference.T2ReferenceType;
+import net.sf.taverna.t2.reference.impl.T2ReferenceImpl;
 
 /**
  * @author paolo
@@ -298,7 +306,7 @@ public class MySQLProvenanceWriter  implements ProvenanceWriter {
 	/**
 	 * catching SQL errors  -> these may happen when the same event is generated twice due to a fail-retry condition
 	 */
-	public void addVarBinding(VarBinding vb) {
+	public void addVarBinding(VarBinding vb, Object context) {
 
 		Statement stmt;
 		try {
@@ -315,22 +323,50 @@ public class MySQLProvenanceWriter  implements ProvenanceWriter {
 			"iteration    = \""+vb.getIteration()+"\", "+
 			"positionInColl = \""+vb.getPositionInColl()+"\";";
 
-			if (cnt % 100 == 0) {
+//			if (cnt % 100 == 0) {
 			System.out.println("Var binding: instance ["+vb.getWfInstanceRef()+"] processor ["+vb.getPNameRef()+"] varName ["+vb.getVarNameRef()+
 					"] collIdRef ["+vb.getCollIDRef()+"] iteration ["+vb.getIteration()+
 					"] positionInCollection ["+vb.getPositionInColl()+"] value ["+vb.getValue()+"]");
-			}
+//			}
+			
 			
 			int result = stmt.executeUpdate(q);
 
 			cnt++;
+
+			// lame attempt to use context to resolve vb.getValue(): THIS DOES NOT WORK
+//			InvocationContext invocationContext = (InvocationContext)context;
+//			ReferenceService referenceService = invocationContext.getReferenceService();
+//			T2Reference ref = (T2Reference) vb.getValue();
+//			referenceService.renderIdentifier(ref, byte[].class, invocationContext);
+//			ReferenceSetService referenceSetService = referenceService.getReferenceSetService();
+//			ReferenceSet referenceSet = referenceSetService.getReferenceSet(ref);
+//			Set<ExternalReferenceSPI> externalReferences = referenceSet.getExternalReferences();
+//			externalReferences.iterator().next().getDataNature();
+			
+			// can we just create a new T2ReferenceImpl object here??
+//			T2ReferenceImpl r = new T2ReferenceImpl();
+//			
+//			String[] valueParts = vb.getValue().split("\\?");
+//			
+//			
+//			r.setLocalPart(valueParts[1]);
+//			r.setNamespacePart("testNamespace");
+//			r.setContainsErrors(false);
+//			r.setDepth(0);  // FIXME
+//			r.setReferenceType(T2ReferenceType.ReferenceSet);
+//
+//			InvocationContext invocationContext = (InvocationContext)context;
+//			ReferenceService referenceService = invocationContext.getReferenceService();
+//			
+//			referenceService.renderIdentifier(r, String.class, invocationContext);
+			
 			
 		} catch (SQLException e) {
-
 			System.out.println("****  insert failed due to ["+e.getMessage()+"]");
-
+		}  catch (ReferenceServiceException e1) {
+			System.out.println(e1.getMessage());
 		}
-		//	System.out.println("*** addVarBinding: "+result+ " rows added to DB");
 
 	}
 
@@ -494,6 +530,7 @@ public class MySQLProvenanceWriter  implements ProvenanceWriter {
 			e.printStackTrace();
 		}
 	}
+
 
 
 

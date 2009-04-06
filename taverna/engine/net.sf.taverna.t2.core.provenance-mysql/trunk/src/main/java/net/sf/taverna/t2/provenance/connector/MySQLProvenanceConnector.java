@@ -27,17 +27,23 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.jdom.output.XMLOutputter;
 
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.provenance.item.ProvenanceItem;
 import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResult;
 import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
 import net.sf.taverna.t2.provenance.lineageservice.LineageSQLQuery;
 import net.sf.taverna.t2.provenance.lineageservice.Provenance;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenance;
+import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.ReferenceSet;
+import net.sf.taverna.t2.reference.ReferenceSetService;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workbench.provenance.ProvenanceConfiguration;
 
 public class MySQLProvenanceConnector implements ProvenanceConnector {
@@ -156,8 +162,18 @@ public class MySQLProvenanceConnector implements ProvenanceConnector {
 	/**
 	 * main entry point into the service
 	 */
-	public void addProvenanceItem(ProvenanceItem provenanceItem) {
+	public void addProvenanceItem(ProvenanceItem provenanceItem, Object context) {
 
+//		InvocationContext invocationContext = (InvocationContext)context;
+//		ReferenceService referenceService = invocationContext.getReferenceService();
+//		T2Reference ref = null;
+//		referenceService.renderIdentifier(ref, byte[].class, invocationContext);
+//		ReferenceSetService referenceSetService = referenceService.getReferenceSetService();
+//		ReferenceSet referenceSet = referenceSetService.getReferenceSet(ref);
+//		Set<ExternalReferenceSPI> externalReferences = referenceSet.getExternalReferences();
+//		externalReferences.iterator().next().getDataNature();
+		
+		
 		String content = provenanceItem.getAsString();
 
 
@@ -173,7 +189,7 @@ public class MySQLProvenanceConnector implements ProvenanceConnector {
 
 		try {
 			provenance.acceptRawProvenanceEvent(provenanceItem.getEventType(),
-					content);
+					content, context);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

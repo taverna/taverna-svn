@@ -597,7 +597,7 @@ public class MySQLProvenanceQuery implements ProvenanceQuery {
 		Statement stmt;
 		stmt = dbConn.createStatement();
 
-		System.out.println("executing: "+q);
+	//	System.out.println("executing: "+q);
 
 		boolean success = stmt.execute(q);
 		// System.out.println("result: "+success);
@@ -646,7 +646,7 @@ public class MySQLProvenanceQuery implements ProvenanceQuery {
 		Statement stmt;
 		stmt = dbConn.createStatement();
 
-		System.out.println("executing: "+q);
+	//	System.out.println("executing: "+q);
 
 		boolean success = stmt.execute(q);
 		// System.out.println("result: "+success);

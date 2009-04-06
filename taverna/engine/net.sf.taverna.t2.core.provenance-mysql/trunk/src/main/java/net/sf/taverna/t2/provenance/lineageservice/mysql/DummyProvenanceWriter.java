@@ -76,7 +76,7 @@ public class DummyProvenanceWriter implements ProvenanceWriter {
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addVarBinding(net.sf.taverna.t2.provenance.lineageservice.utils.VarBinding)
 	 */
-	public void addVarBinding(VarBinding vb) throws SQLException {
+	public void addVarBinding(VarBinding vb, Object context) throws SQLException {
 		// TODO Auto-generated method stub
 		System.out.println("addVarBinding called");
 
