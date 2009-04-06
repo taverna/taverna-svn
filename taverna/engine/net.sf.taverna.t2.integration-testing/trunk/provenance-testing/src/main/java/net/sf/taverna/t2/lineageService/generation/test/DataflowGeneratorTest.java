@@ -35,9 +35,11 @@ public class DataflowGeneratorTest {
 	private static final String DEFAULT_CHAIN_LEN = "5";
 	private static String len = Messages.getString("linearChainLength");
 	private static String inputDepthStr = Messages.getString("inputDepth");
+	private static String serial = Messages.getString("serial");  // add control links?
 
 	String dataflowName, dataflowID  = null;
 	private static int inputDepth = 0;
+	private static boolean isSerial = false;
 
 	Element templateDataflowElement = null;
 
@@ -62,6 +64,9 @@ public class DataflowGeneratorTest {
 
 		if (inputDepthStr == null) inputDepth = 0; 
 		else inputDepth = Integer.parseInt(inputDepthStr);
+
+		if (serial != null)  
+		 isSerial = Boolean.parseBoolean(serial);
 
 	}
 
@@ -91,7 +96,10 @@ public class DataflowGeneratorTest {
 
 		LinearChainGenerator lcg = new LinearChainGenerator();
 		lcg.setTemplateFileName(TEMPLATE_FILE);
-
+		
+		lcg.setSerial(isSerial);
+		System.out.println("isSerial: "+isSerial);
+		
 		Dataflow df = lcg.createEmptyDataflow(dataflowName, dataflowID); //$NON-NLS-1$ //$NON-NLS-2$
 
 		// create single input port
@@ -153,7 +161,7 @@ public class DataflowGeneratorTest {
 		// connect this chain to LISTGEN:Y1
 		df = dfg.connectPorts(df, listGen, "Y1", lcg1.getFirst(), "X"); //$NON-NLS-1$ //$NON-NLS-2$
 		
-		df = dfg.addControlLink(df, listGen, lcg1.getFirst());  // CHECK 
+		if (isSerial) df = dfg.addControlLink(df, listGen, lcg1.getFirst());  // CHECK 
 
 		// create second chain of length <len>
 		lcg2 = new LinearChainGenerator();
@@ -165,7 +173,7 @@ public class DataflowGeneratorTest {
 		// connect this chain to LISTGEN:Y1
 		df = dfg.connectPorts(df, listGen, "Y2", lcg2.getFirst(), "X"); //$NON-NLS-1$ //$NON-NLS-2$
 
-		df = dfg.addControlLink(df, listGen, lcg2.getFirst());  // CHECK 
+		if (isSerial) df = dfg.addControlLink(df, listGen, lcg2.getFirst());  // CHECK 
 
 		// create 2TO1 processor
 		Processor two2One = dfg.addSingleProcessor(df, "2TO1", "2TO1_FINAL");

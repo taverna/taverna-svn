@@ -25,38 +25,44 @@ public class CaptureResultsListener implements ResultListener {
 
 		this.context = context;
 		outputCount=dataflow.getOutputPorts().size();
+		
+		System.out.println("initial output count = "+outputCount);
 	}
+	
+	
 	public void resultTokenProduced(WorkflowDataToken dataToken,
 			String portname) {
 		if (dataToken.getIndex().length==0) {
 			T2Reference reference = dataToken.getData();
 			System.out.println("Output reference = " + reference);
 
-			ReferenceService referenceService = context.getReferenceService();
-
-			try {
-				ReferenceSetService referenceSetService = referenceService.getReferenceSetService();
-				ReferenceSet referenceSet = referenceSetService.getReferenceSet(reference);
-				Set<ExternalReferenceSPI> externalReferences = referenceSet.getExternalReferences();
-				System.out.println(externalReferences.iterator().next().getDataNature());
-				
-//				referenceService.renderIdentifier(reference, Object.class, context);
-
-				//referenceService.resolveIdentifier(reference, null, context);
-			} catch(Exception e) {
-				System.out.println(e.getMessage());
-			}
+//			ReferenceService referenceService = context.getReferenceService();
+//
+//			try {
+//				ReferenceSetService referenceSetService = referenceService.getReferenceSetService();
+//				ReferenceSet referenceSet = referenceSetService.getReferenceSet(reference);
+//				Set<ExternalReferenceSPI> externalReferences = referenceSet.getExternalReferences();
+//				System.out.println("data nature: "+externalReferences.iterator().next().getDataNature());
+//				
+////				referenceService.renderIdentifier(reference, Object.class, context);
+//
+//				//referenceService.resolveIdentifier(reference, null, context);
+//			} catch(Exception e) {
+//				System.out.println(e.getMessage());
+//			}
 
 //			ReferenceSetService referenceSetService = referenceService.getReferenceSetService();
 //			ReferenceSet referenceSet = referenceSetService.getReferenceSet(reference);
 //			Set<ExternalReferenceSPI> externalReferences = referenceSet.getExternalReferences();
 //			System.out.println(externalReferences.iterator().next().getDataNature());
 //
-			//		System.out.println("data: "+context.getReferenceService().renderIdentifier(reference, String.class, context));
+	//		System.out.println("data: "+context.getReferenceService().renderIdentifier(reference, String.class, context));
 
+			// FIXME data resolution is broken -- not sure why.
+//			resultMap.put(portname, context.getReferenceService().renderIdentifier(reference, Object.class,context));
 
-			resultMap.put(portname, context.getReferenceService().renderIdentifier(reference, Object.class,context));
 			outputCount--;
+			System.out.println("current output count = "+outputCount);
 		}
 	}
 

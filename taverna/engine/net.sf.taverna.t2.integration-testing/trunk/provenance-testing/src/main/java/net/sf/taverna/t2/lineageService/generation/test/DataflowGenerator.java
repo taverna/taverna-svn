@@ -53,6 +53,7 @@ public class DataflowGenerator {
 	XMLDeserializer deserializer;
 	
 	String templateFileName;
+
 	
 	static {
 		PluginManager.setRepository(ApplicationRuntime.getInstance().getRavenRepository());

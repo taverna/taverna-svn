@@ -58,7 +58,7 @@ public class ProvenanceCaptureTestHelper {
 	private String clearDB = testFiles.getString("clearDB");
 	private String saveEvents = testFiles.getString("saveEvents");
 	boolean isClearDB = false;
-	
+	boolean isUseProvenance = true;
 	
 	@SuppressWarnings("unchecked") //$NON-NLS-1$
 	
@@ -107,14 +107,14 @@ public class ProvenanceCaptureTestHelper {
 			}
 
 			public ProvenanceConnector getProvenanceConnector() {
-				return provenanceConnector;
-				//return null;
+				
+				if (isUseProvenance) return provenanceConnector;
+				return null;
+				
 			}
 		};
 	}
 
-	
-	
 	protected Dataflow loadDataflow(String resourceName) throws Exception {
 		XMLDeserializer deserializer = new XMLDeserializerImpl();
 		InputStream inStream = ProvenanceCaptureTestHelper.class.getResourceAsStream("/provenance-testing/" + resourceName); //$NON-NLS-1$
@@ -123,7 +123,6 @@ public class ProvenanceCaptureTestHelper {
 		Element el= builder.build(inStream).detachRootElement();
 		return deserializer.deserializeDataflow(el);
 	}
-	
 	
 	/**
 	 * 
@@ -137,7 +136,8 @@ public class ProvenanceCaptureTestHelper {
 		waitForCompletion(listener, 3000);
 	}
 	
-	protected void waitForCompletion(CaptureResultsListener listener,int maxtimeSeconds) throws InterruptedException, DataflowTimeoutException{
+	protected void waitForCompletion(CaptureResultsListener listener,int maxtimeSeconds) throws InterruptedException, DataflowTimeoutException{	
+		
 		float time=0;
 		int maxTime = maxtimeSeconds*1000;
 		int interval=100;
@@ -150,7 +150,10 @@ public class ProvenanceCaptureTestHelper {
 						+ "s was exceed waiting for the results"); //$NON-NLS-1$
 			}
 		}
+
+
 	}
+	
 	protected void waitForCompletion(
 			Map<String, DummyEventHandler> eventHandlers, int maxtimeSeconds)
 			throws InterruptedException, DataflowTimeoutException {
@@ -183,6 +186,11 @@ public class ProvenanceCaptureTestHelper {
 	
 		String T2File = testFiles.getString(testfilesProperty);
 
+		String useProvenance = testFiles.getString("useProvenance");
+		
+		if (useProvenance != null)  isUseProvenance = Boolean.parseBoolean(useProvenance);
+		System.out.println("enable provenance: "+isUseProvenance);
+		
 		Dataflow dataflow = null;
 
 		makeDataManager();

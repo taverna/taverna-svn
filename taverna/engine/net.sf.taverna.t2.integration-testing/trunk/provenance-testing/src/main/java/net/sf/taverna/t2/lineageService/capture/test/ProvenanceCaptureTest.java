@@ -13,6 +13,10 @@ import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 
+//CHECK
+import info.ipaw.pc3.PSLoadWorkflow.*;
+
+
 import org.junit.Test;
 
 
@@ -22,19 +26,27 @@ import org.junit.Test;
  */
 public class ProvenanceCaptureTest extends ProvenanceCaptureTestHelper  {
 
-	boolean activateProvenance = true;
+
+//	@Test
+//	public void testBeanshell() throws Exception {
+//
+//		boolean IsCSVReadyFileExistsOutput = LoadAppLogic.IsCSVReadyFileExists("/Users/paolo/Documents/myGRID/OPM/PC3/SampleData/J062941");
+//	}
+
 
 	@Test
 	public void testInput() throws Exception {
 
-		ProvenanceCaptureTestHelper helper = new ProvenanceCaptureTestHelper();
 
+		ProvenanceCaptureTest helper = this;
 		helper.createEventsDir(); 
 
 		Dataflow dataflow = helper.setup("ProvenanceCaptureTest");
 
 		// collect inputs from properties file
 		String inputValues = testFiles.getString("workflow.inputs");
+
+		long start=0;
 
 		if (inputValues.equals("!workflow.inputs!")) {
 			System.out.println("no inputs -- hope that's ok");			
@@ -57,6 +69,9 @@ public class ProvenanceCaptureTest extends ProvenanceCaptureTestHelper  {
 			}
 
 			// provide inputs to ports
+			start = System.currentTimeMillis();
+			System.out.println("timer started");
+
 			for (DataflowInputPort port : dataflow.getInputPorts()) {
 
 				T2Reference entity = references.get(port.getName());
@@ -72,6 +87,11 @@ public class ProvenanceCaptureTest extends ProvenanceCaptureTestHelper  {
 		}
 
 		helper.waitForCompletion();
+
+
+		long stop = System.currentTimeMillis();
+		long gst = stop-start;
+		System.out.println("execution time: "+gst+"ms");
 
 		assertTrue("ok as long as we got this far", true); //$NON-NLS-1$
 	}

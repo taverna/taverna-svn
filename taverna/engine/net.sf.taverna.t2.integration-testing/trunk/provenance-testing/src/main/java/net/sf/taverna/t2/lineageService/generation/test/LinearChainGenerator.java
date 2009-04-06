@@ -25,6 +25,7 @@ public class LinearChainGenerator extends DataflowGenerator {
 
 	Processor first, last;
 	private String suffix;
+	boolean isSerial = false;
 
 	/**
 	 * generates a linear chain with one global I and one O using the same processor template
@@ -54,7 +55,8 @@ public class LinearChainGenerator extends DataflowGenerator {
 
 			if (i>0) {
 				 df = connectPorts(df, previous, "Y", current, "X"); //$NON-NLS-1$ //$NON-NLS-2$
-				 df = addControlLink(df, previous, current);   //  experimental
+				 if (isSerial) 
+					 df = addControlLink(df, previous, current);   
 			}
 
 			if (i < length-1)  previous = current;
@@ -94,6 +96,22 @@ public class LinearChainGenerator extends DataflowGenerator {
 
 	public void setPnameSuffix(String suffix) {
 		this.suffix = suffix;
+	}
+
+
+	/**
+	 * @return the isSerial
+	 */
+	public boolean isSerial() {
+		return isSerial;
+	}
+
+
+	/**
+	 * @param isSerial the isSerial to set
+	 */
+	public void setSerial(boolean isSerial) {
+		this.isSerial = isSerial;
 	}
 
 
