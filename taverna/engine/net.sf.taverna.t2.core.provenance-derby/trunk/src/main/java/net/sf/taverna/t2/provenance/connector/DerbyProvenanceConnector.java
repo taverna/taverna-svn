@@ -525,4 +525,20 @@ public class DerbyProvenanceConnector implements ProvenanceConnector {
 		logger.info("Cleared provenance database");
 		
 	}
+
+	public void addProvenanceItem(ProvenanceItem provenanceItem,
+			Object invocationContext) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public String getSaveEvents() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setSaveEvents(String saveEvents) {
+		// TODO Auto-generated method stub
+		
+	}
 }

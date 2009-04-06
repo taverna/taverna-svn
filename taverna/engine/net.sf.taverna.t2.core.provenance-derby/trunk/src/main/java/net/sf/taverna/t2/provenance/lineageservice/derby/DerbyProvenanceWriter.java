@@ -361,4 +361,10 @@ public class DerbyProvenanceWriter implements ProvenanceWriter {
 		return null;
 	}
 
+	public void addVarBinding(VarBinding vb, Object context)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

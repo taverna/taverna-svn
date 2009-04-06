@@ -193,11 +193,11 @@ public class DerbyProvenance implements Provenance, SharedVocabulary {
 		} else if (eventType.equals("EOW")) { // SharedVocabulary.END_WORKFLOW_EVENT_TYPE))
 												// {
 			// use this event to do housekeeping on the input/output varbindings
+//TODO change null to whatever it should be 
+			getEp().fillInputVarBindings(null); // indep. of current event
+			getEp().fillOutputVarBindings(null);
 
-			getEp().fillInputVarBindings(); // indep. of current event
-			getEp().fillOutputVarBindings();
-
-			getEp().patchTopLevelnputs();
+			getEp().patchTopLevelnputs(null);
 			// load up any annotations associated with this workflow TODO
 
 		} else {
@@ -209,7 +209,7 @@ public class DerbyProvenance implements Provenance, SharedVocabulary {
 			try {
 				d = b.build(new StringReader(content));
 
-				getEp().processProcessEvent(d);
+				getEp().processProcessEvent(d, null);
 
 			} catch (JDOMException e) {
 				logger.warn("Process event problem: " + e);
@@ -263,6 +263,12 @@ public class DerbyProvenance implements Provenance, SharedVocabulary {
 	}
 
 	public void setSaveEvents(String saveEvents) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void acceptRawProvenanceEvent(String eventType, String content,
+			Object context) throws SQLException, IOException {
 		// TODO Auto-generated method stub
 		
 	}
