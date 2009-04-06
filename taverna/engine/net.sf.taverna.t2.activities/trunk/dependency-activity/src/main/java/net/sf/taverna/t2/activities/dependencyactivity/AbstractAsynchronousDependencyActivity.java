@@ -52,6 +52,7 @@ import net.sf.taverna.t2.workflowmodel.utils.Tools;
  * 
  * @author Alex Nenadic
  * @author Tom Oinn
+ * @author Stian Soiland-Reyes
  * 
  * @param <ConfigType> the configuration type used for this activity
  *
@@ -273,8 +274,7 @@ public abstract class AbstractAsynchronousDependencyActivity<ConfigType> extends
 										continue;
 									}
 								}								
-							}
-							else if (dependencyType.equals(ARTIFACTS)){ 
+							} else if (dependencyType.equals(ARTIFACTS) && this.getClass().getClassLoader() instanceof LocalArtifactClassLoader){ 
 								LocalArtifactClassLoader cl = (LocalArtifactClassLoader) this.getClass().getClassLoader(); // this class is always loaded with LocalArtifactClassLoader
 								// Get the LocalReposotpry capable of finding artifact jar files
 								LocalRepository rep  = (LocalRepository) cl.getRepository();
@@ -288,8 +288,7 @@ public abstract class AbstractAsynchronousDependencyActivity<ConfigType> extends
 					}
 				}
 			}
-		}
-		else{ // Just add dependencies for this activity since we can't get hold of the whole workflow
+		} else { // Just add dependencies for this activity since we can't get hold of the whole workflow
 			if (dependencyType.equals(LOCAL_JARS)){
 				for (String jar : configurationBean.getLocalDependencies()) {
 					try {
