@@ -77,11 +77,12 @@ public class CaptureResultsListener implements ResultListener {
 		if (identified instanceof ErrorDocument) {
 			ErrorDocument errorDoc = (ErrorDocument)identified;
 			System.err.println("ERROR: " + identified.getId());
-			System.err.println(" message=" + errorDoc.getMessage());
-			System.err.println(" exceptionMessage=" + errorDoc.getExceptionMessage());
-			if (! errorDoc.getStackTraceStrings().isEmpty()) {
-				System.err.println(" stacktrace=");
-	//			System.err.println("Exception: ");
+			System.err.println(" message: " + errorDoc.getMessage());
+			if (errorDoc.getStackTraceStrings().isEmpty()) {
+				System.err.println(" errorMessage: " + errorDoc.getExceptionMessage());
+			} else {
+				System.err.println(" stacktrace:");
+				System.err.println(errorDoc.getExceptionMessage());
 				for (StackTraceElementBean stackTrace : errorDoc.getStackTraceStrings()) {
 					System.err.println("	at " + stackTrace.getClassName() + "." + stackTrace.getMethodName() + "(" + stackTrace.getFileName() + ":" + stackTrace.getLineNumber() + ")");
 				}
