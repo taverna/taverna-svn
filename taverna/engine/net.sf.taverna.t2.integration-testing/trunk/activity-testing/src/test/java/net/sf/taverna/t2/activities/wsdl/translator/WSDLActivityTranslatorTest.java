@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.taverna.t2.activities.testutils.ActivityInvoker;
-import net.sf.taverna.t2.activities.testutils.DummyProcessor;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivity;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
 import net.sf.taverna.t2.activities.wsdl.WSDLTestConstants;
@@ -42,9 +41,11 @@ import net.sf.taverna.t2.activities.wsdl.translator.WSDLActivityTranslatorTest;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessor;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class WSDLActivityTranslatorTest {
@@ -77,10 +78,17 @@ public class WSDLActivityTranslatorTest {
         WSDLActivityTranslator translator = new WSDLActivityTranslator();
         assertTrue(translator.canHandle(processor));
     }
+
+	@SuppressWarnings("serial")
+	private class DummyProcessor extends BeanshellProcessor {
+		public DummyProcessor() throws ProcessorCreationException, DuplicateProcessorNameException {
+			super(null,"beanshell","",new String[]{},new String[]{});
+		}
+	};
     
     @Test
     public void testCanHandleFalse() throws Exception {
-        WSDLActivityTranslator translator = new WSDLActivityTranslator();
+        WSDLActivityTranslator translator = new WSDLActivityTranslator();        
         assertFalse(translator.canHandle(new DummyProcessor()));
     }
     
