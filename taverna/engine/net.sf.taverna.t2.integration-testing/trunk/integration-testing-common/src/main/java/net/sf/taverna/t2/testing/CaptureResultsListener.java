@@ -50,17 +50,18 @@ public class CaptureResultsListener implements ResultListener {
 		if (dataToken.getIndex().length == 0) {
 			T2Reference reference = dataToken.getData();
 			System.out.println("Output reference made = " + reference);
-			Object value;
+			Object value = reference;
 			if (reference.containsErrors()) {
 				System.out.println("Contains errors!");
-				printAllErrors(context.getReferenceService().resolveIdentifier(reference, null, context));				
-			}
-			try {
-				value = context.getReferenceService().renderIdentifier(
-						reference, Object.class, context);
-			} catch (ReferenceServiceException ex) {
-				ex.printStackTrace();
-				value = reference;
+				printAllErrors(context.getReferenceService().resolveIdentifier(
+						reference, null, context));
+			} else {
+				try {
+					value = context.getReferenceService().renderIdentifier(
+							reference, Object.class, context);
+				} catch (ReferenceServiceException ex) {
+					ex.printStackTrace();
+				}
 			}
 			resultMap.put(portname, value);
 			synchronized (this) {
@@ -71,36 +72,43 @@ public class CaptureResultsListener implements ResultListener {
 
 	@SuppressWarnings("unchecked")
 	public void printAllErrors(Identified identified) {
-		if (! identified.getId().containsErrors()) {
+		if (!identified.getId().containsErrors()) {
 			return;
 		}
 		if (identified instanceof ErrorDocument) {
-			ErrorDocument errorDoc = (ErrorDocument)identified;
+			ErrorDocument errorDoc = (ErrorDocument) identified;
 			System.err.println("ERROR: " + identified.getId());
 			System.err.println(" message: " + errorDoc.getMessage());
 			if (errorDoc.getStackTraceStrings().isEmpty()) {
-				System.err.println(" errorMessage: " + errorDoc.getExceptionMessage());
+				System.err.println(" errorMessage: "
+						+ errorDoc.getExceptionMessage());
 			} else {
 				System.err.println(" stacktrace:");
 				System.err.println(errorDoc.getExceptionMessage());
-				for (StackTraceElementBean stackTrace : errorDoc.getStackTraceStrings()) {
-					System.err.println("	at " + stackTrace.getClassName() + "." + stackTrace.getMethodName() + "(" + stackTrace.getFileName() + ":" + stackTrace.getLineNumber() + ")");
+				for (StackTraceElementBean stackTrace : errorDoc
+						.getStackTraceStrings()) {
+					System.err.println("	at " + stackTrace.getClassName() + "."
+							+ stackTrace.getMethodName() + "("
+							+ stackTrace.getFileName() + ":"
+							+ stackTrace.getLineNumber() + ")");
 				}
 			}
 			if (!errorDoc.getErrorReferences().isEmpty()) {
 				System.err.print("Caused by ");
 				for (T2Reference errorRef : errorDoc.getErrorReferences()) {
-					printAllErrors(context.getReferenceService().resolveIdentifier(errorRef, null, context));
+					printAllErrors(context.getReferenceService()
+							.resolveIdentifier(errorRef, null, context));
 				}
 			}
-			System.err.println("(end of workflow error " + identified.getId() + ")");
+			System.err.println("(end of workflow error " + identified.getId()
+					+ ")");
 		} else if (identified instanceof IdentifiedList) {
 			IdentifiedList list = (IdentifiedList) identified;
 			for (Object object : list) {
 				if (object instanceof Identified) {
-					printAllErrors((Identified)object);
+					printAllErrors((Identified) object);
 				}
-			}			
+			}
 		} else {
 			// OK, no errors to report
 		}
