@@ -1,61 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
-		<artifactId>t2integration-testing</artifactId>
-		<version>0.4-SNAPSHOT</version>
+		<artifactId>integration-testing</artifactId>
+		<version>0.5-SNAPSHOT</version>
 	</parent>
-	<groupId>net.sf.taverna.t2</groupId>
+	<groupId>net.sf.taverna.t2.integration-testing</groupId>
 	<artifactId>integration-testing-common</artifactId>
 	<name>Common Testing Utilities</name>
-	<packaging>jar</packaging>
-	
+
 	<dependencies>
-		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>compatibility-api</artifactId>
-			<version>${t2.core.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>compatibility-impl</artifactId>
-			<version>${t2.core.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>workflowmodel-api</artifactId>
-			<version>${t2.core.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>workflowmodel-impl</artifactId>
-			<version>${t2.core.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
-				<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
+		<dependency>
+			<groupId>net.sf.taverna.t2.infrastructure</groupId>
 			<artifactId>platform</artifactId>
-			<version>${t2.platform.version}</version>
+			<version>${t2.infrastructure.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>t2reference-api</artifactId>
-			<version>${t2.reference.version}</version>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>workflowmodel-api</artifactId>
+			<version>${t2.core.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>t2reference-impl</artifactId>
-			<version>${t2.reference.version}</version>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>workflowmodel-impl</artifactId>
+			<version>${t2.core.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>t2reference-core-extensions</artifactId>
-			<version>${t2.reference.version}</version>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>reference-api</artifactId>
+			<version>${t2.core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>reference-impl</artifactId>
+			<version>${t2.core.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>reference-core-extensions</artifactId>
+			<version>${t2.reference.core.extensions.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sf.taverna.t2.compatibility</groupId>
+			<artifactId>compatibility-api</artifactId>
+			<version>${t2.compatibility.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.compatibility</groupId>
+			<artifactId>compatibility-impl</artifactId>
+			<version>${t2.compatibility.version}</version>
 		</dependency>
 	</dependencies>
-	
 </project>

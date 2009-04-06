@@ -1,38 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.sf.taverna.t2.integration-testing</groupId>
-	<artifactId>provenance-testing</artifactId>
-	<packaging>jar</packaging>
-	<name>Provenance testing</name>
 	<parent>
-		<artifactId>integration-testing</artifactId>
 		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>integration-testing</artifactId>
 		<version>0.5-SNAPSHOT</version>
 	</parent>
-	
-	<properties>
-		<t2.activities.version>0.6-SNAPSHOT</t2.activities.version>
-		<t2.infrastructure.version>1.10-SNAPSHOT</t2.infrastructure.version>
-		<t2.core.version>0.6-SNAPSHOT</t2.core.version>
-		<t2.lang.version>0.5-SNAPSHOT</t2.lang.version>
-		<t2.compatibility.version>0.6-SNAPSHOT</t2.compatibility.version>
-		<t2.translators.version>0.6-SNAPSHOT</t2.translators.version>
-		<taverna.version>1.7.2.0</taverna.version>
-	</properties>
-	
+	<groupId>net.sf.taverna.t2.integration-testing</groupId>
+	<artifactId>provenance-testing</artifactId>
+	<name>Provenance testing</name>
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.4</version>
-		</dependency>
-		<dependency>
-			<groupId>jdom</groupId>
-			<artifactId>jdom</artifactId>
-			<version>1.0</version>
 		</dependency>
 
 		<dependency>
@@ -42,11 +24,16 @@
 		</dependency>
 
 		<dependency>
+			<groupId>net.sf.taverna.t2.infrastructure</groupId>
+			<artifactId>plugins-api</artifactId>
+			<version>${t2.infrastructure.version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>provenanceconnector-api</artifactId>
 			<version>${t2.core.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>reference-impl</artifactId>
@@ -58,31 +45,28 @@
 			<artifactId>workflowmodel-impl</artifactId>
 			<version>${t2.core.version}</version>
 		</dependency>
-
-		<!--<dependency>
-			<groupId>net.sf.taverna.t2.activities</groupId>
-			<artifactId>all-activities</artifactId>
-			<version>${t2.activities.version}</version>
-			</dependency>
-			
-		--><!-- 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>compatibility-impl</artifactId>
-			<version>0.4</version>
-			</dependency>
-		-->
-		<dependency>
-			<groupId>net.sf.taverna.t2.infrastructure</groupId>
-			<artifactId>plugins-api</artifactId>
-			<version>${t2.infrastructure.version}</version>
-		</dependency>
-
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>provenance-mysql</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>provenance-mysql</artifactId>
+			<version>0.1-SNAPSHOT</version>
+			<type>test-jar</type>
+		</dependency>
 
+		<!--
+			<dependency> <groupId>net.sf.taverna.t2.activities</groupId>
+			<artifactId>all-activities</artifactId>
+			<version>${t2.activities.version}</version> </dependency>
+		-->
+		<!--
+			<dependency> <groupId>net.sf.taverna.t2.compatibility</groupId>
+			<artifactId>compatibility-impl</artifactId>
+			<version>${t2.compatibility.version}</version> </dependency>
+		-->
 
 		<dependency>
 			<groupId>jdom</groupId>
