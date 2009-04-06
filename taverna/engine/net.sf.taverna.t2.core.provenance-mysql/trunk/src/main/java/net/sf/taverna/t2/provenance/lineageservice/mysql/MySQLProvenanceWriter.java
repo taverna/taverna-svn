@@ -324,9 +324,9 @@ public class MySQLProvenanceWriter  implements ProvenanceWriter {
 			"positionInColl = \""+vb.getPositionInColl()+"\";";
 
 //			if (cnt % 100 == 0) {
-			System.out.println("Var binding: instance ["+vb.getWfInstanceRef()+"] processor ["+vb.getPNameRef()+"] varName ["+vb.getVarNameRef()+
-					"] collIdRef ["+vb.getCollIDRef()+"] iteration ["+vb.getIteration()+
-					"] positionInCollection ["+vb.getPositionInColl()+"] value ["+vb.getValue()+"]");
+//			System.out.println("Var binding: instance ["+vb.getWfInstanceRef()+"] processor ["+vb.getPNameRef()+"] varName ["+vb.getVarNameRef()+
+//					"] collIdRef ["+vb.getCollIDRef()+"] iteration ["+vb.getIteration()+
+//					"] positionInCollection ["+vb.getPositionInColl()+"] value ["+vb.getValue()+"]");
 //			}
 			
 			
