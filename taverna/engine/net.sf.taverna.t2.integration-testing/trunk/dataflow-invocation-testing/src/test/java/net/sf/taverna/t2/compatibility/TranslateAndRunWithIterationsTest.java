@@ -39,14 +39,13 @@ import org.junit.Test;
 public class TranslateAndRunWithIterationsTest extends InvocationTestHelper {
 
 	@Test
-	
 	//Tests a dataflow that passes a list of lists to a processor that expects a list, so should iterate for each inner list. 
 	public void testIterateListOfLists() throws Exception {
 		Dataflow dataflow = translateScuflFile("test_iterate_list_of_lists.xml");
 		DataflowValidationReport report = validateDataflow(dataflow);
-		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().size() == 0);
-		assertTrue("Failed processors found during validation",report.getFailedEntities().size() == 0);
-		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().isEmpty());
+		assertTrue("Failed processors found during validation",report.getFailedEntities().isEmpty());
+		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().isEmpty());
 		assertTrue("Validation failed",report.isValid());
 		
 		WorkflowInstanceFacade facade;
@@ -65,9 +64,9 @@ public class TranslateAndRunWithIterationsTest extends InvocationTestHelper {
 	public void testIterateOverList() throws Exception {
 		Dataflow dataflow = translateScuflFile("lists_iterate.xml");
 		DataflowValidationReport report = validateDataflow(dataflow);
-		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().size() == 0);
-		assertTrue("Failed processors found during validation",report.getFailedEntities().size() == 0);
-		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().isEmpty());
+		assertTrue("Failed processors found during validation",report.getFailedEntities().isEmpty());
+		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().isEmpty());
 		assertTrue("Validation failed",report.isValid());
 		
 		WorkflowInstanceFacade facade;
@@ -87,9 +86,9 @@ public class TranslateAndRunWithIterationsTest extends InvocationTestHelper {
 	public void testIterationStrategy() throws Exception {
 		Dataflow dataflow = translateScuflFile("iteration-strategy.xml");
 		DataflowValidationReport report = validateDataflow(dataflow);
-		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().size() == 0);
-		assertTrue("Failed processors found during validation",report.getFailedEntities().size() == 0);
-		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().isEmpty());
+		assertTrue("Failed processors found during validation",report.getFailedEntities().isEmpty());
+		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().isEmpty());
 		assertTrue("Validation failed",report.isValid());
 		
 		WorkflowInstanceFacade facade;
