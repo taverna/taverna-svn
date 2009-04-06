@@ -11,7 +11,6 @@ import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,8 +52,7 @@ public class DataDependenciesBuilder {
 		DataDependenciesBuilder ddBuilder = new DataDependenciesBuilder(jdbcString, clearDB);
 				
 		try {
-			ddBuilder.buildDD();
-			
+			ddBuilder.buildDD();			
 			assertTrue("DONE", true);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
