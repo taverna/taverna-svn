@@ -13,10 +13,6 @@ import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 
-//CHECK
-import info.ipaw.pc3.PSLoadWorkflow.*;
-
-
 import org.junit.Test;
 
 
