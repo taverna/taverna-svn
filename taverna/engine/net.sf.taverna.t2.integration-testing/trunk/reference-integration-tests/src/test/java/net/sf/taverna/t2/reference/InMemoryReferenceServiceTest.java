@@ -76,12 +76,12 @@ public class InMemoryReferenceServiceTest {
 		// String[] split4 = split3[0].split(":");
 		T2Reference referenceFromString = rs.referenceFromString(ref);
 
-		
 		assertEquals(referenceFromString.getNamespacePart(), "test");
 
 		assertEquals(referenceFromString.getLocalPart(), "abcd1234");
 
-		assertEquals(referenceFromString.getReferenceType(), T2ReferenceType.ReferenceSet);
+		assertEquals(referenceFromString.getReferenceType(),
+				T2ReferenceType.ReferenceSet);
 
 		// T2Reference fromReference = rs.fromReference(ref);
 		//		
@@ -104,7 +104,7 @@ public class InMemoryReferenceServiceTest {
 		String ref = "t2:error//test?abcd1234/2";
 		T2Reference referenceFromString = null;
 		try {
-			referenceFromString = rs.referenceFromString(ref);		
+			referenceFromString = rs.referenceFromString(ref);
 		} catch (Throwable ex) {
 			ex.printStackTrace();
 		}
@@ -112,13 +112,13 @@ public class InMemoryReferenceServiceTest {
 
 		assertEquals(referenceFromString.getLocalPart(), "abcd1234");
 
-		assertEquals(referenceFromString.getReferenceType(), T2ReferenceType.ErrorDocument);
-		
+		assertEquals(referenceFromString.getReferenceType(),
+				T2ReferenceType.ErrorDocument);
+
 		assertEquals(referenceFromString.getDepth(), 2);
-		
+
 	}
-	
-	
+
 	@Test
 	public void getListFromString() {
 		ApplicationContext context = new RavenAwareClassPathXmlApplicationContext(
@@ -126,20 +126,31 @@ public class InMemoryReferenceServiceTest {
 		ReferenceService rs = (ReferenceService) context
 				.getBean("t2reference.service.referenceService");
 		String ref = "t2:list//test?abcd1234/true/2";
-		
+
 		T2Reference parseRef = rs.referenceFromString(ref);
 
-		
 		assertEquals(parseRef.getNamespacePart(), "test");
 
 		assertEquals(parseRef.getLocalPart(), "abcd1234");
 
-		assertEquals(parseRef.getReferenceType(), T2ReferenceType.IdentifiedList);
-		
+		assertEquals(parseRef.getReferenceType(),
+				T2ReferenceType.IdentifiedList);
+
 		assertEquals(parseRef.getDepth(), 2);
-		
+
 		assertEquals(parseRef.containsErrors(), true);
-		
+
+	}
+
+	@Test
+	public void testUUIDReference() {
+		ApplicationContext context = new RavenAwareClassPathXmlApplicationContext(
+				"inMemoryReferenceServiceTestContext.xml");
+		ReferenceService rs = (ReferenceService) context
+				.getBean("t2reference.service.referenceService");
+		String o = "I am a string";
+		T2Reference register = rs.register(o, 0, true, null);
+		assertEquals(register.getNamespacePart(), "taverna");
 	}
 
 	private Map<String, String> parseRef(String ref) {
