@@ -20,19 +20,41 @@
  ******************************************************************************/
 package net.sf.taverna.t2.provenance.lineageservice.mysql;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.tupeloproject.kernel.Context;
+import org.tupeloproject.kernel.OperatorException;
+import org.tupeloproject.kernel.UnionContext;
+import org.tupeloproject.kernel.impl.MemoryContext;
+import org.tupeloproject.kernel.impl.ResourceContext;
+import org.tupeloproject.provenance.ProvenanceAccount;
+import org.tupeloproject.provenance.ProvenanceArtifact;
+import org.tupeloproject.provenance.ProvenanceGeneratedArc;
+import org.tupeloproject.provenance.ProvenanceProcess;
+import org.tupeloproject.provenance.ProvenanceRole;
+import org.tupeloproject.provenance.ProvenanceUsedArc;
+import org.tupeloproject.provenance.impl.ProvenanceContextFacade;
+import org.tupeloproject.rdf.Resource;
+import org.tupeloproject.rdf.Triple;
+import org.tupeloproject.rdf.xml.RdfXmlWriter;
+import org.tupeloproject.util.Tuple;
+
 import net.sf.taverna.t2.provenance.lineageservice.AnnotationsLoader;
 import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResult;
+import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
 import net.sf.taverna.t2.provenance.lineageservice.LineageSQLQuery;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.utils.Arc;
 import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
+import net.sf.taverna.t2.provenance.lineageservice.utils.VarBinding;
 
 /**
  * @author paolo<p/>
@@ -44,6 +66,8 @@ public class ProvenanceAnalysis {
 	private static final String IP_ANNOTATION = "index-preserving";
 	private static final String OUTPUT_CONTAINER_PROCESSOR = "_OUTPUT_";
 	private static final String INPUT_CONTAINER_PROCESSOR = "_INPUT_";
+	private static final String OPM_TAVERNA_NAMESPACE = "http://taverna.opm.org/";
+	private static final String OPM_GRAPH_FILE = "src/test/resources/provenance-testing/OPM/OPMGraph.rdf";
 
 	MySQLProvenanceQuery pq = null;
 	AnnotationsLoader al = null;
@@ -57,12 +81,37 @@ public class ProvenanceAnalysis {
 
 	private final String location;
 
+	//
+	// Tupelo for OPM -- 4/09
+	// init the provenance graph
+	//
+	Context context = null;
+	ProvenanceContextFacade graph = null;
+	ProvenanceAccount account = null;
+
 	public ProvenanceAnalysis(String location) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
 		this.location = location;
 		pq = new MySQLProvenanceQuery(location);		
 
 		al = new AnnotationsLoader();  // singleton
+
+		// init Tupelo RDF provenance graph
+		MemoryContext mc = new MemoryContext();
+		ResourceContext rc = new ResourceContext("http://example.org/data/","/provenanceExample/");
+		context = new UnionContext();
+		context.addChild(mc);
+		context.addChild(rc);
+
+		graph = new ProvenanceContextFacade(mc);		
+
+		// create new account to hold the causality graph
+		// and give it a Resource name
+
+		account = 
+			graph.newAccount("OPM-"+
+					getWFInstanceIDs().get(0), Resource.uriRef(OPM_TAVERNA_NAMESPACE+getWFInstanceIDs().get(0)));
+		graph.assertAccount(account);
 
 	}
 
@@ -111,8 +160,8 @@ public class ProvenanceAnalysis {
 
 	}
 
-	
-	
+
+
 	public List<LineageQueryResult> computeLineage(
 			String wfInstance,   // context
 			String var,   // target var
@@ -120,9 +169,9 @@ public class ProvenanceAnalysis {
 			String path, 
 			Set<String> selectedProcessors
 	) throws SQLException  {
-		
+
 		List<LineageSQLQuery>  lqList =  searchDataflowGraph(wfInstance, var, proc, path, selectedProcessors);
-		
+
 		// execute queries in the LineageSQLQuery list
 		// System.out.println("\n****************  executing lineage queries:  **************\n");
 		return pq.runLineageQueries(lqList);
@@ -144,12 +193,12 @@ public class ProvenanceAnalysis {
 			String wfInstance,   // context
 			String var,   // target var
 			String proc,   // qualified with its processor name
-			String path, 
+			String path,  // can be empty but not null
 			Set<String> selectedProcessors
 	) throws SQLException  {
 
 		List<LineageSQLQuery>  lqList =  new ArrayList<LineageSQLQuery>();
-		
+
 		// init paths accumulation
 		//  associate an empty list of paths to each selected processor
 		for (String sp:selectedProcessors) {			
@@ -177,22 +226,73 @@ public class ProvenanceAnalysis {
 		// CHECK there can be multiple (pname, varname) pairs, i.e., in case of nested workflows
 		// here we pick the first that turns up -- we would need to let users choose, or process all of them...
 
+		// OPM: fetch value for this variable and assert it as an Artifact in the OPM graph
+
+		Map<String, String> vbConstraints = new HashMap<String, String>();
+		vbConstraints.put("VB.PNameRef", v.getPName());
+		vbConstraints.put("VB.varNameRef", v.getVName());
+		vbConstraints.put("VB.wfInstanceRef", wfInstance);
+		if (path != null) { 
+			vbConstraints.put("VB.iteration", "["+path+"]");
+		}
+
+		List<VarBinding> vbList = pq.getVarBindings(vbConstraints); // DB
+		// QUERY
+
+		// use only the first result (expect only one)
+		// map the resulting varBinding to an Artifact
+		VarBinding vb = vbList.get(0);
+
+		Resource initialResource = Resource.uriRef(vb.getValue());
+//		ProvenanceArtifact initialArtifact = graph.newArtifact(vb.getResolvedValue(), initialResource);
+		ProvenanceArtifact initialArtifact = graph.newArtifact(vb.getValue(), initialResource);
+
+		String URIFriendlyIterationVector = vb.getIteration().
+		replace(',', '-').replace('[', ' ').replace(']', ' ').trim();
+
+		String role;
+		if (URIFriendlyIterationVector.length()>0) {
+			role = vb.getPNameRef()+"/"+vb.getVarNameRef()+"?it="+URIFriendlyIterationVector;
+		} else
+			role = vb.getPNameRef()+"/"+vb.getVarNameRef();
+
+		Resource initialRole = Resource.uriRef(OPM_TAVERNA_NAMESPACE+role);		
+		ProvenanceRole initialArtifactRole = graph.newRole(role, initialRole);
+		graph.assertArtifact(initialArtifact);
+
 		if (v.isInput()) { // if vName is input, then do a xfer() step
 
 			// rec. accumulates SQL queries into lqList
-			xferStep(wfInstance, var, proc, path, selectedProcessors, lqList);
+			xferStep(wfInstance, var, proc, path, selectedProcessors, lqList, initialArtifact, initialArtifactRole);
 
 		} else { // start with xform
 
 			// rec. accumulates SQL queries into lqList
-			xformStep(wfInstance, v, proc, path, selectedProcessors, lqList);			
+			xformStep(wfInstance, v, proc, path, selectedProcessors, lqList, initialArtifact, initialArtifactRole);			
+		}
+
+		// print out OPM graph for diagnostics
+		try {
+			Set<Triple> allTriples = context.getTriples();
+
+			RdfXmlWriter writer = new RdfXmlWriter();				
+			writer.write(allTriples, new FileWriter(OPM_GRAPH_FILE));
+
+			System.out.println("OPM graph written to "+OPM_GRAPH_FILE);
+
+		} catch (OperatorException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		return lqList;
 
 	}  // end searchDataflowGraph
-	
-	
+
+
 
 
 	/**
@@ -203,6 +303,8 @@ public class ProvenanceAnalysis {
 	 * @param selectedProcessors
 	 * @param path
 	 * @param lqList
+	 * @param currentDerivedArtifactRole 
+	 * @param initialArtifact 
 	 * @throws SQLException 
 	 */
 	private void xformStep(String wfInstance, 
@@ -210,7 +312,7 @@ public class ProvenanceAnalysis {
 			String proc,
 			String path,
 			Set<String> selectedProcessors, 
-			List<LineageSQLQuery> lqList) throws SQLException {
+			List<LineageSQLQuery> lqList, ProvenanceArtifact currentDerivedArtifact, ProvenanceRole currentDerivedArtifactRole) throws SQLException {
 
 		// retrieve input vars for current processor 
 		Map<String, String>  varsQueryConstraints = new HashMap<String, String>();
@@ -308,19 +410,19 @@ public class ProvenanceAnalysis {
 
 		/////
 		// accumulate this proc to current path 
-			currentPath.add(proc);
+		currentPath.add(proc);
 
 		// if this is a selected processor, add a copy of the current path to the list of paths for the processor
 		if (selectedProcessors.contains(proc)) { 
 			List<List<String>> paths = validPaths.get(proc);
-			
+
 			// copy the path since the original will change
 			// also remove spurious dataflow processors are this point
 			List<String> pathCopy = new ArrayList<String>();
 			for (String s:currentPath) {
 				if (!pq.isDataflow(s)) pathCopy.add(s);
 			}			
-			
+
 			paths.add(pathCopy);			
 		}
 
@@ -331,12 +433,16 @@ public class ProvenanceAnalysis {
 		/// the projected paths are required to determine the level in the collection at which 
 		/// we look at the value assignment
 		///////////
+
+		Map<String, ProvenanceArtifact> var2Artifact = new HashMap<String, ProvenanceArtifact>();
+		Map<String, ProvenanceRole> var2ArtifactRole = new HashMap<String, ProvenanceRole>();
+
 		if (selectedProcessors.isEmpty() || selectedProcessors.contains(proc)) {
 
 			LineageSQLQuery lq;
 
 			// processor may have no inputs.
-			// this is not a prob when dping path projections
+			// this is not a prob when doing path projections
 			// but we still want to generate SQL if this is a selected proc
 			// in this case we flag proc as outputs-only and generate SQL for the current output
 			// using the current path, which becomes the element in collection		
@@ -348,6 +454,77 @@ public class ProvenanceAnalysis {
 				// dnl of output var defines length of suffix to path that we are going to use for query
 				// if var2Path is null this generates a trivial query for the current output var and current path CHECK
 				lq = pq.lineageQueryGen(wfInstance, proc, var2Path, outputVar, path);
+
+				// if OPM is on, execute the query so we get the value we need for the Artifact node 
+				LineageQueryResult inputs = pq.runLineageQuery(lq);
+
+				//
+				// update OPM graph
+				//
+				boolean found = false;
+
+				// assert proc as Process
+				Resource processResource = Resource.uriRef(OPM_TAVERNA_NAMESPACE+proc);
+				String processIndex = (path != null? "["+path+"]" : "");
+				ProvenanceProcess process = graph.newProcess(proc+processIndex, processResource);
+				graph.assertProcess(process);
+
+				if (currentDerivedArtifact != null && currentDerivedArtifactRole != null) {
+					// this process has generated the currentDerivedArtifact:
+
+					// prevent duplicates -- add explicit option TODO
+					Collection<ProvenanceGeneratedArc> generatedBy = graph.getGeneratedBy(currentDerivedArtifact);
+					found = false;
+					for (ProvenanceGeneratedArc arc:generatedBy) {						
+						ProvenanceProcess pp = arc.getProcess();
+						if (pp.getName().equals(process.getName())) { found = true; break; }						
+					}
+
+					if (!found)
+						graph.assertGeneratedBy(currentDerivedArtifact, process, currentDerivedArtifactRole, account);
+				}				
+
+				// the value comes from the DB query
+				for (LineageQueryResultRecord resultRecord: inputs.getRecords()) {
+
+					// map each input var in the resultRecord to an Artifact
+					// 1. create new Resource for the resultRecord
+					//    use the value as URI for the Artifact, and resolvedValue as the actual value
+					Resource inputResource = Resource.uriRef(resultRecord.getValue());
+
+//					ProvenanceArtifact inputArtifact = graph.newArtifact(resultRecord.getResolvedValue(), inputResource);
+					ProvenanceArtifact inputArtifact = graph.newArtifact(resultRecord.getValue(), inputResource);
+					var2Artifact.put(resultRecord.getVname(), inputArtifact);
+
+					String URIFriendlyIterationVector = resultRecord.getIteration().
+					replace(',', '-').replace('[', ' ').replace(']', ' ').trim();
+
+					String role;
+					if (URIFriendlyIterationVector.length()>0) {
+						role = resultRecord.getPname()+"/"+resultRecord.getVname()+"?it="+URIFriendlyIterationVector;
+					} else
+						role = resultRecord.getPname()+"/"+resultRecord.getVname();
+
+					Resource inputRole = Resource.uriRef(OPM_TAVERNA_NAMESPACE+role);
+					ProvenanceRole inputArtifactRole = graph.newRole(role, inputRole);
+					var2ArtifactRole.put(resultRecord.getVname(), inputArtifactRole);
+
+					graph.assertArtifact(inputArtifact);
+
+					// prevent duplicates -- add explicit option TODO
+					Collection<ProvenanceUsedArc> used = graph.getUsed(process);
+					found = false;
+					for (ProvenanceUsedArc arc:used) {						
+						ProvenanceArtifact pa = arc.getArtifact();
+						if (pa.getName().equals(inputArtifact.getName())) { found = true; break; }						
+					}
+
+//					if (!found) {
+					// these Artifacts are used by proc:
+					graph.assertUsed(process, inputArtifact, inputArtifactRole, account);
+//					}
+				}			
+
 			}
 
 			lqList.add(lq);
@@ -356,7 +533,13 @@ public class ProvenanceAnalysis {
 
 		// recursion -- xfer path is next up
 		for (Var inputVar: inputVars) {
-			xferStep(wfInstance, inputVar.getVName(), inputVar.getPName(), var2Path.get(inputVar), selectedProcessors, lqList);	
+
+			// fetch the Artifact corresponding to this input var
+			ProvenanceArtifact currentInputArtifact = var2Artifact.get(inputVar.getVName());
+			ProvenanceRole currentInputArtifactRole = var2ArtifactRole.get(inputVar.getVName());
+
+			xferStep(wfInstance, inputVar.getVName(), inputVar.getPName(), var2Path.get(inputVar), selectedProcessors, lqList, 
+					currentInputArtifact, currentInputArtifactRole);	
 		}
 
 		currentPath.remove(currentPath.size()-1);  // CHECK	
@@ -370,7 +553,7 @@ public class ProvenanceAnalysis {
 			String proc,
 			String path, 
 			Set<String> selectedProcessors,
-			List<LineageSQLQuery> lqList) throws SQLException {
+			List<LineageSQLQuery> lqList, ProvenanceArtifact currentOutputArtifact, ProvenanceRole currentOutputArtifactRole) throws SQLException {
 
 		String sourceProcName = null;
 		String sourceVarName  = null;
@@ -413,7 +596,7 @@ public class ProvenanceAnalysis {
 		Var outputVar = varList.get(0);
 
 		// recurse on xform
-		xformStep(wfInstanceID, outputVar, sourceProcName, path, selectedProcessors, lqList);
+		xformStep(wfInstanceID, outputVar, sourceProcName, path, selectedProcessors, lqList, currentOutputArtifact, currentOutputArtifactRole);
 
 	} // end xferStep2
 

@@ -469,8 +469,9 @@ public class MySQLProvenanceQuery implements ProvenanceQuery {
 
 		String q = "SELECT * FROM VarBinding VB join Var V "+
 		"on (VB.varNameRef = V.varName and VB.PNameRef =  V.PNameRef) "+
-		"JOIN WfInstance W ON VB.wfInstanceRef = W.instanceID and V.wfInstanceRef = wfnameRef" ;
-
+		"JOIN WfInstance W ON VB.wfInstanceRef = W.instanceID and V.wfInstanceRef = wfnameRef " + 
+		"LEFT OUTER JOIN Data D ON D.wfInstanceID = VB.wfInstanceRef and D.dataReference = VB.value";
+		
 		q = addWhereClauseToQuery(q, constraints, true);
 
 		Statement stmt;
@@ -494,6 +495,7 @@ public class MySQLProvenanceQuery implements ProvenanceQuery {
 				vb.setIterationVector(rs.getString("iteration"));
 				vb.setPNameRef(rs.getString("PNameRef"));
 				vb.setPositionInColl(rs.getInt("positionInColl"));
+				vb.setResolvedValue(rs.getString("D.data"));
 
 				result.add(vb);
 
@@ -820,7 +822,8 @@ public class MySQLProvenanceQuery implements ProvenanceQuery {
 	 *		 if input vars is null, then use the output var		
 	 *		 this returns the bindings for the set of input vars at the correct iteration
 	 *		 if effectivePath is null:
-	 *		 fetch VarBindings for all input vars, without constraint on the iteration
+	 *		 fetch VarBindings for all input vars, without constraint on the iteration<br/>
+	 *		added outer join with Data
 	 * @param wfInstance
 	 * @param proc
 	 * @param effectivePath
@@ -834,7 +837,8 @@ public class MySQLProvenanceQuery implements ProvenanceQuery {
 		String q1 = "SELECT * FROM VarBinding VB JOIN wfInstance W ON " +
 				"VB.wfInstanceRef = W.instanceID " +
 				"JOIN Var V on "+
-		        "V.wfInstanceRef = W.wfnameRef and VB.PNameRef = V.pnameRef and VB.varNameRef = V.varName";
+		        "V.wfInstanceRef = W.wfnameRef and VB.PNameRef = V.pnameRef and VB.varNameRef = V.varName "+
+		        "LEFT OUTER JOIN Data D ON D.wfInstanceID = VB.wfInstanceRef and D.dataReference = VB.value";
 
 		// constraints:
 		Map<String, String>  lineageQueryConstraints = new HashMap<String, String>();
@@ -885,9 +889,10 @@ public class MySQLProvenanceQuery implements ProvenanceQuery {
 //		System.out.println("executing lineage query:\n"+lq.getSQLQuery());
 
 		String q            = lq.getSQLQuery();
-//		int    nestingLevel = lq.getNestingLevel();
-
 		
+		// System.out.println("lineage query: \n"+q);
+		
+//		int    nestingLevel = lq.getNestingLevel();
 		boolean success = stmt.execute(q);
 		
 		if (success) {
@@ -903,7 +908,10 @@ public class MySQLProvenanceQuery implements ProvenanceQuery {
 				String it   = rs.getString("VB.iteration");
 				String coll = rs.getString("VB.collIDRef");
 				String value = rs.getString("VB.value");
-
+				String resolvedValue = rs.getString("D.data");
+				
+				// System.out.println("resolved value: "+resolvedValue);
+				
 			//	System.out.println("proc ["+proc+"] var ["+var+"] iteration ["+it+"] collection ["+ coll+"] value ["+value+"]");
 
 				String type = lqr.ATOM_TYPE; // temp -- FIXME
@@ -913,7 +921,7 @@ public class MySQLProvenanceQuery implements ProvenanceQuery {
 				// at most 1 record for each var --> return them
 				// >1 record for some var: --> reconstruct list structure from collID or from iteration TODO
 
-				lqr.addLineageQueryResultRecord(proc, var, wfInstance, it, value, type);				
+				lqr.addLineageQueryResultRecord(proc, var, wfInstance, it, value, resolvedValue, type);				
 			}
 
 			return lqr;

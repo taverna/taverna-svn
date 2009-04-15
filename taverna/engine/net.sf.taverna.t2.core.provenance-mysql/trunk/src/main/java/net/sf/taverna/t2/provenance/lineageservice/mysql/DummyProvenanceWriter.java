@@ -148,4 +148,9 @@ public class DummyProvenanceWriter implements ProvenanceWriter {
 		return null;
 	}
 
+	public void addData(String dataRef, String wfInstanceId, String data) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

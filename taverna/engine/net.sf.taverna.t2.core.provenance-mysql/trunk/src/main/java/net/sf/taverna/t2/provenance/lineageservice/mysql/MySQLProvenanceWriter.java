@@ -302,6 +302,35 @@ public class MySQLProvenanceWriter  implements ProvenanceWriter {
 
 	}
 
+	
+	/**
+	 * adds (dataRef, data) pairs to the Data table (only for string data)
+	 */
+	public void addData(String dataRef, String wfInstanceId, String data) throws SQLException {
+		
+		Statement stmt;
+		try {
+			stmt = dbConn.createStatement();
+
+			String q = "INSERT INTO Data SET "+
+			"dataReference = '"+dataRef+"', "+
+			"wfInstanceID = '"+wfInstanceId+"', "+			
+			"data = '"+data+"'; ";
+
+			int result = stmt.executeUpdate(q);
+
+			cnt++;
+
+		} catch (SQLException e) {
+			// the same ID will come in several times -- duplications are expected, don't panic
+//			System.out.println("****  insert failed due to ["+e.getMessage()+"]");
+		}  catch (ReferenceServiceException e1) {
+			System.out.println(e1.getMessage());
+		}
+
+	}
+
+
 
 	/**
 	 * catching SQL errors  -> these may happen when the same event is generated twice due to a fail-retry condition
@@ -334,34 +363,6 @@ public class MySQLProvenanceWriter  implements ProvenanceWriter {
 
 			cnt++;
 
-			// lame attempt to use context to resolve vb.getValue(): THIS DOES NOT WORK
-//			InvocationContext invocationContext = (InvocationContext)context;
-//			ReferenceService referenceService = invocationContext.getReferenceService();
-//			T2Reference ref = (T2Reference) vb.getValue();
-//			referenceService.renderIdentifier(ref, byte[].class, invocationContext);
-//			ReferenceSetService referenceSetService = referenceService.getReferenceSetService();
-//			ReferenceSet referenceSet = referenceSetService.getReferenceSet(ref);
-//			Set<ExternalReferenceSPI> externalReferences = referenceSet.getExternalReferences();
-//			externalReferences.iterator().next().getDataNature();
-			
-			// can we just create a new T2ReferenceImpl object here??
-//			T2ReferenceImpl r = new T2ReferenceImpl();
-//			
-//			String[] valueParts = vb.getValue().split("\\?");
-//			
-//			
-//			r.setLocalPart(valueParts[1]);
-//			r.setNamespacePart("testNamespace");
-//			r.setContainsErrors(false);
-//			r.setDepth(0);  // FIXME
-//			r.setReferenceType(T2ReferenceType.ReferenceSet);
-//
-//			InvocationContext invocationContext = (InvocationContext)context;
-//			ReferenceService referenceService = invocationContext.getReferenceService();
-//			
-//			referenceService.renderIdentifier(r, String.class, invocationContext);
-			
-			
 		} catch (SQLException e) {
 			System.out.println("****  insert failed due to ["+e.getMessage()+"]");
 		}  catch (ReferenceServiceException e1) {
@@ -454,7 +455,6 @@ public class MySQLProvenanceWriter  implements ProvenanceWriter {
 		result = stmt.executeUpdate(q);
 		//System.out.println(result+ " rows removed from DB");
 
-
 		q = "DELETE FROM ProcBinding;";		
 		//System.out.println("executing: "+q);
 		result = stmt.executeUpdate(q);
@@ -469,6 +469,9 @@ public class MySQLProvenanceWriter  implements ProvenanceWriter {
 		//System.out.println("executing: "+q);
 		result = stmt.executeUpdate(q);
 		//System.out.println(result+ " rows removed from DB");
+
+		q = "DELETE FROM Data;";		
+		result = stmt.executeUpdate(q);
 
 		System.out.println(" **** DB cleared DYNAMIC ****");
 
@@ -530,6 +533,7 @@ public class MySQLProvenanceWriter  implements ProvenanceWriter {
 			e.printStackTrace();
 		}
 	}
+
 
 
 

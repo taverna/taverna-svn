@@ -213,6 +213,10 @@ public class MySQLProvenance implements Provenance, SharedVocabulary
 		MySQLProvenance.saveEvents = saveEvents;
 	}
 
+	public String getCurrentWFInstanceID() {
+		return getEp().getWfInstanceID();
+	}
+
 
 
 }  // end class

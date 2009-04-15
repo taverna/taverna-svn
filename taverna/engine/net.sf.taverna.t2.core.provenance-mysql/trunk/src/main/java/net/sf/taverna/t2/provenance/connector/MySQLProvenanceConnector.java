@@ -26,20 +26,25 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.jdom.output.XMLOutputter;
 
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.provenance.item.IterationProvenanceItem;
 import net.sf.taverna.t2.provenance.item.ProvenanceItem;
 import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResult;
 import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
 import net.sf.taverna.t2.provenance.lineageservice.LineageSQLQuery;
 import net.sf.taverna.t2.provenance.lineageservice.Provenance;
+import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenance;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
+import net.sf.taverna.t2.reference.Identified;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceSet;
 import net.sf.taverna.t2.reference.ReferenceSetService;
@@ -164,8 +169,8 @@ public class MySQLProvenanceConnector implements ProvenanceConnector {
 	 */
 	public void addProvenanceItem(ProvenanceItem provenanceItem, Object context) {
 
-//		InvocationContext invocationContext = (InvocationContext)context;
-//		ReferenceService referenceService = invocationContext.getReferenceService();
+		InvocationContext invocationContext = (InvocationContext)context;
+		ReferenceService referenceService = invocationContext.getReferenceService();
 //		T2Reference ref = null;
 //		referenceService.renderIdentifier(ref, byte[].class, invocationContext);
 //		ReferenceSetService referenceSetService = referenceService.getReferenceSetService();
@@ -173,12 +178,53 @@ public class MySQLProvenanceConnector implements ProvenanceConnector {
 //		Set<ExternalReferenceSPI> externalReferences = referenceSet.getExternalReferences();
 //		externalReferences.iterator().next().getDataNature();
 		
-		
+		if (provenanceItem instanceof IterationProvenanceItem) {
+
+			// provenance DB must be up and running when we get here, so it's safe to write to it
+			ProvenanceWriter pw = provenance.getPw();
+			
+			IterationProvenanceItem ipi = (IterationProvenanceItem) provenanceItem;
+			
+			Map<String, T2Reference> inputDataMap = ipi.getInputDataItem().getDataMap();
+			Map<String, T2Reference> outputDataMap = ipi.getOutputDataItem().getDataMap();
+			
+			Set<Map.Entry<String,T2Reference>> allRefs = new HashSet<Map.Entry<String,T2Reference>>();
+			
+			for(Map.Entry<String, T2Reference> entry:inputDataMap.entrySet()) allRefs.add(entry);
+			for(Map.Entry<String, T2Reference> entry:outputDataMap.entrySet()) allRefs.add(entry);
+						
+			for(Map.Entry<String, T2Reference> entry:allRefs) {
+
+				T2Reference ref = entry.getValue();
+
+				Identified id = referenceService.resolveIdentifier(entry.getValue(), null, invocationContext);
+				if (id instanceof ReferenceSet ) {
+
+					String renderedData = (String) referenceService.renderIdentifier(entry.getValue(), String.class, invocationContext);
+					
+					System.out.println("****\ndata in provenance event: "+
+							entry.getValue()+" --> \n"+ renderedData+ "\n *****");
+
+					try {
+						pw.addData(entry.getValue().toString(), provenance.getCurrentWFInstanceID(),  renderedData);
+					} catch (SQLException e) {
+						System.out.println("Exception while writing data to DB: "+e.getMessage());
+//						e.printStackTrace();
+					}
+					
+//				ReferenceSet rs = (ReferenceSet) id;
+//				Set<ExternalReferenceSPI> externalRefs = rs.getExternalReferences();
+//				externalRefs.
+				} else {
+					System.out.println("input data in provenance event NOT a ReferenceSet: "+entry.getValue());
+				}
+			}
+		}
+
 		String content = provenanceItem.getAsString();
 
-
 		if (provenanceItem.getEventType().equals("EOW"))
-  		   System.out.println("EVENT: " + provenanceItem.getEventType());
+  		   System.out.println("EOW EVENT arrived ");
 
 		if (content == null) {
 
