@@ -203,7 +203,7 @@ public class ProvenanceAnalysisTest {
 				}
 
 				if (qvComponents.length>1) qv.setVname(qvComponents[1]);
-				if (qvComponents.length>2) qv.setPath(qvComponents[2]);
+				if (qvComponents.length>2) qv.setPath(qvComponents[2]); 
 
 				qvList.add(qv);
 			}			
@@ -310,7 +310,11 @@ public class ProvenanceAnalysisTest {
 
 				System.out.println("****** result: *****");
 				for (LineageQueryResultRecord r:result.getRecords()) {					
-					System.out.println("proc "+r.getPname()+" var "+r.getVname()+" iteration: "+r.getIteration()+" value: "+r.getValue());
+					System.out.println("proc "+r.getPname()+
+							           " var "+r.getVname()+" " +
+							           "iteration: "+r.getIteration()+
+							           " value: "+r.getValue()+
+							           " resolvedValue: "+r.getResolvedValue());
 				}				
 			}
 			assertTrue("lineage tree should have been printed above", true);

@@ -1,7 +1,7 @@
 <workflow xmlns="http://taverna.sf.net/2008/xml/t2flow" version="1"><dataflow id="49abadad-5b87-46e6-9f52-8870ce85f2de" role="top"><name>dataflow2</name><inputPorts /><outputPorts /><processors><processor><name>LINEARBLOCK</name><inputPorts /><outputPorts /><annotations /><activities><activity><raven><group>net.sf.taverna.t2.activities</group><artifact>beanshell-activity</artifact><version>0.4</version></raven><class>net.sf.taverna.t2.activities.beanshell.BeanshellActivity</class><inputMap /><outputMap /><configBean encoding="xstream"><net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean xmlns="">
   <script>import java.lang.Math;
 Y = X +"_LB_";
-Thread.sleep((new Double(Math.random()*100)).intValue());</script>
+Thread.sleep((new Double(Math.random()*1000)).intValue());</script>
   <dependencies />
   <classLoaderSharing>workflow</classLoaderSharing>
   <localDependencies />

@@ -55,7 +55,7 @@ public class LinearChainGenerator extends DataflowGenerator {
 
 			if (i>0) {
 				 df = connectPorts(df, previous, "Y", current, "X"); //$NON-NLS-1$ //$NON-NLS-2$
-				 if (isSerial) 
+				// if (isSerial) 
 					 df = addControlLink(df, previous, current);   
 			}
 
