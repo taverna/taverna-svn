@@ -42,8 +42,11 @@ import org.tupeloproject.provenance.ProvenanceProcess;
 import org.tupeloproject.provenance.ProvenanceRole;
 import org.tupeloproject.provenance.ProvenanceUsedArc;
 import org.tupeloproject.provenance.impl.ProvenanceContextFacade;
+import org.tupeloproject.provenance.impl.RdfProvenanceArtifact;
+import org.tupeloproject.provenance.impl.RdfProvenanceProcess;
 import org.tupeloproject.rdf.Resource;
 import org.tupeloproject.rdf.Triple;
+import org.tupeloproject.rdf.terms.Dc;
 import org.tupeloproject.rdf.xml.RdfXmlWriter;
 import org.tupeloproject.util.Tuple;
 
@@ -312,7 +315,8 @@ public class ProvenanceAnalysis {
 			String proc,
 			String path,
 			Set<String> selectedProcessors, 
-			List<LineageSQLQuery> lqList, ProvenanceArtifact currentDerivedArtifact, ProvenanceRole currentDerivedArtifactRole) throws SQLException {
+			List<LineageSQLQuery> lqList, 
+			ProvenanceArtifact currentDerivedArtifact, ProvenanceRole currentDerivedArtifactRole) throws SQLException {
 
 		// retrieve input vars for current processor 
 		Map<String, String>  varsQueryConstraints = new HashMap<String, String>();
@@ -461,43 +465,59 @@ public class ProvenanceAnalysis {
 				//
 				// update OPM graph
 				//
-				boolean found = false;
-
-				// assert proc as Process
-				Resource processResource = Resource.uriRef(OPM_TAVERNA_NAMESPACE+proc);
-				String processIndex = (path != null? "["+path+"]" : "");
-				ProvenanceProcess process = graph.newProcess(proc+processIndex, processResource);
-				graph.assertProcess(process);
-
-				if (currentDerivedArtifact != null && currentDerivedArtifactRole != null) {
-					// this process has generated the currentDerivedArtifact:
-
-					// prevent duplicates -- add explicit option TODO
-					Collection<ProvenanceGeneratedArc> generatedBy = graph.getGeneratedBy(currentDerivedArtifact);
-					found = false;
-					for (ProvenanceGeneratedArc arc:generatedBy) {						
-						ProvenanceProcess pp = arc.getProcess();
-						if (pp.getName().equals(process.getName())) { found = true; break; }						
-					}
-
-					if (!found)
-						graph.assertGeneratedBy(currentDerivedArtifact, process, currentDerivedArtifactRole, account);
-				}				
 
 				// the value comes from the DB query
 				for (LineageQueryResultRecord resultRecord: inputs.getRecords()) {
 
+					String URIFriendlyIterationVector = resultRecord.getIteration().
+					replace(',', '-').replace('[', ' ').replace(']', ' ').trim();
+					
+					boolean found = false;  // used to avoid duplicate process resources
+
+					// assert proc as Process -- include iteration vector to separate different activations of the same process
+					String processID;
+					if (URIFriendlyIterationVector.length()>0) {
+						processID = OPM_TAVERNA_NAMESPACE+proc+"?it="+URIFriendlyIterationVector;
+					} else
+						processID = OPM_TAVERNA_NAMESPACE+proc;
+					
+					Resource processResource = Resource.uriRef(processID);					
+					ProvenanceProcess process = graph.newProcess(processID, processResource);
+					graph.assertProcess(process);
+
+					// add a triple to specify the iteration vector for this occurrence of Process, if it is available
+					if (URIFriendlyIterationVector.length() > 0) {
+//						Resource inputProcessSubject = ((RdfProvenanceProcess) process).getSubject();
+						try {
+							context.addTriple(processResource, Resource.uriRef(OPM_TAVERNA_NAMESPACE+"iteration"), resultRecord.getIteration());
+						} catch (OperatorException e) {
+							System.out.println("OPM iteration triple creation exception: "+e.getMessage());
+						}
+					}
+
+					if (currentDerivedArtifact != null && currentDerivedArtifactRole != null) {
+						// this process has generated the currentDerivedArtifact:
+
+						// prevent duplicates -- add explicit option TODO
+						Collection<ProvenanceGeneratedArc> generatedBy = graph.getGeneratedBy(currentDerivedArtifact);
+						found = false;
+						for (ProvenanceGeneratedArc arc:generatedBy) {						
+							ProvenanceProcess pp = arc.getProcess();
+							if (pp.getName().equals(process.getName())) { found = true; break; }						
+						}
+
+						//if (!found)
+							graph.assertGeneratedBy(currentDerivedArtifact, process, currentDerivedArtifactRole, account);
+					}		
+					
 					// map each input var in the resultRecord to an Artifact
-					// 1. create new Resource for the resultRecord
+					// create new Resource for the resultRecord
 					//    use the value as URI for the Artifact, and resolvedValue as the actual value
 					Resource inputResource = Resource.uriRef(resultRecord.getValue());
 
 //					ProvenanceArtifact inputArtifact = graph.newArtifact(resultRecord.getResolvedValue(), inputResource);
 					ProvenanceArtifact inputArtifact = graph.newArtifact(resultRecord.getValue(), inputResource);
 					var2Artifact.put(resultRecord.getVname(), inputArtifact);
-
-					String URIFriendlyIterationVector = resultRecord.getIteration().
-					replace(',', '-').replace('[', ' ').replace(']', ' ').trim();
 
 					String role;
 					if (URIFriendlyIterationVector.length()>0) {
@@ -523,6 +543,7 @@ public class ProvenanceAnalysis {
 					// these Artifacts are used by proc:
 					graph.assertUsed(process, inputArtifact, inputArtifactRole, account);
 //					}
+
 				}			
 
 			}
