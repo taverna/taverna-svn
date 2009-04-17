@@ -92,9 +92,7 @@ public class ProvenanceCaptureTestHelper {
 		provenanceConnector.setPassword(DB_PASSWD);
 		provenanceConnector.setDBLocation(DB_URL_LOCAL);
 		provenanceConnector.init();
-		provenanceConnector.setReferenceService(referenceService);
-		
-		
+
 		context =  new InvocationContext() {
 
 			public ReferenceService getReferenceService() {
@@ -113,6 +111,8 @@ public class ProvenanceCaptureTestHelper {
 				
 			}
 		};
+		provenanceConnector.setReferenceService(context.getReferenceService());
+
 	}
 
 	protected Dataflow loadDataflow(String resourceName) throws Exception {
