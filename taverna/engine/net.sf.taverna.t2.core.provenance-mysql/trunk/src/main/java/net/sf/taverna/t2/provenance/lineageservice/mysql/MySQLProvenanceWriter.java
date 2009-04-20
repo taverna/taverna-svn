@@ -368,9 +368,44 @@ public class MySQLProvenanceWriter  implements ProvenanceWriter {
 		}  catch (ReferenceServiceException e1) {
 			System.out.println(e1.getMessage());
 		}
-
 	}
 
+	
+	
+	public void updateVarBinding(VarBinding vb) {
+
+		Statement stmt;
+		try {
+			stmt = dbConn.createStatement();
+
+			String q = "UPDATE VarBinding SET "+
+			"valueType = \""+vb.getValueType()+"\", "+
+			"value  = \""+vb.getValue()+"\", "+
+			"ref    = \""+vb.getRef()+"\", "+			       
+			"collIdRef    = \""+vb.getCollIDRef()+"\" "+
+			"WHERE varNameRef = \""+vb.getVarNameRef()+"\" and "+
+			"wfInstanceRef = \""+vb.getWfInstanceRef()+"\" and "+
+			"pnameRef = \""+vb.getPNameRef()+"\" and "+
+			"positionInColl = \""+vb.getPositionInColl()+"\" and "+
+			"iteration    = \""+vb.getIteration()+"\" ";
+			
+//			if (cnt % 100 == 0) {
+//			System.out.println("Var binding: instance ["+vb.getWfInstanceRef()+"] processor ["+vb.getPNameRef()+"] varName ["+vb.getVarNameRef()+
+//					"] collIdRef ["+vb.getCollIDRef()+"] iteration ["+vb.getIteration()+
+//					"] positionInCollection ["+vb.getPositionInColl()+"] value ["+vb.getValue()+"]");
+//			}
+			
+			
+			int result = stmt.executeUpdate(q);
+
+			cnt++;
+
+		} catch (SQLException e) {
+			System.out.println("****  insert failed due to ["+e.getMessage()+"]");
+		}  catch (ReferenceServiceException e1) {
+			System.out.println(e1.getMessage());
+		}
+	}
 
 	public void clearDBStatic() throws SQLException {
 

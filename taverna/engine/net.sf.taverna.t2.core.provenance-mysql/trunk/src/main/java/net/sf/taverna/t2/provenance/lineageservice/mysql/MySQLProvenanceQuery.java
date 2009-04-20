@@ -344,7 +344,6 @@ public class MySQLProvenanceQuery implements ProvenanceQuery {
 
 
 	
-	
 	public String getWFInstanceID(String dataflowID) throws SQLException {
 		
 		String q = "SELECT instanceID FROM WfInstance where wfnameRef = \""+dataflowID+"\";";
@@ -358,6 +357,26 @@ public class MySQLProvenanceQuery implements ProvenanceQuery {
 			ResultSet rs = stmt.getResultSet();
 
 			if (rs.next()) {  return  rs.getString("instanceID"); }
+		}
+
+		return null;
+
+	}
+	
+	
+	public String getWFNameFromInstanceID(String wfInstanceID)  throws SQLException {
+		
+		String q = "SELECT wfnameRef FROM WfInstance where instanceID = \""+wfInstanceID+"\";";
+
+		Statement stmt;
+		stmt = dbConn.createStatement();
+
+		boolean success = stmt.execute(q);
+
+		if (success) {
+			ResultSet rs = stmt.getResultSet();
+
+			if (rs.next()) {  return  rs.getString("wfnameRef"); }
 		}
 
 		return null;

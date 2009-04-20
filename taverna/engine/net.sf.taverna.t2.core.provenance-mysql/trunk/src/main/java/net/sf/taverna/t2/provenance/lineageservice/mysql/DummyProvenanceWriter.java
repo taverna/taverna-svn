@@ -153,4 +153,9 @@ public class DummyProvenanceWriter implements ProvenanceWriter {
 		
 	}
 
+	public void updateVarBinding(VarBinding vb) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
