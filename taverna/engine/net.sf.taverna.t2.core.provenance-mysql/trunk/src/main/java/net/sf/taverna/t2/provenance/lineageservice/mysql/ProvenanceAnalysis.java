@@ -188,7 +188,7 @@ public class ProvenanceAnalysis {
 	 * we use this as the graph search phase that is needed by the naive query anyway
 	 * @param var
 	 * @param proc
-	 * @param path  within var (can be null)
+	 * @param path  within var (can be empty but not null)
 	 * @param selectedProcessors  only report lineage when you reach any of these processors
 	 * @throws SQLException
 	 */
@@ -204,9 +204,7 @@ public class ProvenanceAnalysis {
 
 		// init paths accumulation
 		//  associate an empty list of paths to each selected processor
-		for (String sp:selectedProcessors) {			
-			validPaths.put(sp, new ArrayList<List<String>>());
-		}
+		for (String sp:selectedProcessors) { validPaths.put(sp, new ArrayList<List<String>>()); }
 
 		currentPath = new ArrayList<String>();
 
@@ -240,7 +238,7 @@ public class ProvenanceAnalysis {
 		}
 
 		List<VarBinding> vbList = pq.getVarBindings(vbConstraints); // DB
-		// QUERY
+
 
 		// use only the first result (expect only one)
 		// map the resulting varBinding to an Artifact
