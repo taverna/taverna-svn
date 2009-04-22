@@ -204,7 +204,8 @@ public class RshellActivityConfigView extends JPanel {
 		outerConstraint.weightx = 0.1;
 		add(tabbedPane, outerConstraint);
 
-		scriptText = new JEditTextArea(new TextAreaDefaults());
+		scriptText = new JEditTextArea();
+
 		scriptText.setText(configBean.getScript());
 		scriptText.setTokenMarker(new JavaTokenMarker());
 		scriptText.setCaretPosition(0);
