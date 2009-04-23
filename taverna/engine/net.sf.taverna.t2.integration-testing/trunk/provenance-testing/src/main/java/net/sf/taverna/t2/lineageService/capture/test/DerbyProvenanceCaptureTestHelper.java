@@ -13,7 +13,6 @@ import net.sf.taverna.raven.plugins.PluginManager;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.provenance.connector.DerbyProvenanceConnector;
-import net.sf.taverna.t2.provenance.connector.MySQLProvenanceConnector;
 import net.sf.taverna.t2.provenance.connector.ProvenanceConnector;
 import net.sf.taverna.t2.provenance.lineageservice.EventProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.Provenance;
@@ -21,7 +20,6 @@ import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceWriter;
-import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceWriter;
 import net.sf.taverna.t2.provenance.reporter.ProvenanceReporter;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -41,7 +39,7 @@ import org.springframework.context.ApplicationContext;
  * 
  * @author Paolo Missier
  */
-public class ProvenanceCaptureTestHelper {
+public class DerbyProvenanceCaptureTestHelper {
 
 	private CaptureResultsListener listener;
 	private WorkflowInstanceFacade facade;
@@ -84,9 +82,22 @@ public class ProvenanceCaptureTestHelper {
 		if (clearDB != null)
 			isClearDB = Boolean.parseBoolean(clearDB);
 
-		String jdbcString = "jdbc:mysql:" + DB_URL_LOCAL +"/T2Provenance?user=" + DB_USER +"?password=" + DB_PASSWD;
+		// String jdbcString = "jdbc:mysql://" + DB_URL_LOCAL +
+		// "/T2Provenance?user="
+		// + DB_USER + "&password=" + DB_PASSWD;
+		// derby specific bit here
+		File applicationHomeDir = ApplicationRuntime.getInstance()
+				.getApplicationHomeDir();
+		File dbFile = new File(applicationHomeDir, "provenance");
+		try {
+			FileUtils.forceMkdir(dbFile);
+		} catch (IOException e2) {
 
-		ProvenanceWriter writer = new MySQLProvenanceWriter();
+		}
+		String jdbcString = "jdbc:derby:" + dbFile.toString()
+				+ "/db;create=true;upgrade=true";
+
+		ProvenanceWriter writer = new DerbyProvenanceWriter();
 		writer.setDbURL(jdbcString);
 		try {
 			writer.clearDBStatic();
@@ -101,7 +112,7 @@ public class ProvenanceCaptureTestHelper {
 		eventProcessor.setPq(query);
 
 		Provenance provenance = new Provenance(eventProcessor, jdbcString);
-		provenanceConnector = new MySQLProvenanceConnector(provenance,
+		provenanceConnector = new DerbyProvenanceConnector(provenance,
 				jdbcString, isClearDB, saveEvents);
 		provenanceConnector.setReferenceService(referenceService);
 		provenanceConnector.createDatabase();
@@ -130,7 +141,7 @@ public class ProvenanceCaptureTestHelper {
 
 	protected Dataflow loadDataflow(String resourceName) throws Exception {
 		XMLDeserializer deserializer = new XMLDeserializerImpl();
-		InputStream inStream = ProvenanceCaptureTestHelper.class
+		InputStream inStream = DerbyProvenanceCaptureTestHelper.class
 				.getResourceAsStream("/provenance-testing/" + resourceName); //$NON-NLS-1$
 		if (inStream == null)
 			throw new IOException(

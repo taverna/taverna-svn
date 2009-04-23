@@ -19,7 +19,7 @@ import org.junit.Test;
  * @author Paolo Missier
  * 
  */
-public class ProvenanceCaptureTest extends ProvenanceCaptureTestHelper  {
+public class DerbyProvenanceCaptureTest extends DerbyProvenanceCaptureTestHelper  {
 
 
 //	@Test
@@ -33,7 +33,7 @@ public class ProvenanceCaptureTest extends ProvenanceCaptureTestHelper  {
 	public void testInput() throws Exception {
 
 
-		ProvenanceCaptureTest helper = this;
+		DerbyProvenanceCaptureTest helper = this;
 		helper.createEventsDir(); 
 
 		Dataflow dataflow = helper.setup("ProvenanceCaptureTest");
