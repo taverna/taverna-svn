@@ -22,9 +22,9 @@ import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResult;
 import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
 import net.sf.taverna.t2.provenance.lineageservice.LineageSQLQuery;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
+import net.sf.taverna.t2.provenance.lineageservice.utils.DDRecord;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
-import net.sf.taverna.t2.provenance.lineageservice.mysql.DDRecord;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenance;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.NaiveProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.ProvenanceAnalysis;
@@ -50,7 +50,7 @@ public class ProvenanceAnalysisTest {
 
 	NaiveProvenanceQuery npq = null;
 	ProvenanceAnalysis pa = null;
-	MySQLProvenanceQuery pq = null;		
+	ProvenanceQuery pq = null;		
 
 	// shared by all tests -- these capture users configuration from AnalysisTestFiles.properties
 	Set<String> selProcNames = new HashSet<String>();
@@ -88,7 +88,8 @@ public class ProvenanceAnalysisTest {
 
 		npq = new NaiveProvenanceQuery(jdbcString);		
 		pa = new ProvenanceAnalysis(jdbcString);
-		pq = new MySQLProvenanceQuery(jdbcString);		
+		pq = new MySQLProvenanceQuery();	
+		pq.setDbURL(jdbcString);
 
 		acquireTestConfiguration();		
 
@@ -493,26 +494,31 @@ public class ProvenanceAnalysisTest {
 
 				// TIMER STARTS
 				start = System.currentTimeMillis();
-				stmt = pq.getDbConn().createStatement();
-				boolean success = stmt.execute(q);
-				stop = System.currentTimeMillis();
-				// TIMER STOPS
-
-				System.out.println("** results:  ***");
-				if (success) {
-					ResultSet rs = stmt.getResultSet();
-
-					while (rs.next()) {
-
-						String pFrom = rs.getString("pFrom");
-						String vFrom = rs.getString("vFrom");
-						String valFrom = rs.getString("valFrom");
+				try {
+					stmt = pq.getConnection().createStatement();
+					boolean success = stmt.execute(q);
+					stop = System.currentTimeMillis();
+					// TIMER STOPS
+					
+					System.out.println("** results:  ***");
+					if (success) {
+						ResultSet rs = stmt.getResultSet();
+						
+						while (rs.next()) {
+							
+							String pFrom = rs.getString("pFrom");
+							String vFrom = rs.getString("vFrom");
+							String valFrom = rs.getString("valFrom");
 //						String pTo = rs.getString("pTo");
 //						String vTo = rs.getString("vTo");
 //						String valTo = rs.getString("valTo");
-
-						System.out.println("pFrom = "+pFrom+" vFrom= "+vFrom+" valFrom= "+valFrom);
+							
+							System.out.println("pFrom = "+pFrom+" vFrom= "+vFrom+" valFrom= "+valFrom);
+						}
 					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 				long qrt = stop-start;
 

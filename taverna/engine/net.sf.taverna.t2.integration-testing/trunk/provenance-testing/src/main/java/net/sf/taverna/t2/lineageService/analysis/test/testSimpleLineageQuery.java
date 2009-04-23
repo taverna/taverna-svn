@@ -49,7 +49,8 @@ public class testSimpleLineageQuery {
 
 		String jdbcString = "jdbc:mysql://"+location;
 		
-		pq = new MySQLProvenanceQuery(jdbcString);
+		pq = new MySQLProvenanceQuery();
+		pq.setDbURL(jdbcString);
 		
 		// target proc
 		pname = AnalysisTestFiles.getString("query.pname");
