@@ -30,6 +30,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.taverna.t2.provenance.lineageservice.AnnotationsLoader;
+import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResult;
+import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
+import net.sf.taverna.t2.provenance.lineageservice.LineageSQLQuery;
+import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
+import net.sf.taverna.t2.provenance.lineageservice.utils.Arc;
+import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
+import net.sf.taverna.t2.provenance.lineageservice.utils.VarBinding;
+
 import org.tupeloproject.kernel.Context;
 import org.tupeloproject.kernel.OperatorException;
 import org.tupeloproject.kernel.UnionContext;
@@ -42,22 +51,9 @@ import org.tupeloproject.provenance.ProvenanceProcess;
 import org.tupeloproject.provenance.ProvenanceRole;
 import org.tupeloproject.provenance.ProvenanceUsedArc;
 import org.tupeloproject.provenance.impl.ProvenanceContextFacade;
-import org.tupeloproject.provenance.impl.RdfProvenanceArtifact;
-import org.tupeloproject.provenance.impl.RdfProvenanceProcess;
 import org.tupeloproject.rdf.Resource;
 import org.tupeloproject.rdf.Triple;
-import org.tupeloproject.rdf.terms.Dc;
 import org.tupeloproject.rdf.xml.RdfXmlWriter;
-import org.tupeloproject.util.Tuple;
-
-import net.sf.taverna.t2.provenance.lineageservice.AnnotationsLoader;
-import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResult;
-import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
-import net.sf.taverna.t2.provenance.lineageservice.LineageSQLQuery;
-import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
-import net.sf.taverna.t2.provenance.lineageservice.utils.Arc;
-import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
-import net.sf.taverna.t2.provenance.lineageservice.utils.VarBinding;
 
 /**
  * @author paolo<p/>
@@ -72,15 +68,15 @@ public class ProvenanceAnalysis {
 	private static final String OPM_TAVERNA_NAMESPACE = "http://taverna.opm.org/";
 	private static final String OPM_GRAPH_FILE = "src/test/resources/provenance-testing/OPM/OPMGraph.rdf";
 
-	MySQLProvenanceQuery pq = null;
-	AnnotationsLoader al = null;
+	private ProvenanceQuery pq = null;
+	private AnnotationsLoader al = null;
 
 	// paths collected by lineageQuery and to be used by naive provenance query
-	Map<String, List<List<String>>> validPaths = new HashMap<String, List<List<String>>>();
+	private Map<String, List<List<String>>> validPaths = new HashMap<String, List<List<String>>>();
 
-	List<String> currentPath;
+	private List<String> currentPath;
 
-	Map<String,List<String>> annotations = null;  // user-made annotations to processors
+	private Map<String,List<String>> annotations = null;  // user-made annotations to processors
 
 	private final String location;
 
@@ -95,7 +91,8 @@ public class ProvenanceAnalysis {
 	public ProvenanceAnalysis(String location) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
 		this.location = location;
-		pq = new MySQLProvenanceQuery(location);		
+		pq = new MySQLProvenanceQuery();	
+		pq.setDbURL(location);
 
 		al = new AnnotationsLoader();  // singleton
 

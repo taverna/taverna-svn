@@ -8,17 +8,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
+import net.sf.taverna.t2.provenance.lineageservice.utils.DDRecord;
+
 /**
  * @author paolo
  *
  */
 public class NaiveProvenanceQuery {
 
-	MySQLProvenanceQuery pq = null;
+	private ProvenanceQuery pq = null;
 
 	public NaiveProvenanceQuery(String location) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
-		pq = new MySQLProvenanceQuery(location);  // manages connections
+		pq = new MySQLProvenanceQuery();  // manages connections
+		pq.setDbURL(location);
 	}
 
 
@@ -279,7 +283,7 @@ public class NaiveProvenanceQuery {
 	/**
 	 * @return the pq
 	 */
-	public MySQLProvenanceQuery getPq() {
+	public ProvenanceQuery getPq() {
 		return pq;
 	}
 

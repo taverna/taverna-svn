@@ -20,9 +20,7 @@
  ******************************************************************************/
 package net.sf.taverna.t2.provenance.connector;
 
-import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -31,27 +29,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
-import org.jdom.output.XMLOutputter;
-
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.provenance.item.IterationProvenanceItem;
 import net.sf.taverna.t2.provenance.item.ProvenanceItem;
-import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResult;
-import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
-import net.sf.taverna.t2.provenance.lineageservice.LineageSQLQuery;
+import net.sf.taverna.t2.provenance.lineageservice.EventProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.Provenance;
+import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
-import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenance;
-import net.sf.taverna.t2.reference.ExternalReferenceSPI;
+import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceQuery;
+import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceWriter;
+import net.sf.taverna.t2.provenance.vocabulary.SharedVocabulary;
 import net.sf.taverna.t2.reference.Identified;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceSet;
-import net.sf.taverna.t2.reference.ReferenceSetService;
 import net.sf.taverna.t2.reference.T2Reference;
-import net.sf.taverna.t2.workbench.provenance.ProvenanceConfiguration;
 
-public class MySQLProvenanceConnector implements ProvenanceConnector {
+import org.apache.log4j.Logger;
+
+public class MySQLProvenanceConnector extends ProvenanceConnector{
 
 	private static Logger logger = Logger
 			.getLogger(MySQLProvenanceConnector.class);
@@ -59,7 +54,7 @@ public class MySQLProvenanceConnector implements ProvenanceConnector {
 	private static final String EVENTS_LOG_DIR = "/tmp/TEST-EVENTS";
 
 	private static final String deleteDB = "drop database T2Provenance;";
-	
+
 	private static final String createDB = "CREATE DATABASE IF NOT EXISTS T2Provenance";
 
 	private static final String createTableArc = "CREATE TABLE IF NOT EXISTS  `T2Provenance`.`Arc` ("
@@ -134,22 +129,24 @@ public class MySQLProvenanceConnector implements ProvenanceConnector {
 			+ "PRIMARY KEY  (`wfname`)"
 			+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- all known workflows by name';";
 
+
+	private Provenance provenance;
+	private String location;
+
+	private ReferenceService referenceService;
+
+	private InvocationContext invocationContext;
+
+	public MySQLProvenanceConnector() {
+	}
+	
+	public MySQLProvenanceConnector(Provenance provenance, String dbURL, boolean isClearDB, String saveEvents) {
+		super(provenance, dbURL, isClearDB, saveEvents);
+	}
+
 	@Override
 	public String toString() {
 		return "MySQL Provenance Connector";
-	}
-
-	private ReferenceService rs = null;
-	private Provenance provenance;
-	private String password;
-	private String user;
-	private String location;
-	private boolean isClearDB = false;
-	private String saveEvents = null;
-
-	private Connection dbConn;
-
-	public MySQLProvenanceConnector() {
 	}
 
 	public List<ProvenanceItem> getProvenanceCollection() {
@@ -158,19 +155,23 @@ public class MySQLProvenanceConnector implements ProvenanceConnector {
 		return null;
 	}
 
-	public void store(ReferenceService referenceService) {
-
-		System.out.println("invoked: LocalConnector::store()");
-
-	}
-
 	/**
 	 * main entry point into the service
 	 */
-	public void addProvenanceItem(ProvenanceItem provenanceItem, Object context) {
+	public synchronized void addProvenanceItem(ProvenanceItem provenanceItem) {
 
-		InvocationContext invocationContext = (InvocationContext)context;
-		ReferenceService referenceService = invocationContext.getReferenceService();
+		// InvocationContext invocationContext = (InvocationContext)context;
+		// ReferenceService referenceService =
+		// invocationContext.getReferenceService();
+		// T2Reference ref = null;
+		// referenceService.renderIdentifier(ref, byte[].class,
+		// invocationContext);
+		// ReferenceSetService referenceSetService =
+		// referenceService.getReferenceSetService();
+		// ReferenceSet referenceSet = referenceSetService.getReferenceSet(ref);
+		// Set<ExternalReferenceSPI> externalReferences =
+		// referenceSet.getExternalReferences();
+		// externalReferences.iterator().next().getDataNature();
 //		T2Reference ref = null;
 //		referenceService.renderIdentifier(ref, byte[].class, invocationContext);
 //		ReferenceSetService referenceSetService = referenceService.getReferenceSetService();
@@ -200,16 +201,17 @@ public class MySQLProvenanceConnector implements ProvenanceConnector {
 				Identified id = referenceService.resolveIdentifier(entry.getValue(), null, invocationContext);
 				if (id instanceof ReferenceSet ) {
 
-					String renderedData = (String) referenceService.renderIdentifier(entry.getValue(), String.class, invocationContext);
+					byte[] renderedData = (byte[]) referenceService.renderIdentifier(entry.getValue(), byte[].class, invocationContext);
 					
 					System.out.println("****\ndata in provenance event: "+
 							entry.getValue()+" --> \n"+ renderedData+ "\n *****");
 
 					try {
-						pw.addData(entry.getValue().toString(), provenance.getCurrentWFInstanceID(),  renderedData);
+//						FIXME need to get the svn synched properly so that EP has this method
+						pw.addData(entry.getValue().toString(), provenance.getEp().getWfInstanceID(),  renderedData);
 					} catch (SQLException e) {
 						System.out.println("Exception while writing data to DB: "+e.getMessage());
-//						e.printStackTrace();
+						e.printStackTrace();
 					}
 					
 //				ReferenceSet rs = (ReferenceSet) id;
@@ -221,21 +223,28 @@ public class MySQLProvenanceConnector implements ProvenanceConnector {
 			}
 		}
 
-		String content = provenanceItem.getAsString();
+		// String content = provenanceItem.getAsString();
 
-		if (provenanceItem.getEventType().equals("EOW"))
-  		   System.out.println("EOW EVENT arrived ");
-
-		if (content == null) {
-
-			XMLOutputter outputter = new XMLOutputter();
-			content = outputter.outputString(provenanceItem.getAsXML(rs));
-
+		if (provenanceItem.getEventType().equals(
+				SharedVocabulary.END_WORKFLOW_EVENT_TYPE)) {
+			logger.info("EVENT: " + provenanceItem.getEventType());
+		}
+		if (provenanceItem.getEventType().equals("EOW")) {
+			logger.info("EOW EVENT arrived ");			
 		}
 
+		// if (content == null) {
+		//
+		// XMLOutputter outputter = new XMLOutputter();
+		// content = outputter.outputString(provenanceItem.getAsXML(rs));
+		//
+		// }
+
 		try {
-			provenance.acceptRawProvenanceEvent(provenanceItem.getEventType(),
-					content, context);
+			// provenance.acceptRawProvenanceEvent(provenanceItem.getEventType(),
+			// content, context);
+			getProvenance().acceptRawProvenanceEvent(
+					provenanceItem.getEventType(), provenanceItem);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -247,46 +256,9 @@ public class MySQLProvenanceConnector implements ProvenanceConnector {
 	}
 
 	public void createDatabase() {
-		try {
-			if (dbConn == null) {
-				String user = ProvenanceConfiguration.getInstance()
-						.getProperty("dbUser");
-				if (user != null) {
-
-					this.user = user;
-				}
-				String password = ProvenanceConfiguration.getInstance()
-						.getProperty("dbPassword");
-				if (password != null) {
-
-					this.password = password;
-				}
-				String location = ProvenanceConfiguration.getInstance()
-						.getProperty("dbURL");
-				if (location != null) {
-
-					this.location = location;
-				}
-
-				String jdbcString = "jdbc:mysql://" + this.location
-						+ "/T2Provenance?user=" + this.user + "&password="
-						+ this.password;
-
-				openConnection(jdbcString);
-			}
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		Statement stmt;
 		try {
-			stmt = dbConn.createStatement();
+			stmt = getConnection().createStatement();
 			stmt.executeUpdate(createDB);
 			stmt.executeUpdate(createTableArc);
 			stmt.executeUpdate(createTableCollection);
@@ -301,24 +273,6 @@ public class MySQLProvenanceConnector implements ProvenanceConnector {
 			logger
 					.warn("There was a problem creating the Provenance database database: "
 							+ e.toString());
-		}
-
-	}
-
-	public void deleteDatabase() {
-		try {
-			if (dbConn == null) {
-				this.user = ProvenanceConfiguration.getInstance().getProperty(
-						"dbUser");
-				this.password = ProvenanceConfiguration.getInstance()
-						.getProperty("dbPassword");
-				this.location = ProvenanceConfiguration.getInstance()
-						.getProperty("dbURL");
-				String jdbcString = "jdbc:mysql://" + location
-						+ "/T2Provenance?user=" + user + "&password="
-						+ password;
-				openConnection(jdbcString);
-			}
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -329,14 +283,28 @@ public class MySQLProvenanceConnector implements ProvenanceConnector {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+	}
+
+	public void deleteDatabase() {
+		
 		Statement stmt;
 		try {
-			stmt = dbConn.createStatement();
+			stmt = getConnection().createStatement();
 			stmt.executeUpdate(deleteDB);
 		} catch (SQLException e) {
 			logger
 					.warn("There was a problem deleting the Provenance database: "
 							+ e.toString());
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 	}
@@ -345,292 +313,86 @@ public class MySQLProvenanceConnector implements ProvenanceConnector {
 		return "mysqlprovenance";
 	}
 
+//	public void init() {
+//		String jdbcString = "jdbc:mysql://" + location + "/T2Provenance?user="
+//				+ user + "&password=" + password;
+//		try {
+//			setProvenance(new MySQLProvenance(jdbcString, this.isClearDB));
+//			getProvenance().setSaveEvents(this.saveEvents);
+//
+//			// clear the events dir -- hacked up in a hurry
+//			File dir = new File(EVENTS_LOG_DIR);
+//			File[] allFiles = dir.listFiles();
+//
+//			if (allFiles != null)
+//				for (File f : allFiles) {
+//					f.delete();
+//				}
+//
+//		} catch (InstantiationException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IllegalAccessException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (ClassNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+
+	public void setProvenance(Provenance provenance) {
+		this.provenance = provenance;
+	}
+
+	public Provenance getProvenance() {
+		return provenance;
+	}
+
+	@Override
+	protected void openConnection() throws InstantiationException,
+			IllegalAccessException, ClassNotFoundException {
+		getClass().getClassLoader().loadClass("com.mysql.jdbc.Driver")
+				.newInstance();
+		try {
+			connection = DriverManager.getConnection(location);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
 	public ReferenceService getReferenceService() {
-		return rs;
-	}
-
-	public String getSessionId() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void setDBLocation(String location) {
-		this.location = location;
-		// this.location = "jdbc:mysql://" + location;
+		return referenceService;
 	}
 
 	public void setReferenceService(ReferenceService referenceService) {
-		this.rs = referenceService;
+		this.referenceService = referenceService;	
 	}
 
-	public void setSessionId(String identifier) {
-		// TODO Auto-generated method stub
-
+	public InvocationContext getInvocationContext() {
+		return invocationContext;
 	}
 
-	public void store(ProvenanceItem provenanceItem) {
-		// TODO Auto-generated method stub
-
+	public void setInvocationContext(InvocationContext invocationContext) {
+		this.invocationContext = invocationContext;		
 	}
 
-	public String getPassword() {
-		return this.password;
-	}
-
-	public String getUser() {
-		return this.user;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public void setUser(String user) {
-		this.user = user;
-	}
-
+	@Override
 	public void init() {
-		String jdbcString = "jdbc:mysql://" + location + "/T2Provenance?user="
-				+ user + "&password=" + password;
-		try {
-			provenance = new MySQLProvenance(jdbcString, this.isClearDB);
-			provenance.setSaveEvents(this.saveEvents);
-			
-			// clear the events dir -- hacked up in a hurry
-			File dir = new File(EVENTS_LOG_DIR);
-			File[] allFiles = dir.listFiles();
-			
-			if (allFiles != null) for (File f:allFiles) { f.delete(); }
-			
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+		ProvenanceWriter writer = new MySQLProvenanceWriter();
+		writer.setDbURL(getDbURL());
+		ProvenanceQuery query = new MySQLProvenanceQuery();
+		query.setDbURL(getDbURL());
+		EventProcessor eventProcessor = new EventProcessor();
+		eventProcessor.setPw(writer);
+		eventProcessor.setPq(query);
 
-	public void openConnection(String connection)
-			throws InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-
-		getClass().getClassLoader().loadClass("com.mysql.jdbc.Driver")
-				.newInstance();
-		System.out.println("connection made");
-
-		try {
-			dbConn = DriverManager.getConnection(connection);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public String getdbName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void setdbName(String dbName) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public String getIntermediateValues(String processorName, String dataflowId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/**
-	 * @return the isClearDB
-	 */
-	public boolean isClearDB() {
-		return isClearDB;
-	}
-
-	public void setClearDB(boolean isClearDB) {
-		this.isClearDB = isClearDB;
-	}
-
-	public boolean isFinished() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public String getIntermediateValues(String wfInstance, String pname,
-			String vname, String iteration) throws SQLException {
-		LineageSQLQuery simpleLineageQuery = ((MySQLProvenance) provenance)
-				.getPq()
-				.simpleLineageQuery(wfInstance, pname, vname, iteration);
-		LineageQueryResult runLineageQuery;
-		try {
-			runLineageQuery = ((MySQLProvenance) provenance).getPq()
-					.runLineageQuery(simpleLineageQuery);
-		} catch (SQLException e) {
-			throw e;
-		}
-		// String result =
-		// "<table><tr><th>Workflow</th><th>Processor</th><th>Iteration</th><th>Value</th><th>Type</th><th>Variable Name</th></tr>";
-		//
-		// for (LineageQueryResultRecord record : runLineageQuery.getRecords())
-		// {
-		// result = result + "<tr><td>" + record.getWfInstance() + "</td><td>"
-		// + record.getPname() + "</td><td>" + record.getIteration()
-		// + "</td><td>" + record.getValue() + "</td><td>"
-		// + record.getType() + "</td><td>" + record.getVname()
-		// + "</td></tr>";
-		// }
-		String result = "<table><tr><th>Iteration</th><th>Value</th><th>Variable Name</th></tr>";
-
-		for (LineageQueryResultRecord record : runLineageQuery.getRecords()) {
-			result = result + "<tr><td>" + record.getIteration() + "</td><td>"
-					+ record.getValue() + "</td><td>" + record.getVname()
-					+ "</td></tr>";
-		}
-		result = result + "</table>";
-
-		return result;
-	}
-
-	/**
-	 * @return the saveEvents
-	 */
-	public String getSaveEvents() {
-		return saveEvents;
-	}
-
-	/**
-	 * @param saveEvents
-	 *            the saveEvents to set
-	 */
-	public void setSaveEvents(String saveEvents) {
-		this.saveEvents = saveEvents;
-	}
-
-	public String getDataflowInstance(String dataflowId) {
-		String instanceID = null;
-		try {
-			instanceID = ((MySQLProvenance) provenance).getPq()
-					.getWFInstanceID(dataflowId);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return instanceID;
-	}
-
-	public void clearDatabase() {
-		try {
-			if (dbConn == null) {
-				String user = ProvenanceConfiguration.getInstance()
-						.getProperty("dbUser");
-				if (user != null) {
-
-					this.user = user;
-				}
-				String password = ProvenanceConfiguration.getInstance()
-						.getProperty("dbPassword");
-				if (password != null) {
-
-					this.password = password;
-				}
-				String location = ProvenanceConfiguration.getInstance()
-						.getProperty("dbURL");
-				if (location != null) {
-
-					this.location = location;
-				}
-
-				String jdbcString = "jdbc:mysql://" + this.location
-						+ "/T2Provenance?user=" + this.user + "&password="
-						+ this.password;
-
-				openConnection(jdbcString);
-			}
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		String q = null;
-
-		Statement stmt = null;
-		try {
-			stmt = dbConn.createStatement();
-		} catch (SQLException e) {
-			logger.warn("Could not create database statement :" + e);
-		}
-
-		q = "DELETE FROM Workflow";
-		try {
-			stmt.executeUpdate(q);
-		} catch (SQLException e) {
-			logger.warn("Could not execute statement " + q + " :" + e);
-		}
-
-		q = "DELETE FROM Processor";
-		try {
-			stmt.executeUpdate(q);
-		} catch (SQLException e) {
-			logger.warn("Could not execute statement " + q + " :" + e);
-		}
-
-		q = "DELETE FROM Arc";
-		try {
-			stmt.executeUpdate(q);
-		} catch (SQLException e) {
-			logger.warn("Could not execute statement " + q + " :" + e);
-		}
-
-		q = "DELETE FROM Var";
-		try {
-			stmt.executeUpdate(q);
-		} catch (SQLException e) {
-			logger.warn("Could not execute statement " + q + " :" + e);
-		}
-		
-		q = "DELETE FROM WfInstance";
-		try {
-			stmt.executeUpdate(q);
-		} catch (SQLException e) {
-			logger.warn("Could not execute statement " + q + " :" + e);
-		}
-
-		q = "DELETE FROM ProcBinding";
-		try {
-			stmt.executeUpdate(q);
-		} catch (SQLException e) {
-			logger.warn("Could not execute statement " + q + " :" + e);
-		}
-
-		q = "DELETE FROM VarBinding";
-		try {
-			stmt.executeUpdate(q);
-		} catch (SQLException e) {
-			logger.warn("Could not execute statement " + q + " :" + e);
-		}
-
-		q = "DELETE FROM Collection";
-		try {
-			stmt.executeUpdate(q);
-		} catch (SQLException e) {
-			logger.warn("Could not execute statement " + q + " :" + e);
-		}
-
-		logger.info("Cleared provenance database");
-		
+		Provenance provenance = new Provenance(eventProcessor, getDbURL());
 	}
 
 }

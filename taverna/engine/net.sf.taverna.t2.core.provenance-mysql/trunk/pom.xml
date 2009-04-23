@@ -60,7 +60,7 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
-			<artifactId>provenanceconnector-impl</artifactId>
+			<artifactId>provenanceconnector</artifactId>
 			<version>${t2.core.version}</version>
 		</dependency>
 		<dependency>

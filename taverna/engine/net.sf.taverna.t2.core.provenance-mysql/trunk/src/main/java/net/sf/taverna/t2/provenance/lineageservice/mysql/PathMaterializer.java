@@ -25,14 +25,17 @@ import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
 public class PathMaterializer {
 
 	private ProvenanceWriter     pw = null;
-	private MySQLProvenanceQuery      pq = null;
+	private ProvenanceQuery      pq = null;
 	private String location;
 
 	public PathMaterializer(String location) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
+		pq = new MySQLProvenanceQuery();
+		pq.setDbURL(location);
+		pw = new MySQLProvenanceWriter();
+		pw.setDbURL(location);
+		
 		setLocation(location);
-		setPq(new MySQLProvenanceQuery(this.location));   // singleton
-		setPw(new MySQLProvenanceWriter(this.location));  // singleton
 	}
 
 
@@ -134,11 +137,11 @@ public class PathMaterializer {
 		return pw;
 	}
 
-	public void setPq(MySQLProvenanceQuery pq) {
+	public void setPq(ProvenanceQuery pq) {
 		this.pq = pq;
 	}
 
-	public MySQLProvenanceQuery getPq() {
+	public ProvenanceQuery getPq() {
 		return pq;
 	}
 

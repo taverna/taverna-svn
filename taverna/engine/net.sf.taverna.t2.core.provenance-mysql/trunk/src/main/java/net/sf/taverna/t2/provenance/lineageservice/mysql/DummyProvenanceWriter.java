@@ -3,7 +3,6 @@
  */
 package net.sf.taverna.t2.provenance.lineageservice.mysql;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -17,7 +16,7 @@ import net.sf.taverna.t2.provenance.lineageservice.utils.VarBinding;
  * @author paolo
  *
  */
-public class DummyProvenanceWriter implements ProvenanceWriter {
+public class DummyProvenanceWriter extends ProvenanceWriter {
 
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addArc(net.sf.taverna.t2.provenance.lineageservice.utils.Var, net.sf.taverna.t2.provenance.lineageservice.utils.Var, java.lang.String)
@@ -76,7 +75,7 @@ public class DummyProvenanceWriter implements ProvenanceWriter {
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addVarBinding(net.sf.taverna.t2.provenance.lineageservice.utils.VarBinding)
 	 */
-	public void addVarBinding(VarBinding vb, Object context) throws SQLException {
+	public void addVarBinding(VarBinding vb) throws SQLException {
 		// TODO Auto-generated method stub
 		System.out.println("addVarBinding called");
 
@@ -142,20 +141,10 @@ public class DummyProvenanceWriter implements ProvenanceWriter {
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#openConnection()
 	 */
-	public Connection openConnection() throws InstantiationException,
+	public void openConnection() throws InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
 		// TODO Auto-generated method stub
-		return null;
-	}
 
-	public void addData(String dataRef, String wfInstanceId, String data) throws SQLException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void updateVarBinding(VarBinding vb) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }
