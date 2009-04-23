@@ -22,31 +22,37 @@ package net.sf.taverna.t2.provenance.connector;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.provenance.item.ProvenanceItem;
-import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResult;
-import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
-import net.sf.taverna.t2.provenance.lineageservice.LineageSQLQuery;
+import net.sf.taverna.t2.provenance.lineageservice.EventProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.Provenance;
-import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenance;
+import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
+import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
+import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceQuery;
+import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceWriter;
+import net.sf.taverna.t2.provenance.vocabulary.SharedVocabulary;
 import net.sf.taverna.t2.reference.ReferenceService;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.derby.drda.NetworkServerControl;
 import org.apache.log4j.Logger;
-import org.jdom.output.XMLOutputter;
 
-public class DerbyProvenanceConnector implements ProvenanceConnector {
+public class DerbyProvenanceConnector extends ProvenanceConnector {
+
+//	private ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10);
+	
+//	private ExecutorService executor = Executors.newSingleThreadExecutor();
 
 	private static Logger logger = Logger
 			.getLogger(DerbyProvenanceConnector.class);
+
+	private static final String createTableData = "CREATE TABLE Data (dataReference VARCHAR(100), wfInstanceID VARCHAR(100), data BLOB)";
 
 	private static final String createTableArc = "CREATE TABLE Arc ("
 			+ "sourceVarNameRef varchar(100) NOT NULL ,"
@@ -91,13 +97,13 @@ public class DerbyProvenanceConnector implements ProvenanceConnector {
 			+ "varNameRef varchar(100) NOT NULL,"
 			+ "wfInstanceRef varchar(100) NOT NULL,"
 			+ "value varchar(100) default NULL,"
-			+ "collIDRef varchar(100) NOT NULL,"
+			+ "collIDRef varchar(100),"
 			+ "positionInColl int NOT NULL,"
 			+ "PNameRef varchar(100) NOT NULL,"
 			+ "valueType varchar(50) default NULL,"
 			+ "ref varchar(100) default NULL,"
 			+ "iteration char(10) NOT NULL,"
-			+ "PRIMARY KEY (varNameRef,wfInstanceRef,PNameRef,positionInColl,iteration,collIDRef))";
+			+ "PRIMARY KEY (varNameRef,wfInstanceRef,PNameRef,positionInColl,iteration))";
 	// + " KEY collectionFK (wfInstanceRef,PNameRef,varNameRef,collIDRef))";
 
 	private static final String createTableWFInstance = "CREATE TABLE WfInstance ("
@@ -110,113 +116,61 @@ public class DerbyProvenanceConnector implements ProvenanceConnector {
 			+ "wfname varchar(100) NOT NULL," + "parentWFname varchar(100),"
 			+ "PRIMARY KEY  (wfname))";
 
-	private ArrayList<ProvenanceItem> provenanceCollection;
-
-	private boolean driverLoaded = false;
-
-	private String provenance;
-
-	private String name;
-
-	private Provenance localProvenance;
-
 	private ReferenceService referenceService;
 
-	private String portlocation = "27467";
-
-	private Connection dbConn;
-
-	private boolean isClearDB = false;
-
-	private NetworkServerControl server;
-
-	private String location;
-
-	private String dbURL = "jdbc:derby:provenance;create=true;upgrade=true";
+	private InvocationContext invocationContext;
 
 	public DerbyProvenanceConnector() {
-
 	}
 
-	public void openConnection() {
+	public DerbyProvenanceConnector(Provenance provenance, String dbURL,
+			boolean isClearDB, String saveEvents) {
+		super(provenance, dbURL, isClearDB, saveEvents);
+	}
+
+	public void openConnection() throws InstantiationException,
+			IllegalAccessException, ClassNotFoundException {
+
+		getClass().getClassLoader().loadClass(
+				"org.apache.derby.jdbc.EmbeddedDriver").newInstance();
+
 		try {
-			dbConn = DriverManager.getConnection(dbURL);
-			dbConn.setAutoCommit(true);
+			connection = DriverManager.getConnection(getDbURL());
+			connection.setAutoCommit(true);
 		} catch (SQLException e) {
 			logger.warn(e);
 		}
 	}
 
-	public void init() {
-
-		File applicationHomeDir = ApplicationRuntime.getInstance()
-				.getApplicationHomeDir();
-		File dbFile = new File(applicationHomeDir, "provenance");
-		dbFile.toString();
-
-		dbURL = "jdbc:derby:" + dbFile + "/db;create=true;upgrade=true";
-
-		provenanceCollection = new ArrayList<ProvenanceItem>();
-		name = "Local Derby DB";
-
-		try {
-
-			localProvenance = new DerbyProvenance(location, this);
-		} catch (InstantiationException e) {
-			logger.warn(e);
-		} catch (IllegalAccessException e) {
-			logger.warn(e);
-		} catch (ClassNotFoundException e) {
-			logger.warn(e);
-		} catch (SQLException e) {
-			logger.warn(e);
-		}
-
-		if (isClearDB) {
-			try {
-				((DerbyProvenance) localProvenance).getPw().clearDBStatic();
-				((DerbyProvenance) localProvenance).getPw().clearDBDynamic();
-			} catch (SQLException e) {
-				logger.warn(e);
-			}
-		}
-
-	}
-
-	public String getProvenance() {
-		return provenance;
-	}
-
-	public void saveProvenance(String annotation) {
-		provenance = annotation;
-	}
-
+	// FIXME is this needed?
 	public List<ProvenanceItem> getProvenanceCollection() {
-		return provenanceCollection;
-	}
-
-	@SuppressWarnings("unchecked")
-	public synchronized void store(ProvenanceItem provenanceItem) {
-
+		return null;
 	}
 
 	public void createDatabase() {
-		File applicationHomeDir = ApplicationRuntime.getInstance()
-				.getApplicationHomeDir();
-		File dbFile = new File(applicationHomeDir, "provenance");
-		try {
-			FileUtils.forceMkdir(dbFile);
-		} catch (IOException e2) {
-			logger.warn("Could not create root provenance directory: "
-					+ dbFile.toString() + " " + e2);
-		}
-		dbURL = "jdbc:derby:" + dbFile.toString() + "/db;create=true;upgrade=true";
+		// FIXME should this have the File stuff in it or not?
+		// File applicationHomeDir = ApplicationRuntime.getInstance()
+		// .getApplicationHomeDir();
+		// File dbFile = new File(applicationHomeDir, "provenance");
+		// try {
+		// FileUtils.forceMkdir(dbFile);
+		// } catch (IOException e2) {
+		//
+		// }
+		// String jdbcString = "jdbc:derby:" + dbFile.toString()
+		// + "/db;create=true;upgrade=true";
 
 		Statement stmt = null;
 		try {
 			stmt = getConnection().createStatement();
 		} catch (SQLException e1) {
 			logger.warn(e1);
+		} catch (InstantiationException e) {
+			logger.warn("Could not create database: " + e);
+		} catch (IllegalAccessException e) {
+			logger.warn("Could not create database: " + e);
+		} catch (ClassNotFoundException e) {
+			logger.warn("Could not create database: " + e);
 		}
 
 		try {
@@ -261,17 +215,30 @@ public class DerbyProvenanceConnector implements ProvenanceConnector {
 		} catch (Exception e) {
 			logger.warn("Could not create table Workflow : " + e);
 		}
+		try {
+			stmt.executeUpdate(createTableData);
+		} catch (Exception e) {
+			logger.warn("Could not create table Data : " + e);
+		}
+
 	}
 
 	public void deleteDatabase() {
-
+		// slightly hard coded here, the cb must be /provenance/db
 		try {
-			dbConn.close();
+			getConnection().close();
 		} catch (SQLException e) {
 			logger.warn("Could not close the database");
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		dbConn = null;
-		driverLoaded = false;
 		File applicationHomeDir = ApplicationRuntime.getInstance()
 				.getApplicationHomeDir();
 		File dbFile = new File(applicationHomeDir, "provenance");
@@ -282,26 +249,6 @@ public class DerbyProvenanceConnector implements ProvenanceConnector {
 			logger.warn("Could not delete provenance directory: "
 					+ provFile.toString() + " " + e);
 		}
-		// FIXME probably just remove the derby database file!!
-		// if (dbConn == null) {
-		// openConnection();
-		// }
-		//		
-		// Statement stmt = null;
-		// try {
-		// stmt = dbConn.createStatement();
-		// } catch (SQLException e1) {
-		// // TODO Auto-generated catch block
-		// e1.printStackTrace();
-		// }
-		// // int result = stmt.executeUpdate(createDB);
-		// int result;
-		// try {
-		// result = stmt.executeUpdate(deleteDB);
-		// } catch (SQLException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
 
 	}
 
@@ -309,35 +256,36 @@ public class DerbyProvenanceConnector implements ProvenanceConnector {
 		return "Derby DB Connector";
 	}
 
-	public void setDBLocation(String location) {
-		this.location = location;
-		// localProvenance.setLocation(location);
-	}
+	/**
+	 * Uses a {@link ScheduledThreadPoolExecutor} to process events in a Thread
+	 * safe manner
+	 */
+	public void addProvenanceItem(final ProvenanceItem provenanceItem) {
 
-	@Override
-	public String toString() {
-		return "Derby DB Connector";
-	}
+		if (provenanceItem.getEventType().equals(
+				SharedVocabulary.END_WORKFLOW_EVENT_TYPE))
+			logger.info("EVENT: " + provenanceItem.getEventType());
 
-	public void addProvenanceItem(ProvenanceItem provenanceItem) {
-		String content = provenanceItem.getAsString();
+		Runnable runnable = new Runnable() {
 
-		if (content == null) {
+			public void run() {
+				try {
+					
+					getProvenance().acceptRawProvenanceEvent(
+							provenanceItem.getEventType(), provenanceItem);
+					
+					
+				} catch (SQLException e) {
+					logger.warn("Could not add provenance: " + e);
+				} catch (IOException e) {
+					logger.warn("Could not add provenance: " + e);
+				}
 
-			XMLOutputter outputter = new XMLOutputter();
-			content = outputter.outputString(provenanceItem
-					.getAsXML(referenceService));
+			}
 
-		}
+		};
+		getExecutor().submit(runnable);
 
-		try {
-			localProvenance.acceptRawProvenanceEvent(provenanceItem
-					.getEventType(), content);
-		} catch (SQLException e) {
-			logger.warn("Problem adding provenance item : " + e);
-		} catch (IOException e) {
-			logger.warn("Problem adding provenance item : " + e);
-		}
 	}
 
 	public void setReferenceService(ReferenceService referenceService) {
@@ -348,197 +296,31 @@ public class DerbyProvenanceConnector implements ProvenanceConnector {
 		return referenceService;
 	}
 
-	public String getSessionId() {
-		// TODO Auto-generated method stub
-		return null;
+	@Override
+	public String toString() {
+		return "Derby Provenance Connector";
 	}
 
-	public void setSessionId(String identifier) {
-		// TODO Auto-generated method stub
-
+	public InvocationContext getInvocationContext() {
+		return invocationContext;
 	}
 
-	public String getPassword() {
-		return null;
-	}
-
-	public String getUser() {
-		return null;
-	}
-
-	public void setPassword(String password) {
+	public void setInvocationContext(InvocationContext invocationContext) {
+		this.invocationContext = invocationContext;
 
 	}
 
-	public void setUser(String user) {
+	@Override
+	public void init() {
+		ProvenanceWriter writer = new DerbyProvenanceWriter();
+		writer.setDbURL(getDbURL());
+		ProvenanceQuery query = new DerbyProvenanceQuery();
+		query.setDbURL(getDbURL());
+		EventProcessor eventProcessor = new EventProcessor();
+		eventProcessor.setPw(writer);
+		eventProcessor.setPq(query);
 
-	}
-
-	public String getdbName() {
-		return null;
-	}
-
-	public void setdbName(String dbName) {
-
-	}
-
-	public String getIntermediateValues(String wfInstance, String pname,
-			String vname, String iteration) throws SQLException {
-
-		LineageSQLQuery simpleLineageQuery = ((DerbyProvenance) localProvenance)
-				.getPq()
-				.simpleLineageQuery(wfInstance, pname, vname, iteration);
-		LineageQueryResult runLineageQuery;
-		try {
-			runLineageQuery = ((DerbyProvenance) localProvenance).getPq()
-					.runLineageQuery(simpleLineageQuery);
-		} catch (SQLException e) {
-			throw e;
-		}
-		String result = "<table><tr><th>Iteration</th><th>Value</th><th>Variable Name</th></tr>";
-
-		for (LineageQueryResultRecord record : runLineageQuery.getRecords()) {
-			result = result + "<tr><td>" + record.getIteration() + "</td><td>"
-					+ record.getValue() + "</td><td>" + record.getVname()
-					+ "</td></tr>";
-		}
-		result = result + "</table>";
-
-		return result;
-	}
-
-	public boolean isClearDB() {
-		return isClearDB;
-	}
-
-	public boolean isFinished() {
-		return false;
-	}
-
-	public void setClearDB(boolean isClearDB) {
-		this.isClearDB = isClearDB;
-
-	}
-
-	public String getDataflowInstance(String dataflowId) {
-		String instanceID = null;
-		try {
-			instanceID = ((DerbyProvenance) localProvenance).getPq()
-					.getWFInstanceID(dataflowId);
-		} catch (SQLException e) {
-			logger.warn("Problem getting dataflow instance : " + e);
-		}
-		return instanceID;
-	}
-
-	public synchronized Connection getConnection() {
-		if (!driverLoaded) {
-			loadDriver();
-		}
-
-		if (dbConn == null) {
-			openConnection();
-		}
-		return dbConn;
-	}
-
-	private void loadDriver() {
-		try {
-			getClass().getClassLoader().loadClass(
-					"org.apache.derby.jdbc.EmbeddedDriver").newInstance();
-		} catch (InstantiationException e) {
-			logger.warn(e);
-		} catch (IllegalAccessException e) {
-			logger.warn(e);
-		} catch (ClassNotFoundException e) {
-			logger.warn(e);
-		}
-		driverLoaded = true;
-	}
-
-	public void clearDatabase() {
-		String q = null;
-
-		Statement stmt = null;
-		try {
-			stmt = getConnection().createStatement();
-		} catch (SQLException e) {
-			logger.warn("Could not create database statement :" + e);
-		}
-
-		q = "DELETE FROM Workflow";
-		try {
-			stmt.executeUpdate(q);
-		} catch (SQLException e) {
-			logger.warn("Could not execute statement " + q + " :" + e);
-		}
-
-		q = "DELETE FROM Processor";
-		try {
-			stmt.executeUpdate(q);
-		} catch (SQLException e) {
-			logger.warn("Could not execute statement " + q + " :" + e);
-		}
-
-		q = "DELETE FROM Arc";
-		try {
-			stmt.executeUpdate(q);
-		} catch (SQLException e) {
-			logger.warn("Could not execute statement " + q + " :" + e);
-		}
-
-		q = "DELETE FROM Var";
-		try {
-			stmt.executeUpdate(q);
-		} catch (SQLException e) {
-			logger.warn("Could not execute statement " + q + " :" + e);
-		}
-		
-		q = "DELETE FROM WfInstance";
-		try {
-			stmt.executeUpdate(q);
-		} catch (SQLException e) {
-			logger.warn("Could not execute statement " + q + " :" + e);
-		}
-
-		q = "DELETE FROM ProcBinding";
-		try {
-			stmt.executeUpdate(q);
-		} catch (SQLException e) {
-			logger.warn("Could not execute statement " + q + " :" + e);
-		}
-
-		q = "DELETE FROM VarBinding";
-		try {
-			stmt.executeUpdate(q);
-		} catch (SQLException e) {
-			logger.warn("Could not execute statement " + q + " :" + e);
-		}
-
-		q = "DELETE FROM Collection";
-		try {
-			stmt.executeUpdate(q);
-		} catch (SQLException e) {
-			logger.warn("Could not execute statement " + q + " :" + e);
-		}
-
-		logger.info("Cleared provenance database");
-		
-	}
-
-	public void addProvenanceItem(ProvenanceItem provenanceItem,
-			Object invocationContext) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public String getSaveEvents() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void setSaveEvents(String saveEvents) {
-		// TODO Auto-generated method stub
-		
+		Provenance provenance = new Provenance(eventProcessor, getDbURL());
+		setProvenance(provenance);
 	}
 }
