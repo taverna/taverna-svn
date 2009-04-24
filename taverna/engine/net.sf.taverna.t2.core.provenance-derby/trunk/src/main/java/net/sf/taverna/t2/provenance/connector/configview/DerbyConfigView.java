@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.provenance.connector.configview;
 
 import java.awt.Frame;
+import java.io.File;
 
 import javax.swing.Action;
 import javax.swing.JComponent;
@@ -23,8 +24,10 @@ public class DerbyConfigView extends ContextualView {
 	@Override
 	public JComponent getMainFrame() {
 		JTextArea label = new JTextArea();
-		label.setText("Provenance will be stored in: \n" + ApplicationRuntime.getInstance().getApplicationHomeDir()
-						.toString() + "/db");
+		File applicationHomeDir = ApplicationRuntime.getInstance()
+				.getApplicationHomeDir();
+		File file = new File(applicationHomeDir, "db");
+		label.setText("Provenance will be stored in: \n" + file.toString());
 		label.setEditable(false);
 		return label;
 	}
@@ -42,9 +45,12 @@ public class DerbyConfigView extends ContextualView {
 	}
 
 	public String getDBURL() {
-		String jdbcString = "jdbc:derby:"
-				+ ApplicationRuntime.getInstance().getApplicationHomeDir()
-						.toString() + "/db;create=true;upgrade=true";
+
+		File applicationHomeDir = ApplicationRuntime.getInstance()
+				.getApplicationHomeDir();
+		File dbFile = new File(applicationHomeDir, "db");
+		String jdbcString = "jdbc:derby:" + dbFile.toString()
+				+ ";create=true;upgrade=true";
 		return jdbcString;
 	}
 
