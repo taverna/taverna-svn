@@ -301,14 +301,15 @@ public class WorkflowModelTranslator {
 					for (String mimeType : typeList) {
 						MimeType mimeTypeAnnotation = new MimeType();
 						mimeTypeAnnotation.setText(mimeType);
-						try {
 							EditsRegistry.getEdits().getAddAnnotationChainEdit(
 									inputPort, mimeTypeAnnotation).doEdit();
-						} catch (EditException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
 					}
+					String description = sourcePort.getMetadata().getDescription();
+					FreeTextDescription ftd = new FreeTextDescription();
+					ftd.setText(description);
+					EditsRegistry.getEdits().getAddAnnotationChainEdit(
+							inputPort, ftd).doEdit();
+					
 					inputMap.put(sourcePort, inputPort);
 					break;
 				}
