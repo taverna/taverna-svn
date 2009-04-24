@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.taverna.t2.invocation.InvocationContext;
-import net.sf.taverna.t2.provenance.connector.ProvenanceConnector;
+import net.sf.taverna.t2.provenance.reporter.ProvenanceReporter;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
@@ -50,7 +50,7 @@ public class DummyCallback implements AsynchronousActivityCallback {
 			return referenceService;
 		}
 
-		public ProvenanceConnector getProvenanceConnector() {
+		public ProvenanceReporter getProvenanceReporter() {
 			// TODO Auto-generated method stub
 			return null;
 		}
