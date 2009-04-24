@@ -28,7 +28,7 @@ import java.util.Map.Entry;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
 
 /**
- * Add your own database and carry out provenance queries
+ * Uses Apache Derby to carry out provenance queries
  * 
  * @author Ian Dunlop
  * 

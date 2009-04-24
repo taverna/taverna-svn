@@ -26,7 +26,7 @@ import java.sql.SQLException;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
 
 /**
- * Uses your database of choice to write workflow provenance
+ * Uses Apache Derby database to write workflow provenance
  * 
  * @author Paolo Missier
  * @author Ian Dunlop
