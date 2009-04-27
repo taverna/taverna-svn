@@ -260,7 +260,7 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 	 * Uses a {@link ScheduledThreadPoolExecutor} to process events in a Thread
 	 * safe manner
 	 */
-	public void addProvenanceItem(final ProvenanceItem provenanceItem) {
+	public synchronized void addProvenanceItem(final ProvenanceItem provenanceItem) {
 
 		if (provenanceItem.getEventType().equals(
 				SharedVocabulary.END_WORKFLOW_EVENT_TYPE))
