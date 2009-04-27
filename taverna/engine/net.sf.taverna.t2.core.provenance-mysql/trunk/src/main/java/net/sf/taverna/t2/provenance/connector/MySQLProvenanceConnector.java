@@ -413,7 +413,8 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		EventProcessor eventProcessor = new EventProcessor();
 		eventProcessor.setPw(writer);
 		eventProcessor.setPq(query);
-
+		ProvenanceAnalysis provenanceAnalysis = new ProvenanceAnalysis(query);
+		setProvenanceAnalysis(provenanceAnalysis);
 		Provenance provenance = new Provenance(eventProcessor, getDbURL());
 	}
 
