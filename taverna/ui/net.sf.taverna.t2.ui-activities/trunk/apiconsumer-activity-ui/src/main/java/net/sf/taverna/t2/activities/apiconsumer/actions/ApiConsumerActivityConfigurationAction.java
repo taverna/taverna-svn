@@ -88,17 +88,7 @@ public class ApiConsumerActivityConfigurationAction extends ActivityConfiguratio
 	
 	// New configuration for local dependencies
 	private LinkedHashSet<String> newLocalDependencies = new LinkedHashSet<String>();
-	
-	// New configuration for artifact dependencies
-	private LinkedHashSet<BasicArtifact> newArtifactDependencies = new LinkedHashSet<BasicArtifact>();
-
-	
-	// Table model for artifact dependencies 
-	private DefaultTableModel artTableModel;
-	
-	// Table holding artifact dependencies
-	private JTable artTable;
-	
+		
 	public ApiConsumerActivityConfigurationAction(ApiConsumerActivity activity, Frame owner) {
 		super(activity);
 		this.owner = owner;
@@ -107,7 +97,6 @@ public class ApiConsumerActivityConfigurationAction extends ActivityConfiguratio
 		// Initialise new configuration fields to the values of the previous ones
 		newClassLoaderSharing = configuration.getClassLoaderSharing();
 		newLocalDependencies.addAll(configuration.getLocalDependencies());
-		newArtifactDependencies.addAll(configuration.getArtifactDependencies());
 	}
 	
 	public void actionPerformed(ActionEvent e) {
@@ -122,8 +111,6 @@ public class ApiConsumerActivityConfigurationAction extends ActivityConfiguratio
 		JPanel classloadingPanel = new ClassloadingPanel();
 		// Create panel for selecting jar files
 		JPanel jarFilesPanel = new JarFilesPanel();
-		// Create panel for setting artifacts
-		JPanel artifactsPanel = new ArtifactsPanel();
 		// Create panel with OK/Cancel buttons
         ButtonsPanel buttonsPanel = new ButtonsPanel();
         
@@ -131,12 +118,10 @@ public class ApiConsumerActivityConfigurationAction extends ActivityConfiguratio
 		dialog.add(Box.createRigidArea(new Dimension(0,10)));
 		dialog.getContentPane().add(jarFilesPanel);
 		dialog.add(Box.createRigidArea(new Dimension(0,10)));
-		dialog.getContentPane().add(artifactsPanel);
-		dialog.add(Box.createRigidArea(new Dimension(0,10)));
 		dialog.getContentPane().add(buttonsPanel);
 		
-		dialog.getContentPane().setMinimumSize(new Dimension(500,600));
-		dialog.getContentPane().setPreferredSize(new Dimension(500,600));
+		dialog.getContentPane().setMinimumSize(new Dimension(500,280));
+		dialog.getContentPane().setPreferredSize(new Dimension(500,280));
 		dialog.pack();
 		dialog.setModal(true);
 		dialog.setVisible(true);
@@ -319,74 +304,6 @@ public class ApiConsumerActivityConfigurationAction extends ActivityConfiguratio
 		}
 	}
 	
-	// Panel for users to add artifact dependencies
-	private class ArtifactsPanel extends JPanel{
-		
-		private ArtifactsPanel() {
-			super();
-			setBorder(new EmptyBorder(0,10,0,10));
-			setLayout(new BorderLayout());
-			setMinimumSize(new Dimension(490, 200));
-			setMaximumSize(new Dimension(490, 250));
-			
-			add(new JLabel("Maven Artifacts"), BorderLayout.NORTH);
-			add(artifacts(),BorderLayout.CENTER);
-		}
-		
-		public JPanel artifacts() {
-			final JPanel panel = new JPanel(new BorderLayout());
-			panel.setBorder(new EtchedBorder());
-
-			artTableModel = new DefaultTableModel();
-			artTableModel.addColumn("Group ID");
-			artTableModel.addColumn("Artifact ID");
-			artTableModel.addColumn("Version");
-			for (BasicArtifact basicArt : configuration.getArtifactDependencies()){
-				String[] artifactStrings = new String[]{basicArt.getGroupId(), basicArt.getArtifactId(), basicArt.getVersion()}; 
-				artTableModel.addRow(artifactStrings);
-			}
-			artTable = new JTable(artTableModel);
-			artTable.setShowGrid(true);
-			artTable.setGridColor(Color.GRAY);
-			panel.add(new JScrollPane(artTable,
-					JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-					JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
-			
-			JButton addButton = new JButton("Add");
-			addButton.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e) {
-					NewArtifactDialog newArtifactDialog = new NewArtifactDialog("Enter New Artifact", true);
-					newArtifactDialog.setVisible(true);
-
-					String groupID = newArtifactDialog.getGroupID();
-					String artifactID = newArtifactDialog.getArtifatcID();
-					String version = newArtifactDialog.getVersion();
-
-					if (groupID == null) { // user cancelled-any of the above three is null
-						// Do nothing
-					}
-					else{
-						artTableModel.addRow(new String[]{groupID,artifactID,version});
-					}
-				}
-			});
-			JButton removeButton = new JButton("Remove");
-			removeButton.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e) {
-					if (artTable.getSelectedRow() >=0){
-						artTableModel.removeRow(artTable.getSelectedRow());
-					}
-				}
-			});
-			JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-			buttonsPanel.add(addButton);
-			buttonsPanel.add(removeButton);
-			panel.add(buttonsPanel, BorderLayout.SOUTH);
-			
-			return panel;
-		}
-	}
-	
 	private class ButtonsPanel extends Panel{
 		
 		private ButtonsPanel(){
@@ -397,23 +314,12 @@ public class ApiConsumerActivityConfigurationAction extends ActivityConfiguratio
 	        jbOK.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent evt)
-	            {	            		
-					// Collect the artifact dependencies (from non-empty table rows)
-					LinkedHashSet<BasicArtifact> artDeps = new LinkedHashSet<BasicArtifact>();
-					for (int i = 0; i< artTableModel.getRowCount(); i++){
-						BasicArtifact basicArt = new BasicArtifact(
-								(String) artTableModel.getValueAt(i, 0),
-								(String) artTableModel.getValueAt(i, 1),
-								(String) artTableModel.getValueAt(i, 2));
-							artDeps.add(basicArt);
-					}
-					newArtifactDependencies = artDeps;
-	            	
+	            {	            			            	
 	            	// Set the configuration bean to reflect any changes done in the dialog
 					if (isConfigurationChanged()) {
 						configuration.setClassLoaderSharing(newClassLoaderSharing);
 						configuration.setLocalDependencies(newLocalDependencies);
-						configuration.setArtifactDependencies(newArtifactDependencies);
+						configuration.setArtifactDependencies(new LinkedHashSet<BasicArtifact>());
 		            	configureActivity(configuration);
 					}
 	            	dialog.setVisible(false);
@@ -423,9 +329,7 @@ public class ApiConsumerActivityConfigurationAction extends ActivityConfiguratio
 				private boolean isConfigurationChanged() {
 					// The only things that can be configured are local and artifact dependencies and 
 					// classloader sharing policy, so we check if these have changed
-					if (configuration.getArtifactDependencies().equals(
-							newArtifactDependencies)
-							&& configuration.getClassLoaderSharing()
+					if (configuration.getClassLoaderSharing()
 									.equals(newClassLoaderSharing)
 							&& configuration.getLocalDependencies()
 									.equals(newLocalDependencies)) {
