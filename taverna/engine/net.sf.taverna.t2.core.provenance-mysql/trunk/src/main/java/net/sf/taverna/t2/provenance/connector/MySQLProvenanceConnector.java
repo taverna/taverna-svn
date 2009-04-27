@@ -38,6 +38,7 @@ import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceWriter;
+import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.vocabulary.SharedVocabulary;
 import net.sf.taverna.t2.reference.Identified;
 import net.sf.taverna.t2.reference.ReferenceService;
@@ -46,7 +47,7 @@ import net.sf.taverna.t2.reference.T2Reference;
 
 import org.apache.log4j.Logger;
 
-public class MySQLProvenanceConnector extends ProvenanceConnector{
+public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 	private static Logger logger = Logger
 			.getLogger(MySQLProvenanceConnector.class);
@@ -129,7 +130,6 @@ public class MySQLProvenanceConnector extends ProvenanceConnector{
 			+ "PRIMARY KEY  (`wfname`)"
 			+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- all known workflows by name';";
 
-
 	private Provenance provenance;
 	private String location;
 
@@ -139,9 +139,11 @@ public class MySQLProvenanceConnector extends ProvenanceConnector{
 
 	public MySQLProvenanceConnector() {
 	}
-	
-	public MySQLProvenanceConnector(Provenance provenance, String dbURL, boolean isClearDB, String saveEvents) {
-		super(provenance, dbURL, isClearDB, saveEvents);
+
+	public MySQLProvenanceConnector(Provenance provenance,
+			ProvenanceAnalysis provenanceAnalysis, String dbURL,
+			boolean isClearDB, String saveEvents) {
+		super(provenance, provenanceAnalysis, dbURL, isClearDB, saveEvents);
 	}
 
 	@Override
@@ -172,53 +174,73 @@ public class MySQLProvenanceConnector extends ProvenanceConnector{
 		// Set<ExternalReferenceSPI> externalReferences =
 		// referenceSet.getExternalReferences();
 		// externalReferences.iterator().next().getDataNature();
-//		T2Reference ref = null;
-//		referenceService.renderIdentifier(ref, byte[].class, invocationContext);
-//		ReferenceSetService referenceSetService = referenceService.getReferenceSetService();
-//		ReferenceSet referenceSet = referenceSetService.getReferenceSet(ref);
-//		Set<ExternalReferenceSPI> externalReferences = referenceSet.getExternalReferences();
-//		externalReferences.iterator().next().getDataNature();
-		
+		// T2Reference ref = null;
+		// referenceService.renderIdentifier(ref, byte[].class,
+		// invocationContext);
+		// ReferenceSetService referenceSetService =
+		// referenceService.getReferenceSetService();
+		// ReferenceSet referenceSet = referenceSetService.getReferenceSet(ref);
+		// Set<ExternalReferenceSPI> externalReferences =
+		// referenceSet.getExternalReferences();
+		// externalReferences.iterator().next().getDataNature();
+
 		if (provenanceItem instanceof IterationProvenanceItem) {
 
-			// provenance DB must be up and running when we get here, so it's safe to write to it
+			// provenance DB must be up and running when we get here, so it's
+			// safe to write to it
 			ProvenanceWriter pw = provenance.getPw();
-			
+
 			IterationProvenanceItem ipi = (IterationProvenanceItem) provenanceItem;
-			
-			Map<String, T2Reference> inputDataMap = ipi.getInputDataItem().getDataMap();
-			Map<String, T2Reference> outputDataMap = ipi.getOutputDataItem().getDataMap();
-			
-			Set<Map.Entry<String,T2Reference>> allRefs = new HashSet<Map.Entry<String,T2Reference>>();
-			
-			for(Map.Entry<String, T2Reference> entry:inputDataMap.entrySet()) allRefs.add(entry);
-			for(Map.Entry<String, T2Reference> entry:outputDataMap.entrySet()) allRefs.add(entry);
-						
-			for(Map.Entry<String, T2Reference> entry:allRefs) {
+
+			Map<String, T2Reference> inputDataMap = ipi.getInputDataItem()
+					.getDataMap();
+			Map<String, T2Reference> outputDataMap = ipi.getOutputDataItem()
+					.getDataMap();
+
+			Set<Map.Entry<String, T2Reference>> allRefs = new HashSet<Map.Entry<String, T2Reference>>();
+
+			for (Map.Entry<String, T2Reference> entry : inputDataMap.entrySet())
+				allRefs.add(entry);
+			for (Map.Entry<String, T2Reference> entry : outputDataMap
+					.entrySet())
+				allRefs.add(entry);
+
+			for (Map.Entry<String, T2Reference> entry : allRefs) {
 
 				T2Reference ref = entry.getValue();
 
-				Identified id = referenceService.resolveIdentifier(entry.getValue(), null, invocationContext);
-				if (id instanceof ReferenceSet ) {
+				Identified id = referenceService.resolveIdentifier(entry
+						.getValue(), null, invocationContext);
+				if (id instanceof ReferenceSet) {
 
-					byte[] renderedData = (byte[]) referenceService.renderIdentifier(entry.getValue(), byte[].class, invocationContext);
-					
-					System.out.println("****\ndata in provenance event: "+
-							entry.getValue()+" --> \n"+ renderedData+ "\n *****");
+					byte[] renderedData = (byte[]) referenceService
+							.renderIdentifier(entry.getValue(), byte[].class,
+									invocationContext);
+
+					System.out.println("****\ndata in provenance event: "
+							+ entry.getValue() + " --> \n" + renderedData
+							+ "\n *****");
 
 					try {
-//						FIXME need to get the svn synched properly so that EP has this method
-						pw.addData(entry.getValue().toString(), provenance.getEp().getWfInstanceID(),  renderedData);
+						// FIXME need to get the svn synched properly so that EP
+						// has this method
+						pw.addData(entry.getValue().toString(), provenance
+								.getEp().getWfInstanceID(), renderedData);
 					} catch (SQLException e) {
-						System.out.println("Exception while writing data to DB: "+e.getMessage());
+						System.out
+								.println("Exception while writing data to DB: "
+										+ e.getMessage());
 						e.printStackTrace();
 					}
-					
-//				ReferenceSet rs = (ReferenceSet) id;
-//				Set<ExternalReferenceSPI> externalRefs = rs.getExternalReferences();
-//				externalRefs.
+
+					// ReferenceSet rs = (ReferenceSet) id;
+					// Set<ExternalReferenceSPI> externalRefs =
+					// rs.getExternalReferences();
+					// externalRefs.
 				} else {
-					System.out.println("input data in provenance event NOT a ReferenceSet: "+entry.getValue());
+					System.out
+							.println("input data in provenance event NOT a ReferenceSet: "
+									+ entry.getValue());
 				}
 			}
 		}
@@ -230,7 +252,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector{
 			logger.info("EVENT: " + provenanceItem.getEventType());
 		}
 		if (provenanceItem.getEventType().equals("EOW")) {
-			logger.info("EOW EVENT arrived ");			
+			logger.info("EOW EVENT arrived ");
 		}
 
 		// if (content == null) {
@@ -287,7 +309,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector{
 	}
 
 	public void deleteDatabase() {
-		
+
 		Statement stmt;
 		try {
 			stmt = getConnection().createStatement();
@@ -313,36 +335,36 @@ public class MySQLProvenanceConnector extends ProvenanceConnector{
 		return "mysqlprovenance";
 	}
 
-//	public void init() {
-//		String jdbcString = "jdbc:mysql://" + location + "/T2Provenance?user="
-//				+ user + "&password=" + password;
-//		try {
-//			setProvenance(new MySQLProvenance(jdbcString, this.isClearDB));
-//			getProvenance().setSaveEvents(this.saveEvents);
-//
-//			// clear the events dir -- hacked up in a hurry
-//			File dir = new File(EVENTS_LOG_DIR);
-//			File[] allFiles = dir.listFiles();
-//
-//			if (allFiles != null)
-//				for (File f : allFiles) {
-//					f.delete();
-//				}
-//
-//		} catch (InstantiationException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IllegalAccessException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (ClassNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
+	// public void init() {
+	// String jdbcString = "jdbc:mysql://" + location + "/T2Provenance?user="
+	// + user + "&password=" + password;
+	// try {
+	// setProvenance(new MySQLProvenance(jdbcString, this.isClearDB));
+	// getProvenance().setSaveEvents(this.saveEvents);
+	//
+	// // clear the events dir -- hacked up in a hurry
+	// File dir = new File(EVENTS_LOG_DIR);
+	// File[] allFiles = dir.listFiles();
+	//
+	// if (allFiles != null)
+	// for (File f : allFiles) {
+	// f.delete();
+	// }
+	//
+	// } catch (InstantiationException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// } catch (IllegalAccessException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// } catch (ClassNotFoundException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// } catch (SQLException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// }
 
 	public void setProvenance(Provenance provenance) {
 		this.provenance = provenance;
@@ -371,7 +393,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector{
 	}
 
 	public void setReferenceService(ReferenceService referenceService) {
-		this.referenceService = referenceService;	
+		this.referenceService = referenceService;
 	}
 
 	public InvocationContext getInvocationContext() {
@@ -379,7 +401,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector{
 	}
 
 	public void setInvocationContext(InvocationContext invocationContext) {
-		this.invocationContext = invocationContext;		
+		this.invocationContext = invocationContext;
 	}
 
 	@Override
