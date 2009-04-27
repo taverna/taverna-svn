@@ -29,7 +29,7 @@ import java.util.Map;
 import net.sf.taverna.platform.spring.RavenAwareClassPathXmlApplicationContext;
 import net.sf.taverna.t2.compatibility.WorkflowModelTranslator;
 import net.sf.taverna.t2.invocation.InvocationContext;
-import net.sf.taverna.t2.provenance.connector.ProvenanceConnector;
+import net.sf.taverna.t2.provenance.reporter.ProvenanceReporter;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
@@ -76,7 +76,7 @@ public class InvocationTestHelper extends DataflowTranslationHelper {
 				return null;
 			}
 
-			public ProvenanceConnector getProvenanceConnector() {
+			public ProvenanceReporter getProvenanceReporter() {
 				// TODO Auto-generated method stub
 				return null;
 			}
