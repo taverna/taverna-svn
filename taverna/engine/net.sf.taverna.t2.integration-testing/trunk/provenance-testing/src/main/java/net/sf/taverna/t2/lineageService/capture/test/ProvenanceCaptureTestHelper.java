@@ -22,6 +22,7 @@ import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceWriter;
+import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.reporter.ProvenanceReporter;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -99,9 +100,10 @@ public class ProvenanceCaptureTestHelper {
 		EventProcessor eventProcessor = new EventProcessor();
 		eventProcessor.setPw(writer);
 		eventProcessor.setPq(query);
+		ProvenanceAnalysis provenanceAnalysis = new ProvenanceAnalysis(query);
 
 		Provenance provenance = new Provenance(eventProcessor, jdbcString);
-		provenanceConnector = new MySQLProvenanceConnector(provenance,
+		provenanceConnector = new MySQLProvenanceConnector(provenance,provenanceAnalysis,
 				jdbcString, isClearDB, saveEvents);
 		provenanceConnector.setReferenceService(referenceService);
 		provenanceConnector.createDatabase();
