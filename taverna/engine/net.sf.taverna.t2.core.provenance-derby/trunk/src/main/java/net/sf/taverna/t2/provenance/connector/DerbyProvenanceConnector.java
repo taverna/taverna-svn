@@ -37,6 +37,7 @@ import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceWriter;
+import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.vocabulary.SharedVocabulary;
 import net.sf.taverna.t2.reference.ReferenceService;
 
@@ -45,9 +46,10 @@ import org.apache.log4j.Logger;
 
 public class DerbyProvenanceConnector extends ProvenanceConnector {
 
-//	private ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10);
-	
-//	private ExecutorService executor = Executors.newSingleThreadExecutor();
+	// private ScheduledThreadPoolExecutor executor = new
+	// ScheduledThreadPoolExecutor(10);
+
+	// private ExecutorService executor = Executors.newSingleThreadExecutor();
 
 	private static Logger logger = Logger
 			.getLogger(DerbyProvenanceConnector.class);
@@ -123,9 +125,10 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 	public DerbyProvenanceConnector() {
 	}
 
-	public DerbyProvenanceConnector(Provenance provenance, String dbURL,
+	public DerbyProvenanceConnector(Provenance provenance,
+			ProvenanceAnalysis provenanceAnalysis, String dbURL,
 			boolean isClearDB, String saveEvents) {
-		super(provenance, dbURL, isClearDB, saveEvents);
+		super(provenance, provenanceAnalysis, dbURL, isClearDB, saveEvents);
 	}
 
 	public void openConnection() throws InstantiationException,
@@ -260,7 +263,8 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 	 * Uses a {@link ScheduledThreadPoolExecutor} to process events in a Thread
 	 * safe manner
 	 */
-	public synchronized void addProvenanceItem(final ProvenanceItem provenanceItem) {
+	public synchronized void addProvenanceItem(
+			final ProvenanceItem provenanceItem) {
 
 		if (provenanceItem.getEventType().equals(
 				SharedVocabulary.END_WORKFLOW_EVENT_TYPE))
@@ -270,11 +274,10 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 
 			public void run() {
 				try {
-					
+
 					getProvenance().acceptRawProvenanceEvent(
 							provenanceItem.getEventType(), provenanceItem);
-					
-					
+
 				} catch (SQLException e) {
 					logger.warn("Could not add provenance: " + e);
 				} catch (IOException e) {
