@@ -131,7 +131,6 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 			+ "PRIMARY KEY  (`wfname`)"
 			+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- all known workflows by name';";
 
-	private Provenance provenance;
 
 	private ReferenceService referenceService;
 
@@ -169,7 +168,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 			// provenance DB must be up and running when we get here, so it's
 			// safe to write to it
-			ProvenanceWriter pw = provenance.getPw();
+			ProvenanceWriter pw = getProvenance().getPw();
 
 			IterationProvenanceItem ipi = (IterationProvenanceItem) provenanceItem;
 
@@ -205,7 +204,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 					try {
 						// FIXME need to get the svn synched properly so that EP
 						// has this method
-						pw.addData(entry.getValue().toString(), provenance
+						pw.addData(entry.getValue().toString(), getProvenance()
 								.getEp().getWfInstanceID(), renderedData);
 					} catch (SQLException e) {
 						System.out
@@ -351,14 +350,6 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 	// e.printStackTrace();
 	// }
 	// }
-
-	public void setProvenance(Provenance provenance) {
-		this.provenance = provenance;
-	}
-
-	public Provenance getProvenance() {
-		return provenance;
-	}
 
 	@Override
 	protected void openConnection() throws InstantiationException,
