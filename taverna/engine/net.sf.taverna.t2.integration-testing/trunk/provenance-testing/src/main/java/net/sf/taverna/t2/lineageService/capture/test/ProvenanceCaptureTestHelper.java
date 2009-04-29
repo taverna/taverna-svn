@@ -86,7 +86,7 @@ public class ProvenanceCaptureTestHelper {
 		if (clearDB != null)
 			isClearDB = Boolean.parseBoolean(clearDB);
 
-		String jdbcString = "jdbc:mysql:" + DB_URL_LOCAL +"/T2Provenance?user=" + DB_USER +"?password=" + DB_PASSWD;
+		String jdbcString = "jdbc:mysql://" + DB_URL_LOCAL +"/T2Provenance?user=" + DB_USER +"&password=" + DB_PASSWD;
 
 		ProvenanceWriter writer = new MySQLProvenanceWriter();
 		writer.setDbURL(jdbcString);
