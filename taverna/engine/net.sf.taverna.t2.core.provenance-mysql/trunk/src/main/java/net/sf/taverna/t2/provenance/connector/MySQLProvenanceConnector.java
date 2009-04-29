@@ -36,6 +36,7 @@ import net.sf.taverna.t2.provenance.lineageservice.EventProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.Provenance;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
+import net.sf.taverna.t2.provenance.lineageservice.WorkflowDataProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceAnalysis;
@@ -387,9 +388,13 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		writer.setDbURL(getDbURL());
 		ProvenanceQuery query = new MySQLProvenanceQuery();
 		query.setDbURL(getDbURL());
+		WorkflowDataProcessor wfdp = new WorkflowDataProcessor();
+		wfdp.setPq(query);
+		wfdp.setPw(writer);
 		EventProcessor eventProcessor = new EventProcessor();
 		eventProcessor.setPw(writer);
 		eventProcessor.setPq(query);
+		eventProcessor.setWfdp(wfdp);
 		ProvenanceAnalysis provenanceAnalysis = null;
 		try {
 			provenanceAnalysis = new ProvenanceAnalysis(query);
