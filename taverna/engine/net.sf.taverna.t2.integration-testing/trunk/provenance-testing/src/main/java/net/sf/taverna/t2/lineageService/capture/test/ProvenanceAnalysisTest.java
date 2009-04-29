@@ -17,8 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.taverna.t2.lineageService.analysis.test.AnalysisTestFiles;
-import net.sf.taverna.t2.lineageService.analysis.test.QueryVar;
+import net.sf.taverna.t2.lineageService.capture.test.testFiles;
 import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResult;
 import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
 import net.sf.taverna.t2.provenance.lineageservice.LineageSQLQuery;
