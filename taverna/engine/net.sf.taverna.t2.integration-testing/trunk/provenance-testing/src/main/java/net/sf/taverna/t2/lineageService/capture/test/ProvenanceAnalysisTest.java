@@ -1,36 +1,34 @@
 /**
  * 
  */
-package net.sf.taverna.t2.lineageService.analysis.test;
+package net.sf.taverna.t2.lineageService.capture.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
-import net.sf.taverna.t2.lineageService.capture.test.testFiles;
+import net.sf.taverna.t2.lineageService.analysis.test.AnalysisTestFiles;
+import net.sf.taverna.t2.lineageService.analysis.test.QueryVar;
 import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResult;
 import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
 import net.sf.taverna.t2.provenance.lineageservice.LineageSQLQuery;
-import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
+import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceQuery;
+import net.sf.taverna.t2.provenance.lineageservice.mysql.NaiveProvenanceQuery;
+import net.sf.taverna.t2.provenance.lineageservice.mysql.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.lineageservice.utils.DDRecord;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
-import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenance;
-import net.sf.taverna.t2.provenance.lineageservice.mysql.NaiveProvenanceQuery;
-import net.sf.taverna.t2.provenance.lineageservice.mysql.ProvenanceAnalysis;
-import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceQuery;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -54,11 +52,12 @@ public class ProvenanceAnalysisTest {
 
 	NaiveProvenanceQuery npq = null;
 	ProvenanceAnalysis pa = null;
-	ProvenanceQuery pq = null;		
+	MySQLProvenanceQuery pq = null;		
 
 	// shared by all tests -- these capture users configuration from AnalysisTestFiles.properties
 	Set<String> selProcNames = new HashSet<String>();
 	List<QueryVar>  qvList = new ArrayList<QueryVar>();
+	
 	String wfInstance = null; 
 
 	//////////////

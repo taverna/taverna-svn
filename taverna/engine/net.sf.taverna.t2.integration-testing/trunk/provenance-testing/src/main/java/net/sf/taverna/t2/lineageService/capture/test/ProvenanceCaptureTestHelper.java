@@ -100,7 +100,22 @@ public class ProvenanceCaptureTestHelper {
 		EventProcessor eventProcessor = new EventProcessor();
 		eventProcessor.setPw(writer);
 		eventProcessor.setPq(query);
-		ProvenanceAnalysis provenanceAnalysis = new ProvenanceAnalysis(query);
+		ProvenanceAnalysis provenanceAnalysis = null;
+		try {
+			provenanceAnalysis = new ProvenanceAnalysis(null, query);
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		Provenance provenance = new Provenance(eventProcessor, jdbcString);
 		provenanceConnector = new MySQLProvenanceConnector(provenance,provenanceAnalysis,

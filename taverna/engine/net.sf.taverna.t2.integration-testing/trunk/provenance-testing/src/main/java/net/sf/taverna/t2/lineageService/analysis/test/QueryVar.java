@@ -6,7 +6,8 @@ package net.sf.taverna.t2.lineageService.analysis.test;
 /**
  * @author paolo
  *
- */	class QueryVar {
+ */	
+public class QueryVar {
 	 String pname;
 	 String vname;
 	 String path;
