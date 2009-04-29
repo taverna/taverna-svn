@@ -21,6 +21,7 @@ import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceWriter;
+import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.reporter.ProvenanceReporter;
@@ -95,14 +96,14 @@ public class ProvenanceCaptureTestHelper {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		ProvenanceQuery query = new DerbyProvenanceQuery();
+		ProvenanceQuery query = new MySQLProvenanceQuery();
 		query.setDbURL(jdbcString);
 		EventProcessor eventProcessor = new EventProcessor();
 		eventProcessor.setPw(writer);
 		eventProcessor.setPq(query);
 		ProvenanceAnalysis provenanceAnalysis = null;
 		try {
-			provenanceAnalysis = new ProvenanceAnalysis(null, query);
+			provenanceAnalysis = new ProvenanceAnalysis(query);
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
