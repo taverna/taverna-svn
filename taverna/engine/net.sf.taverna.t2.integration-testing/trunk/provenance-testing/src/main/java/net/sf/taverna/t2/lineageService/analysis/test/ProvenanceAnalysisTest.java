@@ -310,7 +310,8 @@ public class ProvenanceAnalysisTest {
 			for (LineageQueryResult result:results) {
 
 				System.out.println("****** result: *****");
-				for (LineageQueryResultRecord r:result.getRecords()) {					
+				for (LineageQueryResultRecord r:result.getRecords()) {	
+					r.setPrintResolvedValue(false);
 					System.out.println("proc "+r.getPname()+
 							           " var "+r.getVname()+" " +
 							           "iteration: "+r.getIteration()+
