@@ -122,7 +122,7 @@ public class ProvenanceCaptureTestHelper {
 		provenanceConnector = new MySQLProvenanceConnector(provenance,provenanceAnalysis,
 				jdbcString, isClearDB, saveEvents);
 		provenanceConnector.setReferenceService(referenceService);
-		provenanceConnector.createDatabase();
+//		provenanceConnector.createDatabase();
 		provenanceConnector.setInvocationContext(context);
 
 		context =  new InvocationContext() {
@@ -133,7 +133,7 @@ public class ProvenanceCaptureTestHelper {
 
 			public ProvenanceReporter getProvenanceReporter() {
 				if (isUseProvenance)
-					return (ProvenanceReporter) provenanceConnector;
+					return provenanceConnector;
 				return null;
 			}
 

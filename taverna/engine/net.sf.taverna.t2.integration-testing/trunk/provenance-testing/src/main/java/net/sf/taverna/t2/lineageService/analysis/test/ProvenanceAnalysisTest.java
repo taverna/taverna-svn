@@ -23,8 +23,8 @@ import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
 import net.sf.taverna.t2.provenance.lineageservice.LineageSQLQuery;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.NaiveProvenanceQuery;
-import net.sf.taverna.t2.provenance.lineageservice.mysql.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.lineageservice.utils.DDRecord;
+import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
 
@@ -89,9 +89,9 @@ public class ProvenanceAnalysisTest {
 		+ DB_USER + "&password=" + DB_PASSWD;
 
 		npq = new NaiveProvenanceQuery(jdbcString);		
-		pa = new ProvenanceAnalysis(jdbcString);
 		pq = new MySQLProvenanceQuery();	
 		pq.setDbURL(jdbcString);
+		pa = new ProvenanceAnalysis(pq);
 
 		acquireTestConfiguration();		
 
