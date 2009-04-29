@@ -30,5 +30,9 @@ public class RshellTemplateService extends AbstractTemplateService<RshellActivit
 	public String getName() {
 		return RSHELL;
 	}
-
+	
+	@Override
+	public String getDescription() {
+		return "A service that allows the calling of R scripts on an R server";	
+	}
 }
