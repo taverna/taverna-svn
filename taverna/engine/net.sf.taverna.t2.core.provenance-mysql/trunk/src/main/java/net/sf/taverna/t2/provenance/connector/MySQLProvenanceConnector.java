@@ -132,7 +132,6 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 			+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- all known workflows by name';";
 
 	private Provenance provenance;
-	private String location;
 
 	private ReferenceService referenceService;
 
@@ -367,7 +366,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		getClass().getClassLoader().loadClass("com.mysql.jdbc.Driver")
 				.newInstance();
 		try {
-			connection = DriverManager.getConnection(location);
+			connection = DriverManager.getConnection(getDbURL());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
