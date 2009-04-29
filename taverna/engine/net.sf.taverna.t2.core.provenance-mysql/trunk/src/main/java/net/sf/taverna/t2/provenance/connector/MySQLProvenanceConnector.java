@@ -43,6 +43,7 @@ import net.sf.taverna.t2.provenance.vocabulary.SharedVocabulary;
 import net.sf.taverna.t2.reference.Identified;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceSet;
+import net.sf.taverna.t2.reference.ReferenceSetService;
 import net.sf.taverna.t2.reference.T2Reference;
 
 import org.apache.log4j.Logger;
@@ -160,29 +161,10 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 	/**
 	 * main entry point into the service
 	 */
-	public synchronized void addProvenanceItem(ProvenanceItem provenanceItem) {
+	public synchronized void addProvenanceItem(final ProvenanceItem provenanceItem) {
 
-		// InvocationContext invocationContext = (InvocationContext)context;
-		// ReferenceService referenceService =
-		// invocationContext.getReferenceService();
-		// T2Reference ref = null;
-		// referenceService.renderIdentifier(ref, byte[].class,
-		// invocationContext);
-		// ReferenceSetService referenceSetService =
-		// referenceService.getReferenceSetService();
-		// ReferenceSet referenceSet = referenceSetService.getReferenceSet(ref);
-		// Set<ExternalReferenceSPI> externalReferences =
-		// referenceSet.getExternalReferences();
-		// externalReferences.iterator().next().getDataNature();
-		// T2Reference ref = null;
-		// referenceService.renderIdentifier(ref, byte[].class,
-		// invocationContext);
-		// ReferenceSetService referenceSetService =
-		// referenceService.getReferenceSetService();
-		// ReferenceSet referenceSet = referenceSetService.getReferenceSet(ref);
-		// Set<ExternalReferenceSPI> externalReferences =
-		// referenceSet.getExternalReferences();
-		// externalReferences.iterator().next().getDataNature();
+		 ReferenceService referenceService =
+		 invocationContext.getReferenceService();
 
 		if (provenanceItem instanceof IterationProvenanceItem) {
 
@@ -262,19 +244,24 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		//
 		// }
 
-		try {
-			// provenance.acceptRawProvenanceEvent(provenanceItem.getEventType(),
-			// content, context);
-			getProvenance().acceptRawProvenanceEvent(
-					provenanceItem.getEventType(), provenanceItem);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Runnable runnable = new Runnable() {
 
+			public void run() {
+				try {
+
+					getProvenance().acceptRawProvenanceEvent(
+							provenanceItem.getEventType(), provenanceItem);
+
+				} catch (SQLException e) {
+					logger.warn("Could not add provenance: " + e);
+				} catch (IOException e) {
+					logger.warn("Could not add provenance: " + e);
+				}
+
+			}
+
+		};
+		getExecutor().submit(runnable);
 	}
 
 	public void createDatabase() {
