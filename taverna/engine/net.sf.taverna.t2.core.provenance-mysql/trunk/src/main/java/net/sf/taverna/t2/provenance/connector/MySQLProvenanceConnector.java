@@ -402,7 +402,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		eventProcessor.setPq(query);
 		ProvenanceAnalysis provenanceAnalysis = null;
 		try {
-			provenanceAnalysis = new ProvenanceAnalysis(null, query);
+			provenanceAnalysis = new ProvenanceAnalysis(query);
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
