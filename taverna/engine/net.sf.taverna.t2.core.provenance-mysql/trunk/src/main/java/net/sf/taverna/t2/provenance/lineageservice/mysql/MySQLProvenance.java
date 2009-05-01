@@ -50,14 +50,6 @@ public class MySQLProvenance extends Provenance {
 //		this.location = location;
 //		this.ep = eventProcessor;
 //
-//		// clear the DB prior to collecting new provenance
-////		if (isClearDB) {
-////			System.out.println("clearing DB");
-////			pw.clearDBStatic();
-////			pw.clearDBDynamic();
-////		} else {
-////			System.out.println("clearDB is FALSE: not clearing");
-////		}
 //
 //	}
 

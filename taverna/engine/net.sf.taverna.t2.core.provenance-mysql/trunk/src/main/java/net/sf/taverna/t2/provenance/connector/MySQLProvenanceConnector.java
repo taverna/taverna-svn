@@ -52,7 +52,7 @@ import org.apache.log4j.Logger;
 public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 	private static Logger logger = Logger
-			.getLogger(MySQLProvenanceConnector.class);
+	.getLogger(MySQLProvenanceConnector.class);
 
 	private static final String EVENTS_LOG_DIR = "/tmp/TEST-EVENTS";
 
@@ -61,76 +61,76 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 	private static final String createDB = "CREATE DATABASE IF NOT EXISTS T2Provenance";
 
 	private static final String createTableArc = "CREATE TABLE IF NOT EXISTS  `T2Provenance`.`Arc` ("
-			+ "`sourceVarNameRef` varchar(100) NOT NULL COMMENT 'ref. to var name for source of arc',"
-			+ "`sinkVarNameRef` varchar(100) NOT NULL COMMENT 'ref. to var name for sink of arc',"
-			+ "`sourcePNameRef` varchar(100) NOT NULL,"
-			+ "`sinkPNameRef` varchar(100) NOT NULL,"
-			+ "`wfInstanceRef` varchar(100) NOT NULL,"
-			+ "PRIMARY KEY  USING BTREE (`sourceVarNameRef`,`sinkVarNameRef`,`sourcePNameRef`,`sinkPNameRef`,`wfInstanceRef`)"
-			+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- arc between two processors';";
+		+ "`sourceVarNameRef` varchar(100) NOT NULL COMMENT 'ref. to var name for source of arc',"
+		+ "`sinkVarNameRef` varchar(100) NOT NULL COMMENT 'ref. to var name for sink of arc',"
+		+ "`sourcePNameRef` varchar(100) NOT NULL,"
+		+ "`sinkPNameRef` varchar(100) NOT NULL,"
+		+ "`wfInstanceRef` varchar(100) NOT NULL,"
+		+ "PRIMARY KEY  USING BTREE (`sourceVarNameRef`,`sinkVarNameRef`,`sourcePNameRef`,`sinkPNameRef`,`wfInstanceRef`)"
+		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- arc between two processors';";
 
 	private static final String createTableCollection = "CREATE TABLE  IF NOT EXISTS `T2Provenance`.`Collection` ("
-			+ "`collID` varchar(100) NOT NULL COMMENT 'ID of a list (collection). not sure yet what this looks like... ',"
-			+ "`parentCollIDRef` varchar(100) NOT NULL default 'TOP' COMMENT 'used for list nesting.\ndefault is dummy list TOP since this attr. is key',"
-			+ "`wfInstanceRef` varchar(100) NOT NULL,"
-			+ "`PNameRef` varchar(100) NOT NULL,"
-			+ "`varNameRef` varchar(100) NOT NULL,"
-			+ "`iteration` char(10) NOT NULL default '',"
-			+ " PRIMARY KEY  USING BTREE (`collID`,`wfInstanceRef`,`PNameRef`,`varNameRef`,`parentCollIDRef`,`iteration`)"
-			+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='dynamic -- contains IDs of lists (T2 collections)';";
+		+ "`collID` varchar(100) NOT NULL COMMENT 'ID of a list (collection). not sure yet what this looks like... ',"
+		+ "`parentCollIDRef` varchar(100) NOT NULL default 'TOP' COMMENT 'used for list nesting.\ndefault is dummy list TOP since this attr. is key',"
+		+ "`wfInstanceRef` varchar(100) NOT NULL,"
+		+ "`PNameRef` varchar(100) NOT NULL,"
+		+ "`varNameRef` varchar(100) NOT NULL,"
+		+ "`iteration` char(10) NOT NULL default '',"
+		+ " PRIMARY KEY  USING BTREE (`collID`,`wfInstanceRef`,`PNameRef`,`varNameRef`,`parentCollIDRef`,`iteration`)"
+		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='dynamic -- contains IDs of lists (T2 collections)';";
 
 	private static final String createTableProcBinding = "CREATE TABLE IF NOT EXISTS  `T2Provenance`.`ProcBinding` ("
-			+ "`pnameRef` varchar(100) NOT NULL COMMENT 'ref to static processor name',"
-			+ "`execIDRef` varchar(100) NOT NULL COMMENT 'ref. to ID of wf execution',"
-			+ "`actName` varchar(100) NOT NULL COMMENT 'name of activity bound to this processor',"
-			+ "`iteration` char(10) NOT NULL default '',"
-			+ "PRIMARY KEY  USING BTREE (`pnameRef`,`execIDRef`,`iteration`)"
-			+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='dynamic -- binding of processor to activity';";
+		+ "`pnameRef` varchar(100) NOT NULL COMMENT 'ref to static processor name',"
+		+ "`execIDRef` varchar(100) NOT NULL COMMENT 'ref. to ID of wf execution',"
+		+ "`actName` varchar(100) NOT NULL COMMENT 'name of activity bound to this processor',"
+		+ "`iteration` char(10) NOT NULL default '',"
+		+ "PRIMARY KEY  USING BTREE (`pnameRef`,`execIDRef`,`iteration`)"
+		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='dynamic -- binding of processor to activity';";
 
 	private static final String createTableProcessor = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Processor` ("
-			+ "`pname` varchar(100) NOT NULL,"
-			+ "`wfInstanceRef` varchar(100) NOT NULL COMMENT 'ref to WfInstance.wfInstanceID',"
-			+ "`type` varchar(100) default NULL COMMENT 'processor type',"
-			+ "PRIMARY KEY  (`pname`,`wfInstanceRef`)"
-			+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- all processors for all workflows, by name';";
+		+ "`pname` varchar(100) NOT NULL,"
+		+ "`wfInstanceRef` varchar(100) NOT NULL COMMENT 'ref to WfInstance.wfInstanceID',"
+		+ "`type` varchar(100) default NULL COMMENT 'processor type',"
+		+ "PRIMARY KEY  (`pname`,`wfInstanceRef`)"
+		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- all processors for all workflows, by name';";
 
 	private static final String createTableVar = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Var` ("
-			+ "`varName` varchar(100) NOT NULL,"
-			+ "`type` varchar(20) default NULL COMMENT 'variable type',"
-			+ "`inputOrOutput` tinyint(1) NOT NULL COMMENT '1 = input, 0 = output',"
-			+ "`pnameRef` varchar(100) NOT NULL COMMENT 'reference to the processor',"
-			+ "`wfInstanceRef` varchar(100) NOT NULL,"
-			+ "`nestingLevel` int(10) unsigned default '0',"
-			+ "`actualNestingLevel` int(10) unsigned default '0',"
-			+ "`anlSet` tinyint(1) default NULL,"
-			+ "PRIMARY KEY  USING BTREE (`varName`,`inputOrOutput`,`pnameRef`,`wfInstanceRef`)"
-			+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- input and output variables (processor port names i';";
+		+ "`varName` varchar(100) NOT NULL,"
+		+ "`type` varchar(20) default NULL COMMENT 'variable type',"
+		+ "`inputOrOutput` tinyint(1) NOT NULL COMMENT '1 = input, 0 = output',"
+		+ "`pnameRef` varchar(100) NOT NULL COMMENT 'reference to the processor',"
+		+ "`wfInstanceRef` varchar(100) NOT NULL,"
+		+ "`nestingLevel` int(10) unsigned default '0',"
+		+ "`actualNestingLevel` int(10) unsigned default '0',"
+		+ "`anlSet` tinyint(1) default NULL,"
+		+ "PRIMARY KEY  USING BTREE (`varName`,`inputOrOutput`,`pnameRef`,`wfInstanceRef`)"
+		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- input and output variables (processor port names i';";
 
 	private static final String createTableVarBinding = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`VarBinding` ("
-			+ "`varNameRef` varchar(100) NOT NULL COMMENT 'ref to var name',"
-			+ "`wfInstanceRef` varchar(100) NOT NULL COMMENT 'ref to execution ID',"
-			+ "`value` varchar(100) default NULL COMMENT 'ref to value. Either a string value or a string ref (URI) to a value',"
-			+ "`collIDRef` varchar(100) NOT NULL default 'TOP',"
-			+ "`positionInColl` int(10) unsigned NOT NULL default '1' COMMENT 'position within collection. default is 1',"
-			+ "`PNameRef` varchar(100) NOT NULL,"
-			+ "`valueType` varchar(50) default NULL,"
-			+ "`ref` varchar(100) default NULL,"
-			+ "`iteration` char(10) NOT NULL default '',"
-			+ "PRIMARY KEY  USING BTREE (`varNameRef`,`wfInstanceRef`,`PNameRef`,`positionInColl`,`iteration`,`collIDRef`),"
-			+ "KEY `collectionFK` (`wfInstanceRef`,`PNameRef`,`varNameRef`,`collIDRef`)"
-			+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='dynamic -- binding of variables to values ';";
+		+ "`varNameRef` varchar(100) NOT NULL COMMENT 'ref to var name',"
+		+ "`wfInstanceRef` varchar(100) NOT NULL COMMENT 'ref to execution ID',"
+		+ "`value` varchar(100) default NULL COMMENT 'ref to value. Either a string value or a string ref (URI) to a value',"
+		+ "`collIDRef` varchar(100) NOT NULL default 'TOP',"
+		+ "`positionInColl` int(10) unsigned NOT NULL default '1' COMMENT 'position within collection. default is 1',"
+		+ "`PNameRef` varchar(100) NOT NULL,"
+		+ "`valueType` varchar(50) default NULL,"
+		+ "`ref` varchar(100) default NULL,"
+		+ "`iteration` char(10) NOT NULL default '',"
+		+ "PRIMARY KEY  USING BTREE (`varNameRef`,`wfInstanceRef`,`PNameRef`,`positionInColl`,`iteration`,`collIDRef`),"
+		+ "KEY `collectionFK` (`wfInstanceRef`,`PNameRef`,`varNameRef`,`collIDRef`)"
+		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='dynamic -- binding of variables to values ';";
 
 	private static final String createTableWFInstance = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`WfInstance` ("
-			+ "`instanceID` varchar(100) NOT NULL COMMENT 'T2-generated ID for one execution',"
-			+ "`wfnameRef` varchar(100) NOT NULL COMMENT 'ref to name of the workflow being executed',"
-			+ "`timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP COMMENT 'when execution has occurred',"
-			+ "PRIMARY KEY  (`instanceID`, `wfnameRef`)"
-			+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='dynamic -- execution of a workflow';";
+		+ "`instanceID` varchar(100) NOT NULL COMMENT 'T2-generated ID for one execution',"
+		+ "`wfnameRef` varchar(100) NOT NULL COMMENT 'ref to name of the workflow being executed',"
+		+ "`timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP COMMENT 'when execution has occurred',"
+		+ "PRIMARY KEY  (`instanceID`, `wfnameRef`)"
+		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='dynamic -- execution of a workflow';";
 
 	private static final String createTableWorkflow = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Workflow` ("
-			+ "`wfname` varchar(100) NOT NULL, `parentWFname` varchar(100), "
-			+ "PRIMARY KEY  (`wfname`)"
-			+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- all known workflows by name';";
+		+ "`wfname` varchar(100) NOT NULL, `parentWFname` varchar(100), "
+		+ "PRIMARY KEY  (`wfname`)"
+		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- all known workflows by name';";
 
 
 	private ReferenceService referenceService;
@@ -144,6 +144,22 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 			ProvenanceAnalysis provenanceAnalysis, String dbURL,
 			boolean isClearDB, String saveEvents) {
 		super(provenance, provenanceAnalysis, dbURL, isClearDB, saveEvents);
+
+//		// clear the DB prior to collecting new provenance
+		if (isClearDB) {
+			System.out.println("clearing DB");
+			try {
+				getProvenance().getPw().clearDBStatic();
+				getProvenance().getPw().clearDBDynamic();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			System.out.println("clearDB is FALSE: not clearing");
+		}
+
+
 	}
 
 	@Override
@@ -153,7 +169,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 	public List<ProvenanceItem> getProvenanceCollection() {
 		System.out
-				.println("invoked: LocalConnector::getProvenanceCollection()");
+		.println("invoked: LocalConnector::getProvenanceCollection()");
 		return null;
 	}
 
@@ -162,8 +178,8 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 	 */
 	public synchronized void addProvenanceItem(final ProvenanceItem provenanceItem) {
 
-		 ReferenceService referenceService =
-		 invocationContext.getReferenceService();
+		ReferenceService referenceService =
+			invocationContext.getReferenceService();
 
 		if (provenanceItem instanceof IterationProvenanceItem) {
 
@@ -174,9 +190,9 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 			IterationProvenanceItem ipi = (IterationProvenanceItem) provenanceItem;
 
 			Map<String, T2Reference> inputDataMap = ipi.getInputDataItem()
-					.getDataMap();
+			.getDataMap();
 			Map<String, T2Reference> outputDataMap = ipi.getOutputDataItem()
-					.getDataMap();
+			.getDataMap();
 
 			Set<Map.Entry<String, T2Reference>> allRefs = new HashSet<Map.Entry<String, T2Reference>>();
 
@@ -195,8 +211,8 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 				if (id instanceof ReferenceSet) {
 
 					byte[] renderedData = (byte[]) referenceService
-							.renderIdentifier(entry.getValue(), byte[].class,
-									invocationContext);
+					.renderIdentifier(entry.getValue(), byte[].class,
+							invocationContext);
 
 					System.out.println("****\ndata in provenance event: "
 							+ entry.getValue() + " --> \n" + renderedData
@@ -209,8 +225,8 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 								.getEp().getWfInstanceID(), renderedData);
 					} catch (SQLException e) {
 						System.out
-								.println("Exception while writing data to DB: "
-										+ e.getMessage());
+						.println("Exception while writing data to DB: "
+								+ e.getMessage());
 						e.printStackTrace();
 					}
 
@@ -220,8 +236,8 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 					// externalRefs.
 				} else {
 					System.out
-							.println("input data in provenance event NOT a ReferenceSet: "
-									+ entry.getValue());
+					.println("input data in provenance event NOT a ReferenceSet: "
+							+ entry.getValue());
 				}
 			}
 		}
@@ -279,8 +295,8 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 		} catch (SQLException e) {
 			logger
-					.warn("There was a problem creating the Provenance database database: "
-							+ e.toString());
+			.warn("There was a problem creating the Provenance database database: "
+					+ e.toString());
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -302,8 +318,8 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 			stmt.executeUpdate(deleteDB);
 		} catch (SQLException e) {
 			logger
-					.warn("There was a problem deleting the Provenance database: "
-							+ e.toString());
+			.warn("There was a problem deleting the Provenance database: "
+					+ e.toString());
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -354,9 +370,9 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 	@Override
 	protected void openConnection() throws InstantiationException,
-			IllegalAccessException, ClassNotFoundException {
+	IllegalAccessException, ClassNotFoundException {
 		getClass().getClassLoader().loadClass("com.mysql.jdbc.Driver")
-				.newInstance();
+		.newInstance();
 		try {
 			connection = DriverManager.getConnection(getDbURL());
 		} catch (SQLException e) {
