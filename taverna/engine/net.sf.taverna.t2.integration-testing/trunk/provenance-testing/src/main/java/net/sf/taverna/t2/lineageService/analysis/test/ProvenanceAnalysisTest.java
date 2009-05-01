@@ -49,6 +49,8 @@ public class ProvenanceAnalysisTest {
 
 	private static  String jdbcString = null;
 
+	private boolean returnOutputs = false;  // set through prefs. if true then we return output processor var bindings as well
+
 	NaiveProvenanceQuery npq = null;
 	ProvenanceAnalysis pa = null;
 	MySQLProvenanceQuery pq = null;		
@@ -119,6 +121,13 @@ public class ProvenanceAnalysisTest {
 		if (selectedInstances == null) {
 			selectedInstances = DEFAULT_SELECTED_INSTANCES;			
 		}
+
+		// do we need to return output processor values in addition to inputs?
+		String returnOutputsPref = AnalysisTestFiles.getString("query.returnOutputs");
+		if (returnOutputsPref != null) {
+			setReturnOutputs(Boolean.parseBoolean(returnOutputsPref));	
+		}
+		
 
 		//////////////
 		// set the run instances (scope)
@@ -324,6 +333,9 @@ public class ProvenanceAnalysisTest {
 	@Test
 	public final void testComputeLineagePaths() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
+		// set return outputs pref
+		pa.setReturnOutputs(isReturnOutputs());
+		
 		// launch a lineage query for each target variable
 		for (QueryVar qv:qvList) {
 
@@ -623,6 +635,22 @@ public class ProvenanceAnalysisTest {
 			System.out.println("lineage query response time: "+(stop.getTime() - start.getTime())+" ms");
 
 		}
+	}
+
+
+	/**
+	 * @return the returnOutputs
+	 */
+	public boolean isReturnOutputs() {
+		return returnOutputs;
+	}
+
+
+	/**
+	 * @param returnOutputs the returnOutputs to set
+	 */
+	public void setReturnOutputs(boolean returnOutputs) {
+		this.returnOutputs = returnOutputs;
 	}
 
 }
