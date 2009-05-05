@@ -26,6 +26,11 @@
 			<artifactId>components-plugin</artifactId>
 			<version>${t2.taverna.workbench.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
+			<artifactId>provenanceconnectors-plugin</artifactId>
+			<version>${t2.taverna.workbench.version}</version>
+		</dependency>
 		
 		<!--<dependency>
 			<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
