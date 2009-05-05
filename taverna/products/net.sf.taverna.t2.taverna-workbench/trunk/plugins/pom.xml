@@ -15,5 +15,6 @@
 		<module>activities-plugin</module>
 		<module>components-plugin</module>
 		<module>translators-plugin</module>
+		<module>provenanceconnectors-plugin</module>
 	</modules>
 </project>
