@@ -28,6 +28,7 @@ import javax.swing.JComponent;
 import javax.swing.JTextArea;
 
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
+import net.sf.taverna.t2.workbench.provenance.ProvenanceConfiguration;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 
 /**
@@ -56,6 +57,9 @@ public class DerbyConfigView extends ContextualView {
 		File file = new File(applicationHomeDir, "db");
 		label.setText("Provenance will be stored in: \n" + file.toString());
 		label.setEditable(false);
+		//this is added so that the db can be created whenever the provenance connector check box
+		//is selected in the main frame.
+		ProvenanceConfiguration.getInstance().setProperty("dbURL", getDBURL());
 		return label;
 	}
 

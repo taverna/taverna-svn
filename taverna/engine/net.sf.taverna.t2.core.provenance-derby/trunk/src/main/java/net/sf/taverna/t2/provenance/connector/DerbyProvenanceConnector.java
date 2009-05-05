@@ -180,7 +180,10 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 		try {
 			stmt.executeUpdate(createTableArc);
 		} catch (Exception e) {
+			//probably means that the database already existed so just log
+			//the exception and return
 			logger.warn("Could not create table Arc : " + e);
+			return;
 		}
 		try {
 			stmt.executeUpdate(createTableCollection);
@@ -191,7 +194,6 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			stmt.executeUpdate(createTableProcBinding);
 		} catch (Exception e) {
 			logger.warn("Could not create table ProcBinding : " + e);
-			;
 		}
 
 		try {
@@ -316,6 +318,7 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 
 	@Override
 	public void init() {
+		createDatabase();
 		ProvenanceWriter writer = new DerbyProvenanceWriter();
 		writer.setDbURL(getDbURL());
 		ProvenanceQuery query = new DerbyProvenanceQuery();
