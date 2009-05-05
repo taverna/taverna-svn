@@ -37,6 +37,11 @@
 			<artifactId>apiconsumer-activity</artifactId>
 			<version>${t2.activities.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-impl</groupId>
+			<artifactId>activity-tools</artifactId>
+			<version>${t2.ui.impl.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-impl</groupId>
