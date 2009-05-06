@@ -290,7 +290,7 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			}
 
 		};
-		getExecutor().submit(runnable);
+		getExecutor().execute(runnable);
 
 	}
 
