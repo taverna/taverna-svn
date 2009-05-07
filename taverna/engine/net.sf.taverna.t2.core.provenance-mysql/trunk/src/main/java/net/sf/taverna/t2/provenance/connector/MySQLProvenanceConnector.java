@@ -173,6 +173,8 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		return null;
 	}
 
+	
+	
 	/**
 	 * main entry point into the service
 	 */
@@ -219,8 +221,6 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 							+ "\n *****");
 
 					try {
-						// FIXME need to get the svn synched properly so that EP
-						// has this method
 						pw.addData(entry.getValue().toString(), getProvenance()
 								.getEp().getWfInstanceID(), renderedData);
 					} catch (SQLException e) {
