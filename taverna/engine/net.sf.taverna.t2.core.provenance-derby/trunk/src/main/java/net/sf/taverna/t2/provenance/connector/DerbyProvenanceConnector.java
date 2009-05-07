@@ -41,6 +41,7 @@ import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.vocabulary.SharedVocabulary;
 import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.workbench.provenance.ProvenanceConfiguration;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -139,7 +140,17 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 				"org.apache.derby.jdbc.EmbeddedDriver").newInstance();
 
 		try {
-			connection = DriverManager.getConnection(getDbURL());
+			String dbURL = getDbURL();
+			if (dbURL == null) {
+				File applicationHomeDir = ApplicationRuntime.getInstance()
+						.getApplicationHomeDir();
+				File dbFile = new File(applicationHomeDir, "db");
+				dbURL = "jdbc:derby:" + dbFile.toString()
+						+ ";create=true;upgrade=true";
+				setDbURL(dbURL);
+				ProvenanceConfiguration.getInstance().setProperty("dbURL", dbURL);
+			}
+			connection = DriverManager.getConnection(dbURL);
 			connection.setAutoCommit(true);
 		} catch (SQLException e) {
 			logger.warn(e);
@@ -180,8 +191,8 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 		try {
 			stmt.executeUpdate(createTableArc);
 		} catch (Exception e) {
-			//probably means that the database already existed so just log
-			//the exception and return
+			// probably means that the database already existed so just log
+			// the exception and return
 			logger.warn("Could not create table Arc : " + e);
 			return;
 		}
