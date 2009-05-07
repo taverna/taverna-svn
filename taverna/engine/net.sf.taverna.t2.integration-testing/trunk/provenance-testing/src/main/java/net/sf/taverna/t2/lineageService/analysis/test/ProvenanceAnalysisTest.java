@@ -27,6 +27,7 @@ import net.sf.taverna.t2.provenance.lineageservice.utils.DDRecord;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
+import net.sf.taverna.t2.provenance.lineageservice.utils.VarBinding;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -50,7 +51,8 @@ public class ProvenanceAnalysisTest {
 	private static  String jdbcString = null;
 
 	private boolean returnOutputs = false;  // set through prefs. if true then we return output processor var bindings as well
-
+	private boolean recordArtifactValues = false;  // set through prefs. if true then we record artifact values alongside names in OPM
+	
 	NaiveProvenanceQuery npq = null;
 	ProvenanceAnalysis pa = null;
 	MySQLProvenanceQuery pq = null;		
@@ -128,7 +130,24 @@ public class ProvenanceAnalysisTest {
 			setReturnOutputs(Boolean.parseBoolean(returnOutputsPref));	
 		}
 		
+		// do we need to record actual values as part of the OPM graph?
+		String recordArtifacValuesPref = AnalysisTestFiles.getString("OPM.recordArtifactValues");
+		if (recordArtifacValuesPref != null) {
+			
+			pa.setRecordArtifactValues(Boolean.parseBoolean(recordArtifacValuesPref));
 
+			// are we recording artifact values along with their names?
+			System.out.println("OPM.recordArtifactValues: "+ pa.isRecordArtifactValues());
+
+		}
+		
+		// are we recording the actual (de-referenced) values at all?!
+		String includeDataValuePref = AnalysisTestFiles.getString("query.returnDataValues");
+		if (includeDataValuePref != null) {
+			pa.setIncludeDataValue(Boolean.parseBoolean(includeDataValuePref));
+			System.out.println("query.returnDataValues: "+pa.isIncludeDataValue());
+		}
+		
 		//////////////
 		// set the run instances (scope)
 		//////////////
@@ -289,17 +308,45 @@ public class ProvenanceAnalysisTest {
 			System.out.println("************\n Intermediate values on TARGET VAR ==> Simple lineage query: [instance, proc, port, path] = ["+
 					wfInstance+","+qv.getPname()+","+qv.getVname()+",["+qv.getPath()+"]]\n***********");
 
-			LineageSQLQuery slq = pq.simpleLineageQuery(wfInstance, qv.getPname(), qv.getVname(), qv.getPath());
+			List<LineageQueryResult> lqr = new ArrayList<LineageQueryResult>();
+			
+			if (qv.getPath().equals(pa.ALL_PATHS_KEYWORD)) {
 
-			LineageQueryResult runLineageQuery;
-			try {
-				runLineageQuery = pq.runLineageQuery(slq);
-			} catch (SQLException e) {
-				throw e;
+				Map<String, String> vbConstraints = new HashMap<String, String>();
+				vbConstraints.put("VB.PNameRef", qv.getPname());
+				vbConstraints.put("VB.varNameRef", qv.getVname());
+				vbConstraints.put("VB.wfInstanceRef", wfInstance);
+
+				List<VarBinding> vbList = pq.getVarBindings(vbConstraints); // DB
+
+				for (VarBinding vb:vbList) {
+
+					// path is of the form [x,y..]  we need it as x,y... 
+					String path = vb.getIteration().substring(1, vb.getIteration().length()-1);
+
+					System.out.println("simpleLineageQuery on path "+path);
+
+					if (!path.startsWith("["))  path = "["+path+"]";
+					
+					LineageSQLQuery slq = pq.simpleLineageQuery(wfInstance, qv.getPname(), qv.getVname(), path);
+					lqr.add(pq.runLineageQuery(slq, pa.isIncludeDataValue()));
+					
+				}
+			}  else {
+				LineageSQLQuery slq = pq.simpleLineageQuery(wfInstance, qv.getPname(), qv.getVname(), qv.getPath());
+				lqr.add(pq.runLineageQuery(slq, pa.isIncludeDataValue()));
 			}
-
+			
 			System.out.println("******  intermediate values on TARGET VAR ["+
 					qv.getPname()+","+qv.getVname()+",["+qv.getPath()+"] query completed");
+			
+			if (lqr != null) {
+				
+				for (LineageQueryResult res:lqr) {
+					res.setPrintResolvedValue(true);
+					System.out.println(res.toString());
+				}
+			}
 
 		}
 
@@ -312,7 +359,7 @@ public class ProvenanceAnalysisTest {
 
 			LineageQueryResult runLineageQuery;
 			try {
-				runLineageQuery = pq.runLineageQuery(slq);
+				runLineageQuery = pq.runLineageQuery(slq, pa.isIncludeDataValue());
 			} catch (SQLException e) {
 				throw e;
 			}			
@@ -359,7 +406,7 @@ public class ProvenanceAnalysisTest {
 					//System.out.println("****** result: *****");
 					for (LineageQueryResultRecord r:result.getRecords()) {	
 
-						r.setPrintResolvedValue(false);					
+						r.setPrintResolvedValue(false);					// unclutter visual output
 						System.out.println(r.toString());
 					}				
 				}

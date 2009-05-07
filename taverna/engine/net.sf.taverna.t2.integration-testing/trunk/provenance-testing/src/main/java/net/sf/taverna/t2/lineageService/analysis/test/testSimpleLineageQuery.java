@@ -110,7 +110,7 @@ public class testSimpleLineageQuery {
 		LineageQueryResult result = null;
 		
 		try {
-			result = pq.runLineageQuery(lq);
+			result = pq.runLineageQuery(lq, false);  // false -> do not return actual data values
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
