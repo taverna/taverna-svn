@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>core</artifactId>
+		<version>p0.1b1</version>
+	</parent>
+	<groupId>net.sf.taverna.t2</groupId>
+	<artifactId>workflowmodel-impl</artifactId>
+	<name>Taverna 2 Workflow Model Implementation</name>
+	<description>
+		Implementation of the core workflow object model for Taverna 2
+		workflows including concrete instances of the workflow
+		definition objects and enactment behaviours.
+	</description>
+	<dependencies>
+		<dependency>
+			<groupId>jdom</groupId>
+			<artifactId>jdom</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>workflowmodel-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>reference-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.infrastructure</groupId>
+			<artifactId>platform-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>1.2.1</version>
+		</dependency>
+	</dependencies>
+</project>

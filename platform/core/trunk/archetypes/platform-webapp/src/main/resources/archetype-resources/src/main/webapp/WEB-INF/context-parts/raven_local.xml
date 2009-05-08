@@ -1,0 +1,124 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="UTF-8"?>
+
+	<!-- Exports raven.repository -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:raven="http://taverna.sf.net/schema/artifact-support-0.2"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd 
+	http://taverna.sf.net/schema/artifact-support-0.2 
+	http://taverna.sf.net/schema/artifact-support/artifact-support-0.2.xsd">
+
+
+
+	<bean id="platform.pluginManager"
+		class="net.sf.taverna.t2.platform.spring.PluginManagerFactoryBean">
+		<property name="base">
+			<ref bean="platform.baseFilePath" />
+		</property>
+		<property name="downloadManager">
+			<ref local="platform.downloadManager" />
+		</property>
+		<property name="jarManager">
+			<ref local="platform.jarManager" />
+		</property>
+		<property name="raven">
+			<ref local="platform.raven.repository" />
+		</property>
+		<property name="pluginParser">
+			<ref local="platform.pluginDescriptionParser" />
+		</property>
+		<!-- Specify as in the comments below, or use properties files -->
+		<!--
+			<property name="defaultPluginList"> <list> <value>
+			plugin:net.sf.taverna.t2.reference:core:0.0.1 </value> <value>
+			plugin:net.sf.taverna.t2.dispatch:core:0.0.1 </value> <value>
+			plugin:net.sf.taverna.t2.activity:wsdl:0.0.1 </value> </list>
+			</property> <property name="remoteRepositoryList"> <list>
+			<value>http://classpath/plugins/</value> </list> </property>
+		-->
+		<property name="remoteRepositoryListResource" value="WEB-INF/platform.plugin.repositories.text" />
+		<property name="defaultPluginListResource"
+			value="WEB-INF/platform.plugin.defaultplugins.text" />
+		<property name="artifactList">
+			<list>
+				<value>net.sf.taverna.t2:reference-impl:${symbol_dollar}{t2core.reference.version}
+				</value>
+			</list>
+		</property>
+	</bean>
+
+
+
+
+	<!--
+		Raven repository configuration, you may need to change the set of
+	-->
+	<!--
+		system artifacts and default repositories depending on your
+		application
+	-->
+
+	<bean id="platform.raven.repository" class="net.sf.taverna.t2.platform.spring.RepositoryFactoryBean">
+		<property name="jarManager">
+			<ref bean="platform.jarManager" />
+		</property>
+		<property name="pomParser">
+			<ref bean="platform.raven.pomParser" />
+		</property>
+		<property name="remoteRepositoriesResource" value="WEB-INF/platform.raven.repositories.text" />
+		<property name="systemArtifactsResource"
+			value="WEB-INF/platform.raven.systemartifacts.text" />
+	</bean>
+
+	<!-- Lower level sub-components below this line, probably don't -->
+	<!-- to change anything here unless you're working with these   -->
+	<!-- sub-components directly -->
+
+	<!-- Download manager bean -->
+	<bean id="platform.downloadManager"
+		class="net.sf.taverna.t2.platform.util.download.impl.DownloadManagerImpl">
+		<constructor-arg>
+			<!-- Defines number of download worker threads -->
+			<value>2</value>
+		</constructor-arg>
+		<property name="printDownloads" value="${symbol_dollar}{platform.download.show}"/>
+	</bean>
+
+	<!-- POM.xml parser bean -->
+	<bean id="platform.raven.pomParser" class="net.sf.taverna.t2.platform.pom.impl.PomParserImpl">
+		<property name="downloadManager">
+			<ref local="platform.downloadManager" />
+		</property>
+		<property name="fileCache">
+			<ref bean="platform.baseFilePath" />
+		</property>
+	</bean>
+
+	<!-- plugin xml parser -->
+	<bean id="platform.pluginDescriptionParser"
+		class="net.sf.taverna.t2.platform.plugin.impl.PluginDescriptionParserImpl">
+		<property name="baseLocation">
+			<ref bean="platform.baseFilePath" />
+		</property>
+		<property name="downloadManager">
+			<ref local="platform.downloadManager" />
+		</property>
+	</bean>
+
+	<!-- Jar manager bean -->
+	<bean id="platform.jarManager" class="net.sf.taverna.t2.platform.pom.impl.JarManagerImpl">
+		<property name="downloadManager">
+			<ref local="platform.downloadManager" />
+		</property>
+		<property name="fileCache">
+			<ref bean="platform.baseFilePath" />
+		</property>
+	</bean>
+
+
+
+
+</beans>

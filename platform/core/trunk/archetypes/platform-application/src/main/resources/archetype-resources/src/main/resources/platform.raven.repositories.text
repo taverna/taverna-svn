@@ -1,0 +1,11 @@
+# List of maven 2 repositories for artifacts
+# Uncomment the line below to search the local maven repository
+# file:/${user.home}/.m2/repository/
+http://www.cyclonic.org/t2platform/repository/
+http://www.mygrid.org.uk/maven/repository/
+http://mirrors.sunsite.dk/maven2/
+http://mirrors.ibiblio.org/pub/mirrors/maven2/
+http://mirror.omii.ac.uk/maven/repository/
+http://www.mygrid.org.uk/maven/snapshot-repository/
+http://moby.ucalgary.ca/moby_maven/
+http://bioinf.ncl.ac.uk/mirror/maven/repository/

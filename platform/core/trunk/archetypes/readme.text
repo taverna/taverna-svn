@@ -1,0 +1,7 @@
+Archetypes are not built along with the rest of the core - this 
+is because as far as I can see there's a set of bugs when running
+maven from eclipse which prevent the build functioning correctly. 
+They do, however, inherit from the parent pom.
+
+To build these you'll need to manually launch the pom.xml with an 
+appropriate goal (install or deploy normally)

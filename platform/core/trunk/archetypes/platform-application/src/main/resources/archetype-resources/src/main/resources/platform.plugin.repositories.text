@@ -1,0 +1,4 @@
+# List of repositories to fetch plug-in definitions
+# Uncomment the line below to load plug-ins from the classpath
+# http://classpath/plugins/
+http://www.cyclonic.org/t2platform/plugins/

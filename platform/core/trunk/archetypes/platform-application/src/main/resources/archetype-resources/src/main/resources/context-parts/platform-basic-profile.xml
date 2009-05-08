@@ -1,0 +1,113 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:platform="http://taverna.sf.net/schema/artifact-support-0.2"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd 
+	http://taverna.sf.net/schema/artifact-support-0.2 
+	http://taverna.sf.net/schema/artifact-support/artifact-support-0.2.xsd">
+
+	<!--
+		To use interpolated values in other fields in this configuration you
+		must include this bean and it must have this particular name
+	-->
+	<bean id="platform.propertyPlaceholder"
+		class="net.sf.taverna.t2.platform.spring.RavenAwarePropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:platform.properties</value>
+			</list>
+		</property>
+		<property name="ignoreUnresolvablePlaceholders" value="false" />
+	</bean>
+
+	<!--
+		Define the base file path for the plugin manager and related
+		sub-components, system properties can be interpolated into the
+		filePath property value
+	-->
+	<bean id="platform.baseFilePath" class="net.sf.taverna.t2.platform.spring.FileFactoryBean">
+		<property name="filePath">
+			<value>${symbol_dollar}{platform.home}</value>
+		</property>
+	</bean>
+
+	<!--
+		Beans below this point, along with the reference service and plug-in
+		manager, define the Taverna Base Profile
+	-->
+
+	<bean id="t2.enactor.workflowParser"
+		class="net.sf.taverna.t2.platform.taverna.impl.WorkflowParserImpl"
+		platform:artifact="net.sf.taverna.t2:platform-taverna-impl:${symbol_dollar}{t2core.platform.version}"
+		platform:repository="platform.raven.repository">
+		<property name="pluginManager">
+			<ref bean="platform.pluginManager" />
+		</property>
+	</bean>
+
+	<bean id="t2.enactor.workflowRenderer"
+		class="net.sf.taverna.t2.platform.taverna.impl.WorkflowXMLRendererImpl"
+		platform:artifact="net.sf.taverna.t2:platform-taverna-impl:${symbol_dollar}{t2core.platform.version}"
+		platform:repository="platform.raven.repository">
+		<property name="pluginManager">
+			<ref bean="platform.pluginManager" />
+		</property>
+	</bean>
+
+	<bean id="platform.reflectionHelper"
+		class="net.sf.taverna.t2.platform.util.reflect.impl.ReflectionHelperImpl">
+		<property name="pluginManager">
+			<ref bean="platform.pluginManager" />
+		</property>
+	</bean>
+
+	<bean id="t2.workflow.editkit"
+		class="net.sf.taverna.t2.platform.taverna.impl.WorkflowEditKitImpl"
+		platform:artifact="net.sf.taverna.t2:platform-taverna-impl:${symbol_dollar}{t2core.platform.version}"
+		platform:repository="platform.raven.repository">
+		<property name="edits">
+			<bean class="net.sf.taverna.t2.workflowmodel.impl.EditsImpl"
+				platform:artifact="net.sf.taverna.t2:workflowmodel-impl:${symbol_dollar}{t2core.workflowmodel.version}"
+				platform:repository="platform.raven.repository">
+				<constructor-arg>
+					<ref bean="platform.pluginManager" />
+				</constructor-arg>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="t2.enactor.invocationContextFactory"
+		class="net.sf.taverna.t2.platform.taverna.impl.InvocationContextFactoryImpl"
+		platform:artifact="net.sf.taverna.t2:platform-taverna-impl:${symbol_dollar}{t2core.platform.version}"
+		platform:repository="platform.raven.repository">
+		<property name="referenceService">
+			<ref bean="t2.data.referenceService" />
+		</property>
+	</bean>
+
+	<bean id="t2.enactor.monitorFactory"
+		class="net.sf.taverna.t2.platform.taverna.impl.MonitorFactoryImpl"
+		platform:artifact="net.sf.taverna.t2:platform-taverna-impl:${symbol_dollar}{t2core.platform.version}"
+		platform:repository="platform.raven.repository" />
+
+	<bean id="t2.data.referenceGeneratorFactory"
+		class="net.sf.taverna.t2.reference.impl.T2ReferenceGeneratorFactoryImpl"
+		platform:artifact="net.sf.taverna.t2:reference-impl:${symbol_dollar}{t2core.reference.version}"
+		platform:repository="platform.raven.repository" />
+		
+	<bean id="t2.enactor.enactor" class="net.sf.taverna.t2.platform.taverna.impl.EnactorImpl"
+		platform:artifact="net.sf.taverna.t2:platform-taverna-impl:${symbol_dollar}{t2core.platform.version}"
+		platform:repository="platform.raven.repository">
+		<property name="referenceService">
+			<ref bean="t2.data.referenceService" />
+		</property>
+		<property name="pluginManager">
+			<ref bean="platform.pluginManager" />
+		</property>
+	</bean>
+
+</beans>

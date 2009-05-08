@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?><archetype>
+  <id>platform-application</id>
+  <sources>
+    <source>src\main\java\Application.java</source>
+  </sources>
+  <resources>
+    <resource>src\main\assembly\app.xml</resource>
+    <resource>src\main\assembly\appjar.xml</resource>
+    <resource>src\main\assembly\deps.xml</resource>
+    <resource>src\main\bin\run.bat</resource>
+    <resource>src\main\bin\run.sh</resource>
+    <resource>src\main\resources\commons-logging.properties</resource>
+    <resource>src\main\resources\context-parts\componentservices.xml</resource>
+    <resource>src\main\resources\context-parts\dao_hibernate.xml</resource>
+    <resource>src\main\resources\context-parts\dao_inmemory.xml</resource>
+    <resource>src\main\resources\context-parts\hibernateprops_derby.xml</resource>
+    <resource>src\main\resources\context-parts\platform-basic-profile.xml</resource>
+    <resource>src\main\resources\context-parts\raven_local.xml</resource>
+    <resource>src\main\resources\context-parts\referenceservice.xml</resource>
+    <resource>src\main\resources\context.xml</resource>
+    <resource>src\main\resources\log4j.xml</resource>
+    <resource>src\main\resources\platform.plugin.defaultplugins.text</resource>
+    <resource>src\main\resources\platform.plugin.repositories.text</resource>
+    <resource>src\main\resources\platform.properties</resource>
+    <resource>src\main\resources\platform.raven.repositories.text</resource>
+    <resource>src\main\resources\platform.raven.systemartifacts.text</resource>
+    <resource>src\main\resources\plugins\readme.text</resource>
+  </resources>
+</archetype>

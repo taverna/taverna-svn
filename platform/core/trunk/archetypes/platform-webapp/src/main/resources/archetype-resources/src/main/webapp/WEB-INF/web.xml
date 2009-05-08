@@ -1,0 +1,46 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
+	<!--
+		This is a perfectly normal web.xml file for your web application.
+		You'll probably want to add servlet declarations here as usual, just
+		don't remove the section that's already here. Writing web.xml files is
+		rather outside of the scope of the platform docs but there's plenty of
+		information on the internet if you need it.
+	-->
+<web-app>
+
+	<display-name>Archetype Created Web Application</display-name>
+
+
+	<!-- Don't edit below here without a very good reason! -->
+	<!--
+		Tell spring where the top level application context definition is
+	-->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/context.xml</param-value>
+	</context-param>
+	<!--
+		Tell Spring to use the raven-aware version of the web application
+		context, or you won't get the platform to work at all
+	-->
+	<context-param>
+		<param-name>contextClass</param-name>
+		<param-value>
+			net.sf.taverna.t2.platform.spring.RavenAwareXmlWebApplicationContext
+		</param-value>
+	</context-param>
+	<!--
+		Register a listener, loads the platform when the context is loaded
+	-->
+	<listener>
+		<listener-class>
+			org.springframework.web.context.ContextLoaderListener
+		</listener-class>
+	</listener>
+
+</web-app>
