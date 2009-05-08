@@ -1,0 +1,6 @@
+# Implementation classes of DispatchLayer go here, one per line
+net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ErrorBounce
+net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover
+net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke
+net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize
+net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Retry

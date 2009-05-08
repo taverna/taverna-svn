@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<plugin xmlns="http://taverna.sf.net/pluginDescription" xmlns:ns2="http://taverna.sf.net/authorDescription">
+    <name>Soaplab  Activity</name>
+    <description>An activity plug-in providing access to Soaplab services</description>
+    <id>plugin:net.sf.taverna.t2.activity:soaplab:0.0.1</id>
+    <quality>alpha</quality>
+    <author>
+        <ns2:name>David Withers</ns2:name>
+        <ns2:affiliation>myGrid</ns2:affiliation>
+        <ns2:email>david.withers@manchester.ac.uk</ns2:email>
+    </author>
+    <tag>webservice</tag>
+    <tag>soaplab</tag>
+    <url>http://www.mygrid.org.uk/</url>
+    <link>
+        <linkdescription>myGrid Project Homepage</linkdescription>
+        <link>http://www.mygrid.org.uk/</link>
+    </link>
+    <artifact>net.sf.taverna.t2.activities:soaplab-activity:p0.1b1</artifact>
+    <artifact>axis:axis-wsdl4j:1.5.1</artifact>
+    <artifact>axis:axis-saaj:1.4</artifact>
+    <artifact>axis:axis:1.4</artifact>
+    <artifact>commons-discovery:commons-discovery:0.2</artifact>
+    <artifact>axis:axis-jaxrpc:1.4</artifact>
+</plugin>
