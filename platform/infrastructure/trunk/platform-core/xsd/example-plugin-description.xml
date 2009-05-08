@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- An example of a fully populated dummy plug-in description, you can use this -->
+<!-- as a template if you need to write plug-in files before we've got the full  -->
+<!-- tool support up and running                                                 -->
+<!-- Tom Oinn, tomoinn@crypticsquid.com, 18th November 2008                      -->
+
+<plugin xmlns="http://taverna.sf.net/pluginDescription"
+	xmlns:author="http://taverna.sf.net/authorDescription"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://taverna.sf.net/pluginDescription plugin-description.xsd ">
+
+	<!-- Exactly one free text name per plug-in -->
+	<name>My Plug-in</name>
+
+	<!-- Exactly one plug-in description per plug-in, free text -->
+	<description>A wonderful example plug-in definition</description>
+
+	<!-- Exactly one identifier per plug-in, must match regular expression           -->
+	<!-- plugin:([a-zA-Z0-9]+\.)*[a-zA-Z0-9]+:[a-zA-Z0-9][a-zA-Z0-9_]+:(\d+\.){2}\d+ -->
+	<id>plugin:pluginGroup:pluginId:0.1.0</id>
+
+	<!-- Exactly one quality value, can be [alpha|beta|stable] -->
+	<quality>alpha</quality>
+
+	<!-- At least one author per plug-in -->
+	<author>
+		<!-- Exactly one name per author -->
+		<author:name>Bob the plugin author</author:name>
+		<!-- Zero or one affiliation as free text -->
+		<author:affiliation>myInstitute</author:affiliation>
+		<!-- Zero or one email address matching the regular expression :                                    -->
+		<!-- [a-z0-9._%+-]+@[a-z0-9.-]+\.([a-z]{2}|com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum) -->
+		<author:email>email@host.com</author:email>
+		<!-- Zero or one arbitrary URL -->
+		<author:url>http://tempuri.org</author:url>
+		<!-- Zero or one icon, must be a URL to a png image and -->
+		<!-- match regular expression : http(s?).*\.png         -->
+		<author:icon>http://tempuri.org/someImage.png</author:icon>
+	</author>
+	<author>
+		<author:name>Sheila the poorly described author</author:name>
+	</author>
+
+	<!-- An arbitrary number of names corresponding to JavaHelp files that can  -->
+	<!-- be loaded from this plug-in's class loader to provide interactive help -->
+	<javahelp>helpFile1</javahelp>
+	<javahelp>helpFile2</javahelp>
+	<javahelp>helpFile3</javahelp>
+
+	<!-- An arbitrary number of free text tags, tags must match [a-zA-Z0-9]+ -->
+	<tag>tag</tag>
+	<tag>anotherTag</tag>
+
+	<!-- Exactly one URL to the web page form of this plug-in description -->
+	<url>http://tempuri.org</url>
+
+	<!-- An arbitrary number of links to external references for this plug-in -->
+	<link>
+		<!-- Exactly one free text description per link -->
+		<linkdescription>
+			A link using a DOI (in URI form)
+		</linkdescription>
+		<!-- Exactly one arbitrary URI per link -->
+		<link>info:doi/10.1000/182</link>
+	</link>
+	<link>
+		<linkdescription>
+			My related paper in PDF format
+		</linkdescription>
+		<link>http://my.host/papers/myPaper.pdf</link>
+	</link>
+
+	<!-- Zero or one icon as a URL to a PNG file matching http(s?).*\.png  -->
+	<icon>http://tempuri.org/someIcon.png</icon>
+
+	<!-- Zero or one background image as a URL to a PNG file matching as above -->
+	<backgroundimage>
+		http://tempuri.org/backgroundImage.png
+	</backgroundimage>
+
+	<!-- Arbitrary number of descriptions of SPI implementations within this  -->
+	<!-- plug-in. These are optional, the SPI mechanism in PluginManager will -->
+	<!-- work without these but they're recommended to provide documentation  -->
+	<!-- for consumers of the plug-in package                                 -->
+	<spi>
+		<!-- Exactly one interface, this the SPI you're implementing -->
+		<interface>com.foo.MyInterfaceSPI</interface>
+		<!-- Exactly one class, this is the implementation class -->
+		<class>com.bar.MyImplementationClass</class>
+		<!-- Exactly one free text name -->
+		<name>Foo implementation</name>
+		<!-- Exactly one free text description -->
+		<description>
+			Implements the foo interface and provides a bar
+		</description>
+	</spi>
+
+	<!-- Arbitrarily many URLs to Maven2 repositories. These are used to locate      -->
+	<!-- artifacts specified in the 'artifact' elements in this plug-in description  -->
+	<!-- Note that the plug-in manager will only download an artifact if it doesn't  -->
+	<!-- already have it in its cache so this cannot be used to 'override' an        -->
+	<!-- artifact from a public repository with your own version. In those cases     -->
+	<!-- the correct approach is to create your own version of the existing artifact -->
+	<repository-url>http://foo.com/my/maven2/repository</repository-url>
+	<repository-url>
+		http://bar.com/someone/elses/maven2/repository
+	</repository-url>
+
+	<!-- CLASSLOADING                                                              -->
+	<!-- ************************************************************************* -->
+	<!-- The plug-in's class loader is assembled from a mix of raw jar files and   -->
+	<!-- maven 2 artifacts (which are of course jar files, just ones we can mirror -->
+	<!-- and get metadata for). The maven metadata is not used to assemble the     -->
+	<!-- class loader though, so if you use a maven artifact below you must also   -->
+	<!-- include its transitive dependencies or it won't work. We're not using the -->
+	<!-- depedency information so you have the option of excluding or including    -->
+	<!-- optional dependencies and of converging dependency collisions where those -->
+	<!-- exist. Do not include 'platform' level dependencies here (you can if you  -->
+	<!-- like, but the plug-in manager will ignore them)                           -->
+
+	<!-- Arbitrarily many URLs to raw jar files. These will be cached per-plugin so    -->
+	<!-- if you change the jar files and re-release the plug-in description you should -->
+	<!-- also change the jar names or you'll end up with your new plug-in referencing  -->
+	<!-- old jar files, this is not a good thing                                       -->
+	<jar-url>http://tempuri.org/a/random/jar/file.jar</jar-url>
+	<jar-url>http://tempuri.org/a/random/jar/anotherFile.jar</jar-url>
+
+	<!-- Arbitrarily many maven 2 artifacts, these will be loaded (if not cached) from -->
+	<!-- the repositories you set in the 'repository-url' elements above               -->
+	<artifact>artifactGroup:artifactId:artifactVersion</artifact>
+	<artifact>artifactGroup2:artifactId2:artifactVersion2</artifact>
+
+	<!-- Exactly one target specification. This denotes that the plug-in is     -->
+	<!-- targetted at a particular platform. As the plug-in manager is generic  -->
+	<!-- we need this to specify whether a particular plug-in is linked against -->
+	<!-- the correct version of Taverna, or even whether it's intended to work  -->
+	<!-- with Taverna at all.                                                   -->
+	<target>OpaqueSpecificationOfTargetAPI</target>
+
+</plugin>

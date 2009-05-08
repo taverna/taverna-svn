@@ -1,0 +1,3 @@
+Schema files for the plugin description document. These are also used to generate the corresponding java classes in the net.sf.taverna.t2.platform.plugin.generated package through JAXB annotations within the schema documents. The top level plugin-description.xsd defined the plugin description document, author-description.xsd defines a single author description within that document and the generic-java.xsd is used to define JAXB mappings for java types including URI,URL,Class and ArtifactIdentifier to and from xsd:string and xsd:anyURI restrictions
+
+To use this file to regenerate the java classes you'll need the XJC compiler with extensions enabled
