@@ -22,28 +22,20 @@ package net.sf.taverna.t2.activities.rshell.menu;
 
 import java.awt.event.ActionEvent;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-
-import org.apache.log4j.Logger;
+import javax.swing.JComponent;
 
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
-import net.sf.taverna.t2.activities.rshell.RshellActivityConfigurationBean;
+import net.sf.taverna.t2.activities.rshell.servicedescriptions.RshellTemplateService;
 import net.sf.taverna.t2.ui.menu.AbstractContextualMenuAction;
 import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
-import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.FileManager;
-import net.sf.taverna.t2.workflowmodel.CompoundEdit;
+import net.sf.taverna.t2.workbench.ui.workflowview.WorkflowView;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
-import net.sf.taverna.t2.workflowmodel.Edit;
-import net.sf.taverna.t2.workflowmodel.EditException;
-import net.sf.taverna.t2.workflowmodel.EditsRegistry;
-import net.sf.taverna.t2.workflowmodel.Processor;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
-import net.sf.taverna.t2.workflowmodel.utils.Tools;
+
+import org.apache.log4j.Logger;
 
 /**
  * An action to add a Rshell activity + a wrapping processor to the workflow. 
@@ -78,28 +70,16 @@ public class AddRshellTemplateAction extends AbstractContextualMenuAction {
 			public void actionPerformed(ActionEvent e) {
 				Dataflow workflow = FileManager.getInstance().getCurrentDataflow();
 
-				// Create a processor placeholder for a Rshell activity 
-				// and check for duplicate processor names
-				String suggestedProcessorName = "Rshell";
-				suggestedProcessorName = Tools.uniqueProcessorName(suggestedProcessorName, workflow);
-				Processor processor = EditsRegistry.getEdits().createProcessor(suggestedProcessorName);				
-				// Create the Rshell activity and configure it
-				RshellActivity rshellActivity = new RshellActivity();
 				try {
-					rshellActivity.configure(new RshellActivityConfigurationBean());
-				} catch (ActivityConfigurationException ex) {
-					logger.error("Configuring Rshell activity failed when trying to add it to the workflow model", ex);
-					return;
-				}
-				// List of all edits to be done to the workflow
-				List<Edit<?>> editList = new ArrayList<Edit<?>>();
-				editList.add(EditsRegistry.getEdits().getAddActivityEdit(processor, rshellActivity));
-				editList.add(EditsRegistry.getEdits().getAddProcessorEdit(workflow, processor));
-				try {
-					EditManager.getInstance().doDataflowEdit(workflow, new CompoundEdit(editList));
-				} catch (EditException ex) {
-					logger.error("Adding Rshell activity to the workflow model failed", ex);
-				}						
+					WorkflowView.importServiceDescription(workflow, RshellTemplateService.getServiceDescription(),
+							(JComponent) e.getSource(), false);
+				} catch (InstantiationException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IllegalAccessException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}							
 			}
 			
 		};
