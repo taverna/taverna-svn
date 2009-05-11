@@ -5,7 +5,7 @@
 
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>core</artifactId>
-	<version>p0.1b1</version>
+	<version>p0.1b2</version>
 	<packaging>pom</packaging>
 
 	<name>Taverna 2 Core (parent)</name>
@@ -47,8 +47,8 @@
 	</build>
 
 	<properties>
-		<t2.platform.version>p0.1b1</t2.platform.version>
-		<t2.core.version>p0.1b1</t2.core.version>
+		<t2.platform.version>p0.1b2</t2.platform.version>
+		<t2.core.version>p0.1b2</t2.core.version>
 		<t2.spring.version>2.5.4</t2.spring.version>
 	</properties>
 
@@ -66,15 +66,6 @@
 		<module>platform-taverna-api</module>
 		<module>platform-taverna-impl</module>
 	</modules>
-
-	<distributionManagement>
-		<!-- Deploy to cyclonic for the moment -->
-		<repository>
-		<id>cyclonic</id>
-		<name>Cyclonic.org Maven Repository</name>
-		<url>ftp://login.arachsys.com/Web/cyclonic/t2platform/repository</url>
-		</repository>
-	</distributionManagement>
 
 	<repositories>
 		<repository>

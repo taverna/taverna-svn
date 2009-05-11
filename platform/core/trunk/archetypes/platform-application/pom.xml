@@ -7,7 +7,7 @@
 		<artifactId>parent</artifactId>
 		<groupId>net.sf.taverna.t2.archetypes
 		</groupId>
-		<version>p0.1b1</version>
+		<version>p0.1b2</version>
 	</parent>
 
 	<groupId>net.sf.taverna.t2.archetypes

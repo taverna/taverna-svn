@@ -35,7 +35,7 @@
     <repository-url>http://biomoby.org/m2repo/</repository-url>
     <repository-url>http://repository.jboss.com/maven2/</repository-url>
     <repository-url>http://jena.hpl.hp.com/repo/</repository-url>
-    <artifact>net.sf.taverna.t2.activities:biomoby-activity:p0.1b1</artifact>
+    <artifact>net.sf.taverna.t2.activities:biomoby-activity:p0.1b2</artifact>
     <artifact>ant-contrib:ant-contrib:1.0b2</artifact>
     <artifact>antlr:antlr:2.7.5</artifact>
     <artifact>axis:axis:1.4</artifact>

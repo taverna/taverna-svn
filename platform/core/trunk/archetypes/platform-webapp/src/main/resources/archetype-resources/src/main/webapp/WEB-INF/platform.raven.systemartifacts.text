@@ -1,10 +1,10 @@
 # Artifacts provided by the platform and which will not be
 # downloaded from a remote repository (you already have them)
-net.sf.taverna.t2:reference-api:p0.1b1
-net.sf.taverna.t2:workflowmodel-api:p0.1b1
-net.sf.taverna.t2.infrastructure:platform-core:p0.1b1
-net.sf.taverna.t2.infrastructure:platform-spring:p0.1b1
-net.sf.taverna.t2:platform-taverna-api:p0.1b1
+net.sf.taverna.t2:reference-api:p0.1b2
+net.sf.taverna.t2:workflowmodel-api:p0.1b2
+net.sf.taverna.t2.infrastructure:platform-core:p0.1b2
+net.sf.taverna.t2.infrastructure:platform-spring:p0.1b2
+net.sf.taverna.t2:platform-taverna-api:p0.1b2
 org.springframework:spring-beans:2.5.4
 org.springframework:spring-jdbc:2.5.4
 org.springframework:spring-orm:2.5.4

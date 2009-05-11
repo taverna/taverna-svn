@@ -16,7 +16,7 @@
         <linkdescription>myGrid Project Homepage</linkdescription>
         <link>http://www.mygrid.org.uk/</link>
     </link>
-    <artifact>net.sf.taverna.t2.activities:soaplab-activity:p0.1b1</artifact>
+    <artifact>net.sf.taverna.t2.activities:soaplab-activity:p0.1b2</artifact>
     <artifact>axis:axis-wsdl4j:1.5.1</artifact>
     <artifact>axis:axis-saaj:1.4</artifact>
     <artifact>axis:axis:1.4</artifact>

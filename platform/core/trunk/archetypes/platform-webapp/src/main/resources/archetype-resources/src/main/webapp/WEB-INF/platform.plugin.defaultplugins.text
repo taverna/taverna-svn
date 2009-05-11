@@ -2,10 +2,13 @@
 # used the first time a given platform initializes,
 # after which the active plug-in set is cached by the
 # plug-in manager.
-plugin:net.sf.taverna.t2.reference:core:0.0.3
-plugin:net.sf.taverna.t2.dispatch:core:0.0.3
-plugin:net.sf.taverna.t2.activity:wsdl:0.0.3
-plugin:net.sf.taverna.t2.activity:beanshell:0.0.3
-plugin:net.sf.taverna.t2.activity:biomart:0.0.3
-plugin:net.sf.taverna.t2.activity:stringconstant:0.0.3
-plugin:net.sf.taverna.t2.activity:biomoby:0.0.3
+plugin:net.sf.taverna.t2.reference:core:0.0.4
+plugin:net.sf.taverna.t2.dispatch:core:0.0.4
+plugin:net.sf.taverna.t2.activity:wsdl:0.0.4
+plugin:net.sf.taverna.t2.activity:beanshell:0.0.4
+plugin:net.sf.taverna.t2.activity:biomart:0.0.4
+plugin:net.sf.taverna.t2.activity:stringconstant:0.0.4
+plugin:net.sf.taverna.t2.activity:biomoby:0.0.4
+plugin:net.sf.taverna.t2.activity:dataflow:0.0.1
+plugin:net.sf.taverna.t2.activity:rshell:0.0.1
+plugin:net.sf.taverna.t2.activity:soaplab:0.0.1

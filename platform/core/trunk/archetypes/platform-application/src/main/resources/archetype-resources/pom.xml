@@ -28,15 +28,6 @@
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-			<id>cyclonic</id>
-			<name>Cyclonic.org repository</name>
-			<url>http://www.cyclonic.org/t2platform/repository</url>
-		</repository>
-		<repository>
-			<releases />
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
 			<id>mygrid-repository</id>
 			<name>myGrid Repository</name>
 			<url>http://www.mygrid.org.uk/maven/repository</url>
@@ -91,7 +82,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>platform-taverna-api</artifactId>
-			<version>p0.1b1</version>
+			<version>p0.1b2</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.springframework</groupId>

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>core</artifactId>
-		<version>p0.1b1</version>
+		<version>p0.1b2</version>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>workflowmodel-api</artifactId>
