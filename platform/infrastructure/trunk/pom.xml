@@ -10,7 +10,7 @@
 
 	<groupId>net.sf.taverna.t2.infrastructure</groupId>
 	<artifactId>platform</artifactId>
-	<version>p0.1b1</version>
+	<version>p0.1b2</version>
 
 	<packaging>pom</packaging>
 	<name>Taverna 2 Platform (parent)</name>
@@ -21,7 +21,7 @@
 	</description>
 
 	<properties>
-		<t2.platform.version>p0.1b1</t2.platform.version>
+		<t2.platform.version>p0.1b2</t2.platform.version>
 		<t2.spring.version>2.5.4</t2.spring.version>
 	</properties>
 
