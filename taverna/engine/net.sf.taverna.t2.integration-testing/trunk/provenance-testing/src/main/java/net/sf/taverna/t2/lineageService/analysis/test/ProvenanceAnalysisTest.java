@@ -48,7 +48,8 @@ public class ProvenanceAnalysisTest {
 	private static final String ALL_VARS = "ALL";
 	private static final String ALL_PATHS = "ALL";
 
-	private static  String jdbcString = null;
+	private static  String mySQLjdbcString = null;
+	private static  String derbyjdbcString = null;
 
 	private boolean returnOutputs = false;  // set through prefs. if true then we return output processor var bindings as well
 	private boolean recordArtifactValues = false;  // set through prefs. if true then we record artifact values alongside names in OPM
@@ -89,16 +90,17 @@ public class ProvenanceAnalysisTest {
 		String DB_USER = testFiles.getString("dbuser");                        // database user id //$NON-NLS-1$
 		String DB_PASSWD = testFiles.getString("dbpassword"); //$NON-NLS-1$
 
-		jdbcString = "jdbc:mysql://" + DB_URL_LOCAL + "/T2Provenance?user="
+		derbyjdbcString = "jdbc:derby:/Users/paolo/Library/Application Support/taverna-2.1-SNAPSHOT-20090511/db";
+
+		mySQLjdbcString = "jdbc:mysql://" + DB_URL_LOCAL + "/T2Provenance?user="
 		+ DB_USER + "&password=" + DB_PASSWD;
 
-		npq = new NaiveProvenanceQuery(jdbcString);		
+		npq = new NaiveProvenanceQuery(mySQLjdbcString);		
 		pq = new MySQLProvenanceQuery();	
-		pq.setDbURL(jdbcString);
+		pq.setDbURL(mySQLjdbcString);
 		pa = new ProvenanceAnalysis(pq);
 
 		acquireTestConfiguration();		
-
 	}
 
 
