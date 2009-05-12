@@ -13,9 +13,11 @@
 	<bean id="t2reference.referenceGenerator"
 		raven:artifact="net.sf.taverna.t2.core:reference-impl:0.6-SNAPSHOT"
 		raven:repository="raven.repository"
-		class="net.sf.taverna.t2.reference.impl.UUIDT2ReferenceGenerator">
+		class="net.sf.taverna.t2.reference.impl.SimpleT2ReferenceGenerator"> 
 		<property name="namespace" value="dataref.taverna.org" />
 	</bean>
+
+<!-- 		class="net.sf.taverna.t2.reference.impl.UUIDT2ReferenceGenerator">  -->
 
 	<!-- reference set service -->
 	<bean id="t2reference.service.referenceSetService"
