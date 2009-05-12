@@ -19,7 +19,7 @@ import org.junit.Test;
  * @author Paolo Missier
  * 
  */
-public class ProvenanceCaptureTest_Tom1 extends ProvenanceCaptureTestHelper {
+public class ProvenanceCaptureTest_Tom extends ProvenanceCaptureTestHelper {
 
 	@Test
 	public void testProvenanceCapture() throws Exception {

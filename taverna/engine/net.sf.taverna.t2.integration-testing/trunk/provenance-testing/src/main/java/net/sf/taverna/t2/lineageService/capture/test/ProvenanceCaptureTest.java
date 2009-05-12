@@ -22,13 +22,6 @@ import org.junit.Test;
 public class ProvenanceCaptureTest extends ProvenanceCaptureTestHelper  {
 
 
-//	@Test
-//	public void testBeanshell() throws Exception {
-//
-//		boolean IsCSVReadyFileExistsOutput = LoadAppLogic.IsCSVReadyFileExists("/Users/paolo/Documents/myGRID/OPM/PC3/SampleData/J062941");
-//	}
-
-
 	@Test
 	public void testInput() throws Exception {
 
