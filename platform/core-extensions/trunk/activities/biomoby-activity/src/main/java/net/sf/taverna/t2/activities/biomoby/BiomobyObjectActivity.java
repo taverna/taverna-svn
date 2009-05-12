@@ -89,6 +89,8 @@ public class BiomobyObjectActivity extends AbstractAsynchronousActivity<BiomobyO
 				String registryEndpoint = worker.getRegistryEndpoint();
 				Registry mRegistry = new Registry(registryEndpoint,registryEndpoint,"http://domain.com/MOBY/Central");
 
+                BiomobyCache.cacheForRegistry(mRegistry);
+                
 				if (isPrimitiveType) {
 					try {
 
@@ -354,6 +356,13 @@ public class BiomobyObjectActivity extends AbstractAsynchronousActivity<BiomobyO
             }
             throw new ActivityConfigurationException(formatError(e.toString()));
         }
+        // here we make sure that we have downloaded the ontology for the
+		// registry that we got this service from
+        try {
+			new GetOntologyThread(worker.getRegistryEndpoint()).start();
+		} catch (Exception e) {
+			/* don't care if an exception occurs here ... */
+		}
     }
 
     private void generatePorts(Edits edits) {

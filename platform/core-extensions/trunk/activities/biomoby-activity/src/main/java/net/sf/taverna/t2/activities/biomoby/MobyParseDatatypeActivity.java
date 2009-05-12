@@ -22,8 +22,7 @@ import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
-import net.sf.taverna.t2.activities.biomoby.XMLUtilities;
-import net.sf.taverna.t2.activities.biomoby.ParseMobyXML;
+
 
 import org.apache.log4j.Logger;
 import org.biomoby.client.CentralImpl;
@@ -65,12 +64,16 @@ public class MobyParseDatatypeActivity extends AbstractAsynchronousActivity<Moby
 			final AsynchronousActivityCallback callback) {
 		callback.requestRun(new Runnable() {
 
+			@SuppressWarnings("unchecked")
 			public void run() {
 				ReferenceService referenceService = callback.getContext().getReferenceService();
 
 				Map<String, T2Reference> output = new HashMap<String, T2Reference>();
 				
 				try {
+
+                    //cache ontology and namespace if not done so already. Immediately returns if already cached.
+                    BiomobyCache.cacheForRegistryEndpoint(getConfiguration().getRegistryEndpoint());
 
 					String inputMapKey = getInputPorts().iterator().next().getName();
 					// inputMap wasnt as expected
@@ -213,6 +216,7 @@ public class MobyParseDatatypeActivity extends AbstractAsynchronousActivity<Moby
 		return configurationBean;
 	}
 
+	@SuppressWarnings("unchecked")
 	private void init(Edits edits) throws ActivityConfigurationException {
 		try {
 			central = new CentralImpl(configurationBean.getRegistryEndpoint());
@@ -270,6 +274,7 @@ public class MobyParseDatatypeActivity extends AbstractAsynchronousActivity<Moby
 		return false;
 	}
 
+	@SuppressWarnings("unchecked")
 	private void processDatatype(MobyDataType dt, Central central, String currentName, List list) throws ActivityConfigurationException {
 
 		if (dt.getParentName() == null || dt.getParentName().trim().equals("")) {
@@ -332,6 +337,7 @@ public class MobyParseDatatypeActivity extends AbstractAsynchronousActivity<Moby
 
 	}
 
+	@SuppressWarnings("unchecked")
 	private void flattenChildType(String name, Central central, String current, List list) throws ActivityConfigurationException {
 		MobyDataType dt = null;
 		try {
