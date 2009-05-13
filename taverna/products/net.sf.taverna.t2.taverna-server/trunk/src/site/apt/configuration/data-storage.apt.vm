@@ -1,0 +1,82 @@
+ --------------------------
+ Data Storage Configuration
+ --------------------------
+ David Withers
+ --------------------------
+ 
+Data Storage Type
+
+ <${project.name}> can be configured to store data in a database or in-memory.
+ 
++-----------------------------------------------------+
+In-memory data storage is for testing and evaluation purposes only.
+Do not use in-memory data storage for a production system.
++-----------------------------------------------------+
+
+ The data storage for <${project.name}> is configured in the Data Storage section of the WEB-INF/applicationContext.xml file.
+
+ WEB-INF/applicationContext.xml
+
++-----------------------------------------------------+
+<!--============== Data Storage  ===============-->
+	
+<!--<import resource="inmemory.xml" />-->
+<import resource="hibernate.xml" />
+
+<!--============================================-->
++-----------------------------------------------------+
+
+ 
+Data Source
+
+ When using a database to store data a data source must be configured. The data source specifies which database is
+to be used. The default configuration uses a Hypersonic database that will be created when <${project.name}> is first
+started. It is recommended that you configure <${project.name}> to use your preferred database for a production system.
+The data source for <${project.name}> is configured in the Data Source section of the WEB-INF/applicationContext.xml file.
+
+ WEB-INF/applicationContext.xml
+
++-----------------------------------------------------+
+<!--=============== Data Source ================-->
+
+<bean id="server.dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+	destroy-method="close">
+  <property name="driverClassName" value="org.hsqldb.jdbcDriver" />
+  <property name="url" value="jdbc:hsqldb:file:${server.data}/hsqldb" />
+  <property name="username" value="sa" />
+  <property name="password" value="" />
+</bean>    
+
+<!--============================================-->
++-----------------------------------------------------+
+
+Hibernate Dialect
+
+ The Hibernate dialect has to match the database configured by the data source. The hibernate dialect is configured
+in the Session Factory section of the WEB-INF/hibernate.xml file, set the 'hibernate.dialect' property.
+
+ WEB-INF/hibernate.xml
+
++-----------------------------------------------------+
+<!--============= Session Factory ==============-->
+	
+<bean id="hibernate.sessionFactory"
+	class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+	<property name="dataSource" ref="server.dataSource" />
+	<property name="mappingResources">
+		<list>
+			<value>hibernate/Data.hbm.xml</value>
+			<value>hibernate/Job.hbm.xml</value>
+			<value>hibernate/Workflow.hbm.xml</value>
+		</list>
+	</property>
+	<property name="hibernateProperties">
+		<props>
+			<prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
+			<prop key="hibernate.current_session_context_class">thread</prop>
+			<prop key="hibernate.cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
+			<prop key="hibernate.hbm2ddl.auto">create</prop>
+		</props>
+	</property>
+</bean>
++-----------------------------------------------------+

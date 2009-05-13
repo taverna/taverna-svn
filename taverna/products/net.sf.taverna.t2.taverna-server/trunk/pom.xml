@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.sf.taverna.t2</groupId>
+	<artifactId>taverna-server</artifactId>
+	<packaging>war</packaging>
+	<version>0.2.0-SNAPSHOT</version>
+	<name>Taverna Server</name>
+	<url>http://www.mygrid.org.uk/tools/taverna/taverna-remote-execution/</url>
+	<inceptionYear>2008</inceptionYear>
+	<issueManagement>
+		<system>jira</system>
+		<url>http://www.mygrid.org.uk/dev/issues/</url>
+	</issueManagement>
+	<licenses>
+		<license>
+			<name>GNU Lesser General Public License</name>
+			<url>http://www.gnu.org/licenses/lgpl.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<organization>
+		<name>myGrid</name>
+		<url>http://www.mygrid.org.uk/</url>
+	</organization>
+	<developers>
+		<developer>
+			<name>David Withers</name>
+			<organization>University of Manchester</organization>
+			<organizationUrl>http://www.manchester.ac.uk/</organizationUrl>
+			<email>david.withers@manchester.ac.uk</email>
+		</developer>
+	</developers>
+	<mailingLists>
+		<mailingList>
+			<name>Taverna Users</name>
+			<post>taverna-users@lists.sourceforge.net</post>
+			<subscribe>https://lists.sourceforge.net/lists/listinfo/taverna-users</subscribe>
+			<archive>http://taverna-users.markmail.org/search/?q=</archive>
+			<otherArchives>
+				<otherArchive>http://sourceforge.net/mailarchive/forum.php?forum_name=taverna-users</otherArchive>
+			</otherArchives>
+		</mailingList>
+		<mailingList>
+			<name>Taverna Hackers</name>
+			<post>taverna-hackers@lists.sourceforge.net</post>
+			<subscribe>https://lists.sourceforge.net/lists/listinfo/taverna-hackers</subscribe>
+			<archive>http://taverna-hackers.markmail.org/search/?q=</archive>
+			<otherArchives>
+				<otherArchive>http://sourceforge.net/mailarchive/forum.php?forum_name=taverna-hackers</otherArchive>
+			</otherArchives>
+		</mailingList>
+	</mailingLists>
+	<build>
+		<finalName>${artifactId}</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${compileSource}</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>**/*IntegrationTest.java</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<id>integration-tests</id>
+						<phase>integration-test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>**/*IntegrationTest.java</include>
+							</includes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.mortbay.jetty</groupId>
+				<artifactId>maven-jetty-plugin</artifactId>
+				<configuration>
+					<connectors>
+						<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+							<port>8080</port>
+							<responseBufferSize>64</responseBufferSize>
+						</connector>
+					</connectors>
+				</configuration>
+				<!--
+					<executions> <execution> <id>jetty-integration-tests</id>
+					<phase>pre-integration-test</phase> <goals> <goal>run</goal>
+					</goals> <configuration> <connectors> <connector
+					implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+					<port>8080</port> </connector> </connectors> </configuration>
+					</execution> </executions>
+				-->
+			</plugin>
+			<plugin>
+				<groupId>com.sun.tools.jxc.maven2</groupId>
+				<artifactId>maven-jaxb-schemagen-plugin</artifactId>
+				<version>1.2</version>
+				<executions>
+					<execution>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<destdir>${project.build.directory}/${project.build.finalName}</destdir>
+							<schemas>
+								<schema>
+									<namespace>http://taverna.org.uk/schema/t2server</namespace>
+									<file>t2server.xsd</file>
+								</schema>
+							</schemas>
+							<includes>
+								<include>**/net/sf/taverna/t2/service/webservice/resource/*.java</include>
+							</includes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!--
+				<plugin> <groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId> <version>2.4</version>
+				<executions> <execution> <id>generate-documentation</id>
+				<phase>process-classes</phase> <configuration> <doclet>
+				net.sf.taverna.t2.service.doclet.Wsdl2Doclet </doclet>
+				<docletPath>${project.build.directory}/classes</docletPath>
+				<outputDirectory>${project.build.directory}</outputDirectory>
+				<reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
+				<destDir>${project.build.finalName}</destDir> <show>private</show>
+				</configuration> <goals> <goal>javadoc</goal> </goals> </execution>
+				</executions> </plugin>
+			-->
+		</plugins>
+	</build>
+	<repositories>
+		<repository>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+		</repository>
+		<!-- for jaxb-impl -->
+		<repository>
+			<id>java.net</id>
+			<name>java.net maven 1 repository</name>
+			<url>http://download.java.net/maven/1/</url>
+			<layout>legacy</layout>
+		</repository>
+		<repository>
+			<id>spring-milestone</id>
+			<name>Spring Portfolio Milestone Repository</name>
+			<url>http://repository.springsource.com/maven/bundles/milestone</url>
+		</repository>
+		<repository>
+			<id>spring-snapshot</id>
+			<name>Spring Portfolio Snapshot Repository</name>
+			<url>http://repository.springsource.com/maven/bundles/snapshot</url>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>java.net.2</id>
+			<name>java.net maven 2 repository</name>
+			<url>http://download.java.net/maven/2</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<properties>
+		<compileSource>1.5</compileSource>
+		<taverna.platform.version>p0.1b2</taverna.platform.version>
+
+		<cxf.version>2.1.4</cxf.version>
+		<jsr311.version>0.8</jsr311.version>
+
+		<spring.version>2.5.4</spring.version>
+		<!--<spring.security.version>2.0.4</spring.security.version>-->
+		<spring.security.version>2.5.0-SNAPSHOT</spring.security.version>
+	</properties>
+
+	<dependencies>
+		<!-- Spring core -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<!-- Spring security -->
+		<dependency>
+			<groupId>org.springframework.security
+			</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security
+			</groupId>
+			<artifactId>spring-security-acl</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security
+			</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.1.2</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+		</dependency>
+		<dependency>
+			<groupId>taglibs</groupId>
+			<artifactId>standard</artifactId>
+			<version>1.1.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<version>1.8.0.7</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>1.5.0</version>
+		</dependency>
+
+		<!-- Apache commons -->
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.2.1</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.3.2</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.0-beta1</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- CXF -->
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-bindings-http</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-transports-http</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-transports-http-jetty
+			</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-frontend-jaxrs</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>jsr311-api</artifactId>
+			<version>${jsr311.version}</version>
+		</dependency>
+
+		<!-- Taverna platform -->
+		<!-- See http://www.benmccann.com/dev-blog/hibernate-asm-incompatibilities/ -->
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>platform-taverna-api</artifactId>
+			<version>${taverna.platform.version}
+			</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>cglib</artifactId>
+					<groupId>cglib</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>asm</artifactId>
+					<groupId>asm</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib-nodep</artifactId>
+			<version>2.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.15</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.sun.jmx</groupId>
+					<artifactId>jmxri</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jdmk</groupId>
+					<artifactId>jmxtools</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.jms</groupId>
+					<artifactId>jms</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.mail</groupId>
+					<artifactId>mail</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- Testing -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.4</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>workflowmodel-impl</artifactId>
+			<version>${taverna.platform.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>reference-impl</artifactId>
+			<version>${taverna.platform.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+	<scm>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/products/net.sf.taverna.t2.taverna-server/trunk/</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/products/net.sf.taverna.t2.taverna-server/trunk/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/products/net.sf.taverna.t2.taverna-server/trunk/</url>
+	</scm>
+	<distributionManagement>
+		<repository>
+			<id>mygrid-repository</id>
+			<name>myGrid repository</name>
+			<url>
+				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/repository
+			</url>
+		</repository>
+		<snapshotRepository>
+			<id>mygrid-snapshot-repository</id>
+			<name>myGrid Snapshot repository</name>
+			<url>
+				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/snapshot-repository
+			</url>
+		</snapshotRepository>
+		<site>
+			<id>taverna-server-site</id>
+			<name>Taverna Server Project Site</name>
+			<url>scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/dev/taverna-service</url>
+		</site>
+	</distributionManagement>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<!--
+								<report>dependencies</report> <report>project-team</report>
+								<report>mailing-list</report> <report>cim</report>
+								<report>issue-tracking</report> <report>license</report>
+							-->
+							<report>scm</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<targetJdk>${compileSource}</targetJdk>
+					<rulesets>
+						<ruleset>/rulesets/basic.xml</ruleset>
+						<ruleset>/rulesets/braces.xml</ruleset>
+						<!--
+							<ruleset>/rulesets/clone.xml</ruleset>
+							<ruleset>/rulesets/codesize.xml</ruleset>
+							<ruleset>/rulesets/coupling.xml</ruleset>
+							<ruleset>/rulesets/design.xml</ruleset>
+							<ruleset>/rulesets/favorites.xml</ruleset>
+							<ruleset>/rulesets/finalizers.xml</ruleset>
+							<ruleset>/rulesets/imports.xml</ruleset>
+							<ruleset>/rulesets/junit.xml</ruleset>
+							<ruleset>/rulesets/strings.xml</ruleset>
+							<ruleset>/rulesets/sunsecure.xml</ruleset>
+							<ruleset>/rulesets/typeresolution.xml</ruleset>
+							<ruleset>/rulesets/unusedcode.xml</ruleset>
+						-->
+					</rulesets>
+				</configuration>
+			</plugin>
+			<!--
+				<plugin> <groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>2.4.2</version> </plugin>
+			-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>com.sun.tools.jxc.maven2</groupId>
+				<artifactId>maven-jaxb-schemagen-plugin</artifactId>
+				<version>1.2</version>
+				<configuration>
+					<destdir>${project.reporting.outputDirectory}</destdir>
+					<schemas>
+						<schema>
+							<namespace>http://taverna.org.uk/schema/taverna-server</namespace>
+							<file>taverna-server.xsd</file>
+						</schema>
+					</schemas>
+					<includes>
+						<include>**/net/sf/taverna/t2/service/webservice/resource/*.java</include>
+					</includes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
+
+</project>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ReferenceSet, ErrorDocument and List services, requires raven.repository -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:raven="http://taverna.sf.net/schema/artifact-support-0.2"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd 
+	http://taverna.sf.net/schema/artifact-support-0.2 
+	http://taverna.sf.net/schema/artifact-support/artifact-support-0.2.xsd">
+
+	<!-- t2 reference generator -->
+	<bean id="t2.data.referenceGenerator"
+		raven:artifact="net.sf.taverna.t2:reference-impl:${t2core.reference.version}"
+		raven:repository="platform.raven.repository"
+		class="net.sf.taverna.t2.reference.impl.SimpleT2ReferenceGenerator">
+		<property name="namespace" value="testNamespace" />
+	</bean>
+
+	<!-- reference set service -->
+	<bean id="t2.data.service.referenceSetService"
+		raven:artifact="net.sf.taverna.t2:reference-impl:${t2core.reference.version}"
+		raven:repository="platform.raven.repository"
+		class="net.sf.taverna.t2.reference.impl.ReferenceSetServiceImpl">
+		<property name="referenceSetDao">
+			<ref bean="t2.data.dao.referenceSetDao" />
+		</property>
+		<property name="t2ReferenceGenerator">
+			<ref bean="t2.data.referenceGenerator" />
+		</property>
+		<property name="referenceSetAugmentor">
+			<ref bean="t2.data.augmentor" />
+		</property>
+	</bean>
+
+	<bean id="t2.data.augmentor"
+		class="net.sf.taverna.t2.reference.impl.ReferenceSetAugmentorImpl"
+		raven:artifact="net.sf.taverna.t2:reference-impl:${t2core.reference.version}"
+		raven:repository="platform.raven.repository">
+		<property name="builderRegistry">
+			<bean
+				class="net.sf.taverna.t2.platform.spring.InstanceRegistryFactoryBean">
+				<property name="spiRegistry">
+					<raven:spi
+						spiClass="net.sf.taverna.t2.reference.ExternalReferenceBuilderSPI"
+						pluginManager="platform.pluginManager" />
+				</property>
+			</bean>
+		</property>
+		<property name="translatorRegistry">
+			<bean
+				class="net.sf.taverna.t2.platform.spring.InstanceRegistryFactoryBean">
+				<property name="spiRegistry">
+					<raven:spi
+						spiClass="net.sf.taverna.t2.reference.ExternalReferenceTranslatorSPI"
+						pluginManager="platform.pluginManager" />
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<!-- error document service -->
+	<bean id="t2.data.service.errorDocumentService"
+		raven:artifact="net.sf.taverna.t2:reference-impl:${t2core.reference.version}"
+		raven:repository="platform.raven.repository"
+		class="net.sf.taverna.t2.reference.impl.ErrorDocumentServiceImpl">
+		<property name="errorDao">
+			<ref bean="t2.data.dao.errorDocumentDao" />
+		</property>
+		<property name="t2ReferenceGenerator">
+			<ref bean="t2.data.referenceGenerator" />
+		</property>
+	</bean>
+
+	<!-- list service -->
+	<bean id="t2.data.service.listService"
+		raven:artifact="net.sf.taverna.t2:reference-impl:${t2core.reference.version}"
+		raven:repository="platform.raven.repository"
+		class="net.sf.taverna.t2.reference.impl.ListServiceImpl">
+		<property name="listDao">
+			<ref bean="t2.data.dao.listDao" />
+		</property>
+		<property name="t2ReferenceGenerator">
+			<ref bean="t2.data.referenceGenerator" />
+		</property>
+	</bean>
+
+
+
+
+</beans>

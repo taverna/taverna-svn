@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+           http://www.springframework.org/schema/aop 
+           http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+           http://www.springframework.org/schema/tx 
+           http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+	<bean id="propertyPlaceholderConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location" value="/WEB-INF/server.properties" />
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+	</bean>
+
+	<!--================= Taverna ==================-->
+	<import resource="tavernaContext.xml" />
+	<!--============================================-->
+
+	<!--============= REST interface  ==============-->	
+	<import resource="cxfServlet.xml" />
+	<!--============================================-->
+	
+	<!--================= Security =================-->
+		
+	<!--<import resource="security.xml" />-->
+
+	<!--============================================-->
+
+	<!--=============== Data Storage ===============-->
+	
+	<!--<import resource="inmemory.xml" />-->
+	<import resource="hibernate.xml" />
+
+	<!--============================================-->
+
+	<!--=============== Data Source ================-->
+	
+	<bean id="server.dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
+		<property name="url" value="jdbc:hsqldb:file:${server.data}/hsqldb" />
+		<!--<property name="url" value="jdbc:hsqldb:hsql://localhost:9001"/>-->
+		<property name="username" value="sa" />
+		<property name="password" value="" />
+	</bean>    
+
+	<!--============================================-->
+
+	<!--============== Manager Beans ===============-->
+	
+	<bean id="workflowManager" class="net.sf.taverna.t2.service.WorkflowManagerImpl">
+		<property name="workflowDao" ref="workflowDao" />
+		<property name="workflowParser" ref="t2.enactor.workflowParser" />
+		<!--<property name="authorizationManager" ref="authorizationManager" />-->
+	</bean>
+
+	<bean id="jobManager" class="net.sf.taverna.t2.service.JobManagerImpl">
+		<property name="jobDao" ref="jobDao" />
+		<property name="enactor" ref="t2.enactor.enactor" />
+		<property name="workflowManager" ref="workflowManager" />
+		<property name="dataManager" ref="dataManager" />
+		<property name="invocationContextFactory" ref="t2.enactor.invocationContextFactory" />
+		<!--<property name="authorizationManager" ref="authorizationManager" />-->
+	</bean>
+
+	<bean id="dataManager" class="net.sf.taverna.t2.service.DataManagerImpl">
+		<property name="dataDao" ref="dataDao" />
+		<property name="referenceService" ref="t2.data.referenceService" />
+		<!--<property name="authorizationManager" ref="authorizationManager" />-->
+	</bean>
+
+	<!--<bean id="authorizationManager" class="net.sf.taverna.t2.service.AuthorizationManagerImpl">
+		<property name="dataSource" ref="server.dataSource" />
+		<property name="mutableAclService" ref="aclService" />
+		<property name="platformTransactionManager" ref="transactionManager" />
+	</bean>-->
+
+	<!--============================================-->
+
+</beans>

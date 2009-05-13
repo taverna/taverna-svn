@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+           http://www.springframework.org/schema/aop 
+           http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+           http://www.springframework.org/schema/tx 
+           http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+	<!-- ========= ACL SERVICE  DEFINITIONS ========= -->
+
+	<bean id="aclCache"
+		class="org.springframework.security.acls.jdbc.EhCacheBasedAclCache">
+		<constructor-arg>
+			<bean class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+				<property name="cacheManager">
+					<bean class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" />
+				</property>
+				<property name="cacheName" value="aclCache" />
+			</bean>
+		</constructor-arg>
+	</bean>
+
+	<bean id="authorizationStrategy"
+		class="org.springframework.security.acls.domain.AclAuthorizationStrategyImpl">
+		<constructor-arg>
+			<list>
+				<bean class="org.springframework.security.GrantedAuthorityImpl">
+					<constructor-arg value="ROLE_ADMINISTRATOR" />
+				</bean>
+				<bean class="org.springframework.security.GrantedAuthorityImpl">
+					<constructor-arg value="ROLE_ADMINISTRATOR" />
+				</bean>
+				<bean class="org.springframework.security.GrantedAuthorityImpl">
+					<constructor-arg value="ROLE_ADMINISTRATOR" />
+				</bean>
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<bean id="lookupStrategy"
+		class="org.springframework.security.acls.jdbc.BasicLookupStrategy">
+		<constructor-arg ref="server.dataSource" />
+		<constructor-arg ref="aclCache" />
+		<constructor-arg ref="authorizationStrategy">
+		</constructor-arg>
+		<constructor-arg>
+			<bean class="org.springframework.security.acls.domain.ConsoleAuditLogger" />
+		</constructor-arg>
+	</bean>
+
+	<bean id="aclService"
+		class="org.springframework.security.acls.jdbc.JdbcMutableAclService">
+		<constructor-arg ref="server.dataSource" />
+		<constructor-arg ref="lookupStrategy" />
+		<constructor-arg ref="aclCache" />
+	</bean>
+
+	<!-- ========= Transactions ========= -->
+
+	<bean id="acl.transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="server.dataSource" />
+	</bean>
+
+	<aop:config>
+		<aop:pointcut id="authorizationManagerMethods"
+			expression="execution(* net.sf.taverna.t2.service.AuthorizationManager.*AclEntry(..))" />
+		<aop:advisor pointcut-ref="authorizationManagerMethods" advice-ref="acl.txAdvice" />
+	</aop:config>
+
+	<tx:advice id="acl.txAdvice" transaction-manager="acl.transactionManager">
+		<tx:attributes>
+			<tx:method name="create*" />
+			<tx:method name="delete*" />
+			<!--<tx:method name="get*" read-only="true" />-->
+		</tx:attributes>
+	</tx:advice>
+
+</beans>

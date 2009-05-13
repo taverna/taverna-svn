@@ -1,0 +1,25 @@
+ ---
+ Overview
+ ---
+ David Withers
+ ---
+ 
+Overview of ${project.name}
+
+ <${project.name}> is a web application for running Taverna 2 workflows. It is designed to be used from other applications via its REST interface.
+ 
+ * Workflow enactment using the Taverna 2 Engine for speed and scalability
+
+ * REST interface for simple integration with your application
+
+ * Web based management and monitoring interface
+
+ * Secured using Spring Security to enable integration with your security systems
+
+ * Configurable data storage that can be configured to use your database solution
+ 
+ * Runs in an Java Application Server such as Tomcat or Jetty
+
+ <${project.name}> can be installed on your preferred Java Application Server by downloading and deploying the web archive (war) file.
+The default configuration uses a Hypersonic database and a built-in user management system, but <${project.name}> can be easily
+configured to use your existing database and security setup.

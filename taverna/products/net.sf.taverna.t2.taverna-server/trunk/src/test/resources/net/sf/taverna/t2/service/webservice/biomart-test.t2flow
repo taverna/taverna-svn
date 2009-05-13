@@ -1,0 +1,30 @@
+<workflow xmlns="http://taverna.sf.net/2008/xml/t2flow" version="1"><dataflow id="a36d63e2-d1ef-4544-9338-d852a9039933" role="top"><name>dataflow0</name><inputPorts /><outputPorts><port><name>id</name></port><port><name>stage</name></port></outputPorts><processors><processor><name>hsapiens_gene_ensembl</name><inputPorts /><outputPorts><port><name>hsapiens_gene_ensembl.development_stage</name><depth>1</depth><granularDepth>0</granularDepth></port><port><name>hsapiens_gene_ensembl.ensembl_gene_id</name><depth>1</depth><granularDepth>0</granularDepth></port></outputPorts><annotations /><activities><activity><raven><group>net.sf.taverna.t2.activities</group><artifact>biomart-activity</artifact><version>0.4</version></raven><class>net.sf.taverna.t2.activities.biomart.BiomartActivity</class><inputMap /><outputMap><map from="hsapiens_gene_ensembl.development_stage" to="hsapiens_gene_ensembl.development_stage" /><map from="hsapiens_gene_ensembl.ensembl_gene_id" to="hsapiens_gene_ensembl.ensembl_gene_id" /></outputMap><configBean encoding="jdomxml"><MartQuery xmlns=""><MartService location="http://www.biomart.org/biomart/martservice" /><MartDataset displayName="Homo sapiens genes (NCBI36)" name="hsapiens_gene_ensembl" type="TableSet" initialBatchSize="200" maximumBatchSize="50000" visible="false" interface="default" modified="2008-11-27 16:08:08"><MartURLLocation database="ensembl_mart_52" default="1" displayName="ENSEMBL 52 GENES (SANGER UK)" host="www.biomart.org" includeDatasets="" martUser="" name="ensembl" path="/biomart/martservice" port="80" serverVirtualSchema="default" virtualSchema="default" visible="1" redirect="0" /></MartDataset><Query virtualSchemaName="default" count="0" uniqueRows="0" softwareVersion="0.7" requestId="taverna"><Dataset name="hsapiens_gene_ensembl"><Attribute name="ensembl_gene_id" /><Attribute name="development_stage" /><Filter name="chromosome_name" value="22" /><Filter name="biotype" value="IG_C_gene" /></Dataset></Query></MartQuery></configBean><annotations /></activity></activities><dispatchStack><dispatchLayer><raven><group>net.sf.taverna.t2</group><artifact>workflowmodel-impl</artifact><version>0.4</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize</class><configBean encoding="xstream"><net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ParallelizeConfig xmlns="">
+  <maxJobs>1</maxJobs>
+</net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ParallelizeConfig></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2</group><artifact>workflowmodel-impl</artifact><version>0.4</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ErrorBounce</class><configBean encoding="xstream"><null xmlns="" /></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2</group><artifact>workflowmodel-impl</artifact><version>0.4</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover</class><configBean encoding="xstream"><null xmlns="" /></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2</group><artifact>workflowmodel-impl</artifact><version>0.4</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Retry</class><configBean encoding="xstream"><net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.RetryConfig xmlns="">
+  <backoffFactor>1.0</backoffFactor>
+  <initialDelay>1000</initialDelay>
+  <maxDelay>5000</maxDelay>
+  <maxRetries>0</maxRetries>
+</net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.RetryConfig></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2</group><artifact>workflowmodel-impl</artifact><version>0.4</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke</class><configBean encoding="xstream"><null xmlns="" /></configBean></dispatchLayer></dispatchStack><iterationStrategyStack><iteration><strategy /></iteration></iterationStrategyStack></processor></processors><conditions /><datalinks><datalink><sink type="dataflow"><port>id</port></sink><source type="processor"><processor>hsapiens_gene_ensembl</processor><port>hsapiens_gene_ensembl.ensembl_gene_id</port></source></datalink><datalink><sink type="dataflow"><port>stage</port></sink><source type="processor"><processor>hsapiens_gene_ensembl</processor><port>hsapiens_gene_ensembl.development_stage</port></source></datalink></datalinks><annotations><annotation_chain encoding="xstream"><net.sf.taverna.t2.annotation.AnnotationChainImpl xmlns="">
+  <annotationAssertions>
+    <net.sf.taverna.t2.annotation.AnnotationAssertionImpl>
+      <annotationBean class="net.sf.taverna.t2.annotation.annotationbeans.DescriptiveTitle">
+        <text>Biomart test</text>
+      </annotationBean>
+      <date>2009-02-10 09:58:00.865 GMT</date>
+      <creators />
+      <curationEventList />
+    </net.sf.taverna.t2.annotation.AnnotationAssertionImpl>
+  </annotationAssertions>
+</net.sf.taverna.t2.annotation.AnnotationChainImpl></annotation_chain><annotation_chain encoding="xstream"><net.sf.taverna.t2.annotation.AnnotationChainImpl xmlns="">
+  <annotationAssertions>
+    <net.sf.taverna.t2.annotation.AnnotationAssertionImpl>
+      <annotationBean class="net.sf.taverna.t2.annotation.annotationbeans.Author">
+        <text>David Withers</text>
+      </annotationBean>
+      <date>2009-02-10 09:57:42.159 GMT</date>
+      <creators />
+      <curationEventList />
+    </net.sf.taverna.t2.annotation.AnnotationAssertionImpl>
+  </annotationAssertions>
+</net.sf.taverna.t2.annotation.AnnotationChainImpl></annotation_chain></annotations></dataflow></workflow>

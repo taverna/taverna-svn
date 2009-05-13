@@ -1,0 +1,25 @@
+ ---
+ Requirements
+ ---
+ David Withers
+ ---
+ 
+Requirements
+
+*Operating System
+
+ <${project.name}> runs on any operating system that can run Java.
+
+*Java
+
+ Java version 1.6 or later. Java can be downloaded from {{{http://java.sun.com/javase/downloads/}Sun}}
+
+*Application Server
+
+ <${project.name}> is a web application and requires a Java Servlet Container to run. We recommend {{{http://tomcat.apache.org/}Apache Tomcat}}
+version 6.
+
+*Database
+
+ <${project.name}> is configured to use a Hypersonic database as default. While this is convenient for evaluation
+purposes we recommend that you {{{../configuration/data-storage.html}configure}} a separate database for a production use.
