@@ -10,11 +10,16 @@ Download $project.name $project.version
 
  <${project.name}> is distributed as a Web ARchive (WAR) file under the {{{${license.url}}$license.name}}
 
-#set($file = "$project.build.finalName.$project.packaging" )
-#set($path = "$project.groupId.replace('.','/')/$project.artifactId/$project.version/$file" )
+#set($repository = "http://www.mygrid.org.uk/maven/repository/")
+#set($file = "$project.build.finalName.$project.packaging")
+#set($group = $project.groupId.replace('.','/'))
+#set($versions = [$project.version, "0.1.0"])
  
-*------------------+------------------+----------------+
-||Version          ||Download         ||Checksum
-*------------------+------------------+----------------+
-|$project.version  |{{{http://www.mygrid.org.uk/maven/repository/$path}$file}}|{{{http://www.mygrid.org.uk/maven/repository/${path}.md5}${file}.md5}} 
-*------------------+------------------+----------------+
+*---------+-----------------+-----------------------------+-------------------------------+
+||Version ||Download        ||md5 Checksum                ||sha1 Checksum                 |
+*---------+-----------------+-----------------------------+-------------------------------+
+#foreach($version in $versions) #set($path = "$repository/$group/$project.artifactId/$version/$file")
+|$version |{{{$path}$file}} |{{{${path}.md5}${file}.md5}} |{{{${path}.sha1}${file}.sha1}} |
+*---------+-----------------+-----------------------------+-------------------------------+
+#end
+
