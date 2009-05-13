@@ -4,9 +4,11 @@
  David Withers
  ---
  
-Overview of ${project.name}
+Overview of $project.name
 
- <${project.name}> is a web application for running Taverna 2 workflows. It is designed to be used from other applications via its REST interface.
+ <$project.name> is a web application for running Taverna 2 workflows. It is designed to be used from other applications via its REST interface.
+ 
+*$project.name features
  
  * Workflow enactment using the Taverna 2 Engine for speed and scalability
 
@@ -18,8 +20,11 @@ Overview of ${project.name}
 
  * Configurable data storage that can be configured to use your database solution
  
- * Runs in an Java Application Server such as Tomcat or Jetty
+ * Runs in an Java Application Server such as {{{http://tomcat.apache.org/}Tomcat}} or {{{http://www.mortbay.org/jetty/}Jetty}}
+ 
+ []
 
- <${project.name}> can be installed on your preferred Java Application Server by downloading and deploying the web archive (war) file.
-The default configuration uses a Hypersonic database and a built-in user management system, but <${project.name}> can be easily
-configured to use your existing database and security setup.
+ <$project.name> can be {{{installation/installation.html}installed}} on your preferred Java Application Server
+by {{{download.html}downloading}} and deploying the web archive (war) file.
+The default configuration uses an {{{http://hsqldb.org/}HSQL}} database and a built-in user management system,
+but <${project.name}> can be easily configured to use your existing database and security setup.

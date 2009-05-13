@@ -6,7 +6,7 @@
  
 Introduction
 
- <${project.name}> is secured using {{{http://static.springsource.org/spring-security/site/index.html}Spring Security}}.
+ <$project.name> is secured using {{{http://static.springsource.org/spring-security/site/index.html}Spring Security}}.
 The default configuration uses HTTP BASIC authentication.
 
 

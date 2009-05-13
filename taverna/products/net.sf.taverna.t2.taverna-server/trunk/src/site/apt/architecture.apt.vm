@@ -4,25 +4,25 @@
  David Withers
  ---
 
-${project.name} Architecture
+$project.name Architecture
 
  <${project.name}> is a java web application that runs in a application server such as Apache Tomcat, Jetty, etc.
 It has a REST interface for running workflows and handling input/output data. There is a web interface for server administration.
 
  <${project.name}> has a typical enterprise application layered architecture with presentation, business and persistence layers.
 
-[images/TavernaServerArchitecture.png] <${project.name}> Architecture
+[images/TavernaServerArchitecture.png] <$project.name> Architecture
 
 *Implementation
 
- <${project.name}> uses the {{{http://www.springsource.org/}Spring Java Application Platform}} to manage objects implementing the
+ <$project.name> uses the {{{http://www.springsource.org/}Spring Java Application Platform}} to manage objects implementing the
 business logic of the application. The presentation layer interfaces interact with the business layer components. The business
 layer (and hence the application) is secured using {{{http://static.springsource.org/spring-security/site/index.html}Spring Security}}.
 Data is persisted using Spring's DAO Support. Workflow execution is handled by the Taverna Platform. 
  
 **Presentation Layer
 
- The presentation layer provides a REST interface to run workflows and a web interface for administration of <${project.name}>.
+ The presentation layer provides a REST interface to run workflows and a web interface for administration of <$project.name>.
 The REST interface is written with {{{http://cxf.apache.org/}Apache CXF}} and the web management interface with
 {{{http://static.springframework.org/spring/docs/2.5.x/reference/mvc.html}Spring MVC}}. 
 
@@ -34,5 +34,5 @@ beans managed by Spring's IoC.
 **Persistence Layer
 
  Data persistence uses {{{http://static.springframework.org/spring/docs/2.5.x/reference/dao.html}Spring's DAO Support}}.
-<${project.name}> implements a Object Relational Mapping DAO using {{{http://www.hibernate.org/}Hibernate}}. There is also
+<$project.name> implements a Object Relational Mapping DAO using {{{http://www.hibernate.org/}Hibernate}}. There is also
 an In-Memory implementation which is useful for testing.

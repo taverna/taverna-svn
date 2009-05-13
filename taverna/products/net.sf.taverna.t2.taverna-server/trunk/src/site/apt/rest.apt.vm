@@ -4,7 +4,7 @@
  David Withers
  ---
  
-${project.name}'s REST interface
+$project.name's REST interface
 
 *--------------+-------------------+-------+----------------------------------+----------------------------------+
 ||Operation    ||Path              ||Method||Consumes                         ||Produces                         |

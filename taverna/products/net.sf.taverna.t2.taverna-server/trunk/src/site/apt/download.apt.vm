@@ -1,0 +1,20 @@
+ ---
+ Download
+ ---
+ David Withers
+ ---
+
+Download $project.name $project.version
+
+#set($license = $project.licenses.get(0))
+
+ <${project.name}> is distributed as a Web ARchive (WAR) file under the {{{${license.url}}$license.name}}
+
+#set($file = "$project.build.finalName.$project.packaging" )
+#set($path = "$project.groupId.replace('.','/')/$project.artifactId/$project.version/$file" )
+ 
+*------------------+------------------+----------------+
+||Version          ||Download         ||Checksum
+*------------------+------------------+----------------+
+|$project.version  |{{{http://www.mygrid.org.uk/maven/repository/$path}$file}}|{{{http://www.mygrid.org.uk/maven/repository/${path}.md5}${file}.md5}} 
+*------------------+------------------+----------------+

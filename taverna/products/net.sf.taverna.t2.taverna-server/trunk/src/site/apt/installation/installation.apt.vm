@@ -4,9 +4,9 @@
  David Withers
  ---
 
-Installing <${project.name}>
+Installing <$project.name>
 
- <${project.name}> is distributed as a 'war' file that is deployed on a Java Servlet Container. If you don't already have a
+ <$project.name> is distributed as a web archive (WAR) file that is deployed on a Java Servlet Container. If you don't already have a
 Servlet Container we recommend {{{http://tomcat.apache.org/download-60.cgi}Apache Tomcat 6}}.
  
 *Deploying on Apache Tomcat 6
@@ -20,12 +20,12 @@ Under the <Administration> section click on <Tomcat Manager>.
 
 **Deploying the WAR file
 
- Scroll down to the <Deploy> section. Under <WAR file to deploy>, select the WAR file you have downloaded and click on <Deploy>.
+ Scroll down to the <Deploy> section. Under <WAR file to deploy>, select the WAR file you have {{{../download.html}downloaded}} and click on <Deploy>.
 
 [../images/deploy-tomcat-2.png]
 
 **Viewing deployed applications
 
- When the WAR file is deployed <<t2server>> should be shown in the list of deployed applications.
+ When the WAR file is deployed <<taverna-server>> should be shown in the list of deployed applications.
 
 [../images/deploy-tomcat-3.png]

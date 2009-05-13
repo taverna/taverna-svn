@@ -8,7 +8,7 @@ Requirements
 
 *Operating System
 
- <${project.name}> runs on any operating system that can run Java.
+ <$project.name> runs on any operating system that can run Java. It has been tested on Mac OS X, Ubuntu Linux, Windows XP and Windows Server.
 
 *Java
 
@@ -16,10 +16,10 @@ Requirements
 
 *Application Server
 
- <${project.name}> is a web application and requires a Java Servlet Container to run. We recommend {{{http://tomcat.apache.org/}Apache Tomcat}}
+ <$project.name> is a web application and requires a Java Servlet Container to run. We recommend {{{http://tomcat.apache.org/}Apache Tomcat}}
 version 6.
 
 *Database
 
- <${project.name}> is configured to use a Hypersonic database as default. While this is convenient for evaluation
+ <$project.name> is configured to use an {{{http://hsqldb.org/}HSQL}} database as default. While this is convenient for evaluation
 purposes we recommend that you {{{../configuration/data-storage.html}configure}} a separate database for a production use.
