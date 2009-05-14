@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?><archetype>
+  <id>platform-webapp</id>
+  <resources>
+    <resource>src\main\resources\commons-logging.properties</resource>
+    <resource>src\main\resources\log4j.xml</resource>
+    <resource>src\main\webapp\index.jsp</resource>
+    <resource>src\main\webapp\WEB-INF\context-parts\componentservices.xml</resource>
+    <resource>src\main\webapp\WEB-INF\context-parts\dao_hibernate.xml</resource>
+    <resource>src\main\webapp\WEB-INF\context-parts\dao_inmemory.xml</resource>
+    <resource>src\main\webapp\WEB-INF\context-parts\hibernateprops_derby.xml</resource>
+    <resource>src\main\webapp\WEB-INF\context-parts\platform-basic-profile.xml</resource>
+    <resource>src\main\webapp\WEB-INF\context-parts\raven_local.xml</resource>
+    <resource>src\main\webapp\WEB-INF\context-parts\referenceservice.xml</resource>
+    <resource>src\main\webapp\WEB-INF\context.xml</resource>
+    <resource>src\main\webapp\WEB-INF\platform.plugin.defaultplugins.text</resource>
+    <resource>src\main\webapp\WEB-INF\platform.plugin.repositories.text</resource>
+    <resource>src\main\webapp\WEB-INF\platform.properties</resource>
+    <resource>src\main\webapp\WEB-INF\platform.raven.repositories.text</resource>
+    <resource>src\main\webapp\WEB-INF\platform.raven.systemartifacts.text</resource>
+    <resource>src\main\webapp\WEB-INF\web.xml</resource>
+  </resources>
+</archetype>

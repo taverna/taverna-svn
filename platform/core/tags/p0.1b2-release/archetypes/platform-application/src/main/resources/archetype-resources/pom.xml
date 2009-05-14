@@ -1,0 +1,118 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>${groupId}</groupId>
+	<artifactId>${artifactId}</artifactId>
+	<version>${version}</version>
+
+	<name>Example application showing use of the T2 platform</name>
+
+	<description>Command line driven T2 platform application.</description>
+
+	<!--
+		Property to determine the main class launched by the shell scripts
+	-->
+	<properties>
+		<app.mainClass>${package}.Application</app.mainClass>
+	</properties>
+
+	<repositories>
+		<repository>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+		</repository>
+		<repository>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>mygrid-mirror</id>
+			<name>myGrid maven proxy server</name>
+			<url>http://www.mygrid.org.uk/maven/repo1</url>
+		</repository>
+	</repositories>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.0.2</version>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2-beta-2</version>
+				<configuration>
+					<finalName>${artifactId}</finalName>
+					<appendAssemblyId>true</appendAssemblyId>
+					<attach>true</attach>
+					<ignoreDirFormatExtensions>true</ignoreDirFormatExtensions>
+					<outputDirectory>${symbol_dollar}{project.build.directory}</outputDirectory>
+					<includeBaseDirectory>false</includeBaseDirectory>
+					<descriptors>
+						<descriptor>src/main/assembly/deps.xml</descriptor>
+						<descriptor>src/main/assembly/appjar.xml</descriptor>
+						<descriptor>src/main/assembly/app.xml</descriptor>
+						<!-- Add more descriptor elements here -->
+					</descriptors>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<!--
+			Depend on platform-taverna-api to pull in the platform artifacts
+		-->
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>platform-taverna-api</artifactId>
+			<version>p0.1b2</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-web</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.15</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.sun.jmx</groupId>
+					<artifactId>jmxri</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jdmk</groupId>
+					<artifactId>jmxtools</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.jms</groupId>
+					<artifactId>jms</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.mail</groupId>
+					<artifactId>mail</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+	</dependencies>
+
+</project>

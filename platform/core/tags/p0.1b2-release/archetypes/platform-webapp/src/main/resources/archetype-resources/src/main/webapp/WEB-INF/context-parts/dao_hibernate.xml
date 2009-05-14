@@ -1,0 +1,102 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="UTF-8"?>
+
+	<!--
+		Dao implementations backed by full hibernate transaction manager
+		support
+	-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:raven="http://taverna.sf.net/schema/artifact-support-0.2"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-2.5.xsd
+   	http://taverna.sf.net/schema/artifact-support-0.2 
+	http://taverna.sf.net/schema/artifact-support/artifact-support-0.2.xsd">
+
+	<!-- Import the hibernate properties -->
+	<import resource="hibernateprops_hsqldb.xml" />
+
+	<!-- An SPI-enabled hibernate session factory -->
+	<bean id="t2.data.orm.h3.sessionFactory"
+		class="net.sf.taverna.t2.platform.spring.orm.hibernate3.SpiRegistryAwareLocalSessionFactoryBean">
+		<property name="dataSource">
+			<ref bean="t2.data.jdbc.datasource" />
+		</property>
+		<property name="hibernateProperties">
+			<ref bean="t2.data.orm.h3.properties" />
+		</property>
+		<property name="lobHandler">
+			<bean class="org.springframework.jdbc.support.lob.DefaultLobHandler" />
+		</property>
+		<!--
+			Need to map the abstract superclass for the SPI first, SPI classes
+		-->
+		<!--
+			are subclasses of this and hibernate can be picky about the order
+		-->
+		<property name="mappingResources">
+			<list>
+				<value>
+					net/sf/taverna/t2/reference/AbstractExternalReference.hbm.xml
+				</value>
+			</list>
+		</property>
+		<!--
+			SPI enabled session, uses the linked SPI registry or registries
+		-->
+		<!--
+			to gather Class definitions and uses the slightly patched hibernate
+		-->
+		<!--
+			to ensure that raven is used to fetch these back when required
+		-->
+		<property name="spiRegistries">
+			<list>
+				<!-- SPI used by the raven-aware hibernate session factory bean -->
+				<!-- This *must* go before the external reference SPI bean or   -->
+				<!-- those beans won't find the mapping for their superclasses  -->
+				<raven:spi spiClass="net.sf.taverna.t2.reference.h3.HibernateMappedEntity"
+					pluginManager="platform.pluginManager" />
+				<!-- SPI used by the raven-aware hibernate session factory bean -->
+				<raven:spi spiClass="net.sf.taverna.t2.reference.ExternalReferenceSPI"
+					pluginManager="platform.pluginManager" />
+			</list>
+		</property>
+		<property name="preloadRegistries">
+			<list>
+				<raven:spi spiClass="net.sf.taverna.t2.reference.h3.HibernateComponentClass"
+					pluginManager="platform.pluginManager" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="t2.data.dao.referenceSetDao"
+		raven:artifact="net.sf.taverna.t2:reference-impl:${symbol_dollar}{t2core.reference.version}"
+		raven:repository="platform.raven.repository"
+		class="net.sf.taverna.t2.reference.impl.HibernateReferenceSetDao">
+		<property name="sessionFactory">
+			<ref local="t2.data.orm.h3.sessionFactory" />
+		</property>
+	</bean>
+
+	<bean id="t2.data.dao.errorDocumentDao"
+		raven:artifact="net.sf.taverna.t2:reference-impl:${symbol_dollar}{t2core.reference.version}"
+		raven:repository="platform.raven.repository"
+		class="net.sf.taverna.t2.reference.impl.HibernateErrorDocumentDao">
+		<property name="sessionFactory">
+			<ref local="t2.data.orm.h3.sessionFactory" />
+		</property>
+	</bean>
+
+	<bean id="t2.data.dao.listDao"
+		raven:artifact="net.sf.taverna.t2:reference-impl:${symbol_dollar}{t2core.reference.version}"
+		raven:repository="platform.raven.repository" class="net.sf.taverna.t2.reference.impl.HibernateListDao">
+		<property name="sessionFactory">
+			<ref local="t2.data.orm.h3.sessionFactory" />
+		</property>
+	</bean>
+
+</beans>

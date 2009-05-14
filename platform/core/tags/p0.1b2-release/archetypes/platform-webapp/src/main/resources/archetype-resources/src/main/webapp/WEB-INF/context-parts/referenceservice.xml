@@ -1,0 +1,50 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:raven="http://taverna.sf.net/schema/artifact-support-0.2"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd 
+	http://taverna.sf.net/schema/artifact-support-0.2 
+	http://taverna.sf.net/schema/artifact-support/artifact-support-0.2.xsd">
+
+	<!-- Reference service bean -->
+	<bean id="t2.data.referenceService"
+		raven:artifact="net.sf.taverna.t2:reference-impl:${symbol_dollar}{t2core.reference.version}"
+		raven:repository="platform.raven.repository"
+		class="net.sf.taverna.t2.reference.impl.ReferenceServiceImpl">
+		<property name="referenceSetService">
+			<ref bean="t2.data.service.referenceSetService" />
+		</property>
+		<property name="listService">
+			<ref bean="t2.data.service.listService" />
+		</property>
+		<property name="errorDocumentService">
+			<ref bean="t2.data.service.errorDocumentService" />
+		</property>
+		<property name="converterRegistry">
+			<bean
+				class="net.sf.taverna.t2.platform.spring.InstanceRegistryFactoryBean">
+				<property name="spiRegistry">
+					<raven:spi
+						spiClass="net.sf.taverna.t2.reference.ValueToReferenceConverterSPI"
+						pluginManager="platform.pluginManager" />
+				</property>
+			</bean>
+		</property>
+		<property name="valueBuilderRegistry">
+			<bean
+				class="net.sf.taverna.t2.platform.spring.InstanceRegistryFactoryBean">
+				<property name="spiRegistry">
+					<raven:spi
+						spiClass="net.sf.taverna.t2.reference.StreamToValueConverterSPI"
+						pluginManager="platform.pluginManager" />
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+</beans>

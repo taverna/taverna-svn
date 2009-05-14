@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>core</artifactId>
+		<version>p0.1b2</version>
+	</parent>
+	<groupId>net.sf.taverna.t2</groupId>
+	<artifactId>workflowmodel-api</artifactId>
+	<name>Taverna 2 Workflow Model API</name>
+	<description>
+		Core workflow object model for Taverna 2 workflows. Depends on
+		the data layer but nothing else, intended as lightweight
+		platform for applications using Taverna APIs as well as the core
+		for the new enactor and model.
+	</description>
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>reference-api</artifactId>
+			<version>${t2.core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>

@@ -1,0 +1,1 @@
+java -Dplatform.home=`pwd`/platform -cp ${artifactId}-code.jar:${artifactId}-dependencies.jar:conf ${app.mainClass}

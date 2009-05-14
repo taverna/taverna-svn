@@ -1,0 +1,23 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<assembly>
+	<id>code</id>
+	<formats>
+		<format>jar</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<fileSets>
+		<fileSet>
+			<excludes>
+				<exclude>context-parts/**</exclude>
+				<exclude>context.xml</exclude>
+				<exclude>plugins/**</exclude>
+				<exclude>*.properties</exclude>
+				<exclude>platform.*</exclude>
+			</excludes>
+			<directory>target/classes</directory>
+			<outputDirectory></outputDirectory>
+		</fileSet>
+	</fileSets>
+</assembly>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<artifactId>parent</artifactId>
+		<groupId>net.sf.taverna.t2.archetypes
+		</groupId>
+		<version>p0.1b2</version>
+	</parent>
+
+	<groupId>net.sf.taverna.t2.archetypes
+	</groupId>
+	<artifactId>platform-webapp</artifactId>
+	<packaging>maven-archetype</packaging>
+
+	<name>Platform web application archetype</name>
+
+</project>
