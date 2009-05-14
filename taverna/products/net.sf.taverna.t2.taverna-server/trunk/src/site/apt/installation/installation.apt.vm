@@ -4,7 +4,7 @@
  David Withers
  ---
 
-Installing <$project.name>
+Installing $project.name
 
  <$project.name> is distributed as a web archive (WAR) file that is deployed on a Java Servlet Container. If you don't already have a
 Servlet Container we recommend {{{http://tomcat.apache.org/download-60.cgi}Apache Tomcat 6}}.

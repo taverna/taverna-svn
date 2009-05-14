@@ -112,6 +112,7 @@
 				<version>1.2</version>
 				<executions>
 					<execution>
+					    <id>package</id>
 						<phase>process-classes</phase>
 						<goals>
 							<goal>generate</goal>
@@ -120,8 +121,27 @@
 							<destdir>${project.build.directory}/${project.build.finalName}</destdir>
 							<schemas>
 								<schema>
-									<namespace>http://taverna.org.uk/schema/t2server</namespace>
-									<file>t2server.xsd</file>
+									<namespace>http://taverna.org.uk/schema/taverna-server</namespace>
+									<file>taverna-server.xsd</file>
+								</schema>
+							</schemas>
+							<includes>
+								<include>**/net/sf/taverna/t2/service/webservice/resource/*.java</include>
+							</includes>
+						</configuration>
+					</execution>
+					<execution>
+					    <id>site</id>
+						<phase>site</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<destdir>${project.reporting.outputDirectory}</destdir>
+							<schemas>
+								<schema>
+									<namespace>http://taverna.org.uk/schema/taverna-server</namespace>
+									<file>taverna-server.xsd</file>
 								</schema>
 							</schemas>
 							<includes>

@@ -38,4 +38,7 @@
     <src>images/mygrid.png</src>
     <alt>myGrid Logo</alt>
   </bannerRight>
+  <poweredBy>
+    <logo name="Jira" href="http://www.atlassian.com/c/NPOS/10160" img="images/jira_button_120wx60h.gif"/>
+  </poweredBy>
 </project>

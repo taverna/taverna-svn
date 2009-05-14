@@ -4,7 +4,7 @@
  David Withers
  --------------------------
  
-Data Storage Type
+Data Storage Configuration
 
  <${project.name}> can be configured to store data in a database or in-memory.
  
