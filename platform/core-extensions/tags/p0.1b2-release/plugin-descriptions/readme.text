@@ -1,0 +1,4 @@
+You should be able to copy the contents of this directory to any visible 
+location to create a plug-in repository, this is the directory structure 
+the plug-in description parser expects to see when searching for plug-in 
+descriptions.

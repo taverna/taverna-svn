@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Plug-in definition for the Biomart activity -->
+<plugin xmlns="http://taverna.sf.net/pluginDescription"
+	xmlns:author="http://taverna.sf.net/authorDescription">
+
+	<name>Biomart Activity</name>
+	<description>
+		An activity plug-in providing access to Biomart services
+	</description>
+
+	<id>plugin:net.sf.taverna.t2.activity:biomart:0.0.4</id>
+
+	<quality>beta</quality>
+
+	<author>
+		<author:name>Alex Nenadic</author:name>
+		<author:affiliation>myGrid</author:affiliation>
+	</author>
+
+	<tag>biomart</tag>
+	<tag>webservice</tag>
+
+	<!-- This really should be a Biomart specific link here -->
+	<url>http://www.mygrid.org.uk</url>
+
+	<link>
+		<linkdescription>myGrid Project Homepage</linkdescription>
+		<link>http://www.mygrid.org.uk</link>
+	</link>
+	<link>
+		<linkdescription>
+			Open Middleware Infrastructure Institute UK
+		</linkdescription>
+		<link>http://omii.ac.uk</link>
+	</link>
+	
+	<artifact>net.sf.taverna.t2.activities:biomart-activity:p0.1b2</artifact>
+	<artifact>org.biomart:martservice:0.7.2-SNAPSHOT</artifact>
+	<artifact>jdom:jdom:1.0</artifact>
+	<artifact>org.biomart:martj:0.6</artifact>
+	<artifact>commons-codec:commons-codec:1.2</artifact>
+	<artifact>commons-httpclient:commons-httpclient:3.0</artifact>
+	<artifact>commons-io:commons-io:1.3.1</artifact>
+
+	<target>Taverna2</target>
+
+</plugin>

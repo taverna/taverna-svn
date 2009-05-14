@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>core-extensions</artifactId>
+		<version>p0.1b2</version>
+	</parent>
+	<groupId>net.sf.taverna.t2.dispatchlayers</groupId>
+	<artifactId>core-dispatchlayers</artifactId>
+	<name>Taverna 2 Core Dispatch Layers</name>
+	<description>
+		Implementations of DispatchLayer provided as part of the
+		standard Taverna2 workflow system
+	</description>
+	<dependencies>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>workflowmodel-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>reference-api</artifactId>
+		</dependency>
+	</dependencies>
+</project>
