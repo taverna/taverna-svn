@@ -11,34 +11,28 @@ Download $project.name $project.version
  <${project.name}> is distributed as a Web ARchive (WAR) file under the {{{${license.url}}$license.name}}
 
 #set($repository = "http://www.mygrid.org.uk/maven/repository")
-#set($snapshotrepository = "http://www.mygrid.org.uk/maven/snapshot-repository")
-#set($file = "$project.build.finalName.$project.packaging")
 #set($group = $project.groupId.replace('.','/'))
 #set($version = $project.version)
-#set($previousVersions = ["0.1.0"])
+#set($file = "${project.build.finalName}-$version.$project.packaging")
+#set($path = "$repository/$group/$project.artifactId/$version/$file")
  
 *-----------------+-----------------+-----------------------------+-------------------------------+
 ||Current Version ||Download        ||md5 Checksum                ||sha1 Checksum                 |
 *-----------------+-----------------+-----------------------------+-------------------------------+
-#if($version.endsWith("SNAPSHOT"))
- #set($path = "$snapshotrepository/$group/$project.artifactId/$version/$file")
-#else
- #set($path = "$repository/$group/$project.artifactId/$version/$file")
-#end
 |$version         |{{{$path}$file}} |{{{${path}.md5}${file}.md5}} |{{{${path}.sha1}${file}.sha1}} |
 *-----------------+-----------------+-----------------------------+-------------------------------+
 
 *Previous versions
 
+#set($previousVersions = ["0.1.0"])
+
 *---------+-----------------+-----------------------------+-------------------------------+
 ||Version ||Download        ||md5 Checksum                ||sha1 Checksum                 |
 *---------+-----------------+-----------------------------+-------------------------------+
 #foreach($version in $previousVersions)
-#if($version.endsWith("SNAPSHOT"))
-#set($path = "$snapshotrepository/$group/$project.artifactId/$version/$file")
-#else
+#set($file = "${project.build.finalName}-$version.$project.packaging")
 #set($path = "$repository/$group/$project.artifactId/$version/$file")
-#end
 |$version |{{{$path}$file}} |{{{${path}.md5}${file}.md5}} |{{{${path}.sha1}${file}.sha1}} |
 *---------+-----------------+-----------------------------+-------------------------------+
 #end
+

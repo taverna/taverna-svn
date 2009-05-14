@@ -427,7 +427,7 @@
 		<site>
 			<id>taverna-server-site</id>
 			<name>Taverna Server Project Site</name>
-			<url>scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/dev/taverna-service</url>
+			<url>scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/dev/taverna-server</url>
 		</site>
 	</distributionManagement>
 	<reporting>
