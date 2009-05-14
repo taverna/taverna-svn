@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sf.taverna.t2.infrastructure</groupId>
+		<artifactId>platform</artifactId>
+		<version>p0.1b2</version>
+	</parent>
+	<groupId>net.sf.taverna.t2.infrastructure</groupId>
+	<artifactId>platform-core</artifactId>
+	<name>Taverna 2 Platform Core</name>
+	<description>
+		Core classes for the t2 platform support module
+	</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.1.9</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+		</dependency>
+		<!--  Exported dependency for compatibility only -->
+		<dependency>
+			<groupId>net.sf.taverna.t2.lang</groupId>
+			<artifactId>uibuilder</artifactId>
+			<version>0.5-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+</project>

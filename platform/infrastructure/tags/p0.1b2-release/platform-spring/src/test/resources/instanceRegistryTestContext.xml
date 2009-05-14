@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--
+		Copyright (C) 2007-2009 The University of Manchester Modifications to
+		the initial code base are copyright of their respective authors, or
+		their employers as appropriate. This program is free software; you can
+		redistribute it and/or modify it under the terms of the GNU Lesser
+		General Public License as published by the Free Software Foundation;
+		either version 2.1 of the License, or (at your option) any later
+		version. This program is distributed in the hope that it will be
+		useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+		Lesser General Public License for more details. You should have
+		received a copy of the GNU Lesser General Public License along with
+		this program; if not, write to the Free Software Foundation, Inc., 59
+		Temple Place, Suite 330, Boston, MA 02111-1307
+	-->
+
+
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:platform="http://taverna.sf.net/schema/artifact-support-0.2"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd 
+	http://taverna.sf.net/schema/artifact-support-0.2 
+	http://taverna.sf.net/schema/artifact-support/artifact-support-0.2.xsd">
+
+
+	<!-- * Plug-in manager configuration below this point * -->
+
+
+	<!-- Define the base file path for the plugin manager  -->
+	<!-- and related sub-components, system properties can -->
+	<!-- be interpolated into the filePath property value  -->
+	<bean id="baseFilePath" class="net.sf.taverna.t2.platform.spring.FileFactoryBean">
+		<property name="filePath" value="${java.io.tmpdir}/t2infrastructuretest/plugin-manager" />
+	</bean>
+
+
+	<!--
+		Plug-in manager configuration, you may want to add default plug-ins to
+		load on first startup here, in which case you will also need to add
+		any plug-in description repositories where they'd be located
+	-->
+	<pluginManager id="pluginManager" base="baseFilePath"
+		downloadManager="downloadManager" jarManager="jarManager"
+		pluginParser="pluginDescriptionParser" raven="raven"
+		xmlns="http://taverna.sf.net/schema/artifact-support-0.2">
+
+		<!-- Add default plugins here, i.e. :                 -->
+		<!-- <defaultPlugins>                                 -->
+		<!--	<plugin>plugin:pgrp:pid:pversion</plugin>     -->
+		<!--    ....                                          -->
+		<!-- </defaultPlugins>                                -->
+
+
+		<repositories>
+			<url>file:${java.io.tmpdir}/t2infrastructuretest/plugins</url>
+		</repositories>
+
+		<!-- These sections can be skipped if you don't need  -->
+		<!-- defaults, the repository locations are not used  -->
+		<!-- after this default initialization phase          -->
+
+	</pluginManager>
+
+	<!-- Quick test for an SPI registry creation, this isn't actually -->
+	<!-- an SPI so it will never discover anything (and besides, the  -->
+	<!-- referenced plug-in manager is empty anyway so...)            -->
+	<platform:spi id="testSPI"
+		spiClass="net.sf.taverna.t2.platform.plugin.PluginManager"
+		pluginManager="pluginManager" />
+
+	<!--
+		Raven repository configuration, you may need to change the set of
+	-->
+	<!--
+		system artifacts and default repositories depending on your
+		application
+	-->
+	<raven xmlns="http://taverna.sf.net/schema/artifact-support-0.2"
+		id="raven" jarManager="jarManager" pomParser="pomParser">
+		<systemArtifacts>
+			<artifact>
+				net.sf.taverna.t2.infrastructure:platform-core:0.1-SNAPSHOT
+			</artifact>
+			<artifact>
+				net.sf.taverna.t2.infrastructure:platform-spring:0.1-SNAPSHOT
+			</artifact>
+			<artifact>org.springframework:spring-core:2.5
+			</artifact>
+			<artifact>org.springframework:spring-beans:2.5
+			</artifact>
+			<artifact>org.springframework:spring-context:2.5
+			</artifact>
+			<artifact>org.springframework:spring-aop:2.5
+			</artifact>
+			<artifact>aopalliance:aopalliance:1.0
+			</artifact>
+		</systemArtifacts>
+		<repositories>
+			<url>http://www.mygrid.org.uk/maven/repository/
+			</url>
+			<url>http://moby.ucalgary.ca/moby_maven/
+			</url>
+			<url>http://mirrors.sunsite.dk/maven2/
+			</url>
+			<url>http://mirrors.ibiblio.org/maven2/
+			</url>
+			<url>http://bioinf.ncl.ac.uk/mirror/maven/repository/
+			</url>
+			<url>http://mirror.omii.ac.uk/maven/repository/
+			</url>
+			<url>
+				http://www.mygrid.org.uk/maven/snapshot-repository/
+			</url>
+		</repositories>
+	</raven>
+
+	<!-- Lower level sub-components below this line, probably don't -->
+	<!-- to change anything here unless you're working with these   -->
+	<!-- sub-components directly -->
+
+	<!-- Download manager bean -->
+	<bean id="downloadManager"
+		class="net.sf.taverna.t2.platform.util.download.impl.DownloadManagerImpl">
+		<constructor-arg>
+			<!-- Defines number of download worker threads -->
+			<value>2</value>
+		</constructor-arg>
+	</bean>
+
+	<!-- POM.xml parser bean -->
+	<bean id="pomParser" class="net.sf.taverna.t2.platform.pom.impl.PomParserImpl">
+		<property name="downloadManager">
+			<ref local="downloadManager" />
+		</property>
+		<property name="fileCache">
+			<ref local="baseFilePath" />
+		</property>
+	</bean>
+
+	<!-- plugin xml parser -->
+	<bean id="pluginDescriptionParser"
+		class="net.sf.taverna.t2.platform.plugin.impl.PluginDescriptionParserImpl">
+		<property name="baseLocation">
+			<ref local="baseFilePath" />
+		</property>
+		<property name="downloadManager">
+			<ref local="downloadManager" />
+		</property>
+	</bean>
+
+	<!-- Jar manager bean -->
+	<bean id="jarManager" class="net.sf.taverna.t2.platform.pom.impl.JarManagerImpl">
+		<property name="downloadManager">
+			<ref local="downloadManager" />
+		</property>
+		<property name="fileCache">
+			<ref local="baseFilePath" />
+		</property>
+	</bean>
+
+	<bean id="dummyRegistry"
+		class="net.sf.taverna.t2.platform.spring.InstanceRegistryFactoryBean">
+		<property name="spiRegistry">
+			<platform:spi spiClass="net.sf.taverna.t2.platform.spring.test.DummyInterface"
+				pluginManager="pluginManager" />
+		</property>
+	</bean>
+
+	<bean id="dummyRegistryInit"
+		class="net.sf.taverna.t2.platform.spring.InstanceRegistryFactoryBean">
+		<property name="spiRegistry">
+			<platform:spi spiClass="net.sf.taverna.t2.platform.spring.test.DummyInterface"
+				pluginManager="pluginManager" />
+		</property>
+		<property name="initializeBeans" value="true" />
+	</bean>
+
+	<bean id="dummyBean" class="net.sf.taverna.t2.platform.spring.test.DummyBean">
+		<property name="fish" value="The fish" />
+	</bean>
+
+
+</beans>
