@@ -6,6 +6,7 @@ package net.sf.taverna.t2.lineageService.analysis.test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -16,6 +17,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.xml.bind.JAXBException;
 
 import net.sf.taverna.t2.lineageService.capture.test.testFiles;
 import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResult;
@@ -31,6 +34,7 @@ import net.sf.taverna.t2.provenance.lineageservice.utils.VarBinding;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.tupeloproject.kernel.OperatorException;
 
 /**
  * @author paolo
@@ -378,9 +382,12 @@ public class ProvenanceAnalysisTest {
 	 * @throws IllegalAccessException
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
+	 * @throws JAXBException 
+	 * @throws IOException 
+	 * @throws OperatorException 
 	 */
 	@Test
-	public final void testComputeLineagePaths() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public final void testComputeLineagePaths() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, OperatorException, IOException, JAXBException {
 
 		// set return outputs pref
 		pa.setReturnOutputs(isReturnOutputs());
@@ -413,6 +420,19 @@ public class ProvenanceAnalysisTest {
 					}				
 				}
 			}
+			
+			// convert OPM RDF/XML to OPM XML
+			System.out.println("converting RDF OPM graph to XML...");
+			pa.OPMRdf2Xml();
+			System.out.println("done");
+			
+			// create a dot file from the RDF/XML  (going through a converter)
+			// NEEDS FIXING
+			System.out.println("creating dot file...");
+			String  dotFile = pa.OPMRdf2Dot();
+			System.out.println("done - file is "+dotFile);
+
+			
 			assertTrue("lineage tree should have been printed above", true);
 		}
 	}
