@@ -216,9 +216,9 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 					.renderIdentifier(entry.getValue(), byte[].class,
 							invocationContext);
 
-					System.out.println("****\ndata in provenance event: "
-							+ entry.getValue() + " --> \n" + renderedData
-							+ "\n *****");
+//					System.out.println("****\ndata in provenance event: "
+//							+ entry.getValue() + " --> \n" + renderedData
+//							+ "\n *****");
 
 					try {
 						pw.addData(entry.getValue().toString(), getProvenance()
