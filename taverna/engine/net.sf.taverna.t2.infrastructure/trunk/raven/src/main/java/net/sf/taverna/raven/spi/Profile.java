@@ -24,8 +24,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -92,6 +94,8 @@ public class Profile extends AbstractArtifactFilter {
 
 	private String version;
 	private String name;
+
+	private Map<List<Object>, Artifact> discoverArtifactCache = new Hashtable<List<Object>, Artifact>();
 
 	public Profile(boolean strict) {
 		this.strict = strict;
@@ -174,6 +178,7 @@ public class Profile extends AbstractArtifactFilter {
 	public void addArtifact(Artifact artifact) {
 		artifacts.add(artifact);
 		fireFilterChanged(this);
+		discoverArtifactCache.clear();
 	}
 
 	/**
@@ -265,7 +270,12 @@ public class Profile extends AbstractArtifactFilter {
 	 */
 	public Artifact discoverArtifact(String groupId, String artifactId,
 			Repository repository) {
-		Artifact result = null;
+		List<Object> cacheKey = Arrays.asList(groupId, artifactId, repository);
+		Artifact result = discoverArtifactCache.get(cacheKey);
+		if (result != null) {
+			return result;
+		}
+		
 		List<Artifact> matches = new ArrayList<Artifact>();
 
 		// The profile will decide if it states the artifact directly
@@ -324,6 +334,9 @@ public class Profile extends AbstractArtifactFilter {
 			VersionComparator.sort(matches);
 			// return LAST element (ie. highest version)
 			result = matches.get(matches.size() - 1);
+		}
+		if (result != null) {
+			discoverArtifactCache.put(cacheKey, result);
 		}
 		return result;
 	}
@@ -402,6 +415,7 @@ public class Profile extends AbstractArtifactFilter {
 	public void removeArtifact(Artifact artifact) {
 		artifacts.remove(artifact);
 		systemArtifacts.remove(artifacts);
+		discoverArtifactCache.clear();
 		fireFilterChanged(this);
 	}
 

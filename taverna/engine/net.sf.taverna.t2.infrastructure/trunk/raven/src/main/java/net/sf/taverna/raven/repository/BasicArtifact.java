@@ -35,6 +35,10 @@ public class BasicArtifact implements Artifact {
 
 	protected String version;
 
+	private Integer hashCode;
+
+	private String string;
+
 	/**
 	 * Construct a BasicArtifact as a copy of another artifact
 	 * 
@@ -130,12 +134,18 @@ public class BasicArtifact implements Artifact {
 	 */
 	@Override
 	public int hashCode() {
-		return (getArtifactId() + getGroupId() + getVersion()).hashCode();
+		if (hashCode == null) {
+			hashCode = (getArtifactId() + getGroupId() + getVersion()).hashCode();
+		}
+		return hashCode;
 	}
 
 	@Override
 	public String toString() {
-		return getGroupId() + ":" + getArtifactId() + ":" + getVersion();
+		if (string == null) {
+			string = getGroupId() + ":" + getArtifactId() + ":" + getVersion();
+		}
+		return string;
 	}
 
 }
