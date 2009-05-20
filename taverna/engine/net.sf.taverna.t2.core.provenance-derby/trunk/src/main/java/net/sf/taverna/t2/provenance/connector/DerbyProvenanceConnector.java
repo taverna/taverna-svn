@@ -56,8 +56,6 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 	private static Logger logger = Logger
 			.getLogger(DerbyProvenanceConnector.class);
 
-	private static final String createTableData = "CREATE TABLE Data (dataReference VARCHAR(100), wfInstanceID VARCHAR(100), data BLOB)";
-
 	private static final String createTableArc = "CREATE TABLE Arc ("
 			+ "sourceVarNameRef varchar(100) NOT NULL ,"
 			+ "sinkVarNameRef varchar(100) NOT NULL,"
@@ -119,6 +117,13 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 	private static final String createTableWorkflow = "CREATE TABLE Workflow ("
 			+ "wfname varchar(100) NOT NULL," + "parentWFname varchar(100),"
 			+ "PRIMARY KEY  (wfname))";
+	
+	private final String createTableData = "CREATE TABLE  `T2Provenance`.`Data` ("
+		  +"`dataReference` varchar(100) NOT NULL,"
+		  +"`wfInstanceID` varchar(100) NOT NULL,"
+		  +"`data` blob,"
+		  +"PRIMARY KEY  USING BTREE (`dataReference`,`wfInstanceID`);";
+
 
 	private ReferenceService referenceService;
 
