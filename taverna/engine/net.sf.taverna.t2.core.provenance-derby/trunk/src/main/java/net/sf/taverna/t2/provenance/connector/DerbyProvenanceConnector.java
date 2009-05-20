@@ -30,6 +30,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.provenance.connector.configview.DerbyConfigView;
 import net.sf.taverna.t2.provenance.item.ProvenanceItem;
 import net.sf.taverna.t2.provenance.lineageservice.EventProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.Provenance;
@@ -56,6 +57,8 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 	private static Logger logger = Logger
 			.getLogger(DerbyProvenanceConnector.class);
 
+	private static final String createTableData = "CREATE TABLE Data (dataReference VARCHAR(100), wfInstanceID VARCHAR(100), data BLOB)";
+
 	private static final String createTableArc = "CREATE TABLE Arc ("
 			+ "sourceVarNameRef varchar(100) NOT NULL ,"
 			+ "sinkVarNameRef varchar(100) NOT NULL,"
@@ -70,7 +73,7 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			+ "wfInstanceRef varchar(100) NOT NULL,"
 			+ "PNameRef varchar(100) NOT NULL,"
 			+ "varNameRef varchar(100) NOT NULL,"
-			+ "iteration char(10) NOT NULL default '',"
+			+ "iteration varchar(2000) NOT NULL default '',"
 			+ " PRIMARY KEY (collID,wfInstanceRef,PNameRef,varNameRef,parentCollIDRef,iteration))";
 
 	private static final String createTableProcBinding = "CREATE TABLE ProcBinding ("
@@ -104,7 +107,7 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			+ "PNameRef varchar(100) NOT NULL,"
 			+ "valueType varchar(50) default NULL,"
 			+ "ref varchar(100) default NULL,"
-			+ "iteration char(10) NOT NULL,"
+			+ "iteration varchar(2000) NOT NULL,"
 			+ "PRIMARY KEY (varNameRef,wfInstanceRef,PNameRef,positionInColl,iteration))";
 	// + " KEY collectionFK (wfInstanceRef,PNameRef,varNameRef,collIDRef))";
 
@@ -117,13 +120,6 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 	private static final String createTableWorkflow = "CREATE TABLE Workflow ("
 			+ "wfname varchar(100) NOT NULL," + "parentWFname varchar(100),"
 			+ "PRIMARY KEY  (wfname))";
-	
-	private final String createTableData = "CREATE TABLE  `T2Provenance`.`Data` ("
-		  +"`dataReference` varchar(100) NOT NULL,"
-		  +"`wfInstanceID` varchar(100) NOT NULL,"
-		  +"`data` blob,"
-		  +"PRIMARY KEY  USING BTREE (`dataReference`,`wfInstanceID`);";
-
 
 	private ReferenceService referenceService;
 
@@ -320,7 +316,7 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 
 	@Override
 	public String toString() {
-		return "Derby Provenance Connector";
+		return "Derby DB Connector";
 	}
 
 	public InvocationContext getInvocationContext() {
@@ -334,6 +330,10 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 
 	@Override
 	public void init() {
+		String dbURL = getDbURL();
+		if (dbURL == null) {
+			setDbURL(DerbyConfigView.getDBURL());
+		}
 		createDatabase();
 		ProvenanceWriter writer = new DerbyProvenanceWriter();
 		writer.setDbURL(getDbURL());
