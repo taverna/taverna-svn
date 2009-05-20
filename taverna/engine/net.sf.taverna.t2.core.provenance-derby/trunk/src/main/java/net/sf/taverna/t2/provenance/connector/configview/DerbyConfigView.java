@@ -75,7 +75,7 @@ public class DerbyConfigView extends ContextualView {
 
 	}
 
-	public String getDBURL() {
+	public static String getDBURL() {
 
 		File applicationHomeDir = ApplicationRuntime.getInstance()
 				.getApplicationHomeDir();
