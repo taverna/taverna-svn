@@ -64,8 +64,9 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
 					q.append(" and ");
 				}
 				// FIXME there may be more numerical inputs than inputOrOutput,
-				// needs checking
-				if (entry.getKey().equalsIgnoreCase("V.inputOrOutput")) {
+				// needs checking - 21.5.09 there are - this kind of custom where clause is very dangerous and 
+				//should be refactored at some point
+				if (entry.getKey().equals("V.inputOrOutput") || entry.getKey().equals("VB.positionInColl")) {
 					q.append(" " + entry.getKey() + " = " + entry.getValue());
 				} else {
 					q.append(" " + entry.getKey() + " = \'" + entry.getValue()
