@@ -309,22 +309,7 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 			logger.debug("Returning cached '" + name + "' - " + this);
 		} else {
 			try {
-
-				// Synchronize the call to findClass to avoid TAV-480
-				// java.lang.LinkageError: duplicate class definition
-
-				Object findClassLock;
-				synchronized (findClassLocks) {
-					findClassLock = findClassLocks.get(name);
-					if (findClassLock == null) {
-						findClassLock = new Object();
-						findClassLocks.put(name, findClassLock);
-					}
-				}
-				// One lock per classname per classloader
-				synchronized (findClassLock) {
-					loadedClass = super.findClass(name);
-				}
+				loadedClass = super.findClass(name);
 				logger.debug("Returning found '" + name + "' - " + this);
 			} catch (ClassNotFoundException e) {
 				for (LocalArtifactClassLoader ac : childLoaders) {
@@ -348,10 +333,17 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 				logger.error("Error finding class " + name + " ACL=" + this, e);
 			}
 		}
+		Class<?> foundLoadedClass = findLoadedClass(name);
+		if (foundLoadedClass != null && foundLoadedClass != loadedClass) {
+			logger.error("findLoadedClass(" + name + ") returned different class " 
+					+ foundLoadedClass + " instead");
+			loadedClass = foundLoadedClass;
+		}		
 		if (loadedClass == null) {
 			throw new ClassNotFoundException(name);
 		}
 
+		
 		synchronized (classMap) {
 			if (!classMap.containsKey(name)) {
 				classMap.put(name, loadedClass);
