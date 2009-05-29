@@ -133,6 +133,14 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- all known workflows by name';";
 
 
+	private final String createTableData = "CREATE TABLE  `T2Provenance`.`Data` ("
+	  +"`dataReference` varchar(100) NOT NULL,"
+	  +"`wfInstanceID` varchar(100) NOT NULL,"
+	  +"`data` blob,"
+	  +"PRIMARY KEY  USING BTREE (`dataReference`,`wfInstanceID`)"
+	  +") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='dereferced data -- strings only (includes XMLEncoded beans)';";
+
+	
 	private ReferenceService referenceService;
 
 	private InvocationContext invocationContext;
@@ -147,7 +155,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 //		// clear the DB prior to collecting new provenance
 		if (isClearDB) {
-			System.out.println("clearing DB");
+			logger.info("clearing DB");
 			try {
 				getProvenance().getPw().clearDBStatic();
 				getProvenance().getPw().clearDBDynamic();
@@ -235,8 +243,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 					// rs.getExternalReferences();
 					// externalRefs.
 				} else {
-					System.out
-					.println("input data in provenance event NOT a ReferenceSet: "
+					logger.debug("input data in provenance event NOT a ReferenceSet: "
 							+ entry.getValue());
 				}
 			}
@@ -292,6 +299,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 			stmt.executeUpdate(createTableVarBinding);
 			stmt.executeUpdate(createTableWFInstance);
 			stmt.executeUpdate(createTableWorkflow);
+			stmt.executeUpdate(createTableData);
 
 		} catch (SQLException e) {
 			logger
