@@ -1,0 +1,28 @@
+# Artifacts provided by the platform and which will not be
+# downloaded from a remote repository (you already have them)
+net.sf.taverna.t2:reference-api:p0.1a2
+net.sf.taverna.t2:workflowmodel-api:p0.1a2
+net.sf.taverna.t2:provenanceconnector-api:p0.1a2
+net.sf.taverna.t2.infrastructure:platform-core:p0.1a2
+net.sf.taverna.t2.infrastructure:platform-spring:p0.1a2
+net.sf.taverna.t2:platform-taverna-api:p0.1a2
+org.springframework:spring-beans:2.5.4
+org.springframework:spring-jdbc:2.5.4
+org.springframework:spring-orm:2.5.4
+org.springframework:spring-context:2.5.4
+org.springframework:spring-core:2.5.4
+org.springframework:spring-tx:2.5.4
+org.springframework:spring-web:2.5.4
+cglib:cglib:2.1_3
+geronimo-spec:geronimo-spec-jta:1.0-M1
+aopalliance:aopalliance:1.0
+dom4j:dom4j:1.6.1
+org.hibernate:hibernate:3.2.5.ga.raven
+asm:asm:1.5.3
+commons-logging:commons-logging:1.1.1
+commons-collections:commons-collections:2.1.1
+log4j:log4j:1.2.15
+com.sun.xml.bind:jaxb-impl:2.1.9
+javax.xml.bind:jaxb-api:2.1
+javax.xml.stream:stax-api:1.0-2
+javax.activation:activation:1.1

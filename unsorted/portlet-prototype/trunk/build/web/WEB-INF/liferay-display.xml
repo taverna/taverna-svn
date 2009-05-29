@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE display PUBLIC "-//Liferay//DTD Display 4.0.0//EN" "http://www.liferay.com/dtd/liferay-display_4_0_0.dtd">
+
+<display>
+	<category name="E-Science">
+		<portlet id="Taverna">Taverna</portlet>
+		<portlet id="myexp">myExperiment</portlet>
+		<portlet id="SessionManagerPortlet">SessionManagerPortlet</portlet>
+		<portlet id="user">user</portlet>
+	</category>
+</display>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+    <display-name>Archetype Created Web Application</display-name>
+
+
+	<!-- Don't edit below here without a very good reason! -->
+	<!--
+		Tell spring where the top level application context definition is
+	-->
+	 
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/context.xml</param-value>
+	</context-param>
+	
+	
+	<!--
+		Tell Spring to use the raven-aware version of the web application
+		context, or you won't get the platform to work at all
+	-->
+	 
+	<context-param>
+		<param-name>contextClass</param-name>
+		<param-value>
+			net.sf.taverna.t2.platform.spring.RavenAwareXmlWebApplicationContext
+		</param-value>
+	</context-param>
+	
+	
+	<!--
+		Register a listener, loads the platform when the context is loaded
+	-->
+	 
+    <context-param>
+        <description>Switch off caching. You can remove this parameter or comment it out when this app goes into production.</description>
+        <param-name>jmaki-usecache</param-name>
+        <param-value>false</param-value>
+    </context-param>
+    <listener>
+		<listener-class>
+			org.springframework.web.context.ContextLoaderListener
+		</listener-class>
+	</listener>
+    <servlet>
+        <servlet-name>XmlHttpProxy</servlet-name>
+        <servlet-class>jmaki.xhp.XmlHttpProxyServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>XmlHttpProxy</servlet-name>
+        <url-pattern>/xhp</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+        </welcome-file-list>
+    </web-app>

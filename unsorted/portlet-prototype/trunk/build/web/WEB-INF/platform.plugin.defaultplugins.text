@@ -1,0 +1,11 @@
+# Default plug-in identifiers go here, this is only
+# used the first time a given platform initializes,
+# after which the active plug-in set is cached by the
+# plug-in manager.
+plugin:net.sf.taverna.t2.reference:core:0.0.2
+plugin:net.sf.taverna.t2.dispatch:core:0.0.2
+plugin:net.sf.taverna.t2.activity:wsdl:0.0.2
+plugin:net.sf.taverna.t2.activity:beanshell:0.0.2
+plugin:net.sf.taverna.t2.activity:biomart:0.0.2
+plugin:net.sf.taverna.t2.activity:stringconstant:0.0.2
+plugin:net.sf.taverna.t2.activity:biomoby:0.0.2

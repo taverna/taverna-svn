@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<search query="taverna">
+  <group resource="http://www.myexperiment.org/groups/93" uri="http://www.myexperiment.org/group.xml?id=93">Nottingham_TavernaTraining</group>
+  <group resource="http://www.myexperiment.org/groups/139" uri="http://www.myexperiment.org/group.xml?id=139">Taverna Help</group>
+  <group resource="http://www.myexperiment.org/groups/31" uri="http://www.myexperiment.org/group.xml?id=31">cdk-taverna plugin</group>
+  <group resource="http://www.myexperiment.org/groups/105" uri="http://www.myexperiment.org/group.xml?id=105">CDK-Taverna</group>
+  <group resource="http://www.myexperiment.org/groups/51" uri="http://www.myexperiment.org/group.xml?id=51">myGrid</group>
+  <group resource="http://www.myexperiment.org/groups/69" uri="http://www.myexperiment.org/group.xml?id=69">Taverna 1.7.1 workflow workbench examples</group>
+  <group resource="http://www.myexperiment.org/groups/144" uri="http://www.myexperiment.org/group.xml?id=144">Taverna 1 Tutorial</group>
+  <file resource="http://www.myexperiment.org/files/115" uri="http://www.myexperiment.org/file.xml?id=115">An Introduction to Taverna and myExperiment - Background</file>
+  <group resource="http://www.myexperiment.org/groups/108" uri="http://www.myexperiment.org/group.xml?id=108">NERC Tutorial</group>
+  <group resource="http://www.myexperiment.org/groups/122" uri="http://www.myexperiment.org/group.xml?id=122">NBIC_tutorial</group>
+  <group resource="http://www.myexperiment.org/groups/151" uri="http://www.myexperiment.org/group.xml?id=151">Newcastle MSc.</group>
+  <group resource="http://www.myexperiment.org/groups/59" uri="http://www.myexperiment.org/group.xml?id=59">NBIConWorkflows</group>
+  <group resource="http://www.myexperiment.org/groups/97" uri="http://www.myexperiment.org/group.xml?id=97">NeuroScience Newcastle</group>
+  <group resource="http://www.myexperiment.org/groups/125" uri="http://www.myexperiment.org/group.xml?id=125">Cheminformatics</group>
+  <group resource="http://www.myexperiment.org/groups/63" uri="http://www.myexperiment.org/group.xml?id=63">AstroGrid and the VO</group>
+  <file resource="http://www.myexperiment.org/files/38" uri="http://www.myexperiment.org/file.xml?id=38">An Introduction to Taverna Tutorial</file>
+  <file resource="http://www.myexperiment.org/files/114" uri="http://www.myexperiment.org/file.xml?id=114">A Taverna Users Guide</file>
+  <group resource="http://www.myexperiment.org/groups/98" uri="http://www.myexperiment.org/group.xml?id=98">Taverna 2 beta tester programme</group>
+  <group resource="http://www.myexperiment.org/groups/145" uri="http://www.myexperiment.org/group.xml?id=145">Bio2RDF </group>
+  <group resource="http://www.myexperiment.org/groups/150" uri="http://www.myexperiment.org/group.xml?id=150">OndexServer</group>
+  <file resource="http://www.myexperiment.org/files/26" uri="http://www.myexperiment.org/file.xml?id=26">Taverna tutorial</file>
+  <group resource="http://www.myexperiment.org/groups/87" uri="http://www.myexperiment.org/group.xml?id=87">e-(bio)science tool group</group>
+  <group resource="http://www.myexperiment.org/groups/102" uri="http://www.myexperiment.org/group.xml?id=102">Computational Grid</group>
+  <file resource="http://www.myexperiment.org/files/29" uri="http://www.myexperiment.org/file.xml?id=29">Using Taverna and webservices as tools to revive a database</file>
+  <file resource="http://www.myexperiment.org/files/135" uri="http://www.myexperiment.org/file.xml?id=135">Example Genbank data</file>
+  <file resource="http://www.myexperiment.org/files/136" uri="http://www.myexperiment.org/file.xml?id=136">Example SwissProt Data</file>
+  <group resource="http://www.myexperiment.org/groups/77" uri="http://www.myexperiment.org/group.xml?id=77">MyCIB</group>
+  <file resource="http://www.myexperiment.org/files/25" uri="http://www.myexperiment.org/file.xml?id=25">Taverna tutorial</file>
+  <group resource="http://www.myexperiment.org/groups/65" uri="http://www.myexperiment.org/group.xml?id=65">Bio web service annotation</group>
+  <user resource="http://www.myexperiment.org/users/5" uri="http://www.myexperiment.org/user.xml?id=5">Stian Soiland-Reyes</user>
+  <file resource="http://www.myexperiment.org/files/28" uri="http://www.myexperiment.org/file.xml?id=28">From biologist to web service to Taverna to myExperiment to biologist</file>
+  <user resource="http://www.myexperiment.org/users/622" uri="http://www.myexperiment.org/user.xml?id=622">Wassinki</user>
+  <user resource="http://www.myexperiment.org/users/648" uri="http://www.myexperiment.org/user.xml?id=648">Glatard</user>
+  <user resource="http://www.myexperiment.org/users/2" uri="http://www.myexperiment.org/user.xml?id=2">David Withers</user>
+  <group resource="http://www.myexperiment.org/groups/64" uri="http://www.myexperiment.org/group.xml?id=64">Free/Libre Open Source Software</group>
+  <user resource="http://www.myexperiment.org/users/118" uri="http://www.myexperiment.org/user.xml?id=118">Mark Finlayson</user>
+  <user resource="http://www.myexperiment.org/users/297" uri="http://www.myexperiment.org/user.xml?id=297">Tomoinn</user>
+  <user resource="http://www.myexperiment.org/users/504" uri="http://www.myexperiment.org/user.xml?id=504">Taverna78</user>
+  <file resource="http://www.myexperiment.org/files/148" uri="http://www.myexperiment.org/file.xml?id=148">Installing java certificates for services using SSL</file>
+  <user resource="http://www.myexperiment.org/users/624" uri="http://www.myexperiment.org/user.xml?id=624">Tabma</user>
+  <user resource="http://www.myexperiment.org/users/1214" uri="http://www.myexperiment.org/user.xml?id=1214">Thomasku</user>
+  <user resource="http://www.myexperiment.org/users/13" uri="http://www.myexperiment.org/user.xml?id=13">Katy Wolstencroft</user>
+  <user resource="http://www.myexperiment.org/users/30" uri="http://www.myexperiment.org/user.xml?id=30">Alan Williams</user>
+  <user resource="http://www.myexperiment.org/users/99" uri="http://www.myexperiment.org/user.xml?id=99">Thomas Kuhn</user>
+  <user resource="http://www.myexperiment.org/users/19" uri="http://www.myexperiment.org/user.xml?id=19">Morris Swertz</user>
+  <user resource="http://www.myexperiment.org/users/785" uri="http://www.myexperiment.org/user.xml?id=785">Alexm</user>
+  <user resource="http://www.myexperiment.org/users/62" uri="http://www.myexperiment.org/user.xml?id=62">Franck Tanoh</user>
+  <user resource="http://www.myexperiment.org/users/171" uri="http://www.myexperiment.org/user.xml?id=171">Tony Linde</user>
+  <user resource="http://www.myexperiment.org/users/70" uri="http://www.myexperiment.org/user.xml?id=70">Jiten Bhagat</user>
+  <user resource="http://www.myexperiment.org/users/16" uri="http://www.myexperiment.org/user.xml?id=16">David De Roure</user>
+  <user resource="http://www.myexperiment.org/users/621" uri="http://www.myexperiment.org/user.xml?id=621">Pieter Neerincx</user>
+  <user resource="http://www.myexperiment.org/users/542" uri="http://www.myexperiment.org/user.xml?id=542">Jmboer</user>
+  <workflow resource="http://www.myexperiment.org/workflows/562" uri="http://www.myexperiment.org/workflow.xml?id=562">firstwf</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/505" uri="http://www.myexperiment.org/workflow.xml?id=505">somar</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/358" uri="http://www.myexperiment.org/workflow.xml?id=358">taverna PJ exc5</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/69" uri="http://www.myexperiment.org/workflow.xml?id=69">3</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/279" uri="http://www.myexperiment.org/workflow.xml?id=279">remove_nulls.xml</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/286" uri="http://www.myexperiment.org/workflow.xml?id=286">maxdBrowse.xml</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/315" uri="http://www.myexperiment.org/workflow.xml?id=315">maxdBrowse_strings.xml</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/321" uri="http://www.myexperiment.org/workflow.xml?id=321">interpro_scan_3.xml</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/323" uri="http://www.myexperiment.org/workflow.xml?id=323">interpro_scan_2.xml</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/326" uri="http://www.myexperiment.org/workflow.xml?id=326">genomic_sequence.xml</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/659" uri="http://www.myexperiment.org/workflow.xml?id=659">Bio2RDF: CPath describe interaction</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/661" uri="http://www.myexperiment.org/workflow.xml?id=661">Bio2RDF: CPath search in taxon</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/631" uri="http://www.myexperiment.org/workflow.xml?id=631">Run an XMPP cloud service.</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/66" uri="http://www.myexperiment.org/workflow.xml?id=66">Find address entry</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/83" uri="http://www.myexperiment.org/workflow.xml?id=83">couple</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/171" uri="http://www.myexperiment.org/workflow.xml?id=171">SannaWorkflow</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/179" uri="http://www.myexperiment.org/workflow.xml?id=179">blast_test</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/194" uri="http://www.myexperiment.org/workflow.xml?id=194">dgm_ex6</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/252" uri="http://www.myexperiment.org/workflow.xml?id=252">maxdBrowse_upreg.xml</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/259" uri="http://www.myexperiment.org/workflow.xml?id=259">blast_simplifier.xml</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/260" uri="http://www.myexperiment.org/workflow.xml?id=260">add_ncbi_to_string.xml</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/264" uri="http://www.myexperiment.org/workflow.xml?id=264">geneHunt.xml</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/265" uri="http://www.myexperiment.org/workflow.xml?id=265">ensembl_gene_info.xml</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/270" uri="http://www.myexperiment.org/workflow.xml?id=270">gene_ontology_analysis.xml</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/277" uri="http://www.myexperiment.org/workflow.xml?id=277">text_mining.xml</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/280" uri="http://www.myexperiment.org/workflow.xml?id=280">linking.xml</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/291" uri="http://www.myexperiment.org/workflow.xml?id=291">uniprot_search.xml</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/292" uri="http://www.myexperiment.org/workflow.xml?id=292">interpro_scan.xml</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/305" uri="http://www.myexperiment.org/workflow.xml?id=305">bind-idsearch.xml</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/310" uri="http://www.myexperiment.org/workflow.xml?id=310">protein_protein_interactions.xml</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/314" uri="http://www.myexperiment.org/workflow.xml?id=314">stringList.xml</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/316" uri="http://www.myexperiment.org/workflow.xml?id=316">getgenesbyspecies.xml</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/325" uri="http://www.myexperiment.org/workflow.xml?id=325">linking1.xml</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/328" uri="http://www.myexperiment.org/workflow.xml?id=328">protein2dna.xml</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/330" uri="http://www.myexperiment.org/workflow.xml?id=330">blast.xml</workflow>
+  <workflow resource="http://www.myexperiment.org/workflows/331" uri="http://www.myexperiment.org/workflow.xml?id=331">DDBJ_BLAST.xml</workflow>
+</search>

@@ -1,0 +1,170 @@
+<workflow xmlns="http://taverna.sf.net/2008/xml/t2flow"
+	version="1">
+	<dataflow id="5a94ef05-10bd-424a-8ba3-2110010ff0a6" role="top">
+		<name>Example Workflow</name>
+		<inputPorts>
+			<port>
+				<name>Input</name>
+				<depth>0</depth>
+				<granularDepth>0</granularDepth>
+			</port>
+		</inputPorts>
+		<outputPorts>
+			<port>
+				<name>Output</name>
+			</port>
+		</outputPorts>
+		<processors>
+			<processor>
+				<name>get_drugs_by_pathway</name>
+				<inputPorts>
+					<port>
+						<name>pathway_id</name>
+						<depth>0</depth>
+					</port>
+				</inputPorts>
+				<outputPorts>
+					<port>
+						<name>return</name>
+						<depth>1</depth>
+						<granularDepth>1</granularDepth>
+					</port>
+				</outputPorts>
+				<annotations />
+				<activities>
+					<activity>
+						<raven>
+							<group>net.sf.taverna.t2.activities
+							</group>
+							<artifact>wsdl-activity</artifact>
+							<version>0.4</version>
+						</raven>
+						<class>net.sf.taverna.t2.activities.wsdl.WSDLActivity
+						</class>
+						<inputMap>
+							<map from="pathway_id" to="pathway_id" />
+						</inputMap>
+						<outputMap>
+							<map from="return" to="return" />
+						</outputMap>
+						<configBean encoding="xstream">
+							<net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean
+								xmlns="">
+								<wsdl>http://soap.genome.jp/KEGG.wsdl</wsdl>
+								<operation>get_drugs_by_pathway</operation>
+							</net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean>
+						</configBean>
+						<annotations />
+					</activity>
+				</activities>
+				<dispatchStack>
+					<dispatchLayer>
+						<raven>
+							<group>net.sf.taverna.t2</group>
+							<artifact>workflowmodel-impl</artifact>
+							<version>0.4</version>
+						</raven>
+						<class>
+							net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize
+						</class>
+						<configBean encoding="xstream">
+							<net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ParallelizeConfig
+								xmlns="">
+								<maxJobs>1</maxJobs>
+							</net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ParallelizeConfig>
+						</configBean>
+					</dispatchLayer>
+					<dispatchLayer>
+						<raven>
+							<group>net.sf.taverna.t2</group>
+							<artifact>workflowmodel-impl</artifact>
+							<version>0.4</version>
+						</raven>
+						<class>
+							net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ErrorBounce
+						</class>
+						<configBean encoding="xstream">
+							<null xmlns="" />
+						</configBean>
+					</dispatchLayer>
+					<dispatchLayer>
+						<raven>
+							<group>net.sf.taverna.t2</group>
+							<artifact>workflowmodel-impl</artifact>
+							<version>0.4</version>
+						</raven>
+						<class>
+							net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover
+						</class>
+						<configBean encoding="xstream">
+							<null xmlns="" />
+						</configBean>
+					</dispatchLayer>
+					<dispatchLayer>
+						<raven>
+							<group>net.sf.taverna.t2</group>
+							<artifact>workflowmodel-impl</artifact>
+							<version>0.4</version>
+						</raven>
+						<class>
+							net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Retry
+						</class>
+						<configBean encoding="xstream">
+							<net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.RetryConfig
+								xmlns="">
+								<backoffFactor>1.0</backoffFactor>
+								<initialDelay>1000</initialDelay>
+								<maxDelay>5000</maxDelay>
+								<maxRetries>0</maxRetries>
+							</net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.RetryConfig>
+						</configBean>
+					</dispatchLayer>
+					<dispatchLayer>
+						<raven>
+							<group>net.sf.taverna.t2</group>
+							<artifact>workflowmodel-impl</artifact>
+							<version>0.4</version>
+						</raven>
+						<class>
+							net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke
+						</class>
+						<configBean encoding="xstream">
+							<null xmlns="" />
+						</configBean>
+					</dispatchLayer>
+				</dispatchStack>
+				<iterationStrategyStack>
+					<iteration>
+						<strategy>
+							<cross>
+								<port name="pathway_id" depth="0" />
+							</cross>
+						</strategy>
+					</iteration>
+				</iterationStrategyStack>
+			</processor>
+		</processors>
+		<conditions />
+		<datalinks>
+			<datalink>
+				<sink type="processor">
+					<processor>get_drugs_by_pathway</processor>
+					<port>pathway_id</port>
+				</sink>
+				<source type="dataflow">
+					<port>Input</port>
+				</source>
+			</datalink>
+			<datalink>
+				<sink type="dataflow">
+					<port>Output</port>
+				</sink>
+				<source type="processor">
+					<processor>get_drugs_by_pathway</processor>
+					<port>return</port>
+				</source>
+			</datalink>
+		</datalinks>
+		<annotations />
+	</dataflow>
+</workflow>
