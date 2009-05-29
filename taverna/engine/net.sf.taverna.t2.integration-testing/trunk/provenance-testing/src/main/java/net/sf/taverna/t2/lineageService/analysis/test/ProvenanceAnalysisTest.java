@@ -24,6 +24,8 @@ import net.sf.taverna.t2.lineageService.capture.test.testFiles;
 import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResult;
 import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
 import net.sf.taverna.t2.provenance.lineageservice.LineageSQLQuery;
+import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
+import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.NaiveProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.utils.DDRecord;
@@ -32,6 +34,7 @@ import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
 import net.sf.taverna.t2.provenance.lineageservice.utils.VarBinding;
 
+import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.tupeloproject.kernel.OperatorException;
@@ -60,13 +63,15 @@ public class ProvenanceAnalysisTest {
 	
 	NaiveProvenanceQuery npq = null;
 	ProvenanceAnalysis pa = null;
-	MySQLProvenanceQuery pq = null;		
+	ProvenanceQuery pq = null;		
 
 	// shared by all tests -- these capture users configuration from AnalysisTestFiles.properties
 	Set<String> selProcNames = new HashSet<String>();
 	List<QueryVar>  qvList = new ArrayList<QueryVar>();
 	
 	String wfInstance = null; 
+
+	private static Logger logger = Logger.getLogger(ProvenanceAnalysisTest.class);
 
 	//////////////
 	// set annotations
@@ -100,6 +105,9 @@ public class ProvenanceAnalysisTest {
 		+ DB_USER + "&password=" + DB_PASSWD;
 
 		npq = new NaiveProvenanceQuery(mySQLjdbcString);		
+		
+//		pq = new DerbyProvenanceQuery();
+//		pq.setDbURL(derbyjdbcString);
 		pq = new MySQLProvenanceQuery();	
 		pq.setDbURL(mySQLjdbcString);
 		pa = new ProvenanceAnalysis(pq);
@@ -154,6 +162,12 @@ public class ProvenanceAnalysisTest {
 			System.out.println("query.returnDataValues: "+pa.isIncludeDataValue());
 		}
 		
+		String computeOPMGraph = AnalysisTestFiles.getString("OPM.computeGraph");
+		if (computeOPMGraph != null) {
+			pa.setGenerateOPMGraph(Boolean.parseBoolean(computeOPMGraph));
+			logger.info("OPM.computeGraph: "+computeOPMGraph);			
+		}
+		
 		//////////////
 		// set the run instances (scope)
 		//////////////
@@ -204,7 +218,7 @@ public class ProvenanceAnalysisTest {
 		if (queryVars.length() == 0)  { // default: TOP/ALL == all global OUTPUT vars, with fine granularity
 
 			for (ProvenanceProcessor pp: allProcessors) {
-				if (pp.getType().equals(pq.DATAFLOW_TYPE)) {
+				if (pp.getType() != null && pp.getType().equals(pq.DATAFLOW_TYPE)) {
 					proc = pp.getPname(); 
 					break;
 				}
@@ -238,29 +252,29 @@ public class ProvenanceAnalysisTest {
 			for (String qvtoken:queryVarsTokens) {
 
 				// one query var
-				String[] qvComponents = qvtoken.split("/");
+				String[] qvComponents = qvtoken.split("££");
 
 				QueryVar qv = new QueryVar();
 
 				if (qvComponents.length>0)   // pname 
-					qv.setPname(qvComponents[0]);
+					qv.setPname(qvComponents[0].trim());
 				else 
 					qv.setPname(TOP_PROCESSOR);  // default;
 
 				if (qvComponents.length>1)  // varname
-					qv.setVname(qvComponents[1]);  
+					qv.setVname(qvComponents[1].trim());  
 				else 
 					qv.setVname(ALL_VARS);  // default
 
 				if (qvComponents.length>2)  // path
-					qv.setPath(qvComponents[2]);
+					qv.setPath(qvComponents[2].trim());
 				else 
 					qv.setPath(ALL_PATHS);  // default
 
 				//  <proc> == TOP: resolve immediately to the top level dataflow
 				if (qv.getPname().equals(TOP_PROCESSOR)) {
 					for (ProvenanceProcessor pp: allProcessors) {
-						if (pp.getType().equals(pq.DATAFLOW_TYPE)) {
+						if (pp.getType() != null && pp.getType().equals(pq.DATAFLOW_TYPE)) {
 							qv.setPname(pp.getPname()); 
 							break;
 						}
@@ -396,7 +410,7 @@ public class ProvenanceAnalysisTest {
 		for (QueryVar qv:qvList) {
 
 			// full lineage query			
-			System.out.println("************\n lineage query: [instance, proc, port, path] = ["+
+			logger.info("************\n lineage query: [instance, proc, port, path] = ["+
 					wfInstance+","+qv.getPname()+","+qv.getVname()+",["+qv.getPath()+"]]\n***********");
 
 			Map<String, List<LineageQueryResult>> results = 
@@ -407,7 +421,7 @@ public class ProvenanceAnalysisTest {
 			// for each path
 			for (Map.Entry<String, List<LineageQueryResult>> pathResult:results.entrySet()) {
 
-				System.out.println("results for var "+qv.getVname()+" path:"+pathResult.getKey());
+				logger.info("results for var "+qv.getVname()+" path:"+pathResult.getKey());
 
 				// display results
 				for (LineageQueryResult result:pathResult.getValue()) {
@@ -422,15 +436,15 @@ public class ProvenanceAnalysisTest {
 			}
 			
 			// convert OPM RDF/XML to OPM XML
-			System.out.println("converting RDF OPM graph to XML...");
-			pa.OPMRdf2Xml();
-			System.out.println("done");
+			logger.info("converting RDF OPM graph to XML...");
+			String XMLFile = pa.OPMRdf2Xml();
+			logger.info("done - file is "+XMLFile);
 			
 			// create a dot file from the RDF/XML  (going through a converter)
 			// NEEDS FIXING
-			System.out.println("creating dot file...");
+			logger.info("creating dot file...");
 			String  dotFile = pa.OPMRdf2Dot();
-			System.out.println("done - file is "+dotFile);
+			logger.info("done - file is "+dotFile);
 
 			
 			assertTrue("lineage tree should have been printed above", true);
