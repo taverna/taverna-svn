@@ -238,7 +238,6 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 		} catch (Exception e) {
 			logger.warn("Could not create table Data : " + e);
 		}
-
 	}
 
 	public void deleteDatabase() {
