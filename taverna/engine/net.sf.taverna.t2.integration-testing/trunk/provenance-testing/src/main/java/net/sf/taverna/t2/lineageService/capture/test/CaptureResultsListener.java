@@ -4,9 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import net.sf.taverna.t2.facade.ResultListener;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
+import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceAnalysis;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceServiceException;
@@ -17,6 +20,8 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 public class CaptureResultsListener implements ResultListener {
 
+	private static Logger logger = Logger.getLogger(CaptureResultsListener.class);
+
 	private int outputCount;
 	private Map<String,Object> resultMap = new HashMap<String,Object>();
 	private final InvocationContext context;
@@ -26,7 +31,7 @@ public class CaptureResultsListener implements ResultListener {
 		this.context = context;
 		outputCount=dataflow.getOutputPorts().size();
 		
-		System.out.println("initial output count = "+outputCount);
+		logger.info("initial output count = "+outputCount);
 	}
 	
 	
@@ -34,7 +39,7 @@ public class CaptureResultsListener implements ResultListener {
 			String portname) {
 		if (dataToken.getIndex().length==0) {
 			T2Reference reference = dataToken.getData();
-			System.out.println("Output reference = " + reference);
+			logger.info("Output reference = " + reference);
 
 //			ReferenceService referenceService = context.getReferenceService();
 //
@@ -62,7 +67,7 @@ public class CaptureResultsListener implements ResultListener {
 //			resultMap.put(portname, context.getReferenceService().renderIdentifier(reference, Object.class,context));
 
 			outputCount--;
-			System.out.println("current output count = "+outputCount);
+			logger.debug("current output count = "+outputCount);
 		}
 	}
 

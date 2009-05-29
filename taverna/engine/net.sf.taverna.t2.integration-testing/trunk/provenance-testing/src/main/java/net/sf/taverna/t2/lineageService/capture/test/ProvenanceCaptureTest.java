@@ -46,7 +46,7 @@ public class ProvenanceCaptureTest extends ProvenanceCaptureTestHelper  {
 
 			for (String vp:valuepairs) {
 
-				String[] pair = vp.split(":");
+				String[] pair = vp.split("=");
 
 				if (pair.length != 2) {
 					fail("expecting name:value pairs, found "+vp);
