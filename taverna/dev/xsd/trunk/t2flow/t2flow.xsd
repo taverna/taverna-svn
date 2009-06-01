@@ -10,24 +10,45 @@ Taverna 2.0. Such workflows are commonly served with the extension
 .t2flow and served using the content-type
 application/vnd.taverna.t2flow+xml Draft as of 2009-03-17 by Stian
 Soiland-Reyes, should correctly describe workflows as
-saved from Taverna, but as this schema has been made in retrospect no guarantees are made.To test the schema against the examples, try xmllint: <code>xmllint --noout --schema t2flow.xsd examples/*t2flow</code></documentation>	</annotation>
+saved from Taverna, but as this schema has been made in retrospect no guarantees are made.To test the schema against the examples, try xmllint: <code xmlns='http://www.w3.org/1999/xhtml'>xmllint --noout --schema t2flow.xsd examples/*t2flow</code></documentation>	</annotation>
 	<element name="workflow" type="tav:Workflow">
 		<annotation>
 			<documentation>The container element for a .t2flow workflow definition. Future versions of Taverna may support other kinds of flows, like control flows, but currently only Dataflows are supported.The Dataflow with role="top" is the main workflows.</documentation>
 		</annotation></element>
 
 	<complexType name="Workflow">
-        <annotation>
-        	<documentation>The container of a workflow definition. This schema specifies workflow definitions where version="1" (as used by Taverna 2.0) - although this schema also permits any future minor versions like "1.1". At least one dataflow must be present, and it must have role="top". Other dataflows would typically be referenced by their id from the nested workflow activity.</documentation>
-        </annotation>
-        <sequence>
-			<element name="dataflow" type="tav:Dataflow" maxOccurs="unbounded"
-				minOccurs="1">
+		<annotation>
+			<documentation>
+				The container of a workflow definition. This schema
+				specifies workflow definitions where version="1" (as
+				used by Taverna 2.0) - although this schema also permits
+				any future minor versions like "1.1".
+
+				At least one dataflow must be present, and it must have
+				role="top". Other dataflows would typically be
+				referenced by their id from the nested workflow
+				activity.
+			</documentation>
+		</annotation>
+		<sequence>
+			<element name="dataflow" type="tav:Dataflow"
+				maxOccurs="unbounded" minOccurs="1">
 			</element>
 		</sequence>
-        <attribute use="required" name="version" type="tav:Version1">
-        	
-        </attribute>
+		<attribute use="required" name="version" type="tav:Version1">
+
+		</attribute>
+		<attribute name="producedBy" type="string" use="optional">
+			<annotation>
+				<documentation>Application that produced (ie. saved/serialised) this workflow.
+
+Example: taverna-2.1-beta-1
+
+Introduced in Taverna 2.1 Beta 1 - if the value is missing it's safe to 
+assume 'taverna-2.0' - although it might also be a workflow saved 
+through another application using the pre 2.1 APIs, such as the 
+Taverna Platform.</documentation>
+			</annotation></attribute>
 	</complexType>
 
 	<complexType name="Dataflow">
