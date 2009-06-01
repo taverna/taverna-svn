@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema targetNamespace="http://taverna.sf.net/2008/xml/t2flow"
 	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
-	xmlns:tav="http://taverna.sf.net/2008/xml/t2flow">
+	xmlns:tav="http://taverna.sf.net/2008/xml/t2flow"
+	xml:lang="en">
 
 	<annotation>
-		<documentation>This is a descriptive, informative XML Schema
-describing the serialisation format of Taverna 2 workflows, as of
-Taverna 2.0. Such workflows are commonly served with the extension
-.t2flow and served using the content-type
-application/vnd.taverna.t2flow+xml Draft as of 2009-03-17 by Stian
-Soiland-Reyes, should correctly describe workflows as
-saved from Taverna, but as this schema has been made in retrospect no guarantees are made.To test the schema against the examples, try xmllint: <code xmlns='http://www.w3.org/1999/xhtml'>xmllint --noout --schema t2flow.xsd examples/*t2flow</code></documentation>	</annotation>
+		<documentation>
+			<p xmlns='http://www.w3.org/1999/xhtml'>
+	This is a descriptive, informative XML Schema
+	describing the serialisation format of Taverna 2 workflows, as of
+	Taverna 2.0. Such workflows are commonly served with the extension
+	.t2flow and served using the content-type
+	application/vnd.taverna.t2flow+xml
+	</p>	<p xmlns='http://www.w3.org/1999/xhtml'>	Draft as of 2009-06-01 by Stian Soiland-Reyes, should correctly
+	describe workflows as saved from Taverna 2.0 and 2.1 b1, but as
+	this schema has been made in retrospect no guarantees are made.	To test the schema against the examples, try xmllint: 	<code>xmllint --noout --schema t2flow.xsd examples/*t2flow</code>	</p>
+</documentation>	</annotation>
 	<element name="workflow" type="tav:Workflow">
 		<annotation>
 			<documentation>The container element for a .t2flow workflow definition. Future versions of Taverna may support other kinds of flows, like control flows, but currently only Dataflows are supported.The Dataflow with role="top" is the main workflows.</documentation>
