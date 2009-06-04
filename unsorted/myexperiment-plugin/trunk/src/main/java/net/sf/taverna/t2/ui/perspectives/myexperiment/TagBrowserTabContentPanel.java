@@ -20,7 +20,7 @@ import net.sf.taverna.t2.ui.perspectives.myexperiment.model.SearchEngine;
 /*
  * @author Jiten Bhagat
  */
-public class TagBrowserTabContentPanel extends JPanel implements ActionListener //, ChangeListener, HyperlinkListener
+public class TagBrowserTabContentPanel extends JPanel implements ActionListener
 {
   // CONSTANTS
   private static final double TAG_CLOUD_BALANCE = 0.35;
@@ -209,91 +209,5 @@ public class TagBrowserTabContentPanel extends JPanel implements ActionListener 
       this.pluginMainComponent.getMainTabs().setSelectedComponent(this.pluginMainComponent.getMyStuffTab());
     }
 	}
-	
-	
-	/*
-	public void refresh() {
-		this.refreshCloud();
-		this.refreshResults();
-	}*/
-	
-	
-	/*
-	public void refreshResults() {
-		if (this.currentTagName != null && !this.currentTagName.equals("")) {
-			this.resultsStatusLabel.setText("Searching for workflows with tag '" + this.currentTagName + "' from myExperiment...");
-			
-			// Make call to myExperiment API in a different thread
-			// (then use SwingUtilities.invokeLater to update the UI when ready).
-			new Thread("Perform tag search for TagsBrowserPanel") {
-				public void run() {
-					logger.debug("Performing tag search for Tags Browser tab");
-
-					try {
-						tagSearchResults = client.getTagResults(currentTagName);
-
-						SwingUtilities.invokeLater(new Runnable() {
-							public void run() {
-								repopulateResults();
-							}
-						});
-					} catch (Exception ex) {
-						logger.error("Failed to get tag results from myExperiment", ex);
-					}
-				}
-			}.start();
-		}
-		else {
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					clearResults();
-				}
-			});
-		}
-	}*/
-  
-	/*
-	public void repopulate() {
-		this.repopulateCloud();
-		this.repopulateResults();
-	}
-	*/
-	
-	
-	/*
-	public void repopulateResults() {
-		logger.debug("Repopulating tag results pane");
-
-		this.resultsStatusLabel.setText(this.tagSearchResults.getWorkflows().size() + " workflows found for tag '" + this.currentTagName + "'");
-		
-		this.workflowsListPanel.setWorkflows(this.tagSearchResults.getWorkflows());
-		
-		this.resultsClearButton.setEnabled(true);
-		this.resultsRefreshButton.setEnabled(true);
-		
-		this.revalidate();
-	}*/
-	
-	/*
-	public void clear() {
-		this.clearCloud();
-		this.clearResults();
-	}*/
-	
-	/*
-	public void clearCloud() {
-		this.cloudStatusLabel.setText("");
-		this.cloudTextPane.setDocument(new HTMLDocument());
-		this.revalidate();
-	}*/
-	
-	/*
-	public void clearResults() {
-		this.resultsStatusLabel.setText("");
-		this.resultsClearButton.setEnabled(false);
-		this.resultsRefreshButton.setEnabled(false);
-		this.workflowsListPanel.clear();
-		this.revalidate();
-	}*/
 	
 }
