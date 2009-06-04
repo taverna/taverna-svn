@@ -441,9 +441,8 @@ public final class MainComponent extends JPanel implements UIComponentSPI, Chang
     
     public void actionPerformed(ActionEvent actionEvent)
     {
-      // if the preview browser window is opened, hide it
-      // TODO HACK - this will only work until the preview browser is a modal window; needs to be changed afterwards
-      if (getPreviewBrowser().isActive()) getPreviewBrowser().setVisible(false);
+      // if the preview browser window is opened, hide it beneath the main window
+      if (getPreviewBrowser().isActive()) getPreviewBrowser().toBack();
       
       final String strCallerTabClassName = getMainTabs().getSelectedComponent().getClass().getName();
       getStatusBar().setStatus(strCallerTabClassName, "Downloading and opening workflow...");

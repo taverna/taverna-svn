@@ -11,7 +11,7 @@ import java.util.EventListener;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -19,7 +19,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
-import net.sf.taverna.t2.ui.perspectives.myexperiment.MainComponent.DownloadResourceAction;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.MyExperimentClient;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Resource;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
@@ -33,7 +32,7 @@ import edu.stanford.ejalbert.BrowserLauncher;
  * 
  * @author Sergejs Aleksejevs
  */
-public class ResourcePreviewBrowser extends JDialog implements ActionListener, HyperlinkListener, ComponentListener
+public class ResourcePreviewBrowser extends JFrame implements ActionListener, HyperlinkListener, ComponentListener
 {
   // CONSTANTS
   protected static final int PREFERRED_WIDTH = 750;
@@ -92,7 +91,6 @@ public class ResourcePreviewBrowser extends JDialog implements ActionListener, H
     
     // set options of the preview dialog box
     this.setIconImage(new ImageIcon(MyExperimentPerspective.getLocalResourceURL("myexp_icon")).getImage());
-    this.setModal(true);
     this.addComponentListener(this);
     
     this.initialiseUI();
