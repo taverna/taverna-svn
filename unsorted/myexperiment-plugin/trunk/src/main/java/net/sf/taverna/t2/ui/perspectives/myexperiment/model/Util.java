@@ -1,6 +1,8 @@
 package net.sf.taverna.t2.ui.perspectives.myexperiment.model;
 
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
@@ -22,7 +24,9 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.imageio.ImageIO;
@@ -551,6 +555,19 @@ public class Util
                                                SwingConstants.LEFT,
                                                r.getItemTypeName() + ": " + r.getTitle()
     ));
+  }
+  
+  
+  /**
+   * Generates a JLabel with a "none-text" style.
+   */
+  public static JLabel generateNoneTextLabel(String strLabel)
+  {
+    JLabel lNoneText = new JLabel(strLabel);
+    lNoneText.setFont(lNoneText.getFont().deriveFont(Font.ITALIC));
+    lNoneText.setForeground(Color.GRAY);
+    lNoneText.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    return (lNoneText);
   }
   
   

@@ -26,13 +26,15 @@ import net.sf.taverna.t2.lang.ui.ShadedLabel;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.MyExperimentClient;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Resource;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Util;
+import net.sf.taverna.t2.ui.perspectives.myexperiment.model.SearchEngine.QuerySearchInstance;
+import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 
 import org.apache.log4j.Logger;
 
 public class HistoryBrowserTabContentPanel extends JPanel implements ActionListener
 {
   // CONSTANTS
-  private static final double SIDEBAR_BALANCE = 0.4;
+  
   
   private MainComponent pluginMainComponent;
   private MyExperimentClient myExperimentClient;
@@ -110,6 +112,7 @@ public class HistoryBrowserTabContentPanel extends JPanel implements ActionListe
   private void refreshAllData()
   {
     this.refreshPreviewHistory();
+    this.refreshSearchHistory();
   }
   
   
@@ -142,16 +145,61 @@ public class HistoryBrowserTabContentPanel extends JPanel implements ActionListe
       }
     }
     else {
-      JLabel lNoPreviewsYet = new JLabel("No items were previewed yet");
-      lNoPreviewsYet.setFont(lNoPreviewsYet.getFont().deriveFont(Font.ITALIC));
-      lNoPreviewsYet.setForeground(Color.GRAY);
-      lNoPreviewsYet.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-      this.jpPreviewHistory.add(lNoPreviewsYet);
+      this.jpPreviewHistory.add(Util.generateNoneTextLabel("No items were previewed yet"));
     }
     
     // make sure that the component is updated after population
     this.jpPreviewHistory.revalidate();
     this.jpPreviewHistory.repaint();
+  }
+  
+  
+  /**
+   * This helper can be called externally to refresh the search history.
+   * Is used inside SearchTabContentPanel every time a new item is added to search history.
+   */
+  public void refreshSearchHistory()
+  {
+    this.jpSearchHistory.removeAll();
+    populateSearchHistory();
+  }
+  
+  
+  /**
+   * Retrieves search history data from SearchTabContentPanel and populates the relevant panel.
+   */
+  private void populateSearchHistory()
+  {
+    List<QuerySearchInstance> lSearchHistory = this.pluginMainComponent.getSearchTab().getSearchHistory();
+    
+    if (lSearchHistory.size() > 0)
+    {
+      for (int i = lSearchHistory.size() - 1; i >= 0; i--)
+      {
+        QuerySearchInstance qsiCurrent = lSearchHistory.get(i);
+        JClickableLabel jclCurrentEntryLabel = new JClickableLabel(qsiCurrent.getSearchQuery(), SearchTabContentPanel.SEARCH_FROM_HISTORY + ":" + i,
+            this, WorkbenchIcons.findIcon, SwingUtilities.LEFT, qsiCurrent.toString());
+        JLabel jlCurrentEntrySettings = new JLabel(qsiCurrent.detailsAsString());
+        jlCurrentEntrySettings.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
+        
+        JPanel jpCurrentSearchHistoryEntry = new JPanel();
+        jpCurrentSearchHistoryEntry.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.anchor = GridBagConstraints.WEST;
+        jpCurrentSearchHistoryEntry.add(jclCurrentEntryLabel, c);
+        c.weightx = 1.0;
+        jpCurrentSearchHistoryEntry.add(jlCurrentEntrySettings, c);
+        
+        this.jpSearchHistory.add(jpCurrentSearchHistoryEntry);
+      }
+    }
+    else {
+      this.jpPreviewHistory.add(Util.generateNoneTextLabel(SearchResultsPanel.NO_SEARCHES_STATUS));
+    }
+    
+    // make sure that the component is updated after population
+    this.jpSearchHistory.revalidate();
+    this.jpSearchHistory.repaint();
   }
   
   
@@ -190,9 +238,17 @@ public class HistoryBrowserTabContentPanel extends JPanel implements ActionListe
   }
   
   
+  // *** Callback for ActionListener interface ***
   public void actionPerformed(ActionEvent e)
   {
-    // TODO Auto-generated method stub
+    if (e.getSource() instanceof JClickableLabel)
+    {
+      if (e.getActionCommand().startsWith(SearchTabContentPanel.SEARCH_FROM_HISTORY)) {
+        // open search tab and start the chosen search
+        this.pluginMainComponent.getSearchTab().actionPerformed(e);
+        this.pluginMainComponent.getMainTabs().setSelectedComponent(this.pluginMainComponent.getSearchTab());
+      }
+    }
     
   }
   

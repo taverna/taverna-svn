@@ -29,6 +29,7 @@ import javax.swing.SwingUtilities;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Base64;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.MyExperimentClient;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.SearchEngine;
+import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Util;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.SearchEngine.QuerySearchInstance;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 
@@ -40,6 +41,10 @@ public class SearchTabContentPanel extends JPanel implements ActionListener
   // CONSTANTS
   private final static int SEARCH_HISTORY_LENGTH = 50;
   private final static int SEARCH_FAVOURITES_LENGTH = 30;
+  protected final static String SEARCH_FROM_FAVOURITES = "searchFromFavourites";
+  protected final static String SEARCH_FROM_HISTORY = "searchFromHistory";
+  protected final static String ADD_FAVOURITE_SEARCH_INSTANCE = "addFavouriteSearchInstance";
+  protected final static String REMOVE_FAVOURITE_SEARCH_INSTANCE = "removeFavouriteSearchInstance";
   
   
   private MainComponent pluginMainComponent;
@@ -225,21 +230,17 @@ public class SearchTabContentPanel extends JPanel implements ActionListener
     
     if (this.llFavouriteSearches.size() == 0)
     {
-      JLabel jlNoSearches = new JLabel("No favourite searches");
-      jlNoSearches.setFont(jlNoSearches.getFont().deriveFont(Font.ITALIC));
-      jlNoSearches.setForeground(Color.GRAY);
-      jlNoSearches.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
       GridBagConstraints c = new GridBagConstraints();
       c.weightx = 1.0;
       c.anchor = GridBagConstraints.WEST;
-      this.jpFavouriteSearches.add(jlNoSearches, c);
+      this.jpFavouriteSearches.add(Util.generateNoneTextLabel("No favourite searches"), c);
     }
     else
     {
       for(int i = this.llFavouriteSearches.size() - 1; i >= 0; i--)
       {
-        addEntryToSearchListingPanel(this.llFavouriteSearches, i, "searchFromFavourites", this.jpFavouriteSearches,
-            this.iconRemove, "removeFavouriteSearchInstance", "Click to remove from your favourite searches");
+        addEntryToSearchListingPanel(this.llFavouriteSearches, i, SEARCH_FROM_FAVOURITES, this.jpFavouriteSearches,
+            this.iconRemove, REMOVE_FAVOURITE_SEARCH_INSTANCE, "Click to remove from your favourite searches");
       }
     }
     
@@ -261,26 +262,28 @@ public class SearchTabContentPanel extends JPanel implements ActionListener
     
     if (this.llSearchHistory.size() == 0)
     {
-      JLabel jlNoSearches = new JLabel("No searches have been done yet");
-      jlNoSearches.setFont(jlNoSearches.getFont().deriveFont(Font.ITALIC));
-      jlNoSearches.setForeground(Color.GRAY);
-      jlNoSearches.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
       GridBagConstraints c = new GridBagConstraints();
       c.weightx = 1.0;
       c.anchor = GridBagConstraints.WEST;
-      this.jpSearchHistory.add(jlNoSearches, c);
+      this.jpSearchHistory.add(Util.generateNoneTextLabel(SearchResultsPanel.NO_SEARCHES_STATUS), c);
     }
     else
     {
       for(int i = this.llSearchHistory.size() - 1; i >= 0; i--)
       {
-        addEntryToSearchListingPanel(this.llSearchHistory, i, "searchFromHistory", this.jpSearchHistory,
-            this.iconFavourite, "addFavouriteSearchInstance", "Click to add to your favourite searches");
+        addEntryToSearchListingPanel(this.llSearchHistory, i, SEARCH_FROM_HISTORY, this.jpSearchHistory,
+            this.iconFavourite, ADD_FAVOURITE_SEARCH_INSTANCE, "Click to add to your favourite searches");
       }
     }
     
     this.jpSearchHistory.repaint();
     this.jpSearchHistory.revalidate();
+    
+    
+    // also update search history in History tab
+    if (this.pluginMainComponent.getHistoryBrowser() != null) {
+      this.pluginMainComponent.getHistoryBrowser().refreshSearchHistory();
+    }
   }
   
   
@@ -370,12 +373,12 @@ public class SearchTabContentPanel extends JPanel implements ActionListener
     }
     else if (e.getSource() instanceof JClickableLabel)
     {
-      if (e.getActionCommand().startsWith("searchFromHistory:") || e.getActionCommand().startsWith("searchFromFavourites:"))
+      if (e.getActionCommand().startsWith(SEARCH_FROM_HISTORY) || e.getActionCommand().startsWith(SEARCH_FROM_FAVOURITES))
       {
         // the part of the action command that is following the prefix is the ID in the search history / favourites storage;
         // this search instance is removed from history and will be re-added at the top of it when search is launched 
         int iEntryID = Integer.parseInt(e.getActionCommand().substring(e.getActionCommand().indexOf(":") + 1));
-        final QuerySearchInstance si = (e.getActionCommand().startsWith("searchFromHistory:") ? 
+        final QuerySearchInstance si = (e.getActionCommand().startsWith(SEARCH_FROM_HISTORY) ? 
                                         this.llSearchHistory.remove(iEntryID) : 
                                         this.llFavouriteSearches.get(iEntryID)); // in case of favourites, no need to remove the entry
         
@@ -399,7 +402,7 @@ public class SearchTabContentPanel extends JPanel implements ActionListener
           }
         });
       }
-      else if (e.getActionCommand().startsWith("addFavouriteSearchInstance:"))
+      else if (e.getActionCommand().startsWith(ADD_FAVOURITE_SEARCH_INSTANCE))
       {
         // get the ID of the entry in the history listing first; then fetch the instance itself
         int iHistID = Integer.parseInt(e.getActionCommand().substring(e.getActionCommand().indexOf(":") + 1));
@@ -413,7 +416,7 @@ public class SearchTabContentPanel extends JPanel implements ActionListener
           }
         });
       }
-      else if (e.getActionCommand().startsWith("removeFavouriteSearchInstance:"))
+      else if (e.getActionCommand().startsWith(REMOVE_FAVOURITE_SEARCH_INSTANCE))
       {
         // get the ID of the entry in the favourite searches listing first; then remove the instance with that ID from the list
         int iFavouriteID = Integer.parseInt(e.getActionCommand().substring(e.getActionCommand().indexOf(":") + 1));
