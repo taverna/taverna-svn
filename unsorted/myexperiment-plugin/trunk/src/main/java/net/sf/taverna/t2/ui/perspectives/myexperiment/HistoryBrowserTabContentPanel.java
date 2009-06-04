@@ -25,6 +25,7 @@ import javax.swing.SwingUtilities;
 import net.sf.taverna.t2.lang.ui.ShadedLabel;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.MyExperimentClient;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Resource;
+import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Tag;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Util;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.SearchEngine.QuerySearchInstance;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
@@ -113,6 +114,7 @@ public class HistoryBrowserTabContentPanel extends JPanel implements ActionListe
   {
     this.refreshPreviewHistory();
     this.refreshSearchHistory();
+    this.refreshTagSearchHistory();
   }
   
   
@@ -203,6 +205,48 @@ public class HistoryBrowserTabContentPanel extends JPanel implements ActionListe
   }
   
   
+  /**
+   * This helper can be called externally to refresh the tag search history.
+   * Is used inside TagBrowserTabContentPanel every time a new tag is searched for.
+   */
+  public void refreshTagSearchHistory()
+  {
+    this.jpTagSearchHistory.removeAll();
+    populateTagSearchHistory();
+  }
+  
+  
+  /**
+   * Retrieves tag search history data from Tag Browser and populates the relevant panel.
+   */
+  private void populateTagSearchHistory()
+  {
+    List<Tag> lTagSearchHistory = this.pluginMainComponent.getTagBrowserTab().getTagSearchHistory();
+    
+    if (lTagSearchHistory.size() > 0)
+    {
+      for (int i = lTagSearchHistory.size() - 1; i >= 0; i--)
+      {
+        Tag t = lTagSearchHistory.get(i);
+        JClickableLabel lTag = new JClickableLabel(t.getTagName(),
+                                                   "tag:" + t.getTagName(),
+                                                   this,
+                                                   new ImageIcon(MyExperimentPerspective.getLocalIconURL(t.getItemType())),
+                                                   SwingConstants.LEFT,
+                                                   t.getItemTypeName() + ": " + t.getTagName()
+                                                   );
+        this.jpTagSearchHistory.add(lTag);
+      }
+    }
+    else {
+      this.jpTagSearchHistory.add(Util.generateNoneTextLabel("No searches by tags have been made yet"));
+    }
+    
+    // make sure that the component is updated after population
+    this.jpTagSearchHistory.revalidate();
+    this.jpTagSearchHistory.repaint();
+  }
+  
   
   /**
    * @param strBoxTitle Title of the content box.
@@ -247,6 +291,11 @@ public class HistoryBrowserTabContentPanel extends JPanel implements ActionListe
         // open search tab and start the chosen search
         this.pluginMainComponent.getSearchTab().actionPerformed(e);
         this.pluginMainComponent.getMainTabs().setSelectedComponent(this.pluginMainComponent.getSearchTab());
+      }
+      else if (e.getActionCommand().startsWith("tag:")) {
+        // open tag browser tab and start the chosen tag search
+        this.pluginMainComponent.getTagBrowserTab().actionPerformed(e);
+        this.pluginMainComponent.getMainTabs().setSelectedComponent(this.pluginMainComponent.getTagBrowserTab());
       }
     }
     

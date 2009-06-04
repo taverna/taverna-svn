@@ -72,6 +72,22 @@ public class Tag extends Resource {
   }
 	
 	
+	/**
+   * This makes sure that things like instanceOf() and remove() in List interface
+   * work properly - this way resources are treated to be the same if they store
+   * identical data, rather than they simply hold the same reference.
+   */
+  public boolean equals(Object other) {
+    // could only be equal to another Tag object, not anything else
+    if (! (other instanceof Tag)) return (false);
+    
+    // 'other' object is a Tag; equality is based on the data stored
+    // in the current and 'other' Tag instances
+    Tag otherTag = (Tag)other;
+    return (this.count == otherTag.count && this.tagName.equals(otherTag.tagName));
+  }
+	
+	
   /**
    * A helper method to return a set of API elements that are
    * needed to satisfy request of a particular type - e.g. creating
@@ -93,6 +109,28 @@ public class Tag extends Resource {
     }
     
     return (strElements);
+  }
+  
+  
+  /**
+   * Instantiates a Tag object from action command string that is used to
+   * trigger tag search events in the plugin. These action commands should
+   * look like "tag:<tag_name>".
+   * 
+   * @param strActionCommand The action command to parse.
+   * @return A Tab object instance or null if action command was invalid.
+   */
+  public static Tag instantiateTagFromActionCommand(String strActionCommand)
+  {
+    if (! strActionCommand.startsWith("tag:")) {
+      return (null);
+    }
+    else {
+      // instantiate the Tag object, strip out the leading "tag:" and return result
+      Tag t = new Tag();
+      t.setTagName(strActionCommand.replaceFirst("tag:", ""));
+      return (t);
+    }
   }
 	
 }

@@ -5,6 +5,9 @@ import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -14,8 +17,12 @@ import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
+
+import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Base64;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.MyExperimentClient;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.SearchEngine;
+import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Tag;
+import net.sf.taverna.t2.ui.perspectives.myexperiment.model.SearchEngine.QuerySearchInstance;
 
 /*
  * @author Jiten Bhagat
@@ -25,6 +32,7 @@ public class TagBrowserTabContentPanel extends JPanel implements ActionListener
   // CONSTANTS
   private static final double TAG_CLOUD_BALANCE = 0.35;
   private static final double TAG_SIDEBAR_BALANCE = 0.4;
+  private static final int TAG_SEARCH_HISTORY_LENGTH = 50;
   
   private MainComponent pluginMainComponent;
   private MyExperimentClient myExperimentClient;
@@ -40,15 +48,18 @@ public class TagBrowserTabContentPanel extends JPanel implements ActionListener
   private JButton bLoginToSeeMyTags;
   private JPanel jpLoginToSeeMyTags;
   
+  // STORAGE
   // last tag for which the search has been made
   private String strCurrentTagCommand;
+  private List<Tag> lTagSearchHistory;
   
-  //Search components 
+  // Search components 
   private SearchEngine searchEngine;    // The search engine for executing keyword query searches 
   private Vector<Long> vCurrentSearchThreadID; // This will keep ID of the current search thread (there will only be one such thread)
   
 	
-	public TagBrowserTabContentPanel(MainComponent component, MyExperimentClient client, Logger logger)
+	@SuppressWarnings("unchecked")
+  public TagBrowserTabContentPanel(MainComponent component, MyExperimentClient client, Logger logger)
 	{
     super();
     
@@ -60,6 +71,17 @@ public class TagBrowserTabContentPanel extends JPanel implements ActionListener
 	  // no tag searches have been done yet
 	  this.strCurrentTagCommand = null;
 		
+   	// initialise the tag search history
+    String strTagSearchHistory = (String)myExperimentClient.getSettings().get(MyExperimentClient.INI_TAG_SEARCH_HISTORY);
+    if (strTagSearchHistory != null) {
+      Object oTagSearchHistory = Base64.decodeToObject(strTagSearchHistory);
+      this.lTagSearchHistory = (ArrayList<Tag>)oTagSearchHistory;
+    }
+    else {
+      this.lTagSearchHistory = new ArrayList<Tag>();
+    }
+	  
+	  
 		this.initialiseUI();
 		
 	  // initialise the search engine
@@ -166,6 +188,12 @@ public class TagBrowserTabContentPanel extends JPanel implements ActionListener
 	}
 	
 	
+	public List<Tag> getTagSearchHistory()
+	{
+	  return (this.lTagSearchHistory);
+	}
+	
+	
 	public void actionPerformed(ActionEvent e)
 	{
 	  if (e.getSource().equals(this.jpTagSearchResults.bRefresh))
@@ -184,21 +212,29 @@ public class TagBrowserTabContentPanel extends JPanel implements ActionListener
       this.getTagSearchResultPanel().bClear.setEnabled(false);
       this.getTagSearchResultPanel().bRefresh.setEnabled(false);
     }
-    else if (e.getSource().equals(this.jpMyTags) || e.getSource().equals(this.jpAllTags)) {
-      // one of the tags was clicked as a hyperlink
+    else if (e.getSource() instanceof JClickableLabel || e.getSource() instanceof TagCloudPanel)
+    {
+      // one of the tags was clicked as a hyperlink in any TagCloudPanel
+      // (in Resource Preview Browser or in Tag Browser tab) or as a JClickableLabel
       if (e.getActionCommand().startsWith("tag:")) {
         // record the tag search command and run the search
         this.strCurrentTagCommand = e.getActionCommand();
         this.searchEngine.searchAndPopulateResults(strCurrentTagCommand);
+        
+        // update tag search history making sure that:
+        // - there's only one occurrence of this tag in the history;
+        // - if this tag was in the history before, it is moved to the 'top' now;
+        // - predefined history size is not exceeded 
+        Tag t = Tag.instantiateTagFromActionCommand(strCurrentTagCommand);
+        this.lTagSearchHistory.remove(t);
+        this.lTagSearchHistory.add(t);
+        if (this.lTagSearchHistory.size() > TAG_SEARCH_HISTORY_LENGTH) this.lTagSearchHistory.remove(0);
+        
+        // now update the tag search history panel in 'History' tab
+        if (this.pluginMainComponent.getHistoryBrowser() != null) {
+          this.pluginMainComponent.getHistoryBrowser().refreshTagSearchHistory();
+        }
       }
-    }
-    else if ((e.getSource() instanceof JClickableLabel || e.getSource() instanceof TagCloudPanel) 
-             && e.getActionCommand().startsWith("tag:"))
-    {
-      // one of the tags was clicked as a JClickableLabel
-      // (record the tag search command and run the search)
-      this.strCurrentTagCommand = e.getActionCommand();
-      this.searchEngine.searchAndPopulateResults(strCurrentTagCommand);
     }
     else if (e.getSource().equals(this.bLoginToSeeMyTags))
     {

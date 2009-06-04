@@ -69,8 +69,8 @@ public class SearchEngine
         pluginMainComponent.getStatusBar().setStatus(pluginMainComponent.getTagBrowserTab().getClass().getName(), "Searching");
         
         
-        // strip out the leading "tag:"
-        strSearchQuery = strSearchQuery.replaceFirst("tag:", "");
+        // get the search query (which is the tag name in this case)
+        strSearchQuery = Tag.instantiateTagFromActionCommand(strSearchQuery).getTagName();
         jpResultsPanel.setCurrentSearchTerm(strSearchQuery);
         jpResultsPanel.setStatus("Starting to search for a tag '" + strSearchQuery + "'...");
         

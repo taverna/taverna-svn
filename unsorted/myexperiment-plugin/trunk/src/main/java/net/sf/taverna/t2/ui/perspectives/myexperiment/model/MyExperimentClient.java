@@ -48,6 +48,7 @@ public class MyExperimentClient
   public static final String INI_AUTO_LOGIN = "auto_login";
   public static final String INI_FAVOURITE_SEARCHES = "favourite_searches";
   public static final String INI_SEARCH_HISTORY = "search_history";
+  public static final String INI_TAG_SEARCH_HISTORY = "tag_search_history";
   public static final String INI_DEFAULT_LOGGED_IN_TAB = "default_tab_for_logged_in_users";
   public static final String INI_DEFAULT_ANONYMOUS_TAB = "default_tab_for_anonymous_users";
   public static final String INI_MY_STUFF_WORKFLOWS = "show_workflows_in_my_stuff";
