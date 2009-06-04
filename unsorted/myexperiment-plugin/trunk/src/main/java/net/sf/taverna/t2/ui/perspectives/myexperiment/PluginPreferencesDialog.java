@@ -50,6 +50,7 @@ public class PluginPreferencesDialog extends JDialog implements ComponentListene
   private JCheckBox cbMyStuffPacks;
   private JButton bSave;
   private JButton bCancel;
+  private JClickableLabel jclClearPreviewHistory;
   private JClickableLabel jclClearSearchHistory;
   private JClickableLabel jclClearFavouriteSearches;
   
@@ -189,11 +190,15 @@ public class PluginPreferencesDialog extends JDialog implements ComponentListene
         BorderFactory.createEmptyBorder(0, 7, 5, 5)
     ));
     
+    this.jclClearPreviewHistory = new JClickableLabel("Clear browsing history", "clear_preview_history", this);
+    jpPrivacySettings.add(this.jclClearPreviewHistory);
+    
     this.jclClearSearchHistory = new JClickableLabel("Clear search history", "clear_search_history", this);
+    this.jclClearSearchHistory.setBorder(BorderFactory.createEmptyBorder(3, 0, 3, 0));
     jpPrivacySettings.add(this.jclClearSearchHistory);
     
     this.jclClearFavouriteSearches = new JClickableLabel("Clear favourite searches", "clear_favourite_searches", this);
-    this.jclClearFavouriteSearches.setBorder(BorderFactory.createEmptyBorder(3, 0, 2, 0));
+    this.jclClearFavouriteSearches.setBorder(BorderFactory.createEmptyBorder(0, 0, 2, 0));
     jpPrivacySettings.add(this.jclClearFavouriteSearches);
     
     
@@ -359,6 +364,16 @@ public class PluginPreferencesDialog extends JDialog implements ComponentListene
     {
       // simply close the preferences window
       setVisible(false);
+    }
+    else if (e.getSource().equals(this.jclClearPreviewHistory))
+    {
+      // request user confirmation and clear browsing history (preview history)
+      if (JOptionPane.showConfirmDialog(null, "This will delete the browsing history - the list of previosly\npreviewed items will be emptied.\n\nDo you want to proceed?", 
+          "myExperiment Plugin - Confirmation Required", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+      {
+        pluginMainComponent.getPreviewBrowser().clearPreviewHistory();
+        pluginMainComponent.getPreviewHistoryBrowser().refreshSidebar();
+      }
     }
     else if (e.getSource().equals(this.jclClearSearchHistory))
     {

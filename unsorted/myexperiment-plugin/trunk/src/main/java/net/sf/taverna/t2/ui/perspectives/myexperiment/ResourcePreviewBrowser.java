@@ -109,6 +109,36 @@ public class ResourcePreviewBrowser extends JFrame implements ActionListener, Hy
   
   
   /**
+   * As opposed to getPreviewHistory() which returns full history of previewed resources,
+   * this helper method only retrieves the current history stack.
+   * 
+   * Example: if a user was to view the following items - A -> B -> C
+   *                                                           B <- C
+   *                                                           B -> D,
+   * the full history would be [A,C,B,D];
+   * current history stack would be [A,B,D] - note how item C was "forgotten" (this works the same way as all web browsers do)
+   */
+  public List<String> getCurrentPreviewHistory()
+  {
+    return (this.alCurrentHistory);
+  }
+  
+  
+  /**
+   * Deletes both 'current history' (the latest preview history stack) and the
+   * 'full preview history'. Also, resets the index in the current history,
+   * so that the preview browser would not allow using Back-Forward buttons until
+   * some new previews are opened.
+   */
+  public void clearPreviewHistory()
+  {
+    this.iCurrentHistoryIdx = -1;
+    this.alCurrentHistory.clear();
+    this.alFullHistory.clear();
+  }
+  
+  
+  /**
    * This method is a launcher for the real worker method ('createPreview()')
    * that does all the job.
    * 
@@ -141,6 +171,12 @@ public class ResourcePreviewBrowser extends JFrame implements ActionListener, Hy
       // this is not the first page in the history, enable "Back" button (if only this isn't the same page as was the first one);
       // (this, however, is the last page in the history now - so disable "Forward" button)
       bBack.setEnabled(bPreviewNotTheSameAsTheLastOne || alCurrentHistory.size() > 1);
+      bForward.setEnabled(false);
+    }
+    else if (alCurrentHistory.size() == 0) {
+      // this is the first preview after application has loaded or since the
+      // preview history was cleared - disable both Back and Forward buttons
+      bBack.setEnabled(false);
       bForward.setEnabled(false);
     }
     
