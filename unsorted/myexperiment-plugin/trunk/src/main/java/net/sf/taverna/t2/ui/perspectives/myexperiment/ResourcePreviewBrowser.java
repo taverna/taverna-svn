@@ -7,6 +7,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.util.ArrayList;
 import java.util.EventListener;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -38,11 +39,12 @@ public class ResourcePreviewBrowser extends JFrame implements ActionListener, Hy
   protected static final int PREFERRED_WIDTH = 750;
   protected static final int PREFERRED_HEIGHT = 600;
   protected static final int PREFERRED_SCROLL = 10;
+  protected static final int PREVIEW_HISTORY_LENGTH = 50;
   
   // navigation data
   private int iCurrentHistoryIdx;             // index within the current history
   private ArrayList<String> alCurrentHistory; // current history - e.g. if one opens Page1, then Page2; goes back and opens Page3 - current preview would hold only [Page1, Page3]
-  private ArrayList<String> alFullHistory;    // all previews that were ever watched since application started
+  private ArrayList<Resource> alFullHistory;    // all resources that were previewed since application started (will be used by ResourcePreviewHistoryBrowser)
   
   // components for accessing application's main elements
   private MainComponent pluginMainComponent;
@@ -87,13 +89,22 @@ public class ResourcePreviewBrowser extends JFrame implements ActionListener, Hy
     // no navigation history at loading
     this.iCurrentHistoryIdx = -1;
     this.alCurrentHistory = new ArrayList<String>();
-    this.alFullHistory = new ArrayList<String>();
+    this.alFullHistory = new ArrayList<Resource>();
     
     // set options of the preview dialog box
     this.setIconImage(new ImageIcon(MyExperimentPerspective.getLocalResourceURL("myexp_icon")).getImage());
     this.addComponentListener(this);
     
     this.initialiseUI();
+  }
+  
+  
+  /**
+   * Accessor method for getting a full history of previewed resources as a list.
+   */
+  public List<Resource> getPreviewHistory()
+  {
+    return (this.alFullHistory);
   }
   
   
@@ -138,7 +149,6 @@ public class ResourcePreviewBrowser extends JFrame implements ActionListener, Hy
     {
       iCurrentHistoryIdx++;
       alCurrentHistory.add(action);
-      alFullHistory.add(action);
     }
     
     // *** Launch Preview ***
@@ -174,6 +184,15 @@ public class ResourcePreviewBrowser extends JFrame implements ActionListener, Hy
         try {
           // *** Fetch Data and Create Preview Content ***
           rpcContent = pluginMainComponent.getPreviewFactory().createPreview(strAction, self);
+          
+          // as all the details about the previewed resource are now known, can store this into full preview history
+          // (before that make sure that if the this item was viewed before, it's removed and re-added at the "top" of the list)
+          // (also make sure that the history size doesn't exceed the pre-set value)
+          alFullHistory.remove(rpcContent.getResource());
+          alFullHistory.add(rpcContent.getResource());
+          if (alFullHistory.size() > PREVIEW_HISTORY_LENGTH) alFullHistory.remove(0);
+          pluginMainComponent.getPreviewHistoryBrowser().refreshSidebar();
+          
           
           // *** Update the Preview Dialog Box when everything is ready ***
           SwingUtilities.invokeLater(new Runnable() {
