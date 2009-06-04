@@ -227,7 +227,7 @@ public class ResourcePreviewBrowser extends JFrame implements ActionListener, Hy
           alFullHistory.remove(rpcContent.getResource());
           alFullHistory.add(rpcContent.getResource());
           if (alFullHistory.size() > PREVIEW_HISTORY_LENGTH) alFullHistory.remove(0);
-          pluginMainComponent.getPreviewHistoryBrowser().refreshSidebar();
+          pluginMainComponent.getHistoryBrowser().refreshPreviewHistory();
           
           
           // *** Update the Preview Dialog Box when everything is ready ***

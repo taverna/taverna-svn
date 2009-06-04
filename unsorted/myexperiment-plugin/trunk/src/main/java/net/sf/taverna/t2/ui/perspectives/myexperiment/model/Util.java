@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.net.InetAddress;
 import java.net.URL;
@@ -23,9 +24,12 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
 import javax.imageio.ImageIO;
 
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
+import net.sf.taverna.t2.ui.perspectives.myexperiment.JClickableLabel;
+import net.sf.taverna.t2.ui.perspectives.myexperiment.MyExperimentPerspective;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.SearchEngine.QuerySearchInstance;
 
 import org.jdom.Document;
@@ -533,6 +537,22 @@ public class Util
   
   
   // ******** VARIOUS HELPERS ********
+  
+  /**
+   * Generates a JClickableLabel instance for a supplied Resource
+   * object with a specified click handler.
+   */
+  public static JClickableLabel generateClickableLabelFor(Resource r, ActionListener clickHandler)
+  {
+    return (new JClickableLabel(r.getTitle(), 
+                                               "preview:" + r.getItemType() + ":" + r.getURI(),
+                                               clickHandler,
+                                               new ImageIcon(MyExperimentPerspective.getLocalIconURL(r.getItemType())),
+                                               SwingConstants.LEFT,
+                                               r.getItemTypeName() + ": " + r.getTitle()
+    ));
+  }
+  
   
   /**
    * A helper method to assemble part of the URL query for myExperiment API.

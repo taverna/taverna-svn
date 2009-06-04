@@ -89,7 +89,7 @@ public final class MainComponent extends JPanel implements UIComponentSPI, Chang
 	private ExampleWorkflowsPanel pExampleWorkflows;
 	private TagBrowserTabContentPanel pTagBrowser;
 	private SearchTabContentPanel pSearchTab;
-	private ResourcePreviewHistoryBrowser pPreviewHistoryBrowserTab;
+	private HistoryBrowserTabContentPanel pHistoryBrowserTab;
 	private PluginStatusBar pStatusBar;
 	private PluginPreferencesDialog jdPreferences;
 	
@@ -219,9 +219,9 @@ public final class MainComponent extends JPanel implements UIComponentSPI, Chang
     return this.previewBrowser;
   }
   
-  public ResourcePreviewHistoryBrowser getPreviewHistoryBrowser()
+  public HistoryBrowserTabContentPanel getHistoryBrowser()
   {
-    return this.pPreviewHistoryBrowserTab;
+    return this.pHistoryBrowserTab;
   }
   
   public JTabbedPane getMainTabs()
@@ -264,7 +264,7 @@ public final class MainComponent extends JPanel implements UIComponentSPI, Chang
 	  this.pExampleWorkflows = new ExampleWorkflowsPanel(this, myExperimentClient, logger);
 	  this.pTagBrowser = new TagBrowserTabContentPanel(this, myExperimentClient, logger);
 	  this.pSearchTab = new SearchTabContentPanel(this, myExperimentClient, logger);
-	  this.pPreviewHistoryBrowserTab = new ResourcePreviewHistoryBrowser(this, myExperimentClient, logger);
+	  this.pHistoryBrowserTab = new HistoryBrowserTabContentPanel(this, myExperimentClient, logger);
 	  
 	  // add the required ones into the main tabs
 	  this.tpMainTabs = new JTabbedPane();
@@ -272,7 +272,7 @@ public final class MainComponent extends JPanel implements UIComponentSPI, Chang
 	  this.tpMainTabs.add("Example Workflows", this.pExampleWorkflows);
 	  this.tpMainTabs.add("Tag Browser", this.pTagBrowser);
 	  this.tpMainTabs.add("Search", this.pSearchTab);
-	  this.tpMainTabs.add("Preview History", this.pPreviewHistoryBrowserTab);
+	  this.tpMainTabs.add("History", this.pHistoryBrowserTab);
 	  
 	  // add main tabs and the status bar into the perspective
 	  this.setLayout(new BorderLayout());

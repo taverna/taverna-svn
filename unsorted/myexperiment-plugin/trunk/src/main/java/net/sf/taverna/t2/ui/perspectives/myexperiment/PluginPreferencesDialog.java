@@ -372,7 +372,7 @@ public class PluginPreferencesDialog extends JDialog implements ComponentListene
           "myExperiment Plugin - Confirmation Required", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
       {
         pluginMainComponent.getPreviewBrowser().clearPreviewHistory();
-        pluginMainComponent.getPreviewHistoryBrowser().refreshSidebar();
+        pluginMainComponent.getHistoryBrowser().refreshPreviewHistory();
       }
     }
     else if (e.getSource().equals(this.jclClearSearchHistory))
