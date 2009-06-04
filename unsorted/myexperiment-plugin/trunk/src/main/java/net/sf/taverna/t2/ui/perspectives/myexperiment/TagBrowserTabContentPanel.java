@@ -51,7 +51,7 @@ public class TagBrowserTabContentPanel extends JPanel implements ActionListener
   // STORAGE
   // last tag for which the search has been made
   private String strCurrentTagCommand;
-  private List<Tag> lTagSearchHistory;
+  private ArrayList<Tag> lTagSearchHistory;
   
   // Search components 
   private SearchEngine searchEngine;    // The search engine for executing keyword query searches 
@@ -188,7 +188,7 @@ public class TagBrowserTabContentPanel extends JPanel implements ActionListener
 	}
 	
 	
-	public List<Tag> getTagSearchHistory()
+	public ArrayList<Tag> getTagSearchHistory()
 	{
 	  return (this.lTagSearchHistory);
 	}

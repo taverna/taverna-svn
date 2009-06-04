@@ -176,27 +176,36 @@ public class HistoryBrowserTabContentPanel extends JPanel implements ActionListe
     
     if (lSearchHistory.size() > 0)
     {
+      this.jpSearchHistory.setLayout(new GridBagLayout());
+      GridBagConstraints c = new GridBagConstraints();
+      c.anchor = GridBagConstraints.NORTHWEST;
+      
       for (int i = lSearchHistory.size() - 1; i >= 0; i--)
       {
         QuerySearchInstance qsiCurrent = lSearchHistory.get(i);
         JClickableLabel jclCurrentEntryLabel = new JClickableLabel(qsiCurrent.getSearchQuery(), SearchTabContentPanel.SEARCH_FROM_HISTORY + ":" + i,
             this, WorkbenchIcons.findIcon, SwingUtilities.LEFT, qsiCurrent.toString());
         JLabel jlCurrentEntrySettings = new JLabel(qsiCurrent.detailsAsString());
-        jlCurrentEntrySettings.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
+        jlCurrentEntrySettings.setBorder(BorderFactory.createEmptyBorder(3, 5, 0, 0));
         
         JPanel jpCurrentSearchHistoryEntry = new JPanel();
         jpCurrentSearchHistoryEntry.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        c.anchor = GridBagConstraints.WEST;
+        c.gridx = 0;
+        c.gridy = 0;
+        c.weightx = 0;
         jpCurrentSearchHistoryEntry.add(jclCurrentEntryLabel, c);
+        c.gridx = 1;
+        c.gridy = 0;
         c.weightx = 1.0;
         jpCurrentSearchHistoryEntry.add(jlCurrentEntrySettings, c);
         
-        this.jpSearchHistory.add(jpCurrentSearchHistoryEntry);
+        c.gridy = lSearchHistory.size() - 1 - i;
+        if (i == 0) c.weighty = 1.0;
+        this.jpSearchHistory.add(jpCurrentSearchHistoryEntry, c);
       }
     }
     else {
-      this.jpPreviewHistory.add(Util.generateNoneTextLabel(SearchResultsPanel.NO_SEARCHES_STATUS));
+      this.jpSearchHistory.add(Util.generateNoneTextLabel(SearchResultsPanel.NO_SEARCHES_STATUS));
     }
     
     // make sure that the component is updated after population

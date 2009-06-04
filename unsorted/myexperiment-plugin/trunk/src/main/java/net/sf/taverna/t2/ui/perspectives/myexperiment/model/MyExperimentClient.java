@@ -34,7 +34,7 @@ import org.jdom.input.SAXBuilder;
 public class MyExperimentClient
 {
   // CONSTANTS
-  public static final String DEFAULT_BASE_URL = "http://sandbox.myexperiment.org";
+  public static final String DEFAULT_BASE_URL = "http://www.myexperiment.org";
   public static final String PLUGIN_USER_AGENT = "Taverna2-myExperiment-plugin/" +
                                                  MyExperimentPerspective.PLUGIN_VERSION +
                                                  " Java/" + System.getProperty("java.version");
@@ -164,10 +164,12 @@ public class MyExperimentClient
       
       // === DECRYPT LOGIN AND PASSWORD ===
       // settings are now read, decrypt login and password before proceeding - these are encrypted, then Base64 encoded
-      String strEncryptedLogin = this.iniSettings.get(MyExperimentClient.INI_LOGIN).toString();
+      Object oEnctryptedLogin = this.iniSettings.get(MyExperimentClient.INI_LOGIN);
+      String strEncryptedLogin = (oEnctryptedLogin == null ? "" : oEnctryptedLogin.toString());
       String strLogin = new String(Util.decrypt(new String(Base64.decode(strEncryptedLogin))));
       
-      String strEncryptedPassword = this.iniSettings.get(MyExperimentClient.INI_PASSWORD).toString();
+      Object oEncryptedPassword = this.iniSettings.get(MyExperimentClient.INI_PASSWORD);
+      String strEncryptedPassword = (oEncryptedPassword == null ? "" : oEncryptedPassword.toString());
       String strPassword = new String(Util.decrypt(new String(Base64.decode(strEncryptedPassword))));
       
       this.iniSettings.put(MyExperimentClient.INI_LOGIN, strLogin);
@@ -179,9 +181,15 @@ public class MyExperimentClient
     }
     catch (FileNotFoundException e) {
       this.logger.debug("myExperiment plugin INI file was not found, defaults will be used.");
+      
+      // make sure that in this case login and password are still set in the "read" settings
+      // (just putting empty strings as values)
+      this.iniSettings.put(MyExperimentClient.INI_LOGIN, "");
+      this.iniSettings.put(MyExperimentClient.INI_PASSWORD, "");
     }
     catch (IOException e) {
       this.logger.error("Error on reading settings from INI file:\n" + e);
+      e.printStackTrace();
     }
   }
   
@@ -191,7 +199,7 @@ public class MyExperimentClient
   {
     // === ENCRYPT LOGIN AND PASSWORD ===
     // it's important to do this before writing these values into the INI file
-    String strLogin = this.iniSettings.get(MyExperimentClient.INI_LOGIN).toString();
+  	String strLogin = this.iniSettings.get(MyExperimentClient.INI_LOGIN).toString();
     String strPass = this.iniSettings.get(MyExperimentClient.INI_PASSWORD).toString();
     this.iniSettings.put(MyExperimentClient.INI_LOGIN, Base64.encodeBytes(Util.encrypt(strLogin)));
     this.iniSettings.put(MyExperimentClient.INI_PASSWORD, Base64.encodeBytes(Util.encrypt(strPass)));
