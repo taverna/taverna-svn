@@ -103,6 +103,7 @@ public class Util
     }
     catch (Exception e) {
       System.err.println(e);
+      e.printStackTrace();
       return(new byte[1]);
     }
     

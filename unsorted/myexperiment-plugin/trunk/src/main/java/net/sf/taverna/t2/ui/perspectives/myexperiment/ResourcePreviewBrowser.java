@@ -227,7 +227,7 @@ public class ResourcePreviewBrowser extends JFrame implements ActionListener, Hy
           alFullHistory.remove(rpcContent.getResource());
           alFullHistory.add(rpcContent.getResource());
           if (alFullHistory.size() > PREVIEW_HISTORY_LENGTH) alFullHistory.remove(0);
-          pluginMainComponent.getHistoryBrowser().refreshPreviewHistory();
+          pluginMainComponent.getHistoryBrowser().refreshHistoryBox(HistoryBrowserTabContentPanel.PREVIEWED_ITEMS_HISTORY);
           
           
           // *** Update the Preview Dialog Box when everything is ready ***
@@ -486,6 +486,23 @@ public class ResourcePreviewBrowser extends JFrame implements ActionListener, Hy
         // a good option now would be to reload only the comments tab, but
         // for now we refresh the whole of the preview
         this.actionPerformed(new ActionEvent(this.bRefresh, 0, ""));
+        
+        // update history of the items that were commented on, making sure that:
+        // - there's only one occurrence of this item in the history;
+        // - if this item was in the history before, it is moved to the 'top' now;
+        // - predefined history size is not exceeded 
+        this.pluginMainComponent.getHistoryBrowser().getCommentedOnItemsHistoryList().remove(this.rpcContent.getResource());
+        this.pluginMainComponent.getHistoryBrowser().getCommentedOnItemsHistoryList().add(this.rpcContent.getResource());
+        if (this.pluginMainComponent.getHistoryBrowser().getCommentedOnItemsHistoryList().size() > 
+            HistoryBrowserTabContentPanel.COMMENTED_ON_ITEMS_HISTORY)
+        {
+          this.pluginMainComponent.getHistoryBrowser().getCommentedOnItemsHistoryList().remove(0);
+        }
+        
+        // now update the history of the items that were commented on in 'History' tab
+        if (this.pluginMainComponent.getHistoryBrowser() != null) {
+          this.pluginMainComponent.getHistoryBrowser().refreshHistoryBox(HistoryBrowserTabContentPanel.COMMENTED_ON_ITEMS_HISTORY);
+        }
       }
     }
     else if (e.getSource().equals(this.bAddRemoveFavourite))

@@ -38,9 +38,10 @@ public class MyExperimentClient
   public static final String PLUGIN_USER_AGENT = "Taverna2-myExperiment-plugin/" +
                                                  MyExperimentPerspective.PLUGIN_VERSION +
                                                  " Java/" + System.getProperty("java.version");
+  private static final String INI_FILE_NAME = "myexperiment-plugin.ini";
   private static final int EXAMPLE_WORKFLOWS_GROUP_ID = 69;
   
-  private static final String INI_FILE_NAME = "myexperiment-plugin.ini";
+  
   public static final String INI_BASE_URL = "my_experiment_base_url";
   public static final String INI_LOGIN = "login";
   public static final String INI_PASSWORD = "password";
@@ -49,6 +50,9 @@ public class MyExperimentClient
   public static final String INI_FAVOURITE_SEARCHES = "favourite_searches";
   public static final String INI_SEARCH_HISTORY = "search_history";
   public static final String INI_TAG_SEARCH_HISTORY = "tag_search_history";
+  public static final String INI_OPENED_ITEMS_HISTORY = "opened_items_history";
+  public static final String INI_DOWNLOADED_ITEMS_HISTORY = "downloaded_items_history";
+  public static final String INI_COMMENTED_ITEMS_HISTORY = "commented_items_history";
   public static final String INI_DEFAULT_LOGGED_IN_TAB = "default_tab_for_logged_in_users";
   public static final String INI_DEFAULT_ANONYMOUS_TAB = "default_tab_for_anonymous_users";
   public static final String INI_MY_STUFF_WORKFLOWS = "show_workflows_in_my_stuff";

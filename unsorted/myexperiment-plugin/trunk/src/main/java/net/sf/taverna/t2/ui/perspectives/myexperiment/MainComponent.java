@@ -62,6 +62,7 @@ import net.sf.taverna.t2.ui.perspectives.PerspectiveRegistry;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Base64;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.MyExperimentClient;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Resource;
+import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Tag;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Util;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Workflow;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.SearchEngine.QuerySearchInstance;
@@ -398,6 +399,21 @@ public final class MainComponent extends JPanel implements UIComponentSPI, Chang
       try {
         BrowserLauncher launcher = new BrowserLauncher();
         launcher.openURLinBrowser(resource.getResource() + "/download");
+        
+        // update downloaded items history making sure that:
+        // - there's only one occurrence of this item in the history;
+        // - if this item was in the history before, it is moved to the 'top' now;
+        // - predefined history size is not exceeded 
+        getHistoryBrowser().getDownloadedItemsHistoryList().remove(resource);
+        getHistoryBrowser().getDownloadedItemsHistoryList().add(resource);
+        if (getHistoryBrowser().getDownloadedItemsHistoryList().size() > HistoryBrowserTabContentPanel.DOWNLOADED_ITEMS_HISTORY_LENGTH) {
+          getHistoryBrowser().getDownloadedItemsHistoryList().remove(0);
+        }
+        
+        // now update the downloaded items history panel in 'History' tab
+        if (getHistoryBrowser() != null) {
+          getHistoryBrowser().refreshHistoryBox(HistoryBrowserTabContentPanel.DOWNLOADED_ITEMS_HISTORY);
+        }
       }
       catch (Exception ex) {
         logger.error("Failed while trying to open download URL in a standard browser; URL was: " + resource.getURI()
@@ -467,6 +483,22 @@ public final class MainComponent extends JPanel implements UIComponentSPI, Chang
             Dataflow openDataflow = fileManager.openDataflow(fileTypeType, workflowDataInputStream);
             
             getStatusBar().setStatus(strCallerTabClassName, null);
+            
+            
+            // update opened items history making sure that:
+            // - there's only one occurrence of this item in the history;
+            // - if this item was in the history before, it is moved to the 'top' now;
+            // - predefined history size is not exceeded 
+            getHistoryBrowser().getOpenedItemsHistoryList().remove(resource);
+            getHistoryBrowser().getOpenedItemsHistoryList().add(resource);
+            if (getHistoryBrowser().getOpenedItemsHistoryList().size() > HistoryBrowserTabContentPanel.OPENED_ITEMS_HISTORY_LENGTH) {
+              getHistoryBrowser().getOpenedItemsHistoryList().remove(0);
+            }
+            
+            // now update the opened items history panel in 'History' tab
+            if (getHistoryBrowser() != null) {
+              getHistoryBrowser().refreshHistoryBox(HistoryBrowserTabContentPanel.OPENED_ITEMS_HISTORY);
+            }
           }
           catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(null, "An error has occurred while trying to load a workflow from myExperiment.\n\n" + e,

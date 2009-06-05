@@ -8,6 +8,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -23,6 +24,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import net.sf.taverna.t2.lang.ui.ShadedLabel;
+import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Base64;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.MyExperimentClient;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Resource;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Tag;
@@ -35,11 +37,24 @@ import org.apache.log4j.Logger;
 public class HistoryBrowserTabContentPanel extends JPanel implements ActionListener
 {
   // CONSTANTS
+  public static final int DOWNLOADED_ITEMS_HISTORY_LENGTH = 50;
+  public static final int OPENED_ITEMS_HISTORY_LENGTH = 50;
+  public static final int COMMENTED_ON_ITEMS_HISTORY_LENGTH = 50;
+  
+  public static final int PREVIEWED_ITEMS_HISTORY = 0;
+  public static final int DOWNLOADED_ITEMS_HISTORY = 1;
+  public static final int OPENED_ITEMS_HISTORY = 2;
+  public static final int COMMENTED_ON_ITEMS_HISTORY = 3;
   
   
   private MainComponent pluginMainComponent;
   private MyExperimentClient myExperimentClient;
   private Logger logger;
+  
+  // STORAGE
+  private ArrayList<Resource> lDownloadedItems;
+  private ArrayList<Resource> lOpenedItems;
+  private ArrayList<Resource> lCommentedOnItems;
   
   // COMPONENTS
   private JPanel jpPreviewHistory;
@@ -50,6 +65,7 @@ public class HistoryBrowserTabContentPanel extends JPanel implements ActionListe
   private JPanel jpCommentedOnHistory;
   
   
+  @SuppressWarnings("unchecked")
   public HistoryBrowserTabContentPanel(MainComponent component, MyExperimentClient client, Logger logger)
   {
     super();
@@ -58,6 +74,38 @@ public class HistoryBrowserTabContentPanel extends JPanel implements ActionListe
     this.pluginMainComponent = component;
     this.myExperimentClient = client;
     this.logger = logger;
+    
+    
+    // initialise downloaded items history
+    String strDownloadedItemsHistory = (String)myExperimentClient.getSettings().get(MyExperimentClient.INI_DOWNLOADED_ITEMS_HISTORY);
+    if (strDownloadedItemsHistory != null) {
+      Object oDownloadedItemsHistory = Base64.decodeToObject(strDownloadedItemsHistory);
+      this.lDownloadedItems = (ArrayList<Resource>)oDownloadedItemsHistory;
+    }
+    else {
+      this.lDownloadedItems = new ArrayList<Resource>();
+    }
+    
+    // initialise opened items history
+    String strOpenedItemsHistory = (String)myExperimentClient.getSettings().get(MyExperimentClient.INI_OPENED_ITEMS_HISTORY);
+    if (strOpenedItemsHistory != null) {
+      Object oOpenedItemsHistory = Base64.decodeToObject(strOpenedItemsHistory);
+      this.lOpenedItems = (ArrayList<Resource>)oOpenedItemsHistory;
+    }
+    else {
+      this.lOpenedItems = new ArrayList<Resource>();
+    }
+    
+    // initialise history of the items that were commented on
+    String strCommentedItemsHistory = (String)myExperimentClient.getSettings().get(MyExperimentClient.INI_COMMENTED_ITEMS_HISTORY);
+    if (strCommentedItemsHistory != null) {
+      Object oCommentedItemsHistory = Base64.decodeToObject(strCommentedItemsHistory);
+      this.lCommentedOnItems = (ArrayList<Resource>)oCommentedItemsHistory;
+    }
+    else {
+      this.lCommentedOnItems = new ArrayList<Resource>();
+    }
+    
     
     this.initialiseUI();
     this.refreshAllData();
@@ -107,52 +155,92 @@ public class HistoryBrowserTabContentPanel extends JPanel implements ActionListe
   }
   
   
+  public List<Resource> getDownloadedItemsHistoryList()
+  {
+    return (this.lDownloadedItems);
+  }
+  
+  public List<Resource> getOpenedItemsHistoryList()
+  {
+    return (this.lOpenedItems);
+  }
+  
+  public List<Resource> getCommentedOnItemsHistoryList()
+  {
+    return (this.lCommentedOnItems);
+  }
+  
+  
   /**
    * Used to refresh all boxes at a time (for example at launch time).
    */
   private void refreshAllData()
   {
-    this.refreshPreviewHistory();
+    this.refreshHistoryBox(PREVIEWED_ITEMS_HISTORY);
+    this.refreshHistoryBox(DOWNLOADED_ITEMS_HISTORY);
+    this.refreshHistoryBox(OPENED_ITEMS_HISTORY);
+    this.refreshHistoryBox(COMMENTED_ON_ITEMS_HISTORY);
     this.refreshSearchHistory();
     this.refreshTagSearchHistory();
   }
   
   
   /**
-   * This helper can be called externally to refresh the preview history.
-   * Is used inside ResourcePreviewBrowser every time a new item is previewed.
-   * Also useful, when an option to 'clear preview history' is used in the Preferences window.
+   * This helper can be called externally to refresh the following history boxes:
+   * previewed items history, downloaded items history, opened items history and
+   * the history of items that were commented on.
+   * 
+   * Is used inside ResourcePreviewBrowser and MainComponent every time a relevant action occurs.
+   * Also useful, when an option to 'clear preview history' is used in the Preferences window for.
+   * a particular history type.
    */
-  public void refreshPreviewHistory()
+  public void refreshHistoryBox(int historyType)
   {
-    this.jpPreviewHistory.removeAll();
-    populatePreviewHistory();
+    switch (historyType) {
+      case PREVIEWED_ITEMS_HISTORY:
+        this.jpPreviewHistory.removeAll();
+        populateHistoryBox(this.pluginMainComponent.getPreviewBrowser().getPreviewHistory(),
+                           this.jpPreviewHistory,
+                           "No items were previewed yet");
+        break;
+      case DOWNLOADED_ITEMS_HISTORY:
+        this.jpDownloadedItemsHistory.removeAll();
+        populateHistoryBox(this.lDownloadedItems, this.jpDownloadedItemsHistory, "No items were downloaded yet");
+        break;
+      case OPENED_ITEMS_HISTORY:
+        this.jpOpenedItemsHistory.removeAll();
+        populateHistoryBox(this.lOpenedItems, this.jpOpenedItemsHistory, "No items were opened yet");
+        break;
+      case COMMENTED_ON_ITEMS_HISTORY:
+        this.jpCommentedOnHistory.removeAll();
+        populateHistoryBox(this.lCommentedOnItems, this.jpCommentedOnHistory, "You didn't comment on any items yet");
+        break;
+    }
   }
   
   
   /**
-   * Retrieves preview history data from Preview Browser and populates the relevant panel.
+   * Retrieves history data from a relevant list and populates the specified panel with it.
+   * All listed items will be resources that can be opened by Preview Browser.
    */
-  private void populatePreviewHistory()
+  private void populateHistoryBox(List<Resource> lHistory, JPanel jpPanelToPopulate, String strLabelIfNoItems)
   {
-    List<Resource> lPreviewedItems = this.pluginMainComponent.getPreviewBrowser().getPreviewHistory();
-    
-    if (lPreviewedItems.size() > 0)
+    if (lHistory.size() > 0)
     {
-      for (int i = lPreviewedItems.size() - 1; i >= 0; i--)
+      for (int i = lHistory.size() - 1; i >= 0; i--)
       {
-        Resource r = lPreviewedItems.get(i);
+        Resource r = lHistory.get(i);
         JClickableLabel lResource = Util.generateClickableLabelFor(r, this.pluginMainComponent.getPreviewBrowser());
-        this.jpPreviewHistory.add(lResource);
+        jpPanelToPopulate.add(lResource);
       }
     }
     else {
-      this.jpPreviewHistory.add(Util.generateNoneTextLabel("No items were previewed yet"));
+      jpPanelToPopulate.add(Util.generateNoneTextLabel(strLabelIfNoItems));
     }
     
     // make sure that the component is updated after population
-    this.jpPreviewHistory.revalidate();
-    this.jpPreviewHistory.repaint();
+    jpPanelToPopulate.revalidate();
+    jpPanelToPopulate.repaint();
   }
   
   
