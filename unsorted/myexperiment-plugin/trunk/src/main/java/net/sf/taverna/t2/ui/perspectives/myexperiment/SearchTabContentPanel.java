@@ -240,7 +240,8 @@ public class SearchTabContentPanel extends JPanel implements ActionListener
       for(int i = this.llFavouriteSearches.size() - 1; i >= 0; i--)
       {
         addEntryToSearchListingPanel(this.llFavouriteSearches, i, SEARCH_FROM_FAVOURITES, this.jpFavouriteSearches,
-            this.iconRemove, REMOVE_FAVOURITE_SEARCH_INSTANCE, "Click to remove from your favourite searches");
+            this.iconRemove, REMOVE_FAVOURITE_SEARCH_INSTANCE, "<html>Click to remove from your local favourite searches.<br/>" +
+            "(This will not affect your myExperiment profile settings.)</html>");
       }
     }
     
@@ -272,7 +273,9 @@ public class SearchTabContentPanel extends JPanel implements ActionListener
       for(int i = this.llSearchHistory.size() - 1; i >= 0; i--)
       {
         addEntryToSearchListingPanel(this.llSearchHistory, i, SEARCH_FROM_HISTORY, this.jpSearchHistory,
-            this.iconFavourite, ADD_FAVOURITE_SEARCH_INSTANCE, "Click to add to your favourite searches");
+            this.iconFavourite, ADD_FAVOURITE_SEARCH_INSTANCE, "<html>Click to add to your local favourite" +
+            " searches - these will be available every time you use Taverna.<br/>(This will not affect your" +
+            " myExperiment profile settings.)</html>");
       }
     }
     
