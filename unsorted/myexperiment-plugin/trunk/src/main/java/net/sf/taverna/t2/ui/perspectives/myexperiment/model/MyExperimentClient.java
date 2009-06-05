@@ -503,7 +503,7 @@ public class MyExperimentClient
     }
     
     // fetch the avatar, if one exists for the user
-    if(user.getAvatarURI() != null && !user.getAvatarURI().isEmpty())
+    if(user.getAvatarURI() != null && user.getAvatarURI().length() != 0)
     {
       try {
         Document doc = this.doMyExperimentGET(user.getAvatarURI()).getResponseBody();
@@ -912,7 +912,7 @@ public class MyExperimentClient
       if (searchQuery.getSearchPacks()) strSearchFor += ",pack";
       if (searchQuery.getSearchUsers()) strSearchFor += ",user";
       if (searchQuery.getSearchGroups()) strSearchFor += ",group";
-      if (!strSearchFor.isEmpty())
+      if (strSearchFor.length() != 0)
       {
         // some types were added;
         // remove leading comma (if it exists)
@@ -926,7 +926,7 @@ public class MyExperimentClient
       // assemble all search parameters together
       // (we will definitely have the number of results)
       String strParameters = strSearchFor;
-      if (!strParameters.isEmpty()) strParameters += "&";
+      if (strParameters.length() != 0) strParameters += "&";
       strParameters += "num=" + searchQuery.getResultCountLimit();
       strParameters += Util.composeAPIQueryElements(searchQuery);
       

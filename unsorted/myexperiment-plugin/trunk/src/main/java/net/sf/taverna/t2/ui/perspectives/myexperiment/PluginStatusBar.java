@@ -94,7 +94,7 @@ public class PluginStatusBar extends JPanel implements ActionListener
   public void setCurrentUser(String strUsername)
   {
     // if "null" or "" is submitted as a parameter, the status will be set to "Ready"
-    if (strUsername == null || strUsername.isEmpty())
+    if (strUsername == null || strUsername.length() == 0)
       this.lCurrentUser.setText("Please log in to access your profile");
     else
       this.lCurrentUser.setText("<html>Logged in as <b>" + strUsername + "</b></html>");
@@ -130,7 +130,7 @@ public class PluginStatusBar extends JPanel implements ActionListener
   public void setStatus(String strTabClassName, String strStatus)
   {
     // PREPROCESSING - if "null" or "" is submitted as a parameter, the status will be set to "Ready"
-    if (strStatus == null || strStatus.isEmpty()) strStatus = PluginStatusBar.STATUS_MESSAGE_READY;
+    if (strStatus == null || strStatus.length() == 0) strStatus = PluginStatusBar.STATUS_MESSAGE_READY;
     String strBaseClassName = Util.getBaseClassName(strTabClassName);
     
     // STORING the status it in the collection

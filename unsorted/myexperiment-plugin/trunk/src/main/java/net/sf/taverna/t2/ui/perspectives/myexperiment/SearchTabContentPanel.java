@@ -341,7 +341,7 @@ public class SearchTabContentPanel extends JPanel implements ActionListener
       // "Search" button was clicked
       
       // if no search query is specified, display error message
-      if (jpSearchOptions.getSearchQuery().isEmpty()) {
+      if (jpSearchOptions.getSearchQuery().length() == 0) {
         javax.swing.JOptionPane.showMessageDialog(null, "Search query is empty. Please specify your search query and try again.", "Error", JOptionPane.WARNING_MESSAGE);
         jpSearchOptions.focusSearchQueryField();
       }

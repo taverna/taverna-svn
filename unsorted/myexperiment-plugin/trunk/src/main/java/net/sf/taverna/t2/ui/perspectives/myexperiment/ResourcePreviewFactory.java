@@ -526,10 +526,10 @@ public class ResourcePreviewFactory
         
         content.append("<p class='info'>");
         String strLocation;
-        if(u.getCity().isEmpty() && u.getCountry().isEmpty())
+        if(u.getCity().length() == 0 && u.getCountry().length() == 0)
           strLocation = "<span class='none_text'>Not specified</span>";
         else
-          strLocation = u.getCity() + (u.getCity().isEmpty() || u.getCountry().isEmpty() ? "" : ", ") + u.getCountry();
+          strLocation = u.getCity() + (u.getCity().length() == 0 || u.getCountry().length() == 0 ? "" : ", ") + u.getCountry();
         content.append("<b>Location:</b> " + strLocation + "<br>");
         content.append("<b>Joined at: </b> " + u.getCreatedAt() + "<br>");
         content.append("<b>Last seen at: </b> " + u.getUpdatedAt() + "<br>");
@@ -555,8 +555,8 @@ public class ResourcePreviewFactory
         
         content.append("<p class='contact_details_header'>Contact Details</p>");
         content.append("<p class='contact_details'>");
-        content.append("<b>Email: </b>" + (u.getEmail().isEmpty() ? "<span class='none_text'>Not specified</span>" : u.getEmail()) + "<br/>");
-        content.append("<b>Website: </b>" + (u.getWebsite().isEmpty() ? "<span class='none_text'>Not specified</span>" : u.getWebsite()));
+        content.append("<b>Email: </b>" + (u.getEmail().length() == 0 ? "<span class='none_text'>Not specified</span>" : u.getEmail()) + "<br/>");
+        content.append("<b>Website: </b>" + (u.getWebsite().length() == 0 ? "<span class='none_text'>Not specified</span>" : u.getWebsite()));
         content.append("</p>");
         
         content.append("</div>");
