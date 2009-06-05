@@ -21,11 +21,16 @@
 package net.sf.taverna.t2.provenance.lineageservice.derby;
 
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
+import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
 
 /**
  * Uses Apache Derby to carry out provenance queries
@@ -66,7 +71,7 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
 				// FIXME there may be more numerical inputs than inputOrOutput,
 				// needs checking - 21.5.09 there are - this kind of custom where clause is very dangerous and 
 				//should be refactored at some point
-				if (entry.getKey().equals("V.inputOrOutput") || entry.getKey().equals("VB.positionInColl")) {
+				if (entry.getKey().equals("V.inputOrOutput") || entry.getKey().equals("VB.positionInColl") || entry.getKey().equals("inputOrOutput")) {
 					q.append(" " + entry.getKey() + " = " + entry.getValue());
 				} else {
 					q.append(" " + entry.getKey() + " = \'" + entry.getValue()
@@ -77,6 +82,67 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
 		}
 
 		return q.toString();
+	}
+	
+	/**
+	 * select Var records that satisfy constraints
+	 */
+	@Override
+	public List<Var> getVars(Map<String, String> queryConstraints)
+	throws SQLException {
+		List<Var> result = new ArrayList<Var>();
+
+		String q0 = "SELECT  * FROM Var V JOIN WfInstance W ON W.wfnameRef = V.wfInstanceRef";
+
+		String q = addWhereClauseToQuery(q0, queryConstraints, true);
+		
+		List<String> orderAttr = new ArrayList<String>();
+		orderAttr.add("V.reorder");
+
+		String q1 = addOrderByToQuery(q, orderAttr, true);
+
+//		logger.info("q1 = "+q1);
+		
+		Statement stmt;
+		try {
+			stmt = getConnection().createStatement();
+			boolean success = stmt.execute(q1.toString());
+
+			if (success) {
+				ResultSet rs = stmt.getResultSet();
+
+				while (rs.next()) {
+
+					Var aVar = new Var();
+
+					aVar.setWfInstanceRef(rs.getString("WfInstanceRef"));
+
+					if (rs.getInt("inputOrOutput") == 1) {
+						aVar.setInput(true);
+					} else {
+						aVar.setInput(false);
+					}
+					aVar.setPName(rs.getString("pnameRef"));
+					aVar.setVName(rs.getString("varName"));
+					aVar.setType(rs.getString("type"));
+					aVar.setTypeNestingLevel(rs.getInt("nestingLevel"));
+					aVar.setActualNestingLevel(rs.getInt("actualNestingLevel"));
+					aVar.setANLset((rs.getInt("anlSet") == 1 ? true : false));
+					result.add(aVar);
+
+				}
+			}
+		} catch (InstantiationException e) {
+			logger.warn("Could not execute query: " + e);
+		} catch (IllegalAccessException e) {
+			logger.warn("Could not execute query: " + e);
+		} catch (ClassNotFoundException e) {
+			logger.warn("Could not execute query: " + e);
+		}
+
+		// System.out.println("getVars: executing query\n"+q.toString());
+
+		return result;
 	}
 
 	@Override
