@@ -240,9 +240,9 @@ public class HistoryBrowserTabContentPanel extends JPanel implements ActionListe
         JClickableLabel lTag = new JClickableLabel(t.getTagName(),
                                                    "tag:" + t.getTagName(),
                                                    this,
-                                                   new ImageIcon(MyExperimentPerspective.getLocalIconURL(t.getItemType())),
+                                                   new ImageIcon(MyExperimentPerspective.getLocalIconURL(Resource.TAG)),  // HACK: after deserialization t.getItemType() return "Unknown" type
                                                    SwingConstants.LEFT,
-                                                   t.getItemTypeName() + ": " + t.getTagName()
+                                                   "Tag: " + t.getTagName()
                                                    );
         this.jpTagSearchHistory.add(lTag);
       }

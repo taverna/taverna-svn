@@ -1,15 +1,16 @@
 // Copyright (C) 2008 The University of Manchester, University of Southampton and Cardiff University
 package net.sf.taverna.t2.ui.perspectives.myexperiment.model;
 
+import java.io.Serializable;
 import java.util.Comparator;
+
 
 /*
  * @author Jiten Bhagat, modified by Sergejs Aleksejevs
  */
-public class Tag extends Resource {
-	
+public class Tag extends Resource implements Serializable
+{
 	private String tagName;
-	
 	private int count;
   
 	
@@ -87,7 +88,13 @@ public class Tag extends Resource {
     return (this.count == otherTag.count && this.tagName.equals(otherTag.tagName));
   }
 	
+  
+  public String toString()
+  {
+    return ("Tag (" + this.tagName + ", " + this.count + ")");
+  }
 	
+  
   /**
    * A helper method to return a set of API elements that are
    * needed to satisfy request of a particular type - e.g. creating
