@@ -20,6 +20,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
+import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Base64;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.MyExperimentClient;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Resource;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
@@ -86,10 +87,19 @@ public class ResourcePreviewBrowser extends JFrame implements ActionListener, Hy
     this.myExperimentClient = client;
     this.logger = logger;
     
+    // initialise previewed items history
+    String strPreviewedItemsHistory = (String)myExperimentClient.getSettings().get(MyExperimentClient.INI_PREVIEWED_ITEMS_HISTORY);
+    if (strPreviewedItemsHistory != null) {
+      Object oPreviewedItemsHistory = Base64.decodeToObject(strPreviewedItemsHistory);
+      this.alFullHistory = (ArrayList<Resource>)oPreviewedItemsHistory;
+    }
+    else {
+      this.alFullHistory = new ArrayList<Resource>();
+    }
+    
     // no navigation history at loading
     this.iCurrentHistoryIdx = -1;
     this.alCurrentHistory = new ArrayList<String>();
-    this.alFullHistory = new ArrayList<Resource>();
     
     // set options of the preview dialog box
     this.setIconImage(new ImageIcon(MyExperimentPerspective.getLocalResourceURL("myexp_icon")).getImage());
@@ -102,7 +112,7 @@ public class ResourcePreviewBrowser extends JFrame implements ActionListener, Hy
   /**
    * Accessor method for getting a full history of previewed resources as a list.
    */
-  public List<Resource> getPreviewHistory()
+  public ArrayList<Resource> getPreviewHistory()
   {
     return (this.alFullHistory);
   }

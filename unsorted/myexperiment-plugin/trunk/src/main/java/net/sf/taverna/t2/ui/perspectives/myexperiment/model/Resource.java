@@ -3,6 +3,7 @@ package net.sf.taverna.t2.ui.perspectives.myexperiment.model;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.io.Serializable;
 import java.net.URI;
 import java.util.Date;
 import java.util.EventListener;
@@ -11,7 +12,6 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.event.HyperlinkListener;
@@ -29,7 +29,7 @@ import org.jdom.Element;
 /*
  * @author Jiten Bhagat (modified by Sergejs Aleksejevs)
  */
-public class Resource implements Comparable<Resource>
+public class Resource implements Comparable<Resource>, Serializable
 {
   // CONSTANTS
   // (integer resource types)

@@ -155,17 +155,17 @@ public class HistoryBrowserTabContentPanel extends JPanel implements ActionListe
   }
   
   
-  public List<Resource> getDownloadedItemsHistoryList()
+  public ArrayList<Resource> getDownloadedItemsHistoryList()
   {
     return (this.lDownloadedItems);
   }
   
-  public List<Resource> getOpenedItemsHistoryList()
+  public ArrayList<Resource> getOpenedItemsHistoryList()
   {
     return (this.lOpenedItems);
   }
   
-  public List<Resource> getCommentedOnItemsHistoryList()
+  public ArrayList<Resource> getCommentedOnItemsHistoryList()
   {
     return (this.lCommentedOnItems);
   }

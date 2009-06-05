@@ -1,11 +1,13 @@
 // Copyright (C) 2008 The University of Manchester, University of Southampton and Cardiff University 
 package net.sf.taverna.t2.ui.perspectives.myexperiment.model;
 
+import java.io.Serializable;
+
 /*
  * @author Jiten Bhagat
  */
-public class License {
-	
+public class License implements Serializable
+{	
 	private String type;
 	
 	private String text;

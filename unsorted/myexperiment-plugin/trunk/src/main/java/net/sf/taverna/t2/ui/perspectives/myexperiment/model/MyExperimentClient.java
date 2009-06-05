@@ -50,6 +50,7 @@ public class MyExperimentClient
   public static final String INI_FAVOURITE_SEARCHES = "favourite_searches";
   public static final String INI_SEARCH_HISTORY = "search_history";
   public static final String INI_TAG_SEARCH_HISTORY = "tag_search_history";
+  public static final String INI_PREVIEWED_ITEMS_HISTORY = "previewed_items_history";
   public static final String INI_OPENED_ITEMS_HISTORY = "opened_items_history";
   public static final String INI_DOWNLOADED_ITEMS_HISTORY = "downloaded_items_history";
   public static final String INI_COMMENTED_ITEMS_HISTORY = "commented_items_history";

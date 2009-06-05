@@ -73,6 +73,11 @@ public class MainComponentShutdownHook implements ShutdownSPI
         myExperimentClient.getSettings().put(MyExperimentClient.INI_FAVOURITE_SEARCHES, Base64.encodeObject(pluginMainComponent.getSearchTab().getSearchFavouritesList()));
         myExperimentClient.getSettings().put(MyExperimentClient.INI_SEARCH_HISTORY, Base64.encodeObject(pluginMainComponent.getSearchTab().getSearchHistory()));
         myExperimentClient.getSettings().put(MyExperimentClient.INI_TAG_SEARCH_HISTORY, Base64.encodeObject(pluginMainComponent.getTagBrowserTab().getTagSearchHistory()));
+        myExperimentClient.getSettings().put(MyExperimentClient.INI_PREVIEWED_ITEMS_HISTORY, Base64.encodeObject(pluginMainComponent.getPreviewBrowser().getPreviewHistory()));
+        myExperimentClient.getSettings().put(MyExperimentClient.INI_DOWNLOADED_ITEMS_HISTORY, Base64.encodeObject(pluginMainComponent.getHistoryBrowser().getDownloadedItemsHistoryList()));
+        myExperimentClient.getSettings().put(MyExperimentClient.INI_OPENED_ITEMS_HISTORY, Base64.encodeObject(pluginMainComponent.getHistoryBrowser().getOpenedItemsHistoryList()));
+        myExperimentClient.getSettings().put(MyExperimentClient.INI_COMMENTED_ITEMS_HISTORY, Base64.encodeObject(pluginMainComponent.getHistoryBrowser().getCommentedOnItemsHistoryList()));
+        
         myExperimentClient.storeSettings();
       }
       catch(Exception e)
