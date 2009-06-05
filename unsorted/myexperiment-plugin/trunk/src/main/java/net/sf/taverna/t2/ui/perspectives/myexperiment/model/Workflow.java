@@ -38,7 +38,7 @@ public class Workflow extends Resource
 	
 	private List<Tag> tags;
 	private List<Comment> comments;
-	private List<User> credits;
+	private List<Resource> credits;
 	private List<Resource> attributions;
 	private HashMap<String, ArrayList<HashMap<String,String>>> components;
 	
@@ -152,7 +152,7 @@ public class Workflow extends Resource
 	  return comments;
 	}
 	
-	public List<User> getCredits() {
+	public List<Resource> getCredits() {
 		return credits;
 	}
 	
@@ -341,7 +341,7 @@ public class Workflow extends Resource
       w.getComments().addAll(Util.retrieveComments(docRootElement, w));
       
       // Credits
-      w.credits = new ArrayList<User>();
+      w.credits = new ArrayList<Resource>();
       w.getCredits().addAll(Util.retrieveCredits(docRootElement));
       
       // Attributions

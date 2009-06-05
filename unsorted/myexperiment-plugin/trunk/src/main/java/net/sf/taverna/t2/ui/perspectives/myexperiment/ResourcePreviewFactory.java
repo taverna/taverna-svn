@@ -1151,11 +1151,7 @@ public class ResourcePreviewFactory
     else {
       c.weighty = 1.0;
       c.weightx = 1.0;
-      
-      JLabel jlNone = new JLabel("None");
-      jlNone.setFont(jlNone.getFont().deriveFont(Font.ITALIC));
-      jlNone.setForeground(Color.GRAY);
-      jpPackItemsTabContent.add(jlNone, c);
+      jpPackItemsTabContent.add(Util.generateNoneTextLabel("None"), c);
     }
     
     return(wrapPreviewTabContentIntoScrollPane(jpPackItemsTabContent));
@@ -1269,10 +1265,7 @@ public class ResourcePreviewFactory
       }.start();
     }
     else {
-      JLabel jlNone = new JLabel("None");
-      jlNone.setFont(jlNone.getFont().deriveFont(Font.ITALIC));
-      jlNone.setForeground(Color.GRAY);
-      jpCommentsTabContent.add(jlNone);
+      jpCommentsTabContent.add(Util.generateNoneTextLabel("None"));
     }
     
     JScrollPane spCommentsTabContent = wrapPreviewTabContentIntoScrollPane(jpCommentsTabContent);
@@ -1281,20 +1274,21 @@ public class ResourcePreviewFactory
   }
   
   
-  private JScrollPane createCreditsPreviewTab(List<User> lCreditedUsers)
+  private JScrollPane createCreditsPreviewTab(List<Resource> lCreditedUsersOrGroups)
   {
     JPanel jpCreditsTabContent = createStandardTabContentPanel();
     
-    if (lCreditedUsers.size() > 0) {
-      for (User u : lCreditedUsers) {
-        jpCreditsTabContent.add(new JClickableLabel(u.getName(), "preview:" + Resource.USER + ":" + u.getURI(), pluginMainComponent.getPreviewBrowser(), this.iconUser));
+    if (lCreditedUsersOrGroups.size() > 0) {
+      for (Resource r : lCreditedUsersOrGroups) {
+        jpCreditsTabContent.add(new JClickableLabel(r.getTitle(),
+                                                    "preview:" + r.getItemType() + ":" + r.getURI(),
+                                                    pluginMainComponent.getPreviewBrowser(),
+                                                    new ImageIcon(MyExperimentPerspective.getLocalIconURL(r.getItemType()))
+                               ));
       }
     }
     else {
-      JLabel jlNone = new JLabel("None");
-      jlNone.setFont(jlNone.getFont().deriveFont(Font.ITALIC));
-      jlNone.setForeground(Color.GRAY);
-      jpCreditsTabContent.add(jlNone);
+      jpCreditsTabContent.add(Util.generateNoneTextLabel("None"));
     }
     
     return (wrapPreviewTabContentIntoScrollPane(jpCreditsTabContent));
@@ -1315,10 +1309,7 @@ public class ResourcePreviewFactory
       }
     }
     else {
-      JLabel jlNone = new JLabel("None");
-      jlNone.setFont(jlNone.getFont().deriveFont(Font.ITALIC));
-      jlNone.setForeground(Color.GRAY);
-      jpAttributionsTabContent.add(jlNone);
+      jpAttributionsTabContent.add(Util.generateNoneTextLabel("None"));
     }
     
     return (wrapPreviewTabContentIntoScrollPane(jpAttributionsTabContent));

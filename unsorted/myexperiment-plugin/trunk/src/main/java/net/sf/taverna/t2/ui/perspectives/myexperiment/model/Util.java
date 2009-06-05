@@ -388,15 +388,15 @@ public class Util
    * which contains "credits" element.
    */
   @SuppressWarnings("unchecked")
-  public static List<User> retrieveCredits(Element docRootElement)
+  public static List<Resource> retrieveCredits(Element docRootElement)
   {
-    List<User> credits = new ArrayList<User>();
+    List<Resource> credits = new ArrayList<Resource>();
     
     Element creditsElement = docRootElement.getChild("credits");
     if (creditsElement != null) {
       List<Element> creditsNodes = creditsElement.getChildren();
       for (Element e : creditsNodes) {
-        credits.add(Util.instantiatePrimitiveUserFromElement(e));
+        credits.add(Util.instantiatePrimitiveResourceFromElement(e));
       }
     }
     

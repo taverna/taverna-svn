@@ -22,7 +22,7 @@ public class File extends Resource
   private String contentType;
   private List<Tag> tags;
   private List<Comment> comments;
-  private List<User> credits;
+  private List<Resource> credits;
   private List<Resource> attributions;
   
   
@@ -95,7 +95,7 @@ public class File extends Resource
     return this.comments;
   }
 
-  public List<User> getCredits() {
+  public List<Resource> getCredits() {
     return this.credits;
   }
   
@@ -211,7 +211,7 @@ public class File extends Resource
       f.getComments().addAll(Util.retrieveComments(docRootElement, f));
       
       // Credits
-      f.credits = new ArrayList<User>();
+      f.credits = new ArrayList<Resource>();
       f.getCredits().addAll(Util.retrieveCredits(docRootElement));
       
       // Attributions
