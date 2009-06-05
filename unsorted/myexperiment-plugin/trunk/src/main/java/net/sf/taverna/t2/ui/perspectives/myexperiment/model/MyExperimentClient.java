@@ -111,7 +111,7 @@ public class MyExperimentClient
     
     // === Check if defaults should be applied to override not sensible settings from INI file ===
     // verify that myExperiment BASE URL was read - use default otherwise
-    if (BASE_URL == null || BASE_URL.isEmpty()) BASE_URL = DEFAULT_BASE_URL;
+    if (BASE_URL == null || BASE_URL.length() == 0) BASE_URL = DEFAULT_BASE_URL;
     this.iniSettings.put(INI_BASE_URL, BASE_URL); // store this to settings (if no changes were made - same as before, alternatively default URL)
   }
   
@@ -160,9 +160,9 @@ public class MyExperimentClient
   {
     try {
       // === READ SETTINGS ===
-      FileReader fIniReader = new FileReader(new java.io.File(this.fIniFileDir, this.INI_FILE_NAME));
-      this.iniSettings.load(fIniReader);
-      fIniReader.close();
+      FileInputStream fIniInputStream = new FileInputStream(new java.io.File(this.fIniFileDir, this.INI_FILE_NAME));
+      this.iniSettings.load(fIniInputStream);
+      fIniInputStream.close();
       
       // set BASE_URL if from INI settings
       this.BASE_URL = this.iniSettings.getProperty(INI_BASE_URL);
@@ -213,9 +213,9 @@ public class MyExperimentClient
     // === STORE THE SETTINGS ===
     try {
       this.fIniFileDir.mkdirs();
-      PrintWriter fIniWriter = new PrintWriter(new java.io.File(this.fIniFileDir, this.INI_FILE_NAME));
-      this.iniSettings.store(fIniWriter, "Test comment");
-      fIniWriter.close();
+      FileOutputStream fIniOutputStream = new FileOutputStream(new java.io.File(this.fIniFileDir, this.INI_FILE_NAME));
+      this.iniSettings.store(fIniOutputStream, "Test comment");
+      fIniOutputStream.close();
     }
     catch (IOException e) {
       this.logger.error("Error while trying to store settings to INI file:\n" + e);

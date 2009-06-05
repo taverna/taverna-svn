@@ -72,7 +72,7 @@ public class AddRemoveFavouriteDialog extends JDialog implements ActionListener,
     this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     this.setTitle((this.bIsFavouriteBeingAdded ? "Add to" : "Remove from") + " favourites - \"" + 
                   resource.getTitle() + "\" " + resource.getItemTypeName());
-    this.setIconImage(new ImageIcon(MyExperimentPerspective.getLocalResourceURL("myexp_icon")).getImage());
+    //this.setIconImage(new ImageIcon(MyExperimentPerspective.getLocalResourceURL("myexp_icon")).getImage());
     
     this.initialiseUI();
   }

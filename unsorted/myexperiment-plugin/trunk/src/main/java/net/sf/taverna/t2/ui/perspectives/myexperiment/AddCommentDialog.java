@@ -72,7 +72,7 @@ public class AddCommentDialog extends JDialog implements ActionListener, CaretLi
     this.setModal(true);
     this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     this.setTitle("Add comment for \"" + resource.getTitle() + "\" " + resource.getItemTypeName());
-    this.setIconImage(new ImageIcon(MyExperimentPerspective.getLocalResourceURL("myexp_icon")).getImage());
+    //this.setIconImage(new ImageIcon(MyExperimentPerspective.getLocalResourceURL("myexp_icon")).getImage());
     
     this.initialiseUI();
   }

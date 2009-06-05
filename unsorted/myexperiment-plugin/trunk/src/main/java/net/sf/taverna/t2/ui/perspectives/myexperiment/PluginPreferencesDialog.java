@@ -71,7 +71,7 @@ public class PluginPreferencesDialog extends JDialog implements ComponentListene
     // set options of the preview dialog box
     this.addComponentListener(this);
     this.setModal(true);
-    this.setIconImage(new ImageIcon(MyExperimentPerspective.getLocalResourceURL("myexp_icon")).getImage());
+    //this.setIconImage(new ImageIcon(MyExperimentPerspective.getLocalResourceURL("myexp_icon")).getImage());
     
     // prepare plugin tab names to display in the UI afterwards
     this.alPluginTabComponentNames = new ArrayList<String>();
