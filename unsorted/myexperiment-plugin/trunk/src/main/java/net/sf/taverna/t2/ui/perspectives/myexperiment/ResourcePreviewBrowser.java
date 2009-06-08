@@ -490,7 +490,7 @@ public class ResourcePreviewBrowser extends JFrame implements ActionListener, Hy
     {
       // "Add Comment" button was clicked
       String strComment = null;
-      AddCommentDialog commentDialog = new AddCommentDialog(this.rpcContent.getResource(), pluginMainComponent, myExperimentClient, logger);
+      AddCommentDialog commentDialog = new AddCommentDialog(this, this.rpcContent.getResource(), pluginMainComponent, myExperimentClient, logger);
       if ((strComment = commentDialog.launchAddCommentDialogAndPostCommentIfRequired()) != null) {
         // comment was added because return value is not null;
         // a good option now would be to reload only the comments tab, but
@@ -519,7 +519,7 @@ public class ResourcePreviewBrowser extends JFrame implements ActionListener, Hy
     {
       boolean bItemIsFavourited = this.rpcContent.getResource().isFavouritedBy(this.myExperimentClient.getCurrentUser());
       
-      AddRemoveFavouriteDialog favouriteDialog = new AddRemoveFavouriteDialog(!bItemIsFavourited, this.rpcContent.getResource(), pluginMainComponent, myExperimentClient, logger);
+      AddRemoveFavouriteDialog favouriteDialog = new AddRemoveFavouriteDialog(this, !bItemIsFavourited, this.rpcContent.getResource(), pluginMainComponent, myExperimentClient, logger);
       int iFavouritingStatus = favouriteDialog.launchAddRemoveFavouriteDialogAndPerformNecessaryActionIfRequired();
       
       // if the operation wasn't cancelled, update status of the "add/remove favourite"

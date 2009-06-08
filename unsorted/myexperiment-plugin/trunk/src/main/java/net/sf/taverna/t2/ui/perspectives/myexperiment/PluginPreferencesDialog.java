@@ -17,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -59,9 +60,9 @@ public class PluginPreferencesDialog extends JDialog implements ComponentListene
   private ArrayList<String> alPluginTabComponentNames;
   
   
-  public PluginPreferencesDialog(MainComponent component, MyExperimentClient client, Logger logger)
+  public PluginPreferencesDialog(JFrame owner, MainComponent component, MyExperimentClient client, Logger logger)
   {
-    super();
+    super(owner);
     
     // set main variables to ensure access to myExperiment, logger and the parent component
     this.pluginMainComponent = component;

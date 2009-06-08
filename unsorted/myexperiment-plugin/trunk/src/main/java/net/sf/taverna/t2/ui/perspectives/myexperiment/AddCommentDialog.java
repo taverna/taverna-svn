@@ -16,6 +16,7 @@ import java.net.HttpURLConnection;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JRootPane;
@@ -56,9 +57,9 @@ public class AddCommentDialog extends JDialog implements ActionListener, CaretLi
   private boolean bPostingSuccessful = false;
   
   
-  public AddCommentDialog(Resource resource, MainComponent component, MyExperimentClient client, Logger logger)
+  public AddCommentDialog(JFrame owner, Resource resource, MainComponent component, MyExperimentClient client, Logger logger)
   {
-    super();
+    super(owner);
     
     // set main variables to ensure access to myExperiment, logger and the parent component
     this.pluginMainComponent = component;

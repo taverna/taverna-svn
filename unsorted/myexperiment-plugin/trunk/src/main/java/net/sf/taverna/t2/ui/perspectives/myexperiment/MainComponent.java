@@ -285,7 +285,12 @@ public final class MainComponent extends JPanel implements UIComponentSPI, Chang
 	  
 	  // initialise the preferences dialog
 	  // NB! this has to be done after all tabs were created
-	  this.jdPreferences = new PluginPreferencesDialog(this, myExperimentClient, logger);
+	  // (Preview Browser is used as an owner of the preferences dialog because Preview
+	  //  Browser is the only JFrame in the application - in Java 1.5 it is only possible
+	  //  to set an icon to a JFrame and all 'children' dialog of it get the same icon -
+	  //  so essentially, this is only to set the myExperiment logo as an icon of preferences
+	  //  dialog.)
+	  this.jdPreferences = new PluginPreferencesDialog(this.getPreviewBrowser(), this, myExperimentClient, logger);
 	}
 	
 	
