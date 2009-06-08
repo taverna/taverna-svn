@@ -160,14 +160,29 @@ public class HistoryBrowserTabContentPanel extends JPanel implements ActionListe
     return (this.lDownloadedItems);
   }
   
+  public void clearDownloadedItemsHistory()
+  {
+    this.lDownloadedItems.clear();
+  }
+  
   public ArrayList<Resource> getOpenedItemsHistoryList()
   {
     return (this.lOpenedItems);
   }
   
+  public void clearOpenedItemsHistory()
+  {
+    this.lOpenedItems.clear();
+  }
+  
   public ArrayList<Resource> getCommentedOnItemsHistoryList()
   {
     return (this.lCommentedOnItems);
+  }
+  
+  public void clearCommentedOnItemsHistory()
+  {
+    this.lCommentedOnItems.clear();
   }
   
   
@@ -262,12 +277,13 @@ public class HistoryBrowserTabContentPanel extends JPanel implements ActionListe
   {
     List<QuerySearchInstance> lSearchHistory = this.pluginMainComponent.getSearchTab().getSearchHistory();
     
+    // prepare layout
+    this.jpSearchHistory.setLayout(new GridBagLayout());
+    GridBagConstraints c = new GridBagConstraints();
+    c.anchor = GridBagConstraints.NORTHWEST;
+    
     if (lSearchHistory.size() > 0)
     {
-      this.jpSearchHistory.setLayout(new GridBagLayout());
-      GridBagConstraints c = new GridBagConstraints();
-      c.anchor = GridBagConstraints.NORTHWEST;
-      
       for (int i = lSearchHistory.size() - 1; i >= 0; i--)
       {
         QuerySearchInstance qsiCurrent = lSearchHistory.get(i);
@@ -293,7 +309,9 @@ public class HistoryBrowserTabContentPanel extends JPanel implements ActionListe
       }
     }
     else {
-      this.jpSearchHistory.add(Util.generateNoneTextLabel(SearchResultsPanel.NO_SEARCHES_STATUS));
+      c.weightx = 1.0;
+      c.weighty = 1.0;
+      this.jpSearchHistory.add(Util.generateNoneTextLabel(SearchResultsPanel.NO_SEARCHES_STATUS), c);
     }
     
     // make sure that the component is updated after population

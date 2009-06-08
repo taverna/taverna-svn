@@ -369,21 +369,31 @@ public class PluginPreferencesDialog extends JDialog implements ComponentListene
     else if (e.getSource().equals(this.jclClearPreviewHistory))
     {
       // request user confirmation and clear browsing history (preview history)
-      if (JOptionPane.showConfirmDialog(null, "This will delete the browsing history - the list of previosly\npreviewed items will be emptied.\n\nDo you want to proceed?", 
+      if (JOptionPane.showConfirmDialog(null, "This will delete the browsing history - the lists of previosly previewed,\n" +
+          "downloaded, opened and commented on items will be emptied.\n\nDo you want to proceed?", 
           "myExperiment Plugin - Confirmation Required", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
       {
         pluginMainComponent.getPreviewBrowser().clearPreviewHistory();
+        pluginMainComponent.getHistoryBrowser().clearDownloadedItemsHistory();
+        pluginMainComponent.getHistoryBrowser().clearOpenedItemsHistory();
+        pluginMainComponent.getHistoryBrowser().clearCommentedOnItemsHistory();
         pluginMainComponent.getHistoryBrowser().refreshHistoryBox(HistoryBrowserTabContentPanel.PREVIEWED_ITEMS_HISTORY);
+        pluginMainComponent.getHistoryBrowser().refreshHistoryBox(HistoryBrowserTabContentPanel.DOWNLOADED_ITEMS_HISTORY);
+        pluginMainComponent.getHistoryBrowser().refreshHistoryBox(HistoryBrowserTabContentPanel.OPENED_ITEMS_HISTORY);
+        pluginMainComponent.getHistoryBrowser().refreshHistoryBox(HistoryBrowserTabContentPanel.COMMENTED_ON_ITEMS_HISTORY);
       }
     }
     else if (e.getSource().equals(this.jclClearSearchHistory))
     {
-      // request user confirmation and clear search history
-      if (JOptionPane.showConfirmDialog(null, "This will delete the search history.\nDo you want to proceed?", 
+      // request user confirmation and clear search history (tag search history + query search history)
+      if (JOptionPane.showConfirmDialog(null, "This will delete both query and tag search history.\nDo you want to proceed?", 
           "myExperiment Plugin - Confirmation Required", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
       {
         pluginMainComponent.getSearchTab().getSearchHistory().clear();
+        pluginMainComponent.getTagBrowserTab().getTagSearchHistory().clear();
         pluginMainComponent.getSearchTab().updateSearchHistory();
+        pluginMainComponent.getHistoryBrowser().refreshSearchHistory();
+        pluginMainComponent.getHistoryBrowser().refreshTagSearchHistory();
       }
     }
     else if (e.getSource().equals(this.jclClearFavouriteSearches))
