@@ -138,9 +138,8 @@ public class LocalworkerTranslator extends
 		localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.ncbi.PubMedESearchWorker", "PubMedESearchWorker");
 		localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.ncbi.PubMedEFetchWorker", "PubMedEFetchWorker");
 		
-		//jdbc not done yet
-		// localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.jdbc.SQLQueryWorker", "SQLQueryWorker");
-		// localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.jdbc.SQLUpdateWorker", "SQLUpdateWorker");
+		 localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.jdbc.SQLQueryWorker", "SQLQueryWorker");
+//		 localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.jdbc.SQLUpdateWorker", "SQLUpdateWorker");
 	}
 
 	@Override
