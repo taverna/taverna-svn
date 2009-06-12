@@ -43,11 +43,6 @@ if ((userid == void) || (userid == null) || userid.equals("")) {
 }
 
 
-
-boolean provideXmlBoolean = ((provideXml != void) &amp;&amp; (provideXml != null) &amp;&amp; Boolean.valueOf(provideXml));
-
-
-
 if ((params == void) || (params == null)) {
 
    params = new ArrayList();
@@ -67,113 +62,32 @@ if ((sql == void) || (sql == null) || sql.equals("")) {
 Class c = Thread.currentThread().getContextClassLoader().loadClass(driver);
 
 if (c == null) {
-
 	throw new RuntimeExcecption("Class " + driver + " not found");
-
 }
 
-
-
 Driver d = c.newInstance();
-
-
 
 Properties p = new Properties();
 
 p.setProperty("user", userid);
 
 if ((password == void) || (passsword == null)) {
-
 	password = "";
-
 }
 
 p.setProperty("password", password);
 
-
-
 Connection con = d.connect(url, p);
-
-
 
 PreparedStatement ps = con.prepareStatement(sql);
 
-
-
 for (int i = 0; i &lt; params.size(); i++) {
-
 	ps.setObject(i + 1, params.get(i));
-
 }
 
+ps.executeUpdate();
 
-
-ResultSet rs = ps.executeQuery();
-
-
-
-if (provideXmlBoolean) {
-
-	WebRowSet webrs = new WebRowSetImpl();
-
-
-
-	StringWriter sw = new StringWriter();
-
-	webrs.writeXml(rs, sw);
-
-	xmlresults = sw.toString();
-
-} else {
-
-	xmlresults = "";
-
-}
-
-
-
-
-
-
-
-try {
-
-	rs.beforeFirst();
-
-} catch (SQLException e) {
-
-	// redo the query
-
-	rs = ps.executeQuery();
-
-}
-
-
-
-ResultSetMetaData rsmd = rs.getMetaData();
-
-
-
-int numCols = rsmd.getColumnCount();
-
-resultList = new ArrayList();
-
-// put the results into the results list.
-
-while (rs.next()) {
-
-	List row = new ArrayList(numCols);
-
-	for (int i = 0; i &lt; numCols; i++) {
-
-		row.add(rs.getString(i + 1));
-
-	}
-
-	resultList.add(row);
-
-}
-rs.close();
+resultList = "update successful";
 ps.close();
 con.close();
 
