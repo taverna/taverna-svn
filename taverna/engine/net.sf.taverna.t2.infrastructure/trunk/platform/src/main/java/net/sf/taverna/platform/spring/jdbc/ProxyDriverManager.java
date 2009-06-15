@@ -80,10 +80,22 @@ public class ProxyDriverManager {
 					null);
 
 			// URLs to use to populate the temporary class loader
+			URL rootJarUrl = getRootJarUrl(driverClassName, artifactLoader);
+			URL proxyHelperLocation = null;
+			try {
+				proxyHelperLocation = getProxyHelperLocation();
+			} catch(IndexOutOfBoundsException e) {
+				proxyHelperLocation = new URL(proxyHelperClassName);
+			}
+			ClassLoader loader;
+			if (proxyHelperLocation != null) {
+				loader = URLClassLoader.newInstance(new URL[] {rootJarUrl, proxyHelperLocation}, null);
+			} else {
+				loader = URLClassLoader.newInstance(new URL[] {rootJarUrl}, null);
+			}
 			URL[] loaderUrls = new URL[] {
-					getRootJarUrl(driverClassName, artifactLoader),
-					getProxyHelperLocation() };
-			ClassLoader loader = URLClassLoader.newInstance(loaderUrls, null);
+					rootJarUrl,
+					proxyHelperLocation };
 			return new ProxyDriverManager(loader, driverClassName);
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to register driver", e);
@@ -97,15 +109,22 @@ public class ProxyDriverManager {
 
 	private ProxyDriverManager(ClassLoader loader, String driverClassName)
 			throws SQLException, ClassNotFoundException {
-		final Class<?> helperClass;
+
 		this.loader = loader;
+		Class<?> proxyHelperClass = null;
 		// Get helper class
 		try {
-			helperClass = Class.forName(proxyHelperClassName, true, loader);
+			proxyHelperClass = Class.forName(proxyHelperClassName, true, loader);
 		} catch (ClassNotFoundException cnfe) {
+			try {
+				proxyHelperClass = Class.forName(proxyHelperClassName);
+			}
+			catch (ClassNotFoundException e) {
 			log.error("Failed to locate proxy helper class", cnfe);
-			throw new RuntimeException(cnfe);
+			throw new RuntimeException(e);
+}
 		}
+		final Class<?> helperClass = proxyHelperClass;
 		// Find and store methods on helper class for later use
 		try {
 			this.deregisterDriver = helperClass.getMethod("deregisterDriver",
@@ -243,9 +262,16 @@ public class ProxyDriverManager {
 		}
 		String classAsResource = className.replaceAll("\\.", "/") + ".class";
 		URL resourceURL = loader.getResource(classAsResource);
-		return new URL(resourceURL.getFile().substring(0,
+		String resourceFile = resourceURL.getFile();
+		String result = "";
+		if (resourceFile.contains(".jar")) {
+		result = resourceURL.getFile().substring(0,
 				resourceURL.getFile().indexOf(".jar"))
-				+ ".jar");
+				+ ".jar";
+		} else {
+			result = "file:" + resourceFile.substring(0, resourceFile.lastIndexOf("/")) + "/";
+		}
+		return new URL(result);
 	}
 
 }
