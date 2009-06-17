@@ -5,7 +5,6 @@ import javax.swing.ImageIcon;
 
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
 import net.sf.taverna.t2.activities.rshell.RshellActivityConfigurationBean;
-import net.sf.taverna.t2.activities.rshell.query.RshellActivityItem;
 import net.sf.taverna.t2.servicedescriptions.AbstractTemplateService;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescription;
 
@@ -25,7 +24,7 @@ public class RshellTemplateService extends AbstractTemplateService<RshellActivit
 
 	@Override
 	public Icon getIcon() {
-		return new ImageIcon(RshellActivityItem.class.getResource("/rshell.png"));
+		return RshellActivityIcon.getRshellIcon();
 	}
 
 	public String getName() {

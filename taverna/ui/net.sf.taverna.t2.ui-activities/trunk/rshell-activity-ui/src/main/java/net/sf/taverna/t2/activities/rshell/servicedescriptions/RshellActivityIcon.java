@@ -18,23 +18,40 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
-package net.sf.taverna.t2.activities.rshell.partition;
+package net.sf.taverna.t2.activities.rshell.servicedescriptions;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
-import net.sf.taverna.t2.activities.rshell.query.RshellActivityItem;
-import net.sf.taverna.t2.partition.PropertyExtractorSPI;
+import net.sf.taverna.t2.activities.rshell.RshellActivity;
+import net.sf.taverna.t2.workbench.activityicons.ActivityIconSPI;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
-public class RshellPropertyExtractor implements PropertyExtractorSPI {
+/**
+ * 
+ * @author Alex Nenadic
+ *
+ */
+public class RshellActivityIcon implements ActivityIconSPI{
+	
+	private static Icon icon;
 
-	public Map<String, Object> extractProperties(Object target) {
-		Map<String,Object> map = new HashMap<String, Object>();
-		if (target instanceof RshellActivityItem) {
-			RshellActivityItem item = (RshellActivityItem)target;
-			map.put("type", item.getType());
-		}
-		return map;
+	public int canProvideIconScore(Activity<?> activity) {
+		if (activity.getClass().getName().equals(RshellActivity.class.getName()))
+			return DEFAULT_ICON + 1;
+		else
+			return NO_ICON;
 	}
 
+	public Icon getIcon(Activity<?> activity) {
+		return getRshellIcon();
+	}
+	
+	public static Icon getRshellIcon() {
+		if (icon == null) {
+			icon = new ImageIcon(RshellActivityIcon.class.getResource("/rshell.png"));
+		}
+		return icon;
+	}
 }
+
