@@ -18,26 +18,40 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
-package net.sf.taverna.t2.activities.apiconsumer.partition;
+package net.sf.taverna.t2.activities.apiconsumer.servicedescriptions;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
-import net.sf.taverna.t2.activities.apiconsumer.query.ApiConsumerActivityItem;
-import net.sf.taverna.t2.partition.PropertyExtractorSPI;
+import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivity;
+import net.sf.taverna.t2.workbench.activityicons.ActivityIconSPI;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
-public class ApiConsumerPropertyExtractor implements PropertyExtractorSPI {
+/**
+ * 
+ * @author Alex Nenadic
+ *
+ */
+public class ApiConsumerActivityIcon implements ActivityIconSPI{
+	
+	static Icon icon = null;
 
-	public Map<String, Object> extractProperties(Object target) {
-		Map<String,Object> map = new HashMap<String, Object>();
-		if (target instanceof ApiConsumerActivityItem) {
-			ApiConsumerActivityItem item = (ApiConsumerActivityItem)target;
-			map.put("type", item.getType());
-			map.put(ApiConsumerPartitionAlgorithmSetSPI.API_NAME, item.getApiConsumerName());
-			map.put(ApiConsumerPartitionAlgorithmSetSPI.API_CLASS, item.getClassName());
-			map.put(ApiConsumerPartitionAlgorithmSetSPI.API_METHOD, item.getMethodName());
+	public int canProvideIconScore(Activity<?> activity) {
+		if (activity.getClass().getName().equals(ApiConsumerActivity.class.getName()))
+			return DEFAULT_ICON + 1;
+		else
+			return NO_ICON;
+	}
+
+	public Icon getIcon(Activity<?> activity) {
+		return getApiConsumerIcon();
+	}
+	
+	public static Icon getApiConsumerIcon() {
+		if (icon == null) {
+			icon = new ImageIcon(ApiConsumerActivityIcon.class.getResource("/apiconsumer.png"));
 		}
-		return map;
+		return icon;
 	}
 
 }

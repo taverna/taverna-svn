@@ -22,8 +22,6 @@ import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 
 import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivity;
-import net.sf.taverna.t2.activities.apiconsumer.query.ApiConsumerActivityItem;
-import net.sf.taverna.t2.activities.apiconsumer.query.ApiConsumerQuery;
 import net.sf.taverna.t2.lang.ui.ExtensionFileFilter;
 import net.sf.taverna.t2.servicedescriptions.AbstractConfigurableServiceProvider;
 import net.sf.taverna.t2.servicedescriptions.CustomizedConfigurePanelProvider;
@@ -149,7 +147,7 @@ CustomizedConfigurePanelProvider<ApiConsumerServiceProviderConfig>{
 	}
 
 	public Icon getIcon() {
-		return new ImageIcon(ApiConsumerActivityItem.class.getResource("/apiconsumer.png"));
+		return ApiConsumerActivityIcon.getApiConsumerIcon();
 	}
 
 	public String getName() {

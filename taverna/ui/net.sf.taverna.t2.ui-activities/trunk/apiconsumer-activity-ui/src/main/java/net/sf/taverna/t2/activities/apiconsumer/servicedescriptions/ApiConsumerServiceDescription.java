@@ -28,7 +28,6 @@ import javax.swing.ImageIcon;
 
 import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivity;
 import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivityConfigurationBean;
-import net.sf.taverna.t2.activities.apiconsumer.query.ApiConsumerActivityItem;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescription;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
@@ -128,7 +127,7 @@ public class ApiConsumerServiceDescription extends ServiceDescription<ApiConsume
 
 	@Override
 	public Icon getIcon() {
-		return new ImageIcon(ApiConsumerActivityItem.class.getResource("/apiconsumer.png"));
+		return ApiConsumerActivityIcon.getApiConsumerIcon();
 	}
 
 	@Override
