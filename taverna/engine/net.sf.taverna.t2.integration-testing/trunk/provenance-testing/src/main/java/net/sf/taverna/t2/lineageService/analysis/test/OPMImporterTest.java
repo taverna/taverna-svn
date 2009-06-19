@@ -50,6 +50,7 @@ public class OPMImporterTest {
 		// the OPM graph we import
 		_aOPM_XMLFile = AnalysisTestFiles.getString("OPM.XMLfile");
 		if (_aOPM_XMLFile == null || _aOPM_XMLFile.contains("!")) {
+			logger.info("invalid property OPM.XMLfile: using default OPM file "+DEFAULT_OPM_XML);			
 			_aOPM_XMLFile = DEFAULT_OPM_XML;			
 		}
 		

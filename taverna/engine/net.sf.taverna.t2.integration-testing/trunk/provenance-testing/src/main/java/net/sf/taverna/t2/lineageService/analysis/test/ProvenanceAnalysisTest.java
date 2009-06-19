@@ -50,6 +50,7 @@ public class ProvenanceAnalysisTest {
 	private static final String DEFAULT_QUERY_PATH = null;
 	private static final String DEFAULT_SELECTED_PROCESSORS = "ALL";
 	private static final String DEFAULT_SELECTED_INSTANCES = "LAST";
+	private static final String DEFAULT_SELECTED_WF = "LAST";
 
 	private static final String TOP_PROCESSOR = "TOP";
 	private static final String ALL_VARS = "ALL";
@@ -132,6 +133,14 @@ public class ProvenanceAnalysisTest {
 			selectedProcessors = DEFAULT_SELECTED_PROCESSORS;			
 		}
 
+		// wf ID
+		String selectedWF = AnalysisTestFiles.getString("query.workflow");
+		if (selectedWF == null || selectedWF.contains("!")) {
+			selectedWF = DEFAULT_SELECTED_WF;			
+		}
+		
+		
+		
 		// wf instance(s)
 		String selectedInstances = AnalysisTestFiles.getString("query.wfinstances");
 		if (selectedInstances == null) {
@@ -171,8 +180,15 @@ public class ProvenanceAnalysisTest {
 		//////////////
 		// set the run instances (scope)
 		//////////////
-		ArrayList<String> instances = (ArrayList<String>) pa.getWFInstanceIDs();  // ordered by timestamp
-
+	
+		ArrayList<String> instances = null;
+		
+		if (selectedWF.equals("LAST")) { // default WF
+			instances = (ArrayList<String>) pa.getWFInstanceIDs();  // ordered by timestamp
+		} else  {
+			instances = (ArrayList<String>) pa.getWFInstanceID(selectedWF);  // ordered by timestamp
+		}
+		
 		if (! selectedInstances.equals("LAST")) {
 			System.out.println("WARNING: only LAST wfinstance supported in this version");
 		}
@@ -184,6 +200,10 @@ public class ProvenanceAnalysisTest {
 			assertFalse("FATAL: no wfinstances in DB -- terminating", instances.size() == 0);
 		}
 
+		logger.info("QUERY SCOPE: \nWF = "+selectedWF+" INSTANCE = "+wfInstance);
+		
+
+		// OBSOLETE
 		String proc = "_OUTPUT_"; // we test from the outputs of the workflow
 
 		//////////////
