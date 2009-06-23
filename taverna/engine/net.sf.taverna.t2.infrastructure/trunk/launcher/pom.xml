@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>infrastructure</artifactId>
-		<version>1.10</version>
+		<version>1.11-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.infrastructure</groupId>
 	<artifactId>launcher</artifactId>
@@ -19,24 +19,24 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.infrastructure</groupId>
 			<artifactId>appconfig</artifactId>
-			<version>1.10</version>
+			<version>1.11-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.infrastructure</groupId>
 			<artifactId>appconfig</artifactId>
-			<version>1.10</version>
+			<version>1.11-SNAPSHOT</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.infrastructure</groupId>
 			<artifactId>plugins-api</artifactId>
-			<version>1.10</version>
+			<version>1.11-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.infrastructure</groupId>
 			<artifactId>helloworld</artifactId>
-			<version>1.10</version>
+			<version>1.11-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

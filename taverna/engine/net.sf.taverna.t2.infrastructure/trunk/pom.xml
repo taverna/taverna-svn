@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>infrastructure</artifactId>
-	<version>1.10</version>
+	<version>1.11-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Taverna 2 infrastructure</name>
 	<description>Infrastructure for launching Taverna 2, including plugin management, Raven and SPI discovery</description>
@@ -18,9 +18,9 @@
 		<t2.lang.version>0.5-SNAPSHOT</t2.lang.version>
 	</properties>
 	<scm>
-		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.infrastructure/tags/infrastructure-1.10</connection>
-		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.infrastructure/tags/infrastructure-1.10</developerConnection>
-		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/engine/net.sf.taverna.t2.infrastructure/tags/infrastructure-1.10</url>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.infrastructure/trunk/</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.infrastructure/trunk/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/engine/net.sf.taverna.t2.infrastructure/trunk</url>
 	</scm>
 	<build>
 		<plugins>
