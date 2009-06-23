@@ -14,17 +14,17 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.compatibility</groupId>
 			<artifactId>compatibility-api</artifactId>
-			<version>${t2.compatibility.version}</version>
+			<version>0.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>beanshell-activity</artifactId>
-			<version>${t2.activities.version}</version>
+			<version>0.6</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>localworker-activity</artifactId>
-			<version>${t2.activities.version}</version>
+			<version>0.6</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -39,7 +39,7 @@
 			<groupId>uk.org.mygrid.taverna.processors
 			</groupId>
 			<artifactId>taverna-localworkers</artifactId>
-			<version>${taverna.version}</version>
+			<version>1.7.2.0</version>
 			<scope>test</scope>
 			<exclusions>
 				<exclusion>
@@ -57,7 +57,7 @@
 		<dependency>
 			<groupId>uk.org.mygrid.taverna</groupId>
 			<artifactId>taverna-contrib</artifactId>
-			<version>${taverna.version}</version>
+			<version>1.7.2.0</version>
 			<exclusions>
 				<exclusion>
 					<groupId>uk.org.mygrid.taverna.raven
@@ -195,13 +195,13 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>activity-test-utils</artifactId>
-			<version>${t2.activities.version}</version>
+			<version>0.6</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>workflowmodel-impl</artifactId>
-			<version>${t2.core.version}</version>
+			<version>0.6</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>
