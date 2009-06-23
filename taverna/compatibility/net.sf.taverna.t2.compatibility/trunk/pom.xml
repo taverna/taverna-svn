@@ -23,12 +23,12 @@
 
 	<properties>
 		<t2.compatibility.version>${project.version}</t2.compatibility.version>
-		<t2.activities.version>0.6-SNAPSHOT</t2.activities.version>
-		<t2.activity-translators.version.previous>0.5-SNAPSHOT</t2.activity-translators.version.previous>
-		<t2.infrastructure.version>1.10-SNAPSHOT</t2.infrastructure.version>
-		<t2.core.version>0.6-SNAPSHOT</t2.core.version>
+		<t2.activities.version>0.6</t2.activities.version>
+		<t2.activity-translators.version.previous>0.5</t2.activity-translators.version.previous>
+		<t2.infrastructure.version>1.10</t2.infrastructure.version>
+		<t2.core.version>0.6</t2.core.version>
 		<t2.lang.version>0.5-SNAPSHOT</t2.lang.version>
-		<t2.core.refexts.version>0.4-SNAPSHOT</t2.core.refexts.version>
+		<t2.core.refexts.version>0.4</t2.core.refexts.version>
 		<taverna.version>1.7.2.0</taverna.version>
 	</properties>
 
