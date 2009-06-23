@@ -36,7 +36,7 @@
 								<artifactItem>
 									<groupId>net.sf.taverna.t2.infrastructure.platform-testhelpers</groupId>
 									<artifactId>platform-testhelpers-h3-impl</artifactId>
-									<version>${t2.infrastructure.version}</version>
+									<version>1.10-SNAPSHOT</version>
 								</artifactItem>
 							</artifactItems>
 						</configuration>
@@ -57,13 +57,13 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.infrastructure</groupId>
 			<artifactId>raven</artifactId>
-			<version>${t2.infrastructure.version}</version>
+			<version>1.10-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>net.sf.taverna.t2.infrastructure</groupId>
 			<artifactId>appconfig</artifactId>
-			<version>${t2.infrastructure.version}</version>
+			<version>1.10-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
