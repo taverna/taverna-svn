@@ -9,7 +9,7 @@
 
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>ui-activities</artifactId>
-	<version>0.9-SNAPSHOT</version>
+	<version>0.9</version>
 	<packaging>pom</packaging>
 
 	<name>Taverna 2 Activities UI</name>
@@ -23,9 +23,9 @@
 		<t2.lang.version>0.5</t2.lang.version>
 		<t2.compatibility.version>0.6</t2.compatibility.version>
 		<t2.translators.version>0.6</t2.translators.version>
-		<t2.ui.api.version>0.4</t2.ui.api.version>
-		<t2.ui.impl.version>0.5</t2.ui.impl.version>
-		<t2.ui.components.version>0.5</t2.ui.components.version>
+		<t2.ui.api.version>0.5</t2.ui.api.version>
+		<t2.ui.impl.version>0.6</t2.ui.impl.version>
+		<t2.ui.components.version>0.6</t2.ui.components.version>
 		<t2.security.version>0.4</t2.security.version>
 		<taverna.version>1.7.2.0</taverna.version>
 	</properties>
@@ -57,9 +57,9 @@
 
 	</repositories>
 	<scm>
-		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/ui/net.sf.taverna.t2.ui-activities/trunk/</connection>
-		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/ui/net.sf.taverna.t2.ui-activities/trunk/</developerConnection>
-		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/ui/net.sf.taverna.t2.ui-activities/trunk/</url>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/ui/net.sf.taverna.t2.ui-activities/tags/ui-activities-0.9</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/ui/net.sf.taverna.t2.ui-activities/tags/ui-activities-0.9</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/ui/net.sf.taverna.t2.ui-activities/tags/ui-activities-0.9</url>
 	</scm>
 	<dependencyManagement>
 		<dependencies>
