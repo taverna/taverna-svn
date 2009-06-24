@@ -1,0 +1,3 @@
+net.sf.taverna.t2.activities.biomoby.translator.BiomobyActivityTranslator
+net.sf.taverna.t2.activities.biomoby.translator.BiomobyObjectActivityTranslator
+net.sf.taverna.t2.activities.biomoby.translator.MobyParseDatatypeActivityTranslator
