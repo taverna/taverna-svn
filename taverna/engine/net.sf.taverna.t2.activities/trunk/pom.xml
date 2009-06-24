@@ -9,7 +9,7 @@
 
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>activities</artifactId>
-	<version>0.7-SNAPSHOT</version>
+	<version>0.7</version>
 	<packaging>pom</packaging>
 
 	<name>Taverna 2 Activities</name>
@@ -21,12 +21,11 @@
 	</description>
 
 	<properties>
-		<t2.activities.version>${project.version}</t2.activities.version>
-		<t2.infrastructure.version>1.10</t2.infrastructure.version>
-		<t2.core.version>0.6</t2.core.version>
+		<t2.infrastructure.version>1.11</t2.infrastructure.version>
+		<t2.core.version>0.7</t2.core.version>
 		<t2.lang.version>0.5</t2.lang.version>
-		<t2.security.version>0.4</t2.security.version>
-		<t2.core.refexts.version>0.4</t2.core.refexts.version>
+		<t2.security.version>0.5</t2.security.version>
+		<t2.core.refexts.version>0.5</t2.core.refexts.version>
 	</properties>
 
 	<modules>
@@ -149,9 +148,9 @@
         </repository>
 	</repositories>
 	<scm>
-		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.activities/trunk/</connection>
-		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.activities/trunk/</developerConnection>
-		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/engine/net.sf.taverna.t2.activities/trunk</url>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.activities/tags/activities-0.7</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.activities/tags/activities-0.7</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/engine/net.sf.taverna.t2.activities/tags/activities-0.7</url>
 	</scm>
 	<dependencyManagement>
 		<dependencies>			
