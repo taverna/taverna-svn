@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>infrastructure</artifactId>
-		<version>1.11-SNAPSHOT</version>
+		<version>1.11</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.infrastructure</groupId>
 	<artifactId>raven-log4j</artifactId>
@@ -13,7 +13,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.infrastructure</groupId>
 			<artifactId>raven</artifactId>
-			<version>1.11-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>

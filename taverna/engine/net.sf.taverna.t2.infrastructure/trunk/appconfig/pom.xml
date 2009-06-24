@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?XL version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>infrastructure</artifactId>
-		<version>1.11-SNAPSHOT</version>
+		<version>1.11</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.infrastructure</groupId>
 	<artifactId>appconfig</artifactId>
@@ -17,22 +17,22 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.infrastructure</groupId>
 			<artifactId>launcher-api</artifactId>
-			<version>1.11-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.infrastructure</groupId>
 			<artifactId>prelauncher</artifactId>
-			<version>1.11-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.infrastructure</groupId>
 			<artifactId>raven</artifactId>
-			<version>1.11-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.infrastructure</groupId>
 			<artifactId>raven-log4j</artifactId>
-			<version>1.11-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

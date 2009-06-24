@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>net.sf.taverna.t2.infrastructure</groupId>
 		<artifactId>platform-testhelpers</artifactId>
-		<version>1.11-SNAPSHOT</version>
+		<version>1.11</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.infrastructure.platform-testhelpers</groupId>
 	<artifactId>platform-testhelpers-h3-impl</artifactId>
@@ -17,7 +17,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.infrastructure.platform-testhelpers</groupId>
 			<artifactId>platform-testhelpers-h3-api</artifactId>
-			<version>1.11-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 </project>
