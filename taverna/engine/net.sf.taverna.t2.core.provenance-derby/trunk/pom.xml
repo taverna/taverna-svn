@@ -7,7 +7,7 @@
 	</parent>
 	<groupId>net.sf.taverna.t2.core</groupId>
 	<artifactId>provenance-derby</artifactId>
-	<version>0.2</version>
+	<version>0.3-SNAPSHOT</version>
 	<name>Derby Provenance</name>
 	<properties>
 		<t2.activities.version>0.8</t2.activities.version>
@@ -72,8 +72,8 @@
 		</dependency>
 	</dependencies>
 	<scm>
-		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.core.provenance-derby/tags/provenance-derby-0.2</connection>
-		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.core.provenance-derby/tags/provenance-derby-0.2</developerConnection>
-		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/engine/net.sf.taverna.t2.core.provenance-derby/tags/provenance-derby-0.2</url>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.core.provenance-derby/trunk/</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.core.provenance-derby/trunk/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/engine/net.sf.taverna.t2.core.provenance-derby/trunk</url>
 	</scm>
 </project>
