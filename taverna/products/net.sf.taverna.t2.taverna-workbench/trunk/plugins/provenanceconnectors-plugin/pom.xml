@@ -13,7 +13,7 @@
   	<dependency>
   		<groupId>net.sf.taverna.t2.core</groupId>
   		<artifactId>provenance-derby</artifactId>
-        <version>${t2.core.version}</version>
+        <version>0.2</version>
   	</dependency>
   </dependencies>
 </project>
