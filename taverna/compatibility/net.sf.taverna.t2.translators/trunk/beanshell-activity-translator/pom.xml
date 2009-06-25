@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>translators</artifactId>
-		<version>0.8</version>
+		<version>0.9-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.translators</groupId>
 	<artifactId>beanshell-activity-translator</artifactId>
