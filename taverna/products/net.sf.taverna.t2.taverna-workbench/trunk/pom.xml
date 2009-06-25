@@ -19,10 +19,10 @@
 		<t2.activities.version>0.8</t2.activities.version>
                 <t2.compatibility.translators.version>0.8</t2.compatibility.translators.version>
 		<t2.ui.api.version>0.6</t2.ui.api.version>
-		<t2.ui.impl.version>0.7</t2.ui.impl.version>
-		<t2.ui.components.version>0.7</t2.ui.components.version>
-		<t2.ui.activities.version>0.10</t2.ui.activities.version>
-		<t2.ui.exts.version>0.7</t2.ui.exts.version>
+		<t2.ui.impl.version>0.8</t2.ui.impl.version>
+		<t2.ui.components.version>0.8</t2.ui.components.version>
+		<t2.ui.activities.version>0.11</t2.ui.activities.version>
+		<t2.ui.exts.version>0.8</t2.ui.exts.version>
 		<taverna.version>1.7.2.0</taverna.version>
 	</properties>
 	<repositories>
