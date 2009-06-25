@@ -9,7 +9,7 @@
 
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>activities</artifactId>
-	<version>0.8-SNAPSHOT</version>
+	<version>0.8</version>
 	<packaging>pom</packaging>
 
 	<name>Taverna 2 Activities</name>
@@ -22,10 +22,12 @@
 
 	<properties>
 		<t2.infrastructure.version>1.11</t2.infrastructure.version>
-		<t2.core.version>0.7</t2.core.version>
+		<t2.core.version>0.8</t2.core.version>
 		<t2.lang.version>0.5</t2.lang.version>
-		<t2.security.version>0.5</t2.security.version>
-		<t2.core.refexts.version>0.5</t2.core.refexts.version>
+		<t2.security.version>0.6</t2.security.version>
+		<t2.core.refexts.version>0.6</t2.core.refexts.version>
+                <org.biomart.martservice.version>0.7.2</org.biomart.martservice.version>
+                <wsdl.generic.version>1.4</wsdl.generic.version>
 	</properties>
 
 	<modules>
@@ -148,9 +150,9 @@
         </repository>
 	</repositories>
 	<scm>
-		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.activities/trunk/</connection>
-		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.activities/trunk/</developerConnection>
-		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/engine/net.sf.taverna.t2.activities/trunk</url>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.activities/tags/activities-0.8</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.activities/tags/activities-0.8</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/engine/net.sf.taverna.t2.activities/tags/activities-0.8</url>
 	</scm>
 	<dependencyManagement>
 		<dependencies>			
