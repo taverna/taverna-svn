@@ -9,7 +9,7 @@
 
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>compatibility</artifactId>
-	<version>0.8-SNAPSHOT</version>
+	<version>0.8</version>
 	<packaging>pom</packaging>
 
 	<name>Taverna 2 Activities</name>
@@ -21,12 +21,12 @@
 	</description>
 
 	<properties>
-		<t2.activities.version>0.7</t2.activities.version>
+		<t2.activities.version>0.8</t2.activities.version>
 		<t2.activity-translators.version.previous>0.6</t2.activity-translators.version.previous>
 		<t2.infrastructure.version>1.11</t2.infrastructure.version>
-		<t2.core.version>0.7</t2.core.version>
+		<t2.core.version>0.8</t2.core.version>
 		<t2.lang.version>0.5</t2.lang.version>
-		<t2.core.refexts.version>0.5</t2.core.refexts.version>
+		<t2.core.refexts.version>0.6</t2.core.refexts.version>
 		<taverna.version>1.7.2.0</taverna.version>
 	</properties>
 
@@ -48,9 +48,9 @@
 		</repository>
 	</repositories>
 	<scm>
-		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/compatibility/net.sf.taverna.t2.compatibility/trunk/</connection>
-		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/compatibility/net.sf.taverna.t2.compatibility/trunk/</developerConnection>
-		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/compatibility/net.sf.taverna.t2.compatibility/trunk</url>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/compatibility/net.sf.taverna.t2.compatibility/tags/compatibility-0.8</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/compatibility/net.sf.taverna.t2.compatibility/tags/compatibility-0.8</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/compatibility/net.sf.taverna.t2.compatibility/tags/compatibility-0.8</url>
 	</scm>
 	<dependencyManagement>
 		<dependencies>

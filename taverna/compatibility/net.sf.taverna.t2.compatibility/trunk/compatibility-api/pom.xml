@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>compatibility</artifactId>
-		<version>0.8-SNAPSHOT</version>
+		<version>0.8</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.compatibility</groupId>
 	<artifactId>compatibility-api</artifactId>
@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.scufl</groupId>
 			<artifactId>scufl-model</artifactId>
-			<version>1.7.2.0</version>
+			<version>${taverna.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>uk.org.mygrid.taverna.raven
