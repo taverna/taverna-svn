@@ -10,12 +10,10 @@
   <name>Provenance Connectors Plugin</name>
   <version>2.1-beta-2</version>
   <dependencies>
-<!--
   	<dependency>
   		<groupId>net.sf.taverna.t2.core</groupId>
   		<artifactId>provenance-derby</artifactId>
         <version>${t2.core.version}</version>
   	</dependency>
--->
   </dependencies>
 </project>
