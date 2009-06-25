@@ -18,7 +18,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-exts</groupId>
 			<artifactId>file-translator</artifactId>
-			<version>0.4</version>
+			<version>${t2.ui.exts.version}</version>
 		</dependency>
 	</dependencies>
 </project>
