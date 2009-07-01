@@ -48,7 +48,7 @@ public class LoaderTest {
 
 	public static final String MAVEN_MYGRID_REPOSITORY = "http://www.mygrid.org.uk/maven/repository/";
 	public static final String MAVEN_MYGRID_SNAPSHOT_REPOSITORY = "http://www.mygrid.org.uk/maven/snapshot-repository/";
-	public static final String MAVEN_MYGRID_PROXY_REPOSITORY = "http://www.mygrid.org.uk/maven/proxy/repository/";
+	public static final String MAVEN_MYGRID_REPO1_REPOSITORY = "http://www.mygrid.org.uk/maven/repo1/repository/";
 	public static final String MAVEN_UNIONTRANSIT_REPOSITORY = "http://www.uniontransit.com/apache/maven-repository/";
 
 	public static final String repositoryLocation = MAVEN_MYGRID_REPOSITORY;
@@ -72,7 +72,13 @@ public class LoaderTest {
 
 	@After
 	public void deleteTempDirectory() throws IOException {
-		deleteDirectory(dir);
+		System.gc();
+		System.gc();
+		try {
+			deleteDirectory(dir);
+		} catch (Exception ex) {
+			System.err.println("Could not delete directory " + dir + " - probably locking problem");
+		}
 	}
 
 	// fixme: name this back as testDynamic once this is deployed
@@ -117,7 +123,7 @@ public class LoaderTest {
 		// Parameters for the Raven loader call
 		String ravenVersion = "1.5.1";
 		URL[] remoteRepositories = new URL[] { new URL(repositoryLocation),
-				new URL(MAVEN_MYGRID_PROXY_REPOSITORY) };
+				new URL(MAVEN_MYGRID_REPO1_REPOSITORY) };
 		String groupID = "uk.org.mygrid.taverna";
 		String artifactID = "taverna-workbench";
 		String version = "1.5.1";
@@ -168,7 +174,7 @@ public class LoaderTest {
 
 		// Parameters for the Raven loader call
 		URL[] remoteRepositories = new URL[] { new URL(repositoryLocation),
-				new URL(MAVEN_MYGRID_PROXY_REPOSITORY) };
+				new URL(MAVEN_MYGRID_REPO1_REPOSITORY) };
 		String groupID = "uk.org.mygrid.taverna";
 		String artifactID = "taverna-workbench";
 		String version = "1.5.1";
@@ -228,7 +234,7 @@ public class LoaderTest {
 		// .getSystemLookAndFeelClassName());
 		Loader.doRavenMagic("1.5.1", dir, new URL[] {
 				new URL(repositoryLocation),
-				new URL(MAVEN_MYGRID_PROXY_REPOSITORY) },
+				new URL(MAVEN_MYGRID_REPO1_REPOSITORY) },
 				"uk.org.mygrid.taverna", "taverna-workbench", "1.5.1",
 				"org.embl.ebi.escience.scuflui.workbench.Workbench", null,
 				10000);

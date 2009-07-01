@@ -224,7 +224,7 @@ public class ArtifactClassLoaderTest {
 		repository.addRemoteRepository(new URL(
 				"http://www.mygrid.org.uk/maven/repository/"));
 		repository.addRemoteRepository(new URL(
-				"http://mirrors.dotsrc.org/maven2/"));
+				"http://www.mygrid.org.uk/maven/repo1/"));
 		wsdlProcessor = new BasicArtifact("uk.org.mygrid.taverna.processors",
 				"taverna-wsdl-processor", "1.7.1.0");
 		repository.addArtifact(wsdlProcessor);

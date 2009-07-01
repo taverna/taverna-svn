@@ -84,7 +84,7 @@ public class ArtifactImplTest {
 		r.addRemoteRepository(new URL(LoaderTest.MAVEN_MYGRID_REPOSITORY));
 		r
 				.addRemoteRepository(new URL(
-						LoaderTest.MAVEN_MYGRID_PROXY_REPOSITORY));
+						LoaderTest.MAVEN_MYGRID_REPO1_REPOSITORY));
 		r.addRemoteRepository(testRepos);
 		BasicArtifact bocaTest = new BasicArtifact("raventest", "bocatest",
 				"2.4");
@@ -139,7 +139,7 @@ public class ArtifactImplTest {
 			ArtifactStateException {
 		r
 				.addRemoteRepository(new URL(
-						LoaderTest.MAVEN_MYGRID_PROXY_REPOSITORY));
+						LoaderTest.MAVEN_MYGRID_REPO1_REPOSITORY));
 		r.addRemoteRepository(testRepos);
 		BasicArtifact exclusionTest = new BasicArtifact("raventest",
 				"exclusiontest", "1.6.0");
@@ -183,7 +183,7 @@ public class ArtifactImplTest {
 			InterruptedException, ArtifactStateException {
 		r
 				.addRemoteRepository(new URL(
-						LoaderTest.MAVEN_MYGRID_PROXY_REPOSITORY));
+						LoaderTest.MAVEN_MYGRID_REPO1_REPOSITORY));
 		r.addRemoteRepository(testRepos);
 		BasicArtifact exclusionTest = new BasicArtifact("raventest",
 				"exclusiontest", "1.5.1");
@@ -219,8 +219,7 @@ public class ArtifactImplTest {
 	@Test
 	public void testPropertiesInterpolation() throws MalformedURLException,
 			InterruptedException, ArtifactStateException, FileNotFoundException {
-		r
-				.addRemoteRepository(new URL(
+		r.addRemoteRepository(new URL(
 						LoaderTest.MAVEN_UNIONTRANSIT_REPOSITORY));
 		r.addRemoteRepository(testRepos);
 		BasicArtifact propertiesTest = new BasicArtifact("raventest",
