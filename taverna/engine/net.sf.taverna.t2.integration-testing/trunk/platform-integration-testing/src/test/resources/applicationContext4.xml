@@ -104,7 +104,7 @@
 		</repositories>
 		<system>
 			<!-- Raven -->
-			<sys artifact="net.sf.taverna.t2.infrastructure:raven:1.10-SNAPSHOT" />
+			<sys artifact="net.sf.taverna.t2.infrastructure:raven:1.11" />
 			<!-- Spring modules -->
 			<sys artifact="org.springframework:spring-core:2.5" />
 			<sys artifact="org.springframework:spring-orm:2.5" />
@@ -122,7 +122,7 @@
 			<sys artifact="org.hibernate:hibernate:3.2.5.ga.raven" />
 			<!-- Test helper API package -->
 			<sys
-				artifact="net.sf.taverna.t2.infrastructure.platform-testhelpers:platform-testhelpers-h3-api:1.10-SNAPSHOT" />
+				artifact="net.sf.taverna.t2.infrastructure.platform-testhelpers:platform-testhelpers-h3-api:1.11" />
 		</system>
 	</repository>
 
@@ -136,7 +136,7 @@
 	-->
 	<!-- artifact -->
 	<bean
-		raven:artifact="net.sf.taverna.t2.infrastructure.platform-testhelpers:platform-testhelpers-h3-impl:1.10-SNAPSHOT"
+		raven:artifact="net.sf.taverna.t2.infrastructure.platform-testhelpers:platform-testhelpers-h3-impl:1.11"
 		raven:repository="ravenRepository" class="net.sf.taverna.platformtest.impl.BarDataBean" />
 
 	<!-- SPI used by the raven-aware hibernate session factory bean -->

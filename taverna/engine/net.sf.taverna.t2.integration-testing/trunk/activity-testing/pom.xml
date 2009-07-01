@@ -22,6 +22,11 @@
 			<version>${t2.activities.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>net.sf.taverna.t2.activities</groupId>
+			<artifactId>soaplab-activity</artifactId>
+			<version>${t2.activities.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>net.sf.taverna.t2.ui-activities</groupId>
 			<artifactId>soaplab-activity-ui</artifactId>
 			<version>${t2.ui.activities.version}</version>

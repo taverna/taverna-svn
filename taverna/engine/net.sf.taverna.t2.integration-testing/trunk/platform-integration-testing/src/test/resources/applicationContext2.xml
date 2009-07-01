@@ -41,7 +41,7 @@
 			<rep url="http://mirror.omii.ac.uk/maven/repository/" />
 		</repositories>
 		<system>
-			<sys artifact="net.sf.taverna.t2.infrastructure:raven:1.10-SNAPSHOT" />
+			<sys artifact="net.sf.taverna.t2.infrastructure:raven:1.11" />
 			<sys artifact="org.springframework:spring-core:2.5" />
 			<sys artifact="org.springframework:spring-beans:2.5" />
 			<sys artifact="org.springframework:spring-context:2.5" />
