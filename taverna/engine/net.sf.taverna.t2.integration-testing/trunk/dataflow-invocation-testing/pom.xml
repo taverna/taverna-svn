@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.integration-testing</groupId>
 			<artifactId>integration-testing-common</artifactId>
-			<version>${t2.integration.testing.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.infrastructure</groupId>

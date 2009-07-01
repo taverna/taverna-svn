@@ -20,7 +20,6 @@
 	<properties>
 		<!--  Common version numbers of dependencies -->
 
-		<t2.integration.testing.version>${project.version}</t2.integration.testing.version>
 		
 		 <t2.ui.exts.version>${project.version}</t2.ui.exts.version>
          <t2.activities.version>0.8</t2.activities.version>
