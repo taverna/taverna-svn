@@ -3,15 +3,14 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.sf.taverna.t2.integration-testing</groupId>
-	<artifactId>provenance-testing</artifactId>
-	<packaging>jar</packaging>
-	<name>Provenance testing</name>
 	<parent>
 		<artifactId>integration-testing</artifactId>
 		<groupId>net.sf.taverna.t2</groupId>
-		<version>0.5-SNAPSHOT</version>
+		<version>0.6-SNAPSHOT</version>
 	</parent>
+	<groupId>net.sf.taverna.t2.integration-testing</groupId>
+	<artifactId>provenance-testing</artifactId>
+	<name>Provenance testing</name>
 
 	<!--<repositories>
 		<repository>
