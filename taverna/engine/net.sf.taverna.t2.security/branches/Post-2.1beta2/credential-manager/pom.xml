@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>net.sf.taverna.t2.security</groupId>
 	<artifactId>credential-manager</artifactId>
-	<version>0.7-SNAPSHOT</version>
+	<version>0.8-SNAPSHOT</version>
 	<name>Credential manager</name>
 	<dependencies>
 		<dependency>
@@ -24,7 +24,7 @@
 		<dependency>
 			<groupId>bouncycastle</groupId>
 			<artifactId>bcprov-jdk15</artifactId>
-			<version>${bouncycastle.version}</version>
+			<version>140</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.infrastructure</groupId>
@@ -41,4 +41,15 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<repositories>
+		<repository>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+		</repository>
+	</repositories>
 </project>
