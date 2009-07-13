@@ -22,6 +22,8 @@ package net.sf.taverna.t2.security.credentialmanager;
 
 import java.io.File;
 
+import javax.swing.JFrame;
+
 /**
  * A UI pop-up that asks user for a master password for Credential Manager.
  * 
@@ -60,7 +62,7 @@ public class UIMasterPasswordProvider implements MasterPasswordProviderSPI{
 		}
 		else{
 			// Ask user to set the master password for Credential Manager (only the first time)
-			SetMasterPasswordDialog setPasswordDialog = new SetMasterPasswordDialog();
+			SetMasterPasswordDialog setPasswordDialog = new SetMasterPasswordDialog((JFrame) null, "Set master password", true, "Set master password for Credential Manager");
 			setPasswordDialog.setLocationRelativeTo(null);
 			setPasswordDialog.setVisible(true);
 			return setPasswordDialog.getPassword();

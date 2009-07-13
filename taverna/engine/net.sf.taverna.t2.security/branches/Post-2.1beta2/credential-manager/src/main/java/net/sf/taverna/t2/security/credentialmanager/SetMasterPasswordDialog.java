@@ -23,7 +23,6 @@ package net.sf.taverna.t2.security.credentialmanager;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,6 +32,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -57,13 +57,16 @@ public class SetMasterPasswordDialog extends JDialog {
 
     // Stores the password entered 
     private String password = null;
+    
+    private String instructions;
 
     /**
      * Creates new SetNewPasswordDialog where the parent is a frame.
      */
-    public SetMasterPasswordDialog()
+    public SetMasterPasswordDialog(JFrame parent, String title, boolean modal, String instructions)
     {
-        super((Frame)null, "Set master password", true);
+        super(parent, title, modal);
+        this.instructions = instructions;
         initComponents();
     }
 
@@ -74,7 +77,7 @@ public class SetMasterPasswordDialog extends JDialog {
     {
         getContentPane().setLayout(new BorderLayout());
 
-        JLabel jlInstructions = new JLabel ("Set the master password for Credential Manager");
+        JLabel jlInstructions = new JLabel (instructions);
     	jlInstructions.setFont(new Font(null, Font.PLAIN, 11));
     	
     	JPanel jpInstructions = new JPanel();
