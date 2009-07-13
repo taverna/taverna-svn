@@ -53,7 +53,7 @@ public class UIMasterPasswordProvider implements MasterPasswordProviderSPI{
 		
 		if (keystoreFile.exists() || truststoreFile.exists()){
 			// Ask user to provide a master password for Credential Manager
-			GetMasterPasswordDialog getPasswordDialog = new GetMasterPasswordDialog();
+			GetMasterPasswordDialog getPasswordDialog = new GetMasterPasswordDialog("Enter master password for Credential Manager");
 			getPasswordDialog.setLocationRelativeTo(null);
 			getPasswordDialog.setVisible(true);
 			return getPasswordDialog.getPassword();

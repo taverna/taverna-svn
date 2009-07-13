@@ -55,13 +55,17 @@ public class GetMasterPasswordDialog extends JDialog {
 
     // Stores the password entered 
     private String password = null;
+    
+    // Text giving user the instructions what to do in the dialog
+    private String instructions;
 
     /**
      * Creates new GetNewPasswordDialog where the parent is a frame.
      */
-    public GetMasterPasswordDialog()
+    public GetMasterPasswordDialog(String instructions)
     {
         super((Frame)null, "Enter master password", true);
+        this.instructions = instructions;
         initComponents();
     }
 
@@ -72,7 +76,7 @@ public class GetMasterPasswordDialog extends JDialog {
     {
         getContentPane().setLayout(new BorderLayout());
 
-        JLabel jlInstructions = new JLabel ("Enter master password for Credential Manager");
+        JLabel jlInstructions = new JLabel (instructions);
     	jlInstructions.setFont(new Font(null, Font.PLAIN, 11));
     	
     	JPanel jpInstructions = new JPanel();
@@ -80,7 +84,7 @@ public class GetMasterPasswordDialog extends JDialog {
     	jpInstructions.add(jlInstructions);
     	jpInstructions.setBorder(new EmptyBorder(10,5,10,0));
         
-        JLabel jlPassword = new JLabel("Master password");
+        JLabel jlPassword = new JLabel("Password");
         jlPassword.setBorder(new EmptyBorder(0,5,0,0));
 
         jpfPassword = new JPasswordField(15);

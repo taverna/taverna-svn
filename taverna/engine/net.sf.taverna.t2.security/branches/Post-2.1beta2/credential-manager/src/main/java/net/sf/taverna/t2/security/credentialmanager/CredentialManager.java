@@ -77,9 +77,6 @@ public class CredentialManager implements Observable<KeystoreChangedEvent>{
 	
 	// Master password the Keystore and Truststore are created/accessed with. 
 	private static String masterPassword;
-	
-	// Master password for the Keystore and Truststore.
-	//private static String masterPassword;
 
 	// Keystore file. 
 	private static File keystoreFile;
@@ -114,9 +111,6 @@ public class CredentialManager implements Observable<KeystoreChangedEvent>{
 	
 	/**
 	 * Returns a CredentialManager singleton.
-	 * 
-	 * @return
-	 * @throws CMException
 	 */
 	public static CredentialManager getInstance() throws CMException {
 		synchronized (CredentialManager.class) {
@@ -264,7 +258,7 @@ public class CredentialManager implements Observable<KeystoreChangedEvent>{
 
 		// Load the Truststore
 		try {
-			truststore = loadKeystore(truststoreFile, mPassword);
+			truststore = loadTruststore(truststoreFile, mPassword);
 			logger.info("Credential Manager: Loaded the Truststore.");
 		} 
 		catch (CMException cme) {
@@ -275,14 +269,10 @@ public class CredentialManager implements Observable<KeystoreChangedEvent>{
 
 	
 	/**
-	 * Loads a Bouncy Castle "UBER"-type keystore from a file on the disk and
+	 * Loads Taverna's Bouncy Castle "UBER"-type keystore from a file on the disk and
 	 * returns it.
-	 * 
-	 * @param ksFile - the file containing the keystore
-	 * @param masterPassword - masterpassword for the keystore
-	 * @throws CMException - if the keystore could not be loaded for some reason
 	 */
-	public static KeyStore loadKeystore(File ksFile, String masterPassword) throws CMException {
+	public static KeyStore loadKeystore(File keystoreFile, String masterPassword) throws CMException {
 
 		KeyStore keystore = null;
 		try {
@@ -290,21 +280,21 @@ public class CredentialManager implements Observable<KeystoreChangedEvent>{
 		} 
 		catch (Exception ex) {
 			// The requested keystore type is not available from the provider
-			String exMessage = "Failed to instantiate the Bouncy Castle 'UBER' keystore.";
+			String exMessage = "Failed to instantiate a Bouncy Castle 'UBER'-type keystore.";
 			logger.error(exMessage, ex);
 			ex.printStackTrace();
 			throw new CMException(exMessage);
 		} 
 
 
-		if (ksFile.exists()) { // If the file exists, open it
+		if (keystoreFile.exists()) { // If the file exists, open it
 			// Try to load the keystore as Bouncy Castle "UBER"-type
 			// keystore
 			FileInputStream fis = null;
 
 			try {				
 				// Get the file
-				fis = new FileInputStream(ksFile);
+				fis = new FileInputStream(keystoreFile);
 				// Load the keystore from the file
 				keystore.load(fis, masterPassword.toCharArray());
 			} 
@@ -332,7 +322,7 @@ public class CredentialManager implements Observable<KeystoreChangedEvent>{
 				keystore.load(null, null);
 
 				// Immediately save the new (empty) keystore to the file
-				fos = new FileOutputStream(ksFile);
+				fos = new FileOutputStream(keystoreFile);
 				keystore.store(fos, masterPassword.toCharArray());
 			} 
 			catch (Exception ex) {
@@ -352,6 +342,180 @@ public class CredentialManager implements Observable<KeystoreChangedEvent>{
 			}
 		}
 		return keystore;
+	}
+	
+	/**
+	 * Load Taverna's truststore from a file on a disk. If the truststore 
+	 * does not already exist, a new empty one will be created and contents 
+	 * of Java's truststore located in <JAVA_HOME>/lib/security/cacerts will 
+	 * be copied over to this truststore.
+	 */
+	private static KeyStore loadTruststore(File truststoreFile, String masterPassword) throws CMException{
+		
+		KeyStore truststore = null;
+		// Try to create the Taverna's Truststore - has to be "JKS"-type keystore 
+		// because we use it to set the system property "javax.net.ssl.trustStore"
+		try {
+			truststore = KeyStore.getInstance("JKS");
+		} 
+		catch (Exception ex) {
+			// The requested keystore type is not available from the provider
+			String exMessage = "Failed to instantiate a 'JKS'-type keystore.";
+			logger.error(exMessage, ex);
+			ex.printStackTrace();
+			throw new CMException(exMessage);
+		} 
+		
+		if (truststoreFile.exists()) { // If the Truststore file already exists, open it and load the Truststore
+			
+			FileInputStream fis = null;
+			try {				
+				// Get the file
+				fis = new FileInputStream(truststoreFile);
+				// Load the Truststore from the file
+				truststore.load(fis, masterPassword.toCharArray());
+			} 
+			catch (Exception ex) {				
+				String exMessage = "Failed to load the truststore. Possible reason: incorrect password or corrupted file.";
+				logger.error(exMessage, ex);
+				ex.printStackTrace();
+				throw new CMException(exMessage);
+			} 
+			finally {
+				if (fis != null) {
+					try {
+						fis.close();
+					} catch (IOException e) {
+						// ignore
+					}
+				}
+			}
+		} 
+		else { // Otherwise create a new empty truststore and load it with certs from Java's truststore		
+
+			File javaTruststoreFile = new File(System.getProperty("java.home") + "/lib/security/cacerts"); 
+			KeyStore javaTruststore = null;
+			// Java's truststore is of type "JKS" - try to load it
+			try {
+				javaTruststore = KeyStore.getInstance("JKS");
+			} 
+			catch (Exception ex) {
+				// The requested keystore type is not available from the provider
+				String exMessage = "Failed to instantiate a 'JKS'-type keystore.";
+				logger.error(exMessage, ex);
+				ex.printStackTrace();
+				throw new CMException(exMessage);
+			}		
+			
+			FileInputStream fis = null;
+			boolean loadedJavaTruststore = false;
+			try {				
+				// Get the file
+				fis = new FileInputStream(javaTruststoreFile);
+				// Load the Java keystore from the file
+				javaTruststore.load(fis, "changeit".toCharArray()); // try with the default Java truststore password first
+				loadedJavaTruststore = true;
+			} 
+			catch(IOException ioex){
+				// If there is an I/O or format problem with the keystore data, 
+				// or if the given password was incorrect
+				logger.error("Failed to load the Java truststore to copy over certificates using default password 'changeit'. Trying with user-provided password.");
+				
+				// Close the input stream and reopen it to rewind it (resetting it did not work for some reason)
+				if (fis != null) {
+					try {
+						fis.close();
+						fis = new FileInputStream(javaTruststoreFile);
+					} catch (IOException e) {
+						// ignore
+					}
+				}
+				// Hopefully it was the password problem - ask user to provide 
+				// their password for the Java truststore
+				GetMasterPasswordDialog getPasswordDialog = new GetMasterPasswordDialog("Credential Manager needs to copy certificates from Java truststore. Please enter your password.");
+				getPasswordDialog.setLocationRelativeTo(null);
+				getPasswordDialog.setVisible(true);
+				String javaTruststorePassword = getPasswordDialog.getPassword();
+				if (javaTruststorePassword == null){ // user cancelled - do not try to load Java truststore
+					loadedJavaTruststore = false;
+				}
+				else{
+					try {
+						javaTruststore.load(fis, javaTruststorePassword.toCharArray());
+						loadedJavaTruststore = true;
+					} catch (Exception ex) {
+						String exMessage = "Failed to load the Java truststore to copy over certificates using user-provided password. Creating a new empty truststore for Taverna.";
+						logger.error(exMessage, ex);
+						ex.printStackTrace();
+						loadedJavaTruststore = false;
+					}
+					finally {
+						if (fis != null) {
+							try {
+								fis.close();
+							} catch (IOException e) {
+								// ignore
+							}
+						}
+					}
+				}
+			}
+			catch (Exception ex) {				
+				String exMessage = "Failed to load the Java truststore to copy over certificates. Creating a new empty truststore for Taverna.";
+				logger.error(exMessage, ex);
+				ex.printStackTrace();
+				loadedJavaTruststore = false;
+			} 
+			finally {
+				if (fis != null) {
+					try {
+						fis.close();
+					} catch (IOException e) {
+						// ignore
+					}
+				}
+			}			
+			FileOutputStream fos = null;
+			// Create a new empty truststore for Taverna
+			try {
+				truststore.load(null, null);		
+				if (loadedJavaTruststore){
+					// Copy certificates into Taverna's truststore from Java truststore
+					Enumeration<String> aliases = javaTruststore.aliases();
+					while (aliases.hasMoreElements()){
+						String alias = aliases.nextElement();
+						Certificate certificate = javaTruststore.getCertificate(alias);
+						if (certificate instanceof X509Certificate){
+							String trustedCertAlias = createX509CertificateAlias((X509Certificate)certificate);
+							truststore.setCertificateEntry(trustedCertAlias, certificate);
+						}
+					}		
+				}		
+				// Immediately save the new truststore to the file
+				fos = new FileOutputStream(truststoreFile);
+				truststore.store(fos, masterPassword.toCharArray());
+			} 
+			catch (Exception ex) {
+				String exMessage = "Failed to generate a new truststore.";
+				logger.error(exMessage, ex);
+				ex.printStackTrace();
+				throw new CMException(exMessage);
+			} 
+			finally {
+				if (fos != null) {
+					try {
+						fos.close();
+					} catch (IOException e) {
+						// ignore
+					}
+				}
+			}			
+		}
+		
+		// Set the system property "javax.net.ssl.Truststore" to use Taverna's truststore 
+		System.setProperty("javax.net.ssl.trustStore", truststoreFile.getAbsolutePath());
+		System.setProperty("javax.net.ssl.trustStorePassword", masterPassword);
+		return truststore;
 	}
 	
 	
@@ -822,7 +986,7 @@ public class CredentialManager implements Observable<KeystoreChangedEvent>{
 	 */
 	public void deleteKeyPair(String alias) throws CMException{
 		
-		// FIXME: We are passing alias for now but we want to be passing
+		// TODO: We are passing alias for now but we want to be passing
 		// the private key and its public key certificate
 		
 //		// Create an alias for the new key pair entry in the Keystore
@@ -1117,24 +1281,9 @@ public class CredentialManager implements Observable<KeystoreChangedEvent>{
 			ArrayList<Provider> oldBCProviders = unregisterOldBCProviders();
 			Security.addProvider(bcProvider);
 			
-			// Create an alias for the new key pair entry in the Keystore
+			// Create an alias for the new trusted certificate entry in the Truststore
 			// as "trustedcert#"<CERT_SUBJECT_COMMON_NAME>"#"<CERT_ISSUER_COMMON_NAME>"#"<CERT_SERIAL_NUMBER>
-			String ownerDN = cert.getSubjectX500Principal()
-					.getName(X500Principal.RFC2253);
-			CMX509Util util = new CMX509Util();
-			util.parseDN(ownerDN);
-			String ownerCN = util.getCN(); // owner's common name
-
-			// Get the hexadecimal representation of the certificate's serial number
-			String serialNumber = new BigInteger(1, cert.getSerialNumber()
-					.toByteArray()).toString(16).toUpperCase();
-
-			String issuerDN = cert.getIssuerX500Principal()
-			.getName(X500Principal.RFC2253);
-			util.parseDN(issuerDN);
-			String issuerCN = util.getCN(); // issuer's common name
-			
-			String alias = "trustedcert#" + ownerCN + "#" + issuerCN + "#" + serialNumber;
+			String alias = createX509CertificateAlias(cert);
 			
 			try {
 				synchronized (truststore) {
@@ -1153,6 +1302,61 @@ public class CredentialManager implements Observable<KeystoreChangedEvent>{
 				restoreOldBCProviders(oldBCProviders);
 			}
 		}
+	}
+
+	/**
+	 * Create a Truststore alias for the trusted certificate as
+	 * 
+	 * "trustedcert#"<CERT_SUBJECT_COMMON_NAME>"#"<CERT_ISSUER_COMMON_NAME>"#"<CERT_SERIAL_NUMBER>
+	 */
+	private static String createX509CertificateAlias(X509Certificate cert) {
+		String ownerDN = cert.getSubjectX500Principal()
+				.getName(X500Principal.RFC2253);
+		CMX509Util util = new CMX509Util();
+		util.parseDN(ownerDN);
+		String owner;
+		String ownerCN = util.getCN(); // owner's common name
+		String ownerOU = util.getOU();
+		String ownerO = util.getO();
+		if (!ownerCN.equals("none")){ // try owner's CN first
+			owner = ownerCN;
+		} // try owner's OU
+		else if (!ownerOU.equals("none")){
+			owner = ownerOU;
+		}
+		else if (!ownerO.equals("none")){ // finally use owner's Organisation
+			owner= ownerO;
+		}
+		else{
+			owner = "<Not Part of Certificate>";
+		}
+
+		// Get the hexadecimal representation of the certificate's serial number
+		String serialNumber = new BigInteger(1, cert.getSerialNumber()
+				.toByteArray()).toString(16).toUpperCase();
+
+		String issuerDN = cert.getIssuerX500Principal()
+		.getName(X500Principal.RFC2253);
+		util.parseDN(issuerDN);
+		String issuer;
+		String issuerCN = util.getCN(); // issuer's common name
+		String issuerOU = util.getOU();
+		String issuerO = util.getO();
+		if (!issuerCN.equals("none")){ // try issuer's CN first
+			issuer = issuerCN;
+		} // try issuer's OU
+		else if (!issuerOU.equals("none")){
+			issuer = issuerOU;
+		}
+		else if (!issuerO.equals("none")){ // finally use issuer's Organisation
+			issuer= issuerO;
+		}
+		else{
+			issuer = "<Not Part of Certificate>";
+		}
+		
+		String alias = "trustedcert#" + owner + "#" + issuer + "#" + serialNumber;
+		return alias;
 	}
 
 	/**
