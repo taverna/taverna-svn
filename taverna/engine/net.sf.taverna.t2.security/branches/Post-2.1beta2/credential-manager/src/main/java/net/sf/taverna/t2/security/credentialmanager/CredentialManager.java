@@ -68,6 +68,10 @@ import org.apache.log4j.Logger;
 
 public class CredentialManager implements Observable<KeystoreChangedEvent>{
 	
+	private static final String T2TRUSTSTORE_FILE = "t2truststore.jks";
+	private static final String SERVICE_URLS_FILE = "t2serviceURLs.txt";
+	private static final String T2KEYSTORE_FILE = "t2keystore.ubr";
+
 	// Log4J Logger
 	private static Logger logger = Logger.getLogger(CredentialManager.class);
 
@@ -75,25 +79,29 @@ public class CredentialManager implements Observable<KeystoreChangedEvent>{
 	private MultiCaster<KeystoreChangedEvent> multiCaster = new MultiCaster<KeystoreChangedEvent>(
 			this);
 	
+	// Security config directory
+	private static File secConfigDirectory = CMUtil.getSecurityConfigurationDirectory();	
+	// Keystore file. 
+	private static File keystoreFile = new File(secConfigDirectory,T2KEYSTORE_FILE);
+	// Truststore file.
+	private static File truststoreFile = new File(secConfigDirectory,T2TRUSTSTORE_FILE); 
+	// Service URLs file containing lists of service URLs associated with private key aliases.
+	// The alias points to the key pair entry to be used for a particular service.
+	private static File serviceURLsFile = new File(secConfigDirectory,SERVICE_URLS_FILE); 
+
+	
 	// Master password the Keystore and Truststore are created/accessed with. 
 	private static String masterPassword;
-
-	// Keystore file. 
-	private static File keystoreFile;
-
+	
 	// Keystore containing user's passwords, private keys and public key certificate chains.
 	private static KeyStore keystore;
-
-	// Truststore file.
-	private static File truststoreFile;
-
 	// Truststore containing trusted certificates of CA authorities and services.
 	private static KeyStore truststore;
 
-	// Service URLs file containing lists of service URLs associated with private key aliases.
-	// The alias points to the key pair entry to be used for a particular service.
-	private static File serviceURLsFile;
+	
+	
 
+	
 	// A map of service URLs associated with private key aliases, i.e. aliases
 	// are keys in the hashmap and lists of URLs are hashmap values.
 	private static HashMap<String,ArrayList<String>> serviceURLsForKeyPairs;
@@ -102,6 +110,7 @@ public class CredentialManager implements Observable<KeystoreChangedEvent>{
 	// performing operations on.
 	public static final String KEYSTORE = "Keystore";
 	public static final String TRUSTSTORE = "Truststore";
+	private static final String TRUSTSTORE_PASSWORD = "raehiekooshe0eghiPhi";
 
 	// Credential Manager singleton
 	private static CredentialManager INSTANCE;
@@ -223,22 +232,11 @@ public class CredentialManager implements Observable<KeystoreChangedEvent>{
 	 */
 	public void init(String mPassword) throws CMException {	
 
-		// Security config directory
-		File secConfigDirectory = CMUtil.getSecurityConfigurationDirectory();
-		
-		// Get the Keystore file
-		keystoreFile = new File(secConfigDirectory,"t2keystore.ubr"); 
-
-		// Get the service URLs file (where lists of service urls for private
-		// keys are saved)
-		serviceURLsFile = new File(secConfigDirectory,"t2serviceURLs.txt"); 
-
-		// Get the Truststore file
-		truststoreFile = new File(secConfigDirectory,"t2truststore.ubr"); 
+	
 
 		// Load the Keystore
 		try {
-			keystore = loadKeystore(keystoreFile, mPassword);
+			keystore = loadKeystore(mPassword);
 			logger.info("Credential Manager: Loaded the Keystore.");
 		} 
 		catch (CMException cme) {
@@ -258,7 +256,7 @@ public class CredentialManager implements Observable<KeystoreChangedEvent>{
 
 		// Load the Truststore
 		try {
-			truststore = loadTruststore(truststoreFile, mPassword);
+			truststore = loadTruststore(TRUSTSTORE_PASSWORD);
 			logger.info("Credential Manager: Loaded the Truststore.");
 		} 
 		catch (CMException cme) {
@@ -272,8 +270,7 @@ public class CredentialManager implements Observable<KeystoreChangedEvent>{
 	 * Loads Taverna's Bouncy Castle "UBER"-type keystore from a file on the disk and
 	 * returns it.
 	 */
-	public static KeyStore loadKeystore(File keystoreFile, String masterPassword) throws CMException {
-
+	public static KeyStore loadKeystore(String masterPassword) throws CMException {
 		KeyStore keystore = null;
 		try {
 			keystore = KeyStore.getInstance("UBER", "BC");
@@ -350,7 +347,7 @@ public class CredentialManager implements Observable<KeystoreChangedEvent>{
 	 * of Java's truststore located in <JAVA_HOME>/lib/security/cacerts will 
 	 * be copied over to this truststore.
 	 */
-	private static KeyStore loadTruststore(File truststoreFile, String masterPassword) throws CMException{
+	private static KeyStore loadTruststore(String masterPassword) throws CMException{
 		
 		KeyStore truststore = null;
 		// Try to create the Taverna's Truststore - has to be "JKS"-type keystore 
@@ -1569,7 +1566,8 @@ public class CredentialManager implements Observable<KeystoreChangedEvent>{
 				else if (ksType.equals(TRUSTSTORE)) {
 					synchronized (truststore) {
 						fos = new FileOutputStream(truststoreFile);
-						truststore.store(fos, masterPassword.toCharArray());
+						// Hard-coded trust store password
+						truststore.store(fos, TRUSTSTORE_PASSWORD.toCharArray());
 					}
 				}
 			} 
@@ -1641,6 +1639,10 @@ public class CredentialManager implements Observable<KeystoreChangedEvent>{
 		masterPassword = newPassword;
 		saveKeystore(KEYSTORE);
 		saveKeystore(TRUSTSTORE);
+	}
+
+	public static void initialiseSSL() throws CMException {		
+		loadTruststore(TRUSTSTORE_PASSWORD);
 	}
 	
 	/**
