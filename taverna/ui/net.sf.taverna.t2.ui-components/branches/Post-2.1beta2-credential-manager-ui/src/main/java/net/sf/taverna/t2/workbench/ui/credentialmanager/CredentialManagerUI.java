@@ -1491,8 +1491,8 @@ public class CredentialManagerUI extends JFrame {
 			else if (((JTable) evt.getSource()).getModel() instanceof KeyPairsTableModel) { // Key pairs table
 				viewCertificate();
 			} 
-			else if (((JTable) evt.getSource()).getModel() instanceof ProxiesTableModel) { // Key pairs table
-				viewCertificate();
+			else if (((JTable) evt.getSource()).getModel() instanceof ProxiesTableModel) { // Proxies table
+				viewProxyCertificate();
 			}
 			else { // Trusted certificates table
 				viewCertificate();
