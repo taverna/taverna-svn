@@ -1,0 +1,15 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>javax.xml</groupId>
+    <artifactId>jaxb-impl</artifactId>
+    <version>2.0EA3</version>
+    <packaging>jar</packaging>
+    <name>JAXB 2.0 Impl</name>
+    <licenses>
+        <license>
+            <name>COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0</name>
+            <url>http://www.sun.com/cddl/cddl.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+</project>
