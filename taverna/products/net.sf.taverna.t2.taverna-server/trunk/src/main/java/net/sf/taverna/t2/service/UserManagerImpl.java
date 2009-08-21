@@ -84,15 +84,17 @@ public class UserManagerImpl implements UserManager, InitializingBean {
         
    		if (!userDetailsManager.userExists("default")) {
 	        GrantedAuthority grantedAuthority = new GrantedAuthorityImpl("ROLE_USER");
-	        User user = new User("default", "frgsi;y", true, true, true, true, Collections.singletonList(grantedAuthority));
+	        User user = new User("default", "frgsi;y", true,
+ //	        		true, true, true,
+	        		(GrantedAuthority[]) Collections.singletonList(grantedAuthority).toArray());
 			userDetailsManager.createUser(user);
-			groupManager.createGroup("all", new ArrayList<GrantedAuthority>());
+			groupManager.createGroup("all", (GrantedAuthority[]) new ArrayList<GrantedAuthority>().toArray());
 			groupManager.addUserToGroup("david", "all");
 		}
 	}
 
     public List<UserDetails> getUsers() {
-		List<String> users = groupManager.findUsersInGroup("all");
+		String[] users = groupManager.findUsersInGroup("all");
 		List<UserDetails> userDetails = new ArrayList<UserDetails>();
 		for (String user : users) {
 			userDetails.add(userDetailsManager.loadUserByUsername(user));

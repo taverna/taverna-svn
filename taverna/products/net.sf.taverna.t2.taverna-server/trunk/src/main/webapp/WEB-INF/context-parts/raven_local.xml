@@ -66,6 +66,7 @@
 			<ref bean="platform.raven.pomParser" />
 		</property>
 		<property name="remoteRepositoriesResource" value="classpath:platform.raven.repositories.text" />
+		<property name="bundledRepository" value="classpath:repository"/>
 		<property name="systemArtifactsResource"
 			value="classpath:platform.raven.systemartifacts.text" />
 	</bean>

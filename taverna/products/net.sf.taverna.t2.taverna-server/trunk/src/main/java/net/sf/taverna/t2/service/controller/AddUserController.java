@@ -68,7 +68,9 @@ public class AddUserController extends SimpleFormController implements Initializ
         AddUser addUser = (AddUser) command;
 
         GrantedAuthority grantedAuthority = new GrantedAuthorityImpl("ROLE_USER");
-        User user = new User(addUser.getUserName().trim(), addUser.getPassword(), true, true, true, true, Collections.singletonList(grantedAuthority));
+        User user = new User(addUser.getUserName().trim(), addUser.getPassword(), true,
+  //       		true, true, true,
+        		(GrantedAuthority[]) Collections.singletonList(grantedAuthority).toArray());
 
         try {
             userDetailsManager.createUser(user);

@@ -24,7 +24,7 @@ Download $project.name $project.version
 
 *Previous versions
 
-#set($previousVersions = ["0.1.0"])
+#set($previousVersions = ["0.2.0","0.1.0"])
 
 *---------+-----------------+-----------------------------+-------------------------------+
 ||Version ||Download        ||md5 Checksum                ||sha1 Checksum                 |

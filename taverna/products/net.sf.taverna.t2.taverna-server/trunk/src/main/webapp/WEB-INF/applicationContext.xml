@@ -32,8 +32,8 @@
 
 	<!--=============== Data Storage ===============-->
 	
-	<!--<import resource="inmemory.xml" />-->
-	<import resource="hibernate.xml" />
+    <import resource="context-parts/server_inmemory.xml" />
+	<import resource="context-parts/dao_hibernate.xml" />
 
 	<!--============================================-->
 

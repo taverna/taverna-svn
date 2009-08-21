@@ -10,12 +10,4 @@
 	<bean id="dataDao" class="net.sf.taverna.t2.service.store.memory.InMemoryDataDao" />
 	<bean id="workflowDao" class="net.sf.taverna.t2.service.store.memory.InMemoryWorkflowDao" />
 
-	<!--============================================-->
-
-	<!--=========== Taverna Data Storage ===========-->
-	
-	<import resource="context-parts/dao_inmemory.xml" /> 
-	
-	<!--============================================-->
-
 </beans>

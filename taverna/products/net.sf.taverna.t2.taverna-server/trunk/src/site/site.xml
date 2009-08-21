@@ -19,7 +19,7 @@
       <item name="Installing Taverna Server" href="installation/installation.html"/>
     </menu>
     <menu name="Configuration">
-      <item name="Data Storage" href="configuration/data-storage.html"/>
+<!--      <item name="Data Storage" href="configuration/data-storage.html"/> -->
       <item name="Proxies" href="configuration/proxy.html"/>
       <item name="Security" href="configuration/security.html"/>
     </menu>

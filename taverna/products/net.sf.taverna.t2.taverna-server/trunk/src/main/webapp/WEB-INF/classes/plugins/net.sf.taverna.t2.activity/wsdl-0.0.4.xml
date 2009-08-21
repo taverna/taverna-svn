@@ -39,7 +39,7 @@
 		<link>http://omii.ac.uk</link>
 	</link>
 		
-	<artifact>net.sf.taverna.t2.activities:wsdl-activity:p0.1b2</artifact>
+	<artifact>net.sf.taverna.t2.activities:wsdl-activity:p0.1b3-SNAPSHOT</artifact>
 	<artifact>net.sf.taverna:wsdl-generic:1.3-SNAPSHOT</artifact>
 	<artifact>javax.activation:activation:1.1</artifact>
 	<artifact>jdom:jdom:1.0</artifact>

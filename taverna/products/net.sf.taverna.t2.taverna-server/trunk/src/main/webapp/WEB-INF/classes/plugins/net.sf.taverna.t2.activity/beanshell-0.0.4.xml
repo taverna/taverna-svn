@@ -24,6 +24,6 @@
         <link>http://omii.ac.uk</link>
     </link>
     <artifact>org.beanshell:bsh:2.0b4</artifact>
-    <artifact>net.sf.taverna.t2.activities:beanshell-activity:p0.1b2</artifact>
+    <artifact>net.sf.taverna.t2.activities:beanshell-activity:p0.1b3-SNAPSHOT</artifact>
     <target>Taverna2</target>
 </plugin>

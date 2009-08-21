@@ -81,13 +81,5 @@
 		</tx:attributes>
 	</tx:advice>
 
-	<!--============================================-->
-	
-	<!--=========== Taverna Data Storage ===========-->
-	
-	<import resource="context-parts/dao_hibernate.xml" />
-	
-	<!--============================================-->
-
 </beans>
            

@@ -11,6 +11,8 @@ Servlet Container we recommend {{{http://tomcat.apache.org/download-60.cgi}Apach
  
 *Deploying on Apache Tomcat 6
 
+ You may need to alter the JAVA_OPTS in catalina.sh to add -XX:MaxPermSize=140m.
+
 **Starting the Tomcat Manager
 
  Navigate to the the Tomcat home page in your browser. The default Tomcat installation is usually at at {{http://localhost:8080/}}

@@ -38,7 +38,7 @@
 	</link>
 
 	<artifact>
-		net.sf.taverna.t2.dispatchlayers:core-dispatchlayers:p0.1b2
+		net.sf.taverna.t2.dispatchlayers:core-dispatchlayers:p0.1b3-SNAPSHOT
 	</artifact>
 
 	<target>Taverna2</target>

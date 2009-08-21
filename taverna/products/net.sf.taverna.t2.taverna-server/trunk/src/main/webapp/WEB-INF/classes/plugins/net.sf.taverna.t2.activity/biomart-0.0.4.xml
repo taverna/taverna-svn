@@ -35,7 +35,7 @@
 		<link>http://omii.ac.uk</link>
 	</link>
 	
-	<artifact>net.sf.taverna.t2.activities:biomart-activity:p0.1b2</artifact>
+	<artifact>net.sf.taverna.t2.activities:biomart-activity:p0.1b3-SNAPSHOT</artifact>
 	<artifact>org.biomart:martservice:0.7.2-SNAPSHOT</artifact>
 	<artifact>jdom:jdom:1.0</artifact>
 	<artifact>org.biomart:martj:0.6</artifact>

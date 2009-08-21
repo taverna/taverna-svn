@@ -5,7 +5,7 @@
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>taverna-server</artifactId>
 	<packaging>war</packaging>
-	<version>0.2.0</version>
+	<version>0.2.1</version>
 	<name>Taverna Server</name>
 	<url>http://www.mygrid.org.uk/tools/taverna/taverna-server/</url>
 	<inceptionYear>2008</inceptionYear>
@@ -30,6 +30,12 @@
 			<organization>University of Manchester</organization>
 			<organizationUrl>http://www.manchester.ac.uk/</organizationUrl>
 			<email>david.withers@manchester.ac.uk</email>
+		</developer>
+		<developer>
+			<name>Alan R Williams</name>
+			<organization>University of Manchester</organization>
+			<organizationUrl>http://www.manchester.ac.uk/</organizationUrl>
+			<email>alan.r.williams@manchester.ac.uk</email>
 		</developer>
 	</developers>
 	<mailingLists>
@@ -60,7 +66,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<source>${compileSource}</source>
-					<target>1.6</target>
+					<target>1.5</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -201,14 +207,14 @@
 
 	<properties>
 		<compileSource>1.5</compileSource>
-		<taverna.platform.version>p0.1b2</taverna.platform.version>
+		<taverna.platform.version>p0.1b3-SNAPSHOT</taverna.platform.version>
 
 		<cxf.version>2.1.4</cxf.version>
 		<jsr311.version>0.8</jsr311.version>
 
 		<spring.version>2.5.4</spring.version>
 		<!--<spring.security.version>2.0.4</spring.security.version>-->
-		<spring.security.version>2.5.0-SNAPSHOT</spring.security.version>
+		<spring.security.version>2.0.4</spring.security.version>
 	</properties>
 
 	<dependencies>
@@ -254,6 +260,7 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>taglibs</groupId>
@@ -402,7 +409,36 @@
 			<version>${taverna.platform.version}</version>
 			<scope>test</scope>
 		</dependency>
-
+<dependency>
+    <groupId>org.openoffice</groupId>
+    <artifactId>ridl</artifactId>
+    <version>2.3.1</version>
+</dependency>
+<dependency>
+    <groupId>org.openoffice</groupId>
+    <artifactId>unoil</artifactId>
+    <version>2.3.1</version>
+</dependency> 
+<dependency>
+    <groupId>org.apache.derby</groupId>
+    <artifactId>derby</artifactId>
+    <version>10.4.2.0</version>
+</dependency> 
+<dependency>
+  <groupId>xerces</groupId>
+  <artifactId>xercesImpl</artifactId>
+  <version>2.6.2</version>
+</dependency>
+<dependency>
+  <groupId>xerces</groupId>
+  <artifactId>xmlParserAPIs</artifactId>
+  <version>2.6.2</version>
+</dependency>
+<dependency>
+<groupId>xml-apis</groupId>
+<artifactId>xml-apis</artifactId>
+<version>2.0.2</version>
+</dependency>
 	</dependencies>
 	<scm>
 		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/products/net.sf.taverna.t2.taverna-server/trunk/</connection>
@@ -438,11 +474,11 @@
 				<reportSets>
 					<reportSet>
 						<reports>
-							<report>dependencies</report>
+<!--							<report>dependencies</report> -->
 							<report>project-team</report>
 							<report>mailing-list</report>
 							<report>cim</report>
-							<report>issue-tracking</report>
+<!--							<report>issue-tracking</report> -->
 							<report>license</report>
 							<report>scm</report>
 						</reports>
