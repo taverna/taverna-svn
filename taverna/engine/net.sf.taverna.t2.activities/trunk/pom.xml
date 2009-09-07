@@ -21,13 +21,13 @@
 	</description>
 
 	<properties>
-		<t2.infrastructure.version>1.11</t2.infrastructure.version>
-		<t2.core.version>0.8</t2.core.version>
-		<t2.lang.version>0.5</t2.lang.version>
-		<t2.security.version>0.6</t2.security.version>
-		<t2.core.refexts.version>0.6</t2.core.refexts.version>
-                <org.biomart.martservice.version>0.7.2</org.biomart.martservice.version>
-                <wsdl.generic.version>1.4</wsdl.generic.version>
+		<t2.infrastructure.version>1.12-SNAPSHOT</t2.infrastructure.version>
+		<t2.core.version>0.9-SNAPSHOT</t2.core.version>
+		<t2.lang.version>0.6-SNAPSHOT</t2.lang.version>
+		<t2.security.version>0.7-SNAPSHOT</t2.security.version>
+		<t2.core.refexts.version>0.7-SNAPSHOT</t2.core.refexts.version>
+                <org.biomart.martservice.version>0.7.3-SNAPSHOT</org.biomart.martservice.version>
+                <wsdl.generic.version>1.6-SNAPSHOT</wsdl.generic.version>
 	</properties>
 
 	<modules>
