@@ -73,7 +73,14 @@
 						<xsd:element form="unqualified" name="MartQuery"
 							type="activities:BioMartConfig">
 						</xsd:element>
+						<xsd:element form="unqualified" name="net.sf.taverna.t2.activities.biomoby.BiomobyActivityConfigurationBean"
+							type="activities:BioMobyConfig"/>
+						<xsd:element form="unqualified" name="net.sf.taverna.t2.activities.biomoby.BiomobyObjectActivityConfigurationBean"
+							type="activities:BioMobyObjectConfig" />
+						<xsd:element form="unqualified" name="net.sf.taverna.t2.activities.biomoby.MobyParseDatatypeActivityConfigurationBean"
+							type="activities:BioMobyParserConfig"/>
 
+						
 						<xsd:element name="dataflow" type="activities:DataflowConfig">
 						</xsd:element>
 					</xsd:choice>
