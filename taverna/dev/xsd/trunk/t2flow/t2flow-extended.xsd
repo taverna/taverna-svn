@@ -13,7 +13,7 @@
 			Restricting schema of t2flow.xsd that describes the
 			configuration beans for the
 			dispatch stack layers and activities,
-			given the shipped Taverna 2.0
+			given the shipped Taverna 2.0/2.1
 			with no additional plugins installed.		</xsd:documentation>
 	</xsd:annotation>
 	<xsd:redefine schemaLocation="t2flow.xsd">
