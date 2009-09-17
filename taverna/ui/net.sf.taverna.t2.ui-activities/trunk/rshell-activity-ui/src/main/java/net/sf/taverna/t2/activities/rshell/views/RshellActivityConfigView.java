@@ -243,7 +243,7 @@ public class RshellActivityConfigView extends JPanel {
 
 		});
 
-		final JCheckBox rVersionCheck = new JCheckBox("R1.6+");
+/*		final JCheckBox rVersionCheck = new JCheckBox("R1.6+");
 		rVersionCheck.setEnabled(false);
 		rVersionCheck.addActionListener(new ActionListener() {
 
@@ -253,11 +253,11 @@ public class RshellActivityConfigView extends JPanel {
 				rVersion = rVersionCheck.isSelected();
 			}
 
-		});
+		});*/
 
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout());
-		buttonPanel.add(rVersionCheck);
+//		buttonPanel.add(rVersionCheck);
 		buttonPanel.add(loadRScriptButton);
 		buttonPanel.add(clearScriptButton);
 
