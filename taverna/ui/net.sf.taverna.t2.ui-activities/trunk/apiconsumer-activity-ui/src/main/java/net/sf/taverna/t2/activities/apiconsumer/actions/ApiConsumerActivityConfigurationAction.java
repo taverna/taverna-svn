@@ -43,6 +43,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -88,9 +89,12 @@ public class ApiConsumerActivityConfigurationAction extends ActivityConfiguratio
 	
 	// New configuration for local dependencies
 	private LinkedHashSet<String> newLocalDependencies = new LinkedHashSet<String>();
+
+	public static final String CONFIGURE_APICONSUMER_ACTIVITY = "Configure Api Consumer";
 		
 	public ApiConsumerActivityConfigurationAction(ApiConsumerActivity activity, Frame owner) {
 		super(activity);
+		putValue(Action.NAME, CONFIGURE_APICONSUMER_ACTIVITY);
 		this.owner = owner;
 		this.configuration = activity.getConfiguration();
 

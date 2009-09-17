@@ -16,8 +16,6 @@ import net.sf.taverna.t2.workbench.activitytools.AbstractConfigureActivityMenuAc
 public class ConfigureApiConsumerActivityMenuAction extends
 		AbstractConfigureActivityMenuAction<ApiConsumerActivity> {
 
-	private static final String CONFIGURE_APICONSUMER_ACTIVITY = "Configure Api Consumer";
-
 	public ConfigureApiConsumerActivityMenuAction() {
 		super(ApiConsumerActivity.class);
 	}
@@ -26,7 +24,7 @@ public class ConfigureApiConsumerActivityMenuAction extends
 	protected Action createAction() {
 		ApiConsumerActivityConfigurationAction configAction = new ApiConsumerActivityConfigurationAction(
 				findActivity(), getParentFrame());
-		configAction.putValue(Action.NAME, CONFIGURE_APICONSUMER_ACTIVITY);
+		configAction.putValue(Action.NAME, ApiConsumerActivityConfigurationAction.CONFIGURE_APICONSUMER_ACTIVITY);
 		addMenuDots(configAction);
 		return configAction;
 	}
