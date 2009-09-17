@@ -106,6 +106,7 @@ public class RshellInputViewer extends JPanel {
 		add(nameField, outerConstraint);
 		
 		semanticTypeSelector = new JComboBox(SymanticTypes.values());
+		semanticTypeSelector.setSelectedItem(SymanticTypes.STRING);
 		
 		semanticTypeSelector.setRenderer(new PortTypesListCellRenderer());
 		

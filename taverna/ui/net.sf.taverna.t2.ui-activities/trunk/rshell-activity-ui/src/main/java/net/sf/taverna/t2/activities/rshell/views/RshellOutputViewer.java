@@ -149,6 +149,7 @@ public class RshellOutputViewer extends JPanel {
 		setSemanticTypeSelector(new JComboBox(SymanticTypes.values()));
 		semanticTypeSelector.setRenderer(new PortTypesListCellRenderer());
 		
+		semanticTypeSelector.setSelectedItem(SymanticTypes.STRING);
 		for (RShellPortSymanticTypeBean outputType : list) {
 			if (bean.getName().equalsIgnoreCase(outputType.getName())) {
 				semanticTypeSelector.setSelectedItem(outputType.getSymanticType());
