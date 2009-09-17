@@ -29,8 +29,6 @@ import javax.swing.Action;
 public class ConfigureRshellMenuAction extends
 		AbstractConfigureActivityMenuAction<RshellActivity> {
 
-	private static final String EDIT_RSHELL_SCRIPT = "Edit Rshell script";
-
 	public ConfigureRshellMenuAction() {
 		super(RshellActivity.class);
 	}
@@ -39,7 +37,6 @@ public class ConfigureRshellMenuAction extends
 	protected Action createAction() {
 		RshellActivityConfigurationAction configAction = new RshellActivityConfigurationAction(
 				findActivity(), getParentFrame());
-		configAction.putValue(Action.NAME, EDIT_RSHELL_SCRIPT);
 		addMenuDots(configAction);
 		return configAction;
 	}

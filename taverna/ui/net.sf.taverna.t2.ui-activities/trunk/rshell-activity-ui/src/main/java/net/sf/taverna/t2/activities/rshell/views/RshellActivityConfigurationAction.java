@@ -24,6 +24,7 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.Action;
 import javax.swing.JDialog;
 
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
@@ -43,10 +44,12 @@ public class RshellActivityConfigurationAction
 		ActivityConfigurationAction<RshellActivity, RshellActivityConfigurationBean> {
 
 	private Frame owner;
+	public static final String EDIT_RSHELL_SCRIPT = "Edit Rshell script";
 
 	public RshellActivityConfigurationAction(RshellActivity activity,
 			Frame owner) {
 		super(activity);
+		putValue(Action.NAME, EDIT_RSHELL_SCRIPT);
 		this.owner = owner;
 	}
 
