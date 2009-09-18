@@ -719,7 +719,7 @@ public class LocalRepository implements Repository {
 		String repositoryPath = repositoryPath(a, suffix);
 		for (URL repository : repositories) {
 			if (isBlacklisted(repository)) {
-				logger.debug("Skipping blacklisted repository " + repository
+				logger.debug("Skipping ignored repository " + repository
 						+ " for " + a);
 				continue;
 			}
@@ -830,11 +830,11 @@ public class LocalRepository implements Repository {
 	}
 
 	private void blacklistRepository(URL repository) {
-		logger.warn("Blacklisting repository " + repository);
+		logger.warn("Ignoring repository " + repository);
 		try {
 			blacklistedRepositories.add(repository.toURI());
 		} catch (URISyntaxException e1) {
-			logger.error("Invalid blacklisted repository " + repository);
+			logger.error("Invalid ignored repository " + repository);
 		}
 	}
 
