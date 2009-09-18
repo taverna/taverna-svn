@@ -61,7 +61,8 @@ public class RshellActivityConfigurationAction
 	public void actionPerformed(ActionEvent e) {
 		final RshellActivityConfigView rshellConfigView = new RshellActivityConfigView(
 				(RshellActivity) getActivity());
-		final HelpEnabledDialog dialog = new HelpEnabledDialog(owner, "RShell Activity Configuration", true, null);
+		final HelpEnabledDialog dialog =
+			new HelpEnabledDialog(owner, getRelativeName(), true, null);
 		dialog.add(rshellConfigView);
 		dialog.setSize(500, 500);
 		// the action that will happen when the OK button is clicked
