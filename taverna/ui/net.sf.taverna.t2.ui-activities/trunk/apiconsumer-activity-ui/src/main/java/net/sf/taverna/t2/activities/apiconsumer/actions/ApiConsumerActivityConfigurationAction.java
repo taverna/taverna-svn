@@ -106,7 +106,7 @@ public class ApiConsumerActivityConfigurationAction extends ActivityConfiguratio
 	public void actionPerformed(ActionEvent e) {
 		
 		dialog = new HelpEnabledDialog(owner,
-				"APIConsumer Activity Configuration",
+				getRelativeName(),
 				true,
 				null);
 		dialog.setLayout(new BoxLayout(dialog.getContentPane(), BoxLayout.PAGE_AXIS));
