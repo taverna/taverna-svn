@@ -18,4 +18,6 @@ WHERE
       ?artifactResource rdfs:label ?usedArtifact .
       ?roleResource rdfs:label ?role 
       OPTIONAL {  ?processResource b:iteration ?processIteration }
+#      FILTER regex(?process, "LoadCSVFileIntoTable", "i")
+#      FILTER regex(?role, "FileEntry", "i")   
  }  

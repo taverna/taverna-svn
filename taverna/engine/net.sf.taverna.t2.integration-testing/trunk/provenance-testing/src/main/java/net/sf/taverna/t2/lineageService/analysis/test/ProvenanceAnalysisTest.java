@@ -31,6 +31,7 @@ import net.sf.taverna.t2.provenance.lineageservice.mysql.NaiveProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.utils.DDRecord;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceProcessor;
+import net.sf.taverna.t2.provenance.lineageservice.utils.QueryVar;
 import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
 import net.sf.taverna.t2.provenance.lineageservice.utils.VarBinding;
 
@@ -61,7 +62,7 @@ public class ProvenanceAnalysisTest {
 
 	private boolean returnOutputs = false;  // set through prefs. if true then we return output processor var bindings as well
 	private boolean recordArtifactValues = false;  // set through prefs. if true then we record artifact values alongside names in OPM
-	
+
 	NaiveProvenanceQuery npq = null;
 	ProvenanceAnalysis pa = null;
 	ProvenanceQuery pq = null;		
@@ -69,7 +70,7 @@ public class ProvenanceAnalysisTest {
 	// shared by all tests -- these capture users configuration from AnalysisTestFiles.properties
 	Set<String> selProcNames = new HashSet<String>();
 	List<QueryVar>  qvList = new ArrayList<QueryVar>();
-	
+
 	String wfInstance = null; 
 
 	private static Logger logger = Logger.getLogger(ProvenanceAnalysisTest.class);
@@ -106,7 +107,7 @@ public class ProvenanceAnalysisTest {
 		+ DB_USER + "&password=" + DB_PASSWD;
 
 		npq = new NaiveProvenanceQuery(mySQLjdbcString);		
-		
+
 //		pq = new DerbyProvenanceQuery();
 //		pq.setDbURL(derbyjdbcString);
 		pq = new MySQLProvenanceQuery();	
@@ -138,9 +139,9 @@ public class ProvenanceAnalysisTest {
 		if (selectedWF == null || selectedWF.contains("!")) {
 			selectedWF = DEFAULT_SELECTED_WF;			
 		}
-		
-		
-		
+
+
+
 		// wf instance(s)
 		String selectedInstances = AnalysisTestFiles.getString("query.wfinstances");
 		if (selectedInstances == null) {
@@ -152,43 +153,43 @@ public class ProvenanceAnalysisTest {
 		if (returnOutputsPref != null) {
 			setReturnOutputs(Boolean.parseBoolean(returnOutputsPref));	
 		}
-		
+
 		// do we need to record actual values as part of the OPM graph?
 		String recordArtifacValuesPref = AnalysisTestFiles.getString("OPM.recordArtifactValues");
 		if (recordArtifacValuesPref != null) {
-			
+
 			pa.setRecordArtifactValues(Boolean.parseBoolean(recordArtifacValuesPref));
 
 			// are we recording artifact values along with their names?
 			System.out.println("OPM.recordArtifactValues: "+ pa.isRecordArtifactValues());
 
 		}
-		
+
 		// are we recording the actual (de-referenced) values at all?!
 		String includeDataValuePref = AnalysisTestFiles.getString("query.returnDataValues");
 		if (includeDataValuePref != null) {
 			pa.setIncludeDataValue(Boolean.parseBoolean(includeDataValuePref));
 			System.out.println("query.returnDataValues: "+pa.isIncludeDataValue());
 		}
-		
+
 		String computeOPMGraph = AnalysisTestFiles.getString("OPM.computeGraph");
 		if (computeOPMGraph != null) {
 			pa.setGenerateOPMGraph(Boolean.parseBoolean(computeOPMGraph));
 			logger.info("OPM.computeGraph: "+computeOPMGraph);			
 		}
-		
+
 		//////////////
 		// set the run instances (scope)
 		//////////////
-	
+
 		ArrayList<String> instances = null;
-		
+
 		if (selectedWF.equals("LAST")) { // default WF
 			instances = (ArrayList<String>) pa.getWFInstanceIDs();  // ordered by timestamp
 		} else  {
 			instances = (ArrayList<String>) pa.getWFInstanceID(selectedWF);  // ordered by timestamp
 		}
-		
+
 		if (! selectedInstances.equals("LAST")) {
 			System.out.println("WARNING: only LAST wfinstance supported in this version");
 		}
@@ -201,10 +202,8 @@ public class ProvenanceAnalysisTest {
 		}
 
 		logger.info("QUERY SCOPE: \nWF = "+selectedWF+" INSTANCE = "+wfInstance);
-		
 
-		// OBSOLETE
-		String proc = "_OUTPUT_"; // we test from the outputs of the workflow
+
 
 		//////////////
 		// set the selected processors
@@ -233,6 +232,7 @@ public class ProvenanceAnalysisTest {
 		//////////////
 		// set the vars used as starting points
 		//////////////
+		String proc = null;
 		String queryVars = AnalysisTestFiles.getString("query.vars");
 
 		if (queryVars.length() == 0)  { // default: TOP/ALL == all global OUTPUT vars, with fine granularity
@@ -251,7 +251,7 @@ public class ProvenanceAnalysisTest {
 			varQueryConstraints.put("W.instanceID", wfInstance);
 			varQueryConstraints.put("V.pnameRef", proc);  
 			varQueryConstraints.put("V.inputOrOutput", "0");
-			
+
 			List<Var> outVars = pq.getVars(varQueryConstraints);
 
 			for (int i=0; i<outVars.size(); i++) {
@@ -309,7 +309,7 @@ public class ProvenanceAnalysisTest {
 					varQueryConstraints.put("W.instanceID", wfInstance);
 					varQueryConstraints.put("V.pnameRef", qv.getPname());  
 					varQueryConstraints.put("V.inputOrOutput", "0");
-					
+
 					List<Var> outVars = pq.getVars(varQueryConstraints);
 
 					QueryVar qv1;
@@ -349,7 +349,7 @@ public class ProvenanceAnalysisTest {
 					wfInstance+","+qv.getPname()+","+qv.getVname()+",["+qv.getPath()+"]]\n***********");
 
 			List<LineageQueryResult> lqr = new ArrayList<LineageQueryResult>();
-			
+
 			if (qv.getPath().equals(pa.ALL_PATHS_KEYWORD)) {
 
 				Map<String, String> vbConstraints = new HashMap<String, String>();
@@ -367,21 +367,21 @@ public class ProvenanceAnalysisTest {
 					System.out.println("simpleLineageQuery on path "+path);
 
 					if (!path.startsWith("["))  path = "["+path+"]";
-					
+
 					LineageSQLQuery slq = pq.simpleLineageQuery(wfInstance, qv.getPname(), qv.getVname(), path);
 					lqr.add(pq.runLineageQuery(slq, pa.isIncludeDataValue()));
-					
+
 				}
 			}  else {
 				LineageSQLQuery slq = pq.simpleLineageQuery(wfInstance, qv.getPname(), qv.getVname(), qv.getPath());
 				lqr.add(pq.runLineageQuery(slq, pa.isIncludeDataValue()));
 			}
-			
+
 			System.out.println("******  intermediate values on TARGET VAR ["+
 					qv.getPname()+","+qv.getVname()+",["+qv.getPath()+"] query completed");
-			
+
 			if (lqr != null) {
-				
+
 				for (LineageQueryResult res:lqr) {
 					res.setPrintResolvedValue(true);
 					System.out.println(res.toString());
@@ -425,51 +425,27 @@ public class ProvenanceAnalysisTest {
 
 		// set return outputs pref
 		pa.setReturnOutputs(isReturnOutputs());
-		
-		// launch a lineage query for each target variable
-		for (QueryVar qv:qvList) {
 
-			// full lineage query			
-			logger.info("************\n lineage query: [instance, proc, port, path] = ["+
-					wfInstance+","+qv.getPname()+","+qv.getVname()+",["+qv.getPath()+"]]\n***********");
+		pa.computeLineageMultiVar(qvList, wfInstance, selProcNames);
 
-			Map<String, List<LineageQueryResult>> results = 
-				pa.computeLineage(wfInstance, qv.getVname(), qv.getPname(), qv.getPath(), selProcNames);
+		// get the final OPM graph from pa
 
-			if (results == null) break;
+		// convert OPM RDF/XML to OPM XML
+		logger.info("converting RDF OPM graph to XML...");
+		String XMLFile = pa.OPMRdf2Xml();
+		logger.info("done - file is "+XMLFile);
 
-			// for each path
-			for (Map.Entry<String, List<LineageQueryResult>> pathResult:results.entrySet()) {
+		// create a dot file from the RDF/XML  (going through a converter)
+		// NEEDS FIXING
+		logger.info("creating dot file...");
+		String  dotFile = pa.OPMRdf2Dot();
+		logger.info("done - file is "+dotFile);
 
-				logger.info("results for var "+qv.getVname()+" path:"+pathResult.getKey());
-
-				// display results
-				for (LineageQueryResult result:pathResult.getValue()) {
-
-					//System.out.println("****** result: *****");
-					for (LineageQueryResultRecord r:result.getRecords()) {	
-
-						r.setPrintResolvedValue(false);					// unclutter visual output
-						System.out.println(r.toString());
-					}				
-				}
-			}
-			
-			// convert OPM RDF/XML to OPM XML
-			logger.info("converting RDF OPM graph to XML...");
-			String XMLFile = pa.OPMRdf2Xml();
-			logger.info("done - file is "+XMLFile);
-			
-			// create a dot file from the RDF/XML  (going through a converter)
-			// NEEDS FIXING
-			logger.info("creating dot file...");
-			String  dotFile = pa.OPMRdf2Dot();
-			logger.info("done - file is "+dotFile);
-
-			
-			assertTrue("lineage tree should have been printed above", true);
-		}
+		assertTrue("lineage tree should have been printed above", true);
 	}
+
+
+
 
 
 

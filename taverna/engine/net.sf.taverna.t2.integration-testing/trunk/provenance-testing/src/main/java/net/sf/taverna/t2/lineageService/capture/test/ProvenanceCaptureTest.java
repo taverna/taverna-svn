@@ -49,7 +49,7 @@ public class ProvenanceCaptureTest extends ProvenanceCaptureTestHelper  {
 				String[] pair = vp.split("=");
 
 				if (pair.length != 2) {
-					fail("expecting name:value pairs, found "+vp);
+					fail("expecting name:value pairs, found "+vp+" of length "+pair.length);
 				}
 
 				T2Reference entity = context.getReferenceService().register(pair[1], 0,true, context);
