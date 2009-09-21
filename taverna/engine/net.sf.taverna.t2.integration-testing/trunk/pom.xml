@@ -51,11 +51,9 @@
 		<module>dataflow-serialization-testing</module>
 		<module>integration-testing-common</module>
 		<module>platform-integration-testing</module>
-		<!--   
-		<module>provenance-testing</module>
-		-->
 		<module>raven-integration-testing</module>
 		<module>reference-integration-tests</module>
+		<module>provenance-testing</module>
 	</modules>
 	<scm>
 		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.integration-testing/tags/integration-testing-0.5</connection>
@@ -63,7 +61,7 @@
 		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/engine/net.sf.taverna.t2.integration-testing/tags/integration-testing-0.5</url>
 	</scm>
 	<repositories>
-		<repository>
+	<repository>
 			<releases />
 			<snapshots>
 				<enabled>false</enabled>
@@ -72,8 +70,8 @@
 			<name>myGrid Repository</name>
 			<url>http://www.mygrid.org.uk/maven/repository</url>
 		</repository>
-	</repositories>
-	<dependencyManagement>
+ 	</repositories>
+ 	<dependencyManagement>
 		<dependencies>
 			<dependency>
 				<groupId>junit</groupId>
