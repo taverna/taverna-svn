@@ -32,7 +32,7 @@ public class DummyProvenanceWriter extends ProvenanceWriter {
 	 */
 	public void addArc(String sourceVarName, String sourceProcName,
 			String sinkVarName, String sinkProcName, String wfId)
-			throws SQLException {
+			{
 		// TODO Auto-generated method stub
 
 	}

@@ -26,6 +26,23 @@ public class NaiveProvenanceQuery {
 	}
 
 
+	
+	/**
+	 * facade - calls underlying recursiveNaiveQuery method with allInstances = false. This causes the method to operate on the latest 
+	 * wf instance only
+	 * @param targetVar
+	 * @param targetProc
+	 * @param targetIteration
+	 * @param path
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<DDRecord> recursiveNaiveQuery(String targetVar, String targetProc, String targetIteration, List<String> path) throws SQLException  {
+		
+		return recursiveNaiveQuery(targetVar, targetProc, targetIteration, path, false);
+	}
+
+		
 	/**
 	 * answers a lineage quey by performing a traversal of the nodes in path. This involves executing one query for each 
 	 * DD record to be retrieved 
@@ -33,9 +50,11 @@ public class NaiveProvenanceQuery {
 	 * @param targetProc
 	 * @param targetIteration
 	 * @param path
+	 * @param allInstances set to true to have the query be repeated on all instances in the DB. Used for performance testing
 	 * @throws SQLException 
 	 */
-	public List<DDRecord> recursiveNaiveQuery(String targetVar, String targetProc, String targetIteration, List<String> path) throws SQLException  {
+	public List<DDRecord> recursiveNaiveQuery(String targetVar, String targetProc, String targetIteration, List<String> path,
+			boolean allInstances) throws SQLException  {
 
 		String pTo = targetProc;
 		String vTo = targetVar;

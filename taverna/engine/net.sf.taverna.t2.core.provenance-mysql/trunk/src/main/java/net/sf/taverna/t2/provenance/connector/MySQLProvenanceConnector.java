@@ -253,10 +253,10 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 		if (provenanceItem.getEventType().equals(
 				SharedVocabulary.END_WORKFLOW_EVENT_TYPE)) {
-			logger.info("EVENT: " + provenanceItem.getEventType());
+			logger.debug("EVENT: " + provenanceItem.getEventType());
 		}
 		if (provenanceItem.getEventType().equals("EOW")) {
-			logger.info("EOW EVENT arrived ");
+			logger.debug("EOW EVENT arrived ");
 		}
 
 		// if (content == null) {
