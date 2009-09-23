@@ -154,6 +154,7 @@ public class LocalworkerTranslator extends
 		populateConfigurationBeanPortDetails(processor, bean);
 		
 		String workerClassName = getWorkerClassName(processor);
+		bean.setLocalworkerName(workerClassName);
 		bean.setScript(getScript(workerClassName));
 		if (localWorkerToDependecies.containsKey(workerClassName)) {
 			// Set artifact dependencies
