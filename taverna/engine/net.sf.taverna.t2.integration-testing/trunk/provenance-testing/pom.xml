@@ -12,16 +12,6 @@
 	<artifactId>provenance-testing</artifactId>
 	<name>Provenance testing</name>
 
-	<!--<repositories>
-		<repository>
-		<id>tupelo2</id>
-		<name>tupelo2</name>
-		<url>http://dlt-dev.ncsa.uiuc.edu/m2</url>
-		</repository>
-		</repositories>
-		
-		
-	-->
 	<properties>
 		<t2.activities.version>0.6-SNAPSHOT</t2.activities.version>
 		<t2.infrastructure.version>
@@ -57,7 +47,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>provenanceconnector</artifactId>
-			<version>${t2.core.version}</version>
+			<version>0.9-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
@@ -106,11 +96,6 @@
 			<artifactId>jdom</artifactId>
 			<version>1.0</version>
 		</dependency>
-		<!--<dependency>
-			<groupId>tupeloproject</groupId>
-			<artifactId>tupelo</artifactId>
-			<version>2.1-SNAPSHOT</version>
-			</dependency>-->
 
  		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
