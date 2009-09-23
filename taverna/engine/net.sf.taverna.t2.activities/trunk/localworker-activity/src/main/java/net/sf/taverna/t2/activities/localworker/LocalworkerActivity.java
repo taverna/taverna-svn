@@ -27,6 +27,13 @@ import net.sf.taverna.t2.annotation.annotationbeans.HostInstitution;
 
 public class LocalworkerActivity extends BeanshellActivity{
 	
+	@Override
+	public LocalworkerActivityConfigurationBean getConfiguration() {
+		LocalworkerActivityConfigurationBean result =
+			(LocalworkerActivityConfigurationBean) super.getConfiguration();
+		return result;
+	}
+
 	/**
 	 * Check if the activity has been made into a Beanshell
 	 * @return
