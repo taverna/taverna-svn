@@ -21,7 +21,26 @@
 package net.sf.taverna.t2.activities.localworker;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
+import net.sf.taverna.t2.annotation.AnnotationAssertion;
+import net.sf.taverna.t2.annotation.AnnotationChain;
+import net.sf.taverna.t2.annotation.annotationbeans.HostInstitution;
 
 public class LocalworkerActivity extends BeanshellActivity{
+	
+	/**
+	 * Check if the activity has been made into a Beanshell
+	 * @return
+	 */
+	public boolean isAltered() {
+		for (AnnotationChain chain : getAnnotations()) {
+			for (AnnotationAssertion<?> assertion : chain.getAssertions()) {
+				Object detail = assertion.getDetail();
+				if (detail instanceof HostInstitution) {
+					return true;
+				}
+			}
+		}
+		return false;		
+	}
 
 }
