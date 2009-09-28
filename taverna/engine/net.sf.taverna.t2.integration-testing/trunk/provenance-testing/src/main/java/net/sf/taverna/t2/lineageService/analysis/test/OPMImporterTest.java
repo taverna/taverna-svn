@@ -11,10 +11,10 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import net.sf.taverna.t2.lineageService.capture.test.testFiles;
+import net.sf.taverna.t2.provenance.lineageservice.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceWriter;
-import net.sf.taverna.t2.provenance.lineageservice.utils.OPMImporter;
-import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceAnalysis;
+import net.sf.taverna.t2.provenance.opm.OPMImporter;
 
 import org.apache.log4j.Logger;
 
@@ -61,7 +61,7 @@ public class OPMImporterTest {
 	}
 
 	/**
-	 * Test method for {@link net.sf.taverna.t2.provenance.lineageservice.utils.OPMImporter#importGraph(java.lang.String)}.
+	 * Test method for {@link net.sf.taverna.t2.provenance.opm.OPMImporter#importGraph(java.lang.String)}.
 	 * @throws JAXBException 
 	 * @throws SQLException 
 	 */

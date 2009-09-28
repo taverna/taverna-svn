@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import net.sf.taverna.t2.facade.ResultListener;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
-import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceAnalysis;
+import net.sf.taverna.t2.provenance.lineageservice.ProvenanceAnalysis;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceServiceException;
