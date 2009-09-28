@@ -21,16 +21,32 @@
 package net.sf.taverna.t2.activities.localworker;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
+import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
 import net.sf.taverna.t2.annotation.AnnotationAssertion;
 import net.sf.taverna.t2.annotation.AnnotationChain;
 import net.sf.taverna.t2.annotation.annotationbeans.HostInstitution;
+import net.sf.taverna.t2.workflowmodel.ConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 
 public class LocalworkerActivity extends BeanshellActivity{
 	
 	@Override
 	public LocalworkerActivityConfigurationBean getConfiguration() {
-		LocalworkerActivityConfigurationBean result =
-			(LocalworkerActivityConfigurationBean) super.getConfiguration();
+		super.getConfiguration();
+		LocalworkerActivityConfigurationBean result = null;
+		if (configurationBean == null) {
+			return result;
+		}
+
+		if (configurationBean instanceof LocalworkerActivityConfigurationBean) {
+			result = (LocalworkerActivityConfigurationBean) configurationBean;
+		} else {
+			result = new LocalworkerActivityConfigurationBean();
+			result.setScript(configurationBean.getScript());
+			result.setDependencies(configurationBean.getDependencies());
+			result.setLocalworkerName(null);
+			configurationBean = result;
+		}
 		return result;
 	}
 
