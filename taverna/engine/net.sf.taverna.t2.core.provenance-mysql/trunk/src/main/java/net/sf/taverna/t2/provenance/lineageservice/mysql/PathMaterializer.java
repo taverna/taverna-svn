@@ -108,7 +108,7 @@ public class PathMaterializer {
 			// skip dataflowName -- this is not a valid successor
 			if (dataflowNames.contains(p))  continue;
 			
-			List<String> successors = pq.getSuccProcessors(p, dataflowRef);
+			List<String> successors = pq.getSuccProcessors(p, dataflowRef, null);  // null wfInstanceID: CHECK
 
 			for (String p1: successors) {
 

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.taverna.t2.provenance.lineageservice.utils.DataValueExtractor;
-import net.sf.taverna.t2.provenance.lineageservice.utils.OPMManager;
+import net.sf.taverna.t2.provenance.opm.OPMManager;
 
 /**
  * @author paolo
