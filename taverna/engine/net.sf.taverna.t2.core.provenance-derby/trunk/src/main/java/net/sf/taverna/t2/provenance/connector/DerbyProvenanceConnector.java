@@ -39,7 +39,7 @@ import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.WorkflowDataProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceWriter;
-import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceAnalysis;
+import net.sf.taverna.t2.provenance.lineageservice.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.vocabulary.SharedVocabulary;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.workbench.provenance.ProvenanceConfiguration;
@@ -119,7 +119,7 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			+ " PRIMARY KEY (instanceID, wfnameRef))";
 
 	private static final String createTableWorkflow = "CREATE TABLE Workflow ("
-			+ "wfname varchar(100) NOT NULL," + "parentWFname varchar(100),"
+			+ "wfname varchar(100) NOT NULL," + "parentWFname varchar(100)," + "externalName varchar(100),"
 			+ "PRIMARY KEY  (wfname))";
 
 	private ReferenceService referenceService;
