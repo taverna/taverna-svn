@@ -122,7 +122,8 @@ public class DerbyProvenance extends Provenance {
 			// try {
 			// d = b.build(new StringReader(content));
 
-			getEp().processProcessEvent(provenanceItem);
+			//not used anywhere so not needed
+//			getEp().processProcessEvent(provenanceItem);
 
 			// } catch (JDOMException e) {
 			// logger.warn("Process event problem: " + e);
