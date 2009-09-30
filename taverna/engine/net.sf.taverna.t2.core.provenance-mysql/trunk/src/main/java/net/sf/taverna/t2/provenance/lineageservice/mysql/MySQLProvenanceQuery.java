@@ -20,8 +20,6 @@
  ******************************************************************************/
 package net.sf.taverna.t2.provenance.lineageservice.mysql;
 
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
 
@@ -38,15 +36,6 @@ public class MySQLProvenanceQuery extends ProvenanceQuery {
 		
 	}
 	
-	protected void openConnection() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-		getClass().getClassLoader().loadClass("com.mysql.jdbc.Driver").newInstance();
-
-		try {
-			connection = DriverManager.getConnection(getDbURL());
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-	}
+	
 	
 }

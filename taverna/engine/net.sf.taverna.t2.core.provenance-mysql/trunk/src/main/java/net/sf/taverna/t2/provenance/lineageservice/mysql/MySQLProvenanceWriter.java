@@ -35,17 +35,6 @@ public class MySQLProvenanceWriter extends ProvenanceWriter {
 
 	}
 	
-	public void openConnection() throws InstantiationException,
-	IllegalAccessException, ClassNotFoundException {
-		getClass().getClassLoader().loadClass("com.mysql.jdbc.Driver")
-		.newInstance();
-
-		try {
-			connection = DriverManager.getConnection(getDbURL());
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	
 
 }

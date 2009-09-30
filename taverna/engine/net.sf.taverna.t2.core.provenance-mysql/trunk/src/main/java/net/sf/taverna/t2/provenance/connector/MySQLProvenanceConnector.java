@@ -21,7 +21,7 @@
 package net.sf.taverna.t2.provenance.connector;
 
 import java.io.IOException;
-import java.sql.DriverManager;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
@@ -44,7 +44,6 @@ import net.sf.taverna.t2.provenance.vocabulary.SharedVocabulary;
 import net.sf.taverna.t2.reference.Identified;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceSet;
-import net.sf.taverna.t2.reference.ReferenceSetService;
 import net.sf.taverna.t2.reference.T2Reference;
 
 import org.apache.log4j.Logger;
@@ -54,9 +53,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 	private static Logger logger = Logger
 	.getLogger(MySQLProvenanceConnector.class);
 
-	private static final String EVENTS_LOG_DIR = "/tmp/TEST-EVENTS";
-
-	private static final String deleteDB = "drop database T2Provenance;";
+	private static final String EVENTS_LOG_DIR = "/tmp/TEST-EVENTS";	
 
 	private static final String createDB = "CREATE DATABASE IF NOT EXISTS T2Provenance";
 
@@ -145,8 +142,10 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 	private InvocationContext invocationContext;
 
-	public MySQLProvenanceConnector() {
-	}
+        public MySQLProvenanceConnector() {
+            
+        }
+	
 
 	public MySQLProvenanceConnector(Provenance provenance,
 			ProvenanceAnalysis provenanceAnalysis, String dbURL,
@@ -288,8 +287,10 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 	public void createDatabase() {
 		Statement stmt;
+                Connection connection = null;
 		try {
-			stmt = getConnection().createStatement();
+                        connection=getConnection();
+			stmt = connection.createStatement();
 			stmt.executeUpdate(createDB);
 			stmt.executeUpdate(createTableArc);
 			stmt.executeUpdate(createTableCollection);
@@ -314,33 +315,18 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException ex) {
+                    logger.error("Error closing database connection",ex);
+                }
+            }
+        }
 
 	}
-
-	public void deleteDatabase() {
-
-		Statement stmt;
-		try {
-			stmt = getConnection().createStatement();
-			stmt.executeUpdate(deleteDB);
-		} catch (SQLException e) {
-			logger
-			.warn("There was a problem deleting the Provenance database: "
-					+ e.toString());
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-
+	
 	public String getName() {
 		return "mysqlprovenance";
 	}
@@ -376,20 +362,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 	// }
 	// }
 
-	@Override
-	protected void openConnection() throws InstantiationException,
-	IllegalAccessException, ClassNotFoundException {
-		getClass().getClassLoader().loadClass("com.mysql.jdbc.Driver")
-		.newInstance();
-		try {
-			connection = DriverManager.getConnection(getDbURL());
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-
+	
 	public ReferenceService getReferenceService() {
 		return referenceService;
 	}
