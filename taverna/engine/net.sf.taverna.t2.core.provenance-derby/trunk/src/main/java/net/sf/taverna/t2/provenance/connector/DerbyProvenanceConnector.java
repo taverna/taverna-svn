@@ -20,17 +20,14 @@
  ******************************************************************************/
 package net.sf.taverna.t2.provenance.connector;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import java.util.logging.Level;
-import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.provenance.connector.configview.DerbyConfigView;
 import net.sf.taverna.t2.provenance.item.ProvenanceItem;
@@ -44,122 +41,45 @@ import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.vocabulary.SharedVocabulary;
 import net.sf.taverna.t2.reference.ReferenceService;
-import net.sf.taverna.t2.workbench.provenance.ProvenanceConfiguration;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 public class DerbyProvenanceConnector extends ProvenanceConnector {
 
-	// private ScheduledThreadPoolExecutor executor = new
-	// ScheduledThreadPoolExecutor(10);
+    private static Logger logger = Logger.getLogger(DerbyProvenanceConnector.class);
+    private static final String createTableData = "CREATE TABLE Data (dataReference VARCHAR(100), wfInstanceID VARCHAR(100), data BLOB)";
+    private static final String createTableArc = "CREATE TABLE Arc (" + "sourceVarNameRef varchar(100) NOT NULL ," + "sinkVarNameRef varchar(100) NOT NULL," + "sourcePNameRef varchar(100) NOT NULL," + "sinkPNameRef varchar(100) NOT NULL," + "wfInstanceRef varchar(100) NOT NULL," + " PRIMARY KEY  (sourceVarNameRef,sinkVarNameRef,sourcePNameRef,sinkPNameRef,wfInstanceRef))";
+    private static final String createTableCollection = "CREATE TABLE Collection (" + "collID varchar(100) NOT NULL," + "parentCollIDRef varchar(100) NOT NULL ," + "wfInstanceRef varchar(100) NOT NULL," + "PNameRef varchar(100) NOT NULL," + "varNameRef varchar(100) NOT NULL," + "iteration varchar(2000) NOT NULL default ''," + " PRIMARY KEY (collID,wfInstanceRef,PNameRef,varNameRef,parentCollIDRef,iteration))";
+    private static final String createTableProcBinding = "CREATE TABLE ProcBinding (" + "pnameRef varchar(100) NOT NULL ," + "execIDRef varchar(100) NOT NULL ," + "actName varchar(100) NOT NULL ," + "iteration char(10) NOT NULL default ''," + "PRIMARY KEY (pnameRef,execIDRef,iteration))";
+    private static final String createTableProcessor = "CREATE TABLE Processor (" + "pname varchar(100) NOT NULL," + "wfInstanceRef varchar(100) NOT NULL ," + "type varchar(100) default NULL," + "isTopLevel smallint, " + "PRIMARY KEY  (pname,wfInstanceRef))";
+    private static final String createTableVar = "CREATE TABLE Var (" + "varName varchar(100) NOT NULL," + "type varchar(20) default NULL," + "inputOrOutput smallint NOT NULL ," + "pnameRef varchar(100) NOT NULL," + "wfInstanceRef varchar(100) NOT NULL," + "nestingLevel int," + "actualNestingLevel int," + "anlSet smallint default NULL," + "reorder smallint, " + "PRIMARY KEY (varName,inputOrOutput,pnameRef,wfInstanceRef))";
+    private static final String createTableVarBinding = "CREATE TABLE VarBinding (" + "varNameRef varchar(100) NOT NULL," + "wfInstanceRef varchar(100) NOT NULL," + "value varchar(100) default NULL," + "collIDRef varchar(100)," + "positionInColl int NOT NULL," + "PNameRef varchar(100) NOT NULL," + "valueType varchar(50) default NULL," + "ref varchar(100) default NULL," + "iteration varchar(2000) NOT NULL," + "PRIMARY KEY (varNameRef,wfInstanceRef,PNameRef,positionInColl,iteration))";
+    // + " KEY collectionFK (wfInstanceRef,PNameRef,varNameRef,collIDRef))";
+    private static final String createTableWFInstance = "CREATE TABLE WfInstance (" + "instanceID varchar(100) NOT NULL," + "wfnameRef varchar(100) NOT NULL," + "timestamp timestamp NOT NULL default CURRENT_TIMESTAMP," + " PRIMARY KEY (instanceID, wfnameRef))";
+    private static final String createTableWorkflow = "CREATE TABLE Workflow (" + "wfname varchar(100) NOT NULL," + "parentWFname varchar(100)," + "externalName varchar(100)," + "PRIMARY KEY  (wfname))";
+    private ReferenceService referenceService;
+    private InvocationContext invocationContext;
 
-	// private ExecutorService executor = Executors.newSingleThreadExecutor();
+    public DerbyProvenanceConnector() {
+    }
 
-	private static Logger logger = Logger
-			.getLogger(DerbyProvenanceConnector.class);
+    public DerbyProvenanceConnector(Provenance provenance,
+            ProvenanceAnalysis provenanceAnalysis, String dbURL,
+            boolean isClearDB, String saveEvents) {
+        super(provenance, provenanceAnalysis, dbURL, isClearDB, saveEvents);
+    }
 
-	private static final String createTableData = "CREATE TABLE Data (dataReference VARCHAR(100), wfInstanceID VARCHAR(100), data BLOB)";
+    // FIXME is this needed?
+    public List<ProvenanceItem> getProvenanceCollection() {
+        return null;
+    }
 
-	private static final String createTableArc = "CREATE TABLE Arc ("
-			+ "sourceVarNameRef varchar(100) NOT NULL ,"
-			+ "sinkVarNameRef varchar(100) NOT NULL,"
-			+ "sourcePNameRef varchar(100) NOT NULL,"
-			+ "sinkPNameRef varchar(100) NOT NULL,"
-			+ "wfInstanceRef varchar(100) NOT NULL,"
-			+ " PRIMARY KEY  (sourceVarNameRef,sinkVarNameRef,sourcePNameRef,sinkPNameRef,wfInstanceRef))";
-
-	private static final String createTableCollection = "CREATE TABLE Collection ("
-			+ "collID varchar(100) NOT NULL,"
-			+ "parentCollIDRef varchar(100) NOT NULL ,"
-			+ "wfInstanceRef varchar(100) NOT NULL,"
-			+ "PNameRef varchar(100) NOT NULL,"
-			+ "varNameRef varchar(100) NOT NULL,"
-			+ "iteration varchar(2000) NOT NULL default '',"
-			+ " PRIMARY KEY (collID,wfInstanceRef,PNameRef,varNameRef,parentCollIDRef,iteration))";
-
-	private static final String createTableProcBinding = "CREATE TABLE ProcBinding ("
-			+ "pnameRef varchar(100) NOT NULL ,"
-			+ "execIDRef varchar(100) NOT NULL ,"
-			+ "actName varchar(100) NOT NULL ,"
-			+ "iteration char(10) NOT NULL default '',"
-			+ "PRIMARY KEY (pnameRef,execIDRef,iteration))";
-
-	private static final String createTableProcessor = "CREATE TABLE Processor ("
-			+ "pname varchar(100) NOT NULL,"
-			+ "wfInstanceRef varchar(100) NOT NULL ,"
-			+ "type varchar(100) default NULL,"
-			+ "isTopLevel smallint, "
-			+ "PRIMARY KEY  (pname,wfInstanceRef))";
-
-	private static final String createTableVar = "CREATE TABLE Var ("
-			+ "varName varchar(100) NOT NULL,"
-			+ "type varchar(20) default NULL,"
-			+ "inputOrOutput smallint NOT NULL ,"
-			+ "pnameRef varchar(100) NOT NULL,"
-			+ "wfInstanceRef varchar(100) NOT NULL," + "nestingLevel int,"
-			+ "actualNestingLevel int," + "anlSet smallint default NULL,"
-			+ "reorder smallint, "
-			+ "PRIMARY KEY (varName,inputOrOutput,pnameRef,wfInstanceRef))";
-
-	private static final String createTableVarBinding = "CREATE TABLE VarBinding ("
-			+ "varNameRef varchar(100) NOT NULL,"
-			+ "wfInstanceRef varchar(100) NOT NULL,"
-			+ "value varchar(100) default NULL,"
-			+ "collIDRef varchar(100),"
-			+ "positionInColl int NOT NULL,"
-			+ "PNameRef varchar(100) NOT NULL,"
-			+ "valueType varchar(50) default NULL,"
-			+ "ref varchar(100) default NULL,"
-			+ "iteration varchar(2000) NOT NULL,"
-			+ "PRIMARY KEY (varNameRef,wfInstanceRef,PNameRef,positionInColl,iteration))";
-	// + " KEY collectionFK (wfInstanceRef,PNameRef,varNameRef,collIDRef))";
-
-	private static final String createTableWFInstance = "CREATE TABLE WfInstance ("
-			+ "instanceID varchar(100) NOT NULL,"
-			+ "wfnameRef varchar(100) NOT NULL,"
-			+ "timestamp timestamp NOT NULL default CURRENT_TIMESTAMP,"
-			+ " PRIMARY KEY (instanceID, wfnameRef))";
-
-	private static final String createTableWorkflow = "CREATE TABLE Workflow ("
-			+ "wfname varchar(100) NOT NULL," + "parentWFname varchar(100)," + "externalName varchar(100),"
-			+ "PRIMARY KEY  (wfname))";
-
-	private ReferenceService referenceService;
-
-	private InvocationContext invocationContext;
-
-	public DerbyProvenanceConnector() {
-	}
-
-	public DerbyProvenanceConnector(Provenance provenance,
-			ProvenanceAnalysis provenanceAnalysis, String dbURL,
-			boolean isClearDB, String saveEvents) {
-		super(provenance, provenanceAnalysis, dbURL, isClearDB, saveEvents);
-	}
-
-
-
-	// FIXME is this needed?
-	public List<ProvenanceItem> getProvenanceCollection() {
-		return null;
-	}
-
-	public void createDatabase() {
+    public void createDatabase() {
+        Connection connection = null;
         try {
-            // FIXME should this have the File stuff in it or not?
-            // File applicationHomeDir = ApplicationRuntime.getInstance()
-            // .getApplicationHomeDir();
-            // File dbFile = new File(applicationHomeDir, "provenance");
-            // try {
-            // FileUtils.forceMkdir(dbFile);
-            // } catch (IOException e2) {
-            //
-            // }
-            // String jdbcString = "jdbc:derby:" + dbFile.toString()
-            // + "/db;create=true;upgrade=true";
+
             Statement stmt = null;
-            Connection connection = null;
+
             try {
                 connection = getConnection();
                 stmt = connection.createStatement();
@@ -220,110 +140,108 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
             } catch (Exception e) {
                 logger.warn("Could not create table Data : " + e);
             }
+        } finally {
             if (connection != null) {
-                connection.close();
+                try {
+                    connection.close();
+                } catch (SQLException ex) {
+                    logger.warn("There was an error closing the database connection", ex);
+                }
             }
-        } catch (SQLException ex) {
-            logger.error("There was an error closing the database connection.",ex);
+
         }
-	}
+    }
 
-	
+    public String getName() {
+        return "Derby DB Connector";
+    }
 
-	public String getName() {
-		return "Derby DB Connector";
-	}
+    /**
+     * Uses a {@link ScheduledThreadPoolExecutor} to process events in a Thread
+     * safe manner
+     */
+    public synchronized void addProvenanceItem(
+            final ProvenanceItem provenanceItem) {
 
-	/**
-	 * Uses a {@link ScheduledThreadPoolExecutor} to process events in a Thread
-	 * safe manner
-	 */
-	public synchronized void addProvenanceItem(
-			final ProvenanceItem provenanceItem) {
+        if (provenanceItem.getEventType().equals(
+                SharedVocabulary.END_WORKFLOW_EVENT_TYPE)) {
+            logger.info("EVENT: " + provenanceItem.getEventType());
+        }
 
-		if (provenanceItem.getEventType().equals(
-				SharedVocabulary.END_WORKFLOW_EVENT_TYPE))
-			logger.info("EVENT: " + provenanceItem.getEventType());
+        Runnable runnable = new Runnable() {
 
-		Runnable runnable = new Runnable() {
+            public void run() {
+                try {
 
-			public void run() {
-				try {
+                    getProvenance().acceptRawProvenanceEvent(
+                            provenanceItem.getEventType(), provenanceItem);
 
-					getProvenance().acceptRawProvenanceEvent(
-							provenanceItem.getEventType(), provenanceItem);
+                } catch (SQLException e) {
+                    logger.warn("Could not add provenance: " + e);
+                } catch (IOException e) {
+                    logger.warn("Could not add provenance: " + e);
+                }
 
-				} catch (SQLException e) {
-					logger.warn("Could not add provenance: " + e);
-				} catch (IOException e) {
-					logger.warn("Could not add provenance: " + e);
-				}
+            }
+        };
+        getExecutor().execute(runnable);
 
-			}
+    }
 
-		};
-		getExecutor().execute(runnable);
+    public void setReferenceService(ReferenceService referenceService) {
+        this.referenceService = referenceService;
+    }
 
-	}
+    public ReferenceService getReferenceService() {
+        return referenceService;
+    }
 
-	public void setReferenceService(ReferenceService referenceService) {
-		this.referenceService = referenceService;
-	}
+    @Override
+    public String toString() {
+        return "Derby DB Connector";
+    }
 
-	public ReferenceService getReferenceService() {
-		return referenceService;
-	}
+    public InvocationContext getInvocationContext() {
+        return invocationContext;
+    }
 
-	@Override
-	public String toString() {
-		return "Derby DB Connector";
-	}
+    public void setInvocationContext(InvocationContext invocationContext) {
+        this.invocationContext = invocationContext;
 
-	public InvocationContext getInvocationContext() {
-		return invocationContext;
-	}
+    }
 
-	public void setInvocationContext(InvocationContext invocationContext) {
-		this.invocationContext = invocationContext;
-
-	}
-
-	@Override
-	public void init() {
-		String dbURL = getDbURL();
-		if (dbURL == null) {
-			setDbURL(DerbyConfigView.getDBURL());
-		}
-		createDatabase();
-		ProvenanceWriter writer = new DerbyProvenanceWriter();
-		writer.setDbURL(getDbURL());
-		ProvenanceQuery query = new DerbyProvenanceQuery();
-		query.setDbURL(getDbURL());
-		WorkflowDataProcessor wfdp = new WorkflowDataProcessor();
-		wfdp.setPq(query);
-		wfdp.setPw(writer);
-		EventProcessor eventProcessor = new EventProcessor();
-		eventProcessor.setPw(writer);
-		eventProcessor.setPq(query);
-		eventProcessor.setWfdp(wfdp);
-		ProvenanceAnalysis provenanceAnalysis = null;
-		try {
-			provenanceAnalysis = new ProvenanceAnalysis(query);
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		setProvenanceAnalysis(provenanceAnalysis);
-		Provenance provenance = new Provenance(eventProcessor, getDbURL());
-		setProvenance(provenance);
-	}
+    @Override
+    public void init() {
+        String dbURL = getDbURL();
+        if (dbURL == null) {
+            setDbURL(DerbyConfigView.getDBURL());
+        }
+        createDatabase();
+        ProvenanceWriter writer = new DerbyProvenanceWriter();
+        writer.setDbURL(getDbURL());
+        ProvenanceQuery query = new DerbyProvenanceQuery();
+        query.setDbURL(getDbURL());
+        WorkflowDataProcessor wfdp = new WorkflowDataProcessor();
+        wfdp.setPq(query);
+        wfdp.setPw(writer);
+        EventProcessor eventProcessor = new EventProcessor();
+        eventProcessor.setPw(writer);
+        eventProcessor.setPq(query);
+        eventProcessor.setWfdp(wfdp);
+        ProvenanceAnalysis provenanceAnalysis = null;
+        try {
+            provenanceAnalysis = new ProvenanceAnalysis(query);
+        } catch (InstantiationException e) {
+            logger.error("Error creating new provenance analysis for query", e);
+        } catch (IllegalAccessException e) {
+            logger.error("Error creating new provenance analysis for query", e);
+        } catch (ClassNotFoundException e) {
+            logger.error("Error creating new provenance analysis for query", e);
+        } catch (SQLException e) {
+            logger.error("Error creating new provenance analysis for query", e);
+        }
+        setProvenanceAnalysis(provenanceAnalysis);
+        Provenance provenance = new Provenance(eventProcessor, getDbURL());
+        setProvenance(provenance);
+    }
 }

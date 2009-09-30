@@ -100,8 +100,6 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
 
         String q1 = addOrderByToQuery(q, orderAttr, true);
 
-//		logger.info("q1 = "+q1);
-
         Statement stmt;
         Connection connection = null;
         try {
@@ -144,7 +142,6 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
                 connection.close();
             }
         }
-
 
         return result;
     }

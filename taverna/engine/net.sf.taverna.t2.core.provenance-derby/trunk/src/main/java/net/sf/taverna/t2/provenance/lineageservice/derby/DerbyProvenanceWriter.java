@@ -21,7 +21,6 @@
 package net.sf.taverna.t2.provenance.lineageservice.derby;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -33,6 +32,7 @@ import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
  * 
  * @author Paolo Missier
  * @author Ian Dunlop
+ * @author Stuart Owen
  * 
  */
 public class DerbyProvenanceWriter extends ProvenanceWriter {
@@ -49,17 +49,10 @@ public class DerbyProvenanceWriter extends ProvenanceWriter {
 	 */
 	@Override
 	public void updateVar(Var v) throws SQLException {
-		// Statement stmt;
+		
 		PreparedStatement ps = null;
                 Connection connection = null;
-		// String u = "UPDATE Var " + "SET type = \'" + v.getType() + "\'"
-		// + ", inputOrOutput = \'" + (v.isInput() ? 1 : 0) + "\' "
-		// + ", nestingLevel = \'" + v.getTypeNestingLevel() + "\' "
-		// + ", actualNestingLevel = \'" + v.getActualNestingLevel()
-		// + "\' " + ", anlSet = \'" + (v.isANLset() ? 1 : 0) + "\' "
-		// + "WHERE varName = \'" + v.getVName() + "\' "
-		// + "AND pnameRef = \'" + v.getPName() + "\' "
-		// + "AND wfInstanceRef = \'" + v.getWfInstanceRef() + "\'";
+		
 		try {
                         connection = getConnection();
 			ps = connection
@@ -77,12 +70,8 @@ public class DerbyProvenanceWriter extends ProvenanceWriter {
 			ps.setString(7, v.getVName());
 			ps.setString(8, v.getPName());
 			ps.setString(9, v.getWfInstanceRef());
-
-			// stmt = getConnection().createStatement();
-			//			
-			// System.out.println("executing: "+u);
-
-			boolean success = ps.execute();
+			
+			ps.execute();
 		} catch (InstantiationException e) {
 			logger.warn("Could not execute query: " + e);
 		} catch (IllegalAccessException e) {
@@ -93,7 +82,6 @@ public class DerbyProvenanceWriter extends ProvenanceWriter {
                     if (connection != null) connection.close();
                 }
 
-		// System.out.println("update executed");
 	}
 
 }
