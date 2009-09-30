@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright (C) 2007 The University of Manchester   
- * 
+ * Copyright (C) 2007 The University of Manchester
+ *
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
- * 
+ *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public License
  *  as published by the Free Software Foundation; either version 2.1 of
  *  the License, or (at your option) any later version.
- *    
+ *
  *  This program is distributed in the hope that it will be useful, but
  *  WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
- *    
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
@@ -22,12 +22,14 @@ package net.sf.taverna.t2.provenance.connector;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
+import java.util.logging.Level;
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.provenance.connector.configview.DerbyConfigView;
@@ -136,29 +138,7 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 		super(provenance, provenanceAnalysis, dbURL, isClearDB, saveEvents);
 	}
 
-	public void openConnection() throws InstantiationException,
-			IllegalAccessException, ClassNotFoundException {
 
-		getClass().getClassLoader().loadClass(
-				"org.apache.derby.jdbc.EmbeddedDriver").newInstance();
-
-		try {
-			String dbURL = getDbURL();
-			if (dbURL == null) {
-				File applicationHomeDir = ApplicationRuntime.getInstance()
-						.getApplicationHomeDir();
-				File dbFile = new File(applicationHomeDir, "db");
-				dbURL = "jdbc:derby:" + dbFile.toString()
-						+ ";create=true;upgrade=true";
-				setDbURL(dbURL);
-				ProvenanceConfiguration.getInstance().setProperty("dbURL", dbURL);
-			}
-			connection = DriverManager.getConnection(dbURL);
-			connection.setAutoCommit(true);
-		} catch (SQLException e) {
-			logger.warn(e);
-		}
-	}
 
 	// FIXME is this needed?
 	public List<ProvenanceItem> getProvenanceCollection() {
@@ -166,110 +146,89 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 	}
 
 	public void createDatabase() {
-		// FIXME should this have the File stuff in it or not?
-		// File applicationHomeDir = ApplicationRuntime.getInstance()
-		// .getApplicationHomeDir();
-		// File dbFile = new File(applicationHomeDir, "provenance");
-		// try {
-		// FileUtils.forceMkdir(dbFile);
-		// } catch (IOException e2) {
-		//
-		// }
-		// String jdbcString = "jdbc:derby:" + dbFile.toString()
-		// + "/db;create=true;upgrade=true";
-
-		Statement stmt = null;
-		try {
-			stmt = getConnection().createStatement();
-		} catch (SQLException e1) {
-			logger.warn(e1);
-		} catch (InstantiationException e) {
-			logger.warn("Could not create database: " + e);
-		} catch (IllegalAccessException e) {
-			logger.warn("Could not create database: " + e);
-		} catch (ClassNotFoundException e) {
-			logger.warn("Could not create database: " + e);
-		}
-
-		try {
-			stmt.executeUpdate(createTableArc);
-		} catch (Exception e) {
-			// probably means that the database already existed so just log
-			// the exception and return
-			logger.warn("Could not create table Arc : " + e);
-			return;
-		}
-		try {
-			stmt.executeUpdate(createTableCollection);
-		} catch (Exception e) {
-			logger.warn("Could not create table Collection : " + e);
-		}
-		try {
-			stmt.executeUpdate(createTableProcBinding);
-		} catch (Exception e) {
-			logger.warn("Could not create table ProcBinding : " + e);
-		}
-
-		try {
-			stmt.executeUpdate(createTableProcessor);
-		} catch (Exception e) {
-			logger.warn("Could not create table Processor : " + e);
-		}
-		try {
-			stmt.executeUpdate(createTableVar);
-		} catch (Exception e) {
-			logger.warn("Could not create table Var : " + e);
-		}
-		try {
-			stmt.executeUpdate(createTableVarBinding);
-		} catch (Exception e) {
-			logger.warn("Could not create table Var Binding : " + e);
-		}
-		try {
-			stmt.executeUpdate(createTableWFInstance);
-		} catch (Exception e) {
-			logger.warn("Could not create table WfInstance : " + e);
-		}
-		try {
-			stmt.executeUpdate(createTableWorkflow);
-		} catch (Exception e) {
-			logger.warn("Could not create table Workflow : " + e);
-		}
-		try {
-			stmt.executeUpdate(createTableData);
-		} catch (Exception e) {
-			logger.warn("Could not create table Data : " + e);
-		}
+        try {
+            // FIXME should this have the File stuff in it or not?
+            // File applicationHomeDir = ApplicationRuntime.getInstance()
+            // .getApplicationHomeDir();
+            // File dbFile = new File(applicationHomeDir, "provenance");
+            // try {
+            // FileUtils.forceMkdir(dbFile);
+            // } catch (IOException e2) {
+            //
+            // }
+            // String jdbcString = "jdbc:derby:" + dbFile.toString()
+            // + "/db;create=true;upgrade=true";
+            Statement stmt = null;
+            Connection connection = null;
+            try {
+                connection = getConnection();
+                stmt = connection.createStatement();
+            } catch (SQLException e1) {
+                logger.warn(e1);
+            } catch (InstantiationException e) {
+                logger.warn("Could not create database: " + e);
+            } catch (IllegalAccessException e) {
+                logger.warn("Could not create database: " + e);
+            } catch (ClassNotFoundException e) {
+                logger.warn("Could not create database: " + e);
+            }
+            try {
+                stmt.executeUpdate(createTableArc);
+            } catch (Exception e) {
+                // probably means that the database already existed so just log
+                // the exception and return
+                logger.warn("Could not create table Arc : " + e);
+                return;
+            }
+            try {
+                stmt.executeUpdate(createTableCollection);
+            } catch (Exception e) {
+                logger.warn("Could not create table Collection : " + e);
+            }
+            try {
+                stmt.executeUpdate(createTableProcBinding);
+            } catch (Exception e) {
+                logger.warn("Could not create table ProcBinding : " + e);
+            }
+            try {
+                stmt.executeUpdate(createTableProcessor);
+            } catch (Exception e) {
+                logger.warn("Could not create table Processor : " + e);
+            }
+            try {
+                stmt.executeUpdate(createTableVar);
+            } catch (Exception e) {
+                logger.warn("Could not create table Var : " + e);
+            }
+            try {
+                stmt.executeUpdate(createTableVarBinding);
+            } catch (Exception e) {
+                logger.warn("Could not create table Var Binding : " + e);
+            }
+            try {
+                stmt.executeUpdate(createTableWFInstance);
+            } catch (Exception e) {
+                logger.warn("Could not create table WfInstance : " + e);
+            }
+            try {
+                stmt.executeUpdate(createTableWorkflow);
+            } catch (Exception e) {
+                logger.warn("Could not create table Workflow : " + e);
+            }
+            try {
+                stmt.executeUpdate(createTableData);
+            } catch (Exception e) {
+                logger.warn("Could not create table Data : " + e);
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException ex) {
+            logger.error("There was an error closing the database connection.",ex);
+        }
 	}
 
-	public void deleteDatabase() {
-		// slightly hard coded here, the cb must be /provenance/db
-		try {
-			getConnection().close();
-		} catch (SQLException e) {
-			logger.warn("Could not close the database");
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		File applicationHomeDir = ApplicationRuntime.getInstance()
-				.getApplicationHomeDir();
-		File dbFile = new File(applicationHomeDir, "provenance");
-		File provFile = new File(dbFile, "db");
-		try {
-			FileUtils.deleteDirectory(provFile);
-		} catch (IOException e) {
-			logger.warn("Could not delete provenance directory: "
-					+ provFile.toString() + " " + e);
-		}
-
-	}
+	
 
 	public String getName() {
 		return "Derby DB Connector";

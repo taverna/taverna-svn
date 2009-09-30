@@ -20,7 +20,7 @@
  ******************************************************************************/
 package net.sf.taverna.t2.provenance.lineageservice.derby;
 
-import java.sql.DriverManager;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -36,126 +36,116 @@ import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
  * Uses Apache Derby to carry out provenance queries
  * 
  * @author Ian Dunlop
+ * @author Stuart Owen
  * 
  */
 public class DerbyProvenanceQuery extends ProvenanceQuery {
 
-	public DerbyProvenanceQuery() {
+    public DerbyProvenanceQuery() {
+    }
 
-	}
+    /*
+     * Overrides super class because Derby has issues with non-numerical values
+     * requiring quotes
+     *
+     * @see
+     * net.sf.taverna.t2.provenance.lineageservice.mysql.ProvenanceQuery#addWhereCaluseToQuery
+     */
+    @Override
+    @SuppressWarnings("unused")
+    protected String addWhereClauseToQuery(String q0,
+            Map<String, String> queryConstraints, boolean terminate) {
+        //FIXME terminate not required (I think!)
 
-	/*
-	 * Overrides super class because Derby has issues with non-numerical values
-	 * requiring quotes
-	 * 
-	 * @see
-	 * net.sf.taverna.t2.provenance.lineageservice.mysql.ProvenanceQuery#addWhereCaluseToQuery
-	 */
-	@Override
-	@SuppressWarnings("unused")
-	protected String addWhereClauseToQuery(String q0,
-			Map<String, String> queryConstraints, boolean terminate) {
-		//FIXME terminate not required (I think!)
+        // complete query according to constraints
+        StringBuffer q = new StringBuffer(q0);
 
-		// complete query according to constraints
-		StringBuffer q = new StringBuffer(q0);
+        boolean first = true;
+        if (queryConstraints != null && queryConstraints.size() > 0) {
+            q.append(" where ");
 
-		boolean first = true;
-		if (queryConstraints != null && queryConstraints.size() > 0) {
-			q.append(" where ");
+            for (Entry<String, String> entry : queryConstraints.entrySet()) {
+                if (!first) {
+                    q.append(" and ");
+                }
+                // FIXME there may be more numerical inputs than inputOrOutput,
+                // needs checking - 21.5.09 there are - this kind of custom where clause is very dangerous and
+                //should be refactored at some point
+                if (entry.getKey().equals("V.inputOrOutput") || entry.getKey().equals("VB.positionInColl") || entry.getKey().equals("inputOrOutput")) {
+                    q.append(" " + entry.getKey() + " = " + entry.getValue());
+                } else {
+                    q.append(" " + entry.getKey() + " = \'" + entry.getValue() + "\' ");
+                }
+                first = false;
+            }
+        }
 
-			for (Entry<String, String> entry : queryConstraints.entrySet()) {
-				if (!first) {
-					q.append(" and ");
-				}
-				// FIXME there may be more numerical inputs than inputOrOutput,
-				// needs checking - 21.5.09 there are - this kind of custom where clause is very dangerous and 
-				//should be refactored at some point
-				if (entry.getKey().equals("V.inputOrOutput") || entry.getKey().equals("VB.positionInColl") || entry.getKey().equals("inputOrOutput")) {
-					q.append(" " + entry.getKey() + " = " + entry.getValue());
-				} else {
-					q.append(" " + entry.getKey() + " = \'" + entry.getValue()
-							+ "\' ");
-				}
-				first = false;
-			}
-		}
+        return q.toString();
+    }
 
-		return q.toString();
-	}
-	
-	/**
-	 * select Var records that satisfy constraints
-	 */
-	@Override
-	public List<Var> getVars(Map<String, String> queryConstraints)
-	throws SQLException {
-		List<Var> result = new ArrayList<Var>();
+    /**
+     * select Var records that satisfy constraints
+     */
+    @Override
+    public List<Var> getVars(Map<String, String> queryConstraints)
+            throws SQLException {
+        List<Var> result = new ArrayList<Var>();
 
-		String q0 = "SELECT  * FROM Var V JOIN WfInstance W ON W.wfnameRef = V.wfInstanceRef";
+        String q0 = "SELECT  * FROM Var V JOIN WfInstance W ON W.wfnameRef = V.wfInstanceRef";
 
-		String q = addWhereClauseToQuery(q0, queryConstraints, true);
-		
-		List<String> orderAttr = new ArrayList<String>();
-		orderAttr.add("V.reorder");
+        String q = addWhereClauseToQuery(q0, queryConstraints, true);
 
-		String q1 = addOrderByToQuery(q, orderAttr, true);
+        List<String> orderAttr = new ArrayList<String>();
+        orderAttr.add("V.reorder");
+
+        String q1 = addOrderByToQuery(q, orderAttr, true);
 
 //		logger.info("q1 = "+q1);
-		
-		Statement stmt;
-		try {
-			stmt = getConnection().createStatement();
-			boolean success = stmt.execute(q1.toString());
 
-			if (success) {
-				ResultSet rs = stmt.getResultSet();
+        Statement stmt;
+        Connection connection = null;
+        try {
+            connection = getConnection();
+            stmt = connection.createStatement();
+            boolean success = stmt.execute(q1.toString());
 
-				while (rs.next()) {
+            if (success) {
+                ResultSet rs = stmt.getResultSet();
 
-					Var aVar = new Var();
+                while (rs.next()) {
 
-					aVar.setWfInstanceRef(rs.getString("WfInstanceRef"));
+                    Var aVar = new Var();
 
-					if (rs.getInt("inputOrOutput") == 1) {
-						aVar.setInput(true);
-					} else {
-						aVar.setInput(false);
-					}
-					aVar.setPName(rs.getString("pnameRef"));
-					aVar.setVName(rs.getString("varName"));
-					aVar.setType(rs.getString("type"));
-					aVar.setTypeNestingLevel(rs.getInt("nestingLevel"));
-					aVar.setActualNestingLevel(rs.getInt("actualNestingLevel"));
-					aVar.setANLset((rs.getInt("anlSet") == 1 ? true : false));
-					result.add(aVar);
+                    aVar.setWfInstanceRef(rs.getString("WfInstanceRef"));
 
-				}
-			}
-		} catch (InstantiationException e) {
-			logger.warn("Could not execute query: " + e);
-		} catch (IllegalAccessException e) {
-			logger.warn("Could not execute query: " + e);
-		} catch (ClassNotFoundException e) {
-			logger.warn("Could not execute query: " + e);
-		}
+                    if (rs.getInt("inputOrOutput") == 1) {
+                        aVar.setInput(true);
+                    } else {
+                        aVar.setInput(false);
+                    }
+                    aVar.setPName(rs.getString("pnameRef"));
+                    aVar.setVName(rs.getString("varName"));
+                    aVar.setType(rs.getString("type"));
+                    aVar.setTypeNestingLevel(rs.getInt("nestingLevel"));
+                    aVar.setActualNestingLevel(rs.getInt("actualNestingLevel"));
+                    aVar.setANLset((rs.getInt("anlSet") == 1 ? true : false));
+                    result.add(aVar);
 
-		// System.out.println("getVars: executing query\n"+q.toString());
+                }
+            }
+        } catch (InstantiationException e) {
+            logger.warn("Could not execute query: " + e);
+        } catch (IllegalAccessException e) {
+            logger.warn("Could not execute query: " + e);
+        } catch (ClassNotFoundException e) {
+            logger.warn("Could not execute query: " + e);
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
+        }
 
-		return result;
-	}
 
-	@Override
-	protected void openConnection() throws InstantiationException,
-			IllegalAccessException, ClassNotFoundException {
-		getClass().getClassLoader().loadClass(
-				"org.apache.derby.jdbc.EmbeddedDriver").newInstance();
-		try {
-			connection = DriverManager.getConnection(getDbURL());
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
+        return result;
+    }
 }

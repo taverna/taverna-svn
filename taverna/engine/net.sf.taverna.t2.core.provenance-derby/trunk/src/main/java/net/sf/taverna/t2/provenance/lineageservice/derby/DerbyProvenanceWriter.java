@@ -20,6 +20,7 @@
  ******************************************************************************/
 package net.sf.taverna.t2.provenance.lineageservice.derby;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -38,21 +39,7 @@ public class DerbyProvenanceWriter extends ProvenanceWriter {
 	
 	public DerbyProvenanceWriter() {
 		
-	}
-
-	@Override
-	protected void openConnection() throws InstantiationException,
-			IllegalAccessException, ClassNotFoundException {
-		getClass().getClassLoader().loadClass(
-				"org.apache.derby.jdbc.EmbeddedDriver").newInstance();
-		try {
-			connection = DriverManager.getConnection(getDbURL());
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
+	}	
 	
 	/**
 	 * persists var v back to DB
@@ -64,6 +51,7 @@ public class DerbyProvenanceWriter extends ProvenanceWriter {
 	public void updateVar(Var v) throws SQLException {
 		// Statement stmt;
 		PreparedStatement ps = null;
+                Connection connection = null;
 		// String u = "UPDATE Var " + "SET type = \'" + v.getType() + "\'"
 		// + ", inputOrOutput = \'" + (v.isInput() ? 1 : 0) + "\' "
 		// + ", nestingLevel = \'" + v.getTypeNestingLevel() + "\' "
@@ -73,7 +61,8 @@ public class DerbyProvenanceWriter extends ProvenanceWriter {
 		// + "AND pnameRef = \'" + v.getPName() + "\' "
 		// + "AND wfInstanceRef = \'" + v.getWfInstanceRef() + "\'";
 		try {
-			ps = getConnection()
+                        connection = getConnection();
+			ps = connection
 			.prepareStatement(
 					"UPDATE Var SET type = ?, inputOrOutput=?, nestingLevel = ?,"
 					+ "actualNestingLevel = ?, anlSet = ? , Var.reorder = ? WHERE varName = ? AND pnameRef = ? AND wfInstanceRef = ?");
@@ -100,7 +89,9 @@ public class DerbyProvenanceWriter extends ProvenanceWriter {
 			logger.warn("Could not execute query: " + e);
 		} catch (ClassNotFoundException e) {
 			logger.warn("Could not execute query: " + e);
-		}
+		} finally {
+                    if (connection != null) connection.close();
+                }
 
 		// System.out.println("update executed");
 	}
