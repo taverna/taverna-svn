@@ -87,6 +87,7 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			+ "pname varchar(100) NOT NULL,"
 			+ "wfInstanceRef varchar(100) NOT NULL ,"
 			+ "type varchar(100) default NULL,"
+			+ "isTopLevel smallint, "
 			+ "PRIMARY KEY  (pname,wfInstanceRef))";
 
 	private static final String createTableVar = "CREATE TABLE Var ("
