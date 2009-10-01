@@ -55,6 +55,8 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 	private static final String EVENTS_LOG_DIR = "/tmp/TEST-EVENTS";	
 
+	private static final String deleteDB = "drop database T2Provenance;";
+
 	private static final String createDB = "CREATE DATABASE IF NOT EXISTS T2Provenance";
 
 	private static final String createTableArc = "CREATE TABLE IF NOT EXISTS  `T2Provenance`.`Arc` ("
@@ -326,7 +328,30 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
         }
 
 	}
-	
+
+	public void deleteDatabase() {
+
+		Statement stmt;
+		try {
+			stmt = getConnection().createStatement();
+			stmt.executeUpdate(deleteDB);
+		} catch (SQLException e) {
+			logger
+			.warn("There was a problem deleting the Provenance database: "
+					+ e.toString());
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
 	public String getName() {
 		return "mysqlprovenance";
 	}
