@@ -14,7 +14,9 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -111,6 +113,42 @@ public class HistoryBrowserTabContentPanel extends JPanel implements ActionListe
     this.refreshAllData();
   }
   
+  private void confirmHistoryDelete(final int id, String strBoxTitle) {
+	if (JOptionPane.showConfirmDialog(null, "This will the " + strBoxTitle.toLowerCase() + " list.\nDo you want to proceed?", 
+        "myExperiment Plugin - Confirmation Required", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) { 
+  	  switch (id) {
+  		case 1:
+          pluginMainComponent.getPreviewBrowser().clearPreviewHistory();
+  		  break;
+  		case 2:
+    	  pluginMainComponent.getSearchTab().getSearchHistory().clear();
+          pluginMainComponent.getSearchTab().updateSearchHistory();
+          break;
+  		case 3:
+          pluginMainComponent.getTagBrowserTab().getTagSearchHistory().clear();
+  		  break;
+  		case 4: clearDownloadedItemsHistory(); break;
+  		case 5: clearOpenedItemsHistory(); break;
+  		case 6: clearCommentedOnItemsHistory(); break;
+  	  }
+  	  refreshAllData();
+	}
+  }
+  
+  private JPanel addSpecifiedPanel(final int id, final String strBoxTitle, JPanel jPanel) {
+	JPanel jpTemp = new JPanel();
+	jpTemp.setLayout(new BorderLayout());
+	jpTemp.add(generateContentBox(strBoxTitle, jPanel), BorderLayout.CENTER);
+	JButton bClear = new JButton("Clear " + strBoxTitle, WorkbenchIcons.configureIcon);
+	bClear.addActionListener(new ActionListener() {
+	  public void actionPerformed(ActionEvent e) {
+		confirmHistoryDelete(id, strBoxTitle);
+	  }
+	});
+
+	jpTemp.add(bClear, BorderLayout.SOUTH);
+	return jpTemp;
+  }
   
   private void initialiseUI()
   {
@@ -126,16 +164,14 @@ public class HistoryBrowserTabContentPanel extends JPanel implements ActionListe
     this.jpOpenedItemsHistory = new JPanel();
     this.jpCommentedOnHistory = new JPanel();
     
-    
     // create standard boxes for each content holder panels
-    JPanel jpPreviewHistoryBox = generateContentBox("Preview History", jpPreviewHistory);
-    JPanel jpSearchHistoryBox = generateContentBox("Search History", jpSearchHistory);
-    JPanel jpTagSearchHistoryBox = generateContentBox("Tag Search History", jpTagSearchHistory);
-    JPanel jpDownloadedItemsHistoryBox = generateContentBox("Downloaded Items", jpDownloadedItemsHistory);
-    JPanel jpOpenedItemsHistoryBox = generateContentBox("Opened Items", jpOpenedItemsHistory);
-    JPanel jpCommentedOnHistoryBox = generateContentBox("Commented On", jpCommentedOnHistory);
-    
-    
+    JPanel jpPreviewHistoryBox = addSpecifiedPanel(1, "Preview History", jpPreviewHistory);
+    JPanel jpSearchHistoryBox = addSpecifiedPanel(2, "Search History", jpSearchHistory);
+    JPanel jpTagSearchHistoryBox = addSpecifiedPanel(3, "Tag Search History", jpTagSearchHistory);
+    JPanel jpDownloadedItemsHistoryBox = addSpecifiedPanel(4, "Downloaded Items", jpDownloadedItemsHistory);
+    JPanel jpOpenedItemsHistoryBox = addSpecifiedPanel(5, "Opened Items", jpOpenedItemsHistory);
+    JPanel jpCommentedOnHistoryBox = addSpecifiedPanel(6, "Commented On", jpCommentedOnHistory);
+
     // PUT BOXES TOGETHER
     JPanel jpMain = new JPanel();
     jpMain.setLayout(new GridLayout(2, 3));

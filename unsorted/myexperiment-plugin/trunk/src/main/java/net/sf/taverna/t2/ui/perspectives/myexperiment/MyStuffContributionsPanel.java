@@ -3,7 +3,10 @@ package net.sf.taverna.t2.ui.perspectives.myexperiment;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.TextArea;
 import java.awt.event.ActionEvent;
@@ -14,6 +17,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -168,28 +172,28 @@ public class MyStuffContributionsPanel extends JPanel implements ActionListener
       alVisiblePanels.add(jpMyPacks);
     }
     
-    
     // ..putting everything together    
-    SpringLayout layout = new SpringLayout();
-    this.setLayout(layout);
+    JPanel jpEverything = new JPanel();
+    jpEverything.setLayout(new GridBagLayout());
     
-    this.add(jpMyWorkflowsContainer);
-    int iVerticalSpacing = (alVisiblePanels.contains(jpMyWorkflows) ? SECTION_VSPACING : -10);
-    layout.putConstraint(SpringLayout.NORTH, jpMyWorkflowsContainer, iVerticalSpacing, SpringLayout.NORTH, this);
-    layout.putConstraint(SpringLayout.WEST, jpMyWorkflowsContainer, 5, SpringLayout.WEST, this);
-    layout.putConstraint(SpringLayout.EAST, this, 5, SpringLayout.EAST, jpMyWorkflowsContainer);
+    GridBagConstraints gbConstraints = new GridBagConstraints();
+    gbConstraints.anchor = GridBagConstraints.NORTHWEST;
+    gbConstraints.fill = GridBagConstraints.BOTH;
+    gbConstraints.gridx = 0;    
+    gbConstraints.weightx = 1;
+    int index = 0;
     
-    this.add(jpMyFilesContainer);
-    iVerticalSpacing = (alVisiblePanels.contains(jpMyFiles) ? SECTION_VSPACING : -10);
-    layout.putConstraint(SpringLayout.NORTH, jpMyFilesContainer, iVerticalSpacing, SpringLayout.SOUTH, jpMyWorkflowsContainer);
-    layout.putConstraint(SpringLayout.WEST, jpMyFilesContainer, 5, SpringLayout.WEST, this);
-    layout.putConstraint(SpringLayout.EAST, jpMyFilesContainer, 0, SpringLayout.EAST, jpMyWorkflowsContainer);
+    gbConstraints.gridy = index++;
+    jpEverything.add(jpMyWorkflowsContainer, gbConstraints);
     
-    this.add(jpMyPacksContainer);
-    iVerticalSpacing = (alVisiblePanels.contains(jpMyPacks) ? SECTION_VSPACING : -10);
-    layout.putConstraint(SpringLayout.NORTH, jpMyPacksContainer, iVerticalSpacing, SpringLayout.SOUTH, jpMyFilesContainer);
-    layout.putConstraint(SpringLayout.WEST, jpMyPacksContainer, 5, SpringLayout.WEST, this);
-    layout.putConstraint(SpringLayout.EAST, jpMyPacksContainer, 0, SpringLayout.EAST, jpMyWorkflowsContainer);
+    gbConstraints.gridy = index++;
+    jpEverything.add(jpMyFilesContainer, gbConstraints);
+    
+    gbConstraints.gridy = index++;
+    jpEverything.add(jpMyPacksContainer, gbConstraints);
+    
+    this.setLayout(new BorderLayout());
+    this.add(jpEverything, BorderLayout.NORTH);
   }
   
   

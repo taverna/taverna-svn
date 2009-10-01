@@ -44,43 +44,43 @@
 		<dependency>
       <groupId>net.sf.taverna.t2.ui-api</groupId>
 			<artifactId>perspective-core</artifactId>
-      <version>0.4-SNAPSHOT</version>
+      <version>0.6</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.infrastructure</groupId>
 			<artifactId>appconfig</artifactId>
-			<version>1.10-SNAPSHOT</version>
+			<version>1.11</version>
 		</dependency>
 		<dependency>
       <groupId>net.sf.taverna.t2.ui-api</groupId>
 			<artifactId>menu-api</artifactId>
-      <version>0.4-SNAPSHOT</version>
+      <version>0.6</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.lang</groupId>
 			<artifactId>ui</artifactId>
-			<version>0.5-SNAPSHOT</version>
+			<version>0.5</version>
 		</dependency>
 		<dependency>
 	     <groupId>net.sf.taverna.t2.ui-api</groupId>
   		<artifactId>common-icons</artifactId>
-	    <version>0.4-SNAPSHOT</version>
+	    <version>0.6</version>
   	</dependency>
 		<dependency>
       <groupId>net.sf.taverna.t2.ui-api</groupId>
 			<artifactId>workbench-api</artifactId>
-      <version>0.4-SNAPSHOT</version>
+      <version>0.6</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-api</groupId>
 			<artifactId>file-api</artifactId>
-			<version>0.4-SNAPSHOT</version>
+			<version>0.6</version>
 		</dependency>
 
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>workflowmodel-impl</artifactId>
-			<version>0.6-SNAPSHOT</version>
+			<version>0.8</version>
 		</dependency>
 		
 		<dependency>
