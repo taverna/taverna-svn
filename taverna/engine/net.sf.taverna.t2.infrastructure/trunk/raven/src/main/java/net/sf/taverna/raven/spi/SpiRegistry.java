@@ -287,7 +287,9 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 					
 //					if (impClass.getClassLoader() instanceof LocalArtifactClassLoader
 //							|| System.getProperty("raven.eclipse") != null) {
+					if (!implementations.contains(impClass)) {
 						implementations.add(impClass);
+					}
 						// only mark as new if this class did not appear in the
 						// previous set of implementations, i.e.
 						// is actually new.
