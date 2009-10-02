@@ -59,9 +59,9 @@ import java.awt.Toolkit;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
-import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 
 import net.sf.taverna.raven.log.Log;
@@ -71,7 +71,7 @@ import net.sf.taverna.raven.repository.DownloadStatus;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.RepositoryListener;
 
-public class SplashScreen extends JWindow {
+public class SplashScreen extends JFrame {
 
 	private static Log logger = Log.getLogger(SplashScreen.class);
 
@@ -107,6 +107,7 @@ public class SplashScreen extends JWindow {
 
 	private SplashScreen(URL imageURL, final int timeout) {
 		super();
+		setUndecorated(true);
 		ImageIcon image = new ImageIcon(imageURL);
 		JLabel label = new JLabel(image);
 		getContentPane().add(label, BorderLayout.CENTER);
