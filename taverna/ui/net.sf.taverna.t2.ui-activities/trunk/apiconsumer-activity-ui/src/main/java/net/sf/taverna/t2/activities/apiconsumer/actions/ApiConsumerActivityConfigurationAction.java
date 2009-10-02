@@ -33,6 +33,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +51,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -105,9 +108,14 @@ public class ApiConsumerActivityConfigurationAction extends ActivityConfiguratio
 	
 	public void actionPerformed(ActionEvent e) {
 		
-		dialog = new HelpEnabledDialog(owner,
+		JDialog currentDialog = ActivityConfigurationAction.getDialog(getActivity());
+		if (currentDialog != null) {
+			currentDialog.toFront();
+			return;
+		}
+		dialog = new HelpEnabledDialog((Frame) null,
 				getRelativeName(),
-				true,
+				false,
 				null);
 		dialog.setLayout(new BoxLayout(dialog.getContentPane(), BoxLayout.PAGE_AXIS));
 
@@ -127,8 +135,13 @@ public class ApiConsumerActivityConfigurationAction extends ActivityConfiguratio
 		dialog.getContentPane().setMinimumSize(new Dimension(500,280));
 		dialog.getContentPane().setPreferredSize(new Dimension(500,280));
 		dialog.pack();
-		dialog.setModal(true);
-		dialog.setVisible(true);
+		dialog.addWindowListener(new WindowAdapter() {
+
+			public void windowClosing(WindowEvent e) {
+				ActivityConfigurationAction.clearDialog(dialog);
+			}
+		});
+		ActivityConfigurationAction.setDialog(getActivity(), dialog);
 	}
 	
 	// Panel containing classloading options
@@ -314,8 +327,8 @@ public class ApiConsumerActivityConfigurationAction extends ActivityConfiguratio
 			super(new FlowLayout(FlowLayout.RIGHT));
 			
 			// 'OK'  button
-	        JButton jbOK = new JButton("OK");
-	        jbOK.addActionListener(new ActionListener()
+	        JButton jbApply = new JButton("Apply");
+	        jbApply.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent evt)
 	            {	            			            	
@@ -325,9 +338,7 @@ public class ApiConsumerActivityConfigurationAction extends ActivityConfiguratio
 						configuration.setLocalDependencies(newLocalDependencies);
 						configuration.setArtifactDependencies(new LinkedHashSet<BasicArtifact>());
 		            	configureActivity(configuration);
-					}
-	            	dialog.setVisible(false);
-	            	dialog.dispose();     
+					}  
 	            }
 
 				private boolean isConfigurationChanged() {
@@ -344,18 +355,17 @@ public class ApiConsumerActivityConfigurationAction extends ActivityConfiguratio
 					}
 				}
 	        });
-	        // 'Cancel' button
-	        JButton jbCancel = new JButton("Cancel");
-	        jbCancel.addActionListener(new ActionListener()
+	        // 'Close' button
+	        JButton jbClose = new JButton("Close");
+	        jbClose.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent evt)
 	            {
-	            	dialog.setVisible(false);
-	            	dialog.dispose();         
+	            	ActivityConfigurationAction.clearDialog(dialog);  
 	            }
 	        });
-	        add(jbOK);
-	        add(jbCancel);
+	        add(jbApply);
+	        add(jbClose);
 		}
 	}
 	
