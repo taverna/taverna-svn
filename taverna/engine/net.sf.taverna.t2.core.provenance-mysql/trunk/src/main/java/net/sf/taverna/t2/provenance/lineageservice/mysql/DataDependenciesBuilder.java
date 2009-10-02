@@ -67,9 +67,9 @@ public class DataDependenciesBuilder {
 	public DataDependenciesBuilder(String location, String clearDB) {
 
 		pw = new MySQLProvenanceWriter();
-		pw.setDbURL(location);
+		
 		pq = new MySQLProvenanceQuery();
-		pq.setDbURL(location);
+		
 
 		if (clearDB.equals("true")) {
 			System.out.println("clearing DD DB");

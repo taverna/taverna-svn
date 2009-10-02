@@ -39,8 +39,8 @@ public class MySQLProvenance extends Provenance {
 	public MySQLProvenance() {
 	}
 
-	public MySQLProvenance(EventProcessor eventProcessor, String location) {
-		super(eventProcessor, location);
+	public MySQLProvenance(EventProcessor eventProcessor) {
+		super(eventProcessor);
 	}
 
 	static Logger logger = Logger.getLogger(MySQLProvenance.class);

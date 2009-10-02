@@ -19,10 +19,9 @@ public class NaiveProvenanceQuery {
 
 	private ProvenanceQuery pq = null;
 
-	public NaiveProvenanceQuery(String location) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public NaiveProvenanceQuery() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
-		pq = new MySQLProvenanceQuery();  // manages connections
-		pq.setDbURL(location);
+		pq = new MySQLProvenanceQuery();  // manages connections		
 	}
 
 

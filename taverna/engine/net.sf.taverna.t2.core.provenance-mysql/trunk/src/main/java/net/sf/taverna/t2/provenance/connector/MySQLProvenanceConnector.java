@@ -140,9 +140,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 	  +") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='dereferced data -- strings only (includes XMLEncoded beans)';";
 
 	
-	private ReferenceService referenceService;
-
-	private InvocationContext invocationContext;
+	
 
         public MySQLProvenanceConnector() {
             
@@ -150,9 +148,9 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 	
 
 	public MySQLProvenanceConnector(Provenance provenance,
-			ProvenanceAnalysis provenanceAnalysis, String dbURL,
+			ProvenanceAnalysis provenanceAnalysis,
 			boolean isClearDB, String saveEvents) {
-		super(provenance, provenanceAnalysis, dbURL, isClearDB, saveEvents);
+		super(provenance, provenanceAnalysis, isClearDB, saveEvents);
 
 //		// clear the DB prior to collecting new provenance
 		if (isClearDB) {
@@ -190,7 +188,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 	public synchronized void addProvenanceItem(final ProvenanceItem provenanceItem) {
 
 		ReferenceService referenceService =
-			invocationContext.getReferenceService();
+			getInvocationContext().getReferenceService();
 
 		if (provenanceItem instanceof IterationProvenanceItem) {
 
@@ -218,12 +216,12 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 				T2Reference ref = entry.getValue();
 
 				Identified id = referenceService.resolveIdentifier(entry
-						.getValue(), null, invocationContext);
+						.getValue(), null, getInvocationContext());
 				if (id instanceof ReferenceSet) {
 
 					byte[] renderedData = (byte[]) referenceService
 					.renderIdentifier(entry.getValue(), byte[].class,
-							invocationContext);
+							getInvocationContext());
 
 //					System.out.println("****\ndata in provenance event: "
 //							+ entry.getValue() + " --> \n" + renderedData
@@ -388,28 +386,14 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 	// }
 
 	
-	public ReferenceService getReferenceService() {
-		return referenceService;
-	}
-
-	public void setReferenceService(ReferenceService referenceService) {
-		this.referenceService = referenceService;
-	}
-
-	public InvocationContext getInvocationContext() {
-		return invocationContext;
-	}
-
-	public void setInvocationContext(InvocationContext invocationContext) {
-		this.invocationContext = invocationContext;
-	}
+	
 
 	@Override
 	public void init() {
 		ProvenanceWriter writer = new MySQLProvenanceWriter();
-		writer.setDbURL(getDbURL());
+		
 		ProvenanceQuery query = new MySQLProvenanceQuery();
-		query.setDbURL(getDbURL());
+		
 		WorkflowDataProcessor wfdp = new WorkflowDataProcessor();
 		wfdp.setPq(query);
 		wfdp.setPw(writer);
@@ -434,7 +418,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 			e.printStackTrace();
 		}
 		setProvenanceAnalysis(provenanceAnalysis);
-		Provenance provenance = new Provenance(eventProcessor, getDbURL());
+		Provenance provenance = new Provenance(eventProcessor);
 	}
 
 }
