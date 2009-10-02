@@ -100,9 +100,7 @@ public class DataflowGeneratorTest {
 		String mySQLjdbcString = "jdbc:mysql://" + DB_URL_LOCAL + "/T2Provenance?user="
 		+ DB_USER + "&password=" + DB_PASSWD;
 
-		pq = new MySQLProvenanceQuery();	
-		pq.setDbURL(mySQLjdbcString);
-
+		pq = new MySQLProvenanceQuery();
 	}
 
 
@@ -289,7 +287,7 @@ public class DataflowGeneratorTest {
 
 		// read in all Processors -- we need to distinguish Dataflow processors because their input/output
 		// logic is inverted
-		List<ProvenanceProcessor> dataflowProcs = pq.getProcessors("net.sf.taverna.t2.activities.dataflow.DataflowActivity", wfRef);
+		List<ProvenanceProcessor> dataflowProcs = pq.getProcessorsShallow("net.sf.taverna.t2.activities.dataflow.DataflowActivity", wfRef);
 		List<String>  dataflowNames = new ArrayList<String>();
 		for (ProvenanceProcessor pp:dataflowProcs) { dataflowNames.add(pp.getPname()); }
 

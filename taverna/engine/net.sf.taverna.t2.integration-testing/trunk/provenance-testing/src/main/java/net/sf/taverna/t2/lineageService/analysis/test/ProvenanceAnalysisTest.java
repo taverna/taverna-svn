@@ -6,6 +6,7 @@ package net.sf.taverna.t2.lineageService.analysis.test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,12 +22,13 @@ import java.util.Set;
 import javax.xml.bind.JAXBException;
 
 import net.sf.taverna.t2.lineageService.capture.test.testFiles;
-import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResult;
+import net.sf.taverna.t2.provenance.api.NativeAnswer;
+import net.sf.taverna.t2.provenance.api.QueryAnswer;
+import net.sf.taverna.t2.provenance.lineageservice.Dependencies;
 import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
 import net.sf.taverna.t2.provenance.lineageservice.LineageSQLQuery;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
-import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.NaiveProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.utils.DDRecord;
@@ -34,6 +36,7 @@ import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.utils.QueryVar;
 import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
 import net.sf.taverna.t2.provenance.lineageservice.utils.VarBinding;
+import net.sf.taverna.t2.provenance.lineageservice.utils.WorkflowInstance;
 
 import org.apache.log4j.Logger;
 import org.junit.Before;
@@ -42,9 +45,10 @@ import org.tupeloproject.kernel.OperatorException;
 
 /**
  * @author paolo
+ * @param <pathToDependencies>
  *
  */
-public class ProvenanceAnalysisTest {
+public class ProvenanceAnalysisTest<pathToDependencies> {
 
 	private static final String annotationsFileName = null;
 
@@ -108,10 +112,7 @@ public class ProvenanceAnalysisTest {
 
 		npq = new NaiveProvenanceQuery(mySQLjdbcString);		
 
-//		pq = new DerbyProvenanceQuery();
-//		pq.setDbURL(derbyjdbcString);
 		pq = new MySQLProvenanceQuery();	
-		pq.setDbURL(mySQLjdbcString);
 		pa = new ProvenanceAnalysis(pq);
 
 		acquireTestConfiguration();		
@@ -182,12 +183,12 @@ public class ProvenanceAnalysisTest {
 		// set the run instances (scope)
 		//////////////
 
-		ArrayList<String> instances = null;
+		List<WorkflowInstance> instances = null;
 
 		if (selectedWF.equals("LAST")) { // default WF
-			instances = (ArrayList<String>) pa.getWFInstanceIDs();  // ordered by timestamp
+			instances = pa.getWFInstanceIDs();  // ordered by timestamp
 		} else  {
-			instances = (ArrayList<String>) pa.getWFInstanceID(selectedWF);  // ordered by timestamp
+			instances = pa.getWFInstanceID(selectedWF);  // ordered by timestamp
 		}
 
 		if (! selectedInstances.equals("LAST")) {
@@ -195,7 +196,7 @@ public class ProvenanceAnalysisTest {
 		}
 
 		if (instances.size()>0)  {  
-			wfInstance = instances.get(0);
+			wfInstance = instances.get(0).getInstanceID();
 			System.out.println("instance "+wfInstance);
 		} else {
 			assertFalse("FATAL: no wfinstances in DB -- terminating", instances.size() == 0);
@@ -348,7 +349,7 @@ public class ProvenanceAnalysisTest {
 			System.out.println("************\n Intermediate values on TARGET VAR ==> Simple lineage query: [instance, proc, port, path] = ["+
 					wfInstance+","+qv.getPname()+","+qv.getVname()+",["+qv.getPath()+"]]\n***********");
 
-			List<LineageQueryResult> lqr = new ArrayList<LineageQueryResult>();
+			List<Dependencies> lqr = new ArrayList<Dependencies>();
 
 			if (qv.getPath().equals(pa.ALL_PATHS_KEYWORD)) {
 
@@ -382,7 +383,7 @@ public class ProvenanceAnalysisTest {
 
 			if (lqr != null) {
 
-				for (LineageQueryResult res:lqr) {
+				for (Dependencies res:lqr) {
 					res.setPrintResolvedValue(true);
 					System.out.println(res.toString());
 				}
@@ -397,7 +398,7 @@ public class ProvenanceAnalysisTest {
 
 			LineageSQLQuery slq = pq.simpleLineageQuery(wfInstance, s, null, null);
 
-			LineageQueryResult runLineageQuery;
+			Dependencies runLineageQuery;
 			try {
 				runLineageQuery = pq.runLineageQuery(slq, pa.isIncludeDataValue());
 			} catch (SQLException e) {
@@ -420,30 +421,53 @@ public class ProvenanceAnalysisTest {
 	 * @throws IOException 
 	 * @throws OperatorException 
 	 */
-	@Test
-	public final void testComputeLineagePaths() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, OperatorException, IOException, JAXBException {
-
-		// set return outputs pref
-		pa.setReturnOutputs(isReturnOutputs());
-
-		pa.computeLineageMultiVar(qvList, wfInstance, selProcNames);
-
-		// get the final OPM graph from pa
-
-		// convert OPM RDF/XML to OPM XML
-		logger.info("converting RDF OPM graph to XML...");
-		String XMLFile = pa.OPMRdf2Xml();
-		logger.info("done - file is "+XMLFile);
-
-		// create a dot file from the RDF/XML  (going through a converter)
-		// NEEDS FIXING
-		logger.info("creating dot file...");
-		String  dotFile = pa.OPMRdf2Dot();
-		logger.info("done - file is "+dotFile);
-
-		assertTrue("lineage tree should have been printed above", true);
-	}
-
+//	@Test
+//	public final void testComputeLineagePaths() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, OperatorException, IOException, JAXBException {
+//
+//		// set return outputs pref
+//		pa.setReturnOutputs(isReturnOutputs());
+//
+//		// TODO needs refactoring
+//		QueryAnswer answer = pa.lineageQuery(qvList, wfInstance, selProcNames);
+//
+//		// display the native answer one var at the time
+//		for (Map.Entry<QueryVar,Map<String, List<Dependencies>>> entry: answer.getNativeAnswer().getAnswer().entrySet()) {
+//
+//			QueryVar    v       = entry.getKey();
+//			Map<String, List<Dependencies>> singleVarAnswer = entry.getValue();
+//
+//			logger.info("query answer for var "+v);
+//
+//			for (Map.Entry<String, List<Dependencies>> pathToDependencies: singleVarAnswer.entrySet()) {
+//
+//				String pathToValue       = pathToDependencies.getKey();
+//				List<Dependencies>  deps = pathToDependencies.getValue();
+//
+//				logger.info("\t dependencies for path to value "+pathToValue);
+//
+//				// display results
+//				for (Dependencies result:deps) {
+//
+//					//System.out.println("****** result: *****");
+//					for (LineageQueryResultRecord r:result.getRecords()) {	
+//						r.setPrintResolvedValue(false);					// unclutter visual output for testing
+//						logger.info(r.toString());
+//					}				
+//				}
+//			}
+//		}
+//
+//		// display the OPM answer
+//		String OPMAnswer_asXML = answer.getOPMAnswer_AsXML();
+//		String OPMAnswer_asRDF = answer.getOPMAnswer_AsRDF();
+//		
+//		// this is a filename, not the string itself
+//		logger.info("OPM / XML written to "+OPMAnswer_asXML);		
+//		logger.info("OPM / RDF written to "+OPMAnswer_asRDF);
+//		
+//		assertTrue("lineage tree should have been printed above", true);
+//	}
+//
 
 
 
@@ -456,113 +480,113 @@ public class ProvenanceAnalysisTest {
 	 * of unfocused queries
 	 * @throws SQLException
 	 */
-	@Test
-	public final void testRecursiveNaiveQuery() throws SQLException {
-
-		Map<List<String>, List<DDRecord>> cachedResults = new HashMap<List<String>, List<DDRecord>>();
-
-		// for simplicity only consider one target var
-		String pname = qvList.get(0).getPname();
-		String vname = qvList.get(0).getVname();
-		String iteration = qvList.get(0).getPath();
-
-		//  need to add '[' ']' to path in this case to match what's in the DD for iterations...
-		if (iteration != null && iteration.length()>0)  iteration = new String("["+iteration+"]");
-
-		///////
-		// 1 - first traverse the graph to compute all paths to be queried -- use out own computeLineageQuery for this!!
-		///////
-		System.out.println("****  computing paths to selected processors for "+pname+" "+vname+" "+iteration);
-		long start = System.currentTimeMillis();
-		pa.searchDataflowGraph(wfInstance, vname, pname, iteration, selProcNames);
-		long stop = System.currentTimeMillis();
-
-		long pct = stop-start;
-
-		long qrtavg = 0;
-		int cnt =0;
-		// these are the paths we need to traverse
-		Map<String, List<List<String>>> allPaths = pa.getValidPaths();
-
-		///////
-		// 2 - sort paths by dec length -- rationale: shorter paths _may_ be subsumed by longer paths.
-		// (this is always true in our test dataflows!
-		///////
-		List<List<String>> sortedPaths = new ArrayList<List<String>>();
-
-		for (Map.Entry<String, List<List<String>>> entry:allPaths.entrySet()) {
-			for (List<String> aPath: entry.getValue()) {
-
-				boolean inserted = false;
-				for (int i=0; i<sortedPaths.size(); i++) {
-					if (aPath.size() > sortedPaths.get(i).size()) {
-						sortedPaths.add(i, aPath);
-						break;
-					}
-				}
-				if (!inserted) { sortedPaths.add(aPath); }
-			}
-		}		
-
-		///////
-		// 3 - then  call recursiveNaiveQuery once on each path, 
-		// but only if results are not already available through cache
-		///////
-		for (List<String> aPath:sortedPaths) {
-//			for (Map.Entry<String, List<List<String>>> entry:allPaths.entrySet()) {
-
+//	@Test
+//	public final void testRecursiveNaiveQuery() throws SQLException {
+//
+//		Map<List<String>, List<DDRecord>> cachedResults = new HashMap<List<String>, List<DDRecord>>();
+//
+//		// for simplicity only consider one target var
+//		String pname = qvList.get(0).getPname();
+//		String vname = qvList.get(0).getVname();
+//		String iteration = qvList.get(0).getPath();
+//
+//		//  need to add '[' ']' to path in this case to match what's in the DD for iterations...
+//		if (iteration != null && iteration.length()>0)  iteration = new String("["+iteration+"]");
+//
+//		///////
+//		// 1 - first traverse the graph to compute all paths to be queried -- use out own computeLineageQuery for this!!
+//		///////
+//		System.out.println("****  computing paths to selected processors for "+pname+" "+vname+" "+iteration);
+//		long start = System.currentTimeMillis();
+//		pa.searchDataflowGraph(wfInstance, vname, pname, iteration, selProcNames);
+//		long stop = System.currentTimeMillis();
+//
+//		long pct = stop-start;
+//
+//		long qrtavg = 0;
+//		int cnt =0;
+//		// these are the paths we need to traverse
+//		Map<String, List<List<String>>> allPaths = pa.getValidPaths();
+//
+//		///////
+//		// 2 - sort paths by dec length -- rationale: shorter paths _may_ be subsumed by longer paths.
+//		// (this is always true in our test dataflows!
+//		///////
+//		List<List<String>> sortedPaths = new ArrayList<List<String>>();
+//
+//		for (Map.Entry<String, List<List<String>>> entry:allPaths.entrySet()) {
 //			for (List<String> aPath: entry.getValue()) {
-
-			// is this path a prefix of a path for which we have already computed?
-			boolean found = (cachedResults.keySet().size()>0);
-			for (List<String> cachedPath:cachedResults.keySet()) {
-
-				found = true;
-				// prefix check
-				int i=0;
-				while (i< aPath.size() && i<cachedPath.size()) {
-
-					if (!aPath.get(i).equals(cachedPath.get(i))) { found = false; break; }
-					else i++;
-
-				}
-				if (found) break;
-			}
-
-			if (found) {
-				System.out.println("skipping computation on path: ");
-				for (String p1:aPath) { System.out.println(p1); }
-				continue; 
-			} else {
-				System.out.println("NOT skipping computation on path: ");
-				for (String p1:aPath) { System.out.println(p1); }					
-			}
-
-			start = System.currentTimeMillis();
-			List<DDRecord> result = npq.recursiveNaiveQuery(vname, pname, iteration, aPath);
-			stop = System.currentTimeMillis();
-
-			// cache this result
-			cachedResults.put(aPath , result);
-
-			long qrt = stop-start;
-
-			for (DDRecord r:result) {
-				System.out.println("pFrom = "+r.getPFrom()+" vFrom= "+r.getVFrom()+" valFrom= "+r.getValFrom());
-			}
-
-			System.out.println("lineage query response time: "+qrt+" ms");
-			System.out.println("total time: "+(pct+qrt)+"ms");
-
-			qrtavg += qrt;
-			cnt++;
+//
+//				boolean inserted = false;
+//				for (int i=0; i<sortedPaths.size(); i++) {
+//					if (aPath.size() > sortedPaths.get(i).size()) {
+//						sortedPaths.add(i, aPath);
+//						break;
+//					}
+//				}
+//				if (!inserted) { sortedPaths.add(aPath); }
 //			}
+//		}		
+//
+//		///////
+//		// 3 - then  call recursiveNaiveQuery once on each path, 
+//		// but only if results are not already available through cache
+//		///////
+//		for (List<String> aPath:sortedPaths) {
+////			for (Map.Entry<String, List<List<String>>> entry:allPaths.entrySet()) {
+//
+////			for (List<String> aPath: entry.getValue()) {
+//
+//			// is this path a prefix of a path for which we have already computed?
+//			boolean found = (cachedResults.keySet().size()>0);
+//			for (List<String> cachedPath:cachedResults.keySet()) {
+//
+//				found = true;
+//				// prefix check
+//				int i=0;
+//				while (i< aPath.size() && i<cachedPath.size()) {
+//
+//					if (!aPath.get(i).equals(cachedPath.get(i))) { found = false; break; }
+//					else i++;
+//
+//				}
+//				if (found) break;
 //			}
-		}
-		System.out.println("path computation time: "+pct+"ms");
-		System.out.println("avg query response time: "+((float) qrtavg/cnt)+"ms");
-		System.out.println("avg total time: "+(((float) qrtavg/cnt)+pct)+"ms");
-	}
+//
+//			if (found) {
+//				System.out.println("skipping computation on path: ");
+//				for (String p1:aPath) { System.out.println(p1); }
+//				continue; 
+//			} else {
+//				System.out.println("NOT skipping computation on path: ");
+//				for (String p1:aPath) { System.out.println(p1); }					
+//			}
+//
+//			start = System.currentTimeMillis();
+//			List<DDRecord> result = npq.recursiveNaiveQuery(vname, pname, iteration, aPath);
+//			stop = System.currentTimeMillis();
+//
+//			// cache this result
+//			cachedResults.put(aPath , result);
+//
+//			long qrt = stop-start;
+//
+//			for (DDRecord r:result) {
+//				System.out.println("pFrom = "+r.getPFrom()+" vFrom= "+r.getVFrom()+" valFrom= "+r.getValFrom());
+//			}
+//
+//			System.out.println("lineage query response time: "+qrt+" ms");
+//			System.out.println("total time: "+(pct+qrt)+"ms");
+//
+//			qrtavg += qrt;
+//			cnt++;
+////			}
+////			}
+//		}
+//		System.out.println("path computation time: "+pct+"ms");
+//		System.out.println("avg query response time: "+((float) qrtavg/cnt)+"ms");
+//		System.out.println("avg total time: "+(((float) qrtavg/cnt)+pct)+"ms");
+//	}
 
 
 
@@ -573,113 +597,113 @@ public class ProvenanceAnalysisTest {
 	 * - executes query. timed execution
 	 * @throws SQLException
 	 */
-	@Test
-	public final void testGenerateNaiveQuery() throws SQLException {
-
-		// for simplicity only consider one target var
-		String pname = qvList.get(0).getPname();
-		String vname = qvList.get(0).getVname();
-		String iteration = qvList.get(0).getPath();
-
-		//  need to add '[' ']' to path in this case to match what's in the DD for iterations...
-		if (iteration != null && iteration.length()>0)  iteration = new String("["+iteration+"]");
-
-		///////
-		// 1 - first traverse the graph to compute all paths to be queried -- use our own computeLineageQuery for this!!
-		///////
-		System.out.println("****  computing paths to selected processors for "+pname+" "+vname+" "+iteration);
-
-		long start = System.currentTimeMillis();
-		pa.searchDataflowGraph(wfInstance, vname, pname, iteration, selProcNames);
-		long stop = System.currentTimeMillis();
-
-		long pct = stop - start;
-
-		// these are the paths we need to traverse
-		Map<String, List<List<String>>> allPaths = pa.getValidPaths();
-
-		long qrtavg = 0;
-		int cnt =0;
-		for (Map.Entry<String, List<List<String>>> entry:allPaths.entrySet()) {
-
-			for (List<String> aPath: entry.getValue()) {
-
-				System.out.println("generating lineage query "+(cnt+1));
-				//for (String p:aPath)  { System.out.println(p); }
-
-				start = System.currentTimeMillis();
-//				String q = npq.generateNaiveQueryTwoTables(vname, pname, iteration, aPath);
-				String q = npq.generateNaiveQuery(vname, pname, iteration, aPath);
-				stop = System.currentTimeMillis();
-				long qgt = stop- start;
-
-				System.out.println("*** generated query:\n"+q+"\nin "+qgt+"ms");
-
-				Statement stmt = null;
-
-				// TIMER STARTS
-				start = System.currentTimeMillis();
-				try {
-					stmt = pq.getConnection().createStatement();
-				} catch (InstantiationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				boolean success = stmt.execute(q);
-				stop = System.currentTimeMillis();
-				// TIMER STOPS
-
-				System.out.println("** results:  ***");
-				if (success) {
-					ResultSet rs = stmt.getResultSet();
-
-					while (rs.next()) {
-
-						String pFrom = rs.getString("pFrom");
-						String vFrom = rs.getString("vFrom");
-						String valFrom = rs.getString("valFrom");
-//						String pTo = rs.getString("pTo");
-//						String vTo = rs.getString("vTo");
-//						String valTo = rs.getString("valTo");
-
-						System.out.println("pFrom = "+pFrom+" vFrom= "+vFrom+" valFrom= "+valFrom);
-					}
-				}
-				long qrt = stop-start;
-
-				System.out.println("query response time: "+qrt+"ms");			
-				System.out.println("total time: "+(pct+qrt)+"ms");
-
-				qrtavg += qrt;
-				cnt++;
-			}
-		}
-		System.out.println("path computation time: "+pct+"ms");
-		System.out.println("avg query response time: "+((float) qrtavg/cnt)+"ms");
-		System.out.println("avg total time: "+(((float) qrtavg/cnt)+pct)+"ms");
-
-		// report each time + avg / std.dev.  TODO
-
-//		int blockLength = 4;
-
-//		List<String> path = new ArrayList<String>();
-
-//		for (int i=blockLength; i>=0; i--) {
-//		path.add("LINEARBLOCK_"+i);
+//	@Test
+//	public final void testGenerateNaiveQuery() throws SQLException {
+//
+//		// for simplicity only consider one target var
+//		String pname = qvList.get(0).getPname();
+//		String vname = qvList.get(0).getVname();
+//		String iteration = qvList.get(0).getPath();
+//
+//		//  need to add '[' ']' to path in this case to match what's in the DD for iterations...
+//		if (iteration != null && iteration.length()>0)  iteration = new String("["+iteration+"]");
+//
+//		///////
+//		// 1 - first traverse the graph to compute all paths to be queried -- use our own computeLineageQuery for this!!
+//		///////
+//		System.out.println("****  computing paths to selected processors for "+pname+" "+vname+" "+iteration);
+//
+//		long start = System.currentTimeMillis();
+//		pa.searchDataflowGraph(wfInstance, vname, pname, iteration, selProcNames);
+//		long stop = System.currentTimeMillis();
+//
+//		long pct = stop - start;
+//
+//		// these are the paths we need to traverse
+//		Map<String, List<List<String>>> allPaths = pa.getValidPaths();
+//
+//		long qrtavg = 0;
+//		int cnt =0;
+//		for (Map.Entry<String, List<List<String>>> entry:allPaths.entrySet()) {
+//
+//			for (List<String> aPath: entry.getValue()) {
+//
+//				System.out.println("generating lineage query "+(cnt+1));
+//				//for (String p:aPath)  { System.out.println(p); }
+//
+//				start = System.currentTimeMillis();
+////				String q = npq.generateNaiveQueryTwoTables(vname, pname, iteration, aPath);
+//				String q = npq.generateNaiveQuery(vname, pname, iteration, aPath);
+//				stop = System.currentTimeMillis();
+//				long qgt = stop- start;
+//
+//				System.out.println("*** generated query:\n"+q+"\nin "+qgt+"ms");
+//
+//				Statement stmt = null;
+//
+//				// TIMER STARTS
+//				start = System.currentTimeMillis();
+//				try {
+//					stmt = pq.getConnection().createStatement();
+//				} catch (InstantiationException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (IllegalAccessException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (ClassNotFoundException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				boolean success = stmt.execute(q);
+//				stop = System.currentTimeMillis();
+//				// TIMER STOPS
+//
+//				System.out.println("** results:  ***");
+//				if (success) {
+//					ResultSet rs = stmt.getResultSet();
+//
+//					while (rs.next()) {
+//
+//						String pFrom = rs.getString("pFrom");
+//						String vFrom = rs.getString("vFrom");
+//						String valFrom = rs.getString("valFrom");
+////						String pTo = rs.getString("pTo");
+////						String vTo = rs.getString("vTo");
+////						String valTo = rs.getString("valTo");
+//
+//						System.out.println("pFrom = "+pFrom+" vFrom= "+vFrom+" valFrom= "+valFrom);
+//					}
+//				}
+//				long qrt = stop-start;
+//
+//				System.out.println("query response time: "+qrt+"ms");			
+//				System.out.println("total time: "+(pct+qrt)+"ms");
+//
+//				qrtavg += qrt;
+//				cnt++;
+//			}
 //		}
-
-//		System.out.println("path processors: ");
-//		for (String p:path)  { System.out.println(p); }
-
-//		String q = npq.generateNaiveQuery("Y", "LINEARBLOCK_2", "[0]", path);
-
-	}
+//		System.out.println("path computation time: "+pct+"ms");
+//		System.out.println("avg query response time: "+((float) qrtavg/cnt)+"ms");
+//		System.out.println("avg total time: "+(((float) qrtavg/cnt)+pct)+"ms");
+//
+//		// report each time + avg / std.dev.  TODO
+//
+////		int blockLength = 4;
+//
+////		List<String> path = new ArrayList<String>();
+//
+////		for (int i=blockLength; i>=0; i--) {
+////		path.add("LINEARBLOCK_"+i);
+////		}
+//
+////		System.out.println("path processors: ");
+////		for (String p:path)  { System.out.println(p); }
+//
+////		String q = npq.generateNaiveQuery("Y", "LINEARBLOCK_2", "[0]", path);
+//
+//	}
 
 
 

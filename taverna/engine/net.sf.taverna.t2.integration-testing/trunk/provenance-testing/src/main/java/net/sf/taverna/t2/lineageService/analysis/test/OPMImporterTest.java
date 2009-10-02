@@ -55,7 +55,6 @@ public class OPMImporterTest {
 		}
 		
 		pw = new MySQLProvenanceWriter();
-		pw.setDbURL(jdbcString);
 		pw.clearDBStatic();
 		pw.clearDBDynamic();
 	}

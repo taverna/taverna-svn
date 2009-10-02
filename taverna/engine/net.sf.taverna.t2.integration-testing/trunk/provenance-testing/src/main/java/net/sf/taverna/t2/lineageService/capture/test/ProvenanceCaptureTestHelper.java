@@ -12,7 +12,7 @@ import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.raven.plugins.PluginManager;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.invocation.InvocationContext;
-import net.sf.taverna.t2.provenance.connector.DerbyProvenanceConnector;
+
 import net.sf.taverna.t2.provenance.connector.MySQLProvenanceConnector;
 import net.sf.taverna.t2.provenance.connector.ProvenanceConnector;
 import net.sf.taverna.t2.provenance.lineageservice.EventProcessor;
@@ -21,8 +21,6 @@ import net.sf.taverna.t2.provenance.lineageservice.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.WorkflowDataProcessor;
-import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceQuery;
-import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceWriter;
 import net.sf.taverna.t2.provenance.reporter.ProvenanceReporter;
@@ -90,7 +88,6 @@ public class ProvenanceCaptureTestHelper {
 		String jdbcString = "jdbc:mysql://" + DB_URL_LOCAL +"/T2Provenance?user=" + DB_USER +"&password=" + DB_PASSWD;
 
 		ProvenanceWriter writer = new MySQLProvenanceWriter();
-		writer.setDbURL(jdbcString);
 		try {
 			writer.clearDBStatic();
 		} catch (SQLException e) {
@@ -98,7 +95,6 @@ public class ProvenanceCaptureTestHelper {
 			e.printStackTrace();
 		}
 		ProvenanceQuery query = new MySQLProvenanceQuery();
-		query.setDbURL(jdbcString);
 		WorkflowDataProcessor wfdp = new WorkflowDataProcessor();
 		wfdp.setPq(query);
 		wfdp.setPw(writer);
@@ -124,7 +120,7 @@ public class ProvenanceCaptureTestHelper {
 			e.printStackTrace();
 		}
 
-		Provenance provenance = new Provenance(eventProcessor, jdbcString);
+		Provenance provenance = new Provenance(eventProcessor);
 		provenanceConnector = new MySQLProvenanceConnector(provenance,provenanceAnalysis,
 				jdbcString, isClearDB, saveEvents);
 		provenanceConnector.setReferenceService(referenceService);

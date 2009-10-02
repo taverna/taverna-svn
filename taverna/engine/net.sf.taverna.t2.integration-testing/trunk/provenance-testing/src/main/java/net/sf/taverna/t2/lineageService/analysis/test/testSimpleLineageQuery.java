@@ -10,11 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.taverna.t2.lineageService.capture.test.testFiles;
-import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResult;
+import net.sf.taverna.t2.provenance.lineageservice.Dependencies;
 import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
 import net.sf.taverna.t2.provenance.lineageservice.LineageSQLQuery;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceQuery;
+import net.sf.taverna.t2.provenance.lineageservice.utils.WorkflowInstance;
 
 import org.junit.After;
 import org.junit.Before;
@@ -50,7 +51,6 @@ public class testSimpleLineageQuery {
 		String jdbcString = "jdbc:mysql://"+location;
 		
 		pq = new MySQLProvenanceQuery();
-		pq.setDbURL(jdbcString);
 		
 		// target proc
 		pname = AnalysisTestFiles.getString("query.pname");
@@ -89,16 +89,16 @@ public class testSimpleLineageQuery {
 		// set the run instances (scope)
 		//////////////
 		String WFID = null;  // TODO only support one instance query at this time
-		ArrayList<String> instances = null;
+		List<WorkflowInstance> instances = null;
 		try {
-			instances = (ArrayList<String>) pq.getWFInstanceIDs();
+			instances = pq.getWFInstanceID(null);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			fail("SQL exception");
 		}  // ordered by timestamp
 
 		if (instances.size()>0)  {  
-			wfInstance = instances.get(0);
+			wfInstance = instances.get(0).getInstanceID();
 			System.out.println("instance "+WFID);
 		} else {
 			assertFalse("FATAL: no wfinstances in DB -- terminating", instances.size() == 0);
@@ -107,7 +107,7 @@ public class testSimpleLineageQuery {
 		
 		LineageSQLQuery lq = pq.simpleLineageQuery(wfInstance, pname, vname, iteration);
 		
-		LineageQueryResult result = null;
+		Dependencies result = null;
 		
 		try {
 			result = pq.runLineageQuery(lq, false);  // false -> do not return actual data values
