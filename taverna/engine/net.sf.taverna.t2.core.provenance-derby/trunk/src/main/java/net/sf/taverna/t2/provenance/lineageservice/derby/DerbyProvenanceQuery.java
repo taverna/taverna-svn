@@ -21,6 +21,7 @@
 package net.sf.taverna.t2.provenance.lineageservice.derby;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -85,6 +86,7 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
 
     /**
      * select Var records that satisfy constraints
+     * the order column is called reorder in derby because order is a reserved word
      */
     @Override
     public List<Var> getVars(Map<String, String> queryConstraints)
@@ -127,6 +129,71 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
                     aVar.setTypeNestingLevel(rs.getInt("nestingLevel"));
                     aVar.setActualNestingLevel(rs.getInt("actualNestingLevel"));
                     aVar.setANLset((rs.getInt("anlSet") == 1 ? true : false));
+                    result.add(aVar);
+
+                }
+            }
+        } catch (InstantiationException e) {
+            logger.warn("Could not execute query: " + e);
+        } catch (IllegalAccessException e) {
+            logger.warn("Could not execute query: " + e);
+        } catch (ClassNotFoundException e) {
+            logger.warn("Could not execute query: " + e);
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
+        }
+
+        return result;
+    }
+    /**
+     * Derby doesn't like v.wfInstanceRef in the result set so have to change
+     * to wfInstanceRef
+     */
+     @Override
+    public List<Var> getSuccVars(String pName, String vName,
+            String wfInstanceRef) throws SQLException {
+
+        List<Var> result = new ArrayList<Var>();
+        PreparedStatement ps = null;
+        Connection connection = null;
+
+        try {
+            connection = getConnection();
+            ps = connection.prepareStatement(
+                    "SELECT v.* " + "FROM Arc a JOIN Var v ON a.sinkPNameRef = v.pnameRef " + "AND  a.sinkVarNameRef = v.varName " + "AND a.wfInstanceRef = v.wfInstanceRef " + "WHERE sourceVarNameRef = ? AND sourcePNameRef = ?");
+
+            ps.setString(1, vName);
+            ps.setString(2, pName);
+
+            boolean success = ps.execute();
+
+            if (success) {
+                ResultSet rs = ps.getResultSet();
+
+                while (rs.next()) {
+
+                    if (wfInstanceRef != null && !rs.getString("wfInstanceRef").equals(wfInstanceRef)) {
+                        continue;
+                    }
+
+                    Var aVar = new Var();
+
+                    aVar.setWfInstanceRef(rs.getString("WfInstanceRef"));
+
+                    if (rs.getInt("inputOrOutput") == 1) {
+                        aVar.setInput(true);
+                    } else {
+                        aVar.setInput(false);
+                    }
+                    aVar.setPName(rs.getString("pnameRef"));
+                    aVar.setVName(rs.getString("varName"));
+                    aVar.setType(rs.getString("type"));
+                    aVar.setTypeNestingLevel(rs.getInt("nestingLevel"));
+                    aVar.setActualNestingLevel(rs.getInt("actualNestingLevel"));
+                    aVar.setANLset((rs.getInt("anlSet") == 1 ? true : false));
+
                     result.add(aVar);
 
                 }
