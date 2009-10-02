@@ -49,8 +49,6 @@
 		<module>helloworld-launcher</module>
 		<module>launcher</module>
 		<module>launcher-api</module>
-		<module>platform</module>
-		<module>platform-testhelpers</module>
 		<module>plugins-api</module>
 		<module>prelauncher</module>
 		<module>raven</module>
