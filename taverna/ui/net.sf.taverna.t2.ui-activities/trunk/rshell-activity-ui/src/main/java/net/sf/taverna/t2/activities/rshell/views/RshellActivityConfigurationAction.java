@@ -23,6 +23,8 @@ package net.sf.taverna.t2.activities.rshell.views;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.Action;
 import javax.swing.JDialog;
@@ -59,10 +61,15 @@ public class RshellActivityConfigurationAction
 	 * clicks OK
 	 */
 	public void actionPerformed(ActionEvent e) {
+		JDialog currentDialog = ActivityConfigurationAction.getDialog(getActivity());
+		if (currentDialog != null) {
+			currentDialog.toFront();
+			return;
+		}
 		final RshellActivityConfigView rshellConfigView = new RshellActivityConfigView(
 				(RshellActivity) getActivity());
 		final HelpEnabledDialog dialog =
-			new HelpEnabledDialog(owner, getRelativeName(), true, null);
+			new HelpEnabledDialog((Frame) null, getRelativeName(), false, null);
 		dialog.add(rshellConfigView);
 		dialog.setSize(500, 500);
 		// the action that will happen when the OK button is clicked
@@ -72,12 +79,16 @@ public class RshellActivityConfigurationAction
 				if (rshellConfigView.isConfigurationChanged()) {
 					configureActivity(rshellConfigView.getConfiguration());
 				}
-				dialog.setVisible(false);
 			}
 
 		});
-		dialog.setVisible(true);
+		dialog.addWindowListener(new WindowAdapter() {
 
+			public void windowClosing(WindowEvent e) {
+				ActivityConfigurationAction.clearDialog(dialog);
+			}
+		});
+		ActivityConfigurationAction.setDialog(getActivity(), dialog);	
 	}
 
 }

@@ -62,6 +62,7 @@ import net.sf.taverna.t2.activities.rshell.RshellActivityConfigurationBean;
 import net.sf.taverna.t2.activities.rshell.RshellConnectionSettings;
 import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SymanticTypes;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
+import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationAction;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Port;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
@@ -172,9 +173,9 @@ public class RshellActivityConfigView extends JPanel {
 						this,
 						"net.sf.taverna.t2.activities.rshell.views.RshellActivityConfigView");
 		setSize(500, 500);
-		AbstractAction okAction = getOKAction();
-		button = new JButton(okAction);
-		button.setText("OK");
+		AbstractAction applyAction = getOKAction();
+		button = new JButton(applyAction);
+		button.setText("Apply");
 		button.setToolTipText("Click to configure with the new values");
 		inputViewList = new ArrayList<RshellInputViewer>();
 		outputViewList = new ArrayList<RshellOutputViewer>();
@@ -262,11 +263,12 @@ public class RshellActivityConfigView extends JPanel {
 		buttonPanel.add(clearScriptButton);
 
 		buttonPanel.add(button);
-		JButton cancelButton = new JButton(new AbstractAction() {
+		JButton closeButton = new JButton(new AbstractAction() {
 
 			public void actionPerformed(ActionEvent e) {
 				configChanged = false;
 				buttonClicked.actionPerformed(e);
+				ActivityConfigurationAction.clearDialog(activity);
 			}
 		});
 
@@ -276,8 +278,8 @@ public class RshellActivityConfigView extends JPanel {
 		outerConstraint.anchor = GridBagConstraints.LINE_END;
 		outerConstraint.gridy = 2;
 		outerConstraint.weighty = 0;
-		cancelButton.setText("Cancel");
-		buttonPanel.add(cancelButton);
+		closeButton.setText("Close");
+		buttonPanel.add(closeButton);
 		add(buttonPanel, outerConstraint);
 	}
 
@@ -815,7 +817,6 @@ public class RshellActivityConfigView extends JPanel {
 
 				configuration = rshellActivityConfigurationBean;
 				configChanged = true;
-				setVisible(false);
 				buttonClicked.actionPerformed(e);
 			}
 
