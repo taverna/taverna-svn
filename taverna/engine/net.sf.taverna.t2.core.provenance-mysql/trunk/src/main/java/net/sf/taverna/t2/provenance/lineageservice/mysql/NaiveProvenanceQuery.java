@@ -10,6 +10,7 @@ import java.util.Set;
 
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.utils.DDRecord;
+import net.sf.taverna.t2.provenance.lineageservice.utils.WorkflowInstance;
 
 /**
  * @author paolo
@@ -19,9 +20,9 @@ public class NaiveProvenanceQuery {
 
 	private ProvenanceQuery pq = null;
 
-	public NaiveProvenanceQuery() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public NaiveProvenanceQuery(String location) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
-		pq = new MySQLProvenanceQuery();  // manages connections		
+		pq = new MySQLProvenanceQuery();  // manages connections
 	}
 
 
@@ -60,14 +61,14 @@ public class NaiveProvenanceQuery {
 		String iteration = targetIteration;
 
 		// fetch latest WFInstance ID, to use as part of the key
-		List<String> IDs = pq.getWFInstanceIDs();
+		List<WorkflowInstance> IDs = pq.getWFInstanceID(null);
 		
-		String wfInstanceID = IDs.get(0);
+		WorkflowInstance wfInstance = IDs.get(0);
 		
 		List<DDRecord> recordsQueue = new ArrayList<DDRecord>();
 
 		// execute initial xform step
-		List<DDRecord> DDrecords = pq.queryDD(pTo, vTo, null, iteration, wfInstanceID);
+		List<DDRecord> DDrecords = pq.queryDD(pTo, vTo, null, iteration, wfInstance.getInstanceID());
 
 		recordsQueue.addAll(DDrecords);
 
@@ -82,7 +83,7 @@ public class NaiveProvenanceQuery {
 				newRecords = DDrecords;
 
 				DDrecords.clear();
-				DDrecords = pq.queryDD(r.getPFrom(), r.getVFrom(), r.getValFrom(), null, wfInstanceID);
+				DDrecords = pq.queryDD(r.getPFrom(), r.getVFrom(), r.getValFrom(), null, wfInstance.getInstanceID());
 				recordsQueue.addAll(DDrecords);
 
 			}  else {  // we did an xfer
@@ -92,7 +93,7 @@ public class NaiveProvenanceQuery {
 					newRecords = DDrecords;
 
 					DDrecords.clear();
-					DDrecords = pq.queryDD(r.getPFrom(), r.getVFrom(), r.getValFrom(), null, wfInstanceID);
+					DDrecords = pq.queryDD(r.getPFrom(), r.getVFrom(), r.getValFrom(), null, wfInstance.getInstanceID());
 					recordsQueue.addAll(DDrecords);
 
 				}

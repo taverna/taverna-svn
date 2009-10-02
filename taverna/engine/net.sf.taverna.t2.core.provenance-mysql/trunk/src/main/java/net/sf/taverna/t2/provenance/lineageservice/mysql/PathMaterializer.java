@@ -14,6 +14,7 @@ import java.util.Set;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceProcessor;
+import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
 
 /**
  * given a graph structure in the DB, generates all pairs (p1,p2) such that there is a path from processor p1 to processor p2
@@ -24,14 +25,15 @@ import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceProcessor;
 public class PathMaterializer {
 
 	private ProvenanceWriter     pw = null;
-	private ProvenanceQuery      pq = null;	
+	private ProvenanceQuery      pq = null;
+	private String location;
 
 	public PathMaterializer(String location) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
 		pq = new MySQLProvenanceQuery();
-		
 		pw = new MySQLProvenanceWriter();
 		
+		setLocation(location);
 	}
 
 
@@ -78,7 +80,7 @@ public class PathMaterializer {
 
 		// fetch processors that are dataflows -- these will be excluded from the loop
 		List<ProvenanceProcessor> dataflows = 
-			pq.getProcessors("net.sf.taverna.t2.activities.dataflow.DataflowActivity", dataflowRef);
+			pq.getProcessorsShallow("net.sf.taverna.t2.activities.dataflow.DataflowActivity", dataflowRef);
 		List<String> dataflowNames = new ArrayList<String>();
 		
 		for (ProvenanceProcessor proc:dataflows) { dataflowNames.add(proc.getPname()); } 
@@ -140,5 +142,8 @@ public class PathMaterializer {
 	public ProvenanceQuery getPq() {
 		return pq;
 	}
-	
+
+	public void setLocation(String location) {
+		this.location = location;		
+	}
 }

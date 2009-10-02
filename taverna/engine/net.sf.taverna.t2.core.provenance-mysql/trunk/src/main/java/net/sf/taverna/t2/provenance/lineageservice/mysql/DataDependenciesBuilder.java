@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.taverna.t2.provenance.lineageservice.utils.DDRecord;
+import net.sf.taverna.t2.provenance.lineageservice.utils.WorkflowInstance;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -67,9 +68,7 @@ public class DataDependenciesBuilder {
 	public DataDependenciesBuilder(String location, String clearDB) {
 
 		pw = new MySQLProvenanceWriter();
-		
 		pq = new MySQLProvenanceQuery();
-		
 
 		if (clearDB.equals("true")) {
 			System.out.println("clearing DD DB");
@@ -83,9 +82,9 @@ public class DataDependenciesBuilder {
 	public void buildDD() throws SQLException {
 
 		// fetch latest WFInstance ID, to use as part of the key
-		List<String> IDs = pq.getWFInstanceIDs();
+		List<WorkflowInstance> IDs = pq.getWFInstanceID(null);
 
-		String wfInstanceID = IDs.get(0);
+		WorkflowInstance wfInstanceID = IDs.get(0);
 
 		// read all iteration events from the EVENTS log
 
@@ -111,14 +110,14 @@ public class DataDependenciesBuilder {
 				String filename = children[i];
 				// System.out.println(filename);
 
-				processEvent(children[i], wfInstanceID);
+				processEvent(children[i], wfInstanceID.getInstanceID());
 
 			}
 
 			// fill in the table with P1:Y -> P2:X dependencies
 			System.out.println("*** fillXferSteps starting for wfInstanceID = "
 					+ wfInstanceID);
-			fillXferSteps(wfInstanceID);
+			fillXferSteps(wfInstanceID.getInstanceID());
 
 		}
 	}

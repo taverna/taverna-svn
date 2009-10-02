@@ -165,8 +165,6 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		} else {
 			System.out.println("clearDB is FALSE: not clearing");
 		}
-
-
 	}
 
 	@Override
@@ -419,6 +417,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		}
 		setProvenanceAnalysis(provenanceAnalysis);
 		Provenance provenance = new Provenance(eventProcessor);
+		setProvenance(provenance);
 	}
 
 }
