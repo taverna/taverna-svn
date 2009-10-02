@@ -44,10 +44,11 @@ public class DerbyProvenance extends Provenance {
 
 	private static Logger logger = Logger.getLogger(DerbyProvenance.class);
 
-	public DerbyProvenance(EventProcessor eventProcessor, String location) {
-		super(eventProcessor, location);
+	public DerbyProvenance(EventProcessor eventProcessor) {
+		super(eventProcessor);
 	}
 
+        @Override
 	public String toString() {
 		return "Derby Provenance Service";
 	}
@@ -72,6 +73,7 @@ public class DerbyProvenance extends Provenance {
 	 * @throws SQLException
 	 * @throws IOException
 	 */
+        @Override
 	public void acceptRawProvenanceEvent(SharedVocabulary eventType,
 			ProvenanceItem provenanceItem) throws SQLException, IOException {
 
@@ -90,6 +92,7 @@ public class DerbyProvenance extends Provenance {
 	 * @throws IOException
 	 */
 	@SuppressWarnings("unchecked")
+        @Override
 	public void processEvent(ProvenanceItem provenanceItem,
 			SharedVocabulary eventType) throws SQLException, IOException {
 
@@ -135,23 +138,28 @@ public class DerbyProvenance extends Provenance {
 
 	}
 
+        @Override
 	public void clearDB() throws SQLException {
 		getPw().clearDBStatic();
 		getPw().clearDBDynamic();
 	}
 
+        @Override
 	public void setEp(EventProcessor ep) {
 		this.ep = ep;
 	}
 
+        @Override
 	public EventProcessor getEp() {
 		return ep;
 	}
 
+        @Override
 	public String getSaveEvents() {
 		return null;
 	}
 
+        @Override
 	public void setSaveEvents(String saveEvents) {
 
 	}

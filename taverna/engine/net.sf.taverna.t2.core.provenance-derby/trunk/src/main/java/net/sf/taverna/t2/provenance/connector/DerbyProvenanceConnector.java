@@ -27,9 +27,6 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
-import java.util.logging.Level;
-import net.sf.taverna.t2.invocation.InvocationContext;
-import net.sf.taverna.t2.provenance.connector.configview.DerbyConfigView;
 import net.sf.taverna.t2.provenance.item.ProvenanceItem;
 import net.sf.taverna.t2.provenance.lineageservice.EventProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.Provenance;
@@ -40,7 +37,6 @@ import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.vocabulary.SharedVocabulary;
-import net.sf.taverna.t2.reference.ReferenceService;
 
 import org.apache.log4j.Logger;
 
@@ -57,16 +53,15 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
     // + " KEY collectionFK (wfInstanceRef,PNameRef,varNameRef,collIDRef))";
     private static final String createTableWFInstance = "CREATE TABLE WfInstance (" + "instanceID varchar(100) NOT NULL," + "wfnameRef varchar(100) NOT NULL," + "timestamp timestamp NOT NULL default CURRENT_TIMESTAMP," + " PRIMARY KEY (instanceID, wfnameRef))";
     private static final String createTableWorkflow = "CREATE TABLE Workflow (" + "wfname varchar(100) NOT NULL," + "parentWFname varchar(100)," + "externalName varchar(100)," + "PRIMARY KEY  (wfname))";
-    private ReferenceService referenceService;
-    private InvocationContext invocationContext;
+    
 
     public DerbyProvenanceConnector() {
     }
 
     public DerbyProvenanceConnector(Provenance provenance,
-            ProvenanceAnalysis provenanceAnalysis, String dbURL,
+            ProvenanceAnalysis provenanceAnalysis,
             boolean isClearDB, String saveEvents) {
-        super(provenance, provenanceAnalysis, dbURL, isClearDB, saveEvents);
+        super(provenance, provenanceAnalysis, isClearDB, saveEvents);
     }
 
     // FIXME is this needed?
@@ -186,41 +181,22 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
         };
         getExecutor().execute(runnable);
 
-    }
-
-    public void setReferenceService(ReferenceService referenceService) {
-        this.referenceService = referenceService;
-    }
-
-    public ReferenceService getReferenceService() {
-        return referenceService;
-    }
+    }    
 
     @Override
     public String toString() {
         return "Derby DB Connector";
     }
 
-    public InvocationContext getInvocationContext() {
-        return invocationContext;
-    }
-
-    public void setInvocationContext(InvocationContext invocationContext) {
-        this.invocationContext = invocationContext;
-
-    }
-
+   
     @Override
     public void init() {
-        String dbURL = getDbURL();
-        if (dbURL == null) {
-            setDbURL(DerbyConfigView.getDBURL());
-        }
+        
         createDatabase();
         ProvenanceWriter writer = new DerbyProvenanceWriter();
-        writer.setDbURL(getDbURL());
+        
         ProvenanceQuery query = new DerbyProvenanceQuery();
-        query.setDbURL(getDbURL());
+        
         WorkflowDataProcessor wfdp = new WorkflowDataProcessor();
         wfdp.setPq(query);
         wfdp.setPw(writer);
@@ -241,7 +217,7 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
             logger.error("Error creating new provenance analysis for query", e);
         }
         setProvenanceAnalysis(provenanceAnalysis);
-        Provenance provenance = new Provenance(eventProcessor, getDbURL());
+        Provenance provenance = new Provenance(eventProcessor);
         setProvenance(provenance);
     }
 }
