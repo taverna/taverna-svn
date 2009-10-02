@@ -53,11 +53,7 @@
             <version>${spring.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>net.sf.taverna.t2.infrastructure</groupId>
-            <artifactId>raven</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        
 
         <dependency>
             <groupId>net.sf.taverna.t2.infrastructure</groupId>
@@ -82,8 +78,6 @@
             <artifactId>commons-logging</artifactId>
             <version>1.1.1</version>
         </dependency>
-
-        
         
         <dependency>
             <groupId>geronimo-spec</groupId>
@@ -114,10 +108,8 @@
                 </exclusion>
             </exclusions>
         </dependency>
-		
 
-		<!-- For now these are test dependencies -->
-
+        <!-- For now these are test dependencies -->
 
         <dependency>
             <groupId>log4j</groupId>
