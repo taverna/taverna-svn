@@ -149,38 +149,6 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 
     public String getName() {
         return "Derby DB Connector";
-    }
-
-    /**
-     * Uses a {@link ScheduledThreadPoolExecutor} to process events in a Thread
-     * safe manner
-     */
-    public synchronized void addProvenanceItem(
-            final ProvenanceItem provenanceItem) {
-
-        if (provenanceItem.getEventType().equals(
-                SharedVocabulary.END_WORKFLOW_EVENT_TYPE)) {
-            logger.info("EVENT: " + provenanceItem.getEventType());
-        }
-
-        Runnable runnable = new Runnable() {
-
-            public void run() {
-                try {
-
-                    getProvenance().acceptRawProvenanceEvent(
-                            provenanceItem.getEventType(), provenanceItem);
-
-                } catch (SQLException e) {
-                    logger.warn("Could not add provenance: " + e);
-                } catch (IOException e) {
-                    logger.warn("Could not add provenance: " + e);
-                }
-
-            }
-        };
-        getExecutor().execute(runnable);
-
     }    
 
     @Override
