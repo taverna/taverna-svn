@@ -68,7 +68,9 @@ public class MyStuffSidebarPanel extends JPanel implements ActionListener {
 	// add elements of the sidebar
 	this.setLayout(new GridBagLayout());
 	GridBagConstraints gbConstraints = new GridBagConstraints();
-	gbConstraints.fill = GridBagConstraints.HORIZONTAL;
+    gbConstraints.anchor = GridBagConstraints.NORTHWEST;
+    gbConstraints.fill = GridBagConstraints.HORIZONTAL;
+	gbConstraints.weightx = 1;
 	gbConstraints.gridx = 0;
 
 	gbConstraints.gridy = 0;

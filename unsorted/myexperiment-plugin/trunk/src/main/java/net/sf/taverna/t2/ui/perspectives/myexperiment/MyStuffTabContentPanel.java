@@ -62,6 +62,7 @@ public class MyStuffTabContentPanel extends JPanel implements ActionListener,
   private JCheckBox cbLoginAutomatically;
   private JClickableLabel jclForgetMe;
   private MyStuffSidebarPanel jpSidebar;
+  public JSplitPane spMyStuff;
 
   // synchronisation latch to let main thread know that all component-creation
   // threads have been finished
@@ -93,52 +94,48 @@ public class MyStuffTabContentPanel extends JPanel implements ActionListener,
 	if (this.myExperimentClient.isLoggedIn()) {
 	  jpSidebar = new MyStuffSidebarPanel(pluginMainComponent,
 		  myExperimentClient, logger);
-	  jpSidebar.setMaximumSize(new Dimension(300, 0));
 	  JPanel jpSidebarContainer = new JPanel();	  
 	  jpSidebarContainer.setLayout(new BorderLayout());
 	  jpSidebarContainer.add(jpSidebar, BorderLayout.NORTH);
       JScrollPane spSidebar = new JScrollPane(jpSidebarContainer);
 	  spSidebar.getVerticalScrollBar().setUnitIncrement(
 		  ResourcePreviewBrowser.PREFERRED_SCROLL);
-//	  spSidebar.setMinimumSize(new Dimension(jpSidebar.getMyProfileBox()
-//		  .getPreferredSize().width + 30, 0)); // +30 --> 10 for padding and 10 for vertical scroll bar + 10 extra
-	  spSidebar.setMaximumSize(new Dimension(300, 0));
-	  
+	  spSidebar.setMinimumSize(new Dimension(jpSidebar.getMyProfileBox()
+		  .getPreferredSize().width + 30, 0)); // +30 --> 10 for padding and 10 for vertical scroll bar + 10 extra
 	  // current user is logged in to myExperiment, display all personal data
-	  JPanel jpMyStuff = new JPanel();
-	  jpMyStuff.setLayout(new BorderLayout());
-	  jpMyStuff.add(spSidebar, BorderLayout.WEST);
-	  JScrollPane jpContributions = new JScrollPane(new MyStuffContributionsPanel(
-		  pluginMainComponent, myExperimentClient, logger));
-	  jpMyStuff.add(jpContributions);
+      spMyStuff = new JSplitPane();
+      spMyStuff.setLeftComponent(spSidebar);
+      spMyStuff.setRightComponent(new MyStuffContributionsPanel(pluginMainComponent, myExperimentClient, logger));
+      this.pluginMainComponent.getStatusBar().setCurrentUser(myExperimentClient.getCurrentUser().getName());
 	  
-	  this.pluginMainComponent.getStatusBar().setCurrentUser(
-		  myExperimentClient.getCurrentUser().getName());
-
-	  // HACK to stop sidebar overexpanding
-	  jpMyStuff.add(new JPanel(), BorderLayout.NORTH);
-
-	  // set proportional sizes of the two panes as 30/70 percents of the total
+      // set proportional sizes of the two panes as 30/70 percents of the total
 	  // width of the SplitPane
 	  // this can only be done after the SplitPane is made visible - hence the
 	  // need for the listener below
-	  pluginMainComponent.addComponentListener(new ComponentAdapter() {
-		public void componentShown(ComponentEvent e) {
-		  javax.swing.JOptionPane.showMessageDialog(null, "component shown");
-		  // NB! This is only needed for use with test class, not when Taverna
-		  // calls perspective!!
-		  // the SplitPane wouldn't have loaded yet - wait until it does
-		  try {
-			Thread.sleep(50);
-		  } // 50ms is a tiny delay -- acceptable
-		  catch (Exception ex) { /* do nothing */
-		  }
-		}
-	  });
+      pluginMainComponent.addComponentListener(new ComponentAdapter() {
+        public void componentShown(ComponentEvent e)
+        {
+          javax.swing.JOptionPane.showMessageDialog(null, "component shown");
+          // NB! This is only needed for use with test class, not when Taverna calls perspective!!
+          // the SplitPane wouldn't have loaded yet - wait until it does
+          try { Thread.sleep(50); } // 50ms is a tiny delay -- acceptable
+          catch (Exception ex) { /* do nothing */ }
+          
+          // set the proportions in the SplitPane
+         spMyStuff.setDividerLocation(0.3);
+        }
+      });
 
-	  // jpMyStuff will be the only component in the Panel
+      // make sure that both panes will grow/shrink at the same rate if the
+      // size of the whole SplitPane is changed by resizing the window
+      spMyStuff.setResizeWeight(0.3);
+	  spMyStuff.setDividerLocation(0.3);
+	  spMyStuff.setOneTouchExpandable(true);
+	  spMyStuff.setDoubleBuffered(true);
+
+	  // spMyStuff will be the only component in the Panel
 	  this.setLayout(new BorderLayout());
-	  this.add(jpMyStuff);
+	  this.add(spMyStuff);
 
 	  // wait until two of the components finish loading and set the status to
 	  // 'ready'

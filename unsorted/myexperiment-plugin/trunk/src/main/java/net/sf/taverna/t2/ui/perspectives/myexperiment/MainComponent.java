@@ -313,6 +313,10 @@ public final class MainComponent extends JPanel implements UIComponentSPI,
 		  "Autologin finished. Fetching user data");
 	}
 
+    // NB! This should only be done if the user is logged in -
+    // otherwise this component simply doesn't exist
+//    this.pMyStuffContainer.spMyStuff.setDividerLocation(0.3);
+
 	// load data into all tabs
 	this.pMyStuffContainer.createAndInitialiseInnerComponents();
 	if (this.myExperimentClient.isLoggedIn()) {

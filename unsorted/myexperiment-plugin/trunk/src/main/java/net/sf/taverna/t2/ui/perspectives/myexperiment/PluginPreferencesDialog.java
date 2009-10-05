@@ -224,12 +224,9 @@ public class PluginPreferencesDialog extends JDialog implements ComponentListene
     c.gridx = 1;
     c.insets = new Insets(0, 2, 0, 0);
     jpButtons.add(bCancel, c);
-    
-/* ************************************************************************* */    
-    
+        
     // PUT EVERYTHING TOGETHER
     this.setTitle("myExperiment Plugin Preferences");
-//    SpringLayout layout = new SpringLayout();
     BorderLayout layout = new BorderLayout();
     JPanel jpEverything = new JPanel();
     GridBagLayout jpEverythingLayout = new GridBagLayout();
@@ -238,55 +235,27 @@ public class PluginPreferencesDialog extends JDialog implements ComponentListene
     
     GridBagConstraints gbConstraints = new GridBagConstraints();
     gbConstraints.fill = GridBagConstraints.BOTH;
+    gbConstraints.weightx = 1;
     gbConstraints.gridx = 0;
     
     gbConstraints.gridy = 0;
     jpEverything.add(jpApiLocation, gbConstraints);
-//    this.add(jpApiLocation);
-//    layout.putConstraint(SpringLayout.NORTH, jpApiLocation, 5, SpringLayout.NORTH, this.getContentPane());
-//    layout.putConstraint(SpringLayout.WEST, jpApiLocation, 5, SpringLayout.WEST, this.getContentPane());
-//    layout.putConstraint(SpringLayout.EAST, jpApiLocation, 0, SpringLayout.EAST, jpStartupTabChoice);
     
     gbConstraints.gridy = 1;
     jpEverything.add(jpStartupTabChoice, gbConstraints);
-//    this.add(jpStartupTabChoice);
-//    layout.putConstraint(SpringLayout.NORTH, jpStartupTabChoice, 5, SpringLayout.SOUTH, jpApiLocation);
-//    layout.putConstraint(SpringLayout.WEST, jpStartupTabChoice, 5, SpringLayout.WEST, this.getContentPane());
-//    layout.putConstraint(SpringLayout.EAST, this.getContentPane(), 5, SpringLayout.EAST, jpStartupTabChoice);
     
     gbConstraints.gridy = 2;
     jpEverything.add(jpMyStuffPrefs, gbConstraints);
-//    this.add(jpMyStuffPrefs);
-//    layout.putConstraint(SpringLayout.NORTH, jpMyStuffPrefs, 5, SpringLayout.SOUTH, jpStartupTabChoice);
-//    layout.putConstraint(SpringLayout.WEST, jpMyStuffPrefs, 5, SpringLayout.WEST, this.getContentPane());
-//    layout.putConstraint(SpringLayout.EAST, jpMyStuffPrefs, 0, SpringLayout.EAST, jpStartupTabChoice);
     
     gbConstraints.gridy = 3;
     jpEverything.add(jpPrivacySettings, gbConstraints);
-//    this.add(jpPrivacySettings);
-//    layout.putConstraint(SpringLayout.NORTH, jpPrivacySettings, 5, SpringLayout.SOUTH, jpMyStuffPrefs);
-//    layout.putConstraint(SpringLayout.WEST, jpPrivacySettings, 5, SpringLayout.WEST, this.getContentPane());
-//    layout.putConstraint(SpringLayout.EAST, jpPrivacySettings, 0, SpringLayout.EAST, jpStartupTabChoice);
     
     gbConstraints.gridy = 4;
     jpEverything.add(jpButtons, gbConstraints);
-//    this.add(jpButtons);
-//    layout.putConstraint(SpringLayout.NORTH, jpButtons, 5, SpringLayout.SOUTH, jpPrivacySettings);
-//    layout.putConstraint(SpringLayout.WEST, jpButtons, 5, SpringLayout.WEST, this.getContentPane());
-//    layout.putConstraint(SpringLayout.EAST, jpButtons, 0, SpringLayout.EAST, jpStartupTabChoice);
     
-    // NEEDS TO BE CHANGED TO THE LAST (e.g. "lowest") COMPONENT IN THE DIALOG BOX IF MORE COMPONENTS ARE ADDED
-//    layout.putConstraint(SpringLayout.SOUTH, this.getContentPane(), 5, SpringLayout.SOUTH, jpButtons);
-
-//    gbConstraints.gridy = 0;
-//    gbConstraints.anchor = GridBagConstraints.NORTHWEST;
-//    gbConstraints.fill = GridBagConstraints.BOTH;
-//    jpEverythingLayout.setConstraints(jpEverything, gbConstraints);
     this.add(jpEverything);
     this.setResizable(false);
-    
-/* ************************************************************************* */
-    
+        
     // pack() sets preferred size of the dialog box;
     // after this, can set the minimum size to that value too
     this.pack();

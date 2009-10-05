@@ -54,6 +54,7 @@ public class SearchTabContentPanel extends JPanel implements ActionListener
   private Logger logger;
   
   // COMPONENTS
+  private JSplitPane spMainSplitPane;
   private SearchOptionsPanel jpSearchOptions;
   private JPanel jpFavouriteSearches;
   private JPanel jpSearchHistory;
@@ -116,8 +117,8 @@ public class SearchTabContentPanel extends JPanel implements ActionListener
           // THIS MIGHT NOT BE NEEDED AS THE SEARCH OPTIONS BOX NOW
           // SETS THE MINIMUM SIZE OF THE SIDEBAR PROPERLY
           // spMainSplitPane.setDividerLocation(0.5);
-//          spMainSplitPane.setOneTouchExpandable(true);
-//          spMainSplitPane.setDoubleBuffered(true);
+          spMainSplitPane.setOneTouchExpandable(true);
+          spMainSplitPane.setDoubleBuffered(true);
         }
     });
   }
@@ -127,11 +128,11 @@ public class SearchTabContentPanel extends JPanel implements ActionListener
   {
     // create search options panel
     jpSearchOptions = new SearchOptionsPanel(this, this.pluginMainComponent, this.myExperimentClient, this.logger);
-    jpSearchOptions.setMaximumSize(new Dimension(300, 0));  // HACK: this is to make sure that search options box won't be stretched
+    jpSearchOptions.setMaximumSize(new Dimension(1024, 0));  // HACK: this is to make sure that search options box won't be stretched
     
     // create favourite searches panel
     jpFavouriteSearches = new JPanel();
-    jpFavouriteSearches.setMaximumSize(new Dimension(300, 0));  // HACK: this is to make sure that favourite searches box won't be stretched
+    jpFavouriteSearches.setMaximumSize(new Dimension(1024, 0));  // HACK: this is to make sure that favourite searches box won't be stretched
     jpFavouriteSearches.setLayout(new GridBagLayout());
     jpFavouriteSearches.setBorder(BorderFactory.createCompoundBorder(
         BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), " Favourite Searches "),
@@ -140,7 +141,7 @@ public class SearchTabContentPanel extends JPanel implements ActionListener
     
     // create search history panel
     jpSearchHistory = new JPanel();
-    jpSearchHistory.setMaximumSize(new Dimension(300, 0));  // HACK: this is to make sure that search history box won't be stretched
+    jpSearchHistory.setMaximumSize(new Dimension(1024, 0));  // HACK: this is to make sure that search history box won't be stretched
     jpSearchHistory.setLayout(new GridBagLayout());
     jpSearchHistory.setBorder(BorderFactory.createCompoundBorder(
         BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), " Search History "),
@@ -148,15 +149,13 @@ public class SearchTabContentPanel extends JPanel implements ActionListener
     ));
     
     // create the search sidebar
-    JPanel jpEverythingCombined = new JPanel();
-    jpEverythingCombined.setLayout(new BorderLayout());
-
     JPanel jpSearchSidebar = new JPanel();
     jpSearchSidebar.setLayout(new GridBagLayout());
     
     GridBagConstraints gbConstraints = new GridBagConstraints();
     gbConstraints.anchor = GridBagConstraints.NORTHWEST;
     gbConstraints.fill = GridBagConstraints.BOTH;
+    gbConstraints.weightx = 1;
     gbConstraints.gridx = 0;
     
     gbConstraints.gridy = 0;
@@ -175,19 +174,18 @@ public class SearchTabContentPanel extends JPanel implements ActionListener
     // wrap sidebar in a scroll pane
     JScrollPane spSearchSidebar = new JScrollPane(jpSidebarContainer);
     spSearchSidebar.getVerticalScrollBar().setUnitIncrement(ResourcePreviewBrowser.PREFERRED_SCROLL);
-//    spSearchSidebar.setMinimumSize(new Dimension(jpSidebarContainer.getMinimumSize().width + 20, 0));
-    spSearchSidebar.setMaximumSize(new Dimension(300, 0));
+    spSearchSidebar.setMinimumSize(new Dimension(jpSidebarContainer.getMinimumSize().width + 20, 0));
     
     // create panel for search results
     this.jpSearchResults = new SearchResultsPanel(this, pluginMainComponent, myExperimentClient, logger);
     
+    spMainSplitPane = new JSplitPane();
+    spMainSplitPane.setLeftComponent(spSearchSidebar);
+    spMainSplitPane.setRightComponent(jpSearchResults);
+    
     // PUT EVERYTHING TOGETHER
-    jpEverythingCombined.add(spSearchSidebar, BorderLayout.WEST);
-    jpEverythingCombined.add(jpSearchResults, BorderLayout.CENTER);
-    jpEverythingCombined.add(new JPanel(), BorderLayout.NORTH);
-
     this.setLayout(new BorderLayout());
-	this.add(jpEverythingCombined);
+    this.add(spMainSplitPane);
   }
     
   private void addToSearchListQueue(LinkedList<QuerySearchInstance> searchInstanceList, QuerySearchInstance searchInstanceToAdd, int queueSize)
