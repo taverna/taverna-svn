@@ -116,7 +116,7 @@ public class SearchTabContentPanel extends JPanel implements ActionListener
         public void run() {
           // THIS MIGHT NOT BE NEEDED AS THE SEARCH OPTIONS BOX NOW
           // SETS THE MINIMUM SIZE OF THE SIDEBAR PROPERLY
-          // spMainSplitPane.setDividerLocation(0.5);
+          spMainSplitPane.setDividerLocation(390);
           spMainSplitPane.setOneTouchExpandable(true);
           spMainSplitPane.setDoubleBuffered(true);
         }

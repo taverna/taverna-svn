@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Properties;
 
 import javax.naming.spi.Resolver;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
@@ -498,23 +499,26 @@ public class MyExperimentClient
       Document doc = this.getResource(Resource.USER, uri, Resource.REQUEST_FULL_PREVIEW);
       user = User.buildFromXML(doc, logger);
     }
-    catch(Exception ex) {
-      logger.error("Failed to fetch user data from myExperiment (" + uri + "); exception:\n" + ex);
-    }
-    
-    // fetch the avatar, if one exists for the user
-    if(user.getAvatarURI() != null && user.getAvatarURI().length() != 0)
-    {
-      try {
-        Document doc = this.doMyExperimentGET(user.getAvatarURI()).getResponseBody();
-        user.setAvatar(doc);
-      }
-      catch(Exception ex) {
-        logger.error("Failed to fetch user's avatar from myExperiment (" + user.getAvatarURI() + "); exception:\n" + ex);
-      }
-    }
-    
-    return(user);
+ catch (Exception ex) {
+	  logger.error("Failed to fetch user data from myExperiment (" + uri
+		  + "); exception:\n" + ex);
+	}
+
+	// fetch the avatar
+	try {
+	  if (user.getAvatarURI() == null) {
+		ImageIcon icon = new ImageIcon(user.getAvatarResource());
+		user.setAvatar(icon);
+	  } else {
+		Document doc = this.doMyExperimentGET(user.getAvatarURI()).getResponseBody();
+		user.setAvatar(doc);
+	  }
+	} catch (Exception ex) {
+	  logger.error("Failed to fetch user's avatar from myExperiment ("
+		  + user.getAvatarURI() + "); exception:\n" + ex);
+	}
+
+	return (user);
   }
   
   

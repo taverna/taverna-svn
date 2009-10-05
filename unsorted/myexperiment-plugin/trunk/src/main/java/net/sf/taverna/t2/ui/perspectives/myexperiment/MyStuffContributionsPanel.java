@@ -181,6 +181,7 @@ public class MyStuffContributionsPanel extends JPanel implements ActionListener
     gbConstraints.fill = GridBagConstraints.BOTH;
     gbConstraints.gridx = 0;    
     gbConstraints.weightx = 1;
+    gbConstraints.weighty = 1;
     int index = 0;
     
     gbConstraints.gridy = index++;

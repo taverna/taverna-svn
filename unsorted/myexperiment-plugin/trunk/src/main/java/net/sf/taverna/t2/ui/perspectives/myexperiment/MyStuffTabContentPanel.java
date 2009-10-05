@@ -122,15 +122,15 @@ public class MyStuffTabContentPanel extends JPanel implements ActionListener,
           catch (Exception ex) { /* do nothing */ }
           
           // set the proportions in the SplitPane
-         spMyStuff.setDividerLocation(0.3);
+         spMyStuff.setDividerLocation(400);
         }
       });
 
       // make sure that both panes will grow/shrink at the same rate if the
       // size of the whole SplitPane is changed by resizing the window
       spMyStuff.setResizeWeight(0.3);
-	  spMyStuff.setDividerLocation(0.3);
 	  spMyStuff.setOneTouchExpandable(true);
+      spMyStuff.setDividerLocation(400);
 	  spMyStuff.setDoubleBuffered(true);
 
 	  // spMyStuff will be the only component in the Panel
@@ -247,8 +247,8 @@ public class MyStuffTabContentPanel extends JPanel implements ActionListener,
 	pfPassword = new JPasswordField(20);
 	pfPassword.addKeyListener(this);
 	pfPassword.addFocusListener(this);
-	jpLoginBox.add(pfPassword, c);
-
+	jpLoginBox.add(pfPassword, c);	
+	
 	cbRememberMe = new JCheckBox("Remember me");
 	cbRememberMe.setBorder(BorderFactory.createEmptyBorder()); // makes sure
 															   // that this is

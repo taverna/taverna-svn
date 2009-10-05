@@ -105,23 +105,28 @@ public class MyStuffSidebarPanel extends JPanel implements ActionListener {
 	jpProfile.setMaximumSize(new Dimension(1024, 0)); // HACK: this is to make
 													  // sure that profile box
 													  // won't be stretched
-	jpProfile.setLayout(new BoxLayout(jpProfile, BoxLayout.Y_AXIS));
+	jpProfile.setLayout(new BoxLayout(jpProfile, BoxLayout.X_AXIS));
+
+	JPanel jpAvatar = new JPanel();
+	jpAvatar.setLayout(new BoxLayout(jpAvatar, BoxLayout.Y_AXIS));
 
 	User currentUser = this.myExperimentClient.getCurrentUser();
 	ImageIcon userAvatar = currentUser.getAvatar();
 	JLabel jlUserAvatar = new JLabel("No Profile Picture Found");
 	if (userAvatar != null)
-	  jlUserAvatar = new JLabel(Util.getResizedImageIcon(userAvatar, 60, 60));
+	  jlUserAvatar = new JLabel(Util.getResizedImageIcon(userAvatar, 80, 80));
 
-	jlUserAvatar.setAlignmentX(CENTER_ALIGNMENT);
-	jpProfile.add(jlUserAvatar);
+	jlUserAvatar.setAlignmentX(LEFT_ALIGNMENT);
+	jpAvatar.add(jlUserAvatar);
 
 	JClickableLabel jclUserName = new JClickableLabel(currentUser.getName(),
 		"preview:" + Resource.USER + ":" + currentUser.getURI(),
 		pluginMainComponent.getPreviewBrowser(), this.iconUser);
-	jclUserName.setAlignmentX(CENTER_ALIGNMENT);
-	jpProfile.add(jclUserName);
+	jclUserName.setAlignmentX(LEFT_ALIGNMENT);
+	jpAvatar.add(jclUserName);
 
+	jpProfile.add(jpAvatar);
+	
 	bLogout = new JButton("Logout", iconLogout);
 	bLogout.addActionListener(this);
 
