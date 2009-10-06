@@ -35,5 +35,6 @@
 		<module>products</module>
 		<module>ui</module>
 		<module>utils</module>
+		<module>myexperiment-plugin</module>
 	</modules>
 </project>
