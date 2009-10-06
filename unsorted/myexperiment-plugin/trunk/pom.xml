@@ -39,6 +39,11 @@
       <url>http://trianacode.org/maven</url>
     </repository>
 	</repositories>
+	<scm>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/unsorted/myexperiment-plugin/trunk/</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/unsorted/myexperiment-plugin/trunk/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/svn/unsorted/myexperiment-plugin/trunk/</url>
+	</scm>
 	
 	<dependencies>
 		<dependency>
