@@ -20,13 +20,17 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 
 import net.sf.taverna.t2.lineageService.capture.test.testFiles;
+import net.sf.taverna.t2.provenance.api.NativeAnswer;
 import net.sf.taverna.t2.provenance.api.ProvenanceAccess;
 import net.sf.taverna.t2.provenance.api.QueryAnswer;
 import net.sf.taverna.t2.provenance.api.Query;
+import net.sf.taverna.t2.provenance.lineageservice.Dependencies;
+import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.utils.QueryVar;
 import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
+import net.sf.taverna.t2.provenance.lineageservice.utils.Workflow;
 import net.sf.taverna.t2.provenance.lineageservice.utils.WorkflowInstance;
 import net.sf.taverna.t2.workbench.provenance.ProvenanceConfiguration;
 
@@ -59,6 +63,8 @@ public class ApiTest {
 	List<String> wfNames = null;
 	Set<String> selectedProcessors = null;
 
+	private static Logger logger = Logger.getLogger(ApiTest.class);
+
 	/**
 	 * @throws java.lang.Exception
 	 */
@@ -72,13 +78,10 @@ public class ApiTest {
 
 	public void setDataSource() {
 
-//		ProvenanceConfiguration.getInstance().setProperty("connector", "mysqlprovenance");
-
 		System.setProperty(Context.INITIAL_CONTEXT_FACTORY,"org.osjava.sj.memory.MemoryContextFactory");
 		System.setProperty("org.osjava.sj.jndi.shared", "true");
 
 		BasicDataSource ds = new BasicDataSource();
-		// Ê Ê Ê Ê Ê Êds.setDriverClassName("org.apache.derby.jdbc.ClientDriver");
 		ds.setDriverClassName("com.mysql.jdbc.Driver");
 		ds.setDefaultTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
 		ds.setMaxActive(50);
@@ -98,6 +101,7 @@ public class ApiTest {
 		}
 	}
 
+
 	/**
 	 * Test method for {@link net.sf.taverna.t2.provenance.api.Query#executeQuery(java.util.List, java.lang.String, java.util.Set)}.
 	 */
@@ -108,10 +112,58 @@ public class ApiTest {
 
 			Query pq = composeQuery(); // creates a test query using a config file (AnalysisTestFiles.properties)
 			QueryAnswer answer = pAccess.executeQuery (pq);
+			reportAnswer(answer);
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}		
+	}
+
+
+	@Test
+	public final void testFetchPortData() {
+
+		Query pq = composeQuery(); // creates a test query using a config file (AnalysisTestFiles.properties)
+
+		// we only use the query vars portion of the query for this test
+		List<QueryVar> targetPorts = pq.getTargetVars();
+
+		for (QueryVar port:targetPorts) {
+			Dependencies deps = pAccess.fetchPortData(port.getWfInstanceId(), port.getWfName(), 
+					port.getPname(), port.getVname(), port.getPath());
+			
+			logger.info("intermediate values: ");
+			for (LineageQueryResultRecord record: deps.getRecords()) {
+				logger.info(record.toString());
+				
+			}
+ 		}
+	}
+
+
+	private void reportAnswer(QueryAnswer answer) {
+
+		NativeAnswer nAnswer = answer.getNativeAnswer();
+
+		// nAnswer contains a Map of the form 
+		// 	Map<QueryVar, Map<String, List<Dependencies>>>  answer;
+
+		Map<QueryVar, Map<String, List<Dependencies>>>  dependenciesByVar = nAnswer.getAnswer();	
+		for (QueryVar v:dependenciesByVar.keySet()) {
+			logger.info("dependencies for port: "+v.getPname()+":"+v.getVname()+":"+v.getPath());
+
+			Map<String, List<Dependencies>> deps = dependenciesByVar.get(v);
+			for (String path:deps.keySet()) {
+				logger.info("dependencies on path "+path);
+				for (Dependencies dep:deps.get(path)) {
+
+					for (LineageQueryResultRecord record: dep.getRecords()) {
+						record.setPrintResolvedValue(false);
+						logger.info(record.toString());
+					}
+				}
+			}
 		}		
 	}
 
@@ -150,7 +202,6 @@ public class ApiTest {
 		//////////////
 		List<QueryVar> targetVars = new ArrayList<QueryVar>();
 
-		String proc = null;
 		String queryVars = AnalysisTestFiles.getString("query.vars");
 
 		// expect a sequence of the form pname££vname;pname££vname;... where the pnames are unqualified...
@@ -159,12 +210,15 @@ public class ApiTest {
 
 		if (queryVars.length() == 0 || queryVars.equals("ALL"))  { // default: TOP/ALL == all global OUTPUT vars, with fine granularity
 
+			
 			// look for the outputs of the top-level workflow	
-			List<Var> dataflowPorts = pAccess.getPortsForProcessor(topLevelWorkflow, topLevelWorkflow);
+			List<Var> dataflowPorts = pAccess.getPortsForDataflow(topLevelWorkflow);
 
 			for (Var v:dataflowPorts) {
 				if (!v.isInput()) {
 					QueryVar qv = new QueryVar();
+					qv.setWfName(topLevelWorkflow);
+					qv.setWfInstanceId(runID);
 					qv.setPname(v.getPName());
 					qv.setVname(v.getVName());
 					qv.setPath(ALL_PATHS);
@@ -178,6 +232,7 @@ public class ApiTest {
 
 			String[] queryVarsTokens = queryVars.split(";");
 
+			// explicit query var
 			for (String qvtoken:queryVarsTokens) {
 
 				// one query var
@@ -199,9 +254,19 @@ public class ApiTest {
 					for (ProvenanceProcessor pp: allProcessorsFlat) {
 						if (pp.getType() != null && pp.getType().equals(ProvenanceQuery.DATAFLOW_TYPE)) {
 							qv.setPname(pp.getPname()); 
+							qv.setWfName(pp.getWfInstanceRef());
+							qv.setWfInstanceId(runID);
 							break;
 						}
 					}
+				}  else {  // need to qualify the pname with its workflow ID
+					List<Workflow> workflows = pAccess.getContainingWorkflowsForProcessor(qv.getPname());
+
+					// greedily pick the first workflow in the list
+					qv.setPname(qv.getPname());
+					qv.setWfName(workflows.get(0).getWfname());
+					qv.setWfInstanceId(runID);
+
 				}
 
 				// <var> == ALL: unfold to include all variables for the proc
@@ -217,6 +282,8 @@ public class ApiTest {
 						qv1.setPname(ports.get(i).getPName());
 						qv1.setVname(ports.get(i).getVName());
 						qv1.setPath(qv.getPath());
+						qv.setWfName(topLevelWorkflow);
+						qv.setWfInstanceId(runID);
 
 						targetVars.add(qv);
 
@@ -228,6 +295,7 @@ public class ApiTest {
 		}
 		return targetVars;
 	}
+
 
 
 	/**
@@ -247,7 +315,7 @@ public class ApiTest {
 
 			runID = wfInstances.get(0).getInstanceID();			
 			result.add(runID);
-			System.out.println("running query on instance "+runID+" of workflow "+wfNames);
+			System.out.println("running query on instance "+runID);
 		} else {
 			assertFalse("FATAL: no wfinstances in DB -- terminating", wfInstances.size() == 0);
 		}		
@@ -289,7 +357,6 @@ public class ApiTest {
 		// selected processors
 		String selectedProcNames = AnalysisTestFiles.getString("query.processors");
 		if (selectedProcNames == null) { selectedProcNames = DEFAULT_SELECTED_PROCESSORS; }
-
 
 		// user selects all processors in the graph
 		if (selectedProcNames.equals("ALL")) {
