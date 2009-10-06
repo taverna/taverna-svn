@@ -11,7 +11,7 @@
 	
 	<groupId>org.myexperiment</groupId>
 	<artifactId>perspective-myexperiment</artifactId>
-	<version>1.8</version>
+	<version>0.1-SNAPSHOT</version>
 	<name>myExperiment perspective</name>
 	<repositories>
 		<repository>
