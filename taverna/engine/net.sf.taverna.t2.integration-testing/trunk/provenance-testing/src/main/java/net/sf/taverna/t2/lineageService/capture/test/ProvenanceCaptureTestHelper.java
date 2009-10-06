@@ -56,7 +56,6 @@ public class ProvenanceCaptureTestHelper {
 	protected InvocationContext context;
 	private ReferenceService referenceService;
 	private ProvenanceConnector provenanceConnector;
-
 	private ProvenanceAccess pAccess = null;
 
 	private String DB_URL_LOCAL = testFiles.getString("dbhost"); // URL of database server //$NON-NLS-1$
@@ -109,50 +108,19 @@ public class ProvenanceCaptureTestHelper {
 	@Before
 	public void makeDataManager() {	
 
-		if (clearDB != null)
-			isClearDB = Boolean.parseBoolean(clearDB);  // this should be used by the connector???
 
 		setDataSource();
 		pAccess = new ProvenanceAccess("mysqlprovenance");  // creates and initializes the provenance API
 
-		provenanceConnector = pAccess.getProvenanceConnector();
+		provenanceConnector = pAccess.getProvenanceConnector();  // oc is initialized at this point
+		
+		// clear DB if user so chooses
+		if (clearDB != null) isClearDB = Boolean.parseBoolean(clearDB);
+		provenanceConnector.clearDatabase(isClearDB);
 
-		ProvenanceQuery query         = provenanceConnector.getProvenance().getPq();
-		ProvenanceWriter writer       = provenanceConnector.getProvenance().getPw();
-
-		WorkflowDataProcessor wfdp = new WorkflowDataProcessor();
-		wfdp.setPq(query);
-		wfdp.setPw(writer);
-
-		//		EventProcessor eventProcessor = new EventProcessor();
-
-		// CHECK still needed??
-//		eventProcessor.setPw(writer);
-//		eventProcessor.setPq(query);
-//		eventProcessor.setWfdp(wfdp);
-//		ProvenanceAnalysis provenanceAnalysis = null;
-//		try {
-//		provenanceAnalysis = new ProvenanceAnalysis(query);
-//		} catch (InstantiationException e) {
-//		// TODO Auto-generated catch block
-//		e.printStackTrace();
-//		} catch (IllegalAccessException e) {
-//		// TODO Auto-generated catch block
-//		e.printStackTrace();
-//		} catch (ClassNotFoundException e) {
-//		// TODO Auto-generated catch block
-//		e.printStackTrace();
-//		} catch (SQLException e) {
-//		// TODO Auto-generated catch block
-//		e.printStackTrace();
-//		}
-
-//		Provenance provenance = new Provenance(eventProcessor);
-
-		// where does the connect string and connector type?
-//		pc = new MySQLProvenanceConnector(provenance,provenanceAnalysis, isClearDB, saveEvents);
-//		provenanceConnector.setReferenceService(referenceService);
-//		provenanceConnector.createDatabase();
+//		ProvenanceQuery query         = provenanceConnector.getQuery();
+//		ProvenanceWriter writer       = provenanceConnector.getWriter();
+//		WorkflowDataProcessor wfdp    = provenanceConnector.getWfdp();
 
 		ApplicationContext appContext = new RavenAwareClassPathXmlApplicationContext(
 		"inMemoryIntegrationTestsContext.xml"); //$NON-NLS-1$
@@ -181,7 +149,7 @@ public class ProvenanceCaptureTestHelper {
 		provenanceConnector.setInvocationContext(context);
 
 		try {
-			writer.clearDBStatic();
+			provenanceConnector.getWriter().clearDBStatic();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
