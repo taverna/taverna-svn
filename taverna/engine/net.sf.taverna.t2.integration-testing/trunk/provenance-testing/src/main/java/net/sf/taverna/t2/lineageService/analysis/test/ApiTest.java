@@ -64,8 +64,6 @@ public class ApiTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-
-
 		setDataSource();
 		pAccess = new ProvenanceAccess("mysqlprovenance");  // creates and initializes the provenance API
 		configureInterface();              // sets user-defined preferences

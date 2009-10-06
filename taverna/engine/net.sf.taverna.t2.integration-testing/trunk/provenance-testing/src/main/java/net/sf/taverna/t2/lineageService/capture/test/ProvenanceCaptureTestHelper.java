@@ -3,9 +3,13 @@ package net.sf.taverna.t2.lineageService.capture.test;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
 
 import net.sf.taverna.platform.spring.RavenAwareClassPathXmlApplicationContext;
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
@@ -13,6 +17,7 @@ import net.sf.taverna.raven.plugins.PluginManager;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.invocation.InvocationContext;
 
+import net.sf.taverna.t2.provenance.api.ProvenanceAccess;
 import net.sf.taverna.t2.provenance.connector.MySQLProvenanceConnector;
 import net.sf.taverna.t2.provenance.connector.ProvenanceConnector;
 import net.sf.taverna.t2.provenance.lineageservice.EventProcessor;
@@ -30,6 +35,7 @@ import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLDeserializer;
 import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLDeserializerImpl;
 
+import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.io.FileUtils;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -51,6 +57,8 @@ public class ProvenanceCaptureTestHelper {
 	private ReferenceService referenceService;
 	private ProvenanceConnector provenanceConnector;
 
+	private ProvenanceAccess pAccess = null;
+
 	private String DB_URL_LOCAL = testFiles.getString("dbhost"); // URL of database server //$NON-NLS-1$
 	private String DB_USER = testFiles.getString("dbuser"); // database user id //$NON-NLS-1$
 	private String DB_PASSWD = testFiles.getString("dbpassword"); //$NON-NLS-1$
@@ -63,69 +71,94 @@ public class ProvenanceCaptureTestHelper {
 
 	@SuppressWarnings("unchecked")//$NON-NLS-1$
 	public void createEventsDir() {
-
 		try {
 			FileUtils.forceMkdir(new File("/tmp/TEST-EVENTS"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 
-	@Before
-	public void makeDataManager() {
 
-		ApplicationContext appContext = new RavenAwareClassPathXmlApplicationContext(
-				"inMemoryIntegrationTestsContext.xml"); //$NON-NLS-1$
 
-		referenceService = (ReferenceService) appContext
-				.getBean("t2reference.service.referenceService"); //$NON-NLS-1$
+	public void setDataSource() {
+		System.setProperty(Context.INITIAL_CONTEXT_FACTORY,"org.osjava.sj.memory.MemoryContextFactory");
+		System.setProperty("org.osjava.sj.jndi.shared", "true");
 
-		if (clearDB != null)
-			isClearDB = Boolean.parseBoolean(clearDB);
+		BasicDataSource ds = new BasicDataSource();
+		ds.setDriverClassName("com.mysql.jdbc.Driver");
+		ds.setDefaultTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+		ds.setMaxActive(50);
+		ds.setMinIdle(10);
+		ds.setMaxIdle(50);
+		ds.setDefaultAutoCommit(true);
+		ds.setUsername(DB_USER);
+		ds.setPassword(DB_PASSWD);
 
-		String jdbcString = "jdbc:mysql://" + DB_URL_LOCAL +"/T2Provenance?user=" + DB_USER +"&password=" + DB_PASSWD;
-
-		ProvenanceWriter writer = new MySQLProvenanceWriter();
 		try {
-			writer.clearDBStatic();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			ds.setUrl("jdbc:mysql://"+DB_URL_LOCAL+"/T2Provenance");
+
+			InitialContext context = new InitialContext();
+			context.rebind("jdbc/taverna", ds);
+		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		ProvenanceQuery query = new MySQLProvenanceQuery();
+	}
+
+
+	@Before
+	public void makeDataManager() {	
+
+		if (clearDB != null)
+			isClearDB = Boolean.parseBoolean(clearDB);  // this should be used by the connector???
+
+		setDataSource();
+		pAccess = new ProvenanceAccess("mysqlprovenance");  // creates and initializes the provenance API
+
+		provenanceConnector = pAccess.getProvenanceConnector();
+
+		ProvenanceQuery query         = provenanceConnector.getProvenance().getPq();
+		ProvenanceWriter writer       = provenanceConnector.getProvenance().getPw();
+
 		WorkflowDataProcessor wfdp = new WorkflowDataProcessor();
 		wfdp.setPq(query);
 		wfdp.setPw(writer);
-		
-		EventProcessor eventProcessor = new EventProcessor();
-		eventProcessor.setPw(writer);
-		eventProcessor.setPq(query);
-		eventProcessor.setWfdp(wfdp);
-		ProvenanceAnalysis provenanceAnalysis = null;
-		try {
-			provenanceAnalysis = new ProvenanceAnalysis(query);
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
-		Provenance provenance = new Provenance(eventProcessor);
-		provenanceConnector = new MySQLProvenanceConnector(provenance,provenanceAnalysis,
-				jdbcString, isClearDB, saveEvents);
-		provenanceConnector.setReferenceService(referenceService);
+		//		EventProcessor eventProcessor = new EventProcessor();
+
+		// CHECK still needed??
+//		eventProcessor.setPw(writer);
+//		eventProcessor.setPq(query);
+//		eventProcessor.setWfdp(wfdp);
+//		ProvenanceAnalysis provenanceAnalysis = null;
+//		try {
+//		provenanceAnalysis = new ProvenanceAnalysis(query);
+//		} catch (InstantiationException e) {
+//		// TODO Auto-generated catch block
+//		e.printStackTrace();
+//		} catch (IllegalAccessException e) {
+//		// TODO Auto-generated catch block
+//		e.printStackTrace();
+//		} catch (ClassNotFoundException e) {
+//		// TODO Auto-generated catch block
+//		e.printStackTrace();
+//		} catch (SQLException e) {
+//		// TODO Auto-generated catch block
+//		e.printStackTrace();
+//		}
+
+//		Provenance provenance = new Provenance(eventProcessor);
+
+		// where does the connect string and connector type?
+//		pc = new MySQLProvenanceConnector(provenance,provenanceAnalysis, isClearDB, saveEvents);
+//		provenanceConnector.setReferenceService(referenceService);
 //		provenanceConnector.createDatabase();
-		provenanceConnector.setInvocationContext(context);
+
+		ApplicationContext appContext = new RavenAwareClassPathXmlApplicationContext(
+		"inMemoryIntegrationTestsContext.xml"); //$NON-NLS-1$
+
+		referenceService = (ReferenceService) appContext
+		.getBean("t2reference.service.referenceService"); //$NON-NLS-1$
 
 		context =  new InvocationContext() {
 
@@ -144,14 +177,23 @@ public class ProvenanceCaptureTestHelper {
 				return null;
 			}
 		};
-		provenanceConnector.setReferenceService(context.getReferenceService());
+		provenanceConnector.setReferenceService(context.getReferenceService()); // CHECK context.getReferenceService());
+		provenanceConnector.setInvocationContext(context);
 
+		try {
+			writer.clearDBStatic();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
+	
+	
 	protected Dataflow loadDataflow(String resourceName) throws Exception {
 		XMLDeserializer deserializer = new XMLDeserializerImpl();
 		InputStream inStream = ProvenanceCaptureTestHelper.class
-				.getResourceAsStream("/provenance-testing/" + resourceName); //$NON-NLS-1$
+		.getResourceAsStream("/provenance-testing/" + resourceName); //$NON-NLS-1$
 		if (inStream == null)
 			throw new IOException(
 					"Unable to find resource for t2 dataflow:" + resourceName); //$NON-NLS-1$
@@ -169,7 +211,7 @@ public class ProvenanceCaptureTestHelper {
 	 * @throws DataflowTimeoutException
 	 */
 	protected void waitForCompletion(CaptureResultsListener listener)
-			throws InterruptedException, DataflowTimeoutException {
+	throws InterruptedException, DataflowTimeoutException {
 		waitForCompletion(listener, 3000);
 	}
 
@@ -194,7 +236,7 @@ public class ProvenanceCaptureTestHelper {
 
 	protected void waitForCompletion(
 			Map<String, DummyEventHandler> eventHandlers, int maxtimeSeconds)
-			throws InterruptedException, DataflowTimeoutException {
+	throws InterruptedException, DataflowTimeoutException {
 		int time = 0;
 		boolean finished = false;
 		while (!finished) {
@@ -251,7 +293,7 @@ public class ProvenanceCaptureTestHelper {
 	}
 
 	public void waitForCompletion() throws InterruptedException,
-			DataflowTimeoutException {
+	DataflowTimeoutException {
 		waitForCompletion(listener);
 	}
 
