@@ -143,29 +143,11 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 	
 
         public MySQLProvenanceConnector() {
-            
+        	super();
+    		setWriter(new MySQLProvenanceWriter());
+    		setQuery(new MySQLProvenanceQuery());
         }
 	
-
-	public MySQLProvenanceConnector(Provenance provenance,
-			ProvenanceAnalysis provenanceAnalysis,
-			boolean isClearDB, String saveEvents) {
-		super(provenance, provenanceAnalysis, isClearDB, saveEvents);
-
-//		// clear the DB prior to collecting new provenance
-		if (isClearDB) {
-			logger.info("clearing DB");
-			try {
-				getProvenance().getPw().clearDBStatic();
-				getProvenance().getPw().clearDBDynamic();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else {
-			System.out.println("clearDB is FALSE: not clearing");
-		}
-	}
 
 	@Override
 	public String toString() {
@@ -352,72 +334,5 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		return "mysqlprovenance";
 	}
 
-	// public void init() {
-	// String jdbcString = "jdbc:mysql://" + location + "/T2Provenance?user="
-	// + user + "&password=" + password;
-	// try {
-	// setProvenance(new MySQLProvenance(jdbcString, this.isClearDB));
-	// getProvenance().setSaveEvents(this.saveEvents);
-	//
-	// // clear the events dir -- hacked up in a hurry
-	// File dir = new File(EVENTS_LOG_DIR);
-	// File[] allFiles = dir.listFiles();
-	//
-	// if (allFiles != null)
-	// for (File f : allFiles) {
-	// f.delete();
-	// }
-	//
-	// } catch (InstantiationException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// } catch (IllegalAccessException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// } catch (ClassNotFoundException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// } catch (SQLException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	// }
-
-	
-	
-
-	@Override
-	public void init() {
-		ProvenanceWriter writer = new MySQLProvenanceWriter();
-		
-		ProvenanceQuery query = new MySQLProvenanceQuery();
-		
-		WorkflowDataProcessor wfdp = new WorkflowDataProcessor();
-		wfdp.setPq(query);
-		wfdp.setPw(writer);
-		EventProcessor eventProcessor = new EventProcessor();
-		eventProcessor.setPw(writer);
-		eventProcessor.setPq(query);
-		eventProcessor.setWfdp(wfdp);
-		ProvenanceAnalysis provenanceAnalysis = null;
-		try {
-			provenanceAnalysis = new ProvenanceAnalysis(query);
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		setProvenanceAnalysis(provenanceAnalysis);
-		Provenance provenance = new Provenance(eventProcessor);
-		setProvenance(provenance);
-	}
 
 }
