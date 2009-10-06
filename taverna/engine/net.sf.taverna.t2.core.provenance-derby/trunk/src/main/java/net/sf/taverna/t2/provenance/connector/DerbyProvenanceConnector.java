@@ -20,23 +20,14 @@
  ******************************************************************************/
 package net.sf.taverna.t2.provenance.connector;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import net.sf.taverna.t2.provenance.item.ProvenanceItem;
-import net.sf.taverna.t2.provenance.lineageservice.EventProcessor;
-import net.sf.taverna.t2.provenance.lineageservice.Provenance;
-import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
-import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
-import net.sf.taverna.t2.provenance.lineageservice.WorkflowDataProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceWriter;
-import net.sf.taverna.t2.provenance.lineageservice.ProvenanceAnalysis;
-import net.sf.taverna.t2.provenance.vocabulary.SharedVocabulary;
 
 import org.apache.log4j.Logger;
 
@@ -49,19 +40,14 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
     private static final String createTableProcBinding = "CREATE TABLE ProcBinding (" + "pnameRef varchar(100) NOT NULL ," + "execIDRef varchar(100) NOT NULL ," + "actName varchar(100) NOT NULL ," + "iteration char(10) NOT NULL default ''," + "PRIMARY KEY (pnameRef,execIDRef,iteration))";
     private static final String createTableProcessor = "CREATE TABLE Processor (" + "pname varchar(100) NOT NULL," + "wfInstanceRef varchar(100) NOT NULL ," + "type varchar(100) default NULL," + "isTopLevel smallint, " + "PRIMARY KEY  (pname,wfInstanceRef))";
     private static final String createTableVar = "CREATE TABLE Var (" + "varName varchar(100) NOT NULL," + "type varchar(20) default NULL," + "inputOrOutput smallint NOT NULL ," + "pnameRef varchar(100) NOT NULL," + "wfInstanceRef varchar(100) NOT NULL," + "nestingLevel int," + "actualNestingLevel int," + "anlSet smallint default NULL," + "reorder smallint, " + "PRIMARY KEY (varName,inputOrOutput,pnameRef,wfInstanceRef))";
-    private static final String createTableVarBinding = "CREATE TABLE VarBinding (" + "varNameRef varchar(100) NOT NULL," + "wfInstanceRef varchar(100) NOT NULL," + "value varchar(100) default NULL," + "collIDRef varchar(100)," + "positionInColl int NOT NULL," + "PNameRef varchar(100) NOT NULL," + "valueType varchar(50) default NULL," + "ref varchar(100) default NULL," + "iteration varchar(2000) NOT NULL," + "PRIMARY KEY (varNameRef,wfInstanceRef,PNameRef,positionInColl,iteration))";
-    // + " KEY collectionFK (wfInstanceRef,PNameRef,varNameRef,collIDRef))";
+    private static final String createTableVarBinding = "CREATE TABLE VarBinding (" + "varNameRef varchar(100) NOT NULL," + "wfInstanceRef varchar(100) NOT NULL," + "value varchar(100) default NULL," + "collIDRef varchar(100)," + "positionInColl int NOT NULL," + "PNameRef varchar(100) NOT NULL," + "valueType varchar(50) default NULL," + "ref varchar(100) default NULL," + "iteration varchar(2000) NOT NULL," + "PRIMARY KEY (varNameRef,wfInstanceRef,PNameRef,positionInColl,iteration))";    
     private static final String createTableWFInstance = "CREATE TABLE WfInstance (" + "instanceID varchar(100) NOT NULL," + "wfnameRef varchar(100) NOT NULL," + "timestamp timestamp NOT NULL default CURRENT_TIMESTAMP," + " PRIMARY KEY (instanceID, wfnameRef))";
     private static final String createTableWorkflow = "CREATE TABLE Workflow (" + "wfname varchar(100) NOT NULL," + "parentWFname varchar(100)," + "externalName varchar(100)," + "PRIMARY KEY  (wfname))";
     
 
     public DerbyProvenanceConnector() {
-    }
-
-    public DerbyProvenanceConnector(Provenance provenance,
-            ProvenanceAnalysis provenanceAnalysis,
-            boolean isClearDB, String saveEvents) {
-        super(provenance, provenanceAnalysis, isClearDB, saveEvents);
+        setWriter(new DerbyProvenanceWriter());
+        setQuery(new DerbyProvenanceQuery());               
     }
 
     // FIXME is this needed?
@@ -156,36 +142,4 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
         return "Derby DB Connector";
     }
 
-   
-    @Override
-    public void init() {
-        
-        createDatabase();
-        ProvenanceWriter writer = new DerbyProvenanceWriter();
-        
-        ProvenanceQuery query = new DerbyProvenanceQuery();
-        
-        WorkflowDataProcessor wfdp = new WorkflowDataProcessor();
-        wfdp.setPq(query);
-        wfdp.setPw(writer);
-        EventProcessor eventProcessor = new EventProcessor();
-        eventProcessor.setPw(writer);
-        eventProcessor.setPq(query);
-        eventProcessor.setWfdp(wfdp);
-        ProvenanceAnalysis provenanceAnalysis = null;
-        try {
-            provenanceAnalysis = new ProvenanceAnalysis(query);
-        } catch (InstantiationException e) {
-            logger.error("Error creating new provenance analysis for query", e);
-        } catch (IllegalAccessException e) {
-            logger.error("Error creating new provenance analysis for query", e);
-        } catch (ClassNotFoundException e) {
-            logger.error("Error creating new provenance analysis for query", e);
-        } catch (SQLException e) {
-            logger.error("Error creating new provenance analysis for query", e);
-        }
-        setProvenanceAnalysis(provenanceAnalysis);
-        Provenance provenance = new Provenance(eventProcessor);
-        setProvenance(provenance);
-    }
 }
