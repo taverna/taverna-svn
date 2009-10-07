@@ -37,6 +37,7 @@ import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLDeserializerImpl;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.junit.Before;
@@ -49,6 +50,8 @@ import org.springframework.context.ApplicationContext;
  * @author Paolo Missier
  */
 public class ProvenanceCaptureTestHelper {
+
+	private static Logger logger = Logger.getLogger(ProvenanceCaptureTestHelper.class);
 
 	private CaptureResultsListener listener;
 	private WorkflowInstanceFacade facade;
@@ -105,13 +108,11 @@ public class ProvenanceCaptureTestHelper {
 	}
 
 
-	@Before
-	public void makeDataManager() {	
 
+	public void makeDataManager() {	
 
 		setDataSource();
 		pAccess = new ProvenanceAccess("mysqlprovenance");  // creates and initializes the provenance API
-
 		provenanceConnector = pAccess.getProvenanceConnector();  // oc is initialized at this point
 		
 		// clear DB if user so chooses
@@ -148,12 +149,12 @@ public class ProvenanceCaptureTestHelper {
 		provenanceConnector.setReferenceService(context.getReferenceService()); // CHECK context.getReferenceService());
 		provenanceConnector.setInvocationContext(context);
 
-		try {
-			provenanceConnector.getWriter().clearDBStatic();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			provenanceConnector.getWriter().clearDBStatic();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 
 	
@@ -231,6 +232,8 @@ public class ProvenanceCaptureTestHelper {
 		PluginManager.getInstance();
 	}
 
+
+	
 	public Dataflow setup(String testfilesProperty) throws Exception {
 
 		String T2File = testFiles.getString(testfilesProperty);
@@ -239,7 +242,7 @@ public class ProvenanceCaptureTestHelper {
 
 		if (useProvenance != null)
 			isUseProvenance = Boolean.parseBoolean(useProvenance);
-		System.out.println("enable provenance: " + isUseProvenance);
+		logger.info("enable provenance: " + isUseProvenance);
 
 		Dataflow dataflow = null;
 

@@ -12,6 +12,8 @@ import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 
+import org.apache.log4j.xml.DOMConfigurator;
+import org.junit.Before;
 import org.junit.Test;
 
 
@@ -21,10 +23,13 @@ import org.junit.Test;
  */
 public class ProvenanceCaptureTest extends ProvenanceCaptureTestHelper  {
 
+	@Before
+	public void loggerSetup() {
+		DOMConfigurator.configure("src/main/resources/log4j.xml");
+	}
 
 	@Test
 	public void testInput() throws Exception {
-
 
 		ProvenanceCaptureTest helper = this;
 		helper.createEventsDir(); 

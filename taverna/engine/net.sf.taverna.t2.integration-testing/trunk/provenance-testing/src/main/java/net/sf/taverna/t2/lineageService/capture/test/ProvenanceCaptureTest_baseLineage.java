@@ -16,8 +16,9 @@ import org.junit.Test;
  */
 public class ProvenanceCaptureTest_baseLineage extends ProvenanceCaptureTestHelper {
 
+	
 	@Test
-	public void testProvenanceCapture_test6() throws Exception {
+	public void testProvenanceCapture_baseLineage() throws Exception {
 
 		ProvenanceCaptureTestHelper helper = new ProvenanceCaptureTestHelper();
 

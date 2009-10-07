@@ -24,6 +24,7 @@ import net.sf.taverna.t2.provenance.api.NativeAnswer;
 import net.sf.taverna.t2.provenance.api.ProvenanceAccess;
 import net.sf.taverna.t2.provenance.api.QueryAnswer;
 import net.sf.taverna.t2.provenance.api.Query;
+import net.sf.taverna.t2.provenance.connector.MySQLProvenanceConnector;
 import net.sf.taverna.t2.provenance.lineageservice.Dependencies;
 import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
@@ -71,6 +72,7 @@ public class ApiTest {
 	@Before
 	public void setUp() throws Exception {
 		setDataSource();
+		System.setProperty("raven.eclipse","true");
 		pAccess = new ProvenanceAccess("mysqlprovenance");  // creates and initializes the provenance API
 		configureInterface();              // sets user-defined preferences
 	}
@@ -221,7 +223,7 @@ public class ApiTest {
 					qv.setWfInstanceId(runID);
 					qv.setPname(v.getPName());
 					qv.setVname(v.getVName());
-					qv.setPath(ALL_PATHS);
+					qv.setPath(null);  // all paths
 
 					targetVars.add(qv);
 				}
@@ -247,7 +249,7 @@ public class ApiTest {
 				else qv.setVname(ALL_VARS);  // default
 
 				if (qvComponents.length>2)  qv.setPath(qvComponents[2].trim()); // path
-				else qv.setPath(ALL_PATHS);  // default
+				else qv.setPath(null);  // default  -- all paths
 
 				//  <proc> == TOP: resolve immediately to the top level dataflow
 				if (qv.getPname().equals(TOP_PROCESSOR)) {
