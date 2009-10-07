@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import net.sf.taverna.t2.provenance.api.ProvenanceConnectorType;
 import net.sf.taverna.t2.provenance.item.ProvenanceItem;
 import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceWriter;
@@ -134,12 +135,12 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
     }
 
     public String getName() {
-        return "Derby DB Connector";
+        return ProvenanceConnectorType.DERBY;
     }    
 
     @Override
     public String toString() {
-        return "Derby DB Connector";
+        return getName();
     }
 
 }
