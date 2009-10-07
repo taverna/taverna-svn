@@ -70,10 +70,5 @@
 			<artifactId>reference-config</artifactId>
 			<version>${t2.ui.impl.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.myexperiment</groupId>
-			<artifactId>perspective-myexperiment</artifactId>
-			<version>${org.myexperiment.perspective-myexperiment.version}</version>
-		</dependency>
 	</dependencies>
 </project>
