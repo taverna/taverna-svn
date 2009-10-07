@@ -133,7 +133,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- all known workflows by name';";
 
 
-	private final String createTableData = "CREATE TABLE  `T2Provenance`.`Data` ("
+	private final String createTableData = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Data` ("
 	  +"`dataReference` varchar(100) NOT NULL,"
 	  +"`wfInstanceID` varchar(100) NOT NULL,"
 	  +"`data` blob,"
