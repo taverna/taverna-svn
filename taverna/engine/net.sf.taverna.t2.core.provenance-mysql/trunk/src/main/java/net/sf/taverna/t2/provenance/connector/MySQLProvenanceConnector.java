@@ -250,7 +250,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 			public void run() {
 				try {
-
+					logger.debug("Running xx for " + provenanceItem);
 					getProvenance().acceptRawProvenanceEvent(
 							provenanceItem.getEventType(), provenanceItem);
 
@@ -261,9 +261,9 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 				}
 
 			}
-
 		};
-		getExecutor().submit(runnable);
+		runnable.run();
+// 	getExecutor().submit(runnable);
 	}
 
 	public void createDatabase() {
