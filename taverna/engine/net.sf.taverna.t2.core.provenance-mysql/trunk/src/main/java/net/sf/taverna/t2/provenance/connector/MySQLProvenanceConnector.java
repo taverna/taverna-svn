@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.provenance.api.ProvenanceConnectorType;
 import net.sf.taverna.t2.provenance.item.IterationProvenanceItem;
 import net.sf.taverna.t2.provenance.item.ProvenanceItem;
 import net.sf.taverna.t2.provenance.lineageservice.EventProcessor;
@@ -331,7 +332,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 	}
 
 	public String getName() {
-		return "mysqlprovenance";
+		return ProvenanceConnectorType.MYSQL;
 	}
 
 
