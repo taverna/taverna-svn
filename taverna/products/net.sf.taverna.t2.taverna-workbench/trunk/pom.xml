@@ -14,10 +14,10 @@
 	<name>Taverna workbench application</name>
 	<properties>
 		<t2.taverna.workbench.version>${project.version}</t2.taverna.workbench.version>
-		<t2.infrastructure.version>1.12-SNAPSHOT</t2.infrastructure.version>
+		<t2.infrastructure.version>1.12-SNAPSHOT</t2.infrastructure.version>                
 		<t2.core.version>0.9-SNAPSHOT</t2.core.version>
 		<t2.activities.version>0.9-SNAPSHOT</t2.activities.version>
-        <t2.compatibility.translators.version>0.9-SNAPSHOT</t2.compatibility.translators.version>
+                <t2.compatibility.translators.version>0.9-SNAPSHOT</t2.compatibility.translators.version>
 		<t2.ui.api.version>0.7-SNAPSHOT</t2.ui.api.version>
 		<t2.ui.impl.version>0.9-SNAPSHOT</t2.ui.impl.version>
 		<t2.ui.components.version>0.10-SNAPSHOT</t2.ui.components.version>
