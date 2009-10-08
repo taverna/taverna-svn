@@ -5,6 +5,7 @@ package net.sf.taverna.t2.provenance.lineageservice.mysql;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProcBinding;
@@ -117,9 +118,8 @@ public class DummyProvenanceWriter extends ProvenanceWriter {
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#clearDBDynamic()
 	 */
-	public void clearDBDynamic() throws SQLException {
-		// TODO Auto-generated method stub
-
+	public Set<String> clearDBDynamic() throws SQLException {
+		return null;
 	}
 
 	/* (non-Javadoc)
