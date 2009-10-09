@@ -5,6 +5,8 @@ package net.sf.taverna.t2.lineageService.analysis.test;
 
 import static org.junit.Assert.*;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -22,6 +24,7 @@ import javax.naming.InitialContext;
 import net.sf.taverna.t2.lineageService.capture.test.testFiles;
 import net.sf.taverna.t2.provenance.api.NativeAnswer;
 import net.sf.taverna.t2.provenance.api.ProvenanceAccess;
+import net.sf.taverna.t2.provenance.api.ProvenanceQueryParser;
 import net.sf.taverna.t2.provenance.api.QueryAnswer;
 import net.sf.taverna.t2.provenance.api.Query;
 import net.sf.taverna.t2.provenance.connector.MySQLProvenanceConnector;
@@ -37,6 +40,8 @@ import net.sf.taverna.t2.workbench.provenance.ProvenanceConfiguration;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.log4j.Logger;
+import org.jdom.Document;
+import org.jdom.input.SAXBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -104,6 +109,45 @@ public class ApiTest {
 	}
 
 
+
+	/**
+	 * acquire uer input query elements and compose a query
+	 * @param selectedProcessors2 
+	 * @param runID 
+	 * @param targetVars 
+	 */
+	private Query composeQuery() {
+
+		Query q = new Query();
+
+		// THE NEW WAYS
+
+		// get filename for XML query spec
+		String querySpecFile = AnalysisTestFiles.getString("query.file");
+		logger.info("testing query "+querySpecFile);
+
+		ProvenanceQueryParser pqp = new ProvenanceQueryParser();
+		pqp.setPAccess(pAccess);
+
+		q = pqp.parseProvenanceQuery(querySpecFile);
+
+
+		// THE OLD WAYS
+		List<String>  runs = acquireRuns();  // currently contains the latest run
+		q.setRunID(runs.get(0));
+
+		List<ProvenanceProcessor> allProcessorsFlat = runsToProcessors(runs);
+
+		List<ProvenanceProcessor> selectedProcessors = acquireSelectedProcessors(allProcessorsFlat);   
+		q.setSelectedProcessors(selectedProcessors);
+
+		List<QueryVar> selectedVars = acquireSelectedVars(runs.get(0), allProcessorsFlat);
+		q.setTargetVars(selectedVars);
+
+		return q;
+	}
+
+
 	/**
 	 * Test method for {@link net.sf.taverna.t2.provenance.api.Query#executeQuery(java.util.List, java.lang.String, java.util.Set)}.
 	 */
@@ -124,7 +168,7 @@ public class ApiTest {
 
 
 	@Test
-	public final void testFetchPortData() {
+	public final void testFetchPortData1() {
 
 		Query pq = composeQuery(); // creates a test query using a config file (AnalysisTestFiles.properties)
 
@@ -134,13 +178,95 @@ public class ApiTest {
 		for (QueryVar port:targetPorts) {
 			Dependencies deps = pAccess.fetchPortData(port.getWfInstanceId(), port.getWfName(), 
 					port.getPname(), port.getVname(), port.getPath());
-			
+
 			logger.info("intermediate values: ");
 			for (LineageQueryResultRecord record: deps.getRecords()) {
 				logger.info(record.toString());
-				
 			}
- 		}
+		}
+	}
+
+
+
+	/**
+	 * hardcoded on simple-nested.t2flow data
+	 */
+	@Test
+	public final void testFetchPortData2() {
+
+		Dependencies deps = pAccess.fetchPortData(
+				"ae1e2b6b-3bc5-4c93-a250-c4dd0210c3b3",  // instanceID 
+				"3785119a-9701-40a8-9a6e-c14dafb21010",  // wfname
+				"String_constant", //procname
+				"value", // port namem
+				null);  // all paths
+
+		logger.info("intermediate values: ");
+		for (LineageQueryResultRecord record: deps.getRecords()) {
+			logger.info(record.toString());
+		}
+	}
+
+
+
+	/**
+	 * hardcoded on simple-nested.t2flow data
+	 */
+	@Test
+	public final void testFetchPortData3() {
+
+		Dependencies deps = pAccess.fetchPortData(
+				"ae1e2b6b-3bc5-4c93-a250-c4dd0210c3b3",  // instanceID 
+				"f5dd73b3-cc2b-4a37-96ff-afce8dc57d36",  // wfname
+				"String_constant", //procname
+				"value", // port namem
+				null);  // all paths
+
+		logger.info("intermediate values: ");
+		for (LineageQueryResultRecord record: deps.getRecords()) {
+			logger.info(record.toString());
+		}
+	}
+
+
+
+	/**
+	 * hardcoded on simple-nested.t2flow data
+	 */
+	@Test
+	public final void testFetchPortData4() {
+
+		Dependencies deps = pAccess.fetchPortData(
+				"ae1e2b6b-3bc5-4c93-a250-c4dd0210c3b3",  // instanceID 
+				"e0a786d1-61bb-4e60-a9fd-952a0b110a5b",  // wfname
+				"Beanshell", //procname
+				"out0", // port namem
+				null);  // all paths
+
+		logger.info("intermediate values: ");
+		for (LineageQueryResultRecord record: deps.getRecords()) {
+			logger.info(record.toString());
+		}
+	}
+
+
+	/**
+	 * hardcoded on simple-nested.t2flow data
+	 */
+	@Test
+	public final void testFetchPortData5() {
+
+		Dependencies deps = pAccess.fetchPortData(
+				"ae1e2b6b-3bc5-4c93-a250-c4dd0210c3b3",  // instanceID 
+				"e0a786d1-61bb-4e60-a9fd-952a0b110a5b",  // wfname
+				"Nested_workflow", //procname
+				"nestout1", // port namem
+				null);  // all paths
+
+		logger.info("intermediate values: ");
+		for (LineageQueryResultRecord record: deps.getRecords()) {
+			logger.info(record.toString());
+		}
 	}
 
 
@@ -170,31 +296,6 @@ public class ApiTest {
 	}
 
 
-	/**
-	 * acquire uer input query elements and compose a query
-	 * @param selectedProcessors2 
-	 * @param runID 
-	 * @param targetVars 
-	 */
-	private Query composeQuery() {
-
-		Query q = new Query();
-
-		List<String>  runs = acquireRuns();  // currently contains the latest run
-		q.setRunID(runs.get(0));
-
-		List<ProvenanceProcessor> allProcessorsFlat = runsToProcessors(runs);
-
-		List<ProvenanceProcessor> selectedProcessors = acquireSelectedProcessors(allProcessorsFlat);   
-		q.setSelectedProcessors(selectedProcessors);
-
-		List<QueryVar> selectedVars = acquireSelectedVars(runs.get(0), allProcessorsFlat);
-		q.setTargetVars(selectedVars);
-
-		return q;
-	}
-
-
 
 	private List<QueryVar> acquireSelectedVars(String runID, 
 			List<ProvenanceProcessor> allProcessorsFlat) {
@@ -212,7 +313,7 @@ public class ApiTest {
 
 		if (queryVars.length() == 0 || queryVars.equals("ALL"))  { // default: TOP/ALL == all global OUTPUT vars, with fine granularity
 
-			
+
 			// look for the outputs of the top-level workflow	
 			List<Var> dataflowPorts = pAccess.getPortsForDataflow(topLevelWorkflow);
 
