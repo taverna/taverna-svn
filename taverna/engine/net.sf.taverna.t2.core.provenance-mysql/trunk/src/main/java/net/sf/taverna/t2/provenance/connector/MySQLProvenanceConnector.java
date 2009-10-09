@@ -84,7 +84,8 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ "`execIDRef` varchar(100) NOT NULL COMMENT 'ref. to ID of wf execution',"
 		+ "`actName` varchar(100) NOT NULL COMMENT 'name of activity bound to this processor',"
 		+ "`iteration` char(10) NOT NULL default '',"
-		+ "PRIMARY KEY  USING BTREE (`pnameRef`,`execIDRef`,`iteration`)"
+		+ "  `wfNameRef` varchar(100) NOT NULL, "
+		+ "PRIMARY KEY  USING BTREE (`pnameRef`,`execIDRef`,`iteration`, `wfNameRef`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='dynamic -- binding of processor to activity';";
 
 	private static final String createTableProcessor = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Processor` ("
@@ -116,7 +117,8 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ "`valueType` varchar(50) default NULL,"
 		+ "`ref` varchar(100) default NULL,"
 		+ "`iteration` char(10) NOT NULL default '',"
-		+ "PRIMARY KEY  USING BTREE (`varNameRef`,`wfInstanceRef`,`PNameRef`,`positionInColl`,`iteration`,`collIDRef`),"
+		+ "  `wfNameRef` varchar(100) NOT NULL, "
+		+ "PRIMARY KEY  USING BTREE (`varNameRef`,`wfInstanceRef`,`PNameRef`,`positionInColl`,`iteration`,`collIDRef`, `wfNameRef`),"
 		+ "KEY `collectionFK` (`wfInstanceRef`,`PNameRef`,`varNameRef`,`collIDRef`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='dynamic -- binding of variables to values ';";
 
@@ -250,7 +252,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 			public void run() {
 				try {
-					logger.debug("Running xx for " + provenanceItem);
+//					logger.debug("Running xx for " + provenanceItem);
 					getProvenance().acceptRawProvenanceEvent(
 							provenanceItem.getEventType(), provenanceItem);
 
