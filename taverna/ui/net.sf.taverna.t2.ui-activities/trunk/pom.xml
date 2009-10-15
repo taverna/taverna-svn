@@ -41,6 +41,7 @@
 		<module>ncbi-activity-ui</module>
 		<module>rshell-activity-ui</module>
 		<module>soaplab-activity-ui</module>
+		<module>spreadsheet-import-activity-ui</module>
 		<module>stringconstant-activity-ui</module>
 		<module>wsdl-activity-ui</module>
 	</modules>
