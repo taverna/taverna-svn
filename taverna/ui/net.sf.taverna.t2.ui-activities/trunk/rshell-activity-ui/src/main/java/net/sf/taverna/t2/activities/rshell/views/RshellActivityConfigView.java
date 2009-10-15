@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.help.CSH;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -62,15 +61,15 @@ import net.sf.taverna.t2.activities.rshell.RshellActivityConfigurationBean;
 import net.sf.taverna.t2.activities.rshell.RshellConnectionSettings;
 import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SymanticTypes;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
-import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationAction;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationPanel;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Port;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 
+import org.apache.log4j.Logger;
 import org.syntax.jedit.JEditTextArea;
-import org.syntax.jedit.TextAreaDefaults;
 import org.syntax.jedit.tokenmarker.JavaTokenMarker;
 
 /**
@@ -87,7 +86,10 @@ import org.syntax.jedit.tokenmarker.JavaTokenMarker;
  * @author Ingo Wassink
  * 
  */
-public class RshellActivityConfigView extends JPanel {
+public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellActivity, RshellActivityConfigurationBean> {
+	
+	private static Logger logger = Logger.getLogger(RshellActivityConfigView.class);
+
 	/** False for R1.5 and below, true for R1.6 and above */
 	private boolean rVersion;
 	/** The beanshell script */
@@ -100,6 +102,7 @@ public class RshellActivityConfigView extends JPanel {
 	private RshellActivity activity;
 	/** the configuration bean used to configure the activity */
 	private RshellActivityConfigurationBean configuration;
+	
 	/**
 	 * Holds the state of the OK button in case a parent view wants to know
 	 * whether the configuration is finished
@@ -125,7 +128,6 @@ public class RshellActivityConfigView extends JPanel {
 	private JPanel outerInputPanel;
 	private JButton button;
 
-	private boolean configChanged = false;
 	private JTextField hostnameField;
 	private JTextField portField;
 	private JTextField usernameField;
@@ -133,6 +135,8 @@ public class RshellActivityConfigView extends JPanel {
 	private JCheckBox keepSessionAliveCheckBox;
 	private JPanel settingsPanel;
 	private File currentDirectory;
+	private JTabbedPane tabbedPane;
+	private JTabbedPane ports;
 
 	// private JPanel mimes;
 
@@ -146,17 +150,18 @@ public class RshellActivityConfigView extends JPanel {
 	 */
 	public RshellActivityConfigView(RshellActivity activity) {
 		this.activity = activity;
-		configuration = activity.getConfiguration();
-		setLayout(new GridBagLayout());
 		initialise();
 	}
 
 	public RshellActivityConfigurationBean getConfiguration() {
 		return configuration;
 	}
-
+	
 	public boolean isConfigurationChanged() {
-		return configChanged;
+		String configurationString = convertBeanToString(activity.getConfiguration());
+		logger.error(configurationString);
+		logger.error(convertBeanToString(calculateConfiguration()));
+		return (!convertBeanToString(calculateConfiguration()).equals(configurationString));
 	}
 
 	/**
@@ -168,15 +173,8 @@ public class RshellActivityConfigView extends JPanel {
 	 * {@link #setPortPanel()}
 	 */
 	private void initialise() {
-		CSH
-				.setHelpIDString(
-						this,
-						"net.sf.taverna.t2.activities.rshell.views.RshellActivityConfigView");
-		setSize(500, 500);
-		AbstractAction applyAction = getOKAction();
-		button = new JButton(applyAction);
-		button.setText("Apply");
-		button.setToolTipText("Click to configure with the new values");
+		configuration = activity.getConfiguration();
+		setLayout(new GridBagLayout());
 		inputViewList = new ArrayList<RshellInputViewer>();
 		outputViewList = new ArrayList<RshellOutputViewer>();
 		setBorder(javax.swing.BorderFactory.createTitledBorder(null, null,
@@ -189,7 +187,7 @@ public class RshellActivityConfigView extends JPanel {
 
 		JPanel scriptEditPanel = new JPanel(new BorderLayout());
 
-		JTabbedPane tabbedPane = new JTabbedPane();
+		tabbedPane = new JTabbedPane();
 		tabbedPane.addTab("Script", scriptEditPanel);
 		tabbedPane.addTab("Ports", setPortPanel());
 		createSettingsPanel();
@@ -261,26 +259,16 @@ public class RshellActivityConfigView extends JPanel {
 //		buttonPanel.add(rVersionCheck);
 		buttonPanel.add(loadRScriptButton);
 		buttonPanel.add(clearScriptButton);
-
-		buttonPanel.add(button);
-		JButton closeButton = new JButton(new AbstractAction() {
-
-			public void actionPerformed(ActionEvent e) {
-				configChanged = false;
-				buttonClicked.actionPerformed(e);
-				ActivityConfigurationAction.clearDialog(activity);
-			}
-		});
-
+		
 		outerConstraint.gridx = 0;
 		outerConstraint.gridy = 1;
 		outerConstraint.fill = GridBagConstraints.NONE;
 		outerConstraint.anchor = GridBagConstraints.LINE_END;
 		outerConstraint.gridy = 2;
 		outerConstraint.weighty = 0;
-		closeButton.setText("Close");
-		buttonPanel.add(closeButton);
 		add(buttonPanel, outerConstraint);
+		setPreferredSize(new Dimension(500, 500));
+		validate();
 	}
 
 	private void createSettingsPanel() {
@@ -297,50 +285,33 @@ public class RshellActivityConfigView extends JPanel {
 		hostnameLabel.setLabelFor(hostnameField);
 		RshellConnectionSettings connectionSettings = configuration
 				.getConnectionSettings();
-		if (connectionSettings != null) {
-			hostnameField.setText(connectionSettings.getHost());
-		} else {
-			hostnameField.setText(RshellConnectionSettings.DEFAULT_HOST);
-		}
 
+		hostnameField.setText(connectionSettings.getHost());
+		
 		portField = new JTextField();
 		JLabel portLabel = new JLabel("Port");
 		portField.setSize(dimension);
 		portLabel.setSize(dimension);
 		portLabel.setLabelFor(portField);
-		if (connectionSettings != null) {
-
-			portField.setText(Integer.toString(connectionSettings.getPort()));
-		} else {
-			portField.setText(Integer.toString(RshellConnectionSettings.DEFAULT_PORT));
-		}
+		portField.setText(Integer.toString(connectionSettings.getPort()));
 
 		usernameField = new JTextField();
 		JLabel usernameLabel = new JLabel("Username");
 		usernameField.setSize(dimension);
 		usernameLabel.setSize(dimension);
 		usernameLabel.setLabelFor(usernameField);
-		if (connectionSettings != null) {
-
-			usernameField.setText(connectionSettings.getUsername());
-		}
+		usernameField.setText(connectionSettings.getUsername());
 
 		passwordField = new JTextField();
 		JLabel passwordLabel = new JLabel("Password");
 		passwordField.setSize(dimension);
 		passwordLabel.setSize(dimension);
 		passwordLabel.setLabelFor(passwordField);
-		if (connectionSettings != null) {
-
-			passwordField.setText(connectionSettings.getPassword());
-		}
+		passwordField.setText(connectionSettings.getPassword());
 
 		keepSessionAliveCheckBox = new JCheckBox("Keep Session Alive");
-		if (connectionSettings != null) {
-
-			keepSessionAliveCheckBox.setSelected(connectionSettings
+		keepSessionAliveCheckBox.setSelected(connectionSettings
 					.isKeepSessionAlive());
-		}
 
 		JPanel hostPanel = new JPanel();
 		BoxLayout layout = new BoxLayout(hostPanel, BoxLayout.X_AXIS);
@@ -390,7 +361,7 @@ public class RshellActivityConfigView extends JPanel {
 	 * @return a {@link JTabbedPane} with the ports
 	 */
 	private JTabbedPane setPortPanel() {
-		JTabbedPane ports = new JTabbedPane();
+		ports = new JTabbedPane();
 
 		JPanel portEditPanel = new JPanel(new GridLayout(0, 2));
 
@@ -765,58 +736,7 @@ public class RshellActivityConfigView extends JPanel {
 		return new AbstractAction() {
 
 			public void actionPerformed(ActionEvent e) {
-				List<ActivityInputPortDefinitionBean> inputBeanList = new ArrayList<ActivityInputPortDefinitionBean>();
-				RshellActivityConfigurationBean rshellActivityConfigurationBean = new RshellActivityConfigurationBean();
-				List<RShellPortSymanticTypeBean> inputSemanticTypes = new ArrayList<RShellPortSymanticTypeBean>();
-				List<RShellPortSymanticTypeBean> outputSemanticTypes = new ArrayList<RShellPortSymanticTypeBean>();
-				for (RshellInputViewer inputView : inputViewList) {
-					ActivityInputPortDefinitionBean activityInputPortDefinitionBean = new ActivityInputPortDefinitionBean();
-					activityInputPortDefinitionBean.setName(inputView
-							.getNameField().getText());
-					inputBeanList.add(activityInputPortDefinitionBean);
-					RShellPortSymanticTypeBean bean = new RShellPortSymanticTypeBean();
-					bean.setName(inputView.getNameField().getText());
-					bean.setSymanticType((SymanticTypes) inputView
-							.getSemanticSelector().getSelectedItem());
-					inputSemanticTypes.add(bean);
-				}
-
-				List<ActivityOutputPortDefinitionBean> outputBeanList = new ArrayList<ActivityOutputPortDefinitionBean>();
-				for (RshellOutputViewer outputView : outputViewList) {
-					ActivityOutputPortDefinitionBean activityOutputPortDefinitionBean = new ActivityOutputPortDefinitionBean();
-					activityOutputPortDefinitionBean.setName(outputView
-							.getNameField().getText());
-					activityOutputPortDefinitionBean.setMimeTypes(new ArrayList<String>());
-					outputBeanList.add(activityOutputPortDefinitionBean);
-					RShellPortSymanticTypeBean bean = new RShellPortSymanticTypeBean();
-					bean.setSymanticType((SymanticTypes) outputView
-							.getSemanticTypeSelector().getSelectedItem());
-					bean.setName(outputView.getNameField().getText());
-					outputSemanticTypes.add(bean);
-				}
-				rshellActivityConfigurationBean
-						.setInputSymanticTypes(inputSemanticTypes);
-				rshellActivityConfigurationBean
-						.setOutputSymanticTypes(outputSemanticTypes);
-				rshellActivityConfigurationBean.setScript(scriptText.getText());
-				rshellActivityConfigurationBean
-						.setInputPortDefinitions(inputBeanList);
-				rshellActivityConfigurationBean
-						.setOutputPortDefinitions(outputBeanList);
-				RshellConnectionSettings connectionSettings = new RshellConnectionSettings();
-
-				connectionSettings.setUsername(usernameField.getText());
-				connectionSettings.setHost(hostnameField.getText());
-				connectionSettings.setPassword(passwordField.getText());
-				connectionSettings.setKeepSessionAlive(keepSessionAliveCheckBox
-						.isSelected());
-				connectionSettings.setPort(portField.getText());
-				connectionSettings.setNewRVersion(rVersion);
-				rshellActivityConfigurationBean
-						.setConnectionSettings(connectionSettings);
-
-				configuration = rshellActivityConfigurationBean;
-				configChanged = true;
+				
 				buttonClicked.actionPerformed(e);
 			}
 
@@ -918,6 +838,94 @@ public class RshellActivityConfigView extends JPanel {
 			scriptText.setText("");
 		}
 
+	}
+	
+	public RshellActivityConfigurationBean calculateConfiguration() {
+		List<ActivityInputPortDefinitionBean> inputBeanList = new ArrayList<ActivityInputPortDefinitionBean>();
+		RshellActivityConfigurationBean rshellActivityConfigurationBean = new RshellActivityConfigurationBean();
+		List<RShellPortSymanticTypeBean> inputSemanticTypes = new ArrayList<RShellPortSymanticTypeBean>();
+		List<RShellPortSymanticTypeBean> outputSemanticTypes = new ArrayList<RShellPortSymanticTypeBean>();
+		for (RshellInputViewer inputView : inputViewList) {
+			ActivityInputPortDefinitionBean activityInputPortDefinitionBean = new ActivityInputPortDefinitionBean();
+			activityInputPortDefinitionBean.setName(inputView
+					.getNameField().getText());
+			inputBeanList.add(activityInputPortDefinitionBean);
+			RShellPortSymanticTypeBean bean = new RShellPortSymanticTypeBean();
+			bean.setName(inputView.getNameField().getText());
+			bean.setSymanticType((SymanticTypes) inputView
+					.getSemanticSelector().getSelectedItem());
+			inputSemanticTypes.add(bean);
+		}
+
+		List<ActivityOutputPortDefinitionBean> outputBeanList = new ArrayList<ActivityOutputPortDefinitionBean>();
+		for (RshellOutputViewer outputView : outputViewList) {
+			ActivityOutputPortDefinitionBean activityOutputPortDefinitionBean = new ActivityOutputPortDefinitionBean();
+			activityOutputPortDefinitionBean.setName(outputView
+					.getNameField().getText());
+			activityOutputPortDefinitionBean.setMimeTypes(new ArrayList<String>());
+			outputBeanList.add(activityOutputPortDefinitionBean);
+			RShellPortSymanticTypeBean bean = new RShellPortSymanticTypeBean();
+			bean.setSymanticType((SymanticTypes) outputView
+					.getSemanticTypeSelector().getSelectedItem());
+			bean.setName(outputView.getNameField().getText());
+			outputSemanticTypes.add(bean);
+		}
+		rshellActivityConfigurationBean
+				.setInputSymanticTypes(inputSemanticTypes);
+		rshellActivityConfigurationBean
+				.setOutputSymanticTypes(outputSemanticTypes);
+		rshellActivityConfigurationBean.setScript(scriptText.getText());
+		rshellActivityConfigurationBean
+				.setInputPortDefinitions(inputBeanList);
+		rshellActivityConfigurationBean
+				.setOutputPortDefinitions(outputBeanList);
+		RshellConnectionSettings connectionSettings = new RshellConnectionSettings();
+
+		connectionSettings.setUsername(usernameField.getText());
+		connectionSettings.setHost(hostnameField.getText());
+		connectionSettings.setPassword(passwordField.getText());
+		connectionSettings.setKeepSessionAlive(keepSessionAliveCheckBox
+				.isSelected());
+		connectionSettings.setPort(portField.getText());
+		connectionSettings.setNewRVersion(rVersion);
+		rshellActivityConfigurationBean
+				.setConnectionSettings(connectionSettings);
+
+		return rshellActivityConfigurationBean;
+	}
+
+	@Override
+	public void noteConfiguration() {
+		if (isConfigurationChanged()) {
+			configuration = calculateConfiguration();
+		}
+	}
+
+	@Override
+	public void refreshConfiguration() {
+		int visibleTab = -1;
+		int subTab = -1;
+		if (tabbedPane != null) {
+			visibleTab = tabbedPane.getSelectedIndex();
+			logger.info("VisibleTab is " + visibleTab);
+			if (tabbedPane.getTitleAt(visibleTab).equals("Ports")) {
+				subTab = ports.getSelectedIndex();
+			}
+		}
+		this.removeAll();
+		initialise();
+		if (visibleTab != -1) {
+			tabbedPane.setSelectedIndex(visibleTab);
+			if (subTab != -1) {
+				ports.setSelectedIndex(subTab);
+			}
+		}
+	}
+
+	@Override
+	public boolean checkValues() {
+		// TODO Not yet implemented
+		return true;
 	}
 
 }

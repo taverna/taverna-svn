@@ -33,6 +33,8 @@ import net.sf.taverna.t2.activities.rshell.RshellActivity;
 import net.sf.taverna.t2.activities.rshell.RshellActivityConfigurationBean;
 import net.sf.taverna.t2.workbench.helper.HelpEnabledDialog;
 import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationAction;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationDialog;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationPanel;
 
 /**
  * Pops up a config view for an {@link RshellActivity} and then re-configs the
@@ -66,29 +68,13 @@ public class RshellActivityConfigurationAction
 			currentDialog.toFront();
 			return;
 		}
-		final RshellActivityConfigView rshellConfigView = new RshellActivityConfigView(
+		final ActivityConfigurationPanel<RshellActivity, RshellActivityConfigurationBean> rshellConfigView = new RshellActivityConfigView(
 				(RshellActivity) getActivity());
-		final HelpEnabledDialog dialog =
-			new HelpEnabledDialog((Frame) null, getRelativeName(), false, null);
-		dialog.add(rshellConfigView);
-		dialog.setSize(500, 500);
-		// the action that will happen when the OK button is clicked
-		rshellConfigView.setButtonClickedListener(new ActionListener() {
+		final ActivityConfigurationDialog<RshellActivity, RshellActivityConfigurationBean> dialog =
+			new ActivityConfigurationDialog<RshellActivity, RshellActivityConfigurationBean> (getActivity(), rshellConfigView);
 
-			public void actionPerformed(ActionEvent e) {
-				if (rshellConfigView.isConfigurationChanged()) {
-					configureActivity(rshellConfigView.getConfiguration());
-				}
-			}
-
-		});
-		dialog.addWindowListener(new WindowAdapter() {
-
-			public void windowClosing(WindowEvent e) {
-				ActivityConfigurationAction.clearDialog(dialog);
-			}
-		});
 		ActivityConfigurationAction.setDialog(getActivity(), dialog);	
+		
 	}
 
 }
