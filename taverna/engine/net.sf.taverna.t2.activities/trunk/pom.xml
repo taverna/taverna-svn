@@ -42,6 +42,7 @@
 		<module>localworker-activity</module>
 		<module>rshell-activity</module>
 		<module>soaplab-activity</module>
+		<module>spreadsheet-import-activity</module>
 		<module>stringconstant-activity</module>
 		<module>wsdl-activity</module>
 	</modules>
