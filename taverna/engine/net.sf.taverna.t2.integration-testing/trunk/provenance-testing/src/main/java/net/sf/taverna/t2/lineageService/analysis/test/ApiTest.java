@@ -109,6 +109,30 @@ public class ApiTest {
 	}
 
 
+	@Test
+	public void testXMLQuery() {
+
+		Query q = new Query();
+
+		// get filename for XML query spec
+		String querySpecFile = AnalysisTestFiles.getString("query.file");
+		logger.info("testing query "+querySpecFile);
+
+		ProvenanceQueryParser pqp = new ProvenanceQueryParser();
+		pqp.setPAccess(pAccess);
+
+		q = pqp.parseProvenanceQuery(querySpecFile);
+		
+		QueryAnswer answer=null;
+		try {
+			answer = pAccess.executeQuery (q);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		reportAnswer(answer);
+	}
+
 
 	/**
 	 * acquire uer input query elements and compose a query
@@ -120,21 +144,9 @@ public class ApiTest {
 
 		Query q = new Query();
 
-		// THE NEW WAYS
-
-		// get filename for XML query spec
-		String querySpecFile = AnalysisTestFiles.getString("query.file");
-		logger.info("testing query "+querySpecFile);
-
-		ProvenanceQueryParser pqp = new ProvenanceQueryParser();
-		pqp.setPAccess(pAccess);
-
-		q = pqp.parseProvenanceQuery(querySpecFile);
-
-
 		// THE OLD WAYS
 		List<String>  runs = acquireRuns();  // currently contains the latest run
-		q.setRunID(runs.get(0));
+		q.setRunIDList(runs);
 
 		List<ProvenanceProcessor> allProcessorsFlat = runsToProcessors(runs);
 
@@ -240,7 +252,7 @@ public class ApiTest {
 				"ae1e2b6b-3bc5-4c93-a250-c4dd0210c3b3",  // instanceID 
 				"e0a786d1-61bb-4e60-a9fd-952a0b110a5b",  // wfname
 				"Beanshell", //procname
-				"out0", // port namem
+				null, // port name
 				null);  // all paths
 
 		logger.info("intermediate values: ");

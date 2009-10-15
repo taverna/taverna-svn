@@ -82,51 +82,51 @@ public class testSimpleLineageQuery {
 	/**
 	 * Test method for {@link net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceQuery#simpleLineageQuery(java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
 	 */
-	@Test
-	public final void testSimpleLineageQuery() {
-		
-		//////////////
-		// set the run instances (scope)
-		//////////////
-		String WFID = null;  // TODO only support one instance query at this time
-		List<WorkflowInstance> instances = null;
-		try {
-			instances = pq.getWFInstanceID(null);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			fail("SQL exception");
-		}  // ordered by timestamp
-
-		if (instances.size()>0)  {  
-			wfInstance = instances.get(0).getInstanceID();
-			System.out.println("instance "+WFID);
-		} else {
-			assertFalse("FATAL: no wfinstances in DB -- terminating", instances.size() == 0);
-		}
-
-		
-		LineageSQLQuery lq = pq.simpleLineageQuery(wfInstance, pname, vname, iteration);
-		
-		Dependencies result = null;
-		
-		try {
-			result = pq.runLineageQuery(lq, false);  // false -> do not return actual data values
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		System.out.println("Query result: ");
-		
-		List<LineageQueryResultRecord> records = result.getRecords();
-		for (LineageQueryResultRecord record:records) {
-			System.out.println("******\n");
-			System.out.println("processor: "+record.getPname());
-			System.out.println("port name: "+record.getVname()+ "["+record.getIteration()+"] = "+ record.getValue());
-		}
-		
-		
-		assertTrue("test returned non-null result", result != null);
-	}
+//	@Test
+//	public final void testSimpleLineageQuery() {
+//		
+//		//////////////
+//		// set the run instances (scope)
+//		//////////////
+//		String WFID = null;  // TODO only support one instance query at this time
+//		List<WorkflowInstance> instances = null;
+//		try {
+//			instances = pq.getWFInstanceID(null);
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			fail("SQL exception");
+//		}  // ordered by timestamp
+//
+//		if (instances.size()>0)  {  
+//			wfInstance = instances.get(0).getInstanceID();
+//			System.out.println("instance "+WFID);
+//		} else {
+//			assertFalse("FATAL: no wfinstances in DB -- terminating", instances.size() == 0);
+//		}
+//
+//		
+//		LineageSQLQuery lq = pq.simpleLineageQuery(wfInstance, pname, vname, iteration);
+//		
+//		Dependencies result = null;
+//		
+//		try {
+//			result = pq.runLineageQuery(lq, false);  // false -> do not return actual data values
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//		System.out.println("Query result: ");
+//		
+//		List<LineageQueryResultRecord> records = result.getRecords();
+//		for (LineageQueryResultRecord record:records) {
+//			System.out.println("******\n");
+//			System.out.println("processor: "+record.getPname());
+//			System.out.println("port name: "+record.getVname()+ "["+record.getIteration()+"] = "+ record.getValue());
+//		}
+//		
+//		
+//		assertTrue("test returned non-null result", result != null);
+//	}
 
 }

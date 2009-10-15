@@ -340,73 +340,73 @@ public class ProvenanceAnalysisTest<pathToDependencies> {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	@Test
-	public final void testSimpleLineageQuery() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-
-		// simple first: test SimpleLineageQuery -- for the target variables
-		for (QueryVar qv:qvList) {
-
-			System.out.println("************\n Intermediate values on TARGET VAR ==> Simple lineage query: [instance, proc, port, path] = ["+
-					wfInstance+","+qv.getPname()+","+qv.getVname()+",["+qv.getPath()+"]]\n***********");
-
-			List<Dependencies> lqr = new ArrayList<Dependencies>();
-
-			if (qv.getPath().equals(pa.ALL_PATHS_KEYWORD)) {
-
-				Map<String, String> vbConstraints = new HashMap<String, String>();
-				vbConstraints.put("VB.PNameRef", qv.getPname());
-				vbConstraints.put("VB.varNameRef", qv.getVname());
-				vbConstraints.put("VB.wfInstanceRef", wfInstance);
-
-				List<VarBinding> vbList = pq.getVarBindings(vbConstraints); // DB
-
-				for (VarBinding vb:vbList) {
-
-					// path is of the form [x,y..]  we need it as x,y... 
-					String path = vb.getIteration().substring(1, vb.getIteration().length()-1);
-
-					System.out.println("simpleLineageQuery on path "+path);
-
-					if (!path.startsWith("["))  path = "["+path+"]";
-
-					LineageSQLQuery slq = pq.simpleLineageQuery(wfInstance, qv.getPname(), qv.getVname(), path);
-					lqr.add(pq.runLineageQuery(slq, pa.isIncludeDataValue()));
-
-				}
-			}  else {
-				LineageSQLQuery slq = pq.simpleLineageQuery(wfInstance, qv.getPname(), qv.getVname(), qv.getPath());
-				lqr.add(pq.runLineageQuery(slq, pa.isIncludeDataValue()));
-			}
-
-			System.out.println("******  intermediate values on TARGET VAR ["+
-					qv.getPname()+","+qv.getVname()+",["+qv.getPath()+"] query completed");
-
-			if (lqr != null) {
-
-				for (Dependencies res:lqr) {
-					res.setPrintResolvedValue(true);
-					System.out.println(res.toString());
-				}
-			}
-
-		}
-
-		for (String s:selProcNames) { 
-
-			System.out.println("************\n Intermediate values on SELECTED PROCESSOR ==> Simple lineage query: [instance, proc] = ["+
-					wfInstance+","+s+"]\n***********");
-
-			LineageSQLQuery slq = pq.simpleLineageQuery(wfInstance, s, null, null);
-
-			Dependencies runLineageQuery;
-			try {
-				runLineageQuery = pq.runLineageQuery(slq, pa.isIncludeDataValue());
-			} catch (SQLException e) {
-				throw e;
-			}			
-			System.out.println("******  intermediate values on SELECTED PROCESSOR ["+s+"] query completed");
-		}
-	}
+//	@Test
+//	public final void testSimpleLineageQuery() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+//
+//		// simple first: test SimpleLineageQuery -- for the target variables
+//		for (QueryVar qv:qvList) {
+//
+//			System.out.println("************\n Intermediate values on TARGET VAR ==> Simple lineage query: [instance, proc, port, path] = ["+
+//					wfInstance+","+qv.getPname()+","+qv.getVname()+",["+qv.getPath()+"]]\n***********");
+//
+//			List<Dependencies> lqr = new ArrayList<Dependencies>();
+//
+//			if (qv.getPath().equals(pa.ALL_PATHS_KEYWORD)) {
+//
+//				Map<String, String> vbConstraints = new HashMap<String, String>();
+//				vbConstraints.put("VB.PNameRef", qv.getPname());
+//				vbConstraints.put("VB.varNameRef", qv.getVname());
+//				vbConstraints.put("VB.wfInstanceRef", wfInstance);
+//
+//				List<VarBinding> vbList = pq.getVarBindings(vbConstraints); // DB
+//
+//				for (VarBinding vb:vbList) {
+//
+//					// path is of the form [x,y..]  we need it as x,y... 
+//					String path = vb.getIteration().substring(1, vb.getIteration().length()-1);
+//
+//					System.out.println("simpleLineageQuery on path "+path);
+//
+//					if (!path.startsWith("["))  path = "["+path+"]";
+//
+//					LineageSQLQuery slq = pq.simpleLineageQuery(wfInstance, qv.getPname(), qv.getVname(), path);
+//					lqr.add(pq.runLineageQuery(slq, pa.isIncludeDataValue()));
+//
+//				}
+//			}  else {
+//				LineageSQLQuery slq = pq.simpleLineageQuery(wfInstance, qv.getPname(), qv.getVname(), qv.getPath());
+//				lqr.add(pq.runLineageQuery(slq, pa.isIncludeDataValue()));
+//			}
+//
+//			System.out.println("******  intermediate values on TARGET VAR ["+
+//					qv.getPname()+","+qv.getVname()+",["+qv.getPath()+"] query completed");
+//
+//			if (lqr != null) {
+//
+//				for (Dependencies res:lqr) {
+//					res.setPrintResolvedValue(true);
+//					System.out.println(res.toString());
+//				}
+//			}
+//
+//		}
+//
+//		for (String s:selProcNames) { 
+//
+//			System.out.println("************\n Intermediate values on SELECTED PROCESSOR ==> Simple lineage query: [instance, proc] = ["+
+//					wfInstance+","+s+"]\n***********");
+//
+//			LineageSQLQuery slq = pq.simpleLineageQuery(wfInstance, s, null, null);
+//
+//			Dependencies runLineageQuery;
+//			try {
+//				runLineageQuery = pq.runLineageQuery(slq, pa.isIncludeDataValue());
+//			} catch (SQLException e) {
+//				throw e;
+//			}			
+//			System.out.println("******  intermediate values on SELECTED PROCESSOR ["+s+"] query completed");
+//		}
+//	}
 
 
 
