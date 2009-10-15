@@ -49,6 +49,9 @@ public class RshellActivityConfigurationBean extends
 	 * @return the script
 	 */
 	public String getScript() {
+		if (script == null) {
+			setScript("");
+		}
 		return script;
 	}
 
@@ -68,6 +71,9 @@ public class RshellActivityConfigurationBean extends
 	 * @return the connectionSettings
 	 */
 	public RshellConnectionSettings getConnectionSettings() {
+		if (connectionSettings == null) {
+			setConnectionSettings(RshellConnectionSettings.defaultSettings());
+		}
 		return connectionSettings;
 	}
 

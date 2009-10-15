@@ -246,4 +246,13 @@ public class RshellConnectionSettings implements Serializable {
 		return newRVersion;
 	}
 
+	public static RshellConnectionSettings defaultSettings() {
+		RshellConnectionSettings result = new RshellConnectionSettings();
+		result.setHost(DEFAULT_HOST);
+		result.setPort(DEFAULT_PORT);
+		result.setUsername(DEFAULT_USERNAME);
+		result.setPassword(DEFAULT_PASSWORD);
+		result.setKeepSessionAlive(DEFAULT_KEEP_SESSION_ALIVE);
+		return result;
+	}
 }
