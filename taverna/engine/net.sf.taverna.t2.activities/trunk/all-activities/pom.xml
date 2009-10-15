@@ -52,6 +52,11 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
+			<artifactId>spreadsheet-import-activity</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>stringconstant-activity</artifactId>
 			<version>${project.version}</version>
 		</dependency>
