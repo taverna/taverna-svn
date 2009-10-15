@@ -27,16 +27,7 @@
 		<org.myexperiment.perspective-myexperiment.version>0.2-SNAPSHOT</org.myexperiment.perspective-myexperiment.version>
 		<taverna.version>1.7.2.0</taverna.version>
 	</properties>
-	<repositories>
-		<repository>
-			<id>mine</id>
-			<name>Home</name>
-			<url>file:///Users/alanrw/.m2/repository/</url>
-			<releases />
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
+	<repositories>		
 		<repository>
 			<releases />
 			<snapshots>
