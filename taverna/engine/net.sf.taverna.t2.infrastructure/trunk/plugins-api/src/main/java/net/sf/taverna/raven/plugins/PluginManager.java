@@ -606,8 +606,56 @@ public class PluginManager implements PluginListener {
 				Plugin newPlugin = getUpdate(plugin);
 				updatedPlugins.remove(newPlugin);
 				newPlugin.setEnabled(true); // enable newly updated plugin
-				removePlugin(plugin);
-				addPlugin(newPlugin);
+				
+				// Remove the old plugin
+				if (updatedPlugins.contains(plugin))
+					updatedPlugins.remove(plugin);
+				if (plugins.contains(plugin)) {
+					if (plugin.isEnabled()) {
+						disablePlugin(plugin);
+					}
+					int index = plugins.indexOf(plugin);
+					plugins.remove(plugin);
+					plugin.removePluginListener(this);
+				}
+				
+				// Add the new plugin
+				if (!plugins.contains(newPlugin)) {
+					plugins.add(newPlugin);
+					sortPlugins();
+					for (String repositoryURL : newPlugin.getRepositories()) {
+						try {
+							// T2-338 - always add to the end - do not use
+							// prependRemoteRepository
+							repository.addRemoteRepository(new URL(repositoryURL));
+						} catch (MalformedURLException e) {
+							logger.warn("Invalid remote repository URL - "
+									+ repositoryURL);
+						}
+					}
+					for (Artifact artifact : newPlugin.getProfile().getArtifacts()) {
+						repository.addArtifact(artifact);
+						if (newPlugin.getProfile().getSystemArtifacts().contains(artifact)) {
+							profile.addSystemArtifact(artifact);
+						}
+					}
+					if (!checkPluginCompatibility(newPlugin)) {
+						if (newPlugin.isEnabled()) {
+							newPlugin.setEnabled(false);
+							firePluginIncompatibleEvent(new PluginManagerEvent(this,
+									newPlugin, plugins.indexOf(newPlugin)));
+						}
+					}
+					repository.update();
+					if (newPlugin.isEnabled()) {
+						enablePlugin(newPlugin);
+					}
+					
+					// Notify interested parties
+					firePluginUpdatedEvent(new PluginManagerEvent(this, newPlugin, plugins.indexOf(newPlugin)));
+					
+					newPlugin.addPluginListener(this);
+				}			
 				savePlugins();
 			}
 		}
@@ -699,10 +747,18 @@ public class PluginManager implements PluginListener {
 		}
 	}
 
+	protected void firePluginUpdatedEvent(PluginManagerEvent event) {
+		synchronized (pluginManagerListeners) {
+			for (PluginManagerListener listener : pluginManagerListeners) {
+				listener.pluginUpdated(event);
+			}
+		}
+	}
+	
 	protected void firePluginChangedEvent(PluginManagerEvent event) {
 		synchronized (pluginManagerListeners) {
 			for (PluginManagerListener listener : pluginManagerListeners) {
-				listener.pluginChanged(event);
+				listener.pluginStateChanged(event);
 			}
 		}
 	}

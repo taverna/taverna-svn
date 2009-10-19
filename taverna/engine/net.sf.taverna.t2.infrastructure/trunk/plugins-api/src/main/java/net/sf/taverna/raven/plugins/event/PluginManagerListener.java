@@ -78,11 +78,18 @@ public interface PluginManagerListener extends EventListener {
 	public void pluginRemoved(PluginManagerEvent event);
 
 	/**
-	 * Invoked when a plugin is changed.
+	 * Invoked when a plugin is updated.
 	 *
 	 * @param event
 	 */
-	public void pluginChanged(PluginManagerEvent event);
+	public void pluginUpdated(PluginManagerEvent event);
+	
+	/**
+	 * Invoked when a plugin's state (which can be ENABLED or DISABLED) is changed.
+	 *
+	 * @param event
+	 */
+	public void pluginStateChanged(PluginManagerEvent event);
 	
 	/**
 	 * Invoked when a plugin is found to be incompatible with the current running
