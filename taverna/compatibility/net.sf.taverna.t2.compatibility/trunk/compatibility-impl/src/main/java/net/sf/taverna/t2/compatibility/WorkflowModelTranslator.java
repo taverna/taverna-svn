@@ -21,6 +21,8 @@
 package net.sf.taverna.t2.compatibility;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +31,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
 
 import net.sf.taverna.t2.annotation.annotationbeans.Author;
 import net.sf.taverna.t2.annotation.annotationbeans.DescriptiveTitle;
@@ -432,17 +435,34 @@ public class WorkflowModelTranslator {
 				.getIterationStrategy();
 		IterationStrategyImpl t2IterationStrategy = new IterationStrategyImpl();
 		if (t1IterationStrategy == null) {
-			t1IterationStrategy = new IterationStrategy(t1Processor) {
-				public void normalize() {
-				}
-			};
+			makeImplicitIterationStrategy(t1Processor, t2Processor, t2IterationStrategy);			
+		} else {
+			addIterationNode((MutableTreeNode) t1IterationStrategy.getTreeModel()
+					.getRoot(), t2IterationStrategy, t2IterationStrategy
+					.getTerminalNode(), t2Processor);
 		}
-		addIterationNode((MutableTreeNode) t1IterationStrategy.getTreeModel()
-				.getRoot(), t2IterationStrategy, t2IterationStrategy
-				.getTerminalNode(), t2Processor);
-
 		iterationStrategyStack.clear();
 		iterationStrategyStack.addStrategy(t2IterationStrategy);
+	}
+
+	private void makeImplicitIterationStrategy(
+			org.embl.ebi.escience.scufl.Processor t1Processor,
+			Processor t2Processor, IterationStrategyImpl t2IterationStrategy) {
+		CrossProduct parent = new CrossProduct();
+		parent.setParent(t2IterationStrategy.getTerminalNode());
+
+		for (org.embl.ebi.escience.scufl.InputPort inp : t1Processor.getBoundInputPorts()) {
+			for (InputPort ip : t2Processor.getInputPorts()) {
+				if (!ip.getName().equals(inp.getName())) {
+					continue;
+				}
+				NamedInputPortNode inputPortNode = new NamedInputPortNode(inp
+						.getName(), ip.getDepth());
+				// Due to T2-890 we'll have to add these upside down
+				parent.insert(inputPortNode, 0);
+				t2IterationStrategy.addInput(inputPortNode);
+			}
+		}
 	}
 
 	private void addIterationNode(MutableTreeNode node,
@@ -454,6 +474,7 @@ public class WorkflowModelTranslator {
 				if (ip.getName().equals(nodeName)) {
 					NamedInputPortNode inputPortNode = new NamedInputPortNode(
 							nodeName, ip.getDepth());
+					// Insertions should be in the top - which is what we want for cross/dot product, see T2-890
 					inputPortNode.setParent(parent);
 					t2IterationStrategy.addInput(inputPortNode);
 					break;
@@ -467,10 +488,12 @@ public class WorkflowModelTranslator {
 				strategyNode = new CrossProduct();
 			}
 			strategyNode.setParent(parent);
-			for (Enumeration<?> en = node.children(); en.hasMoreElements();) {
-				addIterationNode((MutableTreeNode) en.nextElement(),
+			for (int childIndex = 0; childIndex < node.getChildCount(); childIndex++) {
+				TreeNode childNode = node.getChildAt(childIndex);				
+				addIterationNode((MutableTreeNode) childNode,
 						t2IterationStrategy, strategyNode, t2Processor);
 			}
+			
 		}
 	}
 

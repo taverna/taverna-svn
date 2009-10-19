@@ -85,7 +85,7 @@ import org.junit.Test;
  */
 public class ModelTranslatorTest extends TranslatorTestHelper {
 
-    @Ignore("Integration test")
+	@Ignore("Integration test")
 	@Test
 	public void translateAndValidateTest() throws Exception {
 		DataflowImpl dataflow = (DataflowImpl) translateScuflFile("ModifiedBiomartAndEMBOSSAnalysis.xml");
@@ -243,11 +243,13 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 				assertEquals(2, ((CrossProduct) terminal.getChildAt(0))
 						.getChildCount());
 				assertTrue(terminal.getChildAt(0).getChildAt(0) instanceof NamedInputPortNode);
-				assertTrue(terminal.getChildAt(0).getChildAt(1) instanceof NamedInputPortNode);
-				assertEquals("input_2", ((NamedInputPortNode) terminal
-						.getChildAt(0).getChildAt(0)).getPortName());
+				assertTrue(terminal.getChildAt(0).getChildAt(1) instanceof NamedInputPortNode);				
+				// Note: Upside down due to T2-890
 				assertEquals("input_3", ((NamedInputPortNode) terminal
+						.getChildAt(0).getChildAt(0)).getPortName());
+				assertEquals("input_2", ((NamedInputPortNode) terminal
 						.getChildAt(0).getChildAt(1)).getPortName());
+				
 			}
 
 			List<DispatchLayer<?>> dispatchLayers = processor
