@@ -84,19 +84,24 @@ public class PomPropertiesTest {
 	@After
 	public void deleteRepositoryDir() {
 		repository = null;
+		if (repositoryDir == null) {
+			return;
+		}
 		try {
 			FileUtils.deleteDirectory(repositoryDir);
 		} catch (IOException e) {
 			// OK
 		}
+		repositoryDir = null;
 	}
 
 	@Before
 	public void findRepository() throws IOException {
 		// Fake repository in classpath
-		String repLoc = "/net/sf/taverna/raven/repository/cxf-repository/";
-		repositoryURL = getClass().getResource(repLoc);
-		assertNotNull("Could not find repository " + repLoc, repositoryURL);
+		String repLoc = "/cxf-repository.jar";
+		URL repUrl = getClass().getResource(repLoc);
+		assertNotNull("Could not find repository " + repUrl, repUrl);
+		repositoryURL = new URL("jar:" + repUrl.toExternalForm() + "!/");
 
 		repositoryDir = createTempDirectory().getAbsoluteFile();
 		System.out.println(repositoryDir);

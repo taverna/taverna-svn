@@ -49,7 +49,6 @@ public class LoaderTest {
 	public static final String MAVEN_MYGRID_REPOSITORY = "http://www.mygrid.org.uk/maven/repository/";
 	public static final String MAVEN_MYGRID_SNAPSHOT_REPOSITORY = "http://www.mygrid.org.uk/maven/snapshot-repository/";
 	public static final String MAVEN_MYGRID_REPO1_REPOSITORY = "http://www.mygrid.org.uk/maven/repo1/";
-	public static final String MAVEN_UNIONTRANSIT_REPOSITORY = "http://www.uniontransit.com/apache/maven-repository/";
 
 	public static final String repositoryLocation = MAVEN_MYGRID_REPOSITORY;
 

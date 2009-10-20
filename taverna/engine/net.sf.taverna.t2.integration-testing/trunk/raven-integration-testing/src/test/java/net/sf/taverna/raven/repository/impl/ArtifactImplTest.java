@@ -21,10 +21,10 @@
 package net.sf.taverna.raven.repository.impl;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -55,10 +55,15 @@ public class ArtifactImplTest {
 		dir = LocalRepositoryTest.createTempDirectory();
 		r = new LocalRepository(dir);
 		// To get "repository" under test-classes
-		testRepos = this.getClass().getResource(
-				"/net/sf/taverna/raven/repository/raventest/..");
-		System
-				.setProperty("raven.profile",
+		
+		String repLoc = "/raventest-repository.jar";
+		URL repUrl = getClass().getResource(repLoc);
+		assertNotNull("Could not find repository " + repUrl, repUrl);
+		testRepos = new URL("jar:" + repUrl.toExternalForm() + "!/");
+		
+//		testRepos = this.getClass().getResource(
+//				"/net/sf/taverna/raven/repository/raventest/..");
+		System.setProperty("raven.profile",
 						"http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2.0-profile.xml");
 	}
 
@@ -66,7 +71,7 @@ public class ArtifactImplTest {
 	public void tearDown() {
 		r = null;
 		try {
-			deleteDirectory(dir);
+			if (false) deleteDirectory(dir);
 		} catch (IOException e) {
 			//
 		}
@@ -137,8 +142,7 @@ public class ArtifactImplTest {
 	public void testDependenciesWithPropertiesInterpolation()
 			throws MalformedURLException, InterruptedException,
 			ArtifactStateException {
-		r
-				.addRemoteRepository(new URL(
+		r.addRemoteRepository(new URL(
 						LoaderTest.MAVEN_MYGRID_REPO1_REPOSITORY));
 		r.addRemoteRepository(testRepos);
 		BasicArtifact exclusionTest = new BasicArtifact("raventest",
@@ -220,7 +224,7 @@ public class ArtifactImplTest {
 	public void testPropertiesInterpolation() throws MalformedURLException,
 			InterruptedException, ArtifactStateException, FileNotFoundException {
 		r.addRemoteRepository(new URL(
-						LoaderTest.MAVEN_UNIONTRANSIT_REPOSITORY));
+						LoaderTest.MAVEN_MYGRID_REPO1_REPOSITORY));
 		r.addRemoteRepository(testRepos);
 		BasicArtifact propertiesTest = new BasicArtifact("raventest",
 				"propertiestest", "1.6.0");
