@@ -53,7 +53,7 @@
 		<module>platform-integration-testing</module>
 		<module>raven-integration-testing</module>
 		<module>reference-integration-tests</module>
-		<module>provenance-testing</module>
+		<!--<module>provenance-testing</module>-->
 	</modules>
 	<scm>
 		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.integration-testing/tags/integration-testing-0.5</connection>
