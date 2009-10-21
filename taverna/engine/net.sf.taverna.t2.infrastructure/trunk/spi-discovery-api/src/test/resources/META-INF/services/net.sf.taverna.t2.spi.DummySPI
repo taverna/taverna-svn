@@ -9,7 +9,7 @@ net.sf.taverna.t2.spi.FirstDummySPI
 
         
 # But not NotListedDummy, none of the lines below should be read
-#net.sf.taverna.t2.spi.NotListedDummy
+net.sf.taverna.t2.spi.NotListedDummy
 #  net.sf.taverna.t2.spi.NotListedDummy
 #  net.sf.taverna.t2.spi.NotListedDummy net.sf.taverna.t2.spi.NotListedDummy net.sf.taverna.t2.spi.NotListedDummy
     #net.sf.taverna.t2.spi.NotListedDummy
@@ -21,6 +21,9 @@ net.sf.taverna.t2.spi.FirstDummySPI
 
 # Any interface should be ignored
 net.sf.taverna.t2.spi.DummySPI
+
+# The second one with a constructor
+net.sf.taverna.t2.spi.SecondDummySPI
 
 # A class that does not implement the interface (currently removed from test - Raven SPI registry doesn't filter out non-implementing instances - maybe it should).
 # net.sf.taverna.t2.spi.NotImplementingDummySPI

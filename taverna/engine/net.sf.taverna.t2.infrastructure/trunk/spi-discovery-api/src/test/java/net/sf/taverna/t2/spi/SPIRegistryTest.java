@@ -20,9 +20,11 @@
  ******************************************************************************/
 package net.sf.taverna.t2.spi;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -33,11 +35,22 @@ public class SPIRegistryTest {
 	@Test
 	public void getInstances() {
 		List<DummySPI> instances = registry.getInstances();
-		assertEquals(2, instances.size());
 		// Test that they were instantiated
+		
+		Set<String> expected = new HashSet<String>();
+		expected.add(FirstDummySPI.class.getSimpleName());
+		expected.add(SecondDummySPI.class.getSimpleName());
+		
+		Set<String> found = new HashSet<String>();
+		
 		for (DummySPI spi : instances) {
+			if (! found.add(spi.getClass().getSimpleName())) {
+				fail("Duplicate SPI " + spi.getClass().getCanonicalName());
+			}
 			assertEquals("Wrong name", spi.getName(), spi.getClass().getSimpleName());
 		}
+		assertEquals("Wrong SPIs", expected, found);
+		
 	}
 
 }
