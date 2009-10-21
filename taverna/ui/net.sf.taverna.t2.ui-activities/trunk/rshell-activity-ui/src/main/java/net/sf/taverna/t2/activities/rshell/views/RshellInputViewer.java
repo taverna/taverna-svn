@@ -28,13 +28,13 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
 import net.sf.taverna.t2.activities.rshell.RShellPortSymanticTypeBean;
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
 import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SymanticTypes;
+import net.sf.taverna.t2.lang.ui.DialogTextArea;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 
 /**
@@ -54,9 +54,9 @@ public class RshellInputViewer extends JPanel {
 
 	private JSpinner depthSpinner;
 
-	private JTextArea refSchemeText;
+	private DialogTextArea refSchemeText;
 
-	private JTextArea mimeTypeText;
+	private DialogTextArea mimeTypeText;
 
 	private JLabel translatedType;
 
@@ -131,7 +131,7 @@ public class RshellInputViewer extends JPanel {
 		add(depthSpinner, outerConstraint);
 
 		outerConstraint.gridx = 3;
-		refSchemeText = new JTextArea();
+		refSchemeText = new DialogTextArea();
 //		String refs = "";
 ////		for (Object refScheme : bean.getHandledReferenceSchemes()) {
 ////			refs = refs + refScheme.getClass().getSimpleName() + "\n";
@@ -142,7 +142,7 @@ public class RshellInputViewer extends JPanel {
 		// add(refSchemeText, outerConstraint);
 
 		outerConstraint.gridx = 4;
-		// mimeTypeText = new JTextArea();
+		// mimeTypeText = new DialogTextArea();
 		// String mimes = "";
 		// for (String mimeType : bean.getMimeTypes()) {
 		// mimes = mimes + mimeType + "\n";
@@ -175,7 +175,7 @@ public class RshellInputViewer extends JPanel {
 	 * 
 	 * @return
 	 */
-	public JTextArea getRefSchemeText() {
+	public DialogTextArea getRefSchemeText() {
 		return refSchemeText;
 	}
 
@@ -185,7 +185,7 @@ public class RshellInputViewer extends JPanel {
 	 * 
 	 * @return
 	 */
-	public JTextArea getMimeTypeText() {
+	public DialogTextArea getMimeTypeText() {
 		return mimeTypeText;
 	}
 

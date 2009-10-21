@@ -24,19 +24,16 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.List;
 
-import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
 import net.sf.taverna.t2.activities.rshell.RShellPortSymanticTypeBean;
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
 import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SymanticTypes;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.MimeTypeConfig;
+import net.sf.taverna.t2.lang.ui.DialogTextArea;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 
@@ -59,16 +56,11 @@ public class RshellOutputViewer extends JPanel {
 	/** The granular depth of the port */
 	private JSpinner granularDepthSpinner;
 	/** The mime types which the output port can handle */
-	private JTextArea mimeTypeText;
+	private DialogTextArea mimeTypeText;
 	/** Whether the values in the bean can be edited */
 	private boolean editable;
 	// private final JList mimeDropList = new JList();
 	
-	private JPanel mimeTypePanel;
-	
-	private MimeTypeConfig mimeTypeConfig;
-	private JButton addMimeButton;
-	private JFrame mimeFrame;
 	private JComboBox semanticTypeSelector;
 	private final List<RShellPortSymanticTypeBean> list;
 
@@ -125,26 +117,7 @@ public class RshellOutputViewer extends JPanel {
 		// granularDepthSpinner.setValue(bean.getGranularDepth());
 		add(granularDepthSpinner, outerConstraint);
 
-		outerConstraint.gridx = 3;
-		
-		outerConstraint.gridx = 4;
-		mimeFrame = new JFrame();
-		mimeTypeConfig = new MimeTypeConfig();
-		if (bean.getMimeTypes() !=null) {
-			mimeTypeConfig.setMimeTypeList(bean.getMimeTypes());
-		}
-		mimeFrame.add(mimeTypeConfig);
-		mimeTypeConfig.setVisible(true);
-		addMimeButton = new JButton("Add mime type");
-//		addMimeButton.addActionListener(new AbstractAction() {
-//
-//			public void actionPerformed(ActionEvent e) {
-//				mimeFrame.setVisible(true);
-//			}
-//			
-//		});
-		add(addMimeButton, outerConstraint);
-		
+		outerConstraint.gridx = 3;	
 		
 		setSemanticTypeSelector(new JComboBox(SymanticTypes.values()));
 		semanticTypeSelector.setRenderer(new PortTypesListCellRenderer());
@@ -195,7 +168,7 @@ public class RshellOutputViewer extends JPanel {
 	 * 
 	 * @return
 	 */
-	public JTextArea getMimeTypeText() {
+	public DialogTextArea getMimeTypeText() {
 		return mimeTypeText;
 	}
 
@@ -238,27 +211,6 @@ public class RshellOutputViewer extends JPanel {
 		this.granularDepthSpinner.setEnabled(editable);
 		this.nameField.setEditable(editable);
 
-	}
-
-	/**
-	 * The panel which has all the mime type components in it
-	 * 
-	 * @return
-	 */
-	public JPanel getMimeTypePanel() {
-		return mimeTypePanel;
-	}
-
-	public MimeTypeConfig getMimeTypeConfig() {
-		return mimeTypeConfig;
-	}
-
-	public JButton getAddMimeButton() {
-		return addMimeButton;
-	}
-
-	public JFrame getMimeFrame() {
-		return mimeFrame;
 	}
 
 	public void setSemanticTypeSelector(JComboBox semanticTypeSelector) {
