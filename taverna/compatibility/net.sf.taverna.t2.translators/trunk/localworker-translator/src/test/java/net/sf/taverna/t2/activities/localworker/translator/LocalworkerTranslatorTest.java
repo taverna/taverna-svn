@@ -699,7 +699,8 @@ public class LocalworkerTranslatorTest {
 
 		invoke(activity, inputs, expectedOutputs);
 	}
-	
+
+	@Ignore("Integration test")
 	@Test
 	public void testDoTranslationXSLTWorker() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -759,6 +760,7 @@ public class LocalworkerTranslatorTest {
 				expectedOutput.substring(0, 100)));
 	}
 	
+	@Ignore("Integration test")
 	@Test
 	public void testDoTranslationGenBankParserWorker_url() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -819,6 +821,7 @@ public class LocalworkerTranslatorTest {
 				expectedOutput.substring(0, 100)));
 	}
 	
+	@Ignore("Integration test")
 	@Test
 	public void testDoTranslationSwissProtParserWorker_url() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -913,6 +916,7 @@ public class LocalworkerTranslatorTest {
 		invoke(activity, inputs, expectedOutputs);
 	}
 
+	@Ignore("Integration test")
 	@Test
 	public void testDoTranslationTextFileReader_url() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -961,6 +965,7 @@ public class LocalworkerTranslatorTest {
 		tempFile.delete();
 	}
 
+	@Ignore("Does not work on Windows")
 	@Test
 	public void testDoTranslationLocalCommand() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -1117,6 +1122,7 @@ public class LocalworkerTranslatorTest {
 		invoke(activity, inputs, expectedOutputs);
 	}
 
+	@Ignore("Integration test")
 	@Test
 	public void testDoTranslationConcatenateFileListWorker() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -1203,6 +1209,7 @@ public class LocalworkerTranslatorTest {
 		assertTrue(((String) output).endsWith("</property-list>"));
 	}
 
+	@Ignore("Integration test")
 	@Test
 	public void testDoTranslationNucleotideFastaWorker() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -1225,6 +1232,7 @@ public class LocalworkerTranslatorTest {
 		assertTrue(((String)outputText).startsWith(">gi|18450186"));
 	}
 	
+	@Ignore("Integration test")
 	@Test
 	public void testDoTranslationNucleotideGBSeqWorker() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -1248,6 +1256,7 @@ public class LocalworkerTranslatorTest {
 		assertTrue((String) outputText, ((String)outputText).contains("<GBSeqid>gi|18450186</GBSeqid>"));
 	}
 
+	@Ignore("Integration test")
 	@Test
 	public void testDoTranslationNucleotideINSDSeqXMLWorker() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -1271,6 +1280,7 @@ public class LocalworkerTranslatorTest {
 		assertTrue((String) outputText, ((String)outputText).contains("<INSDSeqid>gi|18450186</INSDSeqid>"));
 	}
 	
+	@Ignore("Integration test")
 	@Test
 	public void testDoTranslationNucleotideTinySeqXMLWorker() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -1294,6 +1304,8 @@ public class LocalworkerTranslatorTest {
 		assertTrue((String) outputText, ((String)outputText).contains("<TSeq_gi>18450186</TSeq_gi>"));
 	}
 	
+	
+	@Ignore("Integration test")
 	@Test
 	public void testDoTranslationProteinFastaWorker() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -1315,7 +1327,8 @@ public class LocalworkerTranslatorTest {
 		assertTrue(outputText instanceof String);
 		assertTrue(((String)outputText).startsWith(">gi|18450186"));
 	}
-	
+
+	@Ignore("Integration test")
 	@Test
 	public void testDoTranslationProteinGBSeqWorker() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -1339,6 +1352,7 @@ public class LocalworkerTranslatorTest {
 		assertTrue((String) outputText, ((String)outputText).contains("<GBSeqid>gi|18450186</GBSeqid>"));
 	}
 
+	@Ignore("Integration test")
 	@Test
 	public void testDoTranslationProteinINSDSeqXMLWorker() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -1361,7 +1375,8 @@ public class LocalworkerTranslatorTest {
 		assertTrue(xmlStartToString((String)outputText));
 		assertTrue((String) outputText, ((String)outputText).contains("<INSDSeqid>gi|18450186</INSDSeqid>"));
 	}
-	
+
+	@Ignore("Integration test")
 	@Test
 	public void testDoTranslationProteinTinySeqXMLWorker() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -1385,6 +1400,7 @@ public class LocalworkerTranslatorTest {
 		assertTrue((String) outputText, ((String)outputText).contains("<TSeq_gi>18450186</TSeq_gi>"));
 	}
 	
+	@Ignore("Integration test")
 	@Test
 	public void testDoTranslationPubMedEFetchWorker() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -1408,7 +1424,8 @@ public class LocalworkerTranslatorTest {
 		assertTrue((String) outputText, xmlStartToString((String)outputText));
 		assertTrue((String) outputText, ((String)outputText).contains("<PMID>18450186</PMID>"));
 	}
-	
+
+	@Ignore("Integration test")
 	@Test
 	public void testDoTranslationPubMedESearchWorker() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
