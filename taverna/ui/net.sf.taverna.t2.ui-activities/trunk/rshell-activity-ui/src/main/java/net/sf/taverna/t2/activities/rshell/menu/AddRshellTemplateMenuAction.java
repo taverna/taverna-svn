@@ -39,6 +39,7 @@ import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.ui.workflowview.WorkflowView;
 import net.sf.taverna.t2.workbench.views.graph.actions.DesignOnlyAction;
 import net.sf.taverna.t2.workbench.views.graph.menu.GraphEditMenuSection;
+import net.sf.taverna.t2.workbench.views.graph.menu.InsertMenu;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.apache.log4j.Logger;
@@ -53,7 +54,7 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("serial")
 public class AddRshellTemplateMenuAction extends AbstractMenuAction {
 
-	private static final String ADD_RSHELL = "Add RShell";
+	private static final String ADD_RSHELL = "RShell";
 
 	private static final URI ADD_RSHELL_URI = URI
 	.create("http://taverna.sf.net/2008/t2workbench/menu#graphMenuAddRShell");
@@ -61,7 +62,7 @@ public class AddRshellTemplateMenuAction extends AbstractMenuAction {
 	private static Logger logger = Logger.getLogger(AddRshellTemplateMenuAction.class);
 
 	public AddRshellTemplateMenuAction() {
-		super(GraphEditMenuSection.GRAPH_EDIT_MENU_SECTION, 23, ADD_RSHELL_URI);
+		super(InsertMenu.INSERT, 23, ADD_RSHELL_URI);
 	}
 
 	@Override
@@ -75,7 +76,7 @@ public class AddRshellTemplateMenuAction extends AbstractMenuAction {
 			putValue(SMALL_ICON, ActivityIconManager.getInstance()
 					.iconForActivity(new RshellActivity()));
 			putValue(NAME, ADD_RSHELL);	
-			putValue(SHORT_DESCRIPTION, "Add RShell");	
+			putValue(SHORT_DESCRIPTION, "RShell");	
 			putValue(Action.ACCELERATOR_KEY,
 					KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.SHIFT_DOWN_MASK | InputEvent.ALT_DOWN_MASK));
 			

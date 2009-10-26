@@ -46,13 +46,13 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("serial")
 public class AddRshellTemplateAction extends AbstractContextualMenuAction {
 
-	private static final URI serviceTemplatesSection = URI
-	.create("http://taverna.sf.net/2009/contextMenu/serviceTemplates");
+	private static final URI insertSection = URI
+	.create("http://taverna.sf.net/2009/contextMenu/insert");
 	
 	private static Logger logger = Logger.getLogger(AddRshellTemplateAction.class);
 
 	public AddRshellTemplateAction() {
-		super(serviceTemplatesSection, 30);
+		super(insertSection, 50);
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class AddRshellTemplateAction extends AbstractContextualMenuAction {
 	@Override
 	protected Action createAction() {
 
-		AbstractAction action = new AbstractAction("Add Rshell", ActivityIconManager.getInstance()
+		AbstractAction action = new AbstractAction("Rshell", ActivityIconManager.getInstance()
 				.iconForActivity(new RshellActivity())){
 
 			public void actionPerformed(ActionEvent e) {
