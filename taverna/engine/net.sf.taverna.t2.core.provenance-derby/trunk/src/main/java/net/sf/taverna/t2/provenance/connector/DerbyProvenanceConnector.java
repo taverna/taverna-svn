@@ -36,7 +36,7 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 
     private static Logger logger = Logger.getLogger(DerbyProvenanceConnector.class);
     private static final String createTableData = "CREATE TABLE Data (dataReference VARCHAR(100), wfInstanceID VARCHAR(100), data BLOB)";
-    private static final String createTableArc = "CREATE TABLE Arc (" + "sourceVarNameRef varchar(100) NOT NULL ," + "sinkVarNameRef varchar(100) NOT NULL," + "sourcePNameRef varchar(100) NOT NULL," + "sinkPNameRef varchar(100) NOT NULL," + "wfInstanceRef varchar(100) NOT NULL," + " PRIMARY KEY  (sourceVarNameRef,sinkVarNameRef,sourcePNameRef,sinkPNameRef,wfInstanceRef))";
+    private static final String createTableArc = "CREATE TABLE  Arc (" + "sourceVarNameRef varchar(100) NOT NULL ," + "sinkVarNameRef varchar(100) NOT NULL," + "sourcePNameRef varchar(100) NOT NULL," + "sinkPNameRef varchar(100) NOT NULL," + "wfInstanceRef varchar(100) NOT NULL," + " PRIMARY KEY  (sourceVarNameRef,sinkVarNameRef,sourcePNameRef,sinkPNameRef,wfInstanceRef))";
     private static final String createTableCollection = "CREATE TABLE Collection (" + "collID varchar(100) NOT NULL," + "parentCollIDRef varchar(100) NOT NULL ," + "wfInstanceRef varchar(100) NOT NULL," + "PNameRef varchar(100) NOT NULL," + "varNameRef varchar(100) NOT NULL," + "iteration varchar(2000) NOT NULL default ''," + " PRIMARY KEY (collID,wfInstanceRef,PNameRef,varNameRef,parentCollIDRef,iteration))";
     private static final String createTableProcBinding = "CREATE TABLE ProcBinding (" + "pnameRef varchar(100) NOT NULL ," + "execIDRef varchar(100) NOT NULL ," + "actName varchar(100) NOT NULL ," + "iteration char(10) NOT NULL default ''," + "wfNameRef varchar(100)," +"PRIMARY KEY (pnameRef,execIDRef,iteration, wfNameRef))";
     private static final String createTableProcessor = "CREATE TABLE Processor (" + "pname varchar(100) NOT NULL," + "wfInstanceRef varchar(100) NOT NULL ," + "type varchar(100) default NULL," + "isTopLevel smallint, " + "PRIMARY KEY  (pname,wfInstanceRef))";
@@ -45,6 +45,7 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
     private static final String createTableWFInstance = "CREATE TABLE WfInstance (" + "instanceID varchar(100) NOT NULL," + "wfnameRef varchar(100) NOT NULL," + "timestamp timestamp NOT NULL default CURRENT_TIMESTAMP," + " PRIMARY KEY (instanceID, wfnameRef))";
     private static final String createTableWorkflow = "CREATE TABLE Workflow (" + "wfname varchar(100) NOT NULL," + "parentWFname varchar(100)," + "externalName varchar(100)," + "PRIMARY KEY  (wfname))";
     
+    private final String TABLE_EXISTS_STATE="X0Y32";
 
     public DerbyProvenanceConnector() {
         setWriter(new DerbyProvenanceWriter());
@@ -68,59 +69,59 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
             } catch (SQLException e1) {
                 logger.warn(e1);
             } catch (InstantiationException e) {
-                logger.warn("Could not create database: " + e);
+                logger.warn("Could not create database: ",e);
             } catch (IllegalAccessException e) {
-                logger.warn("Could not create database: " + e);
+                logger.warn("Could not create database: ",e);
             } catch (ClassNotFoundException e) {
-                logger.warn("Could not create database: " + e);
+                logger.warn("Could not create database: ",e);
             }
             try {
                 stmt.executeUpdate(createTableArc);
             } catch (Exception e) {
                 // probably means that the database already existed so just log
                 // the exception and return
-                logger.warn("Could not create table Arc : " + e);
+                logger.warn("Could not create table Arc : ",e);
                 return;
             }
             try {
                 stmt.executeUpdate(createTableCollection);
-            } catch (Exception e) {
-                logger.warn("Could not create table Collection : " + e);
+            } catch (SQLException e) {
+                if (!e.getSQLState().equals(TABLE_EXISTS_STATE)) logger.warn("Could not create table Collection : ",e);
             }
             try {
                 stmt.executeUpdate(createTableProcBinding);
-            } catch (Exception e) {
-                logger.warn("Could not create table ProcBinding : " + e);
+            } catch (SQLException e) {
+                if (!e.getSQLState().equals(TABLE_EXISTS_STATE)) logger.warn("Could not create table ProcBinding : ",e);
             }
             try {
                 stmt.executeUpdate(createTableProcessor);
-            } catch (Exception e) {
-                logger.warn("Could not create table Processor : " + e);
+            } catch (SQLException e) {
+                if (!e.getSQLState().equals(TABLE_EXISTS_STATE)) logger.warn("Could not create table Processor : ",e);
             }
             try {
                 stmt.executeUpdate(createTableVar);
-            } catch (Exception e) {
-                logger.warn("Could not create table Var : " + e);
+            } catch (SQLException e) {
+                if (!e.getSQLState().equals(TABLE_EXISTS_STATE)) logger.warn("Could not create table Var : ",e);
             }
             try {
                 stmt.executeUpdate(createTableVarBinding);
-            } catch (Exception e) {
-                logger.warn("Could not create table Var Binding : " + e);
+            } catch (SQLException e) {
+                if (!e.getSQLState().equals(TABLE_EXISTS_STATE)) logger.warn("Could not create table Var Binding : ",e);
             }
             try {
                 stmt.executeUpdate(createTableWFInstance);
-            } catch (Exception e) {
-                logger.warn("Could not create table WfInstance : " + e);
+            } catch (SQLException e) {
+                if (!e.getSQLState().equals(TABLE_EXISTS_STATE)) logger.warn("Could not create table WfInstance : ",e);
             }
             try {
                 stmt.executeUpdate(createTableWorkflow);
-            } catch (Exception e) {
-                logger.warn("Could not create table Workflow : " + e);
+            } catch (SQLException e) {
+                if (!e.getSQLState().equals(TABLE_EXISTS_STATE)) logger.warn("Could not create table Workflow : ",e);
             }
             try {
                 stmt.executeUpdate(createTableData);
-            } catch (Exception e) {
-                logger.warn("Could not create table Data : " + e);
+            } catch (SQLException e) {
+                if (!e.getSQLState().equals(TABLE_EXISTS_STATE)) logger.warn("Could not create table Data : ",e);
             }
         } finally {
             if (connection != null) {
