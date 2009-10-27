@@ -77,11 +77,8 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
             }
             try {
                 stmt.executeUpdate(createTableArc);
-            } catch (Exception e) {
-                // probably means that the database already existed so just log
-                // the exception and return
-                logger.warn("Could not create table Arc : ",e);
-                return;
+            } catch (SQLException e) {
+                if (!e.getSQLState().equals(TABLE_EXISTS_STATE)) logger.warn("Could not create table Arc : ",e);                
             }
             try {
                 stmt.executeUpdate(createTableCollection);
