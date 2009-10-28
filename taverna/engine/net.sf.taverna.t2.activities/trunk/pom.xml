@@ -26,8 +26,8 @@
 		<t2.lang.version>0.6-SNAPSHOT</t2.lang.version>
 		<t2.security.version>0.7-SNAPSHOT</t2.security.version>
 		<t2.core.refexts.version>0.7-SNAPSHOT</t2.core.refexts.version>
-                <org.biomart.martservice.version>0.7.3-SNAPSHOT</org.biomart.martservice.version>
-                <wsdl.generic.version>1.6-SNAPSHOT</wsdl.generic.version>
+        <org.biomart.martservice.version>0.7.3-SNAPSHOT</org.biomart.martservice.version>
+        <wsdl.generic.version>1.6-SNAPSHOT</wsdl.generic.version>
 	</properties>
 
 	<modules>
