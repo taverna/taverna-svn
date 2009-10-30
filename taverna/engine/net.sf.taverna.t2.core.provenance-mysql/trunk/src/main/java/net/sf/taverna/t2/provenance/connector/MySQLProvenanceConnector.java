@@ -272,18 +272,18 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		Statement stmt;
                 Connection connection = null;
 		try {
-                        connection=getConnection();
-			stmt = connection.createStatement();
-			stmt.executeUpdate(createDB);
-			stmt.executeUpdate(createTableArc);
-			stmt.executeUpdate(createTableCollection);
-			stmt.executeUpdate(createTableProcBinding);
-			stmt.executeUpdate(createTableProcessor);
-			stmt.executeUpdate(createTableVar);
-			stmt.executeUpdate(createTableVarBinding);
-			stmt.executeUpdate(createTableWFInstance);
+            connection=getConnection();
+			stmt = connection.createStatement();			
+			stmt.executeUpdate(createDB);			
+			stmt.executeUpdate(createTableArc);			
+			stmt.executeUpdate(createTableCollection);			
+			stmt.executeUpdate(createTableProcBinding);			
+			stmt.executeUpdate(createTableProcessor);			
+			stmt.executeUpdate(createTableVar);			
+			stmt.executeUpdate(createTableVarBinding);			
+			stmt.executeUpdate(createTableWFInstance);			
 			stmt.executeUpdate(createTableWorkflow);
-			stmt.executeUpdate(createTableData);
+			stmt.executeUpdate(createTableData);			
 
 		} catch (SQLException e) {
 			logger
