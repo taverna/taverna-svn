@@ -61,7 +61,7 @@ public class NaiveProvenanceQuery {
 		String iteration = targetIteration;
 
 		// fetch latest WFInstance ID, to use as part of the key
-		List<WorkflowInstance> IDs = pq.getWFInstanceID(null);
+		List<WorkflowInstance> IDs = pq.getRuns(null, null);
 		
 		WorkflowInstance wfInstance = IDs.get(0);
 		
