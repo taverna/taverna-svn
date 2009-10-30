@@ -123,6 +123,8 @@ public class ApiTest {
 
 		q = pqp.parseProvenanceQuery(querySpecFile);
 		
+		logger.info("YOUR QUERY: "+q.toString());
+		
 		QueryAnswer answer=null;
 		try {
 			answer = pAccess.executeQuery (q);
