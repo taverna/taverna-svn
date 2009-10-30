@@ -159,8 +159,6 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	
 	public boolean isConfigurationChanged() {
 		String configurationString = convertBeanToString(activity.getConfiguration());
-		logger.error(configurationString);
-		logger.error(convertBeanToString(calculateConfiguration()));
 		return (!convertBeanToString(calculateConfiguration()).equals(configurationString));
 	}
 
@@ -907,7 +905,6 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		int subTab = -1;
 		if (tabbedPane != null) {
 			visibleTab = tabbedPane.getSelectedIndex();
-			logger.info("VisibleTab is " + visibleTab);
 			if (tabbedPane.getTitleAt(visibleTab).equals("Ports")) {
 				subTab = ports.getSelectedIndex();
 			}
