@@ -15,5 +15,10 @@
   		<artifactId>provenance-derby</artifactId>
         <version>${t2.core.provenance.derby.version}</version>
   	</dependency>
+  	<dependency>
+  		<groupId>net.sf.taverna.t2.core</groupId>
+  		<artifactId>provenance-mysql</artifactId>
+        <version>0.1-SNAPSHOT</version>
+  	</dependency>
   </dependencies>
 </project>
