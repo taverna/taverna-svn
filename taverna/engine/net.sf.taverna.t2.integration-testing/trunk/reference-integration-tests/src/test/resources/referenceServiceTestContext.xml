@@ -25,7 +25,7 @@
 
 	<!-- Force load of core-extensions into repository -->
 	<bean
-		raven:artifact="net.sf.taverna.t2.core:reference-core-extensions:0.6"
+		raven:artifact="net.sf.taverna.t2.core:reference-core-extensions:0.7-SNAPSHOT"
 		raven:repository="raven.repository"
 		class="net.sf.taverna.t2.reference.impl.core.LoadCoreExtensions" />
 
