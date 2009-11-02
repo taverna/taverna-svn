@@ -229,6 +229,8 @@ public class InstanceRegistry<IType> implements Iterable<IType>,
 				TypeVariable spi = getClass().getTypeParameters()[0];
 				logger.error("Declared as implementation of the SPI "
 						+ spi.getName() + ", but was not: " + c, e);
+			} catch (LinkageError e) {
+				logger.error("Could not instantiate " + c, e);				
 			}
 		}
 		if (changed) {

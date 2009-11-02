@@ -276,6 +276,9 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 						logger.warn("Could not find class " + impName
 								+ " using " + cl, e);
 						continue;
+					} catch (LinkageError e) {
+						logger.error("Could not load class " + impName, e);
+						continue;
 					}
 					/*if (! cl.equals(impClass.getClassLoader())) {
 						logger.warn("Loaded SPI " + classname + " implementation "
