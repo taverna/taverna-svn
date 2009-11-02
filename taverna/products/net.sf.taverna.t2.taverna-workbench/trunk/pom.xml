@@ -40,7 +40,7 @@
 		<repository>
 			<id>eviware</id>
 			<name>Eviware repository</name>
-			<url>http://www.eviware.com/repository/maven2/</url>
+			<url>http://www.eviware.com/repository/maven2</url>
 			<releases />
 			<snapshots>
 				<enabled>false</enabled>
@@ -49,7 +49,7 @@
 		<repository>
 			<id>wsZones</id>
 			<name>Apache WS Zones repository</name>
-			<url>http://ws.zones.apache.org/repository2/</url>
+			<url>http://ws.zones.apache.org/repository2</url>
 			<releases />
 			<snapshots>
 				<enabled>false</enabled>
@@ -57,7 +57,7 @@
 		</repository>
 		<repository>
 			<id>biomoby</id>
-			<url>http://biomoby.org/m2repo/</url>
+			<url>http://biomoby.org/m2repo</url>
 			<releases />
 			<snapshots>
 				<enabled>false</enabled>
@@ -65,7 +65,7 @@
 		</repository>
 		<repository>
 			<id>java.net</id>
-			<url>http://download.java.net/maven/2/</url>
+			<url>http://download.java.net/maven/2</url>
 			<releases />
 			<snapshots>
 				<enabled>false</enabled>
@@ -73,11 +73,28 @@
 		</repository>
 		<repository>
 			<id>jboss.org</id>
-			<url>http://repository.jboss.org/maven2/</url>
+			<url>http://repository.jboss.org/maven2</url>
 			<releases />
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
+		</repository>
+		<repository>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<id>tupelo2</id>
+			<name>tupelo2</name>
+			<url>http://dlt-dev.ncsa.uiuc.edu/m2</url>
+		</repository>
+		<repository>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>opm-releases</id>
+			<name>opm</name>
+			<url>http://openprovenance.org/java/maven-releases</url>
 		</repository>
 	</repositories>
 	<scm>
