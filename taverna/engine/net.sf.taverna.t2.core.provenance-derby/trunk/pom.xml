@@ -33,6 +33,14 @@
 			<version>${t2.core.version}</version>
 		</dependency>
 		
+		<!-- Test dependencies -->		        
+        <dependency>
+            <groupId>net.sf.taverna.t2.ui-impl</groupId>
+            <artifactId>data-management-config</artifactId>
+            <version>0.9-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+		
 	</dependencies>
 	
 	<scm>
