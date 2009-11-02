@@ -4,13 +4,8 @@
 package net.sf.taverna.t2.lineageService.analysis.test;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,29 +14,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.bind.JAXBException;
-
 import net.sf.taverna.t2.lineageService.capture.test.testFiles;
-import net.sf.taverna.t2.provenance.api.NativeAnswer;
-import net.sf.taverna.t2.provenance.api.QueryAnswer;
-import net.sf.taverna.t2.provenance.lineageservice.Dependencies;
-import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
-import net.sf.taverna.t2.provenance.lineageservice.LineageSQLQuery;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.NaiveProvenanceQuery;
-import net.sf.taverna.t2.provenance.lineageservice.utils.DDRecord;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.utils.QueryVar;
 import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
-import net.sf.taverna.t2.provenance.lineageservice.utils.VarBinding;
 import net.sf.taverna.t2.provenance.lineageservice.utils.WorkflowInstance;
 
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
-import org.tupeloproject.kernel.OperatorException;
 
 /**
  * @author paolo
@@ -273,7 +258,7 @@ public class ProvenanceAnalysisTest<pathToDependencies> {
 			for (String qvtoken:queryVarsTokens) {
 
 				// one query var
-				String[] qvComponents = qvtoken.split("££");
+				String[] qvComponents = qvtoken.split("ï¿½ï¿½");
 
 				QueryVar qv = new QueryVar();
 

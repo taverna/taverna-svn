@@ -3,17 +3,12 @@
  */
 package net.sf.taverna.t2.lineageService.analysis.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,10 +19,10 @@ import javax.naming.InitialContext;
 import net.sf.taverna.t2.lineageService.capture.test.testFiles;
 import net.sf.taverna.t2.provenance.api.NativeAnswer;
 import net.sf.taverna.t2.provenance.api.ProvenanceAccess;
+import net.sf.taverna.t2.provenance.api.ProvenanceConnectorType;
 import net.sf.taverna.t2.provenance.api.ProvenanceQueryParser;
-import net.sf.taverna.t2.provenance.api.QueryAnswer;
 import net.sf.taverna.t2.provenance.api.Query;
-import net.sf.taverna.t2.provenance.connector.MySQLProvenanceConnector;
+import net.sf.taverna.t2.provenance.api.QueryAnswer;
 import net.sf.taverna.t2.provenance.lineageservice.Dependencies;
 import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
@@ -36,12 +31,9 @@ import net.sf.taverna.t2.provenance.lineageservice.utils.QueryVar;
 import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
 import net.sf.taverna.t2.provenance.lineageservice.utils.Workflow;
 import net.sf.taverna.t2.provenance.lineageservice.utils.WorkflowInstance;
-import net.sf.taverna.t2.workbench.provenance.ProvenanceConfiguration;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.log4j.Logger;
-import org.jdom.Document;
-import org.jdom.input.SAXBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -78,7 +70,7 @@ public class ApiTest {
 	public void setUp() throws Exception {
 		setDataSource();
 		System.setProperty("raven.eclipse","true");
-		pAccess = new ProvenanceAccess("mysqlprovenance");  // creates and initializes the provenance API
+		pAccess = new ProvenanceAccess(ProvenanceConnectorType.MYSQL);  // creates and initializes the provenance API
 		configureInterface();              // sets user-defined preferences
 	}
 
@@ -321,7 +313,7 @@ public class ApiTest {
 
 		String queryVars = AnalysisTestFiles.getString("query.vars");
 
-		// expect a sequence of the form pname££vname;pname££vname;... where the pnames are unqualified...
+		// expect a sequence of the form pnameï¿½ï¿½vname;pnameï¿½ï¿½vname;... where the pnames are unqualified...
 
 		String topLevelWorkflow = pAccess.getTopLevelWorkflowID(runID);
 
@@ -353,7 +345,7 @@ public class ApiTest {
 			for (String qvtoken:queryVarsTokens) {
 
 				// one query var
-				String[] qvComponents = qvtoken.split("££");
+				String[] qvComponents = qvtoken.split("ï¿½ï¿½");
 
 				QueryVar qv = new QueryVar();
 

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -16,18 +15,9 @@ import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.raven.plugins.PluginManager;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.invocation.InvocationContext;
-
 import net.sf.taverna.t2.provenance.api.ProvenanceAccess;
-import net.sf.taverna.t2.provenance.connector.MySQLProvenanceConnector;
+import net.sf.taverna.t2.provenance.api.ProvenanceConnectorType;
 import net.sf.taverna.t2.provenance.connector.ProvenanceConnector;
-import net.sf.taverna.t2.provenance.lineageservice.EventProcessor;
-import net.sf.taverna.t2.provenance.lineageservice.Provenance;
-import net.sf.taverna.t2.provenance.lineageservice.ProvenanceAnalysis;
-import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
-import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
-import net.sf.taverna.t2.provenance.lineageservice.WorkflowDataProcessor;
-import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceQuery;
-import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceWriter;
 import net.sf.taverna.t2.provenance.reporter.ProvenanceReporter;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -40,7 +30,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
-import org.junit.Before;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -95,7 +84,7 @@ public class ProvenanceCaptureTestHelper {
 		ds.setMaxIdle(50);
 		ds.setDefaultAutoCommit(true);
 		ds.setUsername(DB_USER);
-		ds.setPassword(DB_PASSWD);
+		ds.setPassword(DB_PASSWD);		
 
 		try {
 			ds.setUrl("jdbc:mysql://"+DB_URL_LOCAL+"/T2Provenance");
@@ -112,7 +101,7 @@ public class ProvenanceCaptureTestHelper {
 	public void makeDataManager() {	
 
 		setDataSource();
-		pAccess = new ProvenanceAccess("mysqlprovenance");  // creates and initializes the provenance API
+		pAccess = new ProvenanceAccess(ProvenanceConnectorType.MYSQL);  // creates and initializes the provenance API
 		provenanceConnector = pAccess.getProvenanceConnector();  // oc is initialized at this point
 		
 		// clear DB if user so chooses
