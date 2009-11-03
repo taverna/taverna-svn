@@ -850,8 +850,10 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 			inputBeanList.add(activityInputPortDefinitionBean);
 			RShellPortSymanticTypeBean bean = new RShellPortSymanticTypeBean();
 			bean.setName(inputView.getNameField().getText());
-			bean.setSymanticType((SymanticTypes) inputView
-					.getSemanticSelector().getSelectedItem());
+			SymanticTypes selectedItem = (SymanticTypes) inputView
+					.getSemanticSelector().getSelectedItem();
+			activityInputPortDefinitionBean.setDepth(selectedItem.getDepth());
+			bean.setSymanticType(selectedItem);
 			inputSemanticTypes.add(bean);
 		}
 
@@ -863,8 +865,10 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 			activityOutputPortDefinitionBean.setMimeTypes(new ArrayList<String>());
 			outputBeanList.add(activityOutputPortDefinitionBean);
 			RShellPortSymanticTypeBean bean = new RShellPortSymanticTypeBean();
-			bean.setSymanticType((SymanticTypes) outputView
-					.getSemanticTypeSelector().getSelectedItem());
+			SymanticTypes selectedItem = (SymanticTypes) outputView
+					.getSemanticTypeSelector().getSelectedItem();
+			activityOutputPortDefinitionBean.setDepth(selectedItem.getDepth());
+			bean.setSymanticType(selectedItem);
 			bean.setName(outputView.getNameField().getText());
 			outputSemanticTypes.add(bean);
 		}
