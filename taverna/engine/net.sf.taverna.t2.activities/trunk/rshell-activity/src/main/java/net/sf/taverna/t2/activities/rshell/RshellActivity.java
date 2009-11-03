@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SymanticTypes;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceServiceException;
@@ -40,7 +41,10 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousAc
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 
+import org.rosuda.JRclient.RBool;
 import org.rosuda.JRclient.REXP;
 import org.rosuda.JRclient.RFileInputStream;
 import org.rosuda.JRclient.RFileOutputStream;
@@ -53,6 +57,8 @@ import org.rosuda.JRclient.RSrvException;
  */
 public class RshellActivity extends
 		AbstractAsynchronousActivity<RshellActivityConfigurationBean> {
+	
+	private static Log logger = Log.getLogger(RshellActivity.class);
 
 	private static int BUF_SIZE = 1024;
 
@@ -66,8 +72,14 @@ public class RshellActivity extends
 	public void configure(RshellActivityConfigurationBean configurationBean)
 			throws ActivityConfigurationException {
 		this.configurationBean = configurationBean;
-		configurePorts(configurationBean);
 		configureSymanticTypes(configurationBean);
+		for (ActivityInputPortDefinitionBean ip : configurationBean.getInputPortDefinitions()) {
+			ip.setDepth(inputSymanticTypes.get(ip.getName()).getDepth());
+		}
+		for (ActivityOutputPortDefinitionBean op : configurationBean.getOutputPortDefinitions()) {
+			op.setDepth(outputSymanticTypes.get(op.getName()).getDepth());
+		}
+		configurePorts(configurationBean);
 	}
 
 	@Override
@@ -114,8 +126,7 @@ public class RshellActivity extends
 									+ "' was defined but not provided.");
 						}
 
-						Object input = referenceService.renderIdentifier(inputId, inputPort
-								.getTranslatedElementClass(), callback.getContext());
+						Object input = referenceService.renderIdentifier(inputId, symanticType.getSemanticClass(), callback.getContext());
 						if (symanticType.isFile) {
 							connection.assign(inputName,
 									generateFilename(inputPort));
@@ -199,7 +210,7 @@ public class RshellActivity extends
 								Object object = rExpToJava(expression,
 										symanticType);
 								outputData.put(portName, referenceService
-										.register(object, 0, true, callback.getContext()));
+										.register(object, outputPort.getDepth(), true, callback.getContext()));
 							}
 							}
 						}
@@ -324,23 +335,28 @@ public class RshellActivity extends
 			return (REXP) value;
 
 		case BOOL: {
-			String strValue = (String) value;
-			boolean bool = strValue.toLowerCase().equals("true")
-					|| strValue.equals("1");
-			return new REXP(new String[] { (bool) ? "true" : "false" });
+			return new REXP(new String[] { ((Boolean) value).toString().toUpperCase() });
 		}
 		case DOUBLE:
-			return new REXP(new double[] { Double.parseDouble((String) value) });
+			return new REXP(new double[] { (Double) value });
 		case INTEGER:
-			return new REXP(new int[] { Integer.parseInt((String) value) });
+			return new REXP(new int[] { (Integer) value });
 		case STRING:
 			return new REXP(new String[] { (String) value });
 
+		case BOOL_LIST:{
+			List values = (List) value;
+			String[] booleanValues = new String[values.size()];
+			for(int i = 0; i<values.size(); i++){
+				booleanValues[i] = ((Boolean) values.get(i)).toString().toUpperCase();
+			}
+			return new REXP(booleanValues);
+		}
 		case DOUBLE_LIST: {
 			List values = (List) value;
 			double[] doubles = new double[values.size()];
 			for (int i = 0; i < values.size(); i++) {
-				doubles[i] = Double.parseDouble((String) values.get(i));
+				doubles[i] = (Double) values.get(i);
 			}
 			return new REXP(doubles);
 		}
@@ -348,7 +364,7 @@ public class RshellActivity extends
 			List values = (List) value;
 			int[] ints = new int[values.size()];
 			for (int i = 0; i < values.size(); i++) {
-				ints[i] = Integer.parseInt((String) values.get(i));
+				ints[i] = (Integer) values.get(i);
 			}
 			return new REXP(ints);
 		}
@@ -441,18 +457,62 @@ public class RshellActivity extends
 		case BOOL:
 			switch (rExp.getType()) {
 			case REXP.XT_NULL:
-				return Boolean.toString(false);
+				return Boolean.FALSE;
 			case REXP.XT_ARRAY_INT:
-				return Boolean.toString(rExp.asIntArray()[0] != 0);
+				return new Boolean(rExp.asIntArray()[0] != 0);
 			case REXP.XT_ARRAY_DOUBLE:
-				return Boolean
-						.toString(Math.abs(rExp.asDoubleArray()[0]) > 0.00001);
+				return new Boolean (Math.abs(rExp.asDoubleArray()[0]) > 0.00001);
+			case REXP.XT_STR:
+				return new Boolean(rExp.asString().equalsIgnoreCase("true"));
 			case REXP.XT_BOOL:
-				return Boolean.toString(rExp.asBool().isTRUE());
+				return new Boolean(rExp.asBool().isTRUE());
 			case REXP.XT_DOUBLE:
-				return Boolean.toString(Math.abs(rExp.asDouble()) > 0.00001);
+				return new Boolean(Math.abs(rExp.asDouble()) > 0.00001);
 			case REXP.XT_INT:
-				return Boolean.toString(rExp.asInt() != 0);
+				return new Boolean(rExp.asInt() != 0);
+			default:
+			}
+			break;
+
+		case BOOL_LIST:
+			switch (rExp.getType()) {
+			case REXP.XT_NULL:
+				return new ArrayList<Boolean>();
+			case REXP.XT_ARRAY_INT:
+				ArrayList<Boolean> values = new ArrayList<Boolean>();
+				for (int i : rExp.asIntArray()) {
+					values.add(new Boolean(i != 0));
+				}
+				return values;
+			case REXP.XT_ARRAY_DOUBLE:
+				ArrayList<Boolean> valuesD = new ArrayList<Boolean>();
+				for (double d : rExp.asDoubleArray()) {
+					valuesD.add(new Boolean(d > 0.00001));
+				}
+				return valuesD;
+			case REXP.XT_ARRAY_BOOL:
+				ArrayList<Boolean> valuesS = new ArrayList<Boolean>();
+				RBool[] rExpArray = (RBool[]) rExp.getContent();
+				for (RBool o : rExpArray) {
+					valuesS.add(new Boolean(o.isTRUE()));
+				}
+				return valuesS;
+			case REXP.XT_VECTOR :
+				ArrayList<Boolean> valuesV = new ArrayList<Boolean>();
+				Vector v = rExp.asVector();
+				for (Object o : v) {
+					valuesV.add((Boolean)rExpToJava((REXP) o, SymanticTypes.BOOL));
+				}
+				logger.info("To BOOL_LIST from XT_VECTOR");
+				return valuesV;
+			case REXP.XT_STR:
+				return new Boolean(rExp.asString().equalsIgnoreCase("true"));
+			case REXP.XT_BOOL:
+				return new Boolean(rExp.asBool().isTRUE());
+			case REXP.XT_DOUBLE:
+				return new Boolean(Math.abs(rExp.asDouble()) > 0.00001);
+			case REXP.XT_INT:
+				return new Boolean(rExp.asInt() != 0);
 			default:
 			}
 			break;
@@ -460,17 +520,17 @@ public class RshellActivity extends
 		case DOUBLE:
 			switch (rExp.getType()) {
 			case REXP.XT_NULL:
-				return 0.0;
+				return new Double(0.0);
 			case REXP.XT_ARRAY_DOUBLE:
-				return Double.toString(rExp.asDoubleArray()[0]);
+				return new Double(rExp.asDoubleArray()[0]);
 			case REXP.XT_ARRAY_INT:
-				return Double.toString(rExp.asIntArray()[0]);
+				return new Double(rExp.asIntArray()[0]);
 			case REXP.XT_BOOL:
-				return (rExp.asBool().isTRUE()) ? "1.0" : "0.0";
+				return new Double(rExp.asBool().isTRUE() ? 1.0 : 0.0);
 			case REXP.XT_DOUBLE:
-				return Double.toString(rExp.asDouble());
+				return new Double(rExp.asDouble());
 			case REXP.XT_INT:
-				return Double.toString(rExp.asInt());
+				return new Double(rExp.asInt());
 			default:
 			}
 			break;
@@ -478,13 +538,13 @@ public class RshellActivity extends
 		case INTEGER:
 			switch (rExp.getType()) {
 			case REXP.XT_NULL:
-				return 0;
+				return new Integer(0);
 			case REXP.XT_ARRAY_DOUBLE:
-				return Integer.toString((int) rExp.asDoubleArray()[0]);
+				return new Integer ((int) rExp.asDoubleArray()[0]);
 			case REXP.XT_ARRAY_INT:
-				return Integer.toString(rExp.asIntArray()[0]);
+				return new Integer(rExp.asIntArray()[0]);
 			case REXP.XT_BOOL:
-				return (rExp.asBool().isTRUE()) ? "1" : "0";
+				return new Integer (rExp.asBool().isTRUE() ? 1 : 0);
 			case REXP.XT_DOUBLE:
 				return Integer.toString((int) rExp.asDouble());
 			case REXP.XT_INT:
@@ -520,54 +580,51 @@ public class RshellActivity extends
 		case DOUBLE_LIST:
 			switch (rExp.getType()) {
 			case REXP.XT_NULL:
-				return new ArrayList<String>();
+				return new ArrayList<Double>();
 			case REXP.XT_ARRAY_DOUBLE: {
-				ArrayList<String> values = new ArrayList<String>();
-				for (double value : rExp.asDoubleArray()) {
-					values.add(Double.toString(value));
-				}
-				return values;
+				return rExp.asDoubleArray();
+//				ArrayList<Double> values = new ArrayList<Double>();
+//				for (double value : rExp.asDoubleArray()) {
+//					values.add(new Double(value));
+//				}
+//				return values;
 			}
 			case REXP.XT_ARRAY_INT: {
-				ArrayList<String> values = new ArrayList<String>();
+				ArrayList<Double> values = new ArrayList<Double>();
 				for (int value : rExp.asIntArray()) {
-					values.add(Double.toString(value));
+					values.add(new Double(value));
 				}
 				return values;
 			}
 			case REXP.XT_BOOL:
-				return new String[] { (rExp.asBool().isTRUE()) ? "1.0" : "0.0" };
+				return new Double[] { new Double(rExp.asBool().isTRUE() ? 1.0 : 0.0) };
 			case REXP.XT_DOUBLE:
-				return new String[] { Double.toString(rExp.asDouble()) };
+				return new Double[] { rExp.asDouble() };
 			case REXP.XT_INT:
-				return new String[] { Double.toString(rExp.asInt()) };
+				return new Double[] { (double) rExp.asInt() };
 			default:
 			}
 			break;
 		case INTEGER_LIST:
 			switch (rExp.getType()) {
 			case REXP.XT_NULL:
-				return new ArrayList<String>();
+				return new ArrayList<Integer>();
 			case REXP.XT_ARRAY_DOUBLE: {
-				ArrayList<String> values = new ArrayList<String>();
+				ArrayList<Integer> values = new ArrayList<Integer>();
 				for (double value : rExp.asDoubleArray()) {
-					values.add(Integer.toString((int) value));
+					values.add((int) value);
 				}
 				return values;
 			}
 			case REXP.XT_ARRAY_INT: {
-				ArrayList<String> values = new ArrayList<String>();
-				for (int value : rExp.asIntArray()) {
-					values.add(Integer.toString(value));
-				}
-				return values;
+				return rExp.asIntArray();
 			}
 			case REXP.XT_BOOL:
-				return (rExp.asBool().isTRUE()) ? "1" : "0";
+				return (new Integer(rExp.asBool().isTRUE() ? 1 : 0));
 			case REXP.XT_DOUBLE:
-				return new String[] { Integer.toString((int) rExp.asDouble()) };
+				return new Integer[] { (int) rExp.asDouble() };
 			case REXP.XT_INT:
-				return new String[] { Integer.toString(rExp.asInt()) };
+				return new Integer[] { rExp.asInt() };
 			default:
 			}
 			break;
@@ -579,7 +636,7 @@ public class RshellActivity extends
 			case REXP.XT_ARRAY_DOUBLE: {
 				ArrayList<String> values = new ArrayList<String>();
 				for (double value : rExp.asDoubleArray()) {
-					values.add(Double.toString((int) value));
+					values.add(Double.toString(value));
 				}
 				return values;
 			}
@@ -593,7 +650,7 @@ public class RshellActivity extends
 			case REXP.XT_BOOL:
 				return new String[] { Boolean.toString(rExp.asBool().isTRUE()) };
 			case REXP.XT_DOUBLE:
-				return new String[] { Double.toString((int) rExp.asDouble()) };
+				return new String[] { Double.toString(rExp.asDouble()) };
 			case REXP.XT_INT:
 				return new String[] { Integer.toString(rExp.asInt()) };
 			case REXP.XT_VECTOR: {

@@ -27,6 +27,10 @@
  */
 package net.sf.taverna.t2.activities.rshell;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Class containing the conversion of java type stirngs to classes
  * 
@@ -52,15 +56,17 @@ public abstract class RshellPortTypes {
 	 * The enumeration type for symantic port types
 	 */
     public static enum SymanticTypes {
-        BOOL("boolean", PLAIN_TEXT_MIME_TYPE), DOUBLE("double",
-                PLAIN_TEXT_MIME_TYPE), INTEGER("integer", PLAIN_TEXT_MIME_TYPE), REXP(
-                "R-expression", JAVA_SERIALIZED_OBJECT_MIME_TYPE), STRING(
-                "string", PLAIN_TEXT_MIME_TYPE), DOUBLE_LIST("double[]",
-                PLAIN_TEXT_LIST_MIME_TYPE), INTEGER_LIST("integer[]",
-                PLAIN_TEXT_LIST_MIME_TYPE), STRING_LIST("string[]",
-                PLAIN_TEXT_LIST_MIME_TYPE), PNG_FILE("PNG-image",
-                PNG_IMAGE_MIME_TYPE, true),
-                TEXT_FILE("Text-file", TEXT_FILE_MIME_TYPE, true);
+        BOOL("Logical", PLAIN_TEXT_MIME_TYPE, Boolean.class, 0),
+        DOUBLE("Numeric", PLAIN_TEXT_MIME_TYPE, Double.class, 0),
+        INTEGER("Integer", PLAIN_TEXT_MIME_TYPE, Integer.class, 0),
+        REXP("R-expression", JAVA_SERIALIZED_OBJECT_MIME_TYPE, Object.class, 0),
+        STRING("String", PLAIN_TEXT_MIME_TYPE, String.class, 0),
+        BOOL_LIST("Logical vector", PLAIN_TEXT_LIST_MIME_TYPE, Boolean.class, 1),
+        DOUBLE_LIST("Numeric vector", PLAIN_TEXT_LIST_MIME_TYPE, Double.class, 1),
+        INTEGER_LIST("Integer vector", PLAIN_TEXT_LIST_MIME_TYPE, Integer.class, 1),
+        STRING_LIST("String vector", PLAIN_TEXT_LIST_MIME_TYPE, String.class, 1),
+        PNG_FILE("PNG-image", PNG_IMAGE_MIME_TYPE, File.class, 0, true),
+        TEXT_FILE("Text-file", TEXT_FILE_MIME_TYPE, File.class, 0, true);
         // PDF is currently not supported by Taverna
         // PDF("PDF-file", PDF_APPLICATION_MIME_TYPE, true)
         ;
@@ -71,14 +77,34 @@ public abstract class RshellPortTypes {
         
         public final boolean isFile;
 
-        SymanticTypes(String description, String syntacticType) {
-            this(description, syntacticType, false);
+		private final Class semanticClass;
+
+		private final int depth;
+
+        SymanticTypes(String description, String syntacticType, Class semanticClass, int depth) {
+            this(description, syntacticType, semanticClass, depth, false);
         }
         
-        SymanticTypes(String description, String syntacticType, boolean isFile) {
+        SymanticTypes(String description, String syntacticType, Class semanticClass, int depth, boolean isFile) {
             this.description = description;
             this.syntacticType = syntacticType;
+			this.semanticClass = semanticClass;
+			this.depth = depth;
             this.isFile = isFile;
         }
+
+		/**
+		 * @return the semanticClass
+		 */
+		public Class getSemanticClass() {
+			return semanticClass;
+		}
+
+		/**
+		 * @return the depth
+		 */
+		public int getDepth() {
+			return depth;
+		}
     };
 }
