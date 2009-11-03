@@ -17,10 +17,8 @@
 		<module>net.sf.taverna.t2.activities</module>
 		<module>net.sf.taverna.t2.core</module>
 		<module>net.sf.taverna.t2.core.reference-core-extensions</module>
-		<!--
-	     	<module>net.sf.taverna.t2.core.provenance-derby</module>
-     		<module>net.sf.taverna.t2.core.provenance-mysql</module>
-		-->
+		<module>net.sf.taverna.t2.core.provenance-derby</module>
+		<module>net.sf.taverna.t2.core.provenance-mysql</module>
 		<module>net.sf.taverna.t2.infrastructure</module>
 		<!--<module>net.sf.taverna.t2.integration-testing</module>-->
 		<module>net.sf.taverna.t2.security</module>
