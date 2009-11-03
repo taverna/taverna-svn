@@ -27,19 +27,32 @@ import net.sf.taverna.raven.RavenException;
  * some reason or when a reference is made to an Artifact that cannot be
  * resolved within the current local repository.
  * 
- * @author Tom
+ * @author Tom Oinn
+ * @author Stian Soiland-Reyes
  * 
  */
 public class ArtifactNotFoundException extends RavenException {
 
 	private static final long serialVersionUID = 1L;
+	private final Artifact artifact;
 
-	public ArtifactNotFoundException() {
-		//
+	public ArtifactNotFoundException(Artifact artifact) {
+		super("Could not find artifact " + artifact);
+		this.artifact = artifact;
 	}
 
-	public ArtifactNotFoundException(String message) {
-		super(message);
+	public ArtifactNotFoundException(String msg) {
+		super(msg);
+		this.artifact = null;
+	}
+	
+	public ArtifactNotFoundException(Artifact artifact, String msg) {
+		super("Could not find artifact " + artifact + ": " + msg);
+		this.artifact = artifact;
+	}
+
+	public Artifact getArtifact() {
+		return artifact;
 	}
 
 }

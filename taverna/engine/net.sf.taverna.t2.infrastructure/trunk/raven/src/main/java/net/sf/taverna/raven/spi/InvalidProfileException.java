@@ -26,7 +26,7 @@ import net.sf.taverna.raven.RavenException;
  * Thrown when an attempt is made to construct a Profile from an invalid XML
  * document
  * 
- * @author Tom
+ * @author Tom Oinn
  * 
  */
 public class InvalidProfileException extends RavenException {

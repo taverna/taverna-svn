@@ -131,7 +131,7 @@ public class ArtifactImpl extends BasicArtifact {
 		if (status.getOrder() < ArtifactStatus.Pom.getOrder()
 				|| (status.isError() && !status
 						.equals(ArtifactStatus.PomNonJar))) {
-			throw new ArtifactStateException(status, new ArtifactStatus[] {
+			throw new ArtifactStateException(this, status, new ArtifactStatus[] {
 					ArtifactStatus.Analyzed, ArtifactStatus.Jar,
 					ArtifactStatus.Pom, ArtifactStatus.Ready });
 		}

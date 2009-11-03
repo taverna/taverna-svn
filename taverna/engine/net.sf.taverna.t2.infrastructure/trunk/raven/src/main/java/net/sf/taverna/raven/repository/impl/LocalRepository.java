@@ -376,12 +376,12 @@ public class LocalRepository implements Repository {
 			if (dlstatus.containsKey(a)) {
 				return dlstatus.get(a);
 			} else {
-				throw new ArtifactStateException(astatus,
+				throw new ArtifactStateException(a, astatus,
 						new ArtifactStatus[] { ArtifactStatus.PomFetching,
 								ArtifactStatus.JarFetching });
 			}
 		}
-		throw new ArtifactNotFoundException("Cant find artifact for: " + a);
+		throw new ArtifactNotFoundException(a, "Cant find artifact for: " + a);
 	}
 
 	/*
@@ -395,12 +395,12 @@ public class LocalRepository implements Repository {
 		ArtifactImpl a = new ArtifactImpl(a1, this);
 		if (!status.containsKey(a)) {
 			// No such artifact
-			throw new ArtifactNotFoundException();
+			throw new ArtifactNotFoundException(a);
 		}
 		if (!status.get(a).equals(ArtifactStatus.Ready)) {
 			// Can't get a classloader yet, the artifact isn't ready
 			logger.debug(a + " :: " + status.get(a));
-			throw new ArtifactStateException(status.get(a),
+			throw new ArtifactStateException(a, status.get(a),
 					new ArtifactStatus[] { ArtifactStatus.Ready });
 		}
 		synchronized (loaderMap) {
@@ -817,7 +817,7 @@ public class LocalRepository implements Repository {
 		setStatus(a, "pom".equals(suffix) ? ArtifactStatus.PomFailed
 				: ArtifactStatus.JarFailed);
 		dlstatus.remove(a);
-		throw new ArtifactNotFoundException("Can't find artifact for: " + a);
+		throw new ArtifactNotFoundException(a, "Can't find artifact for: " + a);
 	}
 
 	private boolean isBlacklisted(URL repository) {

@@ -20,6 +20,8 @@
  ******************************************************************************/
 package net.sf.taverna.raven.repository;
 
+import java.util.Arrays;
+
 import net.sf.taverna.raven.RavenException;
 
 /**
@@ -27,6 +29,7 @@ import net.sf.taverna.raven.RavenException;
  * right state relative to a particular repository
  * 
  * @author Tom Oinn
+ * @author Stian Soiland-Reyes
  */
 public class ArtifactStateException extends RavenException {
 
@@ -35,8 +38,12 @@ public class ArtifactStateException extends RavenException {
 	private ArtifactStatus state;
 	private ArtifactStatus[] validStates;
 
-	public ArtifactStateException(ArtifactStatus state,
+	private final Artifact artifact;
+
+	public ArtifactStateException(Artifact artifact, ArtifactStatus state,
 			ArtifactStatus[] validStates) {
+		super("Artifact " + artifact + " in state " + state + ", expected " + Arrays.asList(validStates));
+		this.artifact = artifact;
 		this.state = state;
 		this.validStates = validStates;
 	}
@@ -47,6 +54,10 @@ public class ArtifactStateException extends RavenException {
 
 	public ArtifactStatus[] getValidStates() {
 		return this.validStates;
+	}
+
+	public Artifact getArtifact() {
+		return artifact;
 	}
 
 }
