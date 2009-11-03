@@ -74,10 +74,22 @@ public class RshellActivity extends
 		this.configurationBean = configurationBean;
 		configureSymanticTypes(configurationBean);
 		for (ActivityInputPortDefinitionBean ip : configurationBean.getInputPortDefinitions()) {
-			ip.setDepth(inputSymanticTypes.get(ip.getName()).getDepth());
+			String name = ip.getName();
+			if (name != null) {
+				SymanticTypes symanticType = inputSymanticTypes.get(name);
+				if (symanticType != null) {
+					ip.setDepth(symanticType.getDepth());
+				}
+			}
 		}
 		for (ActivityOutputPortDefinitionBean op : configurationBean.getOutputPortDefinitions()) {
-			op.setDepth(outputSymanticTypes.get(op.getName()).getDepth());
+			String name = op.getName();
+			if (name != null) {
+				SymanticTypes symanticType = outputSymanticTypes.get(name);
+				if (symanticType != null) {
+					op.setDepth(symanticType.getDepth());
+				}
+			}
 		}
 		configurePorts(configurationBean);
 	}
