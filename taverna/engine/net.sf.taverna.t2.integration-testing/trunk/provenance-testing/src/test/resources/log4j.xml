@@ -10,7 +10,7 @@
   </appender>
 
   <logger name="net.sf.taverna.t2.provenance.lineageservice">
-    <level value="debug"/> 
+    <level value="info"/> 
   </logger>
 
   <logger name="net.sf.taverna.t2.provenance.api">
