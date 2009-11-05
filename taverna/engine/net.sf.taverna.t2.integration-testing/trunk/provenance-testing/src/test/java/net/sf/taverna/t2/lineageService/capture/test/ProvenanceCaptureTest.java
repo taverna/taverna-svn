@@ -25,14 +25,15 @@ public class ProvenanceCaptureTest extends ProvenanceCaptureTestHelper  {
 
 	@Before
 	public void loggerSetup() {
-		DOMConfigurator.configure("src/main/resources/log4j.xml");
+		System.setProperty("raven.eclipse", "true");
+		DOMConfigurator.configure("src/test/resources/log4j.xml");		
 	}
 
 	@Test
 	public void testInput() throws Exception {
 
 		ProvenanceCaptureTest helper = this;
-		helper.createEventsDir(); 
+		helper.createEventsDir(); 		
 
 		Dataflow dataflow = helper.setup("ProvenanceCaptureTest");
 
