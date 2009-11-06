@@ -92,7 +92,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ "`pname` varchar(100) NOT NULL,"
 		+ "`wfInstanceRef` varchar(100) NOT NULL COMMENT 'ref to WfInstance.wfInstanceID',"
 		+ "`type` varchar(100) default NULL COMMENT 'processor type',"
-		+ "`isTopLevel` tinyint(1),"
+		+ "`isTopLevel` tinyint(1) default '0',"
 		+ "PRIMARY KEY  (`pname`,`wfInstanceRef`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- all processors for all workflows, by name';";
 
@@ -104,7 +104,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ "`wfInstanceRef` varchar(100) NOT NULL,"
 		+ "`nestingLevel` int(10) unsigned default '0',"
 		+ "`actualNestingLevel` int(10) unsigned default '0',"
-		+ "`anlSet` tinyint(1) default NULL,"
+		+ "`anlSet` tinyint(1) default '0',"
 		+ "`order` tinyint(4) default NULL,"
 		+ "PRIMARY KEY  USING BTREE (`varName`,`inputOrOutput`,`pnameRef`,`wfInstanceRef`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- input and output variables (processor port names i';";
@@ -132,7 +132,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='dynamic -- execution of a workflow';";
 
 	private static final String createTableWorkflow = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Workflow` ("
-		+ "`wfname` varchar(100) NOT NULL, `parentWFname` varchar(100), `externalName` varchar(100),"
+		+ "`wfname` varchar(100) NOT NULL, `parentWFname` varchar(100) default NULL, `externalName` varchar(100) default NULL,"
 		+ "PRIMARY KEY  (`wfname`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- all known workflows by name';";
 
