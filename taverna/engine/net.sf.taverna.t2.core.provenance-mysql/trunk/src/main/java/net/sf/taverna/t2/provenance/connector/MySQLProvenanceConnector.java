@@ -105,6 +105,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ "`nestingLevel` int(10) unsigned default '0',"
 		+ "`actualNestingLevel` int(10) unsigned default '0',"
 		+ "`anlSet` tinyint(1) default NULL,"
+		+ "`order` tinyint(4) default NULL,"
 		+ "PRIMARY KEY  USING BTREE (`varName`,`inputOrOutput`,`pnameRef`,`wfInstanceRef`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- input and output variables (processor port names i';";
 
