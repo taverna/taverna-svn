@@ -92,6 +92,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ "`pname` varchar(100) NOT NULL,"
 		+ "`wfInstanceRef` varchar(100) NOT NULL COMMENT 'ref to WfInstance.wfInstanceID',"
 		+ "`type` varchar(100) default NULL COMMENT 'processor type',"
+		+ "`isTopLevel` tinyint(1),"
 		+ "PRIMARY KEY  (`pname`,`wfInstanceRef`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- all processors for all workflows, by name';";
 
