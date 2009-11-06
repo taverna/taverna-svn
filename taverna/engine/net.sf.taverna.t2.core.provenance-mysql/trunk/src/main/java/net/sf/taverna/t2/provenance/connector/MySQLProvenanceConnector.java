@@ -29,18 +29,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.provenance.api.ProvenanceConnectorType;
 import net.sf.taverna.t2.provenance.item.IterationProvenanceItem;
 import net.sf.taverna.t2.provenance.item.ProvenanceItem;
-import net.sf.taverna.t2.provenance.lineageservice.EventProcessor;
-import net.sf.taverna.t2.provenance.lineageservice.Provenance;
-import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
-import net.sf.taverna.t2.provenance.lineageservice.WorkflowDataProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceWriter;
-import net.sf.taverna.t2.provenance.lineageservice.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.vocabulary.SharedVocabulary;
 import net.sf.taverna.t2.reference.Identified;
 import net.sf.taverna.t2.reference.ReferenceService;
@@ -53,8 +47,6 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 	private static Logger logger = Logger
 	.getLogger(MySQLProvenanceConnector.class);
-
-	private static final String EVENTS_LOG_DIR = "/tmp/TEST-EVENTS";	
 
 	private static final String deleteDB = "drop database T2Provenance;";
 
@@ -113,14 +105,14 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ "`varNameRef` varchar(100) NOT NULL COMMENT 'ref to var name',"
 		+ "`wfInstanceRef` varchar(100) NOT NULL COMMENT 'ref to execution ID',"
 		+ "`value` varchar(100) default NULL COMMENT 'ref to value. Either a string value or a string ref (URI) to a value',"
-		+ "`collIDRef` varchar(100) NOT NULL default 'TOP',"
+		+ "`collIDRef` varchar(100) default 'TOP',"
 		+ "`positionInColl` int(10) unsigned NOT NULL default '1' COMMENT 'position within collection. default is 1',"
 		+ "`PNameRef` varchar(100) NOT NULL,"
 		+ "`valueType` varchar(50) default NULL,"
 		+ "`ref` varchar(100) default NULL,"
 		+ "`iteration` char(10) NOT NULL default '',"
 		+ "  `wfNameRef` varchar(100) NOT NULL, "
-		+ "PRIMARY KEY  USING BTREE (`varNameRef`,`wfInstanceRef`,`PNameRef`,`positionInColl`,`iteration`,`collIDRef`, `wfNameRef`),"
+		+ "PRIMARY KEY  USING BTREE (`varNameRef`,`wfInstanceRef`,`PNameRef`,`positionInColl`,`iteration`, `wfNameRef`),"
 		+ "KEY `collectionFK` (`wfInstanceRef`,`PNameRef`,`varNameRef`,`collIDRef`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='dynamic -- binding of variables to values ';";
 
@@ -288,18 +280,13 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 			stmt.executeUpdate(createTableData);			
 
 		} catch (SQLException e) {
-			logger
-			.warn("There was a problem creating the Provenance database database: "
-					+ e.toString());
+			logger.error("There was a problem creating the Provenance database database: ",e);
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error creating MySQL database tables",e);
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error creating MySQL database tables",e);
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error creating MySQL database tables",e);
 		} finally {
             if (connection != null) {
                 try {
