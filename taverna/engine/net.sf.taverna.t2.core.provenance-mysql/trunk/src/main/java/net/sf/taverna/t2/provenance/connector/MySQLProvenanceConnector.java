@@ -124,7 +124,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='dynamic -- execution of a workflow';";
 
 	private static final String createTableWorkflow = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Workflow` ("
-		+ "`wfname` varchar(100) NOT NULL, `parentWFname` varchar(100) default NULL, `externalName` varchar(100) default NULL,"
+		+ "`wfname` varchar(100) NOT NULL, `parentWFname` varchar(100) default NULL, `externalName` varchar(100) default NULL, 'dataflow' blob,"
 		+ "PRIMARY KEY  (`wfname`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- all known workflows by name';";
 
