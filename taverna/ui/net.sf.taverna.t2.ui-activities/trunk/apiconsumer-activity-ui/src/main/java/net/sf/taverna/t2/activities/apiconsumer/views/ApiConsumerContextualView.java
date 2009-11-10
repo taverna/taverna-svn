@@ -106,5 +106,10 @@ public class ApiConsumerContextualView extends
 		return new ApiConsumerActivityConfigurationAction(
 				(ApiConsumerActivity) getActivity(), owner);
 	}
+
+	@Override
+	public int getPreferredPosition() {
+		return 100;
+	}
 	
 }
