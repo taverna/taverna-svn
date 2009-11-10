@@ -130,4 +130,9 @@ public class RshellActivityContextualView extends
 		// return null;
 	}
 
+	@Override
+	public int getPreferredPosition() {
+		return 100;
+	}
+
 }

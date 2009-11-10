@@ -20,7 +20,11 @@
  ******************************************************************************/
 package net.sf.taverna.t2.activities.rshell.views;
 
+import java.util.Arrays;
+import java.util.List;
+
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactory;
 
 /**
@@ -36,9 +40,8 @@ public class RshellActivityContextualViewFactory implements ContextualViewFactor
 	}
 
 	 
-	public RshellActivityContextualView getView(RshellActivity activity) {
-		RshellActivityContextualView view = new RshellActivityContextualView(activity);
-		return view;
+	public List<ContextualView> getViews(RshellActivity activity) {
+		return Arrays.asList(new ContextualView[] {new RshellActivityContextualView(activity)});
 	}
 
 }
