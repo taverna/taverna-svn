@@ -133,11 +133,6 @@
 			<artifactId>renderers-exts</artifactId>
 			<version>${t2.ui.exts.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2.ui-exts</groupId>
-			<artifactId>import-workflow</artifactId>
-			<version>${t2.ui.exts.version}</version>
-		</dependency>
 
 		<!--  System artifacts -->
 		<dependency>
