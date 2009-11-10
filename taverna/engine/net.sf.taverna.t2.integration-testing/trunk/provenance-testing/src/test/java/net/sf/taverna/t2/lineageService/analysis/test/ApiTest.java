@@ -43,15 +43,10 @@ import org.junit.Test;
  */
 public class ApiTest {
 
-	private static final String DEFAULT_QUERY_PATH = null;
 	private static final String DEFAULT_SELECTED_PROCESSORS = "ALL";
-	private static final String DEFAULT_SELECTED_INSTANCES = "LAST";
-	private static final String DEFAULT_SELECTED_WF = "LAST";
-
 	private static final String TOP_PROCESSOR = "TOP";
 	private static final String ALL_VARS = "ALL";
-	private static final String ALL_PATHS = "ALL";
-
+	
 	ProvenanceAccess pAccess = null;
 
 	String DB_URL_LOCAL = testFiles.getString("dbhost");  // URL of database server //$NON-NLS-1$
@@ -115,6 +110,10 @@ public class ApiTest {
 
 		q = pqp.parseProvenanceQuery(querySpecFile);
 		
+		if (q == null) {
+			logger.fatal("query processing failed. So sorry.");
+			return;
+		}
 		logger.info("YOUR QUERY: "+q.toString());
 		
 		QueryAnswer answer=null;
