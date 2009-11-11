@@ -1,5 +1,6 @@
 /*******************************************************************************
- * Copyright (C) 2007 The University of Manchester   
+ * Copyright (C) 2009 Ingo Wassink of University of Twente, Netherlands and
+ * The University of Manchester   
  * 
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
@@ -18,6 +19,12 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
+
+/**
+ * @author Ingo Wassink
+ * @author Ian Dunlop
+ * @author Alan R Williams
+ */
 package net.sf.taverna.t2.activities.rshell.views;
 
 import java.awt.BorderLayout;
@@ -28,8 +35,6 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -45,6 +50,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -53,13 +59,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.filechooser.FileFilter;
 
 import net.sf.taverna.t2.activities.rshell.RShellPortSymanticTypeBean;
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
 import net.sf.taverna.t2.activities.rshell.RshellActivityConfigurationBean;
 import net.sf.taverna.t2.activities.rshell.RshellConnectionSettings;
-import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SymanticTypes;
+import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SemanticTypes;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationPanel;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
@@ -69,8 +76,6 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPo
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 
 import org.apache.log4j.Logger;
-import org.syntax.jedit.JEditTextArea;
-import org.syntax.jedit.tokenmarker.JavaTokenMarker;
 
 /**
  * Provides the configurable view for a {@link RshellActivity} through it's
@@ -93,7 +98,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	/** False for R1.5 and below, true for R1.6 and above */
 	private boolean rVersion;
 	/** The beanshell script */
-	private JEditTextArea scriptText;
+	private JEditorPane scriptTextArea;
 	/** A List of views over the input ports */
 	private List<RshellInputViewer> inputViewList;
 	/** A List of views over the output ports */
@@ -175,47 +180,35 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		setLayout(new GridBagLayout());
 		inputViewList = new ArrayList<RshellInputViewer>();
 		outputViewList = new ArrayList<RshellOutputViewer>();
-		setBorder(javax.swing.BorderFactory.createTitledBorder(null, null,
-				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
-				javax.swing.border.TitledBorder.DEFAULT_POSITION,
-				new java.awt.Font("Lucida Grande", 1, 12)));
+//		setBorder(javax.swing.BorderFactory.createTitledBorder(null, null,
+//				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
+//				javax.swing.border.TitledBorder.DEFAULT_POSITION,
+//				new java.awt.Font("Lucida Grande", 1, 12)));
 		setSize(500, 500);
 		final RshellActivityConfigurationBean configBean = activity
 				.getConfiguration();
 
 		JPanel scriptEditPanel = new JPanel(new BorderLayout());
+//		scriptEditPanel.setBorder(BorderFactory.createTitledBorder(
+//				BorderFactory.createEtchedBorder(), "R Script"));
 
-		tabbedPane = new JTabbedPane();
-		tabbedPane.addTab("Script", scriptEditPanel);
-		tabbedPane.addTab("Ports", setPortPanel());
-		createSettingsPanel();
-		tabbedPane.addTab("Connection Settings", settingsPanel);
 
-		GridBagConstraints outerConstraint = new GridBagConstraints();
-		outerConstraint.anchor = GridBagConstraints.FIRST_LINE_START;
-		outerConstraint.gridx = 0;
-		outerConstraint.gridy = 0;
 
-		outerConstraint.fill = GridBagConstraints.BOTH;
-		outerConstraint.weighty = 0.1;
-		outerConstraint.weightx = 0.1;
-		add(tabbedPane, outerConstraint);
+		scriptTextArea = new JTextPane(new RshellDocument());
 
-		scriptText = new JEditTextArea();
+		scriptTextArea.setText(configBean.getScript());
+		scriptTextArea.setCaretPosition(0);
+		scriptTextArea.setPreferredSize(new Dimension(0, 0));
+		for (ActivityInputPortDefinitionBean ip : configuration.getInputPortDefinitions()) {
+			String name = ip.getName();
+			((RshellDocument) scriptTextArea.getDocument()).addPort(name);
+		}
+		for (ActivityOutputPortDefinitionBean op : configuration.getOutputPortDefinitions()) {
+			String name = op.getName();
+			((RshellDocument) scriptTextArea.getDocument()).addPort(name);
+		}
 
-		scriptText.setText(configBean.getScript());
-		scriptText.setTokenMarker(new JavaTokenMarker());
-		scriptText.setCaretPosition(0);
-		scriptText.setPreferredSize(new Dimension(0, 0));
-		scriptText.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent e) {
-			}
-
-			public void focusLost(FocusEvent e) {
-				// configBean.setScript(scriptText.getText());
-			}
-		});
-		scriptEditPanel.add(scriptText, BorderLayout.CENTER);
+		scriptEditPanel.add(scriptTextArea, BorderLayout.CENTER);
 
 		// JPanel scriptButtonsPanel = new JPanel();
 		// BoxLayout boxLayout= new
@@ -258,21 +251,52 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		buttonPanel.add(loadRScriptButton);
 		buttonPanel.add(clearScriptButton);
 		
+//		outerConstraint.gridx = 0;
+//		outerConstraint.gridy = 1;
+//		outerConstraint.fill = GridBagConstraints.NONE;
+//		outerConstraint.anchor = GridBagConstraints.LINE_END;
+//		outerConstraint.gridy = 2;
+//		outerConstraint.weighty = 0;
+		scriptEditPanel.add(buttonPanel, BorderLayout.SOUTH);
+		
+		
+		tabbedPane = new JTabbedPane();
+		tabbedPane.addTab("Script", scriptEditPanel);
+		tabbedPane.addTab("Input ports", new JScrollPane(setInputPanel()));
+		tabbedPane.addTab("Output ports", new JScrollPane(setOutputPanel()));
+		createSettingsPanel();
+		tabbedPane.addTab("Connection Settings", settingsPanel);
+		tabbedPane.addTab("Information", createInfoPanel());
+
+		GridBagConstraints outerConstraint = new GridBagConstraints();
+		outerConstraint.anchor = GridBagConstraints.FIRST_LINE_START;
 		outerConstraint.gridx = 0;
-		outerConstraint.gridy = 1;
-		outerConstraint.fill = GridBagConstraints.NONE;
-		outerConstraint.anchor = GridBagConstraints.LINE_END;
-		outerConstraint.gridy = 2;
-		outerConstraint.weighty = 0;
-		add(buttonPanel, outerConstraint);
+		outerConstraint.gridy = 0;
+
+		outerConstraint.fill = GridBagConstraints.BOTH;
+		outerConstraint.weighty = 0.1;
+		outerConstraint.weightx = 0.1;
+		add(tabbedPane, outerConstraint);
 		setPreferredSize(new Dimension(500, 500));
 		validate();
 	}
 
 	private void createSettingsPanel() {
-		settingsPanel = new JPanel();
-		BoxLayout mgr = new BoxLayout(settingsPanel, BoxLayout.Y_AXIS);
-		settingsPanel.setLayout(mgr);
+		
+		settingsPanel = new JPanel(new GridBagLayout());
+
+		GridBagConstraints labelConstraints = new GridBagConstraints();
+		labelConstraints.weightx = 0.0;
+		labelConstraints.gridx = 0;
+		labelConstraints.gridy = 0;
+		labelConstraints.fill = GridBagConstraints.NONE;
+		labelConstraints.anchor = GridBagConstraints.LINE_START;
+
+		GridBagConstraints fieldConstraints = new GridBagConstraints();
+		fieldConstraints.weightx = 1.0;
+		fieldConstraints.gridx = 1;
+		fieldConstraints.gridy = 0;
+		fieldConstraints.fill = GridBagConstraints.HORIZONTAL;
 
 		Dimension dimension = new Dimension(0, 0);
 
@@ -311,46 +335,28 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		keepSessionAliveCheckBox.setSelected(connectionSettings
 					.isKeepSessionAlive());
 
-		JPanel hostPanel = new JPanel();
-		BoxLayout layout = new BoxLayout(hostPanel, BoxLayout.X_AXIS);
-		hostPanel.setLayout(layout);
-
-		hostPanel.add(hostnameLabel);
-		hostPanel.add(hostnameField);
-
-		JPanel portPanel = new JPanel();
-		BoxLayout layout1 = new BoxLayout(portPanel, BoxLayout.X_AXIS);
-		portPanel.setLayout(layout1);
-
-		portPanel.add(portLabel);
-		portPanel.add(portField);
-
-		JPanel userPanel = new JPanel();
-		BoxLayout layout2 = new BoxLayout(userPanel, BoxLayout.X_AXIS);
-		userPanel.setLayout(layout2);
-
-		userPanel.add(usernameLabel);
-		userPanel.add(usernameField);
-
-		JPanel passwordPanel = new JPanel();
-		BoxLayout layout3 = new BoxLayout(passwordPanel, BoxLayout.X_AXIS);
-		passwordPanel.setLayout(layout3);
-
-		passwordPanel.add(passwordLabel);
-		passwordPanel.add(passwordField);
-
-		JPanel keepAlivePanel = new JPanel();
-		BoxLayout layout4 = new BoxLayout(keepAlivePanel, BoxLayout.X_AXIS);
-		keepAlivePanel.setLayout(layout4);
-
-		keepAlivePanel.add(keepSessionAliveCheckBox);
-
-		settingsPanel.add(hostPanel);
-		settingsPanel.add(portPanel);
-		settingsPanel.add(userPanel);
-		settingsPanel.add(passwordPanel);
-		settingsPanel.add(keepAlivePanel);
-
+		settingsPanel.add(hostnameLabel, labelConstraints);
+		labelConstraints.gridy++;
+		settingsPanel.add(hostnameField, fieldConstraints);
+		fieldConstraints.gridy++;
+		
+		settingsPanel.add(portLabel, labelConstraints);
+		labelConstraints.gridy++;
+		settingsPanel.add(portField, fieldConstraints);
+		fieldConstraints.gridy++;
+		
+		settingsPanel.add(usernameLabel, labelConstraints);
+		labelConstraints.gridy++;
+		settingsPanel.add(usernameField, fieldConstraints);
+		fieldConstraints.gridy++;
+		
+		settingsPanel.add(passwordLabel, labelConstraints);
+		labelConstraints.gridy++;
+		settingsPanel.add(passwordField, fieldConstraints);
+		fieldConstraints.gridy++;
+		settingsPanel.add(keepSessionAliveCheckBox, fieldConstraints);
+		fieldConstraints.gridy++;
+		
 	}
 
 	/**
@@ -387,7 +393,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	 * Loops through the {@link ActivityInputPortDefinitionBean} in the
 	 * {@link RshellActivityConfigurationBean} and creates a
 	 * {@link RshellInputViewer} for each one. Displays the name and a
-	 * {@link JSpinner} to change the {@link SymanticTypes} for each one and a {@link JButton}
+	 * {@link JSpinner} to change the {@link SemanticTypes} for each one and a {@link JButton}
 	 * to remove it. Currently the individual components from a
 	 * {@link RshellInputViewer} are added rather than the
 	 * {@link RshellInputViewer} itself
@@ -396,8 +402,8 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	 */
 	private JPanel setInputPanel() {
 		final JPanel inputEditPanel = new JPanel(new GridBagLayout());
-		inputEditPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
-				.createEtchedBorder(), "Inputs"));
+//		inputEditPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
+//				.createEtchedBorder(), "Inputs"));
 
 		final GridBagConstraints inputConstraint = new GridBagConstraints();
 		inputConstraint.anchor = GridBagConstraints.FIRST_LINE_START;
@@ -431,7 +437,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 					.getSemanticSelector();
 			inputEditPanel.add(semanticSelector, inputConstraint);
 			inputConstraint.gridx = 2;
-			final JButton removeButton = new JButton("remove");
+			final JButton removeButton = new JButton("Remove");
 			removeButton.addActionListener(new AbstractAction() {
 
 				public void actionPerformed(ActionEvent e) {
@@ -440,7 +446,9 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 					inputEditPanel.remove(semanticSelector);
 					inputEditPanel.remove(removeButton);
 					inputEditPanel.revalidate();
+					inputEditPanel.repaint();
 					outerInputPanel.revalidate();
+					outerInputPanel.repaint();
 				}
 
 			});
@@ -499,7 +507,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 						.getSemanticSelector();
 				inputEditPanel.add(semanticSelector, inputConstraint);
 				inputConstraint.gridx = 2;
-				final JButton removeButton = new JButton("remove");
+				final JButton removeButton = new JButton("Remove");
 				removeButton.addActionListener(new AbstractAction() {
 
 					public void actionPerformed(ActionEvent e) {
@@ -508,7 +516,9 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 						inputEditPanel.remove(semanticSelector);
 						inputEditPanel.remove(removeButton);
 						inputEditPanel.revalidate();
+						inputEditPanel.repaint();
 						outerInputPanel.revalidate();
+						outerInputPanel.repaint();
 					}
 
 				});
@@ -552,7 +562,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	 * Loops through the {@link ActivityInputPortDefinitionBean} in the
 	 * {@link RshellActivityConfigurationBean} and creates a
 	 * {@link RshellOutputViewer} for each one. Displays the name and a
-	 * {@link JSpinner} to change the {@link SymanticTypes} for each one and
+	 * {@link JSpinner} to change the {@link SemanticTypes} for each one and
 	 * a {@link JButton} to remove it. Currently the individual components from
 	 * a {@link RshellOutputViewer} are added rather than the
 	 * {@link RshellOutputViewer} itself
@@ -561,8 +571,8 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	 */
 	private JPanel setOutputPanel() {
 		final JPanel outputEditPanel = new JPanel(new GridBagLayout());
-		outputEditPanel.setBorder(BorderFactory.createTitledBorder(
-				BorderFactory.createEtchedBorder(), "Outputs"));
+//		outputEditPanel.setBorder(BorderFactory.createTitledBorder(
+//				BorderFactory.createEtchedBorder(), "Outputs"));
 
 		final GridBagConstraints outputConstraint = new GridBagConstraints();
 		outputConstraint.anchor = GridBagConstraints.FIRST_LINE_START;
@@ -597,7 +607,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 			outputEditPanel.add(semanticTypeSelector, outputConstraint);
 			outputConstraint.gridx = 2;
 			outputConstraint.gridx = 4;
-			final JButton removeButton = new JButton("remove");
+			final JButton removeButton = new JButton("Remove");
 			removeButton.addActionListener(new AbstractAction() {
 
 				public void actionPerformed(ActionEvent e) {
@@ -606,7 +616,9 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 					outputEditPanel.remove(semanticTypeSelector);
 					outputEditPanel.remove(removeButton);
 					outputEditPanel.revalidate();
+					outputEditPanel.repaint();
 					outerOutputPanel.revalidate();
+					outerOutputPanel.repaint();
 				}
 
 			});
@@ -661,7 +673,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 					outputEditPanel.add(semanticTypeSelector, outputConstraint);
 					outputConstraint.gridx = 2;
 					outputConstraint.gridx = 4;
-					final JButton removeButton = new JButton("remove");
+					final JButton removeButton = new JButton("Remove");
 					removeButton.addActionListener(new AbstractAction() {
 
 						public void actionPerformed(ActionEvent e) {
@@ -670,6 +682,9 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 							outputEditPanel.remove(semanticTypeSelector);
 							outputEditPanel.remove(removeButton);
 							outputEditPanel.revalidate();
+							outputEditPanel.repaint();
+							outerOutputPanel.revalidate();
+							outerOutputPanel.repaint();
 						}
 
 					});
@@ -810,7 +825,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 				}
 				reader.close();
 
-				scriptText.setText(buffer.toString());
+				scriptTextArea.setText(buffer.toString());
 
 			} catch (FileNotFoundException ffe) {
 				JOptionPane.showMessageDialog(this, "File '"
@@ -833,7 +848,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		if (JOptionPane.showConfirmDialog(this,
 				"Do you really want to clear the script?",
 				"Clearing the script", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-			scriptText.setText("");
+			scriptTextArea.setText("");
 		}
 
 	}
@@ -850,9 +865,9 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 			inputBeanList.add(activityInputPortDefinitionBean);
 			RShellPortSymanticTypeBean bean = new RShellPortSymanticTypeBean();
 			bean.setName(inputView.getNameField().getText());
-			SymanticTypes selectedItem = (SymanticTypes) inputView
+			SemanticTypes selectedItem = (SemanticTypes) inputView
 					.getSemanticSelector().getSelectedItem();
-			activityInputPortDefinitionBean.setDepth(selectedItem.getDepth());
+//			activityInputPortDefinitionBean.setDepth(selectedItem.getDepth());
 			bean.setSymanticType(selectedItem);
 			inputSemanticTypes.add(bean);
 		}
@@ -865,9 +880,9 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 			activityOutputPortDefinitionBean.setMimeTypes(new ArrayList<String>());
 			outputBeanList.add(activityOutputPortDefinitionBean);
 			RShellPortSymanticTypeBean bean = new RShellPortSymanticTypeBean();
-			SymanticTypes selectedItem = (SymanticTypes) outputView
+			SemanticTypes selectedItem = (SemanticTypes) outputView
 					.getSemanticTypeSelector().getSelectedItem();
-			activityOutputPortDefinitionBean.setDepth(selectedItem.getDepth());
+//			activityOutputPortDefinitionBean.setDepth(selectedItem.getDepth());
 			bean.setSymanticType(selectedItem);
 			bean.setName(outputView.getNameField().getText());
 			outputSemanticTypes.add(bean);
@@ -876,7 +891,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 				.setInputSymanticTypes(inputSemanticTypes);
 		rshellActivityConfigurationBean
 				.setOutputSymanticTypes(outputSemanticTypes);
-		rshellActivityConfigurationBean.setScript(scriptText.getText());
+		rshellActivityConfigurationBean.setScript(scriptTextArea.getText());
 		rshellActivityConfigurationBean
 				.setInputPortDefinitions(inputBeanList);
 		rshellActivityConfigurationBean
@@ -889,7 +904,6 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		connectionSettings.setKeepSessionAlive(keepSessionAliveCheckBox
 				.isSelected());
 		connectionSettings.setPort(portField.getText());
-		connectionSettings.setNewRVersion(rVersion);
 		rshellActivityConfigurationBean
 				.setConnectionSettings(connectionSettings);
 
@@ -906,20 +920,13 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	@Override
 	public void refreshConfiguration() {
 		int visibleTab = -1;
-		int subTab = -1;
 		if (tabbedPane != null) {
 			visibleTab = tabbedPane.getSelectedIndex();
-			if (tabbedPane.getTitleAt(visibleTab).equals("Ports")) {
-				subTab = ports.getSelectedIndex();
-			}
 		}
 		this.removeAll();
 		initialise();
 		if (visibleTab != -1) {
 			tabbedPane.setSelectedIndex(visibleTab);
-			if (subTab != -1) {
-				ports.setSelectedIndex(subTab);
-			}
 		}
 	}
 
@@ -927,6 +934,53 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	public boolean checkValues() {
 		// TODO Not yet implemented
 		return true;
+	}
+	
+	private JPanel createInfoPanel() {
+		/** **************************************************************** */
+		/*
+		 * Info panel
+		 * /******************************************************************
+		 */
+		JPanel infoPanel = new JPanel(new BorderLayout());
+		tabbedPane.addTab("Info", infoPanel);
+
+		JPanel infoContentPanel = new JPanel(new GridBagLayout());
+//		infoContentPanel.setBorder(BorderFactory.createTitledBorder(
+//				BorderFactory.createEtchedBorder(), "Info"));
+		infoPanel.add(infoContentPanel, BorderLayout.NORTH);
+
+		GridBagConstraints infoConstraints = new GridBagConstraints();
+		infoConstraints.weightx = 0.0;
+		infoConstraints.gridx = 0;
+		infoConstraints.gridy = 0;
+		infoConstraints.fill = GridBagConstraints.NONE;
+
+		infoContentPanel.add(new JLabel("Rshell for Taverna 2.1, 2009"), infoConstraints);
+		infoConstraints.gridy++;
+		infoContentPanel.add(new JLabel("Ingo Wassink"), infoConstraints);
+		infoConstraints.gridy++;
+		infoContentPanel.add(new JLabel("Human Media Interaction"),
+				infoConstraints);
+		infoConstraints.gridy++;
+		infoContentPanel.add(new JLabel("University of Twente"),
+				infoConstraints);
+		infoConstraints.gridy++;
+		infoContentPanel.add(new JLabel("BioRange"), infoConstraints);
+		infoConstraints.gridy++;
+		infoContentPanel
+				.add(
+						new JLabel(
+								"<html><a href='http://www.ewi.utwente.nl/~biorange'>www.ewi.utwente.nl/~biorange</a></html>"),
+						infoConstraints);
+		infoConstraints.gridy++;
+		infoContentPanel.add(new JLabel("and"), infoConstraints);
+		infoConstraints.gridy++;
+		infoContentPanel.add(new JLabel("Alan R Williams"), infoConstraints);
+		infoConstraints.gridy++;
+		infoContentPanel.add(new JLabel("University of Manchester, UK"),
+				infoConstraints);
+		return infoPanel;
 	}
 
 }
