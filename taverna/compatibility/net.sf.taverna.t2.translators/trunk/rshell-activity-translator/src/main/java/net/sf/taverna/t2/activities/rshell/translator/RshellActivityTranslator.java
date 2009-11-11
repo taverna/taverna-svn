@@ -29,7 +29,7 @@ import net.sf.taverna.t2.activities.rshell.RShellPortSymanticTypeBean;
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
 import net.sf.taverna.t2.activities.rshell.RshellActivityConfigurationBean;
 import net.sf.taverna.t2.activities.rshell.RshellConnectionSettings;
-import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SymanticTypes;
+import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SemanticTypes;
 import net.sf.taverna.t2.compatibility.activity.AbstractActivityTranslator;
 import net.sf.taverna.t2.compatibility.activity.ActivityTranslationException;
 import net.sf.taverna.t2.compatibility.activity.ActivityTranslator;
@@ -108,11 +108,11 @@ public class RshellActivityTranslator extends AbstractActivityTranslator<RshellA
 		}
 	}
 	
-	private SymanticTypes getSymanticType(Port port) throws ActivityTranslationException {
+	private SemanticTypes getSymanticType(Port port) throws ActivityTranslationException {
 		try {
 			Method method = port.getClass().getMethod("getSymanticType");
 			Enum<?> symanticType = (Enum<?>) method.invoke(port);
-			return SymanticTypes.valueOf(symanticType.name());
+			return SemanticTypes.valueOf(symanticType.name());
 		} catch (SecurityException e) {
 			throw new ActivityTranslationException("There was a Security exception whilst trying to invoke getSymanticType through introspection",e);
 		} catch (NoSuchMethodException e) {
