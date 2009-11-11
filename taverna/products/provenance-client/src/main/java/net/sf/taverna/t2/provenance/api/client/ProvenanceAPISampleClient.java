@@ -15,6 +15,7 @@ import java.util.Set;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.provenance.api.NativeAnswer;
 import net.sf.taverna.t2.provenance.api.ProvenanceAccess;
 import net.sf.taverna.t2.provenance.api.ProvenanceConnectorType;
@@ -24,6 +25,7 @@ import net.sf.taverna.t2.provenance.api.QueryAnswer;
 import net.sf.taverna.t2.provenance.lineageservice.Dependencies;
 import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
 import net.sf.taverna.t2.provenance.lineageservice.utils.QueryVar;
+import net.sf.taverna.t2.reference.T2Reference;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.log4j.Logger;
@@ -31,7 +33,6 @@ import org.apache.log4j.Logger;
 /**
  * @author Paolo Missier<p/>
  * Example provenance API client.
- *
  */
 public class ProvenanceAPISampleClient {
 
@@ -46,6 +47,9 @@ public class ProvenanceAPISampleClient {
 
 	List<String> wfNames = null;
 	Set<String> selectedProcessors = null;
+
+	private boolean derefValues = false;
+	InvocationContext ic = null;
 
 	private static Logger logger = Logger.getLogger(ProvenanceAPISampleClient.class);
 
@@ -71,6 +75,8 @@ public class ProvenanceAPISampleClient {
 		System.setProperty("raven.eclipse","true");
 		pAccess = new ProvenanceAccess(ProvenanceConnectorType.MYSQL);  // creates and initializes the provenance API
 		configureInterface();              // sets user-defined preferences
+		
+		if (derefValues) ic = pAccess.getInvocationContext();
 	}
 
 	protected  void setDataSource() {
@@ -117,12 +123,6 @@ public class ProvenanceAPISampleClient {
 			logger.info("OPM.recordArtifactValues: "+ pAccess.isAttachOPMArtifactValues());
 		}
 
-		// are we recording the actual (de-referenced) values at all?!
-		String includeDataValuePref = PropertiesReader.getString("query.returnDataValues");
-		if (includeDataValuePref != null) {
-			pAccess.toggleIncludeDataValues(Boolean.parseBoolean(includeDataValuePref));
-			logger.info("query.returnDataValues: "+pAccess.isIncludeDataValues());
-		}
 
 		String computeOPMGraph = PropertiesReader.getString("OPM.computeGraph");
 		if (computeOPMGraph != null) {
@@ -136,6 +136,15 @@ public class ProvenanceAPISampleClient {
 			OPMGraphFilename = DEFAULT_OPM_FILENAME;
 			logger.info("OPM.filename: "+OPMGraphFilename);			
 		}
+		
+		// are we recording the actual (de-referenced) values at all?!
+		// NOTE this is a client feature: the API only returns references. They are deref'd locally
+		String derefValuesString = PropertiesReader.getString("query.returnDataValues");
+		if (derefValuesString != null) {
+			logger.info("query.returnDataValues: "+derefValuesString);
+			derefValues = Boolean.parseBoolean(derefValuesString);
+		}
+
 	}
 
 
@@ -217,8 +226,19 @@ public class ProvenanceAPISampleClient {
 				for (Dependencies dep:deps.get(path)) {
 
 					for (LineageQueryResultRecord record: dep.getRecords()) {
-						record.setPrintResolvedValue(false);
+						
+						// we now resolve values on the client, there are no values in the record
+						// returned through the API
+						record.setPrintResolvedValue(false);  
 						logger.info(record.toString());
+						
+						// resolve reference if so desired
+						if (derefValues) {
+							T2Reference ref = ic.getReferenceService().referenceFromString(record.getValue());
+							Object o = ic.getReferenceService().resolveIdentifier(ref, null, ic);
+							
+							logger.info("deref value for ref: "+ref+" "+o);
+						}
 					}
 				}
 			}
