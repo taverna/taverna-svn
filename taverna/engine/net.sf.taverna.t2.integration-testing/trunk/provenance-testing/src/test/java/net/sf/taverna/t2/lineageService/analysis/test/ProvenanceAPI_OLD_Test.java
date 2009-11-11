@@ -442,13 +442,6 @@ public class ProvenanceAPI_OLD_Test {
 			System.out.println("OPM.recordArtifactValues: "+ pAccess.isAttachOPMArtifactValues());
 		}
 
-		// are we recording the actual (de-referenced) values at all?!
-		String includeDataValuePref = AnalysisTestFiles.getString("query.returnDataValues");
-		if (includeDataValuePref != null) {
-			pAccess.toggleIncludeDataValues(Boolean.parseBoolean(includeDataValuePref));
-			System.out.println("query.returnDataValues: "+pAccess.isIncludeDataValues());
-		}
-
 		String computeOPMGraph = AnalysisTestFiles.getString("OPM.computeGraph");
 		if (computeOPMGraph != null) {
 			pAccess.toggleOPMGeneration(Boolean.parseBoolean(computeOPMGraph));
