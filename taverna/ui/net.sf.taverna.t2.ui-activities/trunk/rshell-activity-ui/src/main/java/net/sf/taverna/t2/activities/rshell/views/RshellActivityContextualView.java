@@ -90,7 +90,7 @@ public class RshellActivityContextualView extends
 		if (connectionSettings != null) {		
 			String username = connectionSettings.getUsername();
 			if (username != null) {
-				html = html + "<tr><th>Connection Settings</th></tr>"
+				html = html + "<tr><th colspan=\"2\">Connection Settings</th></tr>"
 				+ "<tr><td>User</td><td>" + username
 				+ "</td></tr>";			
 			}
