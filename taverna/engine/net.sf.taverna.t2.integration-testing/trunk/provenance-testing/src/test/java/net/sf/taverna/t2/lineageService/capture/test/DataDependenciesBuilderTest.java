@@ -33,7 +33,7 @@ public class DataDependenciesBuilderTest {
 
 		String jdbcString = "jdbc:mysql://"+location;
 
-		String clearDB = testFiles.getString("clearDB");
+		String clearDB = propertiesReader.getString("clearDB");
 		
 		DataDependenciesBuilder ddBuilder = new DataDependenciesBuilder(jdbcString, clearDB);
 				

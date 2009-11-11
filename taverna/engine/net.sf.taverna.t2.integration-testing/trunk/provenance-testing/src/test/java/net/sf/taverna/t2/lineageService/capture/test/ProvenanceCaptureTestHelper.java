@@ -50,13 +50,13 @@ public class ProvenanceCaptureTestHelper {
 	private ProvenanceConnector provenanceConnector;
 	private ProvenanceAccess pAccess = null;
 
-	private String DB_URL_LOCAL = testFiles.getString("dbhost"); // URL of database server //$NON-NLS-1$
-	private String DB_USER = testFiles.getString("dbuser"); // database user id //$NON-NLS-1$
-	private String DB_PASSWD = testFiles.getString("dbpassword"); //$NON-NLS-1$
+	private String DB_URL_LOCAL = propertiesReader.getString("dbhost"); // URL of database server //$NON-NLS-1$
+	private String DB_USER = propertiesReader.getString("dbuser"); // database user id //$NON-NLS-1$
+	private String DB_PASSWD = propertiesReader.getString("dbpassword"); //$NON-NLS-1$
 
 	// testing switches
-	private String clearDB = testFiles.getString("clearDB");
-	private String saveEvents = testFiles.getString("saveEvents");
+	private String clearDB = propertiesReader.getString("clearDB");
+	private String saveEvents = propertiesReader.getString("saveEvents");
 	boolean isClearDB = false;
 	boolean isUseProvenance = true;
 
@@ -225,9 +225,9 @@ public class ProvenanceCaptureTestHelper {
 	
 	public Dataflow setup(String testfilesProperty) throws Exception {
 
-		String T2File = testFiles.getString(testfilesProperty);
+		String T2File = propertiesReader.getString(testfilesProperty);
 
-		String useProvenance = testFiles.getString("useProvenance");
+		String useProvenance = propertiesReader.getString("useProvenance");
 
 		if (useProvenance != null)
 			isUseProvenance = Boolean.parseBoolean(useProvenance);

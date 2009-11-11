@@ -3,13 +3,13 @@ package net.sf.taverna.t2.lineageService.capture.test;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-public class testFiles {
+public class propertiesReader {
 	private static final String BUNDLE_NAME = "net.sf.taverna.t2.lineageService.capture.test.CaptureTestFiles"; //$NON-NLS-1$
 
 	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
 			.getBundle(BUNDLE_NAME);
 
-	private testFiles() {
+	private propertiesReader() {
 	}
 
 	public static String getString(String key) {

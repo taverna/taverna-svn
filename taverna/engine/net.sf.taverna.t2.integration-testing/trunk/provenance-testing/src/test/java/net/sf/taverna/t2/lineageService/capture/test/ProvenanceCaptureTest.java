@@ -38,7 +38,7 @@ public class ProvenanceCaptureTest extends ProvenanceCaptureTestHelper  {
 		Dataflow dataflow = helper.setup("ProvenanceCaptureTest");
 
 		// collect inputs from properties file
-		String inputValues = testFiles.getString("workflow.inputs");
+		String inputValues = propertiesReader.getString("workflow.inputs");
 
 		long start=0;
 
