@@ -69,12 +69,16 @@ public class Log {
 	public static Log getLogger(Class c) {
 		return new Log(c);
 	}
+	
+	public static LogInterface getImplementation() {
+		return logImplementation;
+	}
 	/**
 	 * Set the implementation
 	 * 
 	 * @param implementation
 	 */
-	public synchronized static void setImplementation(
+	public static void setImplementation(
 			LogInterface implementation) {
 		LogInterface oldImplementation = logImplementation;
 		logImplementation = implementation;
