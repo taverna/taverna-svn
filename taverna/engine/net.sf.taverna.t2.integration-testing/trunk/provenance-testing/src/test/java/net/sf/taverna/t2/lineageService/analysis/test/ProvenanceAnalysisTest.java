@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.taverna.t2.lineageService.capture.test.testFiles;
+import net.sf.taverna.t2.lineageService.capture.test.propertiesReader;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceQuery;
@@ -86,9 +86,9 @@ public class ProvenanceAnalysisTest<pathToDependencies> {
 	@Before
 	public void setUp() throws Exception {
 
-		String DB_URL_LOCAL = testFiles.getString("dbhost");  // URL of database server //$NON-NLS-1$
-		String DB_USER = testFiles.getString("dbuser");                        // database user id //$NON-NLS-1$
-		String DB_PASSWD = testFiles.getString("dbpassword"); //$NON-NLS-1$
+		String DB_URL_LOCAL = propertiesReader.getString("dbhost");  // URL of database server //$NON-NLS-1$
+		String DB_USER = propertiesReader.getString("dbuser");                        // database user id //$NON-NLS-1$
+		String DB_PASSWD = propertiesReader.getString("dbpassword"); //$NON-NLS-1$
 
 		derbyjdbcString = "jdbc:derby:/Users/paolo/Library/Application Support/taverna-2.1-SNAPSHOT-20090511/db";
 

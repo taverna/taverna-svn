@@ -5,6 +5,9 @@ package net.sf.taverna.t2.lineageService.analysis.test;
 
 import static org.junit.Assert.assertFalse;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -16,7 +19,7 @@ import java.util.Set;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
-import net.sf.taverna.t2.lineageService.capture.test.testFiles;
+import net.sf.taverna.t2.lineageService.capture.test.propertiesReader;
 import net.sf.taverna.t2.provenance.api.NativeAnswer;
 import net.sf.taverna.t2.provenance.api.ProvenanceAccess;
 import net.sf.taverna.t2.provenance.api.ProvenanceConnectorType;
@@ -41,22 +44,24 @@ import org.junit.Test;
  * @author paolo
  *
  */
-public class ApiTest {
+public class ProvenanceAPI_OLD_Test {
 
 	private static final String DEFAULT_SELECTED_PROCESSORS = "ALL";
 	private static final String TOP_PROCESSOR = "TOP";
 	private static final String ALL_VARS = "ALL";
+	private static final String DEFAULT_OPM_FILENAME = "src/test/resources/provenance-testing/OPMGraph.rdf";
 	
 	ProvenanceAccess pAccess = null;
 
-	String DB_URL_LOCAL = testFiles.getString("dbhost");  // URL of database server //$NON-NLS-1$
-	String DB_USER = testFiles.getString("dbuser");                        // database user id //$NON-NLS-1$
-	String DB_PASSWD = testFiles.getString("dbpassword"); //$NON-NLS-1$
-
+	String DB_URL_LOCAL = propertiesReader.getString("dbhost");  // URL of database server //$NON-NLS-1$
+	String DB_USER = propertiesReader.getString("dbuser");                        // database user id //$NON-NLS-1$
+	String DB_PASSWD = propertiesReader.getString("dbpassword"); //$NON-NLS-1$
+	String OPMGraphFilename = null;
+	
 	List<String> wfNames = null;
 	Set<String> selectedProcessors = null;
 
-	private static Logger logger = Logger.getLogger(ApiTest.class);
+	private static Logger logger = Logger.getLogger(ProvenanceAPI_OLD_Test.class);
 
 	/**
 	 * @throws java.lang.Exception
@@ -124,7 +129,52 @@ public class ApiTest {
 			e.printStackTrace();
 		}
 		reportAnswer(answer);
+		saveOPMGraph(answer, OPMGraphFilename);
 	}
+
+
+
+	/**
+	 * writes the RDF/XML OPM string to file
+	 * @param opmFilename
+	 */
+	private void saveOPMGraph(QueryAnswer answer, String opmFilename) {
+		
+		if (answer.getOPMAnswer_AsRDF() == null) {
+			logger.info("save OPM graph: OPM graph was NOT generated.");
+			return;
+		}
+		
+		try {
+			FileWriter fw= new FileWriter(new File(opmFilename));
+			fw.write(answer.getOPMAnswer_AsRDF());
+			fw.close();
+		} catch (IOException e) {
+			logger.warn("saveOPMGraph: error saving graph to file "+opmFilename);
+			logger.warn(e.getMessage());
+		}
+		logger.info("OPM graph saved to "+opmFilename);
+	}
+
+
+	/**
+	 * Test method for {@link net.sf.taverna.t2.provenance.api.Query#executeQuery(java.util.List, java.lang.String, java.util.Set)}.
+	 */
+	@Test
+	public final void testProvenanceQuery() {
+
+		try {
+
+			Query pq = composeQuery(); // creates a test query using a config file (AnalysisTestFiles.properties)
+			QueryAnswer answer = pAccess.executeQuery (pq);
+			reportAnswer(answer);
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+	}
+
 
 
 	/**
@@ -150,128 +200,6 @@ public class ApiTest {
 		q.setTargetVars(selectedVars);
 
 		return q;
-	}
-
-
-	/**
-	 * Test method for {@link net.sf.taverna.t2.provenance.api.Query#executeQuery(java.util.List, java.lang.String, java.util.Set)}.
-	 */
-	@Test
-	public final void testProvenanceQuery() {
-
-		try {
-
-			Query pq = composeQuery(); // creates a test query using a config file (AnalysisTestFiles.properties)
-			QueryAnswer answer = pAccess.executeQuery (pq);
-			reportAnswer(answer);
-
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
-	}
-
-
-	@Test
-	public final void testFetchPortData1() {
-
-		Query pq = composeQuery(); // creates a test query using a config file (AnalysisTestFiles.properties)
-
-		// we only use the query vars portion of the query for this test
-		List<QueryVar> targetPorts = pq.getTargetVars();
-
-		for (QueryVar port:targetPorts) {
-			Dependencies deps = pAccess.fetchPortData(port.getWfInstanceId(), port.getWfName(), 
-					port.getPname(), port.getVname(), port.getPath());
-
-			logger.info("intermediate values: ");
-			for (LineageQueryResultRecord record: deps.getRecords()) {
-				logger.info(record.toString());
-			}
-		}
-	}
-
-
-
-	/**
-	 * hardcoded on simple-nested.t2flow data
-	 */
-	@Test
-	public final void testFetchPortData2() {
-
-		Dependencies deps = pAccess.fetchPortData(
-				"ae1e2b6b-3bc5-4c93-a250-c4dd0210c3b3",  // instanceID 
-				"3785119a-9701-40a8-9a6e-c14dafb21010",  // wfname
-				"String_constant", //procname
-				"value", // port namem
-				null);  // all paths
-
-		logger.info("intermediate values: ");
-		for (LineageQueryResultRecord record: deps.getRecords()) {
-			logger.info(record.toString());
-		}
-	}
-
-
-
-	/**
-	 * hardcoded on simple-nested.t2flow data
-	 */
-	@Test
-	public final void testFetchPortData3() {
-
-		Dependencies deps = pAccess.fetchPortData(
-				"ae1e2b6b-3bc5-4c93-a250-c4dd0210c3b3",  // instanceID 
-				"f5dd73b3-cc2b-4a37-96ff-afce8dc57d36",  // wfname
-				"String_constant", //procname
-				"value", // port namem
-				null);  // all paths
-
-		logger.info("intermediate values: ");
-		for (LineageQueryResultRecord record: deps.getRecords()) {
-			logger.info(record.toString());
-		}
-	}
-
-
-
-	/**
-	 * hardcoded on simple-nested.t2flow data
-	 */
-	@Test
-	public final void testFetchPortData4() {
-
-		Dependencies deps = pAccess.fetchPortData(
-				"ae1e2b6b-3bc5-4c93-a250-c4dd0210c3b3",  // instanceID 
-				"e0a786d1-61bb-4e60-a9fd-952a0b110a5b",  // wfname
-				"Beanshell", //procname
-				null, // port name
-				null);  // all paths
-
-		logger.info("intermediate values: ");
-		for (LineageQueryResultRecord record: deps.getRecords()) {
-			logger.info(record.toString());
-		}
-	}
-
-
-	/**
-	 * hardcoded on simple-nested.t2flow data
-	 */
-	@Test
-	public final void testFetchPortData5() {
-
-		Dependencies deps = pAccess.fetchPortData(
-				"ae1e2b6b-3bc5-4c93-a250-c4dd0210c3b3",  // instanceID 
-				"e0a786d1-61bb-4e60-a9fd-952a0b110a5b",  // wfname
-				"Nested_workflow", //procname
-				"nestout1", // port namem
-				null);  // all paths
-
-		logger.info("intermediate values: ");
-		for (LineageQueryResultRecord record: deps.getRecords()) {
-			logger.info(record.toString());
-		}
 	}
 
 
@@ -525,6 +453,13 @@ public class ApiTest {
 		if (computeOPMGraph != null) {
 			pAccess.toggleOPMGeneration(Boolean.parseBoolean(computeOPMGraph));
 			System.out.println("OPM.computeGraph: "+pAccess.isOPMGenerationActive());			
+		}
+		
+		// user-selected file name for OPM graph?
+		OPMGraphFilename = AnalysisTestFiles.getString("OPM.rdf.file");
+		if (OPMGraphFilename == null) {
+			OPMGraphFilename = DEFAULT_OPM_FILENAME;
+			System.out.println("OPM.filename: "+OPMGraphFilename);			
 		}
 	}
 

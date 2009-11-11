@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.taverna.t2.lineageService.capture.test.testFiles;
+import net.sf.taverna.t2.lineageService.capture.test.propertiesReader;
 import net.sf.taverna.t2.provenance.lineageservice.Dependencies;
 import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
 import net.sf.taverna.t2.provenance.lineageservice.LineageSQLQuery;
@@ -42,9 +42,9 @@ public class testSimpleLineageQuery {
 	@Before
 	public void setUp() throws Exception {
 		
-		String DB_URL_LOCAL = testFiles.getString("dbhost");  // URL of database server //$NON-NLS-1$
-		String DB_USER = testFiles.getString("dbuser");                        // database user id //$NON-NLS-1$
-		String DB_PASSWD = testFiles.getString("dbpassword"); //$NON-NLS-1$
+		String DB_URL_LOCAL = propertiesReader.getString("dbhost");  // URL of database server //$NON-NLS-1$
+		String DB_USER = propertiesReader.getString("dbuser");                        // database user id //$NON-NLS-1$
+		String DB_PASSWD = propertiesReader.getString("dbpassword"); //$NON-NLS-1$
 		  
 		location = DB_URL_LOCAL+"/T2Provenance?user="+DB_USER+"&password="+DB_PASSWD; //$NON-NLS-1$ //$NON-NLS-2$
 

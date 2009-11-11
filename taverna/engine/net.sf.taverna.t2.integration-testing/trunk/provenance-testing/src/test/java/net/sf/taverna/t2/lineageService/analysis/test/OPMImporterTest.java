@@ -10,7 +10,7 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import net.sf.taverna.t2.lineageService.capture.test.testFiles;
+import net.sf.taverna.t2.lineageService.capture.test.propertiesReader;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceWriter;
@@ -32,9 +32,9 @@ public class OPMImporterTest {
 	// the graph we import if no user preference
 	private static final String DEFAULT_OPM_XML = "src/test/resources/provenance-testing/OPM/OPMGraph.xml";
 
-	private String DB_URL_LOCAL = testFiles.getString("dbhost"); // URL of database server //$NON-NLS-1$
-	private String DB_USER = testFiles.getString("dbuser"); // database user id //$NON-NLS-1$
-	private String DB_PASSWD = testFiles.getString("dbpassword"); //$NON-NLS-1$
+	private String DB_URL_LOCAL = propertiesReader.getString("dbhost"); // URL of database server //$NON-NLS-1$
+	private String DB_USER = propertiesReader.getString("dbuser"); // database user id //$NON-NLS-1$
+	private String DB_PASSWD = propertiesReader.getString("dbpassword"); //$NON-NLS-1$
 
 	String _aOPM_XMLFile;
 	ProvenanceWriter pw;
