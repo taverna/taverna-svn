@@ -1,5 +1,6 @@
 /*******************************************************************************
- * Copyright (C) 2007 The University of Manchester   
+ * Copyright (C) 2009 Ingo Wassink of University of Twente, Netherlands and
+ * The University of Manchester   
  * 
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
@@ -18,6 +19,12 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
+
+/**
+ * @author Ingo Wassink
+ * @author Ian Dunlop
+ * @author Alan R Williams
+ */
 package net.sf.taverna.t2.activities.rshell.views;
 
 import java.awt.Component;
@@ -25,7 +32,7 @@ import java.awt.Component;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 
-import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SymanticTypes;
+import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SemanticTypes;
 
 /**
  * Class which calls the 'getDescription' method instead of the toString. Was an
@@ -41,7 +48,7 @@ public class PortTypesListCellRenderer extends DefaultListCellRenderer {
 		super.getListCellRendererComponent(list, value, index, isSelected,
 				cellHasFocus);
 
-		this.setText(((SymanticTypes) value).description);
+		this.setText(((SemanticTypes) value).description);
 		return this;
 	}
 

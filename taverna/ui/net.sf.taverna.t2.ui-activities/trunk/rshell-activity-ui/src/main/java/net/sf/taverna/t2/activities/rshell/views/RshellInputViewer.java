@@ -1,5 +1,6 @@
 /*******************************************************************************
- * Copyright (C) 2007 The University of Manchester   
+ * Copyright (C) 2009 Ingo Wassink of University of Twente, Netherlands and
+ * The University of Manchester   
  * 
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
@@ -18,6 +19,12 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
+
+/**
+ * @author Ingo Wassink
+ * @author Ian Dunlop
+ * @author Alan R Williams
+ */
 package net.sf.taverna.t2.activities.rshell.views;
 
 import java.awt.GridBagConstraints;
@@ -33,14 +40,15 @@ import javax.swing.SpinnerNumberModel;
 
 import net.sf.taverna.t2.activities.rshell.RShellPortSymanticTypeBean;
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
-import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SymanticTypes;
+import net.sf.taverna.t2.activities.rshell.RshellPortTypes;
+import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SemanticTypes;
 import net.sf.taverna.t2.lang.ui.DialogTextArea;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 
 /**
  * A view representing {@link ActivityInputPortDefinitionBean}s of a
  * {@link RshellActivity} and the various parts which can be edited,
- * primarily the name and the {@link SymanticTypes}.
+ * primarily the name and the {@link SemanticTypes}.
  * 
  * @author Ian Dunlop
  * 
@@ -105,8 +113,8 @@ public class RshellInputViewer extends JPanel {
 		nameField = new JTextField(bean.getName());
 		add(nameField, outerConstraint);
 		
-		semanticTypeSelector = new JComboBox(SymanticTypes.values());
-		semanticTypeSelector.setSelectedItem(SymanticTypes.STRING);
+		semanticTypeSelector = new JComboBox(RshellPortTypes.getInputSymanticTypes());
+		semanticTypeSelector.setSelectedItem(SemanticTypes.STRING);
 		
 		semanticTypeSelector.setRenderer(new PortTypesListCellRenderer());
 		

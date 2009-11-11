@@ -27,28 +27,64 @@
  */
 package net.sf.taverna.t2.activities.rshell.views;
 
-import java.util.Arrays;
-import java.util.List;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.util.HashSet;
+import java.util.Set;
 
-import net.sf.taverna.t2.activities.rshell.RshellActivity;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactory;
+import org.apache.log4j.Logger;
 
 /**
- * RshellActivity contextual view factory.
+ * Manager for reading key set file
  * 
- * @author Alex Nenadic
- *
+ * @author WassinkI
+ * 
  */
-public class RshellActivityContextualViewFactory implements ContextualViewFactory<RshellActivity>{
+public class RshellKeySetManager {
+	
+	private static Logger logger = Logger.getLogger(RshellKeySetManager.class);
 
-	public boolean canHandle(Object object) {
-		return object instanceof RshellActivity;
+
+	private static Set<String> keySet;
+
+	/**
+	 * Method for getting the keyset
+	 * 
+	 * @return
+	 */
+	public static Set<String> getKeySet() {
+		if (keySet == null) {
+			loadKeySet();
+		}
+		return keySet;
 	}
 
-	 
-	public List<ContextualView> getViews(RshellActivity activity) {
-		return Arrays.asList(new ContextualView[] {new RshellActivityContextualView(activity)});
-	}
+	private static synchronized void loadKeySet() {
+		if (keySet != null)
+			return;
 
+		keySet = new HashSet<String>();
+		try {
+			BufferedReader reader = new BufferedReader(
+					new InputStreamReader(
+
+							RshellKeySetManager.class
+									.getResourceAsStream("keys.txt")));
+			                                                     
+			String line;
+			while ((line = reader.readLine()) != null) {
+				keySet.add(line.trim());
+			}
+			reader.close();
+		} catch (Exception e) {
+			logger.error(e);
+		}
+
+	}
 }
