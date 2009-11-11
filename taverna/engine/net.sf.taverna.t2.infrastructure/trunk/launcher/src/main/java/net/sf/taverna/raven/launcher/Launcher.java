@@ -21,11 +21,14 @@
 package net.sf.taverna.raven.launcher;
 
 import java.awt.GraphicsEnvironment;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import net.sf.taverna.raven.SplashScreen;
 import net.sf.taverna.raven.appconfig.ApplicationConfig;
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
+import net.sf.taverna.raven.appconfig.config.Log4JConfiguration;
 import net.sf.taverna.raven.plugins.PluginManager;
 import net.sf.taverna.raven.prelauncher.BootstrapClassLoader;
 import net.sf.taverna.raven.prelauncher.PreLauncher;
@@ -51,8 +54,6 @@ import org.apache.log4j.Logger;
  * 
  */
 public class Launcher {
-
-	private static Logger logger = Logger.getLogger(Launcher.class);
 
 	/**
 	 * Call the "real" application
@@ -123,6 +124,7 @@ public class Launcher {
 	 */
 	public int launchMain(String[] args) {
 		prepareClassLoaders();
+		prepareLogging();
 		prepareSplashScreen();
 		String mainClass = appConfig.getMainClass();
 		Launchable launchable;
@@ -152,7 +154,11 @@ public class Launcher {
 		}
 	}
 
-	private void prepareClassLoaders() {
+	private void prepareLogging() {
+		Log4JConfiguration.getInstance().prepareLog4J();		
+	}
+
+	protected void prepareClassLoaders() {
 		PreLauncher preLauncher = PreLauncher.getInstance();
 		BootstrapClassLoader launchingClassLoader = preLauncher
 				.getLaunchingClassLoader();
@@ -172,6 +178,14 @@ public class Launcher {
 			// 3rd party libraries
 			Thread.currentThread().setContextClassLoader(launchingClassLoader);
 		}
+		
+		// Add conf/ folder to classpath
+		try {
+			URL url = new URL(appConfig.getStartupRoot(), "conf/");
+			launchingClassLoader.addURL(url);
+		} catch (Exception e) {
+			System.err.println("Could not add conf/ to classpath");
+		}
 	}
 
 	protected void removeSplashScreenListener() {
@@ -187,7 +201,7 @@ public class Launcher {
 			splash = SplashScreen.getSplashScreen(splashScreenURL);
 			splash.listenToRepository(appRuntime.getRavenRepository());
 		} else {
-			logger.warn("No splash screen : " + splashScreenURL);
+			System.err.println("No splash screen : " + splashScreenURL);
 		}
 	}
 
