@@ -1,5 +1,6 @@
 /*******************************************************************************
- * Copyright (C) 2007 The University of Manchester   
+ * Copyright (C) 2009 Ingo Wassink of University of Twente, Netherlands and
+ * The University of Manchester   
  * 
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
@@ -19,14 +20,18 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
 
+/**
+ * @author Ingo Wassink
+ * @author Ian Dunlop
+ * @author Alan R Williams
+ */
+
 package net.sf.taverna.t2.activities.rshell;
 
 import java.io.Serializable;
 
 /**
  * Class containing the connection settings
- * 
- * @author Ingo Wassink
  * 
  */
 public class RshellConnectionSettings implements Serializable {

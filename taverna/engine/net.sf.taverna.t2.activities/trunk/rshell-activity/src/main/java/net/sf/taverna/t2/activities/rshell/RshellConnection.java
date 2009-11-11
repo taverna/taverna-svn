@@ -1,5 +1,6 @@
 /*******************************************************************************
- * Copyright (C) 2007 The University of Manchester   
+ * Copyright (C) 2009 Ingo Wassink of University of Twente, Netherlands and
+ * The University of Manchester   
  * 
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
@@ -18,24 +19,23 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
+
 /**
- * CVS
- * $Author: sowen70 $
- * $Date: 2008/09/04 13:41:08 $
- * $Revision: 1.2 $
+ * @author Ingo Wassink
+ * @author Ian Dunlop
+ * @author Alan R Williams
+ * @author Stuart Owen
  */
 package net.sf.taverna.t2.activities.rshell;
 
-import org.rosuda.JRclient.RSrvException;
-import org.rosuda.JRclient.Rconnection;
+import org.rosuda.REngine.Rserve.RConnection;
+import org.rosuda.REngine.Rserve.RserveException;
 
 /**
  * Class for rshell connections
  * 
- * @author Ingo Wassink
- * 
  */
-public class RshellConnection extends Rconnection {
+public class RshellConnection extends RConnection {
 	private boolean keepSessionAlive;
 
 	/**
@@ -43,10 +43,10 @@ public class RshellConnection extends Rconnection {
 	 * 
 	 * @param connectionSettings
 	 *            the connection settings for the connection
+	 * @throws RserveException 
 	 * @throws RSrvException
 	 */
-	public RshellConnection(RshellConnectionSettings connectionSettings)
-			throws RSrvException {
+	public RshellConnection(RshellConnectionSettings connectionSettings) throws RserveException {
 		super(connectionSettings.getHost(), connectionSettings.getPort());
 
 		this.keepSessionAlive = connectionSettings.isKeepSessionAlive();

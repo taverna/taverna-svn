@@ -1,5 +1,6 @@
 /*******************************************************************************
- * Copyright (C) 2007 The University of Manchester   
+ * Copyright (C) 2009 Ingo Wassink of University of Twente, Netherlands and
+ * The University of Manchester   
  * 
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
@@ -18,28 +19,22 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
-/*
- * CVS
- * $Author: sowen70 $
- * $Date: 2008/09/04 13:41:07 $
- * $Revision: 1.2 $
- * University of Twente, Human Media Interaction Group
+
+/**
+ * @author Ingo Wassink
+ * @author Ian Dunlop
+ * @author Alan R Williams
  */
 package net.sf.taverna.t2.activities.rshell;
 
 import java.util.HashMap;
 
-//import org.embl.ebi.escience.scufl.enactor.WorkflowEventAdapter;
-//import org.embl.ebi.escience.scufl.enactor.event.WorkflowCompletionEvent;
-//import org.embl.ebi.escience.scufl.enactor.event.WorkflowCreationEvent;
-//import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowEventDispatcher;
-import org.rosuda.JRclient.RSrvException;
+import org.rosuda.REngine.Rserve.RserveException;
+
 
 /**
  * Class for managing connections with RServe Now, it is possible to persist a
  * connection and to keep the session
- * 
- * @author Ingo Wassink
  * 
  */
 public class RshellConnectionManager /*extends WorkflowEventAdapter*/ {
@@ -77,9 +72,9 @@ public class RshellConnectionManager /*extends WorkflowEventAdapter*/ {
 	 * @param settings
 	 *            the connection settings
 	 * @return the connection
+	 * @throws RserveException 
 	 */
-	public RshellConnection createConnection(RshellConnectionSettings settings)
-			throws RSrvException {
+	public RshellConnection createConnection(RshellConnectionSettings settings) throws RserveException {
 
 		RshellConnection connection;
 		if (settings.isKeepSessionAlive()) {

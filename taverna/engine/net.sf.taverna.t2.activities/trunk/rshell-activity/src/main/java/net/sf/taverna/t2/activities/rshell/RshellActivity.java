@@ -1,5 +1,6 @@
 /*******************************************************************************
- * Copyright (C) 2007 The University of Manchester   
+ * Copyright (C) 2009 Ingo Wassink of University of Twente, Netherlands and
+ * The University of Manchester   
  * 
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
@@ -18,6 +19,12 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
+
+/**
+ * @author Ingo Wassink
+ * @author Ian Dunlop
+ * @author Alan R Williams
+ */
 package net.sf.taverna.t2.activities.rshell;
 
 import java.io.ByteArrayOutputStream;
@@ -28,10 +35,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
-import net.sf.taverna.raven.log.Log;
-import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SymanticTypes;
+import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SemanticTypes;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceServiceException;
 import net.sf.taverna.t2.reference.T2Reference;
@@ -44,12 +49,18 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCa
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 
-import org.rosuda.JRclient.RBool;
-import org.rosuda.JRclient.REXP;
-import org.rosuda.JRclient.RFileInputStream;
-import org.rosuda.JRclient.RFileOutputStream;
-import org.rosuda.JRclient.RList;
-import org.rosuda.JRclient.RSrvException;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.rosuda.REngine.REXP;
+import org.rosuda.REngine.REXPDouble;
+import org.rosuda.REngine.REXPInteger;
+import org.rosuda.REngine.REXPLogical;
+import org.rosuda.REngine.REXPMismatchException;
+import org.rosuda.REngine.REXPString;
+import org.rosuda.REngine.RList;
+import org.rosuda.REngine.Rserve.RFileInputStream;
+import org.rosuda.REngine.Rserve.RFileOutputStream;
+import org.rosuda.REngine.Rserve.RserveException;
 
 /**
  * An Activity providing Rshell functionality.
@@ -58,15 +69,19 @@ import org.rosuda.JRclient.RSrvException;
 public class RshellActivity extends
 		AbstractAsynchronousActivity<RshellActivityConfigurationBean> {
 	
-	private static Log logger = Log.getLogger(RshellActivity.class);
+	private static Logger logger = Logger.getLogger(RshellActivity.class);
 
 	private static int BUF_SIZE = 1024;
 
 	private RshellActivityConfigurationBean configurationBean;
 
-	private Map<String, SymanticTypes> inputSymanticTypes = new HashMap<String, SymanticTypes>();
+	private Map<String, SemanticTypes> inputSymanticTypes = new HashMap<String, SemanticTypes>();
 
-	private Map<String, SymanticTypes> outputSymanticTypes = new HashMap<String, SymanticTypes>();
+	private Map<String, SemanticTypes> outputSymanticTypes = new HashMap<String, SemanticTypes>();
+	
+	private static String stringNA = "NA";
+	private static String stringTrue = "TRUE";
+	private static String stringFalse = "FALSE";
 
 	@Override
 	public void configure(RshellActivityConfigurationBean configurationBean)
@@ -76,7 +91,7 @@ public class RshellActivity extends
 		for (ActivityInputPortDefinitionBean ip : configurationBean.getInputPortDefinitions()) {
 			String name = ip.getName();
 			if (name != null) {
-				SymanticTypes symanticType = inputSymanticTypes.get(name);
+				SemanticTypes symanticType = inputSymanticTypes.get(name);
 				if (symanticType != null) {
 					ip.setDepth(symanticType.getDepth());
 				}
@@ -85,7 +100,7 @@ public class RshellActivity extends
 		for (ActivityOutputPortDefinitionBean op : configurationBean.getOutputPortDefinitions()) {
 			String name = op.getName();
 			if (name != null) {
-				SymanticTypes symanticType = outputSymanticTypes.get(name);
+				SemanticTypes symanticType = outputSymanticTypes.get(name);
 				if (symanticType != null) {
 					op.setDepth(symanticType.getDepth());
 				}
@@ -130,7 +145,7 @@ public class RshellActivity extends
 					// pass input form input ports to RServe
 					for (ActivityInputPort inputPort : getInputPorts()) {
 						String inputName = inputPort.getName();
-						SymanticTypes symanticType = inputSymanticTypes
+						SemanticTypes symanticType = inputSymanticTypes
 								.get(inputName);
 						T2Reference inputId = data.get(inputName);
 						if (inputId == null) {
@@ -153,7 +168,17 @@ public class RshellActivity extends
 										+ symanticType + ", it is a "
 										+ input.getClass());
 							}
-							connection.assign(inputName, value);
+							if (value.isLogical()) {
+								if (((REXPLogical)value).length() == 1) {
+									connection.voidEval(inputName + " <- " + value.asString() + ";");
+								} else {
+									String[] strings = value.asStrings();
+									String completeString = "c(" + StringUtils.join(strings, ",") + ")";
+									connection.voidEval(inputName + " <- " + completeString + ";");
+								}
+							} else {
+								connection.assign(inputName, value);
+							}
 						}
 					}
 
@@ -191,15 +216,13 @@ public class RshellActivity extends
 					returnString.append(")\n");
 					REXP results = connection.eval(returnString.toString());
 
-					// convert output and put it in results map
-					switch (results.getType()) {
-					case REXP.XT_LIST: {
+					if (results.isList()) {
 						RList resultList = results.asList();
 
 						assert (resultList.keys().length == outputPorts.size());
 						for (OutputPort outputPort : outputPorts) {
 							String portName = outputPort.getName();
-							SymanticTypes symanticType = outputSymanticTypes
+							SemanticTypes symanticType = outputSymanticTypes
 									.get(portName);
 
 							switch (symanticType) {
@@ -226,16 +249,13 @@ public class RshellActivity extends
 							}
 							}
 						}
-						break;
 					}
-					case REXP.XT_VECTOR: {
+					else if (results.isVector()) {
 						if (outputPorts.size() == 0) {
-							break;
+//							break;
 						} else {
 						}
-					}
-
-					default:
+					} else {
 						callback.fail("Unexpected result");
 					}
 
@@ -250,12 +270,16 @@ public class RshellActivity extends
 
 				} catch (ActivityConfigurationException ace) {
 					callback.fail("RShell failed", ace);
-				} catch (RSrvException rSrvException) {
+				} catch (RserveException rSrvException) {
 					callback.fail("RShell failed: "
 							+ rSrvException.getRequestErrorDescription(),
 							rSrvException);
 				} catch (ReferenceServiceException e) {
 					callback.fail("Error accessing input/output data", e);
+				} catch (REXPMismatchException e) {
+					callback.fail("RShell failed: "
+							+ e.getMessage(),
+							e);
 				} finally {
 					if (connection != null && connection.isConnected()) {
 						cleanUpServerFiles(connection);
@@ -296,7 +320,7 @@ public class RshellActivity extends
 			if (inputSymanticTypes.get(inputPort.getName()).isFile) {
 				try {
 					connection.removeFile(generateFilename(inputPort));
-				} catch (RSrvException rse) {
+				} catch (RserveException rse) {
 					// do nothing, try to delete other files
 				}
 			}
@@ -307,7 +331,7 @@ public class RshellActivity extends
 			if (outputSymanticTypes.get(outputPort.getName()).isFile) {
 				try {
 					connection.removeFile(generateFilename(outputPort));
-				} catch (RSrvException rse) {
+				} catch (RserveException rse) {
 					// do nothing, try to delete other files
 				}
 			}
@@ -322,9 +346,25 @@ public class RshellActivity extends
 	 * @return the filename
 	 * 
 	 */
-	private String generateFilename(Port Port) {
-		String portName = Port.getName();
-		return portName.replaceAll("\\W", "_") + ".png";
+	private String generateFilename(Port port) {
+
+		String portName = port.getName();
+		SemanticTypes semanticType = outputSymanticTypes
+				.get(portName);
+
+		String extension;
+		if (semanticType == RshellPortTypes.SemanticTypes.PNG_FILE) {
+			extension = ".png";
+		} else if (semanticType == RshellPortTypes.SemanticTypes.TEXT_FILE) {
+			extension = ".txt";
+		}
+//		else if (semanticType == RshellPortTypes.SemanticTypes.PDF_FILE) {
+//			extension = ".pdf";
+//		}
+		else {
+			extension = "";
+		}
+		return portName.replaceAll("\\W", "_") + extension;
 	}
 
 	/**
@@ -340,29 +380,33 @@ public class RshellActivity extends
 	 *             if symantictype is not supported
 	 */
 	@SuppressWarnings("unchecked")
-	private REXP javaToRExp(Object value, SymanticTypes symanticType)
+	private REXP javaToRExp(Object value, SemanticTypes symanticType)
 			throws ActivityConfigurationException {
 		switch (symanticType) {
 		case REXP:
 			return (REXP) value;
 
-		case BOOL: {
-			return new REXP(new String[] { ((Boolean) value).toString().toUpperCase() });
-		}
+		case BOOL:
+			if (value instanceof String) {
+				return stringToREXPLogical((String) value);
+			}
+			return new REXPLogical(REXPLogical.NA);
+
 		case DOUBLE:
-			return new REXP(new double[] { (Double) value });
+			return new REXPDouble((Double) value );
 		case INTEGER:
-			return new REXP(new int[] { (Integer) value });
+			return new REXPInteger((Integer) value);
 		case STRING:
-			return new REXP(new String[] { (String) value });
+			return new REXPString((String) value);
 
 		case BOOL_LIST:{
-			List values = (List) value;
-			String[] booleanValues = new String[values.size()];
-			for(int i = 0; i<values.size(); i++){
-				booleanValues[i] = ((Boolean) values.get(i)).toString().toUpperCase();
+			List<String> values = (List<String>) value;
+			byte[] bValues = new byte[values.size()];
+			int i = 0;
+			for (String s : values) {
+				bValues[i++] = stringToByte(s);
 			}
-			return new REXP(booleanValues);
+			return new REXPLogical(bValues);
 		}
 		case DOUBLE_LIST: {
 			List values = (List) value;
@@ -370,7 +414,7 @@ public class RshellActivity extends
 			for (int i = 0; i < values.size(); i++) {
 				doubles[i] = (Double) values.get(i);
 			}
-			return new REXP(doubles);
+			return new REXPDouble(doubles);
 		}
 		case INTEGER_LIST: {
 			List values = (List) value;
@@ -378,21 +422,32 @@ public class RshellActivity extends
 			for (int i = 0; i < values.size(); i++) {
 				ints[i] = (Integer) values.get(i);
 			}
-			return new REXP(ints);
+			return new REXPInteger(ints);
 		}
 		case STRING_LIST: {
-			List values = (List) value;
-			String[] strings = new String[values.size()];
-			for (int i = 0; i < values.size(); i++) {
-				strings[i] = (String) values.get(i);
-			}
-			return new REXP(strings);
+			List<String> values = (List<String>) value;
+			return new REXPString((String[]) values.toArray());
 		}
 
 		default:
 			throw new ActivityConfigurationException("Symantic type "
 					+ symanticType + " not supported");
 		}
+	}
+	
+	private static REXPLogical stringToREXPLogical(String value) {
+		return new REXPLogical (stringToByte(value));
+	}
+	
+	private static byte stringToByte(String value) {
+		if (value.equalsIgnoreCase(stringTrue)) {
+			return REXPLogical.TRUE;
+		}
+		if (value.equalsIgnoreCase(stringFalse)) {
+			return REXPLogical.FALSE;
+		}
+		return REXPLogical.NA;
+		
 	}
 
 	/**
@@ -457,273 +512,231 @@ public class RshellActivity extends
 	 * @param symanticType
 	 *            the type of the output port
 	 * @return a Java object which is a representation of the rExpression
+	 * @throws REXPMismatchException 
 	 * @throw TaskExecutionException if rExp type is unsupported
 	 */
-	private Object rExpToJava(REXP rExp, SymanticTypes symanticType)
-			throws ActivityConfigurationException {
+	private Object rExpToJava(REXP rExp, SemanticTypes symanticType)
+			throws ActivityConfigurationException, REXPMismatchException {
 
 		switch (symanticType) {
 		case REXP:
 			return rExp;
 
 		case BOOL:
-			switch (rExp.getType()) {
-			case REXP.XT_NULL:
-				return Boolean.FALSE;
-			case REXP.XT_ARRAY_INT:
-				return new Boolean(rExp.asIntArray()[0] != 0);
-			case REXP.XT_ARRAY_DOUBLE:
-				return new Boolean (Math.abs(rExp.asDoubleArray()[0]) > 0.00001);
-			case REXP.XT_STR:
-				return new Boolean(rExp.asString().equalsIgnoreCase("true"));
-			case REXP.XT_BOOL:
-				return new Boolean(rExp.asBool().isTRUE());
-			case REXP.XT_DOUBLE:
-				return new Boolean(Math.abs(rExp.asDouble()) > 0.00001);
-			case REXP.XT_INT:
-				return new Boolean(rExp.asInt() != 0);
-			default:
+			if (rExp.isNull()) {
+				return stringNA;
+			}
+			if (rExp.isLogical()) {
+				return rExp.asString();
+			}
+			if (rExp.isInteger()) {
+				if (rExp.asInteger() != 0) {
+					return stringTrue;
+				}
+				return stringFalse;
+			}
+			if (rExp.isNumeric()) {
+				if (Math.abs(rExp.asDouble()) > 0.00001) {
+					return stringTrue;
+				}
+				return stringFalse;
+			}
+			if (rExp.isString()) {
+				if (rExp.asString().equalsIgnoreCase("true")) {
+					return stringTrue;
+				}
+				return stringFalse;
 			}
 			break;
 
 		case BOOL_LIST:
-			switch (rExp.getType()) {
-			case REXP.XT_NULL:
-				return new ArrayList<Boolean>();
-			case REXP.XT_ARRAY_INT:
-				ArrayList<Boolean> values = new ArrayList<Boolean>();
-				for (int i : rExp.asIntArray()) {
-					values.add(new Boolean(i != 0));
+			ArrayList<String> boolResult = new ArrayList<String>();
+			if (rExp.isNull()) {
+				return boolResult;
+			}
+			if (rExp.isLogical()) {
+				for (String s : rExp.asStrings()) {
+					boolResult.add(s);
+				}		
+				return boolResult;
+			}
+			if (rExp.isInteger()) {
+				for (int i : rExp.asIntegers()) {
+					boolResult.add (i != 0 ? stringTrue : stringFalse);
 				}
-				return values;
-			case REXP.XT_ARRAY_DOUBLE:
-				ArrayList<Boolean> valuesD = new ArrayList<Boolean>();
-				for (double d : rExp.asDoubleArray()) {
-					valuesD.add(new Boolean(d > 0.00001));
+				return boolResult;
+			}
+			if (rExp.isNumeric()) {
+				for (double d : rExp.asDoubles()) {
+					boolResult.add (d > 0.00001 ? stringTrue : stringFalse);
 				}
-				return valuesD;
-			case REXP.XT_ARRAY_BOOL:
-				ArrayList<Boolean> valuesS = new ArrayList<Boolean>();
-				RBool[] rExpArray = (RBool[]) rExp.getContent();
-				for (RBool o : rExpArray) {
-					valuesS.add(new Boolean(o.isTRUE()));
+				return boolResult;
+			}
+			if (rExp.isString()) {
+				for (String s : rExp.asStrings()) {
+					boolResult.add(s.equalsIgnoreCase("true") ? stringTrue : stringFalse);
 				}
-				return valuesS;
-			case REXP.XT_VECTOR :
-				ArrayList<Boolean> valuesV = new ArrayList<Boolean>();
-				Vector v = rExp.asVector();
-				for (Object o : v) {
-					valuesV.add((Boolean)rExpToJava((REXP) o, SymanticTypes.BOOL));
-				}
-				logger.info("To BOOL_LIST from XT_VECTOR");
-				return valuesV;
-			case REXP.XT_STR:
-				return new Boolean(rExp.asString().equalsIgnoreCase("true"));
-			case REXP.XT_BOOL:
-				return new Boolean(rExp.asBool().isTRUE());
-			case REXP.XT_DOUBLE:
-				return new Boolean(Math.abs(rExp.asDouble()) > 0.00001);
-			case REXP.XT_INT:
-				return new Boolean(rExp.asInt() != 0);
-			default:
+				return boolResult;
 			}
 			break;
 
 		case DOUBLE:
-			switch (rExp.getType()) {
-			case REXP.XT_NULL:
+			if (rExp.isNull()) {
 				return new Double(0.0);
-			case REXP.XT_ARRAY_DOUBLE:
-				return new Double(rExp.asDoubleArray()[0]);
-			case REXP.XT_ARRAY_INT:
-				return new Double(rExp.asIntArray()[0]);
-			case REXP.XT_BOOL:
-				return new Double(rExp.asBool().isTRUE() ? 1.0 : 0.0);
-			case REXP.XT_DOUBLE:
-				return new Double(rExp.asDouble());
-			case REXP.XT_INT:
-				return new Double(rExp.asInt());
-			default:
+			}
+			if (rExp.isLogical()) {
+				REXPLogical logical = (REXPLogical) rExp;
+				return (new Double(logical.isTRUE()[0] ? 1.0 : 0.0));
+			}
+			if (rExp.isInteger()) {
+				return new Double(rExp.asIntegers()[0]);
+			}
+			if (rExp.isNumeric()) {
+				return new Double(rExp.asDoubles()[0]);
+			}
+			if (rExp.isString()) {
+				// Cannot cope
+			}
+			break;
+			
+		case DOUBLE_LIST:
+			ArrayList<Double> doubleResult = new ArrayList<Double>();
+			if (rExp.isNull()) {
+				return doubleResult;
+			}
+			if (rExp.isLogical()) {
+				REXPLogical logical = (REXPLogical) rExp;
+				for (boolean b : logical.isTRUE()) {
+					doubleResult.add(new Double(b ? 1.0 : 0.0));
+				}
+				return doubleResult;
+			}
+			if (rExp.isInteger()) {
+				for (int i : rExp.asIntegers()) {
+					doubleResult.add(new Double(i));
+				}
+				return doubleResult;
+			}
+			if (rExp.isNumeric()) {
+				for (double d : rExp.asDoubles()) {
+					doubleResult.add(new Double(d));
+				}
+				return doubleResult;
+			}
+			if (rExp.isString()) {
+				// Cannot cope
 			}
 			break;
 
 		case INTEGER:
-			switch (rExp.getType()) {
-			case REXP.XT_NULL:
+			if (rExp.isNull()) {
 				return new Integer(0);
-			case REXP.XT_ARRAY_DOUBLE:
-				return new Integer ((int) rExp.asDoubleArray()[0]);
-			case REXP.XT_ARRAY_INT:
-				return new Integer(rExp.asIntArray()[0]);
-			case REXP.XT_BOOL:
-				return new Integer (rExp.asBool().isTRUE() ? 1 : 0);
-			case REXP.XT_DOUBLE:
-				return Integer.toString((int) rExp.asDouble());
-			case REXP.XT_INT:
-				return Integer.toString(rExp.asInt());
-			default:
+			}
+			if (rExp.isLogical()) {
+				REXPLogical logical = (REXPLogical) rExp;
+				return (new Integer(logical.isTRUE()[0] ? 1 : 0));			
+			}
+			if (rExp.isInteger()) {
+				return new Integer(rExp.asIntegers()[0]);
+			}
+			if (rExp.isNumeric()) {
+				return new Integer((int) rExp.asDoubles()[0]);
+			}
+			if (rExp.isString()) {
+				// Cannot cope
 			}
 			break;
 
-		case STRING:
-			switch (rExp.getType()) {
-			case REXP.XT_NULL:
-				return "null";
-			case REXP.XT_ARRAY_DOUBLE:
-				return Arrays.toString(rExp.asDoubleArray());
-			case REXP.XT_ARRAY_INT:
-				return Arrays.toString(rExp.asIntArray());
-			case REXP.XT_BOOL:
-				return (Boolean.toString(rExp.asBool().isTRUE()));
-			case REXP.XT_DOUBLE:
-				return Double.toString((int) rExp.asDouble());
-			case REXP.XT_INT:
-				return Integer.toString(rExp.asInt());
-			case REXP.XT_STR:
-				return rExp.asString();
-			case REXP.XT_VECTOR:
-				return rVectorToString(rExp);
-			case REXP.XT_LIST:
-				return rListToString(rExp);
-			default:
-			}
-			break;
-
-		case DOUBLE_LIST:
-			switch (rExp.getType()) {
-			case REXP.XT_NULL:
-				return new ArrayList<Double>();
-			case REXP.XT_ARRAY_DOUBLE: {
-				return rExp.asDoubleArray();
-//				ArrayList<Double> values = new ArrayList<Double>();
-//				for (double value : rExp.asDoubleArray()) {
-//					values.add(new Double(value));
-//				}
-//				return values;
-			}
-			case REXP.XT_ARRAY_INT: {
-				ArrayList<Double> values = new ArrayList<Double>();
-				for (int value : rExp.asIntArray()) {
-					values.add(new Double(value));
-				}
-				return values;
-			}
-			case REXP.XT_BOOL:
-				return new Double[] { new Double(rExp.asBool().isTRUE() ? 1.0 : 0.0) };
-			case REXP.XT_DOUBLE:
-				return new Double[] { rExp.asDouble() };
-			case REXP.XT_INT:
-				return new Double[] { (double) rExp.asInt() };
-			default:
-			}
-			break;
 		case INTEGER_LIST:
-			switch (rExp.getType()) {
-			case REXP.XT_NULL:
-				return new ArrayList<Integer>();
-			case REXP.XT_ARRAY_DOUBLE: {
-				ArrayList<Integer> values = new ArrayList<Integer>();
-				for (double value : rExp.asDoubleArray()) {
-					values.add((int) value);
+			ArrayList<Integer> integerResult = new ArrayList<Integer>();
+			if (rExp.isNull()) {
+				return integerResult;
+			}
+			if (rExp.isLogical()) {
+				REXPLogical logical = (REXPLogical) rExp;
+				for (boolean b : logical.isTRUE()) {
+					integerResult.add(new Integer(b ? 1 : 0));
 				}
-				return values;
+				return integerResult;
 			}
-			case REXP.XT_ARRAY_INT: {
-				return rExp.asIntArray();
+			if (rExp.isInteger()) {
+				for (int i : rExp.asIntegers()) {
+					integerResult.add (new Integer(i));
+				}
+				return integerResult;
 			}
-			case REXP.XT_BOOL:
-				return (new Integer(rExp.asBool().isTRUE() ? 1 : 0));
-			case REXP.XT_DOUBLE:
-				return new Integer[] { (int) rExp.asDouble() };
-			case REXP.XT_INT:
-				return new Integer[] { rExp.asInt() };
-			default:
+			if (rExp.isNumeric()) {
+				for (double d : rExp.asDoubles()) {
+					integerResult.add(new Integer((int) d));
+				}
+				return integerResult;
+			}
+			if (rExp.isString()) {
+				// Cannot cope
+			}
+			break;
+			
+		case STRING:
+			if (rExp.isNull()) {
+				return ("null");
+			}
+			if (rExp.isLogical()) {
+				REXPLogical logical = (REXPLogical) rExp;
+				return (Arrays.toString(logical.isTRUE()));							
+			}
+			if (rExp.isInteger()) {
+				return (Arrays.toString(rExp.asIntegers()));
+			}
+			if (rExp.isNumeric()) {
+				return (Arrays.toString(rExp.asDoubles()));
+			}
+			if (rExp.isString()) {
+				// Always take the first
+				return rExp.asString();
 			}
 			break;
 
 		case STRING_LIST:
-			switch (rExp.getType()) {
-			case REXP.XT_NULL:
-				return new ArrayList<String>();
-			case REXP.XT_ARRAY_DOUBLE: {
-				ArrayList<String> values = new ArrayList<String>();
-				for (double value : rExp.asDoubleArray()) {
-					values.add(Double.toString(value));
+			ArrayList<String> stringResult = new ArrayList<String>();
+			if (rExp.isNull()) {
+				return stringResult;
+			}
+			if (rExp.isLogical()) {
+				REXPLogical logical = (REXPLogical) rExp;
+				for (boolean b : logical.isTRUE()) {
+					stringResult.add(b ? "true" : "false");
 				}
-				return values;
+				return stringResult;
 			}
-			case REXP.XT_ARRAY_INT: {
-				ArrayList<String> values = new ArrayList<String>();
-				for (int value : rExp.asIntArray()) {
-					values.add(Integer.toString(value));
+			if (rExp.isInteger()) {
+				for (int i : rExp.asIntegers()) {
+					stringResult.add(Integer.toString(i));
 				}
-				return values;
+				return stringResult;
 			}
-			case REXP.XT_BOOL:
-				return new String[] { Boolean.toString(rExp.asBool().isTRUE()) };
-			case REXP.XT_DOUBLE:
-				return new String[] { Double.toString(rExp.asDouble()) };
-			case REXP.XT_INT:
-				return new String[] { Integer.toString(rExp.asInt()) };
-			case REXP.XT_VECTOR: {
-				ArrayList<String> values = new ArrayList<String>();
-				for (Object value : rExp.asVector()) {
-					values.add((String) rExpToJava((REXP) value,
-							SymanticTypes.STRING));
+			if (rExp.isNumeric()) {
+				for (double d : rExp.asDoubles()) {
+					stringResult.add(Double.toString(d));
 				}
-				return values;
+				return stringResult;
 			}
-			default:
+			if (rExp.isString()) {
+				for (String s : rExp.asStrings()) {
+					stringResult.add(s);
+				}
+				return stringResult;
 			}
+	
 			break;
-		default:
+			default:
 		}
-
-		// should never end here
+		
+		// can end here with strange R scripts
 		throw new ActivityConfigurationException(
-				"Cannot convert R expression type '" + rExp.getType()
+				"Cannot convert R expression '" + rExp.toString()
 						+ "' to the semantic type '" + symanticType.description
 						+ "'");
 
-	}
-
-	/**
-	 * Helper method for rExpToJava for converting a list to a string value
-	 * 
-	 * @param rExp
-	 *            the rExp to be converted
-	 * @return the string representation
-	 */
-	private String rListToString(REXP rExp)
-			throws ActivityConfigurationException {
-		StringBuffer stringRep = new StringBuffer();
-		RList list = rExp.asList();
-		for (String key : list.keys()) {
-			stringRep.append(key);
-			stringRep.append("=");
-			stringRep.append(rExpToJava(list.at(key), SymanticTypes.STRING));
-			stringRep.append("\n");
-		}
-		return stringRep.toString();
-	}
-
-	/**
-	 * Helper function for converting a vector to a string
-	 * 
-	 * @rExp the rExp to be converted to a string
-	 * @return the string representation
-	 */
-	@SuppressWarnings("unchecked")
-	private String rVectorToString(REXP rExp)
-			throws ActivityConfigurationException {
-		Vector elements = rExp.asVector();
-		ArrayList<String> strings = new ArrayList<String>();
-		for (Object object : elements) {
-			strings
-					.add((String) rExpToJava((REXP) object,
-							SymanticTypes.STRING));
-		}
-		return Arrays.toString(strings.toArray());
 	}
 
 	/**
@@ -742,7 +755,6 @@ public class RshellActivity extends
 
 		RFileOutputStream outputStream = null;
 		String filename = generateFilename(inputPort);
-
 		try {
 
 			byte[] bytes;

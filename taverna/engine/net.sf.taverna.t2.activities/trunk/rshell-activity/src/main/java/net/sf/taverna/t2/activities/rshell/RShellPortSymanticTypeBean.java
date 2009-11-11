@@ -1,5 +1,6 @@
 /*******************************************************************************
- * Copyright (C) 2007 The University of Manchester   
+ * Copyright (C) 2009 Ingo Wassink of University of Twente, Netherlands and
+ * The University of Manchester   
  * 
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
@@ -18,15 +19,21 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
+
+/**
+ * @author Ingo Wassink
+ * @author Ian Dunlop
+ * @author Alan R Williams
+ */
 package net.sf.taverna.t2.activities.rshell;
 
-import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SymanticTypes;
+import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SemanticTypes;
 
 public class RShellPortSymanticTypeBean {
 
 	private String name;
 	
-	private SymanticTypes symanticType;
+	private SemanticTypes symanticType;
 
 	/**
 	 * Returns the name.
@@ -51,7 +58,7 @@ public class RShellPortSymanticTypeBean {
 	 *
 	 * @return the symanticType
 	 */
-	public SymanticTypes getSymanticType() {
+	public SemanticTypes getSymanticType() {
 		return symanticType;
 	}
 
@@ -60,7 +67,7 @@ public class RShellPortSymanticTypeBean {
 	 *
 	 * @param symanticType the new symanticType
 	 */
-	public void setSymanticType(SymanticTypes symanticType) {
+	public void setSymanticType(SemanticTypes symanticType) {
 		this.symanticType = symanticType;
 	}
 
