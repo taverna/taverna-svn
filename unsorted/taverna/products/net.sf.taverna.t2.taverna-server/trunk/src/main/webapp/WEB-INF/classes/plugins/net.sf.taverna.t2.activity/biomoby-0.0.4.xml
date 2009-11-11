@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<plugin xmlns="http://taverna.sf.net/pluginDescription" xmlns:ns2="http://taverna.sf.net/authorDescription">
+    <name>Biomoby Activity</name>
+    <description>
+                An activity plug-in providing access to Biomoby services
+        </description>
+    <id>plugin:net.sf.taverna.t2.activity:biomoby:0.0.4</id>
+    <quality>beta</quality>
+    <author>
+        <ns2:name>Alex Nenadic</ns2:name>
+        <ns2:affiliation>myGrid</ns2:affiliation>
+    </author>
+    <author>
+        <ns2:name>Tom Oinn</ns2:name>
+        <ns2:affiliation>Cryptic Squid Ltd.</ns2:affiliation>
+    </author>
+    <author>
+        <ns2:name>David Withers</ns2:name>
+        <ns2:affiliation>myGrid</ns2:affiliation>
+    </author>
+    <tag>biomoby</tag>
+    <tag>webservice</tag>
+    <url>http://www.mygrid.org.uk</url>
+    <link>
+        <linkdescription>myGrid Project Homepage</linkdescription>
+        <link>http://www.mygrid.org.uk</link>
+    </link>
+    <link>
+        <linkdescription>
+                        Open Middleware Infrastructure Institute UK
+                </linkdescription>
+        <link>http://omii.ac.uk</link>
+    </link>
+    <repository-url>http://download.java.net/maven/2/</repository-url>
+    <repository-url>http://biomoby.org/m2repo/</repository-url>
+    <repository-url>http://repository.jboss.com/maven2/</repository-url>
+    <repository-url>http://jena.hpl.hp.com/repo/</repository-url>
+    <artifact>net.sf.taverna.t2.activities:biomoby-activity:p0.1b3-SNAPSHOT</artifact>
+    <artifact>ant-contrib:ant-contrib:1.0b2</artifact>
+    <artifact>antlr:antlr:2.7.5</artifact>
+    <artifact>axis:axis-ant:1.4</artifact>
+    <artifact>axis:axis-jaxrpc:1.4</artifact>
+    <artifact>axis:axis-saaj:1.4</artifact>
+    <artifact>axis:axis-wsdl4j:1.5.1</artifact>
+    <artifact>axis:axis:1.4</artifact>
+    <artifact>castor:castor:0.9.5</artifact>
+    <artifact>com.artofsolving:jodconverter:2.2.1</artifact>
+    <artifact>com.hp.hpl.jena:arq-extra:2.1</artifact>
+    <artifact>com.hp.hpl.jena:arq:2.1</artifact>
+    <artifact>com.hp.hpl.jena:concurrent-jena:1.3.2</artifact>
+    <artifact>com.hp.hpl.jena:iri:0.5</artifact>
+    <artifact>com.hp.hpl.jena:jena:2.5.4</artifact>
+    <artifact>com.hp.hpl.jena:jenatest:2.5.4</artifact>
+    <artifact>com.hp.hpl.jena:json-jena:1.0</artifact>
+    <artifact>com.ibm.icu:icu4j:3.8</artifact>
+    <artifact>com.ibm.lsid:lsid-client:1.1.2</artifact>
+    <artifact>com.ibm.lsid:lsid-server:1.1.2</artifact>
+    <artifact>com.sun.net.httpserver:http:20070405</artifact>
+    <artifact>com.sun.org.apache:jaxp-ri:1.4</artifact>
+    <artifact>com.sun.xml.ws:jaxws-tools:2.1.3</artifact>
+    <artifact>com.toedter:jcalendar:2004</artifact>
+    <artifact>commons-beanutils:commons-beanutils-core:1.7.0</artifact>
+    <artifact>commons-beanutils:commons-beanutils:1.7.0</artifact>
+    <artifact>commons-codec:commons-codec:1.2</artifact>
+    <artifact>commons-configuration:commons-configuration:1.5</artifact>
+    <artifact>commons-dbcp:commons-dbcp:1.1</artifact>
+    <artifact>commons-digester:commons-digester:1.8</artifact>
+    <artifact>commons-discovery:commons-discovery:0.4</artifact>
+    <artifact>commons-httpclient:commons-httpclient:3.1</artifact>
+    <artifact>commons-io:commons-io:1.3.1</artifact>
+    <artifact>commons-lang:commons-lang:2.3</artifact>
+    <artifact>commons-logging:commons-logging-api:1.1</artifact>
+    <artifact>commons-pool:commons-pool:1.1</artifact>
+    <artifact>edu.mit.lcs.haystack:adenine:2003</artifact>
+    <artifact>javax.annotation:jsr250-api:1.0</artifact>
+    <artifact>javax.jws:jsr181-api:1.0-MR1</artifact>
+    <artifact>javax.mail:mail:1.4</artifact>
+    <artifact>javax.servlet:servlet-api:2.5</artifact>
+    <artifact>javax.sql:jdbc-stdext:2.0</artifact>
+    <artifact>javax.xml.parsers:jaxp-api:1.4</artifact>
+    <artifact>javax.xml.soap:saaj-api:1.3</artifact>
+    <artifact>javax.xml.ws:jaxws-api:2.1</artifact>
+    <artifact>javax.xml:jaxb-impl:2.0EA3</artifact>
+    <artifact>javax.xml:jaxb-xjc:2.0EA3</artifact>
+    <artifact>javax.xml:jaxrpc-api:1.1</artifact>
+    <artifact>javax.xml:jsr173:1.0</artifact>
+    <artifact>jaxen:jaxen:1.1.1</artifact>
+    <artifact>jdom:jdom:1.0</artifact>
+    <artifact>junit:junit:3.8.1</artifact>
+    <artifact>mysql:mysql-connector-java:3.1.14</artifact>
+    <artifact>org.apache.ant:ant-launcher:1.7.0</artifact>
+    <artifact>org.apache.ant:ant-nodeps:1.7.0</artifact>
+    <artifact>org.apache.ant:ant:1.7.0</artifact>
+    <artifact>org.apache.lucene:lucene-core:2.0.0</artifact>
+    <artifact>org.biomoby:jmoby-dashboard:1.1.3-taverna</artifact>
+    <artifact>org.biomoby:jmoby:1.1.3-taverna</artifact>
+    <artifact>org.cgiar.icis:icis-pedigree:2006</artifact>
+    <artifact>org.codehaus.woodstox:wstx-asl:3.0.0</artifact>
+    <artifact>org.openoffice:juh:2.3.1</artifact>
+    <artifact>org.openoffice:jurt:2.3.1</artifact>
+    <artifact>org.openoffice:ridl:2.3.1</artifact>
+    <artifact>org.openoffice:unoil:2.3.1</artifact>
+    <artifact>org.slf4j:slf4j-api:1.4.3</artifact>
+    <artifact>org.tulsoft:alltools:2.1.1-taverna</artifact>
+    <artifact>org.xbill:dnsjava:2003</artifact>
+    <artifact>stax:stax-api:1.0.1</artifact>
+    <artifact>xalan:xalan:2.6.0</artifact>
+    <artifact>xerces:xercesImpl:2.6.2</artifact>
+    <artifact>xerces:xmlParserAPIs:2.6.2</artifact>
+    <artifact>xml-apis:xml-apis:2.0.2</artifact>
+    <artifact>xom:xom:1.0</artifact>
+    <target>Taverna2</target>
+</plugin>
+

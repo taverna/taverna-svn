@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<plugin xmlns="http://taverna.sf.net/pluginDescription" xmlns:ns2="http://taverna.sf.net/authorDescription">
+    <name>RShell Activity</name>
+    <description>An activity plug-in providing access to an R server</description>
+    <id>plugin:net.sf.taverna.t2.activity:rshell:0.0.1</id>
+    <quality>alpha</quality>
+    <author>
+        <ns2:name>David Withers</ns2:name>
+        <ns2:affiliation>myGrid</ns2:affiliation>
+        <ns2:email>david.withers@manchester.ac.uk</ns2:email>
+    </author>
+    <tag>R</tag>
+    <url>http://www.mygrid.org.uk/</url>
+    <link>
+        <linkdescription>myGrid Project Homepage</linkdescription>
+        <link>http://www.mygrid.org.uk/</link>
+    </link>
+    <artifact>net.sf.taverna.t2.activities:rshell-activity:p0.1b3-SNAPSHOT</artifact>
+    <artifact>uk.org.mygrid.resources:JRclient:RE817</artifact>
+</plugin>

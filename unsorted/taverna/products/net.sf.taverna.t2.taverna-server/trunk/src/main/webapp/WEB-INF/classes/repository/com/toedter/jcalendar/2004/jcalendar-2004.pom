@@ -1,0 +1,9 @@
+<?xml version="1.0"?><project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.toedter</groupId>
+  <artifactId>jcalendar</artifactId>
+  <version>2004</version>
+  <distributionManagement>
+    <status>deployed</status>
+  </distributionManagement>
+</project>

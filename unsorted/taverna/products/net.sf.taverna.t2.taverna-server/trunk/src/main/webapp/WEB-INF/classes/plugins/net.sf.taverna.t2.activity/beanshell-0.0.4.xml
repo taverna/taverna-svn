@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<plugin xmlns="http://taverna.sf.net/pluginDescription" xmlns:ns2="http://taverna.sf.net/authorDescription">
+    <name>Beanshell Activity</name>
+    <description>An activity plug-in providing access to beanshell inline scripts for Taverna workflows</description>
+    <id>plugin:net.sf.taverna.t2.activity:beanshell:0.0.4</id>
+    <quality>beta</quality>
+    <author>
+        <ns2:name>Tom Oinn</ns2:name>
+        <ns2:affiliation>myGrid</ns2:affiliation>
+        <ns2:email>tomoinn@crypticsquid.com</ns2:email>
+        <ns2:url>http://www.crypticsquid.com</ns2:url>
+    </author>
+    <tag>script</tag>
+    <tag>java</tag>
+    <url>http://www.mygrid.org.uk</url>
+    <link>
+        <linkdescription>myGrid Project Homepage</linkdescription>
+        <link>http://www.mygrid.org.uk</link>
+    </link>
+    <link>
+        <linkdescription>
+			Open Middleware Infrastructure Institute UK
+		</linkdescription>
+        <link>http://omii.ac.uk</link>
+    </link>
+    <artifact>org.beanshell:bsh:2.0b4</artifact>
+    <artifact>net.sf.taverna.t2.activities:beanshell-activity:p0.1b3-SNAPSHOT</artifact>
+    <target>Taverna2</target>
+</plugin>

@@ -1,0 +1,78 @@
+<?xml version="1.0"?><project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.tulsoft</groupId>
+  <artifactId>alltools</artifactId>
+  <name>General tools (all)</name>
+  <version>2.1.1-taverna</version>
+  <description>General tools and utilities that I have not (yet) found elsewhere</description>
+  <url></url>
+  <developers>
+    <developer>
+      <id>marsenger</id>
+      <name>Martin Senger</name>
+      <email>martin.senger@gmail.com</email>
+    </developer>
+  </developers>
+  <dependencies>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.14</version>
+    </dependency>
+    <dependency>
+      <groupId>axis</groupId>
+      <artifactId>axis</artifactId>
+      <version>1.4</version>
+    </dependency>
+    <dependency>
+      <groupId>axis</groupId>
+      <artifactId>axis-ant</artifactId>
+      <version>1.4</version>
+    </dependency>
+    <dependency>
+      <groupId>axis</groupId>
+      <artifactId>axis-jaxrpc</artifactId>
+      <version>1.4</version>
+    </dependency>
+    <dependency>
+      <groupId>axis</groupId>
+      <artifactId>axis-saaj</artifactId>
+      <version>1.4</version>
+    </dependency>
+  </dependencies>
+  <repositories>
+      <repository>
+            <id>mygrid-repository</id>
+            <name>myGrid Repository</name>
+            <url>http://www.mygrid.org.uk/maven/repository</url>
+            <snapshots>
+                    <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                    <enabled>true</enabled>
+            </releases>
+    </repository>
+    <repository>
+            <id>mygrid-snapshot-repository</id>
+            <name>myGrid Snapshot Repository</name>
+            <url>
+                    http://www.mygrid.org.uk/maven/snapshot-repository
+            </url>
+            <snapshots>
+                    <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                    <enabled>false</enabled>
+            </releases>
+    </repository>
+
+  </repositories>
+  <distributionManagement>
+    <status>deployed</status>
+  </distributionManagement>
+</project>

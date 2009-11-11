@@ -1,0 +1,106 @@
+<workflow xmlns="http://taverna.sf.net/2008/xml/t2flow" version="1" producedBy="taverna-2.1-beta-1"><dataflow id="2ed29b91-b5ab-48dd-9eda-575f22321f57" role="top"><name>Workflow4</name><inputPorts /><outputPorts><port><name>String_mobyData</name></port><port><name>DrugBankBySequence_accession_code</name></port><port><name>id</name></port></outputPorts><processors><processor><name>DrugBankBySequence</name><inputPorts><port><name>FASTA(sequence)</name><depth>0</depth></port></inputPorts><outputPorts><port><name>accession-code(Collection - 'accession_code' As Simples)</name><depth>1</depth><granularDepth>1</granularDepth></port></outputPorts><annotations /><activities><activity><raven><group>net.sf.taverna.t2.activities</group><artifact>biomoby-activity</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.activities.biomoby.BiomobyActivity</class><inputMap><map from="FASTA(sequence)" to="FASTA(sequence)" /></inputMap><outputMap><map from="accession-code(Collection - 'accession_code' As Simples)" to="accession-code(Collection - 'accession_code' As Simples)" /></outputMap><configBean encoding="xstream"><net.sf.taverna.t2.activities.biomoby.BiomobyActivityConfigurationBean xmlns="">
+  <mobyEndpoint>http://moby.ucalgary.ca/moby/MOBY-Central.pl</mobyEndpoint>
+  <serviceName>DrugBankBySequence</serviceName>
+  <authorityName>ualberta.ca</authorityName>
+  <category />
+  <serviceType />
+  <secondaries>
+    <entry>
+      <string>lower_case_filtering</string>
+      <string>False</string>
+    </entry>
+    <entry>
+      <string>penalty_for_nucleotide_mismatch</string>
+      <string>-3</string>
+    </entry>
+    <entry>
+      <string>alignment_view_option</string>
+      <string>0</string>
+    </entry>
+    <entry>
+      <string>filter_query_sequence</string>
+      <string>True</string>
+    </entry>
+    <entry>
+      <string>matrix</string>
+      <string>BLOSUM62</string>
+    </entry>
+    <entry>
+      <string>perform_gapped_alignment</string>
+      <string>True</string>
+    </entry>
+    <entry>
+      <string>cost_to_extend_a_gap</string>
+      <string>0</string>
+    </entry>
+    <entry>
+      <string>blast_program</string>
+      <string>blastp</string>
+    </entry>
+    <entry>
+      <string>reward_for_nucleotide_match</string>
+      <string>1</string>
+    </entry>
+    <entry>
+      <string>expectation_value</string>
+      <string>0.00001</string>
+    </entry>
+    <entry>
+      <string>database</string>
+      <string>Approved Drug Targets (protein)</string>
+    </entry>
+    <entry>
+      <string>cost_to_open_a_gap</string>
+      <string>0</string>
+    </entry>
+  </secondaries>
+</net.sf.taverna.t2.activities.biomoby.BiomobyActivityConfigurationBean></configBean><annotations /></activity></activities><dispatchStack><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize</class><configBean encoding="xstream"><net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ParallelizeConfig xmlns="">
+  <maxJobs>1</maxJobs>
+</net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ParallelizeConfig></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ErrorBounce</class><configBean encoding="xstream"><null xmlns="" /></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover</class><configBean encoding="xstream"><null xmlns="" /></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Retry</class><configBean encoding="xstream"><net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.RetryConfig xmlns="">
+  <backoffFactor>1.0</backoffFactor>
+  <initialDelay>1000</initialDelay>
+  <maxDelay>5000</maxDelay>
+  <maxRetries>0</maxRetries>
+</net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.RetryConfig></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke</class><configBean encoding="xstream"><null xmlns="" /></configBean></dispatchLayer></dispatchStack><iterationStrategyStack><iteration><strategy><cross><port name="FASTA(sequence)" depth="0" /></cross></strategy></iteration></iterationStrategyStack></processor><processor><name>Parse Moby Data(accession-code)</name><inputPorts><port><name>mobyData('accession-code')</name><depth>0</depth></port></inputPorts><outputPorts><port><name>accession_code_'content'_id</name><depth>1</depth><granularDepth>1</granularDepth></port></outputPorts><annotations /><activities><activity><raven><group>net.sf.taverna.t2.activities</group><artifact>biomoby-activity</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.activities.biomoby.MobyParseDatatypeActivity</class><inputMap><map from="mobyData('accession-code')" to="mobyData('accession-code')" /></inputMap><outputMap><map from="accession_code_'content'_id" to="accession_code_'content'_id" /></outputMap><configBean encoding="xstream"><net.sf.taverna.t2.activities.biomoby.MobyParseDatatypeActivityConfigurationBean xmlns="">
+  <datatypeName>accession-code</datatypeName>
+  <registryEndpoint>http://moby.ucalgary.ca/moby/MOBY-Central.pl</registryEndpoint>
+  <articleNameUsedByService>accession_code</articleNameUsedByService>
+</net.sf.taverna.t2.activities.biomoby.MobyParseDatatypeActivityConfigurationBean></configBean><annotations /></activity></activities><dispatchStack><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize</class><configBean encoding="xstream"><net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ParallelizeConfig xmlns="">
+  <maxJobs>1</maxJobs>
+</net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ParallelizeConfig></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ErrorBounce</class><configBean encoding="xstream"><null xmlns="" /></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover</class><configBean encoding="xstream"><null xmlns="" /></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Retry</class><configBean encoding="xstream"><net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.RetryConfig xmlns="">
+  <backoffFactor>1.0</backoffFactor>
+  <initialDelay>1000</initialDelay>
+  <maxDelay>5000</maxDelay>
+  <maxRetries>0</maxRetries>
+</net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.RetryConfig></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke</class><configBean encoding="xstream"><null xmlns="" /></configBean></dispatchLayer></dispatchStack><iterationStrategyStack><iteration><strategy><cross><port name="mobyData('accession-code')" depth="0" /></cross></strategy></iteration></iterationStrategyStack></processor><processor><name>FASTA</name><inputPorts><port><name>String(content)</name><depth>0</depth></port></inputPorts><outputPorts><port><name>mobyData</name><depth>0</depth><granularDepth>0</granularDepth></port></outputPorts><annotations /><activities><activity><raven><group>net.sf.taverna.t2.activities</group><artifact>biomoby-activity</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.activities.biomoby.BiomobyObjectActivity</class><inputMap><map from="String(content)" to="String(content)" /></inputMap><outputMap><map from="mobyData" to="mobyData" /></outputMap><configBean encoding="xstream"><net.sf.taverna.t2.activities.biomoby.BiomobyObjectActivityConfigurationBean xmlns="">
+  <mobyEndpoint>http://moby.ucalgary.ca/moby/MOBY-Central.pl</mobyEndpoint>
+  <serviceName>FASTA</serviceName>
+  <authorityName />
+</net.sf.taverna.t2.activities.biomoby.BiomobyObjectActivityConfigurationBean></configBean><annotations /></activity></activities><dispatchStack><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize</class><configBean encoding="xstream"><net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ParallelizeConfig xmlns="">
+  <maxJobs>1</maxJobs>
+</net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ParallelizeConfig></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ErrorBounce</class><configBean encoding="xstream"><null xmlns="" /></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover</class><configBean encoding="xstream"><null xmlns="" /></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Retry</class><configBean encoding="xstream"><net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.RetryConfig xmlns="">
+  <backoffFactor>1.0</backoffFactor>
+  <initialDelay>1000</initialDelay>
+  <maxDelay>5000</maxDelay>
+  <maxRetries>0</maxRetries>
+</net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.RetryConfig></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke</class><configBean encoding="xstream"><null xmlns="" /></configBean></dispatchLayer></dispatchStack><iterationStrategyStack><iteration><strategy><cross><port name="String(content)" depth="0" /></cross></strategy></iteration></iterationStrategyStack></processor><processor><name>String</name><inputPorts><port><name>value</name><depth>0</depth></port></inputPorts><outputPorts><port><name>mobyData</name><depth>0</depth><granularDepth>0</granularDepth></port></outputPorts><annotations /><activities><activity><raven><group>net.sf.taverna.t2.activities</group><artifact>biomoby-activity</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.activities.biomoby.BiomobyObjectActivity</class><inputMap><map from="value" to="value" /></inputMap><outputMap><map from="mobyData" to="mobyData" /></outputMap><configBean encoding="xstream"><net.sf.taverna.t2.activities.biomoby.BiomobyObjectActivityConfigurationBean xmlns="">
+  <mobyEndpoint>http://moby.ucalgary.ca/moby/MOBY-Central.pl</mobyEndpoint>
+  <serviceName>String</serviceName>
+  <authorityName />
+</net.sf.taverna.t2.activities.biomoby.BiomobyObjectActivityConfigurationBean></configBean><annotations /></activity></activities><dispatchStack><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize</class><configBean encoding="xstream"><net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ParallelizeConfig xmlns="">
+  <maxJobs>1</maxJobs>
+</net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ParallelizeConfig></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ErrorBounce</class><configBean encoding="xstream"><null xmlns="" /></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover</class><configBean encoding="xstream"><null xmlns="" /></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Retry</class><configBean encoding="xstream"><net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.RetryConfig xmlns="">
+  <backoffFactor>1.0</backoffFactor>
+  <initialDelay>1000</initialDelay>
+  <maxDelay>5000</maxDelay>
+  <maxRetries>0</maxRetries>
+</net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.RetryConfig></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke</class><configBean encoding="xstream"><null xmlns="" /></configBean></dispatchLayer></dispatchStack><iterationStrategyStack><iteration><strategy><cross><port name="value" depth="0" /></cross></strategy></iteration></iterationStrategyStack></processor><processor><name>value_value</name><inputPorts /><outputPorts><port><name>value</name><depth>0</depth><granularDepth>0</granularDepth></port></outputPorts><annotations /><activities><activity><raven><group>net.sf.taverna.t2.activities</group><artifact>stringconstant-activity</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.activities.stringconstant.StringConstantActivity</class><inputMap /><outputMap><map from="value" to="value" /></outputMap><configBean encoding="xstream"><net.sf.taverna.t2.activities.stringconstant.StringConstantConfigurationBean xmlns="">
+  <value>sdfsdf</value>
+</net.sf.taverna.t2.activities.stringconstant.StringConstantConfigurationBean></configBean><annotations /></activity></activities><dispatchStack><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize</class><configBean encoding="xstream"><net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ParallelizeConfig xmlns="">
+  <maxJobs>1</maxJobs>
+</net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ParallelizeConfig></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ErrorBounce</class><configBean encoding="xstream"><null xmlns="" /></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover</class><configBean encoding="xstream"><null xmlns="" /></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Retry</class><configBean encoding="xstream"><net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.RetryConfig xmlns="">
+  <backoffFactor>1.0</backoffFactor>
+  <initialDelay>1000</initialDelay>
+  <maxDelay>5000</maxDelay>
+  <maxRetries>0</maxRetries>
+</net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.RetryConfig></configBean></dispatchLayer><dispatchLayer><raven><group>net.sf.taverna.t2.core</group><artifact>workflowmodel-impl</artifact><version>0.6-SNAPSHOT</version></raven><class>net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke</class><configBean encoding="xstream"><null xmlns="" /></configBean></dispatchLayer></dispatchStack><iterationStrategyStack><iteration><strategy /></iteration></iterationStrategyStack></processor></processors><conditions /><datalinks><datalink><sink type="processor"><processor>DrugBankBySequence</processor><port>FASTA(sequence)</port></sink><source type="processor"><processor>FASTA</processor><port>mobyData</port></source></datalink><datalink><sink type="processor"><processor>Parse Moby Data(accession-code)</processor><port>mobyData('accession-code')</port></sink><source type="processor"><processor>DrugBankBySequence</processor><port>accession-code(Collection - 'accession_code' As Simples)</port></source></datalink><datalink><sink type="processor"><processor>FASTA</processor><port>String(content)</port></sink><source type="processor"><processor>String</processor><port>mobyData</port></source></datalink><datalink><sink type="processor"><processor>String</processor><port>value</port></sink><source type="processor"><processor>value_value</processor><port>value</port></source></datalink><datalink><sink type="dataflow"><port>String_mobyData</port></sink><source type="processor"><processor>String</processor><port>mobyData</port></source></datalink><datalink><sink type="dataflow"><port>DrugBankBySequence_accession_code</port></sink><source type="processor"><processor>DrugBankBySequence</processor><port>accession-code(Collection - 'accession_code' As Simples)</port></source></datalink><datalink><sink type="dataflow"><port>id</port></sink><source type="processor"><processor>Parse Moby Data(accession-code)</processor><port>accession_code_'content'_id</port></source></datalink></datalinks><annotations /></dataflow></workflow>

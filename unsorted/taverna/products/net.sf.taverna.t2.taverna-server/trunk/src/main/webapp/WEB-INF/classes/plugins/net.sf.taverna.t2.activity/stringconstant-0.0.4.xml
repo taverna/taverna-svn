@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Plug-in definition for the String Constant activity -->
+<plugin xmlns="http://taverna.sf.net/pluginDescription"
+	xmlns:author="http://taverna.sf.net/authorDescription">
+
+	<name>String Constant Activity</name>
+	<description>
+		An activity plug-in providing string constant functionality
+	</description>
+
+	<id>plugin:net.sf.taverna.t2.activity:stringconstant:0.0.4</id>
+
+	<quality>beta</quality>
+
+	<author>
+		<author:name>Alex Nenadic</author:name>
+		<author:affiliation>myGrid</author:affiliation>
+	</author>
+
+	<tag>string</tag>
+	<tag>constant</tag>
+
+	<!-- This really should be a string constant specific link here -->
+	<url>http://www.mygrid.org.uk</url>
+
+	<link>
+		<linkdescription>myGrid Project Homepage</linkdescription>
+		<link>http://www.mygrid.org.uk</link>
+	</link>
+	<link>
+		<linkdescription>
+			Open Middleware Infrastructure Institute UK
+		</linkdescription>
+		<link>http://omii.ac.uk</link>
+	</link>
+	
+	<artifact>net.sf.taverna.t2.activities:stringconstant-activity:p0.1b3-SNAPSHOT</artifact>
+
+	<target>Taverna2</target>
+
+</plugin>

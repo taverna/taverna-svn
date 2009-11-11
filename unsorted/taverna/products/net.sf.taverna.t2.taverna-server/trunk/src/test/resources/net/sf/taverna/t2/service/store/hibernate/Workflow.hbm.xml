@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+                "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+                "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="net.sf.taverna.t2.service.model.Workflow" table="workflow"
+		lazy="false">
+		<id name="id" column="id" type="long">
+			<generator class="increment" />
+		</id>
+		<property name="created" access="field" />
+		<property name="modified" access="field" />
+		<property name="xml" type="text" length="10000" />
+		<property name="enabled" />
+	</class>
+</hibernate-mapping>

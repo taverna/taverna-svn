@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="${project.name}" xmlns="http://maven.apache.org/DECORATION/1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
+  <body>
+    <links>
+      <item name="Taverna" href="http://www.taverna.org.uk/" />
+      <item name="myGrid" href="http://www.mygrid.org.uk/" />
+    </links>
+    <menu name="Introduction">
+      <item name="Overview" href="index.html"/>
+      <item name="Download" href="download.html"/>
+      <item name="Architecture" href="architecture.html"/>
+      <item name="REST Interface" href="rest.html"/>
+    </menu>
+    <menu name="Installation">
+      <item name="Requirements" href="installation/requirements.html"/>
+      <item name="Installing Taverna Server" href="installation/installation.html"/>
+    </menu>
+    <menu name="Configuration">
+<!--      <item name="Data Storage" href="configuration/data-storage.html"/> -->
+      <item name="Proxies" href="configuration/proxy.html"/>
+      <item name="Security" href="configuration/security.html"/>
+    </menu>
+    <menu ref="reports" />
+  </body>
+  <version/>
+  <bannerLeft>
+    <name>Taverna Server</name>
+    <href>http://www.mygrid.org.uk/dev/taverna-server/</href>
+    <src>images/taverna_server_logo.png</src>
+    <alt>Taverna Server Logo</alt>
+  </bannerLeft>
+  <bannerRight>
+    <name>myGrid</name>
+    <href>http://www.mygrid.org.uk/</href>
+    <src>images/mygrid.png</src>
+    <alt>myGrid Logo</alt>
+  </bannerRight>
+  <poweredBy>
+    <logo name="Jira" href="http://www.atlassian.com/c/NPOS/10160" img="images/jira_button_120wx60h.gif"/>
+  </poweredBy>
+</project>

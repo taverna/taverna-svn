@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Plug-in defintion for default reference service support classes -->
+<plugin xmlns="http://taverna.sf.net/pluginDescription"
+	xmlns:author="http://taverna.sf.net/authorDescription">
+
+	<name>Core Reference Service Extensions</name>
+
+	<description>
+		Provides base reference service functionality including the
+		external reference implementations for file and URL and those
+		for inlined byte arrays and string values
+	</description>
+
+	<id>plugin:net.sf.taverna.t2.reference:core:0.0.4</id>
+
+	<quality>beta</quality>
+
+	<author>
+		<author:name>Tom Oinn</author:name>
+		<author:affiliation>myGrid</author:affiliation>
+		<author:email>tomoinn@crypticsquid.com</author:email>
+		<author:url>http://www.crypticsquid.com</author:url>
+	</author>
+
+	<!-- This really should be a reference service specific link here -->
+	<url>http://www.mygrid.org.uk</url>
+
+	<link>
+		<linkdescription>myGrid Project Homepage</linkdescription>
+		<link>http://www.mygrid.org.uk</link>
+	</link>
+	<link>
+		<linkdescription>
+			Open Middleware Infrastructure Institute UK
+		</linkdescription>
+		<link>http://omii.ac.uk</link>
+	</link>
+
+	<artifact>
+		net.sf.taverna.t2:reference-core-extensions:p0.1b3-SNAPSHOT
+	</artifact>
+	<artifact>commons-httpclient:commons-httpclient:3.1</artifact>
+	<artifact>commons-codec:commons-codec:1.2</artifact>
+
+	<target>Taverna2</target>
+
+</plugin>
