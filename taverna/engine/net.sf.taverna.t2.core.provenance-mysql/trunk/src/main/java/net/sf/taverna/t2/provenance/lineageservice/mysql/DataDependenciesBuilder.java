@@ -59,8 +59,7 @@ public class DataDependenciesBuilder {
 		try {
 			ddBuilder.buildDD();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Could not build data dependencies", e);
 
 		}
 	}
@@ -71,10 +70,10 @@ public class DataDependenciesBuilder {
 		pq = new MySQLProvenanceQuery();
 
 		if (clearDB.equals("true")) {
-			System.out.println("clearing DD DB");
+			logger.info("clearing DD DB");
 			pw.clearDD();
 		} else {
-			System.out.println("NOT clearing DD DB");
+			logger.info("NOT clearing DD DB");
 		}
 
 	}
@@ -98,24 +97,22 @@ public class DataDependenciesBuilder {
 
 		String[] children = dir.list(filter);
 
-		System.out.println("about to process " + children.length + " events");
+		logger.info("about to process " + children.length + " events");
 		if (children == null) {
 			// Either dir does not exist or is not a directory
-			System.out.println("no files retrieved -- terminating");
+			logger.info("no files retrieved -- terminating");
 			return;
 		} else {
-			// System.out.println("iteration events:");
 			for (int i = 0; i < children.length; i++) {
 				// Get filename of file or directory
 				String filename = children[i];
-				// System.out.println(filename);
 
 				processEvent(children[i], wfInstanceID.getInstanceID());
 
 			}
 
 			// fill in the table with P1:Y -> P2:X dependencies
-			System.out.println("*** fillXferSteps starting for wfInstanceID = "
+			logger.info("*** fillXferSteps starting for wfInstanceID = "
 					+ wfInstanceID);
 			fillXferSteps(wfInstanceID.getInstanceID());
 
@@ -134,19 +131,19 @@ public class DataDependenciesBuilder {
 		//
 		// if (instances.size()>0) {
 		// wfInstance = instances.get(0);
-		// System.out.println("instance "+wfInstance);
+		// logger.info("instance "+wfInstance);
 		// } else {
-		// System.out.println("FATAL: no wfinstances in DB -- terminating");
+		// logger.info("FATAL: no wfinstances in DB -- terminating");
 		// }
 
 		// select distinct (P, vTo, valTo) and iterate on them
 		Set<DDRecord> fromRecords = pq.queryAllFromValues(wfInstanceID);
 
-		System.out.println("processing " + fromRecords.size() + " fromValues");
+		logger.info("processing " + fromRecords.size() + " fromValues");
 
 		for (DDRecord fromRecord : fromRecords) {
 
-			// System.out.println("processing from-record "+fromRecord.getPFrom()+" "+fromRecord.getVFrom()+" "+fromRecord.getValFrom());
+			// logger.info("processing from-record "+fromRecord.getPFrom()+" "+fromRecord.getVFrom()+" "+fromRecord.getValFrom());
 
 			// find all arcs that have this sink P:V
 			Set<DDRecord> toRecords = pq.queryArcsForDD(fromRecord.getPFrom(),
@@ -154,7 +151,7 @@ public class DataDependenciesBuilder {
 					wfInstanceID);
 
 			for (DDRecord toRecord : toRecords) {
-				// System.out.println("to record: "+toRecord.getPTo()+" "+toRecord.getVTo()+" "+toRecord.getValTo());
+				// logger.info("to record: "+toRecord.getPTo()+" "+toRecord.getVTo()+" "+toRecord.getValTo());
 
 				pw.writeDDRecord(toRecord.getPTo(), toRecord.getVTo(), toRecord
 						.getValTo(), fromRecord.getPFrom(), fromRecord
@@ -241,7 +238,7 @@ public class DataDependenciesBuilder {
 
 				for (Map.Entry<String, String> output : outputs.entrySet()) {
 
-					// System.out.println("DD tuple: "+processor+
+					// logger.info("DD tuple: "+processor+
 					// " "+input.getKey()+
 					// " "+input.getValue()+
 					// " "+output.getKey()+
@@ -257,9 +254,9 @@ public class DataDependenciesBuilder {
 			}
 
 		} catch (JDOMException e) {
-			e.printStackTrace();
+			logger.error("Could not process event", e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("Could not process event", e);
 		}
 
 	}
