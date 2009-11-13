@@ -18,6 +18,8 @@ import java.util.StringTokenizer;
 
 import javax.swing.KeyStroke;
 
+import org.apache.log4j.Logger;
+
 /**
  * The default input handler. It maps sequences of keystrokes into actions
  * and inserts key typed events into the text area.
@@ -26,6 +28,8 @@ import javax.swing.KeyStroke;
  */
 public class DefaultInputHandler extends InputHandler
 {
+	private static Logger logger = Logger.getLogger(DefaultInputHandler.class);
+
 	/**
 	 * Creates a new input handler with no key bindings defined.
 	 */
@@ -328,7 +332,7 @@ public class DefaultInputHandler extends InputHandler
 		}
 		else if(key.length() == 0)
 		{
-			System.err.println("Invalid key stroke: " + keyStroke);
+			logger.error("Invalid key stroke: " + keyStroke);
 			return null;
 		}
 		else
@@ -342,8 +346,8 @@ public class DefaultInputHandler extends InputHandler
 			}
 			catch(Exception e)
 			{
-				System.err.println("Invalid key stroke: "
-					+ keyStroke);
+				logger.error("Invalid key stroke: "
+					+ keyStroke, e);
 				return null;
 			}
 
