@@ -371,8 +371,8 @@ public abstract class InputHandler extends KeyAdapter
 		}
 
 		// this shouldn't happen
-		System.err.println("BUG: getTextArea() returning null");
-		System.err.println("Report this to Slava Pestov <sp@gjt.org>");
+		logger.error("BUG: getTextArea() returning null");
+		logger.error("Report this to Slava Pestov <sp@gjt.org>");
 		return null;
 	}
 
@@ -458,7 +458,7 @@ public abstract class InputHandler extends KeyAdapter
 				catch(BadLocationException bl)
 				{
 					logger.error( bl );
-					//System.err.println(bl);
+					//logger.error(bl);
 				}
 			}
 		}
@@ -506,7 +506,6 @@ public abstract class InputHandler extends KeyAdapter
 			catch(BadLocationException bl)
 			{
 				logger.error( bl );
-				//System.err.println(bl);
 			}
 		}
 	}
@@ -543,7 +542,6 @@ public abstract class InputHandler extends KeyAdapter
 				catch(BadLocationException bl)
 				{
 					logger.error( bl );
-					//System.err.println(bl);
 				}
 			}
 		}
@@ -590,7 +588,6 @@ public abstract class InputHandler extends KeyAdapter
 			catch(BadLocationException bl)
 			{
 				logger.error( bl );
-				//System.err.println(bl);
 			}
 		}
 	}
