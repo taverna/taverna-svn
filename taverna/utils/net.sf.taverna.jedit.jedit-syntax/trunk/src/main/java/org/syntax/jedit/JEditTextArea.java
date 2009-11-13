@@ -924,7 +924,6 @@ public class JEditTextArea extends JComponent implements Scrollable
 		catch(BadLocationException bl)
 		{
 			logger.error( bl );
-			//System.err.println(bl);
 			return null;
 		}
 	}
@@ -945,7 +944,6 @@ public class JEditTextArea extends JComponent implements Scrollable
 		catch(BadLocationException bl)
 		{
 			logger.error( bl );
-			//System.err.println(bl);
 		}
 		finally
 		{
@@ -968,7 +966,6 @@ public class JEditTextArea extends JComponent implements Scrollable
 		catch(BadLocationException bl)
 		{
 			logger.error( bl );
-			//System.err.println(bl);
 			return null;
 		}
 	}
@@ -989,7 +986,6 @@ public class JEditTextArea extends JComponent implements Scrollable
 		catch(BadLocationException bl)
 		{
 			logger.error( bl );
-			//System.err.println(bl);
 			segment.offset = segment.count = 0;
 		}
 	}
@@ -1399,7 +1395,6 @@ public class JEditTextArea extends JComponent implements Scrollable
 		catch(BadLocationException bl)
 		{
 			logger.error( bl );
-			//System.err.println(bl);
 			throw new InternalError("Cannot replace"
 				+ " selection");
 		}
@@ -1503,7 +1498,6 @@ public class JEditTextArea extends JComponent implements Scrollable
 		catch(BadLocationException bl)
 		{
 			logger.error( bl );
-			//System.err.println(bl);
 		}
 		finally
 		{
@@ -1645,8 +1639,8 @@ public class JEditTextArea extends JComponent implements Scrollable
 			catch(Exception e)
 			{
 				getToolkit().beep();
-				System.err.println("Clipboard does not"
-					+ " contain a string");
+				logger.error("Clipboard does not"
+					+ " contain a string", e);
 			}
 		}
 	}
@@ -1757,7 +1751,6 @@ public class JEditTextArea extends JComponent implements Scrollable
 		catch(BadLocationException bl)
 		{
 			logger.error( bl );
-			//System.err.println(bl);
 		}
 
 		bracketLine = bracketPosition = -1;
@@ -2134,7 +2127,6 @@ public class JEditTextArea extends JComponent implements Scrollable
 				catch(BadLocationException bl)
 				{
 					logger.error( bl );
-					//System.err.println(bl);
 				}
 				break;
 			case 3:
@@ -2182,7 +2174,6 @@ public class JEditTextArea extends JComponent implements Scrollable
 			catch(BadLocationException bl)
 			{
 				logger.error( bl );
-				//System.err.println(bl);
 			}
 
 			// Ok, it's not a bracket... select the word
