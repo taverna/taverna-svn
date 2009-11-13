@@ -83,19 +83,19 @@ public class DataflowActivityTranslator extends
 					e);
 		} catch (NoSuchMethodException e) {
 			throw new ActivityTranslationException(
-					"The processor does not have the method getInternalModel, and therefore does not conform to being a Workflow processor",
+					"The service does not have the method getInternalModel, and therefore does not conform to being a Workflow service",
 					e);
 		} catch (IllegalArgumentException e) {
 			throw new ActivityTranslationException(
-					"The method getInternalModel on the Workflow processor had unexpected arguments",
+					"The method getInternalModel on the Workflow service had unexpected arguments",
 					e);
 		} catch (IllegalAccessException e) {
 			throw new ActivityTranslationException(
-					"Unable to access the method getInternalModel on the Workflow processor",
+					"Unable to access the method getInternalModel on the Workflow service",
 					e);
 		} catch (InvocationTargetException e) {
 			throw new ActivityTranslationException(
-					"An error occurred invoking the method getInternalModel on the Workflow processor",
+					"An error occurred invoking the method getInternalModel on the Workflow service",
 					e);
 		}
 	}

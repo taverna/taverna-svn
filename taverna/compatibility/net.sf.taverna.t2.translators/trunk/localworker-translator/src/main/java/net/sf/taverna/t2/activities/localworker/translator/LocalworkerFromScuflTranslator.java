@@ -121,7 +121,7 @@ public class LocalworkerFromScuflTranslator {
 				String workerClassName = translator
 						.getWorkerClassName(processor);
 				// String name = processor.getName();
-				System.out.println("processor: " + workerClassName);
+				System.out.println("service: " + workerClassName);
 				BeanshellActivityConfigurationBean bean = translator
 						.createConfigType(processor);
 				BeanshellActivity activity = new BeanshellActivity();

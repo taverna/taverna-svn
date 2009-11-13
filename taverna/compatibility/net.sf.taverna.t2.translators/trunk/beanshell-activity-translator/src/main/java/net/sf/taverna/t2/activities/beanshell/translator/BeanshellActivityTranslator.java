@@ -68,13 +68,13 @@ public class BeanshellActivityTranslator extends AbstractActivityTranslator<Bean
 		} catch (SecurityException e) {
 			throw new ActivityTranslationException("There was a security exception whilst trying to invoke getString through introspection",e);
 		} catch (NoSuchMethodException e) {
-			throw new ActivityTranslationException("The processor does not have the method getScript, an therefore does not conform to being a Beanshell processor",e);
+			throw new ActivityTranslationException("The service does not have the method getScript, an therefore does not conform to being a Beanshell service",e);
 		} catch (IllegalArgumentException e) {
-			throw new ActivityTranslationException("The method getScript on the beanshell processor had unexpected arguments",e);
+			throw new ActivityTranslationException("The method getScript on the Beanshell service had unexpected arguments",e);
 		} catch (IllegalAccessException e) {
-			throw new ActivityTranslationException("Unable to access the method getScript on the Beanshell processor",e);
+			throw new ActivityTranslationException("Unable to access the method getScript on the Beanshell service",e);
 		} catch (InvocationTargetException e) {
-			throw new ActivityTranslationException("An error occurred invoking the method getScript on the Beanshell processor",e);
+			throw new ActivityTranslationException("An error occurred invoking the method getScript on the Beanshell service",e);
 		}
 	}
 

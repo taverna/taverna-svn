@@ -39,13 +39,13 @@ public class MobyParseDatatypeActivityTranslator extends
 		} catch (SecurityException e) {
 			throw new ActivityTranslationException("The was a Security exception whilst trying to invoke getDatatypeName through introspection",e);
 		} catch (NoSuchMethodException e) {
-			throw new ActivityTranslationException("The processor does not have the method getDatatypeName, an therefore does not conform to being an Biomoby processor",e);
+			throw new ActivityTranslationException("The service does not have the method getDatatypeName, an therefore does not conform to being an Biomoby service",e);
 		} catch (IllegalArgumentException e) {
-			throw new ActivityTranslationException("The method getDatatypeName on the Biomoby processor had unexpected arguments",e);
+			throw new ActivityTranslationException("The method getDatatypeName on the Biomoby service had unexpected arguments",e);
 		} catch (IllegalAccessException e) {
-			throw new ActivityTranslationException("Unable to access the method getDatatypeName on the Biomoby processor",e);
+			throw new ActivityTranslationException("Unable to access the method getDatatypeName on the Biomoby service",e);
 		} catch (InvocationTargetException e) {
-			throw new ActivityTranslationException("An error occurred invoking the method getDatatypeName on the Biomoby processor",e);
+			throw new ActivityTranslationException("An error occurred invoking the method getDatatypeName on the Biomoby service",e);
 		}
 	}
 	
@@ -56,13 +56,13 @@ public class MobyParseDatatypeActivityTranslator extends
 		} catch (SecurityException e) {
 			throw new ActivityTranslationException("The was a Security exception whilst trying to invoke getRegistryEndpoint through introspection",e);
 		} catch (NoSuchMethodException e) {
-			throw new ActivityTranslationException("The processor does not have the method getRegistryEndpoint, an therefore does not conform to being an Biomoby processor",e);
+			throw new ActivityTranslationException("The service does not have the method getRegistryEndpoint, an therefore does not conform to being an Biomoby service",e);
 		} catch (IllegalArgumentException e) {
-			throw new ActivityTranslationException("The method getRegistryEndpoint on the Biomoby processor had unexpected arguments",e);
+			throw new ActivityTranslationException("The method getRegistryEndpoint on the Biomoby service had unexpected arguments",e);
 		} catch (IllegalAccessException e) {
-			throw new ActivityTranslationException("Unable to access the method getRegistryEndpoint on the Biomoby processor",e);
+			throw new ActivityTranslationException("Unable to access the method getRegistryEndpoint on the Biomoby service",e);
 		} catch (InvocationTargetException e) {
-			throw new ActivityTranslationException("An error occurred invoking the method getRegistryEndpoint on the Biomoby processor",e);
+			throw new ActivityTranslationException("An error occurred invoking the method getRegistryEndpoint on the Biomoby service",e);
 		}
 	}
 	
@@ -73,13 +73,13 @@ public class MobyParseDatatypeActivityTranslator extends
 		} catch (SecurityException e) {
 			throw new ActivityTranslationException("The was a Security exception whilst trying to invoke getArticleNameUsedByService through introspection",e);
 		} catch (NoSuchMethodException e) {
-			throw new ActivityTranslationException("The processor does not have the method getArticleNameUsedByService, an therefore does not conform to being an Biomoby processor",e);
+			throw new ActivityTranslationException("The service does not have the method getArticleNameUsedByService, an therefore does not conform to being an Biomoby service",e);
 		} catch (IllegalArgumentException e) {
-			throw new ActivityTranslationException("The method getArticleNameUsedByService on the Biomoby processor had unexpected arguments",e);
+			throw new ActivityTranslationException("The method getArticleNameUsedByService on the Biomoby service had unexpected arguments",e);
 		} catch (IllegalAccessException e) {
-			throw new ActivityTranslationException("Unable to access the method getArticleNameUsedByService on the Biomoby processor",e);
+			throw new ActivityTranslationException("Unable to access the method getArticleNameUsedByService on the Biomoby service",e);
 		} catch (InvocationTargetException e) {
-			throw new ActivityTranslationException("An error occurred invoking the method getArticleNameUsedByService on the Biomoby processor",e);
+			throw new ActivityTranslationException("An error occurred invoking the method getArticleNameUsedByService on the Biomoby service",e);
 		}
 	}
 	

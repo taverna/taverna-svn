@@ -71,13 +71,13 @@ public class RshellActivityTranslator extends AbstractActivityTranslator<RshellA
 		} catch (SecurityException e) {
 			throw new ActivityTranslationException("There was a Security exception whilst trying to invoke getScript through introspection",e);
 		} catch (NoSuchMethodException e) {
-			throw new ActivityTranslationException("The processor does not have the method getScript, an therefore does not conform to being an Rshell processor",e);
+			throw new ActivityTranslationException("The service does not have the method getScript, an therefore does not conform to being an Rshell service",e);
 		} catch (IllegalArgumentException e) {
-			throw new ActivityTranslationException("The method getScript on the Rshell processor had unexpected arguments",e);
+			throw new ActivityTranslationException("The method getScript on the Rshell service had unexpected arguments",e);
 		} catch (IllegalAccessException e) {
-			throw new ActivityTranslationException("Unable to access the method getScript on the Rshell processor",e);
+			throw new ActivityTranslationException("Unable to access the method getScript on the Rshell service",e);
 		} catch (InvocationTargetException e) {
-			throw new ActivityTranslationException("An error occurred invoking the method getScript on the Rshell processor",e);
+			throw new ActivityTranslationException("An error occurred invoking the method getScript on the Rshell service",e);
 		}
 	}
 	
@@ -98,13 +98,13 @@ public class RshellActivityTranslator extends AbstractActivityTranslator<RshellA
 		} catch (SecurityException e) {
 			throw new ActivityTranslationException("There was a Security exception whilst trying to invoke getConnectionSettings through introspection",e);
 		} catch (NoSuchMethodException e) {
-			throw new ActivityTranslationException("The processor does not have the method getConnectionSettings, an therefore does not conform to being an Rshell processor",e);
+			throw new ActivityTranslationException("The service does not have the method getConnectionSettings, an therefore does not conform to being an Rshell service",e);
 		} catch (IllegalArgumentException e) {
-			throw new ActivityTranslationException("The method getConnectionSettings on the Rshell processor had unexpected arguments",e);
+			throw new ActivityTranslationException("The method getConnectionSettings on the Rshell service had unexpected arguments",e);
 		} catch (IllegalAccessException e) {
-			throw new ActivityTranslationException("Unable to access the method getConnectionSettings on the Rshell processor",e);
+			throw new ActivityTranslationException("Unable to access the method getConnectionSettings on the Rshell service",e);
 		} catch (InvocationTargetException e) {
-			throw new ActivityTranslationException("An error occurred invoking the method getConnectionSettings on the Rshell processor",e);
+			throw new ActivityTranslationException("An error occurred invoking the method getConnectionSettings on the Rshell service",e);
 		}
 	}
 	
@@ -116,13 +116,13 @@ public class RshellActivityTranslator extends AbstractActivityTranslator<RshellA
 		} catch (SecurityException e) {
 			throw new ActivityTranslationException("There was a Security exception whilst trying to invoke getSymanticType through introspection",e);
 		} catch (NoSuchMethodException e) {
-			throw new ActivityTranslationException("The processor does not have the method getSymanticType, an therefore does not conform to being an Rshell processor",e);
+			throw new ActivityTranslationException("The service does not have the method getSymanticType, an therefore does not conform to being an Rshell service",e);
 		} catch (IllegalArgumentException e) {
-			throw new ActivityTranslationException("The method getSymanticType on the Rshell processor had unexpected arguments",e);
+			throw new ActivityTranslationException("The method getSymanticType on the Rshell service had unexpected arguments",e);
 		} catch (IllegalAccessException e) {
-			throw new ActivityTranslationException("Unable to access the method getSymanticType on the Rshell processor",e);
+			throw new ActivityTranslationException("Unable to access the method getSymanticType on the Rshell service",e);
 		} catch (InvocationTargetException e) {
-			throw new ActivityTranslationException("An error occurred invoking the method getSymanticType on the Rshell processor",e);
+			throw new ActivityTranslationException("An error occurred invoking the method getSymanticType on the Rshell service",e);
 		}
 	}
 	

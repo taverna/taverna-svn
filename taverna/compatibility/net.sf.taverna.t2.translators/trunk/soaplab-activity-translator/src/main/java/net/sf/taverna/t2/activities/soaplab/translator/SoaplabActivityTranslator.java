@@ -64,13 +64,13 @@ public class SoaplabActivityTranslator extends AbstractActivityTranslator<Soapla
 		} catch (SecurityException e) {
 			throw new ActivityTranslationException("The was a Security exception whilst trying to invoke getEndpoint through introspection",e);
 		} catch (NoSuchMethodException e) {
-			throw new ActivityTranslationException("The processor does not have the method getEndpoint, and therefore does not conform to being a Soaplab processor",e);
+			throw new ActivityTranslationException("The service does not have the method getEndpoint, and therefore does not conform to being a Soaplab service",e);
 		} catch (IllegalArgumentException e) {
-			throw new ActivityTranslationException("The method getEndpoint on the soaplab processor had unexpected arguments",e);
+			throw new ActivityTranslationException("The method getEndpoint on the Soaplab service had unexpected arguments",e);
 		} catch (IllegalAccessException e) {
-			throw new ActivityTranslationException("Unable to access the method getEndpoint on the Soaplab processor",e);
+			throw new ActivityTranslationException("Unable to access the method getEndpoint on the Soaplab service",e);
 		} catch (InvocationTargetException e) {
-			throw new ActivityTranslationException("An error occurred invoking the method getEndpoint on the Soaplab processor",e);
+			throw new ActivityTranslationException("An error occurred invoking the method getEndpoint on the Soaplab service",e);
 		}
 	}
 	
@@ -81,13 +81,13 @@ public class SoaplabActivityTranslator extends AbstractActivityTranslator<Soapla
 		} catch (SecurityException e) {
 			throw new ActivityTranslationException("The was a Security exception whilst trying to invoke getPollingInterval through introspection",e);
 		} catch (NoSuchMethodException e) {
-			throw new ActivityTranslationException("The processor does not have the method getPollingInterval, and therefore does not conform to being a Soaplab processor",e);
+			throw new ActivityTranslationException("The service does not have the method getPollingInterval, and therefore does not conform to being a Soaplab service",e);
 		} catch (IllegalArgumentException e) {
-			throw new ActivityTranslationException("The method getPollingInterval on the soaplab processor had unexpected arguments",e);
+			throw new ActivityTranslationException("The method getPollingInterval on the Soaplab service had unexpected arguments",e);
 		} catch (IllegalAccessException e) {
-			throw new ActivityTranslationException("Unable to access the method getPollingInterval on the Soaplab processor",e);
+			throw new ActivityTranslationException("Unable to access the method getPollingInterval on the Soaplab service",e);
 		} catch (InvocationTargetException e) {
-			throw new ActivityTranslationException("An error occurred invoking the method getPollingInterval on the Soaplab processor",e);
+			throw new ActivityTranslationException("An error occurred invoking the method getPollingInterval on the Soaplab service",e);
 		}
 	}
 	

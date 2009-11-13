@@ -59,13 +59,13 @@ public class BiomartActivityTranslator extends AbstractActivityTranslator<Elemen
 		} catch (SecurityException e) {
 			throw new ActivityTranslationException("The was a Security exception whilst trying to invoke getQueryElement through introspection",e);
 		} catch (NoSuchMethodException e) {
-			throw new ActivityTranslationException("The processor does not have the method getQueryElement, and therefore does not conform to being a Biomart processor",e);
+			throw new ActivityTranslationException("The service does not have the method getQueryElement, and therefore does not conform to being a Biomart service",e);
 		} catch (IllegalArgumentException e) {
-			throw new ActivityTranslationException("The method getQueryElement on the Biomart processor had unexpected arguments",e);
+			throw new ActivityTranslationException("The method getQueryElement on the Biomart service had unexpected arguments",e);
 		} catch (IllegalAccessException e) {
-			throw new ActivityTranslationException("Unable to access the method getQueryElement on the Biomart processor",e);
+			throw new ActivityTranslationException("Unable to access the method getQueryElement on the Biomart service",e);
 		} catch (InvocationTargetException e) {
-			throw new ActivityTranslationException("An error occurred invoking the method getQueryElement on the Biomart processor",e);
+			throw new ActivityTranslationException("An error occurred invoking the method getQueryElement on the Biomart service",e);
 		}
 	}
 	

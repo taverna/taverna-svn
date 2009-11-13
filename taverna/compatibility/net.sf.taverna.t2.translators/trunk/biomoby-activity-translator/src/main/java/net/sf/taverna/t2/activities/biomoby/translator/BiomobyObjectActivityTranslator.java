@@ -38,13 +38,13 @@ public class BiomobyObjectActivityTranslator extends AbstractActivityTranslator<
 		} catch (SecurityException e) {
 			throw new ActivityTranslationException("The was a Security exception whilst trying to invoke getServiceName through introspection",e);
 		} catch (NoSuchMethodException e) {
-			throw new ActivityTranslationException("The processor does not have the method getServiceName, an therefore does not conform to being an Biomoby processor",e);
+			throw new ActivityTranslationException("The service does not have the method getServiceName, an therefore does not conform to being an Biomoby service",e);
 		} catch (IllegalArgumentException e) {
-			throw new ActivityTranslationException("The method getServiceName on the Biomoby processor had unexpected arguments",e);
+			throw new ActivityTranslationException("The method getServiceName on the Biomoby service had unexpected arguments",e);
 		} catch (IllegalAccessException e) {
-			throw new ActivityTranslationException("Unable to access the method getServiceName on the Biomoby processor",e);
+			throw new ActivityTranslationException("Unable to access the method getServiceName on the Biomoby service",e);
 		} catch (InvocationTargetException e) {
-			throw new ActivityTranslationException("An error occurred invoking the method getServiceName on the Biomoby processor",e);
+			throw new ActivityTranslationException("An error occurred invoking the method getServiceName on the Biomoby service",e);
 		}
 	}
 	
@@ -55,13 +55,13 @@ public class BiomobyObjectActivityTranslator extends AbstractActivityTranslator<
 		} catch (SecurityException e) {
 			throw new ActivityTranslationException("The was a Security exception whilst trying to invoke getMobyEndpoint through introspection",e);
 		} catch (NoSuchMethodException e) {
-			throw new ActivityTranslationException("The processor does not have the method getMobyEndpoint, an therefore does not conform to being an Biomoby processor",e);
+			throw new ActivityTranslationException("The service does not have the method getMobyEndpoint, an therefore does not conform to being an Biomoby service",e);
 		} catch (IllegalArgumentException e) {
-			throw new ActivityTranslationException("The method getMobyEndpoint on the Biomoby processor had unexpected arguments",e);
+			throw new ActivityTranslationException("The method getMobyEndpoint on the Biomoby service had unexpected arguments",e);
 		} catch (IllegalAccessException e) {
-			throw new ActivityTranslationException("Unable to access the method getMobyEndpoint on the Biomoby processor",e);
+			throw new ActivityTranslationException("Unable to access the method getMobyEndpoint on the Biomoby service",e);
 		} catch (InvocationTargetException e) {
-			throw new ActivityTranslationException("An error occurred invoking the method getMobyEndpoint on the Biomoby processor",e);
+			throw new ActivityTranslationException("An error occurred invoking the method getMobyEndpoint on the Biomoby service",e);
 		}
 	}
 	
@@ -72,13 +72,13 @@ public class BiomobyObjectActivityTranslator extends AbstractActivityTranslator<
 		} catch (SecurityException e) {
 			throw new ActivityTranslationException("The was a Security exception whilst trying to invoke getAuthorityName through introspection",e);
 		} catch (NoSuchMethodException e) {
-			throw new ActivityTranslationException("The processor does not have the method getAuthorityName, an therefore does not conform to being an Biomoby processor",e);
+			throw new ActivityTranslationException("The service does not have the method getAuthorityName, an therefore does not conform to being an Biomoby service",e);
 		} catch (IllegalArgumentException e) {
-			throw new ActivityTranslationException("The method getAuthorityName on the Biomoby processor had unexpected arguments",e);
+			throw new ActivityTranslationException("The method getAuthorityName on the Biomoby service had unexpected arguments",e);
 		} catch (IllegalAccessException e) {
-			throw new ActivityTranslationException("Unable to access the method getAuthorityName on the Biomoby processor",e);
+			throw new ActivityTranslationException("Unable to access the method getAuthorityName on the Biomoby service",e);
 		} catch (InvocationTargetException e) {
-			throw new ActivityTranslationException("An error occurred invoking the method getAuthorityName on the Biomoby processor",e);
+			throw new ActivityTranslationException("An error occurred invoking the method getAuthorityName on the Biomoby service",e);
 		}
 	}
 	
