@@ -110,7 +110,6 @@ public class SyntaxDocument extends PlainDocument implements UndoableEditListene
 		catch(BadLocationException bl)
 		{
 			logger.error( bl );
-			//System.err.println(bl);
 		}
 	}
 
