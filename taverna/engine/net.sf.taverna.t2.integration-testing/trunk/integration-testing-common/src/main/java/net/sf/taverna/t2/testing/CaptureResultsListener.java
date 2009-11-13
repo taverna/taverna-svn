@@ -49,10 +49,10 @@ public class CaptureResultsListener implements ResultListener {
 	public void resultTokenProduced(WorkflowDataToken dataToken, String portname) {
 		if (dataToken.getIndex().length == 0) {
 			T2Reference reference = dataToken.getData();
-			System.out.println("Output reference made = " + reference);
+			logger.info("Output reference made = " + reference);
 			Object value = reference;
 			if (reference.containsErrors()) {
-				System.out.println("Contains errors!");
+				logger.info("Contains errors!");
 				printAllErrors(context.getReferenceService().resolveIdentifier(
 						reference, null, context));
 			} else {
@@ -77,17 +77,17 @@ public class CaptureResultsListener implements ResultListener {
 		}
 		if (identified instanceof ErrorDocument) {
 			ErrorDocument errorDoc = (ErrorDocument) identified;
-			System.err.println("ERROR: " + identified.getId());
-			System.err.println(" message: " + errorDoc.getMessage());
+			logger.error("ERROR: " + identified.getId());
+			logger.error(" message: " + errorDoc.getMessage());
 			if (errorDoc.getStackTraceStrings().isEmpty()) {
-				System.err.println(" errorMessage: "
+				logger.error(" errorMessage: "
 						+ errorDoc.getExceptionMessage());
 			} else {
-				System.err.println(" stacktrace:");
-				System.err.println(errorDoc.getExceptionMessage());
+				logger.error(" stacktrace:");
+				logger.error(errorDoc.getExceptionMessage());
 				for (StackTraceElementBean stackTrace : errorDoc
 						.getStackTraceStrings()) {
-					System.err.println("	at " + stackTrace.getClassName() + "."
+					logger.error("	at " + stackTrace.getClassName() + "."
 							+ stackTrace.getMethodName() + "("
 							+ stackTrace.getFileName() + ":"
 							+ stackTrace.getLineNumber() + ")");
@@ -100,7 +100,7 @@ public class CaptureResultsListener implements ResultListener {
 							.resolveIdentifier(errorRef, null, context));
 				}
 			}
-			System.err.println("(end of workflow error " + identified.getId()
+			logger.error("(end of workflow error " + identified.getId()
 					+ ")");
 		} else if (identified instanceof IdentifiedList) {
 			IdentifiedList list = (IdentifiedList) identified;
