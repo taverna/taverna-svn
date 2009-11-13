@@ -131,7 +131,7 @@ public class NaiveProvenanceQuery {
 
 			DDRecord current = stack.remove(0);
 
-			System.out.println("processing record: "+current.toString()+" isInput: "+current.isInput());
+			logger.info("processing record: "+current.toString()+" isInput: "+current.isInput());
 
 			if (current.isInput)  {
 				// perform a xfer step, using FROM vars
@@ -143,7 +143,7 @@ public class NaiveProvenanceQuery {
 				if (xferResults != null) {			
 
 					for (DDRecord r1:xferResults) {					
-						System.out.println("xfer result: "+r1.toString());						
+						logger.info("xfer result: "+r1.toString());						
 						r1.setInput(false);
 					}
 					stack.addAll(xferResults);
@@ -156,7 +156,7 @@ public class NaiveProvenanceQuery {
 				List<DDRecord> xformResults  = pq.queryDD(current.getPTo(), current.getVTo(), current.getValTo(), null, wfInstance);
 
 				for (DDRecord r:xformResults) {
-					System.out.println("xform result: "+r.toString());
+					logger.info("xform result: "+r.toString());
 					r.setInput(true);
 				}
 				stack.addAll(xformResults);
