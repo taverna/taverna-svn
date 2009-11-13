@@ -141,7 +141,7 @@ CustomizedConfigurePanelProvider<ApiConsumerServiceProviderConfig>{
 			}
 			callback.partialResults(descriptions);
 		} catch (Exception ex) {
-			callback.fail("Unable to add new API Consumer activity", ex);
+			callback.fail("Unable to add new API Consumer service", ex);
 		}
 		logger.info("Finished parsing API Consumer definition file : " + config.getAbsolutePath());
 	}
