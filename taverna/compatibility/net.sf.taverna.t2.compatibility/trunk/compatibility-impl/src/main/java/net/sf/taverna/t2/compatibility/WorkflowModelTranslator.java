@@ -171,11 +171,11 @@ public class WorkflowModelTranslator {
 
 		} catch (EditException e) {
 			throw new WorkflowTranslationException(
-					"An error occurred trying to edit the target Dataflow whilst doing a T1 workflow translation.",
+					"An error occurred trying to edit the target workflow whilst doing a T1 workflow translation.",
 					e);
 		} catch (ActivityConfigurationException e) {
 			throw new WorkflowTranslationException(
-					"An error occurred whilst trying to configure an Activity whilst doing a T1 workflow translation.",
+					"An error occurred whilst trying to configure a service whilst doing a T1 workflow translation.",
 					e);
 		} catch (ActivityTranslatorNotFoundException e) {
 			org.embl.ebi.escience.scufl.Processor p = e.getTaverna1Processor();
