@@ -70,14 +70,14 @@ public class TranslateAndRunTest extends InvocationTestHelper {
 		waitForCompletion(listener,120);
 		
 		for (DataflowOutputPort outputPort : dataflow.getOutputPorts()) {
-			System.out.println("Values for port " + outputPort.getName());
+			logger.info("Values for port " + outputPort.getName());
 			Object result = listener.getResult(outputPort.getName());
 			if (result instanceof List) {
 				for (Object element : (List<?>) result) {
-					System.out.println(element);
+					logger.info(element);
 				}
 			} else {
-				System.out.println(result);
+				logger.info(result);
 			}
 		}
 	}
