@@ -67,9 +67,9 @@ public class LocalworkerActivity extends BeanshellActivity{
 	public String toString() {
 		LocalworkerActivityConfigurationBean configuration = getConfiguration();
 		if (configuration != null) { 
-			return "Local worker " + configuration.getLocalworkerName();
+			return "Local service " + configuration.getLocalworkerName();
 		} else {
-			return "Local worker";
+			return "Local service";
 		}
 	}
 

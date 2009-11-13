@@ -88,13 +88,13 @@ public class XMLInputSplitterLocalWorkerTranslator extends AbstractActivityTrans
 		} catch (SecurityException e) {
 			throw new ActivityTranslationException("The was a Security exception whilst trying to invoke getWorkerClassName through introspection",e);
 		} catch (NoSuchMethodException e) {
-			throw new ActivityTranslationException("The processor does not have the method getWorkerClassName, an therefore does not conform to being a LocalService processor",e);
+			throw new ActivityTranslationException("The service does not have the method getWorkerClassName, an therefore does not conform to being a local service",e);
 		} catch (IllegalArgumentException e) {
-			throw new ActivityTranslationException("The method getWorkerClassName on the LocalService processor had unexpected arguments",e);
+			throw new ActivityTranslationException("The method getWorkerClassName on the local service had unexpected arguments",e);
 		} catch (IllegalAccessException e) {
-			throw new ActivityTranslationException("Unable to access the method getWorkerClassName on the LocalService processor",e);
+			throw new ActivityTranslationException("Unable to access the method getWorkerClassName on the local service",e);
 		} catch (InvocationTargetException e) {
-			throw new ActivityTranslationException("An error occurred invoking the method getWorkerClassName on the LocalService processor",e);
+			throw new ActivityTranslationException("An error occurred invoking the method getWorkerClassName on the local service",e);
 		}
 	}
 

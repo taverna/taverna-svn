@@ -54,7 +54,7 @@ public class XMLInputSplitterLocalWorkerTranslatorTest implements LocationConsta
 	public void testCantHandleOtherLocalWorkers() throws Exception {
 		XMLInputSplitterLocalWorkerTranslator translator = new XMLInputSplitterLocalWorkerTranslator();
 		LocalServiceProcessor processor = new LocalServiceProcessor(null, "EchoList", new EchoList());
-		assertFalse("should not be able to handle the EchoList localworker",translator.canHandle(processor));
+		assertFalse("should not be able to handle the EchoList local service",translator.canHandle(processor));
 	}
 	
 	
