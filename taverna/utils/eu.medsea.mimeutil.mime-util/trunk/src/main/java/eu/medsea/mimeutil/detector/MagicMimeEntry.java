@@ -101,7 +101,6 @@ class MagicMimeEntry {
 	}
 
 	public void traverseAndPrint(String tabs) {
-		System.out.println(tabs + toString());
 		int len = subEntries.size();
 		for (int i = 0; i < len; i++) {
 			MagicMimeEntry me = (MagicMimeEntry) subEntries.get(i);
