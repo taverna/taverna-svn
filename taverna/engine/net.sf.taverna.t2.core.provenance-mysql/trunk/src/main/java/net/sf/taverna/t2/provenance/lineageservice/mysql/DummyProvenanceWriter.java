@@ -78,7 +78,7 @@ public class DummyProvenanceWriter extends ProvenanceWriter {
 	 */
 	public void addVarBinding(VarBinding vb) throws SQLException {
 		// TODO Auto-generated method stub
-		System.out.println("addVarBinding called");
+		logger.info("addVarBinding called");
 
 	}
 
