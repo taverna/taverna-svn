@@ -12,11 +12,16 @@ import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.utils.DDRecord;
 import net.sf.taverna.t2.provenance.lineageservice.utils.WorkflowInstance;
 
+import org.apache.log4j.Logger;
+
 /**
  * @author paolo
  *
  */
 public class NaiveProvenanceQuery {
+
+	private static Logger logger = Logger
+	.getLogger(NaiveProvenanceQuery.class);
 
 	private ProvenanceQuery pq = null;
 

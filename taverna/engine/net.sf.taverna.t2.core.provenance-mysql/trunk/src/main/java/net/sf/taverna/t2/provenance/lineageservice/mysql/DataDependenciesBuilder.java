@@ -16,6 +16,7 @@ import java.util.Set;
 import net.sf.taverna.t2.provenance.lineageservice.utils.DDRecord;
 import net.sf.taverna.t2.provenance.lineageservice.utils.WorkflowInstance;
 
+import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -35,6 +36,9 @@ import org.jdom.input.SAXBuilder;
  */
 public class DataDependenciesBuilder {
 
+	private static Logger logger = Logger
+	.getLogger(DataDependenciesBuilder.class);
+	
 	private MySQLProvenanceWriter pw = null;
 	private MySQLProvenanceQuery pq = null;
 
