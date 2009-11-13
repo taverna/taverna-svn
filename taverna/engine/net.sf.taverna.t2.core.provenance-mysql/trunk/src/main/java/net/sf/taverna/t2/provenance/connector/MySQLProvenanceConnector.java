@@ -152,8 +152,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 	}
 
 	public List<ProvenanceItem> getProvenanceCollection() {
-		System.out
-		.println("invoked: LocalConnector::getProvenanceCollection()");
+		logger.info("invoked: LocalConnector::getProvenanceCollection()");
 		return null;
 	}
 
@@ -200,18 +199,12 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 					.renderIdentifier(entry.getValue(), byte[].class,
 							getInvocationContext());
 
-//					System.out.println("****\ndata in provenance event: "
-//							+ entry.getValue() + " --> \n" + renderedData
-//							+ "\n *****");
 
 					try {
 						pw.addData(entry.getValue().toString(), getProvenance()
 								.getEp().getWfInstanceID(), renderedData);
 					} catch (SQLException e) {
-						System.out
-						.println("Exception while writing data to DB: "
-								+ e.getMessage());
-						e.printStackTrace();
+						logger.error("Exception while writing data to DB", e);
 					}
 
 					// ReferenceSet rs = (ReferenceSet) id;
@@ -310,14 +303,11 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 			.warn("There was a problem deleting the Provenance database: "
 					+ e.toString());
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Could not delete database", e);
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Could not delete database", e);
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Could not delete database", e);
 		}
 
 	}
