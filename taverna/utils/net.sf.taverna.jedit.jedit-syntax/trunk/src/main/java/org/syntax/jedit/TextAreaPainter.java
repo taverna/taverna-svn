@@ -416,11 +416,9 @@ public class TextAreaPainter extends JComponent implements TabExpander
 		}
 		catch(Exception e)
 		{
-			System.err.println("Error repainting line"
-				+ " range {" + firstInvalid + ","
-				+ lastInvalid + "}:");
-			logger.error( e );
-			//System.err.println(e);
+			logger.error("Error repainting line"
+					+ " range {" + firstInvalid + ","
+					+ lastInvalid + "}:",  e );
 		}
 	}
 
