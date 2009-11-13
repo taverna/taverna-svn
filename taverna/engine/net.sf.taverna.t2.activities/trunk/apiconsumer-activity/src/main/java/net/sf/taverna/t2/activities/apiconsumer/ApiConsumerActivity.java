@@ -91,14 +91,13 @@ public class ApiConsumerActivity extends
 				}
 				else
 					workflowRunID = procID; // for tests, will be an empty string
-				//System.out.println("Workflow run ID: " + workflowRunID);		
 				
 				// Configure the classloader for executing the API consumer
 				if (classLoader == null){ // This is just for junit test to work and set its own classloader - classLoader will always be null at this point normally
 					try{
 						classLoader = findClassLoader(configurationBean, workflowRunID);
 					}catch(RuntimeException rex){
-						String message = "Unable to obtain the classloader for the API consumer activity";
+						String message = "Unable to obtain the classloader for the API consumer service";
 						callback.fail(message, rex);		
 					}
 				}
