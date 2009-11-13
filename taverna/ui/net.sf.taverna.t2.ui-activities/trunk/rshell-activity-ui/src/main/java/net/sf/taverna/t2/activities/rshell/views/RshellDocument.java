@@ -27,15 +27,26 @@
  */
 package net.sf.taverna.t2.activities.rshell.views;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.text.*;
+import java.awt.Color;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Element;
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+
+import org.apache.log4j.Logger;
 
 public class RshellDocument extends DefaultStyledDocument {
+
+	private static Logger logger = Logger
+	.getLogger(RshellDocument.class);
+	
 	private DefaultStyledDocument doc;
 	private Element rootElement;
 
@@ -116,7 +127,7 @@ public class RshellDocument extends DefaultStyledDocument {
 	  try{
 	    processChangedLines(0, getLength() );
 	  } catch(Exception e){
-	    e.printStackTrace();
+		  logger.error("Unable to update text", e);
 	  }
 	}
 
