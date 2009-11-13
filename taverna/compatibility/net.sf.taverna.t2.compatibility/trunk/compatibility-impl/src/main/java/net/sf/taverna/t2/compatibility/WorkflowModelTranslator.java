@@ -21,9 +21,6 @@
 package net.sf.taverna.t2.compatibility;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +33,6 @@ import javax.swing.tree.TreeNode;
 import net.sf.taverna.t2.annotation.annotationbeans.Author;
 import net.sf.taverna.t2.annotation.annotationbeans.DescriptiveTitle;
 import net.sf.taverna.t2.annotation.annotationbeans.FreeTextDescription;
-import net.sf.taverna.t2.annotation.annotationbeans.HostInstitution;
 import net.sf.taverna.t2.annotation.annotationbeans.MimeType;
 import net.sf.taverna.t2.compatibility.activity.ActivityTranslationException;
 import net.sf.taverna.t2.compatibility.activity.ActivityTranslator;
@@ -79,6 +75,7 @@ import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyImpl;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyStackImpl;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.AlternateProcessor;
 import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
 import org.embl.ebi.escience.scufl.DataConstraint;
@@ -111,6 +108,9 @@ import org.embl.ebi.escience.scuflworkers.stringconstant.StringConstantProcessor
  */
 public class WorkflowModelTranslator {
 
+	private static Logger logger = Logger
+	.getLogger(WorkflowModelTranslator.class);
+	
 	private Edits edits = EditsRegistry.getEdits();
 
 	private Map<org.embl.ebi.escience.scufl.Processor, Processor> processorMap = new HashMap<org.embl.ebi.escience.scufl.Processor, Processor>();
@@ -222,8 +222,7 @@ public class WorkflowModelTranslator {
 			CompoundEdit edits = new CompoundEdit(listEdits);
 			edits.doEdit();
 		} catch (EditException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Could not add annotation", e);
 		}
 	}
 
@@ -336,8 +335,7 @@ public class WorkflowModelTranslator {
 							EditsRegistry.getEdits().getAddAnnotationChainEdit(
 									outputPort, mimeTypeAnnotation).doEdit();
 						} catch (EditException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							logger.error("Could not add annotation", e);
 						}
 					}
 					outputMap.put(sinkPort, outputPort);
