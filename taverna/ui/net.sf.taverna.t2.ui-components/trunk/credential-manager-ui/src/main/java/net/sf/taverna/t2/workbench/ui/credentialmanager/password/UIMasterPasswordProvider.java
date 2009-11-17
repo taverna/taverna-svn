@@ -18,12 +18,18 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
-package net.sf.taverna.t2.security.credentialmanager;
+package net.sf.taverna.t2.workbench.ui.credentialmanager.password;
 
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 
 import javax.swing.JFrame;
+
+import net.sf.taverna.t2.security.credentialmanager.CMUtil;
+import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
+import net.sf.taverna.t2.security.credentialmanager.GetMasterPasswordDialog;
+import net.sf.taverna.t2.security.credentialmanager.MasterPasswordProviderSPI;
+import net.sf.taverna.t2.security.credentialmanager.SetMasterPasswordDialog;
 
 /**
  * A UI pop-up that asks user for a master password for Credential Manager.

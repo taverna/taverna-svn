@@ -18,10 +18,12 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  */
-package net.sf.taverna.t2.security.credentialmanager;
+package net.sf.taverna.t2.workbench.ui.credentialmanager.startup;
 
 import org.apache.log4j.Logger;
 
+import net.sf.taverna.t2.security.credentialmanager.CMException;
+import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
 import net.sf.taverna.t2.workbench.StartupSPI;
 
 /**
@@ -45,7 +47,7 @@ public class InitialiseSSLStartupHook implements StartupSPI{
 		try {
 			CredentialManager.initialiseSSL();
 		} catch (CMException e) {
-			logger.error("Could not initialise SSL socket factory and Taverba's Truststore for SSL connections from Taverna.", e);
+			logger.error("Could not initialise SSL socket factory and Taverna's Truststore for SSL connections from Taverna.", e);
 		}
 		return true;
 	}
