@@ -33,7 +33,7 @@
          <t2.ui.activities.version>0.13-SNAPSHOT</t2.ui.activities.version>
          <taverna.version>1.7.2.1</taverna.version>
 	   	 <t2.reference.core.extensions.version>0.7-SNAPSHOT</t2.reference.core.extensions.version>
-
+		 <wsdl.generic.version>1.6-SNAPSHOT</wsdl.generic.version>
 		
 		<!--  
 		<t2.security.version>0.3-SNAPSHOT</t2.security.version>
@@ -54,6 +54,7 @@
 		<module>raven-integration-testing</module>
 		<module>reference-integration-tests</module>
 		<!--<module>provenance-testing</module>-->
+		<module>wsdl-generic-testing</module>
 	</modules>
 	<scm>
 		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.integration-testing/tags/integration-testing-0.5</connection>
