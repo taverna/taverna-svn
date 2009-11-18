@@ -84,9 +84,9 @@
 			<version>${t2.ui.components.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.ui-impl</groupId>
+			<groupId>net.sf.taverna.t2.ui-components</groupId>
 			<artifactId>data-management-config-ui</artifactId>
-			<version>${t2.ui.impl.version}</version>
+			<version>${t2.ui.components.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-components</groupId>
