@@ -106,7 +106,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-components</groupId>
 			<artifactId>credential-manager-ui</artifactId>
-			<version>0.10-SNAPSHOT</version>
+			<version>${t2.ui.components.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-exts</groupId>
