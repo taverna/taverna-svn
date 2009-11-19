@@ -47,7 +47,11 @@ public class OpendesktopMimeDetectorTest extends TestCase {
 		assertEquals(MimeUtil2.UNKNOWN_MIME_TYPE, mimeUtil.getMimeTypes(new File("READanim3")).toString());
 
 		// Try multi extensions
-		assertEquals("application/x-java-archive", mimeUtil.getMimeTypes(new File("e.1.3.jar")).toString());
+		String jarExpected = "application/x-java-archive";
+		String jarMimeType = mimeUtil.getMimeTypes(new File("e.1.3.jar"))
+				.toString();
+		assertTrue("jar mime type did not contain not " + jarExpected + " but "
+				+ jarMimeType, jarMimeType.contains(jarExpected));
 	}
 
 	public void testGetMimeTypesFile() {
