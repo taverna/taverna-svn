@@ -17,5 +17,6 @@
 		<module>net.sf.taverna.t2.lang</module>
 		<module>net.sf.taverna.wsdl-generic</module>
 		<module>org.biomart.martservice</module>
+		<module>eu.medsea.mimeutil.mime-util</module>
 	</modules>
 </project>
