@@ -85,7 +85,7 @@ public class LocalRepository implements Repository {
 	private static final String RAVEN_GROUPID = "net.sf.taverna.t2.infrastructure";
 	// the version of raven to used as the artifact for the faked classloader
 	// used during initialisation.
-	private static final String RAVEN_VERSION = "1.10-SNAPSHOT";
+	private static final String RAVEN_VERSION = "1.12";
 
 	static final Map<Artifact, LocalArtifactClassLoader> loaderMap = new HashMap<Artifact, LocalArtifactClassLoader>();
 

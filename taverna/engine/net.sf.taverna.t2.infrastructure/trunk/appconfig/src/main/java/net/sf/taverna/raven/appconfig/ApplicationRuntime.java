@@ -45,7 +45,7 @@ public class ApplicationRuntime {
 
 	private static final String REFERENCE_VERSION = "0.1";
 
-	private static final String INFRASTRUCTURE_VERSION = "1.10-SNAPSHOT";
+	private static final String INFRASTRUCTURE_VERSION = "1.12";
 
 	private static final String PLUGINS = "plugins";
 
