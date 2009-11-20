@@ -26,7 +26,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.infrastructure.platform-testhelpers</groupId>
 			<artifactId>platform-testhelpers-h3-api</artifactId>
-			<version>${t2.infrastructure.version}</version>
+			<version>1.11</version>
 		</dependency>
 
 		<dependency>
