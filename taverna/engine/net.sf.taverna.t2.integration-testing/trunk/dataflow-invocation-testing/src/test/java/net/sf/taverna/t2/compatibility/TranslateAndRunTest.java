@@ -39,6 +39,7 @@ import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.impl.DataflowImpl;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 
+import org.apache.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -50,6 +51,8 @@ import org.junit.Test;
  */
 public class TranslateAndRunTest extends InvocationTestHelper {
 
+	private static Logger logger = Logger.getLogger(TranslateAndRunTest.class);
+	
 	@Test
 	@Ignore("Fails 50% of the time")
 	public void translateAndValidateBiomartAndEMBOSSTest() throws Exception {

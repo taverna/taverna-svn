@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>integration-testing</artifactId>
-		<version>0.6-SNAPSHOT</version>
+		<version>0.6</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.integration-testing</groupId>
 	<artifactId>dataflow-invocation-testing</artifactId>
@@ -20,11 +20,6 @@
 			<groupId>net.sf.taverna.t2.integration-testing</groupId>
 			<artifactId>integration-testing-common</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2.infrastructure</groupId>
-			<artifactId>platform</artifactId>
-			<version>${t2.infrastructure.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
@@ -116,6 +111,10 @@
 				<exclusion>
 					<groupId>uk.org.mygrid.taverna.raven</groupId>
 					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+				<exclusion>
+					<artifactId>axis</artifactId>
+					<groupId>uk.org.mygrid.resources</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>

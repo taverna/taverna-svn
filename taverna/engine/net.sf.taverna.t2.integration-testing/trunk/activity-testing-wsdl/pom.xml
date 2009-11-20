@@ -7,8 +7,9 @@
 		<version>0.6</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.integration-testing</groupId>
-	<artifactId>activity-testing</artifactId>
-	<name>Testing of Activities</name>
+	<artifactId>activity-testing-wsdl</artifactId>
+	<name>Testing of WSDL Activity</name>
+	<description>tests are separate because wsdl-generic depends on a special bundled axis, which would conflict with the axis biomoby and soaplab depend on</description>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -17,18 +18,8 @@
 
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
-			<artifactId>soaplab-activity</artifactId>
+			<artifactId>wsdl-activity</artifactId>
 			<version>${t2.activities.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2.ui-activities</groupId>
-			<artifactId>soaplab-activity-ui</artifactId>
-			<version>${t2.ui.activities.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2.ui-activities</groupId>
-			<artifactId>biomoby-activity-ui</artifactId>
-			<version>${t2.ui.activities.version}</version>
 		</dependency>
 
 		<dependency>
@@ -37,7 +28,33 @@
 			<version>${t2.activities.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>net.sf.taverna.t2.translators</groupId>
+			<artifactId>wsdl-activity-translator</artifactId>
+			<version>${t2.translators.version}</version>
+		</dependency>
 
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.processors</groupId>
+			<artifactId>taverna-wsdl-processor</artifactId>
+			<version>${taverna.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven 
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven 
+					</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+				<exclusion>
+					<artifactId>axis</artifactId>
+					<groupId>axis</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.processors</groupId>
 			<artifactId>taverna-beanshell-processor</artifactId>
@@ -58,6 +75,11 @@
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>net.sf.taverna</groupId>
+				<artifactId>wsdl-generic</artifactId>
+				<version>${wsdl.generic.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 </project>

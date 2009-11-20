@@ -34,12 +34,16 @@ import net.sf.taverna.t2.reference.StackTraceElementBean;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
+import org.apache.log4j.Logger;
+
 public class CaptureResultsListener implements ResultListener {
 
 	private int outputCount;
 	private Map<String, Object> resultMap = new HashMap<String, Object>();
 	private final InvocationContext context;
 
+	private static Logger logger = Logger.getLogger(CaptureResultsListener.class);
+	
 	public CaptureResultsListener(Dataflow dataflow, InvocationContext context) {
 
 		this.context = context;
@@ -60,7 +64,7 @@ public class CaptureResultsListener implements ResultListener {
 					value = context.getReferenceService().renderIdentifier(
 							reference, Object.class, context);
 				} catch (ReferenceServiceException ex) {
-					ex.printStackTrace();
+					throw new RuntimeException("Could not dereference " + reference, ex);
 				}
 			}
 			resultMap.put(portname, value);

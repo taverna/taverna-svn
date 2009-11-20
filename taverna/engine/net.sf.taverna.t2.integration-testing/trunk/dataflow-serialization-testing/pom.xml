@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>integration-testing</artifactId>
-		<version>0.6-SNAPSHOT</version>
+		<version>0.6</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.integration-testing</groupId>
 	<artifactId>dataflow-serialization-testing</artifactId>
@@ -21,11 +21,6 @@
 			<version>${project.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>net.sf.taverna.t2.infrastructure</groupId>
-			<artifactId>platform</artifactId>
-			<version>${t2.infrastructure.version}</version>
-		</dependency>
 
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>

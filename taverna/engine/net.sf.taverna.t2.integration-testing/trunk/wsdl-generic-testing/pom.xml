@@ -4,10 +4,11 @@
 	<parent>
 		<artifactId>integration-testing</artifactId>
 		<groupId>net.sf.taverna.t2</groupId>
-		<version>0.6-SNAPSHOT</version>
+		<version>0.6</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.integration-testing</groupId>
 	<artifactId>wsdl-generic-testing</artifactId>
+	<name>WSDL generic integration tests</name>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna</groupId>
