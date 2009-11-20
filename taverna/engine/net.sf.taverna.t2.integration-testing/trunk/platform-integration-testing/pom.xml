@@ -18,14 +18,9 @@
 			<artifactId>junit</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.infrastructure</groupId>
-			<artifactId>platform</artifactId>
-			<version>${t2.infrastructure.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>net.sf.taverna.t2.infrastructure.platform-testhelpers</groupId>
 			<artifactId>platform-testhelpers-h3-api</artifactId>
-			<version>${t2.infrastructure.version}</version>
+			<version>1.11</version>
 		</dependency>
 
 		<dependency>
@@ -57,6 +52,13 @@
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derbyclient</artifactId>
 			<version>${derby.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>reference-impl</artifactId>
+			<version>${t2.core.version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 </project>
