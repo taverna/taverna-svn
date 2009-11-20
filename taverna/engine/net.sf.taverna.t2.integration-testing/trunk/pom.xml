@@ -53,7 +53,7 @@
 		<module>dataflow-invocation-testing</module>
 		<module>dataflow-serialization-testing</module>
 		<module>integration-testing-common</module>
-		<module>platform-integration-testing</module>
+		<!-- module>platform-integration-testing</module> -->
 		<module>raven-integration-testing</module>
 		<module>reference-integration-tests</module>
 		<!--<module>provenance-testing</module>-->
