@@ -112,7 +112,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ "`ref` varchar(100) default NULL,"
 		+ "`iteration` char(10) NOT NULL default '',"
 		+ "  `wfNameRef` varchar(100) NOT NULL, "
-		+ "PRIMARY KEY  USING BTREE (`varNameRef`,`wfInstanceRef`,`PNameRef`,`positionInColl`,`iteration`, `wfNameRef`),"
+		+ "PRIMARY KEY  USING BTREE (`varNameRef`,`wfInstanceRef`,`PNameRef`,`iteration`, `wfNameRef`),"
 		+ "KEY `collectionFK` (`wfInstanceRef`,`PNameRef`,`varNameRef`,`collIDRef`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='dynamic -- binding of variables to values ';";
 
@@ -124,7 +124,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='dynamic -- execution of a workflow';";
 
 	private static final String createTableWorkflow = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Workflow` ("
-		+ "`wfname` varchar(100) NOT NULL, `parentWFname` varchar(100) default NULL, `externalName` varchar(100) default NULL, `dataflow` blob,"
+		+ "`wfname` varchar(100) NOT NULL, `parentWFname` varchar(100) default NULL, `externalName` varchar(100) default NULL, `dataflow` longblob,"
 		+ "PRIMARY KEY  (`wfname`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- all known workflows by name';";
 
