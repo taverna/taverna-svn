@@ -45,18 +45,7 @@
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-		</repository>
-		<repository>
-			<id>wsZones</id>
-			<name>Apache WS Zones repository</name>
-			<url>http://ws.zones.apache.org/repository2</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-		</repository>
+		</repository>		
 		<repository>
 			<id>biomoby</id>
 			<url>http://biomoby.org/m2repo</url>
