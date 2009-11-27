@@ -37,7 +37,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
  */
 public class SequenceFileActivityIcon implements ActivityIconSPI {
 
-	public static final String COLOUR_HTML = "#bd2d2d";
+	public static final String COLOUR_HTML = "#bff074";
 	public static final Color COLOUR = Color.decode(COLOUR_HTML);
 
 	static {
