@@ -9,7 +9,7 @@
 
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>compatibility</artifactId>
-	<version>0.9</version>
+	<version>0.10-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Taverna 2 Activities</name>
@@ -21,12 +21,12 @@
 	</description>
 
 	<properties>
-		<t2.activities.version>0.9</t2.activities.version>
-		<t2.activity-translators.version.previous>0.8</t2.activity-translators.version.previous>
-		<t2.infrastructure.version>1.12</t2.infrastructure.version>
-		<t2.core.version>0.9</t2.core.version>
-		<t2.lang.version>0.6</t2.lang.version>
-		<t2.core.refexts.version>0.7</t2.core.refexts.version>
+		<t2.activities.version>0.10-SNAPSHOT</t2.activities.version>
+		<t2.activity-translators.version.previous>0.9-SNAPSHOT</t2.activity-translators.version.previous>
+		<t2.infrastructure.version>1.13-SNAPSHOT</t2.infrastructure.version>
+		<t2.core.version>0.10-SNAPSHOT</t2.core.version>
+		<t2.lang.version>0.7-SNAPSHOT</t2.lang.version>
+		<t2.core.refexts.version>0.8-SNAPSHOT</t2.core.refexts.version>
 		<taverna.version>1.7.2.0</taverna.version>
 	</properties>
 
