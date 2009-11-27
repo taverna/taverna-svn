@@ -60,9 +60,6 @@ import org.xml.sax.SAXException;
  * @author Stian Soiland-Reyes
  */
 public class ArtifactImpl extends BasicArtifact {
-
-	private static DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
-			.newInstance();
 	
 	private static Log logger = Log.getLogger(ArtifactImpl.class);
 
@@ -80,6 +77,19 @@ public class ArtifactImpl extends BasicArtifact {
 
 	protected Set<Artifact> exclusions = null;
 
+	private static final ThreadLocal<DocumentBuilder> builder = new ThreadLocal<DocumentBuilder>() {
+		@Override
+		protected DocumentBuilder initialValue() {
+			try {
+				return DocumentBuilderFactory.newInstance()
+						.newDocumentBuilder();
+			} catch (ParserConfigurationException e) {
+				logger.error("Can't configure XML parser", e);
+				throw new RuntimeException("Can't configure XML parser", e);
+			}
+		}
+	};
+	
 	/**
 	 * Create a new ArtifactImpl from an Artifact and a Repository
 	 */
@@ -522,13 +532,15 @@ public class ArtifactImpl extends BasicArtifact {
 		return readXML(xmlFile.toURI().toURL());
 	}
 
+	
+	
 	private Document readXML(URL url) throws ParserConfigurationException,
 			SAXException, IOException {
-		DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
+		builder.get().reset();
 		InputStream stream = url.openStream();
 		Document document;
 		try {
-			document = builder.parse(stream);
+			document = builder.get().parse(stream);
 		} finally {
 			stream.close();
 		}
