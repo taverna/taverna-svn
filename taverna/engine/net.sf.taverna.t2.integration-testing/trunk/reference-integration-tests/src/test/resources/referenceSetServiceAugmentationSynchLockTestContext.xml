@@ -18,13 +18,13 @@
 
 	<!-- Force load of core-extensions into repository -->
 	<bean
-		raven:artifact="net.sf.taverna.t2.core:reference-core-extensions:0.7"
+		raven:artifact="net.sf.taverna.t2.core:reference-core-extensions:0.8-SNAPSHOT"
 		raven:repository="raven.repository"
 		class="net.sf.taverna.t2.reference.impl.core.LoadCoreExtensions" />
 
 	<bean id="referenceSet"
 		class="net.sf.taverna.t2.reference.impl.ReferenceSetImpl"
-		raven:artifact="net.sf.taverna.t2.core:reference-impl:0.9"
+		raven:artifact="net.sf.taverna.t2.core:reference-impl:0.10-SNAPSHOT"
 		raven:repository="raven.repository">
 		<property name="externalReferences">
 			<set>
@@ -34,14 +34,14 @@
 	</bean>
 
 	<bean id="blueBean"
-		raven:artifact="net.sf.taverna.t2.core:reference-testhelpers:0.9"
+		raven:artifact="net.sf.taverna.t2.core:reference-testhelpers:0.10-SNAPSHOT"
 		raven:repository="raven.repository"
 		class="net.sf.taverna.t2referencetest.BlueReference">
 		<property name="contents" value="foo" />
 	</bean>
 
 	<bean id="redBean"
-		raven:artifact="net.sf.taverna.t2.core:reference-testhelpers:0.9"
+		raven:artifact="net.sf.taverna.t2.core:reference-testhelpers:0.10-SNAPSHOT"
 		raven:repository="raven.repository"
 		class="net.sf.taverna.t2referencetest.RedReference">
 		<property name="contents" value="" />
