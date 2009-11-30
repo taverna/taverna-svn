@@ -23,6 +23,7 @@ package net.sf.taverna.raven.repository.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.SoftReference;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -274,28 +276,27 @@ public class ArtifactImpl extends BasicArtifact {
 			return packageType;
 		}
 		File pomFile = repository.pomFile(this);
-		if (pomFile.exists()) {
-			try {
-				Document document = readXML(pomFile);
-				List<Node> l = findElements(document, "packaging");
-				if (l.isEmpty()) {
-					packageType = "jar";
-					return packageType;
-				}
-				Node packageNode = l.iterator().next();
-				packageType = packageNode.getFirstChild().getNodeValue().trim();
+		try {
+			Document document = readXML(pomFile);
+			List<Node> l = findElements(document, "packaging");
+			if (l.isEmpty()) {
+				packageType = "jar";
 				return packageType;
-				// FIXME: catching exceptions where they are thrown
-			} catch (MalformedURLException e) {
-				logger.error("Malformed URL " + pomFile, e);
-			} catch (IOException e) {
-				logger.warn("IO error for " + pomFile, e);
-			} catch (ParserConfigurationException e) {
-				logger.error("XML parser configuration error for " + pomFile, e);
-			} catch (SAXException e) {
-				logger.warn("XML SAX error for " + pomFile, e);
 			}
+			Node packageNode = l.iterator().next();
+			packageType = packageNode.getFirstChild().getNodeValue().trim();
+			return packageType;
+			// FIXME: catching exceptions where they are thrown
+		} catch (MalformedURLException e) {
+			logger.error("Malformed URL " + pomFile, e);
+		} catch (IOException e) {
+			logger.warn("IO error for " + pomFile, e);
+		} catch (ParserConfigurationException e) {
+			logger.error("XML parser configuration error for " + pomFile, e);
+		} catch (SAXException e) {
+			logger.warn("XML SAX error for " + pomFile, e);
 		}
+		
 		return null;
 	}
 
@@ -529,13 +530,44 @@ public class ArtifactImpl extends BasicArtifact {
 
 	private Document readXML(File xmlFile) throws MalformedURLException,
 			ParserConfigurationException, SAXException, IOException {
-		return readXML(xmlFile.toURI().toURL());
+		String urlKey = xmlFile.getAbsolutePath();
+		Document document = null;
+		SoftReference<Document> softReference = readXMLCache.get(urlKey);
+		if (softReference != null) {
+			document = softReference.get();
+		}
+		if (document == null) {
+			// Not cached (anymore) - let's read and store in cache
+			document = readAndParseXML(xmlFile.toURI().toURL());
+			softReference = new SoftReference<Document>(document);
+			readXMLCache.put(urlKey, softReference);
+		}
+		return document;
 	}
 
-	
+	private static Map<String, SoftReference<Document>> readXMLCache = new ConcurrentHashMap<String, SoftReference<Document>>();
 	
 	private Document readXML(URL url) throws ParserConfigurationException,
 			SAXException, IOException {
+		// Don't use URL as a key directly, 
+		// as its evil equals() method does DNS lookups on hostnames..
+		String urlKey = url.toExternalForm();
+		Document document = null;
+		SoftReference<Document> softReference = readXMLCache.get(urlKey);
+		if (softReference != null) {
+			document = softReference.get();
+		}
+		if (document == null) {
+			// Not cached (anymore) - let's read and store in cache
+			document = readAndParseXML(url);
+			softReference = new SoftReference<Document>(document);
+			readXMLCache.put(urlKey, softReference);
+		}
+		return document;
+	}
+
+	private Document readAndParseXML(URL url) throws ParserConfigurationException,
+			SAXException, IOException {		
 		builder.get().reset();
 		InputStream stream = url.openStream();
 		Document document;
