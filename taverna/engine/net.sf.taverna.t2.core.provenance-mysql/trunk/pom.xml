@@ -14,7 +14,7 @@
 	<name>mySQL provenance</name>
 
 	<properties>		
-		<t2.core.version>0.9</t2.core.version>				
+		<t2.core.version>0.10-SNAPSHOT</t2.core.version>				
 	</properties>
 
 	<repositories>
