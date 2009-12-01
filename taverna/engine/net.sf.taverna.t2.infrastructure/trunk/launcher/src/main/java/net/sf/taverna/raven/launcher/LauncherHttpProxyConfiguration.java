@@ -254,7 +254,7 @@ public class LauncherHttpProxyConfiguration {
 	 * @return
 	 */
 	public static String getName() {
-		return "HttpProxy";
+		return "HTTP proxy";
 	}
 
 	/**
