@@ -28,6 +28,7 @@
 package net.sf.taverna.t2.activities.rshell.views;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -36,13 +37,16 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -61,14 +65,32 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.BoxView;
+import javax.swing.text.ComponentView;
+import javax.swing.text.Element;
+import javax.swing.text.IconView;
+import javax.swing.text.LabelView;
+import javax.swing.text.ParagraphView;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledEditorKit;
+import javax.swing.text.View;
+import javax.swing.text.ViewFactory;
 
 import net.sf.taverna.t2.activities.rshell.RShellPortSymanticTypeBean;
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
 import net.sf.taverna.t2.activities.rshell.RshellActivityConfigurationBean;
 import net.sf.taverna.t2.activities.rshell.RshellConnectionSettings;
 import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SemanticTypes;
+import net.sf.taverna.t2.lang.ui.ExtensionFileFilter;
+import net.sf.taverna.t2.lang.ui.FileTools;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
+import net.sf.taverna.t2.workbench.file.FileType;
+import net.sf.taverna.t2.workbench.file.exceptions.OverwriteException;
+import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
+import net.sf.taverna.t2.workbench.file.impl.FileTypeFileFilter;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationPanel;
+import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Port;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
@@ -93,6 +115,8 @@ import org.apache.log4j.Logger;
  */
 public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellActivity, RshellActivityConfigurationBean> {
 	
+	private static final String EXTENSION = ".r";
+
 	private static Logger logger = Logger.getLogger(RshellActivityConfigView.class);
 
 	/** False for R1.5 and below, true for R1.6 and above */
@@ -131,19 +155,14 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	private JPanel outerOutputPanel;
 	/** parent panel for the inputs */
 	private JPanel outerInputPanel;
-	private JButton button;
-
 	private JTextField hostnameField;
 	private JTextField portField;
 	private JTextField usernameField;
 	private JTextField passwordField;
 	private JCheckBox keepSessionAliveCheckBox;
 	private JPanel settingsPanel;
-	private File currentDirectory;
 	private JTabbedPane tabbedPane;
 	private JTabbedPane ports;
-
-	// private JPanel mimes;
 
 	/**
 	 * Stores the {@link RshellActivity}, gets its
@@ -194,11 +213,14 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 
 
 
-		scriptTextArea = new JTextPane(new RshellDocument());
+		scriptTextArea = new JTextPane();
 
+		scriptTextArea.setDocument(new RshellDocument());
 		scriptTextArea.setText(configBean.getScript());
 		scriptTextArea.setCaretPosition(0);
 		scriptTextArea.setPreferredSize(new Dimension(0, 0));
+		scriptTextArea.setEditorKit( new NoWrapEditorKit() );
+
 		for (ActivityInputPortDefinitionBean ip : configuration.getInputPortDefinitions()) {
 			String name = ip.getName();
 			((RshellDocument) scriptTextArea.getDocument()).addPort(name);
@@ -208,17 +230,27 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 			((RshellDocument) scriptTextArea.getDocument()).addPort(name);
 		}
 
-		scriptEditPanel.add(scriptTextArea, BorderLayout.CENTER);
+		JScrollPane scrollPane = new JScrollPane( scriptTextArea );
+		scrollPane.setPreferredSize( new Dimension( 200, 100 ) );
+		
+		scriptEditPanel.add(scrollPane, BorderLayout.CENTER);
 
-		// JPanel scriptButtonsPanel = new JPanel();
-		// BoxLayout boxLayout= new
-		// BoxLayout(scriptButtonsPanel,BoxLayout.X_AXIS);
-		// scriptButtonsPanel.setLayout(boxLayout);
 		JButton loadRScriptButton = new JButton("Load script");
 		loadRScriptButton.setToolTipText("Load an R script from a file");
 		loadRScriptButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				readScriptFile();
+				String newScript = FileTools.readStringFromFile(RshellActivityConfigView.this);
+				if (newScript != null) {
+					scriptTextArea.setText(newScript);
+				}
+			}
+		});
+
+		JButton saveRScriptButton = new JButton("Save script");
+		saveRScriptButton.setToolTipText("Save the R script to a file");
+		saveRScriptButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				FileTools.saveStringToFile(RshellActivityConfigView.this, "Save R script", ".r", scriptTextArea.getText());
 			}
 		});
 
@@ -249,6 +281,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		buttonPanel.setLayout(new FlowLayout());
 //		buttonPanel.add(rVersionCheck);
 		buttonPanel.add(loadRScriptButton);
+		buttonPanel.add(saveRScriptButton);
 		buttonPanel.add(clearScriptButton);
 		
 //		outerConstraint.gridx = 0;
@@ -790,56 +823,71 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		return false;
 	}
 
-	private void readScriptFile() {
+	public boolean saveScript() {
 		JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setFileFilter(new FileFilter() {
+		Preferences prefs = Preferences.userNodeForPackage(getClass());
+		String curDir = prefs
+				.get("currentDir", System.getProperty("user.home"));
+		fileChooser.setDialogTitle("Save R Script");
 
-			@Override
-			public boolean accept(File f) {
-				return f.getName().toLowerCase().endsWith(".r");
-			}
+		fileChooser.resetChoosableFileFilters();
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		
+		fileChooser.setFileFilter(new ExtensionFileFilter(new String[] { EXTENSION }));
 
-			@Override
-			public String getDescription() {
-				return ".r (R files)";
-			}
+		fileChooser.setCurrentDirectory(new File(curDir));
 
-		});
-		fileChooser.setAcceptAllFileFilterUsed(true);
-		if (currentDirectory != null) {
-			fileChooser.setCurrentDirectory(currentDirectory);
-		}
-		if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-			currentDirectory = fileChooser.getCurrentDirectory();
-			File selectedFile = fileChooser.getSelectedFile();
-
-			try {
-				BufferedReader reader = new BufferedReader(new FileReader(
-						selectedFile));
-
-				String line;
-				StringBuffer buffer = new StringBuffer();
-				while ((line = reader.readLine()) != null) {
-					buffer.append(line);
-					buffer.append("\n");
+		boolean tryAgain = true;
+		while (tryAgain) {
+			tryAgain = false;
+			int returnVal = fileChooser.showSaveDialog(this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				prefs.put("currentDir", fileChooser.getCurrentDirectory()
+						.toString());
+				File file = fileChooser.getSelectedFile();
+				String extension = EXTENSION;
+				if (!file.getName().toLowerCase().endsWith(extension)) {
+					String newName = file.getName() + extension;
+					file = new File(file.getParentFile(), newName);
 				}
-				reader.close();
 
-				scriptTextArea.setText(buffer.toString());
-
-			} catch (FileNotFoundException ffe) {
-				JOptionPane.showMessageDialog(this, "File '"
-						+ selectedFile.getName() + "' not found",
-						"File not found", JOptionPane.ERROR_MESSAGE);
-			} catch (IOException ioe) {
-				JOptionPane.showMessageDialog(this, "Can not read file '"
-						+ selectedFile.getName() + "'", "Can not read file",
-						JOptionPane.ERROR_MESSAGE);
+				// TODO: Open in separate thread to avoid hanging UI
+				try {
+					if (file.exists()) {
+						logger.info("File already exists: " + file);
+						String msg = "Are you sure you want to overwrite existing file "
+								+ file + "?";
+						int ret = JOptionPane.showConfirmDialog(
+								this, msg, "File already exists",
+								JOptionPane.YES_NO_CANCEL_OPTION);
+						if (ret == JOptionPane.YES_OPTION) {
+							
+						} else if (ret == JOptionPane.NO_OPTION) {
+							tryAgain = true;
+							continue;
+						} else {
+							logger.info("Aborted overwrite of " + file);
+							return false;
+						}
+					}
+					BufferedWriter out = new BufferedWriter(new FileWriter(file));
+			        out.write(scriptTextArea.getText());
+			        out.close();
+					logger.info("Saved script by overwriting " + file);
+					return true;
+				} catch (IOException ex) {
+					logger.warn("Could not save script to " + file, ex);
+					JOptionPane.showMessageDialog(this,
+							"Could not save script to " + file + ": \n\n"
+									+ ex.getMessage(), "Warning",
+							JOptionPane.WARNING_MESSAGE);
+					return false;
+				}
 			}
-
 		}
+		return false;
 	}
-
+	
 	/**
 	 * Method for clearing the script
 	 * 
@@ -982,5 +1030,65 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 				infoConstraints);
 		return infoPanel;
 	}
+
+	/**
+	 * 
+	 * The following classes are copied from http://forums.sun.com/thread.jspa?threadID=622683
+	 *
+	 */
+	private class NoWrapEditorKit extends StyledEditorKit
+	{
+		public ViewFactory getViewFactory()
+		{
+				return new StyledViewFactory();
+		} 
+	}
+	 
+		static class StyledViewFactory implements ViewFactory
+		{
+			public View create(Element elem)
+			{
+				String kind = elem.getName();
+	 
+				if (kind != null)
+				{
+					if (kind.equals(AbstractDocument.ContentElementName))
+					{
+						return new LabelView(elem);
+					}
+					else if (kind.equals(AbstractDocument.ParagraphElementName))
+					{
+						return new ParagraphView(elem);
+					}
+					else if (kind.equals(AbstractDocument.SectionElementName))
+					{
+						return new NoWrapBoxView(elem, View.Y_AXIS);
+					}
+					else if (kind.equals(StyleConstants.ComponentElementName))
+					{
+						return new ComponentView(elem);
+					}
+					else if (kind.equals(StyleConstants.IconElementName))
+					{
+						return new IconView(elem);
+					}
+				}
+	 
+		 		return new LabelView(elem);
+			}
+		}
+
+		static class NoWrapBoxView extends BoxView {
+	        public NoWrapBoxView(Element elem, int axis) {
+	            super(elem, axis);
+	        }
+	 
+	        public void layout(int width, int height) {
+	            super.layout(32768, height);
+	        }
+	        public float getMinimumSpan(int axis) {
+	            return super.getPreferredSpan(axis);
+	        }
+	    }
 
 }
