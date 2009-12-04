@@ -57,6 +57,7 @@ import org.rosuda.REngine.REXPInteger;
 import org.rosuda.REngine.REXPLogical;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REXPString;
+import org.rosuda.REngine.REngineException;
 import org.rosuda.REngine.RList;
 import org.rosuda.REngine.Rserve.RFileInputStream;
 import org.rosuda.REngine.Rserve.RFileOutputStream;
@@ -79,12 +80,14 @@ public class RshellActivity extends
 
 	private Map<String, SemanticTypes> outputSymanticTypes = new HashMap<String, SemanticTypes>();
 	
+	private static HashMap<RshellConnectionSettings, Object> lockMap = new HashMap<RshellConnectionSettings, Object> ();
+	
 	private static String stringNA = "NA";
 	private static String stringTrue = "TRUE";
 	private static String stringFalse = "FALSE";
 
 	@Override
-	public void configure(RshellActivityConfigurationBean configurationBean)
+	public synchronized void configure(RshellActivityConfigurationBean configurationBean)
 			throws ActivityConfigurationException {
 		this.configurationBean = configurationBean;
 		configureSymanticTypes(configurationBean);
@@ -126,10 +129,12 @@ public class RshellActivity extends
 
 				RshellConnection connection = null;
 
-				try {
-
 					RshellConnectionSettings settings = configurationBean
 							.getConnectionSettings();
+					
+					Object lock = getLock(settings);
+					
+					synchronized(lock) {
 
 					// create connection
 					try {
@@ -140,7 +145,10 @@ public class RshellActivity extends
 								+ settings.getHost() + " using port "
 								+ settings.getPort() + ": " + ex.getMessage(),
 								ex);
+						return;
 					}
+
+						try {
 
 					// pass input form input ports to RServe
 					for (ActivityInputPort inputPort : getInputPorts()) {
@@ -151,6 +159,8 @@ public class RshellActivity extends
 						if (inputId == null) {
 							callback.fail("Input to rserve '" + inputName
 									+ "' was defined but not provided.");
+							closeConnection(connection);
+							return;
 						}
 
 						Object input = referenceService.renderIdentifier(inputId, symanticType.getSemanticClass(), callback.getContext());
@@ -167,6 +177,8 @@ public class RshellActivity extends
 										+ "' could not be interpreted as a "
 										+ symanticType + ", it is a "
 										+ input.getClass());
+								closeConnection(connection);
+								return;
 							}
 							if (value.isLogical()) {
 								if (((REXPLogical)value).length() == 1) {
@@ -194,7 +206,15 @@ public class RshellActivity extends
 					// execute script
 					String script = configurationBean.getScript();
 					if (script.length() != 0) {
-						connection.voidEval(script);
+						connection.assign(".tmp.", script);
+						REXP r = connection.parseAndEval("try(eval(parse(text=.tmp.)),silent=TRUE)");
+						if (r.inherits("try-error")) {
+							String errorString = r.asString();
+							if (errorString.contains(": ")) {
+								errorString = errorString.substring(errorString.indexOf(": ") + 2);
+							}
+							throw new RserveException(connection, errorString);
+						}
 					}
 
 					// create last statement for getting output for output
@@ -214,7 +234,15 @@ public class RshellActivity extends
 						returnString.append(portName);
 					}
 					returnString.append(")\n");
-					REXP results = connection.eval(returnString.toString());
+					connection.assign(".tmp.", returnString.toString());
+					REXP results = connection.parseAndEval("try(eval(parse(text=.tmp.)),silent=TRUE)");
+					if (results.inherits("try-error")) {
+						String errorString = results.asString();
+						if (errorString.contains(": ")) {
+							errorString = errorString.substring(errorString.indexOf(": ") + 2);
+						}
+						throw new RserveException(connection, errorString);
+					}
 
 					if (results.isList()) {
 						RList resultList = results.asList();
@@ -257,13 +285,12 @@ public class RshellActivity extends
 						}
 					} else {
 						callback.fail("Unexpected result");
+						closeConnection(connection);
+						return;
 					}
 
 					// close the connection
-					cleanUpServerFiles(connection);
-					RshellConnectionManager.INSTANCE
-							.releaseConnection(connection);
-					connection = null;
+					closeConnection(connection);
 
 					// send result to the callback
 					callback.receiveResult(outputData, new int[0]);
@@ -271,8 +298,7 @@ public class RshellActivity extends
 				} catch (ActivityConfigurationException ace) {
 					callback.fail("RShell failed", ace);
 				} catch (RserveException rSrvException) {
-					callback.fail("RShell failed: "
-							+ rSrvException.getRequestErrorDescription(),
+					callback.fail("RShell failed: " + rSrvException.getMessage(),
 							rSrvException);
 				} catch (ReferenceServiceException e) {
 					callback.fail("Error accessing input/output data", e);
@@ -280,18 +306,38 @@ public class RshellActivity extends
 					callback.fail("RShell failed: "
 							+ e.getMessage(),
 							e);
+				} catch (REngineException e) {
+					callback.fail("RShell failed: "
+							+ e.getMessage(),
+							e);
 				} finally {
-					if (connection != null && connection.isConnected()) {
-						cleanUpServerFiles(connection);
-						RshellConnectionManager.INSTANCE
-								.releaseConnection(connection);
-						connection = null;
-					}
+					closeConnection(connection);
 				}
+					}
 			}
 
 		});
 
+	}
+	
+	private static Object getLock(RshellConnectionSettings settings) {
+		Object result = null;
+		result = lockMap.get(settings);
+		if (result == null) {
+			result = new Object();
+			lockMap.put(settings, result);
+		}
+		return result;
+	}
+	
+	private void closeConnection(RshellConnection connection) {
+		if (connection != null && connection.isConnected()) {
+			cleanUpServerFiles(connection);
+			RshellConnectionManager.INSTANCE
+					.releaseConnection(connection);
+			connection = null;
+		}
+		
 	}
 
 	private void configureSymanticTypes(
@@ -425,8 +471,12 @@ public class RshellActivity extends
 			return new REXPInteger(ints);
 		}
 		case STRING_LIST: {
-			List<String> values = (List<String>) value;
-			return new REXPString((String[]) values.toArray());
+			List values = (List) value;
+			String[] strings = new String[values.size()];
+			for (int i = 0; i < values.size(); i++) {
+				strings[i] = (String) values.get(i);
+			}
+			return new REXPString(strings);
 		}
 
 		default:
