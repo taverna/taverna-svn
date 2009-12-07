@@ -148,7 +148,7 @@ public class LauncherHttpProxyConfiguration {
 		if (!configDir.exists()) {
 			configDir.mkdir();
 		}
-		File configFile = new File(configDir, getName() + "-" + getUUID()
+		File configFile = new File(configDir, getFilePrefix() + "-" + getUUID()
 				+ ".config");
 		if (configFile.exists()) {
 			try {
@@ -253,8 +253,12 @@ public class LauncherHttpProxyConfiguration {
 	/**
 	 * @return
 	 */
-	public static String getName() {
+	public static String getDisplayName() {
 		return "HTTP proxy";
+	}
+	
+	public static String getFilePrefix() {
+		return "HttpProxy";
 	}
 
 	/**
