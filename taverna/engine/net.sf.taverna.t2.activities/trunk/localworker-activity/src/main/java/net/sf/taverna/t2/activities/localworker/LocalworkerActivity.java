@@ -42,6 +42,11 @@ public class LocalworkerActivity extends BeanshellActivity{
 			result.setScript(configurationBean.getScript());
 			result.setDependencies(configurationBean.getDependencies());
 			result.setLocalworkerName(null);
+			result.setClassLoaderSharing(configurationBean.getClassLoaderSharing());
+			result.setArtifactDependencies(configurationBean.getArtifactDependencies());
+			result.setLocalDependencies(configurationBean.getLocalDependencies());
+			result.setInputPortDefinitions(configurationBean.getInputPortDefinitions());
+			result.setOutputPortDefinitions(configurationBean.getOutputPortDefinitions());
 			configurationBean = result;
 		}
 		return result;
