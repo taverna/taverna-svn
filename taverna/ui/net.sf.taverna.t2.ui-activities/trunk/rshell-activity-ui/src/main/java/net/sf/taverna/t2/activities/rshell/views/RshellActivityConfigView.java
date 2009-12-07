@@ -28,7 +28,6 @@
 package net.sf.taverna.t2.activities.rshell.views;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -36,21 +35,17 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -64,7 +59,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.BoxView;
 import javax.swing.text.ComponentView;
@@ -85,12 +79,7 @@ import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SemanticTypes;
 import net.sf.taverna.t2.lang.ui.ExtensionFileFilter;
 import net.sf.taverna.t2.lang.ui.FileTools;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
-import net.sf.taverna.t2.workbench.file.FileType;
-import net.sf.taverna.t2.workbench.file.exceptions.OverwriteException;
-import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
-import net.sf.taverna.t2.workbench.file.impl.FileTypeFileFilter;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationPanel;
-import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Port;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
@@ -980,8 +969,36 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 
 	@Override
 	public boolean checkValues() {
-		// TODO Not yet implemented
-		return true;
+		boolean result = true;
+		String text = "";
+		Set<String> inputPortNames = new HashSet<String>();
+		for (RshellInputViewer v : inputViewList) {
+			String name = v.getNameField().getText();
+			if (inputPortNames.contains(name)) {
+				text += "Two input ports have the name " + name + "\n";
+				result = false;
+			} else {
+				inputPortNames.add(name);
+			}
+		}
+		Set<String> outputPortNames = new HashSet<String>();
+		for (RshellOutputViewer v : outputViewList) {
+			String name = v.getNameField().getText();
+			if (inputPortNames.contains(name)) {
+				text += "An input and an output port are named " + name + "\n";
+				result = false;
+			}
+			if (outputPortNames.contains(name)) {
+				text += "Two output ports have the name " + name + "\n";
+				result = false;
+			} else {
+				outputPortNames.add(name);
+			}
+		}
+		if (!result) {
+			JOptionPane.showMessageDialog(this, text, "Port name problem", JOptionPane.ERROR_MESSAGE);
+		}
+		return result;
 	}
 	
 	private JPanel createInfoPanel() {
