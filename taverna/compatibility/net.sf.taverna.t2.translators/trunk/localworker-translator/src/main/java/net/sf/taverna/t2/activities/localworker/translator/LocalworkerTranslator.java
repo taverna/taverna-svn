@@ -79,6 +79,7 @@ public class LocalworkerTranslator extends
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.StringSetUnion", "StringSetUnion");
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.StringStripDuplicates", "StringStripDuplicates");
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.TestAlwaysFailingProcessor", "TestAlwaysFailingProcessor");
+		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.TestSometimesFails", "TestSometimesFails");
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.WebImageFetcher", "WebImageFetcher");
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.WebPageFetcher", "WebPageFetcher");
 		
