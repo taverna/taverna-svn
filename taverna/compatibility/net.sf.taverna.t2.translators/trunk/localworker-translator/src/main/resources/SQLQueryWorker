@@ -12,15 +12,11 @@ import com.sun.rowset.WebRowSetImpl;
 
 
 if ((driver == void) || (driver == null) || driver.equals("")) {
-	throw new RuntimeException("The drivermust be specified");
+	throw new RuntimeException("The driver must be specified");
 }
 
 if ((url == void) || (url == null) || url.equals("")) {
 	throw new RuntimeException("The url must be specified");
-}
-
-if ((userid == void) || (userid == null)) {
-	userid = "";
 }
 
 boolean provideXmlBoolean = ((provideXml != void) && (provideXml != null) && Boolean.valueOf(provideXml));
@@ -40,26 +36,38 @@ if (c == null) {
 }
 
 Driver d = c.newInstance();
+if (d == null) {
+	throw new RuntimeException("Could not create instance of driver");
+}
 
 Properties p = new Properties();
 
+if ((userid == void) || (userid == null)) {
+	userid = "";
+}
+
 p.setProperty("user", userid);
 
-if ((password == void) || (passsword == null)) {
+if ((password == void) || (password == null)) {
 	password = "";
 }
 
 p.setProperty("password", password);
 
+Connection con = null;
+PreparedStatement ps = null;
+ResultSet rs = null;
 try {
-	Connection con = d.connect(url, p);
-	PreparedStatement ps = con.prepareStatement(sql);
 
-	for (int i = 0; i < params.size(); i++) {
+	con = d.connect(url, p);
+	ps = con.prepareStatement(sql);
+
+	int paramSize = params.size();
+	for (int i = 0; i < paramSize; i++) {
 		ps.setObject(i + 1, params.get(i));
 	}
 
-	ResultSet rs = ps.executeQuery();
+	rs = ps.executeQuery();
 
 	if (provideXmlBoolean) {
 		WebRowSet webrs = new WebRowSetImpl();
@@ -79,7 +87,7 @@ try {
 
 	ResultSetMetaData rsmd = rs.getMetaData();
 	int numCols = rsmd.getColumnCount();
-	resultList = new ArrayList();
+	List resultList = new ArrayList();
 	
 	// put the results into the results list.
 	while (rs.next()) {
@@ -97,7 +105,8 @@ finally {
 	if (ps != null) {
 		ps.close();
 	}
-	if (con != null) }
+	if (con != null) {
 		con.close();
 	}
 }
+  
