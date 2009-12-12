@@ -87,7 +87,7 @@ try {
 
 	ResultSetMetaData rsmd = rs.getMetaData();
 	int numCols = rsmd.getColumnCount();
-	List resultList = new ArrayList();
+	resultList = new ArrayList();
 	
 	// put the results into the results list.
 	while (rs.next()) {
