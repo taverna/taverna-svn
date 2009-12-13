@@ -8,14 +8,14 @@
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>infrastructure</artifactId>
-	<version>1.13-SNAPSHOT</version>
+	<version>2.0</version>
 	<packaging>pom</packaging>
 	<name>Taverna 2 infrastructure</name>
 	<description>Infrastructure for launching Taverna 2, including plugin management, Raven and SPI discovery</description>
 	<properties>
 		<t2.infrastructure.version>${project.version}</t2.infrastructure.version>
 		<xmlbeans.version>2.4.0</xmlbeans.version>
-		<t2.lang.version>0.7-SNAPSHOT</t2.lang.version>
+		<t2.lang.version>1.0</t2.lang.version>
 	</properties>
 	<scm>
 		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.infrastructure/trunk/</connection>
