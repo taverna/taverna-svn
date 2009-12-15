@@ -31,7 +31,9 @@
 	<modules>
 		<module>compatibility</module>
 		<module>engine</module>
+		<!--  Already deployed for 2.1 RC1
 		<module>parent</module>
+		 -->
 		<module>products</module>
 		<module>ui</module>
 		<module>utils</module>

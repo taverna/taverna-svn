@@ -13,10 +13,12 @@
 
 	<name>Virtual build tree for the utils modules</name>
 	<modules>
-		<module>net.sf.taverna.jedit.jedit-syntax</module>
+		<!--  Already deployed for 2.1 RC1 
+			<module>net.sf.taverna.jedit.jedit-syntax</module>
+			<module>eu.medsea.mimeutil.mime-util</module>
+			<module>net.sf.taverna.wsdl-generic</module>
+		-->
 		<module>net.sf.taverna.t2.lang</module>
-		<module>net.sf.taverna.wsdl-generic</module>
 		<module>org.biomart.martservice</module>
-		<module>eu.medsea.mimeutil.mime-util</module>
 	</modules>
 </project>
