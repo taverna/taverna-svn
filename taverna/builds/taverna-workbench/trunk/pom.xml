@@ -14,7 +14,7 @@
 	<packaging>pom</packaging>
 
 	<name>Taverna 2 workbench virtual build tree</name>
-	<version>2.1</version>
+	<version>2.1.0</version>
 	<description>
 		Build tree for all of Taverna 2 using svn:externals. It is normally 
 		recommended to check out only the needed individual projects separately
