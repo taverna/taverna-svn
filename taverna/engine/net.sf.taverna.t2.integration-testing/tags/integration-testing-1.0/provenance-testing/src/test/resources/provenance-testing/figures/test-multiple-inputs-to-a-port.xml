@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:6b55bbbf-8fc6-4cb8-ba3f-d3f489274ff5" author="" title="test-multiple-inputs-to-a-port" />
+  <s:processor name="P1">
+    <s:beanshell>
+      <s:scriptvalue />
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">P1VO</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="P2">
+    <s:beanshell>
+      <s:scriptvalue />
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">P2Vo</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:link source="P1:P1VO" sink="O1" />
+  <s:link source="P2:P2Vo" sink="O1" />
+  <s:sink name="O1" />
+</s:scufl>
+
