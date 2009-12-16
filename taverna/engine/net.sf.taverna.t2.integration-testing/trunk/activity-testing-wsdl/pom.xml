@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>integration-testing</artifactId>
-		<version>0.6</version>
+		<version>1.0</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.integration-testing</groupId>
 	<artifactId>activity-testing-wsdl</artifactId>

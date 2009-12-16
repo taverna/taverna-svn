@@ -29,6 +29,7 @@ import java.util.Map;
 import net.sf.taverna.platform.spring.RavenAwareClassPathXmlApplicationContext;
 import net.sf.taverna.t2.compatibility.WorkflowModelTranslator;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.invocation.impl.InvocationContextImpl;
 import net.sf.taverna.t2.provenance.reporter.ProvenanceReporter;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -63,26 +64,9 @@ public class InvocationTestHelper extends DataflowTranslationHelper {
 	public void makeDataManager() {
 		ApplicationContext appContext = new RavenAwareClassPathXmlApplicationContext(
 		"inMemoryActivityTestsContext.xml");
-		referenceService = (ReferenceService) appContext.getBean("t2reference.service.referenceService");
-		
-		context =  new InvocationContext() {
-
-			public ReferenceService getReferenceService() {
-				return referenceService;
-			}
-
-			public <T> List<? extends T> getEntities(Class<T> arg0) {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			public ProvenanceReporter getProvenanceReporter() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-		};
+		referenceService = (ReferenceService) appContext.getBean("t2reference.service.referenceService");		
+		context =  new InvocationContextImpl(referenceService, null);
 	}
-
 
 	protected Map<String, DummyEventHandler> addDummyEventHandlersToOutputs(
 			Dataflow dataflow) throws EditException {
