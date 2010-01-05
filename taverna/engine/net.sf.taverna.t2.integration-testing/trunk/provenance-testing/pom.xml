@@ -6,7 +6,7 @@
 	<parent>
 		<artifactId>integration-testing</artifactId>
 		<groupId>net.sf.taverna.t2</groupId>
-		<version>0.6</version>
+		<version>1.1-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.integration-testing</groupId>
 	<artifactId>provenance-testing</artifactId>
@@ -121,7 +121,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>reference-core-extensions</artifactId>
-			<version>1.0</version>
+			<version>1.1-SNAPSHOT</version>
 		</dependency>
 
 

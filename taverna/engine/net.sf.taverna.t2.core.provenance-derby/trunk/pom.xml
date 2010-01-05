@@ -7,13 +7,13 @@
 	</parent>
 	<groupId>net.sf.taverna.t2.core</groupId>
 	<artifactId>provenance-derby</artifactId>
-	<version>1.0</version>
+	<version>1.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Derby Provenance</name>
 	<properties>		
-		<t2.core.version>1.0</t2.core.version>		
-		<t2.ui.impl.version>1.0</t2.ui.impl.version>		
-		<t2.core.reference-core-extensions.version>1.0</t2.core.reference-core-extensions.version>		
+		<t2.core.version>1.1-SNAPSHOT</t2.core.version>		
+		<t2.ui.impl.version>1.1-SNAPSHOT</t2.ui.impl.version>		
+		<t2.core.reference-core-extensions.version>1.1-SNAPSHOT</t2.core.reference-core-extensions.version>		
 	</properties>
 	<dependencies>
 	

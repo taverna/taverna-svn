@@ -11,7 +11,7 @@
 
 	<!-- Provenance Connector bean -->
 	<bean id="provenanceConnector"
-		raven:artifact="net.sf.taverna.t2.provenance:provenance-impl:0.0.1-SNAPSHOT"
+		raven:artifact="net.sf.taverna.t2.provenance:provenance-impl:1.1-SNAPSHOT"
 		raven:repository="raven.repository"
 		class="net.sf.taverna.t2.provenance.connector.LocalProvenanceConnector">
 	</bean>

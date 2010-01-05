@@ -11,7 +11,7 @@
 	<!-- Example of a bean to be loaded through Raven, this particular -->
 	<!-- bean is one of the dispatch layers from T2 -->
 	<bean id="ravenTestBean"
-		raven:artifact="net.sf.taverna.t2.core:workflowmodel-impl:1.0"
+		raven:artifact="net.sf.taverna.t2.core:workflowmodel-impl:1.1-SNAPSHOT"
 		raven:repository="ravenRepository"
 		class="net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ErrorBounce" />
 
