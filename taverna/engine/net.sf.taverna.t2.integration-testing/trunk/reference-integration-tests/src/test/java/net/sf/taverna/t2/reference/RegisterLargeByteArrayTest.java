@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.sf.taverna.platform.spring.RavenAwareClassPathXmlApplicationContext;
+import net.sf.taverna.t2.reference.impl.EmptyReferenceContext;
 
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -43,11 +44,7 @@ import org.springframework.context.ApplicationContext;
  */
 public class RegisterLargeByteArrayTest {
 
-	private ReferenceContext dummyContext = new ReferenceContext() {
-		public <T> List<? extends T> getEntities(Class<T> arg0) {
-			return new ArrayList<T>();
-		}
-	};
+	private ReferenceContext dummyContext = new EmptyReferenceContext();
 
 	@Test
 	public void testRegisterFromByteArrayList() {

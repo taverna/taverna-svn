@@ -138,8 +138,7 @@
 			</exclusions>
 			 -->
 		</dependency>
-
-
+		
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>reference-impl</artifactId>

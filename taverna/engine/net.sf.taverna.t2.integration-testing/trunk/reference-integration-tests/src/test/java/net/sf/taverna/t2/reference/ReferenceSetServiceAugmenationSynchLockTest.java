@@ -20,13 +20,13 @@
  ******************************************************************************/
 package net.sf.taverna.t2.reference;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import static junit.framework.Assert.assertEquals;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import net.sf.taverna.platform.spring.RavenAwareClassPathXmlApplicationContext;
+import net.sf.taverna.t2.reference.impl.EmptyReferenceContext;
 
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -55,16 +55,12 @@ public class ReferenceSetServiceAugmenationSynchLockTest {
 
 		ReferenceSet rs = (ReferenceSet) context.getBean("referenceSet");
 
-		ReferenceContext refContext = new ReferenceContext() {
-			public <T> List<? extends T> getEntities(Class<T> arg0) {
-				return new ArrayList<T>();
-			}
-		};
+		ReferenceContext refContext = new EmptyReferenceContext();
 
 		Set<Class<ExternalReferenceSPI>> redTarget = new HashSet<Class<ExternalReferenceSPI>>();
 		redTarget.add((Class<ExternalReferenceSPI>) context.getBean("redBean")
 				.getClass());
-		ReferenceSet rs2 = rss.registerReferenceSet(rs.getExternalReferences());
+		ReferenceSet rs2 = rss.registerReferenceSet(rs.getExternalReferences(), refContext);
 		
 		final long startTime = System.currentTimeMillis();
 		rss.getReferenceSetWithAugmentationAsynch(rs2.getId(), redTarget,

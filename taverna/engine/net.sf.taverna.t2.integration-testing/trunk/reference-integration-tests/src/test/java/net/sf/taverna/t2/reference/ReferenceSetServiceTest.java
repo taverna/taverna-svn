@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.sf.taverna.platform.spring.RavenAwareClassPathXmlApplicationContext;
+import net.sf.taverna.t2.reference.impl.EmptyReferenceContext;
 
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -58,9 +59,10 @@ public class ReferenceSetServiceTest {
 		references.add((ExternalReferenceSPI) context
 				.getBean("exampleFileBean"));
 
+		ReferenceContext refContext = new EmptyReferenceContext();
 		// If all goes well we can register the set of external references and
 		// get a referenceset object back with an ID allocated appropriately
-		ReferenceSet rs = rss.registerReferenceSet(references);
+		ReferenceSet rs = rss.registerReferenceSet(references, refContext);
 		System.out.println(rs);
 
 	}

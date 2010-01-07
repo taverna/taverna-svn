@@ -22,13 +22,11 @@ package net.sf.taverna.t2.reference;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import net.sf.taverna.platform.spring.RavenAwareClassPathXmlApplicationContext;
-import net.sf.taverna.t2.reference.T2Reference;
+import net.sf.taverna.t2.reference.impl.EmptyReferenceContext;
 
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -41,11 +39,7 @@ import org.springframework.context.ApplicationContext;
  */
 public class ReferenceServiceTest {
 
-	private ReferenceContext dummyContext = new ReferenceContext() {
-		public <T> List<? extends T> getEntities(Class<T> arg0) {
-			return new ArrayList<T>();
-		}
-	};
+	private ReferenceContext dummyContext = new EmptyReferenceContext();
 
 	@Test
 	public void testInit() {

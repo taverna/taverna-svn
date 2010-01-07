@@ -21,13 +21,13 @@
 package net.sf.taverna.t2.reference;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import net.sf.taverna.platform.spring.RavenAwareClassPathXmlApplicationContext;
+import net.sf.taverna.t2.reference.impl.EmptyReferenceContext;
 
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -41,11 +41,7 @@ import org.springframework.context.ApplicationContext;
 public class InMemoryReferenceServiceTest {
 
 	@SuppressWarnings("unused")
-	private ReferenceContext dummyContext = new ReferenceContext() {
-		public <T> List<? extends T> getEntities(Class<T> arg0) {
-			return new ArrayList<T>();
-		}
-	};
+	private ReferenceContext dummyContext = new EmptyReferenceContext();
 
 	@Test
 	public void testInit() {
@@ -103,11 +99,8 @@ public class InMemoryReferenceServiceTest {
 				.getBean("t2reference.service.referenceService");
 		String ref = "t2:error//test?abcd1234/2";
 		T2Reference referenceFromString = null;
-		try {
-			referenceFromString = rs.referenceFromString(ref);
-		} catch (Throwable ex) {
-			ex.printStackTrace();
-		}
+		referenceFromString = rs.referenceFromString(ref);
+		
 		assertEquals(referenceFromString.getNamespacePart(), "test");
 
 		assertEquals(referenceFromString.getLocalPart(), "abcd1234");
@@ -138,7 +131,7 @@ public class InMemoryReferenceServiceTest {
 
 		assertEquals(parseRef.getDepth(), 2);
 
-		assertEquals(parseRef.containsErrors(), true);
+		assertTrue(parseRef.containsErrors());
 
 	}
 
@@ -153,6 +146,7 @@ public class InMemoryReferenceServiceTest {
 		assertEquals(register.getNamespacePart(), "taverna");
 	}
 
+	@SuppressWarnings("unused")
 	private Map<String, String> parseRef(String ref) {
 		String[] split = ref.split("\\?");
 		// get the bit before and after the final '/' ie. the local part and the
