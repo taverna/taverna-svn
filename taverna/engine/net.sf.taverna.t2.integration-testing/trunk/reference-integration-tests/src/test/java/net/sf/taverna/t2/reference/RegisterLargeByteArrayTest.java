@@ -99,7 +99,6 @@ public class RegisterLargeByteArrayTest {
 		ReferenceService rs = (ReferenceService) context
 				.getBean("t2reference.service.referenceService");
 		T2Reference reference = rs.register(bytes, 0, true, dummyContext);
-		System.out.println("Registered 1m with rs " + rs);
 		
 		Object returnedObject=rs.renderIdentifier(reference, Object.class,dummyContext);
 		byte [] newbytes=(byte[])returnedObject;
