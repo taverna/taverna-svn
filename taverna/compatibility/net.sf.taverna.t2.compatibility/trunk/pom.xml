@@ -23,7 +23,7 @@
 	<properties>
 		<t2.activities.version>1.1-SNAPSHOT</t2.activities.version>
 		<t2.activity-translators.version.previous>0.9</t2.activity-translators.version.previous>
-		<t2.infrastructure.version>2.1-SNAPSHOT</t2.infrastructure.version>
+		<t2.infrastructure.version>2.0</t2.infrastructure.version>
 		<t2.core.version>1.1-SNAPSHOT</t2.core.version>
 		<t2.lang.version>1.1-SNAPSHOT</t2.lang.version>
 		<t2.core.refexts.version>1.1-SNAPSHOT</t2.core.refexts.version>
