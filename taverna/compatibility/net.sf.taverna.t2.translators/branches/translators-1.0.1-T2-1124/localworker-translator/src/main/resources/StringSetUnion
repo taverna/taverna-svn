@@ -1,0 +1,5 @@
+Set results = new HashSet();
+results.addAll(list1);
+results.addAll(list2);
+List union = new ArrayList();
+union.addAll(results);
