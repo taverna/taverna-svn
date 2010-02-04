@@ -206,19 +206,21 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 
 		scriptTextArea = new JTextPane();
 
-		scriptTextArea.setDocument(new RshellDocument());
+		RshellDocument doc = new RshellDocument();
+		// NOTE: Due to T2-1145 - always set editor kit BEFORE setDocument
+		scriptTextArea.setEditorKit( new NoWrapEditorKit() );
+		scriptTextArea.setDocument(doc);
 		scriptTextArea.setText(configBean.getScript());
 		scriptTextArea.setCaretPosition(0);
 		scriptTextArea.setPreferredSize(new Dimension(0, 0));
-		scriptTextArea.setEditorKit( new NoWrapEditorKit() );
 
 		for (ActivityInputPortDefinitionBean ip : configuration.getInputPortDefinitions()) {
 			String name = ip.getName();
-			((RshellDocument) scriptTextArea.getDocument()).addPort(name);
+			doc.addPort(name);
 		}
 		for (ActivityOutputPortDefinitionBean op : configuration.getOutputPortDefinitions()) {
 			String name = op.getName();
-			((RshellDocument) scriptTextArea.getDocument()).addPort(name);
+			doc.addPort(name);
 		}
 
 		JScrollPane scrollPane = new JScrollPane( scriptTextArea );
