@@ -106,6 +106,8 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	
 	private static final String EXTENSION = ".r";
 
+	private static final String VALID_NAME_REGEX = "[\\p{L}\\p{Digit}_]+";
+
 	private static Logger logger = Logger.getLogger(RshellActivityConfigView.class);
 
 	/** False for R1.5 and below, true for R1.6 and above */
@@ -204,19 +206,21 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 
 		scriptTextArea = new JTextPane();
 
-		scriptTextArea.setDocument(new RshellDocument());
+		RshellDocument doc = new RshellDocument();
+		// NOTE: Due to T2-1145 - always set editor kit BEFORE setDocument
+		scriptTextArea.setEditorKit( new NoWrapEditorKit() );
+		scriptTextArea.setDocument(doc);
 		scriptTextArea.setText(configBean.getScript());
 		scriptTextArea.setCaretPosition(0);
 		scriptTextArea.setPreferredSize(new Dimension(0, 0));
-		scriptTextArea.setEditorKit( new NoWrapEditorKit() );
 
 		for (ActivityInputPortDefinitionBean ip : configuration.getInputPortDefinitions()) {
 			String name = ip.getName();
-			((RshellDocument) scriptTextArea.getDocument()).addPort(name);
+			doc.addPort(name);
 		}
 		for (ActivityOutputPortDefinitionBean op : configuration.getOutputPortDefinitions()) {
 			String name = op.getName();
-			((RshellDocument) scriptTextArea.getDocument()).addPort(name);
+			doc.addPort(name);
 		}
 
 		JScrollPane scrollPane = new JScrollPane( scriptTextArea );
@@ -977,6 +981,9 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 			if (inputPortNames.contains(name)) {
 				text += "Two input ports have the name " + name + "\n";
 				result = false;
+			} else if (!name.matches(VALID_NAME_REGEX)){
+				text += "Input port name " + name + " is invalid\n";
+				result = false;
 			} else {
 				inputPortNames.add(name);
 			}
@@ -984,12 +991,11 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		Set<String> outputPortNames = new HashSet<String>();
 		for (RshellOutputViewer v : outputViewList) {
 			String name = v.getNameField().getText();
-			if (inputPortNames.contains(name)) {
-				text += "An input and an output port are named " + name + "\n";
-				result = false;
-			}
 			if (outputPortNames.contains(name)) {
 				text += "Two output ports have the name " + name + "\n";
+				result = false;
+			} else if (!name.matches(VALID_NAME_REGEX)){
+				text += "Input port name " + name + " is invalid\n";
 				result = false;
 			} else {
 				outputPortNames.add(name);
