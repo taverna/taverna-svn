@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>translators</artifactId>
-		<version>1.0.1-SNAPSHOT</version>
+		<version>1.0.1</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.taverna.t2.translators</groupId>
@@ -33,12 +33,12 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.translators</groupId>
 			<artifactId>dataflow-activity-translator</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.translators</groupId>
 			<artifactId>localworker-translator</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.translators</groupId>
@@ -58,7 +58,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.translators</groupId>
 			<artifactId>wsdl-activity-translator</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
+			<version>1.0.1</version>
 		</dependency>
 	</dependencies>
 </project>

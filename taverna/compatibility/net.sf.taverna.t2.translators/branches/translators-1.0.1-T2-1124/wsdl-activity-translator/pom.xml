@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>translators</artifactId>
-		<version>1.0.1-SNAPSHOT</version>
+		<version>1.0.1</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.translators</groupId>
 	<artifactId>wsdl-activity-translator</artifactId>
@@ -13,7 +13,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>wsdl-activity</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.compatibility</groupId>
