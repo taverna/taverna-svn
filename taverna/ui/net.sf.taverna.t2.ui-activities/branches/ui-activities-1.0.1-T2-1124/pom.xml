@@ -9,7 +9,7 @@
 
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>ui-activities</artifactId>
-	<version>1.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Taverna 2 Activities UI</name>
@@ -25,25 +25,28 @@
 		<t2.translators.version>1.0</t2.translators.version>
 		<t2.ui.api.version>1.0</t2.ui.api.version>
 		<t2.ui.impl.version>1.0</t2.ui.impl.version>
-		<t2.ui.components.version>1.0</t2.ui.components.version>
+		<t2.ui.components.version>1.0.1-SNAPSHOT</t2.ui.components.version>
 		<t2.security.version>1.0</t2.security.version>
 		<taverna.version>1.7.2.0</taverna.version>
 	</properties>
 
 	<modules>
 		<module>all-activity-uis</module>
-		<module>apiconsumer-activity-ui</module>
-		<module>beanshell-activity-ui</module>
-		<module>biomart-activity-ui</module>
-		<module>biomoby-activity-ui</module>
 		<module>dataflow-activity-ui</module>
 		<module>localworker-activity-ui</module>
-		<module>ncbi-activity-ui</module>
+		<module>wsdl-activity-ui</module>
+		
 		<module>rshell-activity-ui</module>
-		<module>soaplab-activity-ui</module>
+		<module>beanshell-activity-ui</module>
 		<module>spreadsheet-import-activity-ui</module>
 		<module>stringconstant-activity-ui</module>
-		<module>wsdl-activity-ui</module>
+		
+		<!-- 
+		<module>apiconsumer-activity-ui</module>
+		<module>biomart-activity-ui</module>
+		<module>biomoby-activity-ui</module>
+		<module>soaplab-activity-ui</module>
+		 -->
 	</modules>
 	<repositories>
 		<repository>
