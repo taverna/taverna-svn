@@ -9,7 +9,7 @@
 
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>translators</artifactId>
-	<version>1.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Taverna 2 Activities</name>
@@ -32,17 +32,19 @@
 
 	<modules>
 		<module>all-activity-translators</module>
+		<module>localworker-translator</module>
+		<module>dataflow-activity-translator</module>
+		<module>wsdl-activity-translator</module>
+		<!-- 
 		<module>apiconsumer-activity-translator</module>
 		<module>beanshell-activity-translator</module>
 		<module>biomart-activity-translator</module>
 		<module>biomoby-activity-translator</module>
-		<module>dataflow-activity-translator</module>
-		<module>localworker-translator</module>
 		<module>rshell-activity-translator</module>
 		<module>soaplab-activity-translator</module>
 		<module>stringconstant-activity-translator</module>
 		<module>translators-test-utils</module>
-		<module>wsdl-activity-translator</module>
+		 -->
 	</modules>
 	<build>
 		<plugins>

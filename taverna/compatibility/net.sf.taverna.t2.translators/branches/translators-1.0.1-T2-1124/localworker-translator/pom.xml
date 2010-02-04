@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>translators</artifactId>
-		<version>1.0</version>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.translators</groupId>
 	<artifactId>localworker-translator</artifactId>
@@ -194,7 +194,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>activity-test-utils</artifactId>
-			<version>${t2.activities.version}</version>
+			<version>1.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
