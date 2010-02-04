@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<plugin>activities-2.1.1.xml</plugin>
+	<plugin>compatibility-2.1.1.xml</plugin>
+	<plugin>components-2.1.1.xml</plugin>
+</plugins>
