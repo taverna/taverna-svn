@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>net.sf.taverna.t2.builds</groupId>
 		<artifactId>taverna-workbench</artifactId>
-		<version>2.1.0</version>
+		<version>2.1.1</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.builds.taverna-workbench</groupId>
 	<artifactId>ui</artifactId>
@@ -13,14 +13,19 @@
 
 	<name>Virtual build tree for the ui modules</name>
 	<modules>
+	<!-- 
 		<module>net.sf.taverna.t2.ui-api</module>
 		<module>net.sf.taverna.t2.ui-impl</module>
+	 -->
+		
 		<module>net.sf.taverna.t2.ui-components</module>
 		<module>net.sf.taverna.t2.ui-activities</module>
 		<module>net.sf.taverna.t2.ui-exts</module>
 
 		<!-- A hack to get them built together with ui.. -->
+		<!-- 
 		<module> ../engine/net.sf.taverna.t2.core.provenance-derby</module>
 		<module> ../engine/net.sf.taverna.t2.core.provenance-mysql</module>
+		 -->
 	</modules>
 </project>

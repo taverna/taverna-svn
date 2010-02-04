@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>activities</artifactId>
-		<version>1.0</version>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.activities</groupId>
 	<artifactId>all-activities</artifactId>
@@ -13,57 +13,57 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>apiconsumer-activity</artifactId>
-			<version>${project.version}</version>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>beanshell-activity</artifactId>
-			<version>${project.version}</version>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>biomart-activity</artifactId>
-			<version>${project.version}</version>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>biomoby-activity</artifactId>
-			<version>${project.version}</version>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>dataflow-activity</artifactId>
-			<version>${project.version}</version>
+			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>localworker-activity</artifactId>
-			<version>${project.version}</version>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>rshell-activity</artifactId>
-			<version>${project.version}</version>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>soaplab-activity</artifactId>
-			<version>${project.version}</version>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>spreadsheet-import-activity</artifactId>
-			<version>${project.version}</version>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>stringconstant-activity</artifactId>
-			<version>${project.version}</version>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>wsdl-activity</artifactId>
-			<version>${project.version}</version>
+			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>

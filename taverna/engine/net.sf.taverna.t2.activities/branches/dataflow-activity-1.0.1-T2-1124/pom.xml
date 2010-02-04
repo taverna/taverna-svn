@@ -9,7 +9,7 @@
 
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>activities</artifactId>
-	<version>1.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Taverna 2 Activities</name>
@@ -24,27 +24,29 @@
 		<t2.infrastructure.version>2.0</t2.infrastructure.version>
 		<t2.core.version>1.0</t2.core.version>
 		<t2.lang.version>1.0</t2.lang.version>
-		<t2.security.version>1.0</t2.security.version>
+		<t2.security.version>1.0.1-SNAPSHOT</t2.security.version>
 		<t2.core.refexts.version>1.0</t2.core.refexts.version>
         <org.biomart.martservice.version>1.0</org.biomart.martservice.version>
         <wsdl.generic.version>1.6</wsdl.generic.version>
 	</properties>
 
 	<modules>
-		<module>activity-test-utils</module>
+		<module>dataflow-activity</module>
 		<module>all-activities</module>
+		<module>wsdl-activity</module>
+	<!-- 
+		<module>activity-test-utils</module>
 		<module>apiconsumer-activity</module>
 		<module>beanshell-activity</module>
 		<module>biomart-activity</module>
 		<module>biomoby-activity</module>
-		<module>dataflow-activity</module>
 		<module>dependency-activity</module>
 		<module>localworker-activity</module>
 		<module>rshell-activity</module>
 		<module>soaplab-activity</module>
 		<module>spreadsheet-import-activity</module>
 		<module>stringconstant-activity</module>
-		<module>wsdl-activity</module>
+	 -->
 	</modules>
 	<build>
 		<plugins>
