@@ -12,7 +12,5 @@
 	<name>Taverna workbench plugins</name>
 	<modules>
 		<module>activities-plugin</module>
-		<module>usecase-activity</module>
-		<module>usecase-activity-ui</module>
 	</modules>
 </project>
