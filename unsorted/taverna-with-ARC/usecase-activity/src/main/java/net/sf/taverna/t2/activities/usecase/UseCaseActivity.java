@@ -90,7 +90,7 @@ public class UseCaseActivity extends AbstractAsynchronousActivity<UseCaseActivit
 				ReferenceService referenceService = callback.getContext().getReferenceService();
 				UseCaseInvokation invoke = null;
 				try {
-					invoke = new GridUseCaseInvokation(KnowARCConfigurationFactory.getConfiguration().info, mydesc);
+					invoke = UseCaseInvokation.createAppropriateInvokationFor(KnowARCConfigurationFactory.getConfiguration(), mydesc);
 					for (String cur : invoke.getInputs()) {
 						Object value = referenceService.renderIdentifier(data.get(cur), invoke.getType(cur), callback.getContext());
 						invoke.setInput(cur, value);
