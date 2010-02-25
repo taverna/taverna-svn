@@ -37,11 +37,6 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-activities</groupId>
-			<artifactId>ncbi-activity-ui</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2.ui-activities</groupId>
 			<artifactId>rshell-activity-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
