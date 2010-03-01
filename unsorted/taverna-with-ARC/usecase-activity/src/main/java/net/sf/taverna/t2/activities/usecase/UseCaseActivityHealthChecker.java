@@ -34,6 +34,8 @@ import net.sf.taverna.t2.workflowmodel.health.HealthReport.Status;
 
 /**
  * Investigates if everything is going fine with a job
+ * 
+ * @author Hajo Nils Krabbenhšft
  */
 public class UseCaseActivityHealthChecker implements HealthChecker<UseCaseActivity> {
 
@@ -45,6 +47,8 @@ public class UseCaseActivityHealthChecker implements HealthChecker<UseCaseActivi
 		UseCaseActivityConfigurationBean configuration = activity.getConfiguration();
 		List<HealthReport> reports = new ArrayList<HealthReport>();
 
+		// currently a use case is doing fine if the repository is fine and
+		// contains the needed use case
 		reports.add(checkRepository(configuration));
 		reports.add(checkUsecase(configuration));
 
@@ -56,6 +60,7 @@ public class UseCaseActivityHealthChecker implements HealthChecker<UseCaseActivi
 
 	private HealthReport checkRepository(UseCaseActivityConfigurationBean configuration) {
 		try {
+			// try to parse the use case repository XML file
 			UseCaseEnumeration.enumerateXmlInner(new ProgressDisplayImpl(KnowARCConfigurationFactory.getConfiguration()), configuration.getRepositoryUrl(),
 					new ArrayList<UseCaseDescription>());
 		} catch (Throwable e) {
@@ -66,8 +71,10 @@ public class UseCaseActivityHealthChecker implements HealthChecker<UseCaseActivi
 	}
 
 	private HealthReport checkUsecase(UseCaseActivityConfigurationBean configuration) {
+		// get a list of use cases from the repository XML file
 		List<UseCaseDescription> usecases = UseCaseEnumeration.enumerateXmlFile(new ProgressDisplayImpl(KnowARCConfigurationFactory.getConfiguration()),
 				configuration.getRepositoryUrl());
+		// search for the needed use case
 		for (UseCaseDescription usecase : usecases) {
 			if (!usecase.usecaseid.equalsIgnoreCase(configuration.getUsecaseid()))
 				continue;

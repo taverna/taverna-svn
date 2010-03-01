@@ -33,6 +33,14 @@ import net.sf.taverna.t2.activities.usecase.UseCaseActivityConfigurationBean;
 import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationAction;
 import de.uni_luebeck.inb.knowarc.gui.KnowARCConfigurationDialog;
 
+/**
+ * This class implements an ActivityConfigurationAction to configure the
+ * UseCaseActivity plugin. The configuration action is called
+ * "Configure UseCase invocation" and is implemented in the
+ * KnowARCConfigurationDialog inside the knowarc-usecases maven artifact.
+ * 
+ * @author Hajo Nils Krabbenhšft
+ */
 @SuppressWarnings("serial")
 public class UseCaseActivityConfigureAction extends ActivityConfigurationAction<UseCaseActivity, UseCaseActivityConfigurationBean> {
 

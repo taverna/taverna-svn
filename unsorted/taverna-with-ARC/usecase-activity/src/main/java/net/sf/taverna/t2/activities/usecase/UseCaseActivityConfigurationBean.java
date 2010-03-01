@@ -22,7 +22,10 @@
 package net.sf.taverna.t2.activities.usecase;
 
 /**
- * This class stores the repository URL and matching use case id, which identify the use case to invoke.
+ * This class stores the repository URL and matching use case id, which identify
+ * the use case to invoke.
+ * 
+ * @author Hajo Nils Krabbenhšft
  */
 public class UseCaseActivityConfigurationBean {
 
@@ -45,5 +48,5 @@ public class UseCaseActivityConfigurationBean {
 	public String getUsecaseid() {
 		return usecaseid;
 	}
-    
+
 }

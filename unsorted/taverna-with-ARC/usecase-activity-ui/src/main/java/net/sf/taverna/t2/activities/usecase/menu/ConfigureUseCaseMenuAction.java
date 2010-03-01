@@ -27,6 +27,11 @@ import net.sf.taverna.t2.activities.usecase.UseCaseActivity;
 import net.sf.taverna.t2.activities.usecase.actions.UseCaseActivityConfigureAction;
 import net.sf.taverna.t2.workbench.activitytools.AbstractConfigureActivityMenuAction;
 
+/**
+ * This class adds the plugin configuration action to the context menu of every use case activity.
+ * 
+ * @author Hajo Nils Krabbenhšft
+ */
 public class ConfigureUseCaseMenuAction extends AbstractConfigureActivityMenuAction<UseCaseActivity> {
 
 	public ConfigureUseCaseMenuAction() {

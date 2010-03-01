@@ -29,6 +29,11 @@ import net.sf.taverna.t2.activities.usecase.UseCaseActivity;
 import net.sf.taverna.t2.workbench.activityicons.ActivityIconSPI;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
+/**
+ * This class provides an icon for the use case activity.
+ * 
+ * @author Hajo Nils Krabbenhšft
+ */
 public class UseCaseActivityIcon implements ActivityIconSPI{
 	
 	public int canProvideIconScore(Activity<?> activity) {

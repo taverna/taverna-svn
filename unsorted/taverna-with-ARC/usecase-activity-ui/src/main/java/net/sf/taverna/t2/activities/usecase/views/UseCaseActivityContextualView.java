@@ -31,6 +31,12 @@ import net.sf.taverna.t2.activities.usecase.actions.UseCaseActivityConfigureActi
 import net.sf.taverna.t2.workbench.ui.actions.activity.HTMLBasedActivityContextualView;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
+/**
+ * UseCaseActivityContextualView displays the use case information in a HTML table.
+ * Currently, this is only the use case ID.
+ * 
+ * @author Hajo Nils Krabbenhšft
+ */
 public class UseCaseActivityContextualView extends HTMLBasedActivityContextualView<UseCaseActivityConfigurationBean> {
 	private static final long serialVersionUID = 1L;
 

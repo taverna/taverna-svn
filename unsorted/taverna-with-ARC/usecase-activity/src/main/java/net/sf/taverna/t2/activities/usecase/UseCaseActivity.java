@@ -37,7 +37,6 @@ import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
-import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
@@ -54,10 +53,25 @@ import de.uni_luebeck.inb.knowarc.usecases.UseCaseDescription;
 import de.uni_luebeck.inb.knowarc.usecases.UseCaseEnumeration;
 import de.uni_luebeck.inb.knowarc.usecases.invocation.UseCaseInvokation;
 
+/**
+ * This is the main class of the use case activity plugin. Here we store the
+ * configuration and the description of a use case activity, configure the input
+ * and output port and provide use case activity invocation
+ * 
+ * @author Hajo Nils Krabbenhšft
+ */
 public class UseCaseActivity extends AbstractAsynchronousActivity<UseCaseActivityConfigurationBean> {
 	private UseCaseActivityConfigurationBean configurationBean;
 	private UseCaseDescription mydesc;
 
+	/**
+	 * Add the given MIME types to the given input/output port.
+	 * 
+	 * @param annotated
+	 *            The port to which to add the MIME types.
+	 * @param mimeTypes
+	 *            A list of Strings specifying the MIME types to add.
+	 */
 	private void addMimeTypes(Annotated<?> annotated, List<String> mimeTypes) {
 		for (String mimeType : mimeTypes) {
 			MimeType mimeTypeAnnotation = new MimeType();
@@ -70,6 +84,19 @@ public class UseCaseActivity extends AbstractAsynchronousActivity<UseCaseActivit
 		}
 	}
 
+	/**
+	 * Create a new input port with the given name, depth, element class and
+	 * MIME types.
+	 * 
+	 * @param portName
+	 *            Name of the new port
+	 * @param portDepth
+	 *            Depth of the new port
+	 * @param translatedElementClass
+	 *            Which class of elements would this port like?
+	 * @param mimeTypes
+	 *            Accepted mime types for this port
+	 */
 	private void addInputWithMime(String portName, int portDepth, Class<?> translatedElementClass, List<String> mimeTypes) {
 		List<Class<? extends ExternalReferenceSPI>> handledReferenceSchemes = Collections.emptyList();
 		ActivityInputPort inputPort = EditsRegistry.getEdits().createActivityInputPort(portName, portDepth, true, handledReferenceSchemes,
@@ -78,6 +105,16 @@ public class UseCaseActivity extends AbstractAsynchronousActivity<UseCaseActivit
 		addMimeTypes(inputPort, mimeTypes);
 	}
 
+	/**
+	 * Create a new output port with the given MIME types
+	 * 
+	 * @param portName
+	 *            Name of the new port
+	 * @param portDepth
+	 *            Depth of the new port
+	 * @param mimeTypes
+	 *            Accepted mime types for this port
+	 */
 	private void addOutputWithMime(String portName, int portDepth, List<String> mimeTypes) {
 		OutputPort outputPort = EditsRegistry.getEdits().createActivityOutputPort(portName, portDepth, portDepth);
 		outputPorts.add(outputPort);
@@ -89,8 +126,11 @@ public class UseCaseActivity extends AbstractAsynchronousActivity<UseCaseActivit
 		this.configurationBean = bean;
 
 		try {
+			// re-parse the use case XML file
 			List<UseCaseDescription> usecases = UseCaseEnumeration.enumerateXmlFile(new ProgressDisplayImpl(KnowARCConfigurationFactory.getConfiguration()),
 					bean.getRepositoryUrl());
+			// retrieve the UseCaseDescription for the given configuration bean
+			// and store it into mydesc
 			for (UseCaseDescription usecase : usecases) {
 				if (!usecase.usecaseid.equalsIgnoreCase(bean.getUsecaseid()))
 					continue;
@@ -98,15 +138,26 @@ public class UseCaseActivity extends AbstractAsynchronousActivity<UseCaseActivit
 				break;
 			}
 
+			// loop through all script inputs and add them as taverna activity
+			// input ports
 			for (Map.Entry<String, ScriptInput> cur : mydesc.inputs.entrySet()) {
 				ScriptInputUser scriptInputUser = (ScriptInputUser) cur.getValue();
+				// if the input port is a list, depth is 1 otherwise it is a
+				// single element, therefore depth 0
+				// if the input port is binary, we would like byte arrays,
+				// otherwise we require strings
 				addInputWithMime(cur.getKey(), scriptInputUser.list ? 1 : 0, cur.getValue().binary ? byte[].class : String.class, scriptInputUser.mime);
 
 			}
+			// loop through all script outputs and add them to taverna
 			for (Map.Entry<String, ScriptOutput> cur : mydesc.outputs.entrySet()) {
 				addOutputWithMime(cur.getKey(), 0, cur.getValue().mime);
 			}
 
+			// we always add STDOUT and STDERR output ports, even if these are
+			// not given in the use case description. This makes sence since we
+			// always invoke command line programs, thus always get STDOUT and
+			// STDERR.
 			addOutput("STDOUT", 0);
 			addOutput("STDERR", 0);
 		} catch (Exception e) {
@@ -128,16 +179,31 @@ public class UseCaseActivity extends AbstractAsynchronousActivity<UseCaseActivit
 				ReferenceService referenceService = callback.getContext().getReferenceService();
 				UseCaseInvokation invoke = null;
 				try {
+					// we ask the UseCaseInvokation implementation to choose a
+					// matching invocation algorithm based on the plugin
+					// configuration and use case description.
 					invoke = UseCaseInvokation.createAppropriateInvokationFor(KnowARCConfigurationFactory.getConfiguration(), mydesc);
+
+					// look at every use dynamic case input
 					for (String cur : invoke.getInputs()) {
+						// retrieve the value from taverna's reference service
 						Object value = referenceService.renderIdentifier(data.get(cur), invoke.getType(cur), callback.getContext());
+						// and send it to the UseCaseInvokation
 						invoke.setInput(cur, value);
 					}
+
+					// submit the use case to its invocation mechanism and
+					// retrieve the result.
+					// one *might* divide this into a) submission and b) waiting
+					// and result retrieval, however we see no reason to do so
+					// here
 					Map<String, Object> downloads = invoke.Submit();
 					Map<String, T2Reference> result = new HashMap<String, T2Reference>();
 					for (Map.Entry<String, Object> cur : downloads.entrySet()) {
 						Object value = cur.getValue();
+						// register the result value with taverna
 						T2Reference reference = referenceService.register(value, 0, true, callback.getContext());
+						// store the reference into the activity result set
 						result.put(cur.getKey(), reference);
 					}
 					callback.receiveResult(result, new int[0]);
@@ -152,6 +218,8 @@ public class UseCaseActivity extends AbstractAsynchronousActivity<UseCaseActivit
 				} catch (Exception e) {
 					callback.fail(e.getMessage(), e);
 				} finally {
+					// clean up temporary invocation files, terminate network
+					// connections
 					if (invoke != null)
 						invoke.Cleanup();
 				}

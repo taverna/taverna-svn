@@ -24,6 +24,11 @@ package net.sf.taverna.t2.activities.usecase.servicedescriptions;
 import net.sf.taverna.t2.lang.beans.PropertyAnnotated;
 import net.sf.taverna.t2.lang.beans.PropertyAnnotation;
 
+/**
+ * UseCaseServiceProviderConfig stores the URL of the use case repository XML file
+ * 
+ * @author Hajo Nils Krabbenhšft
+ */
 public class UseCaseServiceProviderConfig extends PropertyAnnotated {
 	private String repositoryUrl;
 

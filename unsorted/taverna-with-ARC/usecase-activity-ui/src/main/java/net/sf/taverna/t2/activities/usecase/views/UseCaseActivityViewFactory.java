@@ -28,6 +28,11 @@ import net.sf.taverna.t2.activities.usecase.UseCaseActivity;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactory;
 
+/**
+ * UseCaseActivityViewFactory produces an UseCaseActivityContextualView to show information for a use case activity.
+ * 
+ * @author Hajo Nils Krabbenhšft
+ */
 public class UseCaseActivityViewFactory implements ContextualViewFactory<UseCaseActivity> {
 
 	public boolean canHandle(Object object) {

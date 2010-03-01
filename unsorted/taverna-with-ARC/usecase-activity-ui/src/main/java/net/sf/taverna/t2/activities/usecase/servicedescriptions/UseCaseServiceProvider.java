@@ -34,6 +34,12 @@ import de.uni_luebeck.inb.knowarc.gui.ProgressDisplayImpl;
 import de.uni_luebeck.inb.knowarc.usecases.UseCaseDescription;
 import de.uni_luebeck.inb.knowarc.usecases.UseCaseEnumeration;
 
+/**
+ * UseCaseServiceProvider searches an use case repository XML for use case
+ * descriptions.
+ * 
+ * @author Hajo Nils Krabbenhšft
+ */
 public class UseCaseServiceProvider extends AbstractConfigurableServiceProvider<UseCaseServiceProviderConfig> {
 
 	public UseCaseServiceProvider() {
@@ -46,6 +52,8 @@ public class UseCaseServiceProvider extends AbstractConfigurableServiceProvider<
 
 	public List<UseCaseServiceProviderConfig> getDefaultConfigurations() {
 		List<UseCaseServiceProviderConfig> defaults = new ArrayList<UseCaseServiceProviderConfig>();
+		// the default use case repository is our shared repository on
+		// taverna.nordugrid.org
 		defaults.add(new UseCaseServiceProviderConfig("http://taverna.nordugrid.org/sharedRepository/xml.php"));
 		return defaults;
 	}
@@ -54,9 +62,13 @@ public class UseCaseServiceProvider extends AbstractConfigurableServiceProvider<
 		String repositoryUrl = serviceProviderConfig.getRepositoryUrl();
 		callBack.status("Parsing use case repository:" + repositoryUrl);
 		try {
+			// prepare a list of all use case descriptions which are stored in
+			// the given repository URL
 			List<UseCaseDescription> usecases = UseCaseEnumeration.enumerateXmlFile(new ProgressDisplayImpl(KnowARCConfigurationFactory.getConfiguration()),
 					repositoryUrl);
 			callBack.status("Found " + usecases.size() + " use cases:" + repositoryUrl);
+			// convert all the UseCaseDescriptions in the XML file into
+			// displayeable UseCaseServiceDescription items
 			List<UseCaseServiceDescription> items = new ArrayList<UseCaseServiceDescription>();
 			for (UseCaseDescription usecase : usecases) {
 				UseCaseServiceDescription item = new UseCaseServiceDescription();
@@ -64,6 +76,8 @@ public class UseCaseServiceProvider extends AbstractConfigurableServiceProvider<
 				item.setUsecaseid(usecase.usecaseid);
 				items.add(item);
 			}
+			// we dont have streaming data loading or partial results, so return
+			// results and finish
 			callBack.partialResults(items);
 			callBack.finished();
 		} catch (Exception e) {
@@ -83,6 +97,7 @@ public class UseCaseServiceProvider extends AbstractConfigurableServiceProvider<
 	@Override
 	protected List<? extends Object> getIdentifyingData() {
 		List<String> result;
+		// one can fully identify an use case repository by its URL
 		result = Arrays.asList(getConfiguration().getRepositoryUrl());
 		return result;
 	}

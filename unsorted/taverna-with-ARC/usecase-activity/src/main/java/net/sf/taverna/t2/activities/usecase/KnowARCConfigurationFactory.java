@@ -24,6 +24,12 @@ package net.sf.taverna.t2.activities.usecase;
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import de.uni_luebeck.inb.knowarc.gui.KnowARCConfiguration;
 
+/**
+ * This singleton ensures a global KnowARCConfiguration which governs the
+ * invocation of all use cases
+ * 
+ * @author Hajo Nils Krabbenhšft
+ */
 public class KnowARCConfigurationFactory {
 
 	private static KnowARCConfiguration config = new KnowARCConfiguration(ApplicationRuntime.getInstance().getApplicationHomeDir());

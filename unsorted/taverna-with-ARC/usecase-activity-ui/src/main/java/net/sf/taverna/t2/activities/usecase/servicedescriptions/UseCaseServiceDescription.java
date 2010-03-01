@@ -33,6 +33,12 @@ import net.sf.taverna.t2.activities.usecase.UseCaseActivityConfigurationBean;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescription;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
+/**
+ * UseCaseServiceDescription stores the repository URL and the use case id so
+ * that it can create an UseCaseActivityConfigurationBean
+ * 
+ * @author Hajo Nils Krabbenhšft
+ */
 public class UseCaseServiceDescription extends ServiceDescription<UseCaseActivityConfigurationBean> {
 
 	private String repositoryUrl;
@@ -79,6 +85,9 @@ public class UseCaseServiceDescription extends ServiceDescription<UseCaseActivit
 	}
 
 	protected List<Object> getIdentifyingData() {
+		// we require use cases inside one XML file to have unique IDs, which
+		// means every usecase is uniquely identified by its repository URL and
+		// its use case ID.
 		return Arrays.<Object> asList(repositoryUrl, usecaseid);
 	}
 
