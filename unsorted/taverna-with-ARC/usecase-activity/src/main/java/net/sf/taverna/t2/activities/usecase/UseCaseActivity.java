@@ -51,6 +51,7 @@ import de.uni_luebeck.inb.knowarc.usecases.ScriptInputUser;
 import de.uni_luebeck.inb.knowarc.usecases.ScriptOutput;
 import de.uni_luebeck.inb.knowarc.usecases.UseCaseDescription;
 import de.uni_luebeck.inb.knowarc.usecases.UseCaseEnumeration;
+import de.uni_luebeck.inb.knowarc.usecases.invocation.OnDemandDownload;
 import de.uni_luebeck.inb.knowarc.usecases.invocation.UseCaseInvokation;
 
 /**
@@ -179,34 +180,59 @@ public class UseCaseActivity extends AbstractAsynchronousActivity<UseCaseActivit
 				ReferenceService referenceService = callback.getContext().getReferenceService();
 				UseCaseInvokation invoke = null;
 				try {
-					// we ask the UseCaseInvokation implementation to choose a
-					// matching invocation algorithm based on the plugin
-					// configuration and use case description.
-					invoke = UseCaseInvokation.createAppropriateInvokationFor(KnowARCConfigurationFactory.getConfiguration(), mydesc);
+					int retries = 5;
+					// retry 5 times
+					while (true) {
+						retries--;
+						try {
+							// we ask the UseCaseInvokation implementation to
+							// choose a
+							// matching invocation algorithm based on the plugin
+							// configuration and use case description.
+							invoke = UseCaseInvokation.createAppropriateInvokationFor(KnowARCConfigurationFactory.getConfiguration(), mydesc);
 
-					// look at every use dynamic case input
-					for (String cur : invoke.getInputs()) {
-						// retrieve the value from taverna's reference service
-						Object value = referenceService.renderIdentifier(data.get(cur), invoke.getType(cur), callback.getContext());
-						// and send it to the UseCaseInvokation
-						invoke.setInput(cur, value);
-					}
+							// look at every use dynamic case input
+							for (String cur : invoke.getInputs()) {
+								// retrieve the value from taverna's reference
+								// service
+								Object value = referenceService.renderIdentifier(data.get(cur), invoke.getType(cur), callback.getContext());
+								// and send it to the UseCaseInvokation
+								invoke.setInput(cur, value);
+							}
 
-					// submit the use case to its invocation mechanism and
-					// retrieve the result.
-					// one *might* divide this into a) submission and b) waiting
-					// and result retrieval, however we see no reason to do so
-					// here
-					Map<String, Object> downloads = invoke.Submit();
-					Map<String, T2Reference> result = new HashMap<String, T2Reference>();
-					for (Map.Entry<String, Object> cur : downloads.entrySet()) {
-						Object value = cur.getValue();
-						// register the result value with taverna
-						T2Reference reference = referenceService.register(value, 0, true, callback.getContext());
-						// store the reference into the activity result set
-						result.put(cur.getKey(), reference);
+							// submit the use case to its invocation mechanism
+							// and
+							// retrieve the result.
+							// one *might* divide this into a) submission and b)
+							// waiting
+							// and result retrieval, however we see no reason to
+							// do so
+							// here
+							Map<String, Object> downloads = invoke.Submit();
+							Map<String, T2Reference> result = new HashMap<String, T2Reference>();
+							for (Map.Entry<String, Object> cur : downloads.entrySet()) {
+								Object value = cur.getValue();
+
+								// if the value is a reference, dereference it
+								if (value instanceof OnDemandDownload)
+									value = ((OnDemandDownload) value).download();
+
+								// register the result value with taverna
+								T2Reference reference = referenceService.register(value, 0, true, callback.getContext());
+								// store the reference into the activity result
+								// set
+								result.put(cur.getKey(), reference);
+							}
+							callback.receiveResult(result, new int[0]);
+
+							// do not retry, we succeeded :)
+							break;
+						} catch (Exception e) {
+							// for the last retry, throw the exception
+							if (retries <= 0)
+								throw e;
+						}
 					}
-					callback.receiveResult(result, new int[0]);
 				} catch (ServerException e) {
 					callback.fail("Problem submitting job: ServerException: ", e);
 				} catch (ReferenceServiceException e) {
