@@ -223,6 +223,9 @@ public class LauncherHttpProxyConfiguration {
 			Authenticator.setDefault(new Authenticator() {
 				@Override
 				protected PasswordAuthentication getPasswordAuthentication() {
+					if (! getRequestorType().equals(RequestorType.PROXY)) {
+						return null;
+					}
 					String password = System.getProperty(PROXY_PASSWORD);
 					String username = System.getProperty(PROXY_USER);
 					return new PasswordAuthentication(username, password

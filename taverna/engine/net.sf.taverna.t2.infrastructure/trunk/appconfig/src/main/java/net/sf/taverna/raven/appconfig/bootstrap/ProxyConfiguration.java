@@ -67,6 +67,9 @@ public class ProxyConfiguration extends AbstractConfiguration {
 			Authenticator.setDefault(new Authenticator() {
 				@Override
 				protected PasswordAuthentication getPasswordAuthentication() {
+					if (! getRequestorType().equals(RequestorType.PROXY)) {
+						return null;
+					}
 					String password=System.getProperty("http.proxyPassword");
 					String username=System.getProperty("http.proxyUser");
 					return new PasswordAuthentication(username,password.toCharArray());
