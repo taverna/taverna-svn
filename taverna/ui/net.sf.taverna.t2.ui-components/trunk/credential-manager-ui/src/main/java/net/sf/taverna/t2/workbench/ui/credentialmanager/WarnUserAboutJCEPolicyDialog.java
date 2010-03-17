@@ -18,16 +18,18 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
-package net.sf.taverna.t2.security.credentialmanager;
+package net.sf.taverna.t2.workbench.ui.credentialmanager;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
+import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JButton;
@@ -44,6 +46,8 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.text.Document;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
+
+import net.sf.taverna.t2.security.credentialmanager.CMUtil;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -146,10 +150,34 @@ public class WarnUserAboutJCEPolicyDialog extends JDialog{
 		setSize(getPreferredSize());
 	}
 
+
+	private static final String DO_NOT_WARN_ABOUT_JCE_POLICY = "do_not_warn_about_JCE_policy";
+	public static File doNotWarnUserAboutJCEPolicyFile = new File(CMUtil.getSecurityConfigurationDirectory(),DO_NOT_WARN_ABOUT_JCE_POLICY);
+	public static boolean warnedUser = false; // have we already warned user for this run
+	/**
+	 * Warn user that they need to install Java Cryptography 
+	 * Extension (JCE) Unlimited Strength Jurisdiction Policy 
+	 * if they want Credential Manager to function properly. 
+	 */
+	public static void warnUserAboutJCEPolicy(){
+		
+		// Do not pop up a dialog if we are running headlessly.
+		// If we have warned the user and they do not want us to remind them again - exit.
+		if (warnedUser || GraphicsEnvironment.isHeadless() || doNotWarnUserAboutJCEPolicyFile.exists()){
+			return;
+		}
+
+		WarnUserAboutJCEPolicyDialog warnDialog = new WarnUserAboutJCEPolicyDialog();
+		warnDialog.setVisible(true);
+		warnedUser = true;
+		
+	}
+	
+	
 	protected void okPressed(){
 		if (doNotWarnMeAgainCheckBox.isSelected()){
 			try {
-				FileUtils.touch(CMUtil.doNotWarnUserAboutJCEPolicyFile);
+				FileUtils.touch(doNotWarnUserAboutJCEPolicyFile);
 			} catch (IOException ioex) {
 				logger.error("Failed to touch the 'Do not want me about JCE unilimited security policy file.",
 								ioex);

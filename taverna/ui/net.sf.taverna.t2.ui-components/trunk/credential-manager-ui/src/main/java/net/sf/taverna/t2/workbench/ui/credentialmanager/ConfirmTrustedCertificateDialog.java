@@ -18,7 +18,7 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
-package net.sf.taverna.t2.security.credentialmanager;
+package net.sf.taverna.t2.workbench.ui.credentialmanager;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -76,8 +76,10 @@ public class ConfirmTrustedCertificateDialog extends JDialog {
 	// Stores certificate to display
 	private X509Certificate cert;
 
-	// Stores user's decision as whether to trust this service's certificaet or not.
+	// Stores user's decision as whether to trust this service's certificate or not.
 	private boolean shouldTrust;
+
+	private boolean shouldSave = false;
 
 	/**
 	 * Creates new ConfirmTrustedCertificateDialog where parent is a Frame.
@@ -432,12 +434,21 @@ public class ConfirmTrustedCertificateDialog extends JDialog {
 		// OK button
 		JPanel jpButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
-		final JButton jbTrust = new JButton("Trust");
+		final JButton jbTrust = new JButton("Trust once");
 		jbTrust.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				trustPressed();
 			}
 		});
+		
+
+		final JButton jbTrustAlways = new JButton("Trust always");
+		jbTrustAlways.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				trustAlwaysPressed();
+			}
+		});
+		
 		final JButton jbDontTrust = new JButton("Do not trust");
 		jbDontTrust.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -446,6 +457,7 @@ public class ConfirmTrustedCertificateDialog extends JDialog {
 		});
 
 		jpButtons.add(jbTrust);
+		jpButtons.add(jbTrustAlways);
 		jpButtons.add(jbDontTrust);
 
 		// Put it all together
@@ -561,14 +573,27 @@ public class ConfirmTrustedCertificateDialog extends JDialog {
 	 */
 	private void trustPressed() {
 		shouldTrust = true;
+		shouldSave = false;
 		closeDialog();
 	}
+	
+	
+	/**
+	 * 'Trust' button pressed.
+	 */
+	private void trustAlwaysPressed() {
+		shouldTrust = true;
+		shouldSave  = true;
+		closeDialog();
+	}
+	
 
 	/**
 	 * 'Do not trust' button pressed.
 	 */
 	private void dontTrustPressed() {
 		shouldTrust = false;
+		shouldSave = false;
 		closeDialog();
 	}	
 	
@@ -582,5 +607,9 @@ public class ConfirmTrustedCertificateDialog extends JDialog {
 
 	public boolean shouldTrust() {
 		return shouldTrust;
+	}
+
+	public boolean shouldSave() {
+		return shouldSave;
 	}
 }

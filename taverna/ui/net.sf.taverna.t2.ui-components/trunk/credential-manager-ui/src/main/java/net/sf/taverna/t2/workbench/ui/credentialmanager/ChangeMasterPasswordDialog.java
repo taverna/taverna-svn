@@ -18,7 +18,7 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
-package net.sf.taverna.t2.security.credentialmanager;
+package net.sf.taverna.t2.workbench.ui.credentialmanager;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -41,14 +41,19 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
+import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
+
 /**
- * Dialog used for user to set a master password for Credential Manager.
+ * Dialog used for user to change master password for Credential Manager.
  * 
  * @author Alex Nenadic
  */
 @SuppressWarnings("serial")
-public class SetMasterPasswordDialog extends JDialog {
+public class ChangeMasterPasswordDialog extends JDialog {
 	
+    // Previous password entry field 
+    private JPasswordField jpfOld;
+    
     // First password entry field 
     private JPasswordField jpfFirst;
 
@@ -60,8 +65,8 @@ public class SetMasterPasswordDialog extends JDialog {
     
     private String instructions;
 
-    public SetMasterPasswordDialog(JFrame parent, String title, boolean modal, String instructions)
-    {
+	public ChangeMasterPasswordDialog(JFrame parent, String title,
+			boolean modal, String instructions)    {
         super(parent, title, modal);
         this.instructions = instructions;
         initComponents();
@@ -82,16 +87,22 @@ public class SetMasterPasswordDialog extends JDialog {
     	jpInstructions.add(jlInstructions);
     	jpInstructions.setBorder(new EmptyBorder(10,5,10,0)); 
 
-        JLabel jlFirst = new JLabel("Master password");
+        JLabel jlOld = new JLabel("Old master password");
+        jlOld.setBorder(new EmptyBorder(0,5,0,0));
+        
+        JLabel jlFirst = new JLabel("New master password");
         jlFirst.setBorder(new EmptyBorder(0,5,0,0));
 
-        JLabel jlConfirm = new JLabel("Confirm master password");
+        JLabel jlConfirm = new JLabel("Confirm new master password");
         jlConfirm.setBorder(new EmptyBorder(0,5,0,0));
 
+        jpfOld = new JPasswordField(15);
         jpfFirst = new JPasswordField(15);
         jpfConfirm = new JPasswordField(15);
         
-        JPanel jpPassword = new JPanel(new GridLayout(2, 2, 5, 5));
+        JPanel jpPassword = new JPanel(new GridLayout(0, 2, 5, 5));
+        jpPassword.add(jlOld);
+        jpPassword.add(jpfOld);
         jpPassword.add(jlFirst);
         jpPassword.add(jpfFirst);
         jpPassword.add(jlConfirm);
@@ -154,6 +165,7 @@ public class SetMasterPasswordDialog extends JDialog {
     /**
      * Check the following:
      * <ul>
+     * 	   <li> that the user has provided correct previous password
      *     <li>that the user has supplied and confirmed a password
      *     <li>that the password's match
      *     <li>that the passwords are not empty
@@ -165,6 +177,31 @@ public class SetMasterPasswordDialog extends JDialog {
      */
     private boolean checkPassword()
     {
+    	String oldPassword = new String (jpfOld.getPassword());
+    	
+    	 if (oldPassword.length()== 0) { //old password must not be empty
+             JOptionPane.showMessageDialog(this,
+                     "You must provide your current master password", 
+                     "Credential Manager Warning",
+                     JOptionPane.WARNING_MESSAGE);             
+             return false;
+         }
+    	try {
+			if (!CredentialManager.confirmMasterPassword(oldPassword)){
+			    JOptionPane.showMessageDialog(this,
+			            "You have provided an incorrect master password", 
+			            "Credential Manager Warning",
+			            JOptionPane.WARNING_MESSAGE);
+			        return false;
+			}
+		} catch (Exception e) {
+		    JOptionPane.showMessageDialog(this,
+		            "Credential Manager could not verify your current master password", 
+		            "Credential Manager Warning",
+		            JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+    	
         String sFirstPassword = new String(jpfFirst.getPassword());
         String sConfirmPassword = new String(jpfConfirm.getPassword());
 
@@ -174,7 +211,7 @@ public class SetMasterPasswordDialog extends JDialog {
         }
         else if ((sFirstPassword.equals(sConfirmPassword)) && (sFirstPassword.length() == 0)) { //passwords match but are empty
             JOptionPane.showMessageDialog(this,
-                    "The password cannot be empty", 
+                    "The new master password cannot be empty", 
                     "Credential Manager Warning",
                     JOptionPane.WARNING_MESSAGE);
 
@@ -182,12 +219,12 @@ public class SetMasterPasswordDialog extends JDialog {
         }
         else{ // passwords do not match
 
-       	JOptionPane.showMessageDialog(this,
-       			"The passwords do not match", 
+        	JOptionPane.showMessageDialog(this,
+       			"Passwords do not match", 
        			"Credential Manager Warning",
        			JOptionPane.WARNING_MESSAGE);
 
-       	return false;
+        	return false;
         }
     }
 
@@ -221,5 +258,6 @@ public class SetMasterPasswordDialog extends JDialog {
         dispose();
     }
 }
+
 
 

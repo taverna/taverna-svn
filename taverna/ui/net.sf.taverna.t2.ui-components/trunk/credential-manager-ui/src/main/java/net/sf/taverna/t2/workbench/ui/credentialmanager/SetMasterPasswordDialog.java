@@ -18,12 +18,11 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
-package net.sf.taverna.t2.security.credentialmanager;
+package net.sf.taverna.t2.workbench.ui.credentialmanager;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,6 +32,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -42,29 +42,27 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
 /**
- * Dialog used for getting a master password for Credential Manager
- * from the users.
+ * Dialog used for user to set a master password for Credential Manager.
  * 
  * @author Alex Nenadic
  */
 @SuppressWarnings("serial")
-public class GetMasterPasswordDialog extends JDialog {
+public class SetMasterPasswordDialog extends JDialog {
 	
-    // Password entry field 
-    private JPasswordField jpfPassword;
+    // First password entry field 
+    private JPasswordField jpfFirst;
+
+    // Password confirmation entry field 
+    private JPasswordField jpfConfirm;
 
     // Stores the password entered 
     private String password = null;
     
-    // Text giving user the instructions what to do in the dialog
     private String instructions;
 
-    /**
-     * Creates new GetNewPasswordDialog where the parent is a frame.
-     */
-    public GetMasterPasswordDialog(String instructions)
+    public SetMasterPasswordDialog(JFrame parent, String title, boolean modal, String instructions)
     {
-        super((Frame)null, "Enter master password", true);
+        super(parent, title, modal);
         this.instructions = instructions;
         initComponents();
     }
@@ -82,21 +80,29 @@ public class GetMasterPasswordDialog extends JDialog {
     	JPanel jpInstructions = new JPanel();
     	jpInstructions.setLayout(new BoxLayout(jpInstructions, BoxLayout.Y_AXIS));
     	jpInstructions.add(jlInstructions);
-    	jpInstructions.setBorder(new EmptyBorder(10,5,10,0));
-        
-        JLabel jlPassword = new JLabel("Password");
-        jlPassword.setBorder(new EmptyBorder(0,5,0,0));
+    	jpInstructions.setBorder(new EmptyBorder(10,5,10,0)); 
 
-        jpfPassword = new JPasswordField(15);
-        JPanel jpPassword = new JPanel(new GridLayout(1, 1, 5, 5));
-        jpPassword.add(jlPassword);
-        jpPassword.add(jpfPassword);
+        JLabel jlFirst = new JLabel("Master password");
+        jlFirst.setBorder(new EmptyBorder(0,5,0,0));
+
+        JLabel jlConfirm = new JLabel("Confirm master password");
+        jlConfirm.setBorder(new EmptyBorder(0,5,0,0));
+
+        jpfFirst = new JPasswordField(15);
+        jpfConfirm = new JPasswordField(15);
+        
+        JPanel jpPassword = new JPanel(new GridLayout(2, 2, 5, 5));
+        jpPassword.add(jlFirst);
+        jpPassword.add(jpfFirst);
+        jpPassword.add(jlConfirm);
+        jpPassword.add(jpfConfirm);
         
         JPanel jpMain = new JPanel(new BorderLayout());
         jpMain.setBorder(new CompoundBorder(
                 new EmptyBorder(10, 10, 10, 10), new EtchedBorder()));
         jpMain.add(jpInstructions, BorderLayout.NORTH);
         jpMain.add(jpPassword, BorderLayout.CENTER);
+        
 
         JButton jbOK = new JButton("OK");
         jbOK.addActionListener(new ActionListener()
@@ -146,22 +152,42 @@ public class GetMasterPasswordDialog extends JDialog {
     }
     
     /**
-     * Check that the password entered is not empty and 
-     * store the entered password.
+     * Check the following:
+     * <ul>
+     *     <li>that the user has supplied and confirmed a password
+     *     <li>that the password's match
+     *     <li>that the passwords are not empty
+     * </ul>
+     * and stores the new password in this object.
+     *
+     * @return true, if the user's dialog entry matches the above criteria,
+     *         false otherwise
      */
     private boolean checkPassword()
     {
-       password = new String(jpfPassword.getPassword());
+        String sFirstPassword = new String(jpfFirst.getPassword());
+        String sConfirmPassword = new String(jpfConfirm.getPassword());
 
-       if (password.length() == 0) { //password is empty          
+        if ((sFirstPassword.equals(sConfirmPassword)) && (sFirstPassword.length()!= 0)) { //passwords match and not empty
+            password = sFirstPassword;
+            return true;
+        }
+        else if ((sFirstPassword.equals(sConfirmPassword)) && (sFirstPassword.length() == 0)) { //passwords match but are empty
             JOptionPane.showMessageDialog(this,
                     "The password cannot be empty", 
                     "Credential Manager Warning",
                     JOptionPane.WARNING_MESSAGE);
-            return false;
+
+                return false;
         }
-        else { //password is not empty
-        	return true;
+        else{ // passwords do not match
+
+       	JOptionPane.showMessageDialog(this,
+       			"The passwords do not match", 
+       			"Credential Manager Warning",
+       			JOptionPane.WARNING_MESSAGE);
+
+       	return false;
         }
     }
 
@@ -195,6 +221,5 @@ public class GetMasterPasswordDialog extends JDialog {
         dispose();
     }
 }
-
 
 
