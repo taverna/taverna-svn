@@ -181,7 +181,10 @@ public class UseCaseActivity extends AbstractAsynchronousActivity<UseCaseActivit
 				UseCaseInvokation invoke = null;
 				try {
 					int retries = 5;
-					// retry 5 times
+					// retry the job submission 5 times. this is needed since
+					// sadly not every grid job queue listed in the information
+					// systems is still online. we only retry job submission,
+					// not result fetching.
 					while (true) {
 						retries--;
 						try {
@@ -189,7 +192,8 @@ public class UseCaseActivity extends AbstractAsynchronousActivity<UseCaseActivit
 							// choose a
 							// matching invocation algorithm based on the plugin
 							// configuration and use case description.
-							invoke = UseCaseInvokation.createAppropriateInvokationFor(KnowARCConfigurationFactory.getConfiguration(), mydesc);
+							invoke = UseCaseInvokation.createAppropriateInvokationFor(KnowARCConfigurationFactory.getConfiguration(), mydesc,
+									new RetrieveLoginFromTaverna());
 
 							// look at every use dynamic case input
 							for (String cur : invoke.getInputs()) {
@@ -201,29 +205,7 @@ public class UseCaseActivity extends AbstractAsynchronousActivity<UseCaseActivit
 							}
 
 							// submit the use case to its invocation mechanism
-							// and
-							// retrieve the result.
-							// one *might* divide this into a) submission and b)
-							// waiting
-							// and result retrieval, however we see no reason to
-							// do so
-							// here
-							Map<String, Object> downloads = invoke.Submit();
-							Map<String, T2Reference> result = new HashMap<String, T2Reference>();
-							for (Map.Entry<String, Object> cur : downloads.entrySet()) {
-								Object value = cur.getValue();
-
-								// if the value is a reference, dereference it
-								if (value instanceof OnDemandDownload)
-									value = ((OnDemandDownload) value).download();
-
-								// register the result value with taverna
-								T2Reference reference = referenceService.register(value, 0, true, callback.getContext());
-								// store the reference into the activity result
-								// set
-								result.put(cur.getKey(), reference);
-							}
-							callback.receiveResult(result, new int[0]);
+							invoke.submit_generate_job();
 
 							// do not retry, we succeeded :)
 							break;
@@ -233,6 +215,24 @@ public class UseCaseActivity extends AbstractAsynchronousActivity<UseCaseActivit
 								throw e;
 						}
 					}
+
+					// retrieve the result.
+					Map<String, Object> downloads = invoke.submit_wait_fetch_results();
+					Map<String, T2Reference> result = new HashMap<String, T2Reference>();
+					for (Map.Entry<String, Object> cur : downloads.entrySet()) {
+						Object value = cur.getValue();
+
+						// if the value is a reference, dereference it
+						if (value instanceof OnDemandDownload)
+							value = ((OnDemandDownload) value).download();
+
+						// register the result value with taverna
+						T2Reference reference = referenceService.register(value, 0, true, callback.getContext());
+						// store the reference into the activity result
+						// set
+						result.put(cur.getKey(), reference);
+					}
+					callback.receiveResult(result, new int[0]);
 				} catch (ServerException e) {
 					callback.fail("Problem submitting job: ServerException: ", e);
 				} catch (ReferenceServiceException e) {
