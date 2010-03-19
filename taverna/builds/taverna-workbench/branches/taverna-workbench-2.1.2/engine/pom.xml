@@ -17,11 +17,14 @@
 		<module>net.sf.taverna.t2.activities</module>
 		<module>net.sf.taverna.t2.core</module>
 		<module>net.sf.taverna.t2.core.reference-core-extensions</module>
-<!-- temporarily built from ui/ instead of engine/ as they depend on ui-api/configuration-api
+		<!--  built from ui/ instead 
 		<module>net.sf.taverna.t2.core.provenance-derby</module>
 		<module>net.sf.taverna.t2.core.provenance-mysql</module>
--->
+		-->
+		
+		<!-- 2.0 already deployed
 		<module>net.sf.taverna.t2.infrastructure</module>
+		 -->
 		<module>net.sf.taverna.t2.security</module>
 
 <!-- disabled as integraton tests depend on network access and external services
