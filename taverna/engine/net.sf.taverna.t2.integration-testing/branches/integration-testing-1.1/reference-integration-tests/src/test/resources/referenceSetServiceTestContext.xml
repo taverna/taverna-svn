@@ -19,7 +19,7 @@
 	<import resource="context-parts/cachesupport.xml" />
 
 	<bean id="exampleFileBean"
-		raven:artifact="net.sf.taverna.t2.core:reference-core-extensions:1.1-SNAPSHOT"
+		raven:artifact="net.sf.taverna.t2.core:reference-core-extensions:1.1"
 		raven:repository="raven.repository"
 		class="net.sf.taverna.t2.reference.impl.external.file.FileReference">
 		<property name="filePath" value="C:\Home\Tom\langs.model.xml" />
@@ -27,7 +27,7 @@
 	</bean>
 
 	<bean id="exampleUrlBean"
-		raven:artifact="net.sf.taverna.t2.core:reference-core-extensions:1.1-SNAPSHOT"
+		raven:artifact="net.sf.taverna.t2.core:reference-core-extensions:1.1"
 		raven:repository="raven.repository"
 		class="net.sf.taverna.t2.reference.impl.external.http.HttpReference">
 		<property name="httpUrlString" value="http://www.dilbert.com" />

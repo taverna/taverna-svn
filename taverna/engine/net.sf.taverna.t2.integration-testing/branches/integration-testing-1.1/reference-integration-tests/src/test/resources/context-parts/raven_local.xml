@@ -19,16 +19,16 @@
 			-->
 
 			<!-- T2Reference API+impl -->
-			<sys artifact="net.sf.taverna.t2.core:reference-api:1.1-SNAPSHOT" />
-			<sys artifact="net.sf.taverna.t2.core:reference-impl:1.1-SNAPSHOT" />
+			<sys artifact="net.sf.taverna.t2.core:reference-api:1.1" />
+			<sys artifact="net.sf.taverna.t2.core:reference-impl:1.1" />
 			<sys artifact="commons-logging:commons-logging:1.1.1" />
 
 			<!-- Raven -->
-			<sys artifact="net.sf.taverna.t2.infrastructure:raven:2.1-SNAPSHOT" />
-			<sys artifact="net.sf.taverna.t2.infrastructure:appconfig:2.1-SNAPSHOT" />
-			<sys artifact="net.sf.taverna.t2.infrastructure:launcher-api:2.1-SNAPSHOT" />
-			<sys artifact="net.sf.taverna.t2.infrastructure:prelauncher:2.1-SNAPSHOT" />
-			<sys artifact="net.sf.taverna.t2.infrastructure:raven-log4j:2.1-SNAPSHOT" />
+			<sys artifact="net.sf.taverna.t2.infrastructure:raven:2.0" />
+			<sys artifact="net.sf.taverna.t2.infrastructure:appconfig:2.0" />
+			<sys artifact="net.sf.taverna.t2.infrastructure:launcher-api:2.0" />
+			<sys artifact="net.sf.taverna.t2.infrastructure:prelauncher:2.0" />
+			<sys artifact="net.sf.taverna.t2.infrastructure:raven-log4j:2.0" />
 
 			<!-- Spring + Essential External Modules -->
 			<sys artifact="org.springframework:spring-orm:2.5.4" />

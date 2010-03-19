@@ -16,14 +16,14 @@
 		<system>
 			<!-- T2Reference API -->
 			<sys
-				artifact="net.sf.taverna.t2.core:reference-api:1.1-SNAPSHOT" />
+				artifact="net.sf.taverna.t2.core:reference-api:1.1" />
 
 			<!-- T2Platform -->
-			<sys artifact="net.sf.taverna.t2.infrastructure:platform:2.1-SNAPSHOT" />
+			<sys artifact="net.sf.taverna.t2.infrastructure:platform:2.0" />
 			<sys artifact="commons-logging:commons-logging:1.1.1" />
 
 			<!-- Raven -->
-			<sys artifact="net.sf.taverna.t2.infrastructure:raven:2.1-SNAPSHOT" />
+			<sys artifact="net.sf.taverna.t2.infrastructure:raven:2.0" />
 
 			<!-- Spring + Essential External Modules -->
 			<sys artifact="org.springframework:spring-orm:2.5.4" />
