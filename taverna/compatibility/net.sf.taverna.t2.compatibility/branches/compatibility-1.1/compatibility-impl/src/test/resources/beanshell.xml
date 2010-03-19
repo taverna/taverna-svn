@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:65effbbe-ef0f-4a87-8352-26087f1345f5" author="" title="beanshell" />
+  <s:processor name="beanshell">
+    <s:beanshell>
+      <s:scriptvalue />
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist />
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+</s:scufl>
+
