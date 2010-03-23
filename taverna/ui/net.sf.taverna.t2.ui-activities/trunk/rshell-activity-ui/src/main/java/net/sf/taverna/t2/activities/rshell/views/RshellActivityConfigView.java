@@ -995,7 +995,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 				text += "Two output ports have the name " + name + "\n";
 				result = false;
 			} else if (!name.matches(VALID_NAME_REGEX)){
-				text += "Input port name " + name + " is invalid\n";
+				text += "Output port name " + name + " is invalid\n";
 				result = false;
 			} else {
 				outputPortNames.add(name);
