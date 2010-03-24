@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<description>net.sf.taverna.t2.taverna-workbench</description>
+	<parent>
+		<artifactId>parent</artifactId>
+		<groupId>net.sf.taverna</groupId>
+		<version>0.1.2009-02-12</version>
+	</parent>
+	<groupId>net.sf.taverna.t2</groupId>
+	<artifactId>taverna-workbench</artifactId>
+	<version>2.1.2</version>
+	<packaging>pom</packaging>
+	<name>Taverna workbench application</name>
+	<properties>
+		<t2.taverna.workbench.version>${project.version}</t2.taverna.workbench.version>
+		<t2.infrastructure.version>2.0</t2.infrastructure.version>                
+		<t2.core.version>1.1</t2.core.version>
+		<t2.activities.version>1.1</t2.activities.version>
+                <t2.compatibility.translators.version>1.1</t2.compatibility.translators.version>
+		<t2.ui.api.version>1.1</t2.ui.api.version>
+		<t2.ui.impl.version>1.1</t2.ui.impl.version>
+		<t2.ui.components.version>1.1</t2.ui.components.version>
+		<t2.ui.activities.version>1.1</t2.ui.activities.version>
+		<t2.ui.exts.version>1.1</t2.ui.exts.version>
+		<t2.core.provenance.derby.version>1.1</t2.core.provenance.derby.version>
+		<t2.core.provenance.mysql.version>1.1</t2.core.provenance.mysql.version>
+		<taverna.version>1.7.2.0</taverna.version>
+	</properties>
+	<repositories>		
+		<repository>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+		</repository>
+		<repository>
+			<id>eviware</id>
+			<name>Eviware repository</name>
+			<url>http://www.eviware.com/repository/maven2</url>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>		
+		<repository>
+			<id>biomoby</id>
+			<url>http://biomoby.org/m2repo</url>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>java.net</id>
+			<url>http://download.java.net/maven/2</url>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>jboss.org</id>
+			<url>http://repository.jboss.org/maven2</url>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<id>tupelo2</id>
+			<name>tupelo2</name>
+			<url>http://dlt-dev.ncsa.uiuc.edu/m2</url>
+		</repository>
+		<repository>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>opm-releases</id>
+			<name>opm</name>
+			<url>http://openprovenance.org/java/maven-releases</url>
+		</repository>
+	</repositories>
+	<scm>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/products/net.sf.taverna.t2.taverna-workbench/trunk/</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/products/net.sf.taverna.t2.taverna-workbench/trunk/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/products/net.sf.taverna.t2.taverna-workbench/trunk/</url>
+	</scm>
+	<modules>
+		<module>plugins</module>
+		<module>workbench-common</module>
+		<module>workbench-dev</module>
+		<module>workbench-distro</module>
+	</modules>
+</project>
