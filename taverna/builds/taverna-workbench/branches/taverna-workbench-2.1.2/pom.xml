@@ -29,6 +29,7 @@
 	</scm>
 
 	<modules>
+		<module>parent</module>
 		<module>compatibility</module>
 		<module>engine</module>
 		<module>parent</module>

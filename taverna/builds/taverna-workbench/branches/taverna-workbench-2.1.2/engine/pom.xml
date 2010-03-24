@@ -22,9 +22,9 @@
 		<module>net.sf.taverna.t2.core.provenance-mysql</module>
 		-->
 		
-		<!-- 2.0 already deployed
-		<module>net.sf.taverna.t2.infrastructure</module>
+		<!-- Note: 2.0 already deployed
 		 -->
+		<module>net.sf.taverna.t2.infrastructure</module>
 		<module>net.sf.taverna.t2.security</module>
 
 <!-- disabled as integraton tests depend on network access and external services
