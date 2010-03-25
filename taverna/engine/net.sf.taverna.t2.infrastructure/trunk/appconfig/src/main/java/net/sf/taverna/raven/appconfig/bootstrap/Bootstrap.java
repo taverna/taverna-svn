@@ -78,7 +78,6 @@ public class Bootstrap {
 		if (System.getProperty("taverna.startup") == null) {
 			determineStartup();
 		}
-		new ProxyConfiguration().initialiseProxySettings();
 		properties = findProperties();
 
 		if (properties == null) {

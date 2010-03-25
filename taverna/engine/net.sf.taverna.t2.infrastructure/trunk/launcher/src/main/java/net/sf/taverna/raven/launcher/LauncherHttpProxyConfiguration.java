@@ -24,8 +24,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
 import java.util.Properties;
 
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
@@ -204,37 +202,11 @@ public class LauncherHttpProxyConfiguration {
 			changeSystemProperty(NON_PROXY_HOSTS, props
 					.getProperty(TAVERNA_NON_PROXY_HOSTS));
 		}
-		setUpProxyAuthenticator();
 		logger.info(PROXY_HOST + " is " + System.getProperty(PROXY_HOST));
 		logger.info(PROXY_PORT + " is " + System.getProperty(PROXY_PORT));
 		logger.info(PROXY_USER + " is " + System.getProperty(PROXY_USER));
-		logger.info(PROXY_PASSWORD + " is "
-				+ System.getProperty(PROXY_PASSWORD));
 		logger.info(NON_PROXY_HOSTS + " is "
 				+ System.getProperty(NON_PROXY_HOSTS));
-	}
-
-	/**
-	 * If appropriate, set up a proxy authenticator for user name and password.
-	 */
-	private void setUpProxyAuthenticator() {
-		if (System.getProperty(PROXY_USER) != null
-				&& System.getProperty(PROXY_PASSWORD) != null) {
-			Authenticator.setDefault(new Authenticator() {
-				@Override
-				protected PasswordAuthentication getPasswordAuthentication() {
-					if (! getRequestorType().equals(RequestorType.PROXY)) {
-						return null;
-					}
-					String password = System.getProperty(PROXY_PASSWORD);
-					String username = System.getProperty(PROXY_USER);
-					return new PasswordAuthentication(username, password
-							.toCharArray());
-				}
-			});
-		} else {
-			Authenticator.setDefault(null);
-		}
 	}
 
 	/**

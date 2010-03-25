@@ -22,6 +22,7 @@ package net.sf.taverna.raven.launcher;
 
 import java.awt.GraphicsEnvironment;
 import java.io.IOException;
+import java.net.Authenticator;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -92,7 +93,6 @@ public class Launcher {
 	public Launchable findMainClass(String className)
 			throws InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
-		LauncherHttpProxyConfiguration.getInstance();
 		Repository localRepository = appRuntime.getRavenRepository();
 		PluginManager.setRepository(localRepository);
 
@@ -125,6 +125,7 @@ public class Launcher {
 	public int launchMain(String[] args) {
 		prepareClassLoaders();
 		prepareLogging();
+		prepareProxyConfiguration();
 		prepareSplashScreen();
 		String mainClass = appConfig.getMainClass();
 		Launchable launchable;
@@ -154,7 +155,12 @@ public class Launcher {
 		}
 	}
 
-	private void prepareLogging() {
+	protected void prepareProxyConfiguration() {
+		LauncherHttpProxyConfiguration.getInstance();
+		Authenticator.setDefault(new ProxyAuthenticator());
+	}
+
+	protected void prepareLogging() {
 		Log4JConfiguration.getInstance().prepareLog4J();		
 	}
 
