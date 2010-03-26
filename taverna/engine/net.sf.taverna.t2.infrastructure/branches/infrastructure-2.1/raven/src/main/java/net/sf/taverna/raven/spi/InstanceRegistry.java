@@ -198,39 +198,46 @@ public class InstanceRegistry<IType> implements Iterable<IType>,
 		// and attempt to construct new instances from them.
 		for (Class c : classes) {
 			try {
+				try {
+					Method m = c.getMethod("getInstance", new Class[] {});
+					if (m.getDeclaringClass().equals(c)) {
+						logger.info("Invoking static getInstance() for " + c);
+						IType newInstance = (IType) m.invoke(null,
+								new Object[] {});
+						temp.add(newInstance);
+						changed = true;
+						// Continue, don't try constructor
+						continue;
+					}
+				} catch (NoSuchMethodException e) {
+					// OK, we'll try the normal constructor
+				}
 				Constructor con = c.getConstructor(cArgTypes);
 				IType newInstance = (IType) con.newInstance(cArgs);
 				temp.add(newInstance);
 				changed = true;
-			} catch (SecurityException e) {
-				logger.warn("Could not instantiate " + c, e);
 			} catch (NoSuchMethodException e) {
-				logger.warn("Could not instantiate " + c, e);
+				logger.warn("Could not instantiate, no constructor " + c, e);
+			} catch (SecurityException e) {
+				logger.warn("Could not instantiate, security restriction " + c,
+						e);
 			} catch (IllegalArgumentException e) {
-				logger.warn("Could not instantiate " + c, e);
+				logger.warn("Could not instantiate, invalid argument " + c, e);
 			} catch (InstantiationException e) {
 				logger.warn("Could not instantiate " + c, e);
 			} catch (IllegalAccessException e) {
-				logger.warn("Could not instantiate " + c, e);
+				logger.warn("Could not instantiate, no access " + c, e);
 			} catch (InvocationTargetException e) {
-				try {
-					// try as a Singleton
-					Method m = c.getMethod("getInstance", new Class[] {});
-					IType newInstance = (IType) m.invoke(null, new Object[] {});
-					temp.add(newInstance);
-					changed = true;
-				} catch (Exception e2) {
-					logger.warn(
-							"Could not instantiate (either through constructor or as a singleton):"
-									+ c, e.getCause());
-				}
-
+				logger.warn("Failed while instantiating "
+						+ "through constructor " + c, e.getCause());
 			} catch (ClassCastException e) {
 				TypeVariable spi = getClass().getTypeParameters()[0];
 				logger.error("Declared as implementation of the SPI "
 						+ spi.getName() + ", but was not: " + c, e);
 			} catch (LinkageError e) {
-				logger.error("Could not instantiate " + c, e);				
+				logger.error("Could not instantiate " + c, e);
+			} catch (RuntimeException e) {
+				logger.warn("Could not instantiate " + c, e);
 			}
 		}
 		if (changed) {
