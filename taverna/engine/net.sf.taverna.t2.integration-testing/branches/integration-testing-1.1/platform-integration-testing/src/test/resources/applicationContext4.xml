@@ -104,7 +104,7 @@
 		</repositories>
 		<system>
 			<!-- Raven -->
-			<sys artifact="net.sf.taverna.t2.infrastructure:raven:1.12" />
+			<sys artifact="net.sf.taverna.t2.infrastructure:raven:2.1" />
 			<!-- Spring modules -->
 			<sys artifact="org.springframework:spring-core:2.5" />
 			<sys artifact="org.springframework:spring-orm:2.5" />

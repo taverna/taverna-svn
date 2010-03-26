@@ -50,7 +50,7 @@
 		</property>
 		<property name="systemArtifacts">
 			<list>
-				<value>net.sf.taverna.t2.infrastructure:raven:1.12</value>
+				<value>net.sf.taverna.t2.infrastructure:raven:2.1</value>
 				<value>org.springframework:spring-core:2.5</value>
 				<value>org.springframework:spring-beans:2.5</value>
 				<value>org.springframework:spring-context:2.5</value>
