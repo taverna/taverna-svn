@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:9ade6830-ade3-4457-b40a-ce246bf971de" author="" title="Ex1" />
+  <s:processor name="P1">
+    <s:beanshell>
+      <s:scriptvalue />
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">X</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">Y</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="P2">
+    <s:beanshell>
+      <s:scriptvalue />
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">X</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">Y</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="P3">
+    <s:beanshell>
+      <s:scriptvalue />
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">X</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">Y</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="P4">
+    <s:beanshell>
+      <s:scriptvalue />
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">X1</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">X2</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">X3</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">Y</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:link source="I1" sink="P1:X" />
+  <s:link source="I2" sink="P2:X" />
+  <s:link source="I3" sink="P3:X" />
+  <s:link source="P1:Y" sink="P4:X1" />
+  <s:link source="P2:Y" sink="P4:X2" />
+  <s:link source="P3:Y" sink="P4:X3" />
+  <s:link source="P4:Y" sink="O" />
+  <s:source name="I1" />
+  <s:source name="I2" />
+  <s:source name="I3" />
+  <s:sink name="O" />
+</s:scufl>
+
