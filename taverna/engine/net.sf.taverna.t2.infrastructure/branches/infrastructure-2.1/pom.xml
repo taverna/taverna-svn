@@ -15,7 +15,7 @@
 	<properties>
 		<t2.infrastructure.version>${project.version}</t2.infrastructure.version>
 		<xmlbeans.version>2.4.0</xmlbeans.version>
-		<t2.lang.version>1.1-SNAPSHOT</t2.lang.version>
+		<t2.lang.version>1.0</t2.lang.version>
 	</properties>
 	<scm>
 		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.infrastructure/trunk/</connection>
