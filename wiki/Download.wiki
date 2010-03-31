@@ -2,7 +2,7 @@
 
 = Download =
 
-Visit our [http://taverna.sourceforge.net/download download page] to download the Taverna workbench, manuals or related software. Also find [http://www.mygrid.org.uk/tools/taverna/ more information about Taverna] on the myGrid site.
+Visit our [http://www.taverna.org.uk/download/ download page] to download the Taverna workbench, manuals or related software. Also find [http://www.taverna.org.uk/ more information about Taverna] on the Taverna site.
 
 
 == Nightly snapshots ==
