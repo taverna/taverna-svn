@@ -4,4 +4,4 @@
 
 We keep track of any bugs and issues using myGrid's [http://www.mygrid.org.uk/dev/issues/browse/T2 Jira] installation. 
 
-However, we mainly prefer you to report bugs to our [MailingLists mailing list]. As a rule of thumb - use the list {{{taverna-hackers}}} for anyting to do with the source code, APIs or building services for Taverna. On the other hand, use the list {{{taverna-users}}} for questions about the user interface, building workflows, finding services, etc.
+However, we mainly prefer you to report bugs to our [MailingLists mailing lists], so that we can check the details of the issue, and also help other issues.
