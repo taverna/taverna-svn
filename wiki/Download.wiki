@@ -4,6 +4,8 @@
 
 Visit our [http://www.taverna.org.uk/download/ download page] to download the Taverna workbench, manuals or related software. Also find [http://www.taverna.org.uk/ more information about Taverna] on the Taverna site.
 
+Our primary download site is from [https://launchpad.net/taverna/t2 launchpad.net] - but in the likely case that launchpad is not available you can also find our most recent releases here at [http://code.google.com/p/taverna/downloads/list Google Code].
+
 
 == Nightly snapshots ==
 
