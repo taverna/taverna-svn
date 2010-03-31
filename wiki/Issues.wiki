@@ -4,4 +4,4 @@
 
 We keep track of any bugs and issues using myGrid's [http://www.mygrid.org.uk/dev/issues/browse/T2 Jira] installation. 
 
-However, we mainly prefer you to report bugs to our [MailingLists mailing lists], so that we can check the details of the issue, and also help other issues.
+However, we mainly prefer you to report bugs to our [MailingLists mailing lists], so that we can check the details of the issue, and also help other users with workarounds.
