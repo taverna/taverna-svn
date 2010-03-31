@@ -2,6 +2,6 @@
 
 =Developer wiki=
 
-Feel free to visit the [http://www.mygrid.org.uk/dev/wiki/display/developer/Home developer wiki], note however due to recent spamming we have had to limit registration rights on the wiki.
+Feel free to visit the [http://www.mygrid.org.uk/dev/wiki/display/developer/Home developer wiki], note however due to spamming attempts we have had to limit public registration rights on the wiki.
 
 To gain write-access to the wiki, simply ask on our [MailingLists mailing lists].
