@@ -16,6 +16,13 @@
 			<name>INB Uni Luebeck</name>
 			<url>http://taverna.nordugrid.org/taverna-repository</url>
 		</repository>
+		<repository>
+			<id>trianacode-maven-repos</id>
+			<url>http://trianacode.org/maven</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
 	</repositories>
 	<dependencies>
 		<dependency>
@@ -68,13 +75,19 @@
 			<artifactId>knowarc-usecases</artifactId>
 			<version>0.3.1</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>usecase-activity</artifactId>
 			<version>${t2.activities.version}</version>
 		</dependency>
 
+		<!-- for the feedback action -->
+		<dependency>
+			<groupId>BrowserLauncher2</groupId>
+			<artifactId>BrowserLauncher2</artifactId>
+			<version>1.3</version>
+		</dependency>
 	</dependencies>
 </project>
 
