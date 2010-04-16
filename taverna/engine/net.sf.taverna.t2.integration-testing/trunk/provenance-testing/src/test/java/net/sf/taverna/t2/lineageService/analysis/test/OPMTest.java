@@ -75,22 +75,14 @@ public class OPMTest {
 	graph.assertGeneratedBy(a2, p1, role2, account);
 	
 	// print out OPM graph for diagnostics
-	try {
-		Set<Triple> allTriples = context.getTriples();
-		
-		RdfXmlWriter writer = new RdfXmlWriter();				
-		writer.write(allTriples, new FileWriter(OPM_GRAPH_FILE));
-		
-		System.out.println("OPM graph written to "+OPM_GRAPH_FILE);
-		
-	} catch (OperatorException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
+	Set<Triple> allTriples = context.getTriples();
+	
+	RdfXmlWriter writer = new RdfXmlWriter();				
+	writer.write(allTriples, new FileWriter(OPM_GRAPH_FILE));
+	
+	System.out.println("OPM graph written to "+OPM_GRAPH_FILE);
 	
 	}
+	
 
 }

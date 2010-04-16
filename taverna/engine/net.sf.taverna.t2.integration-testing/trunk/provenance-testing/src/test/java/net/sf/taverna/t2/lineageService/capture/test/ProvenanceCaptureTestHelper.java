@@ -4,21 +4,21 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
-import java.util.List;
 import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import net.sf.taverna.platform.spring.RavenAwareClassPathXmlApplicationContext;
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.raven.plugins.PluginManager;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.invocation.impl.InvocationContextImpl;
 import net.sf.taverna.t2.provenance.api.ProvenanceAccess;
 import net.sf.taverna.t2.provenance.api.ProvenanceConnectorType;
 import net.sf.taverna.t2.provenance.connector.ProvenanceConnector;
-import net.sf.taverna.t2.provenance.reporter.ProvenanceReporter;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
@@ -53,7 +53,8 @@ public class ProvenanceCaptureTestHelper {
 	private String DB_URL_LOCAL = propertiesReader.getString("dbhost"); // URL of database server //$NON-NLS-1$
 	private String DB_USER = propertiesReader.getString("dbuser"); // database user id //$NON-NLS-1$
 	private String DB_PASSWD = propertiesReader.getString("dbpassword"); //$NON-NLS-1$
-
+	private String DB_TYPE = propertiesReader.getString("dbtype"); 
+	
 	// testing switches
 	private String clearDB = propertiesReader.getString("clearDB");
 	private String saveEvents = propertiesReader.getString("saveEvents");
@@ -71,37 +72,45 @@ public class ProvenanceCaptureTestHelper {
 	}
 
 
-
-	public void setDataSource() {
+	public void setDataSource() throws NamingException {
 		System.setProperty(Context.INITIAL_CONTEXT_FACTORY,"org.osjava.sj.memory.MemoryContextFactory");
 		System.setProperty("org.osjava.sj.jndi.shared", "true");
 
 		BasicDataSource ds = new BasicDataSource();
-		ds.setDriverClassName("com.mysql.jdbc.Driver");
+		
+		if (DB_TYPE.equals("mysql")) {
+			ds.setDriverClassName("com.mysql.jdbc.Driver");
+		} else {
+			ds.setDriverClassName("org.apache.derby.jdbc.EmbeddedDriver");
+		}
 		ds.setDefaultTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
 		ds.setMaxActive(50);
 		ds.setMinIdle(10);
 		ds.setMaxIdle(50);
 		ds.setDefaultAutoCommit(true);
-		ds.setUsername(DB_USER);
-		ds.setPassword(DB_PASSWD);		
-
-		try {
+		if (DB_TYPE.equals("mysql")) {
+			ds.setUsername(DB_USER);
+			ds.setPassword(DB_PASSWD);
 			ds.setUrl("jdbc:mysql://"+DB_URL_LOCAL+"/T2Provenance");
-
-			InitialContext context = new InitialContext();
-			context.rebind("jdbc/taverna", ds);
-		} catch(Exception e) {
-			e.printStackTrace();
+		} else {
+			ds.setUrl("jdbc:derby:t2-database;create=true;upgrade=true");
 		}
+
+	
+		InitialContext context = new InitialContext();
+		context.rebind("jdbc/taverna", ds);
+		
 	}
 
 
 
-	public void makeDataManager() {	
-
+	public void makeDataManager() throws NamingException {	
 		setDataSource();
-		pAccess = new ProvenanceAccess(ProvenanceConnectorType.MYSQL);  // creates and initializes the provenance API
+		if (DB_TYPE.equals("mysql")) {
+			pAccess = new ProvenanceAccess(ProvenanceConnectorType.MYSQL);  // creates and initializes the provenance API		
+		} else {			
+			pAccess = new ProvenanceAccess(ProvenanceConnectorType.DERBY);  // creates and initializes the provenance API
+		}
 		provenanceConnector = pAccess.getProvenanceConnector();  // oc is initialized at this point
 		
 		// clear DB if user so chooses
@@ -118,23 +127,7 @@ public class ProvenanceCaptureTestHelper {
 		referenceService = (ReferenceService) appContext
 		.getBean("t2reference.service.referenceService"); //$NON-NLS-1$
 
-		context =  new InvocationContext() {
-
-			public ReferenceService getReferenceService() {
-				return referenceService;
-			}
-
-			public ProvenanceReporter getProvenanceReporter() {
-				if (isUseProvenance)
-					return provenanceConnector;
-				return null;
-			}
-
-			public <T> List<? extends T> getEntities(Class<T> entityType) {
-				// TODO Auto-generated method stub
-				return null;
-			}
-		};
+		context =  new InvocationContextImpl(referenceService, provenanceConnector);
 		provenanceConnector.setReferenceService(context.getReferenceService()); // CHECK context.getReferenceService());
 		provenanceConnector.setInvocationContext(context);
 
