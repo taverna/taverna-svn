@@ -120,6 +120,16 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-exts</groupId>
+			<artifactId>retry-ui</artifactId>
+			<version>${t2.ui.exts.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-exts</groupId>
+			<artifactId>parallelize-ui</artifactId>
+			<version>${t2.ui.exts.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-exts</groupId>
 			<artifactId>menu-items</artifactId>
 			<version>${t2.ui.exts.version}</version>
 		</dependency>
