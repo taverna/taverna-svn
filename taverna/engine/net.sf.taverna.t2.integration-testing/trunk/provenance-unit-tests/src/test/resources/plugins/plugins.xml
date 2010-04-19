@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins:plugins xmlns:plugins="http://taverna.sf.net/2008/xml/plugins"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://taverna.sf.net/2008/xml/plugins http://taverna.sourceforge.net/2008/xml/plugins/plugins-2008-10-16.xsd "><!--
+
+	<plugin>
+		<provider>taverna.sf.net</provider>
+		<identifier>net.sf.taverna.t2.core</identifier>
+		<version>0.4</version>
+		<name>core</name>
+		<description>Taverna 2 core</description>
+		<enabled>true</enabled>
+		<repositories>
+			
+				local repository while developing
+				<repository>file:///Users/fred/.m2/repository/</repository>
+			
+			 myGrid repositories and mirrors  
+			<repository>http://www.mygrid.org.uk/maven/repository/</repository>
+			<repository>http://bioinf.ncl.ac.uk/mirror/maven/repository/</repository>
+			<repository>http://mirror.omii.ac.uk/maven/repository/</repository>
+			<repository>http://www.mygrid.org.uk/maven/snapshot-repository/</repository>
+
+			  Mirror of official maven repository 
+			<repository>http://www.mygrid.org.uk/maven/repo1/</repository>
+			<repository>http://ibiblio.lsu.edu/main/pub/packages/maven2/</repository>
+			<repository>http://www.eviware.com/repository/maven2/</repository>
+		</repositories>
+		<profile>
+			<dependency>
+				<groupId>net.sf.taverna.t2</groupId>
+				<artifactId>workflowmodel-impl</artifactId>
+				<version>0.4</version>
+			</dependency>
+		</profile>
+		<compatibility>
+			<application>
+				<version>2.0</version>
+			</application>
+		</compatibility>
+	</plugin>
+
+	--><plugin>
+		<provider>taverna.sf.net</provider>
+		<identifier>net.sf.taverna.t2.all-activities</identifier>
+		<version>0.4</version>
+		<name>all-activities</name>
+		<description>Taverna 2 activities</description>
+		<enabled>true</enabled>
+		<repositories>
+			<repository>file:///Users/paolo/.m2/repository/</repository>
+			<!-- myGrid repositories and mirrors  -->
+			<repository>http://www.mygrid.org.uk/maven/repository/</repository>
+			<repository>http://bioinf.ncl.ac.uk/mirror/maven/repository/</repository>
+			<repository>http://mirror.omii.ac.uk/maven/repository/</repository>
+			<repository>http://www.mygrid.org.uk/maven/snapshot-repository/</repository>
+
+			<!--  Mirror of official maven repository -->
+			<repository>http://www.mygrid.org.uk/maven/repo1/</repository>
+
+			<!--  BioMoby repositories -->
+			<repository>http://moby.ucalgary.ca/moby_maven/</repository>
+			<repository>http://biomoby.org/m2repo/</repository>
+			<repository>http://repository.jboss.com/maven2/</repository>
+			<repository>http://download.java.net/maven/2/</repository>
+			<repository>http://ibiblio.lsu.edu/main/pub/packages/maven2/</repository>
+			<repository>http://ws.zones.apache.org/repository2/</repository>
+			<repository>http://www.eviware.com/repository/maven2/</repository>
+
+		</repositories>
+		<profile>
+			<dependency>
+				<groupId>net.sf.taverna.t2.activities</groupId>
+				<artifactId>apiconsumer-activity</artifactId>
+				<version>0.6-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sf.taverna.t2.activities</groupId>
+				<artifactId>beanshell-activity</artifactId>
+				<version>0.6-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sf.taverna.t2.activities</groupId>
+				<artifactId>biomart-activity</artifactId>
+				<version>0.6-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sf.taverna.t2.activities</groupId>
+				<artifactId>biomoby-activity</artifactId>
+				<version>0.6-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sf.taverna.t2.activities</groupId>
+				<artifactId>dataflow-activity</artifactId>
+				<version>0.6-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sf.taverna.t2.activities</groupId>
+				<artifactId>localworker-activity</artifactId>
+				<version>0.6-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sf.taverna.t2.activities</groupId>
+				<artifactId>soaplab-activity</artifactId>
+				<version>0.6-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sf.taverna.t2.activities</groupId>
+				<artifactId>rshell-activity</artifactId>
+				<version>0.6-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sf.taverna.t2.activities</groupId>
+				<artifactId>stringconstant-activity</artifactId>
+				<version>0.6-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sf.taverna.t2.activities</groupId>
+				<artifactId>wsdl-activity</artifactId>
+				<version>0.6-SNAPSHOT</version>
+			</dependency>
+		</profile>
+		<compatibility>
+			<application>
+				<version>2.0</version>
+			</application>
+			<pluginDependency>
+				<provider>taverna.sf.net</provider>
+				<identifier>net.sf.taverna.t2.core</identifier>
+				<version>0.4</version>
+			</pluginDependency>
+		</compatibility>
+	</plugin>
+	
+	<!--<plugin>
+		<provider>taverna.sf.net</provider>
+		<identifier>net.sf.taverna.t2.derby-provenance</identifier>
+		<version>0.1</version>
+		<name>derby-provenance</name>
+		<description>Taverna 2 Derby provenance storage</description>
+		<enabled>true</enabled>
+		<repositories>
+			 myGrid repositories and mirrors  
+			<repository>
+				http://www.mygrid.org.uk/maven/repository/
+			</repository>
+			<repository>
+				http://bioinf.ncl.ac.uk/mirror/maven/repository/
+			</repository>
+			<repository>
+				http://mirror.omii.ac.uk/maven/repository/
+			</repository>
+			<repository>
+				http://www.mygrid.org.uk/maven/snapshot-repository/
+			</repository>
+
+			  Mirror of official maven repository 
+			<repository>
+				http://www.mygrid.org.uk/maven/repo1/
+			</repository>
+
+
+			<repository>
+				http://ibiblio.lsu.edu/main/pub/packages/maven2/
+			</repository>
+			<repository>
+				http://ws.zones.apache.org/repository2/
+			</repository>
+			<repository>
+				http://www.eviware.com/repository/maven2/
+			</repository>
+
+
+		</repositories>
+		<profile>
+			<artifact groupId="net.sf.taverna.t2"
+				artifactId="derby-provenance" version="0.1" />
+		</profile>
+		<compatibility>
+			<application>
+				<version>2.0</version>
+			</application>
+			<pluginDependency>
+				<provider>taverna.sf.net</provider>
+				<identifier>net.sf.taverna.t2.core</identifier>
+				<version>0.4</version>
+			</pluginDependency>
+		</compatibility>
+	</plugin>-->
+	
+	
+</plugins:plugins>
