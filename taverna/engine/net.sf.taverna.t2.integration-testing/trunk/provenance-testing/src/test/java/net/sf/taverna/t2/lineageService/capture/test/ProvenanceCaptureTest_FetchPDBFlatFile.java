@@ -18,7 +18,7 @@ public class ProvenanceCaptureTest_FetchPDBFlatFile extends ProvenanceCaptureTes
 	@Test
 	public void testProvenanceCapture() throws Exception {
 
-		ProvenanceCaptureTestHelper helper = new ProvenanceCaptureTestHelper();
+		ProvenanceCaptureTestHelper helper = this;
 
 		Dataflow dataflow = helper.setup("ProvenanceCaptureTestWithInput");
 

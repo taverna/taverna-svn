@@ -20,7 +20,7 @@ public class ProvenanceCaptureTest_baseLineage extends ProvenanceCaptureTestHelp
 	@Test
 	public void testProvenanceCapture_baseLineage() throws Exception {
 
-		ProvenanceCaptureTestHelper helper = new ProvenanceCaptureTestHelper();
+		ProvenanceCaptureTestHelper helper = this;
 
 		Dataflow dataflow = helper.setup("ProvenanceCaptureTestWithInput");
 

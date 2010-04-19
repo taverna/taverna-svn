@@ -24,11 +24,11 @@ public class ProvenanceCaptureTest_Tom extends ProvenanceCaptureTestHelper {
 	@Test
 	public void testProvenanceCapture() throws Exception {
 
-		ProvenanceCaptureTestHelper helper = new ProvenanceCaptureTestHelper();
+		
 
-		Dataflow dataflow = helper.setup("ProvenanceCaptureTest");
+		Dataflow dataflow = setup("ProvenanceCaptureTest");
 
-		helper.createEventsDir(); 
+		createEventsDir(); 
 
 		// collect inputs from properties file
 
@@ -37,7 +37,7 @@ public class ProvenanceCaptureTest_Tom extends ProvenanceCaptureTestHelper {
 		I.add("item1");
 		I.add("item2");
 
-		T2Reference entityId1 = context.getReferenceService().register(I, 0,true, context);
+		T2Reference entityId1 = context.getReferenceService().register(I, 1,true, context);
 
 		// provide inputs to ports
 		for (DataflowInputPort port : dataflow.getInputPorts()) {
@@ -49,14 +49,14 @@ public class ProvenanceCaptureTest_Tom extends ProvenanceCaptureTestHelper {
 				System.out.println("populating port "+port.getName()+" with input" +I);
 
 				WorkflowDataToken inputToken1 = new WorkflowDataToken("",new int[]{}, entityId1, context);
-				helper.getFacade().pushData(inputToken1, port.getName());
+				getFacade().pushData(inputToken1, port.getName());
 				
 			}
 		}
 
-		helper.waitForCompletion();
+		waitForCompletion();
 
-		System.out.println("output: \n"+helper.getListener().getResult("O1"));
+		System.out.println("output: \n"+getListener().getResult("O1"));
 		assertTrue("ok as long as we got this far", true);
 	}
 

@@ -31,6 +31,8 @@ import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.springframework.context.ApplicationContext;
+import static org.junit.Assert.*;
+
 
 /**
  * provides common code that loads and sets up the dataflow prior to invocation<br/>
@@ -61,6 +63,9 @@ public class ProvenanceCaptureTestHelper {
 	boolean isClearDB = false;
 	boolean isUseProvenance = true;
 
+	public ProvenanceCaptureTestHelper() {
+	}
+	
 	@SuppressWarnings("unchecked")//$NON-NLS-1$
 	public void createEventsDir() {
 		try {
@@ -113,6 +118,8 @@ public class ProvenanceCaptureTestHelper {
 		}
 		provenanceConnector = pAccess.getProvenanceConnector();  // oc is initialized at this point
 		
+		assertNotNull("Could not find provenanceConnector", provenanceConnector);
+		
 		// clear DB if user so chooses
 		if (clearDB != null) isClearDB = Boolean.parseBoolean(clearDB);
 		provenanceConnector.clearDatabase(isClearDB);
@@ -122,12 +129,17 @@ public class ProvenanceCaptureTestHelper {
 //		WorkflowDataProcessor wfdp    = provenanceConnector.getWfdp();
 
 		ApplicationContext appContext = new RavenAwareClassPathXmlApplicationContext(
-		"inMemoryIntegrationTestsContext.xml"); //$NON-NLS-1$
+		"hibernateReferenceServiceContext.xml"); //$NON-NLS-1$
 
+		assertNotNull("Could not find appContext", appContext);
+		
 		referenceService = (ReferenceService) appContext
 		.getBean("t2reference.service.referenceService"); //$NON-NLS-1$
+		assertNotNull("Could not find referenceService", referenceService);
 
+		
 		context =  new InvocationContextImpl(referenceService, provenanceConnector);
+		assertNotNull("Could not make context", context);
 		provenanceConnector.setReferenceService(context.getReferenceService()); // CHECK context.getReferenceService());
 		provenanceConnector.setInvocationContext(context);
 

@@ -9,11 +9,11 @@
 	http://taverna.sf.net/schema/artifact-support/artifact-support.xsd">
 
 	<import resource="context-parts/raven_local.xml" />
+		<import resource="context-parts/hibernateprops_derby.xml" /> 
+		<import	resource="context-parts/dao_hibernate.xml" />
 	<!--
-		<import resource="context-parts/hibernateprops_derby.xml" /> <import
-		resource="context-parts/dao_hibernate.xml" />
-	-->
 	<import resource="context-parts/dao_inmemory.xml" />
+	-->
 	<import resource="context-parts/componentservices.xml" />
 	<import resource="context-parts/referenceservice.xml" />
 <!-- 	<import resource="context-parts/provenanceconnector.xml" />  -->

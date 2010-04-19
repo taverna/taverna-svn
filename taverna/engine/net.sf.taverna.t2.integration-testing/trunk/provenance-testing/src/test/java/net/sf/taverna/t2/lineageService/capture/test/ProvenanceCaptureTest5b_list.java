@@ -24,7 +24,7 @@ public class ProvenanceCaptureTest5b_list extends ProvenanceCaptureTestHelper {
 	@Test
 	public void testProvenanceCapture() throws Exception {
 
-		ProvenanceCaptureTestHelper helper = new ProvenanceCaptureTestHelper();
+		ProvenanceCaptureTestHelper helper = this;
 
 		Dataflow dataflow = helper.setup("ProvenanceCaptureTest");
 

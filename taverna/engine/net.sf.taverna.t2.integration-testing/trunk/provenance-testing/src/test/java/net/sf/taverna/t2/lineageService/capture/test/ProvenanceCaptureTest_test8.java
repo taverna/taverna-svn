@@ -7,6 +7,7 @@ import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -18,7 +19,7 @@ public class ProvenanceCaptureTest_test8 extends ProvenanceCaptureTestHelper {
 	@Test
 	public void testProvenanceCapture_test8() throws Exception {
 		
-		ProvenanceCaptureTestHelper helper = new ProvenanceCaptureTestHelper();
+		ProvenanceCaptureTestHelper helper = this;
 
 		Dataflow dataflow = helper.setup("ProvenanceCaptureTestWithInput");
 

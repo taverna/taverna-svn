@@ -24,7 +24,7 @@ public class ProvenanceCaptureTestMismatchingInputsNL extends ProvenanceCaptureT
 	@Test
 	public void testProvenanceCapture() throws Exception {
 
-		ProvenanceCaptureTestHelper helper = new ProvenanceCaptureTestHelper();
+		ProvenanceCaptureTestHelper helper = this;
 
 		Dataflow dataflow = helper.setup("ProvenanceCaptureTest");
 
@@ -37,7 +37,7 @@ public class ProvenanceCaptureTestMismatchingInputsNL extends ProvenanceCaptureT
 		i1.add("bar1");
 		i1.add("bar2");
 		
-		T2Reference entityId1 = context.getReferenceService().register(i1, 0,true, context);
+		T2Reference entityId1 = context.getReferenceService().register(i1, 1,true, context);
 
 		// provide inputs to ports
 		for (DataflowInputPort port : dataflow.getInputPorts()) {

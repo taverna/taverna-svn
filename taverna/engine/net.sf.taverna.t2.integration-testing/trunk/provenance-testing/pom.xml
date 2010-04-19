@@ -41,6 +41,8 @@
 			<version>${t2.core.version}</version>
 		</dependency>
 
+
+
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>workflowmodel-impl</artifactId>
@@ -102,5 +104,19 @@
 		</dependency>
 
 
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-impl</groupId>
+			<artifactId>data-management-config</artifactId>
+			<version>1.1-SNAPSHOT</version>
+			<type>pom</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>reference-core-extensions</artifactId>
+			<version>1.1-SNAPSHOT</version>
+			<type>pom</type>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 </project>

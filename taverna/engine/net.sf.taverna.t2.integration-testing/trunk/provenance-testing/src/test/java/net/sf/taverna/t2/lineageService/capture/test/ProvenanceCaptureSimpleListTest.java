@@ -24,20 +24,19 @@ public class ProvenanceCaptureSimpleListTest extends ProvenanceCaptureTestHelper
 	@Test
 	public void testProvenanceCapture() throws Exception {
 
-		ProvenanceCaptureTestHelper helper = new ProvenanceCaptureTestHelper();
+		Dataflow dataflow = setup("ProvenanceCaptureTest");
 
-		Dataflow dataflow = helper.setup("ProvenanceCaptureTest");
-
-		helper.createEventsDir(); 
+		createEventsDir(); 
 
 		// collect inputs from properties file
 
-		List<String> i1 = new ArrayList<String>();
-
-		i1.add("a");
-		i1.add("b");
-		i1.add("c");
-		i1.add("d");
+//		List<String> i1 = new ArrayList<String>();
+//
+//		i1.add("a");
+//		i1.add("b");
+//		i1.add("c");
+//		i1.add("d");
+		String i1 = "abcd";
 		
 		T2Reference entityId1 = context.getReferenceService().register(i1, 0,true, context);
 
@@ -46,18 +45,18 @@ public class ProvenanceCaptureSimpleListTest extends ProvenanceCaptureTestHelper
 
 			System.out.println("populating port "+port.getName());
 
-			if (port.getName().equals("I1")) {
+			if (port.getName().equals("I")) {
 
 				System.out.println("populating port "+port.getName()+" with input" +i1);
 
 				WorkflowDataToken inputToken1 = new WorkflowDataToken("",new int[]{}, entityId1, context);
-				helper.getFacade().pushData(inputToken1, port.getName());
+				getFacade().pushData(inputToken1, port.getName());
 
 			}
 
-			helper.waitForCompletion();
+			waitForCompletion();
 
-			System.out.println("output: \n"+helper.getListener().getResult("O"));
+			System.out.println("output: \n"+getListener().getResult("O"));
 			assertTrue("ok as long as we got this far", true);
 		}
 	}
