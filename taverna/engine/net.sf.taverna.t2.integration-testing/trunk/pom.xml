@@ -57,6 +57,7 @@
 		<module>raven-integration-testing</module>
 		<module>reference-integration-tests</module>
 		<!--<module>provenance-testing</module>-->
+		<module>provenance-unit-tests</module>
 		<module>wsdl-generic-testing</module>
 	</modules>
 	<scm>
