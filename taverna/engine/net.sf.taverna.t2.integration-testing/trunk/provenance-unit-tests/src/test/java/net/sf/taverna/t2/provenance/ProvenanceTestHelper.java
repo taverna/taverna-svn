@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map;
 
 import javax.naming.Context;
@@ -61,12 +62,21 @@ public class ProvenanceTestHelper {
 	private CaptureResultsListener listener;
 	private WorkflowInstanceFacade facade;
 
-	protected InvocationContext context;
+	private InvocationContext context;
 	private ReferenceService referenceService;
 	private ProvenanceConnector provenanceConnector;
 	private ProvenanceAccess pAccess = null;
 
 	private String DB_TYPE = "derby";
+	
+	public ProvenanceConnector getProvenanceConnector() {
+		return provenanceConnector;
+	}
+
+	public ProvenanceAccess getProvenanceAccess() {
+		return pAccess;
+	}
+
 	// Set for mysql usage
 	private String DB_USER = null;
 	private String DB_PASSWD = null;
@@ -286,6 +296,10 @@ public class ProvenanceTestHelper {
 							+ "s was exceed waiting for the results"); //$NON-NLS-1$
 			}
 		}
+	}
+	
+	public Connection getConnection() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		return getProvenanceConnector().getQuery().getConnection();
 	}
 
 }
