@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.provenance.capture;
+package net.sf.taverna.t2.provenance.query;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

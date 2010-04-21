@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.provenance.capture;
+package net.sf.taverna.t2.provenance.query;
 
 import java.util.HashMap;
 import java.util.Map;
