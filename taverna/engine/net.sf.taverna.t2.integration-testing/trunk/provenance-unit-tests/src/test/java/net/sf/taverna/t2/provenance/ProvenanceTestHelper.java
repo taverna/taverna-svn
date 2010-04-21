@@ -52,13 +52,13 @@ public class ProvenanceTestHelper {
 	private static Logger logger = Logger.getLogger(ProvenanceTestHelper.class);
 
 	private static Edits edits = EditsRegistry.getEdits();
-	
+
 	static {
 		PluginManager.setRepository(ApplicationRuntime.getInstance()
 				.getRavenRepository());
 		PluginManager.getInstance();
 	}
-	
+
 	private CaptureResultsListener listener;
 	private WorkflowInstanceFacade facade;
 
@@ -68,7 +68,7 @@ public class ProvenanceTestHelper {
 	private ProvenanceAccess pAccess = null;
 
 	private String DB_TYPE = "derby";
-	
+
 	public ProvenanceConnector getProvenanceConnector() {
 		return provenanceConnector;
 	}
@@ -84,6 +84,7 @@ public class ProvenanceTestHelper {
 
 	private boolean DB_CLEAR_ON_STARTUP = true;
 
+	private Connection connection;
 
 	/**
 	 * @return the context
@@ -127,14 +128,13 @@ public class ProvenanceTestHelper {
 		return deserializer.deserializeDataflow(el);
 	}
 
-
 	@Before
 	public void makeDataManager() throws NamingException {
 		setDataSource();
 		if (DB_TYPE.equals("mysql")) {
-			pAccess = new ProvenanceAccess(ProvenanceConnectorType.MYSQL); // creates			
+			pAccess = new ProvenanceAccess(ProvenanceConnectorType.MYSQL); // creates
 		} else {
-			pAccess = new ProvenanceAccess(ProvenanceConnectorType.DERBY); // creates			
+			pAccess = new ProvenanceAccess(ProvenanceConnectorType.DERBY); // creates
 		}
 		provenanceConnector = pAccess.getProvenanceConnector(); // oc is
 		// initialized
@@ -180,7 +180,7 @@ public class ProvenanceTestHelper {
 			InvalidDataflowException {
 		Dataflow dataflow = null;
 
-		logger.info("Preparing to run workflow:" + dataflowFile);		
+		logger.info("Preparing to run workflow:" + dataflowFile);
 		dataflow = loadDataflow(dataflowFile);
 		dataflow.checkValidity();
 
@@ -297,9 +297,13 @@ public class ProvenanceTestHelper {
 			}
 		}
 	}
-	
-	public Connection getConnection() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-		return getProvenanceConnector().getQuery().getConnection();
+
+	public Connection getConnection() throws InstantiationException,
+			IllegalAccessException, ClassNotFoundException, SQLException {
+		if (connection == null) {
+			connection = getProvenanceConnector().getQuery().getConnection();
+		}
+		return connection;
 	}
 
 }
