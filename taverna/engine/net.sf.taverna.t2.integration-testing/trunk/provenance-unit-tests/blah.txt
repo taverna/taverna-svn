@@ -1,0 +1,16 @@
+java.lang.AssertionError: expected:<
+
+e024ea01-89fd-4f93-b6ae-ad6da4a6df08/P0/o:Y[]=[a1, a2]
+e024ea01-89fd-4f93-b6ae-ad6da4a6df08/P2/o:Y[]=[d1, d2],
+e024ea01-89fd-4f93-b6ae-ad6da4a6df08/P4/o:Y2[0,0]=[a1b, d1, f],
+e024ea01-89fd-4f93-b6ae-ad6da4a6df08/P4/o:Y2[0,1]=[a2b, d1, f],
+e024ea01-89fd-4f93-b6ae-ad6da4a6df08/P4/o:Y2[1,0]=[a1b, d2, f],
+e024ea01-89fd-4f93-b6ae-ad6da4a6df08/P4/o:Y2[1,1]=[a2b, d2, f],
+
+e024ea01-89fd-4f93-b6ae-ad6da4a6df08/P0/o:Y[]=[a1, a2],
+e024ea01-89fd-4f93-b6ae-ad6da4a6df08/P2/o:Y[]=[d1, d2],
+e024ea01-89fd-4f93-b6ae-ad6da4a6df08/P4/o:Y1[0,0]=[a1b, d1, f],
+e024ea01-89fd-4f93-b6ae-ad6da4a6df08/P4/o:Y1[0,1]=[a2b, d1, f],
+e024ea01-89fd-4f93-b6ae-ad6da4a6df08/P4/o:Y1[1,0]=[a1b, d2, f],
+e024ea01-89fd-4f93-b6ae-ad6da4a6df08/P4/o:Y1[1,1]=[a2b, d2, f]
+	

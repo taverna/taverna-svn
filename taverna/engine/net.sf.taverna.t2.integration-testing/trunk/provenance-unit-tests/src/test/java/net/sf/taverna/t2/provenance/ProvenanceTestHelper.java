@@ -36,7 +36,6 @@ import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-import org.junit.Before;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -47,6 +46,10 @@ import org.springframework.context.ApplicationContext;
  */
 public class ProvenanceTestHelper {
 
+	public ProvenanceTestHelper() throws NamingException {
+		makeDataManager();
+	}
+	
 	private static final String CONTEXT_XML = "hibernateReferenceServiceContext.xml";
 
 	private static Logger logger = Logger.getLogger(ProvenanceTestHelper.class);
@@ -128,7 +131,6 @@ public class ProvenanceTestHelper {
 		return deserializer.deserializeDataflow(el);
 	}
 
-	@Before
 	public void makeDataManager() throws NamingException {
 		setDataSource();
 		if (DB_TYPE.equals("mysql")) {

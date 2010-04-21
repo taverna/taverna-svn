@@ -1,50 +1,10 @@
 package net.sf.taverna.t2.provenance.capture;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.net.URI;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
-
-import net.sf.taverna.t2.activities.dataflow.DataflowActivity;
-import net.sf.taverna.t2.invocation.WorkflowDataToken;
-import net.sf.taverna.t2.provenance.ProvenanceTestHelper;
-import net.sf.taverna.t2.reference.T2Reference;
-import net.sf.taverna.t2.workflowmodel.Dataflow;
-import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
-import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
-import net.sf.taverna.t2.workflowmodel.Datalink;
-import net.sf.taverna.t2.workflowmodel.EventForwardingOutputPort;
-import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
-import net.sf.taverna.t2.workflowmodel.MergePort;
-import net.sf.taverna.t2.workflowmodel.Processor;
-import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
-import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
-import net.sf.taverna.t2.workflowmodel.ProcessorPort;
-import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
-import net.sf.taverna.t2.workflowmodel.processor.activity.NestedDataflow;
-
-import org.junit.Before;
-import org.junit.Test;
 
 /**
- * test workflow: nested-2.t2flow
+ * Captures values within nested nested workflows
  * 
  * @author Stian Soiland-Reyes
  * 
@@ -74,6 +34,11 @@ public class CapturedToDatabaseNested2Test extends AbstractDatabaseTestHelper {
 	}
 
 	@Override
+	protected Map<String, Object> getExpectedCollections() {
+		return new HashMap<String, Object>();
+	}
+	
+	@Override
 	protected Map<String, Object> getExpectedIntermediateValues() {
 		Map<String, Object> expectedIntermediateValues = new HashMap<String, Object>();
 
@@ -81,22 +46,22 @@ public class CapturedToDatabaseNested2Test extends AbstractDatabaseTestHelper {
 		String df1 = "97e6c544-4acb-4627-aca8-fbcb714ebabc/";
 		String df2 = "85dd9164-10ae-4d2a-8450-5ed905dfb7ac/";
 
-		expectedIntermediateValues.put(df0 + "P1/X[]", "abcd");
-		expectedIntermediateValues.put(df0 + "P1/Y1[]", "10");
-		expectedIntermediateValues.put(df0 + "P1/Y2[]", "20");
-		expectedIntermediateValues.put(df0 + "P4/X1[]", "968");
-		expectedIntermediateValues.put(df0 + "P4/X2[]", "20");
-		expectedIntermediateValues.put(df0 + "P4/Y[]", "988");
-		expectedIntermediateValues.put(df0 + "PNested/I[]", "10");
-		expectedIntermediateValues.put(df0 + "PNested/O[]", "968");
-		expectedIntermediateValues.put(df1 + "P2/X[]", "10");
-		expectedIntermediateValues.put(df1 + "P2/Y[]", "1000");
-		expectedIntermediateValues.put(df1 + "P3/X[]", "1000");
-		expectedIntermediateValues.put(df1 + "P3/Y[]", "968");
-		expectedIntermediateValues.put(df1 + "PNested2/I[]", "968");
-		expectedIntermediateValues.put(df1 + "PNested2/O[]", "968");
-		expectedIntermediateValues.put(df2 + "P6/X[]", "968");
-		expectedIntermediateValues.put(df2 + "P6/Y[]", "968");
+		expectedIntermediateValues.put(df0 + "P1/i:X[]", "abcd");
+		expectedIntermediateValues.put(df0 + "P1/o:Y1[]", "10");
+		expectedIntermediateValues.put(df0 + "P1/o:Y2[]", "20");
+		expectedIntermediateValues.put(df0 + "P4/i:X1[]", "968");
+		expectedIntermediateValues.put(df0 + "P4/i:X2[]", "20");
+		expectedIntermediateValues.put(df0 + "P4/o:Y[]", "988");
+		expectedIntermediateValues.put(df0 + "PNested/i:I[]", "10");
+		expectedIntermediateValues.put(df0 + "PNested/o:O[]", "968");
+		expectedIntermediateValues.put(df1 + "P2/i:X[]", "10");
+		expectedIntermediateValues.put(df1 + "P2/o:Y[]", "1000");
+		expectedIntermediateValues.put(df1 + "P3/i:X[]", "1000");
+		expectedIntermediateValues.put(df1 + "P3/o:Y[]", "968");
+		expectedIntermediateValues.put(df1 + "PNested2/i:I[]", "968");
+		expectedIntermediateValues.put(df1 + "PNested2/o:O[]", "968");
+		expectedIntermediateValues.put(df2 + "P6/i:X[]", "968");
+		expectedIntermediateValues.put(df2 + "P6/o:Y[]", "968");
 
 		return expectedIntermediateValues;
 	}
