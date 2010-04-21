@@ -11,8 +11,8 @@ import java.util.Map;
  * @author Stian Soiland-Reyes
  *
  */
-public class CapturedToDatabaseLineageExampleTest extends
-		AbstractDatabaseTestHelper {
+public class LineageExampleDbTest extends
+		AbstractDbTestHelper {
 
 	@Override
 	protected String getWorkflowName() {

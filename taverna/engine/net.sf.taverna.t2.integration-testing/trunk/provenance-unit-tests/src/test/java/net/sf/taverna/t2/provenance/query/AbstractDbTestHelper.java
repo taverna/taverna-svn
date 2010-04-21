@@ -69,7 +69,7 @@ import org.junit.Test;
  * @author Paolo Missier
  * 
  */
-public abstract class AbstractDatabaseTestHelper {
+public abstract class AbstractDbTestHelper {
 
 	protected static Dataflow dataflow;
 
@@ -225,7 +225,7 @@ public abstract class AbstractDatabaseTestHelper {
 
 	@Before
 	public void runWorkflow() throws Exception {
-		synchronized (AbstractDatabaseTestHelper.class) {
+		synchronized (AbstractDbTestHelper.class) {
 			if (dataflow != null) {
 				return;
 			}

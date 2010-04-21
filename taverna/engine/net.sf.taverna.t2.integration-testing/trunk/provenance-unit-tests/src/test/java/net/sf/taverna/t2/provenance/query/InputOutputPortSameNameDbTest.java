@@ -13,7 +13,7 @@ import org.junit.Test;
  * @author Stian Soiland-Reyes
  * 
  */
-public class CapturedInputOutputPortSameName extends AbstractDatabaseTestHelper {
+public class InputOutputPortSameNameDbTest extends AbstractDbTestHelper {
 
 	protected Map<String, Object> getWorkflowInputs() {
 		Map<String, Object> inputs = new HashMap<String, Object>();		

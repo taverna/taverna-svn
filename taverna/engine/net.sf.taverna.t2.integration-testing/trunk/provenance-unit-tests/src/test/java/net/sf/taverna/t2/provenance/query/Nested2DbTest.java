@@ -9,7 +9,7 @@ import java.util.Map;
  * @author Stian Soiland-Reyes
  * 
  */
-public class CapturedToDatabaseNested2Test extends AbstractDatabaseTestHelper {
+public class Nested2DbTest extends AbstractDbTestHelper {
 
 	protected Map<String, Object> getWorkflowInputs() {
 		Map<String, Object> inputs = new HashMap<String, Object>();
