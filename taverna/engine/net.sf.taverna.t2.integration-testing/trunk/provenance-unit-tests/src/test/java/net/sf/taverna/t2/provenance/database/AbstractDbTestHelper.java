@@ -63,7 +63,7 @@ import org.junit.Test;
 /**
  * Test database content for provenance captured after a dataflow run.
  * <p>
- * Subclass this test to add the workflow specific tests
+ * Subclass this test to add the workflow specific details and tests
  * 
  * @author Stian Soiland-Reyes
  * @author Paolo Missier

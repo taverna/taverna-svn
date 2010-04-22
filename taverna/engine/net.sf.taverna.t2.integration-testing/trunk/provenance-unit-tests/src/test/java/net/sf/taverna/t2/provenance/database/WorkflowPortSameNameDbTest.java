@@ -7,38 +7,37 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * Captures values within nested nested workflows. 
- * Test for bug T2-1051
+ * Test a workflow which has an output port called the same as an input port
+ * Related to bug T2-1051
  * 
  * @author Stian Soiland-Reyes
  * 
  */
-public class InputOutputPortSameNameDbTest extends AbstractDbTestHelper {
+public class WorkflowPortSameNameDbTest extends AbstractDbTestHelper {
 
 	protected Map<String, Object> getWorkflowInputs() {
-		Map<String, Object> inputs = new HashMap<String, Object>();		
+		Map<String, Object> inputs = new HashMap<String, Object>();
+		inputs.put("duplicate", "abcd");
 		return inputs;
 	}
 
 	protected Map<String, Object> getExpectedWorkflowOutputs() {
 		Map<String, Object> inputs = new HashMap<String, Object>();
-		inputs.put("output[]", "output");
+		inputs.put("duplicate[]", "abcdabcd");
 		return inputs;
 	}
 
 	protected String getWorkflowName() {
-		return "t2-1051";
+		return "duplicate-input-output-port";
 	}
 
 	@Override
 	protected Map<String, Object> getExpectedIntermediateValues() {
 		Map<String, Object> expectedIntermediateValues = new HashMap<String, Object>();
-
 		String df0 = dataflow.getInternalIdentier() + "/";
-
-		expectedIntermediateValues.put(df0 + "input/value[]", "input");
-		expectedIntermediateValues.put(df0 + "T2_1051/i:parameter[]", "input");
-		expectedIntermediateValues.put(df0 + "T2_1051/o:parameter[]", "output");
+		expectedIntermediateValues.put(df0 + "Concatenate_two_strings/i:string1[]", "abcd");
+		expectedIntermediateValues.put(df0 + "Concatenate_two_strings/i:string2[]", "abcd");
+		expectedIntermediateValues.put(df0 + "Concatenate_two_strings/o:output[]", "abcdabcd");
 
 		return expectedIntermediateValues;
 	}

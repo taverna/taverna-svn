@@ -74,9 +74,9 @@
 		</dependency>
 
 		<dependency>
-		 <groupId>org.apache.derby</groupId>
-  <artifactId>derby</artifactId>
-    <version>10.5.3.0_1</version>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derby</artifactId>
+			<version>10.5.3.0_1</version>
 		</dependency>
 
 		<dependency>
@@ -91,9 +91,14 @@
 			<version>${t2.activities.version}</version>
 		</dependency>
 
-	<dependency>
+		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>stringconstant-activity</artifactId>
+			<version>${t2.activities.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.activities</groupId>
+			<artifactId>localworker-activity</artifactId>
 			<version>${t2.activities.version}</version>
 		</dependency>
 
@@ -111,7 +116,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>reference-core-extensions</artifactId>
-			<version>${t2.reference.core.extensions.version}</version>			
+			<version>${t2.reference.core.extensions.version}</version>
 		</dependency>
 	</dependencies>
 </project>

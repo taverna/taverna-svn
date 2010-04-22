@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.provenance.database;
+package net.sf.taverna.t2.provenance.query;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +9,7 @@ import java.util.Map;
  * @author Stian Soiland-Reyes
  * 
  */
-public class Nested2DbTest extends AbstractDbTestHelper {
+public class DoubleNestedQueryTest extends AbstractQueryTestHelper {
 
 	protected Map<String, Object> getWorkflowInputs() {
 		Map<String, Object> inputs = new HashMap<String, Object>();
