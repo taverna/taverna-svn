@@ -117,15 +117,20 @@ public class ProvenanceTestHelper {
 		return referenceService;
 	}
 
-	protected Dataflow loadDataflow(String workflowName) throws IOException,
+	public Dataflow loadDataflow(String workflowName) throws IOException,
 			JDOMException, DeserializationException, EditException {
-		XMLDeserializer deserializer = new XMLDeserializerImpl();
 		String resourceName = "/workflows/" + workflowName + ".t2flow";
 		InputStream inStream = getClass().getResourceAsStream(resourceName); //$NON-NLS-1$
 		if (inStream == null) {
 			throw new IOException(
 					"Unable to find resource for t2 dataflow:" + resourceName); //$NON-NLS-1$
 		}
+		return loadDataflow(inStream);
+	}
+
+	public Dataflow loadDataflow(InputStream inStream) throws JDOMException,
+			IOException, DeserializationException, EditException {
+		XMLDeserializer deserializer = new XMLDeserializerImpl();
 		SAXBuilder builder = new SAXBuilder();
 		Element el = builder.build(inStream).detachRootElement();
 		return deserializer.deserializeDataflow(el);
