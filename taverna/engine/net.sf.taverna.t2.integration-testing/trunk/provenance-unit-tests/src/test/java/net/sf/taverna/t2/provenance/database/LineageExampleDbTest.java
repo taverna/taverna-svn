@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.provenance.query;
+package net.sf.taverna.t2.provenance.database;
 
 import java.util.Arrays;
 import java.util.HashMap;
