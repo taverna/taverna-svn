@@ -9,7 +9,7 @@
 	<groupId>org.jdesktop</groupId>
 	<artifactId>swingworker</artifactId>
 	<name>SwingWorker utility</name>
-	<version>1.2-SNAPSHOT</version>
+	<version>1.2-1</version>
 	<description>
 		An utility from https://swingworker.dev.java.net/ for performing lengthy GUI-interacting tasks in a dedicated thread. This is for Java 5 only as in Java 6 this utility comes with JRE.  
 	</description>
@@ -25,9 +25,9 @@
 		</repository>
 	</repositories>
 	<scm>
-		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/utils/net.sf.taverna.jedit.jedit-syntax/trunk/</connection>
-		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/utils/net.sf.taverna.jedit.jedit-syntax/trunk/</developerConnection>
-		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/utils/net.sf.taverna.jedit.jedit-syntax/trunk/</url>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/utils/net.sf.taverna.jedit.jedit-syntax/tags/swingworker-1.2-1</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/utils/net.sf.taverna.jedit.jedit-syntax/tags/swingworker-1.2-1</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/utils/net.sf.taverna.jedit.jedit-syntax/tags/swingworker-1.2-1</url>
 	</scm>
 	<dependencies>
 		<dependency>
