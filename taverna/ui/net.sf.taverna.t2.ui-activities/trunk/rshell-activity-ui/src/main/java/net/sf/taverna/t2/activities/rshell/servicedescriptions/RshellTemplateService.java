@@ -27,8 +27,9 @@
  */
 package net.sf.taverna.t2.activities.rshell.servicedescriptions;
 
+import java.net.URI;
+
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
 import net.sf.taverna.t2.activities.rshell.RshellActivityConfigurationBean;
@@ -38,6 +39,9 @@ import net.sf.taverna.t2.servicedescriptions.ServiceDescription;
 public class RshellTemplateService extends AbstractTemplateService<RshellActivityConfigurationBean>{
 
 	private static final String RSHELL = "Rshell";
+	
+	private static final URI providerId = URI
+	.create("http://taverna.sf.net/2010/service-provider/rshell");
 	
 	@Override
 	public Class<RshellActivity> getActivityClass() {
@@ -63,8 +67,13 @@ public class RshellTemplateService extends AbstractTemplateService<RshellActivit
 		return "A service that allows the calling of R scripts on an R server";	
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static ServiceDescription getServiceDescription() {
 		RshellTemplateService rts = new RshellTemplateService();
 		return rts.templateService;
+	}
+
+	public String getId() {
+		return providerId.toString();
 	}
 }

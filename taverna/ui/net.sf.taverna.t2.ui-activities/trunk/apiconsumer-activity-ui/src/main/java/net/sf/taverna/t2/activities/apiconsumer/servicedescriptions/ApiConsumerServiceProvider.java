@@ -5,6 +5,7 @@ package net.sf.taverna.t2.activities.apiconsumer.servicedescriptions;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -36,6 +36,9 @@ implements
 CustomizedConfigurePanelProvider<ApiConsumerServiceProviderConfig>{
 
 	private static Logger logger = Logger.getLogger(ApiConsumerServiceProvider.class);
+	
+	private static final URI providerId = URI
+	.create("http://taverna.sf.net/2010/service-provider/apiconsumer");
 	
 	public ApiConsumerServiceProvider() {
 		super(new ApiConsumerServiceProviderConfig());
@@ -167,6 +170,10 @@ CustomizedConfigurePanelProvider<ApiConsumerServiceProviderConfig>{
 		List<String> result;
 		result = Arrays.asList(getConfiguration().getAbsolutePath());
 		return result;
+	}
+
+	public String getId() {
+		return providerId.toString();
 	}
 
 }
