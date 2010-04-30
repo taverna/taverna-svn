@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 
 import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivity;
 import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivityConfigurationBean;
@@ -140,6 +139,7 @@ public class ApiConsumerServiceDescription extends ServiceDescription<ApiConsume
 		return getMethodName();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<? extends Comparable> getPath() {
 		List<String> result;

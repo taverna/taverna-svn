@@ -20,7 +20,6 @@
  ******************************************************************************/
 package net.sf.taverna.t2.activities.apiconsumer.actions;
 
-import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 
@@ -30,7 +29,6 @@ import javax.swing.JDialog;
 import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivity;
 import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivityConfigurationBean;
 import net.sf.taverna.t2.activities.apiconsumer.views.ApiConsumerConfigView;
-import net.sf.taverna.t2.workbench.helper.HelpEnabledDialog;
 import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationAction;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationDialog;
 

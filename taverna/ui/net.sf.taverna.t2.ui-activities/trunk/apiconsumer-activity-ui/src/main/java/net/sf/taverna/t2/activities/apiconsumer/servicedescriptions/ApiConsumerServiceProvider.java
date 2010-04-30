@@ -25,6 +25,7 @@ import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivity;
 import net.sf.taverna.t2.lang.ui.ExtensionFileFilter;
 import net.sf.taverna.t2.servicedescriptions.AbstractConfigurableServiceProvider;
 import net.sf.taverna.t2.servicedescriptions.CustomizedConfigurePanelProvider;
+import net.sf.taverna.t2.workbench.ui.impl.Workbench;
 
 /**
  * @author alanrw
@@ -54,7 +55,7 @@ CustomizedConfigurePanelProvider<ApiConsumerServiceProviderConfig>{
 		fc.resetChoosableFileFilters();
 		fc.setFileFilter(new ExtensionFileFilter(new String[] { "xml" }));
 		fc.setCurrentDirectory(new File(curDir));
-		int returnVal = fc.showOpenDialog(null);
+		int returnVal = fc.showOpenDialog(Workbench.getInstance());
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			prefs.put("currentDir", fc.getCurrentDirectory().toString());
 			File file = fc.getSelectedFile();
