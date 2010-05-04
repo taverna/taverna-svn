@@ -12,11 +12,7 @@
 	<description>
 		Hello world example for Raven integration tests
 	</description>
-	<dependencies>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-		</dependency>
+	<dependencies>		
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
