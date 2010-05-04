@@ -21,6 +21,7 @@
 
 package net.sf.taverna.t2.activities.usecase.servicedescriptions;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,6 +43,9 @@ import de.uni_luebeck.inb.knowarc.usecases.UseCaseEnumeration;
  */
 public class UseCaseServiceProvider extends AbstractConfigurableServiceProvider<UseCaseServiceProviderConfig> {
 
+	private static final URI providerId = URI
+	.create("http://taverna.sf.net/2010/service-provider/usecase");
+	
 	public UseCaseServiceProvider() {
 		super(new UseCaseServiceProviderConfig("http://somehost/service?usecase"));
 	}
@@ -105,4 +109,7 @@ public class UseCaseServiceProvider extends AbstractConfigurableServiceProvider<
 	public void setServiceDescriptionRegistry(ServiceDescriptionRegistry registry) {
 	}
 
+	public String getId() {
+		return providerId.toString();
+	}
 }
