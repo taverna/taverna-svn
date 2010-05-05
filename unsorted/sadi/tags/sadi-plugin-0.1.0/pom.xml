@@ -1,0 +1,68 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.sf.taverna.t2.plugins</groupId>
+	<artifactId>sadi-plugin</artifactId>
+	<packaging>taverna-plugin</packaging>
+	<name>SADI activity plugin</name>
+	<version>0.1.0</version>
+	<description>SADI activity plugin for Taverna 2.1</description>
+
+	<repositories>
+		<repository>
+			<id>biordf-repository</id>
+			<name>biordf Repository</name>
+			<url>http://dev.biordf.net/maven</url>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>net.sf.taverna.t2.maven.plugins</groupId>
+				<artifactId>maven-taverna-plugin</artifactId>
+				<version>0.1.1</version>
+				<extensions>true</extensions>
+				<configuration>
+					<provider>biordf.net</provider>
+					<tavernaVersion>2.1</tavernaVersion>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>biordf-repository</id>
+			<name>dev.biordf.net Repository</name>
+			<url>scpexe://dev.biordf.net/var/www/taverna/plugins</url>
+		</repository>
+		<snapshotRepository>
+			<id>biordf-repository</id>
+			<name>dev.biordf.net Repository</name>
+			<url>scpexe://dev.biordf.net/var/www/taverna/plugins/sandbox</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.taverna.t2.activities</groupId>
+			<artifactId>sadi-activity</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-activities</groupId>
+			<artifactId>sadi-activity-ui</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+	</dependencies>
+
+</project>
