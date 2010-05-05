@@ -1,0 +1,3 @@
+net.sf.taverna.t2.activities.sadi.views.SADIActivityContextualViewFactory
+net.sf.taverna.t2.activities.sadi.views.SADIInputPortContextualViewFactory
+net.sf.taverna.t2.activities.sadi.views.SADIOutputPortContextualViewFactory
