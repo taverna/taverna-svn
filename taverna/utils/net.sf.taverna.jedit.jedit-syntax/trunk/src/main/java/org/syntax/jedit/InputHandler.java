@@ -22,9 +22,11 @@ import java.util.Hashtable;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Element;
 
 import org.apache.log4j.Logger;
 
@@ -89,6 +91,7 @@ public abstract class InputHandler extends KeyAdapter
 	public static final ActionListener SELECT_PREV_WORD = new prev_word(true);
 	public static final ActionListener REPEAT = new repeat();
 	public static final ActionListener TOGGLE_RECT = new toggle_rect();
+	public static final ActionListener GOTO_LINE = new goto_line();
 	// Clipboard
 	public static final Action CLIP_COPY = new clip_copy();
 	public static final Action CLIP_PASTE = new clip_paste();
@@ -1084,6 +1087,30 @@ public abstract class InputHandler extends KeyAdapter
 			textArea.setSelectionRectangular(
 				!textArea.isSelectionRectangular());
 		}
+	}
+	
+	public static class goto_line implements ActionListener
+	{
+
+		public void actionPerformed(ActionEvent evt) {
+			JEditTextArea textArea = getTextArea(evt);
+			String inputString = JOptionPane.showInputDialog(textArea, "Enter line number", "Line number", JOptionPane.QUESTION_MESSAGE);
+			if (inputString != null) {
+				try {
+					int lineNumber = Integer.parseInt(inputString);
+					lineNumber = Math.max(lineNumber, 1);
+					lineNumber = Math.min(lineNumber, textArea.getLineCount());
+					int lineOffset = textArea.getLineStartOffset(lineNumber - 1);
+					if (lineOffset != -1) {
+						textArea.setCaretPosition(lineOffset);
+						textArea.scrollToCaret();
+					}
+				} catch (NumberFormatException e1){
+					// do nothing
+				}
+			}
+		}
+		
 	}
 
 	public static class insert_char implements ActionListener,

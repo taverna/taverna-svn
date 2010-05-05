@@ -83,6 +83,7 @@ public class DefaultInputHandler extends InputHandler
 		addKeyBinding("S+DOWN",SELECT_NEXT_LINE);
 
 		addKeyBinding("C+ENTER",REPEAT);
+		addKeyBinding("C+L", GOTO_LINE);
 		
 		// Clipboard
 		addKeyBinding("C+C", CLIP_COPY);
