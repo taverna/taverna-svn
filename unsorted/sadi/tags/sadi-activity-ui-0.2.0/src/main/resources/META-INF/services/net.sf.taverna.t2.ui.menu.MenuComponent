@@ -1,0 +1,3 @@
+net.sf.taverna.t2.activities.sadi.menu.SADIConfigurationMenuAction
+net.sf.taverna.t2.activities.sadi.menu.SADIServiceDiscoveryMenuSection
+net.sf.taverna.t2.activities.sadi.menu.SADIFindServicesMenuAction
