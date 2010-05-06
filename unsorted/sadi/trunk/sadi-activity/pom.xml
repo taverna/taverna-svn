@@ -10,7 +10,7 @@
 
 	<groupId>net.sf.taverna.t2.activities</groupId>
 	<artifactId>sadi-activity</artifactId>
-	<version>0.2.0</version>
+	<version>0.3.0-SNAPSHOT</version>
 	<name>Taverna 2 SADI Activity</name>
 
 	<build>
