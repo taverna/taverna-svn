@@ -159,13 +159,11 @@ public class SADIUtilsIT {
 
 	@Test
 	public void testGetInputResources2() throws Exception {
-		String serviceURI = "http://137.82.157.104:8080/sadi-examples/uniprotInfo";
-//		String serviceURI = "http://sadiframework.org/examples/uniprotInfo";
+		String serviceURI = "http://sadiframework.org/examples/uniprotInfo";
 		String serviceId = serviceURI + UUID.randomUUID();
 		Service service = new ServiceImpl(serviceURI);
 		
 		List<String> uniprot = Arrays.asList("P68871", "Q7Z591");
-//		List<String> uniprot = Arrays.asList("http://lsrn.org/Uniprot:P68871", "http://lsrn.org/Uniprot:Q7Z591");
 
 		RestrictionNode inputRestrictionTree = SADIUtils.buildInputRestrictionTree(service.getInputClass());
 		for (List<String> path : SADIUtils.getDefaultRestrictionPaths(inputRestrictionTree)) {
