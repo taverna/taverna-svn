@@ -2,32 +2,41 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>net.sf.taverna</groupId>
+        <artifactId>parent</artifactId>
+        <version>0.1.2009-02-12</version>
+    </parent>
+
 	<groupId>net.sf.taverna.t2.core</groupId>
 	<artifactId>provenance-client</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+    <name>Provenance client</name>
 
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+    <repositories>
+        <repository>
+            <releases />
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>mygrid-repository</id>
+            <name>myGrid Repository</name>
+            <url>http://www.mygrid.org.uk/maven/repository</url>
+        </repository>
+    </repositories>
+
+
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>provenanceconnector</artifactId>
-			<version>0.9-SNAPSHOT</version>
+			<version>1.1</version>
 		</dependency>
 
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>provenance-mysql</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>1.1</version>
 		</dependency>
 
 		<dependency>
@@ -39,13 +48,19 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>provenance-derby</artifactId>
-			<version>0.3-SNAPSHOT</version>
+			<version>1.1</version>
 		</dependency>
 
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-impl</groupId>
 			<artifactId>data-management-config</artifactId>
-			<version>0.9-SNAPSHOT</version>
+			<version>1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>reference-core-extensions</artifactId>
+			<version>1.1</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 </project>

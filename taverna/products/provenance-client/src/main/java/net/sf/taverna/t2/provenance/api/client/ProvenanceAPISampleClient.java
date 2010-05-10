@@ -93,6 +93,7 @@ public class ProvenanceAPISampleClient {
 		ds.setDefaultAutoCommit(true);
 		ds.setUsername(DB_USER);
 		ds.setPassword(DB_PASSWD);
+		System.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLInnoDBDialect");
 
 		try {
 			ds.setUrl("jdbc:mysql://"+DB_URL_LOCAL+"/T2Provenance");
