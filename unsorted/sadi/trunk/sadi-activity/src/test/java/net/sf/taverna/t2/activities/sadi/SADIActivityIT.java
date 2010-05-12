@@ -37,6 +37,7 @@ import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -67,6 +68,7 @@ public class SADIActivityIT {
 		Set<String> expectedOutputs = new HashSet<String>();
 		expectedOutputs.add("hasName (string)");
 		expectedOutputs.add("belongsToOrganism (string)");
+		expectedOutputs.add("hasSequence (string)");
 
 		activity.configure(configurationBean);
 
@@ -90,6 +92,7 @@ public class SADIActivityIT {
 	}
 
 	@Test
+	@Ignore(value="service fails")
 	public void testConfigureMI() throws Exception {
 		Set<String> expectedInputs = new HashSet<String>();
 		expectedInputs.add("UniProt_Record");
@@ -108,8 +111,8 @@ public class SADIActivityIT {
 			assertEquals(1, inputPort.getDepth());
 		}
 		assertTrue(expectedInputs.size() == 0);
-
 		Set<OutputPort> outputPorts = activity.getOutputPorts();
+
 		assertEquals(expectedOutputs.size(), outputPorts.size());
 		for (OutputPort outputPort : outputPorts) {
 			assertTrue("Wrong output : " + outputPort.getName(), expectedOutputs.remove(outputPort

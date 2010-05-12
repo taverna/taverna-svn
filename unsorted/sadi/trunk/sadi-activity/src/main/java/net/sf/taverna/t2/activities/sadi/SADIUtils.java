@@ -386,20 +386,18 @@ public class SADIUtils {
 						resource.addProperty(restriction.getOntProperty(), rdfNode);
 					} else if (value instanceof String) {
 						String string = (String) value;
-						if (restriction.getOntProperty().isDatatypeProperty() || restriction.getOntProperty().isProperty()) {
+						if (isAbsoluteURI(string)) {
+							Resource newResource = resource.getModel().createResource(string,
+									restriction.getOntClass());
+							resource.addProperty(restriction.getOntProperty(), newResource);
+						} else if (LSRNUtils.isLSRNType(restriction.getOntClass())) {
+							Resource newResource = LSRNUtils.createInstance(resource
+									.getModel(), restriction.getOntClass(), string);
+							resource.addProperty(restriction.getOntProperty(), newResource);
+						} else {
 							Literal literal = resource.getModel().createTypedLiteral(string,
 									restriction.getOntClass().getURI());
 							resource.addProperty(restriction.getOntProperty(), literal);
-						} else {
-							if (isAbsoluteURI(string)) {
-								Resource newResource = resource.getModel().createResource(string,
-										restriction.getOntClass());
-								resource.addProperty(restriction.getOntProperty(), newResource);
-							} else {
-								Resource newResource = ResourceFactory.createInstance(resource
-										.getModel(), restriction.getOntClass(), string);
-								resource.addProperty(restriction.getOntProperty(), newResource);
-							}
 						}
 					} else {
 						return false;
