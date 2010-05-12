@@ -1,60 +1,58 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>net.sf.taverna</groupId>
-		<artifactId>parent</artifactId>
-		<version>0.1.2009-02-12</version>
-	</parent>
-	<groupId>net.sf.taverna.t2.core</groupId>
-	<artifactId>provenance-mysql</artifactId>
-	<version>1.1-SNAPSHOT</version>
-	<name>mySQL provenance</name>
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>net.sf.taverna</groupId>
+        <artifactId>parent</artifactId>
+        <version>0.1.2009-02-12</version>
+    </parent>
+    <groupId>net.sf.taverna.t2.core</groupId>
+    <artifactId>provenance-mysql</artifactId>
+    <version>1.1-SNAPSHOT</version>
+    <name>mySQL provenance</name>
 
-	<properties>		
-		<t2.core.version>1.1-SNAPSHOT</t2.core.version>				
-	</properties>
+    <properties>        
+        <t2.core.version>1.1-SNAPSHOT</t2.core.version>                
+    </properties>
 
-	<repositories>
-		<repository>
-			<releases />
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<id>mygrid-repository</id>
-			<name>myGrid Repository</name>
-			<url>http://www.mygrid.org.uk/maven/repository</url>
-		</repository>
-		<repository>
-			<id>tupelo2</id>
-			<name>tupelo2</name>
-			<url>http://dlt-dev.ncsa.uiuc.edu/m2</url>
-		</repository>
-	</repositories>
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.4</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2.core</groupId>
-			<artifactId>provenanceconnector</artifactId>
-			<version>${t2.core.version}</version>
-		</dependency>
-		
-				<dependency>
-			<groupId>org.tupeloproject</groupId>
-			<artifactId>tupelo-cet</artifactId>
-			<version>2.4.3</version>
-		</dependency>
-       <dependency>
+    <repositories>
+        <repository>
+            <releases />
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>mygrid-repository</id>
+            <name>myGrid Repository</name>
+            <url>http://www.mygrid.org.uk/maven/repository</url>
+        </repository>
+        <repository>
+            <id>tupelo2</id>
+            <name>tupelo2</name>
+            <url>http://dlt-dev.ncsa.uiuc.edu/m2</url>
+        </repository>
+    </repositories>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.4</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.taverna.t2.core</groupId>
+            <artifactId>provenanceconnector</artifactId>
+            <version>${t2.core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tupeloproject</groupId>
+            <artifactId>tupelo-cet</artifactId>
+            <version>2.4.3</version>
+        </dependency>
+        <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
- 				<version>1.2.13</version>
+            <version>1.2.13</version>
         </dependency>
-
-	</dependencies>
+    </dependencies>
 </project>
