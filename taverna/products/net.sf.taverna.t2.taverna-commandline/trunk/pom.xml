@@ -12,12 +12,7 @@
 	<version>1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Taverna command-line application</name>
-	<properties>
-		<t2.core.version>1.1-SNAPSHOT</t2.core.version>
-		<t2.reference-core-extensions.version>1.1-SNAPSHOT</t2.reference-core-extensions.version>
-		<t2.infrastructure.version>2.1-SNAPSHOT</t2.infrastructure.version>
-		<taverna.version>1.7.2.0</taverna.version>
-	</properties>
+	
 	<repositories>		
 		<repository>
 			<releases />
