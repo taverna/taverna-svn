@@ -8,7 +8,7 @@
 		<version>0.1.2009-02-12</version>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
-	<artifactId>taverna-shell</artifactId>
+	<artifactId>taverna-commandline</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Taverna command-line application</name>
@@ -85,6 +85,6 @@
 		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/products/net.sf.taverna.t2.taverna-workbench/trunk/</url>
 	</scm>
 	<modules>
-		<module>taverna-shell-common</module>		
+			
 	</modules>
 </project>
