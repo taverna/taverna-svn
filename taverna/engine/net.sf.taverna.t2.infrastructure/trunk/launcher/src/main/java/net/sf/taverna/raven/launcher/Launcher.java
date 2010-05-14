@@ -206,9 +206,7 @@ public class Launcher {
 		if (splashScreenURL != null && !GraphicsEnvironment.isHeadless()) {
 			splash = SplashScreen.getSplashScreen(splashScreenURL);
 			splash.listenToRepository(appRuntime.getRavenRepository());
-		} else {
-			System.err.println("No splash screen : " + splashScreenURL);
-		}
+		} 
 	}
 
 }
