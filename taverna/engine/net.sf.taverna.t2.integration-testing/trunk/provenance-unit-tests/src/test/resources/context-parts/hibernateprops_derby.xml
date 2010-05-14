@@ -17,6 +17,18 @@
 	<bean id="t2reference.jdbc.url" class="java.lang.String"
 		factory-bean="t2reference.jdbc.temporaryjdbc"
 		factory-method="getTemporaryDerbyJDBC" />
+	
+	 <bean id="t2reference.jdbc.datasource"
+		class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="resourceRef">
+            <value>true</value>
+        </property>
+        <property name="jndiName">
+            <value>jdbc/taverna</value>
+        </property>
+    </bean>
+    
+    <!--
 	<bean id="t2reference.jdbc.datasource"
 		class="net.sf.taverna.platform.spring.jdbc.InterpolatingDriverManagerDataSource">
 		<property name="driverClassName">
@@ -32,6 +44,7 @@
 			<value>org.apache.derby:derby:10.4.1.3</value>
 		</property>
 	</bean>
+	-->
 
 	<!-- Configure hibernate to build schema from scratch, dropping existing -->
 	<bean id="t2reference.orm.h3.properties"

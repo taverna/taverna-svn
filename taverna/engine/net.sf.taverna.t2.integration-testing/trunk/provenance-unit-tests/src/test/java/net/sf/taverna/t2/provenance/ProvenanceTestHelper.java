@@ -50,6 +50,9 @@ public class ProvenanceTestHelper {
 		makeDataManager();
 	}
 	
+	private static ApplicationRuntime applicationRuntime = ApplicationRuntime.getInstance();
+
+	
 	private static final String CONTEXT_XML = "hibernateReferenceServiceContext.xml";
 
 	private static Logger logger = Logger.getLogger(ProvenanceTestHelper.class);
@@ -211,8 +214,8 @@ public class ProvenanceTestHelper {
 		} else {
 			ds.setDriverClassName("org.apache.derby.jdbc.EmbeddedDriver");
 		}
-		ds
-				.setDefaultTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+		ds.setDefaultTransactionIsolation(
+				Connection.TRANSACTION_READ_UNCOMMITTED);
 		ds.setMaxActive(50);
 		ds.setMinIdle(10);
 		ds.setMaxIdle(50);
@@ -222,7 +225,7 @@ public class ProvenanceTestHelper {
 			ds.setPassword(DB_PASSWD);
 			ds.setUrl("jdbc:mysql://" + DB_URL_LOCAL + "/T2Provenance");
 		} else {
-			ds.setUrl("jdbc:derby:t2-database;create=true;upgrade=true");
+			ds.setUrl("jdbc:derby:" + applicationRuntime.getApplicationHomeDir() + "t2-database;create=true;upgrade=true");
 		}
 
 		InitialContext context = new InitialContext();
