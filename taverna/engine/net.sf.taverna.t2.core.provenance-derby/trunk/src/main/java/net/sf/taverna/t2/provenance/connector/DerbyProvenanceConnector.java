@@ -61,12 +61,14 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			+ "wfNameRef varchar(100),"
 			+ "PRIMARY KEY (pnameRef,execIDRef,iteration, wfNameRef))";
 	private static final String createTableProcessor = "CREATE TABLE Processor ("
+			+ "processorId varchar(36) NOT NULL,"
 			+ "pname varchar(100) NOT NULL,"
 			+ "wfInstanceRef varchar(100) NOT NULL ,"
 			+ "type varchar(100) default NULL,"
 			+ "isTopLevel smallint, "
 			+ "PRIMARY KEY  (pname,wfInstanceRef))";
 	private static final String createTableVar = "CREATE TABLE Var ("
+			+ "portId varchar(36) NOT NULL,"
 			+ "varName varchar(100) NOT NULL,"
 			+ "type varchar(20) default NULL,"
 			+ "inputOrOutput smallint NOT NULL ,"
@@ -74,7 +76,8 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			+ "wfInstanceRef varchar(100) NOT NULL," + "nestingLevel int,"
 			+ "actualNestingLevel int," + "anlSet smallint default NULL,"
 			+ "reorder smallint, "
-			+ "PRIMARY KEY (varName,inputOrOutput,pnameRef,wfInstanceRef))";
+			+ "PRIMARY KEY (portId))";
+//			+ "PRIMARY KEY (varName,inputOrOutput,pnameRef,wfInstanceRef))";
 	private static final String createTableVarBinding = "CREATE TABLE VarBinding ("
 			+ "varNameRef varchar(100) NOT NULL,"
 			+ "wfInstanceRef varchar(100) NOT NULL,"
@@ -96,7 +99,9 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			+ "wfname varchar(100) NOT NULL," + "parentWFname varchar(100),"
 			+ "externalName varchar(100)," + "dataflow blob, "
 			+ "PRIMARY KEY  (wfname))";
-
+	
+	// Also see tables in ProvenanceConnector
+	
 	private final String TABLE_EXISTS_STATE = "X0Y32";
 
 	public DerbyProvenanceConnector() {
@@ -181,6 +186,38 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
 					logger.warn("Could not create table Data : ", e);
 			}
+			
+			try {
+				stmt.executeUpdate(ProcessorEnactment.getCreateTable());
+			} catch (SQLException e) {
+				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
+					logger.warn("Could not create table ProcessorEnactment : ", e);
+			}
+
+			try {
+				stmt.executeUpdate(ServiceInvocation.getCreateTable());
+			} catch (SQLException e) {
+				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
+					logger.warn("Could not create table "
+							+ ServiceInvocation.ServiceInvocation, e);
+			}
+			
+			try {
+				stmt.executeUpdate(Activity.getCreateTable());
+			} catch (SQLException e) {
+				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
+					logger.warn("Could not create table "
+							+ Activity.Activity, e);
+			}
+			try {
+				stmt.executeUpdate(DataBinding.getCreateTable());
+			} catch (SQLException e) {
+				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
+					logger.warn("Could not create table "
+							+ DataBinding.DataBinding, e);
+			}
+			
+			
 		} finally {
 			if (connection != null) {
 				try {

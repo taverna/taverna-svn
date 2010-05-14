@@ -72,12 +72,7 @@ public class DerbyProvenanceWriter extends ProvenanceWriter {
 			ps.setString(9, v.getWfInstanceRef());
 			
 			ps.execute();
-		} catch (InstantiationException e) {
-			logger.warn("Could not execute query: " + e);
-		} catch (IllegalAccessException e) {
-			logger.warn("Could not execute query: " + e);
-		} catch (ClassNotFoundException e) {
-			logger.warn("Could not execute query: " + e);
+		
 		} finally {
                     if (connection != null) connection.close();
                 }

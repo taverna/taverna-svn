@@ -123,6 +123,7 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
                     } else {
                         aVar.setInput(false);
                     }
+					aVar.setIdentifier(rs.getString("portId"));
                     aVar.setPName(rs.getString("pnameRef"));
                     aVar.setVName(rs.getString("varName"));
                     aVar.setType(rs.getString("type"));
@@ -187,6 +188,7 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
                     } else {
                         aVar.setInput(false);
                     }
+					aVar.setIdentifier(rs.getString("portId"));
                     aVar.setPName(rs.getString("pnameRef"));
                     aVar.setVName(rs.getString("varName"));
                     aVar.setType(rs.getString("type"));
