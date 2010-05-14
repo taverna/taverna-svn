@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,7 +36,10 @@ import net.sf.taverna.t2.provenance.connector.ProvenanceConnector;
 import net.sf.taverna.t2.provenance.lineageservice.Dependencies;
 import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceAnalysis;
+import net.sf.taverna.t2.provenance.lineageservice.utils.ProcessorEnactment;
+import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.utils.QueryVar;
+import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
 import net.sf.taverna.t2.provenance.lineageservice.utils.WorkflowInstance;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.T2Reference;
@@ -54,6 +58,7 @@ import net.sf.taverna.t2.workflowmodel.ProcessorPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.NestedDataflow;
 import net.sf.taverna.t2.workflowmodel.serialization.DeserializationException;
+import static net.sf.taverna.t2.provenance.database.AbstractDbTestHelper.*;
 
 import org.jdom.JDOMException;
 import org.junit.Before;
@@ -182,6 +187,8 @@ public abstract class AbstractQueryTestHelper {
 
 	protected abstract Map<String, Object> getExpectedCollections();
 
+	protected abstract Set<String> getExpectedProcesses();
+	
 	protected Map<String, Object> getExpectedIntermediateValues() {
 		Map<String, Object> expectedIntermediateValues = new HashMap<String, Object>();
 
@@ -292,7 +299,125 @@ public abstract class AbstractQueryTestHelper {
 		}
 		assertEquals(expectedWorkflowInputs, recordedInputs);
 	}
+	
+	private static Timestamp notExecutedBefore;
+	
+	@BeforeClass
+	public static void findEarlyTimestamp() {
+		notExecutedBefore = new Timestamp(System.currentTimeMillis());
+	}
+	
+	
+	@Test
+	public void listEnactments() {
+		Timestamp notExecutedAfter = new Timestamp(System.currentTimeMillis());
+		assertTrue(notExecutedAfter.after(notExecutedBefore));
+		Set<String> processors = new HashSet<String>();
 
+		String wfRunId = getFacade().getWorkflowRunId();
+		List<ProcessorEnactment> enactments = getProvenanceAccess().getProcessorEnactments(wfRunId);
+		assertTrue(! enactments.isEmpty());
+		
+		for (ProcessorEnactment enactment : enactments) {
+			ProvenanceProcessor proc = getProvenanceAccess().getProvenanceProcessor(enactment.getProcessorId());
+			String pName = proc.getPname();
+			String processorKey = pName + enactment.getIteration();
+			processors.add(processorKey);
+			
+			Timestamp enactmentStarted = enactment.getEnactmentStarted();
+			Timestamp enactmentEnded = enactment.getEnactmentEnded();
+			
+			assertTrue(enactmentStarted.after(notExecutedBefore));
+			assertTrue(enactmentEnded.after(enactmentStarted));
+			assertTrue(notExecutedAfter.after(enactmentEnded));
+		}			
+		Set<String> expectedProcesses = getExpectedProcesses();
+		assertEquals(expectedProcesses, processors);
+	}
+	
+	@Test
+	public void listEnactmentsByProcessor() {
+		// TODO: Check processor paths from nested workflow 
+		for (Processor p : dataflow.getProcessors()) {		
+			String pName = p.getLocalName();
+			String wfRunId = getFacade().getWorkflowRunId();
+			List<ProcessorEnactment> enactments = getProvenanceAccess().getProcessorEnactments(wfRunId, pName);
+			assertTrue(! enactments.isEmpty());
+			for (ProcessorEnactment enactment : enactments) {
+				ProvenanceProcessor proc = getProvenanceAccess().getProvenanceProcessor(enactment.getProcessorId());
+				assertEquals(pName, proc.getPname());
+			}			
+		}
+	}
+	
+	protected Map<String, Object> getExpectedIntermediates() {
+		Map<String, Object> intermediates = new HashMap<String, Object>();
+		
+		Map<String, Object> expectedIntermediateValues = getExpectedIntermediateValues(); 
+			
+		Map<String, Object> expectedCollections = getExpectedCollections();
+		intermediates.putAll(expectedCollections);
+		
+		for (String collectionKey : expectedCollections.keySet()) {
+			String collectionPrefix = collectionKey.split("\\]", 2)[0];
+			if (! collectionPrefix.endsWith("[")) {
+				collectionPrefix = collectionPrefix + ",";
+			}
+			Set<String> removeItems = new HashSet<String>();
+			for (String itemKey : expectedIntermediateValues.keySet()) {
+				String itemPrefix = itemKey.split("\\]", 2)[0];
+				if (itemPrefix.startsWith(collectionPrefix)) {
+					removeItems.add(itemKey);
+				}
+			}
+			expectedIntermediateValues.keySet().removeAll(removeItems);
+		}
+		intermediates.putAll(expectedIntermediateValues);
+		return intermediates;
+		
+	}
+	
+	@Test
+	public void fetchEnactmentValues() {
+		// TODO: Check processors in nested workflow 
+		Map<String, Object>  intermediateValues = new HashMap<String, Object>();
+
+		String wfRunId = getFacade().getWorkflowRunId();
+		List<ProcessorEnactment> enactments = getProvenanceAccess().getProcessorEnactments(wfRunId);
+		assertTrue(! enactments.isEmpty());
+		for (ProcessorEnactment enactment : enactments) {
+			ProvenanceProcessor proc = getProvenanceAccess().getProvenanceProcessor(enactment.getProcessorId());	
+			String inputsId = enactment.getInitialInputsDataBindingId();
+			String outputsId = enactment.getFinalOutputsDataBindingId();
+			
+			Map<Var, T2Reference> bindings = getProvenanceAccess().getDataBindings(inputsId);
+			if (! outputsId.equals(inputsId)) {
+				bindings.putAll(getProvenanceAccess().getDataBindings(outputsId));
+			}			
+			for (Entry<Var,T2Reference> binding : bindings.entrySet()) {
+				Var port = binding.getKey();
+				assertEquals(port.getPName(), proc.getPname());
+				assertEquals(port.getWfInstanceRef(), proc.getWfInstanceRef());
+				//assertEquals(port.getProcessorId(), proc.getIdentifier());
+				String key = proc.getWfInstanceRef() + "/" + proc.getPname()
+				+ "/" + (port.isInput() ? "i:" : "o:") + port.getVName()
+				+ enactment.getIteration();
+				Object resolved = getReferenceService().renderIdentifier(
+						binding.getValue(), Object.class, getContext());
+				intermediateValues.put(key, resolved);
+			}
+			
+		}			
+		
+		Map<String, Object> expectedIntermediateValues = getExpectedIntermediates();
+		
+		assertMapsEquals("Unexpected intermediate values", 
+				expectedIntermediateValues, intermediateValues);
+	}
+	
+	
+
+	
 	@Test
 	public void listRuns() throws JDOMException, IOException,
 			DeserializationException, EditException {
@@ -420,8 +545,10 @@ public abstract class AbstractQueryTestHelper {
 			}
 		}
 
-		assertEquals(expectedWorkflowOutputs, recordedOutputs);
+		assertMapsEquals("Mismatch workflow outputs ", expectedWorkflowOutputs, recordedOutputs);
 	}
+	
+	
 
 	public void waitForCompletion() throws InterruptedException,
 			DataflowTimeoutException {

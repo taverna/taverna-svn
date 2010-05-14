@@ -14,8 +14,12 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,6 +36,8 @@ import net.sf.taverna.t2.provenance.DataflowTimeoutException;
 import net.sf.taverna.t2.provenance.ProvenanceTestHelper;
 import net.sf.taverna.t2.provenance.api.ProvenanceAccess;
 import net.sf.taverna.t2.provenance.connector.ProvenanceConnector;
+import net.sf.taverna.t2.provenance.connector.ProvenanceConnector.DataBinding;
+import net.sf.taverna.t2.provenance.connector.ProvenanceConnector.ProcessorEnactment;
 import net.sf.taverna.t2.reference.IdentifiedList;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceServiceException;
@@ -88,6 +94,8 @@ public abstract class AbstractDbTestHelper {
 	protected static Map<String, List<String>> workflowIdToPaths = new HashMap<String, List<String>>();
 
 	protected static Map<String, Dataflow> workflowPaths = new HashMap<String, Dataflow>();
+
+	private static Timestamp notExecutedBefore;
 
 	protected void debugOutput(ResultSet resultSet) throws SQLException {
 		ResultSetMetaData metaData = resultSet.getMetaData();
@@ -183,7 +191,6 @@ public abstract class AbstractDbTestHelper {
 
 	protected Map<String, Object> getExpectedIntermediateValues() {
 		Map<String, Object> expectedIntermediateValues = new HashMap<String, Object>();
-
 		return expectedIntermediateValues;
 	}
 
@@ -258,8 +265,6 @@ public abstract class AbstractDbTestHelper {
 						"SELECT sourceVarNameRef,sourcePNameRef,sinkVarNameRef,sinkPNameRef from Arc WHERE wfInstanceRef=?");
 		for (Dataflow df : workflowPaths.values()) {
 			Set<String> expectedLinks = describeDataLinks(df);
-			// System.out.println(expectedLinks);
-
 			// Magic processor names meaning workflow ports
 			Set<String> myProcessorNames = new HashSet<String>();
 			for (String path : workflowIdToPaths.get(df.getInternalIdentier())) {
@@ -301,7 +306,6 @@ public abstract class AbstractDbTestHelper {
 					link.append(sinkVarNameRef);
 					links.add(link.toString());
 				}
-				// System.out.println(links);
 			} finally {
 				resultSet.close();
 			}
@@ -473,6 +477,167 @@ public abstract class AbstractDbTestHelper {
 	}
 
 	@Test
+	public void testProcessorEnactments() throws Exception {
+		PreparedStatement statement = getConnection().prepareStatement(
+				"SELECT " + ProcessorEnactment.enactmentStarted + ","
+						+ ProcessorEnactment.enactmentEnded + ","
+						+ ProcessorEnactment.iteration + ","
+						+ "Processor.pName" + " FROM "
+						+ ProcessorEnactment.ProcessorEnactment
+						+ " INNER JOIN " + "Processor" + " ON "
+						+ ProcessorEnactment.ProcessorEnactment + "."
+						+ ProcessorEnactment.processorId + " = "
+						+ "Processor.processorId" + " WHERE "
+						+ ProcessorEnactment.workflowRunId + "=?");
+		statement.setString(1, getFacade().getWorkflowRunId());
+		ResultSet resultSet = statement.executeQuery();
+		
+		Map<String, Timestamp> processorStarted = new HashMap<String, Timestamp>();
+		Map<String, Timestamp> processorEnded = new HashMap<String, Timestamp>();
+		
+		Timestamp notExecutedAfter = new Timestamp(System.currentTimeMillis());
+		assertTrue(notExecutedAfter.after(notExecutedBefore));
+		
+		try {
+			while (resultSet.next()) {
+				Timestamp enactmentStarted = resultSet.getTimestamp(ProcessorEnactment.enactmentStarted.name());
+				Timestamp enactmentEnded = resultSet.getTimestamp(ProcessorEnactment.enactmentEnded.name());
+				String iteration = resultSet.getString(ProcessorEnactment.iteration.name());
+				String pName = resultSet.getString("pName");
+				String processorKey = pName + iteration;
+				processorStarted.put(processorKey, enactmentStarted);
+				processorEnded.put(processorKey, enactmentEnded);
+				assertTrue(enactmentStarted.after(notExecutedBefore));
+				assertTrue(enactmentEnded.after(enactmentStarted));
+				assertTrue(notExecutedAfter.after(enactmentEnded));
+			}
+		} finally {
+			resultSet.close();
+		}
+		
+		
+		
+		Set<String> expectedProcesses = getExpectedProcesses();
+		assertSetsEquals("Unexpected process ", expectedProcesses, processorStarted.keySet());
+
+		
+	}
+	
+	@Test
+	public void testProcessorEnactmentDataBindings() throws Exception {
+		Map<String, Object> intermediateValues = new HashMap<String, Object>();
+		List<ProcessorEnactment> bindings = Arrays.asList(
+				ProcessorEnactment.initialInputsDataBindingId, 
+				ProcessorEnactment.finalOutputsDataBindingId);
+		for (ProcessorEnactment binding : bindings) {
+			PreparedStatement statement = getConnection().prepareStatement(
+							"SELECT " 	
+							+ DataBinding.t2Reference + " AS t2ref, "
+							+ ProcessorEnactment.processIdentifier + ","
+					    	+ ProcessorEnactment.iteration + ","
+					    	+ "Var.varName AS portName, " 
+							+ "Processor.wfInstanceRef AS workflowId,"
+							+ "Processor.pName AS processorName" + " FROM "
+							+ ProcessorEnactment.ProcessorEnactment
+							+ " INNER JOIN " + "Processor" + " ON "
+							+ ProcessorEnactment.ProcessorEnactment + "."
+							+ ProcessorEnactment.processorId + " = " + "Processor.processorId"
+							+ " INNER JOIN " + DataBinding.DataBinding
+							+ " ON " + DataBinding.dataBindingId + "=" + binding
+							+ " INNER JOIN Var "
+							+ " ON Var.portId=" + DataBinding.DataBinding + "." + DataBinding.portId						
+							+ " WHERE "
+							+ ProcessorEnactment.ProcessorEnactment + "." + ProcessorEnactment.workflowRunId + "=?");
+			statement.setString(1, getFacade().getWorkflowRunId());
+			ResultSet resultSet = statement.executeQuery();
+			
+			
+			try {
+				while (resultSet.next()) {
+					String processorName = resultSet.getString("processorName");
+					String workflowId = resultSet.getString("workflowId");
+					String iteration = resultSet.getString("iteration");
+					String t2ref = resultSet.getString("t2ref");
+					String processIdentifier = resultSet.getString("processIdentifier");
+					String portName = resultSet.getString("portName");
+				
+					boolean isInput = binding.equals(ProcessorEnactment.initialInputsDataBindingId);
+					String key = workflowId + "/"
+					+ processorName + "/"
+					+ (isInput ? "i:" : "o:") + portName
+					+ iteration;
+					
+					T2Reference ref = getReferenceService()
+					.referenceFromString(t2ref);
+					Object resolved = getReferenceService().renderIdentifier(ref, Object.class,	getContext());
+					intermediateValues.put(key, resolved);
+				}
+			} finally {
+				resultSet.close();
+			}
+		}
+		
+		Map<String, Object> expectedIntermediateValues = getExpectedIntermediates();
+		assertMapsEquals("Unexpected intermediate values", 
+				expectedIntermediateValues, intermediateValues);
+	}
+		
+
+	public static void assertMapsEquals(String msg, 
+			Map<? extends Object, ? extends Object> expected,
+			Map<? extends Object, ? extends Object> actual) {
+		assertSetsEquals(msg, expected.keySet(), actual.keySet());
+		for (Object key : expected.keySet()) {
+			assertEquals(msg + " values for key " + key,
+					expected.get(key), actual.get(key));
+		}
+	}
+
+	public static void assertSetsEquals(String msg,
+			Set<? extends Object> expected, Set<? extends Object> actual) {
+		Set<Object> missing = new HashSet<Object>(expected);
+		missing.removeAll(actual);
+		Set<Object> extra = new HashSet<Object>(actual);
+		extra.removeAll(expected);
+		assertTrue(msg + " extra: " + extra, extra.isEmpty());
+		assertTrue(msg + " missing: " + missing, missing.isEmpty());
+	}
+
+	protected Map<String, Object> getExpectedIntermediates() {
+		Map<String, Object> intermediates = new HashMap<String, Object>();
+		
+		Map<String, Object> expectedIntermediateValues = getExpectedIntermediateValues(); 
+			
+		Map<String, Object> expectedCollections = getExpectedCollections();
+		intermediates.putAll(expectedCollections);
+		
+		for (String collectionKey : expectedCollections.keySet()) {
+			String collectionPrefix = collectionKey.split("\\]", 2)[0];
+			if (! collectionPrefix.endsWith("[")) {
+				collectionPrefix = collectionPrefix + ",";
+			}
+			Set<String> removeItems = new HashSet<String>();
+			for (String itemKey : expectedIntermediateValues.keySet()) {
+				String itemPrefix = itemKey.split("\\]", 2)[0];
+				if (itemPrefix.startsWith(collectionPrefix)) {
+					removeItems.add(itemKey);
+				}
+			}
+			expectedIntermediateValues.keySet().removeAll(removeItems);
+		}
+		intermediates.putAll(expectedIntermediateValues);
+		return intermediates;
+		
+	}
+
+	@BeforeClass
+	public static void findEarlyTimestamp() {
+		notExecutedBefore = new Timestamp(System.currentTimeMillis());
+	}
+	
+	protected abstract Set<String> getExpectedProcesses();
+
+	@Test
 	public void testVarBindings() throws SQLException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
 		PreparedStatement statement = getConnection()
@@ -511,7 +676,6 @@ public abstract class AbstractDbTestHelper {
 						String iteration = resultSet.getString("iteration");
 						boolean isInput = resultSet.getBoolean("inputOrOutput");
 						if (collIdRef != null) {
-							System.out.println(positionInColl + " " + iteration + " " + collIdRef);
 							// Last bit of iteration should include reference
 							int expectedEnd = Integer.parseInt(positionInColl)-1;
 							
@@ -520,7 +684,7 @@ public abstract class AbstractDbTestHelper {
 //							assertTrue("Expected iteration to end with "
 //									+ expectedEnd + "] but iteration is "
 //									+ iteration, iteration
-//									.endsWith(expectedEnd + "]"));
+//									.endsWith(expectedEnd + "]"));intermediateValues
 						} else {
 							assertEquals("1", positionInColl);
 							// TODO: Enable test for []
@@ -550,7 +714,6 @@ public abstract class AbstractDbTestHelper {
 								+ (isInput ? "i:" : "o:") + varNameRef
 								+ iteration;
 						intermediateValues.put(key, resolved);
-						// System.out.println(key + " " + resolved);
 					}
 				} finally {
 					resultSet.close();
@@ -633,12 +796,6 @@ public abstract class AbstractDbTestHelper {
 						String anlSet = resultSet.getString("anlSet");
 						String reorder = resultSet.getString("reorder");
 
-						// System.out.print(df.getLocalName() + " " +
-						// p.getLocalName() + " " + (isInput ? "i" : "o"));
-						// System.out.println(":" + varName + " " + nestingLevel
-						// + " " + actualNestingLevel + " " + anlSet + " " +
-						// reorder);
-						//						
 						// TODO: Test anlset, reorder
 
 						if (isInput) {
@@ -721,12 +878,7 @@ public abstract class AbstractDbTestHelper {
 				String anlSet = resultSet.getString("anlSet");
 				String reorder = resultSet.getString("reorder");
 
-				// System.out.print(df.getLocalName() + " " +
-				// p.getLocalName() + " " + (isInput ? "i" : "o"));
-				// System.out.println(":" + varName + " " + nestingLevel
-				// + " " + actualNestingLevel + " " + anlSet + " " +
-				// reorder);
-				//						
+
 				// TODO: Test anlset, reorder
 
 				if (isInput) {

@@ -2,7 +2,10 @@ package net.sf.taverna.t2.provenance.database;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Traces lineage over iterations.
@@ -104,6 +107,17 @@ public class LineageExampleDbTest extends
 
 		return expectedIntermediateValues;
 
+	}
+
+	@Override
+	protected Set<String> getExpectedProcesses() {
+		List<String> processes = Arrays.asList("P0[]", 
+				"P2[]", "P1[0]", "P1[1]",
+				 "P3[]", 
+				 "P4[0,0]", "P4[0,1]", 
+				 "P4[1,0]", 
+				 "P4[1,1]");
+		return new HashSet<String>(processes);
 	}
 
 }

@@ -1,8 +1,12 @@
 package net.sf.taverna.t2.provenance.database;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -37,7 +41,7 @@ public class ProcessorPortSameNameDbTest extends AbstractDbTestHelper {
 
 		String df0 = dataflow.getInternalIdentier() + "/";
 
-		expectedIntermediateValues.put(df0 + "input/value[]", "input");
+		expectedIntermediateValues.put(df0 + "input/o:value[]", "input");
 		expectedIntermediateValues.put(df0 + "T2_1051/i:parameter[]", "input");
 		expectedIntermediateValues.put(df0 + "T2_1051/o:parameter[]", "output");
 
@@ -57,6 +61,13 @@ public class ProcessorPortSameNameDbTest extends AbstractDbTestHelper {
 		super.testVarBindings();
 	}
 	
+	@Override
+	protected Set<String> getExpectedProcesses() {
+		List<String> processes = Arrays.asList( 
+				"input[]", "T2_1051[]");
+		return new HashSet<String>(processes);
+	}
+	
 	@Ignore("Disabled while doing T2-1308")
 	@Test		
 	@Override
@@ -64,5 +75,13 @@ public class ProcessorPortSameNameDbTest extends AbstractDbTestHelper {
 			IllegalAccessException, ClassNotFoundException {
 		// TODO Auto-generated method stub
 		super.testVars();
+	}
+	
+	@Ignore("Disabled while doing T2-1308")
+	@Test		
+	@Override
+	public void testProcessorEnactmentDataBindings() throws Exception {
+		// TODO Auto-generated method stub
+		super.testProcessorEnactmentDataBindings();
 	}
 }

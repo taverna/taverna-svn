@@ -1,9 +1,14 @@
 package net.sf.taverna.t2.provenance.query;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * Test a workflow which has an output port called the same as an input port
@@ -12,7 +17,7 @@ import org.junit.Ignore;
  * @author Stian Soiland-Reyes
  * 
  */
-@Ignore("Disabled while doing T2-1308")
+
 public class WorkflowPortSameNameQueryTest extends AbstractQueryTestHelper {
 
 	protected Map<String, Object> getWorkflowInputs() {
@@ -53,6 +58,19 @@ public class WorkflowPortSameNameQueryTest extends AbstractQueryTestHelper {
 		inputs.put("duplicate[]", "abcd");
 		return inputs;
 	}
+	@Override
+	protected Set<String> getExpectedProcesses() {
+		List<String> processes = Arrays.asList( 
+				"Concatenate_two_strings[]");
+		return new HashSet<String>(processes);
+	}
 
-
+	@Test
+	@Ignore("Disabled while doing T2-1308")
+	@Override
+	public void fetchOutputPortData() throws Exception {
+		// TODO Auto-generated method stub
+		super.fetchOutputPortData();
+	}
+	
 }

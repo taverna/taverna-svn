@@ -1,7 +1,11 @@
 package net.sf.taverna.t2.provenance.query;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Captures values within nested nested workflows
@@ -63,7 +67,15 @@ public class DoubleNestedQueryTest extends AbstractQueryTestHelper {
 		expectedIntermediateValues.put(df2 + "P6/i:X[]", "968");
 		expectedIntermediateValues.put(df2 + "P6/o:Y[]", "968");
 
+		
 		return expectedIntermediateValues;
+	}
+	
+	@Override
+	protected Set<String> getExpectedProcesses() {
+		List<String> processes = Arrays.asList("P1[]", "P2[]", "P3[]",
+				"P4[]", "P6[]", "PNested[]", "PNested2[]");
+		return new HashSet<String>(processes);
 	}
 
 }

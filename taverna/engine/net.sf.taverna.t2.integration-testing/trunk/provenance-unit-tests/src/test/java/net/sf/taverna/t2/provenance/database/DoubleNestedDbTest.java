@@ -1,7 +1,11 @@
 package net.sf.taverna.t2.provenance.database;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Captures values within nested nested workflows
@@ -16,7 +20,7 @@ public class DoubleNestedDbTest extends AbstractDbTestHelper {
 		inputs.put("I", "abcd");
 		return inputs;
 	}
-	
+
 	protected Map<String, Object> getExpectedWorkflowInputs() {
 		Map<String, Object> inputs = new HashMap<String, Object>();
 		inputs.put("I[]", "abcd");
@@ -37,7 +41,7 @@ public class DoubleNestedDbTest extends AbstractDbTestHelper {
 	protected Map<String, Object> getExpectedCollections() {
 		return new HashMap<String, Object>();
 	}
-	
+
 	@Override
 	protected Map<String, Object> getExpectedIntermediateValues() {
 		Map<String, Object> expectedIntermediateValues = new HashMap<String, Object>();
@@ -64,6 +68,13 @@ public class DoubleNestedDbTest extends AbstractDbTestHelper {
 		expectedIntermediateValues.put(df2 + "P6/o:Y[]", "968");
 
 		return expectedIntermediateValues;
+	}
+
+	@Override
+	protected Set<String> getExpectedProcesses() {
+		List<String> processes = Arrays.asList("P1[]", "P2[]", "P3[]",
+				"P4[]", "P6[]", "PNested[]", "PNested2[]");
+		return new HashSet<String>(processes);
 	}
 
 }

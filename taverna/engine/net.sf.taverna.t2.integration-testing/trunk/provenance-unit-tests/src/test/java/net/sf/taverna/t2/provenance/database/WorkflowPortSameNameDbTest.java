@@ -1,8 +1,12 @@
 package net.sf.taverna.t2.provenance.database;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -15,8 +19,6 @@ import org.junit.Test;
  * 
  */
 
-
-@Ignore("Disabled while doing T2-1308")
 public class WorkflowPortSameNameDbTest extends AbstractDbTestHelper {
 
 	protected Map<String, Object> getWorkflowInputs() {
@@ -50,5 +52,21 @@ public class WorkflowPortSameNameDbTest extends AbstractDbTestHelper {
 	protected Map<String, Object> getExpectedCollections() {
 		return new HashMap<String, Object>();
 	}
-
+	
+	@Override
+	protected Set<String> getExpectedProcesses() {
+		List<String> processes = Arrays.asList( 
+				"Concatenate_two_strings[]");
+		return new HashSet<String>(processes);
+	}
+	
+	@Test
+	@Ignore("Disabled while doing T2-1308")
+	@Override
+	public void testVarBindingsWorkflowPorts() throws SQLException,
+			InstantiationException, IllegalAccessException,
+			ClassNotFoundException {
+		super.testVarBindingsWorkflowPorts();
+	}
+	
 }
