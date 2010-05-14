@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.taverna.t2.provenance.api.ProvenanceConnectorType;
+import net.sf.taverna.t2.provenance.connector.ProvenanceConnector.ProcessorEnactment;
+import net.sf.taverna.t2.provenance.connector.ProvenanceConnector.ServiceInvocation;
 import net.sf.taverna.t2.provenance.item.IterationProvenanceItem;
 import net.sf.taverna.t2.provenance.item.ProvenanceItem;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
@@ -59,7 +61,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ "`sinkPNameRef` varchar(100) NOT NULL,"
 		+ "`wfInstanceRef` varchar(100) NOT NULL,"
 		+ "PRIMARY KEY  USING BTREE (`sourceVarNameRef`,`sinkVarNameRef`,`sourcePNameRef`,`sinkPNameRef`,`wfInstanceRef`)"
-		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- arc between two processors';";
+		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='static -- arc between two processors';";
 
 	private static final String createTableCollection = "CREATE TABLE  IF NOT EXISTS `T2Provenance`.`Collection` ("
 		+ "`collID` varchar(100) NOT NULL COMMENT 'ID of a list (collection). not sure yet what this looks like... ',"
@@ -69,7 +71,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ "`varNameRef` varchar(100) NOT NULL,"
 		+ "`iteration` char(10) NOT NULL default '',"
 		+ " PRIMARY KEY  USING BTREE (`collID`,`wfInstanceRef`,`PNameRef`,`varNameRef`,`parentCollIDRef`,`iteration`)"
-		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='dynamic -- contains IDs of lists (T2 collections)';";
+		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='dynamic -- contains IDs of lists (T2 collections)';";
 
 	private static final String createTableProcBinding = "CREATE TABLE IF NOT EXISTS  `T2Provenance`.`ProcBinding` ("
 		+ "`pnameRef` varchar(100) NOT NULL COMMENT 'ref to static processor name',"
@@ -78,7 +80,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ "`iteration` char(10) NOT NULL default '',"
 		+ "  `wfNameRef` varchar(100) NOT NULL, "
 		+ "PRIMARY KEY  USING BTREE (`pnameRef`,`execIDRef`,`iteration`, `wfNameRef`)"
-		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='dynamic -- binding of processor to activity';";
+		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='dynamic -- binding of processor to activity';";
 
 	private static final String createTableProcessor = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Processor` ("
 		+ "`pname` varchar(100) NOT NULL,"
@@ -86,7 +88,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ "`type` varchar(100) default NULL COMMENT 'processor type',"
 		+ "`isTopLevel` tinyint(1) default '0',"
 		+ "PRIMARY KEY  (`pname`,`wfInstanceRef`)"
-		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- all processors for all workflows, by name';";
+		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='static -- all processors for all workflows, by name';";
 
 	private static final String createTableVar = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Var` ("
 		+ "`varName` varchar(100) NOT NULL,"
@@ -99,7 +101,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ "`anlSet` tinyint(1) default '0',"
 		+ "`order` tinyint(4) default NULL,"
 		+ "PRIMARY KEY  USING BTREE (`varName`,`inputOrOutput`,`pnameRef`,`wfInstanceRef`)"
-		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- input and output variables (processor port names i';";
+		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='static -- input and output variables (processor port names i';";
 
 	private static final String createTableVarBinding = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`VarBinding` ("
 		+ "`varNameRef` varchar(100) NOT NULL COMMENT 'ref to var name',"
@@ -114,19 +116,19 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ "  `wfNameRef` varchar(100) NOT NULL, "
 		+ "PRIMARY KEY  USING BTREE (`varNameRef`,`wfInstanceRef`,`PNameRef`,`iteration`, `wfNameRef`),"
 		+ "KEY `collectionFK` (`wfInstanceRef`,`PNameRef`,`varNameRef`,`collIDRef`)"
-		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='dynamic -- binding of variables to values ';";
+		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='dynamic -- binding of variables to values ';";
 
 	private static final String createTableWFInstance = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`WfInstance` ("
 		+ "`instanceID` varchar(100) NOT NULL COMMENT 'T2-generated ID for one execution',"
 		+ "`wfnameRef` varchar(100) NOT NULL COMMENT 'ref to name of the workflow being executed',"
 		+ "`timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP COMMENT 'when execution has occurred',"
 		+ "PRIMARY KEY  (`instanceID`, `wfnameRef`)"
-		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='dynamic -- execution of a workflow';";
+		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='dynamic -- execution of a workflow';";
 
 	private static final String createTableWorkflow = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Workflow` ("
 		+ "`wfname` varchar(100) NOT NULL, `parentWFname` varchar(100) default NULL, `externalName` varchar(100) default NULL, `dataflow` longblob,"
 		+ "PRIMARY KEY  (`wfname`)"
-		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- all known workflows by name';";
+		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='static -- all known workflows by name';";
 
 
 	private final String createTableData = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Data` ("
@@ -136,8 +138,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 	  +"PRIMARY KEY  USING BTREE (`dataReference`,`wfInstanceID`)"
 	  +") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='dereferced data -- strings only (includes XMLEncoded beans)';";
 
-	
-	
+	// Also see tables in ProvenanceConnector
 
     public MySQLProvenanceConnector() {
     	super();
@@ -270,8 +271,14 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 			stmt.executeUpdate(createTableVarBinding);			
 			stmt.executeUpdate(createTableWFInstance);			
 			stmt.executeUpdate(createTableWorkflow);
-			stmt.executeUpdate(createTableData);			
-
+			stmt.executeUpdate(createTableData);
+			String engineAndCharset = " ENGINE=MyISAM DEFAULT CHARSET=utf8";
+			stmt.executeUpdate(ProcessorEnactment.getCreateTable() + engineAndCharset);
+			stmt.executeUpdate(ServiceInvocation.getCreateTable() + engineAndCharset);
+			stmt.executeUpdate(Activity.getCreateTable() + engineAndCharset);
+			stmt.executeUpdate(DataBinding.getCreateTable() + engineAndCharset);
+			
+			
 		} catch (SQLException e) {
 			logger.error("There was a problem creating the Provenance database database: ",e);
 		} catch (InstantiationException e) {
