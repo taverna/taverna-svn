@@ -525,57 +525,68 @@ public abstract class AbstractDbTestHelper {
 	
 	@Test
 	public void testProcessorEnactmentDataBindings() throws Exception {
-		PreparedStatement statement = getConnection().prepareStatement(
-						"SELECT " 	
-						+ DataBinding.t2Reference + " AS t2ref, "
-						+ ProcessorEnactment.processIdentifier + ","
-				    	+ ProcessorEnactment.iteration + ","
-				    	+ "Var.varName AS portName, " 
-						+ "Processor.wfInstanceRef AS workflowId,"
-						+ "Processor.pName AS processorName" + " FROM "
-						+ ProcessorEnactment.ProcessorEnactment
-						+ " INNER JOIN " + "Processor" + " ON "
-						+ ProcessorEnactment.ProcessorEnactment + "."
-						+ ProcessorEnactment.processorId + " = " + "Processor.processorId"
-						+ " INNER JOIN " + DataBinding.DataBinding
-						+ " ON " + DataBinding.dataBindingId + "=" + ProcessorEnactment.initialInputsDataBindingId 
-						+ " INNER JOIN Var "
-						+ " ON Var.portId=binding." + DataBinding.portId						
-						+ " WHERE "
-						+ ProcessorEnactment.ProcessorEnactment + "." + ProcessorEnactment.workflowRunId + "=?");
-		statement.setString(1, getFacade().getWorkflowRunId());
-		ResultSet resultSet = statement.executeQuery();
-		
 		Map<String, Object> intermediateValues = new HashMap<String, Object>();
-		
-		try {
-			while (resultSet.next()) {
-				String processorName = resultSet.getString("processorName");
-				String workflowId = resultSet.getString("workflowId");
-				String iteration = resultSet.getString("iteration");
-				String t2ref = resultSet.getString("t2ref");
-				String processIdentifier = resultSet.getString("processIdentifier");
-				String portName = resultSet.getString("portName");
-				System.out.println(processIdentifier + " " + 
-						processorName +":" + portName + iteration + " " + t2ref);
+		List<ProcessorEnactment> bindings = Arrays.asList(
+				ProcessorEnactment.initialInputsDataBindingId, 
+				ProcessorEnactment.finalOutputsDataBindingId);
+		for (ProcessorEnactment binding : bindings) {
+			PreparedStatement statement = getConnection().prepareStatement(
+							"SELECT " 	
+							+ DataBinding.t2Reference + " AS t2ref, "
+							+ ProcessorEnactment.processIdentifier + ","
+					    	+ ProcessorEnactment.iteration + ","
+					    	+ "Var.varName AS portName, " 
+							+ "Processor.wfInstanceRef AS workflowId,"
+							+ "Processor.pName AS processorName" + " FROM "
+							+ ProcessorEnactment.ProcessorEnactment
+							+ " INNER JOIN " + "Processor" + " ON "
+							+ ProcessorEnactment.ProcessorEnactment + "."
+							+ ProcessorEnactment.processorId + " = " + "Processor.processorId"
+							+ " INNER JOIN " + DataBinding.DataBinding
+							+ " ON " + DataBinding.dataBindingId + "=" + binding
+							+ " INNER JOIN Var "
+							+ " ON Var.portId=" + DataBinding.DataBinding + "." + DataBinding.portId						
+							+ " WHERE "
+							+ ProcessorEnactment.ProcessorEnactment + "." + ProcessorEnactment.workflowRunId + "=?");
+			statement.setString(1, getFacade().getWorkflowRunId());
+			ResultSet resultSet = statement.executeQuery();
 			
-				boolean isInput = true;
-				String key = workflowId + "/"
-				+ processorName + "/"
-				+ (isInput ? "i:" : "o:") + portName
-				+ iteration;
+			
+			try {
+				while (resultSet.next()) {
+					String processorName = resultSet.getString("processorName");
+					String workflowId = resultSet.getString("workflowId");
+					String iteration = resultSet.getString("iteration");
+					String t2ref = resultSet.getString("t2ref");
+					String processIdentifier = resultSet.getString("processIdentifier");
+					String portName = resultSet.getString("portName");
+					System.out.println(processIdentifier + " " + 
+							processorName +":" + portName + iteration + " " + t2ref);
 				
-				T2Reference ref = getReferenceService()
-				.referenceFromString(t2ref);
-				Object resolved = getReferenceService().renderIdentifier(ref, Object.class,	getContext());
-				intermediateValues.put(key, resolved);
+					boolean isInput = binding.equals(ProcessorEnactment.initialInputsDataBindingId);
+					String key = workflowId + "/"
+					+ processorName + "/"
+					+ (isInput ? "i:" : "o:") + portName
+					+ iteration;
+					
+					T2Reference ref = getReferenceService()
+					.referenceFromString(t2ref);
+					Object resolved = getReferenceService().renderIdentifier(ref, Object.class,	getContext());
+					intermediateValues.put(key, resolved);
+				}
+			} finally {
+				resultSet.close();
 			}
-		} finally {
-			resultSet.close();
 		}
-		System.out.println(intermediateValues);
+		
+		Map<String, Object> expectedIntermediateValues = getExpectedIntermediates();
+		assertEquals(expectedIntermediateValues, intermediateValues);
 	}
 		
+
+	protected Map<String, Object> getExpectedIntermediates() {
+		return getExpectedIntermediateValues();
+	}
 
 	@BeforeClass
 	public static void findEarlyTimestamp() {
