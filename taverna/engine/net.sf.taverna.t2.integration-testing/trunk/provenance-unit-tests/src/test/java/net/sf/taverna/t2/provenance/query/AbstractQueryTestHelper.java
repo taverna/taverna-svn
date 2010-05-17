@@ -81,7 +81,7 @@ public abstract class AbstractQueryTestHelper {
 
 	@BeforeClass
 	public static void clearDataflow() {
-		dataflow = null;
+		dataflow = null; 
 		workflowIdToPaths.clear();
 		workflowPaths.clear();
 	}
