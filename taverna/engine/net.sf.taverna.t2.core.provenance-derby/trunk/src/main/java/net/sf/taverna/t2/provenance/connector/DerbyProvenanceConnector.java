@@ -76,8 +76,8 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			+ "wfInstanceRef varchar(100) NOT NULL," + "nestingLevel int,"
 			+ "actualNestingLevel int," + "anlSet smallint default NULL,"
 			+ "reorder smallint, "
-			+ "PRIMARY KEY (portId))";
-//			+ "PRIMARY KEY (varName,inputOrOutput,pnameRef,wfInstanceRef))";
+//			+ "PRIMARY KEY (portId))";
+			+ "PRIMARY KEY (varName,inputOrOutput,pnameRef,wfInstanceRef))";
 	private static final String createTableVarBinding = "CREATE TABLE VarBinding ("
 			+ "varNameRef varchar(100) NOT NULL,"
 			+ "wfInstanceRef varchar(100) NOT NULL,"
