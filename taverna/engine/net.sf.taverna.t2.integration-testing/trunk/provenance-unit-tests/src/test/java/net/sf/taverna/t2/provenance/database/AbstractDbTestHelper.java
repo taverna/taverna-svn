@@ -578,6 +578,7 @@ public abstract class AbstractDbTestHelper {
 		}
 		
 		Map<String, Object> expectedIntermediateValues = getExpectedIntermediates();
+		System.out.println("Expecting: " + expectedIntermediateValues);
 		assertMapsEquals("Unexpected intermediate values", 
 				expectedIntermediateValues, intermediateValues);
 	}
@@ -604,7 +605,30 @@ public abstract class AbstractDbTestHelper {
 	}
 
 	protected Map<String, Object> getExpectedIntermediates() {
-		return getExpectedIntermediateValues();
+		Map<String, Object> intermediates = new HashMap<String, Object>();
+		
+		Map<String, Object> expectedIntermediateValues = getExpectedIntermediateValues(); 
+			
+		Map<String, Object> expectedCollections = getExpectedCollections();
+		intermediates.putAll(expectedCollections);
+		
+		for (String collectionKey : expectedCollections.keySet()) {
+			String collectionPrefix = collectionKey.split("\\]", 2)[0];
+			if (! collectionPrefix.endsWith("[")) {
+				collectionPrefix = collectionPrefix + ",";
+			}
+			Set<String> removeItems = new HashSet<String>();
+			for (String itemKey : expectedIntermediateValues.keySet()) {
+				String itemPrefix = itemKey.split("\\]", 2)[0];
+				if (itemPrefix.startsWith(collectionPrefix)) {
+					removeItems.add(itemKey);
+				}
+			}
+			expectedIntermediateValues.keySet().removeAll(removeItems);
+		}
+		intermediates.putAll(expectedIntermediateValues);
+		return intermediates;
+		
 	}
 
 	@BeforeClass
