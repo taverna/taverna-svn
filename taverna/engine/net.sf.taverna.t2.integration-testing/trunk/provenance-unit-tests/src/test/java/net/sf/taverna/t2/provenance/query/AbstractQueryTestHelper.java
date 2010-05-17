@@ -348,6 +348,7 @@ public abstract class AbstractQueryTestHelper {
 				assertEquals(pName, proc.getPname());
 			}			
 		}
+
 	}
 	
 	protected Map<String, Object> getExpectedIntermediates() {
