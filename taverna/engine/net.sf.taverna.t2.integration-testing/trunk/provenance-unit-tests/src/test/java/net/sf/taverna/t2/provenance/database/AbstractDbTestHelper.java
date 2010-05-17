@@ -518,7 +518,7 @@ public abstract class AbstractDbTestHelper {
 		
 		
 		Set<String> expectedProcesses = getExpectedProcesses();
-		assertEquals(expectedProcesses, processorStarted.keySet());
+		assertSetsEquals("Unexpected process ", expectedProcesses, processorStarted.keySet());
 
 		
 	}
@@ -578,7 +578,6 @@ public abstract class AbstractDbTestHelper {
 		}
 		
 		Map<String, Object> expectedIntermediateValues = getExpectedIntermediates();
-		System.out.println("Expecting: " + expectedIntermediateValues);
 		assertMapsEquals("Unexpected intermediate values", 
 				expectedIntermediateValues, intermediateValues);
 	}
@@ -594,7 +593,7 @@ public abstract class AbstractDbTestHelper {
 		}
 	}
 
-	private static void assertSetsEquals(String msg,
+	public static void assertSetsEquals(String msg,
 			Set<? extends Object> expected, Set<? extends Object> actual) {
 		Set<Object> missing = new HashSet<Object>(expected);
 		missing.removeAll(actual);
