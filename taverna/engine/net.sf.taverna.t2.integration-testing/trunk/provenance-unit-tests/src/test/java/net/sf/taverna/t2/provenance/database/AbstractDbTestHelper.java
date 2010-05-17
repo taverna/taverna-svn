@@ -600,8 +600,8 @@ public abstract class AbstractDbTestHelper {
 		missing.removeAll(actual);
 		Set<Object> extra = new HashSet<Object>(actual);
 		extra.removeAll(expected);
-		assertTrue(msg + " missing: " + missing, missing.isEmpty());
 		assertTrue(msg + " extra: " + extra, extra.isEmpty());
+		assertTrue(msg + " missing: " + missing, missing.isEmpty());
 	}
 
 	protected Map<String, Object> getExpectedIntermediates() {
