@@ -560,8 +560,6 @@ public abstract class AbstractDbTestHelper {
 					String t2ref = resultSet.getString("t2ref");
 					String processIdentifier = resultSet.getString("processIdentifier");
 					String portName = resultSet.getString("portName");
-					System.out.println(processIdentifier + " " + 
-							processorName +":" + portName + iteration + " " + t2ref);
 				
 					boolean isInput = binding.equals(ProcessorEnactment.initialInputsDataBindingId);
 					String key = workflowId + "/"
@@ -580,9 +578,30 @@ public abstract class AbstractDbTestHelper {
 		}
 		
 		Map<String, Object> expectedIntermediateValues = getExpectedIntermediates();
-		assertEquals(expectedIntermediateValues, intermediateValues);
+		assertMapsEquals("Unexpected intermediate values", 
+				expectedIntermediateValues, intermediateValues);
 	}
 		
+
+	public static void assertMapsEquals(String msg, 
+			Map<? extends Object, ? extends Object> expected,
+			Map<? extends Object, ? extends Object> actual) {
+		assertSetsEquals(msg, expected.keySet(), actual.keySet());
+		for (Object key : expected.keySet()) {
+			assertEquals(msg + " values for key " + key,
+					expected.get(key), actual.get(key));
+		}
+	}
+
+	private static void assertSetsEquals(String msg,
+			Set<? extends Object> expected, Set<? extends Object> actual) {
+		Set<Object> missing = new HashSet<Object>(expected);
+		missing.removeAll(actual);
+		Set<Object> extra = new HashSet<Object>(actual);
+		extra.removeAll(expected);
+		assertTrue(msg + " missing: " + missing, missing.isEmpty());
+		assertTrue(msg + " extra: " + extra, extra.isEmpty());
+	}
 
 	protected Map<String, Object> getExpectedIntermediates() {
 		return getExpectedIntermediateValues();
