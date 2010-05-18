@@ -69,6 +69,17 @@ public class DoubleNestedDbTest extends AbstractDbTestHelper {
 
 		return expectedIntermediateValues;
 	}
+	
+
+	@Override
+	protected Set<String> getExpectedProcesses() {
+		List<String> processes = Arrays.asList("P0[]", 
+				"P1[]", "P5[]", "PNested[]",
+				 "P2[]", 
+				 "P3[]", "P4[]");
+		return new HashSet<String>(processes);
+	}
+
 
 	@Override
 	protected Set<String> getExpectedProcesses() {
