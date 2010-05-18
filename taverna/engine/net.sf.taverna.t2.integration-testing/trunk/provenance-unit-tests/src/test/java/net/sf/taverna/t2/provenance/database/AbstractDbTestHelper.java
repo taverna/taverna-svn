@@ -515,6 +515,8 @@ public abstract class AbstractDbTestHelper {
 			resultSet.close();
 		}
 		
+		
+		
 		Set<String> expectedProcesses = getExpectedProcesses();
 		assertEquals(expectedProcesses, processorStarted.keySet());
 
@@ -522,84 +524,58 @@ public abstract class AbstractDbTestHelper {
 	}
 	
 	@Test
-	public void testProcessorEnactmentInputs() throws Exception {
+	public void testProcessorEnactmentDataBindings() throws Exception {
 		PreparedStatement statement = getConnection().prepareStatement(
-						"SELECT " 				
-						+ " inputBinding." + DataBinding.t2Reference + " AS inputRef, "
-						+ ProcessorEnactment.initialInputsDataBindingId + ","
+						"SELECT " 	
+						+ DataBinding.t2Reference + " AS t2ref, "
 						+ ProcessorEnactment.processIdentifier + ","
 				    	+ ProcessorEnactment.iteration + ","
-				    	+ "inputPort.varName AS portName, " 
-						
-						+ "Processor.pName" + " FROM "
+				    	+ "Var.varName AS portName, " 
+						+ "Processor.wfInstanceRef AS workflowId,"
+						+ "Processor.pName AS processorName" + " FROM "
 						+ ProcessorEnactment.ProcessorEnactment
 						+ " INNER JOIN " + "Processor" + " ON "
 						+ ProcessorEnactment.ProcessorEnactment + "."
 						+ ProcessorEnactment.processorId + " = " + "Processor.processorId"
-						+ " INNER JOIN " + DataBinding.DataBinding + " AS inputBinding "
-						+ " ON inputBinding." + DataBinding.dataBindingId + "=" + ProcessorEnactment.initialInputsDataBindingId 
-						+ " INNER JOIN Var AS inputPort"
-						+ " ON inputPort.portId=inputBinding." + DataBinding.portId						
+						+ " INNER JOIN " + DataBinding.DataBinding
+						+ " ON " + DataBinding.dataBindingId + "=" + ProcessorEnactment.initialInputsDataBindingId 
+						+ " INNER JOIN Var "
+						+ " ON Var.portId=binding." + DataBinding.portId						
 						+ " WHERE "
 						+ ProcessorEnactment.ProcessorEnactment + "." + ProcessorEnactment.workflowRunId + "=?");
 		statement.setString(1, getFacade().getWorkflowRunId());
 		ResultSet resultSet = statement.executeQuery();
 		
+		Map<String, Object> intermediateValues = new HashMap<String, Object>();
+		
 		try {
 			while (resultSet.next()) {
-				String pName = resultSet.getString("pName");
+				String processorName = resultSet.getString("processorName");
+				String workflowId = resultSet.getString("workflowId");
 				String iteration = resultSet.getString("iteration");
-				String inputRef = resultSet.getString("inputRef");
+				String t2ref = resultSet.getString("t2ref");
 				String processIdentifier = resultSet.getString("processIdentifier");
 				String portName = resultSet.getString("portName");
-				System.out.println(processIdentifier + " " + pName +":" + portName + iteration + " " + inputRef);
+				System.out.println(processIdentifier + " " + 
+						processorName +":" + portName + iteration + " " + t2ref);
+			
+				boolean isInput = true;
+				String key = workflowId + "/"
+				+ processorName + "/"
+				+ (isInput ? "i:" : "o:") + portName
+				+ iteration;
 				
+				T2Reference ref = getReferenceService()
+				.referenceFromString(t2ref);
+				Object resolved = getReferenceService().renderIdentifier(ref, Object.class,	getContext());
+				intermediateValues.put(key, resolved);
 			}
 		} finally {
 			resultSet.close();
 		}
-		
+		System.out.println(intermediateValues);
 	}
-	
-
-	@Test
-	public void testProcessorEnactmentOutputs() throws Exception {
-		PreparedStatement statement = getConnection().prepareStatement(
-						"SELECT " 				
-						+ " outputBinding." + DataBinding.t2Reference + " AS outputRef, "
-						+ ProcessorEnactment.finalOutputsDataBindingId + ","
-						+ ProcessorEnactment.processIdentifier + ","
-				    	+ ProcessorEnactment.iteration + ","
-				    	+ "outputPort.varName AS portName, " 
-						+ "Processor.pName" + " FROM "
-						+ ProcessorEnactment.ProcessorEnactment
-						+ " INNER JOIN " + "Processor" + " ON "
-						+ ProcessorEnactment.ProcessorEnactment + "."
-						+ ProcessorEnactment.processorId + " = " + "Processor.processorId"
-						+ " INNER JOIN " + DataBinding.DataBinding + " AS outputBinding "
-						+ " ON outputBinding." + DataBinding.dataBindingId + "=" + ProcessorEnactment.finalOutputsDataBindingId 
-						+ " INNER JOIN Var AS outputPort"
-						+ " ON outputPort.portId=outputBinding." + DataBinding.portId						
-						+ " WHERE "
-						+ ProcessorEnactment.ProcessorEnactment + "." + ProcessorEnactment.workflowRunId + "=?");
-		statement.setString(1, getFacade().getWorkflowRunId());
-		ResultSet resultSet = statement.executeQuery();
 		
-		try {
-			while (resultSet.next()) {
-				String pName = resultSet.getString("pName");
-				String iteration = resultSet.getString("iteration");
-				String outputRef = resultSet.getString("outputRef");
-				String processIdentifier = resultSet.getString("processIdentifier");
-				String portName = resultSet.getString("portName");
-				System.out.println(processIdentifier + " " + pName +":" + portName + iteration + " " + outputRef);
-				
-			}
-		} finally {
-			resultSet.close();
-		}
-		
-	}
 
 	@BeforeClass
 	public static void findEarlyTimestamp() {
