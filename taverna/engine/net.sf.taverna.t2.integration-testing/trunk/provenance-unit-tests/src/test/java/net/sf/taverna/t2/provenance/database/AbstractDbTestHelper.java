@@ -475,13 +475,14 @@ public abstract class AbstractDbTestHelper {
 			assertEquals(expectedProcessors.keySet(), processors);
 		}
 	}
-	
+
 	@Test
 	public void testProcessorEnactments() throws Exception {
 		PreparedStatement statement = getConnection().prepareStatement(
 				"SELECT " + ProcessorEnactment.enactmentStarted + ","
 						+ ProcessorEnactment.enactmentEnded + ","
-						+ ProcessorEnactment.iteration + " FROM "
+						+ ProcessorEnactment.iteration + ","
+						+ "Processor.pName" + " FROM "
 						+ ProcessorEnactment.ProcessorEnactment
 						+ " INNER JOIN " + "Processor" + " ON "
 						+ ProcessorEnactment.ProcessorEnactment + "."
@@ -489,8 +490,40 @@ public abstract class AbstractDbTestHelper {
 						+ "Processor.processorId" + " WHERE "
 						+ ProcessorEnactment.workflowRunId + "=?");
 		statement.setString(1, getFacade().getWorkflowRunId());
-		debugOutput(statement.executeQuery());
+		ResultSet resultSet = statement.executeQuery();
+		
+		Map<String, Timestamp> processorStarted = new HashMap<String, Timestamp>();
+		Map<String, Timestamp> processorEnded = new HashMap<String, Timestamp>();
+		
+		try {
+			while (resultSet.next()) {
+				Timestamp enactmentStarted = resultSet.getTimestamp(ProcessorEnactment.enactmentStarted.name());
+				Timestamp enactmentEnded = resultSet.getTimestamp(ProcessorEnactment.enactmentEnded.name());
+				String iteration = resultSet.getString(ProcessorEnactment.iteration.name());
+				String pName = resultSet.getString("pName");
+				String processorKey = pName + iteration;
+				processorStarted.put(processorKey, enactmentStarted);
+				processorEnded.put(processorKey, enactmentEnded);
+				assertTrue(enactmentEnded.after(enactmentStarted));
+			}
+		} finally {
+			resultSet.close();
+		}
+		
+		Set<String> expectedProcesses = getExpectedProcesses();
+		assertEquals(expectedProcesses, processorStarted.keySet());
+
+		Set<Timestamp> uniqueTimestamps = new HashSet<Timestamp>();
+		uniqueTimestamps.addAll(processorStarted.values());
+		uniqueTimestamps.addAll(processorEnded.values());
+		assertEquals("Timestamps were not unique", 
+				expectedProcesses.size()*2, uniqueTimestamps.size());
+		
+		// TODO: Test inputs and outputs
+		
 	}
+
+	protected abstract Set<String> getExpectedProcesses();
 
 	@Test
 	public void testProcessorEnactments() throws Exception {
