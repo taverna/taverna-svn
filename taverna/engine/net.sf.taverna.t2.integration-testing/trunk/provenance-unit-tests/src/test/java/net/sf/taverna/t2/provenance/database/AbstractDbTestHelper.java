@@ -495,6 +495,9 @@ public abstract class AbstractDbTestHelper {
 		Map<String, Timestamp> processorStarted = new HashMap<String, Timestamp>();
 		Map<String, Timestamp> processorEnded = new HashMap<String, Timestamp>();
 		
+		Timestamp notExecutedAfter = new Timestamp(System.currentTimeMillis());
+		assertTrue(notExecutedAfter.after(notExecutedBefore));
+		
 		try {
 			while (resultSet.next()) {
 				Timestamp enactmentStarted = resultSet.getTimestamp(ProcessorEnactment.enactmentStarted.name());
@@ -504,7 +507,9 @@ public abstract class AbstractDbTestHelper {
 				String processorKey = pName + iteration;
 				processorStarted.put(processorKey, enactmentStarted);
 				processorEnded.put(processorKey, enactmentEnded);
+				assertTrue(enactmentStarted.after(notExecutedBefore));
 				assertTrue(enactmentEnded.after(enactmentStarted));
+				assertTrue(notExecutedAfter.after(enactmentEnded));
 			}
 		} finally {
 			resultSet.close();
@@ -513,16 +518,16 @@ public abstract class AbstractDbTestHelper {
 		Set<String> expectedProcesses = getExpectedProcesses();
 		assertEquals(expectedProcesses, processorStarted.keySet());
 
-		Set<Timestamp> uniqueTimestamps = new HashSet<Timestamp>();
-		uniqueTimestamps.addAll(processorStarted.values());
-		uniqueTimestamps.addAll(processorEnded.values());
-		assertEquals("Timestamps were not unique", 
-				expectedProcesses.size()*2, uniqueTimestamps.size());
 		
 		// TODO: Test inputs and outputs
 		
 	}
 
+	@BeforeClass
+	public static void findEarlyTimestamp() {
+		notExecutedBefore = new Timestamp(System.currentTimeMillis());
+	}
+	
 	protected abstract Set<String> getExpectedProcesses();
 
 	@Test
