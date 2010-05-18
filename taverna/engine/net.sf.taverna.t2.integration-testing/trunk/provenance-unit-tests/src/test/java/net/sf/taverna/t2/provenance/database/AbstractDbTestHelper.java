@@ -477,13 +477,17 @@ public abstract class AbstractDbTestHelper {
 	}
 	
 	@Test
-	public void processorEnactments() throws Exception {
+	public void testProcessorEnactments() throws Exception {
 		PreparedStatement statement = getConnection().prepareStatement(
-				"SELECT *" + 
-				//
-				//+ ProcessorEnactment.enactmentStarted + "," + ProcessorEnactment.enactmentEnded + "," + ProcessorEnactment.processorId + "," + P 
-				" FROM " + ProcessorEnactment.ProcessorEnactment + " WHERE " + ProcessorEnactment.workflowRunId +"=?");
-
+				"SELECT " + ProcessorEnactment.enactmentStarted + ","
+						+ ProcessorEnactment.enactmentEnded + ","
+						+ ProcessorEnactment.iteration + " FROM "
+						+ ProcessorEnactment.ProcessorEnactment
+						+ " INNER JOIN " + "Processor" + " ON "
+						+ ProcessorEnactment.ProcessorEnactment + "."
+						+ ProcessorEnactment.processorId + " = "
+						+ "Processor.processorId" + " WHERE "
+						+ ProcessorEnactment.workflowRunId + "=?");
 		statement.setString(1, getFacade().getWorkflowRunId());
 		debugOutput(statement.executeQuery());
 	}
