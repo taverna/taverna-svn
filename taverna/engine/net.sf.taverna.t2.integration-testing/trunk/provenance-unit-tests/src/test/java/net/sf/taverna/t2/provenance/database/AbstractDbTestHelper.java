@@ -475,6 +475,18 @@ public abstract class AbstractDbTestHelper {
 			assertEquals(expectedProcessors.keySet(), processors);
 		}
 	}
+	
+	@Test
+	public void processorEnactments() throws Exception {
+		PreparedStatement statement = getConnection().prepareStatement(
+				"SELECT *" + 
+				//
+				//+ ProcessorEnactment.enactmentStarted + "," + ProcessorEnactment.enactmentEnded + "," + ProcessorEnactment.processorId + "," + P 
+				" FROM " + ProcessorEnactment.ProcessorEnactment + " WHERE " + ProcessorEnactment.workflowRunId +"=?");
+
+		statement.setString(1, getFacade().getWorkflowRunId());
+		debugOutput(statement.executeQuery());
+	}
 
 	public static void assertMapsEquals(String msg, 
 			Map<? extends Object, ? extends Object> expected,
