@@ -55,13 +55,13 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 	private static final String createDB = "CREATE DATABASE IF NOT EXISTS T2Provenance";
 
 	private static final String createTableArc = "CREATE TABLE IF NOT EXISTS  `T2Provenance`.`Datalink` ("
-		+ "`sourceVarNameRef` varchar(100) NOT NULL COMMENT 'ref. to var name for source of arc',"
-		+ "`sinkVarNameRef` varchar(100) NOT NULL COMMENT 'ref. to var name for sink of arc',"
+		+ "`sourceVarNameRef` varchar(100) NOT NULL COMMENT 'ref. to var name for source of datalink',"
+		+ "`sinkVarNameRef` varchar(100) NOT NULL COMMENT 'ref. to var name for sink of datalink',"
 		+ "`sourcePNameRef` varchar(100) NOT NULL,"
 		+ "`sinkPNameRef` varchar(100) NOT NULL,"
 		+ "`wfInstanceRef` varchar(100) NOT NULL,"
 		+ "PRIMARY KEY  USING BTREE (`sourceVarNameRef`,`sinkVarNameRef`,`sourcePNameRef`,`sinkPNameRef`,`wfInstanceRef`)"
-		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='static -- arc between two processors';";
+		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- datalink between two processors';";
 
 	private static final String createTableCollection = "CREATE TABLE  IF NOT EXISTS `T2Provenance`.`Collection` ("
 		+ "`collID` varchar(100) NOT NULL COMMENT 'ID of a list (collection). not sure yet what this looks like... ',"

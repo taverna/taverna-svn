@@ -23,13 +23,13 @@
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE IF NOT EXISTS `Datalink` (
-  `sourceVarNameRef` varchar(100) NOT NULL COMMENT 'ref. to var name for source of arc',
-  `sinkVarNameRef` varchar(100) NOT NULL COMMENT 'ref. to var name for sink of arc',
+  `sourceVarNameRef` varchar(100) NOT NULL COMMENT 'ref. to var name for source of datalink',
+  `sinkVarNameRef` varchar(100) NOT NULL COMMENT 'ref. to var name for sink of datalink',
   `sourcePNameRef` varchar(100) NOT NULL,
   `sinkPNameRef` varchar(100) NOT NULL,
   `wfInstanceRef` varchar(100) NOT NULL,
   PRIMARY KEY  USING BTREE (`sourceVarNameRef`,`sinkVarNameRef`,`sourcePNameRef`,`sinkPNameRef`,`wfInstanceRef`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- arc between two processors';
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- datalink between two processors';
 SET character_set_client = @saved_cs_client;
 
 --
