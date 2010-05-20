@@ -109,7 +109,7 @@ public class NaiveProvenanceQuery {
 
 
 	/**
-	 * computeLineage using the naive approach -- based on table DD +Arcs
+	 * computeLineage using the naive approach -- based on table DD +Datalinks
 	 * DD is populated from the events log using DataDependenciesBuilder
 	 * @throws SQLException 
 	 */

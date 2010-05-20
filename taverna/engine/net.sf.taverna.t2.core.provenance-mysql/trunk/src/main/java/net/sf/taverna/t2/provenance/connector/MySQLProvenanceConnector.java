@@ -54,7 +54,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 	private static final String createDB = "CREATE DATABASE IF NOT EXISTS T2Provenance";
 
-	private static final String createTableArc = "CREATE TABLE IF NOT EXISTS  `T2Provenance`.`Arc` ("
+	private static final String createTableArc = "CREATE TABLE IF NOT EXISTS  `T2Provenance`.`Datalink` ("
 		+ "`sourceVarNameRef` varchar(100) NOT NULL COMMENT 'ref. to var name for source of arc',"
 		+ "`sinkVarNameRef` varchar(100) NOT NULL COMMENT 'ref. to var name for sink of arc',"
 		+ "`sourcePNameRef` varchar(100) NOT NULL,"

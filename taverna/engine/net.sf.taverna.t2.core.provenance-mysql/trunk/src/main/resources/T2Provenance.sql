@@ -16,13 +16,13 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `Arc`
+-- Table structure for table `Datalink`
 --
 
 
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-CREATE TABLE IF NOT EXISTS `Arc` (
+CREATE TABLE IF NOT EXISTS `Datalink` (
   `sourceVarNameRef` varchar(100) NOT NULL COMMENT 'ref. to var name for source of arc',
   `sinkVarNameRef` varchar(100) NOT NULL COMMENT 'ref. to var name for sink of arc',
   `sourcePNameRef` varchar(100) NOT NULL,
