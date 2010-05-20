@@ -90,9 +90,8 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ "PRIMARY KEY  (`pname`,`wfInstanceRef`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='static -- all processors for all workflows, by name';";
 
-	private static final String createTableVar = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Port` ("
+	private static final String createTablePort = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Port` ("
 		+ "`varName` varchar(100) NOT NULL,"
-		+ "`type` varchar(20) default NULL COMMENT 'variable type',"
 		+ "`isInputPort` tinyint(1) NOT NULL COMMENT '1 = input, 0 = output',"
 		+ "`pnameRef` varchar(100) NOT NULL COMMENT 'reference to the processor',"
 		+ "`wfInstanceRef` varchar(100) NOT NULL,"
@@ -229,7 +228,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 			stmt.executeUpdate(createTableCollection);			
 			stmt.executeUpdate(createTableProcBinding);			
 			stmt.executeUpdate(createTableProcessor);			
-			stmt.executeUpdate(createTableVar);			
+			stmt.executeUpdate(createTablePort);			
 			stmt.executeUpdate(createTablePortBinding);			
 			stmt.executeUpdate(createTableWFInstance);			
 			stmt.executeUpdate(createTableWorkflow);
