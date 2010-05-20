@@ -69,6 +69,7 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			+ "PRIMARY KEY  (pname,wfInstanceRef))";
 	private static final String createTablePort = "CREATE TABLE Port ("
 			+ "portId varchar(36) NOT NULL,"
+			+ "processorId varchar(36) NOT NULL,"
 			+ "portName varchar(100) NOT NULL,"			
 			+ "isInputPort smallint NOT NULL ,"
 			+ "processorName varchar(100) NOT NULL,"
