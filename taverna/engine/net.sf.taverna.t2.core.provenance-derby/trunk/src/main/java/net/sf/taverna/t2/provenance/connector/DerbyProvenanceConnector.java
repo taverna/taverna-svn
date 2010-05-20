@@ -38,11 +38,13 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			.getLogger(DerbyProvenanceConnector.class);
 	private static final String createTableDatalink = "CREATE TABLE  Datalink ("
 			+ "sourcePortName varchar(100) NOT NULL ,"
+			+ "sourcePortId varchar(36) NOT NULL ,"
+			+ "destinationPortId varchar(36) NOT NULL ,"
 			+ "destinationPortName varchar(100) NOT NULL,"
 			+ "sourceProcessorName varchar(100) NOT NULL,"
 			+ "destinationProcessorName varchar(100) NOT NULL,"
 			+ "workflowId varchar(100) NOT NULL,"
-			+ " PRIMARY KEY  (sourcePortName,destinationPortName,sourceProcessorName,destinationProcessorName,workflowId))";
+			+ " PRIMARY KEY  (sourcePortId,destinationPortId,workflowId))";
 	private static final String createTableCollection = "CREATE TABLE Collection ("
 			+ "collID varchar(100) NOT NULL,"
 			+ "parentCollIDRef varchar(100) NOT NULL ,"
