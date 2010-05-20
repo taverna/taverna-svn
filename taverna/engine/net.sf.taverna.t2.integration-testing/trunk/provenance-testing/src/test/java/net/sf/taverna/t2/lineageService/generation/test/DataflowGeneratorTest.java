@@ -345,15 +345,15 @@ public class DataflowGeneratorTest {
 
 		try {
 			// connect all of them up...
-			for (Datalink arc:allArcs) {
+			for (Datalink datalink:allArcs) {
 
-				if (dataflowNames.contains(arc.getSourcePnameRef())) {
-					dfg.connectGlobalInput(df, arc.getSourceVarNameRef(), pname2proc.get(arc.getSinkPnameRef()), arc.getSinkVarNameRef());
-				} else if (dataflowNames.contains(arc.getSinkPnameRef())) {
-					dfg.connectGlobalOutput(df, arc.getSinkVarNameRef(), pname2proc.get(arc.getSourcePnameRef()), arc.getSourceVarNameRef());
+				if (dataflowNames.contains(datalink.getSourcePnameRef())) {
+					dfg.connectGlobalInput(df, datalink.getSourceVarNameRef(), pname2proc.get(datalink.getSinkPnameRef()), datalink.getSinkVarNameRef());
+				} else if (dataflowNames.contains(datalink.getSinkPnameRef())) {
+					dfg.connectGlobalOutput(df, datalink.getSinkVarNameRef(), pname2proc.get(datalink.getSourcePnameRef()), datalink.getSourceVarNameRef());
 				} else
-					dfg.connectPorts(df, pname2proc.get(arc.getSourcePnameRef()), arc.getSourceVarNameRef(), 
-							pname2proc.get(arc.getSinkPnameRef()), arc.getSinkVarNameRef());
+					dfg.connectPorts(df, pname2proc.get(datalink.getSourcePnameRef()), datalink.getSourceVarNameRef(), 
+							pname2proc.get(datalink.getSinkPnameRef()), datalink.getSinkVarNameRef());
 			}
 
 			String targetFile = TARGET_FILE_FROM_PROVENANCE+"_"+wfRef+".t2flow";
