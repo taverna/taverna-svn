@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
-import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
+import net.sf.taverna.t2.provenance.lineageservice.utils.Port;
 
 /**
  * Uses Apache Derby to carry out provenance queries
@@ -89,9 +89,9 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
      * the order column is called reorder in derby because order is a reserved word
      */
     @Override
-    public List<Var> getVars(Map<String, String> queryConstraints)
+    public List<Port> getVars(Map<String, String> queryConstraints)
             throws SQLException {
-        List<Var> result = new ArrayList<Var>();
+        List<Port> result = new ArrayList<Port>();
 
         String q0 = "SELECT  * FROM Var V JOIN WfInstance W ON W.wfnameRef = V.wfInstanceRef";
 
@@ -114,7 +114,7 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
 
                 while (rs.next()) {
 
-                    Var aVar = new Var();
+                    Port aVar = new Port();
 
                     aVar.setWfInstanceRef(rs.getString("WfInstanceRef"));
 
@@ -153,10 +153,10 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
      * to wfInstanceRef
      */
      @Override
-    public List<Var> getSuccVars(String pName, String vName,
+    public List<Port> getSuccVars(String pName, String vName,
             String wfInstanceRef) throws SQLException {
 
-        List<Var> result = new ArrayList<Var>();
+        List<Port> result = new ArrayList<Port>();
         PreparedStatement ps = null;
         Connection connection = null;
 
@@ -179,7 +179,7 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
                         continue;
                     }
 
-                    Var aVar = new Var();
+                    Port aVar = new Port();
 
                     aVar.setWfInstanceRef(rs.getString("WfInstanceRef"));
 

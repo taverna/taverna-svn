@@ -25,7 +25,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
-import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
+import net.sf.taverna.t2.provenance.lineageservice.utils.Port;
 
 /**
  * Uses Apache Derby database to write workflow provenance
@@ -48,7 +48,7 @@ public class DerbyProvenanceWriter extends ProvenanceWriter {
 	 * @throws SQLException
 	 */
 	@Override
-	public void updateVar(Var v) throws SQLException {
+	public void updateVar(Port v) throws SQLException {
 		
 		PreparedStatement ps = null;
                 Connection connection = null;
