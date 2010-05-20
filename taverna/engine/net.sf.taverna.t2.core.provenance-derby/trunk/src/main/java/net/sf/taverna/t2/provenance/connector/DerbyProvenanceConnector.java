@@ -71,14 +71,14 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			+ "portId varchar(36) NOT NULL,"
 			+ "varName varchar(100) NOT NULL,"
 			+ "type varchar(20) default NULL,"
-			+ "inputOrOutput smallint NOT NULL ,"
+			+ "isInputPort smallint NOT NULL ,"
 			+ "pnameRef varchar(100) NOT NULL,"
 			+ "wfInstanceRef varchar(100) NOT NULL," 
 			+ "depth int,"
 			+ "resolvedDepth int," 
 			+ "iterationStrategyOrder smallint, "
 			+ "PRIMARY KEY (portId))";
-//			+ "PRIMARY KEY (varName,inputOrOutput,pnameRef,wfInstanceRef))";
+//			+ "PRIMARY KEY (varName,isInputPort,pnameRef,wfInstanceRef))";
 	private static final String createTablePortBinding = "CREATE TABLE PortBinding ("
 			+ "varNameRef varchar(100) NOT NULL,"
 			+ "wfInstanceRef varchar(100) NOT NULL,"

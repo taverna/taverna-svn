@@ -69,10 +69,10 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
                 if (!first) {
                     q.append(" and ");
                 }
-                // FIXME there may be more numerical inputs than inputOrOutput,
+                // FIXME there may be more numerical inputs than isInputPort,
                 // needs checking - 21.5.09 there are - this kind of custom where clause is very dangerous and
                 //should be refactored at some point
-                if (entry.getKey().equals("V.inputOrOutput") || entry.getKey().equals("VB.positionInColl") || entry.getKey().equals("inputOrOutput")) {
+                if (entry.getKey().equals("V.isInputPort") || entry.getKey().equals("VB.positionInColl") || entry.getKey().equals("isInputPort")) {
                     q.append(" " + entry.getKey() + " = " + entry.getValue());
                 } else {
                     q.append(" " + entry.getKey() + " = \'" + entry.getValue() + "\' ");
