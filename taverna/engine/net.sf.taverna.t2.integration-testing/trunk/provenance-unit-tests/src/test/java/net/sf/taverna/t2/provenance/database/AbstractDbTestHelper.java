@@ -262,7 +262,7 @@ public abstract class AbstractDbTestHelper {
 			IllegalAccessException, ClassNotFoundException {
 		PreparedStatement statement = getConnection()
 				.prepareStatement(
-						"SELECT sourceVarNameRef,sourcePNameRef,sinkVarNameRef,sinkPNameRef from Datalink WHERE wfInstanceRef=?");
+						"SELECT sourcePortName,sourceProcessorName,destinationPortName,destinationProcessorName from Datalink WHERE workflowId=?");
 		for (Dataflow df : workflowPaths.values()) {
 			Set<String> expectedLinks = describeDataLinks(df);
 			// Magic processor names meaning workflow ports
@@ -282,28 +282,28 @@ public abstract class AbstractDbTestHelper {
 			ResultSet resultSet = statement.executeQuery();
 			try {
 				while (resultSet.next()) {
-					String sourceVarNameRef = resultSet
-							.getString("sourceVarNameRef");
-					String sourcePNameRef = resultSet
-							.getString("sourcePNameRef");
-					String sinkVarNameRef = resultSet
-							.getString("sinkVarNameRef");
-					String sinkPNameRef = resultSet.getString("sinkPNameRef");
+					String sourcePortName = resultSet
+							.getString("sourcePortName");
+					String sourceProcessorName = resultSet
+							.getString("sourceProcessorName");
+					String destinationPortName = resultSet
+							.getString("destinationPortName");
+					String destinationProcessorName = resultSet.getString("destinationProcessorName");
 
 					StringBuilder link = new StringBuilder();
-					if (!myProcessorNames.contains(sourcePNameRef)) {
-						link.append(sourcePNameRef);
+					if (!myProcessorNames.contains(sourceProcessorName)) {
+						link.append(sourceProcessorName);
 						link.append(".");
 					}
-					link.append(sourceVarNameRef);
+					link.append(sourcePortName);
 
 					link.append("->");
 
-					if (!myProcessorNames.contains(sinkPNameRef)) {
-						link.append(sinkPNameRef);
+					if (!myProcessorNames.contains(destinationProcessorName)) {
+						link.append(destinationProcessorName);
 						link.append(".");
 					}
-					link.append(sinkVarNameRef);
+					link.append(destinationPortName);
 					links.add(link.toString());
 				}
 			} finally {
@@ -323,13 +323,13 @@ public abstract class AbstractDbTestHelper {
 						"SELECT collId,parentCollIdRef,"
 								+ "  Collection.pNameRef AS pNameRef,"
 								+ "  Collection.varNameRef AS varNameRef,"
-								+ "   iteration, inputOrOutput "
+								+ "   iteration, isInputPort "
 								+ "FROM Collection " + "INNER JOIN Port "
-								+ "  ON Collection.varNameRef = Port.varName "
-								+ "  AND Collection.pNameRef = Port.pNameRef " +
-								// "  AND Collection.wfNameRef = Port.wfInstanceRef "
+								+ "  ON Collection.varNameRef = Port.portName "
+								+ "  AND Collection.pNameRef = Port.processorName " +
+								// "  AND Collection.wfNameRef = Port.workflowId "
 								// +
-								"WHERE Collection.wfInstanceRef=? AND Port.wfInstanceRef=?");
+								"WHERE Collection.wfInstanceRef=? AND Port.workflowId=?");
 		statement.setString(1, getFacade().getWorkflowRunId());
 		// FIXME: Collections don't support nested workflows
 		statement.setString(2, dataflow.getInternalIdentier());
@@ -345,7 +345,7 @@ public abstract class AbstractDbTestHelper {
 				String pNameRef = resultSet.getString("pNameRef");
 				String varNameRef = resultSet.getString("varNameRef");
 				String iteration = resultSet.getString("iteration");
-				boolean isInput = resultSet.getBoolean("inputOrOutput");
+				boolean isInput = resultSet.getBoolean("isInputPort");
 
 				T2Reference ref = getReferenceService().referenceFromString(
 						collId);
@@ -380,50 +380,6 @@ public abstract class AbstractDbTestHelper {
 		Map<String, Object> expectedCollections = getExpectedCollections();
 		assertEquals(expectedCollections, collections);
 
-	}
-
-	@Test
-	public void testData() throws SQLException, InstantiationException,
-			IllegalAccessException, ClassNotFoundException {
-		PreparedStatement statement = getConnection().prepareStatement(
-				"SELECT * from Data");
-		ResultSet resultSet = statement.executeQuery();
-		try {
-			// Table is always empty..
-			assertTrue(!resultSet.next());
-		} finally {
-			resultSet.close();
-		}
-	}
-
-	@Test
-	@SuppressWarnings("unused")
-	public void testProcBinding() throws SQLException, InstantiationException,
-			IllegalAccessException, ClassNotFoundException {
-		PreparedStatement statement = getConnection()
-				.prepareStatement(
-						"SELECT pNameRef,iteration,actName from ProcBinding WHERE execIDRef=? AND wfNameRef=?");
-		statement.setString(1, getFacade().getWorkflowRunId());
-		for (Dataflow df : workflowPaths.values()) {
-			Map<String, Processor> expectedProcessors = new HashMap<String, Processor>();
-			for (Processor p : df.getProcessors()) {
-				expectedProcessors.put(p.getLocalName(), p);
-			}
-			statement.setString(2, df.getInternalIdentier());
-			Set<String> processors = new HashSet<String>();
-			ResultSet resultSet = statement.executeQuery();
-			try {
-				while (resultSet.next()) {
-					String pNameRef = resultSet.getString("pNameRef");
-					String iteration = resultSet.getString("iteration");
-					String actName = resultSet.getString("actName");
-					processors.add(pNameRef);
-					// TODO: Test iteration, actName
-				}
-			} finally {
-				resultSet.close();
-			}
-		}
 	}
 
 	@Test
@@ -495,6 +451,7 @@ public abstract class AbstractDbTestHelper {
 		assertTrue(msg + " extra: " + extra, extra.isEmpty());
 		assertTrue(msg + " missing: " + missing, missing.isEmpty());
 	}
+
 	
 	protected abstract Set<String> getExpectedProcesses();
 
@@ -558,7 +515,7 @@ public abstract class AbstractDbTestHelper {
 							+ DataBinding.t2Reference + " AS t2ref, "
 							+ ProcessorEnactment.processIdentifier + ","
 					    	+ ProcessorEnactment.iteration + ","
-					    	+ "Var.varName AS portName, " 
+					    	+ "Port.portName AS portName, " 
 							+ "Processor.wfInstanceRef AS workflowId,"
 							+ "Processor.pName AS processorName" + " FROM "
 							+ ProcessorEnactment.ProcessorEnactment
@@ -567,8 +524,8 @@ public abstract class AbstractDbTestHelper {
 							+ ProcessorEnactment.processorId + " = " + "Processor.processorId"
 							+ " INNER JOIN " + DataBinding.DataBinding
 							+ " ON " + DataBinding.dataBindingId + "=" + binding
-							+ " INNER JOIN Var "
-							+ " ON Var.portId=" + DataBinding.DataBinding + "." + DataBinding.portId						
+							+ " INNER JOIN Port "
+							+ " ON Port.portId=" + DataBinding.DataBinding + "." + DataBinding.portId						
 							+ " WHERE "
 							+ ProcessorEnactment.ProcessorEnactment + "." + ProcessorEnactment.workflowRunId + "=?");
 			statement.setString(1, getFacade().getWorkflowRunId());
@@ -640,20 +597,20 @@ public abstract class AbstractDbTestHelper {
 	}
 	
 	@Test
-	public void testVarBindings() throws SQLException, InstantiationException,
+	public void testPortBinding() throws SQLException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
 		PreparedStatement statement = getConnection()
 				.prepareStatement(
 						"SELECT "
 								+ "  varNameRef,value,collIdRef,positionInColl,valueType,"
-								+ "  iteration,ref,inputOrOutput "
+								+ "  iteration,ref,isInputPort "
 								+ "FROM PortBinding "
 								+ "INNER JOIN Port "
-								+ "  ON PortBinding.varNameRef = Port.varName "
-								+ "  AND PortBinding.pNameRef = Port.pNameRef "
+								+ "  ON PortBinding.varNameRef = Port.portName "
+								+ "  AND PortBinding.pNameRef = Port.processorName "
 								+
 								// FIXME: Non-unique foreign key to PortBinding
-								"  AND PortBinding.wfNameRef = Port.wfInstanceRef "
+								"  AND PortBinding.wfNameRef = Port.workflowId "
 								+ "WHERE PortBinding.wfInstanceRef=? "
 								+ "  AND PortBinding.wfNameRef=? "
 								+ "  AND PortBinding.pNameRef=?");
@@ -676,7 +633,7 @@ public abstract class AbstractDbTestHelper {
 								.getString("positionInColl");
 						String valueType = resultSet.getString("valueType");
 						String iteration = resultSet.getString("iteration");
-						boolean isInput = resultSet.getBoolean("inputOrOutput");
+						boolean isInput = resultSet.getBoolean("isInputPort");
 						if (collIdRef != null) {
 							// Last bit of iteration should include reference
 							int expectedEnd = Integer.parseInt(positionInColl)-1;
@@ -731,12 +688,14 @@ public abstract class AbstractDbTestHelper {
 	}
 
 	@Test
-	public void testVarBindingsWorkflowPorts() throws SQLException,
+	public void testPortBindingsWorkflowPorts() throws SQLException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
 		PreparedStatement statement = getConnection()
 				.prepareStatement(
-						"SELECT value,varNameRef,iteration from PortBinding WHERE pNameRef=? AND wfNameRef=?");
+						"SELECT value,varNameRef,iteration " +
+						"FROM PortBinding " +
+						"WHERE pNameRef=? AND wfNameRef=?");
 		statement.setString(1, dataflow.getLocalName());
 		statement.setString(2, dataflow.getInternalIdentier());
 		Map<String, Object> values = new HashMap<String, Object>();
@@ -765,11 +724,11 @@ public abstract class AbstractDbTestHelper {
 	}
 
 	@Test
-	public void testVars() throws SQLException, InstantiationException,
+	public void testPort() throws SQLException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
 		PreparedStatement statement = getConnection()
 				.prepareStatement(
-						"SELECT varName,inputOrOutput,nestingLevel,actualNestingLevel,anlSet,reorder from Port WHERE wfInstanceRef=? AND pNameRef=?");
+						"SELECT portName,isInputPort,depth,resolvedDepth,iterationStrategyOrder from Port WHERE workflowId=? AND processorName=?");
 		for (Dataflow df : workflowPaths.values()) {
 			statement.setString(1, df.getInternalIdentier());
 			for (Processor p : df.getProcessors()) {
@@ -788,17 +747,16 @@ public abstract class AbstractDbTestHelper {
 					Set<String> foundOutputs = new HashSet<String>();
 
 					while (resultSet.next()) {
-						String varName = resultSet.getString("varName");
-						boolean isInput = resultSet.getBoolean("inputOrOutput");
+						String varName = resultSet.getString("portName");
+						boolean isInput = resultSet.getBoolean("isInputPort");
 
-						String nestingLevel = resultSet
-								.getString("nestingLevel");
-						String actualNestingLevel = resultSet
-								.getString("actualNestingLevel");
-						String anlSet = resultSet.getString("anlSet");
-						String reorder = resultSet.getString("reorder");
+						String depth = resultSet
+								.getString("depth");
+						String resolvedDepth = resultSet
+								.getString("resolvedDepth");
+						String iterationStrategyOrder = resultSet.getString("iterationStrategyOrder");
 
-						// TODO: Test anlset, reorder
+						// TODO: Test iterationStrategyOrder
 
 						if (isInput) {
 							ProcessorInputPort inputPort = inputPorts
@@ -807,14 +765,14 @@ public abstract class AbstractDbTestHelper {
 							foundInputs.add(varName);
 							assertEquals(
 									Integer.toString(inputPort.getDepth()),
-									nestingLevel);
+									depth);
 							Datalink incoming = inputPort.getIncomingLink();
 							if (incoming == null) {
-								assertNull(actualNestingLevel);
+								assertNull(resolvedDepth);
 							} else {
 								assertEquals(Integer.toString(incoming
 										.getResolvedDepth()),
-										actualNestingLevel);
+										resolvedDepth);
 							}
 						} else {
 							ProcessorOutputPort outputPort = outputPorts
@@ -823,9 +781,9 @@ public abstract class AbstractDbTestHelper {
 							foundOutputs.add(varName);
 							assertEquals(Integer
 									.toString(outputPort.getDepth()),
-									nestingLevel);
+									depth);
 							if (outputPort.getOutgoingLinks().isEmpty()) {
-								assertNull(actualNestingLevel);
+								assertNull(resolvedDepth);
 							} else {
 								Datalink datalink = outputPort
 										.getOutgoingLinks().iterator().next();
@@ -833,7 +791,7 @@ public abstract class AbstractDbTestHelper {
 								// output ports
 								// assertEquals(Integer.toString(datalink
 								// .getResolvedDepth()),
-								// actualNestingLevel);
+								// resolvedDepth);
 							}
 						}
 					}
@@ -848,12 +806,12 @@ public abstract class AbstractDbTestHelper {
 	}
 
 	@Test
-	public void testVarsWorkflowPorts() throws SQLException,
+	public void testWorkflowPorts() throws SQLException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
 		PreparedStatement statement = getConnection()
 				.prepareStatement(
-						"SELECT varName,inputOrOutput,nestingLevel,actualNestingLevel,anlSet,reorder from Port WHERE wfInstanceRef=? AND pNameRef=?");
+						"SELECT portName,isInputPort,depth,resolvedDepth,iterationStrategyOrder from Port WHERE workflowId=? AND processorName=?");
 		Dataflow df = dataflow;
 		statement.setString(1, df.getInternalIdentier());
 		statement.setString(2, df.getLocalName());
@@ -871,39 +829,38 @@ public abstract class AbstractDbTestHelper {
 			Set<String> foundOutputs = new HashSet<String>();
 
 			while (resultSet.next()) {
-				String varName = resultSet.getString("varName");
-				boolean isInput = resultSet.getBoolean("inputOrOutput");
+				String varName = resultSet.getString("portName");
+				boolean isInput = resultSet.getBoolean("isInputPort");
 
-				String nestingLevel = resultSet.getString("nestingLevel");
-				String actualNestingLevel = resultSet
-						.getString("actualNestingLevel");
-				String anlSet = resultSet.getString("anlSet");
-				String reorder = resultSet.getString("reorder");
+				String depth = resultSet.getString("depth");
+				String resolvedDepth = resultSet
+						.getString("resolvedDepth");
+				String iterationStrategyOrder = resultSet.getString("iterationStrategyOrder");
 
 
-				// TODO: Test anlset, reorder
+				// TODO: Test iterationStrategyOrder
 
 				if (isInput) {
 					DataflowInputPort inputPort = inputPorts.get(varName);
 					assertNotNull(inputPort);
 					foundInputs.add(varName);
 					assertEquals(Integer.toString(inputPort.getDepth()),
-							nestingLevel);
+							depth);
 					Datalink incoming = inputPort.getIncomingLink();
 					if (incoming == null) {
-						assertNull(actualNestingLevel);
+						assertNull(resolvedDepth);
 					} else {
 						assertEquals(Integer.toString(incoming
-								.getResolvedDepth()), actualNestingLevel);
+								.getResolvedDepth()), resolvedDepth);
 					}
 				} else {
 					DataflowOutputPort outputPort = outputPorts.get(varName);
 					assertNotNull(outputPort);
 					foundOutputs.add(varName);
 					assertEquals(Integer.toString(outputPort.getDepth()),
-							nestingLevel);
+							depth);
 					if (outputPort.getOutgoingLinks().isEmpty()) {
-						assertNull(actualNestingLevel);
+						assertNull(resolvedDepth);
 					} else {
 						Datalink datalink = outputPort.getOutgoingLinks()
 								.iterator().next();
@@ -911,7 +868,7 @@ public abstract class AbstractDbTestHelper {
 						// output ports
 						// assertEquals(Integer.toString(datalink
 						// .getResolvedDepth()),
-						// actualNestingLevel);
+						// resolvedDepth);
 					}
 				}
 			}

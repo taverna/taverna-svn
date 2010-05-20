@@ -56,9 +56,9 @@ public class ProcessorPortSameNameDbTest extends AbstractDbTestHelper {
 	@Ignore("Disabled while doing T2-1308")
 	@Test	
 	@Override
-	public void testVarBindings() throws SQLException, InstantiationException,
+	public void testPortBinding() throws SQLException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
-		super.testVarBindings();
+		super.testPortBinding();
 	}
 	
 	@Override
@@ -71,10 +71,10 @@ public class ProcessorPortSameNameDbTest extends AbstractDbTestHelper {
 	@Ignore("Disabled while doing T2-1308")
 	@Test		
 	@Override
-	public void testVars() throws SQLException, InstantiationException,
+	public void testPort() throws SQLException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
 		// TODO Auto-generated method stub
-		super.testVars();
+		super.testPort();
 	}
 	
 	@Ignore("Disabled while doing T2-1308")

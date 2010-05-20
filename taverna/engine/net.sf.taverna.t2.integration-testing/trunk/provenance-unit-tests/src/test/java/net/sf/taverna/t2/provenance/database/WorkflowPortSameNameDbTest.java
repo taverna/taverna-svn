@@ -63,10 +63,10 @@ public class WorkflowPortSameNameDbTest extends AbstractDbTestHelper {
 	@Test
 	@Ignore("Disabled while doing T2-1308")
 	@Override
-	public void testVarBindingsWorkflowPorts() throws SQLException,
+	public void testPortBindingsWorkflowPorts() throws SQLException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
-		super.testVarBindingsWorkflowPorts();
+		super.testPortBindingsWorkflowPorts();
 	}
 	
 }

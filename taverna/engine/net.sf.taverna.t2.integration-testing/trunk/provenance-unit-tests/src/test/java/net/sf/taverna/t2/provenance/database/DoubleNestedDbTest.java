@@ -77,5 +77,4 @@ public class DoubleNestedDbTest extends AbstractDbTestHelper {
 		return new HashSet<String>(processes);
 	}
 
-
 }
