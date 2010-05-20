@@ -24,11 +24,11 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE IF NOT EXISTS `Datalink` (
   `sourcePortName` varchar(100) NOT NULL COMMENT 'ref. to var name for source of datalink',
-  `sinkVarNameRef` varchar(100) NOT NULL COMMENT 'ref. to var name for sink of datalink',
+  `destinationPortName` varchar(100) NOT NULL COMMENT 'ref. to var name for sink of datalink',
   `sourceProcessorName` varchar(100) NOT NULL,
-  `sinkPNameRef` varchar(100) NOT NULL,
+  `destinationProcessorName` varchar(100) NOT NULL,
   `wfInstanceRef` varchar(100) NOT NULL,
-  PRIMARY KEY  USING BTREE (`sourcePortName`,`sinkVarNameRef`,`sourceProcessorName`,`sinkPNameRef`,`wfInstanceRef`)
+  PRIMARY KEY  USING BTREE (`sourcePortName`,`destinationPortName`,`sourceProcessorName`,`destinationProcessorName`,`wfInstanceRef`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- datalink between two processors';
 SET character_set_client = @saved_cs_client;
 
