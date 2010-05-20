@@ -59,8 +59,8 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ "`destinationPortName` varchar(100) NOT NULL COMMENT 'ref. to var name for sink of datalink',"
 		+ "`sourceProcessorName` varchar(100) NOT NULL,"
 		+ "`destinationProcessorName` varchar(100) NOT NULL,"
-		+ "`wfInstanceRef` varchar(100) NOT NULL,"
-		+ "PRIMARY KEY  USING BTREE (`sourcePortName`,`destinationPortName`,`sourceProcessorName`,`destinationProcessorName`,`wfInstanceRef`)"
+		+ "`workflowId` varchar(100) NOT NULL,"
+		+ "PRIMARY KEY  USING BTREE (`sourcePortName`,`destinationPortName`,`sourceProcessorName`,`destinationProcessorName`,`workflowId`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- datalink between two processors';";
 
 	private static final String createTableCollection = "CREATE TABLE  IF NOT EXISTS `T2Provenance`.`Collection` ("
