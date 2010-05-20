@@ -22,7 +22,7 @@ import net.sf.taverna.t2.lineageService.analysis.test.ProvenanceAnalysisTest;
 import net.sf.taverna.t2.lineageService.capture.test.propertiesReader;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceQuery;
-import net.sf.taverna.t2.provenance.lineageservice.utils.Arc;
+import net.sf.taverna.t2.provenance.lineageservice.utils.Datalink;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -277,7 +277,7 @@ public class DataflowGeneratorTest {
 		// logic:
 		// for each processor in the database, collate all its inputs and all its output ports
 		// then create one T2 processor with those ports
-		// finally use the Arcs table to connect up all the processors
+		// finally use the Datalinks table to connect up all the processors
 		//////////////
 
 		Map<String, List<String>> p2Inputs  = new HashMap<String, List<String>>();
@@ -338,14 +338,14 @@ public class DataflowGeneratorTest {
 			e.printStackTrace();
 		}
 
-		// read in all Arcs from wfRef
+		// read in all Datalinks from wfRef
 		queryConstraints.clear();
 		queryConstraints.put("A.wfInstanceRef", wfRef);
-		List<Arc> allArcs = pq.getArcs(queryConstraints);
+		List<Datalink> allArcs = pq.getArcs(queryConstraints);
 
 		try {
 			// connect all of them up...
-			for (Arc arc:allArcs) {
+			for (Datalink arc:allArcs) {
 
 				if (dataflowNames.contains(arc.getSourcePnameRef())) {
 					dfg.connectGlobalInput(df, arc.getSourceVarNameRef(), pname2proc.get(arc.getSinkPnameRef()), arc.getSinkVarNameRef());

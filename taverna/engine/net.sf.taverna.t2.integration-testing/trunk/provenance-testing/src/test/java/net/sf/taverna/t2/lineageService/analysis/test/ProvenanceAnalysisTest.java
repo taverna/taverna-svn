@@ -694,7 +694,7 @@ public class ProvenanceAnalysisTest<pathToDependencies> {
 
 
 	/**
-	 * OLD (obsolete??) this uses both Arcs and DD and avoids (ignores??) prior path traversal
+	 * OLD (obsolete??) this uses both Datalinks and DD and avoids (ignores??) prior path traversal
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 * @throws ClassNotFoundException

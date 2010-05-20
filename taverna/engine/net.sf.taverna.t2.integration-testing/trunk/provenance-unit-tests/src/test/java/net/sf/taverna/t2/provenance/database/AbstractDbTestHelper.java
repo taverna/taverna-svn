@@ -262,7 +262,7 @@ public abstract class AbstractDbTestHelper {
 			IllegalAccessException, ClassNotFoundException {
 		PreparedStatement statement = getConnection()
 				.prepareStatement(
-						"SELECT sourceVarNameRef,sourcePNameRef,sinkVarNameRef,sinkPNameRef from Arc WHERE wfInstanceRef=?");
+						"SELECT sourceVarNameRef,sourcePNameRef,sinkVarNameRef,sinkPNameRef from Datalink WHERE wfInstanceRef=?");
 		for (Dataflow df : workflowPaths.values()) {
 			Set<String> expectedLinks = describeDataLinks(df);
 			// Magic processor names meaning workflow ports
