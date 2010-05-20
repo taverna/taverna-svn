@@ -20,18 +20,18 @@ import net.sf.taverna.t2.provenance.lineageservice.utils.VarBinding;
 public class DummyProvenanceWriter extends ProvenanceWriter {
 
 	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addArc(net.sf.taverna.t2.provenance.lineageservice.utils.Var, net.sf.taverna.t2.provenance.lineageservice.utils.Var, java.lang.String)
+	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addDataLink(net.sf.taverna.t2.provenance.lineageservice.utils.Var, net.sf.taverna.t2.provenance.lineageservice.utils.Var, java.lang.String)
 	 */
-	public void addArc(Var sourceVar, Var sinkVar, String wfId)
+	public void addDataLink(Var sourceVar, Var sinkVar, String wfId)
 			throws SQLException {
 		// TODO Auto-generated method stub
 
 	}
 
 	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addArc(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addDataLink(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	public void addArc(String sourceVarName, String sourceProcName,
+	public void addDataLink(String sourceVarName, String sourceProcName,
 			String sinkVarName, String sinkProcName, String wfId)
 			{
 		// TODO Auto-generated method stub

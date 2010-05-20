@@ -150,7 +150,7 @@ public class DataDependenciesBuilder {
 			// logger.info("processing from-record "+fromRecord.getPFrom()+" "+fromRecord.getVFrom()+" "+fromRecord.getValFrom());
 
 			// find all datalinks that have this sink P:V
-			Set<DDRecord> toRecords = pq.queryArcsForDD(fromRecord.getPFrom(),
+			Set<DDRecord> toRecords = pq.queryDataLinksForDD(fromRecord.getPFrom(),
 					fromRecord.getVFrom(), fromRecord.getValFrom(),
 					wfInstanceID);
 

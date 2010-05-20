@@ -142,7 +142,7 @@ public class NaiveProvenanceQuery {
 				// perform a xfer step, using FROM vars
 
 				// query 2 -- corresponds to a xfer step
-				Set<DDRecord> xferResults = pq.queryArcsForDD(
+				Set<DDRecord> xferResults = pq.queryDataLinksForDD(
 						current.getPTo(), current.getVFrom(), current.getValFrom(), wfInstance);
 
 				if (xferResults != null) {			
