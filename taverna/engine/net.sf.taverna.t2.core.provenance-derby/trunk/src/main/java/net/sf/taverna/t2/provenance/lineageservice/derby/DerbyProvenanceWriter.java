@@ -58,17 +58,19 @@ public class DerbyProvenanceWriter extends ProvenanceWriter {
 			ps = connection
 			.prepareStatement(
 					"UPDATE Port SET inputOrOutput=?, nestingLevel = ?,"
-					+ "actualNestingLevel = ?, anlSet = ? , Port.reorder = ? WHERE varName = ? AND pnameRef = ? AND wfInstanceRef = ?");
+					+ "actualNestingLevel = ?, Port.reorder = ? WHERE varName = ? AND pnameRef = ? AND wfInstanceRef = ?");
 			int i = v.isInputPort() ? 1 : 0;
 			ps.setInt(1, i);
 			ps.setInt(2, v.getDepth());
-			ps.setInt(3, v.getGranularDepth());
-			int j = v.isGranularDepthSet() ? 1 : 0;
-			ps.setInt(4, j);
-			ps.setInt(5, v.getIterationStrategyOrder());
-			ps.setString(6, v.getPortName());
-			ps.setString(7, v.getProcessorName());
-			ps.setString(8, v.getWorkflowId());
+			if (v.isResolvedDepthSet()) {
+				ps.setInt(3, v.getResolvedDepth()); 
+			} else {
+				ps.setString(3, null);
+			}
+			ps.setInt(4, v.getIterationStrategyOrder());
+			ps.setString(5, v.getPortName());
+			ps.setString(6, v.getProcessorName());
+			ps.setString(7, v.getWorkflowId());
 			
 			ps.execute();
 		

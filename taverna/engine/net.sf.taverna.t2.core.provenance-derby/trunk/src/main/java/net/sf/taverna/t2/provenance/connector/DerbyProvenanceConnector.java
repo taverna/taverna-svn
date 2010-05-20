@@ -73,8 +73,9 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			+ "type varchar(20) default NULL,"
 			+ "inputOrOutput smallint NOT NULL ,"
 			+ "pnameRef varchar(100) NOT NULL,"
-			+ "wfInstanceRef varchar(100) NOT NULL," + "nestingLevel int,"
-			+ "actualNestingLevel int," + "anlSet smallint default NULL,"
+			+ "wfInstanceRef varchar(100) NOT NULL," 
+			+ "nestingLevel int,"
+			+ "actualNestingLevel int," 
 			+ "reorder smallint, "
 			+ "PRIMARY KEY (portId))";
 //			+ "PRIMARY KEY (varName,inputOrOutput,pnameRef,wfInstanceRef))";

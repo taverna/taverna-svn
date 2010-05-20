@@ -123,8 +123,9 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
                     aPort.setProcessorName(rs.getString("pnameRef"));
                     aPort.setPortName(rs.getString("varName"));
                     aPort.setDepth(rs.getInt("nestingLevel"));
-                    aPort.setGranularDepth(rs.getInt("actualNestingLevel"));
-                    aPort.setGranularDepthSet(rs.getBoolean("anlSet"));
+                    if (rs.getString("actualNestingLevel") != null) {
+						aPort.setResolvedDepth(rs.getInt("actualNestingLevel"));
+					}
                     result.add(aPort);
 
                 }
@@ -182,9 +183,9 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
                     aPort.setProcessorName(rs.getString("pnameRef"));
                     aPort.setPortName(rs.getString("varName"));
                     aPort.setDepth(rs.getInt("nestingLevel"));
-                    aPort.setGranularDepth(rs.getInt("actualNestingLevel"));
-                    aPort.setGranularDepthSet(rs.getBoolean("anlSet"));
-                    
+                    if (rs.getString("actualNestingLevel") != null) {
+						aPort.setResolvedDepth(rs.getInt("actualNestingLevel"));
+					}                    
                     result.add(aPort);
 
                 }
