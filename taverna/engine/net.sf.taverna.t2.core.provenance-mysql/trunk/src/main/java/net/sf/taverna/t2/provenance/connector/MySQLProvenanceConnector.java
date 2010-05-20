@@ -206,9 +206,9 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 							provenanceItem.getEventType(), provenanceItem);
 
 				} catch (SQLException e) {
-					logger.warn("Could not add provenance: " + e);
+					logger.warn("Could not add provenance", e);
 				} catch (IOException e) {
-					logger.warn("Could not add provenance: " + e);
+					logger.warn("Could not add provenance", e);
 				}
 
 			}
