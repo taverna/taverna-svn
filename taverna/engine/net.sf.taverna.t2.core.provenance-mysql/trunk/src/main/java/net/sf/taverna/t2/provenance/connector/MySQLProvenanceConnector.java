@@ -131,13 +131,6 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='static -- all known workflows by name';";
 
 
-	private final String createTableData = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Data` ("
-	  +"`dataReference` varchar(100) NOT NULL,"
-	  +"`wfInstanceID` varchar(100) NOT NULL,"
-	  +"`data` blob,"
-	  +"PRIMARY KEY  USING BTREE (`dataReference`,`wfInstanceID`)"
-	  +") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='dereferced data -- strings only (includes XMLEncoded beans)';";
-
 	// Also see tables in ProvenanceConnector
 
     public MySQLProvenanceConnector() {
@@ -187,36 +180,6 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 			for (Map.Entry<String, T2Reference> entry : outputDataMap
 					.entrySet())
 				allRefs.add(entry);
-
-			for (Map.Entry<String, T2Reference> entry : allRefs) {
-
-				T2Reference ref = entry.getValue();
-
-				Identified id = referenceService.resolveIdentifier(entry
-						.getValue(), null, getInvocationContext());
-				if (id instanceof ReferenceSet) {
-
-					byte[] renderedData = (byte[]) referenceService
-					.renderIdentifier(entry.getValue(), byte[].class,
-							getInvocationContext());
-
-
-					try {
-						pw.addData(entry.getValue().toString(), getProvenance()
-								.getEp().getWfInstanceID(), renderedData);
-					} catch (SQLException e) {
-						logger.error("Exception while writing data to DB", e);
-					}
-
-					// ReferenceSet rs = (ReferenceSet) id;
-					// Set<ExternalReferenceSPI> externalRefs =
-					// rs.getExternalReferences();
-					// externalRefs.
-				} else {
-					logger.debug("input data in provenance event NOT a ReferenceSet: "
-							+ entry.getValue());
-				}
-			}
 		}
 
 		// String content = provenanceItem.getAsString();
@@ -271,7 +234,6 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 			stmt.executeUpdate(createTablePortBinding);			
 			stmt.executeUpdate(createTableWFInstance);			
 			stmt.executeUpdate(createTableWorkflow);
-			stmt.executeUpdate(createTableData);
 			String engineAndCharset = " ENGINE=MyISAM DEFAULT CHARSET=utf8";
 			stmt.executeUpdate(ProcessorEnactment.getCreateTable() + engineAndCharset);
 			stmt.executeUpdate(ServiceInvocation.getCreateTable() + engineAndCharset);
