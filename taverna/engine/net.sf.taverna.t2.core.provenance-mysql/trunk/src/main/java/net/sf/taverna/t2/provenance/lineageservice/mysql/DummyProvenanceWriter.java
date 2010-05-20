@@ -85,7 +85,7 @@ public class DummyProvenanceWriter extends ProvenanceWriter {
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addVariables(java.util.List, java.lang.String)
 	 */
-	public void addVariables(List<Port> vars, String wfId) throws SQLException {
+	public void addPorts(List<Port> vars, String wfId) throws SQLException {
 		// TODO Auto-generated method stub
 
 	}
