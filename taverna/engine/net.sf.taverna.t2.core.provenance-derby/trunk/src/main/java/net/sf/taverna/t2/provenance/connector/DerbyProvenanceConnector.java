@@ -52,14 +52,7 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			+ "PNameRef varchar(100) NOT NULL,"
 			+ "varNameRef varchar(100) NOT NULL,"
 			+ "iteration varchar(2000) NOT NULL default '',"
-			+ " PRIMARY KEY (collID,wfInstanceRef,PNameRef,varNameRef,parentCollIDRef,iteration))";
-	private static final String createTableProcBinding = "CREATE TABLE ProcBinding ("
-			+ "pnameRef varchar(100) NOT NULL ,"
-			+ "execIDRef varchar(100) NOT NULL ,"
-			+ "actName varchar(100) NOT NULL ,"
-			+ "iteration char(10) NOT NULL default '',"
-			+ "wfNameRef varchar(100),"
-			+ "PRIMARY KEY (pnameRef,execIDRef,iteration, wfNameRef))";
+			+ " PRIMARY KEY (collID,wfInstanceRef,PNameRef,varNameRef,parentCollIDRef,iteration))";	
 	private static final String createTableProcessor = "CREATE TABLE Processor ("
 			+ "processorId varchar(36) NOT NULL,"
 			+ "pname varchar(100) NOT NULL,"
@@ -144,13 +137,7 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			} catch (SQLException e) {
 				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
 					logger.warn("Could not create table Collection : ", e);
-			}
-			try {
-				stmt.executeUpdate(createTableProcBinding);
-			} catch (SQLException e) {
-				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
-					logger.warn("Could not create table ProcBinding : ", e);
-			}
+			}			
 			try {
 				stmt.executeUpdate(createTableProcessor);
 			} catch (SQLException e) {
