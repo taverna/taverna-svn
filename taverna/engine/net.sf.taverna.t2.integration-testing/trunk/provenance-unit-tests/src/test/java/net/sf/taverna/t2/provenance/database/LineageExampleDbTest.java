@@ -58,6 +58,36 @@ public class LineageExampleDbTest extends
 	}
 	
 	@Override
+	protected Map<String, Object> getExpectedIntermediates() {
+		String dfId = dataflow.getInternalIdentier() + "/";
+		Map<String, Object> expectedIntermediateValues = getExpectedCollections();
+
+		expectedIntermediateValues.put(dfId+"P1/i:X[0]", "a1");
+		expectedIntermediateValues.put(dfId+"P1/i:X[1]", "a2");
+		expectedIntermediateValues.put(dfId+"P1/o:Y[0]", "a1b");
+		expectedIntermediateValues.put(dfId+"P1/o:Y[1]", "a2b");
+		expectedIntermediateValues.put(dfId+"P3/o:Y[]", "f");
+		expectedIntermediateValues.put(dfId+"P4/i:X1[0,0]", "a1b");
+		expectedIntermediateValues.put(dfId+"P4/i:X1[0,1]", "a2b");
+		expectedIntermediateValues.put(dfId+"P4/i:X1[1,0]", "a1b");
+		expectedIntermediateValues.put(dfId+"P4/i:X1[1,1]", "a2b");
+		expectedIntermediateValues.put(dfId+"P4/i:X2[0,0]", "d1");
+		expectedIntermediateValues.put(dfId+"P4/i:X2[0,1]", "d1");
+		expectedIntermediateValues.put(dfId+"P4/i:X2[1,0]", "d2");
+		expectedIntermediateValues.put(dfId+"P4/i:X2[1,1]", "d2");
+		expectedIntermediateValues.put(dfId+"P4/i:X3[0,0]", "f");
+		expectedIntermediateValues.put(dfId+"P4/i:X3[0,1]", "f");
+		expectedIntermediateValues.put(dfId+"P4/i:X3[1,0]", "f");
+		expectedIntermediateValues.put(dfId+"P4/i:X3[1,1]", "f");
+
+		expectedIntermediateValues.put(dfId+"P4/o:Y2[0,0]", "a1b_d1_f");
+		expectedIntermediateValues.put(dfId+"P4/o:Y2[0,1]", "a2b_d1_f");
+		expectedIntermediateValues.put(dfId+"P4/o:Y2[1,0]", "a1b_d2_f");
+		expectedIntermediateValues.put(dfId +"P4/o:Y2[1,1]", "a2b_d2_f");
+		return expectedIntermediateValues;
+	}
+	
+	@Override
 	protected Map<String, Object> getWorkflowInputs() {
 		return new HashMap<String, Object>();
 	}
