@@ -93,13 +93,13 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 	private static final String createTableVar = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Port` ("
 		+ "`varName` varchar(100) NOT NULL,"
 		+ "`type` varchar(20) default NULL COMMENT 'variable type',"
-		+ "`inputOrOutput` tinyint(1) NOT NULL COMMENT '1 = input, 0 = output',"
+		+ "`isInputPort` tinyint(1) NOT NULL COMMENT '1 = input, 0 = output',"
 		+ "`pnameRef` varchar(100) NOT NULL COMMENT 'reference to the processor',"
 		+ "`wfInstanceRef` varchar(100) NOT NULL,"
 		+ "`depth` int(10) unsigned default '0',"
 		+ "`resolvedDepth` int(10) unsigned default NULL,"
 		+ "`iterationStrategyOrder` tinyint(4) default NULL,"
-		+ "PRIMARY KEY  USING BTREE (`varName`,`inputOrOutput`,`pnameRef`,`wfInstanceRef`)"
+		+ "PRIMARY KEY  USING BTREE (`varName`,`isInputPort`,`pnameRef`,`wfInstanceRef`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='static -- input and output variables (processor port names i';";
 
 	private static final String createTablePortBinding = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`PortBinding` ("
