@@ -39,10 +39,10 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 	private static final String createTableDatalink = "CREATE TABLE  Datalink ("
 			+ "sourcePortName varchar(100) NOT NULL ,"
 			+ "sinkVarNameRef varchar(100) NOT NULL,"
-			+ "sourcePNameRef varchar(100) NOT NULL,"
+			+ "sourceProcessorName varchar(100) NOT NULL,"
 			+ "sinkPNameRef varchar(100) NOT NULL,"
 			+ "wfInstanceRef varchar(100) NOT NULL,"
-			+ " PRIMARY KEY  (sourcePortName,sinkVarNameRef,sourcePNameRef,sinkPNameRef,wfInstanceRef))";
+			+ " PRIMARY KEY  (sourcePortName,sinkVarNameRef,sourceProcessorName,sinkPNameRef,wfInstanceRef))";
 	private static final String createTableCollection = "CREATE TABLE Collection ("
 			+ "collID varchar(100) NOT NULL,"
 			+ "parentCollIDRef varchar(100) NOT NULL ,"
