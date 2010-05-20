@@ -55,12 +55,12 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 	private static final String createDB = "CREATE DATABASE IF NOT EXISTS T2Provenance";
 
 	private static final String createTableDatalink = "CREATE TABLE IF NOT EXISTS  `T2Provenance`.`Datalink` ("
-		+ "`sourceVarNameRef` varchar(100) NOT NULL COMMENT 'ref. to var name for source of datalink',"
+		+ "`sourcePortName` varchar(100) NOT NULL COMMENT 'ref. to var name for source of datalink',"
 		+ "`sinkVarNameRef` varchar(100) NOT NULL COMMENT 'ref. to var name for sink of datalink',"
 		+ "`sourcePNameRef` varchar(100) NOT NULL,"
 		+ "`sinkPNameRef` varchar(100) NOT NULL,"
 		+ "`wfInstanceRef` varchar(100) NOT NULL,"
-		+ "PRIMARY KEY  USING BTREE (`sourceVarNameRef`,`sinkVarNameRef`,`sourcePNameRef`,`sinkPNameRef`,`wfInstanceRef`)"
+		+ "PRIMARY KEY  USING BTREE (`sourcePortName`,`sinkVarNameRef`,`sourcePNameRef`,`sinkPNameRef`,`wfInstanceRef`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- datalink between two processors';";
 
 	private static final String createTableCollection = "CREATE TABLE  IF NOT EXISTS `T2Provenance`.`Collection` ("
