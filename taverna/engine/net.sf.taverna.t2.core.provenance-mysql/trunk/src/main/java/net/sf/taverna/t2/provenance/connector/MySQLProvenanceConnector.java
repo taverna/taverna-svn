@@ -54,7 +54,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 	private static final String createDB = "CREATE DATABASE IF NOT EXISTS T2Provenance";
 
-	private static final String createTableArc = "CREATE TABLE IF NOT EXISTS  `T2Provenance`.`Datalink` ("
+	private static final String createTableDatalink = "CREATE TABLE IF NOT EXISTS  `T2Provenance`.`Datalink` ("
 		+ "`sourceVarNameRef` varchar(100) NOT NULL COMMENT 'ref. to var name for source of datalink',"
 		+ "`sinkVarNameRef` varchar(100) NOT NULL COMMENT 'ref. to var name for sink of datalink',"
 		+ "`sourcePNameRef` varchar(100) NOT NULL,"
@@ -263,7 +263,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
             connection=getConnection();
 			stmt = connection.createStatement();			
 			stmt.executeUpdate(createDB);			
-			stmt.executeUpdate(createTableArc);			
+			stmt.executeUpdate(createTableDatalink);			
 			stmt.executeUpdate(createTableCollection);			
 			stmt.executeUpdate(createTableProcBinding);			
 			stmt.executeUpdate(createTableProcessor);			
