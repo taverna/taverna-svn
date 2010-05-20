@@ -38,8 +38,8 @@ import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProcessorEnactment;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceProcessor;
-import net.sf.taverna.t2.provenance.lineageservice.utils.QueryVar;
-import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
+import net.sf.taverna.t2.provenance.lineageservice.utils.Port;
+import net.sf.taverna.t2.provenance.lineageservice.utils.QueryPort;
 import net.sf.taverna.t2.provenance.lineageservice.utils.WorkflowInstance;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.T2Reference;
@@ -52,7 +52,6 @@ import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.InvalidDataflowException;
 import net.sf.taverna.t2.workflowmodel.MergePort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
-import net.sf.taverna.t2.workflowmodel.Port;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.ProcessorPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
@@ -263,10 +262,10 @@ public abstract class AbstractQueryTestHelper {
 		Query provenanceQuery = new Query();
 		provenanceQuery.setRunIDList(Arrays.asList(getFacade()
 				.getWorkflowRunId()));
-		QueryVar queryVar = new QueryVar();
-		queryVar.setWfName(dataflow.getInternalIdentier());
-		queryVar.setPath(ProvenanceAnalysis.ALL_PATHS_KEYWORD);
-		provenanceQuery.setTargetVars(Arrays.asList(queryVar));
+		QueryPort queryPort = new QueryPort();
+		queryPort.setWfName(dataflow.getInternalIdentier());
+		queryPort.setPath(ProvenanceAnalysis.ALL_PATHS_KEYWORD);
+		provenanceQuery.setTargetPorts(Arrays.asList(queryPort));
 		QueryAnswer answer = getProvenanceAccess()
 				.executeQuery(provenanceQuery);
 		NativeAnswer provenanceAnswer = answer.getNativeAnswer();
@@ -391,17 +390,17 @@ public abstract class AbstractQueryTestHelper {
 			String inputsId = enactment.getInitialInputsDataBindingId();
 			String outputsId = enactment.getFinalOutputsDataBindingId();
 			
-			Map<Var, T2Reference> bindings = getProvenanceAccess().getDataBindings(inputsId);
+			Map<Port, T2Reference> bindings = getProvenanceAccess().getDataBindings(inputsId);
 			if (! outputsId.equals(inputsId)) {
 				bindings.putAll(getProvenanceAccess().getDataBindings(outputsId));
 			}			
-			for (Entry<Var,T2Reference> binding : bindings.entrySet()) {
-				Var port = binding.getKey();
-				assertEquals(port.getPName(), proc.getPname());
-				assertEquals(port.getWfInstanceRef(), proc.getWfInstanceRef());
+			for (Entry<Port,T2Reference> binding : bindings.entrySet()) {
+				Port port = binding.getKey();
+				assertEquals(port.getProcessorName(), proc.getPname());
+				assertEquals(port.getWorkflowId(), proc.getWfInstanceRef());
 				//assertEquals(port.getProcessorId(), proc.getIdentifier());
 				String key = proc.getWfInstanceRef() + "/" + proc.getPname()
-				+ "/" + (port.isInput() ? "i:" : "o:") + port.getVName()
+				+ "/" + (port.isInputPort() ? "i:" : "o:") + port.getPortName()
 				+ enactment.getIteration();
 				Object resolved = getReferenceService().renderIdentifier(
 						binding.getValue(), Object.class, getContext());
@@ -514,14 +513,14 @@ public abstract class AbstractQueryTestHelper {
 			String workflowId = df.getInternalIdentier();
 			for (Processor p : df.getProcessors()) {
 				String pName = p.getLocalName();
-				List<Port> ports = new ArrayList<Port>();
-				for (Port ip : p.getInputPorts()) {
+				List<ProcessorPort> ports = new ArrayList<ProcessorPort>();
+				for (ProcessorPort ip : p.getInputPorts()) {
 					ports.add(ip);
 				}
-				for (Port ip : p.getOutputPorts()) {
+				for (ProcessorPort ip : p.getOutputPorts()) {
 					ports.add(ip);
 				}
-				for (Port port : ports) {
+				for (ProcessorPort port : ports) {
 					String portName = port.getName();
 					// FIXME: How to specify output port vs. input port?
 					Dependencies fetchPortData = getProvenanceAccess()
