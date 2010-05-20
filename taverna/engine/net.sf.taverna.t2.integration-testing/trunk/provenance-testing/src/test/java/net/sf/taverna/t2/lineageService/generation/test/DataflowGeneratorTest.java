@@ -22,7 +22,7 @@ import net.sf.taverna.t2.lineageService.analysis.test.ProvenanceAnalysisTest;
 import net.sf.taverna.t2.lineageService.capture.test.propertiesReader;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceQuery;
-import net.sf.taverna.t2.provenance.lineageservice.utils.Datalink;
+import net.sf.taverna.t2.provenance.lineageservice.utils.DataLink;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -341,11 +341,11 @@ public class DataflowGeneratorTest {
 		// read in all Datalinks from wfRef
 		queryConstraints.clear();
 		queryConstraints.put("A.wfInstanceRef", wfRef);
-		List<Datalink> allArcs = pq.getArcs(queryConstraints);
+		List<DataLink> allArcs = pq.getArcs(queryConstraints);
 
 		try {
 			// connect all of them up...
-			for (Datalink datalink:allArcs) {
+			for (DataLink datalink:allArcs) {
 
 				if (dataflowNames.contains(datalink.getSourcePnameRef())) {
 					dfg.connectGlobalInput(df, datalink.getSourceVarNameRef(), pname2proc.get(datalink.getSinkPnameRef()), datalink.getSinkVarNameRef());
