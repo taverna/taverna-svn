@@ -57,8 +57,8 @@ public class DerbyProvenanceWriter extends ProvenanceWriter {
                         connection = getConnection();
 			ps = connection
 			.prepareStatement(
-					"UPDATE Port SET inputOrOutput=?, nestingLevel = ?,"
-					+ "actualNestingLevel = ?, Port.reorder = ? WHERE varName = ? AND pnameRef = ? AND wfInstanceRef = ?");
+					"UPDATE Port SET inputOrOutput=?, depth = ?,"
+					+ "resolvedDepth = ?, Port.iterationStrategyOrder = ? WHERE varName = ? AND pnameRef = ? AND wfInstanceRef = ?");
 			int i = v.isInputPort() ? 1 : 0;
 			ps.setInt(1, i);
 			ps.setInt(2, v.getDepth());

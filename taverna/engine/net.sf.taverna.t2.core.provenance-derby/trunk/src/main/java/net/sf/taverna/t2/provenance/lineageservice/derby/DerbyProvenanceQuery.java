@@ -86,7 +86,7 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
 
     /**
      * select Port records that satisfy constraints
-     * the order column is called reorder in derby because order is a reserved word
+     * the order column is called iterationStrategyOrder in derby because order is a reserved word
      */
     @Override
     public List<Port> getPorts(Map<String, String> queryConstraints)
@@ -98,7 +98,7 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
         String q = addWhereClauseToQuery(q0, queryConstraints, true);
 
         List<String> orderAttr = new ArrayList<String>();
-        orderAttr.add("V.reorder");
+        orderAttr.add("V.iterationStrategyOrder");
 
         String q1 = addOrderByToQuery(q, orderAttr, true);
 
@@ -122,9 +122,9 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
 					aPort.setIdentifier(rs.getString("portId"));
                     aPort.setProcessorName(rs.getString("pnameRef"));
                     aPort.setPortName(rs.getString("varName"));
-                    aPort.setDepth(rs.getInt("nestingLevel"));
-                    if (rs.getString("actualNestingLevel") != null) {
-						aPort.setResolvedDepth(rs.getInt("actualNestingLevel"));
+                    aPort.setDepth(rs.getInt("depth"));
+                    if (rs.getString("resolvedDepth") != null) {
+						aPort.setResolvedDepth(rs.getInt("resolvedDepth"));
 					}
                     result.add(aPort);
 
@@ -182,9 +182,9 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
 					aPort.setIdentifier(rs.getString("portId"));
                     aPort.setProcessorName(rs.getString("pnameRef"));
                     aPort.setPortName(rs.getString("varName"));
-                    aPort.setDepth(rs.getInt("nestingLevel"));
-                    if (rs.getString("actualNestingLevel") != null) {
-						aPort.setResolvedDepth(rs.getInt("actualNestingLevel"));
+                    aPort.setDepth(rs.getInt("depth"));
+                    if (rs.getString("resolvedDepth") != null) {
+						aPort.setResolvedDepth(rs.getInt("resolvedDepth"));
 					}                    
                     result.add(aPort);
 
