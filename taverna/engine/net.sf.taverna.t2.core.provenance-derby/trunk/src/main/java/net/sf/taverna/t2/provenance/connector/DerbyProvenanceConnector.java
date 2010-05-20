@@ -36,8 +36,6 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 
 	private static Logger logger = Logger
 			.getLogger(DerbyProvenanceConnector.class);
-	private static final String createTableData = "CREATE TABLE Data ("
-			+ "dataReference VARCHAR(100), wfInstanceID VARCHAR(100), data BLOB)";
 	private static final String createTableDatalink = "CREATE TABLE  Datalink ("
 			+ "sourceVarNameRef varchar(100) NOT NULL ,"
 			+ "sinkVarNameRef varchar(100) NOT NULL,"
@@ -179,12 +177,6 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			} catch (SQLException e) {
 				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
 					logger.warn("Could not create table Workflow : ", e);
-			}
-			try {
-				stmt.executeUpdate(createTableData);
-			} catch (SQLException e) {
-				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
-					logger.warn("Could not create table Data : ", e);
 			}
 			
 			try {
