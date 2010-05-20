@@ -92,7 +92,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 	private static final String createTablePort = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Port` ("
 		+ "`portId` varchar(36) NOT NULL,"
-		+ "`processorId` varchar(36) NOT NULL,"
+		+ "`processorId` varchar(36),"
 		+ "`portName` varchar(100) NOT NULL,"
 		+ "`isInputPort` tinyint(1) NOT NULL COMMENT '1 = input, 0 = output',"
 		+ "`processorName` varchar(100) NOT NULL COMMENT 'reference to the processor',"
