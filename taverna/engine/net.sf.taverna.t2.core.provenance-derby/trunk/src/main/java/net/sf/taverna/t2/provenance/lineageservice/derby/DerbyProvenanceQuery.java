@@ -163,7 +163,7 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
         try {
             connection = getConnection();
             ps = connection.prepareStatement(
-                    "SELECT v.* " + "FROM Arc a JOIN Var v ON a.sinkPNameRef = v.pnameRef " + "AND  a.sinkVarNameRef = v.varName " + "AND a.wfInstanceRef = v.wfInstanceRef " + "WHERE sourceVarNameRef = ? AND sourcePNameRef = ?");
+                    "SELECT v.* " + "FROM Datalink a JOIN Var v ON a.sinkPNameRef = v.pnameRef " + "AND  a.sinkVarNameRef = v.varName " + "AND a.wfInstanceRef = v.wfInstanceRef " + "WHERE sourceVarNameRef = ? AND sourcePNameRef = ?");
 
             ps.setString(1, vName);
             ps.setString(2, pName);

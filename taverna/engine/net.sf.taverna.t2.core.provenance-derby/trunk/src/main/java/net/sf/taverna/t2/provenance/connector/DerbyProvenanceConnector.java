@@ -38,7 +38,7 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			.getLogger(DerbyProvenanceConnector.class);
 	private static final String createTableData = "CREATE TABLE Data ("
 			+ "dataReference VARCHAR(100), wfInstanceID VARCHAR(100), data BLOB)";
-	private static final String createTableDatalink = "CREATE TABLE  Arc ("
+	private static final String createTableDatalink = "CREATE TABLE  Datalink ("
 			+ "sourceVarNameRef varchar(100) NOT NULL ,"
 			+ "sinkVarNameRef varchar(100) NOT NULL,"
 			+ "sourcePNameRef varchar(100) NOT NULL,"
@@ -136,7 +136,7 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 				stmt.executeUpdate(createTableDatalink);
 			} catch (SQLException e) {
 				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
-					logger.warn("Could not create table Arc : ", e);
+					logger.warn("Could not create table Datalink : ", e);
 			}
 			try {
 				stmt.executeUpdate(createTableCollection);

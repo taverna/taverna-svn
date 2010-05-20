@@ -20,7 +20,7 @@ public class TestDerbyProvenanceConnector {
 		DerbyProvenanceConnector connector = new DerbyProvenanceConnector();
 		Connection con = DatabaseHelper.getConnection();
 		try {
-			assertFalse(con.prepareStatement("select * from Arc").execute());
+			assertFalse(con.prepareStatement("select * from Datalink").execute());
 			fail("Query should have failed since table does not exist");
 		}
 		catch(Exception e) {
@@ -35,7 +35,7 @@ public class TestDerbyProvenanceConnector {
 		
 		con = DatabaseHelper.getConnection();
 		try {
-			assertTrue(con.prepareStatement("select * from Arc").execute());			
+			assertTrue(con.prepareStatement("select * from Datalink").execute());			
 		}
 		catch(Exception e) {
 			fail("Query should have succeeded since table exists");
@@ -48,7 +48,7 @@ public class TestDerbyProvenanceConnector {
 		
 		con = DatabaseHelper.getConnection();
 		try {
-			assertTrue(con.prepareStatement("select * from Arc").execute());			
+			assertTrue(con.prepareStatement("select * from Datalink").execute());			
 		}
 		catch(Exception e) {
 			fail("Query should have succeeded since table exists");
