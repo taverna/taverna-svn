@@ -74,11 +74,11 @@ public class DummyProvenanceWriter extends ProvenanceWriter {
 	}
 
 	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addVarBinding(net.sf.taverna.t2.provenance.lineageservice.utils.PortBinding)
+	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addPortBinding(net.sf.taverna.t2.provenance.lineageservice.utils.PortBinding)
 	 */
-	public void addVarBinding(PortBinding vb) throws SQLException {
+	public void addPortBinding(PortBinding vb) throws SQLException {
 		// TODO Auto-generated method stub
-		logger.info("addVarBinding called");
+		logger.info("addPortBinding called");
 
 	}
 
