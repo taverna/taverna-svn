@@ -41,8 +41,8 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			+ "destinationPortName varchar(100) NOT NULL,"
 			+ "sourceProcessorName varchar(100) NOT NULL,"
 			+ "destinationProcessorName varchar(100) NOT NULL,"
-			+ "wfInstanceRef varchar(100) NOT NULL,"
-			+ " PRIMARY KEY  (sourcePortName,destinationPortName,sourceProcessorName,destinationProcessorName,wfInstanceRef))";
+			+ "workflowId varchar(100) NOT NULL,"
+			+ " PRIMARY KEY  (sourcePortName,destinationPortName,sourceProcessorName,destinationProcessorName,workflowId))";
 	private static final String createTableCollection = "CREATE TABLE Collection ("
 			+ "collID varchar(100) NOT NULL,"
 			+ "parentCollIDRef varchar(100) NOT NULL ,"

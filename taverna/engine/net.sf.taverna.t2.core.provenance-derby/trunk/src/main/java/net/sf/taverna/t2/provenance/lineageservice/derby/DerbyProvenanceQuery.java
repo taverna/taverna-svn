@@ -163,7 +163,7 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
         try {
             connection = getConnection();
             ps = connection.prepareStatement(
-                    "SELECT v.* " + "FROM Datalink a JOIN Port v ON a.destinationProcessorName = v.pnameRef " + "AND  a.destinationPortName = v.varName " + "AND a.wfInstanceRef = v.wfInstanceRef " + "WHERE sourcePortName = ? AND sourceProcessorName = ?");
+                    "SELECT v.* " + "FROM Datalink a JOIN Port v ON a.destinationProcessorName = v.pnameRef " + "AND  a.destinationPortName = v.varName " + "AND a.workflowId = v.wfInstanceRef " + "WHERE sourcePortName = ? AND sourceProcessorName = ?");
 
             ps.setString(1, vName);
             ps.setString(2, pName);
