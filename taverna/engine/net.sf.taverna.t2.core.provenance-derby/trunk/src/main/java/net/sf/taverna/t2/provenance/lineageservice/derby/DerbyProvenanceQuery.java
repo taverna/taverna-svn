@@ -89,7 +89,7 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
      * the order column is called reorder in derby because order is a reserved word
      */
     @Override
-    public List<Port> getVars(Map<String, String> queryConstraints)
+    public List<Port> getPorts(Map<String, String> queryConstraints)
             throws SQLException {
         List<Port> result = new ArrayList<Port>();
 
@@ -114,23 +114,23 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
 
                 while (rs.next()) {
 
-                    Port aVar = new Port();
+                    Port aPort = new Port();
 
-                    aVar.setWfInstanceRef(rs.getString("WfInstanceRef"));
+                    aPort.setWfInstanceRef(rs.getString("WfInstanceRef"));
 
                     if (rs.getInt("inputOrOutput") == 1) {
-                        aVar.setInput(true);
+                        aPort.setInput(true);
                     } else {
-                        aVar.setInput(false);
+                        aPort.setInput(false);
                     }
-					aVar.setIdentifier(rs.getString("portId"));
-                    aVar.setPName(rs.getString("pnameRef"));
-                    aVar.setVName(rs.getString("varName"));
-                    aVar.setType(rs.getString("type"));
-                    aVar.setTypeNestingLevel(rs.getInt("nestingLevel"));
-                    aVar.setActualNestingLevel(rs.getInt("actualNestingLevel"));
-                    aVar.setANLset((rs.getInt("anlSet") == 1 ? true : false));
-                    result.add(aVar);
+					aPort.setIdentifier(rs.getString("portId"));
+                    aPort.setPName(rs.getString("pnameRef"));
+                    aPort.setVName(rs.getString("varName"));
+                    aPort.setType(rs.getString("type"));
+                    aPort.setTypeNestingLevel(rs.getInt("nestingLevel"));
+                    aPort.setActualNestingLevel(rs.getInt("actualNestingLevel"));
+                    aPort.setANLset((rs.getInt("anlSet") == 1 ? true : false));
+                    result.add(aPort);
 
                 }
             }
@@ -153,7 +153,7 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
      * to wfInstanceRef
      */
      @Override
-    public List<Port> getSuccVars(String pName, String vName,
+    public List<Port> getSuccPorts(String pName, String vName,
             String wfInstanceRef) throws SQLException {
 
         List<Port> result = new ArrayList<Port>();

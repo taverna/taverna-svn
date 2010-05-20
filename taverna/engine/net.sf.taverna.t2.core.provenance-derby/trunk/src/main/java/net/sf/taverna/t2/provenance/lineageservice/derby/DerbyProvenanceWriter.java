@@ -42,13 +42,13 @@ public class DerbyProvenanceWriter extends ProvenanceWriter {
 	}	
 	
 	/**
-	 * persists var v back to DB
+	 * persists port v back to DB
 	 * 
 	 * @param v
 	 * @throws SQLException
 	 */
 	@Override
-	public void updateVar(Port v) throws SQLException {
+	public void updatePort(Port v) throws SQLException {
 		
 		PreparedStatement ps = null;
                 Connection connection = null;

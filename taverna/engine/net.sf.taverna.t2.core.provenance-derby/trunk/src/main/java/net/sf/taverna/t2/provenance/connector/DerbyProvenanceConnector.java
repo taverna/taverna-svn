@@ -67,7 +67,7 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			+ "type varchar(100) default NULL,"
 			+ "isTopLevel smallint, "
 			+ "PRIMARY KEY  (pname,wfInstanceRef))";
-	private static final String createTableVar = "CREATE TABLE Port ("
+	private static final String createTablePort = "CREATE TABLE Port ("
 			+ "portId varchar(36) NOT NULL,"
 			+ "varName varchar(100) NOT NULL,"
 			+ "type varchar(20) default NULL,"
@@ -78,7 +78,7 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			+ "reorder smallint, "
 			+ "PRIMARY KEY (portId))";
 //			+ "PRIMARY KEY (varName,inputOrOutput,pnameRef,wfInstanceRef))";
-	private static final String createTableVarBinding = "CREATE TABLE PortBinding ("
+	private static final String createTablePortBinding = "CREATE TABLE PortBinding ("
 			+ "varNameRef varchar(100) NOT NULL,"
 			+ "wfInstanceRef varchar(100) NOT NULL,"
 			+ "value varchar(100) default NULL,"
@@ -157,13 +157,13 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 					logger.warn("Could not create table Processor : ", e);
 			}
 			try {
-				stmt.executeUpdate(createTableVar);
+				stmt.executeUpdate(createTablePort);
 			} catch (SQLException e) {
 				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
 					logger.warn("Could not create table Port : ", e);
 			}
 			try {
-				stmt.executeUpdate(createTableVarBinding);
+				stmt.executeUpdate(createTablePortBinding);
 			} catch (SQLException e) {
 				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
 					logger.warn("Could not create table Port Binding : ", e);
