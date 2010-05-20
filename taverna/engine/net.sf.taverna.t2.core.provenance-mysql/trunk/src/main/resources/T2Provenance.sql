@@ -156,13 +156,13 @@ CREATE TABLE IF NOT EXISTS `Processor` (
 SET character_set_client = @saved_cs_client;
 
 --
--- Table structure for table `Var`
+-- Table structure for table `Port`
 --
 
 
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-CREATE TABLE IF NOT EXISTS `Var` (
+CREATE TABLE IF NOT EXISTS `Port` (
   `varName` varchar(100) NOT NULL,
   `type` varchar(20) default NULL COMMENT 'variable type',
   `inputOrOutput` tinyint(1) NOT NULL COMMENT '1 = input, 0 = output',
@@ -177,13 +177,13 @@ CREATE TABLE IF NOT EXISTS `Var` (
 SET character_set_client = @saved_cs_client;
 
 --
--- Table structure for table `VarBinding`
+-- Table structure for table `PortBinding`
 --
 
 
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-CREATE TABLE IF NOT EXISTS `VarBinding` (
+CREATE TABLE IF NOT EXISTS `PortBinding` (
   `varNameRef` varchar(100) NOT NULL COMMENT 'ref to var name',
   `wfInstanceRef` varchar(100) NOT NULL COMMENT 'ref to execution ID',
   `value` varchar(100) default NULL COMMENT 'ref to value. Either a string value or a string ref (URI) to a value',

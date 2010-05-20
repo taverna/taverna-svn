@@ -90,7 +90,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ "PRIMARY KEY  (`pname`,`wfInstanceRef`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='static -- all processors for all workflows, by name';";
 
-	private static final String createTableVar = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Var` ("
+	private static final String createTableVar = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Port` ("
 		+ "`varName` varchar(100) NOT NULL,"
 		+ "`type` varchar(20) default NULL COMMENT 'variable type',"
 		+ "`inputOrOutput` tinyint(1) NOT NULL COMMENT '1 = input, 0 = output',"
@@ -103,7 +103,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ "PRIMARY KEY  USING BTREE (`varName`,`inputOrOutput`,`pnameRef`,`wfInstanceRef`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='static -- input and output variables (processor port names i';";
 
-	private static final String createTableVarBinding = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`VarBinding` ("
+	private static final String createTableVarBinding = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`PortBinding` ("
 		+ "`varNameRef` varchar(100) NOT NULL COMMENT 'ref to var name',"
 		+ "`wfInstanceRef` varchar(100) NOT NULL COMMENT 'ref to execution ID',"
 		+ "`value` varchar(100) default NULL COMMENT 'ref to value. Either a string value or a string ref (URI) to a value',"

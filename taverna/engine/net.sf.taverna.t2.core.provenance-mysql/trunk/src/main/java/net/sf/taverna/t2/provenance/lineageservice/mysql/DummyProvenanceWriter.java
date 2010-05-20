@@ -20,7 +20,7 @@ import net.sf.taverna.t2.provenance.lineageservice.utils.PortBinding;
 public class DummyProvenanceWriter extends ProvenanceWriter {
 
 	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addDataLink(net.sf.taverna.t2.provenance.lineageservice.utils.Var, net.sf.taverna.t2.provenance.lineageservice.utils.Var, java.lang.String)
+	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addDataLink(net.sf.taverna.t2.provenance.lineageservice.utils.Port, net.sf.taverna.t2.provenance.lineageservice.utils.Port, java.lang.String)
 	 */
 	public void addDataLink(Port sourceVar, Port sinkVar, String wfId)
 			throws SQLException {
@@ -74,7 +74,7 @@ public class DummyProvenanceWriter extends ProvenanceWriter {
 	}
 
 	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addVarBinding(net.sf.taverna.t2.provenance.lineageservice.utils.VarBinding)
+	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addVarBinding(net.sf.taverna.t2.provenance.lineageservice.utils.PortBinding)
 	 */
 	public void addVarBinding(PortBinding vb) throws SQLException {
 		// TODO Auto-generated method stub
