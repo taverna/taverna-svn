@@ -21,7 +21,7 @@ import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.NaiveProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.utils.QueryVar;
-import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
+import net.sf.taverna.t2.provenance.lineageservice.utils.Port;
 import net.sf.taverna.t2.provenance.lineageservice.utils.WorkflowInstance;
 
 import org.apache.log4j.Logger;
@@ -238,7 +238,7 @@ public class ProvenanceAnalysisTest<pathToDependencies> {
 			varQueryConstraints.put("V.pnameRef", proc);  
 			varQueryConstraints.put("V.inputOrOutput", "0");
 
-			List<Var> outVars = pq.getVars(varQueryConstraints);
+			List<Port> outVars = pq.getVars(varQueryConstraints);
 
 			for (int i=0; i<outVars.size(); i++) {
 				QueryVar qv = new QueryVar();
@@ -296,7 +296,7 @@ public class ProvenanceAnalysisTest<pathToDependencies> {
 					varQueryConstraints.put("V.pnameRef", qv.getPname());  
 					varQueryConstraints.put("V.inputOrOutput", "0");
 
-					List<Var> outVars = pq.getVars(varQueryConstraints);
+					List<Port> outVars = pq.getVars(varQueryConstraints);
 
 					QueryVar qv1;
 					for (int i=0; i<outVars.size(); i++) {
@@ -343,9 +343,9 @@ public class ProvenanceAnalysisTest<pathToDependencies> {
 //				vbConstraints.put("VB.varNameRef", qv.getVname());
 //				vbConstraints.put("VB.wfInstanceRef", wfInstance);
 //
-//				List<VarBinding> vbList = pq.getVarBindings(vbConstraints); // DB
+//				List<PortBinding> vbList = pq.getVarBindings(vbConstraints); // DB
 //
-//				for (VarBinding vb:vbList) {
+//				for (PortBinding vb:vbList) {
 //
 //					// path is of the form [x,y..]  we need it as x,y... 
 //					String path = vb.getIteration().substring(1, vb.getIteration().length()-1);

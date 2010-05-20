@@ -324,12 +324,12 @@ public abstract class AbstractDbTestHelper {
 								+ "  Collection.pNameRef AS pNameRef,"
 								+ "  Collection.varNameRef AS varNameRef,"
 								+ "   iteration, inputOrOutput "
-								+ "FROM Collection " + "INNER JOIN Var "
-								+ "  ON Collection.varNameRef = Var.varName "
-								+ "  AND Collection.pNameRef = Var.pNameRef " +
-								// "  AND Collection.wfNameRef = Var.wfInstanceRef "
+								+ "FROM Collection " + "INNER JOIN Port "
+								+ "  ON Collection.varNameRef = Port.varName "
+								+ "  AND Collection.pNameRef = Port.pNameRef " +
+								// "  AND Collection.wfNameRef = Port.wfInstanceRef "
 								// +
-								"WHERE Collection.wfInstanceRef=? AND Var.wfInstanceRef=?");
+								"WHERE Collection.wfInstanceRef=? AND Port.wfInstanceRef=?");
 		statement.setString(1, getFacade().getWorkflowRunId());
 		// FIXME: Collections don't support nested workflows
 		statement.setString(2, dataflow.getInternalIdentier());
@@ -647,16 +647,16 @@ public abstract class AbstractDbTestHelper {
 						"SELECT "
 								+ "  varNameRef,value,collIdRef,positionInColl,valueType,"
 								+ "  iteration,ref,inputOrOutput "
-								+ "FROM VarBinding "
-								+ "INNER JOIN Var "
-								+ "  ON VarBinding.varNameRef = Var.varName "
-								+ "  AND VarBinding.pNameRef = Var.pNameRef "
+								+ "FROM PortBinding "
+								+ "INNER JOIN Port "
+								+ "  ON PortBinding.varNameRef = Port.varName "
+								+ "  AND PortBinding.pNameRef = Port.pNameRef "
 								+
-								// FIXME: Non-unique foreign key to VarBinding
-								"  AND VarBinding.wfNameRef = Var.wfInstanceRef "
-								+ "WHERE VarBinding.wfInstanceRef=? "
-								+ "  AND VarBinding.wfNameRef=? "
-								+ "  AND VarBinding.pNameRef=?");
+								// FIXME: Non-unique foreign key to PortBinding
+								"  AND PortBinding.wfNameRef = Port.wfInstanceRef "
+								+ "WHERE PortBinding.wfInstanceRef=? "
+								+ "  AND PortBinding.wfNameRef=? "
+								+ "  AND PortBinding.pNameRef=?");
 		statement.setString(1, getFacade().getWorkflowRunId());
 
 		Map<String, Object> intermediateValues = new HashMap<String, Object>();
@@ -736,7 +736,7 @@ public abstract class AbstractDbTestHelper {
 			ClassNotFoundException {
 		PreparedStatement statement = getConnection()
 				.prepareStatement(
-						"SELECT value,varNameRef,iteration from VarBinding WHERE pNameRef=? AND wfNameRef=?");
+						"SELECT value,varNameRef,iteration from PortBinding WHERE pNameRef=? AND wfNameRef=?");
 		statement.setString(1, dataflow.getLocalName());
 		statement.setString(2, dataflow.getInternalIdentier());
 		Map<String, Object> values = new HashMap<String, Object>();
@@ -769,7 +769,7 @@ public abstract class AbstractDbTestHelper {
 			IllegalAccessException, ClassNotFoundException {
 		PreparedStatement statement = getConnection()
 				.prepareStatement(
-						"SELECT varName,inputOrOutput,nestingLevel,actualNestingLevel,anlSet,reorder from Var WHERE wfInstanceRef=? AND pNameRef=?");
+						"SELECT varName,inputOrOutput,nestingLevel,actualNestingLevel,anlSet,reorder from Port WHERE wfInstanceRef=? AND pNameRef=?");
 		for (Dataflow df : workflowPaths.values()) {
 			statement.setString(1, df.getInternalIdentier());
 			for (Processor p : df.getProcessors()) {
@@ -853,7 +853,7 @@ public abstract class AbstractDbTestHelper {
 			ClassNotFoundException {
 		PreparedStatement statement = getConnection()
 				.prepareStatement(
-						"SELECT varName,inputOrOutput,nestingLevel,actualNestingLevel,anlSet,reorder from Var WHERE wfInstanceRef=? AND pNameRef=?");
+						"SELECT varName,inputOrOutput,nestingLevel,actualNestingLevel,anlSet,reorder from Port WHERE wfInstanceRef=? AND pNameRef=?");
 		Dataflow df = dataflow;
 		statement.setString(1, df.getInternalIdentier());
 		statement.setString(2, df.getLocalName());

@@ -24,7 +24,7 @@ import net.sf.taverna.t2.provenance.lineageservice.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.utils.DataLink;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceProcessor;
-import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
+import net.sf.taverna.t2.provenance.lineageservice.utils.Port;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
@@ -291,12 +291,12 @@ public class DataflowGeneratorTest {
 		List<String>  dataflowNames = new ArrayList<String>();
 		for (ProvenanceProcessor pp:dataflowProcs) { dataflowNames.add(pp.getPname()); }
 
-		// read in all Var for wfRef
+		// read in all Port for wfRef
 		Map<String, String> queryConstraints = new HashMap<String, String>();
 		queryConstraints.put("V.wfInstanceRef", wfRef);
-		List<Var> allVars = pq.getVars(queryConstraints);
+		List<Port> allVars = pq.getVars(queryConstraints);
 
-		for (Var v:allVars) {
+		for (Port v:allVars) {
 			logger.debug("var: "+v.getPName()+"/"+v.getVName());
 			if (p2Inputs.get(v.getPName()) == null)  p2Inputs.put(v.getPName(), new ArrayList<String>());
 			if (p2Outputs.get(v.getPName()) == null) p2Outputs.put(v.getPName(), new ArrayList<String>());

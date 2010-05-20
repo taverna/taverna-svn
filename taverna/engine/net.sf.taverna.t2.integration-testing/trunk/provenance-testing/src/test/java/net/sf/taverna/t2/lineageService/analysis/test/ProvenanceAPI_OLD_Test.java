@@ -31,7 +31,7 @@ import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.utils.QueryVar;
-import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
+import net.sf.taverna.t2.provenance.lineageservice.utils.Port;
 import net.sf.taverna.t2.provenance.lineageservice.utils.Workflow;
 import net.sf.taverna.t2.provenance.lineageservice.utils.WorkflowInstance;
 
@@ -248,9 +248,9 @@ public class ProvenanceAPI_OLD_Test {
 
 
 			// look for the outputs of the top-level workflow	
-			List<Var> dataflowPorts = pAccess.getPortsForDataflow(topLevelWorkflow);
+			List<Port> dataflowPorts = pAccess.getPortsForDataflow(topLevelWorkflow);
 
-			for (Var v:dataflowPorts) {
+			for (Port v:dataflowPorts) {
 				if (!v.isInput()) {
 					QueryVar qv = new QueryVar();
 					qv.setWfName(topLevelWorkflow);
@@ -308,7 +308,7 @@ public class ProvenanceAPI_OLD_Test {
 				// <var> == ALL: unfold to include all variables for the proc
 				if (qv.getVname().equals(ALL_VARS)) {
 
-					List<Var> ports = pAccess.getPortsForProcessor(topLevelWorkflow, qv.getPname());
+					List<Port> ports = pAccess.getPortsForProcessor(topLevelWorkflow, qv.getPname());
 
 					for (int i=0; i<ports.size(); i++) {
 
