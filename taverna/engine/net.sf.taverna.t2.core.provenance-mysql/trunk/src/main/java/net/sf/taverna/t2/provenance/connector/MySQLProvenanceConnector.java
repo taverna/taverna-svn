@@ -73,15 +73,6 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ " PRIMARY KEY  USING BTREE (`collID`,`wfInstanceRef`,`PNameRef`,`varNameRef`,`parentCollIDRef`,`iteration`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='dynamic -- contains IDs of lists (T2 collections)';";
 
-	private static final String createTableProcBinding = "CREATE TABLE IF NOT EXISTS  `T2Provenance`.`ProcBinding` ("
-		+ "`pnameRef` varchar(100) NOT NULL COMMENT 'ref to static processor name',"
-		+ "`execIDRef` varchar(100) NOT NULL COMMENT 'ref. to ID of wf execution',"
-		+ "`actName` varchar(100) NOT NULL COMMENT 'name of activity bound to this processor',"
-		+ "`iteration` char(10) NOT NULL default '',"
-		+ "  `wfNameRef` varchar(100) NOT NULL, "
-		+ "PRIMARY KEY  USING BTREE (`pnameRef`,`execIDRef`,`iteration`, `wfNameRef`)"
-		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='dynamic -- binding of processor to activity';";
-
 	private static final String createTableProcessor = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Processor` ("
 		+ "`pname` varchar(100) NOT NULL,"
 		+ "`wfInstanceRef` varchar(100) NOT NULL COMMENT 'ref to WfInstance.wfInstanceID',"
@@ -228,7 +219,6 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 			stmt.executeUpdate(createDB);			
 			stmt.executeUpdate(createTableDatalink);			
 			stmt.executeUpdate(createTableCollection);			
-			stmt.executeUpdate(createTableProcBinding);			
 			stmt.executeUpdate(createTableProcessor);			
 			stmt.executeUpdate(createTablePort);			
 			stmt.executeUpdate(createTablePortBinding);			
