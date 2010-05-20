@@ -484,7 +484,7 @@ public class TextAreaPainter extends JComponent implements TabExpander
 	public Dimension getPreferredSize()
 	{
 		Dimension dim = new Dimension();
-		dim.width = fm.charWidth('w') * textArea.getMaxLineLength() + 5;
+		dim.width = textArea.getMaxLineLength() + 5;
 		dim.height = fm.getHeight() * textArea.getLineCount() + 5;
 		return dim;
 	}

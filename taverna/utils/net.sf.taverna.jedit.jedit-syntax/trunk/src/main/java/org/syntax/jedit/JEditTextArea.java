@@ -2324,14 +2324,23 @@ public class JEditTextArea extends JComponent implements Scrollable
 		return painter.getMinimumSize();
 	}
 
+	/**
+	 * Changed by ARW to use the painter tabexpander and to return pixels rather than characters.
+	 */
 	public int getMaxLineLength()
 	{
 		int max = 0; 
+		FontMetrics fm = painter.getFontMetrics();
 		
 		for( int c = 0; c < getLineCount(); c++ )
 		{
-			if( getLineLength( c ) > max )
-				max = getLineLength( c );
+			Segment s = new Segment();
+			getLineText(c, s);
+			int length = Utilities.getTabbedTextWidth(s,
+					fm,0,painter,0);
+			if( length > max ) {
+				max = length;
+			}
 		}
 		
 		return max;
