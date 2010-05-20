@@ -85,7 +85,7 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
     }
 
     /**
-     * select Var records that satisfy constraints
+     * select Port records that satisfy constraints
      * the order column is called reorder in derby because order is a reserved word
      */
     @Override
@@ -93,7 +93,7 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
             throws SQLException {
         List<Port> result = new ArrayList<Port>();
 
-        String q0 = "SELECT  * FROM Var V JOIN WfInstance W ON W.wfnameRef = V.wfInstanceRef";
+        String q0 = "SELECT  * FROM Port V JOIN WfInstance W ON W.wfnameRef = V.wfInstanceRef";
 
         String q = addWhereClauseToQuery(q0, queryConstraints, true);
 
@@ -163,7 +163,7 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
         try {
             connection = getConnection();
             ps = connection.prepareStatement(
-                    "SELECT v.* " + "FROM Datalink a JOIN Var v ON a.sinkPNameRef = v.pnameRef " + "AND  a.sinkVarNameRef = v.varName " + "AND a.wfInstanceRef = v.wfInstanceRef " + "WHERE sourceVarNameRef = ? AND sourcePNameRef = ?");
+                    "SELECT v.* " + "FROM Datalink a JOIN Port v ON a.sinkPNameRef = v.pnameRef " + "AND  a.sinkVarNameRef = v.varName " + "AND a.wfInstanceRef = v.wfInstanceRef " + "WHERE sourceVarNameRef = ? AND sourcePNameRef = ?");
 
             ps.setString(1, vName);
             ps.setString(2, pName);
