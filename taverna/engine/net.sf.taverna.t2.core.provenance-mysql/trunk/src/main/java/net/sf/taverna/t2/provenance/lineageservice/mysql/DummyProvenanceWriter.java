@@ -9,8 +9,8 @@ import java.util.Set;
 
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProcBinding;
-import net.sf.taverna.t2.provenance.lineageservice.utils.Var;
-import net.sf.taverna.t2.provenance.lineageservice.utils.VarBinding;
+import net.sf.taverna.t2.provenance.lineageservice.utils.Port;
+import net.sf.taverna.t2.provenance.lineageservice.utils.PortBinding;
 
 /**
  * used to cut out mySQL writes altogether -- for testing purposes only
@@ -22,7 +22,7 @@ public class DummyProvenanceWriter extends ProvenanceWriter {
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addDataLink(net.sf.taverna.t2.provenance.lineageservice.utils.Var, net.sf.taverna.t2.provenance.lineageservice.utils.Var, java.lang.String)
 	 */
-	public void addDataLink(Var sourceVar, Var sinkVar, String wfId)
+	public void addDataLink(Port sourceVar, Port sinkVar, String wfId)
 			throws SQLException {
 		// TODO Auto-generated method stub
 
@@ -76,7 +76,7 @@ public class DummyProvenanceWriter extends ProvenanceWriter {
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addVarBinding(net.sf.taverna.t2.provenance.lineageservice.utils.VarBinding)
 	 */
-	public void addVarBinding(VarBinding vb) throws SQLException {
+	public void addVarBinding(PortBinding vb) throws SQLException {
 		// TODO Auto-generated method stub
 		logger.info("addVarBinding called");
 
@@ -85,7 +85,7 @@ public class DummyProvenanceWriter extends ProvenanceWriter {
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addVariables(java.util.List, java.lang.String)
 	 */
-	public void addVariables(List<Var> vars, String wfId) throws SQLException {
+	public void addVariables(List<Port> vars, String wfId) throws SQLException {
 		// TODO Auto-generated method stub
 
 	}
