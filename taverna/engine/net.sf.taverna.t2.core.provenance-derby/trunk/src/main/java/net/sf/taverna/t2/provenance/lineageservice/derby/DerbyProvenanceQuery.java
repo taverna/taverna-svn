@@ -116,20 +116,15 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
 
                     Port aPort = new Port();
 
-                    aPort.setWfInstanceRef(rs.getString("WfInstanceRef"));
+                    aPort.setWorkflowId(rs.getString("WfInstanceRef"));
 
-                    if (rs.getInt("inputOrOutput") == 1) {
-                        aPort.setInput(true);
-                    } else {
-                        aPort.setInput(false);
-                    }
+                    aPort.setInputPort(rs.getBoolean("inputOrOutput"));
 					aPort.setIdentifier(rs.getString("portId"));
-                    aPort.setPName(rs.getString("pnameRef"));
-                    aPort.setVName(rs.getString("varName"));
-                    aPort.setType(rs.getString("type"));
-                    aPort.setTypeNestingLevel(rs.getInt("nestingLevel"));
-                    aPort.setActualNestingLevel(rs.getInt("actualNestingLevel"));
-                    aPort.setANLset((rs.getInt("anlSet") == 1 ? true : false));
+                    aPort.setProcessorName(rs.getString("pnameRef"));
+                    aPort.setPortName(rs.getString("varName"));
+                    aPort.setDepth(rs.getInt("nestingLevel"));
+                    aPort.setGranularDepth(rs.getInt("actualNestingLevel"));
+                    aPort.setGranularDepthSet(rs.getBoolean("anlSet"));
                     result.add(aPort);
 
                 }
@@ -179,24 +174,18 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
                         continue;
                     }
 
-                    Port aVar = new Port();
+                    Port aPort = new Port();
 
-                    aVar.setWfInstanceRef(rs.getString("WfInstanceRef"));
-
-                    if (rs.getInt("inputOrOutput") == 1) {
-                        aVar.setInput(true);
-                    } else {
-                        aVar.setInput(false);
-                    }
-					aVar.setIdentifier(rs.getString("portId"));
-                    aVar.setPName(rs.getString("pnameRef"));
-                    aVar.setVName(rs.getString("varName"));
-                    aVar.setType(rs.getString("type"));
-                    aVar.setTypeNestingLevel(rs.getInt("nestingLevel"));
-                    aVar.setActualNestingLevel(rs.getInt("actualNestingLevel"));
-                    aVar.setANLset((rs.getInt("anlSet") == 1 ? true : false));
-
-                    result.add(aVar);
+                    aPort.setWorkflowId(rs.getString("WfInstanceRef"));
+                    aPort.setInputPort(rs.getBoolean("inputOrOutput"));
+					aPort.setIdentifier(rs.getString("portId"));
+                    aPort.setProcessorName(rs.getString("pnameRef"));
+                    aPort.setPortName(rs.getString("varName"));
+                    aPort.setDepth(rs.getInt("nestingLevel"));
+                    aPort.setGranularDepth(rs.getInt("actualNestingLevel"));
+                    aPort.setGranularDepthSet(rs.getBoolean("anlSet"));
+                    
+                    result.add(aPort);
 
                 }
             }
