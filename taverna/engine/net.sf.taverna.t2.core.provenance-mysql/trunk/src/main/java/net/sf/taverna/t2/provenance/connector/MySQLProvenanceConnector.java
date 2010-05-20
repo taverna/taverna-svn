@@ -91,10 +91,10 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='static -- all processors for all workflows, by name';";
 
 	private static final String createTablePort = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Port` ("
-		+ "`varName` varchar(100) NOT NULL,"
+		+ "`portName` varchar(100) NOT NULL,"
 		+ "`isInputPort` tinyint(1) NOT NULL COMMENT '1 = input, 0 = output',"
-		+ "`pnameRef` varchar(100) NOT NULL COMMENT 'reference to the processor',"
-		+ "`wfInstanceRef` varchar(100) NOT NULL,"
+		+ "`processorName` varchar(100) NOT NULL COMMENT 'reference to the processor',"
+		+ "`workflowId` varchar(100) NOT NULL,"
 		+ "`depth` int(10) unsigned default '0',"
 		+ "`resolvedDepth` int(10) unsigned default NULL,"
 		+ "`iterationStrategyOrder` tinyint(4) default NULL,"
