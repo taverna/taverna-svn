@@ -43,54 +43,55 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			+ "destinationPortName varchar(100) NOT NULL,"
 			+ "sourceProcessorName varchar(100) NOT NULL,"
 			+ "destinationProcessorName varchar(100) NOT NULL,"
-			+ "workflowId varchar(100) NOT NULL,"
+			+ "workflowId varchar(36) NOT NULL,"
 			+ " PRIMARY KEY  (sourcePortId,destinationPortId,workflowId))";
 	private static final String createTableCollection = "CREATE TABLE Collection ("
 			+ "collID varchar(100) NOT NULL,"
 			+ "parentCollIDRef varchar(100) NOT NULL ,"
-			+ "wfInstanceRef varchar(100) NOT NULL,"
-			+ "PNameRef varchar(100) NOT NULL,"
+			+ "wfInstanceRef varchar(36) NOT NULL,"
+			+ "processorNameRef varchar(100) NOT NULL,"
 			+ "varNameRef varchar(100) NOT NULL,"
 			+ "iteration varchar(2000) NOT NULL default '',"
-			+ " PRIMARY KEY (collID,wfInstanceRef,PNameRef,varNameRef,parentCollIDRef,iteration))";	
+			+ " PRIMARY KEY (collID,wfInstanceRef,processorNameRef,varNameRef,parentCollIDRef,iteration))";	
 	private static final String createTableProcessor = "CREATE TABLE Processor ("
 			+ "processorId varchar(36) NOT NULL,"
-			+ "pname varchar(100) NOT NULL,"
-			+ "wfInstanceRef varchar(100) NOT NULL ,"
-			+ "type varchar(100) default NULL,"
+			+ "processorName varchar(100) NOT NULL,"
+			+ "workflowId varchar(36) NOT NULL ,"
+			+ "firstActivityClass varchar(100) default NULL,"
 			+ "isTopLevel smallint, "
-			+ "PRIMARY KEY  (pname,wfInstanceRef))";
+			+ "PRIMARY KEY (processorId),"
+			+ "CONSTRAINT processor_constraint UNIQUE (processorName,workflowId))";
 	private static final String createTablePort = "CREATE TABLE Port ("
 			+ "portId varchar(36) NOT NULL,"
 			+ "processorId varchar(36),"
 			+ "portName varchar(100) NOT NULL,"			
 			+ "isInputPort smallint NOT NULL ,"
 			+ "processorName varchar(100) NOT NULL,"
-			+ "workflowId varchar(100) NOT NULL," 
+			+ "workflowId varchar(36) NOT NULL," 
 			+ "depth int,"
 			+ "resolvedDepth int," 
 			+ "iterationStrategyOrder smallint, "
-			+ "PRIMARY KEY (portId))";
-//			+ "PRIMARY KEY (varName,isInputPort,pnameRef,wfInstanceRef))";
+			+ "PRIMARY KEY (portId),"
+			+ "CONSTRAINT port_constraint UNIQUE (portName,isInputPort,processorName,workflowId))";
 	private static final String createTablePortBinding = "CREATE TABLE PortBinding ("
 			+ "varNameRef varchar(100) NOT NULL,"
 			+ "wfInstanceRef varchar(100) NOT NULL,"
 			+ "value varchar(100) default NULL,"
 			+ "collIDRef varchar(100),"
 			+ "positionInColl int NOT NULL,"
-			+ "PNameRef varchar(100) NOT NULL,"
+			+ "processorNameRef varchar(100) NOT NULL,"
 			+ "valueType varchar(50) default NULL,"
 			+ "ref varchar(100) default NULL,"
 			+ "iteration varchar(2000) NOT NULL,"
-			+ "wfNameRef varchar(100),"
-			+ "PRIMARY KEY (varNameRef,wfInstanceRef,PNameRef,iteration, wfNameRef))";
+			+ "wfNameRef varchar(36),"
+			+ "PRIMARY KEY (varNameRef,wfInstanceRef,processorNameRef,iteration, wfNameRef))";
 	private static final String createTableWFInstance = "CREATE TABLE WfInstance ("
-			+ "instanceID varchar(100) NOT NULL,"
-			+ "wfnameRef varchar(100) NOT NULL,"
+			+ "instanceID varchar(36) NOT NULL,"
+			+ "wfnameRef varchar(36) NOT NULL,"
 			+ "timestamp timestamp NOT NULL default CURRENT_TIMESTAMP,"
 			+ " PRIMARY KEY (instanceID, wfnameRef))";
 	private static final String createTableWorkflow = "CREATE TABLE Workflow ("
-			+ "wfname varchar(100) NOT NULL," + "parentWFname varchar(100),"
+			+ "wfname varchar(36) NOT NULL," + "parentWFname varchar(100),"
 			+ "externalName varchar(100)," + "dataflow blob, "
 			+ "PRIMARY KEY  (wfname))";
 	

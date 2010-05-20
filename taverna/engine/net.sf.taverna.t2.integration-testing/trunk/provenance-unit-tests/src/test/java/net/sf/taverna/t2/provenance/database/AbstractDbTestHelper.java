@@ -321,12 +321,12 @@ public abstract class AbstractDbTestHelper {
 		PreparedStatement statement = getConnection()
 				.prepareStatement(
 						"SELECT collId,parentCollIdRef,"
-								+ "  Collection.pNameRef AS pNameRef,"
+								+ "  Collection.processorNameRef AS processorNameRef,"
 								+ "  Collection.varNameRef AS varNameRef,"
 								+ "   iteration, isInputPort "
 								+ "FROM Collection " + "INNER JOIN Port "
 								+ "  ON Collection.varNameRef = Port.portName "
-								+ "  AND Collection.pNameRef = Port.processorName " +
+								+ "  AND Collection.processorNameRef = Port.processorName " +
 								// "  AND Collection.wfNameRef = Port.workflowId "
 								// +
 								"WHERE Collection.wfInstanceRef=? AND Port.workflowId=?");
@@ -342,7 +342,7 @@ public abstract class AbstractDbTestHelper {
 			while (resultSet.next()) {
 				String collId = resultSet.getString("collId");
 				String parentCollIdRef = resultSet.getString("parentCollIdRef");
-				String pNameRef = resultSet.getString("pNameRef");
+				String processorNameRef = resultSet.getString("processorNameRef");
 				String varNameRef = resultSet.getString("varNameRef");
 				String iteration = resultSet.getString("iteration");
 				boolean isInput = resultSet.getBoolean("isInputPort");
@@ -368,7 +368,7 @@ public abstract class AbstractDbTestHelper {
 					// collection
 				}
 
-				String key = dataflow.getInternalIdentier() + "/" + pNameRef
+				String key = dataflow.getInternalIdentier() + "/" + processorNameRef
 						+ "/" + (isInput ? "i:" : "o:") + varNameRef
 						+ iteration;
 				collections.put(key, resolved);
@@ -387,7 +387,7 @@ public abstract class AbstractDbTestHelper {
 			IllegalAccessException, ClassNotFoundException {
 		PreparedStatement statement = getConnection()
 				.prepareStatement(
-						"SELECT pName,type,isTopLevel from Processor WHERE wfInstanceRef=?");
+						"SELECT processorName,firstActivityClass,isTopLevel from Processor WHERE workflowId=?");
 		for (Dataflow df : workflowPaths.values()) {
 			Map<String, Processor> expectedProcessors = new HashMap<String, Processor>();
 			for (Processor p : df.getProcessors()) {
@@ -403,8 +403,8 @@ public abstract class AbstractDbTestHelper {
 			Set<String> processors = new HashSet<String>();
 			try {
 				while (resultSet.next()) {
-					String pName = resultSet.getString("pName");
-					String type = resultSet.getString("type");
+					String pName = resultSet.getString("processorName");
+					String type = resultSet.getString("firstActivityClass");
 
 					boolean isTopLevel = resultSet.getBoolean("isTopLevel");
 					processors.add(pName);
@@ -462,7 +462,7 @@ public abstract class AbstractDbTestHelper {
 				"SELECT " + ProcessorEnactment.enactmentStarted + ","
 						+ ProcessorEnactment.enactmentEnded + ","
 						+ ProcessorEnactment.iteration + ","
-						+ "Processor.pName" + " FROM "
+						+ "Processor.processorName" + " FROM "
 						+ ProcessorEnactment.ProcessorEnactment
 						+ " INNER JOIN " + "Processor" + " ON "
 						+ ProcessorEnactment.ProcessorEnactment + "."
@@ -483,7 +483,7 @@ public abstract class AbstractDbTestHelper {
 				Timestamp enactmentStarted = resultSet.getTimestamp(ProcessorEnactment.enactmentStarted.name());
 				Timestamp enactmentEnded = resultSet.getTimestamp(ProcessorEnactment.enactmentEnded.name());
 				String iteration = resultSet.getString(ProcessorEnactment.iteration.name());
-				String pName = resultSet.getString("pName");
+				String pName = resultSet.getString("processorName");
 				String processorKey = pName + iteration;
 				processorStarted.put(processorKey, enactmentStarted);
 				processorEnded.put(processorKey, enactmentEnded);
@@ -516,8 +516,8 @@ public abstract class AbstractDbTestHelper {
 							+ ProcessorEnactment.processIdentifier + ","
 					    	+ ProcessorEnactment.iteration + ","
 					    	+ "Port.portName AS portName, " 
-							+ "Processor.wfInstanceRef AS workflowId,"
-							+ "Processor.pName AS processorName" + " FROM "
+							+ "Processor.workflowId AS workflowId,"
+							+ "Processor.processorName AS processorName" + " FROM "
 							+ ProcessorEnactment.ProcessorEnactment
 							+ " INNER JOIN " + "Processor" + " ON "
 							+ ProcessorEnactment.ProcessorEnactment + "."
@@ -607,13 +607,13 @@ public abstract class AbstractDbTestHelper {
 								+ "FROM PortBinding "
 								+ "INNER JOIN Port "
 								+ "  ON PortBinding.varNameRef = Port.portName "
-								+ "  AND PortBinding.pNameRef = Port.processorName "
+								+ "  AND PortBinding.processorNameRef = Port.processorName "
 								+
 								// FIXME: Non-unique foreign key to PortBinding
 								"  AND PortBinding.wfNameRef = Port.workflowId "
 								+ "WHERE PortBinding.wfInstanceRef=? "
 								+ "  AND PortBinding.wfNameRef=? "
-								+ "  AND PortBinding.pNameRef=?");
+								+ "  AND PortBinding.processorNameRef=?");
 		statement.setString(1, getFacade().getWorkflowRunId());
 
 		Map<String, Object> intermediateValues = new HashMap<String, Object>();
@@ -695,7 +695,7 @@ public abstract class AbstractDbTestHelper {
 				.prepareStatement(
 						"SELECT value,varNameRef,iteration " +
 						"FROM PortBinding " +
-						"WHERE pNameRef=? AND wfNameRef=?");
+						"WHERE processorNameRef=? AND wfNameRef=?");
 		statement.setString(1, dataflow.getLocalName());
 		statement.setString(2, dataflow.getInternalIdentier());
 		Map<String, Object> values = new HashMap<String, Object>();

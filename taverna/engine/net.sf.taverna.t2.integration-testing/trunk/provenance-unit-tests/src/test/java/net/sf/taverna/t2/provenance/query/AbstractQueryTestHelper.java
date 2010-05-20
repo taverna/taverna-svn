@@ -319,7 +319,7 @@ public abstract class AbstractQueryTestHelper {
 		
 		for (ProcessorEnactment enactment : enactments) {
 			ProvenanceProcessor proc = getProvenanceAccess().getProvenanceProcessor(enactment.getProcessorId());
-			String pName = proc.getPname();
+			String pName = proc.getProcessorName();
 			String processorKey = pName + enactment.getIteration();
 			processors.add(processorKey);
 			
@@ -344,7 +344,7 @@ public abstract class AbstractQueryTestHelper {
 			assertTrue(! enactments.isEmpty());
 			for (ProcessorEnactment enactment : enactments) {
 				ProvenanceProcessor proc = getProvenanceAccess().getProvenanceProcessor(enactment.getProcessorId());
-				assertEquals(pName, proc.getPname());
+				assertEquals(pName, proc.getProcessorName());
 			}			
 		}
 
@@ -396,10 +396,10 @@ public abstract class AbstractQueryTestHelper {
 			}			
 			for (Entry<Port,T2Reference> binding : bindings.entrySet()) {
 				Port port = binding.getKey();
-				assertEquals(port.getProcessorName(), proc.getPname());
-				assertEquals(port.getWorkflowId(), proc.getWfInstanceRef());
+				assertEquals(port.getProcessorName(), proc.getProcessorName());
+				assertEquals(port.getWorkflowId(), proc.getWorkflowId());
 				//assertEquals(port.getProcessorId(), proc.getIdentifier());
-				String key = proc.getWfInstanceRef() + "/" + proc.getPname()
+				String key = proc.getWorkflowId() + "/" + proc.getProcessorName()
 				+ "/" + (port.isInputPort() ? "i:" : "o:") + port.getPortName()
 				+ enactment.getIteration();
 				Object resolved = getReferenceService().renderIdentifier(

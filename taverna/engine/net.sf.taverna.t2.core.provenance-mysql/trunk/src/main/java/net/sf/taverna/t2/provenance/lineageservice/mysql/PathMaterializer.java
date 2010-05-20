@@ -80,10 +80,10 @@ public class PathMaterializer {
 
 		// fetch processors that are dataflows -- these will be excluded from the loop
 		List<ProvenanceProcessor> dataflows = 
-			pq.getProcessorsShallow("net.sf.taverna.t2.activities.dataflow.DataflowActivity", dataflowRef);
+			pq.getProcessorsShallow(ProvenanceProcessor.DATAFLOW_ACTIVITY, dataflowRef);
 		List<String> dataflowNames = new ArrayList<String>();
 		
-		for (ProvenanceProcessor proc:dataflows) { dataflowNames.add(proc.getPname()); } 
+		for (ProvenanceProcessor proc:dataflows) { dataflowNames.add(proc.getProcessorName()); } 
 			
 		// initialize queue with roots of graph
 		for (Map.Entry<String,Integer> entry: processorsLinks.entrySet()) {

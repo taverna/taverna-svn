@@ -67,18 +67,19 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ "`collID` varchar(100) NOT NULL COMMENT 'ID of a list (collection). not sure yet what this looks like... ',"
 		+ "`parentCollIDRef` varchar(100) NOT NULL default 'TOP' COMMENT 'used for list nesting.\ndefault is dummy list TOP since this attr. is key',"
 		+ "`wfInstanceRef` varchar(100) NOT NULL,"
-		+ "`PNameRef` varchar(100) NOT NULL,"
+		+ "`processorNameRef` varchar(100) NOT NULL,"
 		+ "`varNameRef` varchar(100) NOT NULL,"
 		+ "`iteration` char(10) NOT NULL default '',"
-		+ " PRIMARY KEY  USING BTREE (`collID`,`wfInstanceRef`,`PNameRef`,`varNameRef`,`parentCollIDRef`,`iteration`)"
+		+ " PRIMARY KEY  USING BTREE (`collID`,`wfInstanceRef`,`processorNameRef`,`varNameRef`,`parentCollIDRef`,`iteration`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='dynamic -- contains IDs of lists (T2 collections)';";
 
 	private static final String createTableProcessor = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Processor` ("
-		+ "`pname` varchar(100) NOT NULL,"
-		+ "`wfInstanceRef` varchar(100) NOT NULL COMMENT 'ref to WfInstance.wfInstanceID',"
-		+ "`type` varchar(100) default NULL COMMENT 'processor type',"
+		+ "`processorId` varchar(36) NOT NULL,"
+		+ "`processorName` varchar(100) NOT NULL,"
+		+ "`workflowId` varchar(100) NOT NULL COMMENT 'ref to WfInstance.wfInstanceID',"
+		+ "`firstActivityClass` varchar(100) default NULL COMMENT 'processor type',"
 		+ "`isTopLevel` tinyint(1) default '0',"
-		+ "PRIMARY KEY  (`pname`,`wfInstanceRef`)"
+		+ "PRIMARY KEY  (`processorId`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='static -- all processors for all workflows, by name';";
 
 	private static final String createTablePort = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Port` ("
@@ -100,13 +101,13 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ "`value` varchar(100) default NULL COMMENT 'ref to value. Either a string value or a string ref (URI) to a value',"
 		+ "`collIDRef` varchar(100) default 'TOP',"
 		+ "`positionInColl` int(10) unsigned NOT NULL default '1' COMMENT 'position within collection. default is 1',"
-		+ "`PNameRef` varchar(100) NOT NULL,"
+		+ "`processorNameRef` varchar(100) NOT NULL,"
 		+ "`valueType` varchar(50) default NULL,"
 		+ "`ref` varchar(100) default NULL,"
 		+ "`iteration` char(10) NOT NULL default '',"
 		+ "  `wfNameRef` varchar(100) NOT NULL, "
-		+ "PRIMARY KEY  USING BTREE (`varNameRef`,`wfInstanceRef`,`PNameRef`,`iteration`, `wfNameRef`),"
-		+ "KEY `collectionFK` (`wfInstanceRef`,`PNameRef`,`varNameRef`,`collIDRef`)"
+		+ "PRIMARY KEY  USING BTREE (`varNameRef`,`wfInstanceRef`,`processorNameRef`,`iteration`, `wfNameRef`),"
+		+ "KEY `collectionFK` (`wfInstanceRef`,`processorNameRef`,`varNameRef`,`collIDRef`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='dynamic -- binding of variables to values ';";
 
 	private static final String createTableWFInstance = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`WfInstance` ("
