@@ -258,7 +258,7 @@ public abstract class AbstractDbTestHelper {
 	}
 
 	@Test
-	public void testArc() throws SQLException, InstantiationException,
+	public void testDataLink() throws SQLException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
 		PreparedStatement statement = getConnection()
 				.prepareStatement(

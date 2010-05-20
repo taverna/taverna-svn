@@ -341,11 +341,11 @@ public class DataflowGeneratorTest {
 		// read in all Datalinks from wfRef
 		queryConstraints.clear();
 		queryConstraints.put("A.wfInstanceRef", wfRef);
-		List<DataLink> allArcs = pq.getArcs(queryConstraints);
+		List<DataLink> allDataLinks = pq.getDataLinks(queryConstraints);
 
 		try {
 			// connect all of them up...
-			for (DataLink datalink:allArcs) {
+			for (DataLink datalink:allDataLinks) {
 
 				if (dataflowNames.contains(datalink.getSourcePnameRef())) {
 					dfg.connectGlobalInput(df, datalink.getSourceVarNameRef(), pname2proc.get(datalink.getSinkPnameRef()), datalink.getSinkVarNameRef());
