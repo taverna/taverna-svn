@@ -37,12 +37,12 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 	private static Logger logger = Logger
 			.getLogger(DerbyProvenanceConnector.class);
 	private static final String createTableDatalink = "CREATE TABLE  Datalink ("
-			+ "sourceVarNameRef varchar(100) NOT NULL ,"
+			+ "sourcePortName varchar(100) NOT NULL ,"
 			+ "sinkVarNameRef varchar(100) NOT NULL,"
 			+ "sourcePNameRef varchar(100) NOT NULL,"
 			+ "sinkPNameRef varchar(100) NOT NULL,"
 			+ "wfInstanceRef varchar(100) NOT NULL,"
-			+ " PRIMARY KEY  (sourceVarNameRef,sinkVarNameRef,sourcePNameRef,sinkPNameRef,wfInstanceRef))";
+			+ " PRIMARY KEY  (sourcePortName,sinkVarNameRef,sourcePNameRef,sinkPNameRef,wfInstanceRef))";
 	private static final String createTableCollection = "CREATE TABLE Collection ("
 			+ "collID varchar(100) NOT NULL,"
 			+ "parentCollIDRef varchar(100) NOT NULL ,"
