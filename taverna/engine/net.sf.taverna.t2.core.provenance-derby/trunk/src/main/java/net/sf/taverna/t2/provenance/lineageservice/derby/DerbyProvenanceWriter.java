@@ -57,8 +57,9 @@ public class DerbyProvenanceWriter extends ProvenanceWriter {
                         connection = getConnection();
 			ps = connection
 			.prepareStatement(
-					"UPDATE Port SET isInputPort=?, depth = ?,"
-					+ "resolvedDepth = ?, Port.iterationStrategyOrder = ? WHERE varName = ? AND pnameRef = ? AND wfInstanceRef = ?");
+					"UPDATE Port SET isInputPort=?, depth=?,"
+					+ "resolvedDepth=?, iterationStrategyOrder=? " +
+							"WHERE portId=?");
 			int i = v.isInputPort() ? 1 : 0;
 			ps.setInt(1, i);
 			ps.setInt(2, v.getDepth());
@@ -68,10 +69,7 @@ public class DerbyProvenanceWriter extends ProvenanceWriter {
 				ps.setString(3, null);
 			}
 			ps.setInt(4, v.getIterationStrategyOrder());
-			ps.setString(5, v.getPortName());
-			ps.setString(6, v.getProcessorName());
-			ps.setString(7, v.getWorkflowId());
-			
+			ps.setString(5, v.getIdentifier());
 			ps.execute();
 		
 		} finally {
