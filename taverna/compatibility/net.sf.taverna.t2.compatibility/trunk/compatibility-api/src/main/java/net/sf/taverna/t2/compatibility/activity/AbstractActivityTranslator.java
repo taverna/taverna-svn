@@ -21,21 +21,27 @@
 package net.sf.taverna.t2.compatibility.activity;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.sf.taverna.t2.compatibility.activity.AbstractActivityTranslator;
 import net.sf.taverna.t2.compatibility.activity.ActivityTranslationException;
 import net.sf.taverna.t2.compatibility.activity.ActivityTranslator;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAndBeanWrapper;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.DisabledActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortsDefinitionBean;
 
+import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
 
 /**
  * <p>
@@ -64,7 +70,8 @@ public abstract class AbstractActivityTranslator<ConfigurationType> implements
 
 	/**
 	 * <p>
-	 * The entry point for carrying out a translation from a Taverna 1 Processor to a Taverna 2 Activity.<br>
+	 * The entry point for carrying out a translation from a Taverna 1 Processor
+	 * to a Taverna 2 Activity.<br>
 	 * </p>
 	 * 
 	 * @param processor
@@ -73,13 +80,54 @@ public abstract class AbstractActivityTranslator<ConfigurationType> implements
 	 * @throws ActivityConfigurationException
 	 */
 	public Activity<ConfigurationType> doTranslation(Processor processor)
-			throws ActivityTranslationException,ActivityConfigurationException {
+			throws ActivityTranslationException, ActivityConfigurationException {
 
 		Activity<ConfigurationType> activity = createUnconfiguredActivity();
 		ConfigurationType configType = createConfigType(processor);
 		activity.configure(configType);
 
 		return activity;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seenet.sf.taverna.t2.compatibility.activity.ActivityTranslator#
+	 * getDisabledActivity(Processor)
+	 */
+	public DisabledActivity getDisabledActivity(Processor processor)
+			throws ActivityTranslatorNotFoundException {
+		DisabledActivity result = null;
+		try {
+			result = new DisabledActivity(createUnconfiguredActivity(),
+					createConfigType(processor));
+			// The input and output ports of the DisabledActivity can be
+			// inferred from the links that are made to ports of the T1
+			// processor. As no information can be inferred about the correct
+			// depth of the ports, they are, perhaps wrongly, assumed to be
+			// zero.
+			Set<String> inputPortNames = new HashSet<String>();
+			Set<String> outputPortNames = new HashSet<String>();
+			ScuflModel parent = processor.getModel();
+			for (DataConstraint dataConstraint : parent.getDataConstraints()) {
+				if (dataConstraint.getSource().getProcessor().equals(processor)) {
+					outputPortNames.add(dataConstraint.getSource().getName());
+				}
+				if (dataConstraint.getSink().getProcessor().equals(processor)) {
+					inputPortNames.add(dataConstraint.getSink().getName());
+				}
+			}
+			for (String s : inputPortNames) {
+				result.addProxyInput(s);
+			}
+			for (String s : outputPortNames) {
+				result.addProxyOutput(s);
+			}
+		} catch (ActivityTranslationException e) {
+			throw new ActivityTranslatorNotFoundException(
+					"Could not recognize", processor);
+		}
+		return result;
 	}
 
 	/**
@@ -96,16 +144,17 @@ public abstract class AbstractActivityTranslator<ConfigurationType> implements
 	 * @return the configuration type.
 	 * @throws ActivityTranslationException
 	 */
-	protected abstract ConfigurationType createConfigType(Processor processor) throws ActivityTranslationException;
+	protected abstract ConfigurationType createConfigType(Processor processor)
+			throws ActivityTranslationException;
 
 	/**
 	 * If the configuration type for an Activity implements
-	 * {@link ActivityPortsDefinitionBean} then this helper method is available to
-	 * transfer input and output port details from the processor to the
+	 * {@link ActivityPortsDefinitionBean} then this helper method is available
+	 * to transfer input and output port details from the processor to the
 	 * configuration type.
 	 * 
-	 * This is for use with activities that have their input and output ports defined
-	 * implicitly rather than dynamically generated
+	 * This is for use with activities that have their input and output ports
+	 * defined implicitly rather than dynamically generated
 	 * 
 	 * @param processor
 	 * @param configBean
@@ -123,8 +172,11 @@ public abstract class AbstractActivityTranslator<ConfigurationType> implements
 			List<String> mimeTypes = new ArrayList<String>();
 			mimeTypes.add(inputPort.getSyntacticType());
 			bean.setMimeTypes(mimeTypes);
-			bean.setHandledReferenceSchemes(new ArrayList<Class<? extends ExternalReferenceSPI>>());
-			bean.setTranslatedElementType(determineClassFromSyntacticType(inputPort.getSyntacticType()));
+			bean
+					.setHandledReferenceSchemes(new ArrayList<Class<? extends ExternalReferenceSPI>>());
+			bean
+					.setTranslatedElementType(determineClassFromSyntacticType(inputPort
+							.getSyntacticType()));
 			bean.setAllowsLiteralValues(true);
 			inputDefinitions.add(bean);
 		}
@@ -152,7 +204,8 @@ public abstract class AbstractActivityTranslator<ConfigurationType> implements
 		Class<?> result = String.class;
 		if (syntacticType != null) {
 			if (syntacticType.startsWith("l(")) {
-				syntacticType = syntacticType.substring(syntacticType.lastIndexOf("l(") + 2);
+				syntacticType = syntacticType.substring(syntacticType
+						.lastIndexOf("l(") + 2);
 			}
 			if (syntacticType.startsWith("'")) {
 				syntacticType = syntacticType.substring(1);
@@ -161,7 +214,8 @@ public abstract class AbstractActivityTranslator<ConfigurationType> implements
 				result = byte[].class;
 			} else if (syntacticType.startsWith("image")) {
 				result = byte[].class;
-			} else if (syntacticType.startsWith("'") || syntacticType.startsWith(")")) {
+			} else if (syntacticType.startsWith("'")
+					|| syntacticType.startsWith(")")) {
 				result = byte[].class;
 			}
 		}
@@ -171,8 +225,8 @@ public abstract class AbstractActivityTranslator<ConfigurationType> implements
 	/**
 	 * @param syntacticType
 	 * @return the depth determined from the syntactic mime type of the original
-	 *         port. i.e text/plain = 0, l('text/plain') = 1, l(l('text/plain')) =
-	 *         2, ... etc.
+	 *         port. i.e text/plain = 0, l('text/plain') = 1, l(l('text/plain'))
+	 *         = 2, ... etc.
 	 */
 	protected int determineDepthFromSyntacticType(String syntacticType) {
 		if (syntacticType == null) {
