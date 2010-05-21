@@ -27,9 +27,12 @@
  */
 package net.sf.taverna.t2.activities.rshell;
 
+import java.util.List;
+
+import net.sf.taverna.t2.workflowmodel.health.HealthCheck;
 import net.sf.taverna.t2.workflowmodel.health.HealthChecker;
-import net.sf.taverna.t2.workflowmodel.health.HealthReport;
-import net.sf.taverna.t2.workflowmodel.health.HealthReport.Status;
+import net.sf.taverna.t2.visit.VisitReport;
+import net.sf.taverna.t2.visit.VisitReport.Status;
 
 /**
  * A health checker for the Rshell activity.
@@ -37,12 +40,17 @@ import net.sf.taverna.t2.workflowmodel.health.HealthReport.Status;
  */
 public class RshellActivityHealthChecker implements HealthChecker<RshellActivity> {
 
-	public boolean canHandle(Object subject) {
-		return (subject instanceof RshellActivity);
+	public boolean canVisit(Object subject) {
+		return (subject != null) && (subject instanceof RshellActivity);
 	}
 
-	public HealthReport checkHealth(RshellActivity activity) {
-		return new HealthReport("Rshell Activity", "Health check not implemented", Status.WARNING);
+	public VisitReport visit(RshellActivity activity, List<Object> ancestors) {
+		return new VisitReport(HealthCheck.getInstance(), activity, "Health check not implemented", HealthCheck.NOT_IMPLEMENTED, Status.WARNING);
 	}
+	
+	public boolean isTimeConsuming() {
+		return false;
+	}
+
 
 }

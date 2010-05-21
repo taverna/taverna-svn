@@ -24,10 +24,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
 import net.sf.taverna.t2.activities.rshell.RshellActivityHealthChecker;
-import net.sf.taverna.t2.workflowmodel.health.HealthReport;
-import net.sf.taverna.t2.workflowmodel.health.HealthReport.Status;
+import net.sf.taverna.t2.visit.VisitReport;
+import net.sf.taverna.t2.visit.VisitReport.Status;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 
@@ -52,21 +55,21 @@ public class RshellActivityHealthCheckerTest {
 
 	@Test
 	public void testCanHandle() {
-		assertFalse(activityHealthChecker.canHandle(null));
-		assertFalse(activityHealthChecker.canHandle(new Object()));
-		assertFalse(activityHealthChecker.canHandle(new AbstractActivity<Object>() {
+		assertFalse(activityHealthChecker.canVisit(null));
+		assertFalse(activityHealthChecker.canVisit(new Object()));
+		assertFalse(activityHealthChecker.canVisit(new AbstractActivity<Object>() {
 			public void configure(Object conf) throws ActivityConfigurationException {
 			}
 			public Object getConfiguration() {
 				return null;
 			}
 		}));
-		assertTrue(activityHealthChecker.canHandle(activity));
+		assertTrue(activityHealthChecker.canVisit(activity));
 	}
 
 	@Test
 	public void testCheckHealth() {
-		HealthReport healthReport = activityHealthChecker.checkHealth(activity);
+		VisitReport healthReport = activityHealthChecker.visit(activity, new ArrayList());
 		assertNotNull(healthReport);
 		assertEquals(Status.WARNING, healthReport.getStatus());
 	}
