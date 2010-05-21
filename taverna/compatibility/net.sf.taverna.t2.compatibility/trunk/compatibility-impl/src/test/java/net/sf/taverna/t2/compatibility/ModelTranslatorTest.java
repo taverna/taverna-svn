@@ -60,6 +60,7 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Retry;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Stop;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.AbstractIterationStrategyNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.CrossProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
@@ -254,12 +255,13 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 
 			List<DispatchLayer<?>> dispatchLayers = processor
 					.getDispatchStack().getLayers();
-			assertEquals(5, dispatchLayers.size());
+			assertEquals(6, dispatchLayers.size());
 			assertTrue(dispatchLayers.get(0) instanceof Parallelize);
 			assertTrue(dispatchLayers.get(1) instanceof ErrorBounce);
 			assertTrue(dispatchLayers.get(2) instanceof Failover);
 			assertTrue(dispatchLayers.get(3) instanceof Retry);
-			assertTrue(dispatchLayers.get(4) instanceof Invoke);
+			assertTrue(dispatchLayers.get(4) instanceof Stop);
+			assertTrue(dispatchLayers.get(5) instanceof Invoke);
 			if (processor.getLocalName().equals("processor_a")) {
 				assertEquals(1, ((Parallelize) dispatchLayers.get(0))
 						.getConfiguration().getMaximumJobs());
