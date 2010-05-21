@@ -59,6 +59,8 @@ import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.BoxView;
 import javax.swing.text.ComponentView;
@@ -78,6 +80,7 @@ import net.sf.taverna.t2.activities.rshell.RshellConnectionSettings;
 import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SemanticTypes;
 import net.sf.taverna.t2.lang.ui.ExtensionFileFilter;
 import net.sf.taverna.t2.lang.ui.FileTools;
+import net.sf.taverna.t2.lang.ui.LineEnabledTextPanel;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationPanel;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
@@ -206,13 +209,13 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 
 		scriptTextArea = new JTextPane();
 
-		RshellDocument doc = new RshellDocument();
+		final RshellDocument doc = new RshellDocument();
 		// NOTE: Due to T2-1145 - always set editor kit BEFORE setDocument
 		scriptTextArea.setEditorKit( new NoWrapEditorKit() );
 		scriptTextArea.setDocument(doc);
 		scriptTextArea.setText(configBean.getScript());
 		scriptTextArea.setCaretPosition(0);
-		scriptTextArea.setPreferredSize(new Dimension(0, 0));
+		scriptTextArea.setPreferredSize(new Dimension(200, 100));
 
 		for (ActivityInputPortDefinitionBean ip : configuration.getInputPortDefinitions()) {
 			String name = ip.getName();
@@ -222,11 +225,8 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 			String name = op.getName();
 			doc.addPort(name);
 		}
-
-		JScrollPane scrollPane = new JScrollPane( scriptTextArea );
-		scrollPane.setPreferredSize( new Dimension( 200, 100 ) );
 		
-		scriptEditPanel.add(scrollPane, BorderLayout.CENTER);
+		scriptEditPanel.add(new LineEnabledTextPanel(scriptTextArea), BorderLayout.CENTER);
 
 		JButton loadRScriptButton = new JButton("Load script");
 		loadRScriptButton.setToolTipText("Load an R script from a file");
