@@ -67,6 +67,7 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Retry;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Stop;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.AbstractIterationStrategyNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.CrossProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DotProduct;
@@ -140,12 +141,7 @@ public class WorkflowModelTranslator {
 	public static Dataflow doTranslation(ScuflModel scuflModel)
 			throws WorkflowTranslationException {
 		WorkflowModelTranslator translator;
-		try {
-			translator = new WorkflowModelTranslator(scuflModel.clone());
-		} catch (CloneNotSupportedException e) {
-			throw new WorkflowTranslationException(
-					"The scufl model could not be cloned", e);
-		}
+		translator = new WorkflowModelTranslator(scuflModel);
 
 		Dataflow dataflow = translator.edits.createDataflow();
 
@@ -415,14 +411,22 @@ public class WorkflowModelTranslator {
 
 	private Activity<?> createActivity(
 			org.embl.ebi.escience.scufl.Processor t1Processor)
-			throws ActivityTranslationException,
-			ActivityConfigurationException, ActivityTranslatorNotFoundException {
+			throws ActivityTranslatorNotFoundException {
 		// find the translator
 		ActivityTranslator<?> translator = ActivityTranslatorFactory
 				.getTranslator(t1Processor);
 		// translate the t1 processor to a t2 activity
-		return translator.doTranslation(t1Processor);
+		Activity<?> result = null;
+		try {
+			result = translator.doTranslation(t1Processor);
+		} catch (ActivityTranslationException e) {
+			result = translator.getDisabledActivity(t1Processor);
+		} catch (ActivityConfigurationException e) {
+			result = translator.getDisabledActivity(t1Processor);
+		}
+		return result;
 	}
+
 
 	private void setIterationStrategy(
 			org.embl.ebi.escience.scufl.Processor t1Processor,
@@ -456,7 +460,6 @@ public class WorkflowModelTranslator {
 				}
 				NamedInputPortNode inputPortNode = new NamedInputPortNode(inp
 						.getName(), ip.getDepth());
-				// Due to T2-890 we'll have to add these upside down
 				parent.insert(inputPortNode, 0);
 				t2IterationStrategy.addInput(inputPortNode);
 			}
@@ -473,7 +476,7 @@ public class WorkflowModelTranslator {
 					NamedInputPortNode inputPortNode = new NamedInputPortNode(
 							nodeName, ip.getDepth());
 					// Insertions should be in the top - which is what we want for cross/dot product, see T2-890
-					inputPortNode.setParent(parent);
+					parent.insert(inputPortNode,0);
 					t2IterationStrategy.addInput(inputPortNode);
 					break;
 				}
@@ -485,7 +488,7 @@ public class WorkflowModelTranslator {
 			} else {
 				strategyNode = new CrossProduct();
 			}
-			strategyNode.setParent(parent);
+			parent.insert(strategyNode,0);
 			for (int childIndex = 0; childIndex < node.getChildCount(); childIndex++) {
 				TreeNode childNode = node.getChildAt(childIndex);				
 				addIterationNode((MutableTreeNode) childNode,
@@ -510,6 +513,7 @@ public class WorkflowModelTranslator {
 		DispatchLayer<?> failover = new Failover();
 		DispatchLayer<?> retry = new Retry(maxRetries, initialDelay, maxDelay,
 				backoffFactor);
+		DispatchLayer<?> stop = new Stop();
 		DispatchLayer<?> invoke = new Invoke();
 
 		int layer = 0;
@@ -520,6 +524,8 @@ public class WorkflowModelTranslator {
 		edits.getAddDispatchLayerEdit(dispatchStack, failover, layer++)
 				.doEdit();
 		edits.getAddDispatchLayerEdit(dispatchStack, retry, layer++).doEdit();
+		edits.getAddDispatchLayerEdit(dispatchStack, stop, layer++).doEdit();
+		
 		edits.getAddDispatchLayerEdit(dispatchStack, invoke, layer++).doEdit();
 	}
 
