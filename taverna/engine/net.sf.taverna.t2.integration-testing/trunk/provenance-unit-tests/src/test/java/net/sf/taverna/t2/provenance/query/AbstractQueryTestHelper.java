@@ -40,7 +40,7 @@ import net.sf.taverna.t2.provenance.lineageservice.utils.ProcessorEnactment;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceProcessor;
 import net.sf.taverna.t2.provenance.lineageservice.utils.Port;
 import net.sf.taverna.t2.provenance.lineageservice.utils.QueryPort;
-import net.sf.taverna.t2.provenance.lineageservice.utils.WorkflowInstance;
+import net.sf.taverna.t2.provenance.lineageservice.utils.WorkflowRun;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -421,10 +421,10 @@ public abstract class AbstractQueryTestHelper {
 	@Test
 	public void listRuns() throws JDOMException, IOException,
 			DeserializationException, EditException {
-		List<WorkflowInstance> runs = getProvenanceAccess()
+		List<WorkflowRun> runs = getProvenanceAccess()
 				.listRuns(null, null);
 		Set<String> wfIds = new HashSet<String>();
-		for (WorkflowInstance run : runs) {
+		for (WorkflowRun run : runs) {
 			assertEquals(getFacade().getWorkflowRunId(), run.getInstanceID());
 
 			String workflowIdentifier = run.getWorkflowIdentifier();
@@ -464,10 +464,10 @@ public abstract class AbstractQueryTestHelper {
 	public void listRunsSpecificWfId() throws JDOMException, IOException,
 			DeserializationException, EditException {
 		for (String dfId : workflowIdToPaths.keySet()) {
-			List<WorkflowInstance> runs = getProvenanceAccess().listRuns(dfId,
+			List<WorkflowRun> runs = getProvenanceAccess().listRuns(dfId,
 					null);			
 			assertEquals(1, runs.size());
-			for (WorkflowInstance run : runs) {
+			for (WorkflowRun run : runs) {
 				assertEquals(getFacade().getWorkflowRunId(), run
 						.getInstanceID());
 				assertEquals(dfId, run.getWorkflowIdentifier());

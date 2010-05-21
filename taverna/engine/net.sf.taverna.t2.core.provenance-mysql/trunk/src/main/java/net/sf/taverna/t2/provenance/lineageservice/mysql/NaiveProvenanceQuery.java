@@ -10,7 +10,7 @@ import java.util.Set;
 
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.utils.DDRecord;
-import net.sf.taverna.t2.provenance.lineageservice.utils.WorkflowInstance;
+import net.sf.taverna.t2.provenance.lineageservice.utils.WorkflowRun;
 
 import org.apache.log4j.Logger;
 
@@ -66,9 +66,9 @@ public class NaiveProvenanceQuery {
 		String iteration = targetIteration;
 
 		// fetch latest WFInstance ID, to use as part of the key
-		List<WorkflowInstance> IDs = pq.getRuns(null, null);
+		List<WorkflowRun> IDs = pq.getRuns(null, null);
 		
-		WorkflowInstance wfInstance = IDs.get(0);
+		WorkflowRun wfInstance = IDs.get(0);
 		
 		List<DDRecord> recordsQueue = new ArrayList<DDRecord>();
 

@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.taverna.t2.provenance.lineageservice.utils.DDRecord;
-import net.sf.taverna.t2.provenance.lineageservice.utils.WorkflowInstance;
+import net.sf.taverna.t2.provenance.lineageservice.utils.WorkflowRun;
 
 import org.apache.log4j.Logger;
 import org.jdom.Document;
@@ -85,9 +85,9 @@ public class DataDependenciesBuilder {
 	public void buildDD() throws SQLException {
 
 		// fetch latest WFInstance ID, to use as part of the key
-		List<WorkflowInstance> IDs = pq.getRuns(null, null);
+		List<WorkflowRun> IDs = pq.getRuns(null, null);
 
-		WorkflowInstance wfInstanceID = IDs.get(0);
+		WorkflowRun wfInstanceID = IDs.get(0);
 
 		// read all iteration events from the EVENTS log
 
