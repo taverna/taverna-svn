@@ -15,13 +15,11 @@
 			<artifactId>workflowmodel-impl</artifactId>
 			<version>${t2.core.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-api</groupId>
 			<artifactId>contextual-views-api</artifactId>
 			<version>${t2.ui.api.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-impl</groupId>
 			<artifactId>contextual-views-impl</artifactId>
@@ -52,7 +50,6 @@
 			<artifactId>renderers-impl</artifactId>
 			<version>${t2.ui.impl.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-components</groupId>
 			<artifactId>activity-palette-ui</artifactId>
@@ -71,6 +68,11 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-components</groupId>
 			<artifactId>perspective-results</artifactId>
+			<version>${t2.ui.components.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-components</groupId>
+			<artifactId>results-view</artifactId>
 			<version>${t2.ui.components.version}</version>
 		</dependency>
 		<dependency>
