@@ -23,6 +23,7 @@ package net.sf.taverna.t2.compatibility.activity;
 import net.sf.taverna.t2.compatibility.activity.ActivityTranslationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.DisabledActivity;
 
 import org.embl.ebi.escience.scufl.Processor;
 
@@ -49,6 +50,8 @@ public interface ActivityTranslator<ConfigurationType> {
 	 * @throws ActivityConfigurationException
 	 */
 	Activity<ConfigurationType> doTranslation(Processor processor) throws ActivityTranslationException,ActivityConfigurationException;
+	
+	DisabledActivity getDisabledActivity(Processor processor) throws ActivityTranslatorNotFoundException;
 	
 	/**
 	 * Returns true if this ActivityTranslator can translate the specified Taverna 1 Processor.
