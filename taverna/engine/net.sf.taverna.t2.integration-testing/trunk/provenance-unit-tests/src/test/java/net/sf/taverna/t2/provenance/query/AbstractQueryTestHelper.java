@@ -154,10 +154,10 @@ public abstract class AbstractQueryTestHelper {
 			path = "/";
 		}
 		workflowPaths.put(path, df);
-		List<String> paths = workflowIdToPaths.get(df.getInternalIdentier());
+		List<String> paths = workflowIdToPaths.get(df.getInternalIdentifier());
 		if (paths == null) {
 			paths = new ArrayList<String>();
-			workflowIdToPaths.put(df.getInternalIdentier(), paths);
+			workflowIdToPaths.put(df.getInternalIdentifier(), paths);
 		}
 		paths.add(path);
 
@@ -263,7 +263,7 @@ public abstract class AbstractQueryTestHelper {
 		provenanceQuery.setRunIDList(Arrays.asList(getFacade()
 				.getWorkflowRunId()));
 		QueryPort queryPort = new QueryPort();
-		queryPort.setWfName(dataflow.getInternalIdentier());
+		queryPort.setWfName(dataflow.getInternalIdentifier());
 		queryPort.setPath(ProvenanceAnalysis.ALL_PATHS_KEYWORD);
 		provenanceQuery.setTargetPorts(Arrays.asList(queryPort));
 		QueryAnswer answer = getProvenanceAccess()
@@ -277,7 +277,7 @@ public abstract class AbstractQueryTestHelper {
 		Map<String, Object> expectedWorkflowInputs = getExpectedWorkflowInputs();
 		Map<String, Object> recordedInputs = new HashMap<String, Object>();
 		String wfInstance = getFacade().getWorkflowRunId();
-		String workflowId = dataflow.getInternalIdentier();
+		String workflowId = dataflow.getInternalIdentifier();
 		String pname = dataflow.getLocalName();
 		for (InputPort inputPort : dataflow.getInputPorts()) {
 			String port = inputPort.getName();
@@ -431,7 +431,7 @@ public abstract class AbstractQueryTestHelper {
 			wfIds.add(workflowIdentifier);
 
 			String externalName = run.getWorkflowExternalName();
-			if (workflowIdentifier.equals(dataflow.getInternalIdentier())) {
+			if (workflowIdentifier.equals(dataflow.getInternalIdentifier())) {
 				assertEquals(dataflow.getLocalName(), externalName);
 				assertTrue(getProvenanceAccess().isTopLevelDataflow(
 						workflowIdentifier));
@@ -455,7 +455,7 @@ public abstract class AbstractQueryTestHelper {
 			Dataflow loadedDf = testHelper
 					.loadDataflow(new ByteArrayInputStream(blob));
 			assertEquals(run.getWorkflowIdentifier(), loadedDf
-					.getInternalIdentier());
+					.getInternalIdentifier());
 		}
 		assertEquals(workflowIdToPaths.keySet(), wfIds);
 	}
@@ -480,7 +480,7 @@ public abstract class AbstractQueryTestHelper {
 		Map<String, Object> expectedWorkflowOutputs = getExpectedWorkflowOutputs();
 		Map<String, Object> recordedOutputs = new HashMap<String, Object>();
 		String wfInstance = getFacade().getWorkflowRunId();
-		String workflowId = dataflow.getInternalIdentier();
+		String workflowId = dataflow.getInternalIdentifier();
 		String pname = dataflow.getLocalName();
 		for (OutputPort outputPort : dataflow.getOutputPorts()) {
 			String port = outputPort.getName();
@@ -510,7 +510,7 @@ public abstract class AbstractQueryTestHelper {
 		Map<String, Object> recordedOutputs = new HashMap<String, Object>();
 		String wfInstance = getFacade().getWorkflowRunId();
 		for (Dataflow df : workflowPaths.values()) {
-			String workflowId = df.getInternalIdentier();
+			String workflowId = df.getInternalIdentifier();
 			for (Processor p : df.getProcessors()) {
 				String pName = p.getLocalName();
 				List<ProcessorPort> ports = new ArrayList<ProcessorPort>();
@@ -536,7 +536,7 @@ public abstract class AbstractQueryTestHelper {
 						Object resolved = getReferenceService()
 								.renderIdentifier(referenceValue, Object.class,
 										getContext());
-						String key = df.getInternalIdentier() + "/" + pName
+						String key = df.getInternalIdentifier() + "/" + pName
 								+ "/" + (isInput ? "i:" : "o:") + portName
 								+ iteration;
 						recordedOutputs.put(key, resolved);

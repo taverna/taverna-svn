@@ -157,10 +157,10 @@ public abstract class AbstractDbTestHelper {
 			path = "/";
 		}
 		workflowPaths.put(path, df);
-		List<String> paths = workflowIdToPaths.get(df.getInternalIdentier());
+		List<String> paths = workflowIdToPaths.get(df.getInternalIdentifier());
 		if (paths == null) {
 			paths = new ArrayList<String>();
-			workflowIdToPaths.put(df.getInternalIdentier(), paths);
+			workflowIdToPaths.put(df.getInternalIdentifier(), paths);
 		}
 		paths.add(path);
 
@@ -267,7 +267,7 @@ public abstract class AbstractDbTestHelper {
 			Set<String> expectedLinks = describeDataLinks(df);
 			// Magic processor names meaning workflow ports
 			Set<String> myProcessorNames = new HashSet<String>();
-			for (String path : workflowIdToPaths.get(df.getInternalIdentier())) {
+			for (String path : workflowIdToPaths.get(df.getInternalIdentifier())) {
 				if (path.equals("/")) {
 					myProcessorNames.add(df.getLocalName());
 				} else {
@@ -278,7 +278,7 @@ public abstract class AbstractDbTestHelper {
 
 			Set<String> links = new HashSet<String>();
 
-			statement.setString(1, df.getInternalIdentier());
+			statement.setString(1, df.getInternalIdentifier());
 			ResultSet resultSet = statement.executeQuery();
 			try {
 				while (resultSet.next()) {
@@ -332,7 +332,7 @@ public abstract class AbstractDbTestHelper {
 								"WHERE Collection.wfInstanceRef=? AND Port.workflowId=?");
 		statement.setString(1, getFacade().getWorkflowRunId());
 		// FIXME: Collections don't support nested workflows
-		statement.setString(2, dataflow.getInternalIdentier());
+		statement.setString(2, dataflow.getInternalIdentifier());
 
 		Map<String, Object> collections = new HashMap<String, Object>();
 
@@ -368,7 +368,7 @@ public abstract class AbstractDbTestHelper {
 					// collection
 				}
 
-				String key = dataflow.getInternalIdentier() + "/" + processorNameRef
+				String key = dataflow.getInternalIdentifier() + "/" + processorNameRef
 						+ "/" + (isInput ? "i:" : "o:") + varNameRef
 						+ iteration;
 				collections.put(key, resolved);
@@ -393,12 +393,12 @@ public abstract class AbstractDbTestHelper {
 			for (Processor p : df.getProcessors()) {
 				expectedProcessors.put(p.getLocalName(), p);
 			}
-			if (df.getInternalIdentier().equals(dataflow.getInternalIdentier())) {
+			if (df.getInternalIdentifier().equals(dataflow.getInternalIdentifier())) {
 				// Also expect the top-level workflow name
 				// NOTE: Might be in conflict with a processor in the workflow
 				expectedProcessors.put(dataflow.getLocalName(), null);
 			}
-			statement.setString(1, df.getInternalIdentier());
+			statement.setString(1, df.getInternalIdentifier());
 			ResultSet resultSet = statement.executeQuery();
 			Set<String> processors = new HashSet<String>();
 			try {
@@ -409,8 +409,8 @@ public abstract class AbstractDbTestHelper {
 					boolean isTopLevel = resultSet.getBoolean("isTopLevel");
 					processors.add(pName);
 					if (isTopLevel) {
-						assertEquals(dataflow.getInternalIdentier(), df
-								.getInternalIdentier());
+						assertEquals(dataflow.getInternalIdentifier(), df
+								.getInternalIdentifier());
 						// Aliasing as a DataflowActivity
 						assertEquals(DataflowActivity.class.getCanonicalName(),
 								type);
@@ -619,7 +619,7 @@ public abstract class AbstractDbTestHelper {
 		Map<String, Object> intermediateValues = new HashMap<String, Object>();
 
 		for (Dataflow df : workflowPaths.values()) {
-			statement.setString(2, df.getInternalIdentier());
+			statement.setString(2, df.getInternalIdentifier());
 			for (Processor p : df.getProcessors()) {
 				statement.setString(3, p.getLocalName());
 
@@ -668,7 +668,7 @@ public abstract class AbstractDbTestHelper {
 							assertEquals(t2Reference, ref);
 						}
 
-						String key = df.getInternalIdentier() + "/"
+						String key = df.getInternalIdentifier() + "/"
 								+ p.getLocalName() + "/"
 								+ (isInput ? "i:" : "o:") + varNameRef
 								+ iteration;
@@ -697,7 +697,7 @@ public abstract class AbstractDbTestHelper {
 						"FROM PortBinding " +
 						"WHERE processorNameRef=? AND wfNameRef=?");
 		statement.setString(1, dataflow.getLocalName());
-		statement.setString(2, dataflow.getInternalIdentier());
+		statement.setString(2, dataflow.getInternalIdentifier());
 		Map<String, Object> values = new HashMap<String, Object>();
 		ResultSet resultSet = statement.executeQuery();
 		try {
@@ -730,7 +730,7 @@ public abstract class AbstractDbTestHelper {
 				.prepareStatement(
 						"SELECT portName,isInputPort,depth,resolvedDepth,iterationStrategyOrder from Port WHERE workflowId=? AND processorName=?");
 		for (Dataflow df : workflowPaths.values()) {
-			statement.setString(1, df.getInternalIdentier());
+			statement.setString(1, df.getInternalIdentifier());
 			for (Processor p : df.getProcessors()) {
 				statement.setString(2, p.getLocalName());
 				ResultSet resultSet = statement.executeQuery();
@@ -813,7 +813,7 @@ public abstract class AbstractDbTestHelper {
 				.prepareStatement(
 						"SELECT portName,isInputPort,depth,resolvedDepth,iterationStrategyOrder from Port WHERE workflowId=? AND processorName=?");
 		Dataflow df = dataflow;
-		statement.setString(1, df.getInternalIdentier());
+		statement.setString(1, df.getInternalIdentifier());
 		statement.setString(2, df.getLocalName());
 		ResultSet resultSet = statement.executeQuery();
 		Map<String, DataflowInputPort> inputPorts = new HashMap<String, DataflowInputPort>();
@@ -903,15 +903,15 @@ public abstract class AbstractDbTestHelper {
 			}
 			Set<String> expectedWfIds = new HashSet<String>();
 			for (Dataflow df : workflowPaths.values()) {
-				expectedWfIds.add(df.getInternalIdentier());
+				expectedWfIds.add(df.getInternalIdentifier());
 			}
 			assertEquals(wfIds, expectedWfIds);
 			Timestamp topTimestamp = timestamps.get(dataflow
-					.getInternalIdentier());
+					.getInternalIdentifier());
 
 			// Check that nested workflows have later timestamps
 			for (Entry<String, Timestamp> entry : timestamps.entrySet()) {
-				if (!entry.getKey().equals(dataflow.getInternalIdentier())) {
+				if (!entry.getKey().equals(dataflow.getInternalIdentifier())) {
 					assertTrue(entry.getValue().after(topTimestamp));
 				}
 			}
@@ -934,7 +934,7 @@ public abstract class AbstractDbTestHelper {
 				String parentWfName = resultSet.getString("parentWfName");
 				String externalName = resultSet.getString("externalName");
 				wfIds.add(wfName);
-				if (wfName.equals(dataflow.getInternalIdentier())) {
+				if (wfName.equals(dataflow.getInternalIdentifier())) {
 					assertNull(parentWfName);
 					assertEquals(dataflow.getLocalName(), externalName);
 				} else {
@@ -953,13 +953,13 @@ public abstract class AbstractDbTestHelper {
 					URI parentPath = URI.create(foundPath).resolve("../");
 					Dataflow parentDataflow = workflowPaths.get(parentPath
 							.toString());
-					assertEquals(parentDataflow.getInternalIdentier(),
+					assertEquals(parentDataflow.getInternalIdentifier(),
 							parentWfName);
 				}
 			}
 			Set<String> expectedWfIds = new HashSet<String>();
 			for (Dataflow df : workflowPaths.values()) {
-				expectedWfIds.add(df.getInternalIdentier());
+				expectedWfIds.add(df.getInternalIdentifier());
 			}
 			assertEquals(wfIds, expectedWfIds);
 		} finally {

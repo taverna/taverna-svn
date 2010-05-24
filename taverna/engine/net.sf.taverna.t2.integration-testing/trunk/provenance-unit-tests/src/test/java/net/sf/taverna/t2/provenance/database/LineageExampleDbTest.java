@@ -45,7 +45,7 @@ public class LineageExampleDbTest extends
 	}
 
 	protected Map<String, Object> getExpectedCollections() {
-		String dfId = dataflow.getInternalIdentier() + "/";
+		String dfId = dataflow.getInternalIdentifier() + "/";
 		
 		Map<String, Object> expected = new HashMap<String, Object>();
 		expected.put(dfId + "P0/o:Y[]", Arrays.asList("a1", "a2"));
@@ -64,7 +64,7 @@ public class LineageExampleDbTest extends
 
 	protected Map<String, Object> getExpectedIntermediateValues() {
 
-		String dfId = dataflow.getInternalIdentier() + "/";
+		String dfId = dataflow.getInternalIdentifier() + "/";
 		
 		Map<String, Object> expectedIntermediateValues = new HashMap<String, Object>();
 		expectedIntermediateValues.put(dfId+"P0/o:Y[0]", "a1");

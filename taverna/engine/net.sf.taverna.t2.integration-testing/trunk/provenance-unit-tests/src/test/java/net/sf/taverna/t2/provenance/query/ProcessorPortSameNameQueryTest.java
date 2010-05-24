@@ -38,7 +38,7 @@ public class ProcessorPortSameNameQueryTest extends AbstractQueryTestHelper {
 	protected Map<String, Object> getExpectedIntermediateValues() {
 		Map<String, Object> expectedIntermediateValues = new HashMap<String, Object>();
 
-		String df0 = dataflow.getInternalIdentier() + "/";
+		String df0 = dataflow.getInternalIdentifier() + "/";
 
 		expectedIntermediateValues.put(df0 + "input/o:value[]", "input");
 		expectedIntermediateValues.put(df0 + "T2_1051/i:parameter[]", "input");

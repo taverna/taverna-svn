@@ -40,7 +40,7 @@ public class WorkflowPortSameNameDbTest extends AbstractDbTestHelper {
 	@Override
 	protected Map<String, Object> getExpectedIntermediateValues() {
 		Map<String, Object> expectedIntermediateValues = new HashMap<String, Object>();
-		String df0 = dataflow.getInternalIdentier() + "/";
+		String df0 = dataflow.getInternalIdentifier() + "/";
 		expectedIntermediateValues.put(df0 + "Concatenate_two_strings/i:string1[]", "abcd");
 		expectedIntermediateValues.put(df0 + "Concatenate_two_strings/i:string2[]", "abcd");
 		expectedIntermediateValues.put(df0 + "Concatenate_two_strings/o:output[]", "abcdabcd");
