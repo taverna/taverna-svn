@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+	xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+	http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
+
+	<description>
+		The Taverna Server bean, plus supporting configuration.
+	</description>
+
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-extension-jaxrs-binding.xml" />
+
+	<bean id="tserv"
+	 	class="org.taverna.server.master.TavernaServerImpl">
+		<property name="policy">
+			<ref bean="policy" />
+		</property>
+		<property name="listenerFactory">
+			<ref bean="listenerFactory" />
+		</property>
+		<property name="runFactory">
+			<ref bean="runFactory" />
+		</property>
+		<property name="runStore">
+			<ref bean="runCatalog" />
+		</property>
+	</bean>
+
+	<bean id="policy" class="org.taverna.server.master.example.SimpleServerPolicy">
+		<property name="maxRuns">
+			<description>
+				Limit on total number of simultaneous runs.
+			</description>
+			<value type="int">1</value>
+		</property>
+		<property name="cleanerInterval">
+			<description>
+				Time between trying to delete expired runs, in seconds.
+			</description>
+			<value type="int">300</value>
+		</property>
+	</bean>
+
+	<bean id="runFactory" class="org.taverna.server.master.example.ExampleRun$Builder">
+		<constructor-arg type="int" value="10" /> <!-- "initialLifetimeMinutes" -->
+	</bean>
+
+	<bean id="runCatalog"
+		class="org.taverna.server.master.example.SimpleNonpersistentRunStore">
+		<property name="policy">
+			<ref bean="policy" />
+		</property>
+	</bean>
+
+	<bean id="listenerFactory"
+		class="org.taverna.server.master.example.SimpleListenerFactory">
+		<property name="builders">
+			<description>
+				This map describes how to build each type of supported
+				event listener that is not installed by default. Any site policy for
+				a listeners should be installed using its properties, as shown. The
+				"key" is the type, the "class" is the builder for actual instances
+				(which must be an instance of
+				org.taverna.server.master.factories.SimpleListenerFactory.Builder)
+				and any policies and installation-specific configurations are
+				characterised by properties such as "sitePolicy" below.
+			</description>
+			<map>
+				<!--						<entry key="exampleListener">-->
+				<!--
+					<bean
+					class="org.taverna.server.master.example.ExampleListener$Builder">
+				-->
+				<!--								<property name="sitePolicy">-->
+				<!--									<value>Just an example!</value>-->
+				<!--								</property>-->
+				<!--							</bean>-->
+				<!--						</entry>-->
+			</map>
+		</property>
+	</bean>
+
+	<jaxws:endpoint id="master_SOAP" implementor="#tserv"
+		address="/soap" />
+	<jaxrs:server id="master_REST" address="/">
+		<jaxrs:serviceBeans>
+			<ref bean="tserv" />
+		</jaxrs:serviceBeans>
+	</jaxrs:server>
+	<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter"
+		lazy-init="false">
+		<property name="assembler" ref="assembler" />
+		<property name="namingStrategy" ref="namingStrategy" />
+		<property name="autodetect" value="true" />
+	</bean>
+	<bean id="jmxAttributeSource"
+		class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource" />
+	<bean id="assembler"
+		class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
+		<property name="attributeSource" ref="jmxAttributeSource" />
+	</bean>
+	<bean id="namingStrategy"
+		class="org.springframework.jmx.export.naming.MetadataNamingStrategy">
+		<property name="attributeSource" ref="jmxAttributeSource" />
+	</bean>
+</beans>
