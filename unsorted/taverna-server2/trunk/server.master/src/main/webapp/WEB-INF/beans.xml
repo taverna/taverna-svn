@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxrs="http://cxf.apache.org/jaxrs"
 	xmlns:jaxws="http://cxf.apache.org/jaxws"
 	xsi:schemaLocation="
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
 	http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
 	http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
@@ -16,8 +18,7 @@
 	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
 	<import resource="classpath:META-INF/cxf/cxf-extension-jaxrs-binding.xml" />
 
-	<bean id="tserv"
-	 	class="org.taverna.server.master.TavernaServerImpl">
+	<bean id="tserv" class="org.taverna.server.master.TavernaServerImpl">
 		<property name="policy">
 			<ref bean="policy" />
 		</property>
@@ -32,7 +33,8 @@
 		</property>
 	</bean>
 
-	<bean id="policy" class="org.taverna.server.master.example.SimpleServerPolicy">
+	<bean id="policy" class="org.taverna.server.master.example.SimpleServerPolicy"
+		lazy-init="false">
 		<property name="maxRuns">
 			<description>
 				Limit on total number of simultaneous runs.
@@ -58,8 +60,7 @@
 		</property>
 	</bean>
 
-	<bean id="listenerFactory"
-		class="org.taverna.server.master.example.SimpleListenerFactory">
+	<bean id="listenerFactory" class="org.taverna.server.master.example.SimpleListenerFactory">
 		<property name="builders">
 			<description>
 				This map describes how to build each type of supported
@@ -93,20 +94,10 @@
 			<ref bean="tserv" />
 		</jaxrs:serviceBeans>
 	</jaxrs:server>
-	<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter"
-		lazy-init="false">
-		<property name="assembler" ref="assembler" />
-		<property name="namingStrategy" ref="namingStrategy" />
-		<property name="autodetect" value="true" />
+
+	<bean id="MBeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">
+		<property name="locateExistingServerIfPossible" value="true" />
 	</bean>
-	<bean id="jmxAttributeSource"
-		class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource" />
-	<bean id="assembler"
-		class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
-		<property name="attributeSource" ref="jmxAttributeSource" />
-	</bean>
-	<bean id="namingStrategy"
-		class="org.springframework.jmx.export.naming.MetadataNamingStrategy">
-		<property name="attributeSource" ref="jmxAttributeSource" />
-	</bean>
+	<context:mbean-export server="MBeanServer"
+		default-domain="${my.domain}" />
 </beans>

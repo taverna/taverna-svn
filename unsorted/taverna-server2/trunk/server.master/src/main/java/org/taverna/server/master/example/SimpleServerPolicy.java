@@ -26,12 +26,13 @@ import org.taverna.server.master.interfaces.TavernaRun;
  * 
  * @author Donal Fellows
  */
-@ManagedResource(description = "Policies enforced by the server")
+@ManagedResource(objectName = "Taverna:group=Server,name=Policy", description = "Policies enforced by the server")
 public class SimpleServerPolicy implements Policy {
 	private int maxRuns = 10;
 	private int cleanerInterval;
 	SimpleNonpersistentRunStore store;
 
+	@ManagedAttribute(description = "The maximum number of simultaneous runs supported by the server.", currencyTimeLimit = 300)
 	public void setMaxRuns(int maxRuns) {
 		this.maxRuns = maxRuns;
 	}
@@ -58,6 +59,7 @@ public class SimpleServerPolicy implements Policy {
 	 * 
 	 * @param intervalInSeconds
 	 */
+	@ManagedAttribute(description = "The time (in seconds) between cleanup activities", currencyTimeLimit = 300)
 	public void setCleanerInterval(int intervalInSeconds) {
 		cleanerInterval = intervalInSeconds;
 		if (store != null)
