@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.taverna.server.master.SCUFL;
 import org.taverna.server.master.Status;
+import org.taverna.server.master.exceptions.BadStateChangeException;
 
 /**
  * The interface to a taverna workflow run, or "run" for short.
@@ -37,12 +38,15 @@ public interface TavernaRun {
 	public Status getStatus();
 
 	/**
-	 * Set the status of the run, which should cause it to move into the
-	 * given state. This may cause some significant changes.
+	 * Set the status of the run, which should cause it to move into the given
+	 * state. This may cause some significant changes.
 	 * 
 	 * @param s
+	 *            The state to try to change to.
+	 * @throws BadStateChangeException
+	 *             If the change to the given state is impossible.
 	 */
-	public void setStatus(Status s);
+	public void setStatus(Status s) throws BadStateChangeException;
 
 	/**
 	 * @return Handle to the main working directory of the run.

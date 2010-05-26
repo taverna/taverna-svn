@@ -12,6 +12,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.cxf.jaxrs.ext.Description;
 import org.taverna.server.master.exceptions.NoUpdateException;
 import org.taverna.server.master.exceptions.UnknownRunException;
 
@@ -23,6 +24,7 @@ import org.taverna.server.master.exceptions.UnknownRunException;
  */
 @Produces( { "application/xml", "application/json" })
 @Consumes( { "application/xml", "application/json" })
+@Description("This is REST service interface to Taverna Server version 2.3")
 public interface TavernaServerREST {
 	// MASTER API
 
@@ -34,6 +36,7 @@ public interface TavernaServerREST {
 	 * @return The description.
 	 */
 	@GET
+	@Description("Produces the description of the service.")
 	public ServerDescription describeService(@Context UriInfo ui);
 
 	/**
@@ -51,6 +54,7 @@ public interface TavernaServerREST {
 	@POST
 	@Path("runs")
 	@Consumes("application/xml")
+	@Description("Accepts (or not) a request to create a new run executing the given workflow.")
 	public Response submitWorkflow(SCUFL workflow, @Context UriInfo ui)
 			throws NoUpdateException;
 
@@ -65,6 +69,7 @@ public interface TavernaServerREST {
 	@GET
 	@Path("policy/runLimit")
 	@Produces("text/plain")
+	@Description("Gets the maximum number of simultaneous runs that the user may create.")
 	public int getMaxSimultaneousRuns();
 
 	/**
@@ -76,16 +81,18 @@ public interface TavernaServerREST {
 	 */
 	@GET
 	@Path("policy/permittedWorkflows")
+	@Description("Gets the list of permitted workflows.")
 	public List<SCUFL> getPermittedWorkflows();
 
 	/**
-	 * Gets the list of permitted listeners. All event listeners must be of a
-	 * type described on this list.
+	 * Gets the list of permitted event listener types. All event listeners must
+	 * be of a type described on this list.
 	 * 
 	 * @return The types of event listeners allowed.
 	 */
 	@GET
 	@Path("policy/permittedListenerTypes")
+	@Description("Gets the list of permitted event listener types.")
 	public List<String> getPermittedListeners();
 
 	/**
@@ -98,6 +105,7 @@ public interface TavernaServerREST {
 	 *             If the run handle is unknown to the current user.
 	 */
 	@Path("runs/{runName}")
+	@Description("Get a particular named run resource to dispatch to.")
 	public TavernaServerRunREST getRunResource(
 			@PathParam("runName") String runName) throws UnknownRunException;
 }

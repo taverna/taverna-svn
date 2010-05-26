@@ -37,8 +37,8 @@ import org.taverna.server.master.interfaces.DirectoryEntry;
 import org.taverna.server.master.interfaces.File;
 import org.taverna.server.master.interfaces.Listener;
 import org.taverna.server.master.interfaces.Policy;
-import org.taverna.server.master.interfaces.TavernaRun;
 import org.taverna.server.master.interfaces.RunStore;
+import org.taverna.server.master.interfaces.TavernaRun;
 
 @Path("/rest")
 @WebService(endpointInterface = "org.taverna.server.master.TavernaServerSOAP", serviceName = "TavernaServer")
@@ -163,8 +163,8 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 			}
 
 			@Override
-			public TavernaServerListenerREST getListeners() {
-				return new TavernaServerListenerREST() {
+			public TavernaServerListenersREST getListeners() {
+				return new TavernaServerListenersREST() {
 					@Override
 					public Response addListener(
 							ListenerCreationDescription typeAndConfiguration,
@@ -180,70 +180,72 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 					}
 
 					@Override
-					public SingleListener getListener(String name)
+					public TavernaServerListenerREST getListener(String name)
 							throws NoListenerException {
 						for (Listener listener : w.getListeners()) {
-							if (!listener.getName().equals(name))
-								continue;
 							final Listener l = listener;
-							return new SingleListener() {
-								@Override
-								public String getConfiguration() {
-									return l.getConfiguration();
-								}
+							if (listener.getName().equals(name))
+								return new TavernaServerListenerREST() {
+									@Override
+									public String getConfiguration() {
+										return l.getConfiguration();
+									}
 
-								@Override
-								public ListenerDescription getDescription(
-										UriInfo ui) {
-									return new ListenerDescription(l.getName(),
-											l.getType(), l.listProperties(), ui);
-								}
+									@Override
+									public ListenerDescription getDescription(
+											UriInfo ui) {
+										return new ListenerDescription(l
+												.getName(), l.getType(), l
+												.listProperties(), ui);
+									}
 
-								@Override
-								public List<String> getProperties() {
-									return asList(l.listProperties());
-								}
+									@Override
+									public List<String> getProperties() {
+										return asList(l.listProperties());
+									}
 
-								@Override
-								public Property getProperty(
-										final String propertyName)
-										throws NoListenerException {
-									if (getProperties().contains(propertyName))
-										return new Property() {
-											@Override
-											public String getValue() {
-												try {
-													return l
-															.getProperty(propertyName);
-												} catch (NoListenerException e) {
-													log
-															.error(
-																	"unexpected exception; property \""
-																			+ propertyName
-																			+ "\" should exist",
-																	e);
-													return null;
+									@Override
+									public Property getProperty(
+											final String propertyName)
+											throws NoListenerException {
+										if (getProperties().contains(
+												propertyName))
+											return new Property() {
+												@Override
+												public String getValue() {
+													try {
+														return l
+																.getProperty(propertyName);
+													} catch (NoListenerException e) {
+														log
+																.error(
+																		"unexpected exception; property \""
+																				+ propertyName
+																				+ "\" should exist",
+																		e);
+														return null;
+													}
 												}
-											}
 
-											@Override
-											public Response setValue(
-													String value, UriInfo ui)
-													throws NoUpdateException,
-													NoListenerException {
-												policy.permitUpdate(
-														getPrincipal(), w);
-												l.setProperty(propertyName,
-														value);
-												return seeOther(
-														ui.getRequestUri())
-														.build();
-											}
-										};
-									throw new NoListenerException(
-											"no such property");
-								}
-							};
+												@Override
+												public Response setValue(
+														String value, UriInfo ui)
+														throws NoUpdateException,
+														NoListenerException {
+													policy.permitUpdate(
+															getPrincipal(), w);
+													l.setProperty(propertyName,
+															value);
+													return seeOther(
+															ui.getRequestUri())
+															.build();
+												}
+											};
+
+										throw new NoListenerException(
+												"no such property");
+									}
+								};
 						}
 						throw new NoListenerException();
 					}
@@ -281,99 +283,8 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 			}
 
 			@Override
-			public TavernaServerDirectoryREST getWorkingDirectory() {
-				return new TavernaServerDirectoryREST() {
-					@Override
-					public Response destroyDirectoryEntry(
-							List<PathSegment> path, UriInfo ui)
-							throws NoUpdateException, FilesystemAccessException {
-						policy.permitUpdate(getPrincipal(), w);
-						DirectoryEntry entry = getDirEntry(w, path);
-						entry.destroy();
-						return temporaryRedirect(
-								ui.getAbsolutePathBuilder().path("..").build())
-								.build();
-					}
-
-					@Override
-					public DirEntryReference getDescription(UriInfo ui) {
-						return makeDirEntryReference(ui
-								.getAbsolutePathBuilder(), w
-								.getWorkingDirectory());
-					}
-
-					@Override
-					public Response getDirectoryOrFileContents(
-							List<PathSegment> path, UriInfo ui)
-							throws FilesystemAccessException {
-						DirectoryEntry de = getDirEntry(w, path);
-						if (de instanceof File) {
-							return Response.ok(((File) de).getContents())
-									.build();
-						} else if (de instanceof Directory) {
-							List<DirEntryReference> result = new ArrayList<DirEntryReference>();
-							for (DirectoryEntry e : ((Directory) de)
-									.getContents())
-								result.add(makeDirEntryReference(ui
-										.getAbsolutePathBuilder(), e));
-							return Response.ok(result).build();
-						} else {
-							throw new FilesystemAccessException(
-									"not a directory");
-						}
-					}
-
-					@Override
-					public Response makeDirectory(List<PathSegment> parent,
-							String name, UriInfo ui) throws NoUpdateException,
-							FilesystemAccessException {
-						policy.permitUpdate(getPrincipal(), w);
-						DirectoryEntry container = getDirEntry(w, parent);
-						if (!(container instanceof Directory))
-							throw new FilesystemAccessException(
-									"You may not make a subdirectory of a file.");
-						Directory dir = ((Directory) container)
-								.makeSubdirectory(getPrincipal(), name);
-						return created(
-								ui.getAbsolutePathBuilder().path("{name}")
-										.build(dir.getName())).build();
-					}
-
-					@Override
-					public Response makeOrUpdateFile(List<PathSegment> parent,
-							String name, byte[] contents, UriInfo ui)
-							throws NoUpdateException, FilesystemAccessException {
-						policy.permitUpdate(getPrincipal(), w);
-						DirectoryEntry container = getDirEntry(w, parent);
-						if (!(container instanceof Directory))
-							throw new FilesystemAccessException(
-									"You may not place a file in a file.");
-						File f = null;
-						for (DirectoryEntry e : ((Directory) container)
-								.getContents()) {
-							if (e.getName().equals(name)) {
-								if (e instanceof File) {
-									f = (File) e;
-									break;
-								}
-								throw new FilesystemAccessException(
-										"You may not overwrite a directory with a file.");
-							}
-						}
-						if (f == null) {
-							f = ((Directory) container).makeEmptyFile(
-									getPrincipal(), name);
-							f.setContents(contents);
-							return created(
-									ui.getAbsolutePathBuilder().path("{name}")
-											.build(f.getName())).build();
-						} else {
-							f.setContents(contents);
-							return Response.ok().build();
-						}
-					}
-
-				};
+			public DirectoryREST getWorkingDirectory() {
+				return new DirectoryREST(w);
 			}
 
 			@Override
@@ -392,6 +303,94 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 				return seeOther(ui.getRequestUri()).build();
 			}
 		};
+	}
+
+	class DirectoryREST implements TavernaServerDirectoryREST {
+		private TavernaRun w;
+
+		DirectoryREST(TavernaRun w) {
+			this.w = w;
+		}
+
+		@Override
+		public Response destroyDirectoryEntry(List<PathSegment> path, UriInfo ui)
+				throws NoUpdateException, FilesystemAccessException {
+			policy.permitUpdate(getPrincipal(), w);
+			DirectoryEntry entry = getDirEntry(w, path);
+			entry.destroy();
+			return temporaryRedirect(
+					ui.getAbsolutePathBuilder().path("..").build()).build();
+		}
+
+		@Override
+		public DirEntryReference getDescription(UriInfo ui) {
+			return makeDirEntryReference(ui.getAbsolutePathBuilder(), w
+					.getWorkingDirectory());
+		}
+
+		@Override
+		public Response getDirectoryOrFileContents(List<PathSegment> path,
+				UriInfo ui) throws FilesystemAccessException {
+			DirectoryEntry de = getDirEntry(w, path);
+			if (de instanceof File) {
+				return Response.ok(((File) de).getContents()).build();
+			} else if (de instanceof Directory) {
+				List<DirEntryReference> result = new ArrayList<DirEntryReference>();
+				for (DirectoryEntry e : ((Directory) de).getContents())
+					result.add(makeDirEntryReference(ui
+							.getAbsolutePathBuilder(), e));
+				return Response.ok(result).build();
+			} else {
+				throw new FilesystemAccessException("not a directory");
+			}
+		}
+
+		@Override
+		public Response makeDirectory(List<PathSegment> parent, String name,
+				UriInfo ui) throws NoUpdateException, FilesystemAccessException {
+			policy.permitUpdate(getPrincipal(), w);
+			DirectoryEntry container = getDirEntry(w, parent);
+			if (!(container instanceof Directory))
+				throw new FilesystemAccessException(
+						"You may not make a subdirectory of a file.");
+			Directory dir = ((Directory) container).makeSubdirectory(
+					getPrincipal(), name);
+			return created(
+					ui.getAbsolutePathBuilder().path("{name}").build(
+							dir.getName())).build();
+		}
+
+		@Override
+		public Response makeOrUpdateFile(List<PathSegment> parent, String name,
+				byte[] contents, UriInfo ui) throws NoUpdateException,
+				FilesystemAccessException {
+			policy.permitUpdate(getPrincipal(), w);
+			DirectoryEntry container = getDirEntry(w, parent);
+			if (!(container instanceof Directory))
+				throw new FilesystemAccessException(
+						"You may not place a file in a file.");
+			File f = null;
+			for (DirectoryEntry e : ((Directory) container).getContents()) {
+				if (e.getName().equals(name)) {
+					if (e instanceof File) {
+						f = (File) e;
+						break;
+					}
+					throw new FilesystemAccessException(
+							"You may not overwrite a directory with a file.");
+				}
+			}
+			if (f == null) {
+				f = ((Directory) container).makeEmptyFile(getPrincipal(), name);
+				f.setContents(contents);
+				return created(
+						ui.getAbsolutePathBuilder().path("{name}").build(
+								f.getName())).build();
+			} else {
+				f.setContents(contents);
+				return Response.ok().build();
+			}
+		}
 	}
 
 	public void destroyRun(String uuid) throws UnknownRunException,

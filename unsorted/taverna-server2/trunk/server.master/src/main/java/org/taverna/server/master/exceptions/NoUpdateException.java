@@ -10,7 +10,7 @@ import javax.xml.ws.WebFault;
  * @author Donal Fellows
  */
 @WebFault(name = "NoUpdateFault")
-@XmlSeeAlso( { NoCreateException.class, NoDestroyException.class })
+@XmlSeeAlso( { NoCreateException.class, NoDestroyException.class, BadStateChangeException.class })
 public class NoUpdateException extends Exception {
 	private static final long serialVersionUID = 4230987102653846379L;
 

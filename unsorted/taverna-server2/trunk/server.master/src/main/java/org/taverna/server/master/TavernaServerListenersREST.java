@@ -13,6 +13,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.cxf.jaxrs.ext.Description;
 import org.taverna.server.master.exceptions.NoListenerException;
 import org.taverna.server.master.exceptions.NoUpdateException;
 
@@ -20,11 +21,13 @@ import org.taverna.server.master.exceptions.NoUpdateException;
  * This represents <i>all</i> the event listeners attached to a workflow run.
  * 
  * @author Donal Fellows
- * @see SingleListener
+ * @see TavernaServerListenerREST
  */
+@Path("/")
 @Produces( { "application/xml", "application/json" })
 @Consumes( { "application/xml", "application/json" })
-public interface TavernaServerListenerREST {
+@Description("This represents all the event listeners attached to a workflow run.")
+public interface TavernaServerListenersREST {
 	/**
 	 * Get the listeners installed in the workflow run.
 	 * 
@@ -33,6 +36,7 @@ public interface TavernaServerListenerREST {
 	 * @return A list of descriptions of listeners.
 	 */
 	@GET
+	@Description("Get the listeners installed in the workflow run.")
 	public List<ListenerDescription> getDescription(@Context UriInfo ui);
 
 	/**
@@ -51,6 +55,7 @@ public interface TavernaServerListenerREST {
 	 *             configuration is unacceptable in some way.
 	 */
 	@POST
+	@Description("Add a new event listener to the named workflow run.")
 	public Response addListener(
 			ListenerCreationDescription typeAndConfiguration,
 			@Context UriInfo ui) throws NoUpdateException, NoListenerException;
@@ -65,19 +70,21 @@ public interface TavernaServerListenerREST {
 	 *             If no listener with the given name exists.
 	 */
 	@Path("{name}")
-	public SingleListener getListener(@PathParam("name") String name)
+	@Description("Resolve a particular listener from its name.")
+	public TavernaServerListenerREST getListener(@PathParam("name") String name)
 			throws NoListenerException;
 
 	/**
 	 * This represents a single event listener attached to a workflow run.
 	 * 
 	 * @author Donal Fellows
-	 * @see TavernaServerListenerREST
+	 * @see TavernaServerListenersREST
 	 * @see Property
 	 */
 	@Produces( { "application/xml", "application/json" })
 	@Consumes( { "application/xml", "application/json" })
-	public interface SingleListener {
+	@Description("This represents a single event listener attached to a workflow run.")
+	public interface TavernaServerListenerREST {
 		/**
 		 * Get the description of this listener.
 		 * 
@@ -86,6 +93,7 @@ public interface TavernaServerListenerREST {
 		 * @return A description document.
 		 */
 		@GET
+		@Description("Get the description of this listener.")
 		public ListenerDescription getDescription(@Context UriInfo ui);
 
 		/**
@@ -97,6 +105,7 @@ public interface TavernaServerListenerREST {
 		@GET
 		@Path("configuration")
 		@Produces("text/plain")
+		@Description("Get the configuration for the given event listener that is attached to a workflow run.")
 		public String getConfiguration();
 
 		/**
@@ -107,6 +116,7 @@ public interface TavernaServerListenerREST {
 		 */
 		@GET
 		@Path("properties")
+		@Description("Get the list of properties supported by a given event listener attached to a workflow run.")
 		public List<String> getProperties();
 
 		/**
@@ -118,6 +128,7 @@ public interface TavernaServerListenerREST {
 		 *             If there is no such property.
 		 */
 		@Path("properties/{propertyName}")
+		@Description("Get an object representing a particular property.")
 		public Property getProperty(
 				@PathParam("propertyName") String propertyName)
 				throws NoListenerException;
@@ -130,6 +141,7 @@ public interface TavernaServerListenerREST {
 	 */
 	@Produces("text/plain")
 	@Consumes("text/plain")
+	@Description("This represents a single property attached of an event listener.")
 	public interface Property {
 		/**
 		 * Get the value of the particular property of an event listener
@@ -138,6 +150,7 @@ public interface TavernaServerListenerREST {
 		 * @return The value of the property.
 		 */
 		@GET
+		@Description("Get the value of the particular property of an event listener attached to a workflow run.")
 		public String getValue();
 
 		/**
@@ -156,6 +169,7 @@ public interface TavernaServerListenerREST {
 		 *             If the property is in the wrong format.
 		 */
 		@PUT
+		@Description("Set the value of the particular property of an event listener attached to a workflow run.")
 		public Response setValue(String value, @Context UriInfo ui)
 				throws NoUpdateException, NoListenerException;
 

@@ -7,6 +7,7 @@ import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 
+import org.taverna.server.master.exceptions.BadStateChangeException;
 import org.taverna.server.master.exceptions.FilesystemAccessException;
 import org.taverna.server.master.exceptions.NoListenerException;
 import org.taverna.server.master.exceptions.NoUpdateException;
@@ -167,10 +168,13 @@ public interface TavernaServerSOAP {
 	 *             not permitted to see it.
 	 * @throws NoUpdateException
 	 *             If the user isn't allowed to manipulate the run.
+	 * @throws BadStateChangeException
+	 *             If the state change requested is impossible.
 	 */
 	public void setRunStatus(@WebParam(name = "runName") String runName,
 			@WebParam(name = "status") Status status)
-			throws UnknownRunException, NoUpdateException;
+			throws UnknownRunException, NoUpdateException,
+			BadStateChangeException;
 
 	/**
 	 * Get the names of the event listeners attached to the run.

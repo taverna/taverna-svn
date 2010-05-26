@@ -89,7 +89,7 @@
 
 	<jaxws:endpoint id="master_SOAP" implementor="#tserv"
 		address="/soap" />
-	<jaxrs:server id="master_REST" address="/">
+	<jaxrs:server id="master_REST" address="/" staticSubresourceResolution="true">
 		<jaxrs:serviceBeans>
 			<ref bean="tserv" />
 		</jaxrs:serviceBeans>

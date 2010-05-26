@@ -12,6 +12,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.cxf.jaxrs.ext.Description;
+import org.taverna.server.master.exceptions.BadStateChangeException;
 import org.taverna.server.master.exceptions.NoUpdateException;
 
 /**
@@ -19,8 +21,10 @@ import org.taverna.server.master.exceptions.NoUpdateException;
  * 
  * @author Donal Fellows.
  */
+@Path("/")
 @Produces( { "application/xml", "application/json" })
 @Consumes( { "application/xml", "application/json" })
+@Description("This represents how a Taverna Server workflow run looks to a RESTful API.")
 public interface TavernaServerRunREST {
 	/**
 	 * Describes a workflow run.
@@ -30,6 +34,7 @@ public interface TavernaServerRunREST {
 	 * @return The description.
 	 */
 	@GET
+	@Description("Describes a workflow run.")
 	public RunDescription getDescription(@Context UriInfo ui);
 
 	/**
@@ -42,6 +47,7 @@ public interface TavernaServerRunREST {
 	 *             If the user may see the handle but may not delete it.
 	 */
 	@DELETE
+	@Description("Deletes a workflow run.")
 	public Response destroy(@Context UriInfo ui) throws NoUpdateException;
 
 	/**
@@ -51,6 +57,7 @@ public interface TavernaServerRunREST {
 	 */
 	@GET
 	@Path("workflow")
+	@Description("Gives the workflow document used to create the workflow run.")
 	public SCUFL getWorkflow();
 
 	/**
@@ -61,6 +68,7 @@ public interface TavernaServerRunREST {
 	 */
 	@GET
 	@Path("expiry")
+	@Description("Gives the time when the workflow run becomes eligible for automatic deletion.")
 	public Date getExpiry();
 
 	/**
@@ -78,6 +86,7 @@ public interface TavernaServerRunREST {
 	 */
 	@PUT
 	@Path("expiry")
+	@Description("Sets the time when the workflow run becomes eligible for automatic deletion.")
 	public Response setExpiry(Date expiry, @Context UriInfo ui)
 			throws NoUpdateException;
 
@@ -89,6 +98,7 @@ public interface TavernaServerRunREST {
 	@GET
 	@Path("status")
 	@Produces("text/plain")
+	@Description("Gives the current status of the workflow run.")
 	public Status getStatus();
 
 	/**
@@ -106,8 +116,9 @@ public interface TavernaServerRunREST {
 	@PUT
 	@Path("status")
 	@Consumes("text/plain")
+	@Description("Attempts to update the status of the workflow run.")
 	public Response setStatus(Status status, @Context UriInfo ui)
-			throws NoUpdateException;
+			throws NoUpdateException, BadStateChangeException;
 
 	/**
 	 * Gets the identity of who owns the workflow run.
@@ -117,6 +128,7 @@ public interface TavernaServerRunREST {
 	@GET
 	@Path("owner")
 	@Produces("text/plain")
+	@Description("Gives the identity of who owns the workflow run.")
 	public String getOwner();
 
 	/**
@@ -125,6 +137,7 @@ public interface TavernaServerRunREST {
 	 * @return A RESTful delegate for the working directory.
 	 */
 	@Path("wd")
+	@Description("Get the working directory of this workflow run.")
 	public TavernaServerDirectoryREST getWorkingDirectory();
 
 	/**
@@ -133,5 +146,6 @@ public interface TavernaServerRunREST {
 	 * @return A RESTful delegate for the list of listeners.
 	 */
 	@Path("listeners")
-	public TavernaServerListenerREST getListeners();
+	@Description("Get the event listeners attached to this workflow run.")
+	public TavernaServerListenersREST getListeners();
 }
