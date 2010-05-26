@@ -8,6 +8,7 @@
 	<enableImports><![CDATA[true]]></enableImports>
 	<configs>
 		<config>src/main/webapp/WEB-INF/beans.xml</config>
+		<config>src/test/java/test-tavserv.xml</config>
 	</configs>
 	<configSets>
 		<configSet>
