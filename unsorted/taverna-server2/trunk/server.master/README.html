@@ -1,0 +1,22 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Taverna Server 2.3 README</title>
+</head>
+<body>
+<h1>Taverna Server 2.3 alpha README</h1>
+<p>This is the prototype of the Taverna Server 2.3.</p>
+<h2>Known Issue Workarounds</h2>
+<p>If you are installing this code into Tomcat and you want to use
+JMX MBeans to administer the TavServ component, you <b>must</b> make
+sure that Tomcat gets the flag <tt>-Dcom.sun.management.jmxremote</tt>
+set on the command line to prevent confusion about which internal JMX
+server to use (this is a known issue between Tomcat and Spring). This
+can be done by setting that value in the <tt>CATALINA_OPTS</tt>
+environment variable on the command line, which in turn can be automated
+by adding it to your startup script.</p>
+<p>The line added might look like this on Unix systems:</p>
+<pre>export CATALINA_OPTS=-Dcom.sun.management.jmxremote</pre>
+</body>
+</html>
