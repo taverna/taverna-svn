@@ -421,6 +421,63 @@ public abstract class AbstractQueryTestHelper {
 		assertMapsEquals("Unexpected intermediate values", 
 				expectedIntermediateValues, intermediateValues);
 	}
+
+	@Test
+	public void fetchEnactmentValuesPerProcessor() {
+
+		Map<String, Object> intermediateValues = new HashMap<String, Object>();
+
+		String wfRunId = getFacade().getWorkflowRunId();
+		for (String workflowPath : workflowPaths.keySet()) {
+			String[] split = workflowPath.split("/");
+			List<String> prefix = new ArrayList(Arrays.asList(split));
+			if (! prefix.isEmpty() && prefix.get(0).equals("")) {
+				prefix.remove(0); 
+			}
+			Dataflow workflow = workflowPaths.get(workflowPath);
+			String workflowId = workflow.getInternalIdentifier();
+			for (Processor proc : workflow.getProcessors()) {
+				String processorName = proc.getLocalName();
+				prefix.add(processorName);
+				String[] processorPath = prefix.toArray(new String[0]);
+				prefix.remove(prefix.size() - 1);
+				List<ProcessorEnactment> processorEnactments = getProvenanceAccess()
+						.getProcessorEnactments(wfRunId, processorPath);
+				assertTrue(!processorEnactments.isEmpty());
+				for (ProcessorEnactment enactment : processorEnactments) {
+
+					String inputsId = enactment.getInitialInputsDataBindingId();
+					String outputsId = enactment.getFinalOutputsDataBindingId();
+
+					Map<Port, T2Reference> bindings = getProvenanceAccess()
+							.getDataBindings(inputsId);
+					if (!outputsId.equals(inputsId)) {
+						bindings.putAll(getProvenanceAccess().getDataBindings(
+								outputsId));
+					}
+					for (Entry<Port, T2Reference> binding : bindings.entrySet()) {
+						Port port = binding.getKey();
+						assertEquals(port.getProcessorName(), processorName);
+						assertEquals(port.getWorkflowId(), workflowId);
+						// assertEquals(port.getProcessorId(),
+						// proc.getIdentifier());
+						String key = workflowId + "/" + processorName + "/"
+								+ (port.isInputPort() ? "i:" : "o:")
+								+ port.getPortName() + enactment.getIteration();
+						Object resolved = getReferenceService()
+								.renderIdentifier(binding.getValue(),
+										Object.class, getContext());
+						intermediateValues.put(key, resolved);
+					}
+				}
+			}
+
+		}
+		Map<String, Object> expectedIntermediateValues = getExpectedIntermediates();
+
+		assertMapsEquals("Unexpected intermediate values",
+				expectedIntermediateValues, intermediateValues);
+	}
 	
 	@Test
 	public void fetchWorkflowValues() {
