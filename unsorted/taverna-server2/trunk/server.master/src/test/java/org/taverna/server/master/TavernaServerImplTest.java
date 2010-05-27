@@ -130,6 +130,7 @@ public class TavernaServerImplTest {
 		RunReference run = server.submitWorkflow(null);
 		try {
 			lrunname = lrunconf = null;
+			assertEquals(asList("foo"), asList(server.getAllowedListeners()));
 			String l = server.addRunListener(run.name, "foo", "foobar");
 			assertEquals("bar", l);
 			assertEquals("foobar", lrunconf);
