@@ -33,7 +33,9 @@ public class SimpleListenerFactory implements ListenerFactory {
 		Builder b = builders.get(listenerType);
 		if (b == null)
 			throw new NoListenerException("no such listener type");
-		return b.build(run, configuration);
+		Listener l = b.build(run, configuration);
+		run.addListener(l);
+		return l;
 	}
 
 	/**
