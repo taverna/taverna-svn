@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 /**
  * Traces lineage over iterations.
  * Captures collections.
@@ -43,6 +46,35 @@ public class LineageExampleDbTest extends
 		expected.put("O2[1,1]", "a2b_d2_f");
 		return expected;
 	}
+	
+	@Override
+	protected Map<String, Object> getExpectedWorkflowPortCollections() {
+		HashMap<String, Object> expected = new HashMap<String, Object>();
+		
+		expected.put("o:O1[]", JSONArray.toList(JSONArray.fromString(
+				"[ [ ['a1b', 'd1', 'f'], ['a2b', 'd1', 'f']], [ ['a1b', 'd2', 'f'], ['a2b', 'd2', 'f'] ] ]" 
+				)));
+		expected.put("o:O2[]", JSONArray.toList(JSONArray.fromString(
+				"[ ['a1b_d1_f', 'a2b_d1_f'], ['a1b_d2_f', 'a2b_d2_f'] ]" 
+				)));
+		
+		return expected;
+	}
+
+
+	protected Map<String, Object> getExpectedWorkflowCollections() {
+		String dfId = dataflow.getInternalIdentifier() + "/";
+		
+		Map<String, Object> expected = new HashMap<String, Object>();
+		expected.put(dfId + "P0/o:Y[]", Arrays.asList("a1", "a2"));
+		expected.put(dfId + "P2/o:Y[]", Arrays.asList("d1", "d2"));
+		expected.put(dfId + "P4/o:Y1[0,0]", Arrays.asList("a1b", "d1", "f"));
+		expected.put(dfId + "P4/o:Y1[0,1]", Arrays.asList("a2b", "d1", "f"));
+		expected.put(dfId + "P4/o:Y1[1,0]", Arrays.asList("a1b", "d2", "f"));
+		expected.put(dfId + "P4/o:Y1[1,1]", Arrays.asList("a2b", "d2", "f"));		
+		return expected;
+	}
+	
 
 	protected Map<String, Object> getExpectedCollections() {
 		String dfId = dataflow.getInternalIdentifier() + "/";

@@ -62,13 +62,6 @@ public class ProcessorPortSameNameQueryTest extends AbstractQueryTestHelper {
 	@Test
 	@Ignore("Disabled while doing T2-1308")
 	@Override
-	public void fetchEnactmentValues() {
-		super.fetchEnactmentValues();
-	}
-	
-	@Test
-	@Ignore("Disabled while doing T2-1308")
-	@Override
 	public void fetchProcessorData() throws Exception {
 		super.fetchProcessorData();
 	}

@@ -36,7 +36,7 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 
 	private static Logger logger = Logger
 			.getLogger(DerbyProvenanceConnector.class);
-	private static final String createTableDatalink = "CREATE TABLE  Datalink ("
+	private static final String createTableDatalink = "CREATE TABLE Datalink ("
 			+ "sourcePortName varchar(100) NOT NULL ,"
 			+ "sourcePortId varchar(36) NOT NULL ,"
 			+ "destinationPortId varchar(36) NOT NULL ,"
@@ -184,6 +184,14 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 					logger.warn("Could not create table "
 							+ ServiceInvocation.ServiceInvocation, e);
 			}
+
+			try {
+				stmt.executeUpdate(DataflowInvocation.getCreateTable());
+			} catch (SQLException e) {
+				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
+					logger.warn("Could not create table DataflowInvocation : ", e);
+			}
+
 			
 			try {
 				stmt.executeUpdate(Activity.getCreateTable());

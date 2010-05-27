@@ -68,20 +68,4 @@ public class ProcessorPortSameNameDbTest extends AbstractDbTestHelper {
 		return new HashSet<String>(processes);
 	}
 	
-	@Ignore("Disabled while doing T2-1308")
-	@Test		
-	@Override
-	public void testPort() throws SQLException, InstantiationException,
-			IllegalAccessException, ClassNotFoundException {
-		// TODO Auto-generated method stub
-		super.testPort();
-	}
-	
-	@Ignore("Disabled while doing T2-1308")
-	@Test		
-	@Override
-	public void testProcessorEnactmentDataBindings() throws Exception {
-		// TODO Auto-generated method stub
-		super.testProcessorEnactmentDataBindings();
-	}
 }

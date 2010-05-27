@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.json.JSONArray;
+
 /**
  * Traces lineage over iterations. Captures collections.
  * 
@@ -42,6 +44,20 @@ public class LineageExampleQueryTest extends AbstractQueryTestHelper {
 		return expected;
 	}
 
+	@Override
+	protected Map<String, Object> getExpectedWorkflowPortCollections() {
+		HashMap<String, Object> expected = new HashMap<String, Object>();
+		
+		expected.put("o:O1[]", JSONArray.toList(JSONArray.fromString(
+				"[ [ ['a1b', 'd1', 'f'], ['a2b', 'd1', 'f']], [ ['a1b', 'd2', 'f'], ['a2b', 'd2', 'f'] ] ]" 
+				)));
+		expected.put("o:O2[]", JSONArray.toList(JSONArray.fromString(
+				"[ ['a1b_d1_f', 'a2b_d1_f'], ['a1b_d2_f', 'a2b_d2_f'] ]" 
+				)));
+		
+		return expected;
+	}
+	
 	protected Map<String, Object> getExpectedCollections() {
 		String dfId = dataflow.getInternalIdentifier() + "/";
 

@@ -21,12 +21,6 @@ public class DoubleNestedQueryTest extends AbstractQueryTestHelper {
 		return inputs;
 	}
 	
-	protected Map<String, Object> getExpectedWorkflowInputs() {
-		Map<String, Object> inputs = new HashMap<String, Object>();
-		inputs.put("I[]", "abcd");
-		return inputs;
-	}
-
 	protected Map<String, Object> getExpectedWorkflowOutputs() {
 		Map<String, Object> inputs = new HashMap<String, Object>();
 		inputs.put("O[]", "988");

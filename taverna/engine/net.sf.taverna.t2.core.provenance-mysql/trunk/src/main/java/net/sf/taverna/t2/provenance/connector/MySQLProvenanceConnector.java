@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.taverna.t2.provenance.api.ProvenanceConnectorType;
+import net.sf.taverna.t2.provenance.connector.ProvenanceConnector.DataflowInvocation;
 import net.sf.taverna.t2.provenance.connector.ProvenanceConnector.ProcessorEnactment;
 import net.sf.taverna.t2.provenance.connector.ProvenanceConnector.ServiceInvocation;
 import net.sf.taverna.t2.provenance.item.IterationProvenanceItem;
@@ -230,6 +231,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 			stmt.executeUpdate(ServiceInvocation.getCreateTable() + engineAndCharset);
 			stmt.executeUpdate(Activity.getCreateTable() + engineAndCharset);
 			stmt.executeUpdate(DataBinding.getCreateTable() + engineAndCharset);
+			stmt.executeUpdate(DataflowInvocation.getCreateTable() + engineAndCharset);
 			
 			
 		} catch (SQLException e) {
