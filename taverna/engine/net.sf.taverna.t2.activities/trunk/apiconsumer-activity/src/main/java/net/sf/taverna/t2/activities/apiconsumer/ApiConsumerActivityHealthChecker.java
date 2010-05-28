@@ -20,6 +20,7 @@
  ******************************************************************************/
 package net.sf.taverna.t2.activities.apiconsumer;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -50,12 +51,18 @@ public class ApiConsumerActivityHealthChecker implements HealthChecker<ApiConsum
 		if (p == null) {
 			return null;
 		}
+		
+		List<VisitReport> reports = new ArrayList<VisitReport>();
+		
 		try {
 			// Try to load the API consumer's class
 			subject.getClassLoader().loadClass(subject.getConfiguration().getClassName());
+			reports.add(new VisitReport(HealthCheck.getInstance(), p, "Class found", HealthCheck.NO_PROBLEM, Status.OK));
 			// All is fine
 		} catch (ClassNotFoundException e) {
-				return new VisitReport(HealthCheck.getInstance(), p, "API consumer's class missing", HealthCheck.MISSING_CLASS, Status.SEVERE);
+			VisitReport vr = new VisitReport(HealthCheck.getInstance(), p, "Class missing", HealthCheck.MISSING_CLASS, Status.SEVERE);
+			vr.setProperty("className", subject.getConfiguration().getClassName());
+				reports.add(vr);
 		}
 
 		// Check if we can find all the API consumer's dependencies
@@ -67,12 +74,19 @@ public class ApiConsumerActivityHealthChecker implements HealthChecker<ApiConsum
 			}
 		}
 		if (localDependencies.isEmpty()){ // all dependencies found
-			return new VisitReport(HealthCheck.getInstance(), p, "API consumer's class and all its dependencies found", HealthCheck.NO_PROBLEM, Status.OK);
+			reports.add(new VisitReport(HealthCheck.getInstance(), p, "Dependencies found", HealthCheck.NO_PROBLEM, Status.OK));
 		}
 		else{
-			return new VisitReport(HealthCheck.getInstance(), p, "Some API consumer's dependencies missing", HealthCheck.MISSING_DEPENDENCY, Status.SEVERE);
+			VisitReport vr = new VisitReport(HealthCheck.getInstance(), p, "Dependencies missing", HealthCheck.MISSING_DEPENDENCY, Status.SEVERE);
+			vr.setProperty("dependencies", localDependencies);
+			reports.add(vr);
 		}
 
+		Status status = VisitReport.getWorstStatus(reports);
+		VisitReport report = new VisitReport(HealthCheck.getInstance(), p, "API Consumer report", HealthCheck.NO_PROBLEM,
+				status, reports);
+
+		return report;
 	}
 
 	public boolean isTimeConsuming() {
