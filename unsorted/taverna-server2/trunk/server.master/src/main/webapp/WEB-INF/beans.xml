@@ -19,73 +19,14 @@
 	<import resource="classpath:META-INF/cxf/cxf-extension-jaxrs-binding.xml" />
 
 	<bean id="tserv" class="org.taverna.server.master.TavernaServerImpl">
-		<property name="policy">
-			<ref bean="policy" />
-		</property>
-		<property name="listenerFactory">
-			<ref bean="listenerFactory" />
-		</property>
-		<property name="runFactory">
-			<ref bean="runFactory" />
-		</property>
-		<property name="runStore">
-			<ref bean="runCatalog" />
-		</property>
+		<property name="policy" ref="policy" />
+		<property name="listenerFactory" ref="listenerFactory" />
+		<property name="runFactory" ref="runFactory" />
+		<property name="runStore" ref="runCatalog" />
 	</bean>
 
-	<bean id="policy" class="org.taverna.server.master.example.SimpleServerPolicy"
-		lazy-init="false">
-		<property name="maxRuns">
-			<description>
-				Limit on total number of simultaneous runs.
-			</description>
-			<value type="int">1</value>
-		</property>
-		<property name="cleanerInterval">
-			<description>
-				Time between trying to delete expired runs, in seconds.
-			</description>
-			<value type="int">300</value>
-		</property>
-	</bean>
-
-	<bean id="runFactory" class="org.taverna.server.master.example.ExampleRun$Builder">
-		<constructor-arg type="int" value="10" /> <!-- "initialLifetimeMinutes" -->
-	</bean>
-
-	<bean id="runCatalog"
-		class="org.taverna.server.master.example.SimpleNonpersistentRunStore">
-		<property name="policy">
-			<ref bean="policy" />
-		</property>
-	</bean>
-
-	<bean id="listenerFactory" class="org.taverna.server.master.example.SimpleListenerFactory">
-		<property name="builders">
-			<description>
-				This map describes how to build each type of supported
-				event listener that is not installed by default. Any site policy for
-				a listeners should be installed using its properties, as shown. The
-				"key" is the type, the "class" is the builder for actual instances
-				(which must be an instance of
-				org.taverna.server.master.factories.SimpleListenerFactory.Builder)
-				and any policies and installation-specific configurations are
-				characterised by properties such as "sitePolicy" below.
-			</description>
-			<map>
-				<!--						<entry key="exampleListener">-->
-				<!--
-					<bean
-					class="org.taverna.server.master.example.ExampleListener$Builder">
-				-->
-				<!--								<property name="sitePolicy">-->
-				<!--									<value>Just an example!</value>-->
-				<!--								</property>-->
-				<!--							</bean>-->
-				<!--						</entry>-->
-			</map>
-		</property>
-	</bean>
+	<import resource="example.xml"/>
+	<!-- <import resource="localworker.xml"/> -->
 
 	<jaxws:endpoint id="master_SOAP" implementor="#tserv"
 		address="/soap" />

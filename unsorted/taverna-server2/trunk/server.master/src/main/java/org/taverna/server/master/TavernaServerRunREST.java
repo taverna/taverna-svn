@@ -14,6 +14,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.cxf.jaxrs.ext.Description;
 import org.taverna.server.master.exceptions.BadStateChangeException;
+import org.taverna.server.master.exceptions.FilesystemAccessException;
 import org.taverna.server.master.exceptions.NoUpdateException;
 
 /**
@@ -148,4 +149,51 @@ public interface TavernaServerRunREST {
 	@Path("listeners")
 	@Description("Get the event listeners attached to this workflow run.")
 	public TavernaServerListenersREST getListeners();
+
+	/**
+	 * Get a delegate for working with the inputs to this workflow run.
+	 * 
+	 * @return A RESTful delegate for the inputs.
+	 */
+	@Path("input")
+	@Description("Get the inputs to this workflow run.")
+	public TavernaServerInputREST getInputs();
+
+	/**
+	 * Get the output Baclava file for this workflow run.
+	 * 
+	 * @return The filename, or empty string to indicate that the outputs will
+	 *         be written to the <tt>out</tt> directory.
+	 */
+	@GET
+	@Path("output")
+	@Produces("text/plain")
+	@Description("Gives the Baclava file where output will be written; empty means use multiple simple files in the out directory.")
+	public String getOutputFile();
+
+	/**
+	 * Set the output Baclava file for this workflow run.
+	 * 
+	 * @param filename
+	 *            The Baclava file to use, or empty to make the outputs be
+	 *            written to individual files in the <tt>out</tt> subdirectory
+	 *            of the working directory.
+	 * @param ui
+	 *            HTTP context handle.
+	 * @return HTTP response description.
+	 * @throws NoUpdateException
+	 *             If the current user is not permitted to update the run.
+	 * @throws FilesystemAccessException
+	 *             If the filename is invalid (starts with <tt>/</tt> or
+	 *             contains a <tt>..</tt> segment).
+	 * @throws BadStateChangeException
+	 *             If the workflow is not in the Initialized state.
+	 */
+	@PUT
+	@Path("output")
+	@Consumes("text/plain")
+	@Description("Sets the Baclava file where output will be written; empty means use multiple simple files in the out directory.")
+	public Response setOutputFile(String filename, @Context UriInfo ui)
+			throws NoUpdateException, FilesystemAccessException,
+			BadStateChangeException;
 }

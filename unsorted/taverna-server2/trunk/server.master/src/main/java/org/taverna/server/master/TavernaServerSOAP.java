@@ -7,6 +7,7 @@ import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 
+import org.taverna.server.master.exceptions.BadPropertyValueException;
 import org.taverna.server.master.exceptions.BadStateChangeException;
 import org.taverna.server.master.exceptions.FilesystemAccessException;
 import org.taverna.server.master.exceptions.NoListenerException;
@@ -93,7 +94,7 @@ public interface TavernaServerSOAP {
 	 * Get the workflow document used to create the given run.
 	 * 
 	 * @param runName
-	 *            The handle of the run
+	 *            The handle of the run.
 	 * @return The workflow document.
 	 * @throws UnknownRunException
 	 *             If the server doesn't know about the run or if the user is
@@ -102,6 +103,146 @@ public interface TavernaServerSOAP {
 	@WebResult(name = "CreationWorkflow")
 	public SCUFL getRunWorkflow(@WebParam(name = "runName") String runName)
 			throws UnknownRunException;
+
+	/**
+	 * Get the description of the inputs to the workflow run.
+	 * 
+	 * @param runName
+	 *            The handle of the run.
+	 * @return The input description
+	 * @throws UnknownRunException
+	 *             If the server doesn't know about the run or if the user is
+	 *             not permitted to see it.
+	 */
+	@WebResult(name = "RunInputDescription")
+	public InputDescription getRunInputs(
+			@WebParam(name = "runName") String runName)
+			throws UnknownRunException;
+
+	/**
+	 * Tells the run to use the given Baclava file for all inputs.
+	 * 
+	 * @param runName
+	 *            The handle of the run.
+	 * @param fileName
+	 *            The name of the file to use. Must not start with a <tt>/</tt>
+	 *            or contain a <tt>..</tt> element.
+	 * @throws UnknownRunException
+	 *             If the server doesn't know about the run or if the user is
+	 *             not permitted to see it.
+	 * @throws NoUpdateException
+	 *             If the user isn't allowed to manipulate the run.
+	 * @throws FilesystemAccessException
+	 *             If the filename is illegal.
+	 * @throws BadStateChangeException
+	 *             If the run is not in the {@link Status.Initialized
+	 *             Initialized} state
+	 */
+	public void setRunInputBaclavaFile(
+			@WebParam(name = "runName") String runName,
+			@WebParam(name = "fileName") String fileName)
+			throws UnknownRunException, NoUpdateException,
+			FilesystemAccessException, BadStateChangeException;
+
+	/**
+	 * Tells the run to use the given file for input on the given port. This
+	 * overrides any previously set file or value on the port and causes the
+	 * server to forget about using a Baclava file for all inputs.
+	 * 
+	 * @param runName
+	 *            The handle of the run.
+	 * @param portName
+	 *            The port to use the file for.
+	 * @param portFilename
+	 *            The file to use on the port. Must not start with a <tt>/</tt>
+	 *            or contain a <tt>..</tt> element.
+	 * @throws UnknownRunException
+	 *             If the server doesn't know about the run or if the user is
+	 *             not permitted to see it.
+	 * @throws NoUpdateException
+	 *             If the user isn't allowed to manipulate the run.
+	 * @throws FilesystemAccessException
+	 *             If the filename is illegal.
+	 * @throws BadStateChangeException
+	 *             If the run is not in the {@link Status.Initialized
+	 *             Initialized} state.
+	 */
+	public void setRunInputPortFile(@WebParam(name = "runName") String runName,
+			@WebParam(name = "portName") String portName,
+			@WebParam(name = "portFilename") String portFilename)
+			throws UnknownRunException, NoUpdateException,
+			FilesystemAccessException, BadStateChangeException,
+			BadPropertyValueException;
+
+	/**
+	 * Tells the run to use the given value for input on the given port. This
+	 * overrides any previously set file or value on the port and causes the
+	 * server to forget about using a Baclava file for all inputs.
+	 * 
+	 * @param runName
+	 *            The handle of the run.
+	 * @param portName
+	 *            The port to use the file for.
+	 * @param portValue
+	 *            The literal value to use on the port.
+	 * @throws UnknownRunException
+	 *             If the server doesn't know about the run or if the user is
+	 *             not permitted to see it.
+	 * @throws NoUpdateException
+	 *             If the user isn't allowed to manipulate the run.
+	 * @throws BadStateChangeException
+	 *             If the run is not in the {@link Status.Initialized
+	 *             Initialized} state.
+	 */
+	public void setRunInputPortValue(
+			@WebParam(name = "runName") String runName,
+			@WebParam(name = "portName") String portName,
+			@WebParam(name = "portValue") String portValue)
+			throws UnknownRunException, NoUpdateException,
+			BadStateChangeException, BadPropertyValueException;
+
+	/**
+	 * Get the Baclava file where the output of the run will be written.
+	 * 
+	 * @param runName
+	 *            The handle of the run.
+	 * @return The filename, or <tt>null</tt> if the results will be written to
+	 *         a subdirectory <tt>out</tt> of the run's working directory.
+	 * @throws UnknownRunException
+	 *             If the server doesn't know about the run or if the user is
+	 *             not permitted to see it.
+	 */
+	@WebResult(name = "OutputBaclavaFile")
+	public String getRunOutputBaclavaFile(
+			@WebParam(name = "runName") String runName)
+			throws UnknownRunException;
+
+	/**
+	 * Set the Baclava file where the output of the run will be written.
+	 * 
+	 * @param runName
+	 *            The handle of the run.
+	 * @param outputFile
+	 *            The filename for the Baclava file, or <tt>null</tt> or the
+	 *            empty string to indicate that the results are to be written to
+	 *            the subdirectory <tt>out</tt> of the run's working directory.
+	 * @throws UnknownRunException
+	 *             If the server doesn't know about the run or if the user is
+	 *             not permitted to see it.
+	 * @throws NoUpdateException
+	 *             If the user isn't allowed to manipulate the run.
+	 * @throws FilesystemAccessException
+	 *             If the filename is illegal (starts with a <tt>/</tt> or
+	 *             contains a <tt>..</tt> element.
+	 * @throws BadStateChangeException
+	 *             If the run is not in the {@link Status.Initialized
+	 *             Initialized} state
+	 */
+	public void setRunOutputBaclavaFile(
+			@WebParam(name = "runName") String runName,
+			@WebParam(name = "outputFile") String outputFile)
+			throws UnknownRunException, NoUpdateException,
+			FilesystemAccessException, BadStateChangeException;
 
 	/**
 	 * Get the time when the run will be eligible to be automatically deleted.

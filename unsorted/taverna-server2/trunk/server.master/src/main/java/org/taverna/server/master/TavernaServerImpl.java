@@ -26,6 +26,9 @@ import javax.xml.ws.WebServiceContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.taverna.server.master.DescriptionElement.Uri;
+import org.taverna.server.master.exceptions.BadPropertyValueException;
+import org.taverna.server.master.exceptions.BadStateChangeException;
 import org.taverna.server.master.exceptions.FilesystemAccessException;
 import org.taverna.server.master.exceptions.NoListenerException;
 import org.taverna.server.master.exceptions.NoUpdateException;
@@ -35,6 +38,7 @@ import org.taverna.server.master.factories.RunFactory;
 import org.taverna.server.master.interfaces.Directory;
 import org.taverna.server.master.interfaces.DirectoryEntry;
 import org.taverna.server.master.interfaces.File;
+import org.taverna.server.master.interfaces.Input;
 import org.taverna.server.master.interfaces.Listener;
 import org.taverna.server.master.interfaces.Policy;
 import org.taverna.server.master.interfaces.RunStore;
@@ -300,6 +304,116 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 					throws NoUpdateException {
 				policy.permitUpdate(getPrincipal(), w);
 				w.setStatus(status);
+				return seeOther(ui.getRequestUri()).build();
+			}
+
+			@Override
+			public TavernaServerInputREST getInputs() {
+				return new TavernaServerInputREST() {
+					@Override
+					public InputsDescriptor get(UriInfo ui) {
+						InputsDescriptor id = new InputsDescriptor();
+						id.baclava = new Uri(ui, "baclava");
+						id.input = new ArrayList<Uri>();
+						for (Input i : w.getInputs()) {
+							id.input.add(new Uri(ui, "input/{name}", i
+									.getName()));
+						}
+						return id;
+					}
+
+					@Override
+					public String getBaclavaFile() {
+						String i = w.getInputBaclavaFile();
+						return i == null ? "" : i;
+					}
+
+					@Override
+					public InDesc getInput(String name)
+							throws BadPropertyValueException {
+						for (Input i : w.getInputs())
+							if (i.getName().equals(name)) {
+								InDesc id = new InDesc();
+								id.name = i.getName();
+								if (i.getFile() != null) {
+									id.content = new InDesc.File();
+									((InDesc.File) id.content).file = i
+											.getFile();
+								} else {
+									id.content = new InDesc.Value();
+									((InDesc.Value) id.content).value = i
+											.getValue();
+								}
+								return id;
+							}
+						throw new BadPropertyValueException(
+								"unknown input port name");
+					}
+
+					@Override
+					public Response setBaclavaFile(String filename, UriInfo ui)
+							throws NoUpdateException, BadStateChangeException,
+							FilesystemAccessException {
+						policy.permitUpdate(getPrincipal(), w);
+						w.setInputBaclavaFile(filename);
+						return seeOther(ui.getRequestUri()).build();
+					}
+
+					@Override
+					public Response setInput(String name,
+							InDesc inputDescriptor, UriInfo ui)
+							throws NoUpdateException, BadStateChangeException,
+							FilesystemAccessException,
+							BadPropertyValueException {
+						policy.permitUpdate(getPrincipal(), w);
+						if (inputDescriptor.content == null)
+							throw new BadPropertyValueException("no content!");
+						for (Input i : w.getInputs()) {
+							if (!i.getName().equals(name))
+								continue;
+							if (inputDescriptor.content instanceof InDesc.File) {
+								String file = ((InDesc.File) inputDescriptor.content).file;
+								i.setFile(file);
+								return seeOther(ui.getRequestUri()).build();
+							} else if (inputDescriptor.content instanceof InDesc.Value) {
+								String value = ((InDesc.Value) inputDescriptor.content).value;
+								i.setValue(value);
+								return seeOther(ui.getRequestUri()).build();
+							} else {
+								throw new BadPropertyValueException(
+										"unknown content type");
+							}
+						}
+						if (inputDescriptor.content instanceof InDesc.File) {
+							String file = ((InDesc.File) inputDescriptor.content).file;
+							w.makeInput(name).setFile(file);
+							return seeOther(ui.getRequestUri()).build();
+						} else if (inputDescriptor.content instanceof InDesc.Value) {
+							String value = ((InDesc.Value) inputDescriptor.content).value;
+							w.makeInput(name).setValue(value);
+							return seeOther(ui.getRequestUri()).build();
+						} else {
+							throw new BadPropertyValueException(
+									"unknown content type");
+						}
+					}
+				};
+			}
+
+			@Override
+			public String getOutputFile() {
+				String o = w.getOutputBaclavaFile();
+				return o == null ? "" : o;
+			}
+
+			@Override
+			public Response setOutputFile(String filename, UriInfo ui)
+					throws NoUpdateException, FilesystemAccessException,
+					BadStateChangeException {
+				policy.permitUpdate(getPrincipal(), w);
+				if (filename != null && filename.length() == 0)
+					filename = null;
+				w.setOutputBaclavaFile(filename);
 				return seeOther(ui.getRequestUri()).build();
 			}
 		};
@@ -583,6 +697,65 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 			}
 		}
 		throw new NoListenerException();
+	}
+
+	@Override
+	public InputDescription getRunInputs(String runName)
+			throws UnknownRunException {
+		return new InputDescription(getRun(runName));
+	}
+
+	@Override
+	public String getRunOutputBaclavaFile(String runName)
+			throws UnknownRunException {
+		return getRun(runName).getOutputBaclavaFile();
+	}
+
+	@Override
+	public void setRunInputBaclavaFile(String runName, String fileName)
+			throws UnknownRunException, NoUpdateException,
+			FilesystemAccessException, BadStateChangeException {
+		TavernaRun w = getRun(runName);
+		policy.permitUpdate(getPrincipal(), w);
+		w.setInputBaclavaFile(fileName);
+	}
+
+	@Override
+	public void setRunInputPortFile(String runName, String portName,
+			String portFilename) throws UnknownRunException, NoUpdateException,
+			FilesystemAccessException, BadStateChangeException {
+		TavernaRun w = getRun(runName);
+		policy.permitUpdate(getPrincipal(), w);
+		for (Input i : w.getInputs())
+			if (i.getName().equals(portName)) {
+				i.setFile(portFilename);
+				return;
+			}
+		w.makeInput(portName).setFile(portFilename);
+	}
+
+	@Override
+	public void setRunInputPortValue(String runName, String portName,
+			String portValue) throws UnknownRunException, NoUpdateException,
+			BadStateChangeException {
+		TavernaRun w = getRun(runName);
+		policy.permitUpdate(getPrincipal(), w);
+		policy.permitUpdate(getPrincipal(), w);
+		for (Input i : w.getInputs())
+			if (i.getName().equals(portName)) {
+				i.setValue(portValue);
+				return;
+			}
+		w.makeInput(portName).setValue(portValue);
+	}
+
+	@Override
+	public void setRunOutputBaclavaFile(String runName, String outputFile)
+			throws UnknownRunException, NoUpdateException,
+			FilesystemAccessException, BadStateChangeException {
+		TavernaRun w = getRun(runName);
+		policy.permitUpdate(getPrincipal(), w);
+		w.setOutputBaclavaFile(outputFile);
 	}
 
 	// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
