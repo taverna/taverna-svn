@@ -66,8 +66,13 @@ public class ApiConsumerActivityHealthChecker implements HealthChecker<ApiConsum
 		}
 
 		// Check if we can find all the API consumer's dependencies
-		LinkedHashSet<String> localDependencies = subject.getConfiguration().getLocalDependencies();
-		List<String> jarFiles = Arrays.asList(ApiConsumerActivity.libDir.list(new FileExtFilter(".jar"))); // URLs of all jars found in the lib directory 
+		LinkedHashSet<String> localDependencies = new LinkedHashSet<String>();
+		localDependencies.addAll(activity.getConfiguration().getLocalDependencies());
+
+		if (!localDependencies.isEmpty()) {
+		String[] jarArray = ApiConsumerActivity.libDir.list(new FileExtFilter(".jar"));
+		if (jarArray != null) {
+		List<String> jarFiles = Arrays.asList(jarArray); // URLs of all jars found in the lib directory 
 		for (String jar : localDependencies) {
 			if (jarFiles.contains(jar)){
 				localDependencies.remove(jar);
@@ -79,9 +84,11 @@ public class ApiConsumerActivityHealthChecker implements HealthChecker<ApiConsum
 		else{
 			VisitReport vr = new VisitReport(HealthCheck.getInstance(), p, "Dependencies missing", HealthCheck.MISSING_DEPENDENCY, Status.SEVERE);
 			vr.setProperty("dependencies", localDependencies);
+			vr.setProperty("directory", ApiConsumerActivity.libDir);
 			reports.add(vr);
 		}
-
+		}
+		}
 		Status status = VisitReport.getWorstStatus(reports);
 		VisitReport report = new VisitReport(HealthCheck.getInstance(), p, "API Consumer report", HealthCheck.NO_PROBLEM,
 				status, reports);
