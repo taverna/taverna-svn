@@ -2,7 +2,6 @@ package org.taverna.server.master.localworker.rmi;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.Date;
 import java.util.List;
 
 public interface RemoteSingleRun extends Remote {
@@ -61,20 +60,6 @@ public interface RemoteSingleRun extends Remote {
 	public void setOutputBaclavaFile(String filename) throws RemoteException;
 
 	/**
-	 * @return When this run will expire, becoming eligible for automated
-	 *         deletion.
-	 */
-	public Date getExpiry() throws RemoteException;
-
-	/**
-	 * Set when this run will expire.
-	 * 
-	 * @param d
-	 *            Expiry time. Deletion will happen some time after that.
-	 */
-	public void setExpiry(Date d) throws RemoteException;
-
-	/**
 	 * @return The current status of the run.
 	 */
 	public RemoteStatus getStatus() throws RemoteException;
@@ -115,4 +100,25 @@ public interface RemoteSingleRun extends Remote {
 	 * Kill off this run, removing all resources which it consumes.
 	 */
 	public void destroy() throws RemoteException;
+
+	/**
+	 * Get the types of listener supported by this run.
+	 * 
+	 * @return A list of listener type names.
+	 */
+	public List<String> getListenerTypes() throws RemoteException;
+
+	/**
+	 * Create a listener that can be attached to this run.
+	 * 
+	 * @param type
+	 *            The type name of the listener to create; it must be one of the
+	 *            names returned by the {@link #getListenerTypes()} operation.
+	 * @param configuration
+	 *            The configuration document for this listener. The nature of
+	 *            the contents of this are determined by the type.
+	 * @return A handle for the listener.
+	 */
+	public RemoteListener makeListener(String type, String configuration)
+			throws RemoteException;
 }
