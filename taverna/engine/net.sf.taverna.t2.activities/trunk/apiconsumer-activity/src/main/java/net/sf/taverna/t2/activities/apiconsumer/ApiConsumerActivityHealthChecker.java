@@ -67,7 +67,7 @@ public class ApiConsumerActivityHealthChecker implements HealthChecker<ApiConsum
 
 		// Check if we can find all the API consumer's dependencies
 		LinkedHashSet<String> localDependencies = new LinkedHashSet<String>();
-		localDependencies.addAll(activity.getConfiguration().getLocalDependencies());
+		localDependencies.addAll(subject.getConfiguration().getLocalDependencies());
 
 		if (!localDependencies.isEmpty()) {
 		String[] jarArray = ApiConsumerActivity.libDir.list(new FileExtFilter(".jar"));
