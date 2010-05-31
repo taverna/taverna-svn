@@ -1,0 +1,75 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>uk.org.taverna</groupId>
+	<artifactId>server.runinterface</artifactId>
+	<name>RMI interface to Taverna Workflow Runs</name>
+	<version>0.0.1-SNAPSHOT</version>
+	<issueManagement>
+		<system>JIRA</system>
+		<url>http://www.mygrid.org.uk/dev/issues/browse/TAVSERV#selectedTab=com.atlassian.jira.plugin.system.project%3Asummary-panel</url>
+	</issueManagement>
+	<developers>
+		<developer>
+			<id>dkf</id>
+			<name>Donal Fellows</name>
+			<email>donal.k.fellows@manchester.ac.uk</email>
+			<organization>The University of Manchester</organization>
+			<organizationUrl>http://www.manchester.ac.uk/</organizationUrl>
+			<timezone>:Europe/London</timezone>
+		</developer>
+	</developers>
+	<organization>
+		<name>University of Manchester</name>
+		<url>http://www.manchester.ac.uk/</url>
+	</organization>
+	<licenses>
+		<license>
+			<name>LGPL</name>
+		</license>
+	</licenses>
+	<scm>
+		<connection>scm:http://taverna.googlecode.com/svn/unsorted/taverna-server2/trunk/</connection>
+		<developerConnection>scm:https://taverna.googlecode.com/svn/unsorted/taverna-server2/trunk/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/unsorted/taverna-server2/trunk</url>
+	</scm>
+
+	<build>
+		<finalName>TavernaServer.WorkerRMI.${version}</finalName>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<source>1.6</source>
+						<target>1.6</target>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-eclipse-plugin</artifactId>
+					<configuration>
+						<projectNameTemplate>[artifactId]-[version]</projectNameTemplate>
+						<wtpmanifest>true</wtpmanifest>
+						<wtpapplicationxml>true</wtpapplicationxml>
+						<wtpversion>2.0</wtpversion>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>rmic-maven-plugin</artifactId>
+					<version>1.0</version>
+					<executions>
+						<execution>
+							<id>rmic-process-classes</id>
+							<goals>
+								<goal>rmic</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>
