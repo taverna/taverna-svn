@@ -1,5 +1,8 @@
 package org.taverna.server.master.localworker;
 
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.Date;
@@ -8,6 +11,8 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.taverna.server.master.SCUFL;
@@ -22,49 +27,71 @@ import org.taverna.server.master.interfaces.Listener;
 import org.taverna.server.master.interfaces.Policy;
 import org.taverna.server.master.interfaces.RunStore;
 import org.taverna.server.master.interfaces.TavernaRun;
+import org.taverna.server.master.localworker.rmi.RemoteSingleRun;
 
 @ManagedResource(objectName = "Taverna:group=Server,name=Factory", description = "The factory for runs")
-public class Factory implements ListenerFactory, RunFactory, Policy, RunStore {
+public abstract class AbstractRemoteRunFactory implements ListenerFactory, RunFactory, Policy, RunStore {
+	static final Log log = LogFactory.getLog("Taverna.Server.WorkerFactory");
+
 	String name;
 	TavernaRun current;
 	private static Timer timer = new Timer(
 			"Taverna.Server.LocalWorker.Factory.Timer", true);
 	TimerTask task;
 
+	static Registry registry;
+	static {
+		try {
+			registry = LocateRegistry.getRegistry();
+		} catch (RemoteException e) {
+			log.error("failed to get RMI registry handle", e);
+		}
+		try {
+			registry.list();
+		} catch (RemoteException ignored) {
+			try {
+				registry = LocateRegistry.createRegistry(1099);
+			} catch (RemoteException e) {
+				log.error("failed to create RMI registry", e);
+			}
+		}
+	}
+
 	@Override
 	public List<String> getSupportedListenerTypes() {
-		return Collections.emptyList();
+		try {
+			return ((RemoteRunDelegate) current).run.getListenerTypes();
+		} catch (RemoteException e) {
+			log.warn("failed to get list of listener types", e);
+			return Collections.emptyList();
+		}
 	}
 
 	@Override
 	public Listener makeListener(TavernaRun run, String listenerType,
 			String configuration) throws NoListenerException {
-		throw new NoListenerException();
-	}
-
-	private Class<? extends TavernaRun> runClass;
-
-	@SuppressWarnings("unchecked")
-	public void setRunClass(String className) throws Exception {
-		Class clazz = Class.forName(className);
-		if (!TavernaRun.class.isAssignableFrom(clazz))
-			throw new Exception(
-					"illegal class; must implement org.taverna.server.master.interfaces.TavernaRun");
-		runClass = clazz;
+		try {
+			return new RemoteRunDelegate.ListenerDelegate(
+					((RemoteRunDelegate) run).run.makeListener(listenerType,
+							configuration));
+		} catch (RemoteException e) {
+			NoListenerException nl = new NoListenerException(e.getMessage());
+			nl.initCause(e);
+			throw nl;
+		}
 	}
 
 	@Override
 	public TavernaRun create(Principal creator, SCUFL workflow) {
 		try {
-			if (runClass != null)
-				return runClass.getConstructor(Principal.class, SCUFL.class)
-						.newInstance(creator, workflow);
+			return new RemoteRunDelegate(creator, workflow, getRealRun(creator, workflow));
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.warn("failed to build run instance", e);
+			throw new RuntimeException(e);
 		}
-		return new Run(creator, workflow);
 	}
+
+	protected abstract RemoteSingleRun getRealRun(Principal creator, SCUFL workflow) throws Exception;
 
 	@ManagedAttribute(description = "The name of the current run.", currencyTimeLimit = 10)
 	public String getCurrentRunName() {
@@ -133,7 +160,7 @@ public class Factory implements ListenerFactory, RunFactory, Policy, RunStore {
 		task = new TimerTask() {
 			@Override
 			public void run() {
-				synchronized (Factory.this) {
+				synchronized (AbstractRemoteRunFactory.this) {
 					if (current == null)
 						return;
 					Date now = new Date();

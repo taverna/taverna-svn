@@ -3,12 +3,18 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="localworker" class="org.taverna.server.master.localworker.Factory"
+	<bean id="localworker" class="org.taverna.server.master.localworker.ForkingRunFactory"
 		scope="singleton" lazy-init="false">
 		<description>
-			The simple policy manager and factory for the baseline localworker case.
+			The simple policy manager and factory for the baseline
+			localworker case.
 		</description>
-		<property name="runClass" value="org.taverna.server.master.localworker.Run" />
+		<property name="firstArguments">
+			<list>
+				<value>java</value>
+				<value>org.taverna.server.worker.WorkerEntry</value>
+			</list>
+		</property>
 	</bean>
 
 	<alias name="localworker" alias="policy" />

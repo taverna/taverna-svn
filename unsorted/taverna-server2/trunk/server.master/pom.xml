@@ -44,6 +44,11 @@
 			<version>4.8.1</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>uk.org.taverna</groupId>
+			<artifactId>server.runinterface</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 	<issueManagement>
 		<system>JIRA</system>
