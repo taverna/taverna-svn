@@ -1,4 +1,4 @@
-package org.taverna.server.master.localworker.rmi;
+package org.taverna.server.localworker.remote;
 
 import java.rmi.RemoteException;
 import java.util.Collection;

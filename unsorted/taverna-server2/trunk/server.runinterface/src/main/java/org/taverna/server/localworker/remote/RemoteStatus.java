@@ -1,4 +1,4 @@
-package org.taverna.server.master.localworker.rmi;
+package org.taverna.server.localworker.remote;
 
 /**
  * States of a workflow run. They are {@link RemoteStatus.Initialized
