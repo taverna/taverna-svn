@@ -11,6 +11,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.taverna.server.localworker.remote.RemoteDirectory;
+import org.taverna.server.localworker.remote.RemoteDirectoryEntry;
+import org.taverna.server.localworker.remote.RemoteFile;
+import org.taverna.server.localworker.remote.RemoteInput;
+import org.taverna.server.localworker.remote.RemoteListener;
+import org.taverna.server.localworker.remote.RemoteSingleRun;
+import org.taverna.server.localworker.remote.RemoteStatus;
 import org.taverna.server.master.SCUFL;
 import org.taverna.server.master.Status;
 import org.taverna.server.master.exceptions.BadPropertyValueException;
@@ -24,13 +31,6 @@ import org.taverna.server.master.interfaces.Input;
 import org.taverna.server.master.interfaces.Listener;
 import org.taverna.server.master.interfaces.TavernaRun;
 import org.taverna.server.master.interfaces.TavernaSecurityContext;
-import org.taverna.server.master.localworker.rmi.RemoteDirectory;
-import org.taverna.server.master.localworker.rmi.RemoteDirectoryEntry;
-import org.taverna.server.master.localworker.rmi.RemoteFile;
-import org.taverna.server.master.localworker.rmi.RemoteInput;
-import org.taverna.server.master.localworker.rmi.RemoteListener;
-import org.taverna.server.master.localworker.rmi.RemoteSingleRun;
-import org.taverna.server.master.localworker.rmi.RemoteStatus;
 
 public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 	private SCUFL workflow;

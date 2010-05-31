@@ -15,6 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
+import org.taverna.server.localworker.remote.RemoteSingleRun;
 import org.taverna.server.master.SCUFL;
 import org.taverna.server.master.exceptions.NoCreateException;
 import org.taverna.server.master.exceptions.NoDestroyException;
@@ -27,7 +28,6 @@ import org.taverna.server.master.interfaces.Listener;
 import org.taverna.server.master.interfaces.Policy;
 import org.taverna.server.master.interfaces.RunStore;
 import org.taverna.server.master.interfaces.TavernaRun;
-import org.taverna.server.master.localworker.rmi.RemoteSingleRun;
 
 @ManagedResource(objectName = "Taverna:group=Server,name=Factory", description = "The factory for runs")
 public abstract class AbstractRemoteRunFactory implements ListenerFactory, RunFactory, Policy, RunStore {
