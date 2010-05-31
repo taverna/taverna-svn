@@ -1,1 +1,4 @@
+if (bytes == null) {
+	throw new RuntimeException("The 'bytes' parameter cannot be null");
+}
 string = new String(bytes);
