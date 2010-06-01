@@ -1,0 +1,107 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>uk.org.taverna</groupId>
+	<artifactId>server.worker</artifactId>
+	<name>Taverna Workflow Run Implementation</name>
+	<version>0.0.1-SNAPSHOT</version>
+	<issueManagement>
+		<system>JIRA</system>
+		<url>http://www.mygrid.org.uk/dev/issues/browse/TAVSERV#selectedTab=com.atlassian.jira.plugin.system.project%3Asummary-panel</url>
+	</issueManagement>
+	<developers>
+		<developer>
+			<id>dkf</id>
+			<name>Donal Fellows</name>
+			<email>donal.k.fellows@manchester.ac.uk</email>
+			<organization>The University of Manchester</organization>
+			<organizationUrl>http://www.manchester.ac.uk/</organizationUrl>
+			<timezone>:Europe/London</timezone>
+		</developer>
+	</developers>
+	<scm>
+		<connection>scm:http://taverna.googlecode.com/svn/unsorted/taverna-server2/trunk/</connection>
+		<developerConnection>scm:https://taverna.googlecode.com/svn/unsorted/taverna-server2/trunk/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/unsorted/taverna-server2/trunk</url>
+	</scm>
+	<organization>
+		<name>University of Manchester</name>
+		<url>http://www.manchester.ac.uk/</url>
+	</organization>
+	<inceptionYear>2010</inceptionYear>
+
+	<properties>
+		<workerMainClass>org.taverna.server.localworker.impl.LocalWorker</workerMainClass>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>uk.org.taverna</groupId>
+			<artifactId>server.runinterface</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.3.2</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<finalName>TavernaServer.Worker.${version}</finalName>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<source>1.6</source>
+						<target>1.6</target>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-eclipse-plugin</artifactId>
+					<configuration>
+						<projectNameTemplate>[artifactId]-[version]</projectNameTemplate>
+						<wtpmanifest>true</wtpmanifest>
+						<wtpapplicationxml>true</wtpapplicationxml>
+						<wtpversion>2.0</wtpversion>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2-beta-5</version>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<archive>
+						<manifest>
+							<mainClass>${workerMainClass}</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
