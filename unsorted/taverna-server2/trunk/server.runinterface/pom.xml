@@ -23,6 +23,7 @@
 		<name>University of Manchester</name>
 		<url>http://www.manchester.ac.uk/</url>
 	</organization>
+	<inceptionYear>2010</inceptionYear>
 	<licenses>
 		<license>
 			<name>LGPL</name>
