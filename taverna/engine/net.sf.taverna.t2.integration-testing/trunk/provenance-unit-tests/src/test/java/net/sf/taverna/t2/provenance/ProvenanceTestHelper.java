@@ -264,6 +264,8 @@ public class ProvenanceTestHelper {
 						+ "s was exceed waiting for the results"); //$NON-NLS-1$
 			}
 		}
+		// Allow provenance to be stored
+		Thread.sleep(interval*2);
 
 	}
 
