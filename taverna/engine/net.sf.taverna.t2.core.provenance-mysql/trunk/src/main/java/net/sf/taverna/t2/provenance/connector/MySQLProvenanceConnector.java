@@ -67,17 +67,17 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 	private static final String createTableCollection = "CREATE TABLE  IF NOT EXISTS `T2Provenance`.`Collection` ("
 		+ "`collID` varchar(100) NOT NULL COMMENT 'ID of a list (collection). not sure yet what this looks like... ',"
 		+ "`parentCollIDRef` varchar(100) NOT NULL default 'TOP' COMMENT 'used for list nesting.\ndefault is dummy list TOP since this attr. is key',"
-		+ "`wfInstanceRef` varchar(100) NOT NULL,"
+		+ "`workflowRunId` varchar(100) NOT NULL,"
 		+ "`processorNameRef` varchar(100) NOT NULL,"
-		+ "`varNameRef` varchar(100) NOT NULL,"
+		+ "`portName` varchar(100) NOT NULL,"
 		+ "`iteration` char(10) NOT NULL default '',"
-		+ " PRIMARY KEY  USING BTREE (`collID`,`wfInstanceRef`,`processorNameRef`,`varNameRef`,`parentCollIDRef`,`iteration`)"
+		+ " PRIMARY KEY  USING BTREE (`collID`,`workflowRunId`,`processorNameRef`,`portName`,`parentCollIDRef`,`iteration`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='dynamic -- contains IDs of lists (T2 collections)';";
 
 	private static final String createTableProcessor = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Processor` ("
 		+ "`processorId` varchar(36) NOT NULL,"
 		+ "`processorName` varchar(100) NOT NULL,"
-		+ "`workflowId` varchar(100) NOT NULL COMMENT 'ref to WfInstance.wfInstanceID',"
+		+ "`workflowId` varchar(100) NOT NULL COMMENT 'ref to WorkflowRun.workflowRunId',"
 		+ "`firstActivityClass` varchar(100) default NULL COMMENT 'processor type',"
 		+ "`isTopLevel` tinyint(1) default '0',"
 		+ "PRIMARY KEY  (`processorId`)"
@@ -97,8 +97,8 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='static -- input and output variables (processor port names i';";
 
 	private static final String createTablePortBinding = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`PortBinding` ("
-		+ "`varNameRef` varchar(100) NOT NULL COMMENT 'ref to var name',"
-		+ "`wfInstanceRef` varchar(100) NOT NULL COMMENT 'ref to execution ID',"
+		+ "`portName` varchar(100) NOT NULL COMMENT 'ref to var name',"
+		+ "`workflowRunId` varchar(100) NOT NULL COMMENT 'ref to execution ID',"
 		+ "`value` varchar(100) default NULL COMMENT 'ref to value. Either a string value or a string ref (URI) to a value',"
 		+ "`collIDRef` varchar(100) default 'TOP',"
 		+ "`positionInColl` int(10) unsigned NOT NULL default '1' COMMENT 'position within collection. default is 1',"
@@ -106,21 +106,21 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		+ "`valueType` varchar(50) default NULL,"
 		+ "`ref` varchar(100) default NULL,"
 		+ "`iteration` char(10) NOT NULL default '',"
-		+ "  `wfNameRef` varchar(100) NOT NULL, "
-		+ "PRIMARY KEY  USING BTREE (`varNameRef`,`wfInstanceRef`,`processorNameRef`,`iteration`, `wfNameRef`),"
-		+ "KEY `collectionFK` (`wfInstanceRef`,`processorNameRef`,`varNameRef`,`collIDRef`)"
+		+ "  `workflowId` varchar(100) NOT NULL, "
+		+ "PRIMARY KEY  USING BTREE (`portName`,`workflowRunId`,`processorNameRef`,`iteration`, `workflowId`),"
+		+ "KEY `collectionFK` (`workflowRunId`,`processorNameRef`,`portName`,`collIDRef`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='dynamic -- binding of variables to values ';";
 
-	private static final String createTableWFInstance = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`WfInstance` ("
-		+ "`instanceID` varchar(100) NOT NULL COMMENT 'T2-generated ID for one execution',"
-		+ "`wfnameRef` varchar(100) NOT NULL COMMENT 'ref to name of the workflow being executed',"
+	private static final String createTableWorkflowRun = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`WorkflowRun` ("
+		+ "`workflowRunId` varchar(100) NOT NULL COMMENT 'T2-generated ID for one execution',"
+		+ "`workflowId` varchar(100) NOT NULL COMMENT 'ref to name of the workflow being executed',"
 		+ "`timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP COMMENT 'when execution has occurred',"
-		+ "PRIMARY KEY  (`instanceID`, `wfnameRef`)"
+		+ "PRIMARY KEY  (`workflowRunId`, `workflowId`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='dynamic -- execution of a workflow';";
 
 	private static final String createTableWorkflow = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Workflow` ("
-		+ "`wfname` varchar(100) NOT NULL, `parentWFname` varchar(100) default NULL, `externalName` varchar(100) default NULL, `dataflow` longblob,"
-		+ "PRIMARY KEY  (`wfname`)"
+		+ "`workflowId` varchar(100) NOT NULL, `parentWorkflowId` varchar(100) default NULL, `externalName` varchar(100) default NULL, `dataflow` longblob,"
+		+ "PRIMARY KEY  (`workflowId`)"
 		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='static -- all known workflows by name';";
 
 
@@ -224,7 +224,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 			stmt.executeUpdate(createTableProcessor);			
 			stmt.executeUpdate(createTablePort);			
 			stmt.executeUpdate(createTablePortBinding);			
-			stmt.executeUpdate(createTableWFInstance);			
+			stmt.executeUpdate(createTableWorkflowRun);			
 			stmt.executeUpdate(createTableWorkflow);
 			String engineAndCharset = " ENGINE=MyISAM DEFAULT CHARSET=utf8";
 			stmt.executeUpdate(ProcessorEnactment.getCreateTable() + engineAndCharset);

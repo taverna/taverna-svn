@@ -329,14 +329,14 @@ public abstract class AbstractDbTestHelper {
 				.prepareStatement(
 						"SELECT collId,parentCollIdRef,"
 								+ "  Collection.processorNameRef AS processorNameRef,"
-								+ "  Collection.varNameRef AS varNameRef,"
+								+ "  Collection.portName AS portName,"
 								+ "   iteration, isInputPort "
 								+ "FROM Collection " + "INNER JOIN Port "
-								+ "  ON Collection.varNameRef = Port.portName "
+								+ "  ON Collection.portName = Port.portName "
 								+ "  AND Collection.processorNameRef = Port.processorName " +
-								// "  AND Collection.wfNameRef = Port.workflowId "
+								// "  AND Collection.workflowId = Port.workflowId "
 								// +
-								"WHERE Collection.wfInstanceRef=? AND Port.workflowId=?");
+								"WHERE Collection.workflowRunId=? AND Port.workflowId=?");
 		statement.setString(1, getFacade().getWorkflowRunId());
 		// FIXME: Collections don't support nested workflows
 		statement.setString(2, dataflow.getInternalIdentifier());
@@ -350,7 +350,7 @@ public abstract class AbstractDbTestHelper {
 				String collId = resultSet.getString("collId");
 				String parentCollIdRef = resultSet.getString("parentCollIdRef");
 				String processorNameRef = resultSet.getString("processorNameRef");
-				String varNameRef = resultSet.getString("varNameRef");
+				String portName = resultSet.getString("portName");
 				String iteration = resultSet.getString("iteration");
 				boolean isInput = resultSet.getBoolean("isInputPort");
 
@@ -376,7 +376,7 @@ public abstract class AbstractDbTestHelper {
 				}
 
 				String key = dataflow.getInternalIdentifier() + "/" + processorNameRef
-						+ "/" + (isInput ? "i:" : "o:") + varNameRef
+						+ "/" + (isInput ? "i:" : "o:") + portName
 						+ iteration;
 				collections.put(key, resolved);
 
@@ -641,17 +641,17 @@ public abstract class AbstractDbTestHelper {
 		PreparedStatement statement = getConnection()
 				.prepareStatement(
 						"SELECT "
-								+ "  varNameRef,value,collIdRef,positionInColl,valueType,"
+								+ "  Port.portName,value,collIdRef,positionInColl,valueType,"
 								+ "  iteration,ref,isInputPort "
 								+ "FROM PortBinding "
 								+ "INNER JOIN Port "
-								+ "  ON PortBinding.varNameRef = Port.portName "
+								+ "  ON PortBinding.portName = Port.portName "
 								+ "  AND PortBinding.processorNameRef = Port.processorName "
 								+
 								// FIXME: Non-unique foreign key to PortBinding
-								"  AND PortBinding.wfNameRef = Port.workflowId "
-								+ "WHERE PortBinding.wfInstanceRef=? "
-								+ "  AND PortBinding.wfNameRef=? "
+								"  AND PortBinding.workflowId = Port.workflowId "
+								+ "WHERE PortBinding.workflowRunId=? "
+								+ "  AND PortBinding.workflowId=? "
 								+ "  AND PortBinding.processorNameRef=?");
 		statement.setString(1, getFacade().getWorkflowRunId());
 
@@ -665,7 +665,7 @@ public abstract class AbstractDbTestHelper {
 				ResultSet resultSet = statement.executeQuery();
 				try {
 					while (resultSet.next()) {
-						String varNameRef = resultSet.getString("varNameRef");
+						String portName = resultSet.getString("portName");
 						String value = resultSet.getString("value");
 						String collIdRef = resultSet.getString("collIdRef");
 						String positionInColl = resultSet
@@ -709,7 +709,7 @@ public abstract class AbstractDbTestHelper {
 
 						String key = df.getInternalIdentifier() + "/"
 								+ p.getLocalName() + "/"
-								+ (isInput ? "i:" : "o:") + varNameRef
+								+ (isInput ? "i:" : "o:") + portName
 								+ iteration;
 						intermediateValues.put(key, resolved);
 					}
@@ -732,9 +732,9 @@ public abstract class AbstractDbTestHelper {
 			ClassNotFoundException {
 		PreparedStatement statement = getConnection()
 				.prepareStatement(
-						"SELECT value,varNameRef,iteration " +
+						"SELECT value,portName,iteration " +
 						"FROM PortBinding " +
-						"WHERE processorNameRef=? AND wfNameRef=? AND wfInstanceRef=?");
+						"WHERE processorNameRef=? AND workflowId=? AND workflowRunId=?");
 		statement.setString(1, dataflow.getLocalName());
 		statement.setString(2, dataflow.getInternalIdentifier());
 		statement.setString(3, getFacade().getWorkflowRunId());
@@ -743,14 +743,14 @@ public abstract class AbstractDbTestHelper {
 		try {
 			while (resultSet.next()) {
 				String value = resultSet.getString("value");
-				String varNameRef = resultSet.getString("varNameRef");
+				String portName = resultSet.getString("portName");
 				String iteration = resultSet.getString("iteration");
 				T2Reference ref = getReferenceService().referenceFromString(
 						value);
 
 				Object rendered = getReferenceService().renderIdentifier(ref,
 						Object.class, getContext());
-				values.put(varNameRef + iteration, rendered);
+				values.put(portName + iteration, rendered);
 			}
 		} finally {
 			resultSet.close();
@@ -931,7 +931,7 @@ public abstract class AbstractDbTestHelper {
 			Set<String> foundOutputs = new HashSet<String>();
 
 			while (resultSet.next()) {
-				String varName = resultSet.getString("portName");
+				String portName = resultSet.getString("portName");
 				boolean isInput = resultSet.getBoolean("isInputPort");
 
 				String depth = resultSet.getString("depth");
@@ -943,9 +943,9 @@ public abstract class AbstractDbTestHelper {
 				// TODO: Test iterationStrategyOrder
 
 				if (isInput) {
-					DataflowInputPort inputPort = inputPorts.get(varName);
+					DataflowInputPort inputPort = inputPorts.get(portName);
 					assertNotNull(inputPort);
-					foundInputs.add(varName);
+					foundInputs.add(portName);
 					assertEquals(Integer.toString(inputPort.getDepth()),
 							depth);
 					Datalink incoming = inputPort.getIncomingLink();
@@ -956,9 +956,9 @@ public abstract class AbstractDbTestHelper {
 								.getResolvedDepth()), resolvedDepth);
 					}
 				} else {
-					DataflowOutputPort outputPort = outputPorts.get(varName);
+					DataflowOutputPort outputPort = outputPorts.get(portName);
 					assertNotNull(outputPort);
-					foundOutputs.add(varName);
+					foundOutputs.add(portName);
 					assertEquals(Integer.toString(outputPort.getDepth()),
 							depth);
 					if (outputPort.getOutgoingLinks().isEmpty()) {
@@ -984,11 +984,11 @@ public abstract class AbstractDbTestHelper {
 	}
 
 	@Test
-	public void testWfInstance() throws SQLException, InstantiationException,
+	public void testWorkflowRun() throws SQLException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
 		java.util.Date now = new java.util.Date();
 		PreparedStatement statement = getConnection().prepareStatement(
-				"SELECT wfNameRef,timestamp from WfInstance WHERE instanceID=?");
+				"SELECT workflowId,timestamp from WorkflowRun WHERE workflowRunId=?");
 		statement.setString(1, getFacade().getWorkflowRunId());
 		ResultSet resultSet = statement.executeQuery();
 		Map<String, Timestamp> timestamps = new HashMap<String, Timestamp>();
@@ -996,11 +996,11 @@ public abstract class AbstractDbTestHelper {
 			// debugOutput(resultSet);
 			Set<String> wfIds = new HashSet<String>();
 			while (resultSet.next()) {
-				String wfNameRef = resultSet.getString("wfNameRef");
+				String workflowId = resultSet.getString("workflowId");
 				Timestamp timestamp = resultSet.getTimestamp("timestamp");
 				assertTrue(timestamp.before(now));
-				timestamps.put(wfNameRef, timestamp);
-				wfIds.add(wfNameRef);
+				timestamps.put(workflowId, timestamp);
+				wfIds.add(workflowId);
 			}
 			Set<String> expectedWfIds = new HashSet<String>();
 			for (Dataflow df : workflowPaths.values()) {
@@ -1025,22 +1025,22 @@ public abstract class AbstractDbTestHelper {
 	public void testWorkflows() throws SQLException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
 		PreparedStatement statement = getConnection().prepareStatement(
-				"SELECT wfName,parentWfName,externalName from Workflow");
+				"SELECT workflowId,parentWorkflowId,externalName from Workflow");
 		ResultSet resultSet = statement.executeQuery();
 		try {
 			// debugOutput(resultSet);
 			Set<String> wfIds = new HashSet<String>();
 			while (resultSet.next()) {
-				String wfName = resultSet.getString("wfName");
-				String parentWfName = resultSet.getString("parentWfName");
+				String workflowId = resultSet.getString("workflowId");
+				String parentWorkflowId = resultSet.getString("parentWorkflowId");
 				String externalName = resultSet.getString("externalName");
-				wfIds.add(wfName);
-				if (wfName.equals(dataflow.getInternalIdentifier())) {
-					assertNull(parentWfName);
+				wfIds.add(workflowId);
+				if (workflowId.equals(dataflow.getInternalIdentifier())) {
+					assertNull(parentWorkflowId);
 					assertEquals(dataflow.getLocalName(), externalName);
 				} else {
-					List<String> paths = workflowIdToPaths.get(wfName);
-					assertNotNull("Could not find workflow " + wfName, paths);
+					List<String> paths = workflowIdToPaths.get(workflowId);
+					assertNotNull("Could not find workflow " + workflowId, paths);
 					assertNotNull("externalName not defined", externalName);
 					String foundPath = null;
 					for (String path : paths) {
@@ -1055,7 +1055,7 @@ public abstract class AbstractDbTestHelper {
 					Dataflow parentDataflow = workflowPaths.get(parentPath
 							.toString());
 					assertEquals(parentDataflow.getInternalIdentifier(),
-							parentWfName);
+							parentWorkflowId);
 				}
 			}
 			Set<String> expectedWfIds = new HashSet<String>();

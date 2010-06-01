@@ -84,10 +84,10 @@ public class DataDependenciesBuilder {
 
 	public void buildDD() throws SQLException {
 
-		// fetch latest WFInstance ID, to use as part of the key
+		// fetch latest WorkflowRun ID, to use as part of the key
 		List<WorkflowRun> IDs = pq.getRuns(null, null);
 
-		WorkflowRun wfInstanceID = IDs.get(0);
+		WorkflowRun workflowRunId = IDs.get(0);
 
 		// read all iteration events from the EVENTS log
 
@@ -111,37 +111,37 @@ public class DataDependenciesBuilder {
 				// Get filename of file or directory
 				String filename = children[i];
 
-				processEvent(children[i], wfInstanceID.getInstanceID());
+				processEvent(children[i], workflowRunId.getWorkflowRunId());
 
 			}
 
 			// fill in the table with P1:Y -> P2:X dependencies
-			logger.info("*** fillXferSteps starting for wfInstanceID = "
-					+ wfInstanceID);
-			fillXferSteps(wfInstanceID.getInstanceID());
+			logger.info("*** fillXferSteps starting for workflowRunId = "
+					+ workflowRunId);
+			fillXferSteps(workflowRunId.getWorkflowRunId());
 
 		}
 	}
 
-	private void fillXferSteps(String wfInstanceID) throws SQLException {
+	private void fillXferSteps(String workflowRunId) throws SQLException {
 
 		// ////////////
 		// set the run instances (scope)
 		// ////////////
-		// String wfInstance = null; // TODO only support one instance query at
+		// String workflowRun = null; // TODO only support one instance query at
 		// this time
 		// ArrayList<String> instances = (ArrayList<String>)
-		// pq.getWFInstanceIDs(); // ordered by timestamp
+		// pq.getWorkflowRunIDs(); // ordered by timestamp
 		//
 		// if (instances.size()>0) {
-		// wfInstance = instances.get(0);
-		// logger.info("instance "+wfInstance);
+		// workflowRun = instances.get(0);
+		// logger.info("instance "+workflowRun);
 		// } else {
-		// logger.info("FATAL: no wfinstances in DB -- terminating");
+		// logger.info("FATAL: no WorkflowRuns in DB -- terminating");
 		// }
 
 		// select distinct (P, vTo, valTo) and iterate on them
-		Set<DDRecord> fromRecords = pq.queryAllFromValues(wfInstanceID);
+		Set<DDRecord> fromRecords = pq.queryAllFromValues(workflowRunId);
 
 		logger.info("processing " + fromRecords.size() + " fromValues");
 
@@ -152,7 +152,7 @@ public class DataDependenciesBuilder {
 			// find all datalinks that have this sink P:V
 			Set<DDRecord> toRecords = pq.queryDataLinksForDD(fromRecord.getPFrom(),
 					fromRecord.getVFrom(), fromRecord.getValFrom(),
-					wfInstanceID);
+					workflowRunId);
 
 			for (DDRecord toRecord : toRecords) {
 				// logger.info("to record: "+toRecord.getPTo()+" "+toRecord.getVTo()+" "+toRecord.getValTo());
@@ -160,13 +160,13 @@ public class DataDependenciesBuilder {
 				pw.writeDDRecord(toRecord.getPTo(), toRecord.getVTo(), toRecord
 						.getValTo(), fromRecord.getPFrom(), fromRecord
 						.getVFrom(), fromRecord.getValFrom(), null,
-						wfInstanceID);
+						workflowRunId);
 			}
 		}
 
 	}
 
-	private void processEvent(String eventFilename, String wfInstanceID) {
+	private void processEvent(String eventFilename, String workflowRunId) {
 
 		// FileReader fr = new FileReader(new
 		// File(EVENTS_LOG_DIR+"/"+filename));
@@ -252,7 +252,7 @@ public class DataDependenciesBuilder {
 					// insert into DD table in provenance DB
 					pw.writeDDRecord(processor, input.getKey(), input
 							.getValue(), processor, output.getKey(), output
-							.getValue(), iteration, wfInstanceID);
+							.getValue(), iteration, workflowRunId);
 				}
 
 			}

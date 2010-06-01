@@ -50,8 +50,8 @@ public class PathMaterializer {
 		// now fetch all children workflows and recurse
 		List<String> children = pq.getChildrenOfWorkflow(dataflowRef);
 
-		for (String childWFName: children) {			
-			Map<String, Set<String>> canBeReachedFrom1 = materializePathPairs(childWFName);
+		for (String childWorkflowId: children) {			
+			Map<String, Set<String>> canBeReachedFrom1 = materializePathPairs(childWorkflowId);
 			
 			// merge maps: assumes unique processor IDs??
 			canBeReachedFrom.entrySet().addAll(canBeReachedFrom1.entrySet());
@@ -62,9 +62,9 @@ public class PathMaterializer {
 
 
 	/**
-	 * @param dataflowRef the static wfNameRef of the dataflow whose processors we need to sort 
+	 * @param dataflowRef the static workflowId of the dataflow whose processors we need to sort 
 	 * @throws SQLException
-	 * @return a list of processors that are immediately contained within wfInstanceRef. This is used by caller to recurse on 
+	 * @return a list of processors that are immediately contained within workflowRunId. This is used by caller to recurse on 
 	 * sub-workflows
 	 */
 	public Map<String, Set<String>> materializePathPairsWithinSubflow(String dataflowRef) throws SQLException {
@@ -106,7 +106,7 @@ public class PathMaterializer {
 			// skip dataflowName -- this is not a valid successor
 			if (dataflowNames.contains(p))  continue;
 			
-			List<String> successors = pq.getSuccProcessors(p, dataflowRef, null);  // null wfInstanceID: CHECK
+			List<String> successors = pq.getSuccProcessors(p, dataflowRef, null);  // null workflowRunId: CHECK
 
 			for (String p1: successors) {
 

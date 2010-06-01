@@ -261,6 +261,7 @@ public abstract class AbstractQueryTestHelper {
 				getFacade().pushData(inputToken1, portName);
 			}
 			waitForCompletion();
+			Thread.sleep(250);
 		}
 	}
 
@@ -270,7 +271,7 @@ public abstract class AbstractQueryTestHelper {
 		provenanceQuery.setRunIDList(Arrays.asList(getFacade()
 				.getWorkflowRunId()));
 		QueryPort queryPort = new QueryPort();
-		queryPort.setWfName(dataflow.getInternalIdentifier());
+		queryPort.setWorkflowId(dataflow.getInternalIdentifier());
 		queryPort.setPath(ProvenanceAnalysis.ALL_PATHS_KEYWORD);
 		provenanceQuery.setTargetPorts(Arrays.asList(queryPort));
 		QueryAnswer answer = getProvenanceAccess()
@@ -283,13 +284,13 @@ public abstract class AbstractQueryTestHelper {
 	public void fetchInputPortData() throws Exception {
 		Map<String, Object> expectedWorkflowInputs = getExpectedWorkflowInputs();
 		Map<String, Object> recordedInputs = new HashMap<String, Object>();
-		String wfInstance = getFacade().getWorkflowRunId();
+		String workflowRun = getFacade().getWorkflowRunId();
 		String workflowId = dataflow.getInternalIdentifier();
 		String pname = dataflow.getLocalName();
 		for (InputPort inputPort : dataflow.getInputPorts()) {
 			String port = inputPort.getName();
 			Dependencies fetchPortData = getProvenanceAccess().fetchPortData(
-					wfInstance, workflowId, pname, port, null);
+					workflowRun, workflowId, pname, port, null);
 			for (LineageQueryResultRecord record : fetchPortData.getRecords()) {
 				String value = record.getValue();
 				T2Reference referenceValue = getReferenceService()
@@ -488,7 +489,8 @@ public abstract class AbstractQueryTestHelper {
 		String wfRunId = getFacade().getWorkflowRunId();
 		DataflowInvocation dataflowInvocation = getProvenanceAccess().getDataflowInvocation(wfRunId);
 		assertNotNull(dataflowInvocation);
-		
+		assertNotNull(dataflowInvocation.getInvocationStarted());
+		assertNotNull(dataflowInvocation.getInvocationEnded());		
 		assertTrue(dataflowInvocation.getInvocationEnded().after(dataflowInvocation.getInvocationStarted()));
 		assertTrue(dataflowInvocation.getInvocationEnded().before(now));
 		assertTrue(dataflowInvocation.getInvocationStarted().after(notExecutedBefore));
@@ -530,6 +532,8 @@ public abstract class AbstractQueryTestHelper {
 
 			assertEquals(wfRunId, dataflowInvocation.getWorkflowRunId());
 			invocationsForWorkflows.add(dataflowInvocation.getWorkflowId());
+			assertNotNull(dataflowInvocation.getInvocationStarted());
+			assertNotNull(dataflowInvocation.getInvocationEnded());
 			assertTrue(dataflowInvocation.getInvocationEnded().after(dataflowInvocation.getInvocationStarted()));
 			assertTrue(dataflowInvocation.getInvocationEnded().before(now));
 			assertTrue(dataflowInvocation.getInvocationStarted().after(notExecutedBefore));
@@ -581,9 +585,9 @@ public abstract class AbstractQueryTestHelper {
 				.listRuns(null, null);
 		Set<String> wfIds = new HashSet<String>();
 		for (WorkflowRun run : runs) {
-			assertEquals(getFacade().getWorkflowRunId(), run.getInstanceID());
+			assertEquals(getFacade().getWorkflowRunId(), run.getWorkflowRunId());
 
-			String workflowIdentifier = run.getWorkflowIdentifier();
+			String workflowIdentifier = run.getWorkflowId();
 			wfIds.add(workflowIdentifier);
 
 			String externalName = run.getWorkflowExternalName();
@@ -610,7 +614,7 @@ public abstract class AbstractQueryTestHelper {
 			byte[] blob = run.getDataflowBlob();
 			Dataflow loadedDf = testHelper
 					.loadDataflow(new ByteArrayInputStream(blob));
-			assertEquals(run.getWorkflowIdentifier(), loadedDf
+			assertEquals(run.getWorkflowId(), loadedDf
 					.getInternalIdentifier());
 		}
 		assertEquals(workflowIdToPaths.keySet(), wfIds);
@@ -625,8 +629,8 @@ public abstract class AbstractQueryTestHelper {
 			assertEquals(1, runs.size());
 			for (WorkflowRun run : runs) {
 				assertEquals(getFacade().getWorkflowRunId(), run
-						.getInstanceID());
-				assertEquals(dfId, run.getWorkflowIdentifier());
+						.getWorkflowRunId());
+				assertEquals(dfId, run.getWorkflowId());
 			}
 		}
 	}
@@ -635,14 +639,14 @@ public abstract class AbstractQueryTestHelper {
 	public void fetchOutputPortData() throws Exception {
 		Map<String, Object> expectedWorkflowOutputs = getExpectedWorkflowOutputs();
 		Map<String, Object> recordedOutputs = new HashMap<String, Object>();
-		String wfInstance = getFacade().getWorkflowRunId();
+		String workflowRun = getFacade().getWorkflowRunId();
 		String workflowId = dataflow.getInternalIdentifier();
 		String pname = dataflow.getLocalName();
 		for (OutputPort outputPort : dataflow.getOutputPorts()) {
 			String port = outputPort.getName();
 			// FIXME: How to specify output port vs. input port?
 			Dependencies fetchPortData = getProvenanceAccess().fetchPortData(
-					wfInstance, workflowId, pname, port, null);
+					workflowRun, workflowId, pname, port, null);
 			System.out.println(fetchPortData);
 			for (LineageQueryResultRecord record : fetchPortData.getRecords()) {
 				String value = record.getValue();
@@ -664,7 +668,7 @@ public abstract class AbstractQueryTestHelper {
 	public void fetchProcessorData() throws Exception {
 		Map<String, Object> expectedWorkflowOutputs = getExpectedIntermediateValues();
 		Map<String, Object> recordedOutputs = new HashMap<String, Object>();
-		String wfInstance = getFacade().getWorkflowRunId();
+		String workflowRun = getFacade().getWorkflowRunId();
 		for (Dataflow df : workflowPaths.values()) {
 			String workflowId = df.getInternalIdentifier();
 			for (Processor p : df.getProcessors()) {
@@ -680,7 +684,7 @@ public abstract class AbstractQueryTestHelper {
 					String portName = port.getName();
 					// FIXME: How to specify output port vs. input port?
 					Dependencies fetchPortData = getProvenanceAccess()
-							.fetchPortData(wfInstance, workflowId, pName,
+							.fetchPortData(workflowRun, workflowId, pName,
 									portName, null);
 					for (LineageQueryResultRecord record : fetchPortData
 							.getRecords()) {

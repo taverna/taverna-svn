@@ -48,11 +48,11 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 	private static final String createTableCollection = "CREATE TABLE Collection ("
 			+ "collID varchar(100) NOT NULL,"
 			+ "parentCollIDRef varchar(100) NOT NULL ,"
-			+ "wfInstanceRef varchar(36) NOT NULL,"
+			+ "workflowRunId varchar(36) NOT NULL,"
 			+ "processorNameRef varchar(100) NOT NULL,"
-			+ "varNameRef varchar(100) NOT NULL,"
+			+ "portName varchar(100) NOT NULL,"
 			+ "iteration varchar(2000) NOT NULL default '',"
-			+ " PRIMARY KEY (collID,wfInstanceRef,processorNameRef,varNameRef,parentCollIDRef,iteration))";	
+			+ " PRIMARY KEY (collID,workflowRunId,processorNameRef,portName,parentCollIDRef,iteration))";	
 	private static final String createTableProcessor = "CREATE TABLE Processor ("
 			+ "processorId varchar(36) NOT NULL,"
 			+ "processorName varchar(100) NOT NULL,"
@@ -74,8 +74,8 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			+ "PRIMARY KEY (portId),"
 			+ "CONSTRAINT port_constraint UNIQUE (portName,isInputPort,processorName,workflowId))";
 	private static final String createTablePortBinding = "CREATE TABLE PortBinding ("
-			+ "varNameRef varchar(100) NOT NULL,"
-			+ "wfInstanceRef varchar(100) NOT NULL,"
+			+ "portName varchar(100) NOT NULL,"
+			+ "workflowRunId varchar(100) NOT NULL,"
 			+ "value varchar(100) default NULL,"
 			+ "collIDRef varchar(100),"
 			+ "positionInColl int NOT NULL,"
@@ -83,17 +83,17 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			+ "valueType varchar(50) default NULL,"
 			+ "ref varchar(100) default NULL,"
 			+ "iteration varchar(2000) NOT NULL,"
-			+ "wfNameRef varchar(36),"
-			+ "PRIMARY KEY (varNameRef,wfInstanceRef,processorNameRef,iteration, wfNameRef))";
-	private static final String createTableWFInstance = "CREATE TABLE WfInstance ("
-			+ "instanceID varchar(36) NOT NULL,"
-			+ "wfnameRef varchar(36) NOT NULL,"
+			+ "workflowId varchar(36),"
+			+ "PRIMARY KEY (portName,workflowRunId,processorNameRef,iteration, workflowId))";
+	private static final String createTableWorkflowRun = "CREATE TABLE WorkflowRun ("
+			+ "workflowRunId varchar(36) NOT NULL,"
+			+ "workflowId varchar(36) NOT NULL,"
 			+ "timestamp timestamp NOT NULL default CURRENT_TIMESTAMP,"
-			+ " PRIMARY KEY (instanceID, wfnameRef))";
+			+ " PRIMARY KEY (workflowRunId, workflowId))";
 	private static final String createTableWorkflow = "CREATE TABLE Workflow ("
-			+ "wfname varchar(36) NOT NULL," + "parentWFname varchar(100),"
+			+ "workflowId varchar(36) NOT NULL," + "parentWorkflowId varchar(100),"
 			+ "externalName varchar(100)," + "dataflow blob, "
-			+ "PRIMARY KEY  (wfname))";
+			+ "PRIMARY KEY  (workflowId))";
 	
 	// Also see tables in ProvenanceConnector
 	
@@ -158,10 +158,10 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 					logger.warn("Could not create table Port Binding : ", e);
 			}
 			try {
-				stmt.executeUpdate(createTableWFInstance);
+				stmt.executeUpdate(createTableWorkflowRun);
 			} catch (SQLException e) {
 				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
-					logger.warn("Could not create table WfInstance : ", e);
+					logger.warn("Could not create table WorkflowRun : ", e);
 			}
 			try {
 				stmt.executeUpdate(createTableWorkflow);

@@ -65,15 +65,15 @@ public class NaiveProvenanceQuery {
 		String vTo = targetVar;
 		String iteration = targetIteration;
 
-		// fetch latest WFInstance ID, to use as part of the key
+		// fetch latest WorkflowRun ID, to use as part of the key
 		List<WorkflowRun> IDs = pq.getRuns(null, null);
 		
-		WorkflowRun wfInstance = IDs.get(0);
+		WorkflowRun workflowRun = IDs.get(0);
 		
 		List<DDRecord> recordsQueue = new ArrayList<DDRecord>();
 
 		// execute initial xform step
-		List<DDRecord> DDrecords = pq.queryDD(pTo, vTo, null, iteration, wfInstance.getInstanceID());
+		List<DDRecord> DDrecords = pq.queryDD(pTo, vTo, null, iteration, workflowRun.getWorkflowRunId());
 
 		recordsQueue.addAll(DDrecords);
 
@@ -88,7 +88,7 @@ public class NaiveProvenanceQuery {
 				newRecords = DDrecords;
 
 				DDrecords.clear();
-				DDrecords = pq.queryDD(r.getPFrom(), r.getVFrom(), r.getValFrom(), null, wfInstance.getInstanceID());
+				DDrecords = pq.queryDD(r.getPFrom(), r.getVFrom(), r.getValFrom(), null, workflowRun.getWorkflowRunId());
 				recordsQueue.addAll(DDrecords);
 
 			}  else {  // we did an xfer
@@ -98,7 +98,7 @@ public class NaiveProvenanceQuery {
 					newRecords = DDrecords;
 
 					DDrecords.clear();
-					DDrecords = pq.queryDD(r.getPFrom(), r.getVFrom(), r.getValFrom(), null, wfInstance.getInstanceID());
+					DDrecords = pq.queryDD(r.getPFrom(), r.getVFrom(), r.getValFrom(), null, workflowRun.getWorkflowRunId());
 					recordsQueue.addAll(DDrecords);
 
 				}
@@ -114,7 +114,7 @@ public class NaiveProvenanceQuery {
 	 * @throws SQLException 
 	 */
 	public void computeLineageNaive(
-			String wfInstance,   // context
+			String workflowRunId,   // context
 			String proc,   // qualified with its processor name
 			String var,   // target var
 			String value, // which value -- paths are not used in the naive approach
@@ -143,7 +143,7 @@ public class NaiveProvenanceQuery {
 
 				// query 2 -- corresponds to a xfer step
 				Set<DDRecord> xferResults = pq.queryDataLinksForDD(
-						current.getPTo(), current.getVFrom(), current.getValFrom(), wfInstance);
+						current.getPTo(), current.getVFrom(), current.getValFrom(), workflowRunId);
 
 				if (xferResults != null) {			
 
@@ -158,7 +158,7 @@ public class NaiveProvenanceQuery {
 				// perform a xform step
 
 				// query 1 on DD: by value -- corresponds to a xform step usng TO vars
-				List<DDRecord> xformResults  = pq.queryDD(current.getPTo(), current.getVTo(), current.getValTo(), null, wfInstance);
+				List<DDRecord> xformResults  = pq.queryDD(current.getPTo(), current.getVTo(), current.getValTo(), null, workflowRunId);
 
 				for (DDRecord r:xformResults) {
 					logger.info("xform result: "+r.toString());

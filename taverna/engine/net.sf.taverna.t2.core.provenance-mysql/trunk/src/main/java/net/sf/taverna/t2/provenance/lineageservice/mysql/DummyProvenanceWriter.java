@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
-import net.sf.taverna.t2.provenance.lineageservice.utils.ProcBinding;
+import net.sf.taverna.t2.provenance.lineageservice.utils.ProcessorBinding;
 import net.sf.taverna.t2.provenance.lineageservice.utils.Port;
 import net.sf.taverna.t2.provenance.lineageservice.utils.PortBinding;
 
@@ -31,8 +31,8 @@ public class DummyProvenanceWriter extends ProvenanceWriter {
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addDataLink(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	public void addDataLink(String sourceVarName, String sourceProcName,
-			String sinkVarName, String sinkProcName, String wfId)
+	public void addDataLink(String sourcePortName, String sourceProcName,
+			String sinkPortName, String sinkProcName, String wfId)
 			{
 		// TODO Auto-generated method stub
 
@@ -59,7 +59,7 @@ public class DummyProvenanceWriter extends ProvenanceWriter {
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addProcessor(java.lang.String, java.lang.String, java.lang.String)
 	 */
-	public void addProcessor(String name, String type, String wfNameRef)
+	public void addProcessor(String name, String type, String workflowId)
 			throws SQLException {
 		// TODO Auto-generated method stub
 
@@ -68,7 +68,7 @@ public class DummyProvenanceWriter extends ProvenanceWriter {
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addProcessorBinding(net.sf.taverna.t2.provenance.lineageservice.utils.ProcBinding)
 	 */
-	public void addProcessorBinding(ProcBinding pb) throws SQLException {
+	public void addProcessorBinding(ProcessorBinding pb) throws SQLException {
 		// TODO Auto-generated method stub
 
 	}
@@ -101,15 +101,15 @@ public class DummyProvenanceWriter extends ProvenanceWriter {
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addWFId(java.lang.String, java.lang.String)
 	 */
-	public void addWFId(String wfId, String parentWFname) throws SQLException {
+	public void addWFId(String wfId, String parentWorkflowId) throws SQLException {
 		// TODO Auto-generated method stub
 
 	}
 
 	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addWFInstanceId(java.lang.String, java.lang.String)
+	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addWorkflowRun(java.lang.String, java.lang.String)
 	 */
-	public void addWFInstanceId(String wfId, String wfInstanceId)
+	public void addWorkflowRun(String wfId, String workflowRunId)
 			throws SQLException {
 		// TODO Auto-generated method stub
 
