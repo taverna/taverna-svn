@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.Map.Entry;
 
 import javax.naming.NamingException;
@@ -511,63 +512,95 @@ public abstract class AbstractDbTestHelper {
 	
 	@Test
 	public void testProcessorEnactmentDataBindings() throws Exception {
-		Map<String, Object> intermediateValues = new HashMap<String, Object>();
-		List<ProcessorEnactment> bindings = Arrays.asList(
-				ProcessorEnactment.initialInputsDataBindingId, 
-				ProcessorEnactment.finalOutputsDataBindingId);
-		for (ProcessorEnactment binding : bindings) {
-			PreparedStatement statement = getConnection().prepareStatement(
-							"SELECT " 	
-							+ DataBinding.t2Reference + " AS t2ref, "
-							+ ProcessorEnactment.processIdentifier + ","
-					    	+ ProcessorEnactment.iteration + ","
-					    	+ "Port.portName AS portName, " 
-							+ "Processor.workflowId AS workflowId,"
-							+ "Processor.processorName AS processorName" + " FROM "
-							+ ProcessorEnactment.ProcessorEnactment
-							+ " INNER JOIN " + "Processor" + " ON "
-							+ ProcessorEnactment.ProcessorEnactment + "."
-							+ ProcessorEnactment.processorId + " = " + "Processor.processorId"
-							+ " INNER JOIN " + DataBinding.DataBinding
-							+ " ON " + DataBinding.dataBindingId + "=" + binding
-							+ " INNER JOIN Port "
-							+ " ON Port.portId=" + DataBinding.DataBinding + "." + DataBinding.portId						
-							+ " WHERE "
-							+ ProcessorEnactment.ProcessorEnactment + "." + ProcessorEnactment.workflowRunId + "=?");
-			statement.setString(1, getFacade().getWorkflowRunId());
-			ResultSet resultSet = statement.executeQuery();
-			
-			
-			try {
-				while (resultSet.next()) {
-					String processorName = resultSet.getString("processorName");
-					String workflowId = resultSet.getString("workflowId");
-					String iteration = resultSet.getString("iteration");
-					String t2ref = resultSet.getString("t2ref");
-					String processIdentifier = resultSet.getString("processIdentifier");
-					String portName = resultSet.getString("portName");
-				
-					boolean isInput = binding.equals(ProcessorEnactment.initialInputsDataBindingId);
-					String key = workflowId + "/"
-					+ processorName + "/"
-					+ (isInput ? "i:" : "o:") + portName
-					+ iteration;
-					
-					T2Reference ref = getReferenceService()
-					.referenceFromString(t2ref);
-					Object resolved = getReferenceService().renderIdentifier(ref, Object.class,	getContext());
-					intermediateValues.put(key, resolved);
-				}
-			} finally {
-				resultSet.close();
-			}
-		}
-		
-		Map<String, Object> expectedIntermediateValues = getExpectedIntermediates();
-		assertMapsEquals("Unexpected intermediate values", 
-				expectedIntermediateValues, intermediateValues);
+		testProcessorEnactmentDataBindingsForWorkflowRun(getFacade().getWorkflowRunId());
 	}
+
+	@Test
+	public void testProcessorEnactmentDataBindingsTwoRuns() throws Exception {
+		String firstRunId = getFacade().getWorkflowRunId();
+		testProcessorEnactmentDataBindingsForWorkflowRun(firstRunId);
+		// Force a second run
+		dataflow = null;
+		runWorkflow();
+		String secondRunId = getFacade().getWorkflowRunId();
+		assertTrue("Did not run again, run IDs are both " + firstRunId, 
+				! firstRunId.equals(secondRunId));
+		testProcessorEnactmentDataBindingsForWorkflowRun(secondRunId);
 		
+		// Should still work for firstRunId
+		testProcessorEnactmentDataBindingsForWorkflowRun(firstRunId);
+	}
+	
+	
+	protected void testProcessorEnactmentDataBindingsForWorkflowRun(
+			String workflowRunId) throws Exception {
+		Map<String, Object> intermediateValues = new HashMap<String, Object>();
+		PreparedStatement statement = getConnection().prepareStatement(
+				"SELECT " + DataBinding.t2Reference + " AS t2ref, "
+						+ ProcessorEnactment.processIdentifier + ", "
+						+ ProcessorEnactment.iteration + ", "
+						+ "Port.portName AS portName, "
+						+ "Port.isInputPort AS isInputPort, "
+						+ "Processor.workflowId AS workflowId, "
+						+ "Processor.processorName AS processorName" + " FROM "
+						+ ProcessorEnactment.ProcessorEnactment
+						+ " INNER JOIN " + "Processor" + " ON "
+						+ ProcessorEnactment.ProcessorEnactment + "."
+						+ ProcessorEnactment.processorId + " = "
+						+ "Processor.processorId" + " INNER JOIN "
+						+ DataBinding.DataBinding + " ON "
+						+ DataBinding.dataBindingId + " IN ("
+						+ ProcessorEnactment.initialInputsDataBindingId + ","
+						+ ProcessorEnactment.finalOutputsDataBindingId + ") "
+						+ " INNER JOIN Port " + " ON Port.portId="
+						+ DataBinding.DataBinding + "." + DataBinding.portId
+						+ " WHERE " + ProcessorEnactment.ProcessorEnactment
+						+ "." + ProcessorEnactment.workflowRunId + "=?");
+		statement.setString(1, workflowRunId);
+		ResultSet resultSet = statement.executeQuery();
+
+		try {
+			while (resultSet.next()) {
+				String processorName = resultSet.getString("processorName");
+				String workflowId = resultSet.getString("workflowId");
+				String iteration = resultSet.getString("iteration");
+				String t2ref = resultSet.getString("t2ref");
+				String processIdentifier = resultSet
+						.getString("processIdentifier");
+
+				String[] processIdentifierSplit = processIdentifier.split(":");
+				if (workflowId.equals(dataflow.getInternalIdentifier())) {
+					assertEquals("Expected processIdentifier length 3, but is " + processIdentifier, 
+							3, processIdentifierSplit.length);
+				} else {
+					assertTrue("Expected processIdentifier longer than 5, but is " + processIdentifier, 
+							processIdentifierSplit.length > 5);
+				}
+				
+				assertEquals("Expected last processIdentifier element to be processor name, but processId is " + processIdentifier,
+						processorName, processIdentifierSplit[processIdentifierSplit.length-1]);
+
+				
+				String portName = resultSet.getString("portName");
+
+				boolean isInput = resultSet.getBoolean("isInputPort");
+				String key = workflowId + "/" + processorName + "/"
+						+ (isInput ? "i:" : "o:") + portName + iteration;
+
+				T2Reference ref = getReferenceService().referenceFromString(
+						t2ref);
+				Object resolved = getReferenceService().renderIdentifier(ref,
+						Object.class, getContext());
+				intermediateValues.put(key, resolved);
+			}
+		} finally {
+			resultSet.close();
+		}
+
+		Map<String, Object> expectedIntermediateValues = getExpectedIntermediates();
+		assertMapsEquals("Unexpected intermediate values",
+				expectedIntermediateValues, intermediateValues);
+	}	
 
 
 	protected Map<String, Object> getExpectedIntermediates() {
@@ -701,9 +734,10 @@ public abstract class AbstractDbTestHelper {
 				.prepareStatement(
 						"SELECT value,varNameRef,iteration " +
 						"FROM PortBinding " +
-						"WHERE processorNameRef=? AND wfNameRef=?");
+						"WHERE processorNameRef=? AND wfNameRef=? AND wfInstanceRef=?");
 		statement.setString(1, dataflow.getLocalName());
 		statement.setString(2, dataflow.getInternalIdentifier());
+		statement.setString(3, getFacade().getWorkflowRunId());
 		Map<String, Object> values = new HashMap<String, Object>();
 		ResultSet resultSet = statement.executeQuery();
 		try {
@@ -791,7 +825,8 @@ public abstract class AbstractDbTestHelper {
 			IllegalAccessException, ClassNotFoundException {
 		PreparedStatement statement = getConnection()
 				.prepareStatement(
-						"SELECT portName,isInputPort,depth,resolvedDepth,iterationStrategyOrder from Port WHERE workflowId=? AND processorName=?");
+						"SELECT portId,portName,isInputPort,depth,resolvedDepth,iterationStrategyOrder from Port WHERE workflowId=? AND processorName=?");
+		Set<UUID> portIds = new HashSet<UUID>();
 		for (Dataflow df : workflowPaths.values()) {
 			statement.setString(1, df.getInternalIdentifier());
 			for (Processor p : df.getProcessors()) {
@@ -810,7 +845,7 @@ public abstract class AbstractDbTestHelper {
 					Set<String> foundOutputs = new HashSet<String>();
 
 					while (resultSet.next()) {
-						String varName = resultSet.getString("portName");
+						String portName = resultSet.getString("portName");
 						boolean isInput = resultSet.getBoolean("isInputPort");
 
 						String depth = resultSet
@@ -819,13 +854,17 @@ public abstract class AbstractDbTestHelper {
 								.getString("resolvedDepth");
 						String iterationStrategyOrder = resultSet.getString("iterationStrategyOrder");
 
+						String portId = resultSet.getString("portId");
+						assertTrue("Port ID not unique: " + portId + " for port " + portName, portIds.add(UUID.fromString(portId)));
+						
+						
 						// TODO: Test iterationStrategyOrder
 
 						if (isInput) {
 							ProcessorInputPort inputPort = inputPorts
-									.get(varName);
+									.get(portName);
 							assertNotNull(inputPort);
-							foundInputs.add(varName);
+							foundInputs.add(portName);
 							assertEquals(
 									Integer.toString(inputPort.getDepth()),
 									depth);
@@ -839,9 +878,9 @@ public abstract class AbstractDbTestHelper {
 							}
 						} else {
 							ProcessorOutputPort outputPort = outputPorts
-									.get(varName);
+									.get(portName);
 							assertNotNull(outputPort);
-							foundOutputs.add(varName);
+							foundOutputs.add(portName);
 							assertEquals(Integer
 									.toString(outputPort.getDepth()),
 									depth);
@@ -949,26 +988,25 @@ public abstract class AbstractDbTestHelper {
 			IllegalAccessException, ClassNotFoundException {
 		java.util.Date now = new java.util.Date();
 		PreparedStatement statement = getConnection().prepareStatement(
-				"SELECT instanceID,wfNameRef,timestamp from WfInstance");
+				"SELECT wfNameRef,timestamp from WfInstance WHERE instanceID=?");
+		statement.setString(1, getFacade().getWorkflowRunId());
 		ResultSet resultSet = statement.executeQuery();
 		Map<String, Timestamp> timestamps = new HashMap<String, Timestamp>();
 		try {
 			// debugOutput(resultSet);
 			Set<String> wfIds = new HashSet<String>();
 			while (resultSet.next()) {
-				String instanceId = resultSet.getString("instanceID");
 				String wfNameRef = resultSet.getString("wfNameRef");
 				Timestamp timestamp = resultSet.getTimestamp("timestamp");
 				assertTrue(timestamp.before(now));
 				timestamps.put(wfNameRef, timestamp);
 				wfIds.add(wfNameRef);
-				assertEquals(getFacade().getWorkflowRunId(), instanceId);
 			}
 			Set<String> expectedWfIds = new HashSet<String>();
 			for (Dataflow df : workflowPaths.values()) {
 				expectedWfIds.add(df.getInternalIdentifier());
 			}
-			assertEquals(wfIds, expectedWfIds);
+			assertEquals(expectedWfIds, wfIds);
 			Timestamp topTimestamp = timestamps.get(dataflow
 					.getInternalIdentifier());
 

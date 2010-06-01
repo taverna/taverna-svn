@@ -47,7 +47,9 @@ import org.springframework.context.ApplicationContext;
 public class ProvenanceTestHelper {
 
 	public ProvenanceTestHelper() throws NamingException {
-		makeDataManager();
+		setDataSource();
+		makeProvenanceConnectorAndContext();
+		
 	}
 	
 	private static ApplicationRuntime applicationRuntime = ApplicationRuntime.getInstance();
@@ -139,57 +141,36 @@ public class ProvenanceTestHelper {
 		return deserializer.deserializeDataflow(el);
 	}
 
-	public void makeDataManager() throws NamingException {
-		setDataSource();
+	public void makeProvenanceConnectorAndContext() {
 		if (DB_TYPE.equals("mysql")) {
-			pAccess = new ProvenanceAccess(ProvenanceConnectorType.MYSQL); // creates
+			pAccess = new ProvenanceAccess(ProvenanceConnectorType.MYSQL);
 		} else {
-			pAccess = new ProvenanceAccess(ProvenanceConnectorType.DERBY); // creates
+			pAccess = new ProvenanceAccess(ProvenanceConnectorType.DERBY);
 		}
-		provenanceConnector = pAccess.getProvenanceConnector(); // oc is
-		// initialized
-		// at this point
+		provenanceConnector = pAccess.getProvenanceConnector();
 
 		assertNotNull("Could not find provenanceConnector", provenanceConnector);
 
-		// clear DB if user so chooses
-		if (DB_CLEAR_ON_STARTUP) {
-			provenanceConnector.clearDatabase(DB_CLEAR_ON_STARTUP);
-		}
-
-		// ProvenanceQuery query = provenanceConnector.getQuery();
-		// ProvenanceWriter writer = provenanceConnector.getWriter();
-		// WorkflowDataProcessor wfdp = provenanceConnector.getWfdp();
-
-		ApplicationContext appContext = new RavenAwareClassPathXmlApplicationContext(
-				CONTEXT_XML); //$NON-NLS-1$
-
-		assertNotNull("Could not find appContext", appContext);
-
-		referenceService = (ReferenceService) appContext
-				.getBean("t2reference.service.referenceService"); //$NON-NLS-1$
-		assertNotNull("Could not find referenceService", referenceService);
-
+		referenceService = provenanceConnector.getReferenceService();
+		
 		context = new InvocationContextImpl(referenceService,
 				provenanceConnector);
 		assertNotNull("Could not make context", context);
-		provenanceConnector.setReferenceService(context.getReferenceService()); // CHECK
-		// context.getReferenceService());
+		provenanceConnector.setReferenceService(referenceService);
 		provenanceConnector.setInvocationContext(context);
-
-		// try {
-		// provenanceConnector.getWriter().clearDBStatic();
-		// } catch (SQLException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
+		
+		
+		provenanceConnector.clearDatabase(DB_CLEAR_ON_STARTUP);
+		// Only clear once
+		DB_CLEAR_ON_STARTUP = false;
 	}
 
 	public Dataflow prepareDataflowRun(String dataflowFile) throws IOException,
 			JDOMException, DeserializationException, EditException,
 			InvalidDataflowException {
 		Dataflow dataflow = null;
-
+		// Reset provenance connector
+		provenanceConnector.init();
 		logger.info("Preparing to run workflow:" + dataflowFile);
 		dataflow = loadDataflow(dataflowFile);
 		dataflow.checkValidity();

@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * Traces lineage over iterations.
