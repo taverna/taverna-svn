@@ -325,8 +325,7 @@ public abstract class AbstractQueryTestHelper {
 		assertTrue(! enactments.isEmpty());
 		
 		for (ProcessorEnactment enactment : enactments) {
-			ProvenanceProcessor proc = getProvenanceAccess().getProvenanceProcessor(enactment.getProcessorId());
-			System.err.println(proc.getWorkflowId() + " " + proc.getProcessorName());
+			ProvenanceProcessor proc = getProvenanceAccess().getProvenanceProcessor(enactment.getProcessorId());		
 			String pName = proc.getProcessorName();
 			String processorKey = pName + enactment.getIteration();
 			processors.add(processorKey);
