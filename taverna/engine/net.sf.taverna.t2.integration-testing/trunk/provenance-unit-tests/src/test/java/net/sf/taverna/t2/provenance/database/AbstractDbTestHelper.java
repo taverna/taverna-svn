@@ -38,9 +38,9 @@ import net.sf.taverna.t2.provenance.DataflowTimeoutException;
 import net.sf.taverna.t2.provenance.ProvenanceTestHelper;
 import net.sf.taverna.t2.provenance.api.ProvenanceAccess;
 import net.sf.taverna.t2.provenance.connector.ProvenanceConnector;
-import net.sf.taverna.t2.provenance.connector.ProvenanceConnector.DataBinding;
-import net.sf.taverna.t2.provenance.connector.ProvenanceConnector.DataflowInvocation;
-import net.sf.taverna.t2.provenance.connector.ProvenanceConnector.ProcessorEnactment;
+import net.sf.taverna.t2.provenance.connector.ProvenanceConnector.DataBindingTable;
+import net.sf.taverna.t2.provenance.connector.ProvenanceConnector.DataflowInvocationTable;
+import net.sf.taverna.t2.provenance.connector.ProvenanceConnector.ProcessorEnactmentTable;
 import net.sf.taverna.t2.reference.IdentifiedList;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceServiceException;
@@ -466,16 +466,16 @@ public abstract class AbstractDbTestHelper {
 	@Test
 	public void testProcessorEnactments() throws Exception {
 		PreparedStatement statement = getConnection().prepareStatement(
-				"SELECT " + ProcessorEnactment.enactmentStarted + ","
-						+ ProcessorEnactment.enactmentEnded + ","
-						+ ProcessorEnactment.iteration + ","
+				"SELECT " + ProcessorEnactmentTable.enactmentStarted + ","
+						+ ProcessorEnactmentTable.enactmentEnded + ","
+						+ ProcessorEnactmentTable.iteration + ","
 						+ "Processor.processorName" + " FROM "
-						+ ProcessorEnactment.ProcessorEnactment
+						+ ProcessorEnactmentTable.ProcessorEnactment
 						+ " INNER JOIN " + "Processor" + " ON "
-						+ ProcessorEnactment.ProcessorEnactment + "."
-						+ ProcessorEnactment.processorId + " = "
+						+ ProcessorEnactmentTable.ProcessorEnactment + "."
+						+ ProcessorEnactmentTable.processorId + " = "
 						+ "Processor.processorId" + " WHERE "
-						+ ProcessorEnactment.workflowRunId + "=?");
+						+ ProcessorEnactmentTable.workflowRunId + "=?");
 		statement.setString(1, getFacade().getWorkflowRunId());
 		ResultSet resultSet = statement.executeQuery();
 		
@@ -487,9 +487,9 @@ public abstract class AbstractDbTestHelper {
 		
 		try {
 			while (resultSet.next()) {
-				Timestamp enactmentStarted = resultSet.getTimestamp(ProcessorEnactment.enactmentStarted.name());
-				Timestamp enactmentEnded = resultSet.getTimestamp(ProcessorEnactment.enactmentEnded.name());
-				String iteration = resultSet.getString(ProcessorEnactment.iteration.name());
+				Timestamp enactmentStarted = resultSet.getTimestamp(ProcessorEnactmentTable.enactmentStarted.name());
+				Timestamp enactmentEnded = resultSet.getTimestamp(ProcessorEnactmentTable.enactmentEnded.name());
+				String iteration = resultSet.getString(ProcessorEnactmentTable.iteration.name());
 				String pName = resultSet.getString("processorName");
 				String processorKey = pName + iteration;
 				processorStarted.put(processorKey, enactmentStarted);
@@ -536,26 +536,26 @@ public abstract class AbstractDbTestHelper {
 			String workflowRunId) throws Exception {
 		Map<String, Object> intermediateValues = new HashMap<String, Object>();
 		PreparedStatement statement = getConnection().prepareStatement(
-				"SELECT " + DataBinding.t2Reference + " AS t2ref, "
-						+ ProcessorEnactment.processIdentifier + ", "
-						+ ProcessorEnactment.iteration + ", "
+				"SELECT " + DataBindingTable.t2Reference + " AS t2ref, "
+						+ ProcessorEnactmentTable.processIdentifier + ", "
+						+ ProcessorEnactmentTable.iteration + ", "
 						+ "Port.portName AS portName, "
 						+ "Port.isInputPort AS isInputPort, "
 						+ "Processor.workflowId AS workflowId, "
 						+ "Processor.processorName AS processorName" + " FROM "
-						+ ProcessorEnactment.ProcessorEnactment
+						+ ProcessorEnactmentTable.ProcessorEnactment
 						+ " INNER JOIN " + "Processor" + " ON "
-						+ ProcessorEnactment.ProcessorEnactment + "."
-						+ ProcessorEnactment.processorId + " = "
+						+ ProcessorEnactmentTable.ProcessorEnactment + "."
+						+ ProcessorEnactmentTable.processorId + " = "
 						+ "Processor.processorId" + " INNER JOIN "
-						+ DataBinding.DataBinding + " ON "
-						+ DataBinding.dataBindingId + " IN ("
-						+ ProcessorEnactment.initialInputsDataBindingId + ","
-						+ ProcessorEnactment.finalOutputsDataBindingId + ") "
+						+ DataBindingTable.DataBinding + " ON "
+						+ DataBindingTable.dataBindingId + " IN ("
+						+ ProcessorEnactmentTable.initialInputsDataBindingId + ","
+						+ ProcessorEnactmentTable.finalOutputsDataBindingId + ") "
 						+ " INNER JOIN Port " + " ON Port.portId="
-						+ DataBinding.DataBinding + "." + DataBinding.portId
-						+ " WHERE " + ProcessorEnactment.ProcessorEnactment
-						+ "." + ProcessorEnactment.workflowRunId + "=?");
+						+ DataBindingTable.DataBinding + "." + DataBindingTable.portId
+						+ " WHERE " + ProcessorEnactmentTable.ProcessorEnactment
+						+ "." + ProcessorEnactmentTable.workflowRunId + "=?");
 		statement.setString(1, workflowRunId);
 		ResultSet resultSet = statement.executeQuery();
 
@@ -769,15 +769,15 @@ public abstract class AbstractDbTestHelper {
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
 		Map<String, Object> values = new HashMap<String, Object>();
-		String sql = "SELECT " + "portName," + DataBinding.t2Reference + ",Port.isInputPort"
-				+ "\n FROM " + DataflowInvocation.DataflowInvocation
-				+ " AS DI " + "\n INNER JOIN " + DataBinding.DataBinding
-				+ "\n ON " + DataBinding.dataBindingId + " IN (" + DataflowInvocation.inputsDataBinding + "," 
-				+ DataflowInvocation.outputsDataBinding + ")" 
+		String sql = "SELECT " + "portName," + DataBindingTable.t2Reference + ",Port.isInputPort"
+				+ "\n FROM " + DataflowInvocationTable.DataflowInvocation
+				+ " AS DI " + "\n INNER JOIN " + DataBindingTable.DataBinding
+				+ "\n ON " + DataBindingTable.dataBindingId + " IN (" + DataflowInvocationTable.inputsDataBinding + "," 
+				+ DataflowInvocationTable.outputsDataBinding + ")" 
 				+ "\n INNER JOIN Port " + "\n ON Port.portId="
-				+ DataBinding.DataBinding + "." + DataBinding.portId
-				+ "\n WHERE " + "DI." + DataflowInvocation.workflowRunId
-				+ "=? AND DI." + DataflowInvocation.workflowId + "=?";
+				+ DataBindingTable.DataBinding + "." + DataBindingTable.portId
+				+ "\n WHERE " + "DI." + DataflowInvocationTable.workflowRunId
+				+ "=? AND DI." + DataflowInvocationTable.workflowId + "=?";
 		//System.out.println(sql);
 		PreparedStatement statement = getConnection()
 				.prepareStatement(
