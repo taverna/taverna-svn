@@ -36,66 +36,6 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 
 	private static Logger logger = Logger
 			.getLogger(DerbyProvenanceConnector.class);
-	private static final String createTableDatalink = "CREATE TABLE Datalink ("
-			+ "sourcePortName varchar(100) NOT NULL ,"
-			+ "sourcePortId varchar(36) NOT NULL ,"
-			+ "destinationPortId varchar(36) NOT NULL ,"
-			+ "destinationPortName varchar(100) NOT NULL,"
-			+ "sourceProcessorName varchar(100) NOT NULL,"
-			+ "destinationProcessorName varchar(100) NOT NULL,"
-			+ "workflowId varchar(36) NOT NULL,"
-			+ " PRIMARY KEY  (sourcePortId,destinationPortId,workflowId))";
-	private static final String createTableCollection = "CREATE TABLE Collection ("
-			+ "collID varchar(100) NOT NULL,"
-			+ "parentCollIDRef varchar(100) NOT NULL ,"
-			+ "workflowRunId varchar(36) NOT NULL,"
-			+ "processorNameRef varchar(100) NOT NULL,"
-			+ "portName varchar(100) NOT NULL,"
-			+ "iteration varchar(2000) NOT NULL default '',"
-			+ " PRIMARY KEY (collID,workflowRunId,processorNameRef,portName,parentCollIDRef,iteration))";	
-	private static final String createTableProcessor = "CREATE TABLE Processor ("
-			+ "processorId varchar(36) NOT NULL,"
-			+ "processorName varchar(100) NOT NULL,"
-			+ "workflowId varchar(36) NOT NULL ,"
-			+ "firstActivityClass varchar(100) default NULL,"
-			+ "isTopLevel smallint, "
-			+ "PRIMARY KEY (processorId),"
-			+ "CONSTRAINT processor_constraint UNIQUE (processorName,workflowId))";
-	private static final String createTablePort = "CREATE TABLE Port ("
-			+ "portId varchar(36) NOT NULL,"
-			+ "processorId varchar(36),"
-			+ "portName varchar(100) NOT NULL,"			
-			+ "isInputPort smallint NOT NULL ,"
-			+ "processorName varchar(100) NOT NULL,"
-			+ "workflowId varchar(36) NOT NULL," 
-			+ "depth int,"
-			+ "resolvedDepth int," 
-			+ "iterationStrategyOrder smallint, "
-			+ "PRIMARY KEY (portId),"
-			+ "CONSTRAINT port_constraint UNIQUE (portName,isInputPort,processorName,workflowId))";
-	private static final String createTablePortBinding = "CREATE TABLE PortBinding ("
-			+ "portName varchar(100) NOT NULL,"
-			+ "workflowRunId varchar(100) NOT NULL,"
-			+ "value varchar(100) default NULL,"
-			+ "collIDRef varchar(100),"
-			+ "positionInColl int NOT NULL,"
-			+ "processorNameRef varchar(100) NOT NULL,"
-			+ "valueType varchar(50) default NULL,"
-			+ "ref varchar(100) default NULL,"
-			+ "iteration varchar(2000) NOT NULL,"
-			+ "workflowId varchar(36),"
-			+ "PRIMARY KEY (portName,workflowRunId,processorNameRef,iteration, workflowId))";
-	private static final String createTableWorkflowRun = "CREATE TABLE WorkflowRun ("
-			+ "workflowRunId varchar(36) NOT NULL,"
-			+ "workflowId varchar(36) NOT NULL,"
-			+ "timestamp timestamp NOT NULL default CURRENT_TIMESTAMP,"
-			+ " PRIMARY KEY (workflowRunId, workflowId))";
-	private static final String createTableWorkflow = "CREATE TABLE Workflow ("
-			+ "workflowId varchar(36) NOT NULL," + "parentWorkflowId varchar(100),"
-			+ "externalName varchar(100)," + "dataflow blob, "
-			+ "PRIMARY KEY  (workflowId))";
-	
-	// Also see tables in ProvenanceConnector
 	
 	private final String TABLE_EXISTS_STATE = "X0Y32";
 
@@ -128,65 +68,65 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 				logger.warn("Could not create database: ", e);
 			}
 			try {
-				stmt.executeUpdate(createTableDatalink);
+				stmt.executeUpdate(DataLinkTable.getCreateTable());
 			} catch (SQLException e) {
 				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
 					logger.warn("Could not create table Datalink : ", e);
 			}
 			try {
-				stmt.executeUpdate(createTableCollection);
+				stmt.executeUpdate(CollectionTable.getCreateTable());
 			} catch (SQLException e) {
 				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
 					logger.warn("Could not create table Collection : ", e);
 			}			
 			try {
-				stmt.executeUpdate(createTableProcessor);
+				stmt.executeUpdate(ProcessorTable.getCreateTable());
 			} catch (SQLException e) {
 				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
 					logger.warn("Could not create table Processor : ", e);
 			}
 			try {
-				stmt.executeUpdate(createTablePort);
+				stmt.executeUpdate(PortTable.getCreateTable());
 			} catch (SQLException e) {
 				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
 					logger.warn("Could not create table Port : ", e);
 			}
 			try {
-				stmt.executeUpdate(createTablePortBinding);
+				stmt.executeUpdate(PortBindingTable.getCreateTable());
 			} catch (SQLException e) {
 				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
 					logger.warn("Could not create table Port Binding : ", e);
 			}
 			try {
-				stmt.executeUpdate(createTableWorkflowRun);
+				stmt.executeUpdate(WorkflowRunTable.getCreateTable());
 			} catch (SQLException e) {
 				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
 					logger.warn("Could not create table WorkflowRun : ", e);
 			}
 			try {
-				stmt.executeUpdate(createTableWorkflow);
+				stmt.executeUpdate(WorkflowTable.getCreateTable());
 			} catch (SQLException e) {
 				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
 					logger.warn("Could not create table Workflow : ", e);
 			}
 			
 			try {
-				stmt.executeUpdate(ProcessorEnactment.getCreateTable());
+				stmt.executeUpdate(ProcessorEnactmentTable.getCreateTable());
 			} catch (SQLException e) {
 				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
 					logger.warn("Could not create table ProcessorEnactment : ", e);
 			}
 
 			try {
-				stmt.executeUpdate(ServiceInvocation.getCreateTable());
+				stmt.executeUpdate(ServiceInvocationTable.getCreateTable());
 			} catch (SQLException e) {
 				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
 					logger.warn("Could not create table "
-							+ ServiceInvocation.ServiceInvocation, e);
+							+ ServiceInvocationTable.ServiceInvocation, e);
 			}
 
 			try {
-				stmt.executeUpdate(DataflowInvocation.getCreateTable());
+				stmt.executeUpdate(DataflowInvocationTable.getCreateTable());
 			} catch (SQLException e) {
 				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
 					logger.warn("Could not create table DataflowInvocation : ", e);
@@ -194,18 +134,18 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 
 			
 			try {
-				stmt.executeUpdate(Activity.getCreateTable());
+				stmt.executeUpdate(ActivityTable.getCreateTable());
 			} catch (SQLException e) {
 				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
 					logger.warn("Could not create table "
-							+ Activity.Activity, e);
+							+ ActivityTable.Activity, e);
 			}
 			try {
-				stmt.executeUpdate(DataBinding.getCreateTable());
+				stmt.executeUpdate(DataBindingTable.getCreateTable());
 			} catch (SQLException e) {
 				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
 					logger.warn("Could not create table "
-							+ DataBinding.DataBinding, e);
+							+ DataBindingTable.DataBinding, e);
 			}
 			
 			

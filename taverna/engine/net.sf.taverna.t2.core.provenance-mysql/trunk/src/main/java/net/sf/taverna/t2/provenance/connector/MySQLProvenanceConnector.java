@@ -30,9 +30,9 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.taverna.t2.provenance.api.ProvenanceConnectorType;
-import net.sf.taverna.t2.provenance.connector.ProvenanceConnector.DataflowInvocation;
-import net.sf.taverna.t2.provenance.connector.ProvenanceConnector.ProcessorEnactment;
-import net.sf.taverna.t2.provenance.connector.ProvenanceConnector.ServiceInvocation;
+import net.sf.taverna.t2.provenance.connector.ProvenanceConnector.DataflowInvocationTable;
+import net.sf.taverna.t2.provenance.connector.ProvenanceConnector.ProcessorEnactmentTable;
+import net.sf.taverna.t2.provenance.connector.ProvenanceConnector.ServiceInvocationTable;
 import net.sf.taverna.t2.provenance.item.IterationProvenanceItem;
 import net.sf.taverna.t2.provenance.item.ProvenanceItem;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
@@ -54,77 +54,6 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 	private static final String deleteDB = "drop database T2Provenance;";
 
 	private static final String createDB = "CREATE DATABASE IF NOT EXISTS T2Provenance";
-
-	private static final String createTableDatalink = "CREATE TABLE IF NOT EXISTS  `T2Provenance`.`Datalink` ("
-		+ "`sourcePortName` varchar(100) NOT NULL COMMENT 'ref. to var name for source of datalink',"
-		+ "`destinationPortName` varchar(100) NOT NULL COMMENT 'ref. to var name for sink of datalink',"
-		+ "`sourceProcessorName` varchar(100) NOT NULL,"
-		+ "`destinationProcessorName` varchar(100) NOT NULL,"
-		+ "`workflowId` varchar(100) NOT NULL,"
-		+ "PRIMARY KEY  USING BTREE (`sourcePortName`,`destinationPortName`,`sourceProcessorName`,`destinationProcessorName`,`workflowId`)"
-		+ ") ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='static -- datalink between two processors';";
-
-	private static final String createTableCollection = "CREATE TABLE  IF NOT EXISTS `T2Provenance`.`Collection` ("
-		+ "`collID` varchar(100) NOT NULL COMMENT 'ID of a list (collection). not sure yet what this looks like... ',"
-		+ "`parentCollIDRef` varchar(100) NOT NULL default 'TOP' COMMENT 'used for list nesting.\ndefault is dummy list TOP since this attr. is key',"
-		+ "`workflowRunId` varchar(100) NOT NULL,"
-		+ "`processorNameRef` varchar(100) NOT NULL,"
-		+ "`portName` varchar(100) NOT NULL,"
-		+ "`iteration` char(10) NOT NULL default '',"
-		+ " PRIMARY KEY  USING BTREE (`collID`,`workflowRunId`,`processorNameRef`,`portName`,`parentCollIDRef`,`iteration`)"
-		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='dynamic -- contains IDs of lists (T2 collections)';";
-
-	private static final String createTableProcessor = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Processor` ("
-		+ "`processorId` varchar(36) NOT NULL,"
-		+ "`processorName` varchar(100) NOT NULL,"
-		+ "`workflowId` varchar(100) NOT NULL COMMENT 'ref to WorkflowRun.workflowRunId',"
-		+ "`firstActivityClass` varchar(100) default NULL COMMENT 'processor type',"
-		+ "`isTopLevel` tinyint(1) default '0',"
-		+ "PRIMARY KEY  (`processorId`)"
-		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='static -- all processors for all workflows, by name';";
-
-	private static final String createTablePort = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Port` ("
-		+ "`portId` varchar(36) NOT NULL,"
-		+ "`processorId` varchar(36),"
-		+ "`portName` varchar(100) NOT NULL,"
-		+ "`isInputPort` tinyint(1) NOT NULL COMMENT '1 = input, 0 = output',"
-		+ "`processorName` varchar(100) NOT NULL COMMENT 'reference to the processor',"
-		+ "`workflowId` varchar(100) NOT NULL,"
-		+ "`depth` int(10) unsigned default '0',"
-		+ "`resolvedDepth` int(10) unsigned default NULL,"
-		+ "`iterationStrategyOrder` tinyint(4) default NULL,"
-		+ "PRIMARY KEY  USING BTREE (`portId`)"
-		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='static -- input and output variables (processor port names i';";
-
-	private static final String createTablePortBinding = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`PortBinding` ("
-		+ "`portName` varchar(100) NOT NULL COMMENT 'ref to var name',"
-		+ "`workflowRunId` varchar(100) NOT NULL COMMENT 'ref to execution ID',"
-		+ "`value` varchar(100) default NULL COMMENT 'ref to value. Either a string value or a string ref (URI) to a value',"
-		+ "`collIDRef` varchar(100) default 'TOP',"
-		+ "`positionInColl` int(10) unsigned NOT NULL default '1' COMMENT 'position within collection. default is 1',"
-		+ "`processorNameRef` varchar(100) NOT NULL,"
-		+ "`valueType` varchar(50) default NULL,"
-		+ "`ref` varchar(100) default NULL,"
-		+ "`iteration` char(10) NOT NULL default '',"
-		+ "  `workflowId` varchar(100) NOT NULL, "
-		+ "PRIMARY KEY  USING BTREE (`portName`,`workflowRunId`,`processorNameRef`,`iteration`, `workflowId`),"
-		+ "KEY `collectionFK` (`workflowRunId`,`processorNameRef`,`portName`,`collIDRef`)"
-		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='dynamic -- binding of variables to values ';";
-
-	private static final String createTableWorkflowRun = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`WorkflowRun` ("
-		+ "`workflowRunId` varchar(100) NOT NULL COMMENT 'T2-generated ID for one execution',"
-		+ "`workflowId` varchar(100) NOT NULL COMMENT 'ref to name of the workflow being executed',"
-		+ "`timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP COMMENT 'when execution has occurred',"
-		+ "PRIMARY KEY  (`workflowRunId`, `workflowId`)"
-		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='dynamic -- execution of a workflow';";
-
-	private static final String createTableWorkflow = "CREATE TABLE IF NOT EXISTS `T2Provenance`.`Workflow` ("
-		+ "`workflowId` varchar(100) NOT NULL, `parentWorkflowId` varchar(100) default NULL, `externalName` varchar(100) default NULL, `dataflow` longblob,"
-		+ "PRIMARY KEY  (`workflowId`)"
-		+ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='static -- all known workflows by name';";
-
-
-	// Also see tables in ProvenanceConnector
 
     public MySQLProvenanceConnector() {
     	super();
@@ -219,19 +148,19 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
             connection=getConnection();
 			stmt = connection.createStatement();			
 			stmt.executeUpdate(createDB);			
-			stmt.executeUpdate(createTableDatalink);			
-			stmt.executeUpdate(createTableCollection);			
-			stmt.executeUpdate(createTableProcessor);			
-			stmt.executeUpdate(createTablePort);			
-			stmt.executeUpdate(createTablePortBinding);			
-			stmt.executeUpdate(createTableWorkflowRun);			
-			stmt.executeUpdate(createTableWorkflow);
 			String engineAndCharset = " ENGINE=MyISAM DEFAULT CHARSET=utf8";
-			stmt.executeUpdate(ProcessorEnactment.getCreateTable() + engineAndCharset);
-			stmt.executeUpdate(ServiceInvocation.getCreateTable() + engineAndCharset);
-			stmt.executeUpdate(Activity.getCreateTable() + engineAndCharset);
-			stmt.executeUpdate(DataBinding.getCreateTable() + engineAndCharset);
-			stmt.executeUpdate(DataflowInvocation.getCreateTable() + engineAndCharset);
+			stmt.executeUpdate(DataLinkTable.getCreateTable() + engineAndCharset);			
+			stmt.executeUpdate(CollectionTable.getCreateTable() + engineAndCharset);			
+			stmt.executeUpdate(ProcessorTable.getCreateTable() + engineAndCharset);			
+			stmt.executeUpdate(PortTable.getCreateTable() + engineAndCharset);			
+			stmt.executeUpdate(PortBindingTable.getCreateTable() + engineAndCharset);			
+			stmt.executeUpdate(WorkflowRunTable.getCreateTable() + engineAndCharset);			
+			stmt.executeUpdate(WorkflowTable.getCreateTable() + engineAndCharset);
+			stmt.executeUpdate(ProcessorEnactmentTable.getCreateTable() + engineAndCharset);
+			stmt.executeUpdate(ServiceInvocationTable.getCreateTable() + engineAndCharset);
+			stmt.executeUpdate(ActivityTable.getCreateTable() + engineAndCharset);
+			stmt.executeUpdate(DataBindingTable.getCreateTable() + engineAndCharset);
+			stmt.executeUpdate(DataflowInvocationTable.getCreateTable() + engineAndCharset);
 			
 			
 		} catch (SQLException e) {
