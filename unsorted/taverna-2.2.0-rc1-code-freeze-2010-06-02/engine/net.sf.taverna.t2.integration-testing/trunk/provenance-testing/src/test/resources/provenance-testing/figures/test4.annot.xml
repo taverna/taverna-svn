@@ -1,5 +1,0 @@
-<annotations>
-  <processor  name="P2">
-     <annotation type="index-preserving"/>
-  </processor>
-</annotations>

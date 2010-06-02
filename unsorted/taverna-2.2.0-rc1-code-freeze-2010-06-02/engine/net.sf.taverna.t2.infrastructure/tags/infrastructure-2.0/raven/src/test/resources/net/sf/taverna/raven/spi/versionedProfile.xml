@@ -1,6 +1,0 @@
-<profile version="0.1">
-	<artifact groupId="group1" artifactId="artifact1" version="1.0.0"/>
-    <!-- Different version than in goodProfile.xml  -->
-	<artifact groupId="group2" artifactId="artifact2" version="1.2.0"/>
-	<artifact groupId="group3" artifactId="artifact3" version="3.11"/>
-</profile>
