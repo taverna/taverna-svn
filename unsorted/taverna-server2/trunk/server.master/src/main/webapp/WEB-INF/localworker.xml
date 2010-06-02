@@ -12,7 +12,9 @@
 		<property name="firstArguments">
 			<list>
 				<value>java</value>
-				<value>org.taverna.server.worker.WorkerEntry</value>
+				<value>-jar</value>
+				<value>TavernaServer.Worker.0.0.1-SNAPSHOT-jar-with-dependencies.jar</value>
+				<value>./executeworkflow.sh</value>
 			</list>
 		</property>
 	</bean>

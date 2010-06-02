@@ -30,7 +30,8 @@ import org.taverna.server.master.interfaces.RunStore;
 import org.taverna.server.master.interfaces.TavernaRun;
 
 @ManagedResource(objectName = "Taverna:group=Server,name=Factory", description = "The factory for runs")
-public abstract class AbstractRemoteRunFactory implements ListenerFactory, RunFactory, Policy, RunStore {
+public abstract class AbstractRemoteRunFactory implements ListenerFactory,
+		RunFactory, Policy, RunStore {
 	static final Log log = LogFactory.getLog("Taverna.Server.WorkerFactory");
 
 	String name;
@@ -84,14 +85,27 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory, RunFa
 	@Override
 	public TavernaRun create(Principal creator, SCUFL workflow) {
 		try {
-			return new RemoteRunDelegate(creator, workflow, getRealRun(creator, workflow));
+			return new RemoteRunDelegate(creator, workflow, getRealRun(creator,
+					workflow));
 		} catch (Exception e) {
 			log.warn("failed to build run instance", e);
 			throw new RuntimeException(e);
 		}
 	}
 
-	protected abstract RemoteSingleRun getRealRun(Principal creator, SCUFL workflow) throws Exception;
+	/**
+	 * Gets the RMI connector for a new run.
+	 * 
+	 * @param creator
+	 *            Who is creating the workflow run.
+	 * @param workflow
+	 *            What workflow are they instantiating.
+	 * @return The remote interface to the run.
+	 * @throws Exception
+	 *             Just about anything can go wrong...
+	 */
+	protected abstract RemoteSingleRun getRealRun(Principal creator,
+			SCUFL workflow) throws Exception;
 
 	@ManagedAttribute(description = "The name of the current run.", currencyTimeLimit = 10)
 	public String getCurrentRunName() {
