@@ -1,0 +1,14 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.sun.org.apache</groupId>
+  <artifactId>jaxp-ri</artifactId>
+  <version>1.4</version>
+  <dependencies>
+    <dependency>
+      <groupId>javax.xml.parsers</groupId>
+      <artifactId>jaxp-api</artifactId>
+      <version>1.4</version>
+    </dependency>
+  </dependencies>
+</project>
+

@@ -1,0 +1,3 @@
+net.sf.taverna.t2.renderers.JMolRenderer
+net.sf.taverna.t2.renderers.SeqVistaRenderer
+net.sf.taverna.t2.renderers.SVGRenderer
