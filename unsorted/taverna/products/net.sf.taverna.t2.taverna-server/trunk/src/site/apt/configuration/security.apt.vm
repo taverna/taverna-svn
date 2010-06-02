@@ -1,0 +1,49 @@
+ ----------------------
+ Security Configuration
+ ----------------------
+ David Withers
+ ----------------------
+ 
+Security Configuration
+
+ <$project.name> is secured using {{{http://static.springsource.org/spring-security/site/index.html}Spring Security}}.
+The default configuration uses HTTP BASIC authentication.
+
+
+*Enabling Security
+
+ To enable security uncomment the security sections of the WEB-INF/web.xml and WEB-INF/applicationContext.xml files.
+
+ WEB-INF/web.xml
+
++-----------------------------------------------------+
+<!--================= Security =================-->
+
+<!--
+<filter>
+  <filter-name>springSecurityFilterChain</filter-name>
+  <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+</filter>
+
+<filter-mapping >
+  <filter-name>springSecurityFilterChain</filter-name>
+  <url-pattern>/*</url-pattern>
+</filter-mapping>
+-->
+
+<!--============================================-->
++-----------------------------------------------------+
+
+ WEB-INF/applicationContext.xml
+
++-----------------------------------------------------+
+<!--================= Security =================-->
+	
+<!--<import resource="security.xml" />-->
+
+<!--============================================-->
++-----------------------------------------------------+
+
+*Authentication
+
+*Authorization

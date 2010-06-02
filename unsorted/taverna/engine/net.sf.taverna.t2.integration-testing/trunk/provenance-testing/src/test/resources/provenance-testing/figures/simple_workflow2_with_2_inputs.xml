@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:7b96d548-4f3a-4304-b4cd-15f0ef9dbf7d" author="" title="mpTest1" />
+  <s:processor name="concat1">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+  </s:processor>
+  <s:processor name="concat2">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+  </s:processor>
+  <s:processor name="separator" boring="true">
+    <s:stringconstant>%</s:stringconstant>
+  </s:processor>
+  <s:processor name="split">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+  </s:processor>
+  <s:link source="s1" sink="concat1:string1" />
+  <s:link source="s2" sink="concat2:string2" />
+  <s:link source="concat1:output" sink="concat2:string1" />
+  <s:link source="concat2:output" sink="split:string" />
+  <s:link source="separator:value" sink="concat1:string2" />
+  <s:link source="separator:value" sink="split:regex" />
+  <s:link source="split:split" sink="s3" />
+  <s:source name="s1" />
+  <s:source name="s2" />
+  <s:sink name="s3" />
+</s:scufl>
+

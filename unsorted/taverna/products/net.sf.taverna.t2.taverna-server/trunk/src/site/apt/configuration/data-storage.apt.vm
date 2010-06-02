@@ -1,0 +1,122 @@
+ --------------------------
+ Data Storage Configuration
+ --------------------------
+ David Withers
+ --------------------------
+ 
+Data Storage Configuration
+
+ <${project.name}> can be configured to store data in a database or in-memory.
+ 
+ The data storage for <${project.name}> is configured in the Data Storage section of the WEB-INF/applicationContext.xml file.
+
++-----------------------------------------------------+
+<!--============== Data Storage  ===============-->
+	
+<!--<import resource="inmemory.xml" />-->
+<import resource="hibernate.xml" />
+
+<!--============================================-->
++-----------------------------------------------------+
+
+ <<In-memory data storage is for testing and evaluation purposes only. Do not use in-memory data storage for a production system.>>
+
+Data Source
+
+ When using a database to store data a data source must be configured. The data source specifies which database is
+to be used. The default configuration uses a Hypersonic database that will be created when <${project.name}> is first
+started. It is recommended that you configure <${project.name}> to use your preferred database for a production system.
+The data source for <${project.name}> is configured in the Data Source section of the WEB-INF/applicationContext.xml file.
+
++--------------------------------------------------------------------------+
+<!--=============== Data Source ================-->
+
+<bean id="server.dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+	destroy-method="close">
+  <property name="driverClassName" value="org.hsqldb.jdbcDriver" />
+  <property name="url" value="jdbc:hsqldb:file:${server.data}/hsqldb" />
+  <property name="username" value="sa" />
+  <property name="password" value="" />
+</bean>    
+
+<!--============================================-->
++--------------------------------------------------------------------------+
+
+Hibernate Dialect
+
+ The Hibernate dialect has to match the database configured by the data source. The hibernate dialect is configured
+in the Session Factory section of the WEB-INF/hibernate.xml file. Set the <<hibernate.dialect>> property to the
+correct Dialect for your database (listed below).
+
++-----------------------------------------------------------------------------------------------+
+<!--============= Session Factory ==============-->
+	
+<bean id="hibernate.sessionFactory"
+	class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+	<property name="dataSource" ref="server.dataSource" />
+	<property name="mappingResources">
+		<list>
+			<value>hibernate/Data.hbm.xml</value>
+			<value>hibernate/Job.hbm.xml</value>
+			<value>hibernate/Workflow.hbm.xml</value>
+		</list>
+	</property>
+	<property name="hibernateProperties">
+		<props>
+			<prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
+			<prop key="hibernate.current_session_context_class">thread</prop>
+			<prop key="hibernate.cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
+			<prop key="hibernate.hbm2ddl.auto">create</prop>
+		</props>
+	</property>
+</bean>
++-----------------------------------------------------------------------------------------------+
+
+*---------------------+--------------------------------------------+
+||RDBMS  	          ||Dialect                                    |
+*---------------------+--------------------------------------------+
+|DB2                  |org.hibernate.dialect.DB2Dialect            |
+*---------------------+--------------------------------------------+
+|DB2 AS/400           |org.hibernate.dialect.DB2400Dialect         |
+*---------------------+--------------------------------------------+
+|DB2 OS390            |org.hibernate.dialect.DB2390Dialect         |
+*---------------------+--------------------------------------------+
+|PostgreSQL           |org.hibernate.dialect.PostgreSQLDialect     |
+*---------------------+--------------------------------------------+
+|MySQL                |org.hibernate.dialect.MySQLDialect          |
+*---------------------+--------------------------------------------+
+|MySQL with InnoDB    |org.hibernate.dialect.MySQLInnoDBDialect    |
+*---------------------+--------------------------------------------+
+|MySQL with MyISAM    |org.hibernate.dialect.MySQLMyISAMDialect    |
+*---------------------+--------------------------------------------+
+|Oracle (any version) |org.hibernate.dialect.OracleDialect         |
+*---------------------+--------------------------------------------+
+|Oracle 9i/10g        |org.hibernate.dialect.Oracle9Dialect        |
+*---------------------+--------------------------------------------+
+|Sybase               |org.hibernate.dialect.SybaseDialect         |
+*---------------------+--------------------------------------------+
+|Sybase Anywhere      |org.hibernate.dialect.SybaseAnywhereDialect |
+*---------------------+--------------------------------------------+
+|Microsoft SQL Server |org.hibernate.dialect.SQLServerDialect      |
+*---------------------+--------------------------------------------+
+|SAP DB               |org.hibernate.dialect.SAPDBDialect          |
+*---------------------+--------------------------------------------+
+|Informix             |org.hibernate.dialect.InformixDialect       |
+*---------------------+--------------------------------------------+
+|HypersonicSQL        |org.hibernate.dialect.HSQLDialect           |
+*---------------------+--------------------------------------------+
+|Ingres               |org.hibernate.dialect.IngresDialect         |
+*---------------------+--------------------------------------------+
+|Progress             |org.hibernate.dialect.ProgressDialect       |
+*---------------------+--------------------------------------------+
+|Mckoi SQL            |org.hibernate.dialect.MckoiDialect          |
+*---------------------+--------------------------------------------+
+|Interbase            |org.hibernate.dialect.InterbaseDialect      |
+*---------------------+--------------------------------------------+
+|Pointbase            |org.hibernate.dialect.PointbaseDialect      |
+*---------------------+--------------------------------------------+
+|FrontBase            |org.hibernate.dialect.FrontbaseDialect      |
+*---------------------+--------------------------------------------+
+|Firebird             |org.hibernate.dialect.FirebirdDialect       |
+*---------------------+--------------------------------------------+
+

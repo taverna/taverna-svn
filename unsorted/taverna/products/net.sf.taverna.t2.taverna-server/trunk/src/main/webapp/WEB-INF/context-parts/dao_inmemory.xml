@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+	<!-- Dao implementations using a simple in-memory data store -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:raven="http://taverna.sf.net/schema/artifact-support-0.2"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-2.5.xsd
+   	http://taverna.sf.net/schema/artifact-support-0.2 
+	http://taverna.sf.net/schema/artifact-support/artifact-support-0.2.xsd">
+
+	<bean id="t2.data.dao.referenceSetDao"
+		raven:artifact="net.sf.taverna.t2:reference-impl:${t2core.reference.version}"
+		raven:repository="platform.raven.repository"
+		class="net.sf.taverna.t2.reference.impl.InMemoryReferenceSetDao">
+	</bean>
+
+	<bean id="t2.data.dao.errorDocumentDao"
+		raven:artifact="net.sf.taverna.t2:reference-impl:${t2core.reference.version}"
+		raven:repository="platform.raven.repository"
+		class="net.sf.taverna.t2.reference.impl.InMemoryErrorDocumentDao">
+	</bean>
+
+	<bean id="t2.data.dao.listDao"
+		raven:artifact="net.sf.taverna.t2:reference-impl:${t2core.reference.version}"
+		raven:repository="platform.raven.repository" class="net.sf.taverna.t2.reference.impl.InMemoryListDao">
+	</bean>
+
+</beans>

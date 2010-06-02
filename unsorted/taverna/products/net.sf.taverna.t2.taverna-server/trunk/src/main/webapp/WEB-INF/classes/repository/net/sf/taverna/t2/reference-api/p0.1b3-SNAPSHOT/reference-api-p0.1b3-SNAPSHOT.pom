@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>core</artifactId>
+		<version>p0.1b3-SNAPSHOT</version>
+	</parent>
+	<groupId>net.sf.taverna.t2</groupId>
+	<artifactId>reference-api</artifactId>
+	<name>Taverna 2 Reference Service API</name>
+	<description>
+		Core APIs and extension points for the T2 reference manager.
+		This includes the SPIs for external references, translators and
+		publishers.
+	</description>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>${t2.spring.version}</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+</project>

@@ -1,0 +1,9 @@
+<?xml version="1.0"?><project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.cgiar.icis</groupId>
+  <artifactId>icis-pedigree</artifactId>
+  <version>2006</version>
+  <distributionManagement>
+    <status>deployed</status>
+  </distributionManagement>
+</project>
