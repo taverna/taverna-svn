@@ -39,7 +39,7 @@ public class ProcessorPortSameNameDbTest extends AbstractDbTestHelper {
 	protected Map<String, Object> getExpectedIntermediateValues() {
 		Map<String, Object> expectedIntermediateValues = new HashMap<String, Object>();
 
-		String df0 = dataflow.getInternalIdentifier() + "/";
+		String df0 = dataflow.getIdentifier() + "/";
 
 		expectedIntermediateValues.put(df0 + "input/o:value[]", "input");
 		expectedIntermediateValues.put(df0 + "T2_1051/i:parameter[]", "input");
