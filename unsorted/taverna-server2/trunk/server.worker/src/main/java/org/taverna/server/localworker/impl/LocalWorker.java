@@ -61,14 +61,27 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 		status = Initialized;
 	}
 
+	private static final String usage = "java -jar "
+			+ "TavernaServer.Worker.0.0.1-SNAPSHOT-jar-with-dependencies.jar"
+			+ " workflowExecScript UUID";
+
 	/**
 	 * @param args
+	 *            The arguments from the command line invocation.
+	 * @throws Exception
+	 *             If we can't connect to the RMI registry, or if we can't read
+	 *             the workflow, or if we can't build the worker instance, or
+	 *             register it. Also if the arguments are wrong.
 	 */
 	public static void main(String[] args) throws Exception {
-		String name = args[0];
+		if (args.length != 2) {
+			throw new Exception("wrong # args: must be \"" + usage + "\"");
+		}
+		String command = args[0];
+		String name = args[1];
 		registry = getRegistry();
 		workflow = IOUtils.toString(System.in);
-		LocalWorker w = new LocalWorker(name, args[1]);
+		LocalWorker w = new LocalWorker(name, command);
 		registry.bind(name, w);
 	}
 
