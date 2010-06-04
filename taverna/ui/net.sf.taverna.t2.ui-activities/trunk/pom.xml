@@ -43,6 +43,7 @@
 		<module>soaplab-activity-ui</module>
 		<module>spreadsheet-import-activity-ui</module>
 		<module>stringconstant-activity-ui</module>
+		<module>unrecognized-activity-ui</module>
 		<module>wsdl-activity-ui</module>
 	</modules>
 	<repositories>
