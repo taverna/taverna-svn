@@ -18,7 +18,7 @@ public class NoUpdateException extends Exception {
 		super("not permitted to update");
 	}
 
-	NoUpdateException(String msg) {
+	public NoUpdateException(String msg) {
 		super(msg);
 	}
 }

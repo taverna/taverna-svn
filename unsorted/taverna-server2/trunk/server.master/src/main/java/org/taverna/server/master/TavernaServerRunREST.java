@@ -1,7 +1,5 @@
 package org.taverna.server.master;
 
-import java.util.Date;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -70,7 +68,7 @@ public interface TavernaServerRunREST {
 	@GET
 	@Path("expiry")
 	@Description("Gives the time when the workflow run becomes eligible for automatic deletion.")
-	public Date getExpiry();
+	public String getExpiry();
 
 	/**
 	 * Sets the time when the workflow run becomes eligible for automatic
@@ -88,7 +86,7 @@ public interface TavernaServerRunREST {
 	@PUT
 	@Path("expiry")
 	@Description("Sets the time when the workflow run becomes eligible for automatic deletion.")
-	public Response setExpiry(Date expiry, @Context UriInfo ui)
+	public Response setExpiry(String expiry, @Context UriInfo ui)
 			throws NoUpdateException;
 
 	/**
@@ -100,7 +98,7 @@ public interface TavernaServerRunREST {
 	@Path("status")
 	@Produces("text/plain")
 	@Description("Gives the current status of the workflow run.")
-	public Status getStatus();
+	public String getStatus();
 
 	/**
 	 * Sets the status of the workflow run. This does nothing if the status code
@@ -118,7 +116,7 @@ public interface TavernaServerRunREST {
 	@Path("status")
 	@Consumes("text/plain")
 	@Description("Attempts to update the status of the workflow run.")
-	public Response setStatus(Status status, @Context UriInfo ui)
+	public Response setStatus(String status, @Context UriInfo ui)
 			throws NoUpdateException, BadStateChangeException;
 
 	/**

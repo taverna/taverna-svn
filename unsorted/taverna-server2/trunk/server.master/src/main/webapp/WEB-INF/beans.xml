@@ -25,8 +25,8 @@
 		<property name="runStore" ref="runCatalog" />
 	</bean>
 
-	<import resource="example.xml"/>
-	<!-- <import resource="localworker.xml"/> -->
+<!--	<import resource="example.xml"/>-->
+	 <import resource="localworker.xml"/> 
 
 	<jaxws:endpoint id="master_SOAP" implementor="#tserv"
 		address="/soap" />

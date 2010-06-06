@@ -11,10 +11,9 @@
 		</description>
 		<property name="firstArguments">
 			<list>
-				<value>java</value>
 				<value>-jar</value>
-				<value>TavernaServer.Worker.0.0.1-SNAPSHOT-jar-with-dependencies.jar</value>
-				<value>./executeworkflow.sh</value>
+				<value>/Users/dkf/Documents/workspace/server.worker/target/TavernaServer.Worker.0.0.1-SNAPSHOT-jar-with-dependencies.jar</value>
+				<value>/Users/dkf/Downloads/taverna-nightly-2.1-SNAPSHOT-20100526/executeworkflow.sh</value>
 			</list>
 		</property>
 	</bean>

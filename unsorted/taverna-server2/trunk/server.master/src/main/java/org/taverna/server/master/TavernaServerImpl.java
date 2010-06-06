@@ -9,6 +9,9 @@ import static javax.ws.rs.core.Response.temporaryRedirect;
 import static org.taverna.server.master.DirEntryReference.makeDirEntryReference;
 
 import java.security.Principal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,6 +33,7 @@ import org.taverna.server.master.DescriptionElement.Uri;
 import org.taverna.server.master.exceptions.BadPropertyValueException;
 import org.taverna.server.master.exceptions.BadStateChangeException;
 import org.taverna.server.master.exceptions.FilesystemAccessException;
+import org.taverna.server.master.exceptions.NoCreateException;
 import org.taverna.server.master.exceptions.NoListenerException;
 import org.taverna.server.master.exceptions.NoUpdateException;
 import org.taverna.server.master.exceptions.UnknownRunException;
@@ -105,7 +109,13 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 			throws NoUpdateException {
 		Principal p = getPrincipal();
 		policy.permitCreate(p, workflow);
-		TavernaRun w = runFactory.create(p, workflow);
+		TavernaRun w;
+		try {
+			w = runFactory.create(p, workflow);
+		} catch (Exception e) {
+			log.error("failed to build workflow run worker", e);
+			throw new NoCreateException("failed to build workflow run worker");
+		}
 		String uuid = randomUUID().toString();
 		runStore.registerRun(uuid, w);
 		return seeOther(ui.getRequestUriBuilder().path("{uuid}").build(uuid))
@@ -116,7 +126,13 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		Principal p = getPrincipal();
 		policy.permitCreate(p, workflow);
 		UriBuilder ub = UriBuilder.fromUri("/tavernaserver/runs");
-		TavernaRun w = runFactory.create(p, workflow);
+		TavernaRun w;
+		try {
+			w = runFactory.create(p, workflow);
+		} catch (Exception e) {
+			log.error("failed to build workflow run worker", e);
+			throw new NoCreateException("failed to build workflow run worker");
+		}
 		String uuid = randomUUID().toString();
 		runStore.registerRun(uuid, w);
 		return new RunReference(uuid, ub);
@@ -271,14 +287,23 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 				return w.getSecurityContext().getOwner().getName();
 			}
 
-			@Override
-			public Date getExpiry() {
-				return w.getExpiry();
+			private DateFormat isoFormat;
+
+			private DateFormat df() {
+				if (isoFormat == null) {
+					isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+				}
+				return isoFormat;
 			}
 
 			@Override
-			public Status getStatus() {
-				return w.getStatus();
+			public String getExpiry() {
+				return df().format(w.getExpiry());
+			}
+
+			@Override
+			public String getStatus() {
+				return w.getStatus().toString();
 			}
 
 			@Override
@@ -292,18 +317,22 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 			}
 
 			@Override
-			public Response setExpiry(Date expiry, UriInfo ui)
+			public Response setExpiry(String expiry, UriInfo ui)
 					throws NoUpdateException {
 				policy.permitDestroy(getPrincipal(), w);
-				w.setExpiry(expiry);
+				try {
+					w.setExpiry(df().parse(expiry));
+				} catch (ParseException e) {
+					throw new NoUpdateException(e.getMessage());
+				}
 				return seeOther(ui.getRequestUri()).build();
 			}
 
 			@Override
-			public Response setStatus(Status status, UriInfo ui)
+			public Response setStatus(String status, UriInfo ui)
 					throws NoUpdateException {
 				policy.permitUpdate(getPrincipal(), w);
-				w.setStatus(status);
+				w.setStatus(Status.valueOf(status));
 				return seeOther(ui.getRequestUri()).build();
 			}
 

@@ -16,4 +16,8 @@ public class NoCreateException extends NoUpdateException {
 	public NoCreateException() {
 		super("not permitted to create");
 	}
+
+	public NoCreateException(String string) {
+		super(string);
+	}
 }

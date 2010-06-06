@@ -1,7 +1,16 @@
 package org.taverna.server.master.localworker;
 
+import static java.lang.System.getSecurityManager;
+import static java.lang.System.setProperty;
+import static java.lang.System.setSecurityManager;
+import static java.rmi.registry.LocateRegistry.createRegistry;
+import static java.rmi.registry.LocateRegistry.getRegistry;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonMap;
+
+import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.security.Principal;
 import java.util.Collections;
@@ -33,17 +42,24 @@ import org.taverna.server.master.interfaces.TavernaRun;
 public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 		RunFactory, Policy, RunStore {
 	static final Log log = LogFactory.getLog("Taverna.Server.WorkerFactory");
+	static Registry registry;
+	public static final String SECURITY_POLICY_FILE = "security.policy";
+	private static Timer timer = new Timer(
+			"Taverna.Server.LocalWorker.Factory.Timer", true);
 
 	String name;
 	TavernaRun current;
-	private static Timer timer = new Timer(
-			"Taverna.Server.LocalWorker.Factory.Timer", true);
 	TimerTask task;
 
-	static Registry registry;
 	static {
+		if (getSecurityManager() == null) {
+			setProperty("java.security.policy", AbstractRemoteRunFactory.class
+					.getClassLoader().getResource(SECURITY_POLICY_FILE)
+					.toExternalForm());
+			setSecurityManager(new RMISecurityManager());
+		}
 		try {
-			registry = LocateRegistry.getRegistry();
+			registry = getRegistry();
 		} catch (RemoteException e) {
 			log.error("failed to get RMI registry handle", e);
 		}
@@ -51,7 +67,7 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 			registry.list();
 		} catch (RemoteException ignored) {
 			try {
-				registry = LocateRegistry.createRegistry(1099);
+				registry = createRegistry(1099);
 			} catch (RemoteException e) {
 				log.error("failed to create RMI registry", e);
 			}
@@ -125,7 +141,7 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 
 	@Override
 	public List<SCUFL> listPermittedWorkflows(Principal user) {
-		return Collections.emptyList();
+		return emptyList();
 	}
 
 	@Override
@@ -164,7 +180,9 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 	@Override
 	public synchronized Map<String, TavernaRun> listRuns(Principal user,
 			Policy p) {
-		return Collections.singletonMap(name, current);
+		if (current == null)
+			return emptyMap();
+		return singletonMap(name, current);
 	}
 
 	@Override
