@@ -2,10 +2,11 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxrs="http://cxf.apache.org/jaxrs"
-	xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xmlns:jaxws="http://cxf.apache.org/jaxws" xmlns:cxf="http://cxf.apache.org/core"
 	xsi:schemaLocation="
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+	http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
 	http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
 	http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
@@ -25,15 +26,23 @@
 		<property name="runStore" ref="runCatalog" />
 	</bean>
 
-<!--	<import resource="example.xml"/>-->
-	 <import resource="localworker.xml"/> 
+	<!-- <import resource="example.xml"/>-->
+	<import resource="localworker.xml" />
 
 	<jaxws:endpoint id="master_SOAP" implementor="#tserv"
-		address="/soap" />
-	<jaxrs:server id="master_REST" address="/" staticSubresourceResolution="true">
+		address="/soap">
+		<jaxws:features>
+			<cxf:logging />
+		</jaxws:features>
+	</jaxws:endpoint>
+	<jaxrs:server id="master_REST" address="/"
+		staticSubresourceResolution="true">
 		<jaxrs:serviceBeans>
 			<ref bean="tserv" />
 		</jaxrs:serviceBeans>
+		<jaxrs:features>
+			<cxf:logging />
+		</jaxrs:features>
 	</jaxrs:server>
 
 	<bean id="MBeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">
