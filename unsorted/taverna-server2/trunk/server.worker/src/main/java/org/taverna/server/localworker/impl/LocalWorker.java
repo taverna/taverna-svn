@@ -15,6 +15,9 @@ import static org.taverna.server.localworker.remote.RemoteStatus.Stopped;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
@@ -25,6 +28,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.apache.commons.io.FileUtils;
 import org.taverna.server.localworker.remote.RemoteDirectory;
 import org.taverna.server.localworker.remote.RemoteInput;
@@ -33,6 +41,9 @@ import org.taverna.server.localworker.remote.RemoteRunFactory;
 import org.taverna.server.localworker.remote.RemoteSecurityContext;
 import org.taverna.server.localworker.remote.RemoteSingleRun;
 import org.taverna.server.localworker.remote.RemoteStatus;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
 
 /**
  * This class implements one side of the connection between the Taverna Server
@@ -74,20 +85,79 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 		status = Initialized;
 	}
 
+	/**
+	 * How to get the actual workflow document from the XML document that it is
+	 * contained in.
+	 * 
+	 * @param containerDocument
+	 *            The document sent from the web interface.
+	 * @return The element describing the workflow, as expected by the Taverna
+	 *         command line executor.
+	 */
+	protected static Element unwrapWorkflow(Document containerDocument) {
+		return (Element) containerDocument.getDocumentElement().getFirstChild();
+	}
+
 	private static final String usage = "java -jar "
 			+ "TavernaServer.Worker.0.0.1-SNAPSHOT-jar-with-dependencies.jar"
 			+ " workflowExecScript UUID";
 
+	/**
+	 * The registered factory for runs.
+	 * 
+	 * @author Donal Fellows
+	 */
 	static class RRF extends UnicastRemoteObject implements RemoteRunFactory {
+		DocumentBuilderFactory dbf;
+		TransformerFactory tf;
 		String command;
+		Class<? extends RemoteSingleRun> clazz;
 
-		public RRF(String command) throws RemoteException {
+		/**
+		 * An RMI-enabled factory for runs.
+		 * 
+		 * @param command
+		 *            What command to call to actually run a run.
+		 * @param clazz
+		 *            What class to instantiate to handle the run.
+		 * @throws RemoteException
+		 *             If anything goes wrong during creation of the instance.
+		 */
+		public RRF(String command, Class<? extends RemoteSingleRun> clazz)
+				throws RemoteException {
 			this.command = command;
+			this.dbf = DocumentBuilderFactory.newInstance();
+			this.dbf.setNamespaceAware(true);
+			this.dbf.setCoalescing(true);
+			this.tf = TransformerFactory.newInstance();
+			this.clazz = clazz;
 		}
 
 		@Override
 		public RemoteSingleRun make(String scufl) throws RemoteException {
-			return new LocalWorker(command, scufl);
+			StringReader sr = new StringReader(scufl);
+			StringWriter sw = new StringWriter();
+			try {
+				tf.newTransformer().transform(
+						new DOMSource(unwrapWorkflow(dbf.newDocumentBuilder()
+								.parse(new InputSource(sr)))),
+						new StreamResult(sw));
+			} catch (Exception e) {
+				throw new RemoteException(
+						"failed to extract contained workflow", e);
+			}
+			try {
+				return clazz.getConstructor(String.class, String.class)
+						.newInstance(command, sw.toString());
+			} catch (InvocationTargetException e) {
+				if (e.getTargetException() instanceof RemoteException) {
+					throw (RemoteException) e.getTargetException();
+				}
+				throw new RemoteException("unexpected exception", e
+						.getTargetException());
+			} catch (Exception e) {
+				throw new RemoteException("bad instance construction", e);
+			}
 		}
 	}
 
@@ -111,7 +181,7 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 		String command = args[0];
 		final String factoryname = args[1];
 		final Registry registry = getRegistry();
-		registry.bind(factoryname, new RRF(command));
+		registry.bind(factoryname, new RRF(command, LocalWorker.class));
 		getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
@@ -122,7 +192,8 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 				}
 			}
 		});
-		System.out.println("registered RemoteRunFactory with ID " + factoryname);
+		System.out
+				.println("registered RemoteRunFactory with ID " + factoryname);
 	}
 
 	@Override
