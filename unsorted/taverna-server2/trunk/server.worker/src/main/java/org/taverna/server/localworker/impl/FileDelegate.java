@@ -11,6 +11,13 @@ import org.apache.commons.io.FileUtils;
 import org.taverna.server.localworker.remote.RemoteDirectory;
 import org.taverna.server.localworker.remote.RemoteFile;
 
+/**
+ * This class acts as a remote-aware delegate for the files in a workflow run's
+ * working directory and its subdirectories.
+ * 
+ * @author Donal Fellows
+ * @see DirectoryDelegate
+ */
 public class FileDelegate extends UnicastRemoteObject implements RemoteFile {
 	private File file;
 	private DirectoryDelegate parent;

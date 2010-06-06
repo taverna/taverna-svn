@@ -6,24 +6,31 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
-import java.util.WeakHashMap;
 
+import org.apache.commons.collections.MapIterator;
+import org.apache.commons.collections.map.ReferenceMap;
 import org.apache.commons.io.FileUtils;
 import org.taverna.server.localworker.remote.RemoteDirectory;
 import org.taverna.server.localworker.remote.RemoteDirectoryEntry;
 import org.taverna.server.localworker.remote.RemoteFile;
 
+/**
+ * This class acts as a remote-aware delegate for the workflow run's working
+ * directory and its subdirectories.
+ * 
+ * @author Donal Fellows
+ * @see FileDelegate
+ */
 public class DirectoryDelegate extends UnicastRemoteObject implements
 		RemoteDirectory {
 	private File dir;
 	private DirectoryDelegate parent;
-	private WeakHashMap<String, RemoteDirectoryEntry> localCache;
+	private ReferenceMap localCache;
 
 	public DirectoryDelegate(File dir, DirectoryDelegate parent)
 			throws RemoteException {
 		super();
-		this.localCache = new WeakHashMap<String, RemoteDirectoryEntry>();
+		this.localCache = new ReferenceMap();
 		this.dir = dir;
 		this.parent = parent;
 	}
@@ -36,7 +43,8 @@ public class DirectoryDelegate extends UnicastRemoteObject implements
 			if (s.equals(".") || s.equals(".."))
 				continue;
 			File f = new File(dir, s);
-			RemoteDirectoryEntry entry = localCache.get(s);
+			RemoteDirectoryEntry entry = (RemoteDirectoryEntry) localCache
+					.get(s);
 			if (f.isDirectory()) {
 				if (entry == null || !(entry instanceof DirectoryDelegate)) {
 					entry = new DirectoryDelegate(f, this);
@@ -99,11 +107,11 @@ public class DirectoryDelegate extends UnicastRemoteObject implements
 		if (parent == null)
 			throw new RemoteException(
 					"tried to destroy main job working directory");
-		for (RemoteDirectoryEntry entry : localCache.values()) {
-			if (entry == null)
+		for (Object obj : localCache.values()) {
+			if (obj == null)
 				continue;
 			try {
-				entry.destroy();
+				((RemoteDirectoryEntry) obj).destroy();
 			} catch (RemoteException e) {
 			}
 		}
@@ -123,9 +131,11 @@ public class DirectoryDelegate extends UnicastRemoteObject implements
 	}
 
 	void forgetEntry(RemoteDirectoryEntry entry) {
-		for (Map.Entry<String, RemoteDirectoryEntry> e : localCache.entrySet()) {
-			if (e.getValue() == entry) {
-				localCache.remove(e.getKey());
+		MapIterator i = localCache.mapIterator();
+		while (i.hasNext()) {
+			Object key = i.next();
+			if (entry == i.getValue()) {
+				localCache.remove(key);
 				break;
 			}
 		}

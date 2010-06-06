@@ -1,8 +1,12 @@
 package org.taverna.server.localworker.impl;
 
+import static java.lang.Runtime.getRuntime;
+import static java.lang.System.setProperty;
+import static java.lang.System.setSecurityManager;
 import static java.rmi.registry.LocateRegistry.getRegistry;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static java.util.UUID.randomUUID;
 import static org.apache.commons.io.FileUtils.forceDelete;
 import static org.taverna.server.localworker.remote.RemoteStatus.Finished;
 import static org.taverna.server.localworker.remote.RemoteStatus.Initialized;
@@ -11,7 +15,7 @@ import static org.taverna.server.localworker.remote.RemoteStatus.Stopped;
 
 import java.io.File;
 import java.io.IOException;
-import java.rmi.NotBoundException;
+import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -22,18 +26,26 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.taverna.server.localworker.remote.RemoteDirectory;
 import org.taverna.server.localworker.remote.RemoteInput;
 import org.taverna.server.localworker.remote.RemoteListener;
+import org.taverna.server.localworker.remote.RemoteRunFactory;
 import org.taverna.server.localworker.remote.RemoteSecurityContext;
 import org.taverna.server.localworker.remote.RemoteSingleRun;
 import org.taverna.server.localworker.remote.RemoteStatus;
 
+/**
+ * This class implements one side of the connection between the Taverna Server
+ * master server and this process. It delegates to a {@link WorkerCore} instance
+ * the handling of actually running a workflow.
+ * 
+ * @author Donal Fellows
+ * @see DirectoryDelegate
+ * @see FileDelegate
+ */
 public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun {
-	static Registry registry;
-	private String name, executeWorkflowCommand;
-	private static String workflow;
+	private String executeWorkflowCommand;
+	private String workflow;
 	private File base;
 	private DirectoryDelegate baseDir;
 	RemoteStatus status;
@@ -42,12 +54,12 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 	Map<String, String> inputValues;
 	private WorkerCore core;
 
-	protected LocalWorker(String name, String executeWorkflowCommand)
+	protected LocalWorker(String executeWorkflowCommand, String workflow)
 			throws RemoteException {
 		super();
-		this.name = name;
+		this.workflow = workflow;
 		this.executeWorkflowCommand = executeWorkflowCommand;
-		base = new File(name);
+		base = new File(randomUUID().toString());
 		try {
 			FileUtils.forceMkdir(base);
 		} catch (IOException e) {
@@ -58,12 +70,28 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 		baseDir = new DirectoryDelegate(base, null);
 		inputFiles = new HashMap<String, String>();
 		inputValues = new HashMap<String, String>();
+		core = new WorkerCore();
 		status = Initialized;
 	}
 
 	private static final String usage = "java -jar "
 			+ "TavernaServer.Worker.0.0.1-SNAPSHOT-jar-with-dependencies.jar"
 			+ " workflowExecScript UUID";
+
+	static class RRF extends UnicastRemoteObject implements RemoteRunFactory {
+		String command;
+
+		public RRF(String command) throws RemoteException {
+			this.command = command;
+		}
+
+		@Override
+		public RemoteSingleRun make(String scufl) throws RemoteException {
+			return new LocalWorker(command, scufl);
+		}
+	}
+
+	public static final String SECURITY_POLICY_FILE = "security.policy";
 
 	/**
 	 * @param args
@@ -77,21 +105,28 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 		if (args.length != 2) {
 			throw new Exception("wrong # args: must be \"" + usage + "\"");
 		}
+		setProperty("java.security.policy", LocalWorker.class.getClassLoader()
+				.getResource(SECURITY_POLICY_FILE).toExternalForm());
+		setSecurityManager(new RMISecurityManager());
 		String command = args[0];
-		String name = args[1];
-		registry = getRegistry();
-		workflow = IOUtils.toString(System.in);
-		LocalWorker w = new LocalWorker(name, command);
-		registry.bind(name, w);
+		final String factoryname = args[1];
+		final Registry registry = getRegistry();
+		registry.bind(factoryname, new RRF(command));
+		getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				try {
+					registry.unbind(factoryname);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		System.out.println("registered RemoteRunFactory with ID " + factoryname);
 	}
 
 	@Override
 	public void destroy() throws RemoteException {
-		try {
-			registry.unbind(name);
-		} catch (NotBoundException e) {
-			e.printStackTrace();
-		}
 		if (status != Finished && status != Initialized)
 			core.killWorker();
 		// Is this it?
