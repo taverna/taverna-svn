@@ -291,7 +291,8 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 
 			private DateFormat df() {
 				if (isoFormat == null) {
-					isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+					isoFormat = new SimpleDateFormat(
+							"yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 				}
 				return isoFormat;
 			}
@@ -478,11 +479,9 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 			if (de instanceof File) {
 				return Response.ok(((File) de).getContents()).build();
 			} else if (de instanceof Directory) {
-				List<DirEntryReference> result = new ArrayList<DirEntryReference>();
-				for (DirectoryEntry e : ((Directory) de).getContents())
-					result.add(makeDirEntryReference(ui
-							.getAbsolutePathBuilder(), e));
-				return Response.ok(result).build();
+				return Response.ok(
+						new DirectoryContents(ui, ((Directory) de)
+								.getContents())).build();
 			} else {
 				throw new FilesystemAccessException("not a directory");
 			}

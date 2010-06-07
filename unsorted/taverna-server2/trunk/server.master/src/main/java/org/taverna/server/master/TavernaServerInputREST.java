@@ -15,6 +15,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
@@ -155,6 +156,7 @@ public interface TavernaServerInputREST {
 		 * @author Donal Fellows
 		 */
 		@XmlType
+		@XmlTransient
 		static abstract class AbstractContents {
 		};
 

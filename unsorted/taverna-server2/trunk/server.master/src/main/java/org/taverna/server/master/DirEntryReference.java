@@ -6,6 +6,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlValue;
 
 import org.taverna.server.master.interfaces.Directory;
 import org.taverna.server.master.interfaces.DirectoryEntry;
@@ -29,6 +30,7 @@ public abstract class DirEntryReference {
 	/**
 	 * The path of the entry.
 	 */
+	@XmlValue
 	public String path;
 
 	public DirEntryReference() {
