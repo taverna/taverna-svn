@@ -125,8 +125,8 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 		 *             If anything goes wrong during creation of the instance.
 		 */
 		public RRF(String command,
-				Constructor<? extends RemoteSingleRun> constructor,
-				Object... args) throws RemoteException {
+				Constructor<? extends RemoteSingleRun> constructor)
+				throws RemoteException {
 			this.command = command;
 			this.dbf = DocumentBuilderFactory.newInstance();
 			this.dbf.setNamespaceAware(true);
