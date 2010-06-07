@@ -143,6 +143,8 @@ public class DirectoryDelegate extends UnicastRemoteObject implements
 
 	@Override
 	public String getName() {
+		if (parent == null)
+			return "";
 		return dir.getName();
 	}
 }

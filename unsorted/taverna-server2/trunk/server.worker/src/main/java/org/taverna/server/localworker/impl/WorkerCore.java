@@ -32,22 +32,27 @@ import org.taverna.server.localworker.remote.RemoteStatus;
 public class WorkerCore extends UnicastRemoteObject implements RemoteListener {
 	public static final String DEFAULT_LISTENER_NAME = "io";
 
-	static final Map<String,Property> pmap = new HashMap<String,Property>();
+	static final Map<String, Property> pmap = new HashMap<String, Property>();
+
 	enum Property {
 		STDOUT("stdout"), STDERR("stderr"), EXIT_CODE("exitcode");
 
 		private String s;
+
 		private Property(String s) {
 			this.s = s;
 			pmap.put(s, this);
 		}
+
 		@Override
 		public String toString() {
 			return s;
 		}
+
 		public static Property is(String s) {
 			return pmap.get(s);
 		}
+
 		public static String[] names() {
 			return pmap.keySet().toArray(new String[pmap.size()]);
 		}
@@ -128,14 +133,15 @@ public class WorkerCore extends UnicastRemoteObject implements RemoteListener {
 		// Add arguments denoting inputs
 		if (inputBaclava != null) {
 			pb.command().add("-inputdoc");
-			pb.command().add(inputBaclava);
+			pb.command().add(
+					new File(workingDir, inputBaclava).getAbsolutePath());
 		} else {
 			for (String port : inputFiles.keySet()) {
 				String f = inputFiles.get(port);
 				if (f != null) {
 					pb.command().add("-inputfile");
 					pb.command().add(port);
-					pb.command().add(f);
+					pb.command().add(new File(workingDir, f).getAbsolutePath());
 				}
 			}
 			for (String port : inputValues.keySet()) {
@@ -151,14 +157,20 @@ public class WorkerCore extends UnicastRemoteObject implements RemoteListener {
 		// Add arguments denoting outputs
 		if (outputBaclava != null) {
 			pb.command().add("-outputdoc");
-			pb.command().add(outputBaclava);
+			pb.command().add(
+					new File(workingDir, outputBaclava).getAbsolutePath());
 		} else {
+			File out = new File(workingDir, "out");
+			if (!out.mkdir()) {
+				throw new IOException("failed to make output directory \"out\"");
+			}
+			out.delete(); // Taverna needs the dir to *not* exist now
 			pb.command().add("-outputdir");
-			pb.command().add("out");
+			pb.command().add(out.getAbsolutePath());
 		}
 
 		// Add an argument holding the workflow
-		File tmp = createTempFile("taverna", "t2flow");
+		File tmp = createTempFile("taverna", ".t2flow");
 		FileWriter w = new FileWriter(tmp);
 		w.write(workflow);
 		w.close();
