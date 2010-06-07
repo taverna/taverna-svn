@@ -16,16 +16,16 @@ import javax.swing.Icon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import org.apache.log4j.Logger;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
-
 import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivity;
 import net.sf.taverna.t2.lang.ui.ExtensionFileFilter;
 import net.sf.taverna.t2.servicedescriptions.AbstractConfigurableServiceProvider;
 import net.sf.taverna.t2.servicedescriptions.CustomizedConfigurePanelProvider;
-import net.sf.taverna.t2.workbench.ui.impl.Workbench;
+import net.sf.taverna.t2.workbench.MainWindow;
+
+import org.apache.log4j.Logger;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
 
 /**
  * @author alanrw
@@ -55,7 +55,7 @@ CustomizedConfigurePanelProvider<ApiConsumerServiceProviderConfig>{
 		fc.resetChoosableFileFilters();
 		fc.setFileFilter(new ExtensionFileFilter(new String[] { "xml" }));
 		fc.setCurrentDirectory(new File(curDir));
-		int returnVal = fc.showOpenDialog(Workbench.getInstance());
+		int returnVal = fc.showOpenDialog(MainWindow.getMainWindow());
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			prefs.put("currentDir", fc.getCurrentDirectory().toString());
 			File file = fc.getSelectedFile();
