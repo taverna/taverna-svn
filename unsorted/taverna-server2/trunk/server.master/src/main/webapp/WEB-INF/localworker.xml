@@ -6,6 +6,7 @@
 	<bean id="localworkerConfig"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location" value="classpath:localworker.properties" />
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
 	</bean>
 
 	<bean id="localworker" class="org.taverna.server.master.localworker.ForkingRunFactory"
