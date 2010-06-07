@@ -1,5 +1,6 @@
 package org.taverna.server.master.localworker;
 
+import static java.util.Calendar.MINUTE;
 import static org.taverna.server.master.localworker.AbstractRemoteRunFactory.log;
 
 import java.rmi.RemoteException;
@@ -36,23 +37,17 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 	private SCUFL workflow;
 	private Date expiry;
 	private Principal creator;
-	//private List<Listener> listeners;
-	//Status s;
-	//String inputBaclava;
-	//String outputBaclava;
-	//List<RunInput> inputs;
-	//private Map<String, String> properties;
+	RemoteSingleRun run;
 
-	RemoteRunDelegate(Principal creator, SCUFL workflow, RemoteSingleRun rsr) {
+	RemoteRunDelegate(Principal creator, SCUFL workflow, RemoteSingleRun rsr,
+			int defaultLifetime) {
 		this.creator = creator;
 		this.workflow = workflow;
 		Calendar c = Calendar.getInstance();
-		c.add(Calendar.MINUTE, 20);
+		c.add(MINUTE, defaultLifetime);
 		this.expiry = c.getTime();
 		this.run = rsr;
 	}
-
-	RemoteSingleRun run;
 
 	@Override
 	public void addListener(Listener listener) {
@@ -163,7 +158,7 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 	public List<Listener> getListeners() {
 		ArrayList<Listener> listeners = new ArrayList<Listener>();
 		try {
-			for (RemoteListener rl: run.getListeners()) {
+			for (RemoteListener rl : run.getListeners()) {
 				listeners.add(new ListenerDelegate(rl));
 			}
 		} catch (RemoteException e) {
@@ -385,26 +380,6 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 		}
 	}
 
-	/*
-	 * @Override public String getConfiguration() {// FIXME return ""; }
-	 * 
-	 * @Override public String getName() {// FIXME return "default"; }
-	 * 
-	 * @Override public String getProperty(String propName) throws
-	 * NoListenerException {// FIXME if (!properties.containsKey(propName))
-	 * throw new NoListenerException("no such property"); return
-	 * properties.get(propName); }
-	 * 
-	 * @Override public String getType() {// FIXME return "default"; }
-	 * 
-	 * @Override public String[] listProperties() {// FIXME return
-	 * properties.keySet().toArray(new String[properties.size()]); }
-	 * 
-	 * @Override public void setProperty(String propName, String value) throws
-	 * NoListenerException, BadPropertyValueException { // TODO change this?
-	 * throw new BadPropertyValueException("setting not supported"); }
-	 */
-
 	@Override
 	public Principal getOwner() {
 		return creator;
@@ -456,8 +431,6 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 		@Override
 		public void setFile(String file) throws FilesystemAccessException,
 				BadStateChangeException {
-			//if (s != Status.Initialized)
-			//	throw new BadStateChangeException();
 			checkBadFilename(file);
 			try {
 				i.setFile(file);
@@ -467,15 +440,10 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 				f.initCause(e);
 				throw f;
 			}
-			// this.file = file;
-			// this.value = null;
-			// inputBaclava = null;
 		}
 
 		@Override
 		public void setValue(String value) throws BadStateChangeException {
-			//if (s != Status.Initialized)
-			//	throw new BadStateChangeException();
 			try {
 				i.setValue(value);
 			} catch (RemoteException e) {
@@ -483,14 +451,7 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 				bsc.initCause(e);
 				throw bsc;
 			}
-			// this.value = value;
-			// this.file = null;
-			// inputBaclava = null;
 		}
-
-		// void reset() {
-		// file = value = null;
-		// }
 	}
 
 	@Override
@@ -528,8 +489,6 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 
 	@Override
 	public Input makeInput(String name) throws BadStateChangeException {
-		//if (s != Status.Initialized)
-		//	throw new BadStateChangeException();
 		try {
 			return new RunInput(run.makeInput(name));
 		} catch (RemoteException e) {
@@ -537,15 +496,11 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 			bsc.initCause(e);
 			throw bsc;
 		}
-		// inputs.add(r);
-		// return r;
 	}
 
 	@Override
 	public void setInputBaclavaFile(String filename)
 			throws FilesystemAccessException, BadStateChangeException {
-		//if (s != Status.Initialized)
-		//	throw new BadStateChangeException();
 		checkBadFilename(filename);
 		try {
 			run.setInputBaclavaFile(filename);
@@ -555,16 +510,11 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 			f.initCause(e);
 			throw f;
 		}
-		// inputBaclava = filename;
-		// for (RunInput i : inputs)
-		// i.reset();
 	}
 
 	@Override
 	public void setOutputBaclavaFile(String filename)
 			throws FilesystemAccessException, BadStateChangeException {
-		//if (s != Status.Initialized)
-		//	throw new BadStateChangeException();
 		checkBadFilename(filename);
 		try {
 			run.setOutputBaclavaFile(filename);
@@ -574,6 +524,5 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 			f.initCause(e);
 			throw f;
 		}
-		// outputBaclava = filename;
 	}
 }

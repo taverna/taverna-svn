@@ -3,6 +3,11 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
+	<bean id="localworkerConfig"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location" value="classpath:localworker.properties" />
+	</bean>
+
 	<bean id="localworker" class="org.taverna.server.master.localworker.ForkingRunFactory"
 		scope="singleton" lazy-init="false">
 		<description>
@@ -12,10 +17,11 @@
 		<property name="firstArguments">
 			<list>
 				<value>-jar</value>
-				<value>/Users/dkf/Documents/workspace/server.worker/target/TavernaServer.Worker.0.0.1-SNAPSHOT-jar-with-dependencies.jar</value>
-				<value>/Users/dkf/Downloads/taverna-nightly-2.1-SNAPSHOT-20100526/executeworkflow.sh</value>
+				<value>${localworker.jar}</value>
+				<value>${taverna.executeworkflow}</value>
 			</list>
 		</property>
+		<property name="defaultLifetime" value="20" />
 	</bean>
 
 	<alias name="localworker" alias="policy" />

@@ -9,6 +9,7 @@
 	<configs>
 		<config>src/main/webapp/WEB-INF/beans.xml</config>
 		<config>src/main/webapp/WEB-INF/example.xml</config>
+		<config>src/main/webapp/WEB-INF/localworker.xml</config>
 	</configs>
 	<configSets>
 		<configSet>

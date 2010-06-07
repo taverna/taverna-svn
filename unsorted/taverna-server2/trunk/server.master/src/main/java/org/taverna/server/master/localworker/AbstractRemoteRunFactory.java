@@ -9,6 +9,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 
+import java.lang.ref.WeakReference;
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
@@ -41,11 +42,12 @@ import org.taverna.server.master.interfaces.TavernaRun;
 @ManagedResource(objectName = "Taverna:group=Server,name=Factory", description = "The factory for runs")
 public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 		RunFactory, Policy, RunStore {
-	static final Log log = LogFactory.getLog("Taverna.Server.WorkerFactory");
+	static final Log log = LogFactory.getLog("Taverna.Server.LocalWorker");
 	static Registry registry;
 	public static final String SECURITY_POLICY_FILE = "security.policy";
 	private static Timer timer = new Timer(
 			"Taverna.Server.LocalWorker.Factory.Timer", true);
+	private int defaultLifetime = 20;
 
 	String name;
 	TavernaRun current;
@@ -101,8 +103,9 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 	@Override
 	public TavernaRun create(Principal creator, SCUFL workflow) {
 		try {
-			return new RemoteRunDelegate(creator, workflow, getRealRun(creator,
-					workflow));
+			RemoteSingleRun rsr = getRealRun(creator, workflow);
+			return new RemoteRunDelegate(creator, workflow, rsr,
+					defaultLifetime);
 		} catch (Exception e) {
 			log.warn("failed to build run instance", e);
 			throw new RuntimeException(e);
@@ -132,6 +135,16 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 	@Override
 	public int getMaxRuns() {
 		return 1;
+	}
+
+	@ManagedAttribute(description = "How many minutes should a workflow live by default?", currencyTimeLimit = 300)
+	public int getDefaultLifetime() {
+		return defaultLifetime;
+	}
+
+	@ManagedAttribute
+	public void setDefaultLifetime(int defaultLifetime) {
+		this.defaultLifetime = defaultLifetime;
 	}
 
 	@Override
@@ -189,20 +202,7 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 	public synchronized void registerRun(final String uuid, TavernaRun run) {
 		name = uuid;
 		current = run;
-		task = new TimerTask() {
-			@Override
-			public void run() {
-				synchronized (AbstractRemoteRunFactory.this) {
-					if (current == null)
-						return;
-					Date now = new Date();
-					if (current.getExpiry().after(now))
-						return;
-					current.destroy();
-					unregisterRun(uuid);
-				}
-			}
-		};
+		task = new AbstractRemoteRunFactoryCleaner(uuid, this);
 		timer.scheduleAtFixedRate(task, 30000, 30000);
 	}
 
@@ -218,5 +218,38 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 	protected synchronized void finalize() {
 		if (task != null)
 			task.cancel();
+	}
+}
+
+/**
+ * Class that handles cleanup of tasks when their expiry is past.
+ * 
+ * @author Donal Fellows
+ */
+class AbstractRemoteRunFactoryCleaner extends TimerTask {
+	private WeakReference<AbstractRemoteRunFactory> arrf;
+	private String uuid;
+
+	AbstractRemoteRunFactoryCleaner(String uuid, AbstractRemoteRunFactory arrf) {
+		this.uuid = uuid;
+		this.arrf = new WeakReference<AbstractRemoteRunFactory>(arrf);
+	}
+
+	@Override
+	public void run() {
+		// Reconvert back to a strong reference for the length of this check
+		AbstractRemoteRunFactory f = arrf.get();
+		if (f == null)
+			return;
+		// Check to see if anything is needing cleaning; if not, we're done
+		synchronized (f) {
+			if (f.current == null)
+				return;
+			Date now = new Date();
+			if (f.current.getExpiry().after(now))
+				return;
+			f.unregisterRun(uuid);
+			f.current.destroy();
+		}
 	}
 }
