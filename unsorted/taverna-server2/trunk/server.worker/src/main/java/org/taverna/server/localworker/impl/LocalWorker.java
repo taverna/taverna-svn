@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
@@ -111,7 +112,7 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 		DocumentBuilderFactory dbf;
 		TransformerFactory tf;
 		String command;
-		Class<? extends RemoteSingleRun> clazz;
+		Constructor<? extends RemoteSingleRun> cons;
 
 		/**
 		 * An RMI-enabled factory for runs.
@@ -123,14 +124,15 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 		 * @throws RemoteException
 		 *             If anything goes wrong during creation of the instance.
 		 */
-		public RRF(String command, Class<? extends RemoteSingleRun> clazz)
-				throws RemoteException {
+		public RRF(String command,
+				Constructor<? extends RemoteSingleRun> constructor,
+				Object... args) throws RemoteException {
 			this.command = command;
 			this.dbf = DocumentBuilderFactory.newInstance();
 			this.dbf.setNamespaceAware(true);
 			this.dbf.setCoalescing(true);
 			this.tf = TransformerFactory.newInstance();
-			this.clazz = clazz;
+			this.cons = constructor;
 		}
 
 		@Override
@@ -147,8 +149,7 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 						"failed to extract contained workflow", e);
 			}
 			try {
-				return clazz.getConstructor(String.class, String.class)
-						.newInstance(command, sw.toString());
+				return cons.newInstance(command, sw.toString());
 			} catch (InvocationTargetException e) {
 				if (e.getTargetException() instanceof RemoteException) {
 					throw (RemoteException) e.getTargetException();
@@ -181,7 +182,8 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 		String command = args[0];
 		final String factoryname = args[1];
 		final Registry registry = getRegistry();
-		registry.bind(factoryname, new RRF(command, LocalWorker.class));
+		registry.bind(factoryname, new RRF(command, LocalWorker.class
+				.getDeclaredConstructor(String.class, String.class)));
 		getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {

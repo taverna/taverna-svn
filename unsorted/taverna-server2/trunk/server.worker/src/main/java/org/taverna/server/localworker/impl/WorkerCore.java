@@ -1,7 +1,6 @@
 package org.taverna.server.localworker.impl;
 
 import static java.io.File.createTempFile;
-import static java.lang.Thread.sleep;
 import static org.apache.commons.io.IOUtils.copy;
 import static org.taverna.server.localworker.remote.RemoteStatus.Finished;
 import static org.taverna.server.localworker.remote.RemoteStatus.Initialized;
@@ -15,6 +14,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.taverna.server.localworker.remote.RemoteListener;
@@ -24,16 +24,40 @@ import org.taverna.server.localworker.remote.RemoteStatus;
  * The core class that connects to a Taverna command-line workflow execution
  * engine. This implementation always registers a single listener, &lquo;
  * <tt>io</tt> &rquo;, with two properties representing the stdout and stderr of
- * the run. The listener is remote-accessible. It does not support attaching any
- * other listeners.
+ * the run and one representing the exit code. The listener is
+ * remote-accessible. It does not support attaching any other listeners.
  * 
  * @author Donal Fellows
  */
 public class WorkerCore extends UnicastRemoteObject implements RemoteListener {
+	public static final String DEFAULT_LISTENER_NAME = "io";
+
+	static final Map<String,Property> pmap = new HashMap<String,Property>();
+	enum Property {
+		STDOUT("stdout"), STDERR("stderr"), EXIT_CODE("exitcode");
+
+		private String s;
+		private Property(String s) {
+			this.s = s;
+			pmap.put(s, this);
+		}
+		@Override
+		public String toString() {
+			return s;
+		}
+		public static Property is(String s) {
+			return pmap.get(s);
+		}
+		public static String[] names() {
+			return pmap.keySet().toArray(new String[pmap.size()]);
+		}
+	}
+
 	Process subprocess;
 	private boolean finished;
 	StringWriter stdout;
 	StringWriter stderr;
+	Integer exitCode;
 
 	public WorkerCore() throws RemoteException {
 		super();
@@ -97,8 +121,11 @@ public class WorkerCore extends UnicastRemoteObject implements RemoteListener {
 			File workingDir, String inputBaclava,
 			Map<String, String> inputFiles, Map<String, String> inputValues,
 			String outputBaclava) throws IOException {
+		// How we execute the workflow in a subprocess
 		ProcessBuilder pb = new ProcessBuilder()
 				.command(executeWorkflowCommand);
+
+		// Add arguments denoting inputs
 		if (inputBaclava != null) {
 			pb.command().add("-inputdoc");
 			pb.command().add(inputBaclava);
@@ -120,6 +147,8 @@ public class WorkerCore extends UnicastRemoteObject implements RemoteListener {
 				}
 			}
 		}
+
+		// Add arguments denoting outputs
 		if (outputBaclava != null) {
 			pb.command().add("-outputdoc");
 			pb.command().add(outputBaclava);
@@ -127,15 +156,26 @@ public class WorkerCore extends UnicastRemoteObject implements RemoteListener {
 			pb.command().add("-outputdir");
 			pb.command().add("out");
 		}
-		File tmp = createTempFile("taverna", null);
+
+		// Add an argument holding the workflow
+		File tmp = createTempFile("taverna", "t2flow");
 		FileWriter w = new FileWriter(tmp);
 		w.write(workflow);
 		w.close();
+		tmp.deleteOnExit();
 		pb.command().add(tmp.getAbsolutePath());
+
+		// Indicate what working directory to use
 		pb.directory(workingDir);
+
+		// Start the subprocess
+		System.out.println("starting " + pb.command() + " in directory "
+				+ workingDir);
 		subprocess = pb.start();
 		if (subprocess == null)
 			throw new IOException("unknown failure creating process");
+
+		// Capture its stdout and stderr
 		new AsyncCopy(subprocess.getInputStream(), stdout);
 		new AsyncCopy(subprocess.getErrorStream(), stderr);
 	}
@@ -147,17 +187,19 @@ public class WorkerCore extends UnicastRemoteObject implements RemoteListener {
 		if (!finished && subprocess != null) {
 			int code;
 			try {
+				// Check if the workflow terminated of its own accord
 				code = subprocess.exitValue();
 			} catch (IllegalThreadStateException e) {
 				subprocess.destroy();
 				try {
-					sleep(350);
+					code = subprocess.waitFor();
 				} catch (InterruptedException e1) {
 					e1.printStackTrace(); // not expected
+					return;
 				}
-				code = subprocess.exitValue();
 				finished = true;
 			}
+			exitCode = code;
 			if (code > 128) {
 				System.out.println("workflow aborted, signal=" + (code - 128));
 			} else {
@@ -213,26 +255,31 @@ public class WorkerCore extends UnicastRemoteObject implements RemoteListener {
 
 	@Override
 	public String getName() {
-		return "io";
+		return DEFAULT_LISTENER_NAME;
 	}
 
 	@Override
 	public String getProperty(String propName) throws RemoteException {
-		if (propName.equals("stdout"))
+		switch (Property.is(propName)) {
+		case STDOUT:
 			return stdout.toString();
-		if (propName.equals("stderr"))
+		case STDERR:
 			return stderr.toString();
-		throw new RemoteException("unknown property");
+		case EXIT_CODE:
+			return (exitCode == null) ? "" : exitCode.toString();
+		default:
+			throw new RemoteException("unknown property");
+		}
 	}
 
 	@Override
 	public String getType() {
-		return "io";
+		return DEFAULT_LISTENER_NAME;
 	}
 
 	@Override
 	public String[] listProperties() {
-		return new String[] { "stdout", "stderr" };
+		return Property.names();
 	}
 
 	@Override
