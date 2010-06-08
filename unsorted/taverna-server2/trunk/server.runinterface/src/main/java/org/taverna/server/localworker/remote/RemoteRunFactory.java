@@ -3,6 +3,10 @@ package org.taverna.server.localworker.remote;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+/**
+ * The main RMI-enabled interface for creating runs. 
+ * @author Donal Fellows
+ */
 public interface RemoteRunFactory extends Remote {
 	/**
 	 * Makes a workflow run that will process a particular SCUFL document.
@@ -12,4 +16,10 @@ public interface RemoteRunFactory extends Remote {
 	 * @return A remote handle for the run.
 	 */
 	public RemoteSingleRun make(String scufl) throws RemoteException;
+
+	/**
+	 * Asks this factory to unregister itself from the registry and cease
+	 * operation.
+	 */
+	public void shutdown() throws RemoteException;
 }
