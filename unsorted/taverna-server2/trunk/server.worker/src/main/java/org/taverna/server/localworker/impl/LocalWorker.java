@@ -1,6 +1,7 @@
 package org.taverna.server.localworker.impl;
 
 import static java.lang.Runtime.getRuntime;
+import static java.lang.System.exit;
 import static java.lang.System.setProperty;
 import static java.lang.System.setSecurityManager;
 import static java.rmi.registry.LocateRegistry.getRegistry;
@@ -64,7 +65,8 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 	String inputBaclava, outputBaclava;
 	Map<String, String> inputFiles;
 	Map<String, String> inputValues;
-	private WorkerCore core;
+	WorkerCore core;
+	private Thread shutdownHook;
 
 	protected LocalWorker(String executeWorkflowCommand, String workflow)
 			throws RemoteException {
@@ -83,6 +85,20 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 		inputFiles = new HashMap<String, String>();
 		inputValues = new HashMap<String, String>();
 		core = new WorkerCore();
+		Thread t = new Thread(new Runnable() {
+			/**
+			 * Kill off the worker launched by the core.
+			 */
+			@Override
+			public void run() {
+				try {
+					destroy();
+				} catch (RemoteException e) {
+				}
+			}
+		});
+		getRuntime().addShutdownHook(t);
+		shutdownHook = t;
 		status = Initialized;
 	}
 
@@ -151,14 +167,28 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 			try {
 				return cons.newInstance(command, sw.toString());
 			} catch (InvocationTargetException e) {
-				if (e.getTargetException() instanceof RemoteException) {
+				if (e.getTargetException() instanceof RemoteException)
 					throw (RemoteException) e.getTargetException();
-				}
 				throw new RemoteException("unexpected exception", e
 						.getTargetException());
 			} catch (Exception e) {
 				throw new RemoteException("bad instance construction", e);
 			}
+		}
+
+		@Override
+		public void shutdown() {
+			new Thread() {
+				@Override
+				public void run() {
+					try {
+						sleep(2000);
+					} catch (InterruptedException e) {
+					} finally {
+						exit(0);
+					}
+				}
+			}.start();
 		}
 	}
 
@@ -173,9 +203,8 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 	 *             register it. Also if the arguments are wrong.
 	 */
 	public static void main(String[] args) throws Exception {
-		if (args.length != 2) {
+		if (args.length != 2)
 			throw new Exception("wrong # args: must be \"" + usage + "\"");
-		}
 		setProperty("java.security.policy", LocalWorker.class.getClassLoader()
 				.getResource(SECURITY_POLICY_FILE).toExternalForm());
 		setSecurityManager(new RMISecurityManager());
@@ -202,15 +231,22 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 	public void destroy() throws RemoteException {
 		if (status != Finished && status != Initialized)
 			core.killWorker();
+		try {
+			if (shutdownHook != null)
+				getRuntime().removeShutdownHook(shutdownHook);
+		} finally {
+			shutdownHook = null;
+		}
 		// Is this it?
 		try {
 			if (base != null)
 				forceDelete(base);
-			base = null;
 		} catch (IOException e) {
 			RemoteException r = new RemoteException(e.getMessage());
 			r.initCause(e);
 			throw r;
+		} finally {
+			base = null;
 		}
 	}
 
@@ -262,9 +298,8 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 	@Override
 	public RemoteStatus getStatus() {
 		// only state that can spontaneously change to another
-		if (status == Operating) {
+		if (status == Operating)
 			status = core.getWorkerStatus();
-		}
 		return status;
 	}
 
