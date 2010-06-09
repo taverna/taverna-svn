@@ -137,12 +137,12 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	 * An incremental name of newInputPort + this number is used to name new
 	 * ports
 	 */
-	private int newInputPortNumber = 0;
+	private int newInputPortNumber = 1;
 	/**
 	 * An incremental name of newOutputPort + this number is used to name new
 	 * ports
 	 */
-	private int newOutputPortNumber = 0;
+	private int newOutputPortNumber = 1;
 	/** Remembers where the next output should be placed in the view */
 	private int outputGridy;
 	/** Parent panel for the outputs */
