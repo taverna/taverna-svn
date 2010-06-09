@@ -6,16 +6,14 @@ import static java.lang.System.setSecurityManager;
 import static java.rmi.registry.LocateRegistry.createRegistry;
 import static java.rmi.registry.LocateRegistry.getRegistry;
 import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.singletonMap;
 
 import java.lang.ref.WeakReference;
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.security.Principal;
-import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -45,13 +43,26 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 	static final Log log = LogFactory.getLog("Taverna.Server.LocalWorker");
 	static Registry registry;
 	public static final String SECURITY_POLICY_FILE = "security.policy";
-	private static Timer timer = new Timer(
-			"Taverna.Server.LocalWorker.Factory.Timer", true);
+	static Timer timer = new Timer("Taverna.Server.LocalWorker.Factory.Timer",
+			true);
 	private int defaultLifetime = 20;
 
-	String name;
-	TavernaRun current;
-	TimerTask task;
+	static class RunClean {
+		String name;
+		TavernaRun run;
+		TimerTask clean;
+
+		public RunClean(String name, TavernaRun run,
+				AbstractRemoteRunFactory abstractRemoteRunFactory) {
+			this.name = name;
+			this.run = run;
+			clean = new AbstractRemoteRunFactoryCleaner(name,
+					abstractRemoteRunFactory);
+			timer.scheduleAtFixedRate(clean, 30000, 30000);
+		}
+	}
+
+	Map<String, RunClean> runs = new HashMap<String, RunClean>();
 
 	static {
 		if (getSecurityManager() == null) {
@@ -76,14 +87,21 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 		}
 	}
 
+	RemoteRunDelegate getRun(String name) {
+		return (RemoteRunDelegate) runs.get(name).run;
+	}
+
 	@Override
 	public List<String> getSupportedListenerTypes() {
 		try {
-			return ((RemoteRunDelegate) current).run.getListenerTypes();
+			for (Map.Entry<String, RunClean> r : runs.entrySet())
+				return ((RemoteRunDelegate) r.getValue().run).run
+						.getListenerTypes();
+			log.warn("failed to get list of listener types; no runs");
 		} catch (RemoteException e) {
 			log.warn("failed to get list of listener types", e);
-			return Collections.emptyList();
 		}
+		return emptyList();
 	}
 
 	@Override
@@ -126,15 +144,15 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 	protected abstract RemoteSingleRun getRealRun(Principal creator,
 			SCUFL workflow) throws Exception;
 
-	@ManagedAttribute(description = "The name of the current run.", currencyTimeLimit = 10)
-	public String getCurrentRunName() {
-		return name == null ? "" : name;
+	@ManagedAttribute(description = "The names of the current runs.", currencyTimeLimit = 5)
+	public String[] getCurrentRunNames() {
+		return runs.keySet().toArray(new String[0]);
 	}
 
 	@ManagedAttribute(description = "The maximum number of simultaneous runs supported by the server.", currencyTimeLimit = 300)
 	@Override
 	public int getMaxRuns() {
-		return 1;
+		return 5;
 	}
 
 	@ManagedAttribute(description = "How many minutes should a workflow live by default?", currencyTimeLimit = 300)
@@ -165,15 +183,19 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 	@Override
 	public synchronized void permitCreate(Principal user, SCUFL workflow)
 			throws NoCreateException {
-		if (current != null)
+		if (runs.size() >= getMaxRuns())
 			throw new NoCreateException();
 	}
 
 	@Override
 	public synchronized void permitDestroy(Principal user, TavernaRun run)
 			throws NoDestroyException {
-		if (run != current)
+		// Simple model: if you can update, you can destroy
+		try {
+			permitUpdate(user, run);
+		} catch (NoUpdateException e) {
 			throw new NoDestroyException();
+		}
 	}
 
 	@Override
@@ -185,39 +207,39 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 	@Override
 	public synchronized TavernaRun getRun(Principal user, Policy p, String uuid)
 			throws UnknownRunException {
-		if (name != null && name.equals(uuid))
-			return current;
+		RunClean rc = runs.get(uuid);
+		if (rc != null)
+			return rc.run;
 		throw new UnknownRunException();
 	}
 
 	@Override
 	public synchronized Map<String, TavernaRun> listRuns(Principal user,
 			Policy p) {
-		if (current == null)
-			return emptyMap();
-		return singletonMap(name, current);
+		Map<String, TavernaRun> result = new HashMap<String, TavernaRun>();
+		for (RunClean rc : runs.values()) {
+			result.put(rc.name, rc.run);
+		}
+		return result;
 	}
 
 	@Override
 	public synchronized void registerRun(final String uuid, TavernaRun run) {
-		name = uuid;
-		current = run;
-		task = new AbstractRemoteRunFactoryCleaner(uuid, this);
-		timer.scheduleAtFixedRate(task, 30000, 30000);
+		runs.put(uuid, new RunClean(uuid, run, this));
 	}
 
 	@Override
 	public synchronized void unregisterRun(String uuid) {
-		name = null;
-		current = null;
-		if (task != null)
-			task.cancel();
-		task = null;
+		RunClean rc = runs.remove(uuid);
+		if (rc != null)
+			rc.clean.cancel();
 	}
 
 	protected synchronized void finalize() {
-		if (task != null)
-			task.cancel();
+		for (RunClean rc: runs.values()) {
+			rc.clean.cancel();
+			rc.run.destroy();
+		}
 	}
 }
 
@@ -243,13 +265,14 @@ class AbstractRemoteRunFactoryCleaner extends TimerTask {
 			return;
 		// Check to see if anything is needing cleaning; if not, we're done
 		synchronized (f) {
-			if (f.current == null)
+			AbstractRemoteRunFactory.RunClean rc = f.runs.get(uuid);
+			if (rc == null)
 				return;
 			Date now = new Date();
-			if (f.current.getExpiry().after(now))
+			if (rc.run.getExpiry().after(now))
 				return;
-			f.unregisterRun(uuid);
-			f.current.destroy();
+			f.unregisterRun(rc.name);
+			rc.run.destroy();
 		}
 	}
 }

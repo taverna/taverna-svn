@@ -10,7 +10,8 @@
 	</bean>
 
 	<bean id="localworker" class="org.taverna.server.master.localworker.ForkingRunFactory"
-		scope="singleton" lazy-init="false">
+		scope="singleton" lazy-init="false" init-method="initFactory"
+		destroy-method="killFactory">
 		<description>
 			The simple policy manager and factory for the baseline
 			localworker case.
