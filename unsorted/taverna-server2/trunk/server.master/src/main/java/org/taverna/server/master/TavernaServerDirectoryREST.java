@@ -6,7 +6,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -18,6 +17,8 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.cxf.jaxrs.ext.Description;
 import org.taverna.server.master.exceptions.FilesystemAccessException;
 import org.taverna.server.master.exceptions.NoUpdateException;
+import org.taverna.server.master.interfaces.Directory;
+import org.taverna.server.master.interfaces.File;
 
 /**
  * Representation of how a workflow run's working directory tree looks.
@@ -25,7 +26,6 @@ import org.taverna.server.master.exceptions.NoUpdateException;
  * @author Donal Fellows
  */
 @Path("/")
-@Produces( { "application/xml", "application/json" })
 @Consumes( { "application/xml", "application/json" })
 @Description("Representation of how a workflow run's working directory tree looks.")
 public interface TavernaServerDirectoryREST {
@@ -37,6 +37,7 @@ public interface TavernaServerDirectoryREST {
 	 * @return A description of the working directory.
 	 */
 	@GET
+	@Produces( { "application/xml", "application/json" })
 	@Description("Describes the working directory of the workflow run.")
 	public DirEntryReference getDescription(@Context UriInfo ui);
 
@@ -55,6 +56,8 @@ public interface TavernaServerDirectoryREST {
 	 */
 	@GET
 	@Path("{path:.*}")
+	@Produces( { "application/xml", "application/json",
+			"application/octet-stream" })
 	@Description("Gives a description of the named entity in or beneath the working directory of the workflow run (either a Directory or File).")
 	public Response getDirectoryOrFileContents(
 			@PathParam("path") List<PathSegment> path, @Context UriInfo ui)
@@ -62,16 +65,17 @@ public interface TavernaServerDirectoryREST {
 
 	/**
 	 * Creates a directory in the filesystem beneath the working directory of
-	 * the workflow run.
+	 * the workflow run, or creates or updates a file's contents, where that
+	 * file is in or below the working directory of a workflow run.
 	 * 
 	 * @param parent
 	 *            The directory to create the directory in.
-	 * @param name
+	 * @param operation
 	 *            What to call the directory to create.
 	 * @param ui
 	 *            About how this method was called.
-	 * @return An HTTP response indicating where the directory was actually
-	 *         made.
+	 * @return An HTTP response indicating where the directory was actually made
+	 *         or what file was created/updated.
 	 * @throws NoUpdateException
 	 *             If the user is not permitted to update the run.
 	 * @throws FilesystemAccessException
@@ -79,37 +83,10 @@ public interface TavernaServerDirectoryREST {
 	 */
 	@POST
 	@Path("{path:.*}")
-	@Consumes("text/plain")
-	@Description("Creates a directory in the filesystem beneath the working directory of the workflow run.")
-	public Response makeDirectory(@PathParam("path") List<PathSegment> parent,
-			String name, @Context UriInfo ui) throws NoUpdateException,
-			FilesystemAccessException;
-
-	/**
-	 * Creates or updates a file's contents, where that file is in or below the
-	 * working directory of a workflow run.
-	 * 
-	 * @param parent
-	 *            The directory holding the file.
-	 * @param name
-	 *            What to call the file to create or update.
-	 * @param contents
-	 *            What to put in the file.
-	 * @param ui
-	 *            About how this method was called.
-	 * @return An HTTP response to the method.
-	 * @throws NoUpdateException
-	 *             If the user is not permitted to update the run.
-	 * @throws FilesystemAccessException
-	 *             If something went wrong during the filesystem operation.
-	 */
-	@PUT
-	@Path("{path:.*}/{name}")
-	@Consumes("application/octet-stream")
-	@Description("Creates or updates a file's contents.")
-	public Response makeOrUpdateFile(
+	@Description("Creates a directory in the filesystem beneath the working directory of the workflow run, or creates or updates a file's contents, where that file is in or below the working directory of a workflow run.")
+	public Response makeDirectoryOrUpdateFile(
 			@PathParam("path") List<PathSegment> parent,
-			@PathParam("name") String name, byte[] contents, @Context UriInfo ui)
+			MakeOrUpdateDirEntry operation, @Context UriInfo ui)
 			throws NoUpdateException, FilesystemAccessException;
 
 	/**

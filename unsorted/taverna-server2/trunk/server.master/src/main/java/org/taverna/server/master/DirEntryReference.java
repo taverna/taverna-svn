@@ -44,7 +44,7 @@ public abstract class DirEntryReference {
 		String fullname = entry.getFullName();
 		de.path = fullname.startsWith("/") ? fullname.substring(1) : fullname;
 		if (ub != null)
-			de.link = ub.build(de.path);
+			de.link = ub.build(entry.getName());
 		return de;
 	}
 

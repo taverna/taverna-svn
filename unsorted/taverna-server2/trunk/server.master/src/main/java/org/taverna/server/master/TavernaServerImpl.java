@@ -3,7 +3,7 @@ package org.taverna.server.master;
 import static java.lang.Math.min;
 import static java.util.Arrays.asList;
 import static java.util.UUID.randomUUID;
-import static javax.ws.rs.core.Response.created;
+import static javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM_TYPE;
 import static javax.ws.rs.core.Response.seeOther;
 import static javax.ws.rs.core.Response.temporaryRedirect;
 import static org.taverna.server.master.DirEntryReference.makeDirEntryReference;
@@ -30,6 +30,7 @@ import javax.xml.ws.WebServiceContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.taverna.server.master.DescriptionElement.Uri;
+import org.taverna.server.master.MakeOrUpdateDirEntry.MakeDirectory;
 import org.taverna.server.master.exceptions.BadPropertyValueException;
 import org.taverna.server.master.exceptions.BadStateChangeException;
 import org.taverna.server.master.exceptions.FilesystemAccessException;
@@ -477,7 +478,8 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 				UriInfo ui) throws FilesystemAccessException {
 			DirectoryEntry de = getDirEntry(w, path);
 			if (de instanceof File) {
-				return Response.ok(((File) de).getContents()).build();
+				return Response.ok(((File) de).getContents()).type(
+						APPLICATION_OCTET_STREAM_TYPE).build();
 			} else if (de instanceof Directory) {
 				return Response.ok(
 						new DirectoryContents(ui, ((Directory) de)
@@ -488,49 +490,45 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		}
 
 		@Override
-		public Response makeDirectory(List<PathSegment> parent, String name,
-				UriInfo ui) throws NoUpdateException, FilesystemAccessException {
-			policy.permitUpdate(getPrincipal(), w);
-			DirectoryEntry container = getDirEntry(w, parent);
-			if (!(container instanceof Directory))
-				throw new FilesystemAccessException(
-						"You may not make a subdirectory of a file.");
-			Directory dir = ((Directory) container).makeSubdirectory(
-					getPrincipal(), name);
-			return created(
-					ui.getAbsolutePathBuilder().path("{name}").build(
-							dir.getName())).build();
-		}
-
-		@Override
-		public Response makeOrUpdateFile(List<PathSegment> parent, String name,
-				byte[] contents, UriInfo ui) throws NoUpdateException,
+		public Response makeDirectoryOrUpdateFile(List<PathSegment> parent,
+				MakeOrUpdateDirEntry op, UriInfo ui) throws NoUpdateException,
 				FilesystemAccessException {
 			policy.permitUpdate(getPrincipal(), w);
 			DirectoryEntry container = getDirEntry(w, parent);
-			if (!(container instanceof Directory))
-				throw new FilesystemAccessException(
-						"You may not place a file in a file.");
-			File f = null;
-			for (DirectoryEntry e : ((Directory) container).getContents()) {
-				if (e.getName().equals(name)) {
-					if (e instanceof File) {
+			if (!(container instanceof Directory)) {
+				if (op instanceof MakeDirectory)
+					throw new FilesystemAccessException(
+							"You may not make a subdirectory of a file.");
+				else
+					throw new FilesystemAccessException(
+							"You may not place a file in a file.");
+			}
+			if (op.name == null)
+				throw new FilesystemAccessException("missing name attribute");
+			Directory d = (Directory) container;
+			if (op instanceof MakeDirectory) {
+				Directory dir = d.makeSubdirectory(getPrincipal(), op.name);
+				return temporaryRedirect(
+						ui.getAbsolutePathBuilder().path("{name}").build(
+								dir.getName())).build();
+			} else {
+				File f = null;
+				for (DirectoryEntry e : d.getContents()) {
+					if (e.getName().equals(op.name)) {
+						if (e instanceof Directory) {
+							throw new FilesystemAccessException(
+									"You may not overwrite a directory with a file.");
+						}
 						f = (File) e;
 						break;
 					}
-					throw new FilesystemAccessException(
-							"You may not overwrite a directory with a file.");
 				}
-			}
-			if (f == null) {
-				f = ((Directory) container).makeEmptyFile(getPrincipal(), name);
-				f.setContents(contents);
-				return created(
+				if (f == null)
+					f = d.makeEmptyFile(getPrincipal(), op.name);
+				f.setContents(op.contents);
+				return temporaryRedirect(
 						ui.getAbsolutePathBuilder().path("{name}").build(
 								f.getName())).build();
-			} else {
-				f.setContents(contents);
-				return Response.ok().build();
 			}
 		}
 	}
