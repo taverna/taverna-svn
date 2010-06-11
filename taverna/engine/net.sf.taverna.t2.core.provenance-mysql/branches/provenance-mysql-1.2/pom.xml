@@ -9,11 +9,11 @@
 	</parent>
 	<groupId>net.sf.taverna.t2.core</groupId>
 	<artifactId>provenance-mysql</artifactId>
-	<version>1.1-SNAPSHOT</version>
+	<version>1.2</version>
 	<name>mySQL provenance</name>
 
 	<properties>		
-		<t2.core.version>1.1-SNAPSHOT</t2.core.version>				
+		<t2.core.version>1.2</t2.core.version>				
 	</properties>
 
     <repositories>
@@ -53,6 +53,11 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.13</version>
-        </dependency>
+        </dependency>    
     </dependencies>
+    <scm>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.core.provenance-mysql/tags/provenance-mysql-1.2/</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.core.provenance-mysql/tags/provenance-mysql-1.2/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/engine/net.sf.taverna.t2.core.provenance-mysql/tags/provenance-mysql-1.2/</url>
+	</scm>
 </project>
