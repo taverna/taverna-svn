@@ -29,11 +29,11 @@
 	</scm>
 
 	<modules>
-		<module>compatibility</module>
-		<module>engine</module>
 		<module>parent</module>
-		<module>products</module>
-		<module>ui</module>
 		<module>utils</module>
+		<module>engine</module>
+		<module>compatibility</module>
+		<module>ui</module>
+		<module>products</module>
 	</modules>
 </project>
