@@ -1,6 +1,4 @@
-package org.taverna.server.master;
-
-import static org.taverna.server.master.DirEntryReference.makeDirEntryReference;
+package org.taverna.server.master.rest;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,6 +8,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.taverna.server.master.DirEntryReference;
 import org.taverna.server.master.DirEntryReference.DirectoryReference;
 import org.taverna.server.master.DirEntryReference.FileReference;
 import org.taverna.server.master.interfaces.DirectoryEntry;
@@ -27,12 +26,12 @@ public class DirectoryContents {
 	public DirectoryContents() {
 	}
 
-	DirectoryContents(UriInfo ui, Collection<DirectoryEntry> collection) {
+	public DirectoryContents(UriInfo ui, Collection<DirectoryEntry> collection) {
 		directory = new ArrayList<DirectoryReference>();
 		file = new ArrayList<FileReference>();
 		UriBuilder ub = ui.getAbsolutePathBuilder().path("{path}");
 		for (DirectoryEntry e : collection) {
-			DirEntryReference de = makeDirEntryReference(ub, e);
+			DirEntryReference de = DirEntryReference.newInstance(ub, e);
 			if (de instanceof DirectoryReference)
 				directory.add((DirectoryReference) de);
 			else

@@ -1,4 +1,4 @@
-package org.taverna.server.master;
+package org.taverna.server.master.rest;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,7 +40,7 @@ public class RunDescription extends DescriptionElement {
 	}
 
 	public RunDescription(){}
-	RunDescription(TavernaRun r, UriInfo ui) {
+	public RunDescription(TavernaRun r, UriInfo ui) {
 		UriBuilder ub = ui.getAbsolutePathBuilder();
 		creationWorkflow = new Uri(ui, "workflow");
 		expiry = new Expiry(r, ub.path("expiry"));

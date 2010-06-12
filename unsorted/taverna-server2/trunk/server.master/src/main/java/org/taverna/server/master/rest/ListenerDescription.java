@@ -1,4 +1,4 @@
-package org.taverna.server.master;
+package org.taverna.server.master.rest;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -68,7 +68,7 @@ public class ListenerDescription {
 	}
 
 	public ListenerDescription() {}
-	ListenerDescription(String name, String type, String[] properties, UriInfo ui) {
+	public ListenerDescription(String name, String type, String[] properties, UriInfo ui) {
 		this.name = name;
 		this.configuration = new ConfigurationDescription();
 		this.configuration.ref = ui.getAbsolutePathBuilder().path("{name}/configuration").build(name);

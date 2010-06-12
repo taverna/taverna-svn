@@ -1,4 +1,4 @@
-package org.taverna.server.master;
+package org.taverna.server.master.rest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ public class ServerDescription extends DescriptionElement {
 	public Uri runLimit, permittedWorkflows, permittedListeners;
 	//Uri database;
 	public ServerDescription(){}
-	ServerDescription(Map<String,TavernaRun> ws, UriInfo ui) {
+	public ServerDescription(Map<String,TavernaRun> ws, UriInfo ui) {
 		runs = new ArrayList<Uri>(ws.size());
 		for (Map.Entry<String, TavernaRun> w: ws.entrySet()) {
 			runs.add(new Uri(ui, "runs/{uuid}", w.getKey()));

@@ -1,4 +1,4 @@
-package org.taverna.server.master;
+package org.taverna.server.master.rest;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.cxf.jaxrs.ext.Description;
+import org.taverna.server.master.SCUFL;
 import org.taverna.server.master.exceptions.BadStateChangeException;
 import org.taverna.server.master.exceptions.FilesystemAccessException;
 import org.taverna.server.master.exceptions.NoUpdateException;

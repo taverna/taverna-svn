@@ -36,8 +36,28 @@ public abstract class DirEntryReference {
 	public DirEntryReference() {
 	}
 
+	/**
+	 * Return the directory entry reference instance subclass suitable for the
+	 * given directory entry.
+	 * 
+	 * @param entry
+	 *            The entry to characterise.
+	 */
+	public static DirEntryReference newInstance(DirectoryEntry entry) {
+		return newInstance(null, entry);
+	}
+
+	/**
+	 * Return the directory entry reference instance subclass suitable for the
+	 * given directory entry.
+	 * 
+	 * @param ub
+	 *            Used for constructing URIs.
+	 * @param entry
+	 *            The entry to characterise.
+	 */
 	// Really returns a subclass, so cannot be constructor
-	static DirEntryReference makeDirEntryReference(UriBuilder ub,
+	public static DirEntryReference newInstance(UriBuilder ub,
 			DirectoryEntry entry) {
 		DirEntryReference de = (entry instanceof Directory) ? new DirectoryReference()
 				: new FileReference();

@@ -1,4 +1,4 @@
-package org.taverna.server.master;
+package org.taverna.server.master.rest;
 
 import java.util.List;
 
@@ -13,6 +13,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.cxf.jaxrs.ext.Description;
+import org.taverna.server.master.SCUFL;
+import org.taverna.server.master.TavernaServerSOAP;
 import org.taverna.server.master.exceptions.NoUpdateException;
 import org.taverna.server.master.exceptions.UnknownRunException;
 

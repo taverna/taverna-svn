@@ -1,4 +1,4 @@
-package org.taverna.server.master;
+package org.taverna.server.master.rest;
 
 import java.net.URI;
 
@@ -14,11 +14,11 @@ public abstract class DescriptionElement {
 		public Uri() {
 		}
 
-		Uri(UriBuilder ub, String... strings) {
+		public Uri(UriBuilder ub, String... strings) {
 			ref = ub.build((Object[]) strings);
 		}
 
-		Uri(UriInfo ui, String path, String... strings) {
+		public Uri(UriInfo ui, String path, String... strings) {
 			ref = ui.getAbsolutePathBuilder().path(path).build((Object[]) strings);
 		}
 	}

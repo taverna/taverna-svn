@@ -10,6 +10,8 @@ import static java.util.UUID.randomUUID;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.rmi.ConnectException;
+import java.rmi.ConnectIOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.security.Principal;
@@ -29,9 +31,10 @@ import org.taverna.server.master.SCUFL;
  * 
  * @author Donal Fellows
  */
-@ManagedResource(objectName = "Taverna:group=Server,name=ForkSingletonFactory", description = "The factory for simple singleton forked run.")
-public class ForkingRunFactory extends AbstractRemoteRunFactory {
-	protected String[] firstArgs;
+@ManagedResource(objectName = "Taverna:group=Server,name=ForkRunFactory", description = "The factory for simple singleton forked run.")
+public class ForkRunFactory extends AbstractRemoteRunFactory {
+	private String executeWorkflowScript;
+	protected String[] extraArgs;
 	private JAXBContext context;
 	private int waitSeconds = 40;
 	private int sleepMS = 1000;
@@ -40,11 +43,25 @@ public class ForkingRunFactory extends AbstractRemoteRunFactory {
 	private int totalRuns;
 	private String javaBinary = getProperty("java.home") + separator + "bin"
 			+ separator + "java";
+	private String serverWorkerJar;
 	private RemoteRunFactory factory;
 	private Process factoryProcess;
+	private String factoryProcessName;
 
-	public ForkingRunFactory() throws JAXBException {
+	public ForkRunFactory() throws JAXBException {
+		ClassLoader cl = ForkRunFactory.class.getClassLoader();
+		serverWorkerJar = cl.getResource("util/server.worker.jar").getFile();
 		context = JAXBContext.newInstance(SCUFL.class);
+	}
+
+	private void reinitFactory() {
+		killFactory();
+		try {
+			if (extraArgs != null)
+				initFactory();
+		} catch (Exception e) {
+			log.fatal("failed to make connection to remote run factory", e);
+		}
 	}
 
 	@ManagedAttribute(description = "Which java executable to run.", currencyTimeLimit = 300)
@@ -55,30 +72,43 @@ public class ForkingRunFactory extends AbstractRemoteRunFactory {
 	@ManagedAttribute(description = "Which java executable to run.", currencyTimeLimit = 300)
 	public void setJavaBinary(String javaBinary) {
 		this.javaBinary = javaBinary;
-		killFactory();
-		try {
-			if (firstArgs != null)
-				initFactory();
-		} catch (Exception e) {
-			log.fatal("failed to make connection to remote run factory", e);
-		}
+		reinitFactory();
 	}
 
-	@ManagedAttribute(description = "The list of arguments used to make a worker process.", currencyTimeLimit = 300)
-	public String[] getFirstArguments() {
-		return firstArgs.clone();
+	@ManagedAttribute(description = "The list of additional arguments used to make a worker process.", currencyTimeLimit = 300)
+	public String[] getExtraArguments() {
+		return extraArgs.clone();
 	}
 
-	@ManagedAttribute(description = "The list of arguments used to make a worker process.", currencyTimeLimit = 300)
-	public void setFirstArguments(String[] firstArguments) {
-		this.firstArgs = firstArguments.clone();
-		killFactory();
-		try {
-			if (firstArgs != null)
-				initFactory();
-		} catch (Exception e) {
-			log.fatal("failed to make connection to remote run factory", e);
-		}
+	@ManagedAttribute(description = "The list of additional arguments used to make a worker process.", currencyTimeLimit = 300)
+	public void setExtraArguments(String[] firstArguments) {
+		if (firstArguments == null)
+			extraArgs = null;
+		else
+			extraArgs = firstArguments.clone();
+		reinitFactory();
+	}
+
+	@ManagedAttribute(description = "The location of the JAR implementing the server worker process.")
+	public String getServerWorkerJar() {
+		return this.serverWorkerJar;
+	}
+
+	@ManagedAttribute(description = "The location of the JAR implementing the server worker process.")
+	public void setServerWorkerJar(String serverWorkerJar) {
+		this.serverWorkerJar = serverWorkerJar;
+		reinitFactory();
+	}
+
+	@ManagedAttribute(description = "The script to run to start running a workflow.", currencyTimeLimit = 300)
+	public String getExecuteWorkflowScript() {
+		return executeWorkflowScript;
+	}
+
+	@ManagedAttribute(description = "The script to run to start running a workflow.", currencyTimeLimit = 300)
+	public void setExecuteWorkflowScript(String executeWorkflowScript) {
+		this.executeWorkflowScript = executeWorkflowScript;
+		reinitFactory();
 	}
 
 	@ManagedAttribute(description = "How many seconds to wait for a worker process to register itself.", currencyTimeLimit = 300)
@@ -116,6 +146,11 @@ public class ForkingRunFactory extends AbstractRemoteRunFactory {
 		return lastExitCode;
 	}
 
+	@ManagedAttribute(description = "What the factory subprocess's main RMI interface is registered as.", currencyTimeLimit = 60)
+	public String getFactoryProcessName() {
+		return factoryProcessName;
+	}
+
 	/**
 	 * Makes the subprocess that manufactures runs.
 	 * 
@@ -126,33 +161,21 @@ public class ForkingRunFactory extends AbstractRemoteRunFactory {
 		if (factory != null)
 			return;
 		// Generate the arguments to use when spawning the subprocess
-		final String uuid = "TavernaRunServer.WorkerFactory." + randomUUID();
+		factoryProcessName = "ForkRunFactory." + randomUUID();
 		ProcessBuilder p = new ProcessBuilder(javaBinary);
-		p.command().addAll(asList(firstArgs));
-		p.command().add(uuid);
+		if (extraArgs != null)
+			p.command().addAll(asList(extraArgs));
+		p.command().add("-jar");
+		p.command().add(serverWorkerJar);
+		p.command().add(executeWorkflowScript);
+		p.command().add(factoryProcessName);
 		p.redirectErrorStream(true);
 
 		// Spawn the subprocess
 		log.info("about to create subprocess: " + p.command());
-		final Process fp = factoryProcess = p.start();
-		Thread logger = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				BufferedReader r = new BufferedReader(new InputStreamReader(fp
-						.getInputStream()));
-				try {
-					String line;
-					while (true) {
-						line = r.readLine();
-						if (line == null)
-							break;
-						log.info(uuid + ".Logger: subprocess output: " + line);
-					}
-				} catch (Exception e) {
-					log.warn("failure in reading from " + uuid, e);
-				}
-			}
-		}, uuid + ".Logger");
+		factoryProcess = p.start();
+		Thread logger = new Thread(new OutputLogger(factoryProcessName,
+				factoryProcess), factoryProcessName + ".Logger");
 		logger.setDaemon(true);
 		logger.start();
 
@@ -165,14 +188,24 @@ public class ForkingRunFactory extends AbstractRemoteRunFactory {
 			try {
 				sleep(sleepMS);
 				lastStartupCheckCount++;
-				log.info("about to look up resource called " + uuid);
-				factory = (RemoteRunFactory) registry.lookup(uuid);
+				log.info("about to look up resource called "
+						+ factoryProcessName);
+				try {
+					registry.list(); // Validate registry connection first
+				} catch (ConnectException ce) {
+					log.warn("connection problems with registry", ce);
+				}
+				factory = (RemoteRunFactory) registry
+						.lookup(factoryProcessName);
+				log.info("successfully connected to factory subprocess "
+						+ factoryProcessName);
 				return;
 			} catch (InterruptedException ie) {
 				continue;
 			} catch (NotBoundException nbe) {
 				lastException = nbe;
-				log.info("resource \"" + uuid + "\" not yet registered...");
+				log.info("resource \"" + factoryProcessName
+						+ "\" not yet registered...");
 				continue;
 			} catch (RuntimeException re) {
 				// Unpack a remote exception if we can
@@ -195,16 +228,15 @@ public class ForkingRunFactory extends AbstractRemoteRunFactory {
 	 */
 	public void killFactory() {
 		if (factory != null) {
-			log.info("requesting shutdown of TavernaRunServer.WorkerFactory");
+			log.info("requesting shutdown of " + factoryProcessName);
 			try {
 				factory.shutdown();
 				sleep(700);
 			} catch (RemoteException e) {
-				log.warn("TavernaRunServer.WorkerFactory"
-						+ " failed to shut down nicely", e);
+				log.warn(factoryProcessName + " failed to shut down nicely", e);
 			} catch (InterruptedException e) {
 				log.debug("interrupted during wait after asking "
-						+ "TavernaRunServer.WorkerFactory to shut down", e);
+						+ factoryProcessName + " to shut down", e);
 			} finally {
 				factory = null;
 			}
@@ -213,10 +245,9 @@ public class ForkingRunFactory extends AbstractRemoteRunFactory {
 			int code = -1;
 			try {
 				lastExitCode = code = factoryProcess.exitValue();
-				log.info("TavernaRunServer.WorkerFactory already dead?");
+				log.info(factoryProcessName + " already dead?");
 			} catch (Exception e) {
-				log
-						.info("trying to force death of TavernaRunServer.WorkerFactory");
+				log.info("trying to force death of " + factoryProcessName);
 				try {
 					factoryProcess.destroy();
 					sleep(350); // takes a little time, even normally
@@ -227,13 +258,12 @@ public class ForkingRunFactory extends AbstractRemoteRunFactory {
 				factoryProcess = null;
 			}
 			if (code > 128) {
-				log.info("TavernaRunServer.WorkerFactory died with signal="
+				log.info(factoryProcessName + " died with signal="
 						+ (code - 128));
 			} else if (code >= 0) {
-				log.info("TavernaRunServer.WorkerFactory process killed: code="
-						+ code);
+				log.info(factoryProcessName + " process killed: code=" + code);
 			} else {
-				log.warn("TavernaRunServer.WorkerFactory not yet dead");
+				log.warn(factoryProcessName + " not yet dead");
 			}
 		}
 	}
@@ -249,10 +279,50 @@ public class ForkingRunFactory extends AbstractRemoteRunFactory {
 			throws Exception {
 		StringWriter sw = new StringWriter();
 		context.createMarshaller().marshal(workflow, sw);
-		if (factory == null)
-			initFactory();
-		RemoteSingleRun rsr = factory.make(sw.toString());
-		totalRuns++;
-		return rsr;
+		for (int i = 0; i < 3; i++) {
+			if (factory == null)
+				initFactory();
+			try {
+				RemoteSingleRun rsr = factory.make(sw.toString());
+				totalRuns++;
+				return rsr;
+			} catch (ConnectException e) {
+				// factory was lost; try to recreate
+			} catch (ConnectIOException e) {
+				// factory was lost; try to recreate
+			}
+			killFactory();
+		}
+		throw new Exception("total failure to connect to factory "
+				+ factoryProcessName + "despite attempting restart");
+	}
+}
+
+class OutputLogger implements Runnable {
+	OutputLogger(String name, Process process) {
+		this.uniqueName = name;
+		this.process = process;
+	}
+
+	private String uniqueName;
+	private Process process;
+
+	@Override
+	public void run() {
+		BufferedReader r = new BufferedReader(new InputStreamReader(process
+				.getInputStream()));
+		try {
+			String line;
+			while (true) {
+				line = r.readLine();
+				if (line == null)
+					break;
+				AbstractRemoteRunFactory.log.info(uniqueName
+						+ " subprocess output: " + line);
+			}
+		} catch (Exception e) {
+			AbstractRemoteRunFactory.log.warn("failure in reading from "
+					+ uniqueName, e);
+		}
 	}
 }

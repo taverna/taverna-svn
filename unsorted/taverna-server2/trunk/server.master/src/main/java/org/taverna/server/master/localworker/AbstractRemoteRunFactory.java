@@ -5,6 +5,7 @@ import static java.lang.System.setProperty;
 import static java.lang.System.setSecurityManager;
 import static java.rmi.registry.LocateRegistry.createRegistry;
 import static java.rmi.registry.LocateRegistry.getRegistry;
+import static java.rmi.registry.Registry.REGISTRY_PORT;
 import static java.util.Collections.emptyList;
 
 import java.lang.ref.WeakReference;
@@ -14,6 +15,7 @@ import java.rmi.registry.Registry;
 import java.security.Principal;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -43,26 +45,12 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 	static final Log log = LogFactory.getLog("Taverna.Server.LocalWorker");
 	static Registry registry;
 	public static final String SECURITY_POLICY_FILE = "security.policy";
-	static Timer timer = new Timer("Taverna.Server.LocalWorker.Factory.Timer",
+	public static final int CLEANER_INTERVAL_MS = 30000;
+	static Timer timer = new Timer("Taverna.Server.RemoteRunFactory.Timer",
 			true);
 	private int defaultLifetime = 20;
-
-	static class RunClean {
-		String name;
-		TavernaRun run;
-		TimerTask clean;
-
-		public RunClean(String name, TavernaRun run,
-				AbstractRemoteRunFactory abstractRemoteRunFactory) {
-			this.name = name;
-			this.run = run;
-			clean = new AbstractRemoteRunFactoryCleaner(name,
-					abstractRemoteRunFactory);
-			timer.scheduleAtFixedRate(clean, 30000, 30000);
-		}
-	}
-
-	Map<String, RunClean> runs = new HashMap<String, RunClean>();
+	private TimerTask cleaner;
+	private Map<String, TavernaRun> runs = new HashMap<String, TavernaRun>();
 
 	static {
 		if (getSecurityManager() == null) {
@@ -80,23 +68,24 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 			registry.list();
 		} catch (RemoteException ignored) {
 			try {
-				registry = createRegistry(1099);
+				registry = createRegistry(REGISTRY_PORT);
 			} catch (RemoteException e) {
 				log.error("failed to create RMI registry", e);
 			}
 		}
 	}
 
-	RemoteRunDelegate getRun(String name) {
-		return (RemoteRunDelegate) runs.get(name).run;
+	public AbstractRemoteRunFactory() {
+		cleaner = new AbstractRemoteRunFactoryCleaner(this);
+		timer.scheduleAtFixedRate(cleaner, CLEANER_INTERVAL_MS,
+				CLEANER_INTERVAL_MS);
 	}
 
 	@Override
 	public List<String> getSupportedListenerTypes() {
 		try {
-			for (Map.Entry<String, RunClean> r : runs.entrySet())
-				return ((RemoteRunDelegate) r.getValue().run).run
-						.getListenerTypes();
+			for (TavernaRun r : runs.values())
+				return ((RemoteRunDelegate) r).run.getListenerTypes();
 			log.warn("failed to get list of listener types; no runs");
 		} catch (RemoteException e) {
 			log.warn("failed to get list of listener types", e);
@@ -207,9 +196,9 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 	@Override
 	public synchronized TavernaRun getRun(Principal user, Policy p, String uuid)
 			throws UnknownRunException {
-		RunClean rc = runs.get(uuid);
-		if (rc != null)
-			return rc.run;
+		TavernaRun run = runs.get(uuid);
+		if (run != null)
+			return run;
 		throw new UnknownRunException();
 	}
 
@@ -217,29 +206,31 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 	public synchronized Map<String, TavernaRun> listRuns(Principal user,
 			Policy p) {
 		Map<String, TavernaRun> result = new HashMap<String, TavernaRun>();
-		for (RunClean rc : runs.values()) {
-			result.put(rc.name, rc.run);
+		for (Map.Entry<String, TavernaRun> namedRun : runs.entrySet()) {
+			result.put(namedRun.getKey(), namedRun.getValue());
 		}
 		return result;
 	}
 
 	@Override
 	public synchronized void registerRun(final String uuid, TavernaRun run) {
-		runs.put(uuid, new RunClean(uuid, run, this));
+		runs.put(uuid, run);
 	}
 
 	@Override
 	public synchronized void unregisterRun(String uuid) {
-		RunClean rc = runs.remove(uuid);
-		if (rc != null)
-			rc.clean.cancel();
+		runs.remove(uuid);
 	}
 
 	protected synchronized void finalize() {
-		for (RunClean rc: runs.values()) {
-			rc.clean.cancel();
-			rc.run.destroy();
+		cleaner.cancel();
+		for (TavernaRun run : runs.values()) {
+			run.destroy();
 		}
+	}
+
+	Iterator<TavernaRun> iterator() {
+		return runs.values().iterator();
 	}
 }
 
@@ -250,10 +241,8 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
  */
 class AbstractRemoteRunFactoryCleaner extends TimerTask {
 	private WeakReference<AbstractRemoteRunFactory> arrf;
-	private String uuid;
 
-	AbstractRemoteRunFactoryCleaner(String uuid, AbstractRemoteRunFactory arrf) {
-		this.uuid = uuid;
+	AbstractRemoteRunFactoryCleaner(AbstractRemoteRunFactory arrf) {
 		this.arrf = new WeakReference<AbstractRemoteRunFactory>(arrf);
 	}
 
@@ -261,18 +250,23 @@ class AbstractRemoteRunFactoryCleaner extends TimerTask {
 	public void run() {
 		// Reconvert back to a strong reference for the length of this check
 		AbstractRemoteRunFactory f = arrf.get();
-		if (f == null)
+		if (f == null) {
+			cancel();
 			return;
+		}
 		// Check to see if anything is needing cleaning; if not, we're done
+		Date now = new Date();
 		synchronized (f) {
-			AbstractRemoteRunFactory.RunClean rc = f.runs.get(uuid);
-			if (rc == null)
-				return;
-			Date now = new Date();
-			if (rc.run.getExpiry().after(now))
-				return;
-			f.unregisterRun(rc.name);
-			rc.run.destroy();
+			Iterator<TavernaRun> it = f.iterator();
+			while (it.hasNext()) {
+				TavernaRun run = it.next();
+				if (run == null)
+					continue;
+				if (run.getExpiry().after(now))
+					continue;
+				it.remove();
+				run.destroy();
+			}
 		}
 	}
 }
