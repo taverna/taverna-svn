@@ -3,12 +3,6 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="localworkerConfig"
-		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="location" value="classpath:localworker.properties" />
-		<property name="ignoreUnresolvablePlaceholders" value="true" />
-	</bean>
-
 	<bean id="localworker" class="org.taverna.server.master.localworker.ForkRunFactory"
 			scope="singleton" lazy-init="false" init-method="initFactory"
 			destroy-method="killFactory">
@@ -16,7 +10,6 @@
 			The simple policy manager and factory for the baseline
 			localworker case.
 		</description>
-		<property name="executeWorkflowScript" value="${taverna.executeworkflow}" />
 		<property name="defaultLifetime" value="20" />
 		<!--
 			Supported properties: javaBinary:String, extraArguments:String[],

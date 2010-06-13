@@ -17,11 +17,13 @@ import java.rmi.RemoteException;
 import java.security.Principal;
 import java.util.Calendar;
 
+import javax.servlet.ServletContext;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
+import org.springframework.web.context.ServletContextAware;
 import org.taverna.server.localworker.remote.RemoteRunFactory;
 import org.taverna.server.localworker.remote.RemoteSingleRun;
 import org.taverna.server.master.SCUFL;
@@ -32,7 +34,8 @@ import org.taverna.server.master.SCUFL;
  * @author Donal Fellows
  */
 @ManagedResource(objectName = "Taverna:group=Server,name=ForkRunFactory", description = "The factory for simple singleton forked run.")
-public class ForkRunFactory extends AbstractRemoteRunFactory {
+public class ForkRunFactory extends AbstractRemoteRunFactory implements
+		ServletContextAware {
 	private String executeWorkflowScript;
 	protected String[] extraArgs;
 	private JAXBContext context;
@@ -55,9 +58,10 @@ public class ForkRunFactory extends AbstractRemoteRunFactory {
 	}
 
 	private void reinitFactory() {
+		boolean makeFactory = factory != null;
 		killFactory();
 		try {
-			if (extraArgs != null)
+			if (makeFactory)
 				initFactory();
 		} catch (Exception e) {
 			log.fatal("failed to make connection to remote run factory", e);
@@ -295,6 +299,17 @@ public class ForkRunFactory extends AbstractRemoteRunFactory {
 		}
 		throw new Exception("total failure to connect to factory "
 				+ factoryProcessName + "despite attempting restart");
+	}
+
+	@Override
+	public void setServletContext(ServletContext servletContext) {
+		if (executeWorkflowScript == null && servletContext != null) {
+			executeWorkflowScript = servletContext
+					.getInitParameter("executeWorkflowScript");
+			if (executeWorkflowScript != null)
+				log.info("configured executeWorkflowScript from context as "
+						+ executeWorkflowScript);
+		}
 	}
 }
 
