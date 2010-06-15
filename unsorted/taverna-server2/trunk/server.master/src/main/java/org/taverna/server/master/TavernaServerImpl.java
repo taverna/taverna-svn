@@ -8,6 +8,7 @@ import static javax.ws.rs.core.Response.seeOther;
 import static javax.ws.rs.core.Response.temporaryRedirect;
 import static org.taverna.server.master.DirEntryReference.newInstance;
 
+import java.io.StringWriter;
 import java.security.Principal;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -25,6 +26,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.ws.WebServiceContext;
 
@@ -33,20 +36,12 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.taverna.server.master.exceptions.BadPropertyValueException;
-import org.taverna.server.master.exceptions.BadPropertyValueHandler;
 import org.taverna.server.master.exceptions.BadStateChangeException;
-import org.taverna.server.master.exceptions.BadStateChangeHandler;
 import org.taverna.server.master.exceptions.FilesystemAccessException;
-import org.taverna.server.master.exceptions.FilesystemAccessHandler;
 import org.taverna.server.master.exceptions.NoCreateException;
-import org.taverna.server.master.exceptions.NoCreateHandler;
-import org.taverna.server.master.exceptions.NoDestroyHandler;
 import org.taverna.server.master.exceptions.NoListenerException;
-import org.taverna.server.master.exceptions.NoListenerHandler;
 import org.taverna.server.master.exceptions.NoUpdateException;
-import org.taverna.server.master.exceptions.NoUpdateHandler;
 import org.taverna.server.master.exceptions.UnknownRunException;
-import org.taverna.server.master.exceptions.UnknownRunHandler;
 import org.taverna.server.master.factories.ListenerFactory;
 import org.taverna.server.master.factories.RunFactory;
 import org.taverna.server.master.interfaces.Directory;
@@ -57,10 +52,17 @@ import org.taverna.server.master.interfaces.Listener;
 import org.taverna.server.master.interfaces.Policy;
 import org.taverna.server.master.interfaces.RunStore;
 import org.taverna.server.master.interfaces.TavernaRun;
+import org.taverna.server.master.rest.BadPropertyValueHandler;
+import org.taverna.server.master.rest.BadStateChangeHandler;
 import org.taverna.server.master.rest.DirectoryContents;
+import org.taverna.server.master.rest.FilesystemAccessHandler;
 import org.taverna.server.master.rest.ListenerCreationDescription;
 import org.taverna.server.master.rest.ListenerDescription;
 import org.taverna.server.master.rest.MakeOrUpdateDirEntry;
+import org.taverna.server.master.rest.NoCreateHandler;
+import org.taverna.server.master.rest.NoDestroyHandler;
+import org.taverna.server.master.rest.NoListenerHandler;
+import org.taverna.server.master.rest.NoUpdateHandler;
 import org.taverna.server.master.rest.RunDescription;
 import org.taverna.server.master.rest.ServerDescription;
 import org.taverna.server.master.rest.TavernaServerDirectoryREST;
@@ -68,6 +70,7 @@ import org.taverna.server.master.rest.TavernaServerInputREST;
 import org.taverna.server.master.rest.TavernaServerListenersREST;
 import org.taverna.server.master.rest.TavernaServerREST;
 import org.taverna.server.master.rest.TavernaServerRunREST;
+import org.taverna.server.master.rest.UnknownRunHandler;
 import org.taverna.server.master.rest.DescriptionElement.Uri;
 import org.taverna.server.master.rest.MakeOrUpdateDirEntry.MakeDirectory;
 
@@ -85,6 +88,15 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	public static Log log = LogFactory.getLog(TavernaServerImpl.class);
 	private static final String REST_BASE = "/taverna2/rest";
 	static int invokes;
+	private JAXBContext scuflSerializer;
+
+	public TavernaServerImpl() {
+		try {
+			scuflSerializer = JAXBContext.newInstance(SCUFL.class);
+		} catch (JAXBException e) {
+			log.warn("failed to construct serializer for SCUFL objects", e);
+		}
+	}
 
 	@ManagedAttribute(description = "Count of the number of external calls into this webapp.")
 	public int getInvocationCount() {
@@ -95,6 +107,21 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	public int getCurrentRunCount() {
 		return runStore.listRuns(null, null).size();
 	}
+
+	@ManagedAttribute(description = "Whether to write submitted workflows to the log.")
+	public boolean getLogIncomingWorkflows() {
+		return logIncomingWorkflows;
+	}
+
+	@ManagedAttribute(description = "Whether to write submitted workflows to the log.")
+	public void setLogIncomingWorkflows(boolean logIncomingWorkflows) {
+		this.logIncomingWorkflows = logIncomingWorkflows;
+	}
+
+	/**
+	 * Whether we should log all workflows sent to us
+	 */
+	private boolean logIncomingWorkflows;
 
 	/**
 	 * Whether we allow the creation of new workflow runs
@@ -157,12 +184,25 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		return ws.toArray(new RunReference[ws.size()]);
 	}
 
+	private void logWorkflow(SCUFL workflow) {
+		StringWriter sw = new StringWriter();
+		try {
+			scuflSerializer.createMarshaller().marshal(workflow, sw);
+			log.info(sw);
+		} catch (JAXBException e) {
+			log.warn("problem when logging workflow", e);
+		}
+	}
+
 	@Override
 	public Response submitWorkflow(SCUFL workflow, UriInfo ui)
 			throws NoUpdateException {
 		invokes++;
 		if (!allowNewWorkflowRuns) {
 			throw new NoCreateException("run creation not currently enabled");
+		}
+		if (logIncomingWorkflows) {
+			logWorkflow(workflow);
 		}
 		Principal p = getPrincipal();
 		policy.permitCreate(p, workflow);
@@ -184,6 +224,9 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		invokes++;
 		if (!allowNewWorkflowRuns) {
 			throw new NoCreateException("run creation not currently enabled");
+		}
+		if (logIncomingWorkflows) {
+			logWorkflow(workflow);
 		}
 		Principal p = getPrincipal();
 		policy.permitCreate(p, workflow);
