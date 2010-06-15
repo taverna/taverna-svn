@@ -8,6 +8,7 @@ import static java.util.Calendar.SECOND;
 import static java.util.UUID.randomUUID;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.rmi.ConnectException;
@@ -174,6 +175,7 @@ public class ForkRunFactory extends AbstractRemoteRunFactory implements
 		p.command().add(executeWorkflowScript);
 		p.command().add(factoryProcessName);
 		p.redirectErrorStream(true);
+		p.directory(new File(getProperty("java.io.tmpdir", ".")));
 
 		// Spawn the subprocess
 		log.info("about to create subprocess: " + p.command());
