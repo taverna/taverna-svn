@@ -1,5 +1,9 @@
 package org.taverna.server.localworker.impl;
 
+import static org.apache.commons.io.FileUtils.forceDelete;
+import static org.apache.commons.io.FileUtils.forceMkdir;
+import static org.apache.commons.io.FileUtils.touch;
+
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -9,7 +13,6 @@ import java.util.Collection;
 
 import org.apache.commons.collections.MapIterator;
 import org.apache.commons.collections.map.ReferenceMap;
-import org.apache.commons.io.FileUtils;
 import org.taverna.server.localworker.remote.RemoteDirectory;
 import org.taverna.server.localworker.remote.RemoteDirectoryEntry;
 import org.taverna.server.localworker.remote.RemoteFile;
@@ -72,11 +75,9 @@ public class DirectoryDelegate extends UnicastRemoteObject implements
 		if (f.exists())
 			throw new RemoteException("already exists");
 		try {
-			FileUtils.touch(f);
+			touch(f);
 		} catch (IOException e) {
-			RemoteException re = new RemoteException(e.getMessage());
-			re.initCause(e);
-			throw re;
+			throw new RemoteException("problem creating empty file", e);
 		}
 		FileDelegate delegate = new FileDelegate(f, this);
 		localCache.put(name, delegate);
@@ -91,11 +92,9 @@ public class DirectoryDelegate extends UnicastRemoteObject implements
 		if (f.exists())
 			throw new RemoteException("already exists");
 		try {
-			FileUtils.forceMkdir(f);
+			forceMkdir(f);
 		} catch (IOException e) {
-			RemoteException re = new RemoteException(e.getMessage());
-			re.initCause(e);
-			throw re;
+			throw new RemoteException("problem creating directory", e);
 		}
 		DirectoryDelegate delegate = new DirectoryDelegate(f, this);
 		localCache.put(name, delegate);
@@ -116,11 +115,9 @@ public class DirectoryDelegate extends UnicastRemoteObject implements
 			}
 		}
 		try {
-			FileUtils.forceDelete(dir);
+			forceDelete(dir);
 		} catch (IOException e) {
-			RemoteException re = new RemoteException(e.getMessage());
-			re.initCause(e);
-			throw re;
+			throw new RemoteException("problem deleting directory", e);
 		}
 		parent.forgetEntry(this);
 	}

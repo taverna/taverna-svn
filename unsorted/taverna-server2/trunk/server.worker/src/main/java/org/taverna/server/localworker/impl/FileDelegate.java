@@ -43,9 +43,7 @@ public class FileDelegate extends UnicastRemoteObject implements RemoteFile {
 					fis.close();
 			}
 		} catch (IOException e) {
-			RemoteException re = new RemoteException(e.getMessage());
-			re.initCause(e);
-			throw re;
+			throw new RemoteException("problem reading contents of file", e);
 		}
 	}
 
@@ -67,9 +65,7 @@ public class FileDelegate extends UnicastRemoteObject implements RemoteFile {
 					fos.close();
 			}
 		} catch (IOException e) {
-			RemoteException re = new RemoteException(e.getMessage());
-			re.initCause(e);
-			throw re;
+			throw new RemoteException("problem writing contents of file", e);
 		}
 	}
 
@@ -78,9 +74,7 @@ public class FileDelegate extends UnicastRemoteObject implements RemoteFile {
 		try {
 			FileUtils.forceDelete(file);
 		} catch (IOException e) {
-			RemoteException re = new RemoteException(e.getMessage());
-			re.initCause(e);
-			throw re;
+			throw new RemoteException("problem deleting file", e);
 		}
 		parent.forgetEntry(this);
 		parent = null;

@@ -77,9 +77,8 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 		try {
 			FileUtils.forceMkdir(base);
 		} catch (IOException e) {
-			RemoteException re = new RemoteException(e.getMessage());
-			re.initCause(e);
-			throw re;
+			throw new RemoteException("problem creating run working directory",
+					e);
 		}
 		baseDir = new DirectoryDelegate(base, null);
 		inputFiles = new HashMap<String, String>();
@@ -242,9 +241,7 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 			if (base != null)
 				forceDelete(base);
 		} catch (IOException e) {
-			RemoteException r = new RemoteException(e.getMessage());
-			r.initCause(e);
-			throw r;
+			throw new RemoteException("problem deleting working directory", e);
 		} finally {
 			base = null;
 		}
@@ -256,7 +253,7 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 	}
 
 	@Override
-	public String getInputBaclavaFile() throws RemoteException {
+	public String getInputBaclavaFile() {
 		return inputBaclava;
 	}
 
@@ -269,7 +266,7 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 	}
 
 	@Override
-	public List<String> getListenerTypes() throws RemoteException {
+	public List<String> getListenerTypes() {
 		return emptyList();
 	}
 
@@ -279,7 +276,7 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 	}
 
 	@Override
-	public String getOutputBaclavaFile() throws RemoteException {
+	public String getOutputBaclavaFile() {
 		return outputBaclava;
 	}
 
@@ -412,9 +409,8 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 							inputBaclava, inputFiles, inputValues,
 							outputBaclava);
 				} catch (IOException e) {
-					RemoteException re = new RemoteException(e.getMessage());
-					re.initCause(e);
-					throw re;
+					throw new RemoteException(
+							"problem creating executing workflow", e);
 				}
 				break;
 			case Stopped:
