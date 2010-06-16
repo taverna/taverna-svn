@@ -106,6 +106,7 @@ public class RshellActivity extends
 				SemanticTypes symanticType = outputSymanticTypes.get(name);
 				if (symanticType != null) {
 					op.setDepth(symanticType.getDepth());
+					op.setGranularDepth(symanticType.getDepth());
 				}
 			}
 		}
