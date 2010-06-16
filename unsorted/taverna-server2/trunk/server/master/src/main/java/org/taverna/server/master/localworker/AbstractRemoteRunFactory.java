@@ -61,16 +61,13 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 		}
 		try {
 			registry = getRegistry();
+			registry.list();
 		} catch (RemoteException e) {
 			log.error("failed to get RMI registry handle", e);
-		}
-		try {
-			registry.list();
-		} catch (RemoteException ignored) {
 			try {
 				registry = createRegistry(REGISTRY_PORT);
-			} catch (RemoteException e) {
-				log.error("failed to create RMI registry", e);
+			} catch (RemoteException e2) {
+				log.error("failed to create RMI registry", e2);
 			}
 		}
 	}
@@ -101,9 +98,7 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 					((RemoteRunDelegate) run).run.makeListener(listenerType,
 							configuration));
 		} catch (RemoteException e) {
-			NoListenerException nl = new NoListenerException(e.getMessage());
-			nl.initCause(e);
-			throw nl;
+			throw new NoListenerException("failed to make listener", e);
 		}
 	}
 

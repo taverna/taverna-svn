@@ -30,20 +30,16 @@ public class FileDelegate extends UnicastRemoteObject implements RemoteFile {
 	}
 
 	@Override
-	public byte[] getContents() throws RemoteException {
+	public byte[] getContents() throws IOException {
 		FileInputStream fis = null;
 		try {
-			try {
-				fis = new FileInputStream(file);
-				byte[] buffer = new byte[(int) file.length()];
-				fis.read(buffer);
-				return buffer;
-			} finally {
-				if (fis != null)
-					fis.close();
-			}
-		} catch (IOException e) {
-			throw new RemoteException("problem reading contents of file", e);
+			fis = new FileInputStream(file);
+			byte[] buffer = new byte[(int) file.length()];
+			fis.read(buffer);
+			return buffer;
+		} finally {
+			if (fis != null)
+				fis.close();
 		}
 	}
 
@@ -53,29 +49,21 @@ public class FileDelegate extends UnicastRemoteObject implements RemoteFile {
 	}
 
 	@Override
-	public void setContents(byte[] data) throws RemoteException {
+	public void setContents(byte[] data) throws IOException {
 		FileOutputStream fos = null;
 		try {
-			try {
-				fos = new FileOutputStream(file);
-				fos.write(data);
-				return;
-			} finally {
-				if (fos != null)
-					fos.close();
-			}
-		} catch (IOException e) {
-			throw new RemoteException("problem writing contents of file", e);
+			fos = new FileOutputStream(file);
+			fos.write(data);
+			return;
+		} finally {
+			if (fos != null)
+				fos.close();
 		}
 	}
 
 	@Override
-	public void destroy() throws RemoteException {
-		try {
-			FileUtils.forceDelete(file);
-		} catch (IOException e) {
-			throw new RemoteException("problem deleting file", e);
-		}
+	public void destroy() throws IOException {
+		FileUtils.forceDelete(file);
 		parent.forgetEntry(this);
 		parent = null;
 	}

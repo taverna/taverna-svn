@@ -68,57 +68,44 @@ public class DirectoryDelegate extends UnicastRemoteObject implements
 	}
 
 	@Override
-	public RemoteFile makeEmptyFile(String name) throws RemoteException {
+	public RemoteFile makeEmptyFile(String name) throws IOException {
 		if ("..".equals(name) || name.contains("/"))
-			throw new RemoteException("illegal filename");
+			throw new IOException("illegal filename");
 		File f = new File(dir, name);
 		if (f.exists())
-			throw new RemoteException("already exists");
-		try {
-			touch(f);
-		} catch (IOException e) {
-			throw new RemoteException("problem creating empty file", e);
-		}
+			throw new IOException("already exists");
+		touch(f);
 		FileDelegate delegate = new FileDelegate(f, this);
 		localCache.put(name, delegate);
 		return delegate;
 	}
 
 	@Override
-	public RemoteDirectory makeSubdirectory(String name) throws RemoteException {
+	public RemoteDirectory makeSubdirectory(String name) throws IOException {
 		if ("..".equals(name) || name.contains("/"))
-			throw new RemoteException("illegal filename");
+			throw new IOException("illegal filename");
 		File f = new File(dir, name);
 		if (f.exists())
-			throw new RemoteException("already exists");
-		try {
-			forceMkdir(f);
-		} catch (IOException e) {
-			throw new RemoteException("problem creating directory", e);
-		}
+			throw new IOException("already exists");
+		forceMkdir(f);
 		DirectoryDelegate delegate = new DirectoryDelegate(f, this);
 		localCache.put(name, delegate);
 		return delegate;
 	}
 
 	@Override
-	public void destroy() throws RemoteException {
+	public void destroy() throws IOException {
 		if (parent == null)
-			throw new RemoteException(
-					"tried to destroy main job working directory");
+			throw new IOException("tried to destroy main job working directory");
 		for (Object obj : localCache.values()) {
 			if (obj == null)
 				continue;
 			try {
 				((RemoteDirectoryEntry) obj).destroy();
-			} catch (RemoteException e) {
+			} catch (IOException e) {
 			}
 		}
-		try {
-			forceDelete(dir);
-		} catch (IOException e) {
-			throw new RemoteException("problem deleting directory", e);
-		}
+		forceDelete(dir);
 		parent.forgetEntry(this);
 	}
 

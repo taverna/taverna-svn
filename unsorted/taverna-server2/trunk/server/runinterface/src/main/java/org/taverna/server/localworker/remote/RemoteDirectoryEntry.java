@@ -1,5 +1,6 @@
 package org.taverna.server.localworker.remote;
 
+import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -28,6 +29,9 @@ public interface RemoteDirectoryEntry extends Remote {
 	/**
 	 * Destroy this directory entry, deleting the file or sub-directory. The
 	 * workflow run's working directory can never be manually destroyed.
+	 * 
+	 * @throws IOException
+	 *             If things go wrong.
 	 */
-	public void destroy() throws RemoteException;
+	public void destroy() throws RemoteException, IOException;
 }

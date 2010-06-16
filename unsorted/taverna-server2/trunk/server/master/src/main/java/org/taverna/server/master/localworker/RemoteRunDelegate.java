@@ -3,6 +3,7 @@ package org.taverna.server.master.localworker;
 import static java.util.Calendar.MINUTE;
 import static org.taverna.server.master.localworker.AbstractRemoteRunFactory.log;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -109,9 +110,8 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 			try {
 				return r.getProperty(propName);
 			} catch (RemoteException e) {
-				NoListenerException nl = new NoListenerException(propName);
-				nl.initCause(e);
-				throw nl;
+				throw new NoListenerException("no such property: " + propName,
+						e);
 			}
 		}
 
@@ -141,10 +141,15 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 			try {
 				r.setProperty(propName, value);
 			} catch (RemoteException e) {
-				NoListenerException nl = new NoListenerException();
-				nl.initCause(e);
 				log.warn("failed to set property", e);
-				throw nl;
+				if (e.getCause() != null
+						&& e.getCause() instanceof RuntimeException)
+					throw new NoListenerException("failed to set property", e
+							.getCause());
+				if (e.getCause() != null && e.getCause() instanceof Exception)
+					throw new BadPropertyValueException(
+							"failed to set property", e.getCause());
+				throw new BadPropertyValueException("failed to set property", e);
 			}
 		}
 	}
@@ -220,8 +225,9 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 		public void destroy() throws FilesystemAccessException {
 			try {
 				entry.destroy();
-			} catch (RemoteException e) {
-				log.error("failed to delete directory entry", e);
+			} catch (IOException e) {
+				throw new FilesystemAccessException(
+						"failed to delete directory entry", e);
 			}
 		}
 
@@ -264,7 +270,8 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 		}
 
 		@Override
-		public Collection<DirectoryEntry> getContents() {
+		public Collection<DirectoryEntry> getContents()
+				throws FilesystemAccessException {
 			ArrayList<DirectoryEntry> result = new ArrayList<DirectoryEntry>();
 			try {
 				for (RemoteDirectoryEntry rde : rd.getContents()) {
@@ -275,8 +282,9 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 					else
 						result.add(new FileDelegate((RemoteFile) rde));
 				}
-			} catch (RemoteException e) {
-				log.warn("failed to get directory contents", e);
+			} catch (IOException e) {
+				throw new FilesystemAccessException(
+						"failed to get directory contents", e);
 			}
 			return result;
 		}
@@ -286,11 +294,9 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 				throws FilesystemAccessException {
 			try {
 				return new FileDelegate(rd.makeEmptyFile(name));
-			} catch (RemoteException e) {
-				FilesystemAccessException fa = new FilesystemAccessException(e
-						.getMessage());
-				fa.initCause(e);
-				throw fa;
+			} catch (IOException e) {
+				throw new FilesystemAccessException(
+						"failed to make empty file", e);
 			}
 		}
 
@@ -299,11 +305,9 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 				throws FilesystemAccessException {
 			try {
 				return new DirectoryDelegate(rd.makeSubdirectory(name));
-			} catch (RemoteException e) {
-				FilesystemAccessException fa = new FilesystemAccessException(e
-						.getMessage());
-				fa.initCause(e);
-				throw fa;
+			} catch (IOException e) {
+				throw new FilesystemAccessException(
+						"failed to make subdirectory", e);
 			}
 		}
 	}
@@ -320,11 +324,9 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 		public byte[] getContents() throws FilesystemAccessException {
 			try {
 				return rf.getContents();
-			} catch (RemoteException e) {
-				FilesystemAccessException fa = new FilesystemAccessException(e
-						.getMessage());
-				fa.initCause(e);
-				throw fa;
+			} catch (IOException e) {
+				throw new FilesystemAccessException(
+						"failed to read file contents", e);
 			}
 		}
 
@@ -332,11 +334,9 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 		public long getSize() throws FilesystemAccessException {
 			try {
 				return rf.getSize();
-			} catch (RemoteException e) {
-				FilesystemAccessException fa = new FilesystemAccessException(e
-						.getMessage());
-				fa.initCause(e);
-				throw fa;
+			} catch (IOException e) {
+				throw new FilesystemAccessException(
+						"failed to get file length", e);
 			}
 		}
 
@@ -344,11 +344,9 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 		public void setContents(byte[] data) throws FilesystemAccessException {
 			try {
 				rf.setContents(data);
-			} catch (RemoteException e) {
-				FilesystemAccessException fa = new FilesystemAccessException(e
-						.getMessage());
-				fa.initCause(e);
-				throw fa;
+			} catch (IOException e) {
+				throw new FilesystemAccessException(
+						"failed to write file contents", e);
 			}
 		}
 	}
@@ -438,10 +436,8 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 			try {
 				i.setFile(file);
 			} catch (RemoteException e) {
-				FilesystemAccessException f = new FilesystemAccessException(e
-						.getMessage());
-				f.initCause(e);
-				throw f;
+				throw new FilesystemAccessException(
+						"cannot set file for input", e);
 			}
 		}
 
@@ -450,9 +446,7 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 			try {
 				i.setValue(value);
 			} catch (RemoteException e) {
-				BadStateChangeException bsc = new BadStateChangeException();
-				bsc.initCause(e);
-				throw bsc;
+				throw new BadStateChangeException(e);
 			}
 		}
 	}
@@ -495,9 +489,7 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 		try {
 			return new RunInput(run.makeInput(name));
 		} catch (RemoteException e) {
-			BadStateChangeException bsc = new BadStateChangeException();
-			bsc.initCause(e);
-			throw bsc;
+			throw new BadStateChangeException("failed to make input", e);
 		}
 	}
 
@@ -508,10 +500,8 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 		try {
 			run.setInputBaclavaFile(filename);
 		} catch (RemoteException e) {
-			FilesystemAccessException f = new FilesystemAccessException(e
-					.getMessage());
-			f.initCause(e);
-			throw f;
+			throw new FilesystemAccessException(
+					"cannot set input baclava file name", e);
 		}
 	}
 
@@ -522,10 +512,8 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 		try {
 			run.setOutputBaclavaFile(filename);
 		} catch (RemoteException e) {
-			FilesystemAccessException f = new FilesystemAccessException(e
-					.getMessage());
-			f.initCause(e);
-			throw f;
+			throw new FilesystemAccessException(
+					"cannot set output baclava file name", e);
 		}
 	}
 }

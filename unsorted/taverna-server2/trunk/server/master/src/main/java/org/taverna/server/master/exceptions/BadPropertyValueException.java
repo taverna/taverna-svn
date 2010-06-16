@@ -4,6 +4,7 @@ import javax.xml.ws.WebFault;
 
 /**
  * Indicates a bad property value.
+ * 
  * @author Donal Fellows
  */
 @WebFault(name = "BadPropertyValueFault")
@@ -12,5 +13,9 @@ public class BadPropertyValueException extends NoListenerException {
 
 	public BadPropertyValueException(String msg) {
 		super(msg);
+	}
+
+	public BadPropertyValueException(String msg, Throwable e) {
+		super(msg, e);
 	}
 }

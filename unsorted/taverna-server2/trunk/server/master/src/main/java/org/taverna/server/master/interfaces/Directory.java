@@ -15,8 +15,9 @@ import org.taverna.server.master.exceptions.FilesystemAccessException;
 public interface Directory extends DirectoryEntry {
 	/**
 	 * @return A list of the contents of the directory.
+	 * @throws FilesystemAccessException If things go wrong.
 	 */
-	public Collection<DirectoryEntry> getContents();
+	public Collection<DirectoryEntry> getContents() throws FilesystemAccessException;
 
 	/**
 	 * Creates a sub-directory of this directory.

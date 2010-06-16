@@ -21,4 +21,8 @@ public class NoListenerException extends Exception {
 	public NoListenerException(String msg) {
 		super(msg);
 	}
+
+	public NoListenerException(String msg, Throwable t) {
+		super(msg, t);
+	}
 }

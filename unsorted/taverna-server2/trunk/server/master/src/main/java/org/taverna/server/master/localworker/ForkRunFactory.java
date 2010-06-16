@@ -6,9 +6,11 @@ import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
 import static java.util.Calendar.SECOND;
 import static java.util.UUID.randomUUID;
+import static org.apache.commons.logging.LogFactory.getLog;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.rmi.ConnectException;
@@ -22,6 +24,7 @@ import javax.servlet.ServletContext;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import org.apache.commons.logging.Log;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.web.context.ServletContextAware;
@@ -232,6 +235,41 @@ public class ForkRunFactory extends AbstractRemoteRunFactory implements
 		throw lastException;
 	}
 
+	private static class OutputLogger implements Runnable {
+		private static final Log log = getLog(OutputLogger.class);
+	
+		OutputLogger(String name, Process process) {
+			this.uniqueName = name;
+			this.br = new BufferedReader(new InputStreamReader(process
+					.getInputStream()));
+		}
+	
+		private String uniqueName;
+		private BufferedReader br;
+	
+		@Override
+		public void run() {
+			try {
+				String line;
+				while (true) {
+					line = br.readLine();
+					if (line == null)
+						break;
+					log.info(uniqueName + " subprocess output: " + line);
+				}
+			} catch (IOException e) {
+				// Do nothing...
+			} catch (Exception e) {
+				log.warn("failure in reading from " + uniqueName, e);
+			} finally {
+				try {
+					br.close();
+				} catch (Throwable e) {
+				}
+			}
+		}
+	}
+
 	/**
 	 * Destroys the subprocess that manufactures runs.
 	 */
@@ -315,35 +353,6 @@ public class ForkRunFactory extends AbstractRemoteRunFactory implements
 			if (executeWorkflowScript != null)
 				log.info("configured executeWorkflowScript from context as "
 						+ executeWorkflowScript);
-		}
-	}
-}
-
-class OutputLogger implements Runnable {
-	OutputLogger(String name, Process process) {
-		this.uniqueName = name;
-		this.process = process;
-	}
-
-	private String uniqueName;
-	private Process process;
-
-	@Override
-	public void run() {
-		BufferedReader r = new BufferedReader(new InputStreamReader(process
-				.getInputStream()));
-		try {
-			String line;
-			while (true) {
-				line = r.readLine();
-				if (line == null)
-					break;
-				AbstractRemoteRunFactory.log.info(uniqueName
-						+ " subprocess output: " + line);
-			}
-		} catch (Exception e) {
-			AbstractRemoteRunFactory.log.warn("failure in reading from "
-					+ uniqueName, e);
 		}
 	}
 }

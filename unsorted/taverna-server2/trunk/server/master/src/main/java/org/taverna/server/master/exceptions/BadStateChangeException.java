@@ -15,4 +15,12 @@ public class BadStateChangeException extends NoUpdateException {
 	public BadStateChangeException() {
 		super("cannot do that state change");
 	}
+
+	public BadStateChangeException(Throwable t) {
+		super("cannot do that state change", t);
+	}
+
+	public BadStateChangeException(String msg, Throwable t) {
+		super(msg, t);
+	}
 }
