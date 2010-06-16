@@ -284,20 +284,20 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	public TavernaServerRunREST getRunResource(final String runName)
 			throws UnknownRunException {
 		invokes++;
-		final TavernaRun w = getRun(runName);
+		final TavernaRun run = getRun(runName);
 		return new TavernaServerRunREST() {
 			@Override
 			public RunDescription getDescription(UriInfo ui) {
 				invokes++;
-				return new RunDescription(w, ui);
+				return new RunDescription(run, ui);
 			}
 
 			@Override
 			public Response destroy(UriInfo ui) throws NoUpdateException {
 				invokes++;
-				policy.permitDestroy(getPrincipal(), w);
+				policy.permitDestroy(getPrincipal(), run);
 				runStore.unregisterRun(runName);
-				w.destroy();
+				run.destroy();
 				return temporaryRedirect(
 						ui.getBaseUriBuilder().path("runs").build()).build();
 			}
@@ -312,8 +312,8 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 							UriInfo ui) throws NoUpdateException,
 							NoListenerException {
 						invokes++;
-						policy.permitUpdate(getPrincipal(), w);
-						String name = listenerFactory.makeListener(w,
+						policy.permitUpdate(getPrincipal(), run);
+						String name = listenerFactory.makeListener(run,
 								typeAndConfiguration.type,
 								typeAndConfiguration.configuration).getName();
 						return seeOther(
@@ -325,7 +325,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 					public TavernaServerListenerREST getListener(String name)
 							throws NoListenerException {
 						invokes++;
-						for (Listener listener : w.getListeners()) {
+						for (Listener listener : run.getListeners()) {
 							final Listener l = listener;
 							if (listener.getName().equals(name))
 								return new TavernaServerListenerREST() {
@@ -381,8 +381,10 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 														throws NoUpdateException,
 														NoListenerException {
 													invokes++;
-													policy.permitUpdate(
-															getPrincipal(), w);
+													policy
+															.permitUpdate(
+																	getPrincipal(),
+																	run);
 													l.setProperty(propertyName,
 															value);
 													return seeOther(
@@ -403,7 +405,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 					public List<ListenerDescription> getDescription(UriInfo ui) {
 						List<ListenerDescription> result = new ArrayList<ListenerDescription>();
 						invokes++;
-						for (Listener l : w.getListeners()) {
+						for (Listener l : run.getListeners()) {
 							result.add(new ListenerDescription(l.getName(), l
 									.getType(), l.listProperties(), ui));
 						}
@@ -415,7 +417,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 			@Override
 			public String getOwner() {
 				invokes++;
-				return w.getSecurityContext().getOwner().getName();
+				return run.getSecurityContext().getOwner().getName();
 			}
 
 			private DateFormat isoFormat;
@@ -431,34 +433,34 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 			@Override
 			public String getExpiry() {
 				invokes++;
-				return df().format(w.getExpiry());
+				return df().format(run.getExpiry());
 			}
 
 			@Override
 			public String getStatus() {
 				invokes++;
-				return w.getStatus().toString();
+				return run.getStatus().toString();
 			}
 
 			@Override
 			public SCUFL getWorkflow() {
 				invokes++;
-				return w.getWorkflow();
+				return run.getWorkflow();
 			}
 
 			@Override
 			public DirectoryREST getWorkingDirectory() {
 				invokes++;
-				return new DirectoryREST(w);
+				return new DirectoryREST(run);
 			}
 
 			@Override
 			public Response setExpiry(String expiry, UriInfo ui)
 					throws NoUpdateException {
 				invokes++;
-				policy.permitDestroy(getPrincipal(), w);
+				policy.permitDestroy(getPrincipal(), run);
 				try {
-					w.setExpiry(df().parse(expiry));
+					run.setExpiry(df().parse(expiry));
 				} catch (ParseException e) {
 					throw new NoUpdateException(e.getMessage());
 				}
@@ -469,8 +471,8 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 			public Response setStatus(String status, UriInfo ui)
 					throws NoUpdateException {
 				invokes++;
-				policy.permitUpdate(getPrincipal(), w);
-				w.setStatus(Status.valueOf(status));
+				policy.permitUpdate(getPrincipal(), run);
+				run.setStatus(Status.valueOf(status));
 				return seeOther(ui.getRequestUri()).build();
 			}
 
@@ -484,7 +486,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 						InputsDescriptor id = new InputsDescriptor();
 						id.baclava = new Uri(ui, "baclava");
 						id.input = new ArrayList<Uri>();
-						for (Input i : w.getInputs()) {
+						for (Input i : run.getInputs()) {
 							id.input.add(new Uri(ui, "input/{name}", i
 									.getName()));
 						}
@@ -494,7 +496,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 					@Override
 					public String getBaclavaFile() {
 						invokes++;
-						String i = w.getInputBaclavaFile();
+						String i = run.getInputBaclavaFile();
 						return i == null ? "" : i;
 					}
 
@@ -502,7 +504,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 					public InDesc getInput(String name)
 							throws BadPropertyValueException {
 						invokes++;
-						for (Input i : w.getInputs())
+						for (Input i : run.getInputs())
 							if (i.getName().equals(name)) {
 								InDesc id = new InDesc();
 								id.name = i.getName();
@@ -526,8 +528,8 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 							throws NoUpdateException, BadStateChangeException,
 							FilesystemAccessException {
 						invokes++;
-						policy.permitUpdate(getPrincipal(), w);
-						w.setInputBaclavaFile(filename);
+						policy.permitUpdate(getPrincipal(), run);
+						run.setInputBaclavaFile(filename);
 						return seeOther(ui.getRequestUri()).build();
 					}
 
@@ -538,10 +540,10 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 							FilesystemAccessException,
 							BadPropertyValueException {
 						invokes++;
-						policy.permitUpdate(getPrincipal(), w);
+						policy.permitUpdate(getPrincipal(), run);
 						if (inputDescriptor.content == null)
 							throw new BadPropertyValueException("no content!");
-						for (Input i : w.getInputs()) {
+						for (Input i : run.getInputs()) {
 							if (!i.getName().equals(name))
 								continue;
 							if (inputDescriptor.content instanceof InDesc.File) {
@@ -559,11 +561,11 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 						}
 						if (inputDescriptor.content instanceof InDesc.File) {
 							String file = ((InDesc.File) inputDescriptor.content).file;
-							w.makeInput(name).setFile(file);
+							run.makeInput(name).setFile(file);
 							return seeOther(ui.getRequestUri()).build();
 						} else if (inputDescriptor.content instanceof InDesc.Value) {
 							String value = ((InDesc.Value) inputDescriptor.content).value;
-							w.makeInput(name).setValue(value);
+							run.makeInput(name).setValue(value);
 							return seeOther(ui.getRequestUri()).build();
 						} else {
 							throw new BadPropertyValueException(
@@ -576,7 +578,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 			@Override
 			public String getOutputFile() {
 				invokes++;
-				String o = w.getOutputBaclavaFile();
+				String o = run.getOutputBaclavaFile();
 				return o == null ? "" : o;
 			}
 
@@ -585,37 +587,38 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 					throws NoUpdateException, FilesystemAccessException,
 					BadStateChangeException {
 				invokes++;
-				policy.permitUpdate(getPrincipal(), w);
+				policy.permitUpdate(getPrincipal(), run);
 				if (filename != null && filename.length() == 0)
 					filename = null;
-				w.setOutputBaclavaFile(filename);
+				run.setOutputBaclavaFile(filename);
 				return seeOther(ui.getRequestUri()).build();
 			}
 		};
 	}
 
 	class DirectoryREST implements TavernaServerDirectoryREST {
-		private TavernaRun w;
+		private TavernaRun run;
 
 		DirectoryREST(TavernaRun w) {
-			this.w = w;
+			this.run = w;
 		}
 
 		@Override
 		public Response destroyDirectoryEntry(List<PathSegment> path, UriInfo ui)
 				throws NoUpdateException, FilesystemAccessException {
 			invokes++;
-			policy.permitUpdate(getPrincipal(), w);
-			DirectoryEntry entry = getDirEntry(w, path);
+			policy.permitUpdate(getPrincipal(), run);
+			DirectoryEntry entry = getDirEntry(run, path);
 			entry.destroy();
 			return temporaryRedirect(
 					ui.getAbsolutePathBuilder().path("..").build()).build();
 		}
 
 		@Override
-		public DirEntryReference getDescription(UriInfo ui) {
+		public DirEntryReference getDescription(UriInfo ui)
+				throws FilesystemAccessException {
 			invokes++;
-			return newInstance(ui.getAbsolutePathBuilder(), w
+			return newInstance(ui.getAbsolutePathBuilder(), run
 					.getWorkingDirectory());
 		}
 
@@ -623,7 +626,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		public Response getDirectoryOrFileContents(List<PathSegment> path,
 				UriInfo ui) throws FilesystemAccessException {
 			invokes++;
-			DirectoryEntry de = getDirEntry(w, path);
+			DirectoryEntry de = getDirEntry(run, path);
 			if (de instanceof File) {
 				return Response.ok(((File) de).getContents()).type(
 						APPLICATION_OCTET_STREAM_TYPE).build();
@@ -641,8 +644,8 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 				MakeOrUpdateDirEntry op, UriInfo ui) throws NoUpdateException,
 				FilesystemAccessException {
 			invokes++;
-			policy.permitUpdate(getPrincipal(), w);
-			DirectoryEntry container = getDirEntry(w, parent);
+			policy.permitUpdate(getPrincipal(), run);
+			DirectoryEntry container = getDirEntry(run, parent);
 			if (!(container instanceof Directory)) {
 				if (op instanceof MakeDirectory)
 					throw new FilesystemAccessException(

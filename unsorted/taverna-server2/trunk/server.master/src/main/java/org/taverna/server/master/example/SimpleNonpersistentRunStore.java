@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.taverna.server.master.exceptions.NoDestroyException;
 import org.taverna.server.master.exceptions.UnknownRunException;
 import org.taverna.server.master.interfaces.Policy;
 import org.taverna.server.master.interfaces.TavernaRun;
@@ -61,7 +62,10 @@ public class SimpleNonpersistentRunStore implements RunStore {
 				TavernaRun w = i.next();
 				if (w.getExpiry().before(now)) {
 					i.remove();
-					w.destroy();
+					try {
+						w.destroy();
+					} catch (NoDestroyException e) {
+					}
 				}
 			}
 		}

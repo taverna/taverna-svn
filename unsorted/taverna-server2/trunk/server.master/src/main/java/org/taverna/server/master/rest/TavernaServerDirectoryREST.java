@@ -36,11 +36,13 @@ public interface TavernaServerDirectoryREST {
 	 * @param ui
 	 *            About how this method was called.
 	 * @return A description of the working directory.
+	 * @throws FilesystemAccessException
 	 */
 	@GET
 	@Produces( { "application/xml", "application/json" })
 	@Description("Describes the working directory of the workflow run.")
-	public DirEntryReference getDescription(@Context UriInfo ui);
+	public DirEntryReference getDescription(@Context UriInfo ui)
+			throws FilesystemAccessException;
 
 	/**
 	 * Gets a description of the named entity in or beneath the working

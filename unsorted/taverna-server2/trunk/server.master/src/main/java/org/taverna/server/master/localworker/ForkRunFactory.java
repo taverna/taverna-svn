@@ -28,6 +28,7 @@ import org.springframework.web.context.ServletContextAware;
 import org.taverna.server.localworker.remote.RemoteRunFactory;
 import org.taverna.server.localworker.remote.RemoteSingleRun;
 import org.taverna.server.master.SCUFL;
+import org.taverna.server.master.exceptions.NoCreateException;
 
 /**
  * A simple factory for workflow runs that forks runs from a subprocess.
@@ -200,6 +201,8 @@ public class ForkRunFactory extends AbstractRemoteRunFactory implements
 					registry.list(); // Validate registry connection first
 				} catch (ConnectException ce) {
 					log.warn("connection problems with registry", ce);
+				} catch (ConnectIOException e) {
+					log.warn("connection problems with registry", e);
 				}
 				factory = (RemoteRunFactory) registry
 						.lookup(factoryProcessName);
@@ -213,7 +216,7 @@ public class ForkRunFactory extends AbstractRemoteRunFactory implements
 				log.info("resource \"" + factoryProcessName
 						+ "\" not yet registered...");
 				continue;
-			} catch (RuntimeException re) {
+			} catch (RemoteException re) {
 				// Unpack a remote exception if we can
 				lastException = re;
 				try {
@@ -247,6 +250,7 @@ public class ForkRunFactory extends AbstractRemoteRunFactory implements
 				factory = null;
 			}
 		}
+
 		if (factoryProcess != null) {
 			int code = -1;
 			try {
@@ -299,7 +303,7 @@ public class ForkRunFactory extends AbstractRemoteRunFactory implements
 			}
 			killFactory();
 		}
-		throw new Exception("total failure to connect to factory "
+		throw new NoCreateException("total failure to connect to factory "
 				+ factoryProcessName + "despite attempting restart");
 	}
 

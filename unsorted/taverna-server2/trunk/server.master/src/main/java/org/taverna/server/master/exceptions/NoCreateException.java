@@ -20,4 +20,8 @@ public class NoCreateException extends NoUpdateException {
 	public NoCreateException(String string) {
 		super(string);
 	}
+
+	public NoCreateException(String string, Throwable e) {
+		super(string, e);
+	}
 }

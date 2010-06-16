@@ -7,6 +7,7 @@ import org.taverna.server.master.SCUFL;
 import org.taverna.server.master.Status;
 import org.taverna.server.master.exceptions.BadStateChangeException;
 import org.taverna.server.master.exceptions.FilesystemAccessException;
+import org.taverna.server.master.exceptions.NoDestroyException;
 
 /**
  * The interface to a taverna workflow run, or "run" for short.
@@ -119,8 +120,9 @@ public interface TavernaRun {
 
 	/**
 	 * @return Handle to the main working directory of the run.
+	 * @throws FilesystemAccessException 
 	 */
-	public Directory getWorkingDirectory();
+	public Directory getWorkingDirectory() throws FilesystemAccessException;
 
 	/**
 	 * @return The list of listener instances attached to the run.
@@ -143,5 +145,5 @@ public interface TavernaRun {
 	/**
 	 * Kill off this run, removing all resources which it consumes.
 	 */
-	public void destroy();
+	public void destroy() throws NoDestroyException;
 }

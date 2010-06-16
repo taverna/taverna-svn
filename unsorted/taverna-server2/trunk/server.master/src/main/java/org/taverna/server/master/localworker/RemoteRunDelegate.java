@@ -197,11 +197,14 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 	}
 
 	@Override
-	public Directory getWorkingDirectory() {
+	public Directory getWorkingDirectory() throws FilesystemAccessException {
 		try {
 			return new DirectoryDelegate(run.getWorkingDirectory());
-		} catch (RemoteException e) {
-			throw new RuntimeException(e);
+		} catch (Throwable e) {
+			if (e.getCause() != null)
+				e = e.getCause();
+			throw new FilesystemAccessException(
+					"problem getting main working directory handle", e);
 		}
 	}
 

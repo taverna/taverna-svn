@@ -108,14 +108,18 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 	}
 
 	@Override
-	public TavernaRun create(Principal creator, SCUFL workflow) {
+	public TavernaRun create(Principal creator, SCUFL workflow)
+			throws NoCreateException {
 		try {
 			RemoteSingleRun rsr = getRealRun(creator, workflow);
 			return new RemoteRunDelegate(creator, workflow, rsr,
 					defaultLifetime);
+		} catch (NoCreateException e) {
+			log.warn("failed to build run instance", e);
+			throw e;
 		} catch (Exception e) {
 			log.warn("failed to build run instance", e);
-			throw new RuntimeException(e);
+			throw new NoCreateException("failed to build run instance", e);
 		}
 	}
 
@@ -173,7 +177,7 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 	public synchronized void permitCreate(Principal user, SCUFL workflow)
 			throws NoCreateException {
 		if (runs.size() >= getMaxRuns())
-			throw new NoCreateException();
+			throw new NoCreateException("server load exceeded; please wait");
 	}
 
 	@Override
@@ -225,7 +229,10 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 	protected synchronized void finalize() {
 		cleaner.cancel();
 		for (TavernaRun run : runs.values()) {
-			run.destroy();
+			try {
+				run.destroy();
+			} catch (NoDestroyException e) {
+			}
 		}
 	}
 
@@ -265,7 +272,10 @@ class AbstractRemoteRunFactoryCleaner extends TimerTask {
 				if (run.getExpiry().after(now))
 					continue;
 				it.remove();
-				run.destroy();
+				try {
+					run.destroy();
+				} catch (NoDestroyException e) {
+				}
 			}
 		}
 	}

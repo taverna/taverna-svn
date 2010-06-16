@@ -21,4 +21,8 @@ public class NoUpdateException extends Exception {
 	public NoUpdateException(String msg) {
 		super(msg);
 	}
+
+	public NoUpdateException(String string, Throwable e) {
+		super(string, e);
+	}
 }

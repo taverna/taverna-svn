@@ -3,6 +3,7 @@ package org.taverna.server.master.factories;
 import java.security.Principal;
 
 import org.taverna.server.master.SCUFL;
+import org.taverna.server.master.exceptions.NoCreateException;
 import org.taverna.server.master.interfaces.TavernaRun;
 
 /**
@@ -20,6 +21,7 @@ public interface RunFactory {
 	 * @param workflow
 	 *            The workflow to instantiate
 	 * @return An object representing the run.
+	 * @throws NoCreateException On failure.
 	 */
-	public TavernaRun create(Principal creator, SCUFL workflow);
+	public TavernaRun create(Principal creator, SCUFL workflow) throws NoCreateException;
 }

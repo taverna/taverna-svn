@@ -12,4 +12,8 @@ public class FilesystemAccessException extends Exception {
 	public FilesystemAccessException(String msg) {
 		super(msg);
 	}
+
+	public FilesystemAccessException(String string, Throwable cause) {
+		super(string, cause);
+	}
 }
