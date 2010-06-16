@@ -1,5 +1,7 @@
 package org.taverna.server.localworker.impl;
 
+import static org.apache.commons.io.FileUtils.forceDelete;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -7,7 +9,6 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-import org.apache.commons.io.FileUtils;
 import org.taverna.server.localworker.remote.RemoteDirectory;
 import org.taverna.server.localworker.remote.RemoteFile;
 
@@ -63,7 +64,7 @@ public class FileDelegate extends UnicastRemoteObject implements RemoteFile {
 
 	@Override
 	public void destroy() throws IOException {
-		FileUtils.forceDelete(file);
+		forceDelete(file);
 		parent.forgetEntry(this);
 		parent = null;
 	}
