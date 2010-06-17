@@ -5,30 +5,18 @@
 	<artifactId>server.worker</artifactId>
 	<name>Taverna Workflow Run Implementation</name>
 	<version>0.0.1-SNAPSHOT</version>
-	<issueManagement>
-		<system>JIRA</system>
-		<url>http://www.mygrid.org.uk/dev/issues/browse/TAVSERV#selectedTab=com.atlassian.jira.plugin.system.project%3Asummary-panel</url>
-	</issueManagement>
-	<developers>
-		<developer>
-			<id>dkf</id>
-			<name>Donal Fellows</name>
-			<email>donal.k.fellows@manchester.ac.uk</email>
-			<organization>The University of Manchester</organization>
-			<organizationUrl>http://www.manchester.ac.uk/</organizationUrl>
-			<timezone>:Europe/London</timezone>
-		</developer>
-	</developers>
+	<description>This is the implementation of the factory process that is started up by the web application to manage executing Taverna Workflow executeworkflow.sh calls.</description>
+	<parent>
+		<groupId>uk.org.taverna</groupId>
+		<artifactId>server</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
 	<scm>
-		<connection>scm:http://taverna.googlecode.com/svn/unsorted/taverna-server2/trunk/</connection>
-		<developerConnection>scm:https://taverna.googlecode.com/svn/unsorted/taverna-server2/trunk/</developerConnection>
-		<url>http://code.google.com/p/taverna/source/browse/unsorted/taverna-server2/trunk</url>
+		<connection>scm:http://taverna.googlecode.com/svn/unsorted/taverna-server2/trunk/server/</connection>
+		<developerConnection>scm:https://taverna.googlecode.com/svn/unsorted/taverna-server2/trunk/server/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/unsorted/taverna-server2/trunk/server</url>
 	</scm>
-	<organization>
-		<name>University of Manchester</name>
-		<url>http://www.manchester.ac.uk/</url>
-	</organization>
-	<inceptionYear>2010</inceptionYear>
 
 	<properties>
 		<workerMainClass>org.taverna.server.localworker.impl.LocalWorker</workerMainClass>
