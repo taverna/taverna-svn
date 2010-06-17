@@ -57,7 +57,8 @@
 	</contributors>
 	<ciManagement>
 		<system>Hudson</system>
-		<!-- No url or notification yet. -->
+		<url>http://www.mygrid.org.uk/hudson/job/uk.org.taverna.server/</url>
+		<!-- No notification yet. -->
 	</ciManagement>
 	<repositories>
 	</repositories>
