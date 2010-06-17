@@ -17,7 +17,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.taverna.server.localworker.remote.RemoteListener;
 import org.taverna.server.localworker.remote.RemoteStatus;
 
 /**
@@ -29,7 +28,7 @@ import org.taverna.server.localworker.remote.RemoteStatus;
  * 
  * @author Donal Fellows
  */
-public class WorkerCore extends UnicastRemoteObject implements RemoteListener {
+public class WorkerCore extends UnicastRemoteObject implements Worker {
 	public static final String DEFAULT_LISTENER_NAME = "io";
 
 	static final Map<String, Property> pmap = new HashMap<String, Property>();
@@ -122,6 +121,7 @@ public class WorkerCore extends UnicastRemoteObject implements RemoteListener {
 	 * @throws IOException
 	 *             If any of quite a large number of things goes wrong.
 	 */
+	@Override
 	public void initWorker(String executeWorkflowCommand, String workflow,
 			File workingDir, String inputBaclava,
 			Map<String, String> inputFiles, Map<String, String> inputValues,
@@ -195,6 +195,7 @@ public class WorkerCore extends UnicastRemoteObject implements RemoteListener {
 	/**
 	 * Kills off the subprocess if it exists and is alive.
 	 */
+	@Override
 	public void killWorker() {
 		if (!finished && subprocess != null) {
 			int code;
@@ -223,29 +224,32 @@ public class WorkerCore extends UnicastRemoteObject implements RemoteListener {
 	/**
 	 * Move the worker out of the stopped state and back to operating.
 	 * 
-	 * @throws RemoteException
+	 * @throws Exception
 	 *             if it fails (which it always does; operation currently
 	 *             unsupported).
 	 */
-	public void startWorker() throws RemoteException {
-		throw new RemoteException("starting unsupported");
+	@Override
+	public void startWorker() throws Exception {
+		throw new Exception("starting unsupported");
 	}
 
 	/**
 	 * Move the worker into the stopped state from the operating state.
 	 * 
-	 * @throws RemoteException
+	 * @throws Exception
 	 *             if it fails (which it always does; operation currently
 	 *             unsupported).
 	 */
-	public void stopWorker() throws RemoteException {
-		throw new RemoteException("stopping unsupported");
+	@Override
+	public void stopWorker() throws Exception {
+		throw new Exception("stopping unsupported");
 	}
 
 	/**
 	 * @return The status of the workflow run. Note that this can be an
 	 *         expensive operation.
 	 */
+	@Override
 	public RemoteStatus getWorkerStatus() {
 		if (subprocess == null)
 			return Initialized;

@@ -2,6 +2,7 @@ package org.taverna.server.localworker.impl;
 
 import static java.lang.Runtime.getRuntime;
 import static java.lang.System.exit;
+import static java.lang.System.out;
 import static java.lang.System.setProperty;
 import static java.lang.System.setSecurityManager;
 import static java.rmi.registry.LocateRegistry.getRegistry;
@@ -65,11 +66,11 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 	String inputBaclava, outputBaclava;
 	Map<String, String> inputFiles;
 	Map<String, String> inputValues;
-	WorkerCore core;
+	Worker core;
 	private Thread shutdownHook;
 
-	protected LocalWorker(String executeWorkflowCommand, String workflow)
-			throws RemoteException {
+	protected LocalWorker(String executeWorkflowCommand, String workflow,
+			Class<? extends Worker> workerClass) throws RemoteException {
 		super();
 		this.workflow = workflow;
 		this.executeWorkflowCommand = executeWorkflowCommand;
@@ -83,7 +84,14 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 		baseDir = new DirectoryDelegate(base, null);
 		inputFiles = new HashMap<String, String>();
 		inputValues = new HashMap<String, String>();
-		core = new WorkerCore();
+		try {
+			core = workerClass.newInstance();
+		} catch (Exception e) {
+			out.println("problem when creating core worker implementation");
+			e.printStackTrace(out);
+			throw new RuntimeException(
+					"problem when creating core worker implementation", e);
+		}
 		Thread t = new Thread(new Runnable() {
 			/**
 			 * Kill off the worker launched by the core.
@@ -128,6 +136,7 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 		TransformerFactory tf;
 		String command;
 		Constructor<? extends RemoteSingleRun> cons;
+		Class<? extends Worker> workerClass;
 
 		/**
 		 * An RMI-enabled factory for runs.
@@ -140,14 +149,15 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 		 *             If anything goes wrong during creation of the instance.
 		 */
 		public RRF(String command,
-				Constructor<? extends RemoteSingleRun> constructor)
-				throws RemoteException {
+				Constructor<? extends RemoteSingleRun> constructor,
+				Class<? extends Worker> workerClass) throws RemoteException {
 			this.command = command;
 			this.dbf = DocumentBuilderFactory.newInstance();
 			this.dbf.setNamespaceAware(true);
 			this.dbf.setCoalescing(true);
 			this.tf = TransformerFactory.newInstance();
 			this.cons = constructor;
+			this.workerClass = workerClass;
 		}
 
 		@Override
@@ -164,7 +174,7 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 						"failed to extract contained workflow", e);
 			}
 			try {
-				return cons.newInstance(command, sw.toString());
+				return cons.newInstance(command, sw.toString(), workerClass);
 			} catch (InvocationTargetException e) {
 				if (e.getTargetException() instanceof RemoteException)
 					throw (RemoteException) e.getTargetException();
@@ -210,8 +220,9 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 		String command = args[0];
 		final String factoryname = args[1];
 		final Registry registry = getRegistry();
-		registry.bind(factoryname, new RRF(command, LocalWorker.class
-				.getDeclaredConstructor(String.class, String.class)));
+		registry.bind(factoryname, new RRF(command,
+				LocalWorker.class.getDeclaredConstructor(String.class,
+						String.class, Class.class), WorkerCore.class));
 		getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
@@ -222,14 +233,18 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 				}
 			}
 		});
-		System.out
-				.println("registered RemoteRunFactory with ID " + factoryname);
+		out.println("registered RemoteRunFactory with ID " + factoryname);
 	}
 
 	@Override
 	public void destroy() throws RemoteException {
 		if (status != Finished && status != Initialized)
-			core.killWorker();
+			try {
+				core.killWorker();
+			} catch (Exception e) {
+				out.println("problem when killing worker");
+				e.printStackTrace(out);
+			}
 		try {
 			if (shutdownHook != null)
 				getRuntime().removeShutdownHook(shutdownHook);
@@ -243,6 +258,8 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 			if (base != null)
 				forceDelete(base);
 		} catch (IOException e) {
+			out.println("problem deleting working directory");
+			e.printStackTrace(out);
 			throw new RemoteException("problem deleting working directory", e);
 		} finally {
 			base = null;
@@ -410,13 +427,18 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 					core.initWorker(executeWorkflowCommand, workflow, base,
 							inputBaclava, inputFiles, inputValues,
 							outputBaclava);
-				} catch (IOException e) {
+				} catch (Exception e) {
 					throw new RemoteException(
 							"problem creating executing workflow", e);
 				}
 				break;
 			case Stopped:
-				core.startWorker();
+				try {
+					core.startWorker();
+				} catch (Exception e) {
+					throw new RemoteException("problem starting workflow run",
+							e);
+				}
 				break;
 			case Finished:
 				throw new RemoteException("already finished");
@@ -428,7 +450,12 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 			case Initialized:
 				throw new RemoteException("may only stop from Operating");
 			case Operating:
-				core.stopWorker();
+				try {
+					core.stopWorker();
+				} catch (Exception e) {
+					throw new RemoteException("problem stopping workflow run",
+							e);
+				}
 				break;
 			case Finished:
 				throw new RemoteException("already finished");
@@ -439,7 +466,11 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 			switch (status) {
 			case Operating:
 			case Stopped:
-				core.killWorker();
+				try {
+					core.killWorker();
+				} catch (Exception e) {
+					throw new RemoteException("problem killing workflow run", e);
+				}
 				break;
 			}
 			status = Finished;
