@@ -43,6 +43,16 @@
 		<jaxrs:features>
 			<cxf:logging />
 		</jaxrs:features>
+		<jaxrs:providers>
+			<bean class="org.taverna.server.master.rest.BadPropertyValueHandler" />
+			<bean class="org.taverna.server.master.rest.BadStateChangeHandler" />
+			<bean class="org.taverna.server.master.rest.FilesystemAccessHandler" />
+			<bean class="org.taverna.server.master.rest.NoCreateHandler" />
+			<bean class="org.taverna.server.master.rest.NoDestroyHandler" />
+			<bean class="org.taverna.server.master.rest.NoListenerHandler"/>
+			<bean class="org.taverna.server.master.rest.NoUpdateHandler"/>
+			<bean class="org.taverna.server.master.rest.UnknownRunHandler"/>
+		</jaxrs:providers>
 	</jaxrs:server>
 
 	<bean id="MBeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">
