@@ -28,7 +28,6 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.ws.WebServiceContext;
 
 import org.apache.commons.logging.Log;
@@ -52,17 +51,10 @@ import org.taverna.server.master.interfaces.Listener;
 import org.taverna.server.master.interfaces.Policy;
 import org.taverna.server.master.interfaces.RunStore;
 import org.taverna.server.master.interfaces.TavernaRun;
-import org.taverna.server.master.rest.BadPropertyValueHandler;
-import org.taverna.server.master.rest.BadStateChangeHandler;
 import org.taverna.server.master.rest.DirectoryContents;
-import org.taverna.server.master.rest.FilesystemAccessHandler;
 import org.taverna.server.master.rest.ListenerCreationDescription;
 import org.taverna.server.master.rest.ListenerDescription;
 import org.taverna.server.master.rest.MakeOrUpdateDirEntry;
-import org.taverna.server.master.rest.NoCreateHandler;
-import org.taverna.server.master.rest.NoDestroyHandler;
-import org.taverna.server.master.rest.NoListenerHandler;
-import org.taverna.server.master.rest.NoUpdateHandler;
 import org.taverna.server.master.rest.RunDescription;
 import org.taverna.server.master.rest.ServerDescription;
 import org.taverna.server.master.rest.TavernaServerDirectoryREST;
@@ -70,16 +62,11 @@ import org.taverna.server.master.rest.TavernaServerInputREST;
 import org.taverna.server.master.rest.TavernaServerListenersREST;
 import org.taverna.server.master.rest.TavernaServerREST;
 import org.taverna.server.master.rest.TavernaServerRunREST;
-import org.taverna.server.master.rest.UnknownRunHandler;
 import org.taverna.server.master.rest.DescriptionElement.Uri;
 import org.taverna.server.master.rest.MakeOrUpdateDirEntry.MakeDirectory;
 
 @Path("/rest")
 @WebService(endpointInterface = "org.taverna.server.master.TavernaServerSOAP", serviceName = "TavernaServer")
-@XmlSeeAlso( { BadPropertyValueHandler.class, BadStateChangeHandler.class,
-		FilesystemAccessHandler.class, NoCreateHandler.class,
-		NoDestroyHandler.class, NoListenerHandler.class, NoUpdateHandler.class,
-		UnknownRunHandler.class })
 @ManagedResource(objectName = "Taverna:group=Server,name=Webapp", description = "The main web-application interface to Taverna Server.")
 public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	/**
@@ -89,6 +76,11 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	private static final String REST_BASE = "/taverna2/rest";
 	static int invokes;
 	private JAXBContext scuflSerializer;
+	/**
+	 * Whether outgoing exceptions should be logged before being converted to
+	 * responses.
+	 */
+	public static boolean logOutgoingExceptions = false;
 
 	public TavernaServerImpl() {
 		try {
@@ -116,6 +108,16 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	@ManagedAttribute(description = "Whether to write submitted workflows to the log.")
 	public void setLogIncomingWorkflows(boolean logIncomingWorkflows) {
 		this.logIncomingWorkflows = logIncomingWorkflows;
+	}
+
+	@ManagedAttribute(description = "Whether outgoing exceptions should be logged before being converted to responses.")
+	public boolean getLogOutgoingExceptions() {
+		return logOutgoingExceptions;
+	}
+
+	@ManagedAttribute(description = "Whether outgoing exceptions should be logged before being converted to responses.")
+	public void setLogOutgoingExceptions(boolean logOutgoing) {
+		logOutgoingExceptions = logOutgoing;
 	}
 
 	/**
