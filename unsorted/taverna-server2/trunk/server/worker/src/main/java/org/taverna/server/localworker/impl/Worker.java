@@ -6,7 +6,7 @@ import java.util.Map;
 import org.taverna.server.localworker.remote.RemoteListener;
 import org.taverna.server.localworker.remote.RemoteStatus;
 
-public interface Worker extends RemoteListener {
+public interface Worker {
 	/**
 	 * Fire up the workflow. This causes a transition into the operating state.
 	 * 
@@ -67,4 +67,10 @@ public interface Worker extends RemoteListener {
 	 *         expensive operation.
 	 */
 	public RemoteStatus getWorkerStatus();
+
+	/**
+	 * @return The listener that is registered by default, in addition to all
+	 *         those that are explicitly registered by the user.
+	 */
+	public RemoteListener getDefaultListener();
 }

@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.rmi.ConnectException;
 import java.rmi.ConnectIOException;
@@ -237,16 +238,16 @@ public class ForkRunFactory extends AbstractRemoteRunFactory implements
 
 	private static class OutputLogger implements Runnable {
 		private static final Log log = getLog(OutputLogger.class);
-	
+
 		OutputLogger(String name, Process process) {
 			this.uniqueName = name;
 			this.br = new BufferedReader(new InputStreamReader(process
 					.getInputStream()));
 		}
-	
+
 		private String uniqueName;
 		private BufferedReader br;
-	
+
 		@Override
 		public void run() {
 			try {
@@ -331,7 +332,9 @@ public class ForkRunFactory extends AbstractRemoteRunFactory implements
 			if (factory == null)
 				initFactory();
 			try {
-				RemoteSingleRun rsr = factory.make(sw.toString());
+				if (creator != null && !(creator instanceof Serializable))
+					creator = null;
+				RemoteSingleRun rsr = factory.make(sw.toString(), creator);
 				totalRuns++;
 				return rsr;
 			} catch (ConnectException e) {

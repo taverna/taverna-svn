@@ -1,6 +1,7 @@
 package org.taverna.server.localworker.impl;
 
 import static java.io.File.createTempFile;
+import static java.lang.System.out;
 import static org.apache.commons.io.IOUtils.copy;
 import static org.taverna.server.localworker.remote.RemoteStatus.Finished;
 import static org.taverna.server.localworker.remote.RemoteStatus.Initialized;
@@ -17,6 +18,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.taverna.server.localworker.remote.RemoteListener;
 import org.taverna.server.localworker.remote.RemoteStatus;
 
 /**
@@ -28,7 +30,8 @@ import org.taverna.server.localworker.remote.RemoteStatus;
  * 
  * @author Donal Fellows
  */
-public class WorkerCore extends UnicastRemoteObject implements Worker {
+public class WorkerCore extends UnicastRemoteObject implements Worker,
+		RemoteListener {
 	public static final String DEFAULT_LISTENER_NAME = "io";
 
 	static final Map<String, Property> pmap = new HashMap<String, Property>();
@@ -181,8 +184,7 @@ public class WorkerCore extends UnicastRemoteObject implements Worker {
 		pb.directory(workingDir);
 
 		// Start the subprocess
-		System.out.println("starting " + pb.command() + " in directory "
-				+ workingDir);
+		out.println("starting " + pb.command() + " in directory " + workingDir);
 		subprocess = pb.start();
 		if (subprocess == null)
 			throw new IOException("unknown failure creating process");
@@ -207,16 +209,16 @@ public class WorkerCore extends UnicastRemoteObject implements Worker {
 				try {
 					code = subprocess.waitFor();
 				} catch (InterruptedException e1) {
-					e1.printStackTrace(); // not expected
+					e1.printStackTrace(out); // not expected
 					return;
 				}
 				finished = true;
 			}
 			exitCode = code;
 			if (code > 128) {
-				System.out.println("workflow aborted, signal=" + (code - 128));
+				out.println("workflow aborted, signal=" + (code - 128));
 			} else {
-				System.out.println("workflow exited, code=" + code);
+				out.println("workflow exited, code=" + code);
 			}
 		}
 	}
@@ -302,5 +304,10 @@ public class WorkerCore extends UnicastRemoteObject implements Worker {
 	public void setProperty(String propName, String value)
 			throws RemoteException {
 		throw new RemoteException("property is read only");
+	}
+
+	@Override
+	public RemoteListener getDefaultListener() {
+		return this;
 	}
 }

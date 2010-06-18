@@ -26,6 +26,7 @@ import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -122,9 +123,7 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 		return (Element) containerDocument.getDocumentElement().getFirstChild();
 	}
 
-	private static final String usage = "java -jar "
-			+ "TavernaServer.Worker.0.0.1-SNAPSHOT-jar-with-dependencies.jar"
-			+ " workflowExecScript UUID";
+	private static final String usage = "java -jar server.worker.jar workflowExecScript UUID";
 
 	/**
 	 * The registered factory for runs.
@@ -161,7 +160,8 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 		}
 
 		@Override
-		public RemoteSingleRun make(String scufl) throws RemoteException {
+		public RemoteSingleRun make(String scufl, Principal creator)
+				throws RemoteException {
 			StringReader sr = new StringReader(scufl);
 			StringWriter sw = new StringWriter();
 			try {
@@ -174,6 +174,9 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 						"failed to extract contained workflow", e);
 			}
 			try {
+				// TODO: Do something properly with creator
+				out.println("Creating run for "
+						+ (creator == null ? "<NOBODY>" : creator.getName()));
 				return cons.newInstance(command, sw.toString(), workerClass);
 			} catch (InvocationTargetException e) {
 				if (e.getTargetException() instanceof RemoteException)
@@ -229,7 +232,7 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 				try {
 					registry.unbind(factoryname);
 				} catch (Exception e) {
-					e.printStackTrace();
+					e.printStackTrace(out);
 				}
 			}
 		});
@@ -291,7 +294,7 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 
 	@Override
 	public List<RemoteListener> getListeners() {
-		return singletonList((RemoteListener) core);
+		return singletonList(core.getDefaultListener());
 	}
 
 	@Override

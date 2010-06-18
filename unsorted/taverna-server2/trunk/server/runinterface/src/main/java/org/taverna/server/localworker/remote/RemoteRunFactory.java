@@ -2,9 +2,11 @@ package org.taverna.server.localworker.remote;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.security.Principal;
 
 /**
- * The main RMI-enabled interface for creating runs. 
+ * The main RMI-enabled interface for creating runs.
+ * 
  * @author Donal Fellows
  */
 public interface RemoteRunFactory extends Remote {
@@ -15,7 +17,8 @@ public interface RemoteRunFactory extends Remote {
 	 *            The (serialized) workflow to instantiate as a run.
 	 * @return A remote handle for the run.
 	 */
-	public RemoteSingleRun make(String scufl) throws RemoteException;
+	public RemoteSingleRun make(String scufl, Principal p)
+			throws RemoteException;
 
 	/**
 	 * Asks this factory to unregister itself from the registry and cease

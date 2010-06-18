@@ -44,16 +44,24 @@
 			<cxf:logging />
 		</jaxrs:features>
 		<jaxrs:providers>
-			<bean class="org.taverna.server.master.rest.BadPropertyValueHandler" />
-			<bean class="org.taverna.server.master.rest.BadStateChangeHandler" />
-			<bean class="org.taverna.server.master.rest.FilesystemAccessHandler" />
-			<bean class="org.taverna.server.master.rest.NoCreateHandler" />
-			<bean class="org.taverna.server.master.rest.NoDestroyHandler" />
-			<bean class="org.taverna.server.master.rest.NoListenerHandler"/>
-			<bean class="org.taverna.server.master.rest.NoUpdateHandler"/>
-			<bean class="org.taverna.server.master.rest.UnknownRunHandler"/>
+			<ref bean="ExceptionProvider.BadPropertyValue" />
+			<ref bean="ExceptionProvider.BadStateChange" />
+			<ref bean="ExceptionProvider.FilesystemAccess" />
+			<ref bean="ExceptionProvider.NoCreate" />
+			<ref bean="ExceptionProvider.NoDestroy" />
+			<ref bean="ExceptionProvider.NoListener" />
+			<ref bean="ExceptionProvider.NoUpdate" />
+			<ref bean="ExceptionProvider.UnknownRun" />
 		</jaxrs:providers>
 	</jaxrs:server>
+	<bean id="ExceptionProvider.BadPropertyValue" class="org.taverna.server.master.rest.BadPropertyValueHandler" />
+	<bean id="ExceptionProvider.BadStateChange" class="org.taverna.server.master.rest.BadStateChangeHandler" />
+	<bean id="ExceptionProvider.FilesystemAccess" class="org.taverna.server.master.rest.FilesystemAccessHandler" />
+	<bean id="ExceptionProvider.NoCreate" class="org.taverna.server.master.rest.NoCreateHandler" />
+	<bean id="ExceptionProvider.NoDestroy" class="org.taverna.server.master.rest.NoDestroyHandler" />
+	<bean id="ExceptionProvider.NoListener" class="org.taverna.server.master.rest.NoListenerHandler" />
+	<bean id="ExceptionProvider.NoUpdate" class="org.taverna.server.master.rest.NoUpdateHandler" />
+	<bean id="ExceptionProvider.UnknownRun" class="org.taverna.server.master.rest.UnknownRunHandler" />
 
 	<bean id="MBeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">
 		<property name="locateExistingServerIfPossible" value="true" />
