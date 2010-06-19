@@ -19,7 +19,7 @@
 	</scm>
 
 	<properties>
-		<workerMainClass>org.taverna.server.localworker.impl.LocalWorker</workerMainClass>
+		<workerMainClass>org.taverna.server.localworker.impl.TavernaRunManager</workerMainClass>
 	</properties>
 
 	<dependencies>

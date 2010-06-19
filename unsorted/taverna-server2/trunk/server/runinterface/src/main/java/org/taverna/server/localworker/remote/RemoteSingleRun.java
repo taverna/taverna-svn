@@ -70,8 +70,12 @@ public interface RemoteSingleRun extends Remote {
 	 * 
 	 * @param s
 	 *            The state to try to change to.
+	 * @throws IllegalStateTransitionException
+	 *             If the requested state change is impossible. (Note that it is
+	 *             always legal to set the status to the current status.)
 	 */
-	public void setStatus(RemoteStatus s) throws RemoteException;
+	public void setStatus(RemoteStatus s) throws IllegalStateTransitionException,
+			RemoteException;
 
 	/**
 	 * @return Handle to the main working directory of the run.

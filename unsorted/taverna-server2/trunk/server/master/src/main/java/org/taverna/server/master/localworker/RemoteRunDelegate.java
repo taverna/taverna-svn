@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.taverna.server.localworker.remote.IllegalStateTransitionException;
 import org.taverna.server.localworker.remote.RemoteDirectory;
 import org.taverna.server.localworker.remote.RemoteDirectoryEntry;
 import org.taverna.server.localworker.remote.RemoteFile;
@@ -374,10 +375,10 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 				run.setStatus(RemoteStatus.Finished);
 				break;
 			}
-		} catch (Exception e) {
-			BadStateChangeException bsc = new BadStateChangeException();
-			bsc.initCause(e);
-			throw bsc;
+		} catch (IllegalStateTransitionException e) {
+			throw new BadStateChangeException(e.getMessage());
+		} catch (RemoteException e) {
+			throw new BadStateChangeException(e.getMessage(), e.getCause());
 		}
 	}
 

@@ -23,4 +23,8 @@ public class BadStateChangeException extends NoUpdateException {
 	public BadStateChangeException(String msg, Throwable t) {
 		super(msg, t);
 	}
+
+	public BadStateChangeException(String message) {
+		super(message);
+	}
 }

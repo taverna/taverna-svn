@@ -6,6 +6,12 @@ import java.util.Map;
 import org.taverna.server.localworker.remote.RemoteListener;
 import org.taverna.server.localworker.remote.RemoteStatus;
 
+/**
+ * The interface between the connectivity layer and the thunk to the
+ * subprocesses.
+ * 
+ * @author Donal Fellows
+ */
 public interface Worker {
 	/**
 	 * Fire up the workflow. This causes a transition into the operating state.
