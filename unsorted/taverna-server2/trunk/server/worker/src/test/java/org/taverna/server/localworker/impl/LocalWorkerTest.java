@@ -1,6 +1,11 @@
 package org.taverna.server.localworker.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -10,9 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.taverna.server.localworker.remote.IllegalStateTransitionException;
 import org.taverna.server.localworker.remote.RemoteDirectory;
@@ -113,6 +116,7 @@ public class LocalWorkerTest {
 
 	@After
 	public void tearDown() throws Exception {
+		lw.destroy();
 	}
 
 	private List<String> l(String... strings) {
