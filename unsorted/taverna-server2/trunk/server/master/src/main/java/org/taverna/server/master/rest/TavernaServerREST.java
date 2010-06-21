@@ -120,6 +120,12 @@ public interface TavernaServerREST {
 	public TavernaServerRunREST getRunResource(
 			@PathParam("runName") String runName) throws UnknownRunException;
 
+	/**
+	 * Helper class for describing the server's user-facing management API via
+	 * JAXB.
+	 * 
+	 * @author Donal Fellows
+	 */
 	@XmlRootElement
 	@XmlType(name = "")
 	public static class ServerDescription {
@@ -140,12 +146,18 @@ public interface TavernaServerREST {
 			runLimit = new Uri(ui, "policy/runLimit");
 			permittedWorkflows = new Uri(ui, "policy/permittedWorkflows");
 			permittedListeners = new Uri(ui, "policy/permittedListenerTypes");
-			// database = new Uri(ui, "database");// TODO make this point to something real
+			// database = new Uri(ui, "database");
+			// TODO make the database point to something real
 		}
 	}
 
+	/**
+	 * Helper class for describing the workflows that are allowed via JAXB.
+	 * 
+	 * @author Donal Fellows
+	 */
 	@XmlRootElement
-	@XmlType(name="")
+	@XmlType(name = "")
 	public static class PermittedWorkflows {
 		@XmlElement
 		public List<SCUFL> workflow;
@@ -158,8 +170,13 @@ public interface TavernaServerREST {
 		}
 	}
 
+	/**
+	 * Helper class for describing the listener types that are allowed via JAXB.
+	 * 
+	 * @author Donal Fellows
+	 */
 	@XmlRootElement
-	@XmlType(name="")
+	@XmlType(name = "")
 	public static class PermittedListeners {
 		@XmlElement
 		public List<String> type;

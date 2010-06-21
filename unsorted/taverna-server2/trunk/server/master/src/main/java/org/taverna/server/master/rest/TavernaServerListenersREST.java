@@ -69,8 +69,7 @@ public interface TavernaServerListenersREST {
 	@Path("/")
 	@Consumes( { "application/xml", "application/json" })
 	@Description("Add a new event listener to the named workflow run.")
-	public Response addListener(
-			ListenerDefinition typeAndConfiguration,
+	public Response addListener(ListenerDefinition typeAndConfiguration,
 			@Context UriInfo ui) throws NoUpdateException, NoListenerException;
 
 	/**
@@ -192,6 +191,7 @@ public interface TavernaServerListenersREST {
 
 	/**
 	 * A description of an event listener that is attached to a workflow run.
+	 * Done with JAXB.
 	 * 
 	 * @author Donal Fellows
 	 */
@@ -213,7 +213,8 @@ public interface TavernaServerListenersREST {
 		 */
 		public Uri configuration;
 		/**
-		 * The name and location of the properties supported by the event listener.
+		 * The name and location of the properties supported by the event
+		 * listener.
 		 */
 		@XmlElementWrapper(name = "properties", nillable = false)
 		@XmlElement(name = "property", nillable = false)
@@ -222,21 +223,23 @@ public interface TavernaServerListenersREST {
 		public ListenerDescription() {
 		}
 
-		public ListenerDescription(String name, String type, String[] properties,
-				UriInfo ui) {
+		public ListenerDescription(String name, String type,
+				String[] properties, UriInfo ui) {
 			this.name = name;
 			this.type = type;
 			this.configuration = new Uri(ui, "{name}/configuration", name);
 			UriBuilder ub = ui.getAbsolutePathBuilder().path(
 					"{name}/properties/{prop}");
-			this.properties = new ArrayList<PropertyDescription>(properties.length);
+			this.properties = new ArrayList<PropertyDescription>(
+					properties.length);
 			for (String propName : properties)
-				this.properties.add(new PropertyDescription(name, propName, ub));
+				this.properties
+						.add(new PropertyDescription(name, propName, ub));
 		}
 	}
 
 	/**
-	 * The description of a single property.
+	 * The description of a single property, done with JAXB.
 	 * 
 	 * @author Donal Fellows
 	 */
@@ -257,8 +260,12 @@ public interface TavernaServerListenersREST {
 		}
 	}
 
+	/**
+	 * The list of descriptions of listeners attached to a run. Done with JAXB.
+	 * @author Donal Fellows
+	 */
 	@XmlRootElement
-	@XmlType(name="")
+	@XmlType(name = "")
 	public static class Listeners {
 		@XmlElement
 		public List<ListenerDescription> description;
@@ -271,8 +278,12 @@ public interface TavernaServerListenersREST {
 		}
 	}
 
+	/**
+	 * The list of properties of a listener. Done with JAXB.
+	 * @author Donal Fellows
+	 */
 	@XmlRootElement
-	@XmlType(name="")
+	@XmlType(name = "")
 	public static class Properties {
 		@XmlElement
 		public List<String> name;

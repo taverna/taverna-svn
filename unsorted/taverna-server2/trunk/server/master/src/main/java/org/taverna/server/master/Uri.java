@@ -7,7 +7,13 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlType(name="Location")
+/**
+ * A class that makes it simpler to work with an element with a {@link URI} in
+ * an <tt>href</tt> attribute. Done with JAXB.
+ * 
+ * @author Donal Fellows
+ */
+@XmlType(name = "Location")
 public class Uri {
 	@XmlAttribute(name = "href", namespace = "http://www.w3.org/1999/xlink")
 	public URI ref;

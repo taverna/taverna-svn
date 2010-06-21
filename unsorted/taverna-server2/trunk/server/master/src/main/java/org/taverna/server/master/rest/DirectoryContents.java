@@ -15,12 +15,13 @@ import org.taverna.server.master.DirEntryReference;
 import org.taverna.server.master.interfaces.DirectoryEntry;
 
 /**
- * The result of a RESTful operation to list the contents of a directory.
+ * The result of a RESTful operation to list the contents of a directory. Done
+ * with JAXB.
  * 
  * @author Donal Fellows
  */
 @XmlRootElement
-@XmlType(name="DirectoryContents")
+@XmlType(name = "DirectoryContents")
 @XmlSeeAlso(MakeOrUpdateDirEntry.class)
 public class DirectoryContents {
 	@XmlElementRef

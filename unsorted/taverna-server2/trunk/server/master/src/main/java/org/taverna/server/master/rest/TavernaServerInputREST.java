@@ -126,12 +126,13 @@ public interface TavernaServerInputREST {
 			FilesystemAccessException, BadPropertyValueException;
 
 	/**
-	 * A description of the structure of inputs to a Taverna workflow run.
+	 * A description of the structure of inputs to a Taverna workflow run, done
+	 * with JAXB.
 	 * 
 	 * @author Donal Fellows
 	 */
 	@XmlRootElement(name = "runInputs")
-	@XmlType(name="TavernaRunInputs")
+	@XmlType(name = "TavernaRunInputs")
 	public static class InputsDescriptor {
 		/**
 		 * Where to find the overall Baclava document filename (if set).
@@ -155,12 +156,13 @@ public interface TavernaServerInputREST {
 	}
 
 	/**
-	 * The Details of a particular input port's value assignment.
+	 * The Details of a particular input port's value assignment, done with
+	 * JAXB.
 	 * 
 	 * @author Donal Fellows
 	 */
 	@XmlRootElement(name = "runInput")
-	@XmlType(name="InputDescription")
+	@XmlType(name = "InputDescription")
 	public static class InDesc {
 		public InDesc() {
 		}
@@ -188,7 +190,7 @@ public interface TavernaServerInputREST {
 		 * 
 		 * @author Donal Fellows
 		 */
-		@XmlType(name="InputContents")
+		@XmlType(name = "InputContents")
 		public static abstract class AbstractContents {
 			@XmlValue
 			public String contents;

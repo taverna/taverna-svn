@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlValue;
 
 /**
  * Description of what sort of event listener to create and attach to a workflow
- * run.
+ * run. Bound via JAXB.
  * 
  * @author Donal Fellows
  */

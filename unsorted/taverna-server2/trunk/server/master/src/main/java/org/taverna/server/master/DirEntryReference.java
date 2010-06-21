@@ -14,23 +14,19 @@ import org.taverna.server.master.interfaces.DirectoryEntry;
 
 /**
  * A reference to something that is in a directory below the working directory
- * of a workflow run.
+ * of a workflow run, described using JAXB.
  * 
  * @author Donal Fellows
  */
-@XmlType(name="DirectoryEntry")
+@XmlType(name = "DirectoryEntry")
 @XmlSeeAlso( { DirEntryReference.DirectoryReference.class,
 		DirEntryReference.FileReference.class })
 public abstract class DirEntryReference {
-	/**
-	 * A link to the entry.
-	 */
+	/** A link to the entry. */
 	@XmlAttribute(name = "href", namespace = "http://www.w3.org/1999/xlink")
 	public URI link;
 
-	/**
-	 * The path of the entry.
-	 */
+	/** The path of the entry. */
 	@XmlValue
 	public String path;
 
@@ -69,15 +65,15 @@ public abstract class DirEntryReference {
 		return de;
 	}
 
-	/** A reference to a directory. */
+	/** A reference to a directory, done with JAXB. */
 	@XmlRootElement(name = "dir")
-	@XmlType(name="")
+	@XmlType(name = "")
 	public static class DirectoryReference extends DirEntryReference {
 	}
 
-	/** A reference to a file. */
+	/** A reference to a file, done with JAXB. */
 	@XmlRootElement(name = "file")
-	@XmlType(name="")
+	@XmlType(name = "")
 	public static class FileReference extends DirEntryReference {
 	}
 }

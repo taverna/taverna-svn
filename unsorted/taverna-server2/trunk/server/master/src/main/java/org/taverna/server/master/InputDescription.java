@@ -13,7 +13,7 @@ import org.taverna.server.master.interfaces.Input;
 import org.taverna.server.master.interfaces.TavernaRun;
 
 /**
- * A description of the inputs to a workflow.
+ * A description of the inputs to a workflow, described using JAXB.
  * 
  * @author Donal Fellows
  */

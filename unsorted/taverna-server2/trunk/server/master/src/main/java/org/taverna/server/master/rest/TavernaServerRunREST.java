@@ -212,15 +212,20 @@ public interface TavernaServerRunREST {
 			throws NoUpdateException, FilesystemAccessException,
 			BadStateChangeException;
 
+	/**
+	 * The description of where everything is in a RESTful view of a workflow
+	 * run. Done with JAXB.
+	 * 
+	 * @author Donal Fellows
+	 */
 	@XmlRootElement
-	@XmlType(name="")
+	@XmlType(name = "")
 	public static class RunDescription {
 		public Expiry expiry;
-		public Uri creationWorkflow, status, workingDirectory,
-				securityContext;
+		public Uri creationWorkflow, status, workingDirectory, securityContext;
 		public ListenerList listeners;
 
-		@XmlType(name="")
+		@XmlType(name = "")
 		public static class Expiry {
 			@XmlAttribute(name = "href", namespace = "http://www.w3.org/1999/xlink")
 			public URI ref;
@@ -236,7 +241,7 @@ public interface TavernaServerRunREST {
 			}
 		}
 
-		@XmlType(name="")
+		@XmlType(name = "")
 		public static class ListenerList extends Uri {
 			List<Uri> listener;
 
@@ -245,11 +250,9 @@ public interface TavernaServerRunREST {
 
 			ListenerList(TavernaRun r, UriBuilder ub) {
 				super(ub);
-				listener = new ArrayList<Uri>(r.getListeners()
-						.size());
+				listener = new ArrayList<Uri>(r.getListeners().size());
 				for (Listener l : r.getListeners()) {
-					listener.add(new Uri(ub.path("{name}"), l
-							.getName()));
+					listener.add(new Uri(ub.path("{name}"), l.getName()));
 				}
 			}
 		}

@@ -8,12 +8,12 @@ import javax.xml.bind.annotation.XmlValue;
 
 /**
  * The input to the REST interface for making directories and files, and
- * uploading file contents.
+ * uploading file contents. Done with JAXB.
  * 
  * @author Donal Fellows
  */
-@XmlRootElement(name="fileysstemOperation")
-@XmlType(name="FilesystemCreationOperation")
+@XmlRootElement(name = "filesystemOperation")
+@XmlType(name = "FilesystemCreationOperation")
 @XmlSeeAlso( { MakeOrUpdateDirEntry.MakeDirectory.class,
 		MakeOrUpdateDirEntry.SetFileContents.class })
 public abstract class MakeOrUpdateDirEntry {
@@ -23,22 +23,23 @@ public abstract class MakeOrUpdateDirEntry {
 	public byte[] contents;
 
 	/**
-	 * Create a directory.
+	 * Create a directory, described with JAXB. Should leave the
+	 * {@link MakeOrUpdateDirEntry#contents contents} field empty.
 	 * 
 	 * @author Donal Fellows
 	 */
 	@XmlRootElement(name = "mkdir")
-	@XmlType(name="MakeDirectory")
+	@XmlType(name = "MakeDirectory")
 	public static class MakeDirectory extends MakeOrUpdateDirEntry {
 	}
 
 	/**
-	 * Create a file or set its contents.
+	 * Create a file or set its contents, described with JAXB.
 	 * 
 	 * @author Donal Fellows
 	 */
 	@XmlRootElement(name = "upload")
-	@XmlType(name="UploadFile")
+	@XmlType(name = "UploadFile")
 	public static class SetFileContents extends MakeOrUpdateDirEntry {
 	}
 }
