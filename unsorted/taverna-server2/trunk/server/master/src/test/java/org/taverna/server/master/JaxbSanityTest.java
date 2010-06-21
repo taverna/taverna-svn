@@ -162,4 +162,19 @@ public class JaxbSanityTest {
 		JAXBContext.newInstance(RunDescription.class).generateSchema(sink);
 		assertTrue(true);
 	}
+
+	/* This test doesn't work. */
+//	@Test
+//	public void testJAXBForEverythingAtOnce() throws Exception {
+//		JAXBContext c = JAXBContext.newInstance(DirEntryReference.class,
+//				InputDescription.class, RunReference.class, SCUFL.class,
+//				Status.class, DirectoryContents.class, InDesc.class,
+//				ListenerDefinition.class, MakeOrUpdateDirEntry.class,
+//				InputsDescriptor.class, ListenerDescription.class,
+//				Listeners.class, Properties.class, PropertyDescription.class,
+//				PermittedListeners.class, PermittedWorkflows.class,
+//				ServerDescription.class, RunDescription.class, Uri.class);
+//		c.generateSchema(sink);
+//		assertTrue(true);
+//	}
 }
