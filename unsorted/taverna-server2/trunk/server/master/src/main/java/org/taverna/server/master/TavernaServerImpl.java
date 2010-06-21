@@ -52,18 +52,17 @@ import org.taverna.server.master.interfaces.Policy;
 import org.taverna.server.master.interfaces.RunStore;
 import org.taverna.server.master.interfaces.TavernaRun;
 import org.taverna.server.master.rest.DirectoryContents;
-import org.taverna.server.master.rest.ListenerCreationDescription;
-import org.taverna.server.master.rest.ListenerDescription;
+import org.taverna.server.master.rest.ListenerDefinition;
 import org.taverna.server.master.rest.MakeOrUpdateDirEntry;
-import org.taverna.server.master.rest.RunDescription;
-import org.taverna.server.master.rest.ServerDescription;
 import org.taverna.server.master.rest.TavernaServerDirectoryREST;
 import org.taverna.server.master.rest.TavernaServerInputREST;
 import org.taverna.server.master.rest.TavernaServerListenersREST;
 import org.taverna.server.master.rest.TavernaServerREST;
 import org.taverna.server.master.rest.TavernaServerRunREST;
-import org.taverna.server.master.rest.DescriptionElement.Uri;
 import org.taverna.server.master.rest.MakeOrUpdateDirEntry.MakeDirectory;
+import org.taverna.server.master.rest.TavernaServerInputREST.InDesc.AbstractContents;
+import org.taverna.server.master.rest.TavernaServerListenersREST.ListenerDescription;
+import org.taverna.server.master.rest.TavernaServerListenersREST.TavernaServerListenerREST;
 
 @Path("/rest")
 @WebService(endpointInterface = "org.taverna.server.master.TavernaServerSOAP", serviceName = "TavernaServer")
@@ -175,6 +174,15 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 				ui);
 	}
 
+	private static DateFormat isoFormat;
+
+	static DateFormat df() {
+		if (isoFormat == null) {
+			isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+		}
+		return isoFormat;
+	}
+
 	@Override
 	public RunReference[] listRuns() {
 		invokes++;
@@ -254,11 +262,11 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		return min(limit.intValue(), policy.getMaxRuns());
 	}
 
-	// FIXME wrap
 	@Override
-	public List<SCUFL> getPermittedWorkflows() {
+	public PermittedWorkflows getPermittedWorkflows() {
 		invokes++;
-		return policy.listPermittedWorkflows(getPrincipal());
+		return new PermittedWorkflows(policy
+				.listPermittedWorkflows(getPrincipal()));
 	}
 
 	@Override
@@ -268,11 +276,11 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 				new SCUFL[0]);
 	}
 
-	// FIXME wrap
 	@Override
-	public List<String> getPermittedListeners() {
+	public PermittedListeners getPermittedListeners() {
 		invokes++;
-		return listenerFactory.getSupportedListenerTypes();
+		return new PermittedListeners(listenerFactory
+				.getSupportedListenerTypes());
 	}
 
 	@Override
@@ -310,7 +318,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 				return new TavernaServerListenersREST() {
 					@Override
 					public Response addListener(
-							ListenerCreationDescription typeAndConfiguration,
+							ListenerDefinition typeAndConfiguration,
 							UriInfo ui) throws NoUpdateException,
 							NoListenerException {
 						invokes++;
@@ -327,91 +335,20 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 					public TavernaServerListenerREST getListener(String name)
 							throws NoListenerException {
 						invokes++;
-						for (Listener listener : run.getListeners()) {
-							final Listener l = listener;
+						for (Listener listener : run.getListeners())
 							if (listener.getName().equals(name))
-								return new TavernaServerListenerREST() {
-									@Override
-									public String getConfiguration() {
-										invokes++;
-										return l.getConfiguration();
-									}
-
-									@Override
-									public ListenerDescription getDescription(
-											UriInfo ui) {
-										invokes++;
-										return new ListenerDescription(l
-												.getName(), l.getType(), l
-												.listProperties(), ui);
-									}
-
-									@Override
-									public List<String> getProperties() {
-										invokes++;
-										return asList(l.listProperties());
-									}
-
-									@Override
-									public Property getProperty(
-											final String propertyName)
-											throws NoListenerException {
-										invokes++;
-										if (getProperties().contains(
-												propertyName))
-											return new Property() {
-												@Override
-												public String getValue() {
-													invokes++;
-													try {
-														return l
-																.getProperty(propertyName);
-													} catch (NoListenerException e) {
-														log
-																.error(
-																		"unexpected exception; property \""
-																				+ propertyName
-																				+ "\" should exist",
-																		e);
-														return null;
-													}
-												}
-
-												@Override
-												public Response setValue(
-														String value, UriInfo ui)
-														throws NoUpdateException,
-														NoListenerException {
-													invokes++;
-													policy
-															.permitUpdate(
-																	getPrincipal(),
-																	run);
-													l.setProperty(propertyName,
-															value);
-													return seeOther(
-															ui.getRequestUri())
-															.build();
-												}
-											};
-
-										throw new NoListenerException(
-												"no such property");
-									}
-								};
-						}
+								return new ListenerIfcImpl(listener);
 						throw new NoListenerException();
 					}
 
 					@Override
-					public List<ListenerDescription> getDescription(UriInfo ui) {
+					public Listeners getDescription(UriInfo ui) {
 						List<ListenerDescription> result = new ArrayList<ListenerDescription>();
 						invokes++;
-						for (Listener l : run.getListeners()) {
+						for (Listener l : run.getListeners())
 							result.add(new ListenerDescription(l.getName(), l
 									.getType(), l.listProperties(), ui));
-						}
-						return result;
+						return new Listeners(result);
 					}
 				};
 			}
@@ -420,16 +357,6 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 			public String getOwner() {
 				invokes++;
 				return run.getSecurityContext().getOwner().getName();
-			}
-
-			private DateFormat isoFormat;
-
-			private DateFormat df() {
-				if (isoFormat == null) {
-					isoFormat = new SimpleDateFormat(
-							"yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-				}
-				return isoFormat;
 			}
 
 			@Override
@@ -464,7 +391,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 				try {
 					run.setExpiry(df().parse(expiry));
 				} catch (ParseException e) {
-					throw new NoUpdateException(e.getMessage());
+					throw new NoUpdateException(e.getMessage(), e);
 				}
 				return seeOther(ui.getRequestUri()).build();
 			}
@@ -485,14 +412,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 					@Override
 					public InputsDescriptor get(UriInfo ui) {
 						invokes++;
-						InputsDescriptor id = new InputsDescriptor();
-						id.baclava = new Uri(ui, "baclava");
-						id.input = new ArrayList<Uri>();
-						for (Input i : run.getInputs()) {
-							id.input.add(new Uri(ui, "input/{name}", i
-									.getName()));
-						}
-						return id;
+						return new InputsDescriptor(ui, run);
 					}
 
 					@Override
@@ -507,20 +427,8 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 							throws BadPropertyValueException {
 						invokes++;
 						for (Input i : run.getInputs())
-							if (i.getName().equals(name)) {
-								InDesc id = new InDesc();
-								id.name = i.getName();
-								if (i.getFile() != null) {
-									id.content = new InDesc.File();
-									((InDesc.File) id.content).file = i
-											.getFile();
-								} else {
-									id.content = new InDesc.Value();
-									((InDesc.Value) id.content).value = i
-											.getValue();
-								}
-								return id;
-							}
+							if (i.getName().equals(name))
+								return new InDesc(i);
 						throw new BadPropertyValueException(
 								"unknown input port name");
 					}
@@ -542,37 +450,33 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 							FilesystemAccessException,
 							BadPropertyValueException {
 						invokes++;
-						policy.permitUpdate(getPrincipal(), run);
-						if (inputDescriptor.content == null)
+						AbstractContents ac = inputDescriptor.assignment;
+						if (name == null || name.isEmpty())
+							throw new BadPropertyValueException(
+									"bad property name");
+						if (ac == null)
 							throw new BadPropertyValueException("no content!");
+						if (!(ac instanceof InDesc.File || ac instanceof InDesc.Value))
+							throw new BadPropertyValueException(
+									"unknown content type");
+						policy.permitUpdate(getPrincipal(), run);
 						for (Input i : run.getInputs()) {
 							if (!i.getName().equals(name))
 								continue;
-							if (inputDescriptor.content instanceof InDesc.File) {
-								String file = ((InDesc.File) inputDescriptor.content).file;
-								i.setFile(file);
-								return seeOther(ui.getRequestUri()).build();
-							} else if (inputDescriptor.content instanceof InDesc.Value) {
-								String value = ((InDesc.Value) inputDescriptor.content).value;
-								i.setValue(value);
-								return seeOther(ui.getRequestUri()).build();
+							if (ac instanceof InDesc.File) {
+								i.setFile(ac.contents);
 							} else {
-								throw new BadPropertyValueException(
-										"unknown content type");
+								i.setValue(ac.contents);
 							}
+							return seeOther(ui.getRequestUri()).build();
 						}
-						if (inputDescriptor.content instanceof InDesc.File) {
-							String file = ((InDesc.File) inputDescriptor.content).file;
-							run.makeInput(name).setFile(file);
-							return seeOther(ui.getRequestUri()).build();
-						} else if (inputDescriptor.content instanceof InDesc.Value) {
-							String value = ((InDesc.Value) inputDescriptor.content).value;
-							run.makeInput(name).setValue(value);
-							return seeOther(ui.getRequestUri()).build();
+						Input i = run.makeInput(name);
+						if (ac instanceof InDesc.File) {
+							i.setFile(ac.contents);
 						} else {
-							throw new BadPropertyValueException(
-									"unknown content type");
+							i.setValue(ac.contents);
 						}
+						return seeOther(ui.getRequestUri()).build();
 					}
 				};
 			}
@@ -594,6 +498,69 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 					filename = null;
 				run.setOutputBaclavaFile(filename);
 				return seeOther(ui.getRequestUri()).build();
+			}
+
+			class ListenerIfcImpl implements TavernaServerListenerREST {
+				Listener l;
+
+				ListenerIfcImpl(Listener l) {
+					this.l = l;
+				}
+
+				@Override
+				public String getConfiguration() {
+					invokes++;
+					return l.getConfiguration();
+				}
+
+				@Override
+				public ListenerDescription getDescription(UriInfo ui) {
+					invokes++;
+					return new ListenerDescription(l.getName(), l.getType(), l
+							.listProperties(), ui);
+				}
+
+				@Override
+				public TavernaServerListenersREST.Properties getProperties() {
+					invokes++;
+					return new TavernaServerListenersREST.Properties(l
+							.listProperties());
+				}
+
+				@Override
+				public TavernaServerListenersREST.Property getProperty(
+						final String propertyName) throws NoListenerException {
+					invokes++;
+					List<String> p = asList(l.listProperties());
+					if (p.contains(propertyName))
+						return new TavernaServerListenersREST.Property() {
+							@Override
+							public String getValue() {
+								invokes++;
+								try {
+									return l.getProperty(propertyName);
+								} catch (NoListenerException e) {
+									log.error(
+											"unexpected exception; property \""
+													+ propertyName
+													+ "\" should exist", e);
+									return null;
+								}
+							}
+
+							@Override
+							public Response setValue(String value, UriInfo ui)
+									throws NoUpdateException,
+									NoListenerException {
+								invokes++;
+								policy.permitUpdate(getPrincipal(), run);
+								l.setProperty(propertyName, value);
+								return seeOther(ui.getRequestUri()).build();
+							}
+						};
+
+					throw new NoListenerException("no such property");
+				}
 			}
 		};
 	}
@@ -617,13 +584,14 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		}
 
 		@Override
-		public DirEntryReference getDescription(UriInfo ui)
+		public DirectoryContents getDescription(UriInfo ui)
 				throws FilesystemAccessException {
 			invokes++;
-			return newInstance(ui.getAbsolutePathBuilder(), run
-					.getWorkingDirectory());
+			return new DirectoryContents(ui, run.getWorkingDirectory()
+					.getContents());
 		}
 
+		// Nasty! This can have several different responses...
 		@Override
 		public Response getDirectoryOrFileContents(List<PathSegment> path,
 				UriInfo ui) throws FilesystemAccessException {
@@ -649,21 +617,18 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 			policy.permitUpdate(getPrincipal(), run);
 			DirectoryEntry container = getDirEntry(run, parent);
 			if (!(container instanceof Directory)) {
-				if (op instanceof MakeDirectory)
-					throw new FilesystemAccessException(
-							"You may not make a subdirectory of a file.");
-				else
-					throw new FilesystemAccessException(
-							"You may not place a file in a file.");
+				throw new FilesystemAccessException(
+						"You may not "
+								+ ((op instanceof MakeDirectory) ? "make a subdirectory of"
+										: "place a file in") + " a file.");
 			}
 			if (op.name == null)
 				throw new FilesystemAccessException("missing name attribute");
 			Directory d = (Directory) container;
+			UriBuilder ub = ui.getAbsolutePathBuilder().path("{name}");
 			if (op instanceof MakeDirectory) {
 				Directory dir = d.makeSubdirectory(getPrincipal(), op.name);
-				return temporaryRedirect(
-						ui.getAbsolutePathBuilder().path("{name}").build(
-								dir.getName())).build();
+				return temporaryRedirect(ub.build(dir.getName())).build();
 			} else {
 				File f = null;
 				for (DirectoryEntry e : d.getContents()) {
@@ -679,9 +644,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 				if (f == null)
 					f = d.makeEmptyFile(getPrincipal(), op.name);
 				f.setContents(op.contents);
-				return temporaryRedirect(
-						ui.getAbsolutePathBuilder().path("{name}").build(
-								f.getName())).build();
+				return temporaryRedirect(ub.build(f.getName())).build();
 			}
 		}
 	}

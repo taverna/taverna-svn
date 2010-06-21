@@ -2,6 +2,7 @@ package org.taverna.server.master.rest;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
 /**
@@ -11,7 +12,8 @@ import javax.xml.bind.annotation.XmlValue;
  * @author Donal Fellows
  */
 @XmlRootElement(name = "listenerDefinition")
-public class ListenerCreationDescription {
+@XmlType(name="ListenerDefinition")
+public class ListenerDefinition {
 	/**
 	 * The type of event listener to create.
 	 */

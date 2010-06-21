@@ -1,5 +1,6 @@
 package org.taverna.server.master.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -15,15 +16,17 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
 import org.apache.cxf.jaxrs.ext.Description;
+import org.taverna.server.master.Uri;
 import org.taverna.server.master.exceptions.BadPropertyValueException;
 import org.taverna.server.master.exceptions.BadStateChangeException;
 import org.taverna.server.master.exceptions.FilesystemAccessException;
 import org.taverna.server.master.exceptions.NoUpdateException;
+import org.taverna.server.master.interfaces.Input;
+import org.taverna.server.master.interfaces.TavernaRun;
 
 /**
  * This represents how a Taverna Server workflow run's inputs looks to a RESTful
@@ -31,9 +34,6 @@ import org.taverna.server.master.exceptions.NoUpdateException;
  * 
  * @author Donal Fellows.
  */
-@Path("/")
-@Produces( { "application/xml", "application/json" })
-@Consumes( { "application/xml", "application/json" })
 @Description("This represents how a Taverna Server workflow run's inputs looks to a RESTful API.")
 public interface TavernaServerInputREST {
 	/**
@@ -41,6 +41,8 @@ public interface TavernaServerInputREST {
 	 *         workflow run.
 	 */
 	@GET
+	@Path("/")
+	@Produces( { "application/xml", "application/json" })
 	@Description("Describe the sub-URIs of this resource.")
 	public InputsDescriptor get(@Context UriInfo ui);
 
@@ -50,6 +52,7 @@ public interface TavernaServerInputREST {
 	 */
 	@GET
 	@Path("baclava")
+	@Produces("text/plain")
 	@Description("Gives the Baclava file describing the inputs, or empty if individual files are used.")
 	public String getBaclavaFile();
 
@@ -71,6 +74,7 @@ public interface TavernaServerInputREST {
 	 */
 	@PUT
 	@Path("baclava")
+	@Consumes("text/plain")
 	@Description("Sets the Baclava file describing the inputs.")
 	public Response setBaclavaFile(String filename, @Context UriInfo ui)
 			throws NoUpdateException, BadStateChangeException,
@@ -87,6 +91,7 @@ public interface TavernaServerInputREST {
 	 */
 	@GET
 	@Path("input/{name}")
+	@Produces( { "application/xml", "application/json" })
 	@Description("Gives a description of what is used to supply a particular input.")
 	public InDesc getInput(@PathParam("name") String name)
 			throws BadPropertyValueException;
@@ -113,6 +118,7 @@ public interface TavernaServerInputREST {
 	 */
 	@PUT
 	@Path("input/{name}")
+	@Consumes( { "application/xml", "application/json" })
 	@Description("Sets the source for a particular input port.")
 	public Response setInput(@PathParam("name") String name,
 			InDesc inputDescriptor, @Context UriInfo ui)
@@ -124,8 +130,9 @@ public interface TavernaServerInputREST {
 	 * 
 	 * @author Donal Fellows
 	 */
-	@XmlRootElement(name = "TavernaRunInputs")
-	public static class InputsDescriptor extends DescriptionElement {
+	@XmlRootElement(name = "runInputs")
+	@XmlType(name="TavernaRunInputs")
+	public static class InputsDescriptor {
 		/**
 		 * Where to find the overall Baclava document filename (if set).
 		 */
@@ -134,6 +141,17 @@ public interface TavernaServerInputREST {
 		 * Where to find the details of inputs to particular ports (if set).
 		 */
 		public List<Uri> input;
+
+		public InputsDescriptor() {
+		}
+
+		public InputsDescriptor(UriInfo ui, TavernaRun run) {
+			baclava = new Uri(ui, "baclava");
+			input = new ArrayList<Uri>();
+			for (Input i : run.getInputs()) {
+				input.add(new Uri(ui, "input/{name}", i.getName()));
+			}
+		}
 	}
 
 	/**
@@ -141,12 +159,27 @@ public interface TavernaServerInputREST {
 	 * 
 	 * @author Donal Fellows
 	 */
-	@XmlRootElement(name = "TavernaRunInput")
+	@XmlRootElement(name = "runInput")
+	@XmlType(name="InputDescription")
 	public static class InDesc {
+		public InDesc() {
+		}
+
+		public InDesc(Input i) {
+			name = i.getName();
+			if (i.getFile() != null) {
+				assignment = new InDesc.File();
+				assignment.contents = i.getFile();
+			} else {
+				assignment = new InDesc.Value();
+				assignment.contents = i.getValue();
+			}
+		}
+
 		/**
 		 * The name of the port.
 		 */
-		@XmlAttribute(required=false)
+		@XmlAttribute(required = false)
 		public String name;
 
 		/**
@@ -155,9 +188,10 @@ public interface TavernaServerInputREST {
 		 * 
 		 * @author Donal Fellows
 		 */
-		@XmlType
-		@XmlTransient
-		static abstract class AbstractContents {
+		@XmlType(name="InputContents")
+		public static abstract class AbstractContents {
+			@XmlValue
+			public String contents;
 		};
 
 		/**
@@ -165,13 +199,8 @@ public interface TavernaServerInputREST {
 		 * 
 		 * @author Donal Fellows
 		 */
-		@XmlType(name = "File")
+		@XmlType(name = "")
 		public static class File extends AbstractContents {
-			/**
-			 * The filename.
-			 */
-			@XmlValue
-			public String file;
 		}
 
 		/**
@@ -179,17 +208,12 @@ public interface TavernaServerInputREST {
 		 * 
 		 * @author Donal Fellows
 		 */
-		@XmlType(name = "Value")
+		@XmlType(name = "")
 		public static class Value extends AbstractContents {
-			/**
-			 * The value.
-			 */
-			@XmlValue
-			public String value;
 		}
 
 		@XmlElements( { @XmlElement(name = "file", type = File.class),
 				@XmlElement(name = "value", type = Value.class) })
-		public AbstractContents content;
+		public AbstractContents assignment;
 	}
 }

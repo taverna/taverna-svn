@@ -6,6 +6,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
 import org.taverna.server.master.interfaces.Directory;
@@ -17,7 +18,7 @@ import org.taverna.server.master.interfaces.DirectoryEntry;
  * 
  * @author Donal Fellows
  */
-@XmlRootElement
+@XmlType(name="DirectoryEntry")
 @XmlSeeAlso( { DirEntryReference.DirectoryReference.class,
 		DirEntryReference.FileReference.class })
 public abstract class DirEntryReference {
@@ -70,11 +71,13 @@ public abstract class DirEntryReference {
 
 	/** A reference to a directory. */
 	@XmlRootElement(name = "dir")
+	@XmlType(name="")
 	public static class DirectoryReference extends DirEntryReference {
 	}
 
 	/** A reference to a file. */
 	@XmlRootElement(name = "file")
+	@XmlType(name="")
 	public static class FileReference extends DirEntryReference {
 	}
 }

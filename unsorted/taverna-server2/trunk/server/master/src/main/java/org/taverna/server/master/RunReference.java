@@ -6,6 +6,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
 
@@ -15,6 +16,7 @@ import javax.xml.bind.annotation.XmlValue;
  * @see org.taverna.server.master.interfaces.TavernaRun TavernaRun
  */
 @XmlRootElement
+@XmlType(name="TavernaRun")
 @XmlSeeAlso({SCUFL.class, DirEntryReference.class})
 public class RunReference {
 	/**

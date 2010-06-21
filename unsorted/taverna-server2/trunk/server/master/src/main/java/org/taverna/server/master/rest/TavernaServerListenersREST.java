@@ -1,5 +1,7 @@
 package org.taverna.server.master.rest;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -11,9 +13,16 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.apache.cxf.jaxrs.ext.Description;
+import org.taverna.server.master.Uri;
 import org.taverna.server.master.exceptions.NoListenerException;
 import org.taverna.server.master.exceptions.NoUpdateException;
 
@@ -23,9 +32,6 @@ import org.taverna.server.master.exceptions.NoUpdateException;
  * @author Donal Fellows
  * @see TavernaServerListenerREST
  */
-@Path("/")
-@Produces( { "application/xml", "application/json" })
-@Consumes( { "application/xml", "application/json" })
 @Description("This represents all the event listeners attached to a workflow run.")
 public interface TavernaServerListenersREST {
 	/**
@@ -36,8 +42,13 @@ public interface TavernaServerListenersREST {
 	 * @return A list of descriptions of listeners.
 	 */
 	@GET
+	@Path("/")
+	@Produces( { "application/xml", "application/json" })
 	@Description("Get the listeners installed in the workflow run.")
-	public List<ListenerDescription> getDescription(@Context UriInfo ui);
+	public Listeners getDescription(@Context UriInfo ui);
+
+	// return
+	// type
 
 	/**
 	 * Add a new event listener to the named workflow run.
@@ -55,9 +66,11 @@ public interface TavernaServerListenersREST {
 	 *             configuration is unacceptable in some way.
 	 */
 	@POST
+	@Path("/")
+	@Consumes( { "application/xml", "application/json" })
 	@Description("Add a new event listener to the named workflow run.")
 	public Response addListener(
-			ListenerCreationDescription typeAndConfiguration,
+			ListenerDefinition typeAndConfiguration,
 			@Context UriInfo ui) throws NoUpdateException, NoListenerException;
 
 	/**
@@ -81,8 +94,6 @@ public interface TavernaServerListenersREST {
 	 * @see TavernaServerListenersREST
 	 * @see Property
 	 */
-	@Produces( { "application/xml", "application/json" })
-	@Consumes( { "application/xml", "application/json" })
 	@Description("This represents a single event listener attached to a workflow run.")
 	public interface TavernaServerListenerREST {
 		/**
@@ -93,6 +104,8 @@ public interface TavernaServerListenersREST {
 		 * @return A description document.
 		 */
 		@GET
+		@Path("/")
+		@Produces( { "application/xml", "application/json" })
 		@Description("Get the description of this listener.")
 		public ListenerDescription getDescription(@Context UriInfo ui);
 
@@ -116,8 +129,9 @@ public interface TavernaServerListenersREST {
 		 */
 		@GET
 		@Path("properties")
+		@Produces( { "application/xml", "application/json" })
 		@Description("Get the list of properties supported by a given event listener attached to a workflow run.")
-		public List<String> getProperties();
+		public Properties getProperties();
 
 		/**
 		 * Get an object representing a particular property.
@@ -139,8 +153,6 @@ public interface TavernaServerListenersREST {
 	 * 
 	 * @author Donal Fellows
 	 */
-	@Produces("text/plain")
-	@Consumes("text/plain")
 	@Description("This represents a single property attached of an event listener.")
 	public interface Property {
 		/**
@@ -150,6 +162,8 @@ public interface TavernaServerListenersREST {
 		 * @return The value of the property.
 		 */
 		@GET
+		@Path("/")
+		@Produces("text/plain")
 		@Description("Get the value of the particular property of an event listener attached to a workflow run.")
 		public String getValue();
 
@@ -169,9 +183,105 @@ public interface TavernaServerListenersREST {
 		 *             If the property is in the wrong format.
 		 */
 		@PUT
+		@Path("/")
+		@Consumes("text/plain")
 		@Description("Set the value of the particular property of an event listener attached to a workflow run.")
 		public Response setValue(String value, @Context UriInfo ui)
 				throws NoUpdateException, NoListenerException;
+	}
 
+	/**
+	 * A description of an event listener that is attached to a workflow run.
+	 * 
+	 * @author Donal Fellows
+	 */
+	@XmlRootElement
+	@XmlType(name = "ListenerDescription")
+	public class ListenerDescription {
+		/**
+		 * The (arbitrary) name of the event listener.
+		 */
+		@XmlAttribute
+		public String name;
+		/**
+		 * The type of the event listener.
+		 */
+		@XmlAttribute
+		public String type;
+		/**
+		 * The location of the configuration document for the event listener.
+		 */
+		public Uri configuration;
+		/**
+		 * The name and location of the properties supported by the event listener.
+		 */
+		@XmlElementWrapper(name = "properties", nillable = false)
+		@XmlElement(name = "property", nillable = false)
+		public List<PropertyDescription> properties;
+
+		public ListenerDescription() {
+		}
+
+		public ListenerDescription(String name, String type, String[] properties,
+				UriInfo ui) {
+			this.name = name;
+			this.type = type;
+			this.configuration = new Uri(ui, "{name}/configuration", name);
+			UriBuilder ub = ui.getAbsolutePathBuilder().path(
+					"{name}/properties/{prop}");
+			this.properties = new ArrayList<PropertyDescription>(properties.length);
+			for (String propName : properties)
+				this.properties.add(new PropertyDescription(name, propName, ub));
+		}
+	}
+
+	/**
+	 * The description of a single property.
+	 * 
+	 * @author Donal Fellows
+	 */
+	@XmlType(name = "PropertyDescription")
+	public static class PropertyDescription extends Uri {
+		/**
+		 * The name of the property.
+		 */
+		@XmlAttribute
+		String name;
+
+		public PropertyDescription() {
+		}
+
+		PropertyDescription(String listenerName, String propName, UriBuilder ub) {
+			super(ub, "", listenerName, propName);
+			this.name = propName;
+		}
+	}
+
+	@XmlRootElement
+	@XmlType(name="")
+	public static class Listeners {
+		@XmlElement
+		public List<ListenerDescription> description;
+
+		public Listeners() {
+		}
+
+		public Listeners(List<ListenerDescription> listeners) {
+			description = listeners;
+		}
+	}
+
+	@XmlRootElement
+	@XmlType(name="")
+	public static class Properties {
+		@XmlElement
+		public List<String> name;
+
+		public Properties() {
+		}
+
+		public Properties(String[] properties) {
+			name = Arrays.asList(properties);
+		}
 	}
 }

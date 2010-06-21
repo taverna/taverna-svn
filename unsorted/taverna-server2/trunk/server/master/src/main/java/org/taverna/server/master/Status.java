@@ -1,6 +1,7 @@
 package org.taverna.server.master;
 
 import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * States of a workflow run. They are {@link Status.Initialized Initialized},
@@ -12,6 +13,7 @@ import javax.xml.bind.annotation.XmlEnum;
  * @author Donal Fellows
  */
 @XmlEnum
+@XmlType(name="Status")
 public enum Status {
 	/**
 	 * The workflow run has been created, but is not yet running. The run will

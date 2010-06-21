@@ -15,7 +15,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.cxf.jaxrs.ext.Description;
-import org.taverna.server.master.DirEntryReference;
 import org.taverna.server.master.exceptions.FilesystemAccessException;
 import org.taverna.server.master.exceptions.NoUpdateException;
 import org.taverna.server.master.interfaces.Directory;
@@ -26,8 +25,6 @@ import org.taverna.server.master.interfaces.File;
  * 
  * @author Donal Fellows
  */
-@Path("/")
-@Consumes( { "application/xml", "application/json" })
 @Description("Representation of how a workflow run's working directory tree looks.")
 public interface TavernaServerDirectoryREST {
 	/**
@@ -39,9 +36,10 @@ public interface TavernaServerDirectoryREST {
 	 * @throws FilesystemAccessException
 	 */
 	@GET
+	@Path("/")
 	@Produces( { "application/xml", "application/json" })
 	@Description("Describes the working directory of the workflow run.")
-	public DirEntryReference getDescription(@Context UriInfo ui)
+	public DirectoryContents getDescription(@Context UriInfo ui)
 			throws FilesystemAccessException;
 
 	/**
@@ -58,7 +56,7 @@ public interface TavernaServerDirectoryREST {
 	 *             If something went wrong during the filesystem operation.
 	 */
 	@GET
-	@Path("{path:.*}")
+	@Path("{path:.+}")
 	@Produces( { "application/xml", "application/json",
 			"application/octet-stream" })
 	@Description("Gives a description of the named entity in or beneath the working directory of the workflow run (either a Directory or File).")
@@ -86,6 +84,7 @@ public interface TavernaServerDirectoryREST {
 	 */
 	@POST
 	@Path("{path:.*}")
+	@Consumes( { "application/xml", "application/json" })
 	@Description("Creates a directory in the filesystem beneath the working directory of the workflow run, or creates or updates a file's contents, where that file is in or below the working directory of a workflow run.")
 	public Response makeDirectoryOrUpdateFile(
 			@PathParam("path") List<PathSegment> parent,

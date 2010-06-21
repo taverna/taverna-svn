@@ -6,6 +6,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
 import org.taverna.server.master.interfaces.Input;
@@ -17,6 +18,7 @@ import org.taverna.server.master.interfaces.TavernaRun;
  * @author Donal Fellows
  */
 @XmlRootElement
+@XmlType(name="InputDescription")
 public class InputDescription {
 	/**
 	 * The Baclava file handling the description of the elements. May be
@@ -47,6 +49,7 @@ public class InputDescription {
 	 * 
 	 * @author Donal Fellows
 	 */
+	@XmlType(name="PortDescription")
 	public static class Port {
 		/**
 		 * The name of this port.

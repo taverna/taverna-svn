@@ -6,11 +6,12 @@ import java.util.List;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlType;
 
 import org.taverna.server.master.DirEntryReference;
-import org.taverna.server.master.DirEntryReference.DirectoryReference;
-import org.taverna.server.master.DirEntryReference.FileReference;
 import org.taverna.server.master.interfaces.DirectoryEntry;
 
 /**
@@ -19,23 +20,20 @@ import org.taverna.server.master.interfaces.DirectoryEntry;
  * @author Donal Fellows
  */
 @XmlRootElement
+@XmlType(name="DirectoryContents")
+@XmlSeeAlso(MakeOrUpdateDirEntry.class)
 public class DirectoryContents {
-	public List<DirectoryReference> directory;
-	public List<FileReference> file;
+	@XmlElementRef
+	public List<DirEntryReference> contents;
 
 	public DirectoryContents() {
 	}
 
 	public DirectoryContents(UriInfo ui, Collection<DirectoryEntry> collection) {
-		directory = new ArrayList<DirectoryReference>();
-		file = new ArrayList<FileReference>();
+		contents = new ArrayList<DirEntryReference>();
 		UriBuilder ub = ui.getAbsolutePathBuilder().path("{path}");
 		for (DirectoryEntry e : collection) {
-			DirEntryReference de = DirEntryReference.newInstance(ub, e);
-			if (de instanceof DirectoryReference)
-				directory.add((DirectoryReference) de);
-			else
-				file.add((FileReference) de);
+			contents.add(DirEntryReference.newInstance(ub, e));
 		}
 	}
 }

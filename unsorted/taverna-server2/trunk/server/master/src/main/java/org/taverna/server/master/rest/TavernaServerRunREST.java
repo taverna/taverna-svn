@@ -1,5 +1,10 @@
 package org.taverna.server.master.rest;
 
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -8,22 +13,27 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
 
 import org.apache.cxf.jaxrs.ext.Description;
 import org.taverna.server.master.SCUFL;
+import org.taverna.server.master.Uri;
 import org.taverna.server.master.exceptions.BadStateChangeException;
 import org.taverna.server.master.exceptions.FilesystemAccessException;
 import org.taverna.server.master.exceptions.NoUpdateException;
+import org.taverna.server.master.interfaces.Listener;
+import org.taverna.server.master.interfaces.TavernaRun;
 
 /**
  * This represents how a Taverna Server workflow run looks to a RESTful API.
  * 
  * @author Donal Fellows.
  */
-@Path("/")
-@Produces( { "application/xml", "application/json" })
-@Consumes( { "application/xml", "application/json" })
 @Description("This represents how a Taverna Server workflow run looks to a RESTful API.")
 public interface TavernaServerRunREST {
 	/**
@@ -34,7 +44,9 @@ public interface TavernaServerRunREST {
 	 * @return The description.
 	 */
 	@GET
+	@Path("/")
 	@Description("Describes a workflow run.")
+	@Produces( { "application/xml", "application/json" })
 	public RunDescription getDescription(@Context UriInfo ui);
 
 	/**
@@ -47,6 +59,7 @@ public interface TavernaServerRunREST {
 	 *             If the user may see the handle but may not delete it.
 	 */
 	@DELETE
+	@Path("/")
 	@Description("Deletes a workflow run.")
 	public Response destroy(@Context UriInfo ui) throws NoUpdateException;
 
@@ -57,6 +70,7 @@ public interface TavernaServerRunREST {
 	 */
 	@GET
 	@Path("workflow")
+	@Produces( { "application/xml", "application/json" })
 	@Description("Gives the workflow document used to create the workflow run.")
 	public SCUFL getWorkflow();
 
@@ -68,6 +82,7 @@ public interface TavernaServerRunREST {
 	 */
 	@GET
 	@Path("expiry")
+	@Produces("text/plain")
 	@Description("Gives the time when the workflow run becomes eligible for automatic deletion.")
 	public String getExpiry();
 
@@ -86,6 +101,7 @@ public interface TavernaServerRunREST {
 	 */
 	@PUT
 	@Path("expiry")
+	@Consumes("text/plain")
 	@Description("Sets the time when the workflow run becomes eligible for automatic deletion.")
 	public Response setExpiry(String expiry, @Context UriInfo ui)
 			throws NoUpdateException;
@@ -195,4 +211,60 @@ public interface TavernaServerRunREST {
 	public Response setOutputFile(String filename, @Context UriInfo ui)
 			throws NoUpdateException, FilesystemAccessException,
 			BadStateChangeException;
+
+	@XmlRootElement
+	@XmlType(name="")
+	public static class RunDescription {
+		public Expiry expiry;
+		public Uri creationWorkflow, status, workingDirectory,
+				securityContext;
+		public ListenerList listeners;
+
+		@XmlType(name="")
+		public static class Expiry {
+			@XmlAttribute(name = "href", namespace = "http://www.w3.org/1999/xlink")
+			public URI ref;
+			@XmlValue
+			public Date timeOfDeath;
+
+			public Expiry() {
+			}
+
+			Expiry(TavernaRun r, UriBuilder ub) {
+				ref = ub.build();
+				this.timeOfDeath = r.getExpiry();
+			}
+		}
+
+		@XmlType(name="")
+		public static class ListenerList extends Uri {
+			List<Uri> listener;
+
+			public ListenerList() {
+			}
+
+			ListenerList(TavernaRun r, UriBuilder ub) {
+				super(ub);
+				listener = new ArrayList<Uri>(r.getListeners()
+						.size());
+				for (Listener l : r.getListeners()) {
+					listener.add(new Uri(ub.path("{name}"), l
+							.getName()));
+				}
+			}
+		}
+
+		public RunDescription() {
+		}
+
+		public RunDescription(TavernaRun r, UriInfo ui) {
+			UriBuilder ub = ui.getAbsolutePathBuilder();
+			creationWorkflow = new Uri(ui, "workflow");
+			expiry = new Expiry(r, ub.path("expiry"));
+			status = new Uri(ui, "status");
+			workingDirectory = new Uri(ui, "wd");
+			listeners = new ListenerList(r, ub.path("listeners"));
+			securityContext = new Uri(ui, "owner");
+		}
+	}
 }
