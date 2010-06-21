@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlValue;
  * 
  * @author Donal Fellows
  */
+@XmlRootElement(name="fileysstemOperation")
 @XmlType(name="FilesystemCreationOperation")
 @XmlSeeAlso( { MakeOrUpdateDirEntry.MakeDirectory.class,
 		MakeOrUpdateDirEntry.SetFileContents.class })

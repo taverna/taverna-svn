@@ -25,6 +25,8 @@ import org.taverna.server.master.interfaces.File;
  * 
  * @author Donal Fellows
  */
+@Produces( { "application/xml", "application/json" })
+@Consumes( { "application/xml", "application/json" })
 @Description("Representation of how a workflow run's working directory tree looks.")
 public interface TavernaServerDirectoryREST {
 	/**
@@ -37,7 +39,6 @@ public interface TavernaServerDirectoryREST {
 	 */
 	@GET
 	@Path("/")
-	@Produces( { "application/xml", "application/json" })
 	@Description("Describes the working directory of the workflow run.")
 	public DirectoryContents getDescription(@Context UriInfo ui)
 			throws FilesystemAccessException;
@@ -84,7 +85,6 @@ public interface TavernaServerDirectoryREST {
 	 */
 	@POST
 	@Path("{path:.*}")
-	@Consumes( { "application/xml", "application/json" })
 	@Description("Creates a directory in the filesystem beneath the working directory of the workflow run, or creates or updates a file's contents, where that file is in or below the working directory of a workflow run.")
 	public Response makeDirectoryOrUpdateFile(
 			@PathParam("path") List<PathSegment> parent,
