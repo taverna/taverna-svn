@@ -2,7 +2,7 @@ package org.taverna.server.master.factories;
 
 import java.security.Principal;
 
-import org.taverna.server.master.SCUFL;
+import org.taverna.server.master.common.SCUFL;
 import org.taverna.server.master.exceptions.NoCreateException;
 import org.taverna.server.master.interfaces.TavernaRun;
 

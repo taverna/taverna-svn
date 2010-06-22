@@ -1,4 +1,4 @@
-package org.taverna.server.master;
+package org.taverna.server.master.common;
 
 import java.net.URI;
 

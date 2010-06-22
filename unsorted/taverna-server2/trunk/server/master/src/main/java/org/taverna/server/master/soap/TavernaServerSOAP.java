@@ -1,4 +1,4 @@
-package org.taverna.server.master;
+package org.taverna.server.master.soap;
 
 import java.util.Date;
 
@@ -7,6 +7,11 @@ import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 
+import org.taverna.server.master.common.DirEntryReference;
+import org.taverna.server.master.common.InputDescription;
+import org.taverna.server.master.common.RunReference;
+import org.taverna.server.master.common.SCUFL;
+import org.taverna.server.master.common.Status;
 import org.taverna.server.master.exceptions.BadPropertyValueException;
 import org.taverna.server.master.exceptions.BadStateChangeException;
 import org.taverna.server.master.exceptions.FilesystemAccessException;

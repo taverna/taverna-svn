@@ -1,4 +1,4 @@
-package org.taverna.server.master;
+package org.taverna.server.master.common;
 
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlRootElement;

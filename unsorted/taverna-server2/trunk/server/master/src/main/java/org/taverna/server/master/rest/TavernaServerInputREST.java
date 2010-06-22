@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
 import org.apache.cxf.jaxrs.ext.Description;
-import org.taverna.server.master.Uri;
+import org.taverna.server.master.common.Uri;
 import org.taverna.server.master.exceptions.BadPropertyValueException;
 import org.taverna.server.master.exceptions.BadStateChangeException;
 import org.taverna.server.master.exceptions.FilesystemAccessException;

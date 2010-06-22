@@ -12,6 +12,12 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.taverna.server.master.common.DirEntryReference;
+import org.taverna.server.master.common.InputDescription;
+import org.taverna.server.master.common.RunReference;
+import org.taverna.server.master.common.SCUFL;
+import org.taverna.server.master.common.Status;
+import org.taverna.server.master.common.Uri;
 import org.taverna.server.master.rest.DirectoryContents;
 import org.taverna.server.master.rest.ListenerDefinition;
 import org.taverna.server.master.rest.MakeOrUpdateDirEntry;

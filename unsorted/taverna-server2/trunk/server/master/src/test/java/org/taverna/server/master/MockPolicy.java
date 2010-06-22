@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.taverna.server.master.common.SCUFL;
 import org.taverna.server.master.exceptions.NoCreateException;
 import org.taverna.server.master.exceptions.NoDestroyException;
 import org.taverna.server.master.exceptions.NoUpdateException;

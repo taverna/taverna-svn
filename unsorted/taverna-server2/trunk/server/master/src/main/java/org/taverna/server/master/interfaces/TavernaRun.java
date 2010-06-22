@@ -3,8 +3,8 @@ package org.taverna.server.master.interfaces;
 import java.util.Date;
 import java.util.List;
 
-import org.taverna.server.master.SCUFL;
-import org.taverna.server.master.Status;
+import org.taverna.server.master.common.SCUFL;
+import org.taverna.server.master.common.Status;
 import org.taverna.server.master.exceptions.BadStateChangeException;
 import org.taverna.server.master.exceptions.FilesystemAccessException;
 import org.taverna.server.master.exceptions.NoDestroyException;

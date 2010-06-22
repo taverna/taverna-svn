@@ -6,7 +6,7 @@ import static java.util.UUID.randomUUID;
 import static javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM_TYPE;
 import static javax.ws.rs.core.Response.seeOther;
 import static javax.ws.rs.core.Response.temporaryRedirect;
-import static org.taverna.server.master.DirEntryReference.newInstance;
+import static org.taverna.server.master.common.DirEntryReference.newInstance;
 
 import java.io.StringWriter;
 import java.security.Principal;
@@ -34,6 +34,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
+import org.taverna.server.master.common.DirEntryReference;
+import org.taverna.server.master.common.InputDescription;
+import org.taverna.server.master.common.RunReference;
+import org.taverna.server.master.common.SCUFL;
+import org.taverna.server.master.common.Status;
 import org.taverna.server.master.exceptions.BadPropertyValueException;
 import org.taverna.server.master.exceptions.BadStateChangeException;
 import org.taverna.server.master.exceptions.FilesystemAccessException;
@@ -63,6 +68,7 @@ import org.taverna.server.master.rest.MakeOrUpdateDirEntry.MakeDirectory;
 import org.taverna.server.master.rest.TavernaServerInputREST.InDesc.AbstractContents;
 import org.taverna.server.master.rest.TavernaServerListenersREST.ListenerDescription;
 import org.taverna.server.master.rest.TavernaServerListenersREST.TavernaServerListenerREST;
+import org.taverna.server.master.soap.TavernaServerSOAP;
 
 @Path("/rest")
 @WebService(endpointInterface = "org.taverna.server.master.TavernaServerSOAP", serviceName = "TavernaServer")

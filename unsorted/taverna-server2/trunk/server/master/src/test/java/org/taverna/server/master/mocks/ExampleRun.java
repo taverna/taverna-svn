@@ -2,7 +2,7 @@ package org.taverna.server.master.mocks;
 
 import static java.util.Calendar.MINUTE;
 import static java.util.Collections.unmodifiableList;
-import static org.taverna.server.master.Status.Initialized;
+import static org.taverna.server.master.common.Status.Initialized;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -12,8 +12,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.taverna.server.master.SCUFL;
-import org.taverna.server.master.Status;
+import org.taverna.server.master.common.SCUFL;
+import org.taverna.server.master.common.Status;
 import org.taverna.server.master.exceptions.BadStateChangeException;
 import org.taverna.server.master.exceptions.FilesystemAccessException;
 import org.taverna.server.master.exceptions.NoListenerException;

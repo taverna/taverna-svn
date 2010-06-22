@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
-import org.taverna.server.master.DirEntryReference;
+import org.taverna.server.master.common.DirEntryReference;
 import org.taverna.server.master.interfaces.DirectoryEntry;
 
 /**

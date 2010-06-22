@@ -19,12 +19,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.cxf.jaxrs.ext.Description;
-import org.taverna.server.master.SCUFL;
-import org.taverna.server.master.TavernaServerSOAP;
-import org.taverna.server.master.Uri;
+import org.taverna.server.master.common.SCUFL;
+import org.taverna.server.master.common.Uri;
 import org.taverna.server.master.exceptions.NoUpdateException;
 import org.taverna.server.master.exceptions.UnknownRunException;
 import org.taverna.server.master.interfaces.TavernaRun;
+import org.taverna.server.master.soap.TavernaServerSOAP;
 
 /**
  * The REST service interface to Taverna Server version 2.3.

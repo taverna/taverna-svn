@@ -1,4 +1,4 @@
-package org.taverna.server.master;
+package org.taverna.server.master.common;
 
 import java.net.URI;
 
@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
+
 
 /**
  * A reference to a single workflow run, described using JAXB.
@@ -33,7 +34,7 @@ public class RunReference {
 	public RunReference() {
 	}
 
-	RunReference(String name, UriBuilder ub) {
+	public RunReference(String name, UriBuilder ub) {
 		this.name = name;
 		this.link = ub.build(name);
 	}

@@ -26,7 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.taverna.server.localworker.remote.RemoteSingleRun;
-import org.taverna.server.master.SCUFL;
+import org.taverna.server.master.common.SCUFL;
 import org.taverna.server.master.exceptions.NoCreateException;
 import org.taverna.server.master.exceptions.NoDestroyException;
 import org.taverna.server.master.exceptions.NoListenerException;

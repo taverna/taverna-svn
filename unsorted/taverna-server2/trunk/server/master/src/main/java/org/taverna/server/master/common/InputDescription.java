@@ -1,4 +1,4 @@
-package org.taverna.server.master;
+package org.taverna.server.master.common;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ import org.taverna.server.master.interfaces.TavernaRun;
  * @author Donal Fellows
  */
 @XmlRootElement
-@XmlType(name="InputDescription")
+@XmlType(name = "InputDescription")
 public class InputDescription {
 	/**
 	 * The Baclava file handling the description of the elements. May be
@@ -29,19 +29,17 @@ public class InputDescription {
 	/**
 	 * The port/value assignment.
 	 */
-	public List<Port> port;
+	@XmlElement(nillable = false)
+	public List<Port> port = new ArrayList<Port>();
 
 	public InputDescription() {
 	}
 
-	InputDescription(TavernaRun r) {
+	public InputDescription(TavernaRun r) {
 		baclavaFile = r.getInputBaclavaFile();
-		if (baclavaFile == null) {
-			List<Input> is = r.getInputs();
-			port = new ArrayList<Port>(is.size());
-			for (Input i : is)
+		if (baclavaFile == null)
+			for (Input i : r.getInputs())
 				port.add(new Port(i));
-		}
 	}
 
 	/**
@@ -49,7 +47,7 @@ public class InputDescription {
 	 * 
 	 * @author Donal Fellows
 	 */
-	@XmlType(name="PortDescription")
+	@XmlType(name = "PortDescription")
 	public static class Port {
 		/**
 		 * The name of this port.
@@ -59,7 +57,7 @@ public class InputDescription {
 		/**
 		 * The file assigned to this port.
 		 */
-		@XmlAttribute
+		@XmlAttribute(required = false)
 		public String file;
 		/**
 		 * The value assigned to this port.
@@ -70,7 +68,7 @@ public class InputDescription {
 		public Port() {
 		}
 
-		Port(Input i) {
+		public Port(Input i) {
 			name = i.getName();
 			if (i.getFile() != null) {
 				file = i.getFile();
