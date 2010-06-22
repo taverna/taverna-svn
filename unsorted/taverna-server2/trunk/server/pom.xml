@@ -73,6 +73,33 @@
 					<nohelp>true</nohelp>
 					<detectLinks>true</detectLinks>
 					<linksource>true</linksource>
+					<stylesheet>maven</stylesheet>
+					<groups>
+						<group>
+							<title>Server Core WebService</title>
+							<packages>org.taverna.server.master:org.taverna.server.master.common:org.taverna.server.master.rest:org.taverna.server.master.soap</packages>
+						</group>
+						<group>
+							<title>Server SPI</title>
+							<packages>org.taverna.server.master.exceptions:org.taverna.server.master.factories:org.taverna.server.master.interfaces</packages>
+						</group>
+						<group>
+							<title>Server Coupling to RMI Back End</title>
+							<packages>org.taverna.server.master.localworker</packages>
+						</group>
+						<group>
+							<title>Mocked Implementations for Testing</title>
+							<packages>org.taverna.server.master.mocks</packages>
+						</group>
+						<group>
+							<title>Server RMI Interface to Back End</title>
+							<packages>org.taverna.server.localworker.remote</packages>
+						</group>
+						<group>
+							<title>Server Back End Factory Coupling to Command Line Executor</title>
+							<packages>org.taverna.server.localworker.impl</packages>
+						</group>
+					</groups>
 				</configuration>
 			</plugin>
 		</plugins>
