@@ -6,11 +6,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.taverna.server.master.example.SimpleServerPolicy;
 import org.taverna.server.master.exceptions.NoCreateException;
 import org.taverna.server.master.exceptions.NoDestroyException;
 import org.taverna.server.master.exceptions.NoUpdateException;
 import org.taverna.server.master.interfaces.TavernaRun;
+import org.taverna.server.master.mocks.SimpleServerPolicy;
 
 class MockPolicy extends SimpleServerPolicy {
 	MockPolicy() {

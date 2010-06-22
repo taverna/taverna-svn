@@ -1,4 +1,4 @@
-package org.taverna.server.master.example;
+package org.taverna.server.master.mocks;
 
 import java.util.ArrayList;
 import java.util.HashMap;

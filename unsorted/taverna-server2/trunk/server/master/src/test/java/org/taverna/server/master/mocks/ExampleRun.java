@@ -1,4 +1,4 @@
-package org.taverna.server.master.example;
+package org.taverna.server.master.mocks;
 
 import static java.util.Calendar.MINUTE;
 import static java.util.Collections.unmodifiableList;

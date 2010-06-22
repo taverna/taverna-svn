@@ -163,7 +163,7 @@ public class JaxbSanityTest {
 		assertTrue(true);
 	}
 
-	/* This test doesn't work. */
+	/* This test doesn't work. Not sure if it _should_ work either. */
 //	@Test
 //	public void testJAXBForEverythingAtOnce() throws Exception {
 //		JAXBContext c = JAXBContext.newInstance(DirEntryReference.class,

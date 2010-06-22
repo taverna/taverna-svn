@@ -1,4 +1,4 @@
-package org.taverna.server.master.example;
+package org.taverna.server.master.mocks;
 
 import java.lang.ref.WeakReference;
 import java.security.Principal;

@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="policy" class="org.taverna.server.master.example.SimpleServerPolicy"
+	<bean id="policy" class="org.taverna.server.master.mocks.SimpleServerPolicy"
 		lazy-init="false" scope="singleton">
 		<property name="maxRuns" value="1">
 			<description>
@@ -17,16 +17,16 @@
 		</property>
 	</bean>
 
-	<bean id="runFactory" class="org.taverna.server.master.example.ExampleRun$Builder">
+	<bean id="runFactory" class="org.taverna.server.master.mocks.ExampleRun$Builder">
 		<constructor-arg type="int" value="10" /> <!-- "initialLifetimeMinutes" -->
 	</bean>
 
 	<bean id="runCatalog" scope="singleton"
-		class="org.taverna.server.master.example.SimpleNonpersistentRunStore">
+		class="org.taverna.server.master.mocks.SimpleNonpersistentRunStore">
 		<property name="policy" ref="policy" />
 	</bean>
 
-	<bean id="listenerFactory" class="org.taverna.server.master.example.SimpleListenerFactory">
+	<bean id="listenerFactory" class="org.taverna.server.master.mocks.SimpleListenerFactory">
 		<property name="builders">
 			<description>
 				This map describes how to build each type of supported

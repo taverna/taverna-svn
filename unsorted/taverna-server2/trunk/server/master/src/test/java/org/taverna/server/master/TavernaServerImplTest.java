@@ -7,15 +7,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
-import org.taverna.server.master.example.ExampleRun;
-import org.taverna.server.master.example.SimpleListenerFactory;
-import org.taverna.server.master.example.SimpleNonpersistentRunStore;
 import org.taverna.server.master.exceptions.BadPropertyValueException;
 import org.taverna.server.master.exceptions.NoListenerException;
 import org.taverna.server.master.exceptions.NoUpdateException;
 import org.taverna.server.master.exceptions.UnknownRunException;
 import org.taverna.server.master.interfaces.Listener;
 import org.taverna.server.master.interfaces.TavernaRun;
+import org.taverna.server.master.mocks.ExampleRun;
+import org.taverna.server.master.mocks.SimpleListenerFactory;
+import org.taverna.server.master.mocks.SimpleNonpersistentRunStore;
 
 public class TavernaServerImplTest {
 	private TavernaServerImpl server;
