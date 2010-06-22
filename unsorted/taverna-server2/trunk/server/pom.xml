@@ -62,6 +62,21 @@
 	</ciManagement>
 	<repositories>
 	</repositories>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.7</version>
+				<configuration>
+					<show>private</show>
+					<nohelp>true</nohelp>
+					<detectLinks>true</detectLinks>
+					<linksource>true</linksource>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
 
 	<modules>
 		<module>master</module>
