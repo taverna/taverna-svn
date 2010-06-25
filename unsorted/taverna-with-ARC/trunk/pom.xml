@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<description>net.sf.taverna.t2.taverna-workbench</description>
 	<parent>
@@ -10,15 +11,18 @@
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>taverna-workbench</artifactId>
 	<version>2.3-beta-3-SNAPSHOT</version>
-	<!-- update this file from /taverna/products/net.sf.taverna.t2.taverna-workbench/trunk/pom.xml -->
+	<!--
+		update this file from
+		/taverna/products/net.sf.taverna.t2.taverna-workbench/trunk/pom.xml
+	-->
 	<packaging>pom</packaging>
 	<name>Taverna workbench application with integrated ARC plugin</name>
 	<properties>
 		<t2.taverna.workbench.version>${project.version}</t2.taverna.workbench.version>
-		<t2.infrastructure.version>2.1-SNAPSHOT</t2.infrastructure.version>                
+		<t2.infrastructure.version>2.1-SNAPSHOT</t2.infrastructure.version>
 		<t2.core.version>1.3-SNAPSHOT</t2.core.version>
 		<t2.activities.version>1.3-SNAPSHOT</t2.activities.version>
-                <t2.compatibility.translators.version>1.3-SNAPSHOT</t2.compatibility.translators.version>
+		<t2.compatibility.translators.version>1.3-SNAPSHOT</t2.compatibility.translators.version>
 		<t2.ui.api.version>1.3-SNAPSHOT</t2.ui.api.version>
 		<t2.ui.impl.version>1.3-SNAPSHOT</t2.ui.impl.version>
 		<t2.ui.components.version>1.3-SNAPSHOT</t2.ui.components.version>
@@ -29,7 +33,7 @@
 		<t2.taverna-commandline.version>1.3-SNAPSHOT</t2.taverna-commandline.version>
 		<taverna.version>1.7.2.2</taverna.version>
 	</properties>
-	<repositories>		
+	<repositories>
 		<repository>
 			<releases />
 			<snapshots>
@@ -47,7 +51,7 @@
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-		</repository>		
+		</repository>
 		<repository>
 			<id>biomoby</id>
 			<url>http://biomoby.org/m2repo</url>

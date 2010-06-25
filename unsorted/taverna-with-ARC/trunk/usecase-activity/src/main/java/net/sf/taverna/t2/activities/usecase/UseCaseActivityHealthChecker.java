@@ -51,6 +51,8 @@ public class UseCaseActivityHealthChecker implements HealthChecker<UseCaseActivi
 		// contains the needed use case
 		reports.add(checkRepository(activity, configuration));
 		reports.add(checkUsecase(activity, configuration));
+		reports.add(checkQueuePresent(activity, configuration));
+		reports.add(checkCertificateNotExpired(activity, configuration));
 
 		Status status = getWorstStatus(reports);
 		VisitReport report = new VisitReport(HealthCheck.getInstance(), activity, "Janitor Use Case Activity", HealthCheck.NO_PROBLEM, status, reports);
@@ -71,7 +73,10 @@ public class UseCaseActivityHealthChecker implements HealthChecker<UseCaseActivi
 				Status.OK);
 	}
 
+	private UseCaseDescription useCaseDescription;
+
 	private VisitReport checkUsecase(UseCaseActivity activity, UseCaseActivityConfigurationBean configuration) {
+		useCaseDescription = null;
 		// get a list of use cases from the repository XML file
 		List<UseCaseDescription> usecases = UseCaseEnumeration.enumerateXmlFile(new ProgressDisplayImpl(KnowARCConfigurationFactory.getConfiguration()),
 				configuration.getRepositoryUrl());
@@ -79,12 +84,29 @@ public class UseCaseActivityHealthChecker implements HealthChecker<UseCaseActivi
 		for (UseCaseDescription usecase : usecases) {
 			if (!usecase.usecaseid.equalsIgnoreCase(configuration.getUsecaseid()))
 				continue;
+
+			useCaseDescription = usecase;
 			return new VisitReport(HealthCheck.getInstance(), activity, "Usecase " + configuration.getUsecaseid() + " was found.", HealthCheck.NO_PROBLEM,
 					Status.OK);
 		}
 
 		return new VisitReport(HealthCheck.getInstance(), activity, "Could not find usecase: " + configuration.getUsecaseid(),
 				HealthCheck.INVALID_CONFIGURATION, Status.SEVERE);
+	}
+
+	private VisitReport checkQueuePresent(UseCaseActivity activity, UseCaseActivityConfigurationBean configuration) {
+		final ArrayList<String> compatibleQueues = KnowARCConfigurationFactory.getConfiguration().info.getCompatibleQueuesForREs(useCaseDescription.REs);
+
+		final int queueCount = compatibleQueues.size();
+		final boolean ok = queueCount > 0;
+		return new VisitReport(HealthCheck.getInstance(), activity, "Found " + queueCount + " compatible queues.", ok ? HealthCheck.NO_PROBLEM
+				: HealthCheck.NO_ENDPOINTS, ok ? Status.OK : Status.SEVERE);
+	}
+
+	private VisitReport checkCertificateNotExpired(UseCaseActivity activity, UseCaseActivityConfigurationBean configuration) {
+		final boolean ok = KnowARCConfigurationFactory.getConfiguration().info.getCertificateData().getTimeLeft() > 10;
+		return new VisitReport(HealthCheck.getInstance(), activity, "Certificate " + (ok ? "is fine." : "has expired."), ok ? HealthCheck.NO_PROBLEM
+				: HealthCheck.INVALID_CONFIGURATION, ok ? Status.OK : Status.SEVERE);
 	}
 
 	private Status getWorstStatus(List<VisitReport> reports) {
@@ -99,7 +121,7 @@ public class UseCaseActivityHealthChecker implements HealthChecker<UseCaseActivi
 	}
 
 	public boolean isTimeConsuming() {
-		return false;
+		return true;
 	}
 
 }
