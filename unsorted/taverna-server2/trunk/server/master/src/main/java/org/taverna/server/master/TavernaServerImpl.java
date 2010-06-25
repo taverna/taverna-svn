@@ -71,7 +71,7 @@ import org.taverna.server.master.rest.TavernaServerListenersREST.TavernaServerLi
 import org.taverna.server.master.soap.TavernaServerSOAP;
 
 @Path("/rest")
-@WebService(endpointInterface = "org.taverna.server.master.TavernaServerSOAP", serviceName = "TavernaServer")
+@WebService(endpointInterface = "org.taverna.server.master.TavernaServerSOAP", serviceName = "TavernaServer", targetNamespace = "http://www.taverna.org.uk/v2/")
 @ManagedResource(objectName = "Taverna:group=Server,name=Webapp", description = "The main web-application interface to Taverna Server.")
 public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	/**
