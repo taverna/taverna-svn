@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!--
+		Import sub-components to create the plug-in manager, referenceservice
+		and other lower level infrastructure components, also imports the
+		platform basic profile which, amongst other things, defines to use the
+		platform.properties file from the classpath to get the platform's on
+		disk storage location
+	-->
+	<import resource="context-parts/platform-basic-profile.xml" />
+	<import resource="context-parts/raven_local.xml" />
+	<import resource="context-parts/componentservices.xml" />
+	<import resource="context-parts/referenceservice.xml" />
+
+</beans>
