@@ -6,7 +6,31 @@ workbench-distro/src/main/assembly/release-assembly.xml
 
 to remove the finalName property line.
 
-After mvn install, a fully runnable Taverna 2.1-SNAPSHOT should be present in workbench-distro/target
+If a direct mvn install does not work, try:
+
+cd plugins/activities-plugin/
+#this will fail:
+mvn clean install
+cd ../..
+
+cd usecase-activity
+mvn clean install
+cd ..
+
+cd usecase-activity-ui
+mvn clean install
+cd ..
+
+cd plugins/activities-plugin/
+#should work now :)
+mvn clean install
+cd ../..
+
+#and finally ..
+mvn clean install
+
+
+After mvn install, a fully runnable Taverna SNAPSHOT should be present in workbench-distro/target
 When running it, you will surely notice the new UseCase service provider which is being added by usecase-activity and usecase-activity-ui.
 
 If maven complains about missing POMs when trying to install, run mvn install inside the folder workbench-dist.

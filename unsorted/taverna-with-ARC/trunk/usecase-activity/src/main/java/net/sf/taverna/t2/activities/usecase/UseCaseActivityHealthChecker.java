@@ -24,13 +24,13 @@ package net.sf.taverna.t2.activities.usecase;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.taverna.t2.visit.VisitReport;
+import net.sf.taverna.t2.visit.VisitReport.Status;
+import net.sf.taverna.t2.workflowmodel.health.HealthCheck;
+import net.sf.taverna.t2.workflowmodel.health.HealthChecker;
 import de.uni_luebeck.inb.knowarc.gui.ProgressDisplayImpl;
 import de.uni_luebeck.inb.knowarc.usecases.UseCaseDescription;
 import de.uni_luebeck.inb.knowarc.usecases.UseCaseEnumeration;
-
-import net.sf.taverna.t2.workflowmodel.health.HealthChecker;
-import net.sf.taverna.t2.workflowmodel.health.HealthReport;
-import net.sf.taverna.t2.workflowmodel.health.HealthReport.Status;
 
 /**
  * Investigates if everything is going fine with a job
@@ -39,38 +39,39 @@ import net.sf.taverna.t2.workflowmodel.health.HealthReport.Status;
  */
 public class UseCaseActivityHealthChecker implements HealthChecker<UseCaseActivity> {
 
-	public boolean canHandle(Object subject) {
+	public boolean canVisit(Object subject) {
 		return subject != null && subject instanceof UseCaseActivity;
 	}
 
-	public HealthReport checkHealth(UseCaseActivity activity) {
+	public VisitReport visit(UseCaseActivity activity, List<Object> ancestry) {
 		UseCaseActivityConfigurationBean configuration = activity.getConfiguration();
-		List<HealthReport> reports = new ArrayList<HealthReport>();
+		List<VisitReport> reports = new ArrayList<VisitReport>();
 
 		// currently a use case is doing fine if the repository is fine and
 		// contains the needed use case
-		reports.add(checkRepository(configuration));
-		reports.add(checkUsecase(configuration));
+		reports.add(checkRepository(activity, configuration));
+		reports.add(checkUsecase(activity, configuration));
 
-		Status status = highestStatus(reports);
-		HealthReport report = new HealthReport("Janitor Use Case Activity", "", status, reports);
+		Status status = getWorstStatus(reports);
+		VisitReport report = new VisitReport(HealthCheck.getInstance(), activity, "Janitor Use Case Activity", HealthCheck.NO_PROBLEM, status, reports);
 
 		return report;
 	}
 
-	private HealthReport checkRepository(UseCaseActivityConfigurationBean configuration) {
+	private VisitReport checkRepository(UseCaseActivity activity, UseCaseActivityConfigurationBean configuration) {
 		try {
 			// try to parse the use case repository XML file
 			UseCaseEnumeration.enumerateXmlInner(new ProgressDisplayImpl(KnowARCConfigurationFactory.getConfiguration()), configuration.getRepositoryUrl(),
 					new ArrayList<UseCaseDescription>());
 		} catch (Throwable e) {
-			return new HealthReport("checkRepository", "Could not enumerate repository \"" + configuration.getRepositoryUrl() + "\" due to error: "
-					+ e.toString(), Status.SEVERE);
+			return new VisitReport(HealthCheck.getInstance(), activity, "Could not enumerate repository \"" + configuration.getRepositoryUrl()
+					+ "\" due to error: " + e.toString(), HealthCheck.INVALID_URL, Status.SEVERE);
 		}
-		return new HealthReport("checkRepository", "Repository is fine: " + configuration.getRepositoryUrl(), Status.OK);
+		return new VisitReport(HealthCheck.getInstance(), activity, "Repository is fine: " + configuration.getRepositoryUrl(), HealthCheck.NO_PROBLEM,
+				Status.OK);
 	}
 
-	private HealthReport checkUsecase(UseCaseActivityConfigurationBean configuration) {
+	private VisitReport checkUsecase(UseCaseActivity activity, UseCaseActivityConfigurationBean configuration) {
 		// get a list of use cases from the repository XML file
 		List<UseCaseDescription> usecases = UseCaseEnumeration.enumerateXmlFile(new ProgressDisplayImpl(KnowARCConfigurationFactory.getConfiguration()),
 				configuration.getRepositoryUrl());
@@ -78,21 +79,27 @@ public class UseCaseActivityHealthChecker implements HealthChecker<UseCaseActivi
 		for (UseCaseDescription usecase : usecases) {
 			if (!usecase.usecaseid.equalsIgnoreCase(configuration.getUsecaseid()))
 				continue;
-			return new HealthReport("checkUsecase", "Usecase " + configuration.getUsecaseid() + " was found.", Status.OK);
+			return new VisitReport(HealthCheck.getInstance(), activity, "Usecase " + configuration.getUsecaseid() + " was found.", HealthCheck.NO_PROBLEM,
+					Status.OK);
 		}
 
-		return new HealthReport("checkUsecase", "Could not find usecase: " + configuration.getUsecaseid(), Status.SEVERE);
+		return new VisitReport(HealthCheck.getInstance(), activity, "Could not find usecase: " + configuration.getUsecaseid(),
+				HealthCheck.INVALID_CONFIGURATION, Status.SEVERE);
 	}
 
-	private Status highestStatus(List<HealthReport> reports) {
+	private Status getWorstStatus(List<VisitReport> reports) {
 		Status status = Status.OK;
-		for (HealthReport report : reports) {
+		for (VisitReport report : reports) {
 			if (report.getStatus().equals(Status.WARNING) && status.equals(Status.OK))
 				status = report.getStatus();
 			if (report.getStatus().equals(Status.SEVERE))
 				status = Status.SEVERE;
 		}
 		return status;
+	}
+
+	public boolean isTimeConsuming() {
+		return false;
 	}
 
 }
