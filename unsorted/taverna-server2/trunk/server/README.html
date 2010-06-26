@@ -77,7 +77,7 @@ permission to deploy webapps (i.e., the "<tt>manager</tt>" role).</p>
 you are going to install the server, updating the bold part to say where
 your Taverna's <tt>executeworkflow.sh</tt> script is located. This is
 currently the <em>only</em> required configuration step.</p>
-<blockquote><pre>&lt;Context path="/taverna2"&gt;
+<blockquote><pre>&lt;Context path="/taverna-server"&gt;
   &lt;Parameter name="executeWorkflowScript" override="false"
          value="<b>/usr/local/taverna-2.2/executeworkflow.sh</b>"/&gt;
 &lt;/Context&gt;</pre></blockquote>
@@ -95,7 +95,7 @@ go to the Deploy box. Fill in with:</p>
 	</tr>
 	<tr>
 		<td>Context Path (required):</td>
-		<td><tt>/taverna2</tt></td>
+		<td><tt>/taverna-server</tt></td>
 	</tr>
 	<tr>
 		<td>XML Configuration file URL:</td>
@@ -109,20 +109,20 @@ go to the Deploy box. Fill in with:</p>
 </blockquote>
 <p>Press the Deploy button; after a few seconds, Tomcat should
 respond with OK (at the top of the reloaded page) and you'll have the
-taverna2 webapp installed at <tt>http://&lt;SERVER:PORT&gt;/taverna2</tt>.</p>
+taverna-server webapp installed at <tt>http://&lt;SERVER:PORT&gt;/taverna-server</tt>.</p>
 </div>
 <div title="Usage">
 <h2>Using the T2 Server</h2>
 <p>The Taverna 2 Server supports both REST and SOAP APIs; you may
 use either API to access the service and any of the workflow runs hosted
-by the service. The full service descriptions are available at <tt>http://<b>&lt;SERVER:PORT&gt;</b>/taverna2/services</tt>
+by the service. The full service descriptions are available at <tt>http://<b>&lt;SERVER:PORT&gt;</b>/taverna-server/services</tt>
 but to illustrate their use, here's a sample execution using the REST
 API.</p>
 <ol>
 	<li>
 	<p>The client starts by creating a workflow run. This is done by
 	POSTing a wrapped T2flow or SCUFL2 document to the service at the
-	address <tt>http://<b>&lt;SERVER:PORT&gt;</b>/taverna2/rest/runs</tt></p>
+	address <tt>http://<b>&lt;SERVER:PORT&gt;</b>/taverna-server/rest/runs</tt></p>
 	<p>The wrapping of the submitted document is a single XML element,
 	<code>scufl</code> in the namespace <code>http://ns.taverna.org.uk/2010/xml/server/</code>,
 	and the workflow (as saved by the Taverna Workbench) is the child

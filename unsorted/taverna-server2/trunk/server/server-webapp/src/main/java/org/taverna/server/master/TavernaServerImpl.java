@@ -82,7 +82,7 @@ import org.taverna.server.master.soap.TavernaServerSOAP;
 public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	/** The logger for the server framework. */
 	public static Log log = LogFactory.getLog(TavernaServerImpl.class);
-	private static final String REST_BASE = "/taverna2/rest";
+	private static final String REST_BASE = "/taverna-server/rest";
 	static int invokes;
 	private JAXBContext scuflSerializer;
 	/**
