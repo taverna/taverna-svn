@@ -1,5 +1,7 @@
 package org.taverna.server.master.common;
 
+import static org.taverna.server.master.common.Namespaces.XLINK;
+
 import java.net.URI;
 
 import javax.ws.rs.core.UriBuilder;
@@ -23,7 +25,7 @@ import org.taverna.server.master.interfaces.DirectoryEntry;
 		DirEntryReference.FileReference.class })
 public abstract class DirEntryReference {
 	/** A link to the entry. */
-	@XmlAttribute(name = "href", namespace = "http://www.w3.org/1999/xlink")
+	@XmlAttribute(name = "href", namespace = XLINK)
 	public URI link;
 
 	/** The path of the entry. */

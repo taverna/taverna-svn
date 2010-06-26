@@ -36,6 +36,7 @@ import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.taverna.server.master.common.DirEntryReference;
 import org.taverna.server.master.common.InputDescription;
+import org.taverna.server.master.common.Namespaces;
 import org.taverna.server.master.common.RunReference;
 import org.taverna.server.master.common.SCUFL;
 import org.taverna.server.master.common.Status;
@@ -76,7 +77,7 @@ import org.taverna.server.master.soap.TavernaServerSOAP;
  * @author Donal Fellows
  */
 @Path("/rest")
-@WebService(endpointInterface = "org.taverna.server.master.TavernaServerSOAP", serviceName = "TavernaServer", targetNamespace = "http://www.taverna.org.uk/v2/")
+@WebService(endpointInterface = "org.taverna.server.master.TavernaServerSOAP", serviceName = "TavernaServer", targetNamespace = Namespaces.SERVER_SOAP)
 @ManagedResource(objectName = "Taverna:group=Server,name=Webapp", description = "The main web-application interface to Taverna Server.")
 public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	/** The logger for the server framework. */

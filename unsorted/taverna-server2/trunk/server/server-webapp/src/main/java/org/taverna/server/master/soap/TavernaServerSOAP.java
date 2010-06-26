@@ -9,6 +9,7 @@ import javax.jws.WebService;
 
 import org.taverna.server.master.common.DirEntryReference;
 import org.taverna.server.master.common.InputDescription;
+import org.taverna.server.master.common.Namespaces;
 import org.taverna.server.master.common.RunReference;
 import org.taverna.server.master.common.SCUFL;
 import org.taverna.server.master.common.Status;
@@ -26,7 +27,7 @@ import org.taverna.server.master.rest.TavernaServerREST;
  * @author Donal Fellows
  * @see TavernaServerREST
  */
-@WebService(name = "tavernaService", targetNamespace = "http://www.taverna.org.uk/v2/")
+@WebService(name = "tavernaService", targetNamespace = Namespaces.SERVER_SOAP)
 public interface TavernaServerSOAP {
 	/**
 	 * Make a run for a particular workflow.

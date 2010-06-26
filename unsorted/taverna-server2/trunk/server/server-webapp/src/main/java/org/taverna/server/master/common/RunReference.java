@@ -1,5 +1,7 @@
 package org.taverna.server.master.common;
 
+import static org.taverna.server.master.common.Namespaces.XLINK;
+
 import java.net.URI;
 
 import javax.ws.rs.core.UriBuilder;
@@ -22,7 +24,7 @@ public class RunReference {
 	/**
 	 * Where to get information about the run. For REST.
 	 */
-	@XmlAttribute(name = "href", namespace = "http://www.w3.org/1999/xlink")
+	@XmlAttribute(name = "href", namespace = XLINK)
 	public URI link;
 	/**
 	 * The name of the run. For SOAP.

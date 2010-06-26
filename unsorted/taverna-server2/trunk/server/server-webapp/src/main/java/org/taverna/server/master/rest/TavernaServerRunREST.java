@@ -22,6 +22,7 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
 import org.apache.cxf.jaxrs.ext.Description;
+import org.taverna.server.master.common.Namespaces;
 import org.taverna.server.master.common.SCUFL;
 import org.taverna.server.master.common.Uri;
 import org.taverna.server.master.exceptions.BadStateChangeException;
@@ -247,7 +248,7 @@ public interface TavernaServerRunREST {
 			/**
 			 * Where to go to read the exiry
 			 */
-			@XmlAttribute(name = "href", namespace = "http://www.w3.org/1999/xlink")
+			@XmlAttribute(name = "href", namespace = Namespaces.XLINK)
 			public URI ref;
 			/**
 			 * What the expiry currently is.

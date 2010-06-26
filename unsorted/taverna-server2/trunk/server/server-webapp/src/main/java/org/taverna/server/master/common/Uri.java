@@ -1,5 +1,7 @@
 package org.taverna.server.master.common;
 
+import static org.taverna.server.master.common.Namespaces.XLINK;
+
 import java.net.URI;
 
 import javax.ws.rs.core.UriBuilder;
@@ -19,7 +21,7 @@ public class Uri {
 	 * This type is characterised by an attribute that is the reference to some
 	 * other element.
 	 */
-	@XmlAttribute(name = "href", namespace = "http://www.w3.org/1999/xlink")
+	@XmlAttribute(name = "href", namespace = XLINK)
 	public URI ref;
 
 	/** Make a reference that points nowhere. */
