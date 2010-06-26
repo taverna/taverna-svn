@@ -19,8 +19,6 @@ public interface RemoteSingleRun extends Remote {
 	 *            The filename to use. Must not start with a <tt>/</tt> or
 	 *            contain any <tt>..</tt> segments. Will be interpreted relative
 	 *            to the run's working directory.
-	 * @throws FilesystemAccessException
-	 *             If the filename is invalid.
 	 */
 	public void setInputBaclavaFile(String filename) throws RemoteException;
 
