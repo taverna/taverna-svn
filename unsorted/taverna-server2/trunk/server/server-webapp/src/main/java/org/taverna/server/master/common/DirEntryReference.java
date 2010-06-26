@@ -30,15 +30,13 @@ public abstract class DirEntryReference {
 	@XmlValue
 	public String path;
 
-	public DirEntryReference() {
-	}
-
 	/**
 	 * Return the directory entry reference instance subclass suitable for the
 	 * given directory entry.
 	 * 
 	 * @param entry
 	 *            The entry to characterise.
+	 * @return An object that describes the directory entry.
 	 */
 	public static DirEntryReference newInstance(DirectoryEntry entry) {
 		return newInstance(null, entry);
@@ -52,6 +50,7 @@ public abstract class DirEntryReference {
 	 *            Used for constructing URIs.
 	 * @param entry
 	 *            The entry to characterise.
+	 * @return An object that describes the directory entry.
 	 */
 	// Really returns a subclass, so cannot be constructor
 	public static DirEntryReference newInstance(UriBuilder ub,

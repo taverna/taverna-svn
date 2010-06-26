@@ -39,12 +39,24 @@ import org.taverna.server.master.interfaces.Policy;
 import org.taverna.server.master.interfaces.RunStore;
 import org.taverna.server.master.interfaces.TavernaRun;
 
+/**
+ * Bridge to remote runs via RMI.
+ * 
+ * @author Donal Fellows
+ */
 @ManagedResource(objectName = "Taverna:group=Server,name=Factory", description = "The factory for runs")
 public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 		RunFactory, Policy, RunStore {
 	static final Log log = LogFactory.getLog("Taverna.Server.LocalWorker");
 	static Registry registry;
+	/**
+	 * The name of the resource that describes the default security policy to
+	 * install.
+	 */
 	public static final String SECURITY_POLICY_FILE = "security.policy";
+	/**
+	 * How frequently to check for expired workflow runs.
+	 */
 	public static final int CLEANER_INTERVAL_MS = 30000;
 	static Timer timer = new Timer("Taverna.Server.RemoteRunFactory.Timer",
 			true);
@@ -63,15 +75,19 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 			registry = getRegistry();
 			registry.list();
 		} catch (RemoteException e) {
-			log.error("failed to get RMI registry handle", e);
+			log.info("failed to get working RMI registry handle; recreating");
 			try {
 				registry = createRegistry(REGISTRY_PORT);
 			} catch (RemoteException e2) {
 				log.error("failed to create RMI registry", e2);
+				log.info("original connection exception", e);
 			}
 		}
 	}
 
+	/**
+	 * Set up the run expiry management engine.
+	 */
 	public AbstractRemoteRunFactory() {
 		cleaner = new AbstractRemoteRunFactoryCleaner(this);
 		timer.scheduleAtFixedRate(cleaner, CLEANER_INTERVAL_MS,
@@ -132,6 +148,7 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 	protected abstract RemoteSingleRun getRealRun(Principal creator,
 			SCUFL workflow) throws Exception;
 
+	/** @return The names of the current runs. */
 	@ManagedAttribute(description = "The names of the current runs.", currencyTimeLimit = 5)
 	public String[] getCurrentRunNames() {
 		return runs.keySet().toArray(new String[0]);
@@ -143,11 +160,18 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 		return 5;
 	}
 
+	/** @return How many minutes should a workflow live by default? */
 	@ManagedAttribute(description = "How many minutes should a workflow live by default?", currencyTimeLimit = 300)
 	public int getDefaultLifetime() {
 		return defaultLifetime;
 	}
 
+	/**
+	 * Set how long a workflow should live by default.
+	 * 
+	 * @param defaultLifetime
+	 *            Default lifetime, in minutes.
+	 */
 	@ManagedAttribute
 	public void setDefaultLifetime(int defaultLifetime) {
 		this.defaultLifetime = defaultLifetime;
@@ -221,6 +245,7 @@ public abstract class AbstractRemoteRunFactory implements ListenerFactory,
 		runs.remove(uuid);
 	}
 
+	@Override
 	protected synchronized void finalize() {
 		cleaner.cancel();
 		for (TavernaRun run : runs.values()) {

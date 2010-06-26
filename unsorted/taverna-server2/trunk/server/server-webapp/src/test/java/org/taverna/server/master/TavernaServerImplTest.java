@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.taverna.server.master.common.RunReference;
 import org.taverna.server.master.exceptions.BadPropertyValueException;
@@ -15,6 +16,7 @@ import org.taverna.server.master.exceptions.UnknownRunException;
 import org.taverna.server.master.interfaces.Listener;
 import org.taverna.server.master.interfaces.TavernaRun;
 import org.taverna.server.master.mocks.ExampleRun;
+import org.taverna.server.master.mocks.MockPolicy;
 import org.taverna.server.master.mocks.SimpleListenerFactory;
 import org.taverna.server.master.mocks.SimpleNonpersistentRunStore;
 
@@ -22,6 +24,7 @@ public class TavernaServerImplTest {
 	private TavernaServerImpl server;
 	private MockPolicy policy;
 	private SimpleNonpersistentRunStore store;
+	@SuppressWarnings("unused")
 	private ExampleRun.Builder runFactory;
 	private SimpleListenerFactory lFactory;
 
@@ -66,7 +69,8 @@ public class TavernaServerImplTest {
 		};
 	}
 
-	{
+	@Before
+	public void wireup() throws Exception {
 		// Wire everything up; ought to be done with Spring, but this works...
 		server = new TavernaServerImpl();
 		server.policy = policy = new MockPolicy();

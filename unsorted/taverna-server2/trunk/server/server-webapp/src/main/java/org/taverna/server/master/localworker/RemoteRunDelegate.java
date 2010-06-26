@@ -35,6 +35,11 @@ import org.taverna.server.master.interfaces.Listener;
 import org.taverna.server.master.interfaces.TavernaRun;
 import org.taverna.server.master.interfaces.TavernaSecurityContext;
 
+/**
+ * Bridging shim between the WebApp world and the RMI world.
+ * 
+ * @author Donal Fellows
+ */
 public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 	private SCUFL workflow;
 	private Date expiry;

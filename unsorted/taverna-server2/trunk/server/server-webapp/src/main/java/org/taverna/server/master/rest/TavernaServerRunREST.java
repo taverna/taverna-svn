@@ -1,8 +1,9 @@
 package org.taverna.server.master.rest;
 
 import java.net.URI;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -40,7 +41,7 @@ public interface TavernaServerRunREST {
 	 * Describes a workflow run.
 	 * 
 	 * @param ui
-	 *            About how this method was called.
+	 *            About the URI used to access this resource.
 	 * @return The description.
 	 */
 	@GET
@@ -53,7 +54,7 @@ public interface TavernaServerRunREST {
 	 * Deletes a workflow run.
 	 * 
 	 * @param ui
-	 *            About how this method was called.
+	 *            About the URI used to access this resource.
 	 * @return An HTTP response to the deletion.
 	 * @throws NoUpdateException
 	 *             If the user may see the handle but may not delete it.
@@ -124,10 +125,12 @@ public interface TavernaServerRunREST {
 	 * @param status
 	 *            The new status code.
 	 * @param ui
-	 *            About how this method was called.
+	 *            About the URI used to access this resource.
 	 * @return An HTTP response to the setting.
 	 * @throws NoUpdateException
 	 *             If the current user is not permitted to update the run.
+	 * @throws BadStateChangeException
+	 *             If the state cannot be modified in the manner requested.
 	 */
 	@PUT
 	@Path("status")
@@ -194,7 +197,7 @@ public interface TavernaServerRunREST {
 	 *            written to individual files in the <tt>out</tt> subdirectory
 	 *            of the working directory.
 	 * @param ui
-	 *            HTTP context handle.
+	 *            About the URI used to access this resource.
 	 * @return HTTP response description.
 	 * @throws NoUpdateException
 	 *             If the current user is not permitted to update the run.
@@ -221,31 +224,70 @@ public interface TavernaServerRunREST {
 	@XmlRootElement
 	@XmlType(name = "")
 	public static class RunDescription {
+		/** The description of the expiry. */
 		public Expiry expiry;
-		public Uri creationWorkflow, status, workingDirectory, securityContext;
+		/** The location of the creation workflow description. */
+		public Uri creationWorkflow;
+		/** The location of the status description. */
+		public Uri status;
+		/** The location of the working directory. */
+		public Uri workingDirectory;
+		/** The location of the security context. */
+		public Uri securityContext;
+		/** The list of listeners. */
 		public ListenerList listeners;
 
+		/**
+		 * How to describe a run's expiry.
+		 * 
+		 * @author Donal Fellows
+		 */
 		@XmlType(name = "")
 		public static class Expiry {
+			/**
+			 * Where to go to read the exiry
+			 */
 			@XmlAttribute(name = "href", namespace = "http://www.w3.org/1999/xlink")
 			public URI ref;
+			/**
+			 * What the expiry currently is.
+			 */
 			@XmlValue
-			public Date timeOfDeath;
+			public String timeOfDeath;
 
+			/**
+			 * Make a blank expiry description.
+			 */
 			public Expiry() {
 			}
 
+			private static DateFormat df;
+
 			Expiry(TavernaRun r, UriBuilder ub) {
 				ref = ub.build();
-				this.timeOfDeath = r.getExpiry();
+				if (df == null)
+					df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+				this.timeOfDeath = df.format(r.getExpiry());
 			}
 		}
 
+		/**
+		 * The description of a list of listeners attached to a run.
+		 * 
+		 * @author Donal Fellows
+		 */
 		@XmlType(name = "")
 		public static class ListenerList extends Uri {
-			List<Uri> listener;
+			/**
+			 * The references to the individual listeners.
+			 */
+			public List<Uri> listener;
 
+			/**
+			 * An empty description of listeners.
+			 */
 			public ListenerList() {
+				listener = new ArrayList<Uri>();
 			}
 
 			ListenerList(TavernaRun r, UriBuilder ub) {
@@ -257,16 +299,27 @@ public interface TavernaServerRunREST {
 			}
 		}
 
+		/**
+		 * An empty description of a run.
+		 */
 		public RunDescription() {
 		}
 
-		public RunDescription(TavernaRun r, UriInfo ui) {
+		/**
+		 * A description of a particular run.
+		 * 
+		 * @param run
+		 *            The run to describe.
+		 * @param ui
+		 *            The factory for URIs.
+		 */
+		public RunDescription(TavernaRun run, UriInfo ui) {
 			UriBuilder ub = ui.getAbsolutePathBuilder();
 			creationWorkflow = new Uri(ui, "workflow");
-			expiry = new Expiry(r, ub.path("expiry"));
+			expiry = new Expiry(run, ub.path("expiry"));
 			status = new Uri(ui, "status");
 			workingDirectory = new Uri(ui, "wd");
-			listeners = new ListenerList(r, ub.path("listeners"));
+			listeners = new ListenerList(run, ub.path("listeners"));
 			securityContext = new Uri(ui, "owner");
 		}
 	}

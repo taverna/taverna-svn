@@ -15,21 +15,50 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "Location")
 public class Uri {
+	/**
+	 * This type is characterised by an attribute that is the reference to some
+	 * other element.
+	 */
 	@XmlAttribute(name = "href", namespace = "http://www.w3.org/1999/xlink")
 	public URI ref;
 
+	/** Make a reference that points nowhere. */
 	public Uri() {
 	}
 
+	/**
+	 * Make a reference to the given location.
+	 * 
+	 * @param ref
+	 *            Where to point to.
+	 */
 	public Uri(URI ref) {
 		this.ref = ref;
 	}
 
+	/**
+	 * Make a reference from the factory with the given parameters.
+	 * 
+	 * @param ub
+	 *            The configured factory.
+	 * @param strings
+	 *            The parameters to the factory.
+	 */
 	public Uri(UriBuilder ub, String... strings) {
 		ref = ub.build((Object[]) strings);
 	}
 
+	/**
+	 * Make a reference from the factory with the given parameters.
+	 * 
+	 * @param ui
+	 *            The factory factory.
+	 * @param path
+	 *            The path to configure the factory with.
+	 * @param strings
+	 *            The parameters to the factory.
+	 */
 	public Uri(UriInfo ui, String path, String... strings) {
-		ref = ui.getAbsolutePathBuilder().path(path).build((Object[]) strings);
+		this(ui.getAbsolutePathBuilder().path(path), strings);
 	}
 }

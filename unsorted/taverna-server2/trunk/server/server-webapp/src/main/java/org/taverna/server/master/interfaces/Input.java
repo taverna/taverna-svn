@@ -1,5 +1,6 @@
 package org.taverna.server.master.interfaces;
 
+import org.taverna.server.master.common.Status;
 import org.taverna.server.master.exceptions.BadStateChangeException;
 import org.taverna.server.master.exceptions.FilesystemAccessException;
 
@@ -39,8 +40,7 @@ public interface Input {
 	 * @throws FilesystemAccessException
 	 *             If the filename is invalid.
 	 * @throws BadStateChangeException
-	 *             If the run isn't in the
-	 *             {@link org.taverna.server.master.Status.Initialized
+	 *             If the run isn't in the {@link Status#Initialized
 	 *             Initialized} state.
 	 */
 	public void setFile(String file) throws FilesystemAccessException,
@@ -53,8 +53,7 @@ public interface Input {
 	 * @param value
 	 *            The value to use.
 	 * @throws BadStateChangeException
-	 *             If the run isn't in the
-	 *             {@link org.taverna.server.master.Status.Initialized
+	 *             If the run isn't in the {@link Status#Initialized
 	 *             Initialized} state.
 	 */
 	public void setValue(String value) throws BadStateChangeException;

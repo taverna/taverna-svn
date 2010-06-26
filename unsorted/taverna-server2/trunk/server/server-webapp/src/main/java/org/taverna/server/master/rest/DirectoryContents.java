@@ -24,12 +24,27 @@ import org.taverna.server.master.interfaces.DirectoryEntry;
 @XmlType(name = "DirectoryContents")
 @XmlSeeAlso(MakeOrUpdateDirEntry.class)
 public class DirectoryContents {
+	/**
+	 * The contents of the directory.
+	 */
 	@XmlElementRef
 	public List<DirEntryReference> contents;
 
+	/**
+	 * Make an empty directory description. Required for JAXB.
+	 */
 	public DirectoryContents() {
+		contents = new ArrayList<DirEntryReference>();
 	}
 
+	/**
+	 * Make an empty directory description.
+	 * 
+	 * @param ui
+	 *            The factory for URIs.
+	 * @param collection
+	 *            The real directory contents that we are to describe.
+	 */
 	public DirectoryContents(UriInfo ui, Collection<DirectoryEntry> collection) {
 		contents = new ArrayList<DirEntryReference>();
 		UriBuilder ub = ui.getAbsolutePathBuilder().path("{path}");

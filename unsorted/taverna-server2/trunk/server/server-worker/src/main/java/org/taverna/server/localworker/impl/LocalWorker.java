@@ -52,6 +52,13 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 	Worker core;
 	private Thread shutdownHook;
 
+	/**
+	 * @param executeWorkflowCommand
+	 * @param workflow
+	 * @param workerClass
+	 * @throws RemoteException
+	 *             If registration of the worker fails.
+	 */
 	protected LocalWorker(String executeWorkflowCommand, String workflow,
 			Class<? extends Worker> workerClass) throws RemoteException {
 		super();
@@ -309,7 +316,8 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 		case Stopped:
 			switch (status) {
 			case Initialized:
-				throw new IllegalStateTransitionException("may only stop from Operating");
+				throw new IllegalStateTransitionException(
+						"may only stop from Operating");
 			case Operating:
 				try {
 					core.stopWorker();

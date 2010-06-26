@@ -32,6 +32,9 @@ import org.taverna.server.localworker.remote.RemoteStatus;
  */
 public class WorkerCore extends UnicastRemoteObject implements Worker,
 		RemoteListener {
+	/**
+	 * The name of the standard listener, which is installed by default.
+	 */
 	public static final String DEFAULT_LISTENER_NAME = "io";
 
 	static final Map<String, Property> pmap = new HashMap<String, Property>();
@@ -66,6 +69,9 @@ public class WorkerCore extends UnicastRemoteObject implements Worker,
 	StringWriter stderr;
 	Integer exitCode;
 
+	/**
+	 * @throws RemoteException
+	 */
 	public WorkerCore() throws RemoteException {
 		super();
 		stdout = new StringWriter();
@@ -89,6 +95,7 @@ public class WorkerCore extends UnicastRemoteObject implements Worker,
 			start();
 		}
 
+		@Override
 		public void run() {
 			try {
 				copy(from, to);

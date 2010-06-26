@@ -16,6 +16,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.cxf.jaxrs.ext.Description;
@@ -129,15 +130,44 @@ public interface TavernaServerREST {
 	@XmlRootElement
 	@XmlType(name = "")
 	public static class ServerDescription {
+		/**
+		 * References to the runs (known about by the current user) in this
+		 * server.
+		 */
 		@XmlElementWrapper(name = "runs", required = true, nillable = false)
 		@XmlElement(nillable = false)
 		public List<Uri> run;
-		public Uri runLimit, permittedWorkflows, permittedListeners;
+		/**
+		 * Where to go to find out about the maximum number of runs.
+		 */
+		public Uri runLimit;
+		/**
+		 * Where to go to find out about what workflows are allowed.
+		 */
+		public Uri permittedWorkflows;
+		/**
+		 * Where to go to find out about what listeners are allowed.
+		 */
+		public Uri permittedListeners;
+		/**
+		 * Where to go to make queries on the provenance database. Not yet
+		 * supported, so not handled by JAXB.
+		 */
+		@XmlTransient
+		public Uri database;
 
-		// Uri database;
+		/** Make a blank server description. */
 		public ServerDescription() {
 		}
 
+		/**
+		 * Make a description of the server.
+		 * 
+		 * @param ws
+		 *            The mapping of run names to runs.
+		 * @param ui
+		 *            The factory for URIs.
+		 */
 		public ServerDescription(Map<String, TavernaRun> ws, UriInfo ui) {
 			run = new ArrayList<Uri>(ws.size());
 			for (Map.Entry<String, TavernaRun> w : ws.entrySet()) {
@@ -159,12 +189,22 @@ public interface TavernaServerREST {
 	@XmlRootElement
 	@XmlType(name = "")
 	public static class PermittedWorkflows {
-		@XmlElement
+		/** The workflows that are permitted. */
+		@XmlElement(name = "scufl")
 		public List<SCUFL> workflow;
 
+		/**
+		 * Make an empty list of permitted workflows.
+		 */
 		public PermittedWorkflows() {
+			workflow = new ArrayList<SCUFL>();
 		}
 
+		/**
+		 * Make a list of permitted workflows.
+		 * 
+		 * @param permitted
+		 */
 		public PermittedWorkflows(List<SCUFL> permitted) {
 			workflow = permitted;
 		}
@@ -178,12 +218,22 @@ public interface TavernaServerREST {
 	@XmlRootElement
 	@XmlType(name = "")
 	public static class PermittedListeners {
+		/** The listener types that are permitted. */
 		@XmlElement
 		public List<String> type;
 
+		/**
+		 * Make an empty list of permitted listener types.
+		 */
 		public PermittedListeners() {
+			type = new ArrayList<String>();
 		}
 
+		/**
+		 * Make a list of permitted listener types.
+		 * 
+		 * @param listenerTypes
+		 */
 		public PermittedListeners(List<String> listenerTypes) {
 			type = listenerTypes;
 		}

@@ -64,8 +64,15 @@ public class TavernaRunManager extends UnicastRemoteObject implements
 	 * 
 	 * @param command
 	 *            What command to call to actually run a run.
-	 * @param clazz
-	 *            What class to instantiate to handle the run.
+	 * @param constructor
+	 *            What constructor to call to instantiate the RMI server object
+	 *            for the run. The constructor <i>must</i> be able to take two
+	 *            strings (the execution command, and the SCUFL document) and a
+	 *            class (the <tt>workerClass</tt> parameter, below) as
+	 *            arguments.
+	 * @param workerClass
+	 *            What class to create to actually manufacture and manage the
+	 *            connection to the workflow engine.
 	 * @throws RemoteException
 	 *             If anything goes wrong during creation of the instance.
 	 */
@@ -143,6 +150,10 @@ public class TavernaRunManager extends UnicastRemoteObject implements
 		}.start();
 	}
 
+	/**
+	 * The name of the file (in this code's resources) that provides the default
+	 * security policy that we use.
+	 */
 	public static final String SECURITY_POLICY_FILE = "security.policy";
 
 	/**

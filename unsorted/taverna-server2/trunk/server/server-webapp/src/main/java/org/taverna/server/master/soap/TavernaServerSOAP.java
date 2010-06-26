@@ -18,6 +18,7 @@ import org.taverna.server.master.exceptions.FilesystemAccessException;
 import org.taverna.server.master.exceptions.NoListenerException;
 import org.taverna.server.master.exceptions.NoUpdateException;
 import org.taverna.server.master.exceptions.UnknownRunException;
+import org.taverna.server.master.rest.TavernaServerREST;
 
 /**
  * The SOAP service interface to Taverna Server version 2.3.
@@ -30,7 +31,7 @@ public interface TavernaServerSOAP {
 	/**
 	 * Make a run for a particular workflow.
 	 * 
-	 * @param scufl
+	 * @param workflow
 	 *            The workflow to instantiate.
 	 * @return Annotated handle for created run.
 	 * @throws NoUpdateException
@@ -140,7 +141,7 @@ public interface TavernaServerSOAP {
 	 * @throws FilesystemAccessException
 	 *             If the filename is illegal.
 	 * @throws BadStateChangeException
-	 *             If the run is not in the {@link Status.Initialized
+	 *             If the run is not in the {@link Status#Initialized
 	 *             Initialized} state
 	 */
 	public void setRunInputBaclavaFile(
@@ -169,8 +170,11 @@ public interface TavernaServerSOAP {
 	 * @throws FilesystemAccessException
 	 *             If the filename is illegal.
 	 * @throws BadStateChangeException
-	 *             If the run is not in the {@link Status.Initialized
+	 *             If the run is not in the {@link Status#Initialized
 	 *             Initialized} state.
+	 * @throws BadPropertyValueException
+	 *             If the input port may not be changed to the contents of the
+	 *             given file.
 	 */
 	public void setRunInputPortFile(@WebParam(name = "runName") String runName,
 			@WebParam(name = "portName") String portName,
@@ -182,7 +186,8 @@ public interface TavernaServerSOAP {
 	/**
 	 * Tells the run to use the given value for input on the given port. This
 	 * overrides any previously set file or value on the port and causes the
-	 * server to forget about using a Baclava file for all inputs.
+	 * server to forget about using a Baclava file for all inputs. Note that
+	 * this is wholly unsuitable for use with binary data.
 	 * 
 	 * @param runName
 	 *            The handle of the run.
@@ -196,8 +201,11 @@ public interface TavernaServerSOAP {
 	 * @throws NoUpdateException
 	 *             If the user isn't allowed to manipulate the run.
 	 * @throws BadStateChangeException
-	 *             If the run is not in the {@link Status.Initialized
+	 *             If the run is not in the {@link Status#Initialized
 	 *             Initialized} state.
+	 * @throws BadPropertyValueException
+	 *             If the input port may not be changed to the given literal
+	 *             value.
 	 */
 	public void setRunInputPortValue(
 			@WebParam(name = "runName") String runName,
@@ -240,7 +248,7 @@ public interface TavernaServerSOAP {
 	 *             If the filename is illegal (starts with a <tt>/</tt> or
 	 *             contains a <tt>..</tt> element.
 	 * @throws BadStateChangeException
-	 *             If the run is not in the {@link Status.Initialized
+	 *             If the run is not in the {@link Status#Initialized
 	 *             Initialized} state
 	 */
 	public void setRunOutputBaclavaFile(
@@ -343,7 +351,7 @@ public interface TavernaServerSOAP {
 	 *            The handle of the run.
 	 * @param listenerType
 	 *            The type of event listener to add. Must be one of the names
-	 *            returned by the {@link #getPermittedListeners()} operation.
+	 *            returned by the {@link #getAllowedListeners()} operation.
 	 * @param configuration
 	 *            The configuration document for the event listener; the
 	 *            interpretation of the configuration is up to the listener.
@@ -476,9 +484,6 @@ public interface TavernaServerSOAP {
 	 * @param dirEntry
 	 *            Reference to an existing item in a directory that will be
 	 *            destroyed. May be a reference to either a file or a directory.
-	 * @param name
-	 *            The name of the directory to create. Must not be the same as
-	 *            any other file or directory in the <i>parent</i> directory.
 	 * @throws UnknownRunException
 	 *             If the server doesn't know about the run or if the user is
 	 *             not permitted to see it.

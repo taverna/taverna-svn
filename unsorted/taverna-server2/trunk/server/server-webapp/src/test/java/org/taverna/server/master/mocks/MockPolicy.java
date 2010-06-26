@@ -1,4 +1,4 @@
-package org.taverna.server.master;
+package org.taverna.server.master.mocks;
 
 import java.security.Principal;
 import java.util.Arrays;
@@ -11,14 +11,13 @@ import org.taverna.server.master.exceptions.NoCreateException;
 import org.taverna.server.master.exceptions.NoDestroyException;
 import org.taverna.server.master.exceptions.NoUpdateException;
 import org.taverna.server.master.interfaces.TavernaRun;
-import org.taverna.server.master.mocks.SimpleServerPolicy;
 
-class MockPolicy extends SimpleServerPolicy {
-	MockPolicy() {
+public class MockPolicy extends SimpleServerPolicy {
+	public MockPolicy() {
 		super();
 		super.setCleanerInterval(30);
 	}
-	int maxruns = 10;
+	public int maxruns = 10;
 	Integer usermaxruns;
 	Set<TavernaRun> denyaccess = new HashSet<TavernaRun>();
 	boolean exnOnUpdate, exnOnCreate, exnOnDelete;

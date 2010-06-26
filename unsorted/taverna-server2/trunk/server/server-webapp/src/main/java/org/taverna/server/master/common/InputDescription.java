@@ -32,13 +32,20 @@ public class InputDescription {
 	@XmlElement(nillable = false)
 	public List<Port> port = new ArrayList<Port>();
 
+	/**
+	 * Make a blank input description.
+	 */
 	public InputDescription() {
 	}
 
-	public InputDescription(TavernaRun r) {
-		baclavaFile = r.getInputBaclavaFile();
+	/**
+	 * Make an input description suitable for the given workflow run.
+	 * @param run
+	 */
+	public InputDescription(TavernaRun run) {
+		baclavaFile = run.getInputBaclavaFile();
 		if (baclavaFile == null)
-			for (Input i : r.getInputs())
+			for (Input i : run.getInputs())
 				port.add(new Port(i));
 	}
 
@@ -65,17 +72,24 @@ public class InputDescription {
 		@XmlValue
 		public String value;
 
+		/**
+		 * Make a blank port description.
+		 */
 		public Port() {
 		}
 
-		public Port(Input i) {
-			name = i.getName();
-			if (i.getFile() != null) {
-				file = i.getFile();
+		/**
+		 * Make a port description suitable for the given input.
+		 * @param input
+		 */
+		public Port(Input input) {
+			name = input.getName();
+			if (input.getFile() != null) {
+				file = input.getFile();
 				value = "";
 			} else {
 				file = null;
-				value = i.getValue();
+				value = input.getValue();
 			}
 		}
 	}

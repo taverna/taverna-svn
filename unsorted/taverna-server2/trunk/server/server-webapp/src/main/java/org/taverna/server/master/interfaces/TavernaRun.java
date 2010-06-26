@@ -37,7 +37,7 @@ public interface TavernaRun {
 	 * @throws FilesystemAccessException
 	 *             If the filename is invalid.
 	 * @throws BadStateChangeException
-	 *             If the workflow is not in the {@link Status.Initialized
+	 *             If the workflow is not in the {@link Status#Initialized
 	 *             Initialized} state.
 	 */
 	public void setInputBaclavaFile(String filename)
@@ -55,7 +55,7 @@ public interface TavernaRun {
 	 *            The name of the port that this will be an input for.
 	 * @return The assignment reference.
 	 * @throws BadStateChangeException
-	 *             If the workflow is not in the {@link Status.Initialized
+	 *             If the workflow is not in the {@link Status#Initialized
 	 *             Initialized} state.
 	 */
 	public Input makeInput(String name) throws BadStateChangeException;
@@ -82,7 +82,7 @@ public interface TavernaRun {
 	 *             If the filename starts with a <tt>/</tt> or contains a
 	 *             <tt>..</tt> segment.
 	 * @throws BadStateChangeException
-	 *             If the workflow is not in the {@link Status.Initialized
+	 *             If the workflow is not in the {@link Status#Initialized
 	 *             Initialized} state.
 	 */
 	public void setOutputBaclavaFile(String filename)
@@ -120,7 +120,7 @@ public interface TavernaRun {
 
 	/**
 	 * @return Handle to the main working directory of the run.
-	 * @throws FilesystemAccessException 
+	 * @throws FilesystemAccessException
 	 */
 	public Directory getWorkingDirectory() throws FilesystemAccessException;
 
@@ -144,6 +144,9 @@ public interface TavernaRun {
 
 	/**
 	 * Kill off this run, removing all resources which it consumes.
+	 * 
+	 * @throws NoDestroyException
+	 *             If the destruction failed.
 	 */
 	public void destroy() throws NoDestroyException;
 }

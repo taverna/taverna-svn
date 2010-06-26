@@ -37,6 +37,8 @@ import org.taverna.server.master.interfaces.TavernaRun;
 @Description("This represents how a Taverna Server workflow run's inputs looks to a RESTful API.")
 public interface TavernaServerInputREST {
 	/**
+	 * @param ui
+	 *            About the URI used to access this resource.
 	 * @return A description of the various URIs to inputs associated with a
 	 *         workflow run.
 	 */
@@ -104,7 +106,7 @@ public interface TavernaServerInputREST {
 	 * @param inputDescriptor
 	 *            A description of the input
 	 * @param ui
-	 *            The HTTP context.
+	 *            About the URI used to access this resource.
 	 * @return A response to the HTTP request.
 	 * @throws NoUpdateException
 	 *             If the user can't update the run.
@@ -143,9 +145,20 @@ public interface TavernaServerInputREST {
 		 */
 		public List<Uri> input;
 
+		/**
+		 * Make a blank description of the inputs.
+		 */
 		public InputsDescriptor() {
 		}
 
+		/**
+		 * Make the description of the inputs.
+		 * 
+		 * @param ui
+		 *            Information about the URIs to generate.
+		 * @param run
+		 *            The run whose inputs are to be described.
+		 */
 		public InputsDescriptor(UriInfo ui, TavernaRun run) {
 			baclava = new Uri(ui, "baclava");
 			input = new ArrayList<Uri>();
@@ -164,23 +177,27 @@ public interface TavernaServerInputREST {
 	@XmlRootElement(name = "runInput")
 	@XmlType(name = "InputDescription")
 	public static class InDesc {
+		/** Make a blank description of an input port. */
 		public InDesc() {
 		}
 
-		public InDesc(Input i) {
-			name = i.getName();
-			if (i.getFile() != null) {
+		/**
+		 * Make a description of the given input port.
+		 * 
+		 * @param inputPort
+		 */
+		public InDesc(Input inputPort) {
+			name = inputPort.getName();
+			if (inputPort.getFile() != null) {
 				assignment = new InDesc.File();
-				assignment.contents = i.getFile();
+				assignment.contents = inputPort.getFile();
 			} else {
 				assignment = new InDesc.Value();
-				assignment.contents = i.getValue();
+				assignment.contents = inputPort.getValue();
 			}
 		}
 
-		/**
-		 * The name of the port.
-		 */
+		/** The name of the port. */
 		@XmlAttribute(required = false)
 		public String name;
 
@@ -192,12 +209,17 @@ public interface TavernaServerInputREST {
 		 */
 		@XmlType(name = "InputContents")
 		public static abstract class AbstractContents {
+			/**
+			 * The contents of the description of the input port. Meaning not
+			 * defined.
+			 */
 			@XmlValue
 			public String contents;
 		};
 
 		/**
-		 * The name of a file that provides input to the port.
+		 * The name of a file that provides input to the port. The
+		 * {@link AbstractContents#contents contents} field is a filename.
 		 * 
 		 * @author Donal Fellows
 		 */
@@ -206,7 +228,9 @@ public interface TavernaServerInputREST {
 		}
 
 		/**
-		 * The the literal input to the port.
+		 * The the literal input to the port. The
+		 * {@link AbstractContents#contents contents} field is a literal input
+		 * value.
 		 * 
 		 * @author Donal Fellows
 		 */
@@ -214,6 +238,9 @@ public interface TavernaServerInputREST {
 		public static class Value extends AbstractContents {
 		}
 
+		/**
+		 * The assignment of input values to the port.
+		 */
 		@XmlElements( { @XmlElement(name = "file", type = File.class),
 				@XmlElement(name = "value", type = Value.class) })
 		public AbstractContents assignment;

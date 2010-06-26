@@ -43,6 +43,9 @@ import org.taverna.server.master.exceptions.NoCreateException;
 public class ForkRunFactory extends AbstractRemoteRunFactory implements
 		ServletContextAware {
 	private String executeWorkflowScript;
+	/**
+	 * The extra arguments to pass to the subprocess.
+	 */
 	protected String[] extraArgs;
 	private JAXBContext context;
 	private int waitSeconds = 40;
@@ -56,10 +59,22 @@ public class ForkRunFactory extends AbstractRemoteRunFactory implements
 	private RemoteRunFactory factory;
 	private Process factoryProcess;
 	private String factoryProcessName;
+	/**
+	 * The name of the resource that is the implementation of the subprocess
+	 * that this class will fork off.
+	 */
+	public static final String SUBPROCESS_IMPLEMENTATION_JAR = "util/server.worker.jar";
 
+	/**
+	 * Create a factory for remote runs that works by forking off a subprocess.
+	 * 
+	 * @throws JAXBException
+	 *             Shouldn't happen.
+	 */
 	public ForkRunFactory() throws JAXBException {
 		ClassLoader cl = ForkRunFactory.class.getClassLoader();
-		serverWorkerJar = cl.getResource("util/server.worker.jar").getFile();
+		serverWorkerJar = cl.getResource(SUBPROCESS_IMPLEMENTATION_JAR)
+				.getFile();
 		context = JAXBContext.newInstance(SCUFL.class);
 	}
 
@@ -74,22 +89,33 @@ public class ForkRunFactory extends AbstractRemoteRunFactory implements
 		}
 	}
 
+	/** @return Which java executable to run. */
 	@ManagedAttribute(description = "Which java executable to run.", currencyTimeLimit = 300)
 	public String getJavaBinary() {
 		return javaBinary;
 	}
 
+	/**
+	 * @param javaBinary
+	 *            Which java executable to run.
+	 */
 	@ManagedAttribute(description = "Which java executable to run.", currencyTimeLimit = 300)
 	public void setJavaBinary(String javaBinary) {
 		this.javaBinary = javaBinary;
 		reinitFactory();
 	}
 
+	/** @return The list of additional arguments used to make a worker process. */
 	@ManagedAttribute(description = "The list of additional arguments used to make a worker process.", currencyTimeLimit = 300)
 	public String[] getExtraArguments() {
 		return extraArgs.clone();
 	}
 
+	/**
+	 * @param firstArguments
+	 *            The list of additional arguments used to make a worker
+	 *            process.
+	 */
 	@ManagedAttribute(description = "The list of additional arguments used to make a worker process.", currencyTimeLimit = 300)
 	public void setExtraArguments(String[] firstArguments) {
 		if (firstArguments == null)
@@ -99,63 +125,102 @@ public class ForkRunFactory extends AbstractRemoteRunFactory implements
 		reinitFactory();
 	}
 
+	/** @return The location of the JAR implementing the server worker process. */
 	@ManagedAttribute(description = "The location of the JAR implementing the server worker process.")
 	public String getServerWorkerJar() {
 		return this.serverWorkerJar;
 	}
 
+	/**
+	 * @param serverWorkerJar
+	 *            The location of the JAR implementing the server worker
+	 *            process.
+	 */
 	@ManagedAttribute(description = "The location of the JAR implementing the server worker process.")
 	public void setServerWorkerJar(String serverWorkerJar) {
 		this.serverWorkerJar = serverWorkerJar;
 		reinitFactory();
 	}
 
+	/** @return The script to run to start running a workflow. */
 	@ManagedAttribute(description = "The script to run to start running a workflow.", currencyTimeLimit = 300)
 	public String getExecuteWorkflowScript() {
 		return executeWorkflowScript;
 	}
 
+	/**
+	 * @param executeWorkflowScript
+	 *            The script to run to start running a workflow.
+	 */
 	@ManagedAttribute(description = "The script to run to start running a workflow.", currencyTimeLimit = 300)
 	public void setExecuteWorkflowScript(String executeWorkflowScript) {
 		this.executeWorkflowScript = executeWorkflowScript;
 		reinitFactory();
 	}
 
+	/** @return How many seconds to wait for a worker process to register itself. */
 	@ManagedAttribute(description = "How many seconds to wait for a worker process to register itself.", currencyTimeLimit = 300)
 	public int getWaitSeconds() {
 		return waitSeconds;
 	}
 
+	/**
+	 * @param seconds
+	 *            How many seconds to wait for a worker process to register
+	 *            itself.
+	 */
 	@ManagedAttribute(description = "How many seconds to wait for a worker process to register itself.", currencyTimeLimit = 300)
 	public void setWaitSeconds(int seconds) {
 		this.waitSeconds = seconds;
 	}
 
+	/**
+	 * @return How many milliseconds to wait between checks to see if a worker
+	 *         process has registered.
+	 */
 	@ManagedAttribute(description = "How many milliseconds to wait between checks to see if a worker process has registered.", currencyTimeLimit = 300)
 	public int getSleepTime() {
 		return sleepMS;
 	}
 
+	/**
+	 * @param sleepTime
+	 *            How many milliseconds to wait between checks to see if a
+	 *            worker process has registered.
+	 */
 	@ManagedAttribute(description = "How many milliseconds to wait between checks to see if a worker process has registered.", currencyTimeLimit = 300)
 	public void setSleepTime(int sleepTime) {
 		sleepMS = sleepTime;
 	}
 
-	@ManagedAttribute(description = "How many checks were done for the worker process the last time a spawn was tried.", currencyTimeLimit = 10)
+	/**
+	 * @return How many checks were done for the worker process the last time a
+	 *         spawn was tried.
+	 */
+	@ManagedAttribute(description = "How many checks were done for the worker process the last time a spawn was tried.", currencyTimeLimit = 60)
 	public int getLastStartupCheckCount() {
 		return lastStartupCheckCount;
 	}
 
-	@ManagedAttribute(description = "How many times has a subprocess been spawned by this engine.", currencyTimeLimit = 10)
+	/** @return How many times has a workflow run been spawned by this engine. */
+	@ManagedAttribute(description = "How many times has a workflow run been spawned by this engine.", currencyTimeLimit = 10)
 	public int getTotalRuns() {
 		return totalRuns;
 	}
 
+	/**
+	 * @return What was the exit code from the last time the factory subprocess
+	 *         was killed?
+	 */
 	@ManagedAttribute(description = "What was the exit code from the last time the factory subprocess was killed?")
 	public Integer getLastExitCode() {
 		return lastExitCode;
 	}
 
+	/**
+	 * @return What the factory subprocess's main RMI interface is registered
+	 *         as.
+	 */
 	@ManagedAttribute(description = "What the factory subprocess's main RMI interface is registered as.", currencyTimeLimit = 60)
 	public String getFactoryProcessName() {
 		return factoryProcessName;

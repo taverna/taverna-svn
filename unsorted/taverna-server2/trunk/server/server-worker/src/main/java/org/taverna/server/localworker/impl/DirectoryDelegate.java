@@ -30,6 +30,12 @@ public class DirectoryDelegate extends UnicastRemoteObject implements
 	private DirectoryDelegate parent;
 	private ReferenceMap localCache;
 
+	/**
+	 * @param dir
+	 * @param parent
+	 * @throws RemoteException
+	 *             If registration of the directory fails.
+	 */
 	public DirectoryDelegate(File dir, DirectoryDelegate parent)
 			throws RemoteException {
 		super();

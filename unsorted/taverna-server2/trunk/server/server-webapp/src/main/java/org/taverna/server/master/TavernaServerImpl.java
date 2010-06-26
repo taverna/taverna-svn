@@ -70,13 +70,16 @@ import org.taverna.server.master.rest.TavernaServerListenersREST.ListenerDescrip
 import org.taverna.server.master.rest.TavernaServerListenersREST.TavernaServerListenerREST;
 import org.taverna.server.master.soap.TavernaServerSOAP;
 
+/**
+ * The core implementation of the web application.
+ * 
+ * @author Donal Fellows
+ */
 @Path("/rest")
 @WebService(endpointInterface = "org.taverna.server.master.TavernaServerSOAP", serviceName = "TavernaServer", targetNamespace = "http://www.taverna.org.uk/v2/")
 @ManagedResource(objectName = "Taverna:group=Server,name=Webapp", description = "The main web-application interface to Taverna Server.")
 public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
-	/**
-	 * The logger for the server framework.
-	 */
+	/** The logger for the server framework. */
 	public static Log log = LogFactory.getLog(TavernaServerImpl.class);
 	private static final String REST_BASE = "/taverna2/rest";
 	static int invokes;
@@ -87,52 +90,69 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	 */
 	public static boolean logOutgoingExceptions = false;
 
-	public TavernaServerImpl() {
-		try {
-			scuflSerializer = JAXBContext.newInstance(SCUFL.class);
-		} catch (JAXBException e) {
-			log.warn("failed to construct serializer for SCUFL objects", e);
-		}
+	/**
+	 * @throws JAXBException
+	 */
+	public TavernaServerImpl() throws JAXBException {
+		scuflSerializer = JAXBContext.newInstance(SCUFL.class);
 	}
 
+	/**
+	 * @return Count of the number of external calls into this webapp.
+	 */
 	@ManagedAttribute(description = "Count of the number of external calls into this webapp.")
 	public int getInvocationCount() {
 		return invokes;
 	}
 
+	/**
+	 * @return Current number of runs.
+	 */
 	@ManagedAttribute(description = "Current number of runs.")
 	public int getCurrentRunCount() {
 		return runStore.listRuns(null, null).size();
 	}
 
+	/**
+	 * @return Whether to write submitted workflows to the log.
+	 */
 	@ManagedAttribute(description = "Whether to write submitted workflows to the log.")
 	public boolean getLogIncomingWorkflows() {
 		return logIncomingWorkflows;
 	}
 
+	/**
+	 * @param logIncomingWorkflows
+	 *            Whether to write submitted workflows to the log.
+	 */
 	@ManagedAttribute(description = "Whether to write submitted workflows to the log.")
 	public void setLogIncomingWorkflows(boolean logIncomingWorkflows) {
 		this.logIncomingWorkflows = logIncomingWorkflows;
 	}
 
+	/**
+	 * @return Whether outgoing exceptions should be logged before being
+	 *         converted to responses.
+	 */
 	@ManagedAttribute(description = "Whether outgoing exceptions should be logged before being converted to responses.")
 	public boolean getLogOutgoingExceptions() {
 		return logOutgoingExceptions;
 	}
 
+	/**
+	 * @param logOutgoing
+	 *            Whether outgoing exceptions should be logged before being
+	 *            converted to responses.
+	 */
 	@ManagedAttribute(description = "Whether outgoing exceptions should be logged before being converted to responses.")
 	public void setLogOutgoingExceptions(boolean logOutgoing) {
 		logOutgoingExceptions = logOutgoing;
 	}
 
-	/**
-	 * Whether we should log all workflows sent to us
-	 */
+	/** Whether we should log all workflows sent to us. */
 	private boolean logIncomingWorkflows;
 
-	/**
-	 * Whether we allow the creation of new workflow runs
-	 */
+	/** Whether we allow the creation of new workflow runs. */
 	private boolean allowNewWorkflowRuns = true;
 
 	@Resource
@@ -140,35 +160,39 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	@Resource
 	private SecurityContext jaxrsContext;
 
-	/**
-	 * Encapsulates the policies applied by this server.
-	 */
+	/** Encapsulates the policies applied by this server. */
 	Policy policy;
-	/**
-	 * A factory for workflow runs.
-	 */
+	/** A factory for workflow runs. */
 	RunFactory runFactory;
-	/**
-	 * A storage facility for workflow runs.
-	 */
+	/** A storage facility for workflow runs. */
 	RunStore runStore;
-	/**
-	 * A factory for event listeners to attach to workflow runs.
-	 */
+	/** A factory for event listeners to attach to workflow runs. */
 	ListenerFactory listenerFactory;
 
+	/**
+	 * @param policy
+	 */
 	public void setPolicy(Policy policy) {
 		this.policy = policy;
 	}
 
+	/**
+	 * @param listenerFactory
+	 */
 	public void setListenerFactory(ListenerFactory listenerFactory) {
 		this.listenerFactory = listenerFactory;
 	}
 
+	/**
+	 * @param runFactory
+	 */
 	public void setRunFactory(RunFactory runFactory) {
 		this.runFactory = runFactory;
 	}
 
+	/**
+	 * @param runStore
+	 */
 	public void setRunStore(RunStore runStore) {
 		this.runStore = runStore;
 	}
@@ -324,9 +348,8 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 				return new TavernaServerListenersREST() {
 					@Override
 					public Response addListener(
-							ListenerDefinition typeAndConfiguration,
-							UriInfo ui) throws NoUpdateException,
-							NoListenerException {
+							ListenerDefinition typeAndConfiguration, UriInfo ui)
+							throws NoUpdateException, NoListenerException {
 						invokes++;
 						policy.permitUpdate(getPrincipal(), run);
 						String name = listenerFactory.makeListener(run,
@@ -507,44 +530,47 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 			}
 
 			class ListenerIfcImpl implements TavernaServerListenerREST {
-				Listener l;
+				Listener listen;
 
 				ListenerIfcImpl(Listener l) {
-					this.l = l;
+					this.listen = l;
 				}
 
 				@Override
 				public String getConfiguration() {
 					invokes++;
-					return l.getConfiguration();
+					return listen.getConfiguration();
 				}
 
 				@Override
 				public ListenerDescription getDescription(UriInfo ui) {
 					invokes++;
-					return new ListenerDescription(l.getName(), l.getType(), l
-							.listProperties(), ui);
+					return new ListenerDescription(listen.getName(), listen
+							.getType(), listen.listProperties(), ui);
 				}
 
 				@Override
-				public TavernaServerListenersREST.Properties getProperties() {
+				public TavernaServerListenersREST.Properties getProperties(
+						UriInfo ui) {
 					invokes++;
-					return new TavernaServerListenersREST.Properties(l
-							.listProperties());
+					return new TavernaServerListenersREST.Properties(ui
+							.getAbsolutePathBuilder().path(
+									"../../{listener}/properties/{prop}"),
+							listen.getName(), listen.listProperties());
 				}
 
 				@Override
 				public TavernaServerListenersREST.Property getProperty(
 						final String propertyName) throws NoListenerException {
 					invokes++;
-					List<String> p = asList(l.listProperties());
+					List<String> p = asList(listen.listProperties());
 					if (p.contains(propertyName))
 						return new TavernaServerListenersREST.Property() {
 							@Override
 							public String getValue() {
 								invokes++;
 								try {
-									return l.getProperty(propertyName);
+									return listen.getProperty(propertyName);
 								} catch (NoListenerException e) {
 									log.error(
 											"unexpected exception; property \""
@@ -560,7 +586,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 									NoListenerException {
 								invokes++;
 								policy.permitUpdate(getPrincipal(), run);
-								l.setProperty(propertyName, value);
+								listen.setProperty(propertyName, value);
 								return seeOther(ui.getRequestUri()).build();
 							}
 						};

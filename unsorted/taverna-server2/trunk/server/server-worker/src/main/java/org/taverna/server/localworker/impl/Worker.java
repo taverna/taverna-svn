@@ -47,6 +47,10 @@ public interface Worker {
 
 	/**
 	 * Kills off the subprocess if it exists and is alive.
+	 * 
+	 * @throws Exception
+	 *             if anything goes badly wrong when the worker is being killed
+	 *             off.
 	 */
 	public void killWorker() throws Exception;
 

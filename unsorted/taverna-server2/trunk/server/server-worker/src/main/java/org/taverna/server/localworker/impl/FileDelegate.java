@@ -23,6 +23,12 @@ public class FileDelegate extends UnicastRemoteObject implements RemoteFile {
 	private File file;
 	private DirectoryDelegate parent;
 
+	/**
+	 * @param file
+	 * @param parent
+	 * @throws RemoteException
+	 *             If registration of the file fails.
+	 */
 	public FileDelegate(File file, DirectoryDelegate parent)
 			throws RemoteException {
 		super();

@@ -17,8 +17,14 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlSeeAlso( { MakeOrUpdateDirEntry.MakeDirectory.class,
 		MakeOrUpdateDirEntry.SetFileContents.class })
 public abstract class MakeOrUpdateDirEntry {
+	/**
+	 * The name of the file or directory that the operation applies to.
+	 */
 	@XmlAttribute
 	public String name;
+	/**
+	 * The contents of the file to upload.
+	 */
 	@XmlValue
 	public byte[] contents;
 

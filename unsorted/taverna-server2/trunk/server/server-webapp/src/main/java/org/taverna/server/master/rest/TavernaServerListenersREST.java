@@ -1,7 +1,6 @@
 package org.taverna.server.master.rest;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -124,13 +123,15 @@ public interface TavernaServerListenersREST {
 		 * Get the list of properties supported by a given event listener
 		 * attached to a workflow run.
 		 * 
+		 * @param ui
+		 *            Information about this request.
 		 * @return The list of property names.
 		 */
 		@GET
 		@Path("properties")
 		@Produces( { "application/xml", "application/json" })
 		@Description("Get the list of properties supported by a given event listener attached to a workflow run.")
-		public Properties getProperties();
+		public Properties getProperties(@Context UriInfo ui);
 
 		/**
 		 * Get an object representing a particular property.
@@ -198,14 +199,10 @@ public interface TavernaServerListenersREST {
 	@XmlRootElement
 	@XmlType(name = "ListenerDescription")
 	public class ListenerDescription {
-		/**
-		 * The (arbitrary) name of the event listener.
-		 */
+		/** The (arbitrary) name of the event listener. */
 		@XmlAttribute
 		public String name;
-		/**
-		 * The type of the event listener.
-		 */
+		/** The type of the event listener. */
 		@XmlAttribute
 		public String type;
 		/**
@@ -220,9 +217,24 @@ public interface TavernaServerListenersREST {
 		@XmlElement(name = "property", nillable = false)
 		public List<PropertyDescription> properties;
 
+		/**
+		 * Make a blank listener description.
+		 */
 		public ListenerDescription() {
 		}
 
+		/**
+		 * Make a listener description from the given characterisation.
+		 * 
+		 * @param name
+		 *            The name of the listener.
+		 * @param type
+		 *            The type of the listener.
+		 * @param properties
+		 *            The names of the listener's properties.
+		 * @param ui
+		 *            The factory for URIs.
+		 */
 		public ListenerDescription(String name, String type,
 				String[] properties, UriInfo ui) {
 			this.name = name;
@@ -251,9 +263,22 @@ public interface TavernaServerListenersREST {
 		@XmlAttribute
 		String name;
 
+		/**
+		 * Make an empty description of a property.
+		 */
 		public PropertyDescription() {
 		}
 
+		/**
+		 * Make a description of a property.
+		 * 
+		 * @param listenerName
+		 *            The name of the listener whose property this is.
+		 * @param propName
+		 *            The name of the property.
+		 * @param ub
+		 *            The factory for URIs.
+		 */
 		PropertyDescription(String listenerName, String propName, UriBuilder ub) {
 			super(ub, "", listenerName, propName);
 			this.name = propName;
@@ -262,17 +287,31 @@ public interface TavernaServerListenersREST {
 
 	/**
 	 * The list of descriptions of listeners attached to a run. Done with JAXB.
+	 * 
 	 * @author Donal Fellows
 	 */
 	@XmlRootElement
 	@XmlType(name = "")
 	public static class Listeners {
+		/**
+		 * The listeners for a workflow run.
+		 */
 		@XmlElement
 		public List<ListenerDescription> description;
 
+		/**
+		 * Make a blank description of listeners.
+		 */
 		public Listeners() {
+			description = new ArrayList<ListenerDescription>();
 		}
 
+		/**
+		 * Make a description of the whole group out of the given list of
+		 * listener descriptions.
+		 * 
+		 * @param listeners
+		 */
 		public Listeners(List<ListenerDescription> listeners) {
 			description = listeners;
 		}
@@ -280,19 +319,40 @@ public interface TavernaServerListenersREST {
 
 	/**
 	 * The list of properties of a listener. Done with JAXB.
+	 * 
 	 * @author Donal Fellows
 	 */
 	@XmlRootElement
 	@XmlType(name = "")
 	public static class Properties {
+		/**
+		 * The references to the properties of a listener.
+		 */
 		@XmlElement
-		public List<String> name;
+		public List<PropertyDescription> property;
 
+		/**
+		 * Make an empty description of the properties of a listener.
+		 */
 		public Properties() {
 		}
 
-		public Properties(String[] properties) {
-			name = Arrays.asList(properties);
+		/**
+		 * Make the description of the properties of a listener.
+		 * 
+		 * @param ub
+		 *            The factory for URIs, configured.
+		 * @param listenerName
+		 *            The name of the listeners.
+		 * @param properties
+		 *            The names of the properties.
+		 */
+		public Properties(UriBuilder ub, String listenerName,
+				String[] properties) {
+			property = new ArrayList<PropertyDescription>(properties.length);
+			for (String propName : properties)
+				property
+						.add(new PropertyDescription(listenerName, propName, ub));
 		}
 	}
 }
