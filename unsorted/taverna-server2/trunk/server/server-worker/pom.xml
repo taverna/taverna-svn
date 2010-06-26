@@ -1,13 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>uk.org.taverna</groupId>
-	<artifactId>server.worker</artifactId>
+	<groupId>uk.org.taverna.server</groupId>
+	<artifactId>server-worker</artifactId>
 	<name>Taverna Workflow Run Implementation</name>
 	<version>0.0.1-SNAPSHOT</version>
 	<description>This is the implementation of the factory process that is started up by the web application to manage executing Taverna Workflow executeworkflow.sh calls.</description>
 	<parent>
-		<groupId>uk.org.taverna</groupId>
+		<groupId>uk.org.taverna.server</groupId>
 		<artifactId>server</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>
@@ -24,8 +24,8 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>uk.org.taverna</groupId>
-			<artifactId>server.runinterface</artifactId>
+			<groupId>uk.org.taverna.server</groupId>
+			<artifactId>server-runinterface</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
