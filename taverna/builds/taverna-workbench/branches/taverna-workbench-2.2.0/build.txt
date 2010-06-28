@@ -8,7 +8,7 @@ You'll need these to compile:
 Sun Java JDK 1.5 or newer (1.6 recommended)
  * http://java.sun.com/javase/downloads
 
-Maven 2.0.10 or newer (2.2.1 recommended)
+Maven 2.2.1 or newer
  * http://maven.apache.org/
 
 Graphviz  (for diagram generation in the compiled product)
@@ -21,7 +21,7 @@ Compiling
 
 Run:
 
-  export MAVEN_OPTS=-Xmx128m    (or equivalent for your shell/OS)
+  export MAVEN_OPTS="-Xmx300m -XX:MaxPermSize=140m"    (or equivalent for your shell/OS)
   mvn clean install -Prelease 
 
 At first time run this will download various external dependencies from public
