@@ -8,16 +8,41 @@
 
 <div>
 <h1>Taverna Server 2.3&alpha; README</h1>
-
 <p>This is the alpha release of the Taverna Server 2.3.</p>
 </div>
+
 <div>
 <h2>About</h2>
 <p>This alpha release is a feature-incomplete version of the Taverna
 2 Server that has been made available to allow people outside the core
 Taverna team the opportunity to provide input on their requirements from
 a basis of trying to integrate things into their own deployments.</p>
-<!-- FIXME: List of Features that Exist -->
+<p>This release supports a number of key features:</p>
+<ul>
+	<li>
+	<p><b>Upload and Execution of arbitrary Taverna 2 workflows</b></p>
+	</li>
+	<li>
+	<p><b>Access to Workflow's Interim Output Files</b>; no need to
+	wait for the workflow to finish if the results are available sooner</p>
+	<ul>
+		<li>
+		<p><b>Safe File Management</b> for handling results; workflows
+		cannot interfere with each others files</p>
+		</li>
+	</ul>
+	</li>
+	<li>
+	<p>Simple mechanism for <b>Removal of Expired Workflows</b></p>
+	</li>
+	<li>
+	<p>Support for both <b>RESTful and SOAP APIs</b>, for easier
+	tooling</p>
+	</li>
+	<li>
+	<p><b>JMX-based Management API</b></p>
+	</li>
+</ul>
 <p>There are a number of known-missing features; notably these
 include:</p>
 <ul>
@@ -35,6 +60,7 @@ include:</p>
 	</li>
 </ul>
 </div>
+
 <div>
 <h2>Installation</h2>
 <h3>Prerequisites</h3>
@@ -111,7 +137,8 @@ go to the Deploy box. Fill in with:</p>
 respond with OK (at the top of the reloaded page) and you'll have the
 taverna-server webapp installed at <tt>http://&lt;SERVER:PORT&gt;/taverna-server</tt>.</p>
 </div>
-<div title="Usage">
+
+<div>
 <h2>Using the T2 Server</h2>
 <p>The Taverna 2 Server supports both REST and SOAP APIs; you may
 use either API to access the service and any of the workflow runs hosted
@@ -167,8 +194,16 @@ API.</p>
 &lt;/t2s:TavernaRunInput&gt;</pre></blockquote>
 		<p>Note the similarity of the final part of this process to the
 		previous method for setting an input.</p>
+		<p>You can also create a directory, e.g., IN, to hold the input
+		files. This is done by POSTing a different message to <tt><b>&lt;RUN_URI&gt;</b>/wd</tt></p>
+		<blockquote><pre>&lt;t2s:mkdir xmlns:t2s="http://ns.taverna.org.uk/2010/xml/server/rest/" name="<b>IN</b>" /&gt;</pre></blockquote>
+		<p>With that, you can then create files in the IN subdirectory by
+		sending the <tt>upload</tt> message to <tt><b>&lt;RUN_URI&gt;</b>/wd/IN</tt>
+		and you can use the file as an input by using a name such as <tt>IN/BOO.TXT</tt>.
+		You can also create sub-subdirectories if required by sending the <tt>mkdir</tt>
+		message to the natural URI of the parent directory, just as sending an
+		<tt>upload</tt> message to that URI creates a file in that directory.</p>
 		</dd>
-		<!-- TODO: DOCUMENT mkdir -->
 
 		<dt><i>Uploading a Baclava File</i></dt>
 		<dd>
@@ -244,6 +279,7 @@ API.</p>
 <p>All operations described above have equivalents in the SOAP
 service interface.</p>
 </div>
+
 <div>
 <h2>Managing the Server</h2>
 <p>The server is designed to be managed via JMX. This allows the use
@@ -338,6 +374,7 @@ properties is liable to change, but is as follows in this release:</p>
 	</dd>
 </dl>
 </div>
+
 </body>
 </html>
 <!-- EOF -->
