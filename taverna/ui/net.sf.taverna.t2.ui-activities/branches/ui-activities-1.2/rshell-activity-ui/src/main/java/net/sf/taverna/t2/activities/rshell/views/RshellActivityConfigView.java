@@ -40,6 +40,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -76,15 +77,19 @@ import javax.swing.text.ViewFactory;
 import net.sf.taverna.t2.activities.rshell.RShellPortSymanticTypeBean;
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
 import net.sf.taverna.t2.activities.rshell.RshellActivityConfigurationBean;
+import net.sf.taverna.t2.activities.rshell.RshellActivityHealthChecker;
 import net.sf.taverna.t2.activities.rshell.RshellConnectionSettings;
 import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SemanticTypes;
 import net.sf.taverna.t2.lang.ui.ExtensionFileFilter;
 import net.sf.taverna.t2.lang.ui.FileTools;
 import net.sf.taverna.t2.lang.ui.LineEnabledTextPanel;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
+import net.sf.taverna.t2.visit.VisitReport;
+import net.sf.taverna.t2.visit.VisitReport.Status;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationPanel;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Port;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
@@ -180,6 +185,10 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		return (!convertBeanToString(calculateConfiguration()).equals(configurationString));
 	}
 
+    public void whenOpened() {
+	scriptTextArea.requestFocus();
+    }
+
 	/**
 	 * Adds a {@link JButton} which handles the reconfiguring of the
 	 * {@link RshellActivity} through the altered
@@ -228,6 +237,33 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		
 		scriptEditPanel.add(new LineEnabledTextPanel(scriptTextArea), BorderLayout.CENTER);
 
+		final JButton checkScriptButton = new JButton("Check script");
+		checkScriptButton.setToolTipText("Check the R script");
+		checkScriptButton.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent ex) {
+				RshellActivityHealthChecker healthChecker = new RshellActivityHealthChecker();
+				RshellActivity fakeActivity = new RshellActivity();
+				try {
+					fakeActivity.configure(calculateConfiguration());
+				} catch (ActivityConfigurationException e) {
+					JOptionPane.showMessageDialog(RshellActivityConfigView.this, e.getMessage(), "Invalid Rshell configuration", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				
+				VisitReport visit = healthChecker.visit(fakeActivity, Collections.emptyList());
+				int messageType;
+				if (visit.getStatus().equals(Status.OK)) {
+					messageType = JOptionPane.INFORMATION_MESSAGE;
+				} else if (visit.getStatus().equals(Status.WARNING)) {
+					messageType = JOptionPane.WARNING_MESSAGE;
+				} else { // SEVERE
+					messageType = JOptionPane.ERROR_MESSAGE;
+				}
+				JOptionPane.showMessageDialog(RshellActivityConfigView.this, visit.toString(), "Rshell script check", messageType);
+			}
+			
+		});
 		JButton loadRScriptButton = new JButton("Load script");
 		loadRScriptButton.setToolTipText("Load an R script from a file");
 		loadRScriptButton.addActionListener(new ActionListener() {
@@ -273,6 +309,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout());
 //		buttonPanel.add(rVersionCheck);
+//		buttonPanel.add(checkScriptButton);
 		buttonPanel.add(loadRScriptButton);
 		buttonPanel.add(saveRScriptButton);
 		buttonPanel.add(clearScriptButton);

@@ -34,6 +34,11 @@ import net.sf.taverna.t2.workflowmodel.health.HealthChecker;
 import net.sf.taverna.t2.visit.VisitReport;
 import net.sf.taverna.t2.visit.VisitReport.Status;
 
+import org.rosuda.REngine.REXP;
+import org.rosuda.REngine.REXPMismatchException;
+import org.rosuda.REngine.REngineException;
+import org.rosuda.REngine.Rserve.RserveException;
+
 /**
  * A health checker for the Rshell activity.
  * 
@@ -45,11 +50,34 @@ public class RshellActivityHealthChecker implements HealthChecker<RshellActivity
 	}
 
 	public VisitReport visit(RshellActivity activity, List<Object> ancestors) {
-		return new VisitReport(HealthCheck.getInstance(), activity, "Health check not implemented", HealthCheck.NOT_IMPLEMENTED, Status.WARNING);
+	    VisitReport vr = null;
+	    
+	    RshellActivityConfigurationBean config = activity.getConfiguration();
+	    if (config != null) {
+		RshellConnectionSettings settings = activity.getConfiguration()
+		    .getConnectionSettings();
+		RshellConnection connection = null;
+		try {
+		    connection = RshellConnectionManager.INSTANCE
+			.createConnection(settings);
+		} catch (RserveException e) {
+		    vr = new VisitReport(HealthCheck.getInstance(), activity, "Read problem", HealthCheck.IO_PROBLEM, Status.SEVERE);
+		    vr.setProperty("exception", e);
+		    vr.setProperty("endpoint", "http://" + settings.getHost() + ":" + settings.getPort());
+		    return vr;
+		}
+		finally {
+		    if (connection != null && connection.isConnected()) {
+			RshellConnectionManager.INSTANCE
+			    .releaseConnection(connection);
+		    }
+		}
+	    }
+	    return null;
 	}
 	
 	public boolean isTimeConsuming() {
-		return false;
+		return true;
 	}
 
 
