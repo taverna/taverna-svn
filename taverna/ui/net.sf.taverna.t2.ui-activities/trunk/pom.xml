@@ -28,7 +28,7 @@
 		<t2.ui.components.version>1.3-SNAPSHOT</t2.ui.components.version>
 		<t2.security.version>1.3-SNAPSHOT</t2.security.version>
 		<jedit-syntax.version>2.2.4-SNAPSHOT</jedit-syntax.version>
-		<taverna.version>1.7.2.2-SNAPSHOT</taverna.version>
+		<taverna.version>1.7.2.2</taverna.version>
 	</properties>
 
 	<modules>
