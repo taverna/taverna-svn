@@ -13,6 +13,7 @@
 			<includes>
 				<include>*.html</include>
 				<include>*.xml</include>
+				<include>*.txt</include>
 			</includes>
 			<excludes>
 				<exclude>pom.xml</exclude>
@@ -26,4 +27,29 @@
 			<outputDirectory>.</outputDirectory>
 		</fileSet>
 	</fileSets>
+<!-- 
+	<moduleSets>
+		<moduleSet>
+			<includes>
+				<include>foobar:foo</include>
+			</includes>
+			<sources>
+				<fileSets>
+					<fileSet>
+						<directory>src</directory>
+						<includes>
+							<include>*.txt</include>
+						</includes>
+					</fileSet>
+				</fileSets>
+			</sources>
+		</moduleSet>
+		<moduleSet>
+			<includes>
+				<include>foobar:foo-bar</include>
+			</includes>
+			<binaries />
+		</moduleSet>
+	</moduleSets>
+-->
 </assembly>

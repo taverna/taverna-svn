@@ -6,13 +6,30 @@
 </head>
 <body>
 
+<div style="float: right; background: #eeeeee">
+<ul>
+	<li><a href="#about">About</a></li>
+	<li><a href="#install">Installation</a>
+	<ul>
+		<li><a href="#install/needed">Prerequisites</a></li>
+		<li><a href="#install/tomcat">Installation into Tomcat</a>&nbsp;</li>
+	</ul>
+	</li>
+	<li><a href="#usage">Using the T2 Server</a></li>
+	<li><a href="#manage">Managing the Server</a></li>
+</ul>
+</div>
 <div>
+
 <h1>Taverna Server 2.3&alpha; README</h1>
-<p>This is the alpha release of the Taverna Server 2.3.</p>
+<p>This is the alpha release of the Taverna Server 2.3, from the <a
+	href="http://www.mygrid.org.uk/">myGrid</a> team at the <a
+	href="http://www.manchester.ac.uk/">University of Manchester</a>.</p>
 </div>
 
+<br clear="right" />
 <div>
-<h2>About</h2>
+<h2><a name="about" />About</h2>
 <p>This alpha release is a feature-incomplete version of the Taverna
 2 Server that has been made available to allow people outside the core
 Taverna team the opportunity to provide input on their requirements from
@@ -59,24 +76,26 @@ include:</p>
 	<p>Persistence across Service Restarts</p>
 	</li>
 </ul>
+<hr />
 </div>
 
 <div>
-<h2>Installation</h2>
-<h3>Prerequisites</h3>
+<h2><a name="install" />Installation</h2>
+<h3><a name="install/needed" />Prerequisites</h3>
 <p>You will need a <b>Java 6</b> installation.</p>
 <p>You will need a suitable <b>servlet container</b>.</p>
 <dl>
-	<dd>This software was developed using <b>Tomcat 6.0.26</b> as the
-	servlet container, but other versions of Tomcat are known to work (back
-	to at least 6.0.20) and other containers may also function correctly as
-	no Tomcat-specific APIs are used in the deployable code. We welcome
-	feedback on which containers work.</dd>
+	<dd>This software was developed using <a
+		href="http://tomcat.apache.org/download-60.cgi"><b>Tomcat
+	6.0.26</b></a> as the servlet container, but other versions of Tomcat are known
+	to work (back to at least 6.0.20) and other containers may also
+	function correctly as no Tomcat-specific APIs are used in the
+	deployable code. We welcome feedback on which containers work.</dd>
 </dl>
-<p>You will need <b>Taverna 2.2</b> installed.</p>
-<!-- TODO: link to T2.2 distro --></div>
-<div>
-<h3>Installation into Tomcat</h3>
+<p>You will need <a
+	href="http://www.taverna.org.uk/download/taverna-2-2/"><b>Taverna
+2.2</b></a> (or later) installed.</p>
+<h3><a name="install/tomcat" />Installation into Tomcat</h3>
 <p>Note that these instructions are Tomcat-specific.</p>
 <h4>Step 1. Configure Tomcat for JMX</h4>
 <p>If you're going to use JMX to administer the server (good for
@@ -93,6 +112,10 @@ JMX management layer is secure; see the <a
 	href="http://java.sun.com/javase/6/docs/technotes/guides/management/agent.html"
 	title="Monitoring and Management Using JMX Technology">Java JMX
 documentation</a> for a discussion of how to do this.</p>
+<p>Users on Windows should edit <tt>&lt;TOMCATDIR&gt;/bin/startup.bat</tt>
+instead, adding the line:</p>
+<blockquote><pre>set CATALINA_OPTS=-Dcom.sun.management.jmxremote</pre>
+</blockquote>
 <h4>Step 2. Configure Tomcat for General Management</h4>
 <p>Add a user entry in <tt>&lt;TOMCATDIR&gt;/conf/tomcat-users.xml</tt>
 so that the manager webapp can know who you are and that you have
@@ -136,10 +159,11 @@ go to the Deploy box. Fill in with:</p>
 <p>Press the Deploy button; after a few seconds, Tomcat should
 respond with OK (at the top of the reloaded page) and you'll have the
 taverna-server webapp installed at <tt>http://&lt;SERVER:PORT&gt;/taverna-server</tt>.</p>
+<hr />
 </div>
 
 <div>
-<h2>Using the T2 Server</h2>
+<h2><a name="usage" />Using the T2 Server</h2>
 <p>The Taverna 2 Server supports both REST and SOAP APIs; you may
 use either API to access the service and any of the workflow runs hosted
 by the service. The full service descriptions are available at <tt>http://<b>&lt;SERVER:PORT&gt;</b>/taverna-server/services</tt>
@@ -278,10 +302,11 @@ API.</p>
 </ol>
 <p>All operations described above have equivalents in the SOAP
 service interface.</p>
+<hr />
 </div>
 
 <div>
-<h2>Managing the Server</h2>
+<h2><a name="manage" />Managing the Server</h2>
 <p>The server is designed to be managed via JMX. This allows the use
 of tools such as <tt>jconsole</tt> or <tt>jvisualvm</tt> (with
 appropriate plugin) to connect to the server so that they can view,
@@ -373,8 +398,13 @@ properties is liable to change, but is as follows in this release:</p>
 	factory subprocess to start.</p>
 	</dd>
 </dl>
+<hr />
 </div>
 
+<div>
+<p><small>Copyright &copy; 2010. The University of
+Manchester.</small></p>
+</div>
 </body>
 </html>
 <!-- EOF -->
