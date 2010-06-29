@@ -14,8 +14,8 @@
 		<relativePath>..</relativePath>
 	</parent>
 	<scm>
-		<connection>scm:http://taverna.googlecode.com/svn/unsorted/taverna-server2/trunk/server/</connection>
-		<developerConnection>scm:https://taverna.googlecode.com/svn/unsorted/taverna-server2/trunk/server/</developerConnection>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/unsorted/taverna-server2/trunk/server</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/unsorted/taverna-server2/trunk/server</developerConnection>
 		<url>http://code.google.com/p/taverna/source/browse/unsorted/taverna-server2/trunk/server</url>
 	</scm>
 

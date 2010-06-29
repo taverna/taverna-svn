@@ -20,12 +20,12 @@
 			<email>donal.k.fellows@manchester.ac.uk</email>
 			<organization>The University of Manchester</organization>
 			<organizationUrl>http://www.manchester.ac.uk/</organizationUrl>
-			<timezone>:Europe/London</timezone>
+			<timezone>0</timezone>
 		</developer>
 	</developers>
 	<scm>
-		<connection>scm:http://taverna.googlecode.com/svn/unsorted/taverna-server2/trunk/</connection>
-		<developerConnection>scm:https://taverna.googlecode.com/svn/unsorted/taverna-server2/trunk/</developerConnection>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/unsorted/taverna-server2/trunk</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/unsorted/taverna-server2/trunk</developerConnection>
 		<url>http://code.google.com/p/taverna/source/browse/unsorted/taverna-server2/trunk</url>
 	</scm>
 	<organization>
@@ -63,6 +63,18 @@
 	</ciManagement>
 	<repositories>
 	</repositories>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.0</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 	<reporting>
 		<plugins>
 			<plugin>
@@ -102,6 +114,45 @@
 						</group>
 					</groups>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-changelog-plugin</artifactId>
+				<version>2.2</version>
+			</plugin>
+<!--
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-changes-plugin</artifactId>
+				<version>2.3</version>
+				<reportSets>
+					<reportSet>
+						<id>jira-report</id>
+						<reports>
+							<report>jira-report</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+-->
+<!--
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.5</version>
+			</plugin>
+-->
+<!--
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>2.5</version>
+			</plugin>
+-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>2.5</version>
 			</plugin>
 		</plugins>
 	</reporting>

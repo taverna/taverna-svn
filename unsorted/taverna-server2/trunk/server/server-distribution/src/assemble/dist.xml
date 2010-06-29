@@ -7,6 +7,29 @@
 	<formats>
 		<format>zip</format>
 	</formats>
+<!-- 
+	<dependencySets>
+		<dependencySet>
+			<useTransitiveDependencies>false</useTransitiveDependencies>
+			<useProjectArtifact>false</useProjectArtifact>
+			<unpack>false</unpack>
+			<scope>runtime</scope>
+			<fileMode>0644</fileMode>
+		</dependencySet>
+	</dependencySets>
+	<fileSets>
+		<fileSet>
+			<includes>
+				<include>*.html</include>
+				<include>*.xml</include>
+				<include>*.txt</include>
+			</includes>
+			<excludes>
+				<exclude>pom.xml</exclude>
+			</excludes>
+		</fileSet>
+	</fileSets>
+-->
 	<fileSets>
 		<fileSet>
 			<directory>${project.basedir}/..</directory>
@@ -18,6 +41,7 @@
 			<excludes>
 				<exclude>pom.xml</exclude>
 			</excludes>
+			<fileMode>0644</fileMode>
 		</fileSet>
 		<fileSet>
 			<directory>${project.basedir}/../server-webapp/target</directory>
@@ -25,19 +49,20 @@
 				<include>*.war</include>
 			</includes>
 			<outputDirectory>.</outputDirectory>
+			<fileMode>0644</fileMode>
 		</fileSet>
 	</fileSets>
 <!-- 
 	<moduleSets>
 		<moduleSet>
 			<includes>
-				<include>foobar:foo</include>
+				<include>uk.org.taverna.server:server</include>
 			</includes>
 			<sources>
 				<fileSets>
 					<fileSet>
-						<directory>src</directory>
 						<includes>
+							<include>*.html</include>
 							<include>*.txt</include>
 						</includes>
 					</fileSet>
@@ -46,7 +71,7 @@
 		</moduleSet>
 		<moduleSet>
 			<includes>
-				<include>foobar:foo-bar</include>
+				<include>uk.org.taverna.server:server-webapp</include>
 			</includes>
 			<binaries />
 		</moduleSet>
