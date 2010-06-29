@@ -1,0 +1,51 @@
+<b:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:b="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+              http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.5.xsd
+              http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+	<b:import resource="authorization.xml" />
+	<b:import resource="authentication.xml" />
+
+	<global-method-security secured-annotations="enabled"
+		jsr250-annotations="enabled" expression-annotations="enabled">
+		<expression-handler ref="expressionHandler" />
+		<!--
+			<protect-pointcut expression="execution(*
+			net.sf.taverna.t2.service.*Manager.*(..))" access="ROLE_ADMIN" />
+		-->
+	</global-method-security>
+
+	<http auto-config='true'>
+		<intercept-url pattern="/login.jsp*" filters="none" />
+		<intercept-url pattern="/**" access="ROLE_USER" />
+		<!--
+			<form-login login-page="/login.jsp"
+			authentication-failure-url="/login.jsp?login_error=1"
+			default-target-url="/index.jsp" />
+		-->
+		<http-basic />
+	</http>
+
+	<authentication-provider>
+		<!--
+	    <password-encoder hash="md5">
+		    <salt-source user-property="username"/>
+		</password-encoder>
+		-->
+		<jdbc-user-service data-source-ref="server.dataSource" />
+	</authentication-provider>
+
+	<b:bean id="expressionHandler"
+		class="org.springframework.security.expression.support.DefaultSecurityExpressionHandler">
+		<b:property name="permissionEvaluator" ref="permissionEvaluator" />
+	</b:bean>
+
+	<b:bean id="permissionEvaluator"
+		class="org.springframework.security.acls.AclPermissionEvaluator">
+		<b:constructor-arg ref="aclService" />
+	</b:bean>
+
+
+</b:beans>

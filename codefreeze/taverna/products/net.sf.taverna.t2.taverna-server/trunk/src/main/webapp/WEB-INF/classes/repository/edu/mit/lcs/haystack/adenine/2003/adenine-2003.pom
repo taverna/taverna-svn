@@ -1,0 +1,9 @@
+<?xml version="1.0"?><project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>edu.mit.lcs.haystack</groupId>
+  <artifactId>adenine</artifactId>
+  <version>2003</version>
+  <distributionManagement>
+    <status>deployed</status>
+  </distributionManagement>
+</project>

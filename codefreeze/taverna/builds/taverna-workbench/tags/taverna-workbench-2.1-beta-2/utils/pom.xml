@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sf.taverna.t2.builds</groupId>
+		<artifactId>taverna-workbench</artifactId>
+		<version>2.1-beta-2</version>
+	</parent>
+	<groupId>net.sf.taverna.t2.builds.taverna-workbench</groupId>
+	<artifactId>utils</artifactId>
+	<packaging>pom</packaging>
+
+	<name>Virtual build tree for the utils modules</name>
+	<modules>
+		<module>net.sf.taverna.jedit.jedit-syntax</module>
+		<module>net.sf.taverna.t2.lang</module>
+		<module>net.sf.taverna.wsdl-generic</module>
+		<module>org.biomart.martservice</module>
+	</modules>
+</project>
