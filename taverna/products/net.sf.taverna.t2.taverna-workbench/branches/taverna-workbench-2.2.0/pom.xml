@@ -12,6 +12,17 @@
 	<version>2.2.0</version>
 	<packaging>pom</packaging>
 	<name>Taverna workbench application</name>
+    <dependencyManagement>
+            <dependencies>
+                    <dependency>
+                            <groupId>log4j</groupId>
+                            <artifactId>log4j</artifactId>
+                            <version>1.2.14</version>
+                            <type>jar</type>
+                            <scope>compile</scope>
+                    </dependency>
+            </dependencies>
+    </dependencyManagement>
 	<properties>
 		<t2.taverna.workbench.version>${project.version}</t2.taverna.workbench.version>
 		<t2.infrastructure.version>2.2</t2.infrastructure.version>                
