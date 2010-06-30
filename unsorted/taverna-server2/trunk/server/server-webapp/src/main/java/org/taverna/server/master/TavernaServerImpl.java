@@ -76,8 +76,8 @@ import org.taverna.server.master.soap.TavernaServerSOAP;
  * 
  * @author Donal Fellows
  */
-@Path("/rest")
-@WebService(endpointInterface = "org.taverna.server.master.TavernaServerSOAP", serviceName = "TavernaServer", targetNamespace = Namespaces.SERVER_SOAP)
+@Path("/")
+@WebService(endpointInterface = "org.taverna.server.master.soap.TavernaServerSOAP", serviceName = "TavernaServer", targetNamespace = Namespaces.SERVER_SOAP)
 @ManagedResource(objectName = "Taverna:group=Server,name=Webapp", description = "The main web-application interface to Taverna Server.")
 public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	/** The logger for the server framework. */

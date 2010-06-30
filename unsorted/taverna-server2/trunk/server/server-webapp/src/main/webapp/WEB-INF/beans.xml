@@ -35,7 +35,15 @@
 			<cxf:logging />
 		</jaxws:features>
 	</jaxws:endpoint>
-	<jaxrs:server id="master_REST" address="/"
+	<jaxrs:server id="root_REST" address="/">
+		<jaxrs:serviceBeans>
+			<ref bean="root_facade" />
+		</jaxrs:serviceBeans>
+		<jaxrs:properties>
+			<entry key="org.apache.cxf.endpoint.private" value="true" />
+		</jaxrs:properties>
+	</jaxrs:server>
+	<jaxrs:server id="master_REST" address="/rest"
 		staticSubresourceResolution="true">
 		<jaxrs:serviceBeans>
 			<ref bean="tserv" />
@@ -62,6 +70,11 @@
 	<bean id="ExceptionProvider.NoListener" class="org.taverna.server.master.rest.NoListenerHandler" />
 	<bean id="ExceptionProvider.NoUpdate" class="org.taverna.server.master.rest.NoUpdateHandler" />
 	<bean id="ExceptionProvider.UnknownRun" class="org.taverna.server.master.rest.UnknownRunHandler" />
+
+	<bean id="root_facade" class="org.taverna.server.master.facade.Facade">
+		<property name="file" value="welcome.html" />
+		<property name="pattern" value="SERVICE_URI/" />
+	</bean>
 
 	<bean id="MBeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">
 		<property name="locateExistingServerIfPossible" value="true" />
