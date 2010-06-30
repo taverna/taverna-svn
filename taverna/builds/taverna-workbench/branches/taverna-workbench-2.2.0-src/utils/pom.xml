@@ -14,11 +14,11 @@
 	<name>Virtual build tree for the utils modules</name>
 	<modules>
 		<!--  Already deployed
+		-->
 		<module>eu.medsea.mimeutil.mime-util</module>
 		<module>net.java.dev.jai-imageio</module>
 		<module>org.fife.ui.hexeditor</module>
 		<module>org.jdesktop.swingworker</module>
-		-->
 		
 		<module>org.biomart.martservice</module>
 		<module>net.sf.taverna.jedit.jedit-syntax</module>
