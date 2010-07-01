@@ -6,7 +6,7 @@
 	<parent>
 		<artifactId>server</artifactId>
 		<groupId>uk.org.taverna.server</groupId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>2.3-alpha-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<groupId>uk.org.taverna.server</groupId>
@@ -33,7 +33,7 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.2-beta-5</version>
 				<configuration>
-					<finalName>TavernaServer-${t2server.version}</finalName>
+					<finalName>TavernaServer-${parent.version}</finalName>
 					<descriptors>
 						<descriptor>src/assemble/dist.xml</descriptor>
 					</descriptors>

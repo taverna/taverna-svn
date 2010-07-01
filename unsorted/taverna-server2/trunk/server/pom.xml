@@ -5,7 +5,7 @@
 	<groupId>uk.org.taverna.server</groupId>
 	<artifactId>server</artifactId>
 	<packaging>pom</packaging>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>2.3-alpha-SNAPSHOT</version>
 	<name>Taverna Server</name>
 	<description>Taverna Server is a service that provides execution of Taverna Workflows, provided they do not access the user interface while executing.</description>
 	<url>http://www.taverna.org.uk/</url>
@@ -21,6 +21,10 @@
 			<organization>The University of Manchester</organization>
 			<organizationUrl>http://www.manchester.ac.uk/</organizationUrl>
 			<timezone>0</timezone>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
 		</developer>
 	</developers>
 	<scm>
@@ -55,11 +59,37 @@
 		</mailingList>
 	</mailingLists>
 	<contributors>
+		<contributor>
+			<name>Alexandra Nenadic</name>
+			<organization>The University of Manchester</organization>
+			<organizationUrl>http://www.manchester.ac.uk/</organizationUrl>
+			<timezone>0</timezone>
+			<roles>
+				<role>website</role>
+			</roles>
+		</contributor>
+		<contributor>
+			<name>Stian Soiland</name>
+			<organization>The University of Manchester</organization>
+			<organizationUrl>http://www.manchester.ac.uk/</organizationUrl>
+			<timezone>0</timezone>
+			<roles>
+				<role>code review</role>
+			</roles>
+		</contributor>
 	</contributors>
 	<ciManagement>
 		<system>Hudson</system>
 		<url>http://www.mygrid.org.uk/hudson/job/uk.org.taverna.server/</url>
-		<!-- No notification yet. -->
+		<notifiers>
+			<notifier>
+				<type>mail</type>
+				<sendOnSuccess>false</sendOnSuccess>
+				<configuration>
+					<recipients>donal.k.fellows@manchester.ac.uk</recipients>
+				</configuration>
+			</notifier>
+		</notifiers>
 	</ciManagement>
 	<repositories>
 	</repositories>
@@ -71,9 +101,24 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
 					<version>2.0</version>
+					<configuration>
+						<autoVersionSubmodules>true</autoVersionSubmodules>
+						<tagBase>https://taverna.googlecode.com/svn/unsorted/taverna-server2/tags</tagBase>
+					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.0</version>
+				<configuration>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<tagBase>https://taverna.googlecode.com/svn/unsorted/taverna-server2/tags</tagBase>
+				</configuration>
+			</plugin>
+		</plugins>
 	</build>
 	<reporting>
 		<plugins>
@@ -82,10 +127,9 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.7</version>
 				<configuration>
-					<show>private</show>
+					<show>protected</show>
 					<nohelp>true</nohelp>
 					<detectLinks>true</detectLinks>
-					<linksource>true</linksource>
 					<stylesheet>maven</stylesheet>
 					<groups>
 						<group>
@@ -120,46 +164,85 @@
 				<artifactId>maven-changelog-plugin</artifactId>
 				<version>2.2</version>
 			</plugin>
-<!--
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-changes-plugin</artifactId>
-				<version>2.3</version>
-				<reportSets>
-					<reportSet>
-						<id>jira-report</id>
-						<reports>
-							<report>jira-report</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
--->
-<!--
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.5</version>
-			</plugin>
--->
-<!--
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pmd-plugin</artifactId>
-				<version>2.5</version>
-			</plugin>
--->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-report-plugin</artifactId>
-				<version>2.5</version>
-			</plugin>
 		</plugins>
 	</reporting>
 
-	<properties>
-		<t2server.version>2.3a1</t2server.version>
-	</properties>
+	<profiles>
+		<profile>
+			<id>full-site</id>
+			<reporting>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.7</version>
+						<configuration>
+							<show>private</show>
+							<nohelp>true</nohelp>
+							<detectLinks>true</detectLinks>
+							<linksource>true</linksource>
+							<stylesheet>maven</stylesheet>
+							<groups>
+								<group>
+									<title>Server Core WebService</title>
+									<packages>org.taverna.server.master:org.taverna.server.master.common:org.taverna.server.master.rest:org.taverna.server.master.soap</packages>
+								</group>
+								<group>
+									<title>Server SPI</title>
+									<packages>org.taverna.server.master.exceptions:org.taverna.server.master.factories:org.taverna.server.master.interfaces</packages>
+								</group>
+								<group>
+									<title>Server Coupling to RMI Back End</title>
+									<packages>org.taverna.server.master.localworker</packages>
+								</group>
+								<group>
+									<title>Mocked Implementations for Testing</title>
+									<packages>org.taverna.server.master.mocks</packages>
+								</group>
+								<group>
+									<title>Server RMI Interface to Back End</title>
+									<packages>org.taverna.server.localworker.remote</packages>
+								</group>
+								<group>
+									<title>Server Back End Factory Coupling to Command Line
+										Executor</title>
+									<packages>org.taverna.server.localworker.impl</packages>
+								</group>
+							</groups>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-changes-plugin</artifactId>
+						<version>2.3</version>
+						<reportSets>
+							<reportSet>
+								<id>jira-report</id>
+								<reports>
+									<report>jira-report</report>
+								</reports>
+							</reportSet>
+						</reportSets>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-checkstyle-plugin</artifactId>
+						<version>2.5</version>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-pmd-plugin</artifactId>
+						<version>2.5</version>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-report-plugin</artifactId>
+						<version>2.5</version>
+					</plugin>
+				</plugins>
+			</reporting>
+		</profile>
+	</profiles>
 
 	<modules>
 		<module>server-webapp</module>
