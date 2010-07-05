@@ -30,12 +30,12 @@ free licences such as the Apache licence and LGPL.
 
     For Taverna 1 support some dependencies from Taverna 1 are also downloaded
     from the myGrid repositories. The source code for these can be found at
-    http://launchpad.net/taverna/t1/1.7.2/+download/taverna-workbench-1.7.2-src.zip
+    http://launchpad.net/taverna/t1/1.7.2.2/+download/taverna-workbench-1.7.2.2-src.zip
 
 
 When the build is complete, go to
 products/net.sf.taverna.t2.taverna-workbench/workbench-distro/target where you
-should find taverna-workbench-2.1.0.zip - unzip and run Taverna from there.
+should find taverna-workbench-2.2.0.zip - unzip and run Taverna from there.
 
 
 Subversion
