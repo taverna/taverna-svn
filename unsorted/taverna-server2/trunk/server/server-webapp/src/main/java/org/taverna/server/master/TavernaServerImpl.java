@@ -229,6 +229,8 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	}
 
 	private UriBuilder getRestfulRunReferenceBuilder() {
+		if (jaxwsContext == null)
+			return fromUri("/taverna-server/rest/runs").path("{uuid}");
 		MessageContext mc = jaxwsContext.getMessageContext();
 		String pathInfo = (String) mc.get(PATH_INFO);
 		return fromUri(pathInfo.replaceFirst("/soap$", "/rest/runs")).path(
