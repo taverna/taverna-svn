@@ -10,9 +10,15 @@ Key Features
 ------------
  * Runs arbitrary Taverna 2 workflows
    * Delegates to T2 Command Line
- * Manages files for workflows
  * REST and SOAP interfaces
- * Tidies up when workflows expire
+   * All functionality available through both interfaces
+ * Manages files for workflows
+   * Make files, read files, delete files
+   * Create subdirectories, list directory contents
+   * Can download a whole directory structure as a ZIP
+ * Tidies up when workflow runs expire
+   * Expiry time fully configurable
+   * Can force immediate deletion of a workflow run
 
 Planned Features
 ----------------
