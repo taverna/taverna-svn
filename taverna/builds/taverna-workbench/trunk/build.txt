@@ -8,7 +8,7 @@ You'll need these to compile:
 Sun Java JDK 1.5 or newer (1.6 recommended)
  * http://java.sun.com/javase/downloads
 
-Maven 2.0.10 or newer (2.2.1 recommended)
+Maven 2.2.1 or newer
  * http://maven.apache.org/
 
 Graphviz  (for diagram generation in the compiled product)
@@ -21,7 +21,7 @@ Compiling
 
 Run:
 
-  export MAVEN_OPTS=-Xmx128m    (or equivalent for your shell/OS)
+  export MAVEN_OPTS="-Xmx300m -XX:MaxPermSize=140m"    (or equivalent for your shell/OS)
   mvn clean install -Prelease 
 
 At first time run this will download various external dependencies from public
@@ -30,12 +30,12 @@ free licences such as the Apache licence and LGPL.
 
     For Taverna 1 support some dependencies from Taverna 1 are also downloaded
     from the myGrid repositories. The source code for these can be found at
-    http://launchpad.net/taverna/t1/1.7.2/+download/taverna-workbench-1.7.2-src.zip
+    http://launchpad.net/taverna/t1/1.7.2.2/+download/taverna-workbench-1.7.2.2-src.zip
 
 
 When the build is complete, go to
 products/net.sf.taverna.t2.taverna-workbench/workbench-distro/target where you
-should find taverna-workbench-2.1.0.zip - unzip and run Taverna from there.
+should find taverna-workbench-2.2.0.zip - unzip and run Taverna from there.
 
 
 Subversion
