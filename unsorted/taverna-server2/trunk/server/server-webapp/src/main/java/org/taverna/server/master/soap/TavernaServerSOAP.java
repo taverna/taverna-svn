@@ -1,5 +1,7 @@
 package org.taverna.server.master.soap;
 
+import static org.taverna.server.master.common.Namespaces.SERVER_SOAP;
+
 import java.util.Date;
 
 import javax.jws.WebMethod;
@@ -9,7 +11,6 @@ import javax.jws.WebService;
 
 import org.taverna.server.master.common.DirEntryReference;
 import org.taverna.server.master.common.InputDescription;
-import org.taverna.server.master.common.Namespaces;
 import org.taverna.server.master.common.RunReference;
 import org.taverna.server.master.common.SCUFL;
 import org.taverna.server.master.common.Status;
@@ -27,7 +28,7 @@ import org.taverna.server.master.rest.TavernaServerREST;
  * @author Donal Fellows
  * @see TavernaServerREST
  */
-@WebService(name = "tavernaService", targetNamespace = Namespaces.SERVER_SOAP)
+@WebService(name = "tavernaService", targetNamespace = SERVER_SOAP)
 public interface TavernaServerSOAP {
 	/**
 	 * Make a run for a particular workflow.
@@ -37,7 +38,7 @@ public interface TavernaServerSOAP {
 	 * @return Annotated handle for created run.
 	 * @throws NoUpdateException
 	 */
-	@WebResult(name = "CreatedRun")
+	@WebResult(name = "Run")
 	RunReference submitWorkflow(@WebParam(name = "workflow") SCUFL workflow)
 			throws NoUpdateException;
 
@@ -46,7 +47,7 @@ public interface TavernaServerSOAP {
 	 * 
 	 * @return Annotated handle list.
 	 */
-	@WebResult(name = "Runs")
+	@WebResult(name = "Run")
 	RunReference[] listRuns();
 
 	/**
@@ -67,7 +68,7 @@ public interface TavernaServerSOAP {
 	 * @return A list of SCUFL workflows.
 	 */
 	@WebMethod(operationName = "getPermittedWorkflows")
-	@WebResult(name = "AllowedWorkflows")
+	@WebResult(name = "PermittedWorkflow")
 	public SCUFL[] getAllowedWorkflows();
 
 	/**
@@ -75,8 +76,8 @@ public interface TavernaServerSOAP {
 	 * 
 	 * @return A list of listener names.
 	 */
-	@WebMethod(operationName = "getPermittedListeners")
-	@WebResult(name = "AllowedListeners")
+	@WebMethod(operationName = "getPermittedListenerTypes")
+	@WebResult(name = "PermittedListenerType")
 	public String[] getAllowedListeners();
 
 	/**
@@ -341,7 +342,7 @@ public interface TavernaServerSOAP {
 	 *             If the server doesn't know about the run or if the user is
 	 *             not permitted to see it.
 	 */
-	@WebResult(name = "AttachedListeners")
+	@WebResult(name = "ListenerName")
 	public String[] getRunListeners(@WebParam(name = "runName") String runName)
 			throws UnknownRunException;
 
@@ -405,8 +406,32 @@ public interface TavernaServerSOAP {
 	 *             If some assumption is violated (e.g., reading the contents of
 	 *             a file).
 	 */
-	@WebResult(name = "DirectoryContents")
+	@WebResult(name = "DirectoryEntry")
 	public DirEntryReference[] getRunDirectoryContents(
+			@WebParam(name = "runName") String runName,
+			@WebParam(name = "directory") DirEntryReference directory)
+			throws UnknownRunException, FilesystemAccessException;
+
+	/**
+	 * Get the contents of any directory (and its subdirectories) at/under the
+	 * run's working directory, returning it as a compressed ZIP file. Runs do
+	 * not share working directories.
+	 * 
+	 * @param runName
+	 *            The handle of the run.
+	 * @param directory
+	 *            The name of the directory to fetch; the main working directory
+	 *            is <tt>/</tt> and <tt>..</tt> is always disallowed.
+	 * @return A serialized ZIP file.
+	 * @throws UnknownRunException
+	 *             If the server doesn't know about the run or if the user is
+	 *             not permitted to see it.
+	 * @throws FilesystemAccessException
+	 *             If some assumption is violated (e.g., reading the contents of
+	 *             a file).
+	 */
+	@WebResult(name = "ZipFile")
+	public byte[] getRunDirectoryAsZip(
 			@WebParam(name = "runName") String runName,
 			@WebParam(name = "directory") DirEntryReference directory)
 			throws UnknownRunException, FilesystemAccessException;
@@ -518,7 +543,7 @@ public interface TavernaServerSOAP {
 	 *             If some assumption is violated (e.g., reading the contents of
 	 *             a directory).
 	 */
-	@WebResult(name = "Contents")
+	@WebResult(name = "FileContents")
 	public byte[] getRunFileContents(
 			@WebParam(name = "runName") String runName,
 			@WebParam(name = "fileName") DirEntryReference file)
@@ -607,7 +632,7 @@ public interface TavernaServerSOAP {
 	 * @throws NoListenerException
 	 *             If no such listener exists.
 	 */
-	@WebResult(name = "ListenerPropertyNames")
+	@WebResult(name = "ListenerPropertyName")
 	public String[] getRunListenerProperties(
 			@WebParam(name = "runName") String runName,
 			@WebParam(name = "listenerName") String listenerName)

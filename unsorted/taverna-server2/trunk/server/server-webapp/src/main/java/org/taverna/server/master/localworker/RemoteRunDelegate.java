@@ -3,6 +3,7 @@ package org.taverna.server.master.localworker;
 import static java.util.Calendar.MINUTE;
 import static org.taverna.server.master.localworker.AbstractRemoteRunFactory.log;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.security.Principal;
@@ -12,6 +13,8 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.taverna.server.localworker.remote.IllegalStateTransitionException;
 import org.taverna.server.localworker.remote.RemoteDirectory;
@@ -314,6 +317,61 @@ public class RemoteRunDelegate implements TavernaRun, TavernaSecurityContext {
 			} catch (IOException e) {
 				throw new FilesystemAccessException(
 						"failed to make subdirectory", e);
+			}
+		}
+
+		@Override
+		public byte[] getContentsAsZip() throws FilesystemAccessException {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ZipOutputStream zos = new ZipOutputStream(baos);
+			try {
+				zipDirectory(this.rd, null, zos);
+				zos.close();
+				zos = null;
+				return baos.toByteArray();
+			} catch (Exception e) {
+				throw new FilesystemAccessException(
+						"failed to zip up directory", e);
+			} finally {
+				if (zos != null)
+					try {
+						zos.close();
+					} catch (IOException e) {
+						// Ignore this; it should be impossible.
+					}
+			}
+		}
+
+		/**
+		 * Compresses a directory tree into a ZIP.
+		 * 
+		 * @param dir
+		 *            The directory to compress.
+		 * @param base
+		 *            The base name of the directory (or <tt>null</tt> if this
+		 *            is the root directory of the ZIP).
+		 * @param zos
+		 *            Where to write the compressed data.
+		 * @throws RemoteException
+		 *             If some kind of problem happens with the remote
+		 *             delegates.
+		 * @throws IOException
+		 *             If we run into problems with reading or writing data.
+		 */
+		private void zipDirectory(RemoteDirectory dir, String base,
+				ZipOutputStream zos) throws RemoteException, IOException {
+			for (RemoteDirectoryEntry rde : dir.getContents()) {
+				String name = rde.getName();
+				if (base != null)
+					name = base + "/" + name;
+				if (rde instanceof RemoteDirectory) {
+					RemoteDirectory rd = (RemoteDirectory) rde;
+					zipDirectory(rd, name, zos);
+				} else {
+					RemoteFile rf = (RemoteFile) rde;
+					zos.putNextEntry(new ZipEntry(name));
+					zos.write(rf.getContents());
+				}
 			}
 		}
 	}

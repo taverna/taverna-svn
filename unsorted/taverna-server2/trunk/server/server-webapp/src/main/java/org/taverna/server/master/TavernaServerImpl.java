@@ -3,9 +3,17 @@ package org.taverna.server.master;
 import static java.lang.Math.min;
 import static java.util.Arrays.asList;
 import static java.util.UUID.randomUUID;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM_TYPE;
+import static javax.ws.rs.core.MediaType.APPLICATION_XML_TYPE;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+import static javax.ws.rs.core.Response.notAcceptable;
+import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.seeOther;
 import static javax.ws.rs.core.Response.temporaryRedirect;
+import static javax.ws.rs.core.UriBuilder.fromUri;
+import static javax.xml.ws.handler.MessageContext.PATH_INFO;
+import static org.apache.commons.logging.LogFactory.getLog;
 import static org.taverna.server.master.common.DirEntryReference.newInstance;
 
 import java.io.StringWriter;
@@ -21,17 +29,20 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.jws.WebService;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Variant;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.handler.MessageContext;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.taverna.server.master.common.DirEntryReference;
@@ -81,8 +92,7 @@ import org.taverna.server.master.soap.TavernaServerSOAP;
 @ManagedResource(objectName = "Taverna:group=Server,name=Webapp", description = "The main web-application interface to Taverna Server.")
 public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	/** The logger for the server framework. */
-	public static Log log = LogFactory.getLog(TavernaServerImpl.class);
-	private static final String REST_BASE = "/taverna-server/rest";
+	public static Log log = getLog(TavernaServerImpl.class);
 	static int invokes;
 	private JAXBContext scuflSerializer;
 	/**
@@ -172,6 +182,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 
 	/**
 	 * @param policy
+	 *            The policy being installed by Spring.
 	 */
 	public void setPolicy(Policy policy) {
 		this.policy = policy;
@@ -179,6 +190,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 
 	/**
 	 * @param listenerFactory
+	 *            The listener factory being installed by Spring.
 	 */
 	public void setListenerFactory(ListenerFactory listenerFactory) {
 		this.listenerFactory = listenerFactory;
@@ -186,6 +198,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 
 	/**
 	 * @param runFactory
+	 *            The run factory being installed by Spring.
 	 */
 	public void setRunFactory(RunFactory runFactory) {
 		this.runFactory = runFactory;
@@ -193,6 +206,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 
 	/**
 	 * @param runStore
+	 *            The run store being installed by Spring.
 	 */
 	public void setRunStore(RunStore runStore) {
 		this.runStore = runStore;
@@ -214,12 +228,19 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		return isoFormat;
 	}
 
+	private UriBuilder getRestfulRunReferenceBuilder() {
+		MessageContext mc = jaxwsContext.getMessageContext();
+		String pathInfo = (String) mc.get(PATH_INFO);
+		return fromUri(pathInfo.replaceFirst("/soap$", "/rest/runs")).path(
+				"{uuid}");
+	}
+
 	@Override
 	public RunReference[] listRuns() {
 		invokes++;
 		Principal p = getPrincipal();
 		ArrayList<RunReference> ws = new ArrayList<RunReference>();
-		UriBuilder ub = UriBuilder.fromUri(REST_BASE + "/runs");
+		UriBuilder ub = getRestfulRunReferenceBuilder();
 		for (String runName : runStore.listRuns(p, policy).keySet())
 			ws.add(new RunReference(runName, ub));
 		return ws.toArray(new RunReference[ws.size()]);
@@ -247,6 +268,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		}
 		Principal p = getPrincipal();
 		policy.permitCreate(p, workflow);
+
 		TavernaRun w;
 		try {
 			w = runFactory.create(p, workflow);
@@ -254,6 +276,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 			log.error("failed to build workflow run worker", e);
 			throw new NoCreateException("failed to build workflow run worker");
 		}
+
 		String uuid = randomUUID().toString();
 		runStore.registerRun(uuid, w);
 		return seeOther(ui.getRequestUriBuilder().path("{uuid}").build(uuid))
@@ -271,7 +294,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		}
 		Principal p = getPrincipal();
 		policy.permitCreate(p, workflow);
-		UriBuilder ub = UriBuilder.fromUri(REST_BASE + "/runs");
+
 		TavernaRun w;
 		try {
 			w = runFactory.create(p, workflow);
@@ -279,7 +302,9 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 			log.error("failed to build workflow run worker", e);
 			throw new NoCreateException("failed to build workflow run worker");
 		}
+
 		String uuid = randomUUID().toString();
+		UriBuilder ub = getRestfulRunReferenceBuilder();
 		runStore.registerRun(uuid, w);
 		return new RunReference(uuid, ub);
 	}
@@ -598,6 +623,13 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		};
 	}
 
+	private static final MediaType APPLICATION_ZIP_TYPE = new MediaType(
+			"application", "zip");
+	static final List<Variant> directoryVariants = asList(new Variant(
+			APPLICATION_XML_TYPE, null, null), new Variant(
+			APPLICATION_JSON_TYPE, null, null), new Variant(
+			APPLICATION_ZIP_TYPE, null, null));
+
 	class DirectoryREST implements TavernaServerDirectoryREST {
 		private TavernaRun run;
 
@@ -627,16 +659,29 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		// Nasty! This can have several different responses...
 		@Override
 		public Response getDirectoryOrFileContents(List<PathSegment> path,
-				UriInfo ui) throws FilesystemAccessException {
+				UriInfo ui, Request req) throws FilesystemAccessException {
 			invokes++;
 			DirectoryEntry de = getDirEntry(run, path);
 			if (de instanceof File) {
-				return Response.ok(((File) de).getContents()).type(
+				return ok(((File) de).getContents()).type(
 						APPLICATION_OCTET_STREAM_TYPE).build();
 			} else if (de instanceof Directory) {
-				return Response.ok(
-						new DirectoryContents(ui, ((Directory) de)
-								.getContents())).build();
+				Variant v = req.selectVariant(directoryVariants);
+				if (v == null)
+					return notAcceptable(directoryVariants)
+							.type(TEXT_PLAIN)
+							.entity(
+									"Do not know what type of response to produce.")
+							.build();
+				MediaType type = v.getMediaType();
+				if (type.getSubtype().equals("zip")) {
+					return ok(((Directory) de).getContentsAsZip()).type(type)
+							.build();
+				} else {
+					return ok(
+							new DirectoryContents(ui, ((Directory) de)
+									.getContents())).type(type).build();
+				}
 			} else {
 				throw new FilesystemAccessException("not a directory");
 			}
@@ -742,15 +787,17 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 			DirEntryReference d) throws UnknownRunException,
 			FilesystemAccessException {
 		invokes++;
-		TavernaRun w = getRun(uuid);
-		DirectoryEntry de = getDirEntry(w, d);
-		if (!(de instanceof Directory))
-			throw new FilesystemAccessException("not a directory");
-
 		List<DirEntryReference> result = new ArrayList<DirEntryReference>();
-		for (DirectoryEntry e : ((Directory) de).getContents())
+		for (DirectoryEntry e : getDirectory(getRun(uuid), d).getContents())
 			result.add(newInstance(null, e));
 		return result.toArray(new DirEntryReference[result.size()]);
+	}
+
+	@Override
+	public byte[] getRunDirectoryAsZip(String uuid, DirEntryReference d)
+			throws UnknownRunException, FilesystemAccessException {
+		invokes++;
+		return getDirectory(getRun(uuid), d).getContentsAsZip();
 	}
 
 	@Override
@@ -760,10 +807,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		invokes++;
 		TavernaRun w = getRun(uuid);
 		policy.permitUpdate(getPrincipal(), w);
-		DirectoryEntry container = getDirEntry(w, parent);
-		if (!(container instanceof Directory))
-			throw new FilesystemAccessException("not inside a directory");
-		Directory dir = ((Directory) container).makeSubdirectory(
+		Directory dir = getDirectory(w, parent).makeSubdirectory(
 				getPrincipal(), name);
 		return newInstance(null, dir);
 	}
@@ -775,10 +819,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		invokes++;
 		TavernaRun w = getRun(uuid);
 		policy.permitUpdate(getPrincipal(), w);
-		DirectoryEntry container = getDirEntry(w, parent);
-		if (!(container instanceof Directory))
-			throw new FilesystemAccessException("not inside a directory");
-		File f = ((Directory) container).makeEmptyFile(getPrincipal(), name);
+		File f = getDirectory(w, parent).makeEmptyFile(getPrincipal(), name);
 		return newInstance(null, f);
 	}
 
@@ -796,10 +837,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	public byte[] getRunFileContents(String uuid, DirEntryReference d)
 			throws UnknownRunException, FilesystemAccessException {
 		invokes++;
-		DirectoryEntry de = getDirEntry(getRun(uuid), d);
-		if (!(de instanceof File))
-			throw new FilesystemAccessException("not a file");
-		return ((File) de).getContents();
+		return getFile(getRun(uuid), d).getContents();
 	}
 
 	@Override
@@ -809,20 +847,14 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		invokes++;
 		TavernaRun w = getRun(uuid);
 		policy.permitUpdate(getPrincipal(), w);
-		DirectoryEntry de = getDirEntry(w, d);
-		if (!(de instanceof File))
-			throw new FilesystemAccessException("not a file");
-		((File) de).setContents(newContents);
+		getFile(w, d).setContents(newContents);
 	}
 
 	@Override
 	public long getRunFileLength(String uuid, DirEntryReference d)
 			throws UnknownRunException, FilesystemAccessException {
 		invokes++;
-		DirectoryEntry de = getDirEntry(getRun(uuid), d);
-		if (!(de instanceof File))
-			throw new FilesystemAccessException("not a file");
-		return ((File) de).getSize();
+		return getFile(getRun(uuid), d).getSize();
 	}
 
 	// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -992,7 +1024,23 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		throw new UnknownRunException();
 	}
 
-	DirectoryEntry getDirEntry(TavernaRun run, DirEntryReference d)
+	private Directory getDirectory(TavernaRun run, DirEntryReference d)
+			throws FilesystemAccessException {
+		DirectoryEntry dirEntry = getDirEntry(run, d);
+		if (!(dirEntry instanceof Directory))
+			throw new FilesystemAccessException("not a directory");
+		return (Directory) dirEntry;
+	}
+
+	private File getFile(TavernaRun run, DirEntryReference d)
+			throws FilesystemAccessException {
+		DirectoryEntry dirEntry = getDirEntry(run, d);
+		if (!(dirEntry instanceof File))
+			throw new FilesystemAccessException("not a file");
+		return (File) dirEntry;
+	}
+
+	private DirectoryEntry getDirEntry(TavernaRun run, DirEntryReference d)
 			throws FilesystemAccessException {
 		Directory dir = run.getWorkingDirectory();
 		DirectoryEntry found = dir;
