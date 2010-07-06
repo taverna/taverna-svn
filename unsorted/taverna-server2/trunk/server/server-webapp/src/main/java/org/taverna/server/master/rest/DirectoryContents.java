@@ -38,7 +38,7 @@ public class DirectoryContents {
 	}
 
 	/**
-	 * Make an empty directory description.
+	 * Make a directory description.
 	 * 
 	 * @param ui
 	 *            The factory for URIs.

@@ -2,6 +2,7 @@ package org.taverna.server.master;
 
 import static java.lang.Math.min;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.UUID.randomUUID;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM_TYPE;
@@ -93,6 +94,10 @@ import org.taverna.server.master.soap.TavernaServerSOAP;
 public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	/** The logger for the server framework. */
 	public static Log log = getLog(TavernaServerImpl.class);
+
+	// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	// CONNECTIONS TO JMX, SPRING AND CXF
+
 	static int invokes;
 	private JAXBContext scuflSerializer;
 	/**
@@ -212,6 +217,9 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		this.runStore = runStore;
 	}
 
+	// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	// REST INTERFACE
+
 	@Override
 	public ServerDescription describeService(UriInfo ui) {
 		invokes++;
@@ -219,96 +227,13 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 				ui);
 	}
 
-	private static DateFormat isoFormat;
-
-	static DateFormat df() {
-		if (isoFormat == null) {
-			isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-		}
-		return isoFormat;
-	}
-
-	private UriBuilder getRestfulRunReferenceBuilder() {
-		if (jaxwsContext == null)
-			return fromUri("/taverna-server/rest/runs").path("{uuid}");
-		MessageContext mc = jaxwsContext.getMessageContext();
-		String pathInfo = (String) mc.get(PATH_INFO);
-		return fromUri(pathInfo.replaceFirst("/soap$", "/rest/runs")).path(
-				"{uuid}");
-	}
-
-	@Override
-	public RunReference[] listRuns() {
-		invokes++;
-		Principal p = getPrincipal();
-		ArrayList<RunReference> ws = new ArrayList<RunReference>();
-		UriBuilder ub = getRestfulRunReferenceBuilder();
-		for (String runName : runStore.listRuns(p, policy).keySet())
-			ws.add(new RunReference(runName, ub));
-		return ws.toArray(new RunReference[ws.size()]);
-	}
-
-	private void logWorkflow(SCUFL workflow) {
-		StringWriter sw = new StringWriter();
-		try {
-			scuflSerializer.createMarshaller().marshal(workflow, sw);
-			log.info(sw);
-		} catch (JAXBException e) {
-			log.warn("problem when logging workflow", e);
-		}
-	}
-
 	@Override
 	public Response submitWorkflow(SCUFL workflow, UriInfo ui)
 			throws NoUpdateException {
 		invokes++;
-		if (!allowNewWorkflowRuns) {
-			throw new NoCreateException("run creation not currently enabled");
-		}
-		if (logIncomingWorkflows) {
-			logWorkflow(workflow);
-		}
-		Principal p = getPrincipal();
-		policy.permitCreate(p, workflow);
-
-		TavernaRun w;
-		try {
-			w = runFactory.create(p, workflow);
-		} catch (Exception e) {
-			log.error("failed to build workflow run worker", e);
-			throw new NoCreateException("failed to build workflow run worker");
-		}
-
-		String uuid = randomUUID().toString();
-		runStore.registerRun(uuid, w);
-		return seeOther(ui.getRequestUriBuilder().path("{uuid}").build(uuid))
+		String name = buildWorkflow(workflow, getPrincipal());
+		return seeOther(ui.getRequestUriBuilder().path("{uuid}").build(name))
 				.build();
-	}
-
-	@Override
-	public RunReference submitWorkflow(SCUFL workflow) throws NoUpdateException {
-		invokes++;
-		if (!allowNewWorkflowRuns) {
-			throw new NoCreateException("run creation not currently enabled");
-		}
-		if (logIncomingWorkflows) {
-			logWorkflow(workflow);
-		}
-		Principal p = getPrincipal();
-		policy.permitCreate(p, workflow);
-
-		TavernaRun w;
-		try {
-			w = runFactory.create(p, workflow);
-		} catch (Exception e) {
-			log.error("failed to build workflow run worker", e);
-			throw new NoCreateException("failed to build workflow run worker");
-		}
-
-		String uuid = randomUUID().toString();
-		UriBuilder ub = getRestfulRunReferenceBuilder();
-		runStore.registerRun(uuid, w);
-		return new RunReference(uuid, ub);
 	}
 
 	@Override
@@ -328,25 +253,14 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	}
 
 	@Override
-	public SCUFL[] getAllowedWorkflows() {
-		invokes++;
-		return policy.listPermittedWorkflows(getPrincipal()).toArray(
-				new SCUFL[0]);
-	}
-
-	@Override
 	public PermittedListeners getPermittedListeners() {
 		invokes++;
 		return new PermittedListeners(listenerFactory
 				.getSupportedListenerTypes());
 	}
 
-	@Override
-	public String[] getAllowedListeners() {
-		invokes++;
-		return listenerFactory.getSupportedListenerTypes().toArray(
-				new String[0]);
-	}
+	// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	// REST INTERFACE - Workflow run
 
 	@Override
 	public TavernaServerRunREST getRunResource(final String runName)
@@ -392,10 +306,10 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 					public TavernaServerListenerREST getListener(String name)
 							throws NoListenerException {
 						invokes++;
-						for (Listener listener : run.getListeners())
-							if (listener.getName().equals(name))
-								return new ListenerIfcImpl(listener);
-						throw new NoListenerException();
+						Listener l = TavernaServerImpl.getListener(run, name);
+						if (l == null)
+							throw new NoListenerException();
+						return new ListenerIfcImpl(l);
 					}
 
 					@Override
@@ -483,11 +397,11 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 					public InDesc getInput(String name)
 							throws BadPropertyValueException {
 						invokes++;
-						for (Input i : run.getInputs())
-							if (i.getName().equals(name))
-								return new InDesc(i);
-						throw new BadPropertyValueException(
-								"unknown input port name");
+						Input i = TavernaServerImpl.getInput(run, name);
+						if (i == null)
+							throw new BadPropertyValueException(
+									"unknown input port name");
+						return new InDesc(i);
 					}
 
 					@Override
@@ -517,22 +431,13 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 							throw new BadPropertyValueException(
 									"unknown content type");
 						policy.permitUpdate(getPrincipal(), run);
-						for (Input i : run.getInputs()) {
-							if (!i.getName().equals(name))
-								continue;
-							if (ac instanceof InDesc.File) {
-								i.setFile(ac.contents);
-							} else {
-								i.setValue(ac.contents);
-							}
-							return seeOther(ui.getRequestUri()).build();
-						}
-						Input i = run.makeInput(name);
-						if (ac instanceof InDesc.File) {
+						Input i = TavernaServerImpl.getInput(run, name);
+						if (i == null)
+							i = run.makeInput(name);
+						if (ac instanceof InDesc.File)
 							i.setFile(ac.contents);
-						} else {
+						else
 							i.setValue(ac.contents);
-						}
 						return seeOther(ui.getRequestUri()).build();
 					}
 				};
@@ -625,12 +530,18 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		};
 	}
 
-	private static final MediaType APPLICATION_ZIP_TYPE = new MediaType(
-			"application", "zip");
+	// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	// REST INTERFACE - Filesystem connection
+
+	/** "application/zip" */
+	static final MediaType APPLICATION_ZIP_TYPE = new MediaType("application",
+			"zip");
 	static final List<Variant> directoryVariants = asList(new Variant(
 			APPLICATION_XML_TYPE, null, null), new Variant(
 			APPLICATION_JSON_TYPE, null, null), new Variant(
 			APPLICATION_ZIP_TYPE, null, null));
+	static final List<Variant> fileVariants = singletonList(new Variant(
+			APPLICATION_OCTET_STREAM_TYPE, null, null));
 
 	class DirectoryREST implements TavernaServerDirectoryREST {
 		private TavernaRun run;
@@ -664,29 +575,35 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 				UriInfo ui, Request req) throws FilesystemAccessException {
 			invokes++;
 			DirectoryEntry de = getDirEntry(run, path);
-			if (de instanceof File) {
-				return ok(((File) de).getContents()).type(
-						APPLICATION_OCTET_STREAM_TYPE).build();
-			} else if (de instanceof Directory) {
-				Variant v = req.selectVariant(directoryVariants);
-				if (v == null)
-					return notAcceptable(directoryVariants)
-							.type(TEXT_PLAIN)
-							.entity(
-									"Do not know what type of response to produce.")
-							.build();
-				MediaType type = v.getMediaType();
-				if (type.getSubtype().equals("zip")) {
-					return ok(((Directory) de).getContentsAsZip()).type(type)
-							.build();
-				} else {
-					return ok(
-							new DirectoryContents(ui, ((Directory) de)
-									.getContents())).type(type).build();
-				}
-			} else {
-				throw new FilesystemAccessException("not a directory");
-			}
+
+			// How did the user want the result?
+			List<Variant> variants;
+			if (de instanceof File)
+				variants = fileVariants;
+			else if (de instanceof Directory)
+				variants = directoryVariants;
+			else
+				throw new FilesystemAccessException("not a directory or file!");
+			Variant v = req.selectVariant(variants);
+			if (v == null)
+				return notAcceptable(variants).type(TEXT_PLAIN).entity(
+						"Do not know what type of response to produce.")
+						.build();
+
+			// Produce the content to deliver up
+			Object result;
+			if (v.getMediaType().equals(APPLICATION_OCTET_STREAM_TYPE))
+				// Only for files...
+				result = ((File) de).getContents();
+			else if (v.getMediaType().equals(APPLICATION_ZIP_TYPE))
+				// Only for directories...
+				result = ((Directory) de).getContentsAsZip();
+			else
+				// Only for directories...
+				// XML or JSON; let CXF pick what to do
+				result = new DirectoryContents(ui, ((Directory) de)
+						.getContents());
+			return ok(result).type(v.getMediaType()).build();
 		}
 
 		@Override
@@ -696,27 +613,26 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 			invokes++;
 			policy.permitUpdate(getPrincipal(), run);
 			DirectoryEntry container = getDirEntry(run, parent);
-			if (!(container instanceof Directory)) {
+			if (!(container instanceof Directory))
 				throw new FilesystemAccessException(
 						"You may not "
 								+ ((op instanceof MakeDirectory) ? "make a subdirectory of"
 										: "place a file in") + " a file.");
-			}
-			if (op.name == null)
+			if (op.name == null || op.name.length() == 0)
 				throw new FilesystemAccessException("missing name attribute");
 			Directory d = (Directory) container;
 			UriBuilder ub = ui.getAbsolutePathBuilder().path("{name}");
-			if (op instanceof MakeDirectory) {
-				Directory dir = d.makeSubdirectory(getPrincipal(), op.name);
-				return temporaryRedirect(ub.build(dir.getName())).build();
-			} else {
+			DirectoryEntry target;
+
+			if (op instanceof MakeDirectory)
+				target = d.makeSubdirectory(getPrincipal(), op.name);
+			else {
 				File f = null;
 				for (DirectoryEntry e : d.getContents()) {
 					if (e.getName().equals(op.name)) {
-						if (e instanceof Directory) {
+						if (e instanceof Directory)
 							throw new FilesystemAccessException(
 									"You may not overwrite a directory with a file.");
-						}
 						f = (File) e;
 						break;
 					}
@@ -724,228 +640,240 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 				if (f == null)
 					f = d.makeEmptyFile(getPrincipal(), op.name);
 				f.setContents(op.contents);
-				return temporaryRedirect(ub.build(f.getName())).build();
+				target = f;
 			}
+
+			return temporaryRedirect(ub.build(target.getName())).build();
 		}
 	}
 
+	// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	// SOAP INTERFACE
+
 	@Override
-	public void destroyRun(String uuid) throws UnknownRunException,
+	public RunReference[] listRuns() {
+		invokes++;
+		Principal p = getPrincipal();
+		ArrayList<RunReference> ws = new ArrayList<RunReference>();
+		UriBuilder ub = getRestfulRunReferenceBuilder();
+		for (String runName : runStore.listRuns(p, policy).keySet())
+			ws.add(new RunReference(runName, ub));
+		return ws.toArray(new RunReference[ws.size()]);
+	}
+
+	@Override
+	public RunReference submitWorkflow(SCUFL workflow) throws NoUpdateException {
+		invokes++;
+		String name = buildWorkflow(workflow, getPrincipal());
+		return new RunReference(name, getRestfulRunReferenceBuilder());
+	}
+
+	@Override
+	public SCUFL[] getAllowedWorkflows() {
+		invokes++;
+		return policy.listPermittedWorkflows(getPrincipal()).toArray(
+				new SCUFL[0]);
+	}
+
+	@Override
+	public String[] getAllowedListeners() {
+		invokes++;
+		return listenerFactory.getSupportedListenerTypes().toArray(
+				new String[0]);
+	}
+
+	@Override
+	public void destroyRun(String runName) throws UnknownRunException,
 			NoUpdateException {
 		invokes++;
-		TavernaRun w = getRun(uuid);
+		TavernaRun w = getRun(runName);
 		policy.permitUpdate(getPrincipal(), w);
-		runStore.unregisterRun(uuid);
+		runStore.unregisterRun(runName);
 		w.destroy();
 	}
 
 	@Override
-	public SCUFL getRunWorkflow(String uuid) throws UnknownRunException {
+	public SCUFL getRunWorkflow(String runName) throws UnknownRunException {
 		invokes++;
-		return getRun(uuid).getWorkflow();
+		return getRun(runName).getWorkflow();
 	}
 
 	@Override
-	public Date getRunExpiry(String uuid) throws UnknownRunException {
+	public Date getRunExpiry(String runName) throws UnknownRunException {
 		invokes++;
-		return getRun(uuid).getExpiry();
+		return getRun(runName).getExpiry();
 	}
 
 	@Override
-	public void setRunExpiry(String uuid, Date d) throws UnknownRunException,
-			NoUpdateException {
+	public void setRunExpiry(String runName, Date d)
+			throws UnknownRunException, NoUpdateException {
 		invokes++;
-		TavernaRun w = getRun(uuid);
+		TavernaRun w = getRun(runName);
 		policy.permitDestroy(getPrincipal(), w);
 		w.setExpiry(d);
 	}
 
 	@Override
-	public Status getRunStatus(String uuid) throws UnknownRunException {
+	public Status getRunStatus(String runName) throws UnknownRunException {
 		invokes++;
-		return getRun(uuid).getStatus();
+		return getRun(runName).getStatus();
 	}
 
 	@Override
-	public void setRunStatus(String uuid, Status s) throws UnknownRunException,
-			NoUpdateException {
+	public void setRunStatus(String runName, Status s)
+			throws UnknownRunException, NoUpdateException {
 		invokes++;
-		TavernaRun w = getRun(uuid);
+		TavernaRun w = getRun(runName);
 		policy.permitUpdate(getPrincipal(), w);
 		w.setStatus(s);
 	}
 
 	@Override
-	public String getRunOwner(String uuid) throws UnknownRunException {
+	public String getRunOwner(String runName) throws UnknownRunException {
 		invokes++;
-		return getRun(uuid).getSecurityContext().getOwner().getName();
+		return getRun(runName).getSecurityContext().getOwner().getName();
 	}
 
 	// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-	// Operations on the filesystem
+	// SOAP INTERFACE - Filesystem connection
 
 	@Override
-	public DirEntryReference[] getRunDirectoryContents(String uuid,
+	public DirEntryReference[] getRunDirectoryContents(String runName,
 			DirEntryReference d) throws UnknownRunException,
 			FilesystemAccessException {
 		invokes++;
 		List<DirEntryReference> result = new ArrayList<DirEntryReference>();
-		for (DirectoryEntry e : getDirectory(getRun(uuid), d).getContents())
+		for (DirectoryEntry e : getDirectory(getRun(runName), d).getContents())
 			result.add(newInstance(null, e));
 		return result.toArray(new DirEntryReference[result.size()]);
 	}
 
 	@Override
-	public byte[] getRunDirectoryAsZip(String uuid, DirEntryReference d)
+	public byte[] getRunDirectoryAsZip(String runName, DirEntryReference d)
 			throws UnknownRunException, FilesystemAccessException {
 		invokes++;
-		return getDirectory(getRun(uuid), d).getContentsAsZip();
+		return getDirectory(getRun(runName), d).getContentsAsZip();
 	}
 
 	@Override
-	public DirEntryReference makeRunDirectory(String uuid,
+	public DirEntryReference makeRunDirectory(String runName,
 			DirEntryReference parent, String name) throws UnknownRunException,
 			NoUpdateException, FilesystemAccessException {
 		invokes++;
-		TavernaRun w = getRun(uuid);
-		policy.permitUpdate(getPrincipal(), w);
-		Directory dir = getDirectory(w, parent).makeSubdirectory(
-				getPrincipal(), name);
+		TavernaRun w = getRun(runName);
+		Principal p = getPrincipal();
+		policy.permitUpdate(p, w);
+		Directory dir = getDirectory(w, parent).makeSubdirectory(p, name);
 		return newInstance(null, dir);
 	}
 
 	@Override
-	public DirEntryReference makeRunFile(String uuid, DirEntryReference parent,
-			String name) throws UnknownRunException, NoUpdateException,
-			FilesystemAccessException {
+	public DirEntryReference makeRunFile(String runName,
+			DirEntryReference parent, String name) throws UnknownRunException,
+			NoUpdateException, FilesystemAccessException {
 		invokes++;
-		TavernaRun w = getRun(uuid);
-		policy.permitUpdate(getPrincipal(), w);
-		File f = getDirectory(w, parent).makeEmptyFile(getPrincipal(), name);
+		TavernaRun w = getRun(runName);
+		Principal p = getPrincipal();
+		policy.permitUpdate(p, w);
+		File f = getDirectory(w, parent).makeEmptyFile(p, name);
 		return newInstance(null, f);
 	}
 
 	@Override
-	public void destroyRunDirectoryEntry(String uuid, DirEntryReference d)
+	public void destroyRunDirectoryEntry(String runName, DirEntryReference d)
 			throws UnknownRunException, NoUpdateException,
 			FilesystemAccessException {
 		invokes++;
-		TavernaRun w = getRun(uuid);
+		TavernaRun w = getRun(runName);
 		policy.permitUpdate(getPrincipal(), w);
 		getDirEntry(w, d).destroy();
 	}
 
 	@Override
-	public byte[] getRunFileContents(String uuid, DirEntryReference d)
+	public byte[] getRunFileContents(String runName, DirEntryReference d)
 			throws UnknownRunException, FilesystemAccessException {
 		invokes++;
-		return getFile(getRun(uuid), d).getContents();
+		return getFile(getRun(runName), d).getContents();
 	}
 
 	@Override
-	public void setRunFileContents(String uuid, DirEntryReference d,
+	public void setRunFileContents(String runName, DirEntryReference d,
 			byte[] newContents) throws UnknownRunException, NoUpdateException,
 			FilesystemAccessException {
 		invokes++;
-		TavernaRun w = getRun(uuid);
+		TavernaRun w = getRun(runName);
 		policy.permitUpdate(getPrincipal(), w);
 		getFile(w, d).setContents(newContents);
 	}
 
 	@Override
-	public long getRunFileLength(String uuid, DirEntryReference d)
+	public long getRunFileLength(String runName, DirEntryReference d)
 			throws UnknownRunException, FilesystemAccessException {
 		invokes++;
-		return getFile(getRun(uuid), d).getSize();
+		return getFile(getRun(runName), d).getSize();
 	}
 
 	// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-	// Operations on listeners
+	// SOAP INTERFACE - Run listeners
 
 	@Override
-	public String[] getRunListeners(String uuid) throws UnknownRunException {
+	public String[] getRunListeners(String runName) throws UnknownRunException {
 		invokes++;
-		TavernaRun w = getRun(uuid);
+		TavernaRun w = getRun(runName);
 		List<String> result = new ArrayList<String>();
-		for (Listener l : w.getListeners()) {
+		for (Listener l : w.getListeners())
 			result.add(l.getName());
-		}
 		return result.toArray(new String[result.size()]);
 	}
 
 	@Override
-	public String addRunListener(String uuid, String listenerType,
+	public String addRunListener(String runName, String listenerType,
 			String configuration) throws UnknownRunException,
 			NoUpdateException, NoListenerException {
 		invokes++;
-		TavernaRun w = getRun(uuid);
+		TavernaRun w = getRun(runName);
 		policy.permitUpdate(getPrincipal(), w);
 		return listenerFactory.makeListener(w, listenerType, configuration)
 				.getName();
 	}
 
 	@Override
-	public String getRunListenerConfiguration(String uuid, String listenerName)
-			throws UnknownRunException, NoListenerException {
+	public String getRunListenerConfiguration(String runName,
+			String listenerName) throws UnknownRunException,
+			NoListenerException {
 		invokes++;
-		for (Listener l : getRun(uuid).getListeners()) {
-			if (l.getName().equals(listenerName)) {
-				return l.getConfiguration();
-			}
-		}
-		throw new NoListenerException();
+		return getListener(runName, listenerName).getConfiguration();
 	}
 
 	@Override
-	public String[] getRunListenerProperties(String uuid, String listenerName)
+	public String[] getRunListenerProperties(String runName, String listenerName)
 			throws UnknownRunException, NoListenerException {
 		invokes++;
-		for (Listener l : getRun(uuid).getListeners()) {
-			if (l.getName().equals(listenerName)) {
-				return l.listProperties().clone();
-			}
-		}
-		throw new NoListenerException();
+		return getListener(runName, listenerName).listProperties().clone();
 	}
 
 	@Override
-	public String getRunListenerProperty(String uuid, String listenerName,
+	public String getRunListenerProperty(String runName, String listenerName,
 			String propName) throws UnknownRunException, NoListenerException {
 		invokes++;
-		for (Listener l : getRun(uuid).getListeners()) {
-			if (l.getName().equals(listenerName)) {
-				String propValue = l.getProperty(propName);
-				if (propValue == null)
-					throw new NoListenerException(
-							"listener does not have property");
-				return propValue;
-			}
-		}
-		throw new NoListenerException();
+		return getListener(runName, listenerName).getProperty(propName);
 	}
 
 	@Override
-	public void setRunListenerProperty(String uuid, String listenerName,
+	public void setRunListenerProperty(String runName, String listenerName,
 			String propName, String value) throws UnknownRunException,
 			NoUpdateException, NoListenerException {
 		invokes++;
-		TavernaRun w = getRun(uuid);
+		TavernaRun w = getRun(runName);
 		policy.permitUpdate(getPrincipal(), w);
-		for (Listener l : w.getListeners()) {
-			if (l.getName().equals(listenerName)) {
-				if (l.getProperty(propName) == null)
-					throw new NoListenerException(
-							"listener does not have property");
-				try {
-					l.setProperty(propName, value);
-				} catch (RuntimeException e) {
-					throw new NoListenerException("problem setting property: "
-							+ e.getMessage());
-				}
-				return;
-			}
+		Listener l = getListener(w, listenerName);
+		try {
+			l.getProperty(propName); // sanity check!
+			l.setProperty(propName, value);
+		} catch (RuntimeException e) {
+			throw new NoListenerException("problem setting property: "
+					+ e.getMessage(), e);
 		}
-		throw new NoListenerException();
 	}
 
 	@Override
@@ -979,12 +907,10 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		invokes++;
 		TavernaRun w = getRun(runName);
 		policy.permitUpdate(getPrincipal(), w);
-		for (Input i : w.getInputs())
-			if (i.getName().equals(portName)) {
-				i.setFile(portFilename);
-				return;
-			}
-		w.makeInput(portName).setFile(portFilename);
+		Input i = getInput(w, portName);
+		if (i == null)
+			i = w.makeInput(portName);
+		i.setFile(portFilename);
 	}
 
 	@Override
@@ -994,13 +920,10 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		invokes++;
 		TavernaRun w = getRun(runName);
 		policy.permitUpdate(getPrincipal(), w);
-		policy.permitUpdate(getPrincipal(), w);
-		for (Input i : w.getInputs())
-			if (i.getName().equals(portName)) {
-				i.setValue(portValue);
-				return;
-			}
-		w.makeInput(portName).setValue(portValue);
+		Input i = getInput(w, portName);
+		if (i == null)
+			i = w.makeInput(portName);
+		i.setValue(portValue);
 	}
 
 	@Override
@@ -1014,32 +937,96 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	}
 
 	// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	// SUPPORT METHODS
 
-	TavernaRun getRun(String uuid) throws UnknownRunException {
+	private static DateFormat isoFormat;
+
+	static DateFormat df() {
+		if (isoFormat == null)
+			isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+		return isoFormat;
+	}
+
+	private String buildWorkflow(SCUFL workflow, Principal p)
+			throws NoCreateException {
+		if (!allowNewWorkflowRuns)
+			throw new NoCreateException("run creation not currently enabled");
+		if (logIncomingWorkflows)
+			try {
+				StringWriter sw = new StringWriter();
+				scuflSerializer.createMarshaller().marshal(workflow, sw);
+				log.info(sw);
+			} catch (JAXBException e) {
+				log.warn("problem when logging workflow", e);
+			}
+		policy.permitCreate(p, workflow);
+
+		TavernaRun w;
+		try {
+			w = runFactory.create(p, workflow);
+		} catch (Exception e) {
+			log.error("failed to build workflow run worker", e);
+			throw new NoCreateException("failed to build workflow run worker");
+		}
+
+		String uuid = randomUUID().toString();
+		runStore.registerRun(uuid, w);
+		return uuid;
+	}
+
+	private UriBuilder getRestfulRunReferenceBuilder() {
+		if (jaxwsContext == null)
+			// Hack to make the test suite work
+			return fromUri("/taverna-server/rest/runs").path("{uuid}");
+		MessageContext mc = jaxwsContext.getMessageContext();
+		String pathInfo = (String) mc.get(PATH_INFO);
+		return fromUri(pathInfo.replaceFirst("/soap$", "/rest/runs")).path(
+				"{uuid}");
+	}
+
+	TavernaRun getRun(String runName) throws UnknownRunException {
 		Principal p = getPrincipal();
 		for (Map.Entry<String, TavernaRun> w : runStore.listRuns(p, policy)
-				.entrySet()) {
-			if (w.getKey().equals(uuid)) {
+				.entrySet())
+			if (w.getKey().equals(runName))
 				return w.getValue();
-			}
-		}
 		throw new UnknownRunException();
+	}
+
+	static Input getInput(TavernaRun run, String portName) {
+		for (Input i : run.getInputs())
+			if (i.getName().equals(portName))
+				return i;
+		return null;
+	}
+
+	private Listener getListener(String runName, String listenerName)
+			throws NoListenerException, UnknownRunException {
+		return getListener(getRun(runName), listenerName);
+	}
+
+	static Listener getListener(TavernaRun run, String listenerName)
+			throws NoListenerException {
+		for (Listener l : run.getListeners())
+			if (l.getName().equals(listenerName))
+				return l;
+		throw new NoListenerException();
 	}
 
 	private Directory getDirectory(TavernaRun run, DirEntryReference d)
 			throws FilesystemAccessException {
 		DirectoryEntry dirEntry = getDirEntry(run, d);
-		if (!(dirEntry instanceof Directory))
-			throw new FilesystemAccessException("not a directory");
-		return (Directory) dirEntry;
+		if (dirEntry instanceof Directory)
+			return (Directory) dirEntry;
+		throw new FilesystemAccessException("not a directory");
 	}
 
 	private File getFile(TavernaRun run, DirEntryReference d)
 			throws FilesystemAccessException {
 		DirectoryEntry dirEntry = getDirEntry(run, d);
-		if (!(dirEntry instanceof File))
-			throw new FilesystemAccessException("not a file");
-		return (File) dirEntry;
+		if (dirEntry instanceof File)
+			return (File) dirEntry;
+		throw new FilesystemAccessException("not a file");
 	}
 
 	private DirectoryEntry getDirEntry(TavernaRun run, DirEntryReference d)
