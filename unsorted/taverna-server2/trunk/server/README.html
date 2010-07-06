@@ -193,9 +193,9 @@ API.</p>
 		<dd>
 		<p>To set the input port, <tt><b>FOO</b></tt>, to have the value <tt><b>BAR</b></tt>,
 		you would PUT a message like this to the URI <tt><b>&lt;RUN_URI&gt;</b>/input/input/<b>FOO</b></tt></p>
-		<blockquote><pre>&lt;t2s:TavernaRunInput xmlns:t2s=&quot;http://ns.taverna.org.uk/2010/xml/server/&quot;&gt;
+		<blockquote><pre>&lt;t2s:runInput xmlns:t2s=&quot;http://ns.taverna.org.uk/2010/xml/server/&quot;&gt;
     &lt;t2s:value&gt;<b>BAR</b>&lt;/t2s:value&gt;
-&lt;/t2s:TavernaRunInput&gt;</pre></blockquote>
+&lt;/t2s:runInput&gt;</pre></blockquote>
 		</dd>
 
 		<dt><i>Uploading a File for One Input</i></dt>
@@ -213,9 +213,9 @@ API.</p>
 		never told the name of this working directory. Once you've created the
 		file, you can then set it to be the input for the port by PUTting this
 		message to <tt><b>&lt;RUN_URI&gt;</b>/input/input/<b>FOO</b></tt></p>
-		<blockquote><pre>&lt;t2s:TavernaRunInput xmlns:t2s="http://ns.taverna.org.uk/2010/xml/server/rest/"&gt;
+		<blockquote><pre>&lt;t2s:runInput xmlns:t2s="http://ns.taverna.org.uk/2010/xml/server/rest/"&gt;
     &lt;t2s:file&gt;<b>BOO.TXT</b>&lt;/t2s:file&gt;
-&lt;/t2s:TavernaRunInput&gt;</pre></blockquote>
+&lt;/t2s:runInput&gt;</pre></blockquote>
 		<p>Note the similarity of the final part of this process to the
 		previous method for setting an input.</p>
 		<p>You can also create a directory, e.g., IN, to hold the input
