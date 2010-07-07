@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-UK" dir="ltr">
 <head>
-<title>Taverna Server 2.3 alpha README</title>
+<title>Taverna Server 2.3-alpha-1 README</title>
 </head>
 <body>
 
@@ -21,7 +21,8 @@
 </div>
 <div>
 
-<h1>Taverna Server 2.3&alpha; README</h1>
+<img src="http://www.taverna.org.uk/pages/wp-content/themes/myGrid-Taverna/library/media/images/taverna-wheel-logo.png" style="float:left"/>
+<h1>Taverna Server 2.3&alpha;1 README</h1>
 <p>This is the alpha release of the Taverna Server 2.3, from the <a
 	href="http://www.mygrid.org.uk/">myGrid</a> team at the <a
 	href="http://www.manchester.ac.uk/">University of Manchester</a>.</p>
@@ -90,7 +91,8 @@ include:</p>
 	6.0.26</b></a> as the servlet container, but other versions of Tomcat are known
 	to work (back to at least 6.0.20) and other containers may also
 	function correctly as no Tomcat-specific APIs are used in the
-	deployable code. We welcome feedback on which containers work.</dd>
+	deployable code. We welcome feedback on which containers work, as well
+	as on how to configure them (if they are not Tomcat versions).</dd>
 </dl>
 <p>You will need <a
 	href="http://www.taverna.org.uk/download/taverna-2-2/"><b>Taverna
@@ -120,6 +122,15 @@ instead, adding the line:</p>
 <p>Add a user entry in <tt>&lt;TOMCATDIR&gt;/conf/tomcat-users.xml</tt>
 so that the manager webapp can know who you are and that you have
 permission to deploy webapps (i.e., the "<tt>manager</tt>" role).</p>
+<blockquote>
+<p>If you want to configure Tomcat to support HTTPS (recommended!)
+then this is the point to do it. Follow the instructions <a
+	href="http://tomcat.apache.org/tomcat-6.0-doc/ssl-howto.html">on
+the Tomcat site</a>. Note that this <i>only enables private
+communication</i> with the Taverna Server, it does not enforce it and it
+does not guarantee that access controls will be enforced. These issues
+will be addressed in future releases of Taverna Server.</p>
+</blockquote>
 <p>Now start Tomcat (or restart it).</p>
 <h4>Step 3. Prepare for T2Server WebApp Installation</h4>
 <p>Save the text below as <tt>context.xml</tt> on the machine where
@@ -127,8 +138,8 @@ you are going to install the server, updating the bold part to say where
 your Taverna's <tt>executeworkflow.sh</tt> script is located. This is
 currently the <em>only</em> required configuration step.</p>
 <blockquote><pre>&lt;Context path="/taverna-server"&gt;
-  &lt;Parameter name="executeWorkflowScript" override="false"
-         value="<b>/usr/local/taverna-2.2/executeworkflow.sh</b>"/&gt;
+    &lt;Parameter name="executeWorkflowScript" override="false"
+           value="<b>/usr/local/taverna-2.2/executeworkflow.sh</b>"/&gt;
 &lt;/Context&gt;</pre></blockquote>
 <h4>Step 4. Download the Webapp ARchive</h4>
 <p>Make sure that the <tt>.war</tt> file is also saved to the
@@ -404,6 +415,10 @@ properties is liable to change, but is as follows in this release:</p>
 <div>
 <p><small>Copyright &copy; 2010. The University of
 Manchester.</small></p>
+<p><small>Note that the numbering of this version as
+2.3&alpha;1 makes no guarantee that there will be a 2.3&alpha;2 in the
+future. The myGrid team retains the right to alter versioning policy
+without prior notice.</small></p>
 </div>
 </body>
 </html>
