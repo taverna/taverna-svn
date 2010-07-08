@@ -150,4 +150,8 @@ public class RDFReference extends AbstractExternalReference implements
 		return RDFNode.class;
 	}
 
+	public Long getApproximateSizeInBytes() {
+		return -1L;
+	}
+
 }

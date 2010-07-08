@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>activities</artifactId>
-		<version>1.1</version>
+		<version>1.2</version>
 	</parent>
 
 	<groupId>net.sf.taverna.t2.activities</groupId>
@@ -64,19 +64,6 @@
 			<snapshots />
 		</repository>
 	</repositories>
-
-	<distributionManagement>
-		<repository>
-			<id>biordf-repository</id>
-			<name>dev.biordf.net Repository</name>
-			<url>scpexe://dev.biordf.net/var/www/maven/</url>
-		</repository>
-		<snapshotRepository>
-			<id>biordf-repository</id>
-			<name>dev.biordf.net Repository</name>
-			<url>scpexe://dev.biordf.net/var/www/maven/</url>
-		</snapshotRepository>
-	</distributionManagement>
 
 	<dependencies>
 		<dependency>

@@ -26,9 +26,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 
-import net.sf.taverna.t2.workflowmodel.health.HealthReport;
-import net.sf.taverna.t2.workflowmodel.health.HealthReport.Status;
+import net.sf.taverna.t2.visit.VisitReport;
+import net.sf.taverna.t2.visit.VisitReport.Status;
+import net.sf.taverna.t2.workflowmodel.health.HealthCheck;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 
@@ -68,48 +71,91 @@ public class SADIActivityHealthCheckerTest {
 
 			@Override
 			public SADIActivityConfigurationBean getConfiguration() {
-				return new SADIActivityConfigurationBean();
+				return new SADIActivityConfigurationBean() {
+					public String getServiceURI() {
+						return "http://example.com/test";
+					}					
+				};
 			}
 		};
 		activityHealthChecker = new SADIActivityHealthChecker();
 	}
 
 	@Test
-	public void testCanHandle() {
-		assertFalse(activityHealthChecker.canHandle(null));
-		assertFalse(activityHealthChecker.canHandle(new Object()));
-		assertFalse(activityHealthChecker.canHandle(new AbstractActivity<Object>() {
+	public void testCanVisit() {
+		assertFalse(activityHealthChecker.canVisit(null));
+		assertFalse(activityHealthChecker.canVisit(new Object()));
+		assertFalse(activityHealthChecker.canVisit(new AbstractActivity<Object>() {
 			public void configure(Object conf) throws ActivityConfigurationException {
 			}
 			public Object getConfiguration() {
 				return null;
 			}
 		}));
-		assertTrue(activityHealthChecker.canHandle(activity));
+		assertTrue(activityHealthChecker.canVisit(activity));
 	}
 
 	@Test
-	public void testCheckHealth() {
+	public void testVisit() {
 		serviceStatus = ServiceStatus.OK;
-		HealthReport healthReport = activityHealthChecker.checkHealth(activity);
+		VisitReport healthReport = activityHealthChecker.visit(activity, new ArrayList<Object>());
 		assertNotNull(healthReport);
-		assertEquals(Status.OK, healthReport.getStatus());
+		assertEquals(HealthCheck.NO_PROBLEM, healthReport.getResultId());
+		assertEquals(Status.WARNING, healthReport.getStatus());		
+		assertEquals(2, healthReport.getSubReports().size());
+		Iterator<VisitReport> iterator = healthReport.getSubReports().iterator();
+		iterator.next();
+		VisitReport subReport = iterator.next();
+		System.out.println(subReport.getMessage());
+		assertEquals(Status.OK, subReport.getStatus());
+
 		serviceStatus = ServiceStatus.SLOW;
-		healthReport = activityHealthChecker.checkHealth(activity);
+		healthReport = activityHealthChecker.visit(activity, new ArrayList<Object>());
 		assertNotNull(healthReport);
-		assertEquals(Status.WARNING, healthReport.getStatus());
+		assertEquals(HealthCheck.NO_PROBLEM, healthReport.getResultId());
+		assertEquals(Status.WARNING, healthReport.getStatus());		
+		assertEquals(2, healthReport.getSubReports().size());
+		iterator = healthReport.getSubReports().iterator();
+		iterator.next();
+		subReport = iterator.next();
+		subReport = healthReport.getSubReports().iterator().next();
+		assertEquals(Status.WARNING, subReport.getStatus());
+
 		serviceStatus = ServiceStatus.DEAD;
-		healthReport = activityHealthChecker.checkHealth(activity);
+		healthReport = activityHealthChecker.visit(activity, new ArrayList<Object>());
 		assertNotNull(healthReport);
-		assertEquals(Status.SEVERE, healthReport.getStatus());
-		healthReport = activityHealthChecker.checkHealth(new SADIActivity() {
+		assertEquals(HealthCheck.NO_PROBLEM, healthReport.getResultId());
+		assertEquals(Status.SEVERE, healthReport.getStatus());		
+		assertEquals(2, healthReport.getSubReports().size());
+		healthReport.getSubReports().iterator().next();
+		iterator = healthReport.getSubReports().iterator();
+		iterator.next();
+		subReport = iterator.next();
+		assertEquals(Status.SEVERE, subReport.getStatus());
+
+		healthReport = activityHealthChecker.visit(new SADIActivity() {
 			public RegistryImpl getRegistry() throws IOException {
 				throw new IOException();
 			}
-		});
+			public SADIActivityConfigurationBean getConfiguration() {
+				return new SADIActivityConfigurationBean() {
+					public String getServiceURI() {
+						return "http://example.com/test";
+					}					
+				};
+			}
+		}, new ArrayList<Object>());
 		assertNotNull(healthReport);
-		assertEquals(Status.SEVERE, healthReport.getStatus());
-		healthReport = activityHealthChecker.checkHealth(new SADIActivity() {
+		assertEquals(HealthCheck.NO_PROBLEM, healthReport.getResultId());
+		assertEquals(Status.WARNING, healthReport.getStatus());		
+		assertEquals(2, healthReport.getSubReports().size());
+		healthReport.getSubReports().iterator().next();
+		iterator = healthReport.getSubReports().iterator();
+		iterator.next();
+		subReport = iterator.next();
+		assertEquals(Status.WARNING, subReport.getStatus());
+
+		healthReport = activityHealthChecker.visit(new SADIActivity() {
 			public RegistryImpl getRegistry() throws IOException {
 				return new RegistryImpl(new BaseConfiguration() {}) {
 					public ServiceStatus getServiceStatus(String serviceURI) throws SADIException {
@@ -118,11 +164,27 @@ public class SADIActivityHealthCheckerTest {
 				};
 			}
 			public SADIActivityConfigurationBean getConfiguration() {
-				return new SADIActivityConfigurationBean();
+				return new SADIActivityConfigurationBean() {
+					public String getServiceURI() {
+						return "http://example.com/test";
+					}					
+				};
 			}
-		});
+		}, new ArrayList<Object>());
 		assertNotNull(healthReport);
-		assertEquals(Status.SEVERE, healthReport.getStatus());
+		assertEquals(HealthCheck.NO_PROBLEM, healthReport.getResultId());
+		assertEquals(Status.WARNING, healthReport.getStatus());		
+		assertEquals(2, healthReport.getSubReports().size());
+		healthReport.getSubReports().iterator().next();
+		iterator = healthReport.getSubReports().iterator();
+		iterator.next();
+		subReport = iterator.next();
+		assertEquals(Status.WARNING, subReport.getStatus());
+	}
+
+	@Test
+	public void testIsTimeConsuming() {
+		assertTrue(activityHealthChecker.isTimeConsuming());
 	}
 
 }
