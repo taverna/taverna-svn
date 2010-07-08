@@ -43,7 +43,7 @@
 		<repository>
 			<id>biordf-repository</id>
 			<name>dev.biordf.net Repository</name>
-			<url>scpexe://rosalind.cs.man.ac.uk/var/www/mygrid/taverna/updates/2.2.0/plugins/prototype</url>
+			<url>scpexe://rosalind/var/www/mygrid/taverna/updates/2.2.0/plugins/prototype</url>
 		</repository>
 	</distributionManagement>
 
