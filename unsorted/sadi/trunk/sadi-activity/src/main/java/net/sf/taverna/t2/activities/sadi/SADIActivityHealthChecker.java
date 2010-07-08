@@ -26,10 +26,12 @@ import java.util.List;
 
 import net.sf.taverna.t2.visit.VisitReport;
 import net.sf.taverna.t2.visit.VisitReport.Status;
-import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.health.HealthCheck;
 import net.sf.taverna.t2.workflowmodel.health.HealthChecker;
 import net.sf.taverna.t2.workflowmodel.health.RemoteHealthChecker;
+
+import org.apache.log4j.Logger;
+
 import ca.wilkinsonlab.sadi.client.Service.ServiceStatus;
 import ca.wilkinsonlab.sadi.common.SADIException;
 
@@ -39,6 +41,8 @@ import ca.wilkinsonlab.sadi.common.SADIException;
  * @author David Withers
  */
 public class SADIActivityHealthChecker implements HealthChecker<SADIActivity> {
+
+	private static Logger logger = Logger.getLogger(SADIActivityHealthChecker.class);
 
 	private static final String OK_MESSAGE = "The service is OK";
 	private static final String WARNING_MESSAGE = "The service is running slowly";
@@ -59,7 +63,7 @@ public class SADIActivityHealthChecker implements HealthChecker<SADIActivity> {
 		String registryURI = activity.getConfiguration().getSparqlEndpoint();
 		String serviceURI = activity.getConfiguration().getServiceURI();
 		reports.add(RemoteHealthChecker.contactEndpoint(activity, serviceURI));
-		reports.add(checkSADIRegistry(activity, registryURI, serviceURI));
+//		reports.add(checkSADIRegistry(activity, registryURI, serviceURI));
 		
 		Status status = VisitReport.getWorstStatus(reports);
 		VisitReport report = new VisitReport(HealthCheck.getInstance(), activity, "SADI Activity Report", HealthCheck.NO_PROBLEM,
@@ -75,6 +79,7 @@ public class SADIActivityHealthChecker implements HealthChecker<SADIActivity> {
 	private VisitReport checkSADIRegistry(SADIActivity activity, String registryURI, String serviceURI) {
 		VisitReport visitReport = null;
 		try {
+			// Registry.getServiceStatus is throwing an OperationNotSupportedException
 			ServiceStatus serviceStatus = activity.getRegistry().getServiceStatus(serviceURI);
 			if (serviceStatus.equals(ServiceStatus.OK)) {
 				visitReport = new VisitReport(HealthCheck.getInstance(), activity, OK_MESSAGE, HealthCheck.NO_PROBLEM, Status.OK);
