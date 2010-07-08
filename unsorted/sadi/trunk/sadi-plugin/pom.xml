@@ -10,9 +10,9 @@
 
 	<repositories>
 		<repository>
-			<id>biordf-repository</id>
-			<name>biordf Repository</name>
-			<url>http://dev.biordf.net/maven</url>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
 		</repository>
 	</repositories>
 
