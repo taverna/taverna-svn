@@ -65,6 +65,19 @@
 		</repository>
 	</repositories>
 
+	<distributionManagement>
+		<repository>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>scpexe://rosalind/local/www/mygrid/maven/repository</url>
+		</repository>
+		<snapshotRepository>
+			<id>mygrid-snapshot-repository</id>
+			<name>myGrid Snapshot Repository</name>
+			<url>scpexe://rosalind/local/www/mygrid/maven/snapshot-repository</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>ca.wilkinsonlab.sadi</groupId>
