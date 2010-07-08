@@ -6,7 +6,7 @@
 	<packaging>taverna-plugin</packaging>
 	<name>SADI activity plugin</name>
 	<version>0.3.0</version>
-	<description>SADI activity plugin for Taverna 2.1</description>
+	<description>SADI activity plugin for Taverna 2.2</description>
 
 	<repositories>
 		<repository>
