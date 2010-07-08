@@ -102,5 +102,9 @@ public class SADIServiceProvider extends AbstractConfigurableServiceProvider<SAD
 		return result;
 	}
 
+	public String getId() {
+		return "http://sadiframework.org/registry/serviceprovider";
+	}
+
 }
 
