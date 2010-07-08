@@ -318,7 +318,7 @@ public class SADIActivity extends AbstractAsynchronousActivity<SADIActivityConfi
 	 * @param ontClass the OWL class
 	 * @return the import ports that consume instances of the specified OWL class
 	 */
-	public Set<SADIActivityInputPort> getInputPorts(OntClass ontClass) {
+	public Set<SADIActivityInputPort> getInputPortsForClass(OntClass ontClass) {
 		Set<SADIActivityInputPort> inputs = inputPortClassMapping.get(ontClass);
 		if (inputs == null) {
 			return Collections.emptySet();
@@ -332,7 +332,7 @@ public class SADIActivity extends AbstractAsynchronousActivity<SADIActivityConfi
 	 * @param ontClass the OWL class
 	 * @return the output ports that produce instances of the specified OWL class
 	 */
-	public Set<SADIActivityOutputPort> getOutputPorts(OntClass ontClass) {
+	public Set<SADIActivityOutputPort> getOutputPortsForClass(OntClass ontClass) {
 		Set<SADIActivityOutputPort> outputs = outputPortClassMapping.get(ontClass);
 		if (outputs == null) {
 			return Collections.emptySet();

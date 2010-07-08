@@ -113,7 +113,7 @@ public class SADIFindServicesAction extends AbstractAction {
 						// find the inputs that match the input class
 						// TODO should match subclasses of the input class too
 						Set<SADIActivityInputPort> inputPorts = activity
-						.getInputPorts(activityPort.getOntClass());
+						.getInputPortsForClass(activityPort.getOntClass());
 						// connect the output port to the input with a matching class
 						if (inputPorts.size() > 0) {
 							// if there's more than one input port connect to one at random
@@ -134,7 +134,7 @@ public class SADIFindServicesAction extends AbstractAction {
 						// find the outputs that match the output class
 						// TODO should math subclasses of the output class too
 						Set<SADIActivityOutputPort> outputPorts = activity
-						.getOutputPorts(activityPort.getOntClass());
+						.getOutputPortsForClass(activityPort.getOntClass());
 						// connect the input port to the output with a matching class
 						if (outputPorts.size() > 0) {
 							// if there's more than one output port connect to one at random
