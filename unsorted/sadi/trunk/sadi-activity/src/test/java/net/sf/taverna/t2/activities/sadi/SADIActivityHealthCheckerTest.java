@@ -37,6 +37,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationE
 
 import org.apache.commons.configuration.BaseConfiguration;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.wilkinsonlab.sadi.client.RegistryImpl;
@@ -96,6 +97,7 @@ public class SADIActivityHealthCheckerTest {
 	}
 
 	@Test
+	@Ignore
 	public void testVisit() {
 		serviceStatus = ServiceStatus.OK;
 		VisitReport healthReport = activityHealthChecker.visit(activity, new ArrayList<Object>());
