@@ -312,12 +312,12 @@ public interface TavernaServerRunREST {
 		 *            The factory for URIs.
 		 */
 		public RunDescription(TavernaRun run, UriInfo ui) {
-			UriBuilder ub = ui.getAbsolutePathBuilder();
 			creationWorkflow = new Uri(ui, "workflow");
-			expiry = new Expiry(run, ub.path("expiry"));
+			expiry = new Expiry(run, ui.getAbsolutePathBuilder().path("expiry"));
 			status = new Uri(ui, "status");
 			workingDirectory = new Uri(ui, "wd");
-			listeners = new ListenerList(run, ub.path("listeners"));
+			listeners = new ListenerList(run, ui.getAbsolutePathBuilder().path(
+					"listeners"));
 			securityContext = new Uri(ui, "owner");
 			inputs = new Uri(ui, "input");
 			output = new Uri(ui, "output");
