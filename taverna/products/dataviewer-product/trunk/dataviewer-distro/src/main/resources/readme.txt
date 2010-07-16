@@ -21,17 +21,15 @@ open source licences such as Apache Licence.
 
 Documentation
 =============
-See http://www.taverna.org.uk/download/associated-tools/dataviewer-tool/ for
-documentation and tutorials on using Taverna, in particular 
-http://www.taverna.org.uk/documentation/taverna-2-x/command-line-tool/
-will explain how to use the DataViewer Tool.
+See http://www.taverna.org.uk/documentation/taverna-2-x/dataviewer-tool/ for
+documentation on the DataViewer Tool.
 
-See the file release-notes.txt for release notes for the Tool.
+See the file release-notes.txt for the release notes of the Tool.
 
 
 Usage
 =====
-In Windows, use "dataviewer.bat", while on OSX/Linux/UNIX,
+On Windows use "dataviewer.bat", while on OSX/Linux/UNIX
 use "sh dataviewer.sh" to run the Tool from the command prompt.
 
 On UNIX you may set the executable bit using 
@@ -41,10 +39,10 @@ equivalent.
 
 usage: dataviewer [<file_path>]
  <file_path>                Absolute path to the file you want loaded at startup.
-              							If you provide a path to the file you want to load 
-							              in the DataViewer, the DataViewer Tool will start 
-							              and load the file. If you omit the file parameter, 
-							              it will simply start the DataViewer Tool. 
+              				If you provide a path to the file you want to load 
+							in the DataViewer, the DataViewer Tool will start 
+							and load the file. If you omit the file parameter, 
+							it will simply start the DataViewer Tool. 
  
 
 For example:
@@ -111,8 +109,7 @@ for more requirement details.
 
 Memory usage 
 ============
-The Taverna DataViewer Tool will by default use a maximum of 
-300 MB. 
+The Taverna DataViewer Tool will by default uses a maximum of 300 MB. 
 
 If you need to increase the available memory, edit "dataviewer.sh" or
 "dataviewer.bat" script and replace "-Xmx300m" with say "-Xmx600m" to use
