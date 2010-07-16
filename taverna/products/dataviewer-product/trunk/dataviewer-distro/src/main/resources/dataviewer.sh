@@ -10,14 +10,14 @@ real_path() {
 }
 
 realprog=`real_path "$prog"`
-taverna_dataviewer_home=`dirname "$realprog"`
+TAVERNA_DATAVIEWER_HOME=`dirname "$realprog"`
 
 # 300 MB memory, 140 MB for classes
 exec java -Xmx300m -XX:MaxPermSize=140m \
-  "-Draven.profile=file://$taverna_home/conf/current-profile.xml" \
-  "-Dtaverna.startup=$taverna_dataviewer_home" \
+  "-Draven.profile=file://$TAVERNA_DATAVIEWER_HOME/conf/current-profile.xml" \
+  "-Dtaverna.startup=$TAVERNA_DATAVIEWER_HOME" \
   -Djava.system.class.loader=net.sf.taverna.raven.prelauncher.BootstrapClassLoader \
   -Draven.launcher.app.main=net.sf.taverna.dataviewer.DataViewerTool \
   -Draven.launcher.show_splashscreen=false \
-  -jar "$taverna_home/lib/"prelauncher-*.jar \
+  -jar "$TAVERNA_DATAVIEWER_HOME/lib/"prelauncher-2.2.jar \
   ${1+"$@"}

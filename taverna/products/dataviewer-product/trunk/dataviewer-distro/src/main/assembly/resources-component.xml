@@ -23,7 +23,6 @@
 			<directory>src/main/resources</directory>
 			<outputDirectory>/</outputDirectory>
 			<excludes>
-				<exclude>plugins/plugins.xml</exclude>
 				<exclude>conf/raven-launcher.properties</exclude>
 				<exclude>conf/current-profile.xml</exclude>
 			</excludes>

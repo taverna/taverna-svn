@@ -10,7 +10,6 @@
 	<componentDescriptors>
 		<componentDescriptor>src/main/assembly/resources-component.xml</componentDescriptor>
 		<componentDescriptor>src/main/assembly/dependencies-component.xml</componentDescriptor>
-		<componentDescriptor>src/main/assembly/repositories-component.xml</componentDescriptor>
 	</componentDescriptors>
 
 </assembly>

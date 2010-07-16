@@ -14,6 +14,19 @@
 
 	<description>Taverna DataViewer Tool distro</description>
 
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.taverna.dataviewer-product</groupId>
+			<artifactId>dataviewer</artifactId>
+			<version>2.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.infrastructure</groupId>
+			<artifactId>launcher</artifactId>
+			<version>${t2.infrastructure.version}</version>
+		</dependency>
+	</dependencies>
+	
 	<build>
 		<finalName>taverna-dataviewer-${project.version}</finalName>
 		<plugins>
@@ -58,11 +71,4 @@
 		</plugins>
 	</build>
 	
-	<dependencies>
-		<dependency>
-			<groupId>net.sf.taverna.dataviewer-product</groupId>
-			<artifactId>dataviewer</artifactId>
-			<version>2.2.0</version>
-		</dependency>
-	</dependencies>
 </project>

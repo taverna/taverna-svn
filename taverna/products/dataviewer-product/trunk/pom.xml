@@ -22,6 +22,7 @@
 		<taverna.version>1.7.2.2</taverna.version>
 		<t2.ui.components.version>1.2</t2.ui.components.version>
 		<t2.ui.exts.version>1.3-SNAPSHOT</t2.ui.exts.version>
+		<t2.infrastructure.version>2.2</t2.infrastructure.version>
 	</properties>
 
 	<build>
@@ -122,4 +123,23 @@
 		<module>dataviewer</module>
 		<module>dataviewer-distro</module>
 	</modules>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>uk.org.mygrid.taverna.baclava</groupId>
+				<artifactId>baclava-core</artifactId>
+				<version>${taverna.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>uk.org.mygrid.taverna.raven</groupId>
+						<artifactId>raven</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>uk.org.mygrid.taverna.raven</groupId>
+						<artifactId>raven-log4j</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>
