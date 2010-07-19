@@ -126,6 +126,25 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
+				<groupId>net.sf.taverna.t2.ui-components</groupId>
+				<artifactId>results-view</artifactId>
+				<version>${t2.ui.components.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>net.sf.taverna.t2.ui-components</groupId>
+						<artifactId>graph-view</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>net.sf.taverna.t2.ui-api</groupId>
+						<artifactId>menu-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>net.sf.taverna.t2.ui-api</groupId>
+						<artifactId>workbench-api</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
 				<groupId>uk.org.mygrid.taverna.baclava</groupId>
 				<artifactId>baclava-core</artifactId>
 				<version>${taverna.version}</version>
