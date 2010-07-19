@@ -64,6 +64,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
 import net.sf.taverna.raven.SplashScreen;
+import net.sf.taverna.raven.launcher.Launchable;
 import net.sf.taverna.t2.lang.ui.DialogTextArea;
 import net.sf.taverna.t2.lang.ui.ExtensionFileFilter;
 
@@ -96,7 +97,7 @@ import net.sf.taverna.t2.workbench.views.results.saveactions.SaveAllResultsSPIRe
  * @author Alex Nenadic
  */
 @SuppressWarnings("serial")
-public class DataViewerTool extends JFrame {
+public class DataViewerTool extends JFrame implements Launchable{
 	
 	// Splash screen of the app
 	private static final String DATAVIEWER_SPLASHSCREEN = "/dataviewer-splash.png";
@@ -482,6 +483,11 @@ public class DataViewerTool extends JFrame {
 	        	((JButton)e.getSource()).getParent().requestFocusInWindow(); // loose the focus from the button
 	        }
 	    }
+	}
+
+	public int launch(String[] args) throws Exception {
+		main(args);
+		return 0;
 	}
 
 }
