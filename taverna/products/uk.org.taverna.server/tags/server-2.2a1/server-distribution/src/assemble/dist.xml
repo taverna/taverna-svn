@@ -42,6 +42,7 @@
 				<exclude>pom.xml</exclude>
 			</excludes>
 			<fileMode>0644</fileMode>
+			<outputDirectory>.</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>${project.parent.basedir}/server-webapp/target</directory>
