@@ -4,11 +4,12 @@
 	<parent>
 		<groupId>net.sf.taverna.t2.taverna-workbench</groupId>
 		<artifactId>plugins</artifactId>
-		<version>2.2.0</version>
+		<version>2.2.1</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
 	<artifactId>components-plugin</artifactId>
 	<name>Taverna workbench components</name>
+	<version>2.2.1</version>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
@@ -73,12 +74,12 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-components</groupId>
 			<artifactId>results-view</artifactId>
-			<version>${t2.ui.components.version}</version>
+			<version>1.2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-components</groupId>
 			<artifactId>run-ui</artifactId>
-			<version>${t2.ui.components.version}</version>
+			<version>1.2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-components</groupId>
@@ -98,7 +99,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-components</groupId>
 			<artifactId>monitor-view</artifactId>
-			<version>${t2.ui.components.version}</version>
+			<version>1.2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-components</groupId>
