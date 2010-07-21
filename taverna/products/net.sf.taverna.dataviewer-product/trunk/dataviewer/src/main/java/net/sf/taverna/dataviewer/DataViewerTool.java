@@ -46,6 +46,7 @@ import java.util.TreeMap;
 import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -116,6 +117,9 @@ public class DataViewerTool extends JFrame implements Launchable{
 	private static final String SAVE_ALL_ACTION_NAME = "Save all values";
 	private static final String  QUIT_VIEWER_ACTION_NAME = "Quit DataViewer";
 	
+	private final ImageIcon dataViewerIcon = new ImageIcon(DataViewerTool.class.getResource("/dataviewer-logo.png")); 
+
+	// Tabs containing data from a Baclava file
 	private JTabbedPane tabs;
 
 	// Maps of DataThingS to the name of the port they came out from
@@ -127,6 +131,9 @@ public class DataViewerTool extends JFrame implements Launchable{
 
 	// Welcome panel with instructions on how to load data file
 	private JPanel instructionsPanel;
+	
+	// Background panel with a logo shown when a Baclava file is closed
+	private JPanel backgroundPanel;
 
 	// Map of tab names to tab panels, orderer alphabetically
 	private TreeMap<String, DataViewPanel> namesToTabsMap;
@@ -207,12 +214,15 @@ public class DataViewerTool extends JFrame implements Launchable{
 
 	private void setInstructions() {
 		if (instructionsPanel == null){
-			instructionsPanel = new JPanel();
-			instructionsPanel.setBorder(new EmptyBorder(10, 10, 20, 10));
+			instructionsPanel = new JPanel(new BorderLayout());
+			instructionsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+			JPanel textPanel = new JPanel();
+			textPanel.add(new JLabel(INSTRUCTIONS_TEXT));
+			instructionsPanel.add(textPanel, BorderLayout.NORTH);
+			instructionsPanel.add(new JLabel(dataViewerIcon), BorderLayout.CENTER);
 		}
-		instructionsPanel.add(new JLabel(INSTRUCTIONS_TEXT));
 	
-		getContentPane().add(instructionsPanel);
+		getContentPane().add(instructionsPanel, BorderLayout.CENTER);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -267,6 +277,8 @@ public class DataViewerTool extends JFrame implements Launchable{
 		closeMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				close();
+				// The frame is empty so show some nice background
+				setBackground();
 			}
 		});
 		
@@ -285,6 +297,18 @@ public class DataViewerTool extends JFrame implements Launchable{
 		
 		menuBar.add(fileMenu);
 		return menuBar;
+	}
+
+	protected void setBackground() {
+		
+		if (backgroundPanel == null){
+			backgroundPanel = new JPanel(new BorderLayout());
+			backgroundPanel.setBorder(new EmptyBorder(10, 10, 20, 10));
+			backgroundPanel.add(new JLabel(dataViewerIcon), BorderLayout.CENTER);
+		}
+		getContentPane().add(backgroundPanel, BorderLayout.CENTER);
+		// For some reason need to reinforce revalidation 
+		((JPanel)getContentPane()).revalidate();
 	}
 
 	private void updateRecentFilesMenu() {
@@ -306,14 +330,14 @@ public class DataViewerTool extends JFrame implements Launchable{
 	}
 	
 	private void close() {
+
+		getContentPane().removeAll();
+		repaint();
+		
 		tabs.removeAll();
 		resultDataThingMap = new HashMap<String, DataThing>();
 		namesToTabsMap = new TreeMap<String, DataViewPanel>();
-		
-		if (instructionsPanel != null){
-			getContentPane().remove(instructionsPanel);
-		}
-		
+						
 		setTitle(WINDOW_TITLE);
 		saveAllAction.setEnabled(false);
 		closeMenuItem.setEnabled(false);
@@ -505,5 +529,4 @@ public class DataViewerTool extends JFrame implements Launchable{
 		main(args);
 		return 0;
 	}
-
 }
