@@ -260,10 +260,7 @@ public class DataViewerTool extends JFrame implements Launchable{
 			}
 		});
 		
-		JMenuItem openMenuItem = new JMenuItem();
-		openMenuItem.setAction(new OpenFileAction());
-		openMenuItem.setText(OPEN_FILE_ACTION_NAME);
-		openMenuItem.setIcon(WorkbenchIcons.openIcon);
+		JMenuItem openMenuItem = new JMenuItem(new OpenFileAction());
 		
 		closeMenuItem = new JMenuItem(CLOSE_FILE_ACTION_NAME, WorkbenchIcons.closeIcon);
 		closeMenuItem.setEnabled(false);
@@ -296,8 +293,7 @@ public class DataViewerTool extends JFrame implements Launchable{
 		}
 		for (String filePath : recentFiles.getItems()){
 			File file = new File(filePath);
-			OpenFileAction openFileAction =  new OpenFileAction();
-			openFileAction.setFile(file);
+			OpenFileAction openFileAction =  new OpenFileAction(file);
 			JMenuItem recentFileMenuItem = new JMenuItem(openFileAction);
 			recentFileMenuItem.setText(filePath);
 			recentFilesMenuItem.add(recentFileMenuItem);
@@ -441,7 +437,14 @@ public class DataViewerTool extends JFrame implements Launchable{
 		
 		private File file;
 
-		public void setFile(File file){
+		// Lets user select a Baclava file to load from a FileChooser
+		public OpenFileAction() {
+			super(OPEN_FILE_ACTION_NAME, WorkbenchIcons.openIcon);
+		}
+		
+		// Loads a given Baclava file
+		public OpenFileAction(File file) {
+			super(file.getAbsolutePath());
 			this.file = file;
 		}
 		
@@ -462,11 +465,15 @@ public class DataViewerTool extends JFrame implements Launchable{
 				else{
 					return;
 				}
-				file = fc.getSelectedFile();
 			}
 			
 			try {
-				DataViewerTool.this.load(file);
+				if (file == null){
+					DataViewerTool.this.load(fc.getSelectedFile());
+				}
+				else{
+					DataViewerTool.this.load(file);
+				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				JOptionPane.showMessageDialog(DataViewerTool.this,
