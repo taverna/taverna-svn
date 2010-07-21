@@ -149,6 +149,11 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>reference-impl</artifactId>
+			<version>${t2.core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>reference-core-extensions</artifactId>
 			<version>${t2.core.version}</version>
 		</dependency>
