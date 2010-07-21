@@ -156,7 +156,7 @@ public class DataViewerTool extends JFrame implements Launchable{
 		SplashScreen splash = null;		
 		URL splashScreenURL = DataViewerTool.class.getResource(DATAVIEWER_SPLASHSCREEN);
 		if (splashScreenURL != null && !GraphicsEnvironment.isHeadless()) {
-			splash = SplashScreen.getSplashScreen(splashScreenURL);
+			splash = SplashScreen.getSplashScreen(splashScreenURL, 2500);
 			splash.setClosable();
 		} 
 
@@ -172,7 +172,13 @@ public class DataViewerTool extends JFrame implements Launchable{
 		if (splash != null){
 			splash.requestClose();
 		}
-		
+		// We want the splash to show a bit longer so we set a timeout on it
+		// but the main app window shows on top of it once it is ready (normally
+		// before the splash has timedout) which is not nice so we wait here until 
+		// the splash disappears
+		while (splash.isActive()){
+			// do nothing
+		}
 		viewer.setVisible(true);
 	}
 
@@ -215,7 +221,7 @@ public class DataViewerTool extends JFrame implements Launchable{
 		SAXBuilder builder = new SAXBuilder();
 		Document doc = builder.build(is);
 		
-		clear();
+		close();
 		
 		getContentPane().add(tabs);
 
@@ -263,7 +269,7 @@ public class DataViewerTool extends JFrame implements Launchable{
 		closeMenuItem.setEnabled(false);
 		closeMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				clear();
+				close();
 			}
 		});
 		
@@ -303,7 +309,7 @@ public class DataViewerTool extends JFrame implements Launchable{
 		}		
 	}
 	
-	private void clear() {
+	private void close() {
 		tabs.removeAll();
 		resultDataThingMap = new HashMap<String, DataThing>();
 		namesToTabsMap = new TreeMap<String, DataViewPanel>();
@@ -315,6 +321,9 @@ public class DataViewerTool extends JFrame implements Launchable{
 		setTitle(WINDOW_TITLE);
 		saveAllAction.setEnabled(false);
 		closeMenuItem.setEnabled(false);
+		currentFilePath = null;
+		
+		updateRecentFilesMenu();
 	}
 	
 	protected void saveAll() {
