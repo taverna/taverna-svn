@@ -27,7 +27,9 @@ public abstract class DirEntryReference {
 	/** A link to the entry. */
 	@XmlAttribute(name = "href", namespace = XLINK)
 	public URI link;
-
+	/** The last, user-displayable part of the name. Ignored on input. */
+	@XmlAttribute
+	public String name;
 	/** The path of the entry. */
 	@XmlValue
 	public String path;
@@ -49,7 +51,8 @@ public abstract class DirEntryReference {
 	 * given directory entry.
 	 * 
 	 * @param ub
-	 *            Used for constructing URIs.
+	 *            Used for constructing URIs. If <tt>null</tt>, no URI will be
+	 *            attached.
 	 * @param entry
 	 *            The entry to characterise.
 	 * @return An object that describes the directory entry.
@@ -59,6 +62,7 @@ public abstract class DirEntryReference {
 			DirectoryEntry entry) {
 		DirEntryReference de = (entry instanceof Directory) ? new DirectoryReference()
 				: new FileReference();
+		de.name = entry.getName();
 		String fullname = entry.getFullName();
 		de.path = fullname.startsWith("/") ? fullname.substring(1) : fullname;
 		if (ub != null)
