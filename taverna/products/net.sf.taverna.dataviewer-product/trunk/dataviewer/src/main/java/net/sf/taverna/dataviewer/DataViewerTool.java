@@ -195,7 +195,9 @@ public class DataViewerTool extends JFrame implements Launchable{
 		
 		referenceService = createReferenceServiceBean();
 		
-		setBounds(100, 100, 800, 500);
+		//setBounds(100, 100, 800, 500);
+		setSize(800, 500);
+		setLocationRelativeTo(null);
 		
 		// Quit this app when the big window closes.
 		addWindowListener(new WindowAdapter() {
