@@ -39,7 +39,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<jdk>1.6</jdk>
+					<jdk>1.5</jdk>
 					<targetPercentage>50%</targetPercentage>
 					<failOnViolation>false</failOnViolation>
 				</configuration>
@@ -96,7 +96,7 @@
 							http://www.mygrid.org.uk/taverna/api/
 						</link>
 						<link>
-							http://java.sun.com/j2se/1.6.0/docs/api/
+							http://java.sun.com/j2se/1.5.0/docs/api/
 						</link>
 					</links>
 				</configuration>
