@@ -25,7 +25,9 @@ import java.awt.FlowLayout;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -69,6 +71,7 @@ import net.sf.taverna.raven.launcher.Launchable;
 import net.sf.taverna.t2.lang.ui.DialogTextArea;
 import net.sf.taverna.t2.lang.ui.ExtensionFileFilter;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
 import org.jdom.Document;
@@ -100,6 +103,11 @@ import net.sf.taverna.t2.workbench.views.results.saveactions.SaveAllResultsSPIRe
 @SuppressWarnings("serial")
 public class DataViewerTool extends JFrame implements Launchable{
 	
+	private static Logger logger = Logger.getLogger(DataViewerTool.class);
+
+	// Nimbus LAF
+	private static final String NIMBUS = "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel";
+
 	// Splash screen of the app
 	private static final String DATAVIEWER_SPLASHSCREEN = "/dataviewer-splash.png";
 
@@ -117,8 +125,14 @@ public class DataViewerTool extends JFrame implements Launchable{
 	private static final String SAVE_ALL_ACTION_NAME = "Save all values";
 	private static final String  QUIT_VIEWER_ACTION_NAME = "Quit DataViewer";
 	
-	private final ImageIcon dataViewerIcon = new ImageIcon(DataViewerTool.class.getResource("/dataviewer-logo.png")); 
-
+	private final ImageIcon dataViewerIcon192x192_BackAndWhite = new ImageIcon(DataViewerTool.class.getResource("/dataviewer-logo-192x192_BlackAndWhite.png")); 
+	private final Image dataViewerIcon192x192 = Toolkit.getDefaultToolkit().getImage(DataViewerTool.class.getResource("/dataviewer-logo-192x192.png")); 
+	//private final Image dataViewerIcon128x128 = Toolkit.getDefaultToolkit().getImage(DataViewerTool.class.getResource("/dataviewer-logo-128x128.png")); 
+	//private final Image dataViewerIcon64x64 = Toolkit.getDefaultToolkit().getImage(DataViewerTool.class.getResource("/dataviewer-logo-64x64.png")); 
+	//private final Image dataViewerIcon32x32 = Toolkit.getDefaultToolkit().getImage(DataViewerTool.class.getResource("/dataviewer-logo-32x32.png")); 
+	//private final Image dataViewerIcon16x16 = Toolkit.getDefaultToolkit().getImage(DataViewerTool.class.getResource("/dataviewer-logo-16x16.png")); 
+	//private final List<Image> dataViewerIcons;
+	
 	// Tabs containing data from a Baclava file
 	private JTabbedPane tabs;
 
@@ -167,7 +181,9 @@ public class DataViewerTool extends JFrame implements Launchable{
 			splash.setClosable();
 		} 
 
-		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		//UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		setLookAndFeel();
+		
 		DataViewerTool viewer = new DataViewerTool();
 		if (args.length == 1) {
 			viewer.load(new File(args[0]));
@@ -186,12 +202,21 @@ public class DataViewerTool extends JFrame implements Launchable{
 		while (splash.isActive()){
 			// do nothing
 		}
+		
 		viewer.setVisible(true);
 	}
 
 	public DataViewerTool() {
 				
 		super(WINDOW_TITLE);
+		
+//		dataViewerIcons = new ArrayList<Image>();
+//		dataViewerIcons.add(dataViewerIcon192x192);
+//		dataViewerIcons.add(dataViewerIcon128x128);
+//		dataViewerIcons.add(dataViewerIcon64x64);
+//		dataViewerIcons.add(dataViewerIcon32x32);
+//		dataViewerIcons.add(dataViewerIcon16x16);
+		setIconImage(dataViewerIcon192x192);
 		
 		referenceService = createReferenceServiceBean();
 		
@@ -221,7 +246,7 @@ public class DataViewerTool extends JFrame implements Launchable{
 			JPanel textPanel = new JPanel();
 			textPanel.add(new JLabel(INSTRUCTIONS_TEXT));
 			instructionsPanel.add(textPanel, BorderLayout.NORTH);
-			instructionsPanel.add(new JLabel(dataViewerIcon), BorderLayout.CENTER);
+			instructionsPanel.add(new JLabel(dataViewerIcon192x192_BackAndWhite), BorderLayout.CENTER);
 		}
 	
 		getContentPane().add(instructionsPanel, BorderLayout.CENTER);
@@ -251,12 +276,21 @@ public class DataViewerTool extends JFrame implements Launchable{
 			tabs.add(tabName, namesToTabsMap.get(tabName));
 		}
 		
-		setTitle(WINDOW_TITLE + ": " + file.getAbsolutePath());
-		saveAllAction.setEnabled(true);
-		closeMenuItem.setEnabled(true);
-		recentFiles.push(file.getAbsolutePath()); // save the file under recently opened files
-		currentFilePath = file.getAbsolutePath();
-		updateRecentFilesMenu();
+		if (tabs.getComponents().length == 0){
+			// Looks like it was baclava file or it was empty
+			JOptionPane.showMessageDialog(DataViewerTool.this,
+					"File does not seem to contain any data - possibly it is not a Baclava XML file.", "Error",
+					JOptionPane.ERROR_MESSAGE);
+			setBackground();
+		}
+		else{
+			setTitle(WINDOW_TITLE + ": " + file.getAbsolutePath());
+			saveAllAction.setEnabled(true);
+			closeMenuItem.setEnabled(true);
+			recentFiles.push(file.getAbsolutePath()); // save the file under recently opened files
+			currentFilePath = file.getAbsolutePath();
+			updateRecentFilesMenu();
+		}
 	}
 
 	private JMenuBar createMenuBar() {
@@ -306,7 +340,7 @@ public class DataViewerTool extends JFrame implements Launchable{
 		if (backgroundPanel == null){
 			backgroundPanel = new JPanel(new BorderLayout());
 			backgroundPanel.setBorder(new EmptyBorder(10, 10, 20, 10));
-			backgroundPanel.add(new JLabel(dataViewerIcon), BorderLayout.CENTER);
+			backgroundPanel.add(new JLabel(dataViewerIcon192x192_BackAndWhite), BorderLayout.CENTER);
 		}
 		getContentPane().add(backgroundPanel, BorderLayout.CENTER);
 		// For some reason need to reinforce revalidation 
@@ -501,10 +535,12 @@ public class DataViewerTool extends JFrame implements Launchable{
 					DataViewerTool.this.load(file);
 				}
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				logger.error("Failed to load data from the file", ex);
 				JOptionPane.showMessageDialog(DataViewerTool.this,
 						"Could not open file: \n\n" + ex.getMessage(), "Error",
 						JOptionPane.ERROR_MESSAGE);
+				close(); // clear out the tabs panel from the content pane that got created in load()
+				setBackground();
 			}
 		}
 	}
@@ -530,5 +566,58 @@ public class DataViewerTool extends JFrame implements Launchable{
 	public int launch(String[] args) throws Exception {
 		main(args);
 		return 0;
+	}
+	
+	// From net.sf.taverna.t2.workbench.ui.impl.Workbench
+	private static void setLookAndFeel() {
+		String defaultLaf = System.getProperty("swing.defaultlaf");
+		if (defaultLaf != null) {
+			try { 
+				UIManager.setLookAndFeel(defaultLaf);
+				return;
+			} catch (Exception e) {
+				logger.info("Can't set requested look and feel -Dswing.defaultlaf=" + defaultLaf, e);
+			}
+		}
+		String os = System.getProperty("os.name");
+		if (os.contains("Mac") || os.contains("Windows")) {
+			// For OSX and Windows use the system look and feel
+			String systemLF = UIManager.getSystemLookAndFeelClassName();
+			try {
+				UIManager.setLookAndFeel(systemLF);
+				logger.info("Using system L&F " + systemLF);
+				return;
+			} catch (Exception ex2) {
+				logger.error("Unable to load system look and feel "
+						+ systemLF, ex2);
+			}
+		}
+		// The system look and feel on *NIX
+		// (com.sun.java.swing.plaf.gtk.GTKLookAndFeel) looks
+		// like Windows 3.1.. try to use Nimbus (Java 6e10 and 
+		// later)
+		try {
+			UIManager.setLookAndFeel(NIMBUS);
+			logger.info("Using Nimbus look and feel");
+			return;
+		} catch (Exception e) {			
+		}
+		
+		// Metal should be better than GTK still
+		try {
+			String crossPlatform = UIManager.getCrossPlatformLookAndFeelClassName();
+			UIManager.setLookAndFeel(crossPlatform);
+			logger.info("Using cross platform Look and Feel " + crossPlatform);
+		} catch (Exception e){
+		}
+		
+		// Final fallback
+		try {
+			String systemLF = UIManager.getSystemLookAndFeelClassName();
+			UIManager.setLookAndFeel(systemLF);
+			logger.info("Using system platform Look and Feel " + systemLF);
+		} catch (Exception e){
+			logger.info("Using default Look and Feel " + UIManager.getLookAndFeel());			
+		}	
 	}
 }
