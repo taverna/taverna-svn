@@ -8,6 +8,7 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
+import javax.xml.soap.SOAPElement;
 
 import org.taverna.server.master.common.DirEntryReference;
 import org.taverna.server.master.common.InputDescription;
@@ -20,7 +21,7 @@ import org.taverna.server.master.exceptions.NoListenerException;
 import org.taverna.server.master.exceptions.NoUpdateException;
 import org.taverna.server.master.exceptions.UnknownRunException;
 import org.taverna.server.master.rest.TavernaServerREST;
-import org.w3c.dom.Element;
+//import org.w3c.dom.Element;
 
 /**
  * The SOAP service interface to Taverna Server version 2.3.
@@ -39,7 +40,7 @@ public interface TavernaServerSOAP {
 	 * @throws NoUpdateException
 	 */
 	@WebResult(name = "Run")
-	RunReference submitWorkflow(@WebParam(name = "workflow") Element workflow)
+	RunReference submitWorkflow(@WebParam(name = "workflow") SOAPElement workflow)
 			throws NoUpdateException;
 
 	/**
@@ -69,7 +70,7 @@ public interface TavernaServerSOAP {
 	 */
 	@WebMethod(operationName = "getPermittedWorkflows")
 	@WebResult(name = "PermittedWorkflow")
-	public Element[] getAllowedWorkflows();
+	public SOAPElement[] getAllowedWorkflows();
 
 	/**
 	 * Get the list of allowed event listeners.
@@ -109,7 +110,7 @@ public interface TavernaServerSOAP {
 	 *             not permitted to see it.
 	 */
 	@WebResult(name = "CreationWorkflow")
-	public Element getRunWorkflow(@WebParam(name = "runName") String runName)
+	public SOAPElement getRunWorkflow(@WebParam(name = "runName") String runName)
 			throws UnknownRunException;
 
 	/**

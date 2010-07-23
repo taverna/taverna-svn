@@ -43,6 +43,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.soap.SOAPElement;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
 
@@ -762,19 +763,19 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	}
 
 	@Override
-	public RunReference submitWorkflow(Element workflow) throws NoUpdateException {
+	public RunReference submitWorkflow(SOAPElement workflow) throws NoUpdateException {
 		invokes++;
 		String name = buildWorkflow(workflow, getPrincipal());
 		return new RunReference(name, getRestfulRunReferenceBuilder());
 	}
 
 	@Override
-	public Element[] getAllowedWorkflows() {
+	public SOAPElement[] getAllowedWorkflows() {
 		invokes++;
 		List<Element> result = new ArrayList<Element>();
 		for (Workflow perm: policy.listPermittedWorkflows(getPrincipal()))
 			result.addAll(asList(perm.content));
-		return result.toArray(new Element[result.size()]);
+		return result.toArray(new SOAPElement[result.size()]);
 	}
 
 	@Override
@@ -795,12 +796,12 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	}
 
 	@Override
-	public Element getRunWorkflow(String runName) throws UnknownRunException {
+	public SOAPElement getRunWorkflow(String runName) throws UnknownRunException {
 		invokes++;
 		Workflow w = getRun(runName).getWorkflow();
 		if (w == null || w.content == null || w.content.length == 0)
 			return null;
-		return w.content[0];
+		return (SOAPElement) w.content[0];
 	}
 
 	@Override
