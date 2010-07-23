@@ -27,6 +27,7 @@ public abstract class Workflow {
 	public Map<QName, Object> args;
 
 	@XmlRootElement(name = "workflow", namespace = "http://taverna.sf.net/2008/xml/t2flow")
+	@XmlType(name = "t2flow")
 	public static class T2Flow extends Workflow {
 	}
 }
