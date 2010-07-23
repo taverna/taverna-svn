@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.xml.bind.annotation.XmlAnyAttribute;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
@@ -16,6 +17,7 @@ import org.w3c.dom.Element;
  * @author dkf
  */
 @XmlType(name = "Workflow")
+@XmlSeeAlso(Workflow.T2Flow.class)
 public abstract class Workflow {
 	/** Literal document. */
 	@XmlAnyElement(lax = true)
