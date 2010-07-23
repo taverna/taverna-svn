@@ -14,6 +14,7 @@
 					<include>release-notes.txt</include>
 					<include>LICENCE.txt</include>
 					<include>readme.txt</include>
+					<include>baclava-example*</include>
 				</includes>
 			</unpackOptions>
 		</dependencySet>
