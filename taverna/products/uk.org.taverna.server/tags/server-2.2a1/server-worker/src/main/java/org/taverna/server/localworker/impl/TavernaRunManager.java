@@ -7,8 +7,6 @@ import static java.lang.System.setProperty;
 import static java.lang.System.setSecurityManager;
 import static java.rmi.registry.LocateRegistry.getRegistry;
 
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RMISecurityManager;
@@ -19,14 +17,9 @@ import java.security.Principal;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.taverna.server.localworker.remote.RemoteRunFactory;
 import org.taverna.server.localworker.remote.RemoteSingleRun;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
 
 /**
  * The registered factory for runs, this class is responsible for constructing
@@ -43,19 +36,6 @@ public class TavernaRunManager extends UnicastRemoteObject implements
 	String command;
 	Constructor<? extends RemoteSingleRun> cons;
 	Class<? extends Worker> workerClass;
-
-	/**
-	 * How to get the actual workflow document from the XML document that it is
-	 * contained in.
-	 * 
-	 * @param containerDocument
-	 *            The document sent from the web interface.
-	 * @return The element describing the workflow, as expected by the Taverna
-	 *         command line executor.
-	 */
-	protected Element unwrapWorkflow(Document containerDocument) {
-		return (Element) containerDocument.getDocumentElement().getFirstChild();
-	}
 
 	private static final String usage = "java -jar server.worker.jar workflowExecScript UUID";
 
@@ -91,23 +71,11 @@ public class TavernaRunManager extends UnicastRemoteObject implements
 	@Override
 	public RemoteSingleRun make(String scufl, Principal creator)
 			throws RemoteException {
-		StringReader sr = new StringReader(scufl);
-		StringWriter sw = new StringWriter();
-		try {
-			tf.newTransformer()
-					.transform(
-							new DOMSource(unwrapWorkflow(dbf
-									.newDocumentBuilder().parse(
-											new InputSource(sr)))),
-							new StreamResult(sw));
-		} catch (Exception e) {
-			throw new RemoteException("failed to extract contained workflow", e);
-		}
 		try {
 			// TODO: Do something properly with creator
 			out.println("Creating run for "
 					+ (creator == null ? "<NOBODY>" : creator.getName()));
-			return cons.newInstance(command, sw.toString(), workerClass);
+			return cons.newInstance(command, scufl, workerClass);
 		} catch (InvocationTargetException e) {
 			if (e.getTargetException() instanceof RemoteException)
 				throw (RemoteException) e.getTargetException();
