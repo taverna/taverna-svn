@@ -367,14 +367,14 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 			public String getFinishTime() {
 				invokes++;
 				Date f = run.getFinishTimestamp();
-				return f==null ? "" : df().format(f);
+				return f == null ? "" : df().format(f);
 			}
 
 			@Override
 			public String getStartTime() {
 				invokes++;
 				Date f = run.getStartTimestamp();
-				return f==null ? "" : df().format(f);
+				return f == null ? "" : df().format(f);
 			}
 
 			@Override
@@ -763,7 +763,8 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	}
 
 	@Override
-	public RunReference submitWorkflow(SOAPElement workflow) throws NoUpdateException {
+	public RunReference submitWorkflow(Workflow workflow)
+			throws NoUpdateException {
 		invokes++;
 		String name = buildWorkflow(workflow, getPrincipal());
 		return new RunReference(name, getRestfulRunReferenceBuilder());
@@ -773,7 +774,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	public SOAPElement[] getAllowedWorkflows() {
 		invokes++;
 		List<Element> result = new ArrayList<Element>();
-		for (Workflow perm: policy.listPermittedWorkflows(getPrincipal()))
+		for (Workflow perm : policy.listPermittedWorkflows(getPrincipal()))
 			result.addAll(asList(perm.content));
 		return result.toArray(new SOAPElement[result.size()]);
 	}
@@ -796,7 +797,8 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	}
 
 	@Override
-	public SOAPElement getRunWorkflow(String runName) throws UnknownRunException {
+	public SOAPElement getRunWorkflow(String runName)
+			throws UnknownRunException {
 		invokes++;
 		Workflow w = getRun(runName).getWorkflow();
 		if (w == null || w.content == null || w.content.length == 0)
@@ -1068,12 +1070,6 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 	// SUPPORT METHODS
 
-	private static Workflow wrap(Element elem) {
-		Workflow s = new Workflow();
-		s.content = new Element[] {elem};
-		return s;
-	}
-
 	private static DateFormat isoFormat;
 
 	static DateFormat df() {
@@ -1084,22 +1080,28 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 
 	private String buildWorkflow(Element workflow, Principal p)
 			throws NoCreateException {
-		Workflow wrapped = wrap(workflow);
+		Workflow wrapped = new Workflow();
+		wrapped.content = new Element[] { workflow };
+		return buildWorkflow(wrapped, p);
+	}
+
+	private String buildWorkflow(Workflow workflow, Principal p)
+			throws NoCreateException {
 		if (!allowNewWorkflowRuns)
 			throw new NoCreateException("run creation not currently enabled");
 		if (logIncomingWorkflows)
 			try {
 				StringWriter sw = new StringWriter();
-				scuflSerializer.createMarshaller().marshal(wrapped, sw);
+				scuflSerializer.createMarshaller().marshal(workflow, sw);
 				log.info(sw);
 			} catch (JAXBException e) {
 				log.warn("problem when logging workflow", e);
 			}
-		policy.permitCreate(p, wrapped);
+		policy.permitCreate(p, workflow);
 
 		TavernaRun w;
 		try {
-			w = runFactory.create(p, wrapped);
+			w = runFactory.create(p, workflow);
 		} catch (Exception e) {
 			log.error("failed to build workflow run worker", e);
 			throw new NoCreateException("failed to build workflow run worker");
