@@ -54,7 +54,7 @@ public class TavernaRunManager extends UnicastRemoteObject implements
 	 *         command line executor.
 	 */
 	protected Element unwrapWorkflow(Document containerDocument) {
-		return (Element) containerDocument.getDocumentElement();//.getFirstChild();
+		return (Element) containerDocument.getDocumentElement().getFirstChild();
 	}
 
 	private static final String usage = "java -jar server.worker.jar workflowExecScript UUID";
@@ -91,7 +91,6 @@ public class TavernaRunManager extends UnicastRemoteObject implements
 	@Override
 	public RemoteSingleRun make(String scufl, Principal creator)
 			throws RemoteException {
-		out.println("[[["+scufl+"]]]");
 		StringReader sr = new StringReader(scufl);
 		StringWriter sw = new StringWriter();
 		try {
