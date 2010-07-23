@@ -16,18 +16,24 @@ import org.w3c.dom.Element;
  * 
  * @author dkf
  */
-@XmlType(name = "Workflow")
-@XmlSeeAlso(Workflow.T2Flow.class)
+@XmlRootElement(name = "abstractWorkflow")
+@XmlType(name = "Taverna2Workflow")
+@XmlSeeAlso({Workflow.T2Flow.class})
 public abstract class Workflow {
 	/** Literal document. */
-	@XmlAnyElement(lax = true)
+	@XmlAnyElement
 	public Element[] content;
 	/** Literal attributes. */
 	@XmlAnyAttribute
 	public Map<QName, Object> args;
 
+	/**
+	 * Old-style Taverna 2 workflow.
+	 * 
+	 * @author dkf
+	 */
 	@XmlRootElement(name = "workflow", namespace = "http://taverna.sf.net/2008/xml/t2flow")
-	@XmlType(name = "t2flow")
+	@XmlType(name = "t2flow", namespace = "http://taverna.sf.net/2008/xml/t2flow")
 	public static class T2Flow extends Workflow {
 	}
 }
