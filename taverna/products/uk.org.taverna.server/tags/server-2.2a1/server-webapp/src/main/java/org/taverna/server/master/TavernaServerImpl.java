@@ -43,7 +43,6 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.soap.SOAPElement;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
 
@@ -54,8 +53,8 @@ import org.taverna.server.master.common.DirEntryReference;
 import org.taverna.server.master.common.InputDescription;
 import org.taverna.server.master.common.Namespaces;
 import org.taverna.server.master.common.RunReference;
-import org.taverna.server.master.common.Workflow;
 import org.taverna.server.master.common.Status;
+import org.taverna.server.master.common.Workflow;
 import org.taverna.server.master.exceptions.BadPropertyValueException;
 import org.taverna.server.master.exceptions.BadStateChangeException;
 import org.taverna.server.master.exceptions.FilesystemAccessException;
@@ -770,13 +769,13 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		return new RunReference(name, getRestfulRunReferenceBuilder());
 	}
 
+	private static final Workflow[] WORKFLOW_ARRAY_TYPE = new Workflow[0];
+
 	@Override
-	public SOAPElement[] getAllowedWorkflows() {
+	public Workflow[] getAllowedWorkflows() {
 		invokes++;
-		List<Element> result = new ArrayList<Element>();
-		for (Workflow perm : policy.listPermittedWorkflows(getPrincipal()))
-			result.addAll(asList(perm.content));
-		return result.toArray(new SOAPElement[result.size()]);
+		return policy.listPermittedWorkflows(getPrincipal()).toArray(
+				WORKFLOW_ARRAY_TYPE);
 	}
 
 	@Override
@@ -797,13 +796,9 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	}
 
 	@Override
-	public SOAPElement getRunWorkflow(String runName)
-			throws UnknownRunException {
+	public Workflow getRunWorkflow(String runName) throws UnknownRunException {
 		invokes++;
-		Workflow w = getRun(runName).getWorkflow();
-		if (w == null || w.content == null || w.content.length == 0)
-			return null;
-		return (SOAPElement) w.content[0];
+		return getRun(runName).getWorkflow();
 	}
 
 	@Override
