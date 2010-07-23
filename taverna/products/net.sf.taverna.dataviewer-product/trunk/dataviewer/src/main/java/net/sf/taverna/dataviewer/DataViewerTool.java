@@ -291,6 +291,13 @@ public class DataViewerTool extends JFrame implements Launchable{
 			currentFilePath = file.getAbsolutePath();
 			updateRecentFilesMenu();
 		}
+		
+		try{
+			is.close();
+	    } catch (Exception ex) {
+	    	// Log it but ignore if we managed to read the file and got so far
+	    	logger.error("Failed to close the Baclava file " + file.getAbsolutePath(), ex);
+	    }
 	}
 
 	private JMenuBar createMenuBar() {
