@@ -66,7 +66,7 @@ public interface TavernaServerRunREST {
 	/**
 	 * Returns the workflow document used to create the workflow run.
 	 * 
-	 * @return The SCUFL document.
+	 * @return The workflow document.
 	 */
 	@GET
 	@Path("workflow")

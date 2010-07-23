@@ -65,7 +65,7 @@ public interface TavernaServerSOAP {
 	 * Get the list of allowed workflows. If the list is empty, <i>any</i>
 	 * workflow may be used.
 	 * 
-	 * @return A list of SCUFL workflows.
+	 * @return A list of workflow documents.
 	 */
 	@WebMethod(operationName = "getPermittedWorkflows")
 	@WebResult(name = "PermittedWorkflow")

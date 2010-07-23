@@ -67,8 +67,8 @@ public class TavernaRunManager extends UnicastRemoteObject implements
 	 * @param constructor
 	 *            What constructor to call to instantiate the RMI server object
 	 *            for the run. The constructor <i>must</i> be able to take two
-	 *            strings (the execution command, and the SCUFL document) and a
-	 *            class (the <tt>workerClass</tt> parameter, below) as
+	 *            strings (the execution command, and the workflow document) and
+	 *            a class (the <tt>workerClass</tt> parameter, below) as
 	 *            arguments.
 	 * @param workerClass
 	 *            What class to create to actually manufacture and manage the
@@ -89,9 +89,9 @@ public class TavernaRunManager extends UnicastRemoteObject implements
 	}
 
 	@Override
-	public RemoteSingleRun make(String scufl, Principal creator)
+	public RemoteSingleRun make(String workflow, Principal creator)
 			throws RemoteException {
-		StringReader sr = new StringReader(scufl);
+		StringReader sr = new StringReader(workflow);
 		StringWriter sw = new StringWriter();
 		try {
 			tf.newTransformer()
@@ -107,7 +107,7 @@ public class TavernaRunManager extends UnicastRemoteObject implements
 			// TODO: Do something properly with creator
 			out.println("Creating run for "
 					+ (creator == null ? "<NOBODY>" : creator.getName()));
-			return cons.newInstance(command, scufl, workerClass);
+			return cons.newInstance(command, workflow, workerClass);
 		} catch (InvocationTargetException e) {
 			if (e.getTargetException() instanceof RemoteException)
 				throw (RemoteException) e.getTargetException();

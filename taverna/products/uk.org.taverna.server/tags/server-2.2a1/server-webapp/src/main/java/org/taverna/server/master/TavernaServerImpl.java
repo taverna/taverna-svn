@@ -103,7 +103,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	// CONNECTIONS TO JMX, SPRING AND CXF
 
 	static int invokes;
-	private JAXBContext scuflSerializer;
+	private JAXBContext workflowSerializer;
 	/**
 	 * Whether outgoing exceptions should be logged before being converted to
 	 * responses.
@@ -114,7 +114,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	 * @throws JAXBException
 	 */
 	public TavernaServerImpl() throws JAXBException {
-		scuflSerializer = JAXBContext.newInstance(Workflow.class);
+		workflowSerializer = JAXBContext.newInstance(Workflow.class);
 	}
 
 	/**
@@ -1076,7 +1076,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		if (logIncomingWorkflows)
 			try {
 				StringWriter sw = new StringWriter();
-				scuflSerializer.createMarshaller().marshal(workflow, sw);
+				workflowSerializer.createMarshaller().marshal(workflow, sw);
 				log.info(sw);
 			} catch (JAXBException e) {
 				log.warn("problem when logging workflow", e);
