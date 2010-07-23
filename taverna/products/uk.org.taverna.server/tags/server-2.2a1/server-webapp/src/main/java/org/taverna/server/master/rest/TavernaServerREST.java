@@ -31,7 +31,6 @@ import org.taverna.server.master.exceptions.NoUpdateException;
 import org.taverna.server.master.exceptions.UnknownRunException;
 import org.taverna.server.master.interfaces.TavernaRun;
 import org.taverna.server.master.soap.TavernaServerSOAP;
-import org.w3c.dom.Element;
 
 /**
  * The REST service interface to Taverna Server version 2.3.
@@ -84,7 +83,7 @@ public interface TavernaServerREST {
 	@Path("runs")
 	@Consumes("application/xml")
 	@Description("Accepts (or not) a request to create a new run executing the given workflow.")
-	public Response submitWorkflow(Element workflow, @Context UriInfo ui)
+	public Response submitWorkflow(Workflow workflow, @Context UriInfo ui)
 			throws NoUpdateException;
 
 	/**

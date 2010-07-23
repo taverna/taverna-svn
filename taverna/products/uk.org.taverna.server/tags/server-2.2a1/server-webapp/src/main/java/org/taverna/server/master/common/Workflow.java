@@ -1,8 +1,12 @@
 package org.taverna.server.master.common;
 
+import java.util.Map;
+
+import javax.xml.bind.annotation.XmlAnyAttribute;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.namespace.QName;
 
 import org.w3c.dom.Element;
 
@@ -11,12 +15,16 @@ import org.w3c.dom.Element;
  * 
  * @author dkf
  */
-@XmlRootElement(name = "workflow")
 @XmlType(name = "Workflow")
-public class Workflow {
-	/**
-	 * Literal document.
-	 */
+public abstract class Workflow {
+	/** Literal document. */
 	@XmlAnyElement(lax = true)
 	public Element[] content;
+	/** Literal attributes. */
+	@XmlAnyAttribute
+	public Map<QName, Object> args;
+
+	@XmlRootElement(name = "workflow", namespace = "http://taverna.sf.net/2008/xml/t2flow")
+	public static class T2Flow extends Workflow {
+	}
 }

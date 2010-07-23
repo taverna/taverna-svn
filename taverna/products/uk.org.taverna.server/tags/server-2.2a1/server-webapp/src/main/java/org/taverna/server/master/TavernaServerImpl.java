@@ -86,7 +86,6 @@ import org.taverna.server.master.rest.TavernaServerInputREST.InDesc.AbstractCont
 import org.taverna.server.master.rest.TavernaServerListenersREST.ListenerDescription;
 import org.taverna.server.master.rest.TavernaServerListenersREST.TavernaServerListenerREST;
 import org.taverna.server.master.soap.TavernaServerSOAP;
-import org.w3c.dom.Element;
 
 /**
  * The core implementation of the web application.
@@ -239,7 +238,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	}
 
 	@Override
-	public Response submitWorkflow(Element workflow, UriInfo ui)
+	public Response submitWorkflow(Workflow workflow, UriInfo ui)
 			throws NoUpdateException {
 		invokes++;
 		String name = buildWorkflow(workflow, getPrincipal());
@@ -383,12 +382,9 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 			}
 
 			@Override
-			public Element getWorkflow() {
+			public Workflow getWorkflow() {
 				invokes++;
-				Workflow w = run.getWorkflow();
-				if (w == null || w.content == null || w.content.length == 0)
-					return null;
-				return w.content[0];
+				return run.getWorkflow();
 			}
 
 			@Override
@@ -1071,13 +1067,6 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		if (isoFormat == null)
 			isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 		return isoFormat;
-	}
-
-	private String buildWorkflow(Element workflow, Principal p)
-			throws NoCreateException {
-		Workflow wrapped = new Workflow();
-		wrapped.content = new Element[] { workflow };
-		return buildWorkflow(wrapped, p);
 	}
 
 	private String buildWorkflow(Workflow workflow, Principal p)
