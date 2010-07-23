@@ -53,7 +53,7 @@ import org.taverna.server.master.common.DirEntryReference;
 import org.taverna.server.master.common.InputDescription;
 import org.taverna.server.master.common.Namespaces;
 import org.taverna.server.master.common.RunReference;
-import org.taverna.server.master.common.SCUFL;
+import org.taverna.server.master.common.Workflow;
 import org.taverna.server.master.common.Status;
 import org.taverna.server.master.exceptions.BadPropertyValueException;
 import org.taverna.server.master.exceptions.BadStateChangeException;
@@ -86,6 +86,7 @@ import org.taverna.server.master.rest.TavernaServerInputREST.InDesc.AbstractCont
 import org.taverna.server.master.rest.TavernaServerListenersREST.ListenerDescription;
 import org.taverna.server.master.rest.TavernaServerListenersREST.TavernaServerListenerREST;
 import org.taverna.server.master.soap.TavernaServerSOAP;
+import org.w3c.dom.Element;
 
 /**
  * The core implementation of the web application.
@@ -114,7 +115,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	 * @throws JAXBException
 	 */
 	public TavernaServerImpl() throws JAXBException {
-		scuflSerializer = JAXBContext.newInstance(SCUFL.class);
+		scuflSerializer = JAXBContext.newInstance(Workflow.class);
 	}
 
 	/**
@@ -238,7 +239,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	}
 
 	@Override
-	public Response submitWorkflow(SCUFL workflow, UriInfo ui)
+	public Response submitWorkflow(Element workflow, UriInfo ui)
 			throws NoUpdateException {
 		invokes++;
 		String name = buildWorkflow(workflow, getPrincipal());
@@ -382,9 +383,12 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 			}
 
 			@Override
-			public SCUFL getWorkflow() {
+			public Element getWorkflow() {
 				invokes++;
-				return run.getWorkflow();
+				Workflow w = run.getWorkflow();
+				if (w == null || w.content == null || w.content.length == 0)
+					return null;
+				return w.content[0];
 			}
 
 			@Override
@@ -758,17 +762,19 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	}
 
 	@Override
-	public RunReference submitWorkflow(SCUFL workflow) throws NoUpdateException {
+	public RunReference submitWorkflow(Element workflow) throws NoUpdateException {
 		invokes++;
 		String name = buildWorkflow(workflow, getPrincipal());
 		return new RunReference(name, getRestfulRunReferenceBuilder());
 	}
 
 	@Override
-	public SCUFL[] getAllowedWorkflows() {
+	public Element[] getAllowedWorkflows() {
 		invokes++;
-		return policy.listPermittedWorkflows(getPrincipal()).toArray(
-				new SCUFL[0]);
+		List<Element> result = new ArrayList<Element>();
+		for (Workflow perm: policy.listPermittedWorkflows(getPrincipal()))
+			result.addAll(asList(perm.content));
+		return result.toArray(new Element[result.size()]);
 	}
 
 	@Override
@@ -789,9 +795,12 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	}
 
 	@Override
-	public SCUFL getRunWorkflow(String runName) throws UnknownRunException {
+	public Element getRunWorkflow(String runName) throws UnknownRunException {
 		invokes++;
-		return getRun(runName).getWorkflow();
+		Workflow w = getRun(runName).getWorkflow();
+		if (w == null || w.content == null || w.content.length == 0)
+			return null;
+		return w.content[0];
 	}
 
 	@Override
@@ -1058,6 +1067,12 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 	// SUPPORT METHODS
 
+	private static Workflow wrap(Element elem) {
+		Workflow s = new Workflow();
+		s.content = new Element[] {elem};
+		return s;
+	}
+
 	private static DateFormat isoFormat;
 
 	static DateFormat df() {
@@ -1066,23 +1081,24 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 		return isoFormat;
 	}
 
-	private String buildWorkflow(SCUFL workflow, Principal p)
+	private String buildWorkflow(Element workflow, Principal p)
 			throws NoCreateException {
+		Workflow wrapped = wrap(workflow);
 		if (!allowNewWorkflowRuns)
 			throw new NoCreateException("run creation not currently enabled");
 		if (logIncomingWorkflows)
 			try {
 				StringWriter sw = new StringWriter();
-				scuflSerializer.createMarshaller().marshal(workflow, sw);
+				scuflSerializer.createMarshaller().marshal(wrapped, sw);
 				log.info(sw);
 			} catch (JAXBException e) {
 				log.warn("problem when logging workflow", e);
 			}
-		policy.permitCreate(p, workflow);
+		policy.permitCreate(p, wrapped);
 
 		TavernaRun w;
 		try {
-			w = runFactory.create(p, workflow);
+			w = runFactory.create(p, wrapped);
 		} catch (Exception e) {
 			log.error("failed to build workflow run worker", e);
 			throw new NoCreateException("failed to build workflow run worker");

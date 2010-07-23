@@ -10,12 +10,13 @@ import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.taverna.server.master.common.DirEntryReference;
 import org.taverna.server.master.common.InputDescription;
 import org.taverna.server.master.common.RunReference;
-import org.taverna.server.master.common.SCUFL;
+import org.taverna.server.master.common.Workflow;
 import org.taverna.server.master.common.Status;
 import org.taverna.server.master.common.Uri;
 import org.taverna.server.master.rest.DirectoryContents;
@@ -42,14 +43,16 @@ import org.taverna.server.master.rest.TavernaServerRunREST.RunDescription;
  */
 public class JaxbSanityTest {
 	SchemaOutputResolver sink;
+	StringWriter writer;
 
 	@Before
 	public void init() {
+		writer = new StringWriter();
 		sink = new SchemaOutputResolver() {
 			@Override
 			public Result createOutput(String namespaceUri,
 					String suggestedFileName) throws IOException {
-				StreamResult sr = new StreamResult(new StringWriter());
+				StreamResult sr = new StreamResult(writer);
 				sr.setSystemId("/dev/null");
 				return sr;
 			}
@@ -59,143 +62,143 @@ public class JaxbSanityTest {
 	@Test
 	public void testJAXBForDirEntryReference() throws Exception {
 		JAXBContext.newInstance(DirEntryReference.class).generateSchema(sink);
-		assertTrue(true);
+		assertTrue(writer.toString().length() > 0);
 	}
 
 	@Test
 	public void testJAXBForInputDescription() throws Exception {
 		JAXBContext.newInstance(InputDescription.class).generateSchema(sink);
-		assertTrue(true);
+		assertTrue(writer.toString().length() > 0);
 	}
 
 	@Test
 	public void testJAXBForRunReference() throws Exception {
 		JAXBContext.newInstance(RunReference.class).generateSchema(sink);
-		assertTrue(true);
+		assertTrue(writer.toString().length() > 0);
 	}
 
 	@Test
-	public void testJAXBForSCUFL() throws Exception {
-		JAXBContext.newInstance(SCUFL.class).generateSchema(sink);
-		assertTrue(true);
+	public void testJAXBForWorkflow() throws Exception {
+		JAXBContext.newInstance(Workflow.class).generateSchema(sink);
+		assertTrue(writer.toString().length() > 0);
 	}
 
 	@Test
 	public void testJAXBForStatus() throws Exception {
 		JAXBContext.newInstance(Status.class).generateSchema(sink);
-		assertTrue(true);
+		assertTrue(writer.toString().length() > 0);
 	}
 
 	@Test
 	public void testJAXBForUri() throws Exception {
 		JAXBContext.newInstance(Uri.class).generateSchema(sink);
-		assertTrue(true);
+		assertTrue(writer.toString().length() > 0);
 	}
 
 	@Test
 	public void testJAXBForDirectoryContents() throws Exception {
 		JAXBContext.newInstance(DirectoryContents.class).generateSchema(sink);
-		assertTrue(true);
+		assertTrue(writer.toString().length() > 0);
 	}
 
 	@Test
 	public void testJAXBForListenerDefinition() throws Exception {
 		JAXBContext.newInstance(ListenerDefinition.class).generateSchema(sink);
-		assertTrue(true);
+		assertTrue(writer.toString().length() > 0);
 	}
 
 	@Test
 	public void testJAXBForMakeOrUpdateDirEntry() throws Exception {
 		JAXBContext.newInstance(MakeOrUpdateDirEntry.class)
 				.generateSchema(sink);
-		assertTrue(true);
+		assertTrue(writer.toString().length() > 0);
 	}
 
 	@Test
 	public void testJAXBForInDesc() throws Exception {
 		JAXBContext.newInstance(InDesc.class).generateSchema(sink);
-		assertTrue(true);
+		assertTrue(writer.toString().length() > 0);
 	}
 
 	@Test
 	public void testJAXBForInputsDescriptor() throws Exception {
 		JAXBContext.newInstance(InputsDescriptor.class).generateSchema(sink);
-		assertTrue(true);
+		assertTrue(writer.toString().length() > 0);
 	}
 
 	@Test
 	public void testJAXBForListenerDescription() throws Exception {
 		JAXBContext.newInstance(ListenerDescription.class).generateSchema(sink);
-		assertTrue(true);
+		assertTrue(writer.toString().length() > 0);
 	}
 
 	@Test
 	public void testJAXBForListeners() throws Exception {
 		JAXBContext.newInstance(Listeners.class).generateSchema(sink);
-		assertTrue(true);
+		assertTrue(writer.toString().length() > 0);
 	}
 
 	@Test
 	public void testJAXBForProperties() throws Exception {
 		JAXBContext.newInstance(Properties.class).generateSchema(sink);
-		assertTrue(true);
+		assertTrue(writer.toString().length() > 0);
 	}
 
 	@Test
 	public void testJAXBForPropertyDescription() throws Exception {
 		JAXBContext.newInstance(PropertyDescription.class).generateSchema(sink);
-		assertTrue(true);
+		assertTrue(writer.toString().length() > 0);
 	}
 
 	@Test
 	public void testJAXBForPermittedListeners() throws Exception {
 		JAXBContext.newInstance(PermittedListeners.class).generateSchema(sink);
-		assertTrue(true);
+		assertTrue(writer.toString().length() > 0);
 	}
 
 	@Test
 	public void testJAXBForPermittedWorkflows() throws Exception {
 		JAXBContext.newInstance(PermittedWorkflows.class).generateSchema(sink);
-		assertTrue(true);
+		assertTrue(writer.toString().length() > 0);
 	}
 
 	@Test
 	public void testJAXBForServerDescription() throws Exception {
 		JAXBContext.newInstance(ServerDescription.class).generateSchema(sink);
-		assertTrue(true);
+		assertTrue(writer.toString().length() > 0);
 	}
 
 	@Test
 	public void testJAXBForRunDescription() throws Exception {
 		JAXBContext.newInstance(RunDescription.class).generateSchema(sink);
-		assertTrue(true);
+		assertTrue(writer.toString().length() > 0);
 	}
 
 	@Test
 	public void testJAXBForRunList() throws Exception {
 		JAXBContext.newInstance(RunList.class).generateSchema(sink);
-		assertTrue(true);
+		assertTrue(writer.toString().length() > 0);
 	}
 
 	@Test
 	public void testJAXBForPointingRunList() throws Exception {
 		JAXBContext.newInstance(PointingRunList.class).generateSchema(sink);
-		assertTrue(true);
+		assertTrue(writer.toString().length() > 0);
 	}
 
-	/* This test doesn't work. Not sure if it _should_ work either. */
-//	@Test
-//	public void testJAXBForEverythingAtOnce() throws Exception {
-//		JAXBContext c = JAXBContext.newInstance(DirEntryReference.class,
-//				InputDescription.class, RunReference.class, SCUFL.class,
-//				Status.class, DirectoryContents.class, InDesc.class,
-//				ListenerDefinition.class, MakeOrUpdateDirEntry.class,
-//				InputsDescriptor.class, ListenerDescription.class,
-//				Listeners.class, Properties.class, PropertyDescription.class,
-//				PermittedListeners.class, PermittedWorkflows.class,
-//				ServerDescription.class, RunDescription.class, Uri.class,
-//				RunList.class, PointingRunList.class);
-//		c.generateSchema(sink);
-//		assertTrue(true);
-//	}
+	@Test
+	public void testJAXBForEverythingAtOnce() throws Exception {
+		JAXBContext c = JAXBContext.newInstance(DirEntryReference.class,
+				InputDescription.class, RunReference.class, Workflow.class,
+				Status.class, DirectoryContents.class, InDesc.class,
+				ListenerDefinition.class, MakeOrUpdateDirEntry.class,
+				InputsDescriptor.class, ListenerDescription.class,
+				Listeners.class, Properties.class, PropertyDescription.class,
+				PermittedListeners.class, PermittedWorkflows.class,
+				ServerDescription.class, RunDescription.class, Uri.class,
+				RunList.class, PointingRunList.class);
+		c.generateSchema(sink);
+		//System.out.println(writer);
+		assertTrue(writer.toString().length() > 0);
+	}
 }
