@@ -116,9 +116,9 @@
 	</dependencyManagement>
 	
 	<scm>
-	    <connection>scm:svn:http://taverna.googlecode.com/svn/taverna/products/net.sf.taverna.dataviewer-product/trunk/</connection>
-        <developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/products/net.sf.taverna.dataviewer-product/trunk/</developerConnection>
-        <url>http://code.google.com/p/taverna/source/browse/#svn/taverna/products/net.sf.taverna.dataviewer-product/trunk/</url>
+	    <connection>scm:svn:http://taverna.googlecode.com/svn/taverna/products/net.sf.taverna.dataviewer/trunk/</connection>
+        <developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/products/net.sf.taverna.dataviewer/trunk/</developerConnection>
+        <url>http://code.google.com/p/taverna/source/browse/#svn/taverna/products/net.sf.taverna.dataviewer/trunk/</url>
     </scm>
 	
 </project>
