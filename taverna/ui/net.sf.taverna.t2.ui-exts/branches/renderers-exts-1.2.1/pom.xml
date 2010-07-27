@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>net.sf.taverna.t2.ui-exts</groupId>
 	<artifactId>renderers-exts</artifactId>
-	<version>1.2.1</version>
+	<version>1.2-SNAPSHOT</version>
 	<name>Renderers extensions</name>
 	<properties>
 		<batik.version>1.7</batik.version>
@@ -70,8 +70,8 @@
 		</repository>
 	</repositories>
 	<scm>
-		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/ui/net.sf.taverna.t2.ui-exts/tags/renderers-exts-1.2.1</connection>
-		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/ui/net.sf.taverna.t2.ui-exts/tags/renderers-exts-1.2.1</developerConnection>
-		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/ui/net.sf.taverna.t2.ui-exts/tags/renderers-exts-1.2.1</url>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/ui/net.sf.taverna.t2.ui-exts/branches/renderers-exts-1.2.1/</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/ui/net.sf.taverna.t2.ui-exts/branches/renderers-exts-1.2.1/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/ui/net.sf.taverna.t2.ui-exts/branches/renderers-exts-1.2.1/</url>
 	</scm>
 </project>
