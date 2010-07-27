@@ -1,22 +1,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>net.sf.taverna.dataviewer-product</groupId>
+		<groupId>net.sf.taverna.dataviewer</groupId>
 		<artifactId>dataviewer-product</artifactId>
 		<version>2.2.0</version>
 	</parent>
-
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.sf.taverna.dataviewer-product</groupId>
 	<artifactId>dataviewer-distro</artifactId>
-	<version>2.2.0</version>
-
-	<description>Taverna DataViewer Tool distro</description>
+	
+	<name>Taverna DataViewer Tool distribution</name>
 
 	<dependencies>
 		<dependency>
-			<groupId>net.sf.taverna.dataviewer-product</groupId>
+	<groupId>net.sf.taverna.dataviewer</groupId>
 			<artifactId>dataviewer</artifactId>
 			<version>2.2.0</version>
 		</dependency>
@@ -26,7 +22,6 @@
 			<version>${t2.infrastructure.version}</version>
 		</dependency>
 	</dependencies>
-	
 	<build>
 		<finalName>taverna-dataviewer-${project.version}</finalName>
 		<plugins>
