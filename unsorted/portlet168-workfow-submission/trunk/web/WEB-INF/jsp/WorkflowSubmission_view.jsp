@@ -15,22 +15,34 @@
 <%@ page import="javax.portlet.PortletContext" %>
 <%@ page import="javax.portlet.PortletContext" %>
 
-<%!
-// Constants
-private static final String WORKFLOW_FILE_NAMES = "workflow_file_names";
-private static final String WORKFLOW_SELECTION_SUBMISSION = "workflow_selection";
-private static final String SELECTED_WORKFLOW = "selected_workflow";
-%>
+<%-- Include various constants --%>
+<%@ include file="CommonConstants.jsp" %>
 
 <%
 // List of workflow file names. Workflow files are located in /WEB-INF/workflows folder in the app root.
 ArrayList<String> workflowFileNamesList = (ArrayList<String>) renderRequest.getPortletSession().getAttribute(WORKFLOW_FILE_NAMES);
 %>
 
+<%-- Print out a message to the user, if any --%>
+<%
+    if (renderRequest.getAttribute(ERROR_MESSAGE) != null){%>
+        <p style="color:red;"><b><%=renderRequest.getAttribute(ERROR_MESSAGE)%></b></p>
+        <br />
+        <hr />
+        <br />
+    <%}
+    if (renderRequest.getAttribute(INFO_MESSAGE) != null){%>
+        <p><b><%=renderRequest.getAttribute(ERROR_MESSAGE)%></b></p>
+        <br />
+        <hr />
+        <br />
+    <%}
+%>
+
 <%-- Form for selecting the workflow to be sent for execution --%>
 <b> Select a workflow to run </b>
 
-<form action="<portlet:actionURL/>" method="post">
+<form name="<portlet:namespace/><%= WORKFLOW_SELECTION_SUBMISSION_FORM%>" action="<portlet:actionURL/>" method="post">
 <table>
 <tr>
     <td style="padding:5px;">

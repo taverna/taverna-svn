@@ -1,4 +1,14 @@
-<workflow xmlns="http://taverna.sf.net/2008/xml/t2flow" version="1" producedBy="taverna-2.2.0"><dataflow id="9bac05e0-8a03-4ba8-89ef-4da9007e5cc6" role="top"><name>Simple_workflow_1</name><inputPorts><port><name>in</name><depth>0</depth><granularDepth>0</granularDepth><annotations /></port></inputPorts><outputPorts><port><name>out</name><annotations><annotation_chain encoding="xstream"><net.sf.taverna.t2.annotation.AnnotationChainImpl xmlns="">
+<workflow xmlns="http://taverna.sf.net/2008/xml/t2flow" version="1" producedBy="taverna-2.2.0">
+<dataflow id="9bac05e0-8a03-4ba8-89ef-4da9007e5cc6" role="top"><name>Simple_workflow_1</name>
+<inputPorts>
+    <port>
+        <name>in</name>
+        <depth>0</depth>
+        <granularDepth>0</granularDepth>
+        <annotations />
+    </port>
+</inputPorts>
+<outputPorts><port><name>out</name><annotations><annotation_chain encoding="xstream"><net.sf.taverna.t2.annotation.AnnotationChainImpl xmlns="">
   <annotationAssertions>
     <net.sf.taverna.t2.annotation.AnnotationAssertionImpl>
       <annotationBean class="net.sf.taverna.t2.annotation.annotationbeans.FreeTextDescription">

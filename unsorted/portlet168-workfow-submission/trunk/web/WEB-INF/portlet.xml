@@ -5,6 +5,10 @@
 		<portlet-name>Workflow Submission</portlet-name>
 		<display-name>Workflow Submission</display-name>
 		<portlet-class>net.sf.taverna.t2.portal.WorkflowSubmissionPortlet</portlet-class>
+                <init-param>
+                    <name>t2_server_url</name>
+                    <value>http://eric.rcs.manchester.ac.uk:8080/taverna-server</value>
+                </init-param>
 		<expiration-cache>0</expiration-cache>
 		<supports>
 			<mime-type>text/html</mime-type>

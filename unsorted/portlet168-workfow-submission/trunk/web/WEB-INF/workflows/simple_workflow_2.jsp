@@ -1,18 +1,15 @@
 <%-- 
     Document   : simple_workflow_2
     Created on : Aug 18, 2010, 11:46:52 AM
-    Author     : alex
+    Author     : Alex Nenadic
     This is a JSP snipet that represents simple_workflow_2.t2flow workflow's input form.
-
 --%>
+
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
 <portlet:defineObjects />
 
-<%!
-// Constants
-private static final String RUN_WORKFLOW = "run_workflow";
-private static final String WORKFLOW_NAME = "workflow_name";
-%>
+<%-- Include various constants --%>
+<%@ include file="/WEB-INF/jsp/CommonConstants.jsp" %>
 
 <b>Workflow: simple_workflow_2</b>
 <br />

@@ -1,35 +1,22 @@
 <%-- 
     Document   : simple_workflow_1.jsp
     Created on : Aug 18, 2010, 11:45:07 AM
-    Author     : alex
+    Author     : Alex Nenadic
     This is a JSP snipet that represents simple_workflow_1.t2flow workflow's input form.
 --%>
+
+<%-- add portlet taglibs to JSP --%>
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
 <portlet:defineObjects />
 
-<%!
-// Constants
-private static final String RUN_WORKFLOW = "run_workflow";
-private static final String WORKFLOW_NAME = "workflow_name";
-%>
+<%-- Include the styling CSS --%>
+<%@ include file="/WEB-INF/jsp/CommonCSS.jsp" %>
 
-<style type="text/css">
-table.inputs
-{
-    border-collapse:collapse;
-    margin-bottom:10px;
-}
-table.inputs, table.inputs th, table.inputs td
-{
-    border: 1px solid #5F5F5F;
-    padding: 5px;
-}
-table.inputs th{
-    background-color: #9F9F9F;
-    color: white;
-}
+<%-- Include various JavaScript functions, e.g. for form validation --%>
+<%@ include file="/WEB-INF/jsp/CommonJavaScript.jsp" %>
 
-</style>
+<%-- Include various constants --%>
+<%@ include file="/WEB-INF/jsp/CommonConstants.jsp" %>
 
 <b>Workflow: simple_workflow_1</b>
 <br />
@@ -39,7 +26,7 @@ workflow output called "out".
 <br />
 <br />
 <b>Workflow inputs:</b>
-<form action="<portlet:actionURL/>" method="post">
+<form name="<portlet:namespace/><%= WORKFLOW_INPUTS_FORM%>" action="<portlet:actionURL/>" method="post" onSubmit="return validateForm()">
 <table class="inputs">
     <tr>
         <th>Name</th>
