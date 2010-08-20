@@ -16,6 +16,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import javax.portlet.PortletRequestDispatcher;
+import org.jdom.DocType;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -57,6 +58,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     // REST
     public static final String T2_SERVER_URL = "t2_server_url";
     public static final String T2_SERVER_NAMESPACE = "http://ns.taverna.org.uk/2010/xml/server/";
+    public static final String T2_SERVER_WORKFLOW_ELEMENT = "workflow";
     public static final String RUNS = "/rest/runs";
 
     // Address of the Taverna 2 Server
@@ -64,6 +66,9 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
     // List of workflow file names. Workflow files are located in /WEB-INF/workflows folder in the app root.
     private static ArrayList<String> workflowFileNamesList;
+
+    // List of wrapped workflow XML objects that get submitted for execution on the Taverna 2 Server
+    private static ArrayList<Document> wrappedWorkflowXMLDocumentsList;
 
     // Map of workflow file names to a list of workflow's inputs
     private static HashMap<String, ArrayList<WorkflowInputPort>> workflowNamesToInputsMap;
@@ -77,6 +82,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
         // Load the workflows once at initialisation time
         workflowFileNamesList = new ArrayList<String>();
+        wrappedWorkflowXMLDocumentsList = new ArrayList<Document>();
         workflowNamesToInputsMap = new HashMap<String, ArrayList<WorkflowInputPort>>();
 
         // Directory containing workflows
@@ -95,7 +101,6 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         { 
             // Get the workflow filename (without the .t2flow extension)
             String workflowFileName = workflowFileNames[i].substring(0, workflowFileNames[i].lastIndexOf('.'));
-            workflowFileNamesList.add(workflowFileName);
 
             // Parse the workflow file
             FileInputStream workflowInputStream = null;
@@ -130,6 +135,18 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                 WorkflowInputPort inputPort = new WorkflowInputPort(inputPortName, inputPortDepth);
                 workflowInputsList.add(inputPort);
             }
+
+            // Wrap the workflow document inside a <workflow> element
+            // in the Taverna 2 Server namespace as expected by the Server
+            Element workflowWrapperElement = new Element(T2_SERVER_WORKFLOW_ELEMENT, T2_SERVER_NAMESPACE);
+            Element oldWorkflowRootElement = workflowDocument.getRootElement();
+            oldWorkflowRootElement.detach(); // detach it from the previous document
+            workflowWrapperElement.addContent(oldWorkflowRootElement); // attach the old root to the new root
+            Document wrappedWorkflowDocument = new Document(workflowWrapperElement);
+            System.out.println(wrappedWorkflowDocument.toString());
+
+            workflowFileNamesList.add(workflowFileName);
+            wrappedWorkflowXMLDocumentsList.add(wrappedWorkflowDocument);
             workflowNamesToInputsMap.put(workflowFileName, workflowInputsList);
             numberOfLoadedWorkflowFiles++;
         }

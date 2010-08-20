@@ -9,7 +9,7 @@
 <portlet:defineObjects />
 
 <%-- Include various constants --%>
-<%@ include file="/WEB-INF/jsp/CommonConstants.jsp" %>
+<%@ include file="/WEB-INF/jsp/CommonConstants.jsp" %> 
 
 <b>Workflow: simple_workflow_2</b>
 <br />

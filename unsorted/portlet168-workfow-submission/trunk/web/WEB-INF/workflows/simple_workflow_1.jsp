@@ -5,18 +5,18 @@
     This is a JSP snipet that represents simple_workflow_1.t2flow workflow's input form.
 --%>
 
-<%-- add portlet taglibs to JSP --%>
+<%-- Add portlet taglibs to JSP --%>
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
 <portlet:defineObjects />
-
-<%-- Include the styling CSS --%>
-<%@ include file="/WEB-INF/jsp/CommonCSS.jsp" %>
 
 <%-- Include various JavaScript functions, e.g. for form validation --%>
 <%@ include file="/WEB-INF/jsp/CommonJavaScript.jsp" %>
 
-<%-- Include various constants --%>
-<%@ include file="/WEB-INF/jsp/CommonConstants.jsp" %>
+<%-- Include the styling CSS --%>
+<%-- Constants already imported through CommonJavaScript.jsp <%@ include file="/WEB-INF/jsp/CommonCSS.jsp" %> --%>
+
+<%-- Include various constants 
+<%@ include file="/WEB-INF/jsp/CommonConstants.jsp" %> --%>
 
 <b>Workflow: simple_workflow_1</b>
 <br />
