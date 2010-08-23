@@ -13,9 +13,10 @@
 <%@ include file="/WEB-INF/jsp/CommonJavaScript.jsp" %>
 
 <%-- Include the styling CSS --%>
-<%-- Constants already imported through CommonJavaScript.jsp <%@ include file="/WEB-INF/jsp/CommonCSS.jsp" %> --%>
+<%@ include file="/WEB-INF/jsp/CommonCSS.jsp" %>
 
-<%-- Include various constants 
+<%-- Include various constants --%>
+<%-- Constants already imported through CommonJavaScript.jsp
 <%@ include file="/WEB-INF/jsp/CommonConstants.jsp" %> --%>
 
 <b>Workflow: simple_workflow_1</b>

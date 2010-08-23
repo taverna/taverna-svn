@@ -23,7 +23,7 @@ function validateForm()
     var alertText = "";
 
     // Namespace of the portlet invoking this code
-    var namespace = '<%= renderResponse.getNamespace() %>';
+    var namespace = "<%= renderResponse.getNamespace() %>";
 
     // workflow inputs form
     var workflowInputsForm = document.getElementsByName(namespace + "<%= WORKFLOW_INPUTS_FORM %>")[0];
