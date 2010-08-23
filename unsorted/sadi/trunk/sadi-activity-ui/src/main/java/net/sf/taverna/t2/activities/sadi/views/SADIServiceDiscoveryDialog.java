@@ -72,14 +72,14 @@ import ca.wilkinsonlab.sadi.common.SADIException;
  * 
  * @author David Withers
  */
-public class SDAIServiceDiscoveryDialog extends JDialog {
+public class SADIServiceDiscoveryDialog extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 	private static final String selectMessage = "Select SADI services to add to the workflow.";
 	private static final String searchMessage = "Searching the SADI repository to find services...";
 	private static final String errorMessage = "Error while accessing the SADI registry.";
 	private static final String noServicesMessage = "No services were found.";
-	private static final Icon listIcon = new ImageIcon(SDAIServiceDiscoveryDialog.class
+	private static final Icon listIcon = new ImageIcon(SADIServiceDiscoveryDialog.class
 			.getResource("/sadi-logo32x32.png"));
 
 	private SADIActivityPort sadiActivityPort;
@@ -99,7 +99,7 @@ public class SDAIServiceDiscoveryDialog extends JDialog {
 	 * 
 	 * @param sadiActivityPort
 	 */
-	public SDAIServiceDiscoveryDialog(SADIActivityPort sadiActivityPort) {
+	public SADIServiceDiscoveryDialog(SADIActivityPort sadiActivityPort) {
 		this.sadiActivityPort = sadiActivityPort;
 		initialize();
 		findServices();
