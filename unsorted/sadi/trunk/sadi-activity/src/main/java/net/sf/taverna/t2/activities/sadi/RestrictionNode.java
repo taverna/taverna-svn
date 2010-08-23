@@ -29,6 +29,8 @@ import java.util.Map;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
+import ca.wilkinsonlab.sadi.utils.OwlUtils;
+
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntProperty;
 
@@ -206,11 +208,11 @@ public class RestrictionNode extends DefaultMutableTreeNode {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		if (ontProperty == null) {
-			sb.append(ontClass.getLocalName());
+			sb.append(OwlUtils.getLabel(ontClass));
 		} else {
-			sb.append(ontProperty.getLocalName());
+			sb.append(OwlUtils.getLabel(ontProperty));
 			sb.append(" (");
-			sb.append(ontClass.getLocalName());
+			sb.append(OwlUtils.getLabel(ontClass));
 			sb.append(')');
 		}
 		return sb.toString();
