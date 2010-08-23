@@ -32,6 +32,7 @@ import javax.swing.JEditorPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -136,7 +137,7 @@ public class SADIHtmlPanel extends JEditorPane {
 		public void addSection(String title) {
 			rows.add("<tr class=section><td colspan=2>" + title + "</td></tr>");
 		}
-
+		
 		/**
 		 * Adds a property to the table.
 		 * 
@@ -145,13 +146,31 @@ public class SADIHtmlPanel extends JEditorPane {
 		 * @param type
 		 */
 		public void addProperty(String property, String value, String type) {
+			addProperty(property, value, null, type);
+		}
+
+		/**
+		 * Adds a property to the table.
+		 * 
+		 * @param property the property
+		 * @param value the value
+		 * @param hover text that will appear when the mouse hovers over the cell
+		 * @param type
+		 */
+		public void addProperty(String property, String value, String hover, String type) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("<tr class=");
 			sb.append(type);
 			sb.append(">");
 			sb.append("<td  class=first align=right>");
 			sb.append(property);
-			sb.append("</td><td class=last>");
+			sb.append("</td><td class=last");
+			if (hover != null) {
+				sb.append(" title='");
+				sb.append(StringEscapeUtils.escapeHtml(hover));
+				sb.append("'");
+			}
+			sb.append(">");
 			try {
 				sb.append(aTag(new URL(value)));
 			} catch (MalformedURLException e) {

@@ -32,6 +32,7 @@ import net.sf.taverna.t2.activities.sadi.SADIActivity;
 import net.sf.taverna.t2.activities.sadi.SADIActivityConfigurationBean;
 import net.sf.taverna.t2.activities.sadi.SADIActivityPort;
 import net.sf.taverna.t2.activities.sadi.actions.SADIActivityConfigurationAction;
+import net.sf.taverna.t2.activities.sadi.utils.LabelUtils;
 import net.sf.taverna.t2.activities.sadi.views.SADIHtmlPanel.Table;
 import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityContextualView;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
@@ -77,9 +78,9 @@ public class SADIActivityContextualView extends ActivityContextualView<SADIActiv
 			type = i % 2 == 0 ? "even" : "odd";
 			table.addProperty("Name", sadiPort.getName(), type);
 			if (sadiPort.getOntProperty() != null) {
-				table.addProperty("Property", sadiPort.getOntProperty().getURI(), type);
+				table.addProperty("Property", LabelUtils.getLabel(sadiPort.getOntProperty()), sadiPort.getOntProperty().getURI(), type);
 			}
-			table.addProperty("Type", sadiPort.getOntClass().getURI(), type);
+			table.addProperty("Type", LabelUtils.getLabel(sadiPort.getOntClass()), sadiPort.getOntClass().getURI(), type);
 			table.addProperty("Depth", String.valueOf(sadiPort.getDepth()), type);
 		}
 
@@ -90,9 +91,9 @@ public class SADIActivityContextualView extends ActivityContextualView<SADIActiv
 			type = i % 2 == 0 ? "even" : "odd";
 			table.addProperty("Name", sadiPort.getName(), type);
 			if (sadiPort.getOntProperty() != null) {
-				table.addProperty("Property", sadiPort.getOntProperty().getURI(), type);
+				table.addProperty("Property", LabelUtils.getLabel(sadiPort.getOntProperty()), sadiPort.getOntProperty().getURI(), type);
 			}
-			table.addProperty("Type", sadiPort.getOntClass().getURI(), type);
+			table.addProperty("Type", LabelUtils.getLabel(sadiPort.getOntClass()), sadiPort.getOntClass().getURI(), type);
 			table.addProperty("Depth", String.valueOf(sadiPort.getDepth()), type);
 		}
 	}

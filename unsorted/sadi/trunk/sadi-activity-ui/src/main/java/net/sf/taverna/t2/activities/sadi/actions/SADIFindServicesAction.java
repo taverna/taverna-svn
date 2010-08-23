@@ -33,6 +33,7 @@ import net.sf.taverna.t2.activities.sadi.SADIActivityInputPort;
 import net.sf.taverna.t2.activities.sadi.SADIActivityOutputPort;
 import net.sf.taverna.t2.activities.sadi.SADIActivityPort;
 import net.sf.taverna.t2.activities.sadi.servicedescriptions.SADIServiceDescription;
+import net.sf.taverna.t2.activities.sadi.utils.LabelUtils;
 import net.sf.taverna.t2.activities.sadi.views.SDAIServiceDiscoveryDialog;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workflowmodel.CompoundEdit;
@@ -75,10 +76,10 @@ public class SADIFindServicesAction extends AbstractAction {
 		this.dataflow = dataflow;
 		this.activityPort = activityPort;
 		if (activityPort instanceof SADIActivityOutputPort) {
-			putValue(NAME, FIND_SADI_CONSUMER_SERVICES + activityPort.getOntClass().getLocalName()
+			putValue(NAME, FIND_SADI_CONSUMER_SERVICES + LabelUtils.getLabel(activityPort.getOntClass())
 					+ "...");
 		} else {
-			putValue(NAME, FIND_SADI_PRODUCER_SERVICES + activityPort.getOntClass().getLocalName()
+			putValue(NAME, FIND_SADI_PRODUCER_SERVICES + LabelUtils.getLabel(activityPort.getOntClass())
 					+ "...");
 		}
 	}

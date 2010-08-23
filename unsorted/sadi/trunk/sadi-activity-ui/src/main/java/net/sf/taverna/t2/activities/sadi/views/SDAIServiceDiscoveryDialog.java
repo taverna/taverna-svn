@@ -60,6 +60,7 @@ import net.sf.taverna.t2.activities.sadi.SADIUtils;
 import net.sf.taverna.t2.activities.sadi.SADIRegistries.RegistryDetails;
 import net.sf.taverna.t2.activities.sadi.servicedescriptions.SADIActivityIcon;
 import net.sf.taverna.t2.activities.sadi.servicedescriptions.SADIServiceDescription;
+import net.sf.taverna.t2.activities.sadi.utils.LabelUtils;
 import net.sf.taverna.t2.lang.ui.DialogTextArea;
 import net.sf.taverna.t2.lang.ui.icons.Icons;
 import ca.wilkinsonlab.sadi.client.Registry;
@@ -119,10 +120,10 @@ public class SDAIServiceDiscoveryDialog extends JDialog {
 
 		if (sadiActivityPort instanceof SADIActivityOutputPort) {
 			titleLabel = new JLabel("SADI services that consume "
-					+ sadiActivityPort.getOntClass().getLocalName());
+					+ LabelUtils.getLabel(sadiActivityPort.getOntClass()));
 		} else {
 			titleLabel = new JLabel("SADI services that produce "
-					+ sadiActivityPort.getOntClass().getLocalName());
+					+ LabelUtils.getLabel(sadiActivityPort.getOntClass()));
 		}
 		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 13.5f));
 		titleIcon = new JLabel("");
@@ -296,7 +297,7 @@ public class SDAIServiceDiscoveryDialog extends JDialog {
 			for (List<String> path : SADIUtils.getDefaultRestrictionPaths(outputRestrictionTree)) {
 				RestrictionNode restriction = SADIUtils.getRestriction(outputRestrictionTree, path);
 				if (restriction.getOntProperty() != null) {
-					properties.add(restriction.getOntProperty().getLocalName());
+					properties.add(LabelUtils.getLabel(restriction.getOntProperty()));
 				}
 			}
 			ssd.setProperties(properties);
@@ -331,6 +332,21 @@ public class SDAIServiceDiscoveryDialog extends JDialog {
 				renderer = super.getListCellRendererComponent(list,
 						serviceToHtml((SADIServiceDescription) value), index, isSelected,
 						cellHasFocus);
+				
+				/* prevent service description from appearing on a single line,
+				 * no matter how big the dialog gets; if you can think of a
+				 * better way to this (styling the HTML didn't work), please
+				 * fix it...
+				 * FYI, the increase to preferredSize.height may be because the
+				 * automatic height calculation doesn't take wrapping into effect,
+				 * in which case if the description is long enough to wrap twice,
+				 * it will still look stupid; I'm hoping it's just that having
+				 * a preferred height at all triggers the correct calculation...
+				 */
+				Dimension preferredSize = renderer.getPreferredSize();
+				preferredSize.width = 400;
+				preferredSize.height += 20;
+				renderer.setPreferredSize(preferredSize);
 			} else {
 				renderer = super.getListCellRendererComponent(list, value, index, isSelected,
 						cellHasFocus);
@@ -356,7 +372,7 @@ public class SDAIServiceDiscoveryDialog extends JDialog {
 			sb.append("</b></dt><dd>");
 			sb.append(service.getDescription());
 			sb.append("</dd>");
-			sb.append("<dt><b>Properties attached:</b> ");
+			sb.append("<dt><b>Properties attached:</b></dt><dd>");
 			boolean first = true;
 			for (String property : service.getProperties()) {
 				if (!first) {
@@ -365,7 +381,7 @@ public class SDAIServiceDiscoveryDialog extends JDialog {
 				sb.append(property);
 				first = false;
 			}
-			sb.append("</dt><dd></dd></dl>");
+			sb.append("</dd></dl>");
 			return sb.toString();
 		}
 

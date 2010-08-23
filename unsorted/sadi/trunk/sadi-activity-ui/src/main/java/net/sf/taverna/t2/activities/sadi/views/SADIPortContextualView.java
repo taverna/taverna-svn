@@ -24,6 +24,7 @@ import javax.swing.JComponent;
 
 import net.sf.taverna.t2.activities.sadi.SADIActivityInputPort;
 import net.sf.taverna.t2.activities.sadi.SADIActivityPort;
+import net.sf.taverna.t2.activities.sadi.utils.LabelUtils;
 import net.sf.taverna.t2.activities.sadi.views.SADIHtmlPanel.Table;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 
@@ -82,9 +83,9 @@ public class SADIPortContextualView extends ContextualView {
 	private void buildHtmlTables() {
 		Table table = mainFrame.createTable();
 		if (activityPort.getOntProperty() != null) {
-			table.addProperty("Property", activityPort.getOntProperty().getURI(), "even");
+			table.addProperty("Property", LabelUtils.getLabel(activityPort.getOntProperty()), activityPort.getOntProperty().getURI(), "even");
 		}
-		table.addProperty("Type", activityPort.getOntClass().getURI(), "even");
+		table.addProperty("Type", LabelUtils.getLabel(activityPort.getOntClass()), activityPort.getOntClass().getURI(), "even");
 		table.addProperty("Depth", String.valueOf(activityPort.getDepth()), "even");
 	}
 
