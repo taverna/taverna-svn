@@ -34,7 +34,7 @@ import net.sf.taverna.t2.activities.sadi.SADIActivityOutputPort;
 import net.sf.taverna.t2.activities.sadi.SADIActivityPort;
 import net.sf.taverna.t2.activities.sadi.servicedescriptions.SADIServiceDescription;
 import net.sf.taverna.t2.activities.sadi.utils.LabelUtils;
-import net.sf.taverna.t2.activities.sadi.views.SDAIServiceDiscoveryDialog;
+import net.sf.taverna.t2.activities.sadi.views.SADIServiceDiscoveryDialog;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workflowmodel.CompoundEdit;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -85,7 +85,7 @@ public class SADIFindServicesAction extends AbstractAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		SDAIServiceDiscoveryDialog dialog = new SDAIServiceDiscoveryDialog(activityPort);
+		SADIServiceDiscoveryDialog dialog = new SADIServiceDiscoveryDialog(activityPort);
 		if (dialog.show(null)) {
 			for (SADIServiceDescription service : dialog.getSelectedServices()) {
 				List<Edit<?>> editList = new ArrayList<Edit<?>>();
