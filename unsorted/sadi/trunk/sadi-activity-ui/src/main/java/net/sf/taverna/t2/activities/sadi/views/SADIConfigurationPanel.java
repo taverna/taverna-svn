@@ -31,6 +31,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -291,6 +293,12 @@ public class SADIConfigurationPanel extends
 					for (AbstractButton abstractButton : getInvalidButtons(node)) {
 						abstractButton.setSelected(false);
 					}
+				}
+			}
+		});
+		button.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if (button.isSelected()) {
 					if (inputs) {
 						newConfiguration.addInputRestrictionPath(getRestrictionPath(node));
 					} else {
@@ -305,6 +313,7 @@ public class SADIConfigurationPanel extends
 				}
 			}
 		});
+		
 		for (SADITreeNode child : node.getChildren()) {
 			addActions(child, inputs);
 		}
