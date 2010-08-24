@@ -5,7 +5,7 @@
 	<artifactId>sadi-plugin</artifactId>
 	<packaging>taverna-plugin</packaging>
 	<name>SADI activity plugin</name>
-	<version>0.3.1-SNAPSHOT</version>
+	<version>0.3.1</version>
 	<description>SADI activity plugin for Taverna 2.2</description>
 
 	<repositories>
@@ -41,22 +41,27 @@
 
 	<distributionManagement>
 		<repository>
-			<id>biordf-repository</id>
-			<name>dev.biordf.net Repository</name>
-			<url>file:///local/www/mygrid/taverna/updates/2.2.0/plugins/prototype/</url>
+			<id>taverna-update-site</id>
+			<name>Taverna Update Site</name>
+			<url>scpexe://rosalind/local/www/mygrid/taverna/updates/2.2.0/plugins/prototype/</url>
 		</repository>
+		<snapshotRepository>
+			<id>local</id>
+			<name>Local</name>
+			<url>file:///Users/david/Sites/taverna/plugins/prototype/</url>
+		</snapshotRepository>
 	</distributionManagement>
 
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>sadi-activity</artifactId>
-			<version>0.3.1-SNAPSHOT</version>
+			<version>0.3.1</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-activities</groupId>
 			<artifactId>sadi-activity-ui</artifactId>
-			<version>0.3.1-SNAPSHOT</version>
+			<version>0.3.1</version>
 		</dependency>
 	</dependencies>
 
