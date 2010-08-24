@@ -47,6 +47,7 @@ public class RestrictionNode extends DefaultMutableTreeNode {
 	private OntClass ontClass;
 	private Map<String, List<?>> values;
 	private boolean exclusive, selected;
+	private String name;
 
 	/**
 	 * Constructs a new non-exclusive RestrictionNode with no property.
@@ -88,6 +89,7 @@ public class RestrictionNode extends DefaultMutableTreeNode {
 		this.ontClass = ontClass;
 		this.exclusive = exclusive;
 		values = new HashMap<String, List<?>>();
+		name = createName();
 	}
 
 	/**
@@ -109,6 +111,25 @@ public class RestrictionNode extends DefaultMutableTreeNode {
 	}
 
 	/**
+	 * Returns the name of the node.
+	 * 
+	 * @return the name of the node
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * Sets the name of the node
+	 * 
+	 * @param name
+	 *            the name of the node
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
 	 * Returns <code>true</code> if this node is exclusive.
 	 * 
 	 * @return <code>true</code> if this node is exclusive
@@ -119,7 +140,7 @@ public class RestrictionNode extends DefaultMutableTreeNode {
 
 	/**
 	 * Returns <code>true</code> if this node is selected.
-	 *
+	 * 
 	 * @return <code>true</code> if this node is selected
 	 */
 	public boolean isSelected() {
@@ -147,7 +168,7 @@ public class RestrictionNode extends DefaultMutableTreeNode {
 			restrictionNode.clearSelected();
 		}
 	}
-	
+
 	/**
 	 * Returns the values for the specified id.
 	 * 
@@ -177,7 +198,7 @@ public class RestrictionNode extends DefaultMutableTreeNode {
 	public void clearValues(String id) {
 		values.remove(id);
 	}
-	
+
 	/**
 	 * Returns all the child nodes of this node that are RestrictionNodes. If
 	 * there are none an empty list is returned.
@@ -206,6 +227,10 @@ public class RestrictionNode extends DefaultMutableTreeNode {
 	 */
 	@Override
 	public String toString() {
+		return getName();
+	}
+
+	private String createName() {
 		StringBuilder sb = new StringBuilder();
 		if (ontProperty == null) {
 			sb.append(OwlUtils.getLabel(ontClass));

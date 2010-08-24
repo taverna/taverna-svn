@@ -26,12 +26,15 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.log4j.Logger;
 
@@ -88,6 +91,18 @@ public class SADIUtils {
 		return sb.toString();
 	}
 
+	public static String printTree(DefaultMutableTreeNode node) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(indent(node.getLevel()));
+		sb.append(node.toString());
+		sb.append(NEW_LINE);
+		Enumeration<?> enumeration = node.children();
+		while (enumeration.hasMoreElements()) {
+			sb.append(printTree((DefaultMutableTreeNode) enumeration.nextElement()));
+		}
+		return sb.toString();
+	}
+	
 	public static void printTreeValues(String id, RestrictionNode node) {
 		System.out.print(indent(node.getLevel()));
 		System.out.println(node.getOntClass().getLocalName());
@@ -147,10 +162,15 @@ public class SADIUtils {
 		if (node.isLeaf()) {
 			defaultRestrictionPaths.add(path);
 		} else {
+			boolean exclusiveSelected = false;
 			for (RestrictionNode child : node.getChildren()) {
 				if (child.isExclusive()) {
-					defaultRestrictionPaths.addAll(getDefaultRestrictionPaths(child, path));
-					break;
+					if (!exclusiveSelected) {
+						List<String> newPath = new ArrayList<String>();
+						newPath.addAll(path);
+						defaultRestrictionPaths.addAll(getDefaultRestrictionPaths(child, newPath));
+						exclusiveSelected = true;
+					}
 				} else {
 					List<String> newPath = new ArrayList<String>();
 					newPath.addAll(path);
@@ -161,6 +181,28 @@ public class SADIUtils {
 		return defaultRestrictionPaths;
 	}
 
+	public static void makeNodesNamesUnique(RestrictionNode node) {
+		makeNodesNamesUnique(node, new HashSet<String>());
+	}
+	
+	public static void makeNodesNamesUnique(RestrictionNode node, Set<String> nodeNames) {
+		String name = uniqueNodeName(node.getName(), nodeNames);
+		node.setName(name);
+		nodeNames.add(name);
+		for (RestrictionNode restrictionNode : node.getChildren()) {
+			makeNodesNamesUnique(restrictionNode, nodeNames);
+		}
+	}
+	
+	public static String uniqueNodeName(String suggestedName, Set<String> existingNames) {
+		String candidateName = suggestedName;
+		long counter = 2;
+		while (existingNames.contains(candidateName)) {
+			candidateName = suggestedName + "_" + counter++;
+		}
+		return candidateName;
+	}
+	
 	/**
 	 * Returns the {@link RestrictionNode} at the end of the specified path,
 	 * using the specified RestrictionNode as the starting point. If the path
@@ -206,6 +248,7 @@ public class SADIUtils {
 		buildRestrictionTree(outputClass, new HashSet<OntClass>(), node,
 				new HashMap<OntProperty, RestrictionNode>(), OwlUtils.listRestrictions(inputClass),
 				false);
+		makeNodesNamesUnique(node);
 		return node;
 	}
 
@@ -220,6 +263,7 @@ public class SADIUtils {
 		RestrictionNode node = new RestrictionNode(inputClass);
 		buildRestrictionTree(inputClass, new HashSet<OntClass>(), node,
 				new HashMap<OntProperty, RestrictionNode>(), new HashSet<Restriction>(), false);
+		makeNodesNamesUnique(node);
 		return node;
 	}
 
