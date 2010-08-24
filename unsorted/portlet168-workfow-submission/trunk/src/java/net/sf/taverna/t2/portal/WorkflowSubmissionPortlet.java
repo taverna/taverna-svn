@@ -18,9 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.portlet.PortletRequestDispatcher;
+import javax.portlet.PortletSession;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -34,7 +34,9 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
+import org.jdom.Text;
 import org.jdom.output.XMLOutputter;
+import sun.misc.BASE64Encoder;
 
 /**
  * WorkflowSubmission Portlet - enables user to select a workflow,
@@ -59,6 +61,8 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     public static final String ERROR_MESSAGE = "error_message";
     public static final String INFO_MESSAGE = "info_message";
 
+    public static final String WORKFLOW_RESOURCE_UUIDS_PORTLET_ATTRIBUTE = "workflow_resource_uuids";
+
     // .t2flow XML namespace
     public static final Namespace T2_WORKFLOW_NAMESPACE = Namespace.getNamespace("http://taverna.sf.net/2008/xml/t2flow");
     // Baclava documents XML namespace
@@ -74,16 +78,26 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
     // REST
     public static final String T2_SERVER_URL_PARAMETER = "t2_server_url";
-    public static final String T2_SERVER_NAMESPACE = "http://ns.taverna.org.uk/2010/xml/server/";
+    public static final Namespace T2_SERVER_NAMESPACE = Namespace.getNamespace("http://ns.taverna.org.uk/2010/xml/server/");
+    public static final Namespace T2_SERVER_REST_NAMESPACE = Namespace.getNamespace("t2sr", "http://ns.taverna.org.uk/2010/xml/server/rest/");
     public static final String T2_SERVER_WORKFLOW_ELEMENT = "workflow";
     public static final String RUNS_URL = "/rest/runs";
+    public static final String WD_URL = "/wd";
     public static final String BACLAVA_INPUTS_URL = "/input/baclava";
     public static final String STATUS_URL = "/status";
     public static final String CONTENT_TYPE_HEADER_NAME = "Content-Type";
     public static final String CONTENT_TYPE_APPLICATION_XML = "application/xml";
+    public static final String CONTENT_TYPE_TEXT_PLAIN = "text/plain";
     public static final String LOCATION_HEADER_NAME = "Location";
+    public static final String STATUS_OPERATING = "Operating";
+
     // XML input message element
-    public static final String WORKFLOW_INPUT_ELEMENT = "runInput";
+    //public static final String WORKFLOW_INPUT_ELEMENT = "runInput";
+    // XML upload file element
+    public static final String UPLOAD_FILE_ELEMENT = "upload";
+    public static final String NAME_ATTRIBUTE = "name";
+    public static final String INPUT_ELEMENT = "runInput";
+    public static final String FILE_ELEMENT = "file";
 
 
     // Address of the T2 Server
@@ -206,28 +220,41 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                 inputPort.setValue(request.getParameter(inputPort.getName()));
             }
             // Submit the workflow to the T2 Server in preparation for execution
-            HttpResponse httpResponse = submitWorkflow(t2ServerURL + RUNS_URL, workflowFileName, request);
+            HttpResponse httpResponse = submitWorkflow(workflowFileName, request);
 
             // Submit the workflow's inputs to the Taverna 2 Server in
             // prepartion for workflow execution
             if (httpResponse != null){ // null indicates something went wrong
 
-                // Extract the workflowID, you get something like http://<SERVER>/taverna-server/rest/runs/UUID
+                // Extract the workflowResourceUUID, you get something like http://<SERVER>/taverna-server/rest/runs/UUID
                 // in the Location header, where UUID part identifies the submitted workflow on the T2 Server
-                String workflowID;
-                workflowID = httpResponse.getHeaders(LOCATION_HEADER_NAME)[0].getValue();
-                workflowID = workflowID.substring(workflowID.lastIndexOf("/") + 1);
-                System.out.println("Workflow Submission Portlet: Workflow " + workflowFileName + " successfully submitted to the Server with UUID " + workflowID);
+                String workflowResourceUUID;
+                workflowResourceUUID = httpResponse.getHeaders(LOCATION_HEADER_NAME)[0].getValue();
+                workflowResourceUUID = workflowResourceUUID.substring(workflowResourceUUID.lastIndexOf("/") + 1);
+                System.out.println("Workflow Submission Portlet: Workflow " + workflowFileName + " successfully submitted to the Server with UUID " + workflowResourceUUID +".");
 
-                boolean inputsSubmitted = submitWorkflowInputs(t2ServerURL + RUNS_URL + "/" + workflowID + BACLAVA_INPUTS_URL, workflowFileName, workflowID, workflowNamesToInputsMap.get(workflowFileName), request);
+                boolean inputsSubmitted = submitWorkflowInputs(workflowFileName, workflowResourceUUID, workflowNamesToInputsMap.get(workflowFileName), request);
 
-                // Run the workflow on the Taverna 2 Server
+                // Run the workflow on the T2 Server
                 if (inputsSubmitted){
-                    System.out.println("Workflow Submission Portlet: Inputs for workflow " + workflowFileName + " successfully submitted to the Server");
+                    System.out.println("Workflow Submission Portlet: Inputs for workflow " + workflowFileName + " successfully submitted to the Server.");
 
-                    boolean runSubmitted = runWorkflow(t2ServerURL + RUNS_URL + "/" + workflowID + STATUS_URL, workflowFileName, request);
+                    boolean runSubmitted = runWorkflow(workflowFileName, workflowResourceUUID, request);
                     if (runSubmitted){
-                        System.out.println("Workflow Submission Portlet: An execution of workflow " + workflowFileName + " successfully initiated on the Server");
+                        System.out.println("Workflow Submission Portlet: Execution of workflow " + workflowFileName + " successfully initiated on the Server.");
+                        
+                        // Add this workflowResourceUUID to the list of submitted workflow UUIDs
+                        // to be read by the Workflow Results portlet and used to fetch results for
+                        // this run
+                        ArrayList<String> workflowResourceUUIDs = (ArrayList<String>)request.getPortletSession().getAttribute(WORKFLOW_RESOURCE_UUIDS_PORTLET_ATTRIBUTE);
+                        if (workflowResourceUUIDs == null){
+                            workflowResourceUUIDs = new ArrayList<String>();
+                            workflowResourceUUIDs.add(workflowResourceUUID);
+                        }
+                        else{
+                            workflowResourceUUIDs.add(workflowResourceUUID);
+                        }
+                        request.getPortletSession().setAttribute(WORKFLOW_RESOURCE_UUIDS_PORTLET_ATTRIBUTE, workflowResourceUUIDs, PortletSession.APPLICATION_SCOPE);
                     }
                 }
             }
@@ -264,7 +291,6 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             else{ // We have to parse the workflow file and figure out the inputs ourselves
 
             }
-
         }
     }
 
@@ -296,11 +322,12 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     /*
      HTTP POSTs workflow document to the T2 Server.
      */
-    HttpResponse submitWorkflow(String url, String workflowFileName, ActionRequest request){
+    HttpResponse submitWorkflow(String workflowFileName, ActionRequest request){
 
         HttpClient httpClient = new DefaultHttpClient();
+        String runsURL = t2ServerURL + RUNS_URL;
 
-        HttpPost httpPost = new HttpPost(url);
+        HttpPost httpPost = new HttpPost(runsURL);
         httpPost.setHeader(CONTENT_TYPE_HEADER_NAME, CONTENT_TYPE_APPLICATION_XML);
 
        try {
@@ -308,7 +335,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             int workflowIndex = workflowFileNamesList.indexOf(workflowFileName); // get the workflow index
             String workflowString = wrappedWorkflowXMLDocumentStringsList.get(workflowIndex);
 
-            System.out.println("Workflow Submission Portlet: Preparing to submit workflow to Server " + url);
+            System.out.println("Workflow Submission Portlet: Preparing to submit workflow to Server " + runsURL);
             System.out.println(workflowString);
 
             StringEntity entity = new StringEntity(workflowString, "UTF-8");
@@ -324,23 +351,23 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         
         HttpResponse httpResponse = null;
         try{
-            // Execute the request
+            // Execute the request to upload the workflow file to the Server
             HttpContext localContext = new BasicHttpContext();
             httpResponse = httpClient.execute(httpPost, localContext);
 
             // Release resource
             httpClient.getConnectionManager().shutdown();
+
+            if (httpResponse.getStatusLine().getStatusCode() != 201){ // HTTP/1.1 201 Created
+                System.out.println("Workflow Submission Portlet: Failed to submit workflow " + workflowFileName + " for execution.\nServer responded with: " + httpResponse.getStatusLine());
+                request.setAttribute(ERROR_MESSAGE, "Failed to submit workflow " + workflowFileName + " for execution.\nServer responded with: " + httpResponse.getStatusLine());
+                return null;
+            }
         }
         catch(Exception ex){
             System.out.println("Workflow Submission Portlet: Failed to POST request to submit workflow " + workflowFileName + " for execution.");
             ex.printStackTrace();
             request.setAttribute(ERROR_MESSAGE, "Failed to submit workflow " + workflowFileName + " for execution: HTTP POST failed.");
-            return null;
-        }
-
-        if (httpResponse.getStatusLine().getStatusCode() != 201){ // HTTP/1.1 201 Created
-            System.out.println("Workflow Submission Portlet: Failed to submit workflow " + workflowFileName + " for execution.\nServer responded with: " + httpResponse.getStatusLine());
-            request.setAttribute(ERROR_MESSAGE, "Failed to submit workflow " + workflowFileName + " for execution.\nServer responded with: " + httpResponse.getStatusLine());
             return null;
         }
 
@@ -350,27 +377,51 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     /*
      HTTP PUTs workflow inputs to the T2 Server.
      */
-    boolean submitWorkflowInputs(String url, String workflowFileName, String workflowID, ArrayList<WorkflowInputPort> workflowInputs, ActionRequest actionRequest){
+    boolean submitWorkflowInputs(String workflowFileName, String workflowResourceUUID, ArrayList<WorkflowInputPort> workflowInputs, ActionRequest actionRequest){
 
         HttpClient httpClient = new DefaultHttpClient();
-
         HttpContext localContext = new BasicHttpContext();
+        String wdURL = t2ServerURL + RUNS_URL + "/" + workflowResourceUUID + WD_URL;
 
-        HttpPut httpPut = new HttpPut(url);
-        //httpPut.setHeader(CONTENT_TYPE_HEADER_NAME, CONTENT_TYPE_APPLICATION_XML);
+        HttpPost httpPost = new HttpPost(wdURL);
+        httpPost.setHeader(CONTENT_TYPE_HEADER_NAME, CONTENT_TYPE_APPLICATION_XML);
 
         HttpResponse httpResponse = null;
 
+        XMLOutputter xmlOutputter = new XMLOutputter();
+
         // Get the workflow inputs as a Baclava XML document
         Document worfklowInputsDocument = buildWorkflowInputsBaclavaDocument(workflowInputs);
-        String workflowDocumentString = new XMLOutputter().outputString(worfklowInputsDocument);
+        String workflowInputsDocumentString = xmlOutputter.outputString(worfklowInputsDocument);
 
+        System.out.println("Workflow Submission Portlet: Preparing to submit workflow inputs Baclava file to Server " + wdURL);
+        System.out.println(workflowInputsDocumentString);
+
+        // Name of the uploaded Baclava file on the Server
+        String baclavaFileName = workflowFileName + ".baclava";
+
+        Element uploadBaclavaFileElement = new Element(UPLOAD_FILE_ELEMENT, T2_SERVER_REST_NAMESPACE);
+        uploadBaclavaFileElement.setAttribute(NAME_ATTRIBUTE, baclavaFileName, T2_SERVER_REST_NAMESPACE);
+        try{
+            String workflowInputsDocumentString_Base64 = new BASE64Encoder().encode(workflowInputsDocumentString.getBytes("UTF-8"));
+            uploadBaclavaFileElement.setContent(new Text(workflowInputsDocumentString_Base64));
+        }
+        catch(UnsupportedEncodingException ex){
+            System.out.println("Workflow Submission Portlet: Failed to Base64 encode the content of the Baclava XML file with workflow inputs for workflow " + workflowFileName + ".");
+            ex.printStackTrace();
+            actionRequest.setAttribute(ERROR_MESSAGE, "Failed to Base64 encode the content of the XML file with workflow inputs for workflow " + workflowFileName + ".");
+            return false;
+        }
+
+        String uploadBaclavaFileElementString = new XMLOutputter().outputString(uploadBaclavaFileElement);
+        System.out.println("Workflow Submission Portlet: Uploading Base64 encoded workflow inputs Baclava file");
+        System.out.println(uploadBaclavaFileElementString);
         try {
-            StringEntity entity = new StringEntity(workflowDocumentString, "UTF-8");
-            httpPut.setEntity(entity);
+            StringEntity entity = new StringEntity(uploadBaclavaFileElementString, "UTF-8");
+            httpPost.setEntity(entity);
         }
         catch (UnsupportedEncodingException ex) {
-        
+
             System.out.println("Workflow Submission Portlet: Failed to create an HTTP entity containing Baclava XML document with workflow inputs for workflow " + workflowFileName + ".");
             ex.printStackTrace();
             actionRequest.setAttribute(ERROR_MESSAGE, "Failed to create message body containing XML document with workflow inputs for workflow " + workflowFileName + ".");
@@ -378,36 +429,90 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         }
 
         try{
-            // Execute the request
-            httpResponse = httpClient.execute(httpPut, localContext);
+            // Execute the request to upload the inputs Baclava file to the Server
+            httpResponse = httpClient.execute(httpPost, localContext);
 
             // Release resource
             httpClient.getConnectionManager().shutdown();
 
             if (httpResponse.getStatusLine().getStatusCode() != 201){ // HTTP/1.1 201 Created
-                System.out.println("Workflow Submission Portlet: Resource for the inputs of workflow " + workflowFileName + " not created on the Server. The Server responded with: " + httpResponse.getStatusLine());
-                actionRequest.setAttribute(ERROR_MESSAGE, "An error occured when submitting inputs for workflow " + workflowFileName + ".\nThe Server responded with: " + httpResponse.getStatusLine());
+                System.out.println("Workflow Submission Portlet: Failed to upload the file with inputs for workflow " + workflowFileName + ". The Server responded with: " + httpResponse.getStatusLine()+".");
+                actionRequest.setAttribute(ERROR_MESSAGE, "Failed to upload the file with inputs for workflow " + workflowFileName + ". The Server responded with: " + httpResponse.getStatusLine()+".");
                 return false;
             }
-       }
-       catch(Exception ex){
-            System.out.println("Workflow Submission Portlet: Failed to PUT the inputs of workflow " + workflowFileName + " to the Server.");
+        }
+        catch(Exception ex){
+            System.out.println("Workflow Submission Portlet: An error occured while trying to upload the XML Baclava file with inputs for workflow " + workflowFileName + " to the Server.");
             ex.printStackTrace();
-            actionRequest.setAttribute(ERROR_MESSAGE, "Failed to submit inputs of workflow " + workflowFileName + " to the Server.");
+            actionRequest.setAttribute(ERROR_MESSAGE, "An error occured while trying to upload the file with inputs for workflow" + workflowFileName + " to the Server.");
             return false;
-       }
-        
+        }
+
+        HttpClient httpClient2 = new DefaultHttpClient();
+
+        String baclavaInputURL = t2ServerURL + RUNS_URL + "/" + workflowResourceUUID + BACLAVA_INPUTS_URL;
+        HttpPut httpPut = new HttpPut(baclavaInputURL);
+        httpPut.setHeader(CONTENT_TYPE_HEADER_NAME, CONTENT_TYPE_TEXT_PLAIN);
+
+        try {
+            StringEntity entity = new StringEntity(baclavaFileName, "UTF-8");
+            httpPut.setEntity(entity);
+        }
+        catch (UnsupportedEncodingException ex) {
+
+            System.out.println("Workflow Submission Portlet: Failed to create an HTTP entity containing the name of the Baclava XML document with workflow inputs for workflow " + workflowFileName + ".");
+            ex.printStackTrace();
+            actionRequest.setAttribute(ERROR_MESSAGE, "Failed to create message body containing the name of the XML file with workflow inputs for workflow " + workflowFileName + ".");
+            return false;
+        }
+
+        HttpResponse httpResponse2 = null;
+        try{
+            // Execute the request to send the name of the uploaded Baclava file
+            // that contains the workflow inputs to the Server
+            httpResponse2 = httpClient2.execute(httpPut, localContext);
+
+            // Release resource
+            httpClient2.getConnectionManager().shutdown();
+
+            if (httpResponse2.getStatusLine().getStatusCode() != 200){ // HTTP/1.1 200 OK
+                System.out.println("Workflow Submission Portlet: Failed to set the name of the file with inputs for workflow " + workflowFileName + ". The Server responded with: " + httpResponse2.getStatusLine()+".");
+                actionRequest.setAttribute(ERROR_MESSAGE, "Failed to set the name of the file with inputs for workflow " + workflowFileName + ". The Server responded with: " + httpResponse2.getStatusLine()+".");
+                return false;
+            }
+        }
+        catch(Exception ex){
+            System.out.println("Workflow Submission Portlet: An error occured while setting the name of the file with inputs for workflow " + workflowFileName + " on the Server.");
+            ex.printStackTrace();
+            actionRequest.setAttribute(ERROR_MESSAGE, "An error occured while setting the name of the file with inputs for workflow " + workflowFileName + " on the Server.");
+            return false;
+        }
+
        return true;
     }
 
     /*
      HTTP PUTs the status of the workflow to "Operating" to kick start its execution.
      */
-    boolean runWorkflow(String url, String workflowFileName, ActionRequest actionRequest){
+    boolean runWorkflow(String workflowFileName, String workflowResourceUUID,  ActionRequest actionRequest){
         
         HttpClient httpClient = new DefaultHttpClient();
+        String statusURL = t2ServerURL + RUNS_URL + "/" + workflowResourceUUID + STATUS_URL;
 
-        HttpPut httpPut = new HttpPut(url);
+        HttpPut httpPut = new HttpPut(statusURL);
+        httpPut.setHeader(CONTENT_TYPE_HEADER_NAME, CONTENT_TYPE_TEXT_PLAIN);
+
+        try {
+            StringEntity entity = new StringEntity(STATUS_OPERATING, "UTF-8");
+            httpPut.setEntity(entity);
+        }
+        catch (UnsupportedEncodingException ex) {
+
+            System.out.println("Workflow Submission Portlet: Failed to create an HTTP entity containing the workflow run status set to 'Operating' for workflow " + workflowFileName + ".");
+            ex.printStackTrace();
+            actionRequest.setAttribute(ERROR_MESSAGE, "Failed to create the status message body used for initiating the execution of workflow " + workflowFileName + ".");
+            return false;
+        }
 
         HttpResponse httpResponse = null;
         try{
@@ -417,19 +522,20 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
             // Release resource
             httpClient.getConnectionManager().shutdown();
+            
+            if (httpResponse.getStatusLine().getStatusCode() != 200){ // HTTP/1.1 200 OK
+               System.out.println("Workflow Submission Portlet: Failed to initiate the execution of workflow " + workflowFileName + ". The Server responded with: " + httpResponse.getStatusLine()+".");
+               actionRequest.setAttribute(ERROR_MESSAGE, "Failed to initiate the execution of workflow " + workflowFileName + ". The Server responded with: " + httpResponse.getStatusLine() +".");
+               return false;
+            }
         }
         catch(Exception ex){
-            System.out.println("Workflow Submission Portlet: Failed to initiate workflow run for " + workflowFileName + ".");
+            System.out.println("Workflow Submission Portlet: An error occured while trying to initiate the execution of workflow " + workflowFileName + ".");
             ex.printStackTrace();
-            actionRequest.setAttribute(ERROR_MESSAGE, "An error occured when initiating an execution of workflow " + workflowFileName +  ".");
+            actionRequest.setAttribute(ERROR_MESSAGE, "An error occured while to initiate the execution of workflow " + workflowFileName +  ".");
             return false;
         }
-        
-        if (httpResponse.getStatusLine().getStatusCode() != 200){ // HTTP/1.1 200 OK
-           System.out.println("Workflow Submission Portlet: Failed to initiate an execution of workflow " + workflowFileName + ".\nThe Server responded with: " + httpResponse.getStatusLine());
-           actionRequest.setAttribute(ERROR_MESSAGE, "Failed to initiate an execution of workflow " + workflowFileName + ".\nThe Server responded with: " + httpResponse.getStatusLine());
-           return false;
-        }
+
         return true;
     }
 
