@@ -29,8 +29,8 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -46,6 +46,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.CompoundBorder;
@@ -148,8 +149,8 @@ public class SADIConfigurationPanel extends
 
 		// tabs
 		tabbedPane = new JTabbedPane();
-		tabbedPane.add("Inputs", inputPanel);
-		tabbedPane.add("Outputs", outputPanel);
+		tabbedPane.add("Inputs", new JScrollPane(inputPanel));
+		tabbedPane.add("Outputs", new JScrollPane(outputPanel));
 		tabbedPane.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				if (inputPanel.equals(tabbedPane.getSelectedComponent())) {
@@ -265,9 +266,9 @@ public class SADIConfigurationPanel extends
 	
 	private void addActions(final SADITreeNode node, final boolean inputs) {
 		final AbstractButton button = node.getButton();
-		button.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == ItemEvent.SELECTED) {
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (button.isSelected()) {
 					for (AbstractButton abstractButton : getParentButtons(node)) {
 						abstractButton.setSelected(false);
 					}
@@ -276,11 +277,15 @@ public class SADIConfigurationPanel extends
 					}
 					if (button instanceof JRadioButton) {
 						for (AbstractButton abstractButton : getSiblingButtons(node)) {
-							abstractButton.setSelected(false);
+							if (abstractButton instanceof JRadioButton) {
+								abstractButton.setSelected(false);
+							}
 						}
 					} else {
 						for (AbstractButton abstractButton : getUnselectedSiblingButtons(node)) {
-							abstractButton.setSelected(true);
+							if (!(abstractButton instanceof JRadioButton)) {
+								abstractButton.setSelected(true);
+							}
 						}
 					}
 					for (AbstractButton abstractButton : getInvalidButtons(node)) {
@@ -385,8 +390,10 @@ public class SADIConfigurationPanel extends
 		if (parent != null) {
 			for (SADITreeNode child : parent.getChildren()) {
 				if (child != node) {
-					buttons.add(child.getButton());
-					buttons.addAll(getChildButtons(child));
+					if (child.getButton() instanceof JRadioButton) {
+						buttons.add(child.getButton());
+						buttons.addAll(getChildButtons(child));
+					}
 				}
 			}
 		}
