@@ -332,21 +332,6 @@ public class SADIServiceDiscoveryDialog extends JDialog {
 				renderer = super.getListCellRendererComponent(list,
 						serviceToHtml((SADIServiceDescription) value), index, isSelected,
 						cellHasFocus);
-				
-				/* prevent service description from appearing on a single line,
-				 * no matter how big the dialog gets; if you can think of a
-				 * better way to this (styling the HTML didn't work), please
-				 * fix it...
-				 * FYI, the increase to preferredSize.height may be because the
-				 * automatic height calculation doesn't take wrapping into effect,
-				 * in which case if the description is long enough to wrap twice,
-				 * it will still look stupid; I'm hoping it's just that having
-				 * a preferred height at all triggers the correct calculation...
-				 */
-				Dimension preferredSize = renderer.getPreferredSize();
-				preferredSize.width = 400;
-				preferredSize.height += 20;
-				renderer.setPreferredSize(preferredSize);
 			} else {
 				renderer = super.getListCellRendererComponent(list, value, index, isSelected,
 						cellHasFocus);
