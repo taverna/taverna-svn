@@ -46,9 +46,9 @@
 			<url>scpexe://rosalind/local/www/mygrid/taverna/updates/2.2.0/plugins/prototype/</url>
 		</repository>
 		<snapshotRepository>
-			<id>local</id>
-			<name>Local</name>
-			<url>file:///Users/david/Sites/taverna/plugins/prototype/</url>
+			<id>dev.biordf.net-t2plugins</id>
+			<name>Taverna plugin repository at dev.biordf.net</name>
+      		<url>scpexe://dev.biordf.net/var/www/taverna/plugins/</url>
 		</snapshotRepository>
 	</distributionManagement>
 

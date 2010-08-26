@@ -71,10 +71,10 @@
 			<name>myGrid Repository</name>
 			<url>scpexe://rosalind/local/www/mygrid/maven/repository</url>
 		</repository>
-		<snapshotRepository>
-			<id>mygrid-snapshot-repository</id>
-			<name>myGrid Snapshot Repository</name>
-			<url>scpexe://rosalind/local/www/mygrid/maven/snapshot-repository</url>
+    	<snapshotRepository>
+      		<id>dev-snapshot-repository</id>
+      		<name>dev.biordf.net Snapshot Repository</name>
+      		<url>scpexe://dev.biordf.net/var/www/maven/</url>
 		</snapshotRepository>
 	</distributionManagement>
 
