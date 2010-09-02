@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright (C) 2007-2010 The University of Manchester   
- * 
+ * Copyright (C) 2007-2010 The University of Manchester
+ *
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
- * 
+ *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public License
  *  as published by the Free Software Foundation; either version 2.1 of
  *  the License, or (at your option) any later version.
- *    
+ *
  *  This program is distributed in the hope that it will be useful, but
  *  WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
- *    
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
@@ -60,7 +60,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		setWriter(new MySQLProvenanceWriter());
 		setQuery(new MySQLProvenanceQuery());
     }
-	
+
 
 	@Override
 	public String toString() {
@@ -72,11 +72,12 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		return null;
 	}
 
-	
-	
+
+
 	/**
 	 * main entry point into the service
 	 */
+	@Override
 	public synchronized void addProvenanceItem(final ProvenanceItem provenanceItem) {
 
 		ReferenceService referenceService =
@@ -141,28 +142,82 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 // 	getExecutor().submit(runnable);
 	}
 
+	/**
+	 * MySQL overriden tables, to avoid
+	 * "Specified key was too long; max key length is 1000 bytes" on massive
+	 * primary keys (T2-1605)
+	 */
+	// TODO: Fix the primary keys to not be composite, and use foreign keys for
+	// processors/ports/iterations
+	public static enum CollectionTable {
+		Collection, collID, parentCollIDRef, workflowRunId, processorNameRef, portName, iteration;
+		public static String getCreateTable() {
+			return "CREATE TABLE " + Collection + " (\n" + collID
+					+ " varchar(80) NOT NULL,\n" + parentCollIDRef
+					+ " varchar(80) NOT NULL ,\n" + workflowRunId
+					+ " varchar(36) NOT NULL,\n" + processorNameRef
+					+ " varchar(40) NOT NULL,\n" + portName
+					+ " varchar(40) NOT NULL,\n" + iteration
+					+ " varchar(40) NOT NULL default '',\n"
+					+ " PRIMARY KEY (\n" + collID + "," + workflowRunId + ","
+					+ processorNameRef + "," + portName + "," + parentCollIDRef
+					+ "," + iteration + "))";
+		}
+	}
+
+	public static enum PortBindingTable {
+		PortBinding, portName, workflowRunId, value, collIDRef, positionInColl, processorNameRef, valueType, ref, iteration, workflowId;
+		public static String getCreateTable() {
+			return "CREATE TABLE " + PortBinding + " (\n" + portName
+					+ " varchar(40) NOT NULL,\n" + workflowRunId
+					+ " varchar(100) NOT NULL,\n" + value
+					+ " varchar(100) default NULL,\n" + collIDRef
+					+ " varchar(100),\n" + positionInColl + " int NOT NULL,\n"
+					+ processorNameRef + " varchar(40) NOT NULL,\n"
+					+ valueType + " varchar(50) default NULL,\n" + ref
+					+ " varchar(100) default NULL,\n" + iteration
+					+ " varchar(40) NOT NULL,\n" + workflowId
+					+ " varchar(36),\n" + "PRIMARY KEY (\n" + portName + ","
+					+ workflowRunId + "," + processorNameRef + "," + iteration
+					+ ", " + workflowId + "))";
+		}
+	}
+
+	@Override
 	public void createDatabase() {
 		Statement stmt;
                 Connection connection = null;
 		try {
             connection=getConnection();
-			stmt = connection.createStatement();			
-			stmt.executeUpdate(createDB);			
+			stmt = connection.createStatement();
+			stmt.executeUpdate(createDB);
 			String engineAndCharset = " ENGINE=MyISAM DEFAULT CHARSET=utf8";
-			stmt.executeUpdate(DataLinkTable.getCreateTable() + engineAndCharset);			
-			stmt.executeUpdate(CollectionTable.getCreateTable() + engineAndCharset);			
-			stmt.executeUpdate(ProcessorTable.getCreateTable() + engineAndCharset);			
-			stmt.executeUpdate(PortTable.getCreateTable() + engineAndCharset);			
-			stmt.executeUpdate(PortBindingTable.getCreateTable() + engineAndCharset);			
-			stmt.executeUpdate(WorkflowRunTable.getCreateTable() + engineAndCharset);			
-			stmt.executeUpdate(WorkflowTable.getCreateTable() + engineAndCharset);
-			stmt.executeUpdate(ProcessorEnactmentTable.getCreateTable() + engineAndCharset);
-			stmt.executeUpdate(ServiceInvocationTable.getCreateTable() + engineAndCharset);
-			stmt.executeUpdate(ActivityTable.getCreateTable() + engineAndCharset);
-			stmt.executeUpdate(DataBindingTable.getCreateTable() + engineAndCharset);
-			stmt.executeUpdate(DataflowInvocationTable.getCreateTable() + engineAndCharset);
-			
-			
+
+			stmt.executeUpdate(DataLinkTable.getCreateTable()
+					+ engineAndCharset);
+			stmt.executeUpdate(CollectionTable.getCreateTable()
+					+ engineAndCharset);
+			stmt.executeUpdate(ProcessorTable.getCreateTable()
+					+ engineAndCharset);
+			stmt.executeUpdate(PortTable.getCreateTable() + engineAndCharset);
+			stmt.executeUpdate(PortBindingTable.getCreateTable()
+					+ engineAndCharset);
+			stmt.executeUpdate(WorkflowRunTable.getCreateTable()
+					+ engineAndCharset);
+			stmt.executeUpdate(WorkflowTable.getCreateTable()
+					+ engineAndCharset);
+			stmt.executeUpdate(ProcessorEnactmentTable.getCreateTable()
+					+ engineAndCharset);
+			stmt.executeUpdate(ServiceInvocationTable.getCreateTable()
+					+ engineAndCharset);
+			stmt.executeUpdate(ActivityTable.getCreateTable()
+					+ engineAndCharset);
+			stmt.executeUpdate(DataBindingTable.getCreateTable()
+					+ engineAndCharset);
+			stmt.executeUpdate(DataflowInvocationTable.getCreateTable()
+					+ engineAndCharset);
+
+
 		} catch (SQLException e) {
 			logger.error("There was a problem creating the Provenance database database: ",e);
 		} catch (InstantiationException e) {
@@ -203,6 +258,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 	}
 
+	@Override
 	public String getName() {
 		return ProvenanceConnectorType.MYSQL;
 	}
