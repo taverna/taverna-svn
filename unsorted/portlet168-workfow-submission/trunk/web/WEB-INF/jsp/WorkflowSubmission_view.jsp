@@ -32,7 +32,7 @@ ArrayList<String> workflowFileNamesList = (ArrayList<String>) renderRequest.getP
         <br />
     <%}
     if (renderRequest.getAttribute(INFO_MESSAGE) != null){%>
-        <p><b><%=renderRequest.getAttribute(ERROR_MESSAGE)%></b></p>
+        <p><b><%=renderRequest.getAttribute(INFO_MESSAGE)%></b></p>
         <br />
         <hr />
         <br />
