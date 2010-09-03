@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.portal;
 
-import java.io.BufferedReader;
 import java.io.FilenameFilter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,13 +12,11 @@ import javax.portlet.RenderResponse;
 import javax.portlet.PortletException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.portlet.PortletRequestDispatcher;
@@ -29,6 +26,7 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.portlet.PortletFileUpload;
+import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.jdom.Document;
@@ -182,6 +180,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                 workflowInputStream = new FileInputStream(getPortletContext().getRealPath(WORKFLOWS_DIRECTORY) + "/" + workflowFileNames[i]);
             } catch (FileNotFoundException e) {
                 System.out.println("Workflow Submission Portlet: could not find workflow file " + getPortletContext().getRealPath(WORKFLOWS_DIRECTORY) + "/" + workflowFileNames[i]);
+                e.printStackTrace();
                 continue;
             }
             try {
@@ -195,17 +194,31 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                 ex2.printStackTrace();
                 continue;
             }
-            // Get the input parameters, if any, from the workflow file
+            // Get the input parameters, if any, from the workflow file.
             ArrayList<WorkflowInputPort> workflowInputsList = new ArrayList<WorkflowInputPort>();
             Element workflowInputPortsElement = getTopDataflow(workflowDocument.getRootElement()).getChild(DATAFLOW_INPUT_PORTS_ELEMENT, T2_WORKFLOW_NAMESPACE);
             for (Element inputPortElement : (List<Element>)workflowInputPortsElement.getChildren(DATAFLOW_PORT, T2_WORKFLOW_NAMESPACE)) {
+                // Get the input port's name and depth
                 String inputPortName = inputPortElement.getChildText(NAME, T2_WORKFLOW_NAMESPACE);
                 int inputPortDepth = Integer.valueOf(inputPortElement.getChildText(DEPTH, T2_WORKFLOW_NAMESPACE));
-		// Annotations
+
+                // Get the latest annotation on the input port
 		//annotationsFromXml(dataflowInputPort, port, df.getClass().getClassLoader());
+		//annotationsFromXml(dataflowInputPort, inputPortElement, df.getClass().getClassLoader());
 
                 WorkflowInputPort inputPort = new WorkflowInputPort(inputPortName, inputPortDepth);
                 workflowInputsList.add(inputPort);
+            }
+
+            // Also generate the JSP snippet for the workflow's input form while
+            // we are at it and save it to a JSP file, if such a file already does not exist.
+            // We will dispatch to this form later, when user select this workflow.
+            File workflowInputFormJSPSnippetFile = new File(getPortletContext().getRealPath(WORKFLOWS_DIRECTORY + "/" + workflowFileName + ".jsp"));
+            if (!workflowInputFormJSPSnippetFile.exists()){
+                if (! createWorkflowInputFormJSPSnippetFile(workflowInputsList, workflowFileName)){
+                    // If we cannot generate the workflow inputs form - skip this workflow altogether
+                    continue;
+                }
             }
 
             // Wrap the workflow document inside a <workflow> element
@@ -234,7 +247,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         while(names.hasMoreElements()){
             String parameterName = (String) names.nextElement();
             System.out.println("Workflow Submission Portlet: parameter name: " + parameterName);
-            System.out.println("Workflow Submission Portlet:: parameter value: " + request.getParameter(parameterName));
+            System.out.println("Workflow Submission Portlet: parameter value: " + request.getParameter(parameterName));
             System.out.println();
         }
         System.out.println();
@@ -541,17 +554,18 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             response.getWriter().println("<br />");
             String selectedWorkflowFileName = request.getParameter(SELECTED_WORKFLOW);
 
-            // If we have a corresponding JSP file containing workflow's input form - dispatch to it
+            // By now we should have generated the corresponding JSP file containing
+            // workflow's input form snippet. Dispatch to this file now.
             File selectedWorkflowJSPFile = new File(getPortletContext().getRealPath(WORKFLOWS_DIRECTORY + "/" + selectedWorkflowFileName + ".jsp"));
-            if (selectedWorkflowJSPFile.exists()){
-                dispatcher = getPortletContext().getRequestDispatcher(WORKFLOWS_DIRECTORY + "/" + selectedWorkflowFileName + ".jsp");
-                dispatcher.include(request, response);
+            if (! selectedWorkflowJSPFile.exists()){ // if it does not exist (something is wrong!) - try generating it once again
+                if (! createWorkflowInputFormJSPSnippetFile( workflowNamesToInputsMap.get(selectedWorkflowFileName), selectedWorkflowFileName)){
+                    // OK, now we are in trouble - we definitely do not have the workflow input form
+                    response.getWriter().println("<p color=\"red\">There was a problem with generating the input form for workflow " + selectedWorkflowFileName +".</p>");
+                    return;
+                }
             }
-            else{ 
-                // We have to figure out the inputs ourselves form the parsed workflow Document
-                // and generate the input form.
-
-            }
+            dispatcher = getPortletContext().getRequestDispatcher(WORKFLOWS_DIRECTORY + "/" + selectedWorkflowFileName + ".jsp");
+            dispatcher.include(request, response);
         }
     }
 
@@ -581,7 +595,73 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     }
 
     /*
-     HTTP POSTs a wrapped workflow Document to the T2 Server.
+     * Generates the JSP snippet containing the inputs form for a given workflow
+     * and saves it to a JSP file.
+     */
+    private boolean createWorkflowInputFormJSPSnippetFile(ArrayList<WorkflowInputPort> workflowInputPorts, String workflowFileName){
+
+        File selectedWorkflowJSPFile = new File(getPortletContext().getRealPath(WORKFLOWS_DIRECTORY + "/" + workflowFileName + ".jsp"));
+
+        if (selectedWorkflowJSPFile.exists()){
+            return true;
+        }
+        
+        StringBuffer inputFormJSP = new StringBuffer();
+
+        // Various imports - portlet taglib, constants, CSS, JavaScript
+        inputFormJSP.append("<%-- Various imports - portlet taglib, constants, CSS to style the input form table, JavaScript to validate form fields --%>\n");
+        inputFormJSP.append("<%@ taglib uri=\"http://java.sun.com/portlet\" prefix=\"portlet\" %>\n");
+        inputFormJSP.append("<portlet:defineObjects />\n\n");
+        //inputFormJSP.append("<%@ include file=\"/WEB-INF/jsp/CommonJavaScript.jsp\" %>\n\n");
+        inputFormJSP.append("<%@ include file=\"/WEB-INF/jsp/CommonCSS.jsp\" %>\n\n");
+        inputFormJSP.append("<%@ include file=\"/WEB-INF/jsp/CommonConstants.jsp\" %>\n\n");
+
+        // Start the inputs form
+        inputFormJSP.append("<b>Workflow inputs:</b>\n");
+        inputFormJSP.append("<form name=\"<portlet:namespace/><%= WORKFLOW_INPUTS_FORM%>\" action=\"<portlet:actionURL/>\" method=\"post\" enctype=\"multipart/form-data\" >\n");
+        inputFormJSP.append("<table class=\"inputs\">\n");
+        inputFormJSP.append("<tr>\n");
+        inputFormJSP.append("<th>Name</th>\n");
+        inputFormJSP.append("<th>Type</th>\n");
+        inputFormJSP.append("<th>Description</th>\n");
+        inputFormJSP.append("<th>Value</th>\n");
+        inputFormJSP.append("</tr>\n");
+        // Loop over the workflow inputs and create a row with input fields
+        // in the table for each one of them
+        for (WorkflowInputPort inputPort : workflowInputPorts){
+            if (inputPort.getDepth() == 0){ // single input
+
+            }
+            else if (inputPort.getDepth() == 1){
+
+            }
+            else{ // We cannot handle workflows with input of depth more than 1
+                System.out.println("Workflow Submission Portlet: Workflow " + workflowFileName +" contains inputs of depth more than 1 (i.e. a list of lists or higher). This is not supported at the moment - skipping this workflow.");
+                return false;
+            }
+        }
+        inputFormJSP.append("</table>\n");
+
+        inputFormJSP.append("<%-- Hidden field to convey which workflow we want to execute --%>\n");
+        inputFormJSP.append("<input type=\"hidden\" name=\"<portlet:namespace/><%= WORKFLOW_NAME%>\" value=\""+ workflowFileName + "\" />\n");
+        inputFormJSP.append("<input type=\"submit\" name=\"<portlet:namespace/><%= RUN_WORKFLOW%>\" value=\"Run workflow\" />\n");
+        inputFormJSP.append("</form>\n");
+
+        // Write this JSP snippet to a file
+        try{
+            FileUtils.writeStringToFile(selectedWorkflowJSPFile, inputFormJSP.toString());
+        }
+        catch(IOException ioex){
+            System.out.println("Workflow Submission Portlet: Failed to write the JSP input form snippet for workflow " + workflowFileName + ".");
+            ioex.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+    /*
+     * HTTP POSTs a wrapped workflow Document to the T2 Server.
      */
     HttpResponse submitWorkflow(String workflowFileName, ActionRequest request){
 
