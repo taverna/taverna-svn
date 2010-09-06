@@ -4,18 +4,18 @@
 	<parent>
 		<artifactId>parent</artifactId>
 		<groupId>net.sf.taverna</groupId>
-		<version>0.1.2009-02-12</version>
+		<version>0.2.2010-09-06</version>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>infrastructure</artifactId>
-	<version>2.3-SNAPSHOT</version>
+	<version>3.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Taverna 2 infrastructure</name>
 	<description>Infrastructure for launching Taverna 2, including plugin management, Raven and SPI discovery</description>
 	<properties>
 		<t2.infrastructure.version>${project.version}</t2.infrastructure.version>
 		<xmlbeans.version>2.4.0</xmlbeans.version>
-		<t2.lang.version>1.3-SNAPSHOT</t2.lang.version>
+		<t2.lang.version>2.0-SNAPSHOT</t2.lang.version>
 	</properties>
 	<scm>
 		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.infrastructure/trunk/</connection>
