@@ -1,0 +1,3 @@
+net.sf.taverna.t2.activities.wsdl.translator.WSDLActivityTranslator
+net.sf.taverna.t2.activities.localworker.xmlsplitter.XMLOutputSplitterLocalWorkerTranslator
+net.sf.taverna.t2.activities.localworker.xmlsplitter.XMLInputSplitterLocalWorkerTranslator
