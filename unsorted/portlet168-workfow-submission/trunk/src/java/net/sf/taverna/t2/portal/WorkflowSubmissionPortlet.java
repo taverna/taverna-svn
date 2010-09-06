@@ -13,8 +13,11 @@ import javax.portlet.PortletException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +47,7 @@ import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.jdom.Text;
 import org.jdom.output.XMLOutputter;
+import org.jdom.xpath.XPath;
 import sun.misc.BASE64Encoder;
 
 /**
@@ -92,9 +96,23 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     public static final String DATAFLOW_ROLE_TOP  = "top";
     public static final String DATAFLOW_INPUT_PORTS_ELEMENT = "inputPorts";
     public static final String DATAFLOW_PORT = "port";
-    public static final String NAME = "name";
-    public static final String DEPTH = "depth";
-
+    public static final String NAME_ELEMENT = "name";
+    public static final String DEPTH_ELEMENT = "depth";
+    public static final String GRANULAR_DEPTH_ELEMENT = "granularDepth";
+    public static final String ANNOTATIONS_ELEMENT = "annotations";
+    public static final String ANNOTATION_CHAIN_ELEMENT = "annotation_chain";
+    public static final String ANNOTATION_CHAIN_IMPL_ELEMENT = "net.sf.taverna.t2.annotation.AnnotationChainImpl";
+    public static final String ANNOTATION_ASSERTIONS_ELEMENT = "annotationAssertions";
+    public static final String ANNOTATION_ASSERTION_IMPL_ELEMENT = "net.sf.taverna.t2.annotation.AnnotationAssertionImpl";
+    public static final String ANNOTATION_BEAN_ELEMENT = "annotationBean";
+    public static final String ANNOTATION_BEAN_ELEMENT_CLASS_ATTRIBUTE = "class";
+    public static final String ANNOTATION_BEAN_ELEMENT_FREETEXT_CLASS = "net.sf.taverna.t2.annotation.annotationbeans.FreeTextDescription";
+    public static final String ANNOTATION_BEAN_ELEMENT_EXAMPLEVALUE_CLASS = "net.sf.taverna.t2.annotation.annotationbeans.ExampleValue";
+    public static final String ANNOTATION_BEAN_ELEMENT_DESCRIPTIVETITLE_CLASS = "net.sf.taverna.t2.annotation.annotationbeans.DescriptiveTitle";
+    public static final String ANNOTATION_BEAN_ELEMENT_AUTHOR_CLASS = "net.sf.taverna.t2.annotation.annotationbeans.Author";
+    public static final String TEXT_ELEMENT = "text";
+    public static final String DATE_ELEMENT = "date";
+    
     // REST
     public static final String T2_SERVER_URL_PARAMETER = "t2_server_url";
     public static final Namespace T2_SERVER_NAMESPACE = Namespace.getNamespace("http://ns.taverna.org.uk/2010/xml/server/");
@@ -118,12 +136,12 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     public static final String INPUT_ELEMENT = "runInput";
     public static final String FILE_ELEMENT = "file";
 
-
     // Address of the T2 Server
     String t2ServerURL;
 
     // List of workflow file names, which are located in /WEB-INF/workflows folder in the app root.
     private static ArrayList<String> workflowFileNamesList;
+
 
     // List of wrapped workflow XML objects that get submitted for execution on the T2 Server
     private static ArrayList<Document> wrappedWorkflowXMLDocumentsList;
@@ -194,20 +212,37 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                 ex2.printStackTrace();
                 continue;
             }
-            // Get the input parameters, if any, from the workflow file.
+
+            // Get the workflow annotations, such as description, title etc.
+            Element topWorkflow = getTopDataflow(workflowDocument.getRootElement()); // top workflow, ignore nested workflows
+            Workflow workflow = new Workflow();
+            workflow.setFileName(workflowFileName);
+            Element workflowAnnotationsElement = topWorkflow.
+                            getChild(ANNOTATIONS_ELEMENT, T2_WORKFLOW_NAMESPACE);         
+            workflow.setDescription(getLatestAnnotationAssertionImplElementValue(workflowAnnotationsElement, ANNOTATION_BEAN_ELEMENT_FREETEXT_CLASS, workflowFileName));
+            workflow.setTitle(getLatestAnnotationAssertionImplElementValue(workflowAnnotationsElement, ANNOTATION_BEAN_ELEMENT_DESCRIPTIVETITLE_CLASS, workflowFileName));
+            workflow.setAuthor(getLatestAnnotationAssertionImplElementValue(workflowAnnotationsElement, ANNOTATION_BEAN_ELEMENT_AUTHOR_CLASS, workflowFileName));
+
+            // Get the workflow input parameters, if any.
             ArrayList<WorkflowInputPort> workflowInputsList = new ArrayList<WorkflowInputPort>();
-            Element workflowInputPortsElement = getTopDataflow(workflowDocument.getRootElement()).getChild(DATAFLOW_INPUT_PORTS_ELEMENT, T2_WORKFLOW_NAMESPACE);
+            Element workflowInputPortsElement = topWorkflow.getChild(DATAFLOW_INPUT_PORTS_ELEMENT, T2_WORKFLOW_NAMESPACE);
             for (Element inputPortElement : (List<Element>)workflowInputPortsElement.getChildren(DATAFLOW_PORT, T2_WORKFLOW_NAMESPACE)) {
+
+                Element workflowInputPortAnnotationsElement = inputPortElement
+                        .getChild(ANNOTATIONS_ELEMENT, T2_WORKFLOW_NAMESPACE);
+
                 // Get the input port's name and depth
-                String inputPortName = inputPortElement.getChildText(NAME, T2_WORKFLOW_NAMESPACE);
-                int inputPortDepth = Integer.valueOf(inputPortElement.getChildText(DEPTH, T2_WORKFLOW_NAMESPACE));
+                String inputPortName = inputPortElement.getChildText(NAME_ELEMENT, T2_WORKFLOW_NAMESPACE);
+                int inputPortDepth = Integer.valueOf(inputPortElement.getChildText(DEPTH_ELEMENT, T2_WORKFLOW_NAMESPACE));
 
-                // Get the latest annotation on the input port
-		//annotationsFromXml(dataflowInputPort, port, df.getClass().getClassLoader());
-		//annotationsFromXml(dataflowInputPort, inputPortElement, df.getClass().getClassLoader());
-
-                WorkflowInputPort inputPort = new WorkflowInputPort(inputPortName, inputPortDepth);
+                WorkflowInputPort inputPort = new WorkflowInputPort();
+                inputPort.setName(inputPortName);
+                inputPort.setDepth(inputPortDepth);
+                inputPort.setDescription(getLatestAnnotationAssertionImplElementValue(workflowInputPortAnnotationsElement, ANNOTATION_BEAN_ELEMENT_FREETEXT_CLASS, workflowFileName));
+                inputPort.setExampleValue(getLatestAnnotationAssertionImplElementValue(workflowInputPortAnnotationsElement, ANNOTATION_BEAN_ELEMENT_EXAMPLEVALUE_CLASS, workflowFileName));
                 workflowInputsList.add(inputPort);
+
+                System.out.println("Workflow Submission Portlet: Parsing workflow " +workflowFileName + ". Input port name: " + inputPortName + ", depth: " + inputPortDepth + ", description: " + inputPort.getDescription() + ", example value: " + inputPort.getExampleValue());
             }
 
             // Also generate the JSP snippet for the workflow's input form while
@@ -222,7 +257,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             }
 
             // Wrap the workflow document inside a <workflow> element
-            // in the T2 Server namespace as expected by the Server
+            // in the T2 Server namespace as expected by the Server.
             Element workflowWrapperElement = new Element(T2_SERVER_WORKFLOW_ELEMENT, T2_SERVER_NAMESPACE);
             Element oldWorkflowRootElement = workflowDocument.getRootElement();
             oldWorkflowRootElement.detach(); // detach it from the previous document
@@ -237,7 +272,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             workflowNamesToInputsMap.put(workflowFileName, workflowInputsList);
             numberOfLoadedWorkflowFiles++;
         }
-        System.out.println("Workflow Submission Portlet: Successfully loaded " + numberOfLoadedWorkflowFiles + " out of " + workflowFileNames.length + " workflow files.");
+        System.out.println("Workflow Submission Portlet: Successfully loaded " + numberOfLoadedWorkflowFiles + " out of " + workflowFileNames.length + " workflow files.\n");
     }
 
     public void processAction(ActionRequest request, ActionResponse response) throws PortletException,IOException {
@@ -960,6 +995,63 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         }
 
         return separatorValue;
+    }
 
+    /*
+     * Given an <annotations> element from the .t2flow file,
+     * it finds the latest <net.sf.taverna.t2.annotation.AnnotationAssertionImpl> 
+     * element regardless of its location in the <annotations>, element whose 
+     * <annotationBean> sub-element has a class attribute that matches the
+     * passed value. It then returns the value of the <text> element inside that
+     * <annotationBean> element.
+     */
+    public String getLatestAnnotationAssertionImplElementValue(Element annotationsElement, String annotationBeanClassName, String workflowFileName){
+
+        System.out.println("Getting annotations with class='" + annotationBeanClassName + "' for workflow " + workflowFileName + ".");
+
+        // Select all <net.sf.taverna.t2.annotation.AnnotationAssertionImpl>
+        // elements no matter where they are located in the <assertions> element passed.
+        List<Element> annotationAssertionImplElements = null;
+        try{
+            annotationAssertionImplElements = XPath.selectNodes(annotationsElement,"//"+ANNOTATION_ASSERTION_IMPL_ELEMENT);
+        }
+        catch(JDOMException jdomex){
+            System.out.println("Workflow Submission Portlet: Failed to parse the annotations element when looking for " + annotationBeanClassName + " in worklow " + workflowFileName +".");
+            jdomex.printStackTrace();
+            return null;
+        }
+
+        // Loop over all the annotation imple elements and find the latest that
+        // has an annotation bean whose class matches the one we are looking for.
+        String latestValue = null;
+        Date latestDate = new Date(0);
+        if (annotationAssertionImplElements != null){
+            for (Element annotationAssertionImplElement : annotationAssertionImplElements){
+
+                                System.out.println(annotationAssertionImplElement.toString());
+
+                Element annotationBeanElement = annotationAssertionImplElement
+                        .getChild(ANNOTATION_BEAN_ELEMENT);
+
+                Date date = null;
+                String pattern = "yyyy-MM-dd HH:mm:ss.SSS z";
+                SimpleDateFormat format = new SimpleDateFormat(pattern);
+                if (annotationBeanElement.getAttributeValue(ANNOTATION_BEAN_ELEMENT_CLASS_ATTRIBUTE).equals(annotationBeanClassName)){
+                    String value = annotationBeanElement.getChildText(TEXT_ELEMENT);
+                    try {
+                        date = format.parse(annotationAssertionImplElement.getChildText(DATE_ELEMENT));
+                        if (latestDate.before(date)){
+                            latestValue = value;
+                            latestDate = date;
+                        }
+                    } catch (ParseException ex) {
+                        System.out.println("Workflow Submission Portlet: Failed to parse the annotation bean date for " + annotationBeanClassName + " in workflow "+workflowFileName+". Skipping this element.");
+                        ex.printStackTrace();
+                        continue;
+                    }
+                }
+            }
+        }
+        return latestValue;
     }
 }

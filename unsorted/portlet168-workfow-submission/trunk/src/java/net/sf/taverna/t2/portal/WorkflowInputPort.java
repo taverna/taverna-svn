@@ -3,7 +3,7 @@ package net.sf.taverna.t2.portal;
 
 /**
  * Represents all information we have about a workflow input
- * (such as name, depth and annotations) port read from the
+ * port (such as name, depth and annotations), read from the
  * workflow file.
  *
  * @author Alex Nenadic
@@ -21,9 +21,22 @@ public class WorkflowInputPort {
     // Data value on the input port
     private Object value;
 
-    WorkflowInputPort(String name, int depth){
+    // Input port description, read from the annotations chain
+    // stored in the workflow definition file
+    private String description;
+
+    // Input port example value, read from the annotations chain
+    // stored in the workflow definition file
+    private String exampleValue;
+
+    public WorkflowInputPort(){
+    }
+
+    public WorkflowInputPort(String name, int depth, String description, String exampleValue){
         this.name = name;
         this.depth = depth;
+        this.description = description;
+        this.exampleValue = exampleValue;
     }
 
     /**
@@ -66,5 +79,33 @@ public class WorkflowInputPort {
      */
     public void setValue(Object value) {
         this.value = value;
+    }
+
+    /**
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
+     * @return the exampleValue
+     */
+    public String getExampleValue() {
+        return exampleValue;
+    }
+
+    /**
+     * @param exampleValue the exampleValue to set
+     */
+    public void setExampleValue(String exampleValue) {
+        this.exampleValue = exampleValue;
     }
 }
