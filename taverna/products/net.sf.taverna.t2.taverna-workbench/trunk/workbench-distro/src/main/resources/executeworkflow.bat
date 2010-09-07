@@ -16,6 +16,6 @@ set ARGS=%ARGS% -Draven.launcher.app.main=net.sf.taverna.t2.commandline.CommandL
 set ARGS=%ARGS% -Draven.launcher.show_splashscreen=false
 set ARGS=%ARGS% "-Dtaverna.startup=%TAVERNA_HOME%."
 
-java %ARGS% -jar "%TAVERNA_HOME%lib\prelauncher-2.3-SNAPSHOT.jar" %*
+java %ARGS% -jar "%TAVERNA_HOME%lib\prelauncher-3.0-SNAPSHOT.jar" %*
 
 
