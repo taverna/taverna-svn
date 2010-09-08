@@ -754,15 +754,14 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                 inputFormJSP.append("<input type=\"file\" name=\"<portlet:namespace/>"+inputPort.getName()+"_file\" /><br/><hr/>\n");
                 inputFormJSP.append("Use the following character sequence as the list item separator:\n");
                 inputFormJSP.append("<select name=\"<portlet:namespace/>"+inputPort.getName()+"_separator\">\n");
-                inputFormJSP.append("<option value=\"new_line_linux\">New line - Unix/Linux (\\n)</option>\n");
-                inputFormJSP.append("<option value=\"new_line_windows\">New line - Windows (\\r\\n)</option>\n");
-                inputFormJSP.append("<option value=\"blank\">Blank (' ')</option>\n");
-                inputFormJSP.append("<option value=\"tab\">Tab (\\t)</option>\n");
-                inputFormJSP.append("<option value=\"colon\">Colon (:)</option>\n");
-                inputFormJSP.append("<option value=\"semi_colon\">Semi-colon (;)</option>\n");
-                inputFormJSP.append("<option value=\"comma\">Comma (,)</option>\n");
-                inputFormJSP.append("<option value=\"pipe\">Pipe (|)</option>\n");
-                inputFormJSP.append("<option value=\"other\">Other</option>\n");
+                inputFormJSP.append("<option value=\""+NEW_LINE_LINUX_SEPARATOR+"\">New line - Unix/Linux (\\n)</option>\n");
+                inputFormJSP.append("<option value=\""+NEW_LINE_WINDOWS_SEPARATOR+"\">New line - Windows (\\r\\n)</option>\n");
+                inputFormJSP.append("<option value=\""+BLANK_SEPARATOR+"\">Blank (' ')</option>\n");
+                inputFormJSP.append("<option value=\""+TAB_SEPARATOR+"\">Tab (\\t)</option>\n");
+                inputFormJSP.append("<option value=\""+COLON_SEPARATOR+"\">Colon (:)</option>\n");
+                inputFormJSP.append("<option value=\""+SEMI_COLON_SEPARATOR+"\">Semi-colon (;)</option>\n");
+                inputFormJSP.append("<option value=\""+COMMA_SEPARATOR+"\">Comma (,)</option>\n");
+                inputFormJSP.append("<option value=\""+PIPE_SEPARATOR+"\">Pipe (|)</option>\n");
                 inputFormJSP.append("</select><br />\n");
                 inputFormJSP.append("Or specify your own separator:\n");
                 inputFormJSP.append("<input type=\"text\" name=\"<portlet:namespace/>"+inputPort.getName()+"_other_separator\" size=\"3\" />\n");
@@ -1094,7 +1093,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             separatorValue = ";";
         }
         else if(separatorName.equals(PIPE_SEPARATOR)){
-            separatorValue = "\\|";
+            separatorValue = "\\|"; // or "[|]". Pipe needs to be escaped as it is a special reg exp character
         }
 
         return separatorValue;
