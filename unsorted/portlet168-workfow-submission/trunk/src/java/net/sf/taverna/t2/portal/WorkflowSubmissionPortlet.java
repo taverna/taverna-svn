@@ -485,7 +485,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                     }
                 } // We have now finished reading all the inputs
 
-                /*if (inputsSuccessfullyRead){
+                if (inputsSuccessfullyRead){
                     // Submit the workflow to the T2 Server in preparation for execution
                     HttpResponse httpResponse = submitWorkflow(workflowFileName, request);
 
@@ -527,7 +527,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                             }
                         }
                     }
-                }*/
+                }
             }
         }
         else{ // just a standard application/x-www-form-urlencoded form submission request
@@ -680,9 +680,9 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         inputFormJSP.append("<%-- Various imports - portlet taglib, constants, CSS to style the input form table, JavaScript to validate form fields --%>\n");
         inputFormJSP.append("<%@ taglib uri=\"http://java.sun.com/portlet\" prefix=\"portlet\" %>\n");
         inputFormJSP.append("<portlet:defineObjects />\n\n");
-        //inputFormJSP.append("<%@ include file=\"/WEB-INF/jsp/CommonJavaScript.jsp\" %>\n\n");
+        inputFormJSP.append("<%@ include file=\"/WEB-INF/jsp/CommonJavaScript.jsp\" %>\n\n");
         inputFormJSP.append("<%@ include file=\"/WEB-INF/jsp/CommonCSS.jsp\" %>\n\n");
-        inputFormJSP.append("<%@ include file=\"/WEB-INF/jsp/CommonConstants.jsp\" %>\n\n");
+        //inputFormJSP.append("<%@ include file=\"/WEB-INF/jsp/CommonConstants.jsp\" %>\n\n");
 
         // Workflow name and description
         if (workflow.getTitle() != null && !workflow.getTitle().equals("")){
@@ -701,7 +701,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
         // Workflow inputs form
         inputFormJSP.append("<b>Workflow inputs:</b>\n");
-        inputFormJSP.append("<form name=\"<portlet:namespace/><%= WORKFLOW_INPUTS_FORM%>\" action=\"<portlet:actionURL/>\" method=\"post\" enctype=\"multipart/form-data\">\n");
+        inputFormJSP.append("<form name=\"<portlet:namespace/><%= WORKFLOW_INPUTS_FORM%>\" action=\"<portlet:actionURL/>\" method=\"post\" enctype=\"multipart/form-data\" onSubmit=\"return validateForm()\">\n");
         inputFormJSP.append("<table class=\"inputs\">\n");
         inputFormJSP.append("<tr>\n");
         inputFormJSP.append("<th>Name</th>\n");
@@ -728,9 +728,9 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                 inputFormJSP.append("<td>" + descriptionString + "</td>\n");
                 inputFormJSP.append("<td>\n");
                 inputFormJSP.append("Paste the value here: <br/>\n");
-                inputFormJSP.append("<textarea name=\"<portlet:namespace/>"+inputPort.getName()+"_content\" rows=\"2\" cols=\"20\" wrap=\"off\"></textarea><br/>\n");
+                inputFormJSP.append("<textarea name=\"<portlet:namespace/>"+inputPort.getName()+WORKFLOW_INPUT_CONTENT_SUFFIX+"\" rows=\"2\" cols=\"20\" wrap=\"off\"></textarea><br/>\n");
                 inputFormJSP.append("Or load the value from a file: <br />\n");
-                inputFormJSP.append("<input type=\"file\" name=\"<portlet:namespace/>"+inputPort.getName()+"_file\" />\n");
+                inputFormJSP.append("<input type=\"file\" name=\"<portlet:namespace/>"+inputPort.getName()+WORKFLOW_INPUT_FILE_SUFFIX+"\" />\n");
                 inputFormJSP.append("</td>\n");
                 inputFormJSP.append("</tr>\n");
             }
@@ -749,9 +749,9 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                 inputFormJSP.append("<td>" + descriptionString + "</td>\n");
                 inputFormJSP.append("<td>\n");
                 inputFormJSP.append("Paste the list values here: <br/>\n");
-                inputFormJSP.append("<textarea name=\"<portlet:namespace/>"+inputPort.getName()+"_content\" rows=\"2\" cols=\"20\" wrap=\"off\"></textarea><br/>\n");
+                inputFormJSP.append("<textarea name=\"<portlet:namespace/>"+inputPort.getName()+WORKFLOW_INPUT_CONTENT_SUFFIX+"\" rows=\"2\" cols=\"20\" wrap=\"off\"></textarea><br/>\n");
                 inputFormJSP.append("Or load them from a file: <br />\n");
-                inputFormJSP.append("<input type=\"file\" name=\"<portlet:namespace/>"+inputPort.getName()+"_file\" /><br/><hr/>\n");
+                inputFormJSP.append("<input type=\"file\" name=\"<portlet:namespace/>"+inputPort.getName()+WORKFLOW_INPUT_FILE_SUFFIX+"\" /><br/><hr/>\n");
                 inputFormJSP.append("Use the following character sequence as the list item separator:\n");
                 inputFormJSP.append("<select name=\"<portlet:namespace/>"+inputPort.getName()+"_separator\">\n");
                 inputFormJSP.append("<option value=\""+NEW_LINE_LINUX_SEPARATOR+"\">New line - Unix/Linux (\\n)</option>\n");

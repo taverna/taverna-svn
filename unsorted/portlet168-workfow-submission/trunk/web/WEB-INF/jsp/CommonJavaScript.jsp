@@ -30,19 +30,26 @@ function validateForm()
 
     if (typeof(workflowInputsForm) != "undefined" && workflowInputsForm != null) {
 
+        var inputPortNames = new Array();
+
         var inputElements = workflowInputsForm.getElementsByTagName("input");
+        var fileInputElements = new Array();
+        var j = 0;
         for (var i = 0; i < inputElements.length; i++) {
             //alert("Found input: " + inputElements[i].name + " with value: " + inputElements[i].value);
-            if (inputElements[i].type == "text" && inputElements[i].value == ""){
-                isFormValid = false;
-                var inputElementName = inputElements[i].name;
-                    // Get rid of the namespace prefix
-                    inputElementName = inputElementName.substr(namespace.length, inputElementName.length);
-                    alertText += "You have not provided a value for input '" + inputElementName + "'.\n";
-                }
+            if (inputElements[i].type == "file"){
+                fileInputElements[j] = inputElements[i];
+                var elementName = inputElements[i].name; 
+                elementName = elementName.substring(namespace.length, elementName.length-1); // get rid of namespace prefix
+                elementName = elementName.substring("<%= WORKFLOW_INPUT_FILE_SUFFIX %>".length, elementName.length-1); // get rid of _file sufix
+                inputPortNames[j] = elementName;
+                j++;
+                alert("Found input: " + elementName);
             }
+        }
 
         var textAreaElements = workflowInputsForm.getElementsByTagName("textarea");
+
         if (typeof(textAreaElements) != "undefined"){
             for (var i = 0; i < textAreaElements.length; i++) {
                 //alert("Found input: " + textAreaElements[i].name + " with value: " + textAreaElements[i].value);

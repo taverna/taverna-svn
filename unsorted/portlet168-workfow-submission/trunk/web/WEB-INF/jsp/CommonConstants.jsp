@@ -8,15 +8,18 @@
 
 <%!
 // Constants
-private static final String WORKFLOW_FILE_NAMES = "workflow_file_names";
-private static final String WORKFLOW_SELECTION_SUBMISSION_FORM = "workflow_selection_form";
-private static final String WORKFLOW_SELECTION_SUBMISSION = "workflow_selection";
-private static final String SELECTED_WORKFLOW = "selected_workflow";
-private static final String WORKFLOW_INPUTS_FORM = "workflow_inputs_form";
-private static final String RUN_WORKFLOW = "run_workflow";
-private static final String WORKFLOW_FILE_NAME = "workflow_file_name";
+public static final String WORKFLOW_FILE_NAMES = "workflow_file_names";
+public static final String WORKFLOW_SELECTION_SUBMISSION_FORM = "workflow_selection_form";
+public static final String WORKFLOW_SELECTION_SUBMISSION = "workflow_selection";
+public static final String SELECTED_WORKFLOW = "selected_workflow";
+public static final String WORKFLOW_INPUTS_FORM = "workflow_inputs_form";
+public static final String RUN_WORKFLOW = "run_workflow";
+public static final String WORKFLOW_FILE_NAME = "workflow_file_name";
 
-private static final String ERROR_MESSAGE = "error_message";
-private static final String INFO_MESSAGE = "info_message";
+public static final String WORKFLOW_INPUT_CONTENT_SUFFIX = "_content";
+public static final String WORKFLOW_INPUT_FILE_SUFFIX = "_file";
+
+public static final String ERROR_MESSAGE = "error_message";
+public static final String INFO_MESSAGE = "info_message";
 
 %>
