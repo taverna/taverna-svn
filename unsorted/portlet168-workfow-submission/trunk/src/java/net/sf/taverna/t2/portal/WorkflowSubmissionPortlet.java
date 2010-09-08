@@ -77,6 +77,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     public static final String NEW_LINE_LINUX_SEPARATOR = "new_line_linux";
     public static final String NEW_LINE_WINDOWS_SEPARATOR = "new_line_windows";
     public static final String BLANK_SEPARATOR = "blank";
+    public static final String TAB_SEPARATOR = "tab";
     public static final String COMMA_SEPARATOR = "comma";
     public static final String COLON_SEPARATOR = "colon";
     public static final String SEMI_COLON_SEPARATOR = "semi_colon";
@@ -329,13 +330,15 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                 } else { // File upload form field
                     String fieldName = item.getFieldName();
                     String fileName = item.getName();
-                    // Get rid of the potlet namespace prefix
-                    if (fieldName.startsWith(PORTLET_NAMESPACE)){
-                        fieldName = fieldName.substring(PORTLET_NAMESPACE.length());
+                    if (!fileName.equals("")){ // if a file was submitted
+                        // Get rid of the potlet namespace prefix
+                        if (fieldName.startsWith(PORTLET_NAMESPACE)){
+                            fieldName = fieldName.substring(PORTLET_NAMESPACE.length());
+                        }
+                        InputStream uploadedStream = item.getInputStream();
+                        formItems.put(fieldName, uploadedStream);
+                        System.out.println("Workflow Submission Portlet: multipart form parameter name (without namespace prefix): " + fieldName + ", file name: " + fileName);
                     }
-                    InputStream uploadedStream = item.getInputStream();
-                    formItems.put(fieldName, uploadedStream);
-                    System.out.println("Workflow Submission Portlet: multipart form parameter name (without namespace prefix): " + fieldName + ", file name: " + fileName);
                 }
             }
 
@@ -343,7 +346,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             if (formItems.keySet().contains(RUN_WORKFLOW)){
 
                 // Workflow to run
-                String workflowFileName = (String)formItems.get(WORKFLOW_FILE_NAME);
+                String workflowFileName = (String) formItems.get(WORKFLOW_FILE_NAME);
                 
                 // Workflow's input ports
                 ArrayList<WorkflowInputPort> workflowInputPorts = workflowInputPortsList.get(workflowFileNamesList.indexOf(workflowFileName));
@@ -356,8 +359,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
                     // Do we have this input's content as a file or actual content was submitted?
                     // If we have a file that overrides the submitted content.
-                    if (formItems.get(inputPort.getName() + WORKFLOW_INPUT_FILE_SUFFIX) != null &&
-                            !formItems.get(inputPort.getName() + WORKFLOW_INPUT_FILE_SUFFIX).equals("")){
+                    if (formItems.get(inputPort.getName() + WORKFLOW_INPUT_FILE_SUFFIX) != null){
 
                         // Read the contents of a file as a byte[]
                         InputStream is = (InputStream) formItems.get(inputPort.getName() + WORKFLOW_INPUT_FILE_SUFFIX);
@@ -386,7 +388,8 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                         if (inputPort.getDepth() == 0){
                             // Just set the input port value to the byte[] we have just read from the file.
                             inputPort.setValue(theBytes);
-                            System.out.println("Workflow Submission Portlet: The value the user submitted (as a file) for the input port '" + inputPort.getName() + "': " + new String(theBytes, "UTF-8"));
+                            System.out.println("Workflow Submission Portlet: The value the user submitted (as a file) for the input port '" + 
+                                    inputPort.getName() + "'was : " + new String(theBytes, "UTF-8"));
                         }
                         // Is this input a list?
                         // We have to split the contents of the file as list items.
@@ -395,20 +398,21 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                             // using UTF-8 encoding and hope for the best. Then separate
                             // the string into items based on the submitted separator.
                             String valueToSeparate = new String(theBytes, "UTF-8");
-                            System.out.println("Workflow Submission Portlet: value "+ valueToSeparate);
                             String listSeparator;
-                            if (formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_OTHER_SEPARATOR_SUFFIX) != null &&
-                                    formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_OTHER_SEPARATOR_SUFFIX) != ""){
-                                listSeparator = (String) formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_OTHER_SEPARATOR_SUFFIX);
+                            String userDefinedListSeparator = (String) formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_OTHER_SEPARATOR_SUFFIX);
+                            if (userDefinedListSeparator != null &&
+                                    !userDefinedListSeparator.equals("")){
+                                listSeparator = getListSeparator(userDefinedListSeparator);
                             }
                             else{
                                 listSeparator = getListSeparator((String) formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_SEPARATOR_SUFFIX));
                             }
                             String[] valueList = valueToSeparate.split(listSeparator);
                             inputPort.setValue(Arrays.asList(valueList));
-                            System.out.print("Workflow Submission Portlet: The value the user submitted (as a file) for the input port '" + inputPort.getName() + "': ");
+                            System.out.println("Workflow Submission Portlet: The list the user submitted (as a file) for the input port '" +
+                                    inputPort.getName() + "' was: ");
                             for (int i=0; i< valueList.length; i++) {
-                                System.out.print(valueList[i]);
+                                System.out.println(valueList[i]);
                             }
                             System.out.println();
                         }
@@ -422,22 +426,25 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                         }
                     }
                     else if(formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_SUFFIX) != null &&
-                            !formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_SUFFIX).equals("")){
+                            !((String) formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_SUFFIX)).equals("")){
 
                         // Is this a single value input? Just get whatever content was submitted.
                         if (inputPort.getDepth() == 0){
-                            inputPort.setValue((String)formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_SUFFIX));
-                            System.out.println("Workflow Submission Portlet: The value the user submitted (from input field) for the input port '" +
+                            inputPort.setValue((String) formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_SUFFIX));
+                            System.out.println("Workflow Submission Portlet: The value the user submitted (from textarea input field) for the input port '" +
                                     inputPort.getName() + "' was: " +
                                     (String)inputPort.getValue());
                         }
                         // Is this input a list? We have to split the string to get the list items.
                         else if (inputPort.getDepth() == 1){
+                            
+                            String valueToSeparate = (String) formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_SUFFIX);
+
                             String listSeparator;
-                            String valueToSeparate = (String)formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_SUFFIX);
-                            if (formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_OTHER_SEPARATOR_SUFFIX) != null &&
-                                    !formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_OTHER_SEPARATOR_SUFFIX).equals("")){
-                                listSeparator = (String) formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_OTHER_SEPARATOR_SUFFIX);
+                            String userDefinedListSeparator = (String) formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_OTHER_SEPARATOR_SUFFIX);
+                            if (userDefinedListSeparator != null &&
+                                    !userDefinedListSeparator.equals("")){
+                                listSeparator = getListSeparator(userDefinedListSeparator);
                             }
                             else{
                                 listSeparator = getListSeparator((String) formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_SEPARATOR_SUFFIX));
@@ -454,7 +461,11 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                valueList = valueToSeparate.split(listSeparator);
                             }
                             inputPort.setValue(Arrays.asList(valueList));
-                            System.out.println("Workflow Submission Portlet: The value the user submitted (from input field) for the input port '" + inputPort.getName() + "' was: " + valueList.toString());
+                            System.out.println("Workflow Submission Portlet: The list the user submitted (from textarea input field) for the input port '" +
+                                    inputPort.getName() + "' was: ");
+                            for (int i=0; i< valueList.length; i++) {
+                                System.out.println(valueList[i]);
+                            }
                         }
                         // Is this input a list of (... lists of ...) lists?
                         // We currently support input list depths up to 1.
@@ -1068,9 +1079,13 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             separatorValue = "\r\n";
         }
         else if(separatorName.equals(BLANK_SEPARATOR)){
-            separatorValue = ",";
-        }       else if(separatorName.equals(COMMA_SEPARATOR)){
             separatorValue = " ";
+        }
+        else if(separatorName.equals(TAB_SEPARATOR)){
+            separatorValue = "\t";
+        }
+        else if(separatorName.equals(COMMA_SEPARATOR)){
+            separatorValue = ",";
         }
         else if(separatorName.equals(COLON_SEPARATOR)){
             separatorValue = ":";
@@ -1079,7 +1094,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             separatorValue = ";";
         }
         else if(separatorName.equals(PIPE_SEPARATOR)){
-            separatorValue = "|";
+            separatorValue = "\\|";
         }
 
         return separatorValue;
