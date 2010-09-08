@@ -18,9 +18,6 @@ public class Workflow {
     // Workflow description read from annotations.
     private String description;
 
-    // File where the workflow definition read from.
-    private String fileName;
-
     public Workflow(){
     }
 
@@ -65,19 +62,4 @@ public class Workflow {
     public void setDescription(String description) {
         this.description = description;
     }
-
-    /**
-     * @return the fileName
-     */
-    public String getFileName() {
-        return fileName;
-    }
-
-    /**
-     * @param fileName the fileName to set
-     */
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
 }

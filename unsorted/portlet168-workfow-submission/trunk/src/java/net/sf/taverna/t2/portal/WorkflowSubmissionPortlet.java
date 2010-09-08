@@ -45,6 +45,7 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
+//import org.jaxen.jdom.JDOMXPath;
 import org.jdom.Text;
 import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
@@ -68,7 +69,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     public static final String WORKFLOW_INPUTS_FORM = "workflow_inputs_form";
     public static final String SELECTED_WORKFLOW = "selected_workflow";
     public static final String RUN_WORKFLOW = "run_workflow";
-    public static final String WORKFLOW_NAME = "workflow_name";
+    public static final String WORKFLOW_FILE_NAME = "workflow_file_name";
     public static final String WORKFLOW_INPUT_CONTENT_SUFFIX = "_content";
     public static final String WORKFLOW_INPUT_FILE_SUFFIX = "_file";
     public static final String WORKFLOW_INPUT_CONTENT_SEPARATOR_SUFFIX = "_separator";
@@ -139,18 +140,20 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     // Address of the T2 Server
     String t2ServerURL;
 
-    // List of workflow file names, which are located in /WEB-INF/workflows folder in the app root.
+    // A list of workflow file names, which are
+    // located in /WEB-INF/workflows folder in the app root.
     private static ArrayList<String> workflowFileNamesList;
 
+    // A list of workflow objects, filled in with info parsed
+    // from the workflow definition files.
+    private static ArrayList<Workflow> workflowList;
 
-    // List of wrapped workflow XML objects that get submitted for execution on the T2 Server
+    // A list of wrapped workflow XML objects that get
+    // submitted for execution on the T2 Server
     private static ArrayList<Document> wrappedWorkflowXMLDocumentsList;
 
-    // String representation of the workflow XML objects
-    private static ArrayList<String> wrappedWorkflowXMLDocumentStringsList;
-
-    // Map of workflow file names to a list of workflow's inputs
-    private static HashMap<String, ArrayList<WorkflowInputPort>> workflowNamesToInputsMap;
+    // A list of lists of workflow input ports
+    private static ArrayList<ArrayList<WorkflowInputPort>> workflowInputPortsList;
 
     // Namespace of this portlet
     private static String PORTLET_NAMESPACE;
@@ -166,9 +169,9 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
         // Load the workflows once at initialisation time
         workflowFileNamesList = new ArrayList<String>();
+        workflowList = new ArrayList<Workflow>();
         wrappedWorkflowXMLDocumentsList = new ArrayList<Document>();
-        wrappedWorkflowXMLDocumentStringsList = new ArrayList<String>();
-        workflowNamesToInputsMap = new HashMap<String, ArrayList<WorkflowInputPort>>();
+        workflowInputPortsList = new ArrayList<ArrayList<WorkflowInputPort>>();
 
         // Directory containing workflows
         File dir = new File(getPortletContext().getRealPath(WORKFLOWS_DIRECTORY));
@@ -184,7 +187,6 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         int numberOfLoadedWorkflowFiles = 0;
        
         SAXBuilder builder = new SAXBuilder();
-        XMLOutputter xmlOutputter = new XMLOutputter();
 
         for (int i=0; i<workflowFileNames.length; i++)
         { 
@@ -216,15 +218,18 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             // Get the workflow annotations, such as description, title etc.
             Element topWorkflow = getTopDataflow(workflowDocument.getRootElement()); // top workflow, ignore nested workflows
             Workflow workflow = new Workflow();
-            workflow.setFileName(workflowFileName);
             Element workflowAnnotationsElement = topWorkflow.
                             getChild(ANNOTATIONS_ELEMENT, T2_WORKFLOW_NAMESPACE);         
             workflow.setDescription(getLatestAnnotationAssertionImplElementValue(workflowAnnotationsElement, ANNOTATION_BEAN_ELEMENT_FREETEXT_CLASS, workflowFileName));
             workflow.setTitle(getLatestAnnotationAssertionImplElementValue(workflowAnnotationsElement, ANNOTATION_BEAN_ELEMENT_DESCRIPTIVETITLE_CLASS, workflowFileName));
             workflow.setAuthor(getLatestAnnotationAssertionImplElementValue(workflowAnnotationsElement, ANNOTATION_BEAN_ELEMENT_AUTHOR_CLASS, workflowFileName));
+            
+            System.out.println("Workflow Submission Portlet: Parsing workflow " +workflowFileName + " finished.");
+            System.out.println("Workflow Submission Portlet: Workflow name: " + workflow.getTitle() + ", description: " + workflow.getDescription() +".\n");
+            System.out.println("Workflow Submission Portlet: Parsing inputs for workflow " +workflowFileName + ".");
 
-            // Get the workflow input parameters, if any.
-            ArrayList<WorkflowInputPort> workflowInputsList = new ArrayList<WorkflowInputPort>();
+            // Get the workflow input parameters and their annotations, if any.
+            ArrayList<WorkflowInputPort> workflowInputPorts = new ArrayList<WorkflowInputPort>();
             Element workflowInputPortsElement = topWorkflow.getChild(DATAFLOW_INPUT_PORTS_ELEMENT, T2_WORKFLOW_NAMESPACE);
             for (Element inputPortElement : (List<Element>)workflowInputPortsElement.getChildren(DATAFLOW_PORT, T2_WORKFLOW_NAMESPACE)) {
 
@@ -240,17 +245,18 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                 inputPort.setDepth(inputPortDepth);
                 inputPort.setDescription(getLatestAnnotationAssertionImplElementValue(workflowInputPortAnnotationsElement, ANNOTATION_BEAN_ELEMENT_FREETEXT_CLASS, workflowFileName));
                 inputPort.setExampleValue(getLatestAnnotationAssertionImplElementValue(workflowInputPortAnnotationsElement, ANNOTATION_BEAN_ELEMENT_EXAMPLEVALUE_CLASS, workflowFileName));
-                workflowInputsList.add(inputPort);
+                workflowInputPorts.add(inputPort);
 
-                System.out.println("Workflow Submission Portlet: Parsing workflow " +workflowFileName + ". Input port name: " + inputPortName + ", depth: " + inputPortDepth + ", description: " + inputPort.getDescription() + ", example value: " + inputPort.getExampleValue());
+                System.out.println("Workflow Submission Portlet: Input port name: " + inputPortName + ", depth: " + inputPortDepth + ", description: " + inputPort.getDescription() + ", example value: " + inputPort.getExampleValue());
             }
+            System.out.println();
 
             // Also generate the JSP snippet for the workflow's input form while
             // we are at it and save it to a JSP file, if such a file already does not exist.
             // We will dispatch to this form later, when user select this workflow.
             File workflowInputFormJSPSnippetFile = new File(getPortletContext().getRealPath(WORKFLOWS_DIRECTORY + "/" + workflowFileName + ".jsp"));
             if (!workflowInputFormJSPSnippetFile.exists()){
-                if (! createWorkflowInputFormJSPSnippetFile(workflowInputsList, workflowFileName)){
+                if (! createWorkflowInputFormJSPSnippetFile(workflowFileName, workflow, workflowInputPorts)){
                     // If we cannot generate the workflow inputs form - skip this workflow altogether
                     continue;
                 }
@@ -265,11 +271,9 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             Document wrappedWorkflowDocument = new Document(workflowWrapperElement);
 
             workflowFileNamesList.add(workflowFileName);
+            workflowList.add(workflow);
             wrappedWorkflowXMLDocumentsList.add(wrappedWorkflowDocument);
-            // We do not really have to keep the string reprsentation of the workflow Document
-            // as well, but do it for now as we do not really care about the memory.
-            wrappedWorkflowXMLDocumentStringsList.add(xmlOutputter.outputString(wrappedWorkflowDocument));
-            workflowNamesToInputsMap.put(workflowFileName, workflowInputsList);
+            workflowInputPortsList.add(workflowInputPorts);
             numberOfLoadedWorkflowFiles++;
         }
         System.out.println("Workflow Submission Portlet: Successfully loaded " + numberOfLoadedWorkflowFiles + " out of " + workflowFileNames.length + " workflow files.\n");
@@ -281,11 +285,10 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         Enumeration names = request.getParameterNames();
         while(names.hasMoreElements()){
             String parameterName = (String) names.nextElement();
-            System.out.println("Workflow Submission Portlet: parameter name: " + parameterName);
+            System.out.println("\nWorkflow Submission Portlet: parameter name: " + parameterName);
             System.out.println("Workflow Submission Portlet: parameter value: " + request.getParameter(parameterName));
             System.out.println();
         }
-        System.out.println();
 
         // Is this a multipart/form-data form submission request?
         // This is the case when user is submitting input values for the selected workflow.
@@ -307,6 +310,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                 System.out.println("Workflow Submission Portlet: Failed to parse the submitted input form values.");
                 fuex.printStackTrace();
                 request.setAttribute(ERROR_MESSAGE, "Failed to parse the submitted input form values.");
+                return;
             }
 
             // Process the uploaded items
@@ -321,7 +325,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                         fieldName = fieldName.substring(PORTLET_NAMESPACE.length());
                     }
                     formItems.put(fieldName, fieldValue);
-                    System.out.println("Workflow Submission Portlet: multipart form parameter name (without prefix): " + fieldName + ", value: " + fieldValue);
+                    System.out.println("Workflow Submission Portlet: multipart form parameter name (without namespace prefix): " + fieldName + ", value: " + fieldValue);
                 } else { // File upload form field
                     String fieldName = item.getFieldName();
                     String fileName = item.getName();
@@ -331,24 +335,29 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                     }
                     InputStream uploadedStream = item.getInputStream();
                     formItems.put(fieldName, uploadedStream);
-                    System.out.println("Workflow Submission Portlet: multipart form parameter name: " + fieldName + ", file name: " + fileName);
+                    System.out.println("Workflow Submission Portlet: multipart form parameter name (without namespace prefix): " + fieldName + ", file name: " + fileName);
                 }
             }
 
             // Was there a request to run a workflow?
             if (formItems.keySet().contains(RUN_WORKFLOW)){
+
                 // Workflow to run
-                String workflowFileName = (String)formItems.get(WORKFLOW_NAME);
+                String workflowFileName = (String)formItems.get(WORKFLOW_FILE_NAME);
+                
+                // Workflow's input ports
+                ArrayList<WorkflowInputPort> workflowInputPorts = workflowInputPortsList.get(workflowFileNamesList.indexOf(workflowFileName));
 
                 boolean inputsSuccessfullyRead = true;
+
                 // Get the workflow inputs from the submitted form and fill the
                 // list of inputs with the submitted values
-                for (WorkflowInputPort inputPort : workflowNamesToInputsMap.get(workflowFileName)){
+                for (WorkflowInputPort inputPort : workflowInputPorts){
 
                     // Do we have this input's content as a file or actual content was submitted?
                     // If we have a file that overrides the submitted content.
                     if (formItems.get(inputPort.getName() + WORKFLOW_INPUT_FILE_SUFFIX) != null &&
-                            formItems.get(inputPort.getName() + WORKFLOW_INPUT_FILE_SUFFIX) != ""){
+                            !formItems.get(inputPort.getName() + WORKFLOW_INPUT_FILE_SUFFIX).equals("")){
 
                         // Read the contents of a file as a byte[]
                         InputStream is = (InputStream) formItems.get(inputPort.getName() + WORKFLOW_INPUT_FILE_SUFFIX);
@@ -362,7 +371,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                             ex.printStackTrace();
                             request.setAttribute(ERROR_MESSAGE, "Failed to read the submitted file for input " + inputPort.getName() + " of workflow " + workflowFileName + ".");
                             inputsSuccessfullyRead = false;
-                            break;
+                            return;
                         }
                         finally{
                             try{
@@ -377,7 +386,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                         if (inputPort.getDepth() == 0){
                             // Just set the input port value to the byte[] we have just read from the file.
                             inputPort.setValue(theBytes);
-                            System.out.println("Workflow Submission Portlet: Submitted value for the input '" + inputPort.getName() + "' of workflow " + workflowFileName + ": " + new String(theBytes, "UTF-8"));
+                            System.out.println("Workflow Submission Portlet: The value the user submitted (as a file) for the input port '" + inputPort.getName() + "': " + new String(theBytes, "UTF-8"));
                         }
                         // Is this input a list?
                         // We have to split the contents of the file as list items.
@@ -386,6 +395,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                             // using UTF-8 encoding and hope for the best. Then separate
                             // the string into items based on the submitted separator.
                             String valueToSeparate = new String(theBytes, "UTF-8");
+                            System.out.println("Workflow Submission Portlet: value "+ valueToSeparate);
                             String listSeparator;
                             if (formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_OTHER_SEPARATOR_SUFFIX) != null &&
                                     formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_OTHER_SEPARATOR_SUFFIX) != ""){
@@ -396,8 +406,10 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                             }
                             String[] valueList = valueToSeparate.split(listSeparator);
                             inputPort.setValue(Arrays.asList(valueList));
-                            System.out.print("Workflow Submission Portlet: Submitted value for the input '" + inputPort.getName() + "' of workflow " + workflowFileName + ": ");
-                            for (int i=0; i< valueList.length; i++) {System.out.print(valueList[i]);}
+                            System.out.print("Workflow Submission Portlet: The value the user submitted (as a file) for the input port '" + inputPort.getName() + "': ");
+                            for (int i=0; i< valueList.length; i++) {
+                                System.out.print(valueList[i]);
+                            }
                             System.out.println();
                         }
                         // Is this input a list of (... lists of ...) lists?
@@ -406,22 +418,25 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                             System.out.println("Workflow Submission Portlet: Input " + inputPort.getName() + " of workflow " + workflowFileName + " expects a list of depth more than 1 which is currently not supported.");
                             request.setAttribute(ERROR_MESSAGE, "Input " + inputPort.getName() + " of workflow " + workflowFileName + " expects a list of depth more than 1 which is currently not supported.");
                             inputsSuccessfullyRead = false;
-                            break;
+                            return;
                         }
                     }
                     else if(formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_SUFFIX) != null &&
-                            formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_SUFFIX) != ""){
+                            !formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_SUFFIX).equals("")){
+
                         // Is this a single value input? Just get whatever content was submitted.
                         if (inputPort.getDepth() == 0){
                             inputPort.setValue((String)formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_SUFFIX));
-                            System.out.println("Workflow Submission Portlet: Submitted value for the input '" + inputPort.getName() + "' of workflow " + workflowFileName + ": " + (String)formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_SUFFIX));
+                            System.out.println("Workflow Submission Portlet: The value the user submitted (from input field) for the input port '" +
+                                    inputPort.getName() + "' was: " +
+                                    (String)inputPort.getValue());
                         }
                         // Is this input a list? We have to split the string to get the list items.
                         else if (inputPort.getDepth() == 1){
                             String listSeparator;
                             String valueToSeparate = (String)formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_SUFFIX);
                             if (formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_OTHER_SEPARATOR_SUFFIX) != null &&
-                                    formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_OTHER_SEPARATOR_SUFFIX) != ""){
+                                    !formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_OTHER_SEPARATOR_SUFFIX).equals("")){
                                 listSeparator = (String) formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_OTHER_SEPARATOR_SUFFIX);
                             }
                             else{
@@ -439,7 +454,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                valueList = valueToSeparate.split(listSeparator);
                             }
                             inputPort.setValue(Arrays.asList(valueList));
-                            System.out.println("Workflow Submission Portlet: Submitted value for the input '" + inputPort.getName() + "' of workflow " + workflowFileName + ": " + valueList.toString());
+                            System.out.println("Workflow Submission Portlet: The value the user submitted (from input field) for the input port '" + inputPort.getName() + "' was: " + valueList.toString());
                         }
                         // Is this input a list of (... lists of ...) lists?
                         // We currently support input list depths up to 1.
@@ -447,7 +462,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                             System.out.println("Workflow Submission Portlet: Input " + inputPort.getName() + " of workflow " + workflowFileName + " expects a list of depth more than 1 which is currently not supported.");
                             request.setAttribute(ERROR_MESSAGE, "Input " + inputPort.getName() + " of workflow " + workflowFileName + " expects a list of depth more than 1 which is currently not supported.");
                             inputsSuccessfullyRead = false;
-                            break;
+                            return;
                         }
                     }
                     else{
@@ -455,11 +470,11 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                         System.out.println("Workflow Submission Portlet: Submitted value for input " + inputPort.getName() + " of workflow " + workflowFileName + " is null. Submission was cancelled as this will cause the workflow to fail.");
                         request.setAttribute(ERROR_MESSAGE, "Submitted value for input " + inputPort.getName() + " of workflow " + workflowFileName + " is null. Submission was cancelled as this will cause the workflow to fail.");
                         inputsSuccessfullyRead = false;
-                        break;
+                        return;
                     }
                 } // We have now finished reading all the inputs
 
-                if (inputsSuccessfullyRead){
+                /*if (inputsSuccessfullyRead){
                     // Submit the workflow to the T2 Server in preparation for execution
                     HttpResponse httpResponse = submitWorkflow(workflowFileName, request);
 
@@ -475,7 +490,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                         workflowResourceUUID = workflowResourceUUID.substring(workflowResourceUUID.lastIndexOf("/") + 1);
                         System.out.println("Workflow Submission Portlet: Workflow " + workflowFileName + " successfully submitted to the Server with UUID " + workflowResourceUUID +".");
 
-                        boolean inputsSubmitted = submitWorkflowInputs(workflowFileName, workflowResourceUUID, workflowNamesToInputsMap.get(workflowFileName), request);
+                        boolean inputsSubmitted = submitWorkflowInputs(workflowFileName, workflowResourceUUID, workflowInputPorts, request);
 
                         // Run the workflow on the T2 Server
                         if (inputsSubmitted){
@@ -501,7 +516,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                             }
                         }
                     }
-                }
+                }*/
             }
         }
         else{ // just a standard application/x-www-form-urlencoded form submission request
@@ -510,11 +525,14 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             if (request.getParameter(RUN_WORKFLOW) != null){
 
                 // Workflow to run
-                String workflowFileName = request.getParameter(WORKFLOW_NAME);
+                String workflowFileName = request.getParameter(WORKFLOW_FILE_NAME);
+
+                // Workflow's input ports
+                ArrayList<WorkflowInputPort> workflowInputPorts = workflowInputPortsList.get(workflowFileNamesList.indexOf(workflowFileName));
 
                 // Get the workflow inputs from the submitted form and fill the
                 // list of inputs with the submitted values
-                for (WorkflowInputPort inputPort : workflowNamesToInputsMap.get(workflowFileName)){
+                for (WorkflowInputPort inputPort : workflowInputPorts){
                     inputPort.setValue(request.getParameter(inputPort.getName()));
                 }
                 // Submit the workflow to the T2 Server in preparation for execution
@@ -532,7 +550,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                     workflowResourceUUID = workflowResourceUUID.substring(workflowResourceUUID.lastIndexOf("/") + 1);
                     System.out.println("Workflow Submission Portlet: Workflow " + workflowFileName + " successfully submitted to the Server with UUID " + workflowResourceUUID +".");
 
-                    boolean inputsSubmitted = submitWorkflowInputs(workflowFileName, workflowResourceUUID, workflowNamesToInputsMap.get(workflowFileName), request);
+                    boolean inputsSubmitted = submitWorkflowInputs(workflowFileName, workflowResourceUUID, workflowInputPorts, request);
 
                     // Run the workflow on the T2 Server
                     if (inputsSubmitted){
@@ -562,7 +580,6 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
         // Pass all request parameters over to the doView() and other render stage methods
         response.setRenderParameters(request.getParameterMap());
-        System.out.println();
     }
 
     public void doView(RenderRequest request,RenderResponse response) throws PortletException,IOException {
@@ -575,7 +592,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             request.getPortletSession().setAttribute(WORKFLOW_FILE_NAMES, workflowFileNamesList);
         }
 
-        if ( PORTLET_NAMESPACE == null){
+        if (PORTLET_NAMESPACE == null){
             PORTLET_NAMESPACE = response.getNamespace();
         }
 
@@ -593,7 +610,12 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             // workflow's input form snippet. Dispatch to this file now.
             File selectedWorkflowJSPFile = new File(getPortletContext().getRealPath(WORKFLOWS_DIRECTORY + "/" + selectedWorkflowFileName + ".jsp"));
             if (! selectedWorkflowJSPFile.exists()){ // if it does not exist (something is wrong!) - try generating it once again
-                if (! createWorkflowInputFormJSPSnippetFile( workflowNamesToInputsMap.get(selectedWorkflowFileName), selectedWorkflowFileName)){
+
+                int index = workflowFileNamesList.indexOf(selectedWorkflowFileName);
+                Workflow workflow = workflowList.get(index);
+                ArrayList<WorkflowInputPort> workflowInputPorts = workflowInputPortsList.get(index);
+
+                if (! createWorkflowInputFormJSPSnippetFile(selectedWorkflowFileName, workflow, workflowInputPorts)){
                     // OK, now we are in trouble - we definitely do not have the workflow input form
                     response.getWriter().println("<p color=\"red\">There was a problem with generating the input form for workflow " + selectedWorkflowFileName +".</p>");
                     return;
@@ -633,7 +655,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
      * Generates the JSP snippet containing the inputs form for a given workflow
      * and saves it to a JSP file.
      */
-    private boolean createWorkflowInputFormJSPSnippetFile(ArrayList<WorkflowInputPort> workflowInputPorts, String workflowFileName){
+    private boolean createWorkflowInputFormJSPSnippetFile(String workflowFileName, Workflow workflow, ArrayList<WorkflowInputPort> workflowInputPorts){
 
         File selectedWorkflowJSPFile = new File(getPortletContext().getRealPath(WORKFLOWS_DIRECTORY + "/" + workflowFileName + ".jsp"));
 
@@ -651,9 +673,24 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         inputFormJSP.append("<%@ include file=\"/WEB-INF/jsp/CommonCSS.jsp\" %>\n\n");
         inputFormJSP.append("<%@ include file=\"/WEB-INF/jsp/CommonConstants.jsp\" %>\n\n");
 
-        // Start the inputs form
+        // Workflow name and description
+        if (workflow.getTitle() != null && !workflow.getTitle().equals("")){
+            inputFormJSP.append("<b>Workflow:</b> "+workflow.getTitle()+"\n");
+        }
+        else{
+            inputFormJSP.append("<b>Workflow:</b> "+workflowFileName+"\n");
+        }
+        if (workflow.getDescription() != null && !workflow.getDescription().equals("")){
+            inputFormJSP.append("<br/>\n");
+            inputFormJSP.append("<br/>\n");
+            inputFormJSP.append("<b>Description:</b> " + workflow.getDescription() +"\n");
+        }
+        inputFormJSP.append("<br/>\n");
+        inputFormJSP.append("<br/>\n");
+
+        // Workflow inputs form
         inputFormJSP.append("<b>Workflow inputs:</b>\n");
-        inputFormJSP.append("<form name=\"<portlet:namespace/><%= WORKFLOW_INPUTS_FORM%>\" action=\"<portlet:actionURL/>\" method=\"post\" enctype=\"multipart/form-data\" >\n");
+        inputFormJSP.append("<form name=\"<portlet:namespace/><%= WORKFLOW_INPUTS_FORM%>\" action=\"<portlet:actionURL/>\" method=\"post\" enctype=\"multipart/form-data\">\n");
         inputFormJSP.append("<table class=\"inputs\">\n");
         inputFormJSP.append("<tr>\n");
         inputFormJSP.append("<th>Name</th>\n");
@@ -661,14 +698,65 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         inputFormJSP.append("<th>Description</th>\n");
         inputFormJSP.append("<th>Value</th>\n");
         inputFormJSP.append("</tr>\n");
+        
         // Loop over the workflow inputs and create a row with input fields
         // in the table for each one of them
         for (WorkflowInputPort inputPort : workflowInputPorts){
             if (inputPort.getDepth() == 0){ // single input
 
+                inputFormJSP.append("<tr>\n");
+                inputFormJSP.append("<td>" + inputPort.getName()+ "</td>\n");
+                inputFormJSP.append("<td>single value</td>\n");
+                String descriptionString = " ";
+                if (inputPort.getDescription() != null){
+                    descriptionString += inputPort.getDescription();
+                }
+                if (inputPort.getExampleValue() != null && !inputPort.getExampleValue().equals("")){
+                    descriptionString += "<br/><br/><b>Example value:</b> "+inputPort.getExampleValue();
+                }
+                inputFormJSP.append("<td>" + descriptionString + "</td>\n");
+                inputFormJSP.append("<td>\n");
+                inputFormJSP.append("Paste the value here: <br/>\n");
+                inputFormJSP.append("<textarea name=\"<portlet:namespace/>"+inputPort.getName()+"_content\" rows=\"2\" cols=\"20\" wrap=\"off\"></textarea><br/>\n");
+                inputFormJSP.append("Or load the value from a file: <br />\n");
+                inputFormJSP.append("<input type=\"file\" name=\"<portlet:namespace/>"+inputPort.getName()+"_file\" />\n");
+                inputFormJSP.append("</td>\n");
+                inputFormJSP.append("</tr>\n");
             }
             else if (inputPort.getDepth() == 1){
 
+                inputFormJSP.append("<tr>\n");
+                inputFormJSP.append("<td>" + inputPort.getName()+ "</td>\n");
+                inputFormJSP.append("<td>a list</td>\n");
+                String descriptionString = " ";
+                if (inputPort.getDescription() != null){
+                    descriptionString += inputPort.getDescription();
+                }
+                if (inputPort.getExampleValue() != null && !inputPort.getExampleValue().equals("")){
+                    descriptionString += "<br/><br/><b>Example value:</b> "+inputPort.getExampleValue();
+                }
+                inputFormJSP.append("<td>" + descriptionString + "</td>\n");
+                inputFormJSP.append("<td>\n");
+                inputFormJSP.append("Paste the list values here: <br/>\n");
+                inputFormJSP.append("<textarea name=\"<portlet:namespace/>"+inputPort.getName()+"_content\" rows=\"2\" cols=\"20\" wrap=\"off\"></textarea><br/>\n");
+                inputFormJSP.append("Or load them from a file: <br />\n");
+                inputFormJSP.append("<input type=\"file\" name=\"<portlet:namespace/>"+inputPort.getName()+"_file\" /><br/><hr/>\n");
+                inputFormJSP.append("Use the following character sequence as the list item separator:\n");
+                inputFormJSP.append("<select name=\"<portlet:namespace/>"+inputPort.getName()+"_separator\">\n");
+                inputFormJSP.append("<option value=\"new_line_linux\">New line - Unix/Linux (\\n)</option>\n");
+                inputFormJSP.append("<option value=\"new_line_windows\">New line - Windows (\\r\\n)</option>\n");
+                inputFormJSP.append("<option value=\"blank\">Blank (' ')</option>\n");
+                inputFormJSP.append("<option value=\"tab\">Tab (\\t)</option>\n");
+                inputFormJSP.append("<option value=\"colon\">Colon (:)</option>\n");
+                inputFormJSP.append("<option value=\"semi_colon\">Semi-colon (;)</option>\n");
+                inputFormJSP.append("<option value=\"comma\">Comma (,)</option>\n");
+                inputFormJSP.append("<option value=\"pipe\">Pipe (|)</option>\n");
+                inputFormJSP.append("<option value=\"other\">Other</option>\n");
+                inputFormJSP.append("</select><br />\n");
+                inputFormJSP.append("Or specify your own separator:\n");
+                inputFormJSP.append("<input type=\"text\" name=\"<portlet:namespace/>"+inputPort.getName()+"_other_separator\" size=\"3\" />\n");
+                inputFormJSP.append("</td>\n");
+                inputFormJSP.append("</tr>\n");
             }
             else{ // We cannot handle workflows with input of depth more than 1
                 System.out.println("Workflow Submission Portlet: Workflow " + workflowFileName +" contains inputs of depth more than 1 (i.e. a list of lists or higher). This is not supported at the moment - skipping this workflow.");
@@ -678,7 +766,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         inputFormJSP.append("</table>\n");
 
         inputFormJSP.append("<%-- Hidden field to convey which workflow we want to execute --%>\n");
-        inputFormJSP.append("<input type=\"hidden\" name=\"<portlet:namespace/><%= WORKFLOW_NAME%>\" value=\""+ workflowFileName + "\" />\n");
+        inputFormJSP.append("<input type=\"hidden\" name=\"<portlet:namespace/><%= WORKFLOW_FILE_NAME%>\" value=\""+ workflowFileName + "\" />\n");
         inputFormJSP.append("<input type=\"submit\" name=\"<portlet:namespace/><%= RUN_WORKFLOW%>\" value=\"Run workflow\" />\n");
         inputFormJSP.append("</form>\n");
 
@@ -709,7 +797,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
        try {
             // Get the workflow XML Document's string representation
             int workflowIndex = workflowFileNamesList.indexOf(workflowFileName); // get the workflow index
-            String workflowString = wrappedWorkflowXMLDocumentStringsList.get(workflowIndex);
+            String workflowString = (new XMLOutputter()).outputString(wrappedWorkflowXMLDocumentsList.get(workflowIndex));
 
             System.out.println("Workflow Submission Portlet: Preparing to submit workflow to Server " + runsURL);
             //System.out.println(workflowString);
@@ -1007,28 +1095,30 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
      */
     public String getLatestAnnotationAssertionImplElementValue(Element annotationsElement, String annotationBeanClassName, String workflowFileName){
 
-        System.out.println("Getting annotations with class='" + annotationBeanClassName + "' for workflow " + workflowFileName + ".");
+        //System.out.println("Getting annotations with class='" + annotationBeanClassName + "' from element " + new XMLOutputter().outputString(annotationsElement) + "\n");
 
         // Select all <net.sf.taverna.t2.annotation.AnnotationAssertionImpl>
-        // elements no matter where they are located in the <assertions> element passed.
+        // elements no matter where they are located inside the <assertions> element passed.
         List<Element> annotationAssertionImplElements = null;
         try{
-            annotationAssertionImplElements = XPath.selectNodes(annotationsElement,"//"+ANNOTATION_ASSERTION_IMPL_ELEMENT);
+             //JDOMXPath path = new JDOMXPath(".//"+ANNOTATION_ASSERTION_IMPL_ELEMENT);
+             //annotationAssertionImplElements = path.selectNodes(annotationsElement);
+
+            annotationAssertionImplElements = XPath.selectNodes(annotationsElement,".//"+ANNOTATION_ASSERTION_IMPL_ELEMENT);
         }
-        catch(JDOMException jdomex){
+        catch(Exception ex){
             System.out.println("Workflow Submission Portlet: Failed to parse the annotations element when looking for " + annotationBeanClassName + " in worklow " + workflowFileName +".");
-            jdomex.printStackTrace();
+            ex.printStackTrace();
             return null;
         }
 
-        // Loop over all the annotation imple elements and find the latest that
-        // has an annotation bean whose class matches the one we are looking for.
+        // Loop over all the annotation assertion implementation elements
+        // and find the latest that has an annotation bean whose class
+        // matches the one we are looking for.
         String latestValue = null;
         Date latestDate = new Date(0);
         if (annotationAssertionImplElements != null){
             for (Element annotationAssertionImplElement : annotationAssertionImplElements){
-
-                                System.out.println(annotationAssertionImplElement.toString());
 
                 Element annotationBeanElement = annotationAssertionImplElement
                         .getChild(ANNOTATION_BEAN_ELEMENT);
@@ -1038,6 +1128,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                 SimpleDateFormat format = new SimpleDateFormat(pattern);
                 if (annotationBeanElement.getAttributeValue(ANNOTATION_BEAN_ELEMENT_CLASS_ATTRIBUTE).equals(annotationBeanClassName)){
                     String value = annotationBeanElement.getChildText(TEXT_ELEMENT);
+
                     try {
                         date = format.parse(annotationAssertionImplElement.getChildText(DATE_ELEMENT));
                         if (latestDate.before(date)){
