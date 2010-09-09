@@ -82,6 +82,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     public static final String COLON_SEPARATOR = "colon";
     public static final String SEMI_COLON_SEPARATOR = "semi_colon";
     public static final String PIPE_SEPARATOR = "pipe";
+    public static final String INPUT_PORT_NAME_ATTRIBUTE = "inputPortName";
 
     public static final String ERROR_MESSAGE = "error_message";
     public static final String INFO_MESSAGE = "info_message";
@@ -701,7 +702,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
         // Workflow inputs form
         inputFormJSP.append("<b>Workflow inputs:</b>\n");
-        inputFormJSP.append("<form name=\"<portlet:namespace/><%= WORKFLOW_INPUTS_FORM%>\" action=\"<portlet:actionURL/>\" method=\"post\" enctype=\"multipart/form-data\" onSubmit=\"return validateForm()\">\n");
+        inputFormJSP.append("<form name=\"<portlet:namespace/><%= WORKFLOW_INPUTS_FORM%>\" action=\"<portlet:actionURL/>\" method=\"post\" enctype=\"multipart/form-data\" onSubmit=\"return validateForm(this)\">\n");
         inputFormJSP.append("<table class=\"inputs\">\n");
         inputFormJSP.append("<tr>\n");
         inputFormJSP.append("<th>Name</th>\n");
@@ -712,10 +713,15 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         
         // Loop over the workflow inputs and create a row with input fields
         // in the table for each one of them
+        int counter = 1;
         for (WorkflowInputPort inputPort : workflowInputPorts){
             if (inputPort.getDepth() == 0){ // single input
-
-                inputFormJSP.append("<tr>\n");
+                if (counter % 2 == 0){ // alternate row colours
+                    inputFormJSP.append("<tr bgcolor=\"#F5F5F5\" " + INPUT_PORT_NAME_ATTRIBUTE + "=\""+inputPort.getName()+"\">\n");
+                }
+                else{
+                    inputFormJSP.append("<tr " + INPUT_PORT_NAME_ATTRIBUTE + "=\""+inputPort.getName()+"\">\n");
+                }
                 inputFormJSP.append("<td>" + inputPort.getName()+ "</td>\n");
                 inputFormJSP.append("<td>single value</td>\n");
                 String descriptionString = " ";
@@ -735,8 +741,12 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                 inputFormJSP.append("</tr>\n");
             }
             else if (inputPort.getDepth() == 1){
-
-                inputFormJSP.append("<tr>\n");
+                if (counter % 2 == 0){ // alternate row colours
+                    inputFormJSP.append("<tr bgcolor=\"#F5F5F5\" "+INPUT_PORT_NAME_ATTRIBUTE+"=\""+inputPort.getName()+"\">\n");
+                }
+                else{
+                    inputFormJSP.append("<tr "+INPUT_PORT_NAME_ATTRIBUTE+"\""+inputPort.getName()+"\">\n");
+                }
                 inputFormJSP.append("<td>" + inputPort.getName()+ "</td>\n");
                 inputFormJSP.append("<td>a list</td>\n");
                 String descriptionString = " ";
@@ -772,6 +782,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                 System.out.println("Workflow Submission Portlet: Workflow " + workflowFileName +" contains inputs of depth more than 1 (i.e. a list of lists or higher). This is not supported at the moment - skipping this workflow.");
                 return false;
             }
+            counter++;
         }
         inputFormJSP.append("</table>\n");
 

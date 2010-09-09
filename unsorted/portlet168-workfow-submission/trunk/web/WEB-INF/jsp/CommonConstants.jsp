@@ -21,5 +21,6 @@ public static final String WORKFLOW_INPUT_FILE_SUFFIX = "_file";
 
 public static final String ERROR_MESSAGE = "error_message";
 public static final String INFO_MESSAGE = "info_message";
+public static final String INPUT_PORT_NAME_ATTRIBUTE = "inputPortName";
 
 %>
