@@ -81,6 +81,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     public static final String COMMA_SEPARATOR = "comma";
     public static final String COLON_SEPARATOR = "colon";
     public static final String SEMI_COLON_SEPARATOR = "semi_colon";
+    public static final String DOT_SEPARATOR = "dot";
     public static final String PIPE_SEPARATOR = "pipe";
     public static final String INPUT_PORT_NAME_ATTRIBUTE = "inputPortName";
 
@@ -771,6 +772,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                 inputFormJSP.append("<option value=\""+COLON_SEPARATOR+"\">Colon (:)</option>\n");
                 inputFormJSP.append("<option value=\""+SEMI_COLON_SEPARATOR+"\">Semi-colon (;)</option>\n");
                 inputFormJSP.append("<option value=\""+COMMA_SEPARATOR+"\">Comma (,)</option>\n");
+                inputFormJSP.append("<option value=\""+DOT_SEPARATOR+"\">Dot (.)</option>\n");
                 inputFormJSP.append("<option value=\""+PIPE_SEPARATOR+"\">Pipe (|)</option>\n");
                 inputFormJSP.append("</select><br />\n");
                 inputFormJSP.append("Or specify your own separator:\n");
@@ -1103,7 +1105,9 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         else if(separatorName.equals(SEMI_COLON_SEPARATOR)){
             separatorValue = ";";
         }
-        else if(separatorName.equals(PIPE_SEPARATOR)){
+        else if(separatorName.equals(DOT_SEPARATOR)){
+            separatorValue = "\\."; // or "[.]". Dot needs to be escaped as it is a special reg exp character
+        }        else if(separatorName.equals(PIPE_SEPARATOR)){
             separatorValue = "\\|"; // or "[|]". Pipe needs to be escaped as it is a special reg exp character
         }
 
