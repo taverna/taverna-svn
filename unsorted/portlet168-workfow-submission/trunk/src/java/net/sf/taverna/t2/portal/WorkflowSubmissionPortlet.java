@@ -1110,6 +1110,12 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         }        else if(separatorName.equals(PIPE_SEPARATOR)){
             separatorValue = "\\|"; // or "[|]". Pipe needs to be escaped as it is a special reg exp character
         }
+        else{ // this is a user defined separator - create a nice separator reg exp string
+            separatorValue = "";
+            for(char ch: separatorName.toCharArray()){
+                separatorValue += "[" + ch + "]"; // create a chacacter class for every characted in the string
+            }
+        }
 
         return separatorValue;
     }
