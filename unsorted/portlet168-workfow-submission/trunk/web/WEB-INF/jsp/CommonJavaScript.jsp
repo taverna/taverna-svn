@@ -91,7 +91,7 @@ function validateForm(workflowInputsForm)
     }
 
     if (! isFormValid){
-        alertText += "\nAre you sure you want to continue to run the workflow\nwith some of the input fields empty?";     
+        alertText += "\nAre you sure you want to continue to run the workflow with some of the input fields empty?";
         if (confirm(alertText)){
             return true;
         }
