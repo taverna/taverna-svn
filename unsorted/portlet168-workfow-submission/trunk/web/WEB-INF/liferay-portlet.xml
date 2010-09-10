@@ -5,6 +5,10 @@
     <portlet-name>Workflow Submission</portlet-name>
     <instanceable>true</instanceable>
   </portlet>
+  <portlet>
+    <portlet-name>Workflow Results</portlet-name>
+    <instanceable>true</instanceable>
+  </portlet>
   <role-mapper>
     <role-name>administrator</role-name>
     <role-link>Administrator</role-link>

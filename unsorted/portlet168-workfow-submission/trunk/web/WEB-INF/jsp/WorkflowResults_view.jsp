@@ -10,5 +10,5 @@
 --%>
 
 <b>
-    Workflow Submission - Help MODE
+    Workflow Results - View MODE
 </b>

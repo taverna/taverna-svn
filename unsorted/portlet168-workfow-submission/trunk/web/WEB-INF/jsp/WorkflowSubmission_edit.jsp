@@ -10,5 +10,5 @@
 --%>
 
 <b>
-    WorkflowSubmission - EDIT MODE
+    Workflow Submission - EDIT MODE
 </b>

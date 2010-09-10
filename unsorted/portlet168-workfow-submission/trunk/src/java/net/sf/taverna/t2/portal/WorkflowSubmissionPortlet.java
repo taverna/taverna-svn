@@ -52,7 +52,7 @@ import org.jdom.xpath.XPath;
 import sun.misc.BASE64Encoder;
 
 /**
- * WorkflowSubmission Portlet - enables user to select a workflow,
+ * Workflow Submission Portlet - enables user to select a workflow,
  * specify the values for its inputs and submit it for execution to
  * a Taverna 2 Server.
  *

@@ -3,5 +3,6 @@
 <display>
   <category name="User_Portlets">
     <portlet id="Workflow Submission">Workflow Submission</portlet>
+    <portlet id="Workflow Results">Workflow Results</portlet>
   </category>
 </display>
