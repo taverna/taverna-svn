@@ -5,7 +5,7 @@
 	<artifactId>sadi-plugin</artifactId>
 	<packaging>taverna-plugin</packaging>
 	<name>SADI activity plugin</name>
-	<version>0.3.2-SNAPSHOT</version>
+	<version>0.3.3-SNAPSHOT</version>
 	<description>SADI activity plugin for Taverna 2.2</description>
 
 	<repositories>
@@ -56,12 +56,12 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>sadi-activity</artifactId>
-			<version>0.3.2-SNAPSHOT</version>
+			<version>0.3.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-activities</groupId>
 			<artifactId>sadi-activity-ui</artifactId>
-			<version>0.3.2-SNAPSHOT</version>
+			<version>0.3.3-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
