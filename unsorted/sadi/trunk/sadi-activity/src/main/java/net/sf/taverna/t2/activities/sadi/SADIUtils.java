@@ -29,7 +29,6 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,12 +44,9 @@ import ca.wilkinsonlab.sadi.utils.ResourceFactory;
 
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.ontology.ComplementClass;
-import com.hp.hpl.jena.ontology.IntersectionClass;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.Restriction;
-import com.hp.hpl.jena.ontology.UnionClass;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -274,68 +270,44 @@ public class SADIUtils {
 			return;
 		}
 		seenClasses.add(clazz);
-
-		if (clazz.isRestriction()) {
-			Restriction restriction = clazz.asRestriction();
-			if (!ignore.contains(restriction)) {
-				OwlUtils.listRestrictions(clazz);
-				OntProperty property = restriction.getOnProperty();
-				OntClass restrictionClass = OwlUtils.getValuesFromAsClass(restriction);
-				if (restrictionClass != null) {
-					RestrictionNode restrictionNode = new RestrictionNode(property,
-							restrictionClass, exclusive);
-					// check if we've already seen a restriction on this
-					// property
-					if (seenProperties.containsKey(property)) {
-						RestrictionNode existingRestrictionNode = seenProperties.get(property);
-						OntClass existingRestrictionClass = existingRestrictionNode.getOntClass();
-						if (existingRestrictionClass.hasSubClass(restrictionClass)) {
-							node.remove(existingRestrictionNode);
-							node.add(restrictionNode);
-							seenProperties.put(property, restrictionNode);
-						} else if (existingRestrictionClass.hasSuperClass(restrictionClass)) {
-							// do nothing
-						} else {
-							node.add(restrictionNode);
-							// TODO do we need a set of restrictions here?
-							seenProperties.put(property, restrictionNode);
-						}
-					} else {
+		System.out.println(String.format("visiting %s", clazz));
+		
+		for (Restriction r: OwlUtils.listRestrictions(clazz)) {
+			if (ignore.contains(r))
+				continue;
+			
+			OntProperty property = r.getOnProperty();
+			if (property == null) {
+				// TOOD this is problematic; create OwlUtils.getOnProperty(r)...
+			}
+			OntClass valuesFrom = OwlUtils.getValuesFromAsClass(r);
+			if (valuesFrom != null) {
+				RestrictionNode restrictionNode = new RestrictionNode(property, valuesFrom, exclusive);
+				// check if we've already seen a restriction on this
+				// property
+				if (seenProperties.containsKey(property)) {
+					RestrictionNode existingRestrictionNode = seenProperties.get(property);
+					OntClass existingRestrictionClass = existingRestrictionNode.getOntClass();
+					if (existingRestrictionClass.hasSubClass(valuesFrom)) {
+						node.remove(existingRestrictionNode);
 						node.add(restrictionNode);
 						seenProperties.put(property, restrictionNode);
+					} else if (existingRestrictionClass.hasSuperClass(valuesFrom)) {
+						// do nothing
+					} else {
+						node.add(restrictionNode);
+						// TODO do we need a set of restrictions here?
+						seenProperties.put(property, restrictionNode);
 					}
-					buildRestrictionTree(restrictionClass, seenClasses, restrictionNode,
-							new HashMap<OntProperty, RestrictionNode>(), ignore, false);
+				} else {
+					node.add(restrictionNode);
+					seenProperties.put(property, restrictionNode);
 				}
+				HashSet<OntClass> seenClassesCopy = new HashSet<OntClass>();
+				seenClassesCopy.addAll(seenClasses);
+				buildRestrictionTree(valuesFrom, seenClassesCopy, restrictionNode,
+						new HashMap<OntProperty, RestrictionNode>(), ignore, false);
 			}
-		}
-
-		if (clazz.isUnionClass()) {
-			UnionClass unionClass = clazz.asUnionClass();
-			for (Iterator<?> i = unionClass.listOperands(); i.hasNext();) {
-				buildRestrictionTree((OntClass) i.next(), seenClasses, node, seenProperties,
-						ignore, true);
-			}
-		} else if (clazz.isIntersectionClass()) {
-			IntersectionClass intersectionClass = clazz.asIntersectionClass();
-			for (Iterator<?> i = intersectionClass.listOperands(); i.hasNext();) {
-				buildRestrictionTree((OntClass) i.next(), seenClasses, node, seenProperties,
-						ignore, exclusive);
-			}
-		} else if (clazz.isComplementClass()) {
-			ComplementClass complementClass = clazz.asComplementClass();
-			for (Iterator<?> i = complementClass.listOperands(); i.hasNext();) {
-				buildRestrictionTree((OntClass) i.next(), seenClasses, node, seenProperties,
-						ignore, exclusive);
-			}
-		}
-
-		for (OntClass equivalentClass : clazz.listEquivalentClasses().toSet()) {
-			buildRestrictionTree(equivalentClass, seenClasses, node, seenProperties, ignore,
-					exclusive);
-		}
-		for (OntClass superClass : clazz.listSuperClasses().toSet()) {
-			buildRestrictionTree(superClass, seenClasses, node, seenProperties, ignore, exclusive);
 		}
 	}
 
