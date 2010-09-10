@@ -412,11 +412,11 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                             String[] valueList = valueToSeparate.split(listSeparator);
                             inputPort.setValue(Arrays.asList(valueList));
                             System.out.println("Workflow Submission Portlet: The list the user submitted (as a file) for the input port '" +
-                                    inputPort.getName() + "' was: ");
+                                    inputPort.getName() + "' was: " + valueToSeparate + " (hex value " + stringToHex(valueToSeparate.getBytes("UTF-8")) +")");
+                            System.out.println("Extracted list items:");
                             for (int i=0; i< valueList.length; i++) {
-                                System.out.println(valueList[i]);
+                                System.out.println("Item " + (i+1) + ": " + valueList[i] + " (hex value: " +stringToHex(valueList[i].getBytes("UTF-8"))+ ")");
                             }
-                            System.out.println();
                         }
                         // Is this input a list of (... lists of ...) lists?
                         // We currently support input list depths up to 1.
@@ -463,10 +463,11 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                valueList = valueToSeparate.split(listSeparator);
                             }
                             inputPort.setValue(Arrays.asList(valueList));
-                            System.out.println("Workflow Submission Portlet: The list the user submitted (from textarea input field) for the input port '" +
-                                    inputPort.getName() + "' was: ");
+                            System.out.println("Workflow Submission Portlet: The list the user submitted (as a file) for the input port '" +
+                                    inputPort.getName() + "' was: " + valueToSeparate + " (hex value " + stringToHex(valueToSeparate.getBytes("UTF-8")) +")");
+                            System.out.println("Extracted list items:");
                             for (int i=0; i< valueList.length; i++) {
-                                System.out.println(valueList[i]);
+                                System.out.println("Item " + (i+1) + ": " + valueList[i] + " (hex value: " +stringToHex(valueList[i].getBytes("UTF-8"))+ ")");
                             }
                         }
                         // Is this input a list of (... lists of ...) lists?
@@ -1180,4 +1181,18 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         }
         return latestValue;
     }
+
+    static final String HEXES = "0123456789ABCDEF";
+    public static String stringToHex( byte [] raw ) {
+        if ( raw == null ) {
+        return null;
+        }
+        final StringBuilder hex = new StringBuilder( 2 * raw.length );
+        for ( final byte b : raw ) {
+            hex.append(HEXES.charAt((b & 0xF0) >> 4))
+            .append(HEXES.charAt((b & 0x0F)));
+        }
+        return hex.toString();
+  }
+
 }
