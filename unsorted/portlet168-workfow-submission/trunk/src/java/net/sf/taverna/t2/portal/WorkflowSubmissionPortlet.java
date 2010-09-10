@@ -704,90 +704,99 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
         // Workflow inputs form
         inputFormJSP.append("<b>Workflow inputs:</b>\n");
-        inputFormJSP.append("<form name=\"<portlet:namespace/><%= WORKFLOW_INPUTS_FORM%>\" action=\"<portlet:actionURL/>\" method=\"post\" enctype=\"multipart/form-data\" onSubmit=\"return validateForm(this)\">\n");
-        inputFormJSP.append("<table class=\"inputs\">\n");
-        inputFormJSP.append("<tr>\n");
-        inputFormJSP.append("<th>Name</th>\n");
-        inputFormJSP.append("<th>Type</th>\n");
-        inputFormJSP.append("<th>Description</th>\n");
-        inputFormJSP.append("<th>Value</th>\n");
-        inputFormJSP.append("</tr>\n");
-        
-        // Loop over the workflow inputs and create a row with input fields
-        // in the table for each one of them
-        int counter = 1;
-        for (WorkflowInputPort inputPort : workflowInputPorts){
-            if (inputPort.getDepth() == 0){ // single input
-                if (counter % 2 == 0){ // alternate row colours
-                    inputFormJSP.append("<tr bgcolor=\"#F5F5F5\" " + INPUT_PORT_NAME_ATTRIBUTE + "=\""+inputPort.getName()+"\">\n");
-                }
-                else{
-                    inputFormJSP.append("<tr " + INPUT_PORT_NAME_ATTRIBUTE + "=\""+inputPort.getName()+"\">\n");
-                }
-                inputFormJSP.append("<td>" + inputPort.getName()+ "</td>\n");
-                inputFormJSP.append("<td>single value</td>\n");
-                String descriptionString = " ";
-                if (inputPort.getDescription() != null){
-                    descriptionString += inputPort.getDescription();
-                }
-                if (inputPort.getExampleValue() != null && !inputPort.getExampleValue().equals("")){
-                    descriptionString += "<br/><br/><b>Example value:</b> "+inputPort.getExampleValue();
-                }
-                inputFormJSP.append("<td>" + descriptionString + "</td>\n");
-                inputFormJSP.append("<td>\n");
-                inputFormJSP.append("Paste the value here: <br/>\n");
-                inputFormJSP.append("<textarea name=\"<portlet:namespace/>"+inputPort.getName()+WORKFLOW_INPUT_CONTENT_SUFFIX+"\" rows=\"2\" cols=\"20\" wrap=\"off\"></textarea><br/>\n");
-                inputFormJSP.append("Or load the value from a file: <br />\n");
-                inputFormJSP.append("<input type=\"file\" name=\"<portlet:namespace/>"+inputPort.getName()+WORKFLOW_INPUT_FILE_SUFFIX+"\" />\n");
-                inputFormJSP.append("</td>\n");
-                inputFormJSP.append("</tr>\n");
-            }
-            else if (inputPort.getDepth() == 1){
-                if (counter % 2 == 0){ // alternate row colours
-                    inputFormJSP.append("<tr bgcolor=\"#F5F5F5\" "+INPUT_PORT_NAME_ATTRIBUTE+"=\""+inputPort.getName()+"\">\n");
-                }
-                else{
-                    inputFormJSP.append("<tr "+INPUT_PORT_NAME_ATTRIBUTE+"\""+inputPort.getName()+"\">\n");
-                }
-                inputFormJSP.append("<td>" + inputPort.getName()+ "</td>\n");
-                inputFormJSP.append("<td>a list</td>\n");
-                String descriptionString = " ";
-                if (inputPort.getDescription() != null){
-                    descriptionString += inputPort.getDescription();
-                }
-                if (inputPort.getExampleValue() != null && !inputPort.getExampleValue().equals("")){
-                    descriptionString += "<br/><br/><b>Example value:</b> "+inputPort.getExampleValue();
-                }
-                inputFormJSP.append("<td>" + descriptionString + "</td>\n");
-                inputFormJSP.append("<td>\n");
-                inputFormJSP.append("Paste the list values here: <br/>\n");
-                inputFormJSP.append("<textarea name=\"<portlet:namespace/>"+inputPort.getName()+WORKFLOW_INPUT_CONTENT_SUFFIX+"\" rows=\"2\" cols=\"20\" wrap=\"off\"></textarea><br/>\n");
-                inputFormJSP.append("Or load them from a file: <br />\n");
-                inputFormJSP.append("<input type=\"file\" name=\"<portlet:namespace/>"+inputPort.getName()+WORKFLOW_INPUT_FILE_SUFFIX+"\" /><br/><hr/>\n");
-                inputFormJSP.append("Use the following character sequence as the list item separator:\n");
-                inputFormJSP.append("<select name=\"<portlet:namespace/>"+inputPort.getName()+"_separator\">\n");
-                inputFormJSP.append("<option value=\""+NEW_LINE_LINUX_SEPARATOR+"\">New line - Unix/Linux (\\n)</option>\n");
-                inputFormJSP.append("<option value=\""+NEW_LINE_WINDOWS_SEPARATOR+"\">New line - Windows (\\r\\n)</option>\n");
-                inputFormJSP.append("<option value=\""+BLANK_SEPARATOR+"\">Blank (' ')</option>\n");
-                inputFormJSP.append("<option value=\""+TAB_SEPARATOR+"\">Tab (\\t)</option>\n");
-                inputFormJSP.append("<option value=\""+COLON_SEPARATOR+"\">Colon (:)</option>\n");
-                inputFormJSP.append("<option value=\""+SEMI_COLON_SEPARATOR+"\">Semi-colon (;)</option>\n");
-                inputFormJSP.append("<option value=\""+COMMA_SEPARATOR+"\">Comma (,)</option>\n");
-                inputFormJSP.append("<option value=\""+DOT_SEPARATOR+"\">Dot (.)</option>\n");
-                inputFormJSP.append("<option value=\""+PIPE_SEPARATOR+"\">Pipe (|)</option>\n");
-                inputFormJSP.append("</select><br />\n");
-                inputFormJSP.append("Or specify your own separator:\n");
-                inputFormJSP.append("<input type=\"text\" name=\"<portlet:namespace/>"+inputPort.getName()+"_other_separator\" size=\"3\" />\n");
-                inputFormJSP.append("</td>\n");
-                inputFormJSP.append("</tr>\n");
-            }
-            else{ // We cannot handle workflows with input of depth more than 1
-                System.out.println("Workflow Submission Portlet: Workflow " + workflowFileName +" contains inputs of depth more than 1 (i.e. a list of lists or higher). This is not supported at the moment - skipping this workflow.");
-                return false;
-            }
-            counter++;
+
+        if (workflowInputPorts.isEmpty()){
+            inputFormJSP.append("The workflow has no inputs<br/><br/>\n");
+            inputFormJSP.append("<form name=\"<portlet:namespace/><%= WORKFLOW_INPUTS_FORM%>\" action=\"<portlet:actionURL/>\" method=\"post\" enctype=\"multipart/form-data\" onSubmit=\"return validateForm(this)\">\n");
         }
-        inputFormJSP.append("</table>\n");
+        else{
+            inputFormJSP.append("<form name=\"<portlet:namespace/><%= WORKFLOW_INPUTS_FORM%>\" action=\"<portlet:actionURL/>\" method=\"post\" enctype=\"multipart/form-data\" onSubmit=\"return validateForm(this)\">\n");
+
+            inputFormJSP.append("<table class=\"inputs\">\n");
+            inputFormJSP.append("<tr>\n");
+            inputFormJSP.append("<th>Name</th>\n");
+            inputFormJSP.append("<th>Type</th>\n");
+            inputFormJSP.append("<th>Description</th>\n");
+            inputFormJSP.append("<th>Value</th>\n");
+            inputFormJSP.append("</tr>\n");
+        
+            // Loop over the workflow inputs and create a row with input fields
+            // in the table for each one of them
+            int counter = 1;
+            for (WorkflowInputPort inputPort : workflowInputPorts){
+                if (inputPort.getDepth() == 0){ // single input
+                    if (counter % 2 == 0){ // alternate row colours
+                        inputFormJSP.append("<tr bgcolor=\"#F5F5F5\" " + INPUT_PORT_NAME_ATTRIBUTE + "=\""+inputPort.getName()+"\">\n");
+                    }
+                    else{
+                        inputFormJSP.append("<tr " + INPUT_PORT_NAME_ATTRIBUTE + "=\""+inputPort.getName()+"\">\n");
+                    }
+                    inputFormJSP.append("<td>" + inputPort.getName()+ "</td>\n");
+                    inputFormJSP.append("<td>single value</td>\n");
+                    String descriptionString = " ";
+                    if (inputPort.getDescription() != null){
+                        descriptionString += inputPort.getDescription();
+                    }
+                    if (inputPort.getExampleValue() != null && !inputPort.getExampleValue().equals("")){
+                        descriptionString += "<br/><br/><b>Example value:</b> "+inputPort.getExampleValue();
+                    }
+                    inputFormJSP.append("<td>" + descriptionString + "</td>\n");
+                    inputFormJSP.append("<td>\n");
+                    inputFormJSP.append("Paste the value here: <br/>\n");
+                    inputFormJSP.append("<textarea name=\"<portlet:namespace/>"+inputPort.getName()+WORKFLOW_INPUT_CONTENT_SUFFIX+"\" rows=\"2\" cols=\"20\" wrap=\"off\"></textarea><br/>\n");
+                    inputFormJSP.append("Or load the value from a file: <br />\n");
+                    inputFormJSP.append("<input type=\"file\" name=\"<portlet:namespace/>"+inputPort.getName()+WORKFLOW_INPUT_FILE_SUFFIX+"\" />\n");
+                    inputFormJSP.append("</td>\n");
+                    inputFormJSP.append("</tr>\n");
+                }
+                else if (inputPort.getDepth() == 1){
+                    if (counter % 2 == 0){ // alternate row colours
+                        inputFormJSP.append("<tr bgcolor=\"#F5F5F5\" "+INPUT_PORT_NAME_ATTRIBUTE+"=\""+inputPort.getName()+"\">\n");
+                    }
+                    else{
+                        inputFormJSP.append("<tr "+INPUT_PORT_NAME_ATTRIBUTE+"\""+inputPort.getName()+"\">\n");
+                    }
+                    inputFormJSP.append("<td>" + inputPort.getName()+ "</td>\n");
+                    inputFormJSP.append("<td>list</td>\n");
+                    String descriptionString = " ";
+                    if (inputPort.getDescription() != null){
+                        descriptionString += inputPort.getDescription();
+                    }
+                    if (inputPort.getExampleValue() != null && !inputPort.getExampleValue().equals("")){
+                        descriptionString += "<br/><br/><b>Example value:</b> "+inputPort.getExampleValue();
+                    }
+                    inputFormJSP.append("<td>" + descriptionString + "</td>\n");
+                    inputFormJSP.append("<td>\n");
+                    inputFormJSP.append("Paste the list values here: <br/>\n");
+                    inputFormJSP.append("<textarea name=\"<portlet:namespace/>"+inputPort.getName()+WORKFLOW_INPUT_CONTENT_SUFFIX+"\" rows=\"2\" cols=\"20\" wrap=\"off\"></textarea><br/>\n");
+                    inputFormJSP.append("Or load them from a file: <br />\n");
+                    inputFormJSP.append("<input type=\"file\" name=\"<portlet:namespace/>"+inputPort.getName()+WORKFLOW_INPUT_FILE_SUFFIX+"\" /><br/><hr/>\n");
+                    inputFormJSP.append("Use the following character sequence as the list item separator:\n");
+                    inputFormJSP.append("<select name=\"<portlet:namespace/>"+inputPort.getName()+"_separator\">\n");
+                    inputFormJSP.append("<option value=\""+NEW_LINE_LINUX_SEPARATOR+"\">New line - Unix/Linux (\\n)</option>\n");
+                    inputFormJSP.append("<option value=\""+NEW_LINE_WINDOWS_SEPARATOR+"\">New line - Windows (\\r\\n)</option>\n");
+                    inputFormJSP.append("<option value=\""+BLANK_SEPARATOR+"\">Blank (' ')</option>\n");
+                    inputFormJSP.append("<option value=\""+TAB_SEPARATOR+"\">Tab (\\t)</option>\n");
+                    inputFormJSP.append("<option value=\""+COLON_SEPARATOR+"\">Colon (:)</option>\n");
+                    inputFormJSP.append("<option value=\""+SEMI_COLON_SEPARATOR+"\">Semi-colon (;)</option>\n");
+                    inputFormJSP.append("<option value=\""+COMMA_SEPARATOR+"\">Comma (,)</option>\n");
+                    inputFormJSP.append("<option value=\""+DOT_SEPARATOR+"\">Dot (.)</option>\n");
+                    inputFormJSP.append("<option value=\""+PIPE_SEPARATOR+"\">Pipe (|)</option>\n");
+                    inputFormJSP.append("</select><br />\n");
+                    inputFormJSP.append("Or specify your own separator:\n");
+                    inputFormJSP.append("<input type=\"text\" name=\"<portlet:namespace/>"+inputPort.getName()+"_other_separator\" size=\"3\" />\n");
+                    inputFormJSP.append("</td>\n");
+                    inputFormJSP.append("</tr>\n");
+                }
+                else{ // We cannot handle workflows with input of depth more than 1
+                    System.out.println("Workflow Submission Portlet: Workflow " + workflowFileName +" contains inputs of depth more than 1 (i.e. a list of lists or higher). This is not supported at the moment - skipping this workflow.");
+                    return false;
+                }
+                counter++;
+            }
+            inputFormJSP.append("</table>\n");
+        }
+        
 
         inputFormJSP.append("<%-- Hidden field to convey which workflow we want to execute --%>\n");
         inputFormJSP.append("<input type=\"hidden\" name=\"<portlet:namespace/><%= WORKFLOW_FILE_NAME%>\" value=\""+ workflowFileName + "\" />\n");
