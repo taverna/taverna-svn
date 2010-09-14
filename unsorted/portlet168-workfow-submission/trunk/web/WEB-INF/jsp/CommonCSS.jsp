@@ -6,6 +6,7 @@
 
 <%-- CSS style for the workflow inputs table --%>
 <style type="text/css">
+<%-- inputs table style --%>
 table.inputs
 {
     border-collapse:collapse;
@@ -19,5 +20,21 @@ table.inputs, table.inputs th, table.inputs td
 table.inputs th{
     background-color: #9F9F9F;
     color: white;
+}
+
+<%-- results table style --%>
+table results
+{
+    border-collapse:collapse;
+    margin-bottom:10px;
+}
+table.results, table.results th, table.results td
+{
+    border: 1px solid #084B8A;
+    padding: 5px;
+}
+table.results th {
+    background-color: #CEE3F6;
+    color: #084B8A;
 }
 </style>

@@ -13,14 +13,13 @@
 <%@ page import="javax.portlet.RenderResponse" %>
 <%@ page import="javax.portlet.PortletConfig" %>
 <%@ page import="javax.portlet.PortletContext" %>
-<%@ page import="javax.portlet.PortletContext" %>
 
 <%-- Include various constants --%>
 <%@ include file="CommonConstants.jsp" %>
 
 <%
 // List of workflow file names. Workflow files are located in /WEB-INF/workflows folder in the app root.
-ArrayList<String> workflowFileNamesList = (ArrayList<String>) renderRequest.getPortletSession().getAttribute(WORKFLOW_FILE_NAMES);
+ArrayList<String> workflowFileNamesList = (ArrayList<String>) renderRequest.getAttribute(WORKFLOW_FILE_NAMES);
 %>
 
 <%-- Print out a message to the user, if any --%>

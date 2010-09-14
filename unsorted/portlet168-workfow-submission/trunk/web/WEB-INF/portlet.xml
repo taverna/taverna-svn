@@ -27,7 +27,11 @@
 		<portlet-name>Workflow Results</portlet-name>
 		<display-name>Workflow Results</display-name>
 		<portlet-class>net.sf.taverna.t2.portal.WorkflowResultsPortlet</portlet-class>
-		<expiration-cache>0</expiration-cache>
+                <init-param>
+                    <name>t2_server_url</name>
+                    <value>http://eric.rcs.manchester.ac.uk:8080/taverna-server</value>
+                </init-param>
+                <expiration-cache>0</expiration-cache>
 		<supports>
 			<mime-type>text/html</mime-type>
 			<portlet-mode>VIEW</portlet-mode>

@@ -16,6 +16,9 @@ public static final String WORKFLOW_INPUTS_FORM = "workflow_inputs_form";
 public static final String RUN_WORKFLOW = "run_workflow";
 public static final String WORKFLOW_FILE_NAME = "workflow_file_name";
 
+public static final String WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE = "workflow_job_uuids";
+public static final String REFRESH_WORKFLOW_JOB_UUIDS = "refresh_workflow_job_uuids";
+
 public static final String WORKFLOW_INPUT_CONTENT_SUFFIX = "_content";
 public static final String WORKFLOW_INPUT_FILE_SUFFIX = "_file";
 
