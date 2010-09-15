@@ -13,25 +13,26 @@
 <%@ page import="javax.portlet.RenderResponse" %>
 <%@ page import="javax.portlet.PortletConfig" %>
 <%@ page import="javax.portlet.PortletContext" %>
+<%@ page import="net.sf.taverna.t2.portal.Constants" %>
 
 <%-- Include various constants --%>
-<%@ include file="CommonConstants.jsp" %>
+<%--<%@ include file="CommonConstants.jsp" %>--%>
 
 <%
 // List of workflow file names. Workflow files are located in /WEB-INF/workflows folder in the app root.
-ArrayList<String> workflowFileNamesList = (ArrayList<String>) renderRequest.getAttribute(WORKFLOW_FILE_NAMES);
+ArrayList<String> workflowFileNamesList = (ArrayList<String>) renderRequest.getAttribute(Constants.WORKFLOW_FILE_NAMES);
 %>
 
 <%-- Print out a message to the user, if any --%>
 <%
-    if (renderRequest.getAttribute(ERROR_MESSAGE) != null){%>
-        <p style="color:red;"><b><%=renderRequest.getAttribute(ERROR_MESSAGE)%></b></p>
+    if (renderRequest.getAttribute(Constants.ERROR_MESSAGE) != null){%>
+        <p style="color:red;"><b><%=renderRequest.getAttribute(Constants.ERROR_MESSAGE)%></b></p>
         <br />
         <hr />
         <br />
     <%}
-    if (renderRequest.getAttribute(INFO_MESSAGE) != null){%>
-        <p><b><%=renderRequest.getAttribute(INFO_MESSAGE)%></b></p>
+    if (renderRequest.getAttribute(Constants.INFO_MESSAGE) != null){%>
+        <p><b><%=renderRequest.getAttribute(Constants.INFO_MESSAGE)%></b></p>
         <br />
         <hr />
         <br />
@@ -39,17 +40,17 @@ ArrayList<String> workflowFileNamesList = (ArrayList<String>) renderRequest.getA
 %>
 
 <%-- Form for selecting the workflow to be sent for execution --%>
-<b> Select a workflow to run </b>
+<b> Select a workflow to run:</b>
 
-<form name="<portlet:namespace/><%= WORKFLOW_SELECTION_SUBMISSION_FORM%>" action="<portlet:actionURL/>" method="post">
+<form name="<portlet:namespace/><%= Constants.WORKFLOW_SELECTION_SUBMISSION_FORM%>" action="<portlet:actionURL/>" method="post">
 <table>
 <tr>
     <td style="padding:5px;">
-        <select name="<portlet:namespace/><%=SELECTED_WORKFLOW%>">
+        <select name="<portlet:namespace/><%= Constants.SELECTED_WORKFLOW%>">
             <%
             for (int i = 0; i < workflowFileNamesList.size(); i++ ) {
                 // If this workflow was selected then show it as selected in the list
-                if (workflowFileNamesList.get(i).equals(renderRequest.getParameter(SELECTED_WORKFLOW))){
+                if (workflowFileNamesList.get(i).equals(renderRequest.getParameter(Constants.SELECTED_WORKFLOW))){
             %>  
                     <option selected="selected" value="<%=workflowFileNamesList.get(i)%>"><%=workflowFileNamesList.get(i)%></option>
             <%
@@ -61,7 +62,7 @@ ArrayList<String> workflowFileNamesList = (ArrayList<String>) renderRequest.getA
         </select>
     </td>
     <td style="padding:5px;">
-        <input type="submit" name="<portlet:namespace/><%=WORKFLOW_SELECTION_SUBMISSION%>" value="Select"/>
+        <input type="submit" name="<portlet:namespace/><%= Constants.WORKFLOW_SELECTION_SUBMISSION%>" value="Select"/>
     </td>
 </tr>
 </table>

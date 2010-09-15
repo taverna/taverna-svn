@@ -13,8 +13,10 @@
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
 <portlet:defineObjects />
 
+<%@ page import="net.sf.taverna.t2.portal.Constants" %>
+
 <%-- Include various constants --%>
-<%@ include file="CommonConstants.jsp" %>
+<%--<%@ include file="CommonConstants.jsp" %>--%>
 
 <script type="text/javascript">
 function validateForm(workflowInputsForm)
@@ -31,7 +33,7 @@ function validateForm(workflowInputsForm)
     for (var i = 0; i < trElements.length; i++) {
         if (typeof(trElements[i].getAttribute("inputPortName")) != "undefined" &&
             trElements[i].getAttribute("inputPortName") != null){
-            var inputPortName = trElements[i].getAttribute("<%= INPUT_PORT_NAME_ATTRIBUTE %>");
+            var inputPortName = trElements[i].getAttribute("<%= Constants.INPUT_PORT_NAME_ATTRIBUTE %>");
             //alert("Found input port: " + inputPortName);
             inputPortNames.push(inputPortName);
         }
@@ -50,8 +52,8 @@ function validateForm(workflowInputsForm)
     for (var i = 0; i < inputPortNames.length; i++){
 
         var inputPortName = inputPortNames[i];
-        var textareaElementName = namespace + inputPortName + "<%= WORKFLOW_INPUT_CONTENT_SUFFIX %>";
-        var fileElementName = namespace + inputPortName + "<%= WORKFLOW_INPUT_FILE_SUFFIX %>";
+        var textareaElementName = namespace + inputPortName + "<%= Constants.WORKFLOW_INPUT_CONTENT_SUFFIX %>";
+        var fileElementName = namespace + inputPortName + "<%= Constants.WORKFLOW_INPUT_FILE_SUFFIX %>";
 
         //alert("Validating input port " + inputPortName);
 

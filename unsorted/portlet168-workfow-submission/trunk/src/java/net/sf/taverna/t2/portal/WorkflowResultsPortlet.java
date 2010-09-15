@@ -7,8 +7,8 @@ package net.sf.taverna.t2.portal;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -35,8 +35,6 @@ import org.apache.http.protocol.HttpContext;
  */
 public class WorkflowResultsPortlet extends GenericPortlet{
 
-    public static final String REFRESH_WORKFLOW_JOB_UUIDS = "refresh_workflow_job_uuids";
-
     // Address of the T2 Server
     String t2ServerURL;
 
@@ -53,21 +51,36 @@ public class WorkflowResultsPortlet extends GenericPortlet{
     @Override
     public void processAction(ActionRequest request, ActionResponse response) throws PortletException,IOException {
 
-        if (request.getParameter(REFRESH_WORKFLOW_JOB_UUIDS) != null){
+        // If there was a request to refresh the job ID status table
+        if (request.getParameter(Constants.REFRESH_WORKFLOW_JOB_UUIDS) != null){
             ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)request.getPortletSession().
                     getAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
 
             if (workflowSubmissionJobs != null){
-                for (WorkflowSubmissionJob job : workflowSubmissionJobs){
+                for (int i = workflowSubmissionJobs.size()-1; i>=0; i--){
+
+                    WorkflowSubmissionJob job = workflowSubmissionJobs.get(i);
+
                     // Get the updated the job's status from the T2 Server
                     String status = getWorkflowSubmissionJobStatus(job);
-                    job.setStatus(status);
+
+                    // If the job is not available on the Server any more - remove it
+                    if (status.equals(Constants.UNKNOWN_RUN_UUID)){
+                        workflowSubmissionJobs.remove(i);
+                    }
+                    else{
+                        job.setStatus(status);
+                    }
                 }
             }
-
             request.getPortletSession().
                     setAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, workflowSubmissionJobs, PortletSession.APPLICATION_SCOPE);
+        }
+        // If there was a request to show results of a workflow run
+        else if (request.getParameter(Constants.FETCH_RESULTS) != null){
 
+            String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(Constants.FETCH_RESULTS)[0], "UTF-8");
+            System.out.println("Workflow Submission Portlet: Fetching results for job ID " + workflowResourceUUID);
         }
 
         // Pass all request parameters over to the doView() and other render stage methods
@@ -81,6 +94,38 @@ public class WorkflowResultsPortlet extends GenericPortlet{
         PortletRequestDispatcher dispatcher =
         getPortletContext().getRequestDispatcher("/WEB-INF/jsp/WorkflowResults_view.jsp");
         dispatcher.include(request, response);
+
+        // If there was a request to show results of a workflow run
+        if (request.getParameter(Constants.FETCH_RESULTS) != null){
+            String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(Constants.FETCH_RESULTS)[0], "UTF-8");
+            String workflowBaclavaOutputURL = t2ServerURL + Constants.RUNS_URL + "/"+ workflowResourceUUID + Constants.WD_URL + "/" + Constants.BACLAVA_OUTPUT_FILE_NAME;
+
+            ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)request.getPortletSession().
+                    getAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
+            WorkflowSubmissionJob workflowSubmissionJob = null;
+            if (workflowSubmissionJobs != null){
+                for (WorkflowSubmissionJob job : workflowSubmissionJobs){
+                    if (job.getUuid().equals(workflowResourceUUID)){
+                        workflowSubmissionJob = job;
+                        break;
+                    }
+                }
+            }
+            else{
+                System.out.println("is null!!!");
+            }
+
+
+            response.getWriter().println("<br />");
+            response.getWriter().println("<hr />");
+            response.getWriter().println("<br />");
+
+            request.setAttribute(Constants.WORKFLOW_BACLAVA_OUTPUT_URL_ATTRIBUTE, workflowBaclavaOutputURL);
+            request.setAttribute(Constants.WORKFLOW_SUBMISSION_JOB_ATTRIBUTE, workflowSubmissionJob);
+
+            dispatcher = getPortletContext().getRequestDispatcher("/WEB-INF/jsp/IndividualWorkflowResults.jsp");
+            dispatcher.include(request, response);
+        }
     }
 
     public void doEdit(RenderRequest request,RenderResponse response) throws PortletException,IOException {
@@ -114,9 +159,37 @@ public class WorkflowResultsPortlet extends GenericPortlet{
             // Release resource
             httpClient.getConnectionManager().shutdown();
 
-            if (httpResponse.getStatusLine().getStatusCode() != 200){ // HTTP/1.1 200 OK
+            if (httpResponse.getStatusLine().getStatusCode() == 403){ // HTTP/1.1 403 Forbidden
+                System.out.println("Workflow Submission Portlet: Job " +workflowSubmissionJob.getUuid()+
+                        " does not exist on the Server any more. The Server responded with: " + httpResponse.getStatusLine()+".");
+                return Constants.UNKNOWN_RUN_UUID;
+            }
+            else if (httpResponse.getStatusLine().getStatusCode() == 200){ // HTTP/1.1 200 OK
+                HttpEntity httpEntity = httpResponse.getEntity();
+
+                String value = null;
+                String contentType = httpEntity.getContentType().getValue().toLowerCase();
+
+                try{
+                    if (contentType.startsWith("text")) {
+                        // Read as text
+                        value = readResponseBodyAsString(httpEntity).trim();
+                         System.out.println("Workflow Submission Portlet: Status of job " +workflowSubmissionJob.getUuid() + " " + value);
+                    }
+                    else{
+                        System.out.println("Workflow Submission Portlet: Server's response not text/plain for status of job " +workflowSubmissionJob.getUuid());
+                    }
+                }
+                catch(Exception ex){
+                    System.out.println("Workflow Submission Portlet: Failed to get the content of the job status respose from the Server.");
+                    ex.printStackTrace();
+                    return "Failed to get the content of the job status respose from the Server";
+                }
+                return value;
+            }
+            else {
                System.out.println("Workflow Submission Portlet: Failed to get the status for job " + workflowSubmissionJob.getUuid() + ". The Server responded with: " + httpResponse.getStatusLine()+".");
-               return "Failed to get the job's status. The Server responnded with: " + httpResponse.getStatusLine() + ".";
+               return "Failed to get the status for job. The Server responnded with: " + httpResponse.getStatusLine() + ".";
             }
         }
         catch(Exception ex){
@@ -124,25 +197,6 @@ public class WorkflowResultsPortlet extends GenericPortlet{
             ex.printStackTrace();
             return "An error occured while trying to get the status for job.";
         }
-
-        HttpEntity httpEntity = httpResponse.getEntity();
-
-        String value = null;
-        String contentType = httpEntity.getContentType().getValue().toLowerCase();
-
-        try{
-            if (contentType.startsWith("text")) {
-                // read as text
-                value = readResponseBodyAsString(httpEntity);
-            }
-        }
-        catch(Exception ex){
-            System.out.println("Workflow Submission Portlet: Failed to get the content of the job status respose from the Server.");
-            ex.printStackTrace();
-            return "Failed to get the content of the job status respose from the Server";
-        }
-
-        return value;
     }
 
   private static String readResponseBodyAsString(HttpEntity entity) throws IOException

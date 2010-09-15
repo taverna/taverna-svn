@@ -35,7 +35,6 @@ import org.apache.http.client.HttpClient;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -45,7 +44,6 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
-//import org.jaxen.jdom.JDOMXPath;
 import org.jdom.Text;
 import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
@@ -61,15 +59,8 @@ import sun.misc.BASE64Encoder;
 public class WorkflowSubmissionPortlet extends GenericPortlet {
 
     // HTML form fields
-    public static final String WORKFLOW_FILE_NAMES = "workflow_file_names";
-    public static final String WORKFLOW_SELECTION_SUBMISSION_FORM = "workflow_selection_form";
-    public static final String WORKFLOW_SELECTION_SUBMISSION = "workflow_selection";
     public static final String WORKFLOW_INPUTS_FORM = "workflow_inputs_form";
-    public static final String SELECTED_WORKFLOW = "selected_workflow";
-    public static final String RUN_WORKFLOW = "run_workflow";
     public static final String WORKFLOW_FILE_NAME = "workflow_file_name";
-    public static final String WORKFLOW_INPUT_CONTENT_SUFFIX = "_content";
-    public static final String WORKFLOW_INPUT_FILE_SUFFIX = "_file";
     public static final String WORKFLOW_INPUT_CONTENT_SEPARATOR_SUFFIX = "_separator";
     public static final String WORKFLOW_INPUT_CONTENT_OTHER_SEPARATOR_SUFFIX = "_other_separator";
     public static final String NEW_LINE_LINUX_SEPARATOR = "new_line_linux";
@@ -81,8 +72,6 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     public static final String SEMI_COLON_SEPARATOR = "semi_colon";
     public static final String DOT_SEPARATOR = "dot";
     public static final String PIPE_SEPARATOR = "pipe";
-    public static final String INPUT_PORT_NAME_ATTRIBUTE = "inputPortName";
-
 
     // Address of the T2 Server
     String t2ServerURL;
@@ -290,7 +279,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             }
 
             // Was there a request to run a workflow?
-            if (formItems.keySet().contains(RUN_WORKFLOW)){
+            if (formItems.keySet().contains(Constants.RUN_WORKFLOW)){
 
                 // Workflow to run
                 String workflowFileName = (String) formItems.get(WORKFLOW_FILE_NAME);
@@ -306,10 +295,10 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
                     // Do we have this input's content as a file or actual content was submitted?
                     // If we have a file that overrides the submitted content.
-                    if (formItems.get(inputPort.getName() + WORKFLOW_INPUT_FILE_SUFFIX) != null){
+                    if (formItems.get(inputPort.getName() + Constants.WORKFLOW_INPUT_FILE_SUFFIX) != null){
 
                         // Read the contents of a file as a byte[]
-                        InputStream is = (InputStream) formItems.get(inputPort.getName() + WORKFLOW_INPUT_FILE_SUFFIX);
+                        InputStream is = (InputStream) formItems.get(inputPort.getName() + Constants.WORKFLOW_INPUT_FILE_SUFFIX);
                         byte[] theBytes;
                         try{
                             theBytes = new byte[is.available()];
@@ -372,12 +361,12 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                             return;
                         }
                     }
-                    else if(formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_SUFFIX) != null &&
-                            !((String) formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_SUFFIX)).equals("")){
+                    else if(formItems.get(inputPort.getName() + Constants.WORKFLOW_INPUT_CONTENT_SUFFIX) != null &&
+                            !((String) formItems.get(inputPort.getName() + Constants.WORKFLOW_INPUT_CONTENT_SUFFIX)).equals("")){
 
                         // Is this a single value input? Just get whatever content was submitted.
                         if (inputPort.getDepth() == 0){
-                            inputPort.setValue((String) formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_SUFFIX));
+                            inputPort.setValue((String) formItems.get(inputPort.getName() + Constants.WORKFLOW_INPUT_CONTENT_SUFFIX));
                             System.out.println("Workflow Submission Portlet: The value the user submitted (from textarea input field) for the input port '" +
                                     inputPort.getName() + "' was: " +
                                     (String)inputPort.getValue());
@@ -385,7 +374,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                         // Is this input a list? We have to split the string to get the list items.
                         else if (inputPort.getDepth() == 1){
                             
-                            String valueToSeparate = (String) formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_SUFFIX);
+                            String valueToSeparate = (String) formItems.get(inputPort.getName() + Constants.WORKFLOW_INPUT_CONTENT_SUFFIX);
 
                             String listSeparator;
                             String userDefinedListSeparator = (String) formItems.get(inputPort.getName() + WORKFLOW_INPUT_CONTENT_OTHER_SEPARATOR_SUFFIX);
@@ -449,32 +438,37 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                         workflowResourceUUID = workflowResourceUUID.substring(workflowResourceUUID.lastIndexOf("/") + 1);
                         System.out.println("Workflow Submission Portlet: Workflow " + workflowFileName + " successfully submitted to the Server with UUID " + workflowResourceUUID +".");
 
-                        boolean inputsSubmitted = submitWorkflowInputs(workflowFileName, workflowResourceUUID, workflowInputPorts, request);
+                        // Try to set the property that contains the name of the
+                        // Baclava file where outputs are to be written to.
+                        boolean outputBaclavaFilePropertySet = setBaclavaOutputFile(workflowFileName, workflowResourceUUID, request);
+                        if (outputBaclavaFilePropertySet){
+                            boolean inputsSubmitted = submitWorkflowInputs(workflowFileName, workflowResourceUUID, workflowInputPorts, request);
 
-                        // Run the workflow on the T2 Server
-                        if (inputsSubmitted){
-                            System.out.println("Workflow Submission Portlet: Inputs for workflow " + workflowFileName + " successfully submitted to the Server.");
+                            // Run the workflow on the T2 Server
+                            if (inputsSubmitted){
+                                System.out.println("Workflow Submission Portlet: Inputs for workflow " + workflowFileName + " successfully submitted to the Server.");
 
-                            boolean runSubmitted = runWorkflow(workflowFileName, workflowResourceUUID, request);
-                            if (runSubmitted){
-                                System.out.println("Workflow Submission Portlet: Execution of workflow " + workflowFileName + " successfully initiated on the Server. Job ID: " + workflowResourceUUID +".");
+                                boolean runSubmitted = runWorkflow(workflowFileName, workflowResourceUUID, request);
+                                if (runSubmitted){
+                                    System.out.println("Workflow Submission Portlet: Execution of workflow " + workflowFileName + " successfully initiated on the Server. Job ID: " + workflowResourceUUID +".");
 
-                                // Add this workflowResourceUUID to the list of submitted workflow UUIDs
-                                // to be read by the Workflow Results portlet and used to fetch results for
-                                // this run
-                                ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)request.getPortletSession().
-                                        getAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
-                                WorkflowSubmissionJob job = new WorkflowSubmissionJob(workflowResourceUUID, workflowFileName, Constants.JOB_STATUS_OPERATING);
-                                if (workflowSubmissionJobs == null){
-                                    workflowSubmissionJobs = new ArrayList<WorkflowSubmissionJob>();
-                                    workflowSubmissionJobs.add(job);
+                                    // Add this workflowResourceUUID to the list of submitted workflow UUIDs
+                                    // to be read by the Workflow Results portlet and used to fetch results for
+                                    // this run
+                                    ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)request.getPortletSession().
+                                            getAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
+                                    WorkflowSubmissionJob job = new WorkflowSubmissionJob(workflowResourceUUID, workflowFileName, Constants.JOB_STATUS_OPERATING);
+                                    if (workflowSubmissionJobs == null){
+                                        workflowSubmissionJobs = new ArrayList<WorkflowSubmissionJob>();
+                                        workflowSubmissionJobs.add(job);
+                                    }
+                                    else{
+                                        workflowSubmissionJobs.add(job);
+                                    }
+                                    request.getPortletSession().
+                                            setAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, workflowSubmissionJobs, PortletSession.APPLICATION_SCOPE);
+                                    request.setAttribute(Constants.INFO_MESSAGE, "Workflow "+workflowFileName+" successfully submitted for execution with job ID: " + workflowResourceUUID + ". You may use this ID to monitor the progress of the workflow run.");
                                 }
-                                else{
-                                    workflowSubmissionJobs.add(job);
-                                }
-                                request.getPortletSession().
-                                        setAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, workflowSubmissionJobs, PortletSession.APPLICATION_SCOPE);
-                                request.setAttribute(Constants.INFO_MESSAGE, "Workflow "+workflowFileName+" successfully submitted for execution with job ID: " + workflowResourceUUID + ". You may use this ID to monitor the progress of the workflow run.");
                             }
                         }
                     }
@@ -484,7 +478,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         else{ // just a standard application/x-www-form-urlencoded form submission request
 
             // Was there a request to run a workflow?
-            if (request.getParameter(RUN_WORKFLOW) != null){
+            if (request.getParameter(Constants.RUN_WORKFLOW) != null){
 
                 // Workflow to run
                 String workflowFileName = request.getParameter(WORKFLOW_FILE_NAME);
@@ -512,32 +506,38 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                     workflowResourceUUID = workflowResourceUUID.substring(workflowResourceUUID.lastIndexOf("/") + 1);
                     System.out.println("Workflow Submission Portlet: Workflow " + workflowFileName + " successfully submitted to the Server with UUID " + workflowResourceUUID +".");
 
-                    boolean inputsSubmitted = submitWorkflowInputs(workflowFileName, workflowResourceUUID, workflowInputPorts, request);
+                    // Try to set the property that contains the name of the
+                    // Baclava file where outputs are to be written to.
+                    boolean outputBaclavaFilePropertySet = setBaclavaOutputFile(workflowFileName, workflowResourceUUID, request);
+                    if (outputBaclavaFilePropertySet){
 
-                    // Run the workflow on the T2 Server
-                    if (inputsSubmitted){
-                        System.out.println("Workflow Submission Portlet: Inputs for workflow " + workflowFileName + " successfully submitted to the Server.");
+                        boolean inputsSubmitted = submitWorkflowInputs(workflowFileName, workflowResourceUUID, workflowInputPorts, request);
 
-                        boolean runSubmitted = runWorkflow(workflowFileName, workflowResourceUUID, request);
-                        if (runSubmitted){
-                            System.out.println("Workflow Submission Portlet: Execution of workflow " + workflowFileName + " successfully initiated on the Server.");
+                        // Run the workflow on the T2 Server
+                        if (inputsSubmitted){
+                            System.out.println("Workflow Submission Portlet: Inputs for workflow " + workflowFileName + " successfully submitted to the Server.");
 
-                            // Add this workflowResourceUUID to the list of submitted workflow UUIDs
-                            // to be read by the Workflow Results portlet and used to fetch results for
-                            // the runs.
+                            boolean runSubmitted = runWorkflow(workflowFileName, workflowResourceUUID, request);
+                            if (runSubmitted){
+                                System.out.println("Workflow Submission Portlet: Execution of workflow " + workflowFileName + " successfully initiated on the Server.");
 
-                            ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)request.getPortletSession().
-                                    getAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
-                            WorkflowSubmissionJob job = new WorkflowSubmissionJob(workflowResourceUUID, workflowFileName, Constants.JOB_STATUS_OPERATING);
-                            if (workflowSubmissionJobs == null){
-                                workflowSubmissionJobs = new ArrayList<WorkflowSubmissionJob>();
-                                workflowSubmissionJobs.add(job);
+                                // Add this workflowResourceUUID to the list of submitted workflow UUIDs
+                                // to be read by the Workflow Results portlet and used to fetch results for
+                                // the runs.
+
+                                ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)request.getPortletSession().
+                                        getAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
+                                WorkflowSubmissionJob job = new WorkflowSubmissionJob(workflowResourceUUID, workflowFileName, Constants.JOB_STATUS_OPERATING);
+                                if (workflowSubmissionJobs == null){
+                                    workflowSubmissionJobs = new ArrayList<WorkflowSubmissionJob>();
+                                    workflowSubmissionJobs.add(job);
+                                }
+                                else{
+                                    workflowSubmissionJobs.add(job);
+                                }
+                                request.getPortletSession().
+                                        setAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, workflowSubmissionJobs, PortletSession.APPLICATION_SCOPE);
                             }
-                            else{
-                                workflowSubmissionJobs.add(job);
-                            }
-                            request.getPortletSession().
-                                    setAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, workflowSubmissionJobs, PortletSession.APPLICATION_SCOPE);
                         }
                     }
                 }
@@ -554,8 +554,8 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         // Set the workflow file names list in the PortletSession if not already set.
         // This list is created in the init() method but at that time we do not have
         // the session object so we have to do it here.
-        if (request.getAttribute(WORKFLOW_FILE_NAMES) == null){
-            request.setAttribute(WORKFLOW_FILE_NAMES, workflowFileNamesList);
+        if (request.getAttribute(Constants.WORKFLOW_FILE_NAMES) == null){
+            request.setAttribute(Constants.WORKFLOW_FILE_NAMES, workflowFileNamesList);
         }
 
         if (PORTLET_NAMESPACE == null){
@@ -566,11 +566,11 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         PortletRequestDispatcher dispatcher;
         dispatcher = getPortletContext().getRequestDispatcher("/WEB-INF/jsp/WorkflowSubmission_view.jsp");
         dispatcher.include(request, response);
-        if (request.getParameter(WORKFLOW_SELECTION_SUBMISSION) != null){
+        if (request.getParameter(Constants.WORKFLOW_SELECTION_SUBMISSION) != null){
             response.getWriter().println("<br />");
             response.getWriter().println("<hr />");
             response.getWriter().println("<br />");
-            String selectedWorkflowFileName = request.getParameter(SELECTED_WORKFLOW);
+            String selectedWorkflowFileName = request.getParameter(Constants.SELECTED_WORKFLOW);
 
             // By now we should have generated the corresponding JSP file containing
             // workflow's input form snippet. Dispatch to this file now.
@@ -659,12 +659,12 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
         if (workflowInputPorts.isEmpty()){
             inputFormJSP.append("The workflow does not require any inputs<br/><br/>\n");
-            inputFormJSP.append("<form name=\"<portlet:namespace/><%= WORKFLOW_INPUTS_FORM%>\" action=\"<portlet:actionURL/>\" method=\"post\" enctype=\"multipart/form-data\" onSubmit=\"return validateForm(this)\">\n");
+            inputFormJSP.append("<form name=\"<portlet:namespace/><%= Constants.WORKFLOW_INPUTS_FORM%>\" action=\"<portlet:actionURL/>\" method=\"post\" enctype=\"multipart/form-data\" onSubmit=\"return validateForm(this)\">\n");
         }
         else{
-            inputFormJSP.append("<form name=\"<portlet:namespace/><%= WORKFLOW_INPUTS_FORM%>\" action=\"<portlet:actionURL/>\" method=\"post\" enctype=\"multipart/form-data\" onSubmit=\"return validateForm(this)\">\n");
+            inputFormJSP.append("<form name=\"<portlet:namespace/><%= Constants.WORKFLOW_INPUTS_FORM%>\" action=\"<portlet:actionURL/>\" method=\"post\" enctype=\"multipart/form-data\" onSubmit=\"return validateForm(this)\">\n");
 
-            inputFormJSP.append("<table class=\"inputs\">\n");
+            inputFormJSP.append("<table class=\"inputs\" width=\"100%\">\n");
             inputFormJSP.append("<tr>\n");
             inputFormJSP.append("<th>Name</th>\n");
             inputFormJSP.append("<th>Type</th>\n");
@@ -678,10 +678,10 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             for (WorkflowInputPort inputPort : workflowInputPorts){
                 if (inputPort.getDepth() == 0){ // single input
                     if (counter % 2 == 0){ // alternate row colours
-                        inputFormJSP.append("<tr bgcolor=\"#F5F5F5\" " + INPUT_PORT_NAME_ATTRIBUTE + "=\""+inputPort.getName()+"\">\n");
+                        inputFormJSP.append("<tr bgcolor=\"#F5F5F5\" " + Constants.INPUT_PORT_NAME_ATTRIBUTE + "=\""+inputPort.getName()+"\">\n");
                     }
                     else{
-                        inputFormJSP.append("<tr " + INPUT_PORT_NAME_ATTRIBUTE + "=\""+inputPort.getName()+"\">\n");
+                        inputFormJSP.append("<tr " + Constants.INPUT_PORT_NAME_ATTRIBUTE + "=\""+inputPort.getName()+"\">\n");
                     }
                     inputFormJSP.append("<td>" + inputPort.getName()+ "</td>\n");
                     inputFormJSP.append("<td>single value</td>\n");
@@ -695,18 +695,18 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                     inputFormJSP.append("<td>" + descriptionString + "</td>\n");
                     inputFormJSP.append("<td>\n");
                     inputFormJSP.append("Paste the value here: <br/>\n");
-                    inputFormJSP.append("<textarea name=\"<portlet:namespace/>"+inputPort.getName()+WORKFLOW_INPUT_CONTENT_SUFFIX+"\" rows=\"2\" cols=\"20\" wrap=\"off\"></textarea><br/>\n");
+                    inputFormJSP.append("<textarea name=\"<portlet:namespace/>"+inputPort.getName()+Constants.WORKFLOW_INPUT_CONTENT_SUFFIX+"\" rows=\"2\" cols=\"20\" wrap=\"off\"></textarea><br/>\n");
                     inputFormJSP.append("Or load the value from a file: <br />\n");
-                    inputFormJSP.append("<input type=\"file\" name=\"<portlet:namespace/>"+inputPort.getName()+WORKFLOW_INPUT_FILE_SUFFIX+"\" />\n");
+                    inputFormJSP.append("<input type=\"file\" name=\"<portlet:namespace/>"+inputPort.getName()+Constants.WORKFLOW_INPUT_FILE_SUFFIX+"\" />\n");
                     inputFormJSP.append("</td>\n");
                     inputFormJSP.append("</tr>\n");
                 }
                 else if (inputPort.getDepth() == 1){
                     if (counter % 2 == 0){ // alternate row colours
-                        inputFormJSP.append("<tr bgcolor=\"#F5F5F5\" "+INPUT_PORT_NAME_ATTRIBUTE+"=\""+inputPort.getName()+"\">\n");
+                        inputFormJSP.append("<tr bgcolor=\"#F5F5F5\" "+Constants.INPUT_PORT_NAME_ATTRIBUTE+"=\""+inputPort.getName()+"\">\n");
                     }
                     else{
-                        inputFormJSP.append("<tr "+INPUT_PORT_NAME_ATTRIBUTE+"\""+inputPort.getName()+"\">\n");
+                        inputFormJSP.append("<tr "+Constants.INPUT_PORT_NAME_ATTRIBUTE+"\""+inputPort.getName()+"\">\n");
                     }
                     inputFormJSP.append("<td>" + inputPort.getName()+ "</td>\n");
                     inputFormJSP.append("<td>list</td>\n");
@@ -720,9 +720,9 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                     inputFormJSP.append("<td>" + descriptionString + "</td>\n");
                     inputFormJSP.append("<td>\n");
                     inputFormJSP.append("Paste the list values here: <br/>\n");
-                    inputFormJSP.append("<textarea name=\"<portlet:namespace/>"+inputPort.getName()+WORKFLOW_INPUT_CONTENT_SUFFIX+"\" rows=\"2\" cols=\"20\" wrap=\"off\"></textarea><br/>\n");
+                    inputFormJSP.append("<textarea name=\"<portlet:namespace/>"+inputPort.getName()+Constants.WORKFLOW_INPUT_CONTENT_SUFFIX+"\" rows=\"2\" cols=\"20\" wrap=\"off\"></textarea><br/>\n");
                     inputFormJSP.append("Or load them from a file: <br />\n");
-                    inputFormJSP.append("<input type=\"file\" name=\"<portlet:namespace/>"+inputPort.getName()+WORKFLOW_INPUT_FILE_SUFFIX+"\" /><br/><hr/>\n");
+                    inputFormJSP.append("<input type=\"file\" name=\"<portlet:namespace/>"+inputPort.getName()+Constants.WORKFLOW_INPUT_FILE_SUFFIX+"\" /><br/><hr/>\n");
                     inputFormJSP.append("Use the following character sequence as the list item separator:\n");
                     inputFormJSP.append("<select name=\"<portlet:namespace/>"+inputPort.getName()+"_separator\">\n");
                     inputFormJSP.append("<option value=\""+NEW_LINE_LINUX_SEPARATOR+"\">New line - Unix/Linux (\\n)</option>\n");
@@ -751,8 +751,8 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         
 
         inputFormJSP.append("<%-- Hidden field to convey which workflow we want to execute --%>\n");
-        inputFormJSP.append("<input type=\"hidden\" name=\"<portlet:namespace/><%= WORKFLOW_FILE_NAME%>\" value=\""+ workflowFileName + "\" />\n");
-        inputFormJSP.append("<input type=\"submit\" name=\"<portlet:namespace/><%= RUN_WORKFLOW%>\" value=\"Run workflow\" />\n");
+        inputFormJSP.append("<input type=\"hidden\" name=\"<portlet:namespace/><%= Constants.WORKFLOW_FILE_NAME%>\" value=\""+ workflowFileName + "\" />\n");
+        inputFormJSP.append("<input type=\"submit\" name=\"<portlet:namespace/><%= Constants.RUN_WORKFLOW%>\" value=\"Run workflow\" />\n");
         inputFormJSP.append("</form>\n");
 
         // Write this JSP snippet to a file
@@ -824,10 +824,60 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     }
 
     /*
+     * PUTs the value for property that keeps the name of the
+     * output Baclava file where to save the results. This needs
+     * to be done before the run is initiated.
+     */
+    private boolean setBaclavaOutputFile(String workflowFileName, String workflowResourceUUID, ActionRequest actionRequest){
+
+        HttpClient httpClient2 = new DefaultHttpClient();
+        HttpContext localContext = new BasicHttpContext();
+
+        String baclavaOutputPropertyURL = t2ServerURL + Constants.RUNS_URL + "/" + workflowResourceUUID + Constants.BACLAVA_OUTPUT_PROPERTY_URL;
+        HttpPut httpPut = new HttpPut(baclavaOutputPropertyURL);
+        httpPut.setHeader(Constants.CONTENT_TYPE_HEADER_NAME, Constants.CONTENT_TYPE_TEXT_PLAIN);
+
+        try {
+            StringEntity entity = new StringEntity(Constants.BACLAVA_OUTPUT_FILE_NAME, "UTF-8");
+            httpPut.setEntity(entity);
+        }
+        catch (UnsupportedEncodingException ex) {
+            System.out.println("Workflow Submission Portlet: Failed to create an HTTP entity containing the name of the Baclava XML file where outputs for workflow " + workflowFileName + " will be saved to.");
+            ex.printStackTrace();
+            actionRequest.setAttribute(Constants.ERROR_MESSAGE, "Failed to create message body containing the name of the XML file where outputs for workflow " + workflowFileName + " will be saved to.");
+            return false;
+        }
+
+        HttpResponse httpResponse2 = null;
+        try{
+            // Execute the request to send the name of the Baclava file
+            // that will be used to save the workflow outputs to.
+            httpResponse2 = httpClient2.execute(httpPut, localContext);
+
+            // Release resource
+            httpClient2.getConnectionManager().shutdown();
+
+            if (httpResponse2.getStatusLine().getStatusCode() != 200){ // HTTP/1.1 200 OK
+                System.out.println("Workflow Submission Portlet: Failed to set the name of the Baclava file where outputs are to be saved to for workflow " + workflowFileName + ". The Server responded with: " + httpResponse2.getStatusLine()+".");
+                actionRequest.setAttribute(Constants.ERROR_MESSAGE, "Failed to set the name of the file where outputs are to be saved to for workflow " + workflowFileName + ". The Server responded with: " + httpResponse2.getStatusLine()+".");
+                return false;
+            }
+        }
+        catch(Exception ex){
+            System.out.println("Workflow Submission Portlet: An error occured while setting the name of the Baclava file where outputs are to be saved to for workflow " + workflowFileName + " on the Server.");
+            ex.printStackTrace();
+            actionRequest.setAttribute(Constants.ERROR_MESSAGE, "An error occured while setting the name of the file where outputs are to be saved to for workflow " + workflowFileName + " on the Server.");
+            return false;
+        }
+        System.out.println("Workflow Submission Portlet: Property where to save the output Baclava file for workflow " + workflowFileName + " successfully set on the Server at " + baclavaOutputPropertyURL +".");
+        return true;
+    }
+
+    /*
      * HTTP PUTs workflow inputs to the T2 Server.
      * Returns false if it fails for any reason.
      */
-    boolean submitWorkflowInputs(String workflowFileName, String workflowResourceUUID, ArrayList<WorkflowInputPort> workflowInputs, ActionRequest actionRequest){
+    private boolean submitWorkflowInputs(String workflowFileName, String workflowResourceUUID, ArrayList<WorkflowInputPort> workflowInputs, ActionRequest actionRequest){
 
         HttpClient httpClient = new DefaultHttpClient();
         HttpContext localContext = new BasicHttpContext();
@@ -845,7 +895,6 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         String workflowInputsDocumentString = xmlOutputter.outputString(worfklowInputsDocument);
 
         System.out.println("Workflow Submission Portlet: Preparing to submit workflow inputs Baclava file to Server " + wdURL);
-        //System.out.println(workflowInputsDocumentString);
 
         // Name of the uploaded Baclava file on the Server
         String baclavaFileName = workflowFileName + ".baclava";
@@ -900,7 +949,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
         HttpClient httpClient2 = new DefaultHttpClient();
 
-        String baclavaInputURL = t2ServerURL + Constants.RUNS_URL + "/" + workflowResourceUUID + Constants.BACLAVA_INPUTS_URL;
+        String baclavaInputURL = t2ServerURL + Constants.RUNS_URL + "/" + workflowResourceUUID + Constants.BACLAVA_INPUTS_PROPERTY_URL;
         HttpPut httpPut = new HttpPut(baclavaInputURL);
         httpPut.setHeader(Constants.CONTENT_TYPE_HEADER_NAME, Constants.CONTENT_TYPE_TEXT_PLAIN);
 
