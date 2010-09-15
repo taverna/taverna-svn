@@ -217,7 +217,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
     @Override
     public void processAction(ActionRequest request, ActionResponse response) throws PortletException,IOException {
-        
+
         // Just print all the parameters we have received, for testing purposes
         Enumeration names = request.getParameterNames();
         while(names.hasMoreElements()){

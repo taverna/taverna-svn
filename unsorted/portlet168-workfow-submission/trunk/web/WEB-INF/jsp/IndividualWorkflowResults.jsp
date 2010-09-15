@@ -26,7 +26,7 @@ else{
 %>
 <b>Workflow: <%= workflowSubmissionJob.getWorkflowFileName() %></b><br/>
 <b>Job ID: <%= workflowSubmissionJob.getUuid() %></b><br/><br/>
-Download the results as a <a href="<%=workflowBaclavaOutputURL %>">single XML file</a> (that can be viewed in Taverna's DataViewer tool).
+Download the results as a <a href="<%=workflowBaclavaOutputURL %>">single XML file</a>. You can view the file in Taverna's DataViewer tool.
 <%
 }
 %>
