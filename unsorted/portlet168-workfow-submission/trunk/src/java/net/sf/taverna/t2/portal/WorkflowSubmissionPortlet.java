@@ -100,8 +100,10 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     @Override
     public void init(){
 
-        // Get the URL of the T2 Server
-        t2ServerURL = getPortletConfig().getInitParameter(Constants.T2_SERVER_URL_PARAMETER);
+        // Get the URL of the T2 Server defined in web.xml as an
+        // app-wide init parameter ( <context-param> element)
+        //t2ServerURL = getPortletConfig().getInitParameter(Constants.T2_SERVER_URL_PARAMETER); //  portlet specific, defined in portlet.xml
+        t2ServerURL = getPortletContext().getInitParameter(Constants.T2_SERVER_URL_PARAMETER);
 
         // Load the workflows once at initialisation time
         workflowFileNamesList = new ArrayList<String>();
@@ -874,7 +876,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     }
 
     /*
-     * HTTP PUTs workflow inputs to the T2 Server.
+     * HTTP PUTs workflow inputs to the T2 Server as a Baclava XML document.
      * Returns false if it fails for any reason.
      */
     private boolean submitWorkflowInputs(String workflowFileName, String workflowResourceUUID, ArrayList<WorkflowInputPort> workflowInputs, ActionRequest actionRequest){

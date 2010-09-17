@@ -44,8 +44,10 @@ public class WorkflowResultsPortlet extends GenericPortlet{
     @Override
     public void init(){
 
-        // Get the URL of the T2 Server
-        t2ServerURL = getPortletConfig().getInitParameter(Constants.T2_SERVER_URL_PARAMETER);
+        // Get the URL of the T2 Server defined in web.xml as an
+        // app-wide init parameter ( <context-param> element)
+        //t2ServerURL = getPortletConfig().getInitParameter(Constants.T2_SERVER_URL_PARAMETER); // portlet specific, defined in portlet.xml
+        t2ServerURL = getPortletContext().getInitParameter(Constants.T2_SERVER_URL_PARAMETER);
     }
 
     @Override

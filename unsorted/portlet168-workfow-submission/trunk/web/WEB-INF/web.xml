@@ -12,4 +12,9 @@
         <taglib-uri>http://java.sun.com/portlet</taglib-uri>
         <taglib-location>/WEB-INF/tld/std-portlet.tld</taglib-location>
     </taglib>
+    <context-param>
+        <param-name>t2_server_url</param-name>
+        <param-value>http://localhost:8081/taverna-server</param-value>
+        <description>The URL of the T2 Server to be used for executing the workflows</description>
+    </context-param>
 </web-app>

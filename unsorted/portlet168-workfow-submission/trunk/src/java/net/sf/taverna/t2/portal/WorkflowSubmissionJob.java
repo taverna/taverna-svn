@@ -18,7 +18,11 @@ public class WorkflowSubmissionJob {
     // Name of the workflow file submitted
     private String workflowFileName;
 
-    // Workflow inputs?
+    // Workflow inputs
+    private Object inputs;
+
+    // Workflow outputs
+    private Object outputs;
 
     // Status of the submitted job
     private String status;
