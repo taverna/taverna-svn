@@ -23,7 +23,7 @@ table.inputs th{
 }
 
 <%-- results table style --%>
-table results
+table.results
 {
     border-collapse:collapse;
     margin-bottom:10px;
