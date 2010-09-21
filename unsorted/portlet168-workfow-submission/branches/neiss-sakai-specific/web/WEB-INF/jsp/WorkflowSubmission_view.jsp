@@ -22,7 +22,7 @@
 // List of workflow file names. Workflow files are located in /WEB-INF/workflows folder in the app root.
 ArrayList<String> workflowFileNamesList = (ArrayList<String>) renderRequest.getAttribute(Constants.WORKFLOW_FILE_NAMES);
 %>
-
+<br/>
 <%-- Print out a message to the user, if any --%>
 <%
     if (renderRequest.getAttribute(Constants.ERROR_MESSAGE) != null){%>

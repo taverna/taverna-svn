@@ -40,7 +40,8 @@ public class WorkflowResultsPortlet extends GenericPortlet{
     private String t2ServerURL;
 
     // Namespace of this portlet
-    private String thisNamespace;
+    private static String PORTLET_NAMESPACE;
+
 
     /*
      * Do the init stuff one at portlet loading time.
@@ -67,7 +68,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
         }
 
         // If there was a request to refresh the job ID status table
-        if (request.getParameter(thisNamespace+Constants.REFRESH_WORKFLOW_JOB_UUIDS) != null){
+        if (request.getParameter(PORTLET_NAMESPACE + Constants.REFRESH_WORKFLOW_JOB_UUIDS) != null){
             ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)request.getPortletSession().
                     getAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
 
@@ -96,7 +97,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                     setAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, workflowSubmissionJobs, PortletSession.APPLICATION_SCOPE);
         }
         // If there was a request to show results of a workflow run
-        else if (request.getParameter(thisNamespace+Constants.FETCH_RESULTS) != null){
+        else if (request.getParameter(PORTLET_NAMESPACE + Constants.FETCH_RESULTS) != null){
 
             // But if workflowSubmissionJobs is null or does not contain this job ID
             // this is just a page refresh after redeployment of the app/restart of
@@ -107,7 +108,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                     getAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
 
             if (workflowSubmissionJobs != null){
-                String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(thisNamespace+Constants.FETCH_RESULTS)[0], "UTF-8");
+                String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(PORTLET_NAMESPACE + Constants.FETCH_RESULTS)[0], "UTF-8");
                 for (WorkflowSubmissionJob job : workflowSubmissionJobs){
                     if (job.getUuid().equals(workflowResourceUUID)){
                         System.out.println("Workflow Submission Portlet: Fetching results for job ID " + workflowResourceUUID);
@@ -124,8 +125,8 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
     public void doView(RenderRequest request,RenderResponse response) throws PortletException,IOException {
 
-        if (thisNamespace == null){
-            thisNamespace = response.getNamespace();
+        if (PORTLET_NAMESPACE == null){
+            PORTLET_NAMESPACE = response.getNamespace();
         }
 
         response.setContentType("text/html");

@@ -28,7 +28,8 @@ ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSub
 
 <%-- Form for selecting the workflow to be sent for execution --%>
 <% if (workflowSubmissionJobs != null && !workflowSubmissionJobs.isEmpty()){ %>
-<b>To view results of a workflow submission job, click on the job ID, once its status becomes "Finished".</b><br/>
+<br/>
+<b>To view results of a workflow submission job, click on the job ID once its status becomes "Finished".</b><br/>
 <b>To refresh job statuses, click on the "Refresh" button.</b><br/><br/>
 <table width="100%">
     <tr>
@@ -74,6 +75,7 @@ ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSub
 <%
 } else{
 %>
+<br/>
 Currently there are no workflows submitted for execution.
 <%
 }
