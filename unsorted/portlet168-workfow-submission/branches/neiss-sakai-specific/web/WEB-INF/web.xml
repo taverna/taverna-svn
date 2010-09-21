@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+    <taglib id="PortletTLD">
+        <taglib-uri>http://java.sun.com/portlet</taglib-uri>
+        <taglib-location>/WEB-INF/tld/std-portlet.tld</taglib-location>
+    </taglib>
+    <context-param>
+        <param-name>t2_server_url</param-name>
+        <param-value>http://localhost:8081/taverna-server</param-value>
+        <description>The URL of the T2 Server to be used for executing the workflows</description>
+    </context-param>
+</web-app>
