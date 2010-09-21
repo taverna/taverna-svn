@@ -2,11 +2,11 @@
 <!DOCTYPE liferay-portlet-app PUBLIC "-//Liferay//DTD Portlet Application 5.1.0//EN" "http://www.liferay.com/dtd/liferay-portlet-app_5_1_0.dtd">
 <liferay-portlet-app>
   <portlet>
-    <portlet-name>Workflow Submission</portlet-name>
+    <portlet-name>WorkflowSubmission</portlet-name>
     <instanceable>true</instanceable>
   </portlet>
   <portlet>
-    <portlet-name>Workflow Results</portlet-name>
+    <portlet-name>WorkflowResults</portlet-name>
     <instanceable>true</instanceable>
   </portlet>
   <role-mapper>

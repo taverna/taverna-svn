@@ -14,7 +14,34 @@
     </taglib>
     <context-param>
         <param-name>t2_server_url</param-name>
+        <!--<param-value>http://eric.rcs.manchester.ac.uk:8080/taverna-server</param-value>-->
         <param-value>http://localhost:8081/taverna-server</param-value>
         <description>The URL of the T2 Server to be used for executing the workflows</description>
     </context-param>
+    <servlet>
+        <servlet-name>WorkflowSubmission</servlet-name>
+        <servlet-class>org.apache.pluto.core.PortletServlet</servlet-class>
+        <init-param>
+            <param-name>portlet-name</param-name>
+            <param-value>WorkflowSubmission</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>WorkflowSubmission</servlet-name>
+        <url-pattern>/PlutoInvoker/WorkflowSubmission</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>WorkflowResults</servlet-name>
+        <servlet-class>org.apache.pluto.core.PortletServlet</servlet-class>
+        <init-param>
+            <param-name>portlet-name</param-name>
+            <param-value>WorkflowResults</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>WorkflowResults</servlet-name>
+        <url-pattern>/PlutoInvoker/WorkflowResults</url-pattern>
+    </servlet-mapping>
 </web-app>
