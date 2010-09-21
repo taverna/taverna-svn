@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.GenericPortlet;
@@ -36,7 +37,10 @@ import org.apache.http.protocol.HttpContext;
 public class WorkflowResultsPortlet extends GenericPortlet{
 
     // Address of the T2 Server
-    String t2ServerURL;
+    private String t2ServerURL;
+
+    // Namespace of this portlet
+    private String thisNamespace;
 
     /*
      * Do the init stuff one at portlet loading time.
@@ -53,12 +57,25 @@ public class WorkflowResultsPortlet extends GenericPortlet{
     @Override
     public void processAction(ActionRequest request, ActionResponse response) throws PortletException,IOException {
 
+        // Just print all the parameters we have received, for testing purposes
+        Enumeration names = request.getParameterNames();
+        while(names.hasMoreElements()){
+            String parameterName = (String) names.nextElement();
+            System.out.println("\nWorkflow Submission Portlet: parameter name: " + parameterName);
+            System.out.println("Workflow Submission Portlet: parameter value: " + request.getParameter(parameterName));
+            System.out.println();
+        }
+
         // If there was a request to refresh the job ID status table
-        if (request.getParameter(Constants.REFRESH_WORKFLOW_JOB_UUIDS) != null){
+        if (request.getParameter(thisNamespace+Constants.REFRESH_WORKFLOW_JOB_UUIDS) != null){
             ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)request.getPortletSession().
                     getAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
 
+            System.out.println("Got refresh request");
+
             if (workflowSubmissionJobs != null){
+                System.out.println("Got " + workflowSubmissionJobs.size() + " jobs");
+
                 for (int i = workflowSubmissionJobs.size()-1; i>=0; i--){
 
                     WorkflowSubmissionJob job = workflowSubmissionJobs.get(i);
@@ -79,7 +96,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                     setAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, workflowSubmissionJobs, PortletSession.APPLICATION_SCOPE);
         }
         // If there was a request to show results of a workflow run
-        else if (request.getParameter(Constants.FETCH_RESULTS) != null){
+        else if (request.getParameter(thisNamespace+Constants.FETCH_RESULTS) != null){
 
             // But if workflowSubmissionJobs is null or does not contain this job ID
             // this is just a page refresh after redeployment of the app/restart of
@@ -90,7 +107,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                     getAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
 
             if (workflowSubmissionJobs != null){
-                String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(Constants.FETCH_RESULTS)[0], "UTF-8");
+                String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(thisNamespace+Constants.FETCH_RESULTS)[0], "UTF-8");
                 for (WorkflowSubmissionJob job : workflowSubmissionJobs){
                     if (job.getUuid().equals(workflowResourceUUID)){
                         System.out.println("Workflow Submission Portlet: Fetching results for job ID " + workflowResourceUUID);
@@ -106,14 +123,18 @@ public class WorkflowResultsPortlet extends GenericPortlet{
     }
 
     public void doView(RenderRequest request,RenderResponse response) throws PortletException,IOException {
-        
+
+        if (thisNamespace == null){
+            thisNamespace = response.getNamespace();
+        }
+
         response.setContentType("text/html");
         PortletRequestDispatcher dispatcher =
         getPortletContext().getRequestDispatcher("/WEB-INF/jsp/WorkflowResults_view.jsp");
         dispatcher.include(request, response);
 
         // If there was a request to show results of a workflow run
-        if (request.getParameter(Constants.FETCH_RESULTS) != null){
+        if (request.getParameter(response.getNamespace()+Constants.FETCH_RESULTS) != null){
             
             // But if workflowSubmissionJobs is null or does not contain this job ID
             // this is just a page refresh after redeployment of the app/restart of
@@ -124,7 +145,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                     getAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
 
             if (workflowSubmissionJobs != null){
-                String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(Constants.FETCH_RESULTS)[0], "UTF-8");
+                String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(response.getNamespace()+Constants.FETCH_RESULTS)[0], "UTF-8");
                 for (WorkflowSubmissionJob job : workflowSubmissionJobs){
                     if (job.getUuid().equals(workflowResourceUUID)){
                         String workflowBaclavaOutputURL = t2ServerURL + Constants.RUNS_URL + "/"+ workflowResourceUUID + Constants.WD_URL + "/" + Constants.BACLAVA_OUTPUT_FILE_NAME;

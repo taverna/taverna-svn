@@ -64,7 +64,7 @@ ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSub
                     <td><%= workflowSubmissionJobs.get(i).getUuid() %></td>
                 <%}
                 else {%>
-                <td><a href="<portlet:actionURL/>&<%=Constants.FETCH_RESULTS%>=<%= URLEncoder.encode(workflowSubmissionJobs.get(i).getUuid(), "UTF-8")%>"><%= workflowSubmissionJobs.get(i).getUuid() %></a></td>
+                <td><a href="<portlet:actionURL/>&<portlet:namespace/><%=Constants.FETCH_RESULTS%>=<%= URLEncoder.encode(workflowSubmissionJobs.get(i).getUuid(), "UTF-8")%>"><%= workflowSubmissionJobs.get(i).getUuid() %></a></td>
                 <%}%>
                 <td><%= workflowSubmissionJobs.get(i).getStatus() %></td>
             </tr>

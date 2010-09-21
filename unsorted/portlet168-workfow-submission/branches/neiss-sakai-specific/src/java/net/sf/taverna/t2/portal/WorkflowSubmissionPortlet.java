@@ -22,6 +22,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.portlet.PortletContext;
 import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.PortletSession;
 import org.apache.commons.fileupload.FileItem;
@@ -568,11 +569,13 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         PortletRequestDispatcher dispatcher;
         dispatcher = getPortletContext().getRequestDispatcher("/WEB-INF/jsp/WorkflowSubmission_view.jsp");
         dispatcher.include(request, response);
-        if (request.getParameter(Constants.WORKFLOW_SELECTION_SUBMISSION) != null){
+
+        if (request.getParameter(response.getNamespace()+Constants.WORKFLOW_SELECTION_SUBMISSION) != null){
+
             response.getWriter().println("<br />");
             response.getWriter().println("<hr />");
             response.getWriter().println("<br />");
-            String selectedWorkflowFileName = request.getParameter(Constants.SELECTED_WORKFLOW);
+            String selectedWorkflowFileName = request.getParameter(response.getNamespace()+Constants.SELECTED_WORKFLOW);
 
             // By now we should have generated the corresponding JSP file containing
             // workflow's input form snippet. Dispatch to this file now.
