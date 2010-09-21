@@ -8,10 +8,10 @@
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
-    <taglib id="PortletTLD">
+    <!--<taglib id="PortletTLD">
         <taglib-uri>http://java.sun.com/portlet</taglib-uri>
         <taglib-location>/WEB-INF/tld/std-portlet.tld</taglib-location>
-    </taglib>
+    </taglib>-->
     <context-param>
         <param-name>t2_server_url</param-name>
         <!--<param-value>http://eric.rcs.manchester.ac.uk:8080/taverna-server</param-value>-->
