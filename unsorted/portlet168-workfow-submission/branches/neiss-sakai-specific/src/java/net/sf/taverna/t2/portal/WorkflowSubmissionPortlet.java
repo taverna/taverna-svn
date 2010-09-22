@@ -22,7 +22,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.portlet.PortletContext;
 import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.PortletSession;
 import org.apache.commons.fileupload.FileItem;
@@ -1153,10 +1152,10 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         // elements no matter where they are located inside the <assertions> element passed.
         List<Element> annotationAssertionImplElements = null;
         try{
-             //JDOMXPath path = new JDOMXPath(".//"+ANNOTATION_ASSERTION_IMPL_ELEMENT);
+             //JDOMXPath path = new JDOMXPath(".//"+Constants.ANNOTATION_ASSERTION_IMPL_ELEMENT);
              //annotationAssertionImplElements = path.selectNodes(annotationsElement);
 
-            annotationAssertionImplElements = XPath.selectNodes(annotationsElement,".//"+Constants.ANNOTATION_ASSERTION_IMPL_ELEMENT);
+             annotationAssertionImplElements = XPath.selectNodes(annotationsElement,".//"+Constants.ANNOTATION_ASSERTION_IMPL_ELEMENT);
         }
         catch(Exception ex){
             System.out.println("Workflow Submission Portlet: Failed to parse the annotations element when looking for " + annotationBeanClassName + " in worklow " + workflowFileName +".");
@@ -1170,16 +1169,19 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         String latestValue = null;
         Date latestDate = new Date(0);
         if (annotationAssertionImplElements != null){
+            //System.out.println("Found "+annotationAssertionImplElements.size()+ " annot impl elements; looking for " + annotationBeanClassName);
             for (Element annotationAssertionImplElement : annotationAssertionImplElements){
 
                 Element annotationBeanElement = annotationAssertionImplElement
                         .getChild(Constants.ANNOTATION_BEAN_ELEMENT);
-
+                //System.out.println("Found some annot impl elements with class "+ annotationBeanClassName+ "; looking for for " + annotationBeanClassName);
                 Date date = null;
                 String pattern = "yyyy-MM-dd HH:mm:ss.SSS z";
                 SimpleDateFormat format = new SimpleDateFormat(pattern);
                 if (annotationBeanElement.getAttributeValue(Constants.ANNOTATION_BEAN_ELEMENT_CLASS_ATTRIBUTE).equals(annotationBeanClassName)){
                     String value = annotationBeanElement.getChildText(Constants.TEXT_ELEMENT);
+
+                    //System.out.println("Found some annot impl elements for " + annotationBeanClassName);
 
                     try {
                         date = format.parse(annotationAssertionImplElement.getChildText(Constants.DATE_ELEMENT));
