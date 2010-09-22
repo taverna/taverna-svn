@@ -72,11 +72,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
             ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)request.getPortletSession().
                     getAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
 
-            System.out.println("Got refresh request");
-
             if (workflowSubmissionJobs != null){
-                System.out.println("Got " + workflowSubmissionJobs.size() + " jobs");
-
                 for (int i = workflowSubmissionJobs.size()-1; i>=0; i--){
 
                     WorkflowSubmissionJob job = workflowSubmissionJobs.get(i);
