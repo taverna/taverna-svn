@@ -31,7 +31,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.jws.WebService;
-import javax.ws.rs.Path;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
@@ -92,7 +91,6 @@ import org.taverna.server.master.soap.TavernaServerSOAP;
  * 
  * @author Donal Fellows
  */
-@Path("/")
 @WebService(endpointInterface = "org.taverna.server.master.soap.TavernaServerSOAP", serviceName = "TavernaServer", targetNamespace = Namespaces.SERVER_SOAP)
 @ManagedResource(objectName = "Taverna:group=Server,name=Webapp", description = "The main web-application interface to Taverna Server.")
 public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
