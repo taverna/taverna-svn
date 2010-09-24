@@ -151,7 +151,10 @@ public class WorkerCore extends UnicastRemoteObject implements Worker,
 				if (f != null) {
 					pb.command().add("-inputfile");
 					pb.command().add(port);
-					pb.command().add(new File(workingDir, f).getAbsolutePath());
+					if (f.startsWith("http://") || f.startsWith("https://"))
+						pb.command().add(f);
+					else
+						pb.command().add(new File(workingDir, f).getAbsolutePath());
 				}
 			}
 			for (String port : inputValues.keySet()) {
