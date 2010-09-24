@@ -46,9 +46,15 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 	private String workflow;
 	private File base;
 	private DirectoryDelegate baseDir;
-	/** When did this workflow start running, or <tt>null</tt> for "never/not yet". */
+	/**
+	 * When did this workflow start running, or <tt>null</tt> for
+	 * "never/not yet".
+	 */
 	public Date start;
-	/** When did this workflow finish running, or <tt>null</tt> for "never/not yet". */
+	/**
+	 * When did this workflow finish running, or <tt>null</tt> for
+	 * "never/not yet".
+	 */
 	public Date finish;
 	RemoteStatus status;
 	String inputBaclava, outputBaclava;
@@ -201,7 +207,9 @@ public class LocalWorker extends UnicastRemoteObject implements RemoteSingleRun 
 		if (filename == null)
 			throw new IllegalArgumentException("filename must be non-null");
 		if (filename.length() == 0 || filename.startsWith("/")
-				|| filename.contains("//"))
+				|| (!filename.startsWith("http://")
+						&& !filename.startsWith("https://") && filename
+						.contains("//")))
 			throw new RemoteException("invalid filename");
 		if (Arrays.asList(filename.split("/")).contains(".."))
 			throw new RemoteException("invalid filename");
