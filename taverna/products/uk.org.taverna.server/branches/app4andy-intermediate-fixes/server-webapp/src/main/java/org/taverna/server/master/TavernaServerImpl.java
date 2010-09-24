@@ -628,7 +628,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 			Object result;
 			if (v.getMediaType().equals(APPLICATION_OCTET_STREAM_TYPE))
 				// Only for files...
-				result = ((File) de).getContents();
+				result = de;
 			else if (v.getMediaType().equals(APPLICATION_ZIP_TYPE))
 				// Only for directories...
 				result = ((Directory) de).getContentsAsZip();
@@ -684,7 +684,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 			Object result;
 			if (wanted.equals(APPLICATION_OCTET_STREAM_TYPE))
 				// Only for files...
-				result = ((File) de).getContents();
+				result = de;
 			else if (wanted.equals(APPLICATION_ZIP_TYPE))
 				// Only for directories...
 				result = ((Directory) de).getContentsAsZip();
@@ -924,7 +924,8 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 	public byte[] getRunFileContents(String runName, DirEntryReference d)
 			throws UnknownRunException, FilesystemAccessException {
 		invokes++;
-		return getFile(getRun(runName), d).getContents();
+		File f = getFile(getRun(runName), d);
+		return f.getContents(0, -1);
 	}
 
 	@Override
