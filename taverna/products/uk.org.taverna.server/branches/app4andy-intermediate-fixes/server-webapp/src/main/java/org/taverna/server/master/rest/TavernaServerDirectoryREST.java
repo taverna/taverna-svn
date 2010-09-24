@@ -70,8 +70,8 @@ public interface TavernaServerDirectoryREST {
 
 	/**
 	 * Creates a directory in the filesystem beneath the working directory of
-	 * the workflow run, or creates or updates a file's contents, where that
-	 * file is in or below the working directory of a workflow run.
+	 * the workflow run, or creates or replaces or appends to a file's contents,
+	 * where that file is in or below the working directory of a workflow run.
 	 * 
 	 * @param parent
 	 *            The directory to create the directory in.

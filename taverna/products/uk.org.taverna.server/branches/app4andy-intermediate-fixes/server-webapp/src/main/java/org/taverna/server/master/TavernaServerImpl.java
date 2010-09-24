@@ -80,6 +80,7 @@ import org.taverna.server.master.rest.TavernaServerInputREST;
 import org.taverna.server.master.rest.TavernaServerListenersREST;
 import org.taverna.server.master.rest.TavernaServerREST;
 import org.taverna.server.master.rest.TavernaServerRunREST;
+import org.taverna.server.master.rest.MakeOrUpdateDirEntry.AppendFileContents;
 import org.taverna.server.master.rest.MakeOrUpdateDirEntry.MakeDirectory;
 import org.taverna.server.master.rest.TavernaServerInputREST.InDesc.AbstractContents;
 import org.taverna.server.master.rest.TavernaServerListenersREST.ListenerDescription;
@@ -719,7 +720,7 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 				return created(ub.build(target.getName())).build();
 			}
 
-			// Make or set the contents of a file
+			// Make, set or append the contents of a file
 
 			File f = null;
 			for (DirectoryEntry e : d.getContents()) {
@@ -732,11 +733,21 @@ public class TavernaServerImpl implements TavernaServerSOAP, TavernaServerREST {
 				}
 			}
 			if (f == null) {
+				if (op instanceof AppendFileContents) {
+					throw new FilesystemAccessException("file does not exist");
+				}
 				f = d.makeEmptyFile(getPrincipal(), op.name);
 				f.setContents(op.contents);
+				log.info("created " + f.getFullName() + " with content of " + op.contents.length + " bytes");
 				return created(ub.build(f.getName())).build();
 			}
-			f.setContents(op.contents);
+			if (op instanceof AppendFileContents) {
+				f.appendContents(op.contents);
+				log.info("appended " + op.contents.length + " bytes to " + f.getFullName());
+			} else {
+				f.setContents(op.contents);
+				log.info("replaced " + op.contents.length + " bytes in " + f.getFullName());
+			}
 			return seeOther(ub.build(f.getName())).build();
 		}
 	}

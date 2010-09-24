@@ -37,6 +37,7 @@
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
 
+<!--
 	<security-constraint>
         <display-name>Totally unsecured</display-name>
         <web-resource-collection>
@@ -94,4 +95,5 @@
     <login-config>
         <auth-method>BASIC</auth-method>
     </login-config>
+-->
 </web-app>

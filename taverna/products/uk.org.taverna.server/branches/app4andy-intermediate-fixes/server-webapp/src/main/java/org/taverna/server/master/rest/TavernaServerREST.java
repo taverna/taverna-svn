@@ -38,11 +38,9 @@ import org.taverna.server.master.soap.TavernaServerSOAP;
  * @author Donal Fellows
  * @see TavernaServerSOAP
  */
-@Path("/")
+@Path("")
 @Description("This is REST service interface to Taverna 2 Server release 1")
 public interface TavernaServerREST {
-	// MASTER API
-
 	/**
 	 * Produces the description of the service.
 	 * 

@@ -69,6 +69,19 @@ public class FileDelegate extends UnicastRemoteObject implements RemoteFile {
 	}
 
 	@Override
+	public void appendContents(byte[] data) throws IOException {
+		FileOutputStream fos = null;
+		try {
+			fos = new FileOutputStream(file, true);
+			fos.write(data);
+			return;
+		} finally {
+			if (fos != null)
+				fos.close();
+		}
+	}
+
+	@Override
 	public void destroy() throws IOException {
 		forceDelete(file);
 		parent.forgetEntry(this);

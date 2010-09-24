@@ -29,11 +29,10 @@
 	<!-- <import resource="example.xml"/>-->
 	<import resource="localworker.xml" />
 
-	<jaxws:endpoint id="master_SOAP" implementor="#tserv"
-		address="/soap">
-		<jaxws:features>
-			<cxf:logging />
-		</jaxws:features>
+	<jaxws:endpoint id="master_SOAP" address="/soap">
+		<jaxws:implementor>
+			<ref bean="tserv" />
+		</jaxws:implementor>
 	</jaxws:endpoint>
 	<jaxrs:server id="root_REST" address="/">
 		<jaxrs:serviceBeans>
@@ -48,9 +47,6 @@
 		<jaxrs:serviceBeans>
 			<ref bean="tserv" />
 		</jaxrs:serviceBeans>
-		<jaxrs:features>
-			<cxf:logging />
-		</jaxrs:features>
 		<jaxrs:providers>
 			<ref bean="ExceptionProvider.BadPropertyValue" />
 			<ref bean="ExceptionProvider.BadStateChange" />

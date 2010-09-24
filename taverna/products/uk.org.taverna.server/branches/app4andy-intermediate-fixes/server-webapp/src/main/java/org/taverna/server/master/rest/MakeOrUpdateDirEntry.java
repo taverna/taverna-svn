@@ -15,7 +15,8 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlRootElement(name = "filesystemOperation")
 @XmlType(name = "FilesystemCreationOperation")
 @XmlSeeAlso( { MakeOrUpdateDirEntry.MakeDirectory.class,
-		MakeOrUpdateDirEntry.SetFileContents.class })
+		MakeOrUpdateDirEntry.SetFileContents.class,
+		MakeOrUpdateDirEntry.AppendFileContents.class })
 public abstract class MakeOrUpdateDirEntry {
 	/**
 	 * The name of the file or directory that the operation applies to.
@@ -47,5 +48,15 @@ public abstract class MakeOrUpdateDirEntry {
 	@XmlRootElement(name = "upload")
 	@XmlType(name = "UploadFile")
 	public static class SetFileContents extends MakeOrUpdateDirEntry {
+	}
+
+	/**
+	 * Append to an existing file, described with JAXB.
+	 * 
+	 * @author Donal Fellows
+	 */
+	@XmlRootElement(name = "append")
+	@XmlType(name = "AppendToFile")
+	public static class AppendFileContents extends MakeOrUpdateDirEntry {
 	}
 }
