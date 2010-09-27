@@ -15,6 +15,7 @@
     <context-param>
         <param-name>t2_server_url</param-name>
         <param-value>http://localhost:8081/taverna-server</param-value>
+        <!--<param-value>http://eric.rcs.manchester.ac.uk:8080/taverna-server</param-value>-->
         <description>The URL of the T2 Server to be used for executing the workflows</description>
     </context-param>
 </web-app>
