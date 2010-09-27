@@ -1149,8 +1149,8 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         // elements no matter where they are located inside the <assertions> element passed.
         List<Element> annotationAssertionImplElements = null;
         try{
-             //JDOMXPath path = new JDOMXPath(".//"+ANNOTATION_ASSERTION_IMPL_ELEMENT);
-             //annotationAssertionImplElements = path.selectNodes(annotationsElement);
+            //JDOMXPath path = new JDOMXPath(".//"+Constants.ANNOTATION_ASSERTION_IMPL_ELEMENT);
+            //annotationAssertionImplElements = path.selectNodes(annotationsElement);
 
             annotationAssertionImplElements = XPath.selectNodes(annotationsElement,".//"+Constants.ANNOTATION_ASSERTION_IMPL_ELEMENT);
         }
