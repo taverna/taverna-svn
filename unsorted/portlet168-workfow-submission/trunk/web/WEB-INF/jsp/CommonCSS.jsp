@@ -98,4 +98,18 @@ END
 Andrew Vos' Cross Browser (JavaScript/DHTML) TreeView CSS style
 http://www.codeproject.com/KB/scripting/IE_FF_DHTML_TreeView.aspx
 --%>
+
+.output_name{
+    font-weight: bold;
+}
+
+.output_depth{
+    font-weight: normal;
+    color: #084B8A;
+}
+
+.output_mime_type{
+    font-style: italic;
+    color: #666;
+}
 </style>

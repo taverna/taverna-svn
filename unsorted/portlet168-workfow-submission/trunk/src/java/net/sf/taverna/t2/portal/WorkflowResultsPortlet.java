@@ -175,7 +175,20 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                                     Object dataObject = resultDataThing.getDataObject();
                                     int dataDepth = calculateDataDepth(dataObject);
                                     outputsTableHTML.append("<tr");
-                                    outputsTableHTML.append("<td width=\"25%\">" + outputPortName + " (depth: " + dataDepth +")</td>\n");
+                                    String dataTypeBasedOnDepth;
+                                    if (dataDepth==0){
+                                        dataTypeBasedOnDepth = "single value";
+                                    }
+                                    else{
+                                        dataTypeBasedOnDepth = "list of depth " + dataDepth;
+                                    }
+                                    // Get data's MIME type as given by the Baclava file
+                                    String mimeType = resultDataThing.getMostInterestingMIMETypeForObject(dataObject);
+                                    outputsTableHTML.append("<td width=\"25%\">\n");
+                                    outputsTableHTML.append("<div class=\"output_name\">" + outputPortName + "<span class=\"output_depth\"> - " + dataTypeBasedOnDepth + "</span></div>\n");
+                                    outputsTableHTML.append("<div class=\"output_mime_type\">" + mimeType + "</div>\n");
+                                    outputsTableHTML.append("</td>");
+
                                     // Create result tree
                                     outputsTableHTML.append("<td><script language=\"javascript\">" + createResultTree(dataObject, dataDepth, dataDepth, -1, "") + "</script></td>\n");
                             }
