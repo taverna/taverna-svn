@@ -666,7 +666,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         else{
             inputFormJSP.append("<form name=\"<portlet:namespace/><%= Constants.WORKFLOW_INPUTS_FORM%>\" action=\"<portlet:actionURL/>\" method=\"post\" enctype=\"multipart/form-data\" onSubmit=\"return validateForm(this)\">\n");
 
-            inputFormJSP.append("<table class=\"inputs\" width=\"100%\">\n");
+            inputFormJSP.append("<table class=\"inputs\">\n");
             inputFormJSP.append("<tr>\n");
             inputFormJSP.append("<th>Name</th>\n");
             inputFormJSP.append("<th>Type</th>\n");
