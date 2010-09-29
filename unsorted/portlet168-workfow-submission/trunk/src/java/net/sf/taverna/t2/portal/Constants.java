@@ -67,7 +67,8 @@ public class Constants {
 
     // Application scope attributes
     public static final String WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE = "workflow_job_uuids";
-    public static final String WORKFLOW_BACLAVA_OUTPUT_URL_ATTRIBUTE = "workflow_baclava_output_URL";
+    public static final String WORKFLOW_RESULTS_BACLAVA_FILE_URL_ATTRIBUTE = "workflow_results_baclava_file_URL";
+    public static final String WORKFLOW_RESULTS_MAP_ATTRIBUTE = "workflow_results_map";
     public static final String WORKFLOW_SUBMISSION_JOB_ATTRIBUTE = "workflow_submission_job";
     // HTML forms
     public static final String WORKFLOW_FILE_NAMES = "workflow_file_names";
