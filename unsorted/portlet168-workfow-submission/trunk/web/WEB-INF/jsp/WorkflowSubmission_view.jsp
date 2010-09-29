@@ -15,8 +15,8 @@
 <%@ page import="javax.portlet.PortletContext" %>
 <%@ page import="net.sf.taverna.t2.portal.Constants" %>
 
-<%-- Include various constants --%>
-<%--<%@ include file="CommonConstants.jsp" %>--%>
+<%-- Include the styling CSS --%>
+<%@ include file="CommonCSS.jsp" %>
 
 <%
 // List of workflow file names. Workflow files are located in /WEB-INF/workflows folder in the app root.
