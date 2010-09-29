@@ -7,9 +7,15 @@ package net.sf.taverna.t2.portal;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.GenericPortlet;
@@ -25,6 +31,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
+import org.jdom.Document;
+import org.jdom.input.SAXBuilder;
 
 /**
  * Workflow Results Portlet - enables user to view status of
@@ -127,17 +137,61 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                 String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(Constants.FETCH_RESULTS)[0], "UTF-8");
                 for (WorkflowSubmissionJob job : workflowSubmissionJobs){
                     if (job.getUuid().equals(workflowResourceUUID)){
-                        String workflowBaclavaOutputURL = t2ServerURL + Constants.RUNS_URL + "/"+ workflowResourceUUID + Constants.WD_URL + "/" + Constants.BACLAVA_OUTPUT_FILE_NAME;
+                        String workflowResultsBaclavaFileURL = t2ServerURL + Constants.RUNS_URL + "/"+ workflowResourceUUID + Constants.WD_URL + "/" + Constants.BACLAVA_OUTPUT_FILE_NAME;
 
                         response.getWriter().println("<br />");
                         response.getWriter().println("<hr />");
                         response.getWriter().println("<br />");
 
-                        request.setAttribute(Constants.WORKFLOW_BACLAVA_OUTPUT_URL_ATTRIBUTE, workflowBaclavaOutputURL);
+                        request.setAttribute(Constants.WORKFLOW_RESULTS_BACLAVA_FILE_URL_ATTRIBUTE, workflowResultsBaclavaFileURL);
                         request.setAttribute(Constants.WORKFLOW_SUBMISSION_JOB_ATTRIBUTE, job);
 
-                        dispatcher = getPortletContext().getRequestDispatcher("/WEB-INF/jsp/IndividualWorkflowResults.jsp");
-                        dispatcher.include(request, response);
+                        //dispatcher = getPortletContext().getRequestDispatcher("/WEB-INF/jsp/IWorkflowResults_Baclava.jsp");
+                        //dispatcher.include(request, response);
+
+                        // Parse the result values from the Baclava file
+                        StringBuffer outputsTableHTML = new StringBuffer();
+                        response.getWriter().println("<b>Workflow: " + job.getWorkflowFileName() + "</b><br/>");
+                        response.getWriter().println("<b>Job ID: " + job.getUuid() + "</b><br/><br/>");
+                        try{
+                            URL url = new URL(workflowResultsBaclavaFileURL);
+                            InputStream is = url.openStream();
+                            SAXBuilder builder = new SAXBuilder();
+                            Document doc = builder.build(is);
+                            Map<String, DataThing> resultDataThingMap = DataThingXMLFactory.parseDataDocument(doc);
+
+                            outputsTableHTML.append("<b>Results:</b><br/>");
+                            outputsTableHTML.append("<table class=\"jobs\">");
+                            outputsTableHTML.append("<tr>");
+                            outputsTableHTML.append("<th width=\"25%\">Output port</th>");
+                            outputsTableHTML.append("<th>Data</th>");
+                            outputsTableHTML.append("</tr>");
+                            // Get all output ports and data associated with them
+                            for (Iterator i = resultDataThingMap.keySet().iterator(); i.hasNext();) {
+                                    String outputPortName = (String) i.next();
+                                    DataThing resultDataThing = resultDataThingMap.get(outputPortName);
+
+                                    // Calculate the depth of the result data for the port
+                                    Object dataObject = resultDataThing.getDataObject();
+                                    int dataDepth = calculateDataDepth(dataObject);
+                                    outputsTableHTML.append("<tr");
+                                    outputsTableHTML.append("<td width=\"25%\">" + outputPortName + " (depth: " + dataDepth +")</td>\n");
+                                    // Create result tree
+                                    outputsTableHTML.append("<td><script language=\"javascript\">" + createResultTree(dataObject, dataDepth, dataDepth, -1, "") + "</script></td>\n");
+                            }
+                            outputsTableHTML.append("</table>\n");
+                            outputsTableHTML.append("</br>\n");
+                            response.getWriter().println(outputsTableHTML.toString());
+                        }
+                        catch(Exception ex){
+                            System.out.println("Failed to fetch/parse Baclava file from " + workflowResultsBaclavaFileURL);
+                            ex.printStackTrace();
+                            response.getWriter().println("<p style=\"color:red;\"><b>There was an error with parsing results.</b></p><br/><br/>");
+                        }
+                        finally{
+                            response.getWriter().println("Download the results as a <a target=\"_blank\" href=\"" + workflowResultsBaclavaFileURL + "\">single XML file</a>. " +
+                                    "You can view the file in Taverna's DataViewer tool.");
+                        }
 
                         break;
                     } // else just ignore it if it is not in the job ID list
@@ -216,7 +270,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
             return "An error occured while trying to get the status for job.";
         }
     }
-
+    
   private static String readResponseBodyAsString(HttpEntity entity) throws IOException
   {
         // Get charset name. Use UTF-8 if not defined.
@@ -243,5 +297,44 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
         return (responseBodyString.toString());
   }
+
+    private int calculateDataDepth(Object dataObject) {
+
+            if (dataObject instanceof Collection<?>){
+                    if (((Collection<?>)dataObject).isEmpty()){
+                            return 1;
+                    }
+                    else{
+                            // Calculate the depth of the first element in collection + 1
+                            return calculateDataDepth(((Collection<?>)dataObject).iterator().next()) + 1;
+                    }
+            }
+            else{
+                return 0;
+            }
+    }
+
+    private String createResultTree(Object dataObject, int maxDepth, int currentDepth, int index, String parentIndex){
+
+        StringBuffer resultTreeHTML = new StringBuffer();
+
+        if (maxDepth == 0){ // Result data is a single item only
+            resultTreeHTML.append("addNode(\"Value\", \"\", \"_blank\")\n");
+        }
+        else{
+            if (currentDepth == 0){ // A leaf in the tree
+                resultTreeHTML.append("addNode(\"Value " + parentIndex + "\", \"\", \"_blank\")\n");
+            }
+            else{ // Result data is a list of (lists of ... ) items
+                resultTreeHTML.append("startParentNode(\"List " + parentIndex +"\")\n");
+                for (int i=0; i < ((Collection)dataObject).size(); i++){
+                    String newParentIndex = parentIndex.equals("") ? (new Integer(i+1)).toString() : (parentIndex +"."+(i+1));
+                    resultTreeHTML.append(createResultTree(((ArrayList)dataObject).get(i), maxDepth, currentDepth - 1, i, newParentIndex));
+                }
+                resultTreeHTML.append("endParentNode()\n");
+            }
+        }
+        return resultTreeHTML.toString();
+    }
 
 }
