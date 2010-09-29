@@ -13,8 +13,11 @@
 <%@ page import="net.sf.taverna.t2.portal.WorkflowSubmissionJob" %>
 <%@ page import="net.sf.taverna.t2.portal.Constants" %>
 
-<%-- Include the styling CSS --%>
+<%-- Include the styling CSS for workflow inputs, job IDs and results tables --%>
 <%@ include file="CommonCSS.jsp" %>
+
+<%-- Include the JavaScript for creating the results data table as a tree --%>
+<%@ include file="TreeJavaScript.jsp" %>
 
 <%
 // List of UUIDs of workflows submitted to the T2 Server.
@@ -43,8 +46,7 @@ ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSub
     </tr>
 </table>
 <br/>
-<form>
-<table class="results" width="100%">
+<table class="jobs">
     <tr>
         <th>Workflow name</th>
         <th>Job ID</th>
@@ -70,7 +72,6 @@ ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSub
             </tr>
     <%}%>
 </table>
-</form>
 <%
 } else{
 %>
