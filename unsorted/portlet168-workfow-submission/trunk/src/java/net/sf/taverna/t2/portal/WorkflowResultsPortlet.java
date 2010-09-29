@@ -146,7 +146,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                         request.setAttribute(Constants.WORKFLOW_RESULTS_BACLAVA_FILE_URL_ATTRIBUTE, workflowResultsBaclavaFileURL);
                         request.setAttribute(Constants.WORKFLOW_SUBMISSION_JOB_ATTRIBUTE, job);
 
-                        //dispatcher = getPortletContext().getRequestDispatcher("/WEB-INF/jsp/IWorkflowResults_Baclava.jsp");
+                        //dispatcher = getPortletContext().getRequestDispatcher("/WEB-INF/jsp/WorkflowResults_Baclava.jsp");
                         //dispatcher.include(request, response);
 
                         // Parse the result values from the Baclava file
