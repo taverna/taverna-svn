@@ -21,6 +21,8 @@ public class WorkflowOutputPort {
     // Data value on the output port
     private Object value;
 
+    // Recognised MIME type of the output port
+    private String mimeType;
 
     public WorkflowOutputPort(){
     }
