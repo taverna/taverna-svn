@@ -23,13 +23,13 @@
 // List of UUIDs of workflows submitted to the T2 Server.
 ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)renderRequest.
         getPortletSession().
-        getAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
+        getAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
 
 %>
 
 <%-- Print out a message to the user, if any --%>
 
-<%-- Form for selecting the workflow to be sent for execution --%>
+<%-- Form for selecting the workflow job to show results for --%>
 <% if (workflowSubmissionJobs != null && !workflowSubmissionJobs.isEmpty()){ %>
 <b>To view results of a workflow submission job, click on the job ID, once its status becomes "Finished".</b><br/>
 <b>To refresh job statuses, click on the "Refresh" button.</b><br/><br/>
@@ -40,7 +40,7 @@ ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSub
         </td>
         <td align="right">
         <form action="<portlet:actionURL/>" method="post">
-        <input type="submit" name="<portlet:namespace/><%= Constants.REFRESH_WORKFLOW_JOB_UUIDS %>" value="Refresh">
+        <input type="submit" name="<portlet:namespace/><%= Constants.REFRESH_WORKFLOW_JOBS %>" value="Refresh">
         </form>
         </td>
     </tr>

@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.portal;
 
-import java.io.FilenameFilter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -22,6 +21,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.PortletSession;
 import org.apache.commons.fileupload.FileItem;
@@ -58,12 +58,6 @@ import sun.misc.BASE64Encoder;
  */
 public class WorkflowSubmissionPortlet extends GenericPortlet {
 
-    // File system separator
-    String FILE_SEPARATOR = System.getProperty("file.separator");
-
-    // Anonymous user
-    String USER_ANONYMOUS = "anonymous";
-
     // HTML form fields
     public static final String WORKFLOW_INPUTS_FORM = "workflow_inputs_form";
     public static final String WORKFLOW_FILE_NAME = "workflow_file_name";
@@ -82,14 +76,8 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     // Address of the T2 Server
     private String t2ServerURL;
 
-    // Directory where info for all submitted jobs is kept for all users
+    // Directory where info for all submitted jobs for all users is persisted
     private File jobsDir;
-
-    // Directory where info for all submitted jobs for the current user is kept
-    private File jobsDirForUser;
-
-    // Currently logged in user or 'anonymous'
-    private String user;
 
     // A list of workflow file names, which are
     // located in /WEB-INF/workflows folder in the app root.
@@ -120,30 +108,13 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         //t2ServerURL = getPortletConfig().getInitParameter(Constants.T2_SERVER_URL_PARAMETER); //  portlet specific, defined in portlet.xml
         t2ServerURL = getPortletContext().getInitParameter(Constants.T2_SERVER_URL_PARAMETER);
 
-        System.out.println();
+        // Get the directory where info for submitted jobs for all users is persisted
+        jobsDir = new File(getPortletContext().getInitParameter(Constants.JOBS_DIRECTORY_PATH),
+                Constants.JOBS_DIRECTORY_NAME);
 
         // Directory containing workflows
         File dir = new File(getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY));
         System.out.println("Workflow Submission Portlet: Using workflows directory " + dir);
-
-        // Container's temp directory
-        String tempdir = System.getProperty("java.io.tmpdir");
-        System.out.println("Workflow Submission Portlet: Temp directory is " + tempdir);
-
-        // Directory where to save/load from info for all submitted jobs
-        jobsDir = new File(getPortletContext().getInitParameter(Constants.JOBS_DIRECTORY_PATH),
-                Constants.JOBS_DIRECTORY_NAME);
-        if (!jobsDir.exists()){
-            try{
-                jobsDir.mkdir();
-            }
-            catch(Exception ex){
-                System.out.println("Workflow Submission Portlet: Failed to create a directory "+jobsDir.getAbsolutePath()+" where jobs submitted by the user " + user + " were to be saved.");
-                ex.printStackTrace();
-            }
-        }
-        System.out.println("Workflow Submission Portlet: Jobs directory " + jobsDir.getAbsolutePath());
-        System.out.println();
 
         // Load the workflows once at initialisation time
         workflowFileNamesList = new ArrayList<String>();
@@ -152,13 +123,12 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         workflowInputPortsList = new ArrayList<ArrayList<WorkflowInputPort>>();
 
         // Filter only workflows i.e. files of type .t2flow
-        FilenameFilter t2flowFilter = new FilenameFilter() {
+        /*FilenameFilter t2flowFilter = new FilenameFilter() {
             public boolean accept(File dir, String name) {
-                return name.endsWith(".t2flow");
+                return name.endsWith(Constants.T2_FLOW_FILE_EXT);
             }
-        };
-
-        String[] workflowFileNames = dir.list(t2flowFilter);
+        };*/
+        String[] workflowFileNames = dir.list(WorkflowResultsPortlet.t2flowFileFilter);
         int numberOfLoadedWorkflowFiles = 0;
        
         SAXBuilder builder = new SAXBuilder();
@@ -172,20 +142,24 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             FileInputStream workflowInputStream = null;
             Document workflowDocument;
             try {
-                workflowInputStream = new FileInputStream(getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY) + FILE_SEPARATOR + workflowFileNames[i]);
+                workflowInputStream = new FileInputStream(getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY) +
+                        Constants.FILE_SEPARATOR + workflowFileNames[i]);
             } catch (FileNotFoundException e) {
-                System.out.println("Workflow Submission Portlet: could not find workflow file " + getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY) + FILE_SEPARATOR + workflowFileNames[i]);
+                System.out.println("Workflow Submission Portlet: could not find workflow file " + getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY) + 
+                        Constants.FILE_SEPARATOR + workflowFileNames[i]);
                 e.printStackTrace();
                 continue;
             }
             try {
             	workflowDocument = builder.build(workflowInputStream);
             } catch (JDOMException ex1) {
-                System.out.println("Workflow Submission Portlet: could not parse the workflow file " + getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY) + FILE_SEPARATOR + workflowFileNames[i]);
+                System.out.println("Workflow Submission Portlet: could not parse the workflow file " + getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY) + 
+                        Constants.FILE_SEPARATOR + workflowFileNames[i]);
                 ex1.printStackTrace();
                 continue;
             } catch (IOException ex2) {
-                System.out.println("Workflow Submission Portlet: could not open workflow file " + getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY) + FILE_SEPARATOR +  workflowFileNames[i]+ " to parse it.");
+                System.out.println("Workflow Submission Portlet: could not open workflow file " + getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY) + 
+                        Constants.FILE_SEPARATOR +  workflowFileNames[i]+ " to parse it.");
                 ex2.printStackTrace();
                 continue;
             }
@@ -229,7 +203,8 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             // Also generate the JSP snippet for the workflow's input form while
             // we are at it and save it to a JSP file, if such a file already does not exist.
             // We will dispatch to this form later, when user select this workflow.
-            File workflowInputFormJSPSnippetFile = new File(getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY + FILE_SEPARATOR + workflowFileName + ".jsp"));
+            File workflowInputFormJSPSnippetFile = new File(getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY +
+                    Constants.FILE_SEPARATOR + workflowFileName + ".jsp"));
             if (!workflowInputFormJSPSnippetFile.exists()){
                 if (! createWorkflowInputFormJSPSnippetFile(workflowFileName, workflow, workflowInputPorts)){
                     // If we cannot generate the workflow inputs form - skip this workflow altogether
@@ -495,17 +470,19 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                     // to be read by the Workflow Results portlet and used to fetch results for
                                     // this run
                                     ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)request.getPortletSession().
-                                            getAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
+                                            getAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE,
+                                            PortletSession.APPLICATION_SCOPE); // should not be null at this point
+                                            
                                     WorkflowSubmissionJob job = new WorkflowSubmissionJob(workflowResourceUUID, workflowFileName, Constants.JOB_STATUS_OPERATING);
-                                    if (workflowSubmissionJobs == null){
-                                        workflowSubmissionJobs = new ArrayList<WorkflowSubmissionJob>();
-                                        workflowSubmissionJobs.add(job);
-                                    }
-                                    else{
-                                        workflowSubmissionJobs.add(job);
-                                    }
+                                    workflowSubmissionJobs.add(job);
+
+                                    // Persist the detains of the newly created job on disk
+                                    persistJobOnDisk(request, job);
+                                   
                                     request.getPortletSession().
-                                            setAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, workflowSubmissionJobs, PortletSession.APPLICATION_SCOPE);
+                                            setAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE,
+                                            workflowSubmissionJobs,
+                                            PortletSession.APPLICATION_SCOPE);
                                     request.setAttribute(Constants.INFO_MESSAGE, "Workflow "+workflowFileName+" successfully submitted for execution with job ID: " + workflowResourceUUID + ". You may use this ID to monitor the progress of the workflow run.");
                                 }
                             }
@@ -565,17 +542,16 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                 // the runs.
 
                                 ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)request.getPortletSession().
-                                        getAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
+                                        getAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
                                 WorkflowSubmissionJob job = new WorkflowSubmissionJob(workflowResourceUUID, workflowFileName, Constants.JOB_STATUS_OPERATING);
-                                if (workflowSubmissionJobs == null){
-                                    workflowSubmissionJobs = new ArrayList<WorkflowSubmissionJob>();
-                                    workflowSubmissionJobs.add(job);
-                                }
-                                else{
-                                    workflowSubmissionJobs.add(job);
-                                }
+
+                                workflowSubmissionJobs.add(job);
+
+                                // Persist the detains of the newly created job on disk
+                                persistJobOnDisk(request, job);
+
                                 request.getPortletSession().
-                                        setAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, workflowSubmissionJobs, PortletSession.APPLICATION_SCOPE);
+                                        setAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE, workflowSubmissionJobs, PortletSession.APPLICATION_SCOPE);
                             }
                         }
                     }
@@ -602,31 +578,6 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             PORTLET_NAMESPACE = response.getNamespace();
         }
 
-        if (user == null){
-            if (request.getUserPrincipal() == null){
-                user = USER_ANONYMOUS;
-            }
-            else{
-                user = request.getUserPrincipal().getName();
-            }
-            System.out.println();
-            System.out.println("Workflow Submission Portlet: User " + user + "." );
-        }
-
-        if (jobsDirForUser == null){
-            jobsDirForUser = new File(jobsDir, user);
-            if (!jobsDirForUser.exists()){
-                try{
-                    jobsDirForUser.mkdir();
-                }
-                catch(Exception ex){
-                    System.out.println("Workflow Submission Portlet: Failed to create a directory "+jobsDirForUser.getAbsolutePath()+" where jobs submitted by the user " + user + " were to be saved.");
-                    ex.printStackTrace();
-                }
-            }
-            System.out.println("Workflow Submission Portlet: Jobs directory " + jobsDirForUser.getAbsolutePath() + "." );
-        }
-
         // If a workflow has been selected - then also print its input form
         PortletRequestDispatcher dispatcher;
         dispatcher = getPortletContext().getRequestDispatcher("/WEB-INF/jsp/WorkflowSubmission_view.jsp");
@@ -639,7 +590,8 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
             // By now we should have generated the corresponding JSP file containing
             // workflow's input form snippet. Dispatch to this file now.
-            File selectedWorkflowJSPFile = new File(getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY + FILE_SEPARATOR + selectedWorkflowFileName + ".jsp"));
+            File selectedWorkflowJSPFile = new File(getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY +
+                    Constants.FILE_SEPARATOR + selectedWorkflowFileName + ".jsp"));
             if (! selectedWorkflowJSPFile.exists()){ // if it does not exist (something is wrong!) - try generating it once again
 
                 int index = workflowFileNamesList.indexOf(selectedWorkflowFileName);
@@ -691,7 +643,8 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
      */
     private boolean createWorkflowInputFormJSPSnippetFile(String workflowFileName, Workflow workflow, ArrayList<WorkflowInputPort> workflowInputPorts){
 
-        File selectedWorkflowJSPFile = new File(getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY + FILE_SEPARATOR + workflowFileName + ".jsp"));
+        File selectedWorkflowJSPFile = new File(getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY +
+                Constants.FILE_SEPARATOR + workflowFileName + ".jsp"));
 
         if (selectedWorkflowJSPFile.exists()){
             return true;
@@ -884,7 +837,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         catch(Exception ex){
             System.out.println("Workflow Submission Portlet: Failed to POST request to submit workflow " + workflowFileName + " for execution.");
             ex.printStackTrace();
-            request.setAttribute(Constants.ERROR_MESSAGE, "Failed to submit workflow " + workflowFileName + " for execution: HTTP POST failed.");
+            request.setAttribute(Constants.ERROR_MESSAGE, "Failed to submit workflow " + workflowFileName + " for execution.<br/>Error: " +  ex.getMessage());
             return null;
         }
 
@@ -1258,6 +1211,56 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             }
         }
         return latestValue;
+    }
+
+    /*
+     * Persist the details of a job on a disk. A directory named after
+     * the job's UUID will be created in the jobs directory for the owning user
+     * and will contain:
+     *  - an empty .t2flow file named after the workflow file just to hold the worflow file name
+     *  - an empty file initially named Operating.status to indicate the status of the job
+     *  - the input Baclava document in input.baclava file to hold the job's inputs
+     */
+    private void persistJobOnDisk(PortletRequest request, WorkflowSubmissionJob job){
+
+        // Get the current user
+        String user = (String)request.getPortletSession().
+                                    getAttribute(Constants.USER,
+                                    PortletSession.APPLICATION_SCOPE); // should not be null at this point
+        File userDir = new File (jobsDir, user);
+
+        // Create a new directory for this job
+        File jobDir = new File(userDir, job.getUuid());
+        try{ // should not have existed so far
+            jobDir.mkdir();
+        }
+        catch(Exception ex){
+            System.out.println("Workflow Submission Portlet: Failed to create a directory "+jobDir.getAbsolutePath()+" to save the job.");
+            ex.printStackTrace();
+        }
+        System.out.println("Workflow Submission Portlet: Job's directory " + jobDir.getAbsolutePath() + " created." );
+
+        // Set the status to "Operating" by creating an empty file
+        File statusFile = new File(jobDir, Constants.JOB_STATUS_OPERATING + Constants.STATUS_FILE_EXT);
+        try{
+            FileUtils.touch(statusFile);
+        }
+        catch(Exception ex){
+            System.out.println("Workflow Submission Portlet: Failed to create the job's status file " + statusFile.getAbsolutePath());
+            ex.printStackTrace();
+        }
+        System.out.println("Workflow Submission Portlet: Job's status set at " + statusFile.getAbsolutePath());
+
+        // Save the workflow name in an empty file
+        File workflowFile = new File(jobDir, job.getWorkflowFileName() + Constants.T2_FLOW_FILE_EXT);
+        try{
+            FileUtils.touch(workflowFile);
+        }
+        catch(Exception ex){
+            System.out.println("Workflow Submission Portlet: Failed to create the job's status file " + workflowFile.getAbsolutePath());
+            ex.printStackTrace();
+        }
+        System.out.println("Workflow Submission Portlet: Job's workflow name set at " + workflowFile.getAbsolutePath());
     }
 
     static final String HEXES = "0123456789ABCDEF";

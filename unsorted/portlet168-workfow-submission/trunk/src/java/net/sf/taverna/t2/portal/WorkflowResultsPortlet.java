@@ -6,10 +6,12 @@
 package net.sf.taverna.t2.portal;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
@@ -48,6 +51,9 @@ public class WorkflowResultsPortlet extends GenericPortlet{
     // Address of the T2 Server
     String t2ServerURL;
 
+    // Directory where info for all submitted jobs for all users is persisted
+    private File jobsDir;
+
     /*
      * Do the init stuff one at portlet loading time.
      */
@@ -58,47 +64,41 @@ public class WorkflowResultsPortlet extends GenericPortlet{
         // app-wide init parameter ( <context-param> element)
         //t2ServerURL = getPortletConfig().getInitParameter(Constants.T2_SERVER_URL_PARAMETER); // portlet specific, defined in portlet.xml
         t2ServerURL = getPortletContext().getInitParameter(Constants.T2_SERVER_URL_PARAMETER);
+
+        // Get the directory where info for submitted jobs for all users is persisted
+        jobsDir = new File(getPortletContext().getInitParameter(Constants.JOBS_DIRECTORY_PATH),
+                Constants.JOBS_DIRECTORY_NAME);
+        if (!jobsDir.exists()){
+            try{
+                jobsDir.mkdir();
+            }
+            catch(Exception ex){
+                System.out.println("Workflow Results Portlet: Failed to create a directory "+jobsDir.getAbsolutePath()+" where submitted jobs are to be persisted.");
+                ex.printStackTrace();
+            }
+        }
+        System.out.println("Workflow Results Portlet: Directory where jobs will be persisted set to " + jobsDir.getAbsolutePath());
     }
 
     @Override
     public void processAction(ActionRequest request, ActionResponse response) throws PortletException,IOException {
 
-        // If there was a request to refresh the job ID status table
-        if (request.getParameter(Constants.REFRESH_WORKFLOW_JOB_UUIDS) != null){
-            ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)request.getPortletSession().
-                    getAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
+        ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)request.getPortletSession().
+        getAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE,
+        PortletSession.APPLICATION_SCOPE);
 
-            if (workflowSubmissionJobs != null){
-                for (int i = workflowSubmissionJobs.size()-1; i>=0; i--){
-
-                    WorkflowSubmissionJob job = workflowSubmissionJobs.get(i);
-
-                    // Get the updated the job's status from the T2 Server
-                    String status = getWorkflowSubmissionJobStatus(job);
-
-                    // If the job is not available on the Server any more - remove it
-                    if (status.equals(Constants.UNKNOWN_RUN_UUID)){
-                        workflowSubmissionJobs.remove(i);
-                    }
-                    else{
-                        job.setStatus(status);
-                    }
-                }
-            }
-            request.getPortletSession().
-                    setAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, workflowSubmissionJobs, PortletSession.APPLICATION_SCOPE);
+        // If there was a request to refresh the job statuses
+        if (request.getParameter(Constants.REFRESH_WORKFLOW_JOBS) != null){
+            refreshJobStatuses(request, workflowSubmissionJobs);
         }
         // If there was a request to show results of a workflow run
         else if (request.getParameter(Constants.FETCH_RESULTS) != null){
 
-            // But if workflowSubmissionJobs is null or does not contain this job ID
+            // If workflowSubmissionJobs is null or does not contain this job ID
             // this is just a page refresh after redeployment of the app/restart of
             // the sever/some form or refresh while the URL parameter FETCH_RESULTS
             // managed to linger in the URL in the browser from the previous
             // session so just ignore it.
-            ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)request.getPortletSession().
-                    getAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
-
             if (workflowSubmissionJobs != null){
                 String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(Constants.FETCH_RESULTS)[0], "UTF-8");
                 for (WorkflowSubmissionJob job : workflowSubmissionJobs){
@@ -115,8 +115,39 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
     }
 
-    public void doView(RenderRequest request,RenderResponse response) throws PortletException,IOException {
-        
+    @Override
+    public void doView(RenderRequest request, RenderResponse response) throws PortletException,IOException {
+
+        // Get currently logged in user
+        String user = (String)request.getPortletSession().
+                                            getAttribute(Constants.USER,
+                                            PortletSession.APPLICATION_SCOPE);
+        if (user == null){
+            if (request.getUserPrincipal() == null){
+                user = Constants.USER_ANONYMOUS;
+            }
+            else{
+                user = request.getUserPrincipal().getName();
+            }
+            System.out.println("Workflow Results Portlet: Session started for user " + user + "." );
+            request.getPortletSession().setAttribute(Constants.USER,
+                    user,
+                    PortletSession.APPLICATION_SCOPE);
+        }
+
+        // Get all jobs for the current user that have been persisted on a disk
+        ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)request.getPortletSession().
+                                            getAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE,
+                                            PortletSession.APPLICATION_SCOPE);
+        if (workflowSubmissionJobs == null){ // load user's jobs from disk
+            workflowSubmissionJobs = loadWorkflowSubmissionJobs(jobsDir, user);
+            request.getPortletSession().setAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE,
+                    workflowSubmissionJobs,
+                    PortletSession.APPLICATION_SCOPE);
+        }
+        // Refresh job statuses if there is a job that has not finished yet
+        refreshJobStatuses(request, workflowSubmissionJobs);
+                
         response.setContentType("text/html");
         PortletRequestDispatcher dispatcher =
         getPortletContext().getRequestDispatcher("/WEB-INF/jsp/WorkflowResults_view.jsp");
@@ -129,10 +160,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
             // this is just a page refresh after redeployment of the app/restart of
             // the sever/some form or refresh while the URL parameter FETCH_RESULTS
             // managed to linger in the URL in the browser from the previous
-            // session so just ignore it.
-            ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)request.getPortletSession().
-                    getAttribute(Constants.WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
-
+            // session so just ignore it.         
             if (workflowSubmissionJobs != null){
                 String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(Constants.FETCH_RESULTS)[0], "UTF-8");
                 for (WorkflowSubmissionJob job : workflowSubmissionJobs){
@@ -203,7 +231,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                         }
                         finally{
                             response.getWriter().println("Download the results as a <a target=\"_blank\" href=\"" + workflowResultsBaclavaFileURL + "\">single XML file</a>. " +
-                                    "You can view the file in Taverna's DataViewer tool.");
+                                    "You can view the file with Taverna's DataViewer tool.");
                         }
 
                         break;
@@ -213,6 +241,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
         }
     }
 
+    @Override
     public void doEdit(RenderRequest request,RenderResponse response) throws PortletException,IOException {
             response.setContentType("text/html");
         PortletRequestDispatcher dispatcher =
@@ -220,6 +249,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
         dispatcher.include(request, response);
     }
 
+    @Override
     public void doHelp(RenderRequest request, RenderResponse response) throws PortletException,IOException {
 
         response.setContentType("text/html");
@@ -228,6 +258,9 @@ public class WorkflowResultsPortlet extends GenericPortlet{
         dispatcher.include(request, response);
     }
 
+    /*
+     * Fetch status of a submitted job from a T2 Server.
+     */
     private String getWorkflowSubmissionJobStatus(WorkflowSubmissionJob workflowSubmissionJob){
 
         HttpClient httpClient = new DefaultHttpClient();
@@ -259,7 +292,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                     if (contentType.startsWith("text")) {
                         // Read as text
                         value = readResponseBodyAsString(httpEntity).trim();
-                         System.out.println("Workflow Results Portlet: Status of job " +workflowSubmissionJob.getUuid() + " " + value);
+                         System.out.println("Workflow Results Portlet: Status of job " +workflowSubmissionJob.getUuid() + " is '" + value + "'.");
                     }
                     else{
                         System.out.println("Workflow Results Portlet: Server's response not text/plain for status of job " +workflowSubmissionJob.getUuid());
@@ -283,9 +316,13 @@ public class WorkflowResultsPortlet extends GenericPortlet{
             return "An error occured while trying to get the status for job.";
         }
     }
-    
-  private static String readResponseBodyAsString(HttpEntity entity) throws IOException
-  {
+
+    /*
+     * Return the body of the HTTP response as a String.
+     * From Sergejs Aleksejevs Taverna REST plugin.
+     */
+    private static String readResponseBodyAsString(HttpEntity entity) throws IOException
+    {
         // Get charset name. Use UTF-8 if not defined.
         String charset = "UTF-8";
         String contentType = entity.getContentType().getValue().toLowerCase();
@@ -309,24 +346,30 @@ public class WorkflowResultsPortlet extends GenericPortlet{
         }
 
         return (responseBodyString.toString());
-  }
-
-    private int calculateDataDepth(Object dataObject) {
-
-            if (dataObject instanceof Collection<?>){
-                    if (((Collection<?>)dataObject).isEmpty()){
-                            return 1;
-                    }
-                    else{
-                            // Calculate the depth of the first element in collection + 1
-                            return calculateDataDepth(((Collection<?>)dataObject).iterator().next()) + 1;
-                    }
-            }
-            else{
-                return 0;
-            }
     }
 
+    /*
+     * Calculate depth of a result data item.
+     */
+    private int calculateDataDepth(Object dataObject) {
+
+        if (dataObject instanceof Collection<?>){
+            if (((Collection<?>)dataObject).isEmpty()){
+                    return 1;
+            }
+            else{
+                    // Calculate the depth of the first element in collection + 1
+                    return calculateDataDepth(((Collection<?>)dataObject).iterator().next()) + 1;
+            }
+        }
+        else{
+            return 0;
+        }
+    }
+
+    /*
+     * Create a result tree in JavaScript for a result data item.
+     */
     private String createResultTree(Object dataObject, int maxDepth, int currentDepth, int index, String parentIndex){
 
         StringBuffer resultTreeHTML = new StringBuffer();
@@ -350,4 +393,126 @@ public class WorkflowResultsPortlet extends GenericPortlet{
         return resultTreeHTML.toString();
     }
 
+    /*
+     * Loads and returns all saved jobs for a user from a disk.
+     */
+    private ArrayList<WorkflowSubmissionJob> loadWorkflowSubmissionJobs(File jobsDir, String user){
+
+        ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = new ArrayList<WorkflowSubmissionJob>();
+        try{
+            File userDir = new File (jobsDir, user);
+            if (!userDir.exists()){
+                try{
+                    userDir.mkdir();
+                }
+                catch(Exception ex){
+                    System.out.println("Workflow Results Portlet: Failed to create a directory "+userDir.getAbsolutePath()+" where jobs submitted by the user " + user + " are to be persisted.");
+                    ex.printStackTrace();
+                    return workflowSubmissionJobs;
+                }
+            }
+
+            File[] jobDirsForUser = userDir.listFiles(dirFilter);
+            for (File jobDir : jobDirsForUser){
+                String uuid = jobDir.getName();
+
+                String workflowFileNameWithExtension = jobDir.list(t2flowFileFilter)[0]; // should be only 1 element or else we are in trouble
+                String workflowFileName = workflowFileNameWithExtension.substring(0, workflowFileNameWithExtension.indexOf(Constants.T2_FLOW_FILE_EXT));
+
+                String statusFileName = jobDir.list(statusFileFilter)[0]; // should be only 1 element or else we are in trouble
+                String status = statusFileName.substring(0, statusFileName.indexOf(Constants.STATUS_FILE_EXT));
+
+                WorkflowSubmissionJob workflowSubmissionJob =  new WorkflowSubmissionJob(uuid, workflowFileName, status);
+                workflowSubmissionJobs.add(workflowSubmissionJob);
+
+                System.out.println("Workflow Results Portlet: Found job: " + uuid + " " + workflowFileName + " " + status);
+            }
+        }
+        catch(Exception ex){
+           System.out.println("Workflow Results Portlet: Failed to load previously submitted jobs from " + jobsDir.getAbsolutePath());
+           ex.printStackTrace();
+        }
+
+        return workflowSubmissionJobs;
+    }
+
+
+    // This file filter only returns directories
+    FileFilter dirFilter = new FileFilter() {
+        public boolean accept(File file) {
+            return file.isDirectory();
+        }
+    };
+    // This file filter only returns files with .status extension
+    public static FilenameFilter statusFileFilter = new FilenameFilter() {
+        public boolean accept(File dir, String name) {
+            return name.endsWith(Constants.STATUS_FILE_EXT);
+        }
+    };
+    // This file filter only returns files with .t2flow extension
+    public static FilenameFilter t2flowFileFilter = new FilenameFilter() {
+        public boolean accept(File dir, String name) {
+            return name.endsWith(Constants.T2_FLOW_FILE_EXT);
+        }
+    };
+
+    /*
+     * Fetches job statuses from a T2 Server for all jobs that
+     * have not already finished.
+     */
+    private void refreshJobStatuses(PortletRequest request, ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs){
+
+        for (int i = workflowSubmissionJobs.size()-1; i>=0; i--){
+
+            WorkflowSubmissionJob job = workflowSubmissionJobs.get(i);
+
+            if (!job.getStatus().equals(Constants.JOB_STATUS_FINISHED)){
+                // Get the updated the job's status from the T2 Server
+                String status = getWorkflowSubmissionJobStatus(job);
+                // If the job is not available on the Server any more - set its status to "Expired"
+                if (status.equals(Constants.UNKNOWN_RUN_UUID)){
+                    job.setStatus(Constants.JOB_STATUS_EXPIRED);
+                }
+                else{
+                    if (status.equals(Constants.JOB_STATUS_FINISHED)){
+                        job.setStatus(status);
+                        // persist the new status for this job on a disk
+                        updateJobStatusOnDisk(job, status, request);
+                    }
+                }
+            }
+        }
+
+        request.getPortletSession().
+                setAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE,
+                workflowSubmissionJobs,
+                PortletSession.APPLICATION_SCOPE);
+    }
+
+    /*
+     * Update job's status as persisted on a local disk.
+     * Job's status is saved in a file with name <JOB_STATUS>.status in
+     * a directory for that job (named after the job's UUID) and the owning user.
+     */
+    private void updateJobStatusOnDisk(WorkflowSubmissionJob job, String newStatus, PortletRequest request){
+
+        // Get the current user
+        String user = (String)request.getPortletSession().
+                                    getAttribute(Constants.USER,
+                                    PortletSession.APPLICATION_SCOPE);
+
+        File userDir = new File (jobsDir, user);
+        File[] userJobsDir = userDir.listFiles(dirFilter);
+
+        String oldStatus = null;
+        for (File jobDir : userJobsDir){
+            if (jobDir.getName().equals(job.getUuid())){
+                String statusFileName = jobDir.list(statusFileFilter)[0]; // should be only 1 element or else we are in trouble
+                oldStatus = statusFileName.substring(0, statusFileName.indexOf(Constants.STATUS_FILE_EXT));
+                File statusFile = new File(jobDir, statusFileName);
+                statusFile.renameTo(new File(jobDir, newStatus + Constants.STATUS_FILE_EXT));
+                System.out.println("Workflow Results Portlet: Updated status for job " + jobDir.getAbsolutePath() + " from '" + oldStatus + "' to '" + newStatus + "'.");
+            }
+        }
+    }
 }

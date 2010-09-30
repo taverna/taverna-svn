@@ -7,9 +7,24 @@ import org.jdom.Namespace;
  * @author Alex Nenadic
  */
 public class Constants {
+    // File system separator
+    public static final String FILE_SEPARATOR = System.getProperty("file.separator");
 
     public static final String WORKFLOWS_DIRECTORY = "/WEB-INF/workflows"; // relative URL path from the root of the app
+    public static final String T2_FLOW_FILE_EXT = ".t2flow";
+    public static final String STATUS_FILE_EXT = ".status";
 
+    // Anonymous user
+    public static final String USER_ANONYMOUS = "anonymous";
+
+    // Application scope attributes
+    public static final String WORKFLOW_JOBS_ATTRIBUTE = "workflow_jobs";
+    public static final String WORKFLOW_RESULTS_BACLAVA_FILE_URL_ATTRIBUTE = "workflow_results_baclava_file_URL";
+    public static final String WORKFLOW_SUBMISSION_JOB_ATTRIBUTE = "workflow_submission_job";
+    //public static final String WORKFLOW_JOBS_DIRECTORY_FOR_USER_ATTRIBUTE = "workflow_jobs_directory_for_user";
+    public static final String USER = "user";
+
+    // Portlet scope attributes
     public static final String ERROR_MESSAGE = "error_message";
     public static final String INFO_MESSAGE = "info_message";
 
@@ -61,6 +76,7 @@ public class Constants {
     public static final String LOCATION_HEADER_NAME = "Location";
     public static final String JOB_STATUS_OPERATING = "Operating";
     public static final String JOB_STATUS_FINISHED = "Finished";
+    public static final String JOB_STATUS_EXPIRED = "Expired"; // no longer available on the T2 Server - this is local to the app, no such status exists on the Server
     public static final String UNKNOWN_RUN_UUID = "unknown run UUID";
     public static final String BACLAVA_OUTPUT_FILE_NAME = "output.baclava";
 
@@ -70,10 +86,6 @@ public class Constants {
     public static final String INPUT_ELEMENT = "runInput";
     public static final String FILE_ELEMENT = "file";
 
-    // Application scope attributes
-    public static final String WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE = "workflow_job_uuids";
-    public static final String WORKFLOW_RESULTS_BACLAVA_FILE_URL_ATTRIBUTE = "workflow_results_baclava_file_URL";
-    public static final String WORKFLOW_SUBMISSION_JOB_ATTRIBUTE = "workflow_submission_job";
     // HTML forms
     public static final String WORKFLOW_FILE_NAMES = "workflow_file_names";
     public static final String WORKFLOW_SELECTION_SUBMISSION_FORM = "workflow_selection_form";
@@ -87,6 +99,6 @@ public class Constants {
     public static final String WORKFLOW_INPUT_CONTENT_SUFFIX = "_content";
     public static final String WORKFLOW_INPUT_FILE_SUFFIX = "_file";
 
-    public static final String REFRESH_WORKFLOW_JOB_UUIDS = "refresh_workflow_job_uuids";
+    public static final String REFRESH_WORKFLOW_JOBS = "refresh_workflow_jobs";
     public static final String FETCH_RESULTS="fetch_results";
 }
