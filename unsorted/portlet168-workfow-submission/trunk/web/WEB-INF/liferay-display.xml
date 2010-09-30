@@ -4,5 +4,6 @@
   <category name="User_Portlets">
     <portlet id="WorkflowSubmission">WorkflowSubmission</portlet>
     <portlet id="WorkflowResults">WorkflowResults</portlet>
+    <portlet id="FileSubmission">FileSubmission</portlet>
   </category>
 </display>

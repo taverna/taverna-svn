@@ -36,4 +36,22 @@
 			<short-title>Workflow Results</short-title>
 		</portlet-info>
 	</portlet>
+        <portlet>
+		<description>Portlet for submitting workflow result data files for viewing in a browser</description>
+		<portlet-name>FileSubmission</portlet-name>
+		<display-name>File Submission Portlet</display-name>
+		<portlet-class>net.sf.taverna.t2.portal.FileSubmissionPortlet</portlet-class>
+                <expiration-cache>0</expiration-cache>
+		<supports>
+			<mime-type>text/html</mime-type>
+			<portlet-mode>VIEW</portlet-mode>
+			<portlet-mode>EDIT</portlet-mode>
+			<portlet-mode>HELP</portlet-mode>
+		</supports>
+		<resource-bundle>net.sf.taverna.t2.portal.messages</resource-bundle>
+		<portlet-info>
+			<title>File Submission Portlet</title>
+			<short-title>File Submission Portlet</short-title>
+		</portlet-info>
+	</portlet>
 </portlet-app>

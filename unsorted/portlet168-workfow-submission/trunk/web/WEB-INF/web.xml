@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+    <servlet>
+        <servlet-name>FileServingServlet</servlet-name>
+        <servlet-class>net.sf.taverna.t2.portal.FileServingServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FileServingServlet</servlet-name>
+        <url-pattern>/FileServingServlet</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             30
@@ -13,9 +21,14 @@
         <taglib-location>/WEB-INF/tld/std-portlet.tld</taglib-location>
     </taglib>
     <context-param>
-        <param-name>t2_server_url</param-name>
+        <param-name>T2_SERVER_URL</param-name>
         <param-value>http://localhost:8081/taverna-server</param-value>
         <!--<param-value>http://eric.rcs.manchester.ac.uk:8080/taverna-server</param-value>-->
         <description>The URL of the T2 Server to be used for executing the workflows</description>
+    </context-param>
+    <context-param>
+        <param-name>FILE_SERVLET_PATH</param-name>
+        <param-value>/FileServingServlet</param-value>
+        <description>Relative path to the servlet that serves files from a local disk and displayes theur content in a browser</description>
     </context-param>
 </web-app>
