@@ -16,6 +16,8 @@ public class Constants {
     // Init parameters
     public static final String T2_SERVER_URL_PARAMETER = "T2_SERVER_URL";
     public static final String FILE_SERVLET_PATH = "FILE_SERVLET_PATH";
+    public static final String JOBS_DIRECTORY_PATH = "JOBS_DIRECTORY_PATH";
+    public static final String JOBS_DIRECTORY_NAME = "T2WorkflowSubmissionJobs";
 
     // .t2flow XML namespace
     public static final Namespace T2_WORKFLOW_NAMESPACE = Namespace.getNamespace("http://taverna.sf.net/2008/xml/t2flow");

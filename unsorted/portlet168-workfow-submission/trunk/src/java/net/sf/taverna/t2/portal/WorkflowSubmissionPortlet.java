@@ -61,6 +61,9 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     // File system separator
     String FILE_SEPARATOR = System.getProperty("file.separator");
 
+    // Anonymous user
+    String USER_ANONYMOUS = "anonymous";
+
     // HTML form fields
     public static final String WORKFLOW_INPUTS_FORM = "workflow_inputs_form";
     public static final String WORKFLOW_FILE_NAME = "workflow_file_name";
@@ -77,7 +80,16 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     public static final String PIPE_SEPARATOR = "pipe";
 
     // Address of the T2 Server
-    String t2ServerURL;
+    private String t2ServerURL;
+
+    // Directory where info for all submitted jobs is kept for all users
+    private File jobsDir;
+
+    // Directory where info for all submitted jobs for the current user is kept
+    private File jobsDirForUser;
+
+    // Currently logged in user or 'anonymous'
+    private String user;
 
     // A list of workflow file names, which are
     // located in /WEB-INF/workflows folder in the app root.
@@ -108,18 +120,36 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         //t2ServerURL = getPortletConfig().getInitParameter(Constants.T2_SERVER_URL_PARAMETER); //  portlet specific, defined in portlet.xml
         t2ServerURL = getPortletContext().getInitParameter(Constants.T2_SERVER_URL_PARAMETER);
 
-        // Load the workflows once at initialisation time
-        workflowFileNamesList = new ArrayList<String>();
-        workflowList = new ArrayList<Workflow>();
-        wrappedWorkflowXMLDocumentsList = new ArrayList<Document>();
-        workflowInputPortsList = new ArrayList<ArrayList<WorkflowInputPort>>();
+        System.out.println();
 
         // Directory containing workflows
         File dir = new File(getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY));
         System.out.println("Workflow Submission Portlet: Using workflows directory " + dir);
 
+        // Container's temp directory
         String tempdir = System.getProperty("java.io.tmpdir");
         System.out.println("Workflow Submission Portlet: Temp directory is " + tempdir);
+
+        // Directory where to save/load from info for all submitted jobs
+        jobsDir = new File(getPortletContext().getInitParameter(Constants.JOBS_DIRECTORY_PATH),
+                Constants.JOBS_DIRECTORY_NAME);
+        if (!jobsDir.exists()){
+            try{
+                jobsDir.mkdir();
+            }
+            catch(Exception ex){
+                System.out.println("Workflow Submission Portlet: Failed to create a directory "+jobsDir.getAbsolutePath()+" where jobs submitted by the user " + user + " were to be saved.");
+                ex.printStackTrace();
+            }
+        }
+        System.out.println("Workflow Submission Portlet: Jobs directory " + jobsDir.getAbsolutePath());
+        System.out.println();
+
+        // Load the workflows once at initialisation time
+        workflowFileNamesList = new ArrayList<String>();
+        workflowList = new ArrayList<Workflow>();
+        wrappedWorkflowXMLDocumentsList = new ArrayList<Document>();
+        workflowInputPortsList = new ArrayList<ArrayList<WorkflowInputPort>>();
 
         // Filter only workflows i.e. files of type .t2flow
         FilenameFilter t2flowFilter = new FilenameFilter() {
@@ -570,6 +600,31 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
         if (PORTLET_NAMESPACE == null){
             PORTLET_NAMESPACE = response.getNamespace();
+        }
+
+        if (user == null){
+            if (request.getUserPrincipal() == null){
+                user = USER_ANONYMOUS;
+            }
+            else{
+                user = request.getUserPrincipal().getName();
+            }
+            System.out.println();
+            System.out.println("Workflow Submission Portlet: User " + user + "." );
+        }
+
+        if (jobsDirForUser == null){
+            jobsDirForUser = new File(jobsDir, user);
+            if (!jobsDirForUser.exists()){
+                try{
+                    jobsDirForUser.mkdir();
+                }
+                catch(Exception ex){
+                    System.out.println("Workflow Submission Portlet: Failed to create a directory "+jobsDirForUser.getAbsolutePath()+" where jobs submitted by the user " + user + " were to be saved.");
+                    ex.printStackTrace();
+                }
+            }
+            System.out.println("Workflow Submission Portlet: Jobs directory " + jobsDirForUser.getAbsolutePath() + "." );
         }
 
         // If a workflow has been selected - then also print its input form
