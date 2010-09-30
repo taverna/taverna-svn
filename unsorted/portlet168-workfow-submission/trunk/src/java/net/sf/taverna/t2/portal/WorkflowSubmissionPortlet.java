@@ -550,6 +550,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         response.setRenderParameters(request.getParameterMap());
     }
 
+    @Override
     public void doView(RenderRequest request,RenderResponse response) throws PortletException,IOException {
         response.setContentType("text/html");
 
@@ -594,12 +595,15 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         }
     }
 
+    @Override
     public void doEdit(RenderRequest request,RenderResponse response) throws PortletException,IOException {
             response.setContentType("text/html");        
         PortletRequestDispatcher dispatcher =
         getPortletContext().getRequestDispatcher("/WEB-INF/jsp/WorkflowSubmission_edit.jsp");
         dispatcher.include(request, response);
     }
+
+    @Override
     public void doHelp(RenderRequest request, RenderResponse response) throws PortletException,IOException {
 
         response.setContentType("text/html");        
