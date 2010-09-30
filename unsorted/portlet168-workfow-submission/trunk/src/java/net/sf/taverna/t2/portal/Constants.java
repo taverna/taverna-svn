@@ -13,6 +13,10 @@ public class Constants {
     public static final String ERROR_MESSAGE = "error_message";
     public static final String INFO_MESSAGE = "info_message";
 
+    // Init parameters
+    public static final String T2_SERVER_URL_PARAMETER = "T2_SERVER_URL";
+    public static final String FILE_SERVLET_PATH = "FILE_SERVLET_PATH";
+
     // .t2flow XML namespace
     public static final Namespace T2_WORKFLOW_NAMESPACE = Namespace.getNamespace("http://taverna.sf.net/2008/xml/t2flow");
     // Baclava documents XML namespace
@@ -41,7 +45,6 @@ public class Constants {
     public static final String DATE_ELEMENT = "date";
 
     // REST
-    public static final String T2_SERVER_URL_PARAMETER = "t2_server_url";
     public static final Namespace T2_SERVER_NAMESPACE = Namespace.getNamespace("http://ns.taverna.org.uk/2010/xml/server/");
     public static final Namespace T2_SERVER_REST_NAMESPACE = Namespace.getNamespace("t2sr", "http://ns.taverna.org.uk/2010/xml/server/rest/");
     public static final String T2_SERVER_WORKFLOW_ELEMENT = "workflow";
@@ -68,7 +71,6 @@ public class Constants {
     // Application scope attributes
     public static final String WORKFLOW_JOB_UUIDS_PORTLET_ATTRIBUTE = "workflow_job_uuids";
     public static final String WORKFLOW_RESULTS_BACLAVA_FILE_URL_ATTRIBUTE = "workflow_results_baclava_file_URL";
-    public static final String WORKFLOW_RESULTS_MAP_ATTRIBUTE = "workflow_results_map";
     public static final String WORKFLOW_SUBMISSION_JOB_ATTRIBUTE = "workflow_submission_job";
     // HTML forms
     public static final String WORKFLOW_FILE_NAMES = "workflow_file_names";
