@@ -58,6 +58,9 @@ import sun.misc.BASE64Encoder;
  */
 public class WorkflowSubmissionPortlet extends GenericPortlet {
 
+    // File system separator
+    String FILE_SEPARATOR = System.getProperty("file.separator");
+
     // HTML form fields
     public static final String WORKFLOW_INPUTS_FORM = "workflow_inputs_form";
     public static final String WORKFLOW_FILE_NAME = "workflow_file_name";
@@ -113,7 +116,11 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
         // Directory containing workflows
         File dir = new File(getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY));
-       
+        System.out.println("Workflow Submission Portlet: Using workflows directory " + dir);
+
+        String tempdir = System.getProperty("java.io.tmpdir");
+        System.out.println("Workflow Submission Portlet: Temp directory is " + tempdir);
+
         // Filter only workflows i.e. files of type .t2flow
         FilenameFilter t2flowFilter = new FilenameFilter() {
             public boolean accept(File dir, String name) {
@@ -135,20 +142,20 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             FileInputStream workflowInputStream = null;
             Document workflowDocument;
             try {
-                workflowInputStream = new FileInputStream(getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY) + "/" + workflowFileNames[i]);
+                workflowInputStream = new FileInputStream(getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY) + FILE_SEPARATOR + workflowFileNames[i]);
             } catch (FileNotFoundException e) {
-                System.out.println("Workflow Submission Portlet: could not find workflow file " + getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY) + "/" + workflowFileNames[i]);
+                System.out.println("Workflow Submission Portlet: could not find workflow file " + getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY) + FILE_SEPARATOR + workflowFileNames[i]);
                 e.printStackTrace();
                 continue;
             }
             try {
             	workflowDocument = builder.build(workflowInputStream);
             } catch (JDOMException ex1) {
-                System.out.println("Workflow Submission Portlet: could not parse the workflow file " + getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY) + "/" + workflowFileNames[i]);
+                System.out.println("Workflow Submission Portlet: could not parse the workflow file " + getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY) + FILE_SEPARATOR + workflowFileNames[i]);
                 ex1.printStackTrace();
                 continue;
             } catch (IOException ex2) {
-                System.out.println("Workflow Submission Portlet: could not open workflow file " + getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY) + "/" +  workflowFileNames[i]+ " to parse it.");
+                System.out.println("Workflow Submission Portlet: could not open workflow file " + getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY) + FILE_SEPARATOR +  workflowFileNames[i]+ " to parse it.");
                 ex2.printStackTrace();
                 continue;
             }
@@ -192,7 +199,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             // Also generate the JSP snippet for the workflow's input form while
             // we are at it and save it to a JSP file, if such a file already does not exist.
             // We will dispatch to this form later, when user select this workflow.
-            File workflowInputFormJSPSnippetFile = new File(getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY + "/" + workflowFileName + ".jsp"));
+            File workflowInputFormJSPSnippetFile = new File(getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY + FILE_SEPARATOR + workflowFileName + ".jsp"));
             if (!workflowInputFormJSPSnippetFile.exists()){
                 if (! createWorkflowInputFormJSPSnippetFile(workflowFileName, workflow, workflowInputPorts)){
                     // If we cannot generate the workflow inputs form - skip this workflow altogether
@@ -577,7 +584,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
             // By now we should have generated the corresponding JSP file containing
             // workflow's input form snippet. Dispatch to this file now.
-            File selectedWorkflowJSPFile = new File(getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY + "/" + selectedWorkflowFileName + ".jsp"));
+            File selectedWorkflowJSPFile = new File(getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY + FILE_SEPARATOR + selectedWorkflowFileName + ".jsp"));
             if (! selectedWorkflowJSPFile.exists()){ // if it does not exist (something is wrong!) - try generating it once again
 
                 int index = workflowFileNamesList.indexOf(selectedWorkflowFileName);
@@ -629,7 +636,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
      */
     private boolean createWorkflowInputFormJSPSnippetFile(String workflowFileName, Workflow workflow, ArrayList<WorkflowInputPort> workflowInputPorts){
 
-        File selectedWorkflowJSPFile = new File(getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY + "/" + workflowFileName + ".jsp"));
+        File selectedWorkflowJSPFile = new File(getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY + FILE_SEPARATOR + workflowFileName + ".jsp"));
 
         if (selectedWorkflowJSPFile.exists()){
             return true;

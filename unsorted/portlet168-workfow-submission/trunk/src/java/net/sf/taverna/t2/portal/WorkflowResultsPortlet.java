@@ -103,7 +103,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                 String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(Constants.FETCH_RESULTS)[0], "UTF-8");
                 for (WorkflowSubmissionJob job : workflowSubmissionJobs){
                     if (job.getUuid().equals(workflowResourceUUID)){
-                        System.out.println("Workflow Submission Portlet: Fetching results for job ID " + workflowResourceUUID);
+                        System.out.println("Workflow Results Portlet: Fetching results for job ID " + workflowResourceUUID);
                         break; 
                     } // else just ignore it if it is not in the job ID list
                 }
@@ -245,7 +245,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
             httpClient.getConnectionManager().shutdown();
 
             if (httpResponse.getStatusLine().getStatusCode() == 403){ // HTTP/1.1 403 Forbidden
-                System.out.println("Workflow Submission Portlet: Job " +workflowSubmissionJob.getUuid()+
+                System.out.println("Workflow Results Portlet: Job " +workflowSubmissionJob.getUuid()+
                         " does not exist on the Server any more. The Server responded with: " + httpResponse.getStatusLine()+".");
                 return Constants.UNKNOWN_RUN_UUID;
             }
@@ -259,26 +259,26 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                     if (contentType.startsWith("text")) {
                         // Read as text
                         value = readResponseBodyAsString(httpEntity).trim();
-                         System.out.println("Workflow Submission Portlet: Status of job " +workflowSubmissionJob.getUuid() + " " + value);
+                         System.out.println("Workflow Results Portlet: Status of job " +workflowSubmissionJob.getUuid() + " " + value);
                     }
                     else{
-                        System.out.println("Workflow Submission Portlet: Server's response not text/plain for status of job " +workflowSubmissionJob.getUuid());
+                        System.out.println("Workflow Results Portlet: Server's response not text/plain for status of job " +workflowSubmissionJob.getUuid());
                     }
                 }
                 catch(Exception ex){
-                    System.out.println("Workflow Submission Portlet: Failed to get the content of the job status respose from the Server.");
+                    System.out.println("Workflow Results Portlet: Failed to get the content of the job status respose from the Server.");
                     ex.printStackTrace();
                     return "Failed to get the content of the job status respose from the Server";
                 }
                 return value;
             }
             else {
-               System.out.println("Workflow Submission Portlet: Failed to get the status for job " + workflowSubmissionJob.getUuid() + ". The Server responded with: " + httpResponse.getStatusLine()+".");
+               System.out.println("Workflow Results Portlet: Failed to get the status for job " + workflowSubmissionJob.getUuid() + ". The Server responded with: " + httpResponse.getStatusLine()+".");
                return "Failed to get the status for job. The Server responnded with: " + httpResponse.getStatusLine() + ".";
             }
         }
         catch(Exception ex){
-            System.out.println("Workflow Submission Portlet: An error occured while trying to get the status for job " + workflowSubmissionJob.getUuid() + ".");
+            System.out.println("Workflow Results Portlet: An error occured while trying to get the status for job " + workflowSubmissionJob.getUuid() + ".");
             ex.printStackTrace();
             return "An error occured while trying to get the status for job.";
         }

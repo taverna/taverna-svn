@@ -8,7 +8,7 @@ import org.jdom.Namespace;
  */
 public class Constants {
 
-    public static final String WORKFLOWS_DIRECTORY = "/WEB-INF/workflows";
+    public static final String WORKFLOWS_DIRECTORY = "/WEB-INF/workflows"; // relative URL path from the root of the app
 
     public static final String ERROR_MESSAGE = "error_message";
     public static final String INFO_MESSAGE = "info_message";
