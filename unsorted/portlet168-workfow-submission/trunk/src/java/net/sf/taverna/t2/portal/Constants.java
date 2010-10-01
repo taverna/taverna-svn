@@ -13,6 +13,10 @@ public class Constants {
     public static final String WORKFLOWS_DIRECTORY = "/WEB-INF/workflows"; // relative URL path from the root of the app
     public static final String T2_FLOW_FILE_EXT = ".t2flow";
     public static final String STATUS_FILE_EXT = ".status";
+    public static final String STARTDATE_FILE_EXT = ".startdate";
+    public static final String ENDDATE_FILE_EXT = ".enddate";
+    public static final String INPUTS_BACLAVA_FILE = "inputs.baclava";
+    public static final String OUTPUTS_BACLAVA_FILE = "outputs.baclava";
 
     // Anonymous user
     public static final String USER_ANONYMOUS = "anonymous";
