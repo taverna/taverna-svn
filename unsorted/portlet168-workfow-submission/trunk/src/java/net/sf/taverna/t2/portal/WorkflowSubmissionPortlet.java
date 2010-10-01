@@ -474,6 +474,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                             PortletSession.APPLICATION_SCOPE); // should not be null at this point
                                             
                                     WorkflowSubmissionJob job = new WorkflowSubmissionJob(workflowResourceUUID, workflowFileName, Constants.JOB_STATUS_OPERATING);
+                                    job.setStartDate(new Date());
                                     workflowSubmissionJobs.add(job);
 
                                     // Persist the detains of the newly created job on disk
@@ -544,14 +545,16 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                 ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)request.getPortletSession().
                                         getAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
                                 WorkflowSubmissionJob job = new WorkflowSubmissionJob(workflowResourceUUID, workflowFileName, Constants.JOB_STATUS_OPERATING);
-
                                 workflowSubmissionJobs.add(job);
+                                job.setStartDate(new Date());
 
                                 // Persist the detains of the newly created job on disk
                                 persistJobOnDisk(request, job);
 
                                 request.getPortletSession().
-                                        setAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE, workflowSubmissionJobs, PortletSession.APPLICATION_SCOPE);
+                                        setAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE, 
+                                        workflowSubmissionJobs,
+                                        PortletSession.APPLICATION_SCOPE);
                             }
                         }
                     }
@@ -1220,6 +1223,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
      *  - an empty .t2flow file named after the workflow file just to hold the worflow file name
      *  - an empty file initially named Operating.status to indicate the status of the job
      *  - the input Baclava document in input.baclava file to hold the job's inputs
+     *  - an empty file named <long>.startdate where <long> represents the Date in miliseconds after the "epoch"
      */
     private void persistJobOnDisk(PortletRequest request, WorkflowSubmissionJob job){
 
@@ -1251,7 +1255,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         }
         System.out.println("Workflow Submission Portlet: Job's status set at " + statusFile.getAbsolutePath());
 
-        // Save the workflow name in an empty file
+        // Save the workflow name by creating an empty file with the same name
         File workflowFile = new File(jobDir, job.getWorkflowFileName() + Constants.T2_FLOW_FILE_EXT);
         try{
             FileUtils.touch(workflowFile);
@@ -1261,6 +1265,28 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             ex.printStackTrace();
         }
         System.out.println("Workflow Submission Portlet: Job's workflow name set at " + workflowFile.getAbsolutePath());
+
+        // Save the job's start date by creating an empty file named after the date
+        File startdateFile = new File(jobDir, job.getStartDate().getTime() + Constants.STARTDATE_FILE_EXT);
+        try{
+            FileUtils.touch(startdateFile);
+        }
+        catch(Exception ex){
+            System.out.println("Workflow Submission Portlet: Failed to create the job's start date file " + startdateFile.getAbsolutePath());
+            ex.printStackTrace();
+        }
+        System.out.println("Workflow Submission Portlet: Job's start date file name set at " + startdateFile.getAbsolutePath());
+
+        // Save the job's input Baclava file in a file called inputs.baclava
+        File inputsFile = new File(jobDir, Constants.INPUTS_BACLAVA_FILE);
+        try{
+            FileUtils.touch(inputsFile);
+        }
+        catch(Exception ex){
+            System.out.println("Workflow Submission Portlet: Failed to save job's inputs to file " + inputsFile.getAbsolutePath());
+            ex.printStackTrace();
+        }
+        System.out.println("Workflow Submission Portlet: Save job's inputs to file " + inputsFile.getAbsolutePath());
     }
 
     static final String HEXES = "0123456789ABCDEF";
