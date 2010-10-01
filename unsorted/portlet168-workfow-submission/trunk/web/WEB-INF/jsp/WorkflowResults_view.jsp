@@ -12,6 +12,7 @@
 <%@ page import="javax.portlet.RenderResponse" %>
 <%@ page import="net.sf.taverna.t2.portal.WorkflowSubmissionJob" %>
 <%@ page import="net.sf.taverna.t2.portal.Constants" %>
+<%@ page import="java.text.SimpleDateFormat" %>
 
 <%-- Include the styling CSS for workflow inputs, job IDs and results tables --%>
 <%@ include file="CommonCSS.jsp" %>
@@ -24,6 +25,8 @@
 ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)renderRequest.
         getPortletSession().
         getAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
+
+SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
 
 %>
 
@@ -48,8 +51,9 @@ ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSub
 <br/>
 <table class="jobs">
     <tr>
-        <th>Workflow name</th>
         <th>Job ID</th>
+        <th>Workflow name</th>
+        <th>Start date</th>
         <th>Status</th>
     </tr>
     <%
@@ -60,7 +64,6 @@ ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSub
         else{%>
             <tr bgcolor="#EFF5FB">
         <%}%>
-                <td><%= workflowSubmissionJobs.get(i).getWorkflowFileName() %></td>
                 <%
                 if(!workflowSubmissionJobs.get(i).getStatus().equals(Constants.JOB_STATUS_FINISHED)){%>
                     <td><%= workflowSubmissionJobs.get(i).getUuid() %></td>
@@ -68,6 +71,8 @@ ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSub
                 else {%>
                 <td><a href="<portlet:actionURL/>&<%=Constants.FETCH_RESULTS%>=<%= URLEncoder.encode(workflowSubmissionJobs.get(i).getUuid(), "UTF-8")%>"><%= workflowSubmissionJobs.get(i).getUuid() %></a></td>
                 <%}%>
+                <td><%= workflowSubmissionJobs.get(i).getWorkflowFileName() %></td>
+                <td><%= dateFormat.format(workflowSubmissionJobs.get(i).getStartDate()) %></td>
                 <td><%= workflowSubmissionJobs.get(i).getStatus() %></td>
             </tr>
     <%}%>
