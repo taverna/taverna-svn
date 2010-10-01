@@ -16,6 +16,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import javax.portlet.ActionRequest;
@@ -179,8 +180,8 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
                         // Parse the result values from the Baclava file
                         StringBuffer outputsTableHTML = new StringBuffer();
-                        response.getWriter().println("<b>Workflow: " + job.getWorkflowFileName() + "</b><br/>");
-                        response.getWriter().println("<b>Job ID: " + job.getUuid() + "</b><br/><br/>");
+                        response.getWriter().println("<b>Job ID: " + job.getUuid() + "</b><br/>");
+                        response.getWriter().println("<b>Workflow: " + job.getWorkflowFileName() + "</b><br/><br/>");
                         try{
                             URL url = new URL(workflowResultsBaclavaFileURL);
                             InputStream is = url.openStream();
@@ -399,23 +400,22 @@ public class WorkflowResultsPortlet extends GenericPortlet{
     private ArrayList<WorkflowSubmissionJob> loadWorkflowSubmissionJobs(File jobsDir, String user){
 
         ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = new ArrayList<WorkflowSubmissionJob>();
-        try{
-            File userDir = new File (jobsDir, user);
-            if (!userDir.exists()){
-                try{
-                    userDir.mkdir();
-                }
-                catch(Exception ex){
-                    System.out.println("Workflow Results Portlet: Failed to create a directory "+userDir.getAbsolutePath()+" where jobs submitted by the user " + user + " are to be persisted.");
-                    ex.printStackTrace();
-                    return workflowSubmissionJobs;
-                }
+        File userDir = new File (jobsDir, user);
+        if (!userDir.exists()){
+            try{
+                userDir.mkdir();
             }
+            catch(Exception ex){
+                System.out.println("Workflow Results Portlet: Failed to create a directory "+userDir.getAbsolutePath()+" where jobs submitted by the user " + user + " are to be persisted.");
+                ex.printStackTrace();
+                return workflowSubmissionJobs;
+            }
+        }
 
-            File[] jobDirsForUser = userDir.listFiles(dirFilter);
-            for (File jobDir : jobDirsForUser){
-                String uuid = jobDir.getName();
-
+        File[] jobDirsForUser = userDir.listFiles(dirFilter);
+        for (File jobDir : jobDirsForUser){
+            String uuid = jobDir.getName();
+            try{
                 String workflowFileNameWithExtension = jobDir.list(t2flowFileFilter)[0]; // should be only 1 element or else we are in trouble
                 String workflowFileName = workflowFileNameWithExtension.substring(0, workflowFileNameWithExtension.indexOf(Constants.T2_FLOW_FILE_EXT));
 
@@ -423,14 +423,19 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                 String status = statusFileName.substring(0, statusFileName.indexOf(Constants.STATUS_FILE_EXT));
 
                 WorkflowSubmissionJob workflowSubmissionJob =  new WorkflowSubmissionJob(uuid, workflowFileName, status);
+
+                String startdateFileName = jobDir.list(startdateFileFilter)[0]; // should be only 1 element or else we are in trouble
+                String startdate = startdateFileName.substring(0, startdateFileName.indexOf(Constants.STARTDATE_FILE_EXT));
+                workflowSubmissionJob.setStartDate(new Date(Long.parseLong(startdate)));
+
                 workflowSubmissionJobs.add(workflowSubmissionJob);
 
                 System.out.println("Workflow Results Portlet: Found job: " + uuid + " " + workflowFileName + " " + status);
             }
-        }
-        catch(Exception ex){
-           System.out.println("Workflow Results Portlet: Failed to load previously submitted jobs from " + jobsDir.getAbsolutePath());
-           ex.printStackTrace();
+            catch(Exception ex){ // something went wrong with getting the files for this job - just skip it
+                System.out.println("Workflow Results Portlet: Failed to load info for a previously submitted job from " + jobsDir.getAbsolutePath());
+                ex.printStackTrace();
+            }
         }
 
         return workflowSubmissionJobs;
@@ -453,6 +458,18 @@ public class WorkflowResultsPortlet extends GenericPortlet{
     public static FilenameFilter t2flowFileFilter = new FilenameFilter() {
         public boolean accept(File dir, String name) {
             return name.endsWith(Constants.T2_FLOW_FILE_EXT);
+        }
+    };
+    // This file filter only returns files with .startdate extension
+    public static FilenameFilter startdateFileFilter = new FilenameFilter() {
+        public boolean accept(File dir, String name) {
+            return name.endsWith(Constants.STARTDATE_FILE_EXT);
+        }
+    };
+    // This file filter only returns files named 'inputs.baclava'
+    public static FilenameFilter inputsBaclavaFileFilter = new FilenameFilter() {
+        public boolean accept(File dir, String name) {
+            return name.equals(Constants.INPUTS_BACLAVA_FILE);
         }
     };
 
