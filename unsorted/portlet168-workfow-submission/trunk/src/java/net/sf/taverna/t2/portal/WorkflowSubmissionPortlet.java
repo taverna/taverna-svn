@@ -456,7 +456,9 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                         // Baclava file where outputs are to be written to.
                         boolean outputBaclavaFilePropertySet = setBaclavaOutputFile(workflowFileName, workflowResourceUUID, request);
                         if (outputBaclavaFilePropertySet){
-                            boolean inputsSubmitted = submitWorkflowInputs(workflowFileName, workflowResourceUUID, workflowInputPorts, request);
+
+                            Document worfklowInputsDocument = buildWorkflowInputsBaclavaDocument(workflowInputPorts);
+                            boolean inputsSubmitted = submitWorkflowInputs(workflowFileName, workflowResourceUUID, worfklowInputsDocument, request);
 
                             // Run the workflow on the T2 Server
                             if (inputsSubmitted){
@@ -478,7 +480,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                     workflowSubmissionJobs.add(job);
 
                                     // Persist the detains of the newly created job on disk
-                                    persistJobOnDisk(request, job);
+                                    persistJobOnDisk(request, job, worfklowInputsDocument);
                                    
                                     request.getPortletSession().
                                             setAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE,
@@ -528,7 +530,9 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                     boolean outputBaclavaFilePropertySet = setBaclavaOutputFile(workflowFileName, workflowResourceUUID, request);
                     if (outputBaclavaFilePropertySet){
 
-                        boolean inputsSubmitted = submitWorkflowInputs(workflowFileName, workflowResourceUUID, workflowInputPorts, request);
+                        Document worfklowInputsDocument = buildWorkflowInputsBaclavaDocument(workflowInputPorts);
+                        
+                        boolean inputsSubmitted = submitWorkflowInputs(workflowFileName, workflowResourceUUID, worfklowInputsDocument, request);
 
                         // Run the workflow on the T2 Server
                         if (inputsSubmitted){
@@ -549,7 +553,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                 job.setStartDate(new Date());
 
                                 // Persist the detains of the newly created job on disk
-                                persistJobOnDisk(request, job);
+                                persistJobOnDisk(request, job, worfklowInputsDocument);
 
                                 request.getPortletSession().
                                         setAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE, 
@@ -901,7 +905,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
      * HTTP PUTs workflow inputs to the T2 Server as a Baclava XML document.
      * Returns false if it fails for any reason.
      */
-    private boolean submitWorkflowInputs(String workflowFileName, String workflowResourceUUID, ArrayList<WorkflowInputPort> workflowInputs, ActionRequest actionRequest){
+    private boolean submitWorkflowInputs(String workflowFileName, String workflowResourceUUID, Document workflowInputsBaclavaDocument, ActionRequest actionRequest){
 
         HttpClient httpClient = new DefaultHttpClient();
         HttpContext localContext = new BasicHttpContext();
@@ -914,9 +918,8 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
         XMLOutputter xmlOutputter = new XMLOutputter();
 
-        // Get the workflow inputs as a Baclava XML document
-        Document worfklowInputsDocument = buildWorkflowInputsBaclavaDocument(workflowInputs);
-        String workflowInputsDocumentString = xmlOutputter.outputString(worfklowInputsDocument);
+        // Write the workflow inputs' Baclava XML document
+        String workflowInputsDocumentString = xmlOutputter.outputString(workflowInputsBaclavaDocument);
 
         System.out.println("Workflow Submission Portlet: Preparing to submit workflow inputs Baclava file to Server " + wdURL);
 
@@ -1225,7 +1228,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
      *  - the input Baclava document in input.baclava file to hold the job's inputs
      *  - an empty file named <long>.startdate where <long> represents the Date in miliseconds after the "epoch"
      */
-    private void persistJobOnDisk(PortletRequest request, WorkflowSubmissionJob job){
+    private void persistJobOnDisk(PortletRequest request, WorkflowSubmissionJob job, Document worfklowInputsDocument){
 
         // Get the current user
         String user = (String)request.getPortletSession().
@@ -1280,13 +1283,17 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         // Save the job's input Baclava file in a file called inputs.baclava
         File inputsFile = new File(jobDir, Constants.INPUTS_BACLAVA_FILE);
         try{
-            FileUtils.touch(inputsFile);
+            XMLOutputter out = new XMLOutputter();
+            java.io.FileWriter writer = new java.io.FileWriter(inputsFile);
+            out.output(worfklowInputsDocument, writer);
+            writer.flush();
+            writer.close();
         }
         catch(Exception ex){
             System.out.println("Workflow Submission Portlet: Failed to save job's inputs to file " + inputsFile.getAbsolutePath());
             ex.printStackTrace();
         }
-        System.out.println("Workflow Submission Portlet: Save job's inputs to file " + inputsFile.getAbsolutePath());
+        System.out.println("Workflow Submission Portlet: Job's inputs saved to Baclava file " + inputsFile.getAbsolutePath());
     }
 
     static final String HEXES = "0123456789ABCDEF";
