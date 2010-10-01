@@ -15,8 +15,8 @@ public class Constants {
     public static final String STATUS_FILE_EXT = ".status";
     public static final String STARTDATE_FILE_EXT = ".startdate";
     public static final String ENDDATE_FILE_EXT = ".enddate";
-    public static final String INPUTS_BACLAVA_FILE = "inputs.baclava";
-    public static final String OUTPUTS_BACLAVA_FILE = "outputs.baclava";
+    public static final String INPUTS_BACLAVA_FILE = "inputs.baclava";// saved on local disk
+    public static final String OUTPUTS_BACLAVA_FILE = "outputs.baclava"; // saved on local disk
 
     // Anonymous user
     public static final String USER_ANONYMOUS = "anonymous";
@@ -25,12 +25,12 @@ public class Constants {
     public static final String WORKFLOW_JOBS_ATTRIBUTE = "workflow_jobs";
     public static final String WORKFLOW_RESULTS_BACLAVA_FILE_URL_ATTRIBUTE = "workflow_results_baclava_file_URL";
     public static final String WORKFLOW_SUBMISSION_JOB_ATTRIBUTE = "workflow_submission_job";
-    //public static final String WORKFLOW_JOBS_DIRECTORY_FOR_USER_ATTRIBUTE = "workflow_jobs_directory_for_user";
     public static final String USER = "user";
 
     // Portlet scope attributes
     public static final String ERROR_MESSAGE = "error_message";
     public static final String INFO_MESSAGE = "info_message";
+    public static final String OUTPUTS_MAP_ATTRIBUTE = "outputs_map";
 
     // Init parameters
     public static final String T2_SERVER_URL_PARAMETER = "T2_SERVER_URL";
