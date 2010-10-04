@@ -1,10 +1,4 @@
 <%-- 
-    Document   : CommonJavaScript
-    Created on : Aug 20, 2010, 10:43:06 AM
-    Author     : Alex Nenadic
---%>
-
-<%-- 
     JavaScript function that validates that all input fields in a form have been provided.
     Use with the <form> tag, e.g. <form action="..." onSubmit="validateForm()">
 --%>

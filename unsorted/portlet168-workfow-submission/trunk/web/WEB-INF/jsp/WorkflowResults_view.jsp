@@ -14,11 +14,12 @@
 <%@ page import="net.sf.taverna.t2.portal.Constants" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 
-<%-- Include the styling CSS for workflow inputs, job IDs and results tables --%>
-<%@ include file="CommonCSS.jsp" %>
+<%-- Include the styling CSS for the inputs, jobs and results tables --%>
+<%@ include file="ResultsCSS.jsp" %>
+<%@ include file="InputsAndJobsCSS.jsp" %>
 
 <%-- Include the JavaScript for creating the results data table as a tree --%>
-<%@ include file="TreeJavaScript.jsp" %>
+<%@ include file="ResultsTreeJavaScript.jsp" %>
 
 <%
 // List of UUIDs of workflows submitted to the T2 Server.
@@ -62,7 +63,7 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z"
             <tr>
         <%}
         else{%>
-            <tr bgcolor="#EFF5FB">
+            <tr style="background-color: #EFF5FB;">
         <%}%>
                 <%
                 if(!workflowSubmissionJobs.get(i).getStatus().equals(Constants.JOB_STATUS_FINISHED)){%>

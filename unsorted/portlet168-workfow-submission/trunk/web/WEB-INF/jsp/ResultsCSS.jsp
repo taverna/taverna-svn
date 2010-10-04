@@ -1,27 +1,11 @@
-<%-- 
-    Document   : CommonCSS.jsp
-    Created on : Aug 19, 2010, 3:46:39 PM
-    Author     : Alex Nenadic
+
+<%--
+CSS style for the workflow results table
+Based on Andrew Vos' Cross Browser (JavaScript/DHTML) TreeView CSS style
+http://www.codeproject.com/KB/scripting/IE_FF_DHTML_TreeView.aspx
 --%>
 
-<%-- CSS style for the workflow inputs table --%>
 <style type="text/css">
-<%-- inputs table style --%>
-table.inputs
-{
-    border-collapse:collapse;
-    margin-bottom:10px;
-    width: 100%;
-}
-table.inputs, table.inputs th, table.inputs td
-{
-    border: 1px solid #5F5F5F;
-    padding: 5px;
-}
-table.inputs th{
-    background-color: #9F9F9F;
-    color: white;
-}
 
 <%-- jobs table style --%>
 table.jobs
@@ -40,11 +24,23 @@ table.jobs th {
     color: #084B8A;
 }
 
-<%--
-BEGIN
-Andrew Vos' Cross Browser (JavaScript/DHTML) TreeView CSS style
-http://www.codeproject.com/KB/scripting/IE_FF_DHTML_TreeView.aspx
---%>
+<%-- results table style --%>
+table.results
+{
+    border-collapse:collapse;
+    margin-bottom:10px;
+    width: 100%;
+}
+table.results, table.results th, table.results td
+{
+    border: 1px solid #4A5C4A;
+    padding: 5px;
+}
+table.results th {
+    background-color: #B8E6B8;
+    color: #526652;
+}
+
 table.result_data
 {
     border-collapse:collapse;
@@ -54,6 +50,8 @@ table.result_data, table.result_data th, table.result_data td
     border: none;
     padding: 0px;
 }
+
+<%-- Andrew Vos' Cross Browser (JavaScript/DHTML) TreeView CSS style --%>
 .parentTreeNode {
 	color: #000000;
 	font-size:xx-small;
@@ -93,11 +91,6 @@ table.result_data, table.result_data th, table.result_data td
 	background-color: #EEEEEE;
 	border: 1px solid #000000;
 }
-<%--
-END
-Andrew Vos' Cross Browser (JavaScript/DHTML) TreeView CSS style
-http://www.codeproject.com/KB/scripting/IE_FF_DHTML_TreeView.aspx
---%>
 
 .output_name{
     font-weight: bold;

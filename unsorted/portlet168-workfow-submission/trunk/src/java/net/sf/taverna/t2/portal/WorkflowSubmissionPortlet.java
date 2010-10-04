@@ -663,8 +663,8 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         inputFormJSP.append("<%-- Various imports - portlet taglib, constants, CSS to style the input form table, JavaScript to validate form fields --%>\n");
         inputFormJSP.append("<%@ taglib uri=\"http://java.sun.com/portlet\" prefix=\"portlet\" %>\n");
         inputFormJSP.append("<portlet:defineObjects />\n\n");
-        inputFormJSP.append("<%@ include file=\"/WEB-INF/jsp/CommonJavaScript.jsp\" %>\n\n");
-        inputFormJSP.append("<%@ include file=\"/WEB-INF/jsp/CommonCSS.jsp\" %>\n\n");
+        inputFormJSP.append("<%@ include file=\"/WEB-INF/jsp/InputsValidationJavaScript.jsp\" %>\n\n");
+        inputFormJSP.append("<%@ include file=\"/WEB-INF/jsp/InputsAndJobsCSS.jsp\" %>\n\n");
         //inputFormJSP.append("<%@ include file=\"/WEB-INF/jsp/CommonConstants.jsp\" %>\n\n");
 
         // Workflow name and description
@@ -706,7 +706,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             for (WorkflowInputPort inputPort : workflowInputPorts){
                 if (inputPort.getDepth() == 0){ // single input
                     if (counter % 2 == 0){ // alternate row colours
-                        inputFormJSP.append("<tr bgcolor=\"#F5F5F5\" " + Constants.INPUT_PORT_NAME_ATTRIBUTE + "=\""+inputPort.getName()+"\">\n");
+                        inputFormJSP.append("<tr style=\"background-color: #F5F5F5;\" " + Constants.INPUT_PORT_NAME_ATTRIBUTE + "=\""+inputPort.getName()+"\">\n");
                     }
                     else{
                         inputFormJSP.append("<tr " + Constants.INPUT_PORT_NAME_ATTRIBUTE + "=\""+inputPort.getName()+"\">\n");

@@ -206,11 +206,12 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                 response.getWriter().println("<b>Workflow: " + job.getWorkflowFileName() + "</b><br/><br/>\n");
 
                 outputsTableHTML.append("<b>Results:</b><br/>\n");
-                outputsTableHTML.append("<table class=\"jobs\">\n");
+                outputsTableHTML.append("<table class=\"results\">\n");
                 outputsTableHTML.append("<tr>\n");
                 outputsTableHTML.append("<th width=\"25%\">Output port</th>\n");
                 outputsTableHTML.append("<th>Data</th>\n");
                 outputsTableHTML.append("</tr>\n");
+                int rowCount = 1;
                 // Get all output ports and data associated with them
                 for (Iterator i = resultDataThingMap.keySet().iterator(); i.hasNext();) {
                         String outputPortName = (String) i.next();
@@ -219,7 +220,13 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                         // Calculate the depth of the result data for the port
                         Object dataObject = resultDataThing.getDataObject();
                         int dataDepth = calculateDataDepth(dataObject);
-                        outputsTableHTML.append("<tr>\n");
+                        if (rowCount % 2 != 0){
+                            outputsTableHTML.append("<tr>\n");
+                        }
+                        else{
+                            outputsTableHTML.append("<tr style=\"background-color: #F0FFF0;\">\n");
+                        }
+                        rowCount++;
                         String dataTypeBasedOnDepth;
                         if (dataDepth==0){
                             dataTypeBasedOnDepth = "single value";
