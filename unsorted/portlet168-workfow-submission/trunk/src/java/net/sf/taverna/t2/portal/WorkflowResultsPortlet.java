@@ -113,10 +113,8 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
                         // See of results are already downloaded from the T2 Server -
                         // if not download and save the Baclava file with outputs now.
-                        String workflowResultsBaclavaFileURL = t2ServerURL + Constants.RUNS_URL + "/"+ workflowResourceUUID + Constants.WD_URL + "/" + Constants.BACLAVA_OUTPUT_FILE_NAME;
-                        Map<String, DataThing> resultDataThingMap = fetchOutputBaclavaFile(job, workflowResultsBaclavaFileURL, request);
+                        Map<String, DataThing> resultDataThingMap = fetchOutputBaclavaFile(job, request);
                         request.setAttribute(Constants.OUTPUTS_MAP_ATTRIBUTE, resultDataThingMap);
-                        request.setAttribute(Constants.WORKFLOW_RESULTS_BACLAVA_FILE_URL_ATTRIBUTE, workflowResultsBaclavaFileURL);
                         request.setAttribute(Constants.WORKFLOW_SUBMISSION_JOB_ATTRIBUTE, job);
                         break; 
                     } // else just ignore it if it is not in the job ID list
@@ -575,7 +573,10 @@ public class WorkflowResultsPortlet extends GenericPortlet{
     /*
      * 
      */
-    private Map<String, DataThing> fetchOutputBaclavaFile(WorkflowSubmissionJob job, String workflowResultsBaclavaFileURL, PortletRequest request){
+    private Map<String, DataThing> fetchOutputBaclavaFile(WorkflowSubmissionJob job, PortletRequest request){
+
+        String workflowResultsBaclavaFileURL = t2ServerURL + Constants.RUNS_URL + "/"+ job.getUuid() + Constants.WD_URL + "/" + Constants.BACLAVA_OUTPUT_FILE_NAME;
+        request.setAttribute(Constants.WORKFLOW_RESULTS_BACLAVA_FILE_URL_ATTRIBUTE, workflowResultsBaclavaFileURL);
 
         // First try to get the Baclava file from the local disk
         // Get the current user
@@ -591,6 +592,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                 String[] outputsBaclavaFiles = jobDir.list(outputsBaclavaFileFilter);
                 if (outputsBaclavaFiles.length == 0){ // no such file on local disk - download the file from T2 Server
                     try{
+                        System.out.println("Workflow Results Portlet: Downloading results to local disk for from T2 Server at " + workflowResultsBaclavaFileURL);
                         URL url = new URL(workflowResultsBaclavaFileURL);
                         InputStream is2 = url.openStream();
                         // Save the file locally
@@ -625,19 +627,19 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                     catch(Exception ex){
                         System.out.println("Workflow Results Portlet: An error occured while trying to download the XML Baclava file with outputs for job " + job.getUuid() + " from the Server.");
                         ex.printStackTrace();
-                        request.setAttribute(Constants.ERROR_MESSAGE, "An error occured while trying to download the results for job " + job.getUuid() + " from the Server.");
+                        request.setAttribute(Constants.ERROR_MESSAGE, "An error occured while trying to download the results for job " + job.getUuid() + " from the Server.<br/>" + ex.getMessage());
                         return null;
                     }
                 }
-
-                try{ // we should have the file by now - if it wasn't there already we should have just downloaded it
+                try{ // We should have the file by now - if it wasn't there already we should have just downloaded it
                     File workflowResultsBaclavaFile  = new File (jobDir, Constants.OUTPUTS_BACLAVA_FILE);
+                    System.out.println("Workflow Results Portlet: Fetching results for from local disk " + workflowResultsBaclavaFile.getAbsolutePath());
                     is = new FileInputStream(workflowResultsBaclavaFile);
                 }
                 catch(Exception ex){
                     System.out.println("Workflow Results Portlet: An error occured while trying to open the XML Baclava file with outputs for job " + job.getUuid() + ".");
                     ex.printStackTrace();
-                    request.setAttribute(Constants.ERROR_MESSAGE, "An error occured while trying to open file with results for job " + job.getUuid() + ".");
+                    request.setAttribute(Constants.ERROR_MESSAGE, "An error occured while trying to open file with results for job " + job.getUuid() + ".<br/>" + ex.getMessage());
                     return null;
                 }
  
