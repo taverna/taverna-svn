@@ -477,7 +477,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                             
                                     WorkflowSubmissionJob job = new WorkflowSubmissionJob(workflowResourceUUID, workflowFileName, Constants.JOB_STATUS_OPERATING);
                                     job.setStartDate(new Date());
-                                    workflowSubmissionJobs.add(job);
+                                    workflowSubmissionJobs.add(0,job);
 
                                     // Persist the detains of the newly created job on disk
                                     persistJobOnDisk(request, job, worfklowInputsDocument);

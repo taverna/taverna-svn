@@ -19,6 +19,8 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -442,7 +444,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
                 workflowSubmissionJobs.add(workflowSubmissionJob);
 
-                System.out.println("Workflow Results Portlet: Found job: " + uuid + " " + workflowFileName + " " + status);
+                System.out.println("Workflow Results Portlet: Found job: " + uuid + "; workflow: " + workflowFileName + "; status: " + status + "\n");
             }
             catch(Exception ex){ // something went wrong with getting the files for this job - just skip it
                 System.out.println("Workflow Results Portlet: Failed to load info for a previously submitted job from " + jobsDir.getAbsolutePath());
@@ -450,6 +452,25 @@ public class WorkflowResultsPortlet extends GenericPortlet{
             }
         }
 
+
+        // Sort the jobs according to their start date - freshest first.
+        Comparator comp = new Comparator(){
+            public int compare(Object job1, Object job2){
+
+                Date date1 = ((WorkflowSubmissionJob)job1).getStartDate();
+                Date date2 = ((WorkflowSubmissionJob)job2).getStartDate();
+                if (date1.after(date2)){
+                    return -1;
+                }
+                else if(date1.before(date2)){
+                    return 1;
+                }
+                else{
+                    return 0;
+                }
+            }
+        };
+        Collections.sort(workflowSubmissionJobs,comp);
         return workflowSubmissionJobs;
     }
 
