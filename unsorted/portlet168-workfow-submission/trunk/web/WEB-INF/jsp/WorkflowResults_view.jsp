@@ -16,7 +16,7 @@
 
 <%-- Include the styling CSS for the inputs, jobs and results tables --%>
 <%@ include file="ResultsCSS.jsp" %>
-<%@ include file="InputsAndJobsCSS.jsp" %>
+<%@ include file="InputsCSS.jsp" %>
 
 <%-- Include the JavaScript for creating the results data table as a tree --%>
 <%@ include file="ResultsTreeJavaScript.jsp" %>
