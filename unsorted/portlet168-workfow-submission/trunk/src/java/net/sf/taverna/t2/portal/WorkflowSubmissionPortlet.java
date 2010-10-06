@@ -465,7 +465,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
                                 boolean runSubmitted = runWorkflow(workflowFileName, workflowResourceUUID, request);
                                 if (runSubmitted){
-                                    System.out.println("Workflow Submission Portlet: Execution of workflow " + workflowFileName + " successfully initiated on the Server. Job ID: " + workflowResourceUUID +".");
+                                    System.out.println("Workflow Submission Portlet: Execution of workflow " + workflowFileName + " successfully initiated on the Server. Job Id: " + workflowResourceUUID +".");
 
                                     // Add this workflowResourceUUID to the list of submitted workflow UUIDs
                                     // to be read by the Workflow Results portlet and used to fetch results for
@@ -485,7 +485,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                             setAttribute(Constants.WORKFLOW_SUBMISSION_JOBS,
                                             workflowSubmissionJobs,
                                             PortletSession.APPLICATION_SCOPE);
-                                    request.setAttribute(Constants.INFO_MESSAGE, "Workflow "+workflowFileName+" successfully submitted for execution with job ID: " + workflowResourceUUID + ". You may use this ID to monitor the progress of the workflow run.");
+                                    request.setAttribute(Constants.INFO_MESSAGE, "Workflow "+workflowFileName+" successfully submitted for execution with job id: " + workflowResourceUUID + ". You may use this ID to monitor the progress of the workflow run.");
                                 }
                             }
                         }

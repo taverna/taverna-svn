@@ -106,7 +106,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
         // If there was a request to show results of a workflow run
         else if (request.getParameter(Constants.FETCH_RESULTS) != null){
 
-            // If workflowSubmissionJobs is null or does not contain this job ID
+            // If workflowSubmissionJobs is null or does not contain this job id
             // this is just a page refresh after redeployment of the app/restart of
             // the sever/some form or refresh while the URL parameter FETCH_RESULTS
             // managed to linger in the URL in the browser from the previous
@@ -115,7 +115,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                 String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(Constants.FETCH_RESULTS)[0], "UTF-8");
                 for (WorkflowSubmissionJob job : workflowSubmissionJobs){
                     if (job.getUuid().equals(workflowResourceUUID)){
-                        System.out.println("Workflow Results Portlet: Fetching results for job ID " + workflowResourceUUID);
+                        System.out.println("Workflow Results Portlet: Fetching results for job id " + workflowResourceUUID);
 
                         // See if results are already downloaded from the T2 Server -
                         // if not download and save the Baclava file with outputs now.
@@ -123,13 +123,13 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                         request.setAttribute(Constants.OUTPUTS_MAP_ATTRIBUTE, resultDataThingMap);
                         request.setAttribute(Constants.WORKFLOW_SUBMISSION_JOB, job);
                         break; 
-                    } // else just ignore it if it is not in the job ID list
+                    } // else just ignore it if it is not in the job id list
                 }
             }
         }
         // If there was a request to delete a workflow run
         else if (request.getParameter(Constants.DELETE_JOB) != null){
-            // If workflowSubmissionJobs is null or does not contain this job ID
+            // If workflowSubmissionJobs is null or does not contain this job id
             // this is just a page refresh after redeployment of the app/restart of
             // the sever/some form or refresh while the URL parameter DELETE_JOB
             // managed to linger in the URL in the browser from the previous
@@ -146,7 +146,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                         request.setAttribute(Constants.WORKFLOW_SUBMISSION_JOBS, workflowSubmissionJobs);
                         break;
                     }
-                } // else just ignore it if it is not in the job ID list           
+                } // else just ignore it if it is not in the job id list
             }
         }
 
@@ -211,7 +211,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
         // If there was a request to show results of a workflow run
         if (request.getParameter(Constants.FETCH_RESULTS) != null){
             
-            // But if workflowSubmissionJobs is null or does not contain this job ID
+            // But if workflowSubmissionJobs is null or does not contain this job id
             // this is just a page refresh after redeployment of the app/restart of
             // the sever/some form or refresh while the URL parameter FETCH_RESULTS
             // managed to linger in the URL in the browser from the previous
@@ -230,13 +230,13 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
                 // Parse the result values from the Baclava file
                 StringBuffer outputsTableHTML = new StringBuffer();
-                response.getWriter().println("<b>Job ID: " + job.getUuid() + "</b><br/>\n");
+                response.getWriter().println("<b>Job Id: " + job.getUuid() + "</b><br/>\n");
                 response.getWriter().println("<b>Workflow: " + job.getWorkflowFileName() + "</b><br/><br/>\n");
 
                 outputsTableHTML.append("<b>Results:</b><br/>\n");
                 outputsTableHTML.append("<table class=\"results\">\n");
                 outputsTableHTML.append("<tr>\n");
-                outputsTableHTML.append("<th>Output port</th>\n");
+                outputsTableHTML.append("<th width=\"15%\">Output port</th>\n");
                 outputsTableHTML.append("<th>Data</th>\n");
                 outputsTableHTML.append("</tr>\n");
                 int rowCount = 1;
@@ -264,7 +264,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                         }
                         // Get data's MIME type as given by the Baclava file
                         String mimeType = resultDataThing.getMostInterestingMIMETypeForObject(dataObject);
-                        outputsTableHTML.append("<td>\n");
+                        outputsTableHTML.append("<td width=\"15%\">\n");
                         outputsTableHTML.append("<div class=\"output_name\">" + outputPortName + "<span class=\"output_depth\"> - " + dataTypeBasedOnDepth + "</span></div>\n");
                         outputsTableHTML.append("<div class=\"output_mime_type\">" + mimeType + "</div>\n");
                         outputsTableHTML.append("</td>");
@@ -431,7 +431,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
             try{
                 String dataFileURL = request.getContextPath() + FILE_SERVLET_URL + 
                         "?"+ Constants.DATA_FILE_PATH +"=" + URLEncoder.encode(dataFilePath, "UTF-8") +
-                        ";mime_type=" + URLEncoder.encode(mimeType, "UTF-8");
+                        "&mime_type=" + URLEncoder.encode(mimeType, "UTF-8");
                 resultTreeHTML.append("addNode(\"Value\", \""+dataFileURL+"\", \"_blank\");\n");
             }
             catch(Exception ex){
