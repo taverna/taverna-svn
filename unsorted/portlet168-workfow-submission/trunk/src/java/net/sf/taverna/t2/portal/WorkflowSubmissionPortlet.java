@@ -74,10 +74,10 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     public static final String PIPE_SEPARATOR = "pipe";
 
     // Address of the T2 Server
-    private String t2ServerURL;
+    private String T2_SERVER_URL;
 
     // Directory where info for all submitted jobs for all users is persisted
-    private File jobsDir;
+    private File JOBS_DIR;
 
     // A list of workflow file names, which are
     // located in /WEB-INF/workflows folder in the app root.
@@ -105,11 +105,10 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
         // Get the URL of the T2 Server defined in web.xml as an
         // app-wide init parameter ( <context-param> element)
-        //t2ServerURL = getPortletConfig().getInitParameter(Constants.T2_SERVER_URL_PARAMETER); //  portlet specific, defined in portlet.xml
-        t2ServerURL = getPortletContext().getInitParameter(Constants.T2_SERVER_URL_PARAMETER);
+        T2_SERVER_URL = getPortletContext().getInitParameter(Constants.T2_SERVER_URL);
 
         // Get the directory where info for submitted jobs for all users is persisted
-        jobsDir = new File(getPortletContext().getInitParameter(Constants.JOBS_DIRECTORY_PATH),
+        JOBS_DIR = new File(getPortletContext().getInitParameter(Constants.JOBS_DIRECTORY_PATH),
                 Constants.JOBS_DIRECTORY_NAME);
 
         // Directory containing workflows
@@ -801,7 +800,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     HttpResponse submitWorkflow(String workflowFileName, ActionRequest request){
 
         HttpClient httpClient = new DefaultHttpClient();
-        String runsURL = t2ServerURL + Constants.RUNS_URL;
+        String runsURL = T2_SERVER_URL + Constants.RUNS_URL;
 
         HttpPost httpPost = new HttpPost(runsURL);
         httpPost.setHeader(Constants.CONTENT_TYPE_HEADER_NAME, Constants.CONTENT_TYPE_APPLICATION_XML);
@@ -836,7 +835,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
             if (httpResponse.getStatusLine().getStatusCode() != 201){ // HTTP/1.1 201 Created
                 System.out.println("Workflow Submission Portlet: Failed to submit workflow " + workflowFileName + " for execution.\nServer responded with: " + httpResponse.getStatusLine());
-                request.setAttribute(Constants.ERROR_MESSAGE, "Failed to submit workflow " + workflowFileName + " for execution.\nServer responded with: " + httpResponse.getStatusLine());
+                request.setAttribute(Constants.ERROR_MESSAGE, "Failed to submit workflow " + workflowFileName + " for execution.<br/>Server responded with: " + httpResponse.getStatusLine());
                 return null;
             }
         }
@@ -860,7 +859,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         HttpClient httpClient2 = new DefaultHttpClient();
         HttpContext localContext = new BasicHttpContext();
 
-        String baclavaOutputPropertyURL = t2ServerURL + Constants.RUNS_URL + "/" + workflowResourceUUID + Constants.BACLAVA_OUTPUT_PROPERTY_URL;
+        String baclavaOutputPropertyURL = T2_SERVER_URL + Constants.RUNS_URL + "/" + workflowResourceUUID + Constants.BACLAVA_OUTPUT_PROPERTY_URL;
         HttpPut httpPut = new HttpPut(baclavaOutputPropertyURL);
         httpPut.setHeader(Constants.CONTENT_TYPE_HEADER_NAME, Constants.CONTENT_TYPE_TEXT_PLAIN);
 
@@ -908,7 +907,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
         HttpClient httpClient = new DefaultHttpClient();
         HttpContext localContext = new BasicHttpContext();
-        String wdURL = t2ServerURL + Constants.RUNS_URL + "/" + workflowResourceUUID + Constants.WD_URL;
+        String wdURL = T2_SERVER_URL + Constants.RUNS_URL + "/" + workflowResourceUUID + Constants.WD_URL;
 
         HttpPost httpPost = new HttpPost(wdURL);
         httpPost.setHeader(Constants.CONTENT_TYPE_HEADER_NAME, Constants.CONTENT_TYPE_APPLICATION_XML);
@@ -975,7 +974,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
         HttpClient httpClient2 = new DefaultHttpClient();
 
-        String baclavaInputURL = t2ServerURL + Constants.RUNS_URL + "/" + workflowResourceUUID + Constants.BACLAVA_INPUTS_PROPERTY_URL;
+        String baclavaInputURL = T2_SERVER_URL + Constants.RUNS_URL + "/" + workflowResourceUUID + Constants.BACLAVA_INPUTS_PROPERTY_URL;
         HttpPut httpPut = new HttpPut(baclavaInputURL);
         httpPut.setHeader(Constants.CONTENT_TYPE_HEADER_NAME, Constants.CONTENT_TYPE_TEXT_PLAIN);
 
@@ -1023,7 +1022,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     boolean runWorkflow(String workflowFileName, String workflowResourceUUID,  ActionRequest actionRequest){
         
         HttpClient httpClient = new DefaultHttpClient();
-        String statusURL = t2ServerURL + Constants.RUNS_URL + "/" + workflowResourceUUID + Constants.STATUS_URL;
+        String statusURL = T2_SERVER_URL + Constants.RUNS_URL + "/" + workflowResourceUUID + Constants.STATUS_URL;
 
         HttpPut httpPut = new HttpPut(statusURL);
         httpPut.setHeader(Constants.CONTENT_TYPE_HEADER_NAME, Constants.CONTENT_TYPE_TEXT_PLAIN);
@@ -1233,7 +1232,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         String user = (String)request.getPortletSession().
                                     getAttribute(Constants.USER,
                                     PortletSession.APPLICATION_SCOPE); // should not be null at this point
-        File userDir = new File (jobsDir, user);
+        File userDir = new File (JOBS_DIR, user);
 
         // Create a new directory for this job
         File jobDir = new File(userDir, job.getUuid());
