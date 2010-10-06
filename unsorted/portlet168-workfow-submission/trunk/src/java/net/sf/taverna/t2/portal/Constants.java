@@ -19,7 +19,11 @@ public class Constants {
     public static final String OUTPUTS_BACLAVA_FILE = "outputs.baclava"; // saved on local disk
     public static final String OUTPUTS_DIRECTORY_NAME = "outputs"; // name of the dir where individual outputs  for all port are saved
     public static final String DATA_FILE_PATH = "data_file_path"; // absolute path to the file with data
+    
+    // URL parameters
+    public static final String FETCH_RESULTS="fetch_results";
     public static final String DELETE_JOB = "delete_job";
+    public static final String MIME_TYPE="mime_type";
     
     // Anonymous user
     public static final String USER_ANONYMOUS = "anonymous";
@@ -107,5 +111,4 @@ public class Constants {
     public static final String WORKFLOW_INPUT_FILE_SUFFIX = "_file";
 
     public static final String REFRESH_WORKFLOW_JOBS = "refresh_workflow_jobs";
-    public static final String FETCH_RESULTS="fetch_results";
 }
