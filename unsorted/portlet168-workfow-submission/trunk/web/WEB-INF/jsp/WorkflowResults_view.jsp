@@ -20,6 +20,8 @@
 
 <%-- Include the JavaScript for creating the results data table as a tree --%>
 <%@ include file="ResultsTreeJavaScript.jsp" %>
+<%-- Include the JavaScript for confirming job deletion --%>
+<%@ include file="ConfirmJobDeletionJavaScript.jsp" %>
 
 <%
 // List of UUIDs of workflows submitted to the T2 Server.
@@ -35,7 +37,7 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z"
 
 <%-- Form for selecting the workflow job to show results for --%>
 <% if (workflowSubmissionJobs != null && !workflowSubmissionJobs.isEmpty()){ %>
-<b>To view results of a workflow submission job, click on the job ID, once its status becomes "Finished".</b><br/>
+<b>To view results of a workflow submission job, click on its id, once its status becomes "Finished".</b><br/>
 <b>To refresh job statuses, click on the "Refresh" button.</b><br/><br/>
 <table width="100%">
     <tr>
@@ -52,7 +54,7 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z"
 <br/>
 <table class="jobs">
     <tr>
-        <th>Job ID</th>
+        <th>Job Id</th>
         <th>Workflow name</th>
         <th>Start date</th>
         <th>Status</th>
@@ -60,24 +62,26 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z"
     </tr>
     <%
     for (int i=0; i< workflowSubmissionJobs.size(); i++ ) {
+        String confirmDeletionText = "Are you sure you want to delete job "+ workflowSubmissionJobs.get(i).getUuid()+ "?";
+
         if (i % 2 == 0){%>
             <tr>
         <%}
         else{%>
             <tr style="background-color: #EFF5FB;">
         <%}%>
-                <%
-                if(!workflowSubmissionJobs.get(i).getStatus().equals(Constants.JOB_STATUS_FINISHED)){%>
-                    <td><%= workflowSubmissionJobs.get(i).getUuid() %></td>
-                <%}
-                else {%>
-                <td><a href="<portlet:actionURL/>&<%=Constants.FETCH_RESULTS%>=<%= URLEncoder.encode(workflowSubmissionJobs.get(i).getUuid(), "UTF-8")%>"><%= workflowSubmissionJobs.get(i).getUuid() %></a></td>
-                <%}%>
-                <td><%= workflowSubmissionJobs.get(i).getWorkflowFileName() %></td>
-                <td><%= dateFormat.format(workflowSubmissionJobs.get(i).getStartDate()) %></td>
-                <td><%= workflowSubmissionJobs.get(i).getStatus() %></td>
-                <td><a href="<portlet:actionURL/>&<%=Constants.DELETE_JOB%>=<%= URLEncoder.encode(workflowSubmissionJobs.get(i).getUuid(), "UTF-8")%>"><img src="<%=renderRequest.getContextPath()%>/images/delete.png" alt="Delete job"></a></td>
-            </tr>
+        <%
+        if(!workflowSubmissionJobs.get(i).getStatus().equals(Constants.JOB_STATUS_FINISHED)){%>
+            <td><%= workflowSubmissionJobs.get(i).getUuid() %></td>
+        <%}
+        else {%>
+            <td><a href="<portlet:actionURL/>&<%=Constants.FETCH_RESULTS%>=<%= URLEncoder.encode(workflowSubmissionJobs.get(i).getUuid(), "UTF-8")%>"><%= workflowSubmissionJobs.get(i).getUuid() %></a></td>
+        <%}%>
+        <td><%= workflowSubmissionJobs.get(i).getWorkflowFileName() %></td>
+        <td><%= dateFormat.format(workflowSubmissionJobs.get(i).getStartDate()) %></td>
+        <td><%= workflowSubmissionJobs.get(i).getStatus() %></td>
+        <td><a onclick="return confirm_deletion('<%=confirmDeletionText%>');" href="<portlet:actionURL/>&<%=Constants.DELETE_JOB%>=<%= URLEncoder.encode(workflowSubmissionJobs.get(i).getUuid(), "UTF-8")%>"><img src="<%=renderRequest.getContextPath()%>/images/delete.png" alt="Delete job"></a></td>
+        </tr>
     <%}%>
 </table>
 <%
