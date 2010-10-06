@@ -96,7 +96,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
     public void processAction(ActionRequest request, ActionResponse response) throws PortletException,IOException {
 
         ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)request.getPortletSession().
-        getAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE,
+        getAttribute(Constants.WORKFLOW_SUBMISSION_JOBS,
         PortletSession.APPLICATION_SCOPE);
 
         // If there was a request to refresh the job statuses
@@ -121,10 +121,32 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                         // if not download and save the Baclava file with outputs now.
                         Map<String, DataThing> resultDataThingMap = fetchResults(job, request);
                         request.setAttribute(Constants.OUTPUTS_MAP_ATTRIBUTE, resultDataThingMap);
-                        request.setAttribute(Constants.WORKFLOW_SUBMISSION_JOB_ATTRIBUTE, job);
+                        request.setAttribute(Constants.WORKFLOW_SUBMISSION_JOB, job);
                         break; 
                     } // else just ignore it if it is not in the job ID list
                 }
+            }
+        }
+        // If there was a request to delete a workflow run
+        else if (request.getParameter(Constants.DELETE_JOB) != null){
+            // If workflowSubmissionJobs is null or does not contain this job ID
+            // this is just a page refresh after redeployment of the app/restart of
+            // the sever/some form or refresh while the URL parameter DELETE_JOB
+            // managed to linger in the URL in the browser from the previous
+            // session so just ignore it.
+            if (workflowSubmissionJobs != null){
+                String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(Constants.DELETE_JOB)[0], "UTF-8");
+                
+                Iterator<WorkflowSubmissionJob> iter = workflowSubmissionJobs.iterator();
+                while (iter.hasNext()) {
+                    if (iter.next().getUuid().equals(workflowResourceUUID)){
+                        System.out.println("Workflow Results Portlet: Deleting job " + workflowResourceUUID);
+                        iter.remove();
+                        deleteJob(workflowResourceUUID, request);
+                        request.setAttribute(Constants.WORKFLOW_SUBMISSION_JOBS, workflowSubmissionJobs);
+                        break;
+                    }
+                } // else just ignore it if it is not in the job ID list           
             }
         }
 
@@ -170,11 +192,11 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
         // Get all jobs for the current user that have been persisted on a disk
         ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)request.getPortletSession().
-                                            getAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE,
+                                            getAttribute(Constants.WORKFLOW_SUBMISSION_JOBS,
                                             PortletSession.APPLICATION_SCOPE);
         if (workflowSubmissionJobs == null){ // load user's jobs from disk
             workflowSubmissionJobs = loadWorkflowSubmissionJobs(JOBS_DIR, user);
-            request.getPortletSession().setAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE,
+            request.getPortletSession().setAttribute(Constants.WORKFLOW_SUBMISSION_JOBS,
                     workflowSubmissionJobs,
                     PortletSession.APPLICATION_SCOPE);
         }
@@ -200,7 +222,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
             Map<String, DataThing> resultDataThingMap = (Map<String, DataThing>)request.getAttribute(Constants.OUTPUTS_MAP_ATTRIBUTE);
             if (resultDataThingMap != null){
                 String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(Constants.FETCH_RESULTS)[0], "UTF-8");
-                WorkflowSubmissionJob job = (WorkflowSubmissionJob)request.getAttribute(Constants.WORKFLOW_SUBMISSION_JOB_ATTRIBUTE);
+                WorkflowSubmissionJob job = (WorkflowSubmissionJob)request.getAttribute(Constants.WORKFLOW_SUBMISSION_JOB);
 
                 response.getWriter().println("<br/>\n");
                 response.getWriter().println("<hr/>\n");
@@ -214,7 +236,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                 outputsTableHTML.append("<b>Results:</b><br/>\n");
                 outputsTableHTML.append("<table class=\"results\">\n");
                 outputsTableHTML.append("<tr>\n");
-                outputsTableHTML.append("<th width=\"25%\">Output port</th>\n");
+                outputsTableHTML.append("<th>Output port</th>\n");
                 outputsTableHTML.append("<th>Data</th>\n");
                 outputsTableHTML.append("</tr>\n");
                 int rowCount = 1;
@@ -242,7 +264,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                         }
                         // Get data's MIME type as given by the Baclava file
                         String mimeType = resultDataThing.getMostInterestingMIMETypeForObject(dataObject);
-                        outputsTableHTML.append("<td width=\"25%\">\n");
+                        outputsTableHTML.append("<td>\n");
                         outputsTableHTML.append("<div class=\"output_name\">" + outputPortName + "<span class=\"output_depth\"> - " + dataTypeBasedOnDepth + "</span></div>\n");
                         outputsTableHTML.append("<div class=\"output_mime_type\">" + mimeType + "</div>\n");
                         outputsTableHTML.append("</td>");
@@ -579,7 +601,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
         }
 
         request.getPortletSession().
-                setAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE,
+                setAttribute(Constants.WORKFLOW_SUBMISSION_JOBS,
                 workflowSubmissionJobs,
                 PortletSession.APPLICATION_SCOPE);
     }
@@ -619,7 +641,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
     private Map<String, DataThing> fetchResults(WorkflowSubmissionJob job, PortletRequest request){
 
         String workflowResultsBaclavaFileURL = T2_SERVER_URL + Constants.RUNS_URL + "/"+ job.getUuid() + Constants.WD_URL + "/" + Constants.BACLAVA_OUTPUT_FILE_NAME;
-        request.setAttribute(Constants.WORKFLOW_RESULTS_BACLAVA_FILE_URL_ATTRIBUTE, workflowResultsBaclavaFileURL);
+        request.setAttribute(Constants.WORKFLOW_RESULTS_BACLAVA_FILE_URL, workflowResultsBaclavaFileURL);
 
         // First try to get the Baclava file from the local disk.
         // Get the current user first.
@@ -821,5 +843,21 @@ public class WorkflowResultsPortlet extends GenericPortlet{
             }
         }
         return resultDataThingMap;
+    }
+
+    private void deleteJob(String jobId, PortletRequest request){
+        // Get currently logged in user
+        String user = (String)request.getPortletSession().
+                                            getAttribute(Constants.USER,
+                                            PortletSession.APPLICATION_SCOPE);
+        File dirToDelete = new File(JOBS_DIR, user + Constants.FILE_SEPARATOR + jobId);
+        try{
+            FileUtils.deleteDirectory(dirToDelete);
+        }
+        catch(Exception ex){
+            System.out.println("Workflow Results Portlet: An error occured while trying to delete job " + jobId + ".");
+            ex.printStackTrace();
+            request.setAttribute(Constants.ERROR_MESSAGE, "An error occured while trying to delete job " + jobId + ".");
+        }
     }
 }

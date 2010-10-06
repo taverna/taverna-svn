@@ -471,7 +471,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                     // to be read by the Workflow Results portlet and used to fetch results for
                                     // this run
                                     ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)request.getPortletSession().
-                                            getAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE,
+                                            getAttribute(Constants.WORKFLOW_SUBMISSION_JOBS,
                                             PortletSession.APPLICATION_SCOPE); // should not be null at this point
                                             
                                     WorkflowSubmissionJob job = new WorkflowSubmissionJob(workflowResourceUUID, workflowFileName, Constants.JOB_STATUS_OPERATING);
@@ -482,7 +482,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                     persistJobOnDisk(request, job, worfklowInputsDocument);
                                    
                                     request.getPortletSession().
-                                            setAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE,
+                                            setAttribute(Constants.WORKFLOW_SUBMISSION_JOBS,
                                             workflowSubmissionJobs,
                                             PortletSession.APPLICATION_SCOPE);
                                     request.setAttribute(Constants.INFO_MESSAGE, "Workflow "+workflowFileName+" successfully submitted for execution with job ID: " + workflowResourceUUID + ". You may use this ID to monitor the progress of the workflow run.");
@@ -546,7 +546,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                 // the runs.
 
                                 ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)request.getPortletSession().
-                                        getAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
+                                        getAttribute(Constants.WORKFLOW_SUBMISSION_JOBS, PortletSession.APPLICATION_SCOPE);
                                 WorkflowSubmissionJob job = new WorkflowSubmissionJob(workflowResourceUUID, workflowFileName, Constants.JOB_STATUS_OPERATING);
                                 workflowSubmissionJobs.add(job);
                                 job.setStartDate(new Date());
@@ -555,7 +555,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                 persistJobOnDisk(request, job, worfklowInputsDocument);
 
                                 request.getPortletSession().
-                                        setAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE, 
+                                        setAttribute(Constants.WORKFLOW_SUBMISSION_JOBS,
                                         workflowSubmissionJobs,
                                         PortletSession.APPLICATION_SCOPE);
                             }
