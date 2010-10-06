@@ -285,8 +285,10 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                         user + Constants.FILE_SEPARATOR +
                         workflowResourceUUID + Constants.FILE_SEPARATOR +
                         Constants.OUTPUTS_BACLAVA_FILE;
+                String baclavaOutputsFileURL = request.getContextPath() + FILE_SERVLET_URL + "?"+ Constants.DATA_FILE_PATH +"=" + URLEncoder.encode(baclavaOutputsFilePath, "UTF-8") +
+                        "&" + Constants.MIME_TYPE + "=" + URLEncoder.encode(Constants.CONTENT_TYPE_APPLICATION_XML, "UTF-8");
                 response.getWriter().println("Download the results as a <a target=\"_blank\" href=\"" + 
-                        request.getContextPath() + FILE_SERVLET_URL + "?"+ Constants.DATA_FILE_PATH +"=" + URLEncoder.encode(baclavaOutputsFilePath, "UTF-8") +
+                        baclavaOutputsFileURL+
                         "\">single XML file</a>. " +
                         "You can view the file with Taverna's DataViewer tool.");
             }
@@ -429,9 +431,9 @@ public class WorkflowResultsPortlet extends GenericPortlet{
         if (maxDepth == 0){ // Result data is a single item only
             String dataFilePath = dataFileParentPath + Constants.FILE_SEPARATOR + "Value";
             try{
-                String dataFileURL = request.getContextPath() + FILE_SERVLET_URL + 
+                String dataFileURL = request.getContextPath() + FILE_SERVLET_URL +
                         "?"+ Constants.DATA_FILE_PATH +"=" + URLEncoder.encode(dataFilePath, "UTF-8") +
-                        "&mime_type=" + URLEncoder.encode(mimeType, "UTF-8");
+                        "&" + Constants.MIME_TYPE + "=" + URLEncoder.encode(mimeType, "UTF-8");
                 resultTreeHTML.append("addNode(\"Value\", \""+dataFileURL+"\", \"_blank\");\n");
             }
             catch(Exception ex){
@@ -442,9 +444,9 @@ public class WorkflowResultsPortlet extends GenericPortlet{
             if (currentDepth == 0){ // A leaf in the tree
                 String dataFilePath = dataFileParentPath + Constants.FILE_SEPARATOR + "Value" + parentIndex;
                 try{
-                    String dataFileURL = request.getContextPath() + FILE_SERVLET_URL + "?" +
-                            Constants.DATA_FILE_PATH +"=" + URLEncoder.encode(dataFilePath, "UTF-8") +
-                            "&mime_type=" + URLEncoder.encode(mimeType, "UTF-8");
+                    String dataFileURL = request.getContextPath() + FILE_SERVLET_URL +
+                        "?"+ Constants.DATA_FILE_PATH +"=" + URLEncoder.encode(dataFilePath, "UTF-8") +
+                        "&" + Constants.MIME_TYPE + "=" + URLEncoder.encode(mimeType, "UTF-8");
                     resultTreeHTML.append("addNode(\"Value" + parentIndex + "\", \""+dataFileURL+"\", \"_blank\");\n");
                 }
                 catch(Exception ex){
