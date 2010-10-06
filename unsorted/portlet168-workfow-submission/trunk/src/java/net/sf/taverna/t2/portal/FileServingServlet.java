@@ -5,58 +5,43 @@
 
 package net.sf.taverna.t2.portal;
 
+import eu.medsea.mimeutil.MimeType;
+import eu.medsea.mimeutil.MimeUtil2;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
+ * This servlet reads the file path from the session object and
+ * sends the file back to the user as a response.
  *
- * @author alex
+ * @author Alex Nenadic
  */
 public class FileServingServlet extends HttpServlet {
 
-     @Override
+    private static final String APPLICATION_OCTETSTREAM = "application/octet-stream";
+
+    // Directory where info for all submitted jobs for all users is persisted
+    private File JOBS_DIR;
+    
+    @Override
     public void init(){
-        System.out.println("inittitttttttt");
 
-     }
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-                System.out.println("hereeeeeeeeee");
-
-        response.setContentType("text/html;charset=UTF-8");
-        /*PrintWriter out = response.getWriter();
-        try {
-            //TODO output your page here
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet FileServingServlet</title>");  
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet FileServingServlet at " + request.getContextPath () + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-          
-        } finally { 
-            out.close();
-        }*/
+        // Get the directory where info for submitted jobs for all users is persisted
+        JOBS_DIR = new File(getServletContext().getInitParameter(Constants.JOBS_DIRECTORY_PATH),
+                Constants.JOBS_DIRECTORY_NAME);
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 
      * Handles the HTTP <code>GET</code> method.
      * @param request servlet request
@@ -67,56 +52,79 @@ public class FileServingServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
 
+        String dataFilePath = URLDecoder.decode((String) request.getParameter(Constants.DATA_FILE_PATH), "UTF-8");
         try {
-            HttpSession session = request.getSession();
-            //String filename = (String) session.getAttribute("FILENAME");
-            String filename = "/Users/alex/Desktop/" + (String) request.getParameter("filename");
-            System.out.println("Serving file: " + filename);
 
-            if ((filename != null) && (filename.length() > 0)) {
-                response.setContentType(getServletContext().getMimeType(filename));
+            File dataFile = new File(dataFilePath);
+            System.out.println("File Serving Servlet: Fetching file " + dataFilePath);
+
+            if (dataFile.exists()) {
+
+                // Get the content type for the file to send
+                String mimeType = URLDecoder.decode((String) request.getParameter("mime_type"), "UTF-8");
 
                 OutputStream os = response.getOutputStream();
+
                 byte b[] = new byte[1024];
-                InputStream is = new FileInputStream(filename);
+                InputStream is = new FileInputStream(dataFile);
                 int numRead = 0;
 
                 while ((numRead=is.read(b)) > 0) {
+                    /*if (mimeType == null){
+                        byte[] copy = new byte[b.length];
+                        System.arraycopy(b, 0, copy, 0, b.length);
+                        mimeType = getMimeTypes(copy).get(0).toString();
+                        System.out.println("File Serving Servlet: MIME type set to " + mimeType);
+                   }*/
                     os.write(b, 0, numRead);
                 }
+
+                response.setContentType(mimeType);
 
                 os.flush();
             }
             else {
-                System.err.println("ERROR! No filename detected.");
+                response.setContentType("text/plain");
+                response.getWriter().write("Error: The file with the result data does not exist.");
+                System.err.println("File Serving Servlet: The file "+ dataFilePath +" does not exist.");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            response.setContentType("text/plain");
+            response.getWriter().write("An error occured while trying to read the file with the result data.\n" + ex.getMessage());
+            System.out.println("File Serving Servlet: An error occured while trying to read the file " + dataFilePath);
+            ex.printStackTrace();
         }
     } 
 
-    /** 
-     * Handles the HTTP <code>POST</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        processRequest(request, response);
-    }
+    public static List<MimeType> getMimeTypes(byte[] bytes) {
+        List<MimeType> mimeList = new ArrayList<MimeType>();
+        MimeUtil2 mimeUtil = new MimeUtil2();
+        mimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.ExtensionMimeDetector");
+        mimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.MagicMimeMimeDetector");
+        mimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.WindowsRegistryMimeDetector");
+        mimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.ExtraMimeTypes");
+        try {
+            Collection<MimeType> mimeTypes2 = mimeUtil.getMimeTypes(bytes);
+            mimeList.addAll(mimeTypes2);
 
-    /** 
-     * Returns a short description of the servlet.
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
+            // Hack for SVG that seems not to be recognised
+            String bytesString = new String(bytes, "UTF-8");
+            if (bytesString.contains("http://www.w3.org/2000/svg")){
+                MimeType svgMimeType = new MimeType("image/svg+xml");
+                if (!mimeList.contains(svgMimeType)){
+                        mimeList.add(svgMimeType);
+                }
+            }
+            if (mimeList.isEmpty()){ // if it is not recognised
+                mimeList.add(new MimeType(APPLICATION_OCTETSTREAM));
+            }
+
+        } catch (IOException ex) {
+                mimeList.add(new MimeType(APPLICATION_OCTETSTREAM));
+        }
+
+        return mimeList;
+    }
 
 }

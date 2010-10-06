@@ -19,11 +19,11 @@ import javax.portlet.RenderResponse;
  */
 public class FileSubmissionPortlet extends GenericPortlet{
 
-    private String fileServletURL;
+    private String FILE_SERVLET_URL;
 
     @Override
     public void init(){
-        fileServletURL = getPortletContext().getInitParameter(Constants.FILE_SERVLET_PATH);
+        FILE_SERVLET_URL = getPortletContext().getInitParameter(Constants.FILE_SERVLET_URL);
     }
 
     @Override
