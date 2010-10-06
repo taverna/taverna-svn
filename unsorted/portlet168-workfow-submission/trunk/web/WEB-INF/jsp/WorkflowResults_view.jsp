@@ -25,7 +25,7 @@
 // List of UUIDs of workflows submitted to the T2 Server.
 ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)renderRequest.
         getPortletSession().
-        getAttribute(Constants.WORKFLOW_JOBS_ATTRIBUTE, PortletSession.APPLICATION_SCOPE);
+        getAttribute(Constants.WORKFLOW_SUBMISSION_JOBS, PortletSession.APPLICATION_SCOPE);
 
 SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
 
@@ -56,6 +56,7 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z"
         <th>Workflow name</th>
         <th>Start date</th>
         <th>Status</th>
+        <th>Delete job</th>
     </tr>
     <%
     for (int i=0; i< workflowSubmissionJobs.size(); i++ ) {
@@ -75,6 +76,7 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z"
                 <td><%= workflowSubmissionJobs.get(i).getWorkflowFileName() %></td>
                 <td><%= dateFormat.format(workflowSubmissionJobs.get(i).getStartDate()) %></td>
                 <td><%= workflowSubmissionJobs.get(i).getStatus() %></td>
+                <td><a href="<portlet:actionURL/>&<%=Constants.DELETE_JOB%>=<%= URLEncoder.encode(workflowSubmissionJobs.get(i).getUuid(), "UTF-8")%>"><img src="<%=renderRequest.getContextPath()%>/images/delete.png" alt="Delete job"></a></td>
             </tr>
     <%}%>
 </table>

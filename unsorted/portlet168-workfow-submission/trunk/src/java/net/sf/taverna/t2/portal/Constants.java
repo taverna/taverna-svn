@@ -19,14 +19,15 @@ public class Constants {
     public static final String OUTPUTS_BACLAVA_FILE = "outputs.baclava"; // saved on local disk
     public static final String OUTPUTS_DIRECTORY_NAME = "outputs"; // name of the dir where individual outputs  for all port are saved
     public static final String DATA_FILE_PATH = "data_file_path"; // absolute path to the file with data
-
+    public static final String DELETE_JOB = "delete_job";
+    
     // Anonymous user
     public static final String USER_ANONYMOUS = "anonymous";
 
     // Application scope attributes
-    public static final String WORKFLOW_JOBS_ATTRIBUTE = "workflow_jobs";
-    public static final String WORKFLOW_RESULTS_BACLAVA_FILE_URL_ATTRIBUTE = "workflow_results_baclava_file_URL";
-    public static final String WORKFLOW_SUBMISSION_JOB_ATTRIBUTE = "workflow_submission_job";
+    public static final String WORKFLOW_SUBMISSION_JOBS = "workflow_submission_jobs";
+    public static final String WORKFLOW_RESULTS_BACLAVA_FILE_URL = "workflow_results_baclava_file_URL";
+    public static final String WORKFLOW_SUBMISSION_JOB = "workflow_submission_job";
     public static final String USER = "user";
 
     // Portlet scope attributes
