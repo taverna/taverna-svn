@@ -32,8 +32,8 @@
         <description>Absolute path to a directory on the local file system where the app can write info about submitted jobs to</description>
     </context-param>
     <context-param>
-        <param-name>FILE_SERVLET_PATH</param-name>
+        <param-name>FILE_SERVLET_URL</param-name>
         <param-value>/FileServingServlet</param-value>
-        <description>Relative path to the servlet that serves files from a local disk and displayes theur content in a browser</description>
+        <description>Relative URL to the servlet that reads files from a local disk and sends their content to a browser</description>
     </context-param>
 </web-app>
