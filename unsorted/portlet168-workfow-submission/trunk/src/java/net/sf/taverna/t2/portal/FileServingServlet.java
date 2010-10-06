@@ -53,27 +53,29 @@ public class FileServingServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
 
+        // Get the file to fetch
         String dataFilePath = URLDecoder.decode((String) request.getParameter(Constants.DATA_FILE_PATH), "UTF-8");
+        // Get the content type of the file to fetch (this is also passed as a parameter)
+        String mimeType = URLDecoder.decode((String) request.getParameter(Constants.MIME_TYPE), "UTF-8");
+
         try {
 
             File dataFile = new File(dataFilePath);
             String user = (String)request.getSession().getAttribute(Constants.USER);
-            System.out.println("File Serving Servlet: Fetching file " + dataFilePath + " for user " + user);
+            System.out.println("File Serving Servlet: Fetching file " + dataFilePath + " for user " + user + "; file mime type: "+mimeType);
 
             // We do not serve arbritarty files here - just those in the JOBS_DIR so make sure
             // we check that here. Also check that the file we are serving belongs to the
             // current user.
             if (dataFilePath.startsWith(JOBS_DIR.getAbsolutePath() + Constants.FILE_SEPARATOR + user)){
                if (dataFile.exists()) {
-
-                    // Get the content type for the file to send
-                    String mimeType = URLDecoder.decode((String) request.getParameter(Constants.MIME_TYPE), "UTF-8");
-
+                    response.setContentType(mimeType);
                     OutputStream os = response.getOutputStream();
 
                     byte b[] = new byte[1024];
                     InputStream is = new FileInputStream(dataFile);
                     int numRead = 0;
+                    response.setContentLength(is.available());
 
                     while ((numRead=is.read(b)) > 0) {
                         /*if (mimeType == null){
@@ -84,11 +86,9 @@ public class FileServingServlet extends HttpServlet {
                        }*/
                         os.write(b, 0, numRead);
                     }
-
-                    response.setContentType(mimeType);
-
                     os.flush();
-                }
+                    System.out.println("File Serving Servlet: Finished serving file " + dataFilePath);
+              }
                 else {
                     response.setContentType("text/plain");
                     response.getWriter().write("Error: You are trying to view a file that does not belong to you.");
