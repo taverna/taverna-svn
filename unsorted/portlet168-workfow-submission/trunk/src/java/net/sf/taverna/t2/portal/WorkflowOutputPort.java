@@ -74,5 +74,19 @@ public class WorkflowOutputPort {
         this.value = value;
     }
 
+    /**
+     * @return the mimeType
+     */
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    /**
+     * @param mimeType the mimeType to set
+     */
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
+
 }
 
