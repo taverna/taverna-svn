@@ -67,7 +67,7 @@ public class FileServingServlet extends HttpServlet {
                if (dataFile.exists()) {
 
                     // Get the content type for the file to send
-                    String mimeType = URLDecoder.decode((String) request.getParameter("mime_type"), "UTF-8");
+                    String mimeType = URLDecoder.decode((String) request.getParameter(Constants.MIME_TYPE), "UTF-8");
 
                     OutputStream os = response.getOutputStream();
 
