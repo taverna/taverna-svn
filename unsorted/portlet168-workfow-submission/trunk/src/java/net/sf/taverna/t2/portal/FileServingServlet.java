@@ -88,19 +88,20 @@ public class FileServingServlet extends HttpServlet {
                     }
                     os.flush();
                     System.out.println("File Serving Servlet: Finished serving file " + dataFilePath);
-              }
-                else {
+                }
+                else{
                     response.setContentType("text/plain");
-                    response.getWriter().write("Error: You are trying to view a file that does not belong to you.");
-                    System.err.println("File Serving Servlet: The user "+user+" is trying to view the file "+ dataFilePath +" that does not belong to them.");
+                    response.getWriter().write("Error: The file with the result data does not exist.");
+                    System.err.println("File Serving Servlet: The file "+ dataFilePath +" does not exist.");
                 }
             }
-            else{
+            else {
                 response.setContentType("text/plain");
-                response.getWriter().write("Error: The file with the result data does not exist.");
-                System.err.println("File Serving Servlet: The file "+ dataFilePath +" does not exist.");
+                response.getWriter().write("Error: You are trying to view a file that does not belong to you.");
+                System.err.println("File Serving Servlet: The user "+user+" is trying to view the file "+ dataFilePath +" that does not belong to them.");
             }
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
         response.setContentType("text/plain");
         response.getWriter().write("An error occured while trying to read the file with the result data.\n" + ex.getMessage());
         System.out.println("File Serving Servlet: An error occured while trying to read the file " + dataFilePath);
