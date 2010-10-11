@@ -89,14 +89,27 @@ function addNode(text, url, target){
 	document.write('<table class="result_data">');
 	document.write('  <tr>');
 	document.write('	<td>');
-    document.write('<a href="' + url + '" target="' + target + '" onfocus="this.hideFocus=true;" style="outline-style:none;">');
+        document.write('<a href="' + url + '" target="' + target + '" onfocus="this.hideFocus=true;" style="outline-style:none;">');
 	document.write('<img src="<%= imagesPath %>page.png" border="0" name="nodeImage' + this.nodeCount + '" onclick="onNodeImageClick(this);" />');
-    document.write('</a>');
+        document.write('</a>');
 	document.write('	</td>');
 	document.write('    <td><a name="nodeText' + this.nodeCount + '" onclick="onNodeTextClick(this);" href="' + url + '" target="' + target + '" class="normalTreeNode" onfocus="this.hideFocus=true;" style="outline-style:none;">' + text + '</a></td>');
 	document.write('  </tr>');
 	document.write('</table>');
-    this.nodeCount = this.nodeCount + 1;
+        this.nodeCount = this.nodeCount + 1;
+}
+function addNode2(text, url, content_id){
+	document.write('<table class="result_data">');
+	document.write('  <tr>');
+	document.write('	<td>');
+        document.write('<a href="javascript:ajaxpage(\''+url+'\', \''+content_id+'\');" onfocus="this.hideFocus=true;" style="outline-style:none;">');
+	document.write('<img src="<%= imagesPath %>page.png" border="0" name="nodeImage' + this.nodeCount + '" onclick="onNodeImageClick(this);" />');
+        document.write('</a>');
+	document.write('	</td>');
+	document.write('    <td><a name="nodeText' + this.nodeCount + '" onclick="onNodeTextClick(this);" href="javascript:ajaxpage(\''+url+'\', \''+content_id +'\');" class="normalTreeNode" onfocus="this.hideFocus=true;" style="outline-style:none;">' + text + '</a></td>');
+	document.write('  </tr>');
+	document.write('</table>');
+        this.nodeCount = this.nodeCount + 1;
 }
 function addExpandCollapseAll(){
 	document.write('<table class="result_data">');

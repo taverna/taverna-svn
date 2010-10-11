@@ -98,11 +98,12 @@ table.result_data, table.result_data th, table.result_data td
 
 .output_depth{
     font-weight: normal;
-    color: #084B8A;
+    color: #088A4B;
 }
 
 .output_mime_type{
     font-style: italic;
     color: #666;
 }
+
 </style>

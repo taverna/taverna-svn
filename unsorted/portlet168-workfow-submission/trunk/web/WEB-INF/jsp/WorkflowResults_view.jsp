@@ -22,6 +22,8 @@
 <%@ include file="ResultsTreeJavaScript.jsp" %>
 <%-- Include the JavaScript for confirming job deletion --%>
 <%@ include file="ConfirmJobDeletionJavaScript.jsp" %>
+<%-- Include the JavaScript for dynamic loading of data files in the result preview --%>
+<%@ include file="AjaxDataPreviewJavaScript.jsp" %>
 
 <%
 // List of UUIDs of workflows submitted to the T2 Server.
@@ -37,12 +39,12 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z"
 
 <%-- Form for selecting the workflow job to show results for --%>
 <% if (workflowSubmissionJobs != null && !workflowSubmissionJobs.isEmpty()){ %>
-<b>To view results of a workflow submission job, click on its id, once its status becomes "Finished".</b><br/>
-<b>To refresh job statuses, click on the "Refresh" button.</b><br/><br/>
-<table width="100%">
+<b>To view results of a workflow submission job, click on its id, once its status becomes "Finished".</b><br>
+<b>To refresh job statuses, click on the "Refresh" button.</b><br><br>
+<table width="100%" style="margin-bottom:3px;">
     <tr>
-        <td>
-            <b> Workflow submission jobs:</b>
+        <td valign="bottom">
+            <b>Workflow submission jobs:</b>
         </td>
         <td align="right">
         <form action="<portlet:actionURL/>" method="post">
@@ -51,7 +53,12 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z"
         </td>
     </tr>
 </table>
-<br/>
+<%--<div style="float:right; padding:0px 0px 5px 5px;">
+    <form action="<portlet:actionURL/>" method="post">
+        <input type="submit" name="<portlet:namespace/><%= Constants.REFRESH_WORKFLOW_JOBS %>" value="Refresh">
+    </form>
+</div>
+<div style="float:left; margin-bottom:3px;"><b>Workflow submission jobs:</b></div>--%>
 <table class="jobs">
     <tr>
         <th>Job Id</th>

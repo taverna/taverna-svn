@@ -673,18 +673,18 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             inputFormJSP.append("<b>Workflow:</b> "+workflowFileName+"\n");
         }
         if (workflow.getDescription() != null && !workflow.getDescription().equals("")){
-            inputFormJSP.append("<br/>\n");
-            inputFormJSP.append("<br/>\n");
+            inputFormJSP.append("<br>\n");
+            inputFormJSP.append("<br>\n");
             inputFormJSP.append("<b>Description:</b> " + workflow.getDescription() +"\n");
         }
-        inputFormJSP.append("<br/>\n");
-        inputFormJSP.append("<br/>\n");
+        inputFormJSP.append("<br>\n");
+        inputFormJSP.append("<br>\n");
 
         // Workflow inputs form
         inputFormJSP.append("<b>Workflow inputs:</b>\n");
 
         if (workflowInputPorts.isEmpty()){
-            inputFormJSP.append("The workflow does not require any inputs<br/><br/>\n");
+            inputFormJSP.append("The workflow does not require any inputs<br><br>\n");
             inputFormJSP.append("<form name=\"<portlet:namespace/><%= Constants.WORKFLOW_INPUTS_FORM%>\" action=\"<portlet:actionURL/>\" method=\"post\" enctype=\"multipart/form-data\" onSubmit=\"return validateForm(this)\">\n");
         }
         else{
@@ -716,12 +716,12 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                         descriptionString += inputPort.getDescription();
                     }
                     if (inputPort.getExampleValue() != null && !inputPort.getExampleValue().equals("")){
-                        descriptionString += "<br/><br/><b>Example value:</b> "+inputPort.getExampleValue();
+                        descriptionString += "<br><br><b>Example value:</b> "+inputPort.getExampleValue();
                     }
                     inputFormJSP.append("<td>" + descriptionString + "</td>\n");
                     inputFormJSP.append("<td>\n");
-                    inputFormJSP.append("Paste the value here: <br/>\n");
-                    inputFormJSP.append("<textarea name=\"<portlet:namespace/>"+inputPort.getName()+Constants.WORKFLOW_INPUT_CONTENT_SUFFIX+"\" rows=\"2\" cols=\"20\" wrap=\"off\"></textarea><br/>\n");
+                    inputFormJSP.append("Paste the value here: <br>\n");
+                    inputFormJSP.append("<textarea name=\"<portlet:namespace/>"+inputPort.getName()+Constants.WORKFLOW_INPUT_CONTENT_SUFFIX+"\" rows=\"2\" cols=\"20\" wrap=\"off\"></textarea><br>\n");
                     inputFormJSP.append("Or load the value from a file: <br />\n");
                     inputFormJSP.append("<input type=\"file\" name=\"<portlet:namespace/>"+inputPort.getName()+Constants.WORKFLOW_INPUT_FILE_SUFFIX+"\" />\n");
                     inputFormJSP.append("</td>\n");
@@ -741,14 +741,14 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                         descriptionString += inputPort.getDescription();
                     }
                     if (inputPort.getExampleValue() != null && !inputPort.getExampleValue().equals("")){
-                        descriptionString += "<br/><br/><b>Example value:</b> "+inputPort.getExampleValue();
+                        descriptionString += "<br><br><b>Example value:</b> "+inputPort.getExampleValue();
                     }
                     inputFormJSP.append("<td>" + descriptionString + "</td>\n");
                     inputFormJSP.append("<td>\n");
-                    inputFormJSP.append("Paste the list values here: <br/>\n");
-                    inputFormJSP.append("<textarea name=\"<portlet:namespace/>"+inputPort.getName()+Constants.WORKFLOW_INPUT_CONTENT_SUFFIX+"\" rows=\"2\" cols=\"20\" wrap=\"off\"></textarea><br/>\n");
+                    inputFormJSP.append("Paste the list values here: <br>\n");
+                    inputFormJSP.append("<textarea name=\"<portlet:namespace/>"+inputPort.getName()+Constants.WORKFLOW_INPUT_CONTENT_SUFFIX+"\" rows=\"2\" cols=\"20\" wrap=\"off\"></textarea><br>\n");
                     inputFormJSP.append("Or load them from a file: <br />\n");
-                    inputFormJSP.append("<input type=\"file\" name=\"<portlet:namespace/>"+inputPort.getName()+Constants.WORKFLOW_INPUT_FILE_SUFFIX+"\" /><br/><hr/>\n");
+                    inputFormJSP.append("<input type=\"file\" name=\"<portlet:namespace/>"+inputPort.getName()+Constants.WORKFLOW_INPUT_FILE_SUFFIX+"\" /><br><hr/>\n");
                     inputFormJSP.append("Use the following character sequence as the list item separator:\n");
                     inputFormJSP.append("<select name=\"<portlet:namespace/>"+inputPort.getName()+"_separator\">\n");
                     inputFormJSP.append("<option value=\""+NEW_LINE_LINUX_SEPARATOR+"\">New line - Unix/Linux (\\n)</option>\n");
@@ -835,14 +835,14 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
             if (httpResponse.getStatusLine().getStatusCode() != 201){ // HTTP/1.1 201 Created
                 System.out.println("Workflow Submission Portlet: Failed to submit workflow " + workflowFileName + " for execution.\nServer responded with: " + httpResponse.getStatusLine());
-                request.setAttribute(Constants.ERROR_MESSAGE, "Failed to submit workflow " + workflowFileName + " for execution.<br/>Server responded with: " + httpResponse.getStatusLine());
+                request.setAttribute(Constants.ERROR_MESSAGE, "Failed to submit workflow " + workflowFileName + " for execution.<br>Server responded with: " + httpResponse.getStatusLine());
                 return null;
             }
         }
         catch(Exception ex){
             System.out.println("Workflow Submission Portlet: Failed to POST request to submit workflow " + workflowFileName + " for execution.");
             ex.printStackTrace();
-            request.setAttribute(Constants.ERROR_MESSAGE, "Failed to submit workflow " + workflowFileName + " for execution.<br/>Error: " +  ex.getMessage());
+            request.setAttribute(Constants.ERROR_MESSAGE, "Failed to submit workflow " + workflowFileName + " for execution.<br>Error: " +  ex.getMessage());
             return null;
         }
 

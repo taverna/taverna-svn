@@ -84,6 +84,7 @@ public class Constants {
     public static final String CONTENT_TYPE_HEADER_NAME = "Content-Type";
     public static final String CONTENT_TYPE_APPLICATION_XML = "application/xml";
     public static final String CONTENT_TYPE_TEXT_PLAIN = "text/plain";
+    public static final String CONTENT_TYPE_APPLICATION_OCTETSTREAM = "application/octet-stream";
     public static final String LOCATION_HEADER_NAME = "Location";
     public static final String JOB_STATUS_OPERATING = "Operating";
     public static final String JOB_STATUS_FINISHED = "Finished";

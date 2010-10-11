@@ -5,5 +5,6 @@
     <portlet id="WorkflowSubmission">WorkflowSubmission</portlet>
     <portlet id="WorkflowResults">WorkflowResults</portlet>
     <portlet id="FileSubmission">FileSubmission</portlet>
+    <portlet id="AjaxTestPortlet">AjaxTestPortlet</portlet>
   </category>
 </display>

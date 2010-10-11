@@ -58,55 +58,7 @@ public class FileServingServlet extends HttpServlet {
         // Get the content type of the file to fetch (this is also passed as a parameter)
         String mimeType = URLDecoder.decode((String) request.getParameter(Constants.MIME_TYPE), "UTF-8");
 
-        try {
-
-            File dataFile = new File(dataFilePath);
-            String user = (String)request.getSession().getAttribute(Constants.USER);
-            System.out.println("File Serving Servlet: Fetching file " + dataFilePath + " for user " + user + "; file mime type: "+mimeType);
-
-            // We do not serve arbritarty files here - just those in the JOBS_DIR so make sure
-            // we check that here. Also check that the file we are serving belongs to the
-            // current user.
-            if (dataFilePath.startsWith(JOBS_DIR.getAbsolutePath() + Constants.FILE_SEPARATOR + user)){
-               if (dataFile.exists()) {
-                    response.setContentType(mimeType);
-                    OutputStream os = response.getOutputStream();
-
-                    byte b[] = new byte[1024];
-                    InputStream is = new FileInputStream(dataFile);
-                    int numRead = 0;
-                    response.setContentLength(is.available());
-
-                    while ((numRead=is.read(b)) > 0) {
-                        /*if (mimeType == null){
-                            byte[] copy = new byte[b.length];
-                            System.arraycopy(b, 0, copy, 0, b.length);
-                            mimeType = getMimeTypes(copy).get(0).toString();
-                            System.out.println("File Serving Servlet: MIME type set to " + mimeType);
-                       }*/
-                        os.write(b, 0, numRead);
-                    }
-                    os.flush();
-                    System.out.println("File Serving Servlet: Finished serving file " + dataFilePath);
-                }
-                else{
-                    response.setContentType("text/plain");
-                    response.getWriter().write("Error: The file with the result data does not exist.");
-                    System.err.println("File Serving Servlet: The file "+ dataFilePath +" does not exist.");
-                }
-            }
-            else {
-                response.setContentType("text/plain");
-                response.getWriter().write("Error: You are trying to view a file that does not belong to you.");
-                System.err.println("File Serving Servlet: The user "+user+" is trying to view the file "+ dataFilePath +" that does not belong to them.");
-            }
-        }
-        catch (IOException ex) {
-        response.setContentType("text/plain");
-        response.getWriter().write("An error occured while trying to read the file with the result data.\n" + ex.getMessage());
-        System.out.println("File Serving Servlet: An error occured while trying to read the file " + dataFilePath);
-        ex.printStackTrace();
-        }
+        sendFile(dataFilePath, mimeType, request, response);
     } 
 
     public static List<MimeType> getMimeTypes(byte[] bytes) {
@@ -137,6 +89,63 @@ public class FileServingServlet extends HttpServlet {
         }
 
         return mimeList;
+    }
+
+    public void sendFile(String dataFilePath, String mimeType, HttpServletRequest request, HttpServletResponse response){
+           try {
+
+            File dataFile = new File(dataFilePath);
+            String user = (String)request.getSession().getAttribute(Constants.USER);
+            System.out.println("File Serving Servlet: Fetching file " + dataFilePath + " for user " + user + "; file mime type: "+mimeType);
+
+            // We do not serve arbritarty files here - just those in the JOBS_DIR so make sure
+            // we check that here. Also check that the file we are serving belongs to the
+            // current user.
+            if (dataFilePath.startsWith(JOBS_DIR.getAbsolutePath() + Constants.FILE_SEPARATOR + user)){
+               if (dataFile.exists()) {
+                    OutputStream os = response.getOutputStream();
+
+                    byte b[] = new byte[1024];
+                    InputStream is = new FileInputStream(dataFile);
+                    int numRead = 0;
+                    response.setContentType(mimeType);
+                    response.setContentLength(is.available());
+
+                    while ((numRead=is.read(b)) > 0) {
+                        /*if (mimeType == null){
+                            byte[] copy = new byte[b.length];
+                            System.arraycopy(b, 0, copy, 0, b.length);
+                            mimeType = getMimeTypes(copy).get(0).toString();
+                            System.out.println("File Serving Servlet: MIME type set to " + mimeType);
+                       }*/
+                        os.write(b, 0, numRead);
+                    }
+                    os.flush();
+                    System.out.println("File Serving Servlet: Finished serving file " + dataFilePath);
+                }
+                else{
+                    response.setContentType("text/plain");
+                    response.getWriter().write("Error: The file with the result data does not exist.");
+                    System.err.println("File Serving Servlet: The file "+ dataFilePath +" does not exist.");
+                }
+            }
+            else {
+                response.setContentType("text/plain");
+                response.getWriter().write("Error: You are trying to view a file that does not belong to you.");
+                System.err.println("File Serving Servlet: The user "+user+" is trying to view the file "+ dataFilePath +" that does not belong to them.");
+            }
+        }
+        catch (IOException ex) {
+            try{
+                response.setContentType("text/plain");
+                response.getWriter().write("An error occured while trying to read the file with the result data.\n" + ex.getMessage());
+                System.out.println("File Serving Servlet: An error occured while trying to read the file " + dataFilePath);
+                ex.printStackTrace();
+            }
+            catch(Exception ex2){ 
+                ex2.printStackTrace();
+            }
+        }
     }
 
 }

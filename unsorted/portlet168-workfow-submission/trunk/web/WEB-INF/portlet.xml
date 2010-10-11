@@ -23,7 +23,7 @@
 		<portlet-name>WorkflowResults</portlet-name>
 		<display-name>Workflow Results</display-name>
 		<portlet-class>net.sf.taverna.t2.portal.WorkflowResultsPortlet</portlet-class>
-                <expiration-cache>0</expiration-cache>
+		<expiration-cache>0</expiration-cache>
 		<supports>
 			<mime-type>text/html</mime-type>
 			<portlet-mode>VIEW</portlet-mode>
@@ -34,6 +34,24 @@
 		<portlet-info>
 			<title>Workflow Results</title>
 			<short-title>Workflow Results</short-title>
+		</portlet-info>
+	</portlet>
+	<portlet>
+		<description>Ajax Test Portlet</description>
+		<portlet-name>AjaxTestPortlet</portlet-name>
+		<display-name>Ajax Test Portlet</display-name>
+		<portlet-class>net.sf.taverna.t2.portal.AjaxTestPortlet</portlet-class>
+		<expiration-cache>0</expiration-cache>
+		<supports>
+			<mime-type>text/html</mime-type>
+			<portlet-mode>VIEW</portlet-mode>
+			<portlet-mode>EDIT</portlet-mode>
+			<portlet-mode>HELP</portlet-mode>
+		</supports>
+		<resource-bundle>net.sf.taverna.t2.portal.messages</resource-bundle>
+		<portlet-info>
+			<title>Ajax Test Portlet</title>
+			<short-title>Ajax Test Portlet</short-title>
 		</portlet-info>
 	</portlet>
 </portlet-app>

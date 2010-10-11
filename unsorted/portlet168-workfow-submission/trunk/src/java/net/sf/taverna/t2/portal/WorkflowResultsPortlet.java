@@ -162,15 +162,15 @@ public class WorkflowResultsPortlet extends GenericPortlet{
         // Print out a message to the user, if any
         if (request.getAttribute(Constants.ERROR_MESSAGE) != null){
             response.getWriter().println("<p style=\"color:red;\"><b>"+ request.getAttribute(Constants.ERROR_MESSAGE)+ "</b></p>\n");
-            response.getWriter().println("<br/>");
+            response.getWriter().println("<br>");
             response.getWriter().println("<hr/>");
-            response.getWriter().println("<br/>");
+            response.getWriter().println("<br>");
         }
         if (request.getAttribute(Constants.INFO_MESSAGE) != null){
             response.getWriter().println("<p><b>"+ request.getAttribute(Constants.INFO_MESSAGE)+ "</b></p>\n");
-            response.getWriter().println("<br/>");
+            response.getWriter().println("<br>");
             response.getWriter().println("<hr/>");
-            response.getWriter().println("<br/>");
+            response.getWriter().println("<br>");
         }
 
         // Get currently logged in user
@@ -224,20 +224,37 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                 String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(Constants.FETCH_RESULTS)[0], "UTF-8");
                 WorkflowSubmissionJob job = (WorkflowSubmissionJob)request.getAttribute(Constants.WORKFLOW_SUBMISSION_JOB);
 
-                response.getWriter().println("<br/>\n");
+                response.getWriter().println("<br>\n");
                 response.getWriter().println("<hr/>\n");
-                response.getWriter().println("<br/>\n");
+                response.getWriter().println("<br>\n");
 
                 // Parse the result values from the Baclava file
                 StringBuffer outputsTableHTML = new StringBuffer();
-                response.getWriter().println("<b>Job Id: " + job.getUuid() + "</b><br/>\n");
-                response.getWriter().println("<b>Workflow: " + job.getWorkflowFileName() + "</b><br/><br/>\n");
+                response.getWriter().println("<b>Job Id: " + job.getUuid() + "</b><br>\n");
+                response.getWriter().println("<b>Workflow: " + job.getWorkflowFileName() + "</b><br><br>\n");
 
-                outputsTableHTML.append("<b>Results:</b><br/>\n");
+                String baclavaOutputsFilePath = JOBS_DIR + Constants.FILE_SEPARATOR +
+                        user + Constants.FILE_SEPARATOR +
+                        workflowResourceUUID + Constants.FILE_SEPARATOR +
+                        Constants.OUTPUTS_BACLAVA_FILE;
+                String baclavaOutputsFileURL = request.getContextPath() + FILE_SERVLET_URL + "?"+ Constants.DATA_FILE_PATH +"=" + URLEncoder.encode(baclavaOutputsFilePath, "UTF-8") +
+                        "&" + Constants.MIME_TYPE + "=" + URLEncoder.encode(Constants.CONTENT_TYPE_APPLICATION_XML, "UTF-8");
+
+                outputsTableHTML.append("<table width=\"100%\" style=\"margin-bottom:3px;\">\n");
+                outputsTableHTML.append("<tr>\n");
+                outputsTableHTML.append("<td valign=\"bottom\"><b>Results:</b></td>\n");
+                outputsTableHTML.append("<td align=\"right\">Download the results as a <a target=\"_blank\" href=\"" +
+                        baclavaOutputsFileURL +
+                        "\">single XML file</a>.<br>" +
+                        "You can view the file with Taverna's DataViewer tool.</td>\n");
+                outputsTableHTML.append("</tr>\n");
+                outputsTableHTML.append("</table>\n");
+
                 outputsTableHTML.append("<table class=\"results\">\n");
                 outputsTableHTML.append("<tr>\n");
                 outputsTableHTML.append("<th width=\"15%\">Output port</th>\n");
-                outputsTableHTML.append("<th>Data</th>\n");
+                outputsTableHTML.append("<th width=\"15%\">Data</th>\n");
+                outputsTableHTML.append("<th width=\"70%\">Data preview</th>\n");
                 outputsTableHTML.append("</tr>\n");
                 int rowCount = 1;
                 // Get all output ports and data associated with them
@@ -254,7 +271,6 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                         else{
                             outputsTableHTML.append("<tr style=\"background-color: #F0FFF0;\">\n");
                         }
-                        rowCount++;
                         String dataTypeBasedOnDepth;
                         if (dataDepth==0){
                             dataTypeBasedOnDepth = "single value";
@@ -275,18 +291,16 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                                 Constants.OUTPUTS_DIRECTORY_NAME + Constants.FILE_SEPARATOR +
                                 outputPortName;
                         outputsTableHTML.append("<td><script language=\"javascript\">" + createResultTree(dataObject, dataDepth, dataDepth, "", dataFileParentPath, mimeType, request) + "</script></td>\n");
+                        if (rowCount == 1){ // Add the data preview cell but only in the first row as it spans across the table height
+                            outputsTableHTML.append("<td style=\"border:none;\" colspan=\""+resultDataThingMap.keySet().size()+"\"><div id=\"data_preview\"></div></td>\n");
+                        }
+                        rowCount++;
                         outputsTableHTML.append("</tr>\n");
                 }
                 outputsTableHTML.append("</table>\n");
                 outputsTableHTML.append("</br>\n");
                 response.getWriter().println(outputsTableHTML.toString());
 
-                String baclavaOutputsFilePath = JOBS_DIR + Constants.FILE_SEPARATOR + 
-                        user + Constants.FILE_SEPARATOR +
-                        workflowResourceUUID + Constants.FILE_SEPARATOR +
-                        Constants.OUTPUTS_BACLAVA_FILE;
-                String baclavaOutputsFileURL = request.getContextPath() + FILE_SERVLET_URL + "?"+ Constants.DATA_FILE_PATH +"=" + URLEncoder.encode(baclavaOutputsFilePath, "UTF-8") +
-                        "&" + Constants.MIME_TYPE + "=" + URLEncoder.encode(Constants.CONTENT_TYPE_APPLICATION_XML, "UTF-8");
                 response.getWriter().println("Download the results as a <a target=\"_blank\" href=\"" + 
                         baclavaOutputsFileURL+
                         "\">single XML file</a>. " +
@@ -434,10 +448,10 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                 String dataFileURL = request.getContextPath() + FILE_SERVLET_URL +
                         "?"+ Constants.DATA_FILE_PATH +"=" + URLEncoder.encode(dataFilePath, "UTF-8") +
                         "&" + Constants.MIME_TYPE + "=" + URLEncoder.encode(mimeType, "UTF-8");
-                resultTreeHTML.append("addNode(\"Value\", \""+dataFileURL+"\", \"_blank\");\n");
+                resultTreeHTML.append("addNode2(\"Value\", \""+dataFileURL+"\", \"data_preview\");\n");
             }
             catch(Exception ex){
-                resultTreeHTML.append("addNode(\"Value\", \"\", \"_blank\");\n");
+                resultTreeHTML.append("addNode2(\"Value\", \"\", \"data_preview\");\n");
             }
         }
         else{
@@ -447,10 +461,10 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                     String dataFileURL = request.getContextPath() + FILE_SERVLET_URL +
                         "?"+ Constants.DATA_FILE_PATH +"=" + URLEncoder.encode(dataFilePath, "UTF-8") +
                         "&" + Constants.MIME_TYPE + "=" + URLEncoder.encode(mimeType, "UTF-8");
-                    resultTreeHTML.append("addNode(\"Value" + parentIndex + "\", \""+dataFileURL+"\", \"_blank\");\n");
+                    resultTreeHTML.append("addNode2(\"Value" + parentIndex + "\", \""+dataFileURL+"\", \"data_preview\");\n");
                 }
                 catch(Exception ex){
-                    resultTreeHTML.append("addNode(\"Value" + parentIndex + "\", \"\", \"_blank\");\n");
+                    resultTreeHTML.append("addNode2(\"Value" + parentIndex + "\", \"\", \"data_preview\");\n");
                 }
             }
             else{ // Result data is a list of (lists of ... ) items
@@ -670,7 +684,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                     catch(Exception ex){
                         System.out.println("Workflow Results Portlet: An error occured while trying to download the XML Baclava file with outputs for job " + job.getUuid() + " from the Server.");
                         ex.printStackTrace();
-                        request.setAttribute(Constants.ERROR_MESSAGE, "An error occured while trying to download the results for job " + job.getUuid() + " from the Server.<br/>" + ex.getMessage());
+                        request.setAttribute(Constants.ERROR_MESSAGE, "An error occured while trying to download the results for job " + job.getUuid() + " from the Server.<br>" + ex.getMessage());
                         return null;
                     }
                 }
@@ -684,7 +698,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                     catch(Exception ex){
                         System.out.println("Workflow Results Portlet: An error occured while trying to open the XML Baclava file with outputs for job " + job.getUuid() + ".");
                         ex.printStackTrace();
-                        request.setAttribute(Constants.ERROR_MESSAGE, "An error occured while trying to open file with results for job " + job.getUuid() + ".<br/>" + ex.getMessage());
+                        request.setAttribute(Constants.ERROR_MESSAGE, "An error occured while trying to open file with results for job " + job.getUuid() + ".<br>" + ex.getMessage());
                         return null;
                     }
                     // Parse the result values from the Baclava file
