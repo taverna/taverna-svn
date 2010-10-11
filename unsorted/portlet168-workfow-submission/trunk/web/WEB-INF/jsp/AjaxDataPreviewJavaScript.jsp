@@ -44,10 +44,11 @@ function loadpage(page_request, containerid, url){
     if (page_request.readyState == 4 && (page_request.status==200 || window.location.href.indexOf("http")==-1)){
 
         var mime_type = get_url_parameter_value(url, "mime_type");
+
         if (typeof(mime_type) == "undefined"){
             document.getElementById(containerid).innerHTML="MIME type of the data value is undefined - cannot preview the value.<br>Try saving <a target=\"_blank\" href=\""+url+"\">the data value</a> and viewing it in an external application.";
         }
-        else if (mime_type.indexOf("text/") === 0){
+        else if (mime_type.indexOf("text/") === 0 || mime_type.indexOf("application/xml") === 0){
             document.getElementById(containerid).innerHTML="<pre>"+page_request.responseText+"</pre><br><br>View <a target=\"_blank\" href=\""+url+"\">the data</a> in a separate window or download it by right-clicking on the link and choosing 'Save Link As'.";
         }
         else if (mime_type.indexOf("image/") === 0){
@@ -102,4 +103,22 @@ function get_url_parameter_value( url, parameter )
     return results[1];
   }
 }
+
+<%-- Escape XML --%>
+function xml_to_string(xml_node)
+{
+    if (xml_node.xml)
+        return xml_node.xml;
+    else if (XMLSerializer)
+    {
+        var xml_serializer = new XMLSerializer();
+        return xml_serializer.serializeToString(xml_node);
+    }
+    else
+    {
+        alert("ERROR: Extremely old browser");
+        return "";
+    }
+}
+
 </script>

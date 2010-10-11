@@ -44,6 +44,7 @@ public class Constants {
     public static final String FILE_SERVLET_URL = "FILE_SERVLET_URL";
     public static final String JOBS_DIRECTORY_PATH = "JOBS_DIRECTORY_PATH";
     public static final String JOBS_DIRECTORY_NAME = "T2WorkflowSubmissionJobs";
+    public static final String MAX_PREVIEW_DATA_SIZE = "MAX_PREVIEW_DATA_SIZE";
 
     // .t2flow XML namespace
     public static final Namespace T2_WORKFLOW_NAMESPACE = Namespace.getNamespace("http://taverna.sf.net/2008/xml/t2flow");

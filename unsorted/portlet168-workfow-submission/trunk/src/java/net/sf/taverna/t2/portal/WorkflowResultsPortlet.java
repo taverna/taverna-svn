@@ -64,6 +64,9 @@ public class WorkflowResultsPortlet extends GenericPortlet{
     // URL of the file serving servlet
     private String FILE_SERVLET_URL;
 
+    //
+    private float MAX_PREVIEW_DATA_SIZE;
+
     /*
      * Do the init stuff one at portlet loading time.
      */
@@ -79,6 +82,13 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                 Constants.JOBS_DIRECTORY_NAME);
 
         FILE_SERVLET_URL = getPortletContext().getInitParameter(Constants.FILE_SERVLET_URL);
+
+        try{
+            MAX_PREVIEW_DATA_SIZE = Float.valueOf((String)getPortletContext().getInitParameter(Constants.MAX_PREVIEW_DATA_SIZE));
+        }
+        catch(Exception ex){
+            MAX_PREVIEW_DATA_SIZE = 0.3f;
+        }
 
         if (!JOBS_DIR.exists()){
             try{
