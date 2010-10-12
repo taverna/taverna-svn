@@ -49,8 +49,8 @@ function loadpage(page_request, containerid, url){
             document.getElementById(containerid).innerHTML="MIME type of the data value is undefined - cannot preview the value.<br>Try saving <a target=\"_blank\" href=\""+url+"\">the data value</a> and viewing it in an external application.";
         }
         else if (mime_type.indexOf("text/") === 0 || mime_type.indexOf("application/xml") === 0){
-           // document.getElementById(containerid).innerHTML="<textarea style=\"width:99%; height:500px;\">"+page_request.responseText+"</textarea><br><br>View <a target=\"_blank\" href=\""+url+"\">the data</a> in a separate window or download it by right-clicking on the link and choosing 'Save Link As'.";
-            document.getElementById(containerid).innerHTML="<pre>"+page_request.responseText+"</pre><br><br>View <a target=\"_blank\" href=\""+url+"\">the data</a> in a separate window or download it by right-clicking on the link and choosing 'Save Link As'.";
+            document.getElementById(containerid).innerHTML="<textarea id=\"data_preview_textarea\" readonly='true' style=\"width:100%; overflow:visible;\">"+page_request.responseText+"</textarea><br><br>View <a target=\"_blank\" href=\""+url+"\">the data</a> in a separate window or download it by right-clicking on the link and choosing 'Save Link As'.";
+            adjustRows(document.getElementById("data_preview_textarea"));
         }
         else if (mime_type.indexOf("image/") === 0){
             document.getElementById(containerid).innerHTML="<img src=\""+url+"\" alt=\"If you see this text - you are trying to view image of type "+mime_type+" which your browser cannot display properly.\"/><br><br>View <a target=\"_blank\" href=\""+url+"\">the image</a> in a separate window or download it by right-clicking on the link and choosing 'Save Link As'.";
@@ -120,6 +120,28 @@ function xml_to_string(xml_node)
         alert("ERROR: Extremely old browser");
         return "";
     }
+}
+
+<%-- Adjust row number on the textarea based on the text size --%>
+function adjustRows(textArea){
+
+    if (navigator.appName.indexOf("Microsoft Internet Explorer") == 0)
+    {
+        textArea.style.overflow = 'visible';
+        return;
+    }
+
+    while (textArea.rows > 1 && textArea.scrollHeight < textArea.offsetHeight){
+        textArea.rows--;
+    }
+
+    while (textArea.scrollHeight > textArea.offsetHeight)
+    {
+        textArea.rows++;
+    }
+
+    textArea.rows++;
+    return;
 }
 
 </script>
