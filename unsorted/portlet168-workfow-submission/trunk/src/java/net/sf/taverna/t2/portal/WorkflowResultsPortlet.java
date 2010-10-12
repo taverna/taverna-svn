@@ -56,7 +56,7 @@ import org.jdom.output.XMLOutputter;
 public class WorkflowResultsPortlet extends GenericPortlet{
 
     // Address of the T2 Server
-    String T2_SERVER_URL;
+    private String T2_SERVER_URL;
 
     // Directory where info for all submitted jobs for all users is persisted
     private File JOBS_DIR;

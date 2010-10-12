@@ -49,6 +49,7 @@ function loadpage(page_request, containerid, url){
             document.getElementById(containerid).innerHTML="MIME type of the data value is undefined - cannot preview the value.<br>Try saving <a target=\"_blank\" href=\""+url+"\">the data value</a> and viewing it in an external application.";
         }
         else if (mime_type.indexOf("text/") === 0 || mime_type.indexOf("application/xml") === 0){
+           // document.getElementById(containerid).innerHTML="<textarea style=\"width:99%; height:500px;\">"+page_request.responseText+"</textarea><br><br>View <a target=\"_blank\" href=\""+url+"\">the data</a> in a separate window or download it by right-clicking on the link and choosing 'Save Link As'.";
             document.getElementById(containerid).innerHTML="<pre>"+page_request.responseText+"</pre><br><br>View <a target=\"_blank\" href=\""+url+"\">the data</a> in a separate window or download it by right-clicking on the link and choosing 'Save Link As'.";
         }
         else if (mime_type.indexOf("image/") === 0){
