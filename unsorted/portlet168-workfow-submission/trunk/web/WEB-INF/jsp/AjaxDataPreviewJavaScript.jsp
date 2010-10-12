@@ -122,7 +122,11 @@ function xml_to_string(xml_node)
     }
 }
 
-<%-- Adjust row number on the textarea based on the text size --%>
+<%--
+    Adjust row number on the textarea based on the text size.
+    Adapted from http://perplexed.co.uk/596_expanding_textarea_as_you_type.htm
+--%>
+
 function adjustRows(textArea){
 
     if (navigator.appName.indexOf("Microsoft Internet Explorer") == 0)
@@ -135,8 +139,7 @@ function adjustRows(textArea){
         textArea.rows--;
     }
 
-    while (textArea.scrollHeight > textArea.offsetHeight)
-    {
+    while (textArea.scrollHeight > textArea.offsetHeight){
         textArea.rows++;
     }
 
