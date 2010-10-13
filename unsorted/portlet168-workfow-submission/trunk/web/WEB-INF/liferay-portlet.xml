@@ -9,14 +9,6 @@
     <portlet-name>WorkflowResults</portlet-name>
     <instanceable>true</instanceable>
   </portlet>
-  <portlet>
-    <portlet-name>FileSubmission</portlet-name>
-    <instanceable>true</instanceable>
-  </portlet>
-  <portlet>
-    <portlet-name>AjaxTestPortlet</portlet-name>
-    <instanceable>true</instanceable>
-  </portlet>
   <role-mapper>
     <role-name>administrator</role-name>
     <role-link>Administrator</role-link>

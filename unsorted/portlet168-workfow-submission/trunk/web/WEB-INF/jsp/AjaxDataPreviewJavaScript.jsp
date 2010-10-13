@@ -49,11 +49,16 @@ function loadpage(page_request, containerid, url){
             document.getElementById(containerid).innerHTML="MIME type of the data value is undefined - cannot preview the value.<br>Try saving <a target=\"_blank\" href=\""+url+"\">the data value</a> and viewing it in an external application.";
         }
         else if (mime_type.indexOf("text/") === 0 || mime_type.indexOf("application/xml") === 0){
-            document.getElementById(containerid).innerHTML="<textarea id=\"data_preview_textarea\" readonly='true' style=\"width:100%; overflow:visible;\">"+page_request.responseText+"</textarea><br><br>View <a target=\"_blank\" href=\""+url+"\">the data</a> in a separate window or download it by right-clicking on the link and choosing 'Save Link As'.";
+            document.getElementById(containerid).innerHTML="<textarea id=\"data_preview_textarea\" readonly='true' style=\"width:100%; overflow:visible;\">"+
+                page_request.responseText+"</textarea><br><br>View <a target=\"_blank\" href=\""+url+
+                "\">the data</a> in a separate window or download it by right-clicking on the link and choosing 'Save Link As'.";
             adjustRows(document.getElementById("data_preview_textarea"));
         }
         else if (mime_type.indexOf("image/") === 0){
-            document.getElementById(containerid).innerHTML="<img src=\""+url+"\" alt=\"If you see this text - you are trying to view image of type "+mime_type+" which your browser cannot display properly.\"/><br><br>View <a target=\"_blank\" href=\""+url+"\">the image</a> in a separate window or download it by right-clicking on the link and choosing 'Save Link As'.";
+            document.getElementById(containerid).innerHTML="<img onload=\"autoImageResize(this,250)\" src=\""+url+
+                "\" alt=\"If you see this text - you are trying to view image of type "+mime_type+
+                " which your browser cannot display properly.\"/><br><br>View the <a target=\"_blank\" href=\""+url+
+                "\">full image</a> in a separate window or download it by right-clicking on the link and choosing 'Save Link As'.";
         }
         else if (mime_type == "application/octet-stream"){
             document.getElementById(containerid).innerHTML="Cannot preview binary data. Try saving <a href=\""+url+"\">the data value</a> and viewing it in an external application.";
@@ -105,23 +110,6 @@ function get_url_parameter_value( url, parameter )
   }
 }
 
-<%-- Escape XML --%>
-function xml_to_string(xml_node)
-{
-    if (xml_node.xml)
-        return xml_node.xml;
-    else if (XMLSerializer)
-    {
-        var xml_serializer = new XMLSerializer();
-        return xml_serializer.serializeToString(xml_node);
-    }
-    else
-    {
-        alert("ERROR: Extremely old browser");
-        return "";
-    }
-}
-
 <%--
     Adjust row number on the textarea based on the text size.
     Adapted from http://perplexed.co.uk/596_expanding_textarea_as_you_type.htm
@@ -147,4 +135,36 @@ function adjustRows(textArea){
     return;
 }
 
+<%--
+    Create thumbnail of the image.
+    http://carso-owen.blogspot.com/2009/02/create-thumbnail-image-using-jquery-or.html
+--%>
+//$(document).ready(
+    function autoImageResize(src, fixedSize) {
+        var width = src.width;
+        var height = src.height;
+        var ratio = width / height;
+        if (width > fixedSize) {
+            src.width = fixedSize;
+        }
+        if (height > fixedSize) {
+            var sizedwidth = fixedSize / ratio;
+            var sizedheight = fixedSize / ratio;
+            if (height > width) {
+                if (height > sizedwidth) {
+                    src.height = fixedSize
+                }
+                if (sizedwidth > fixedSize) {
+                    src.width = src.width * ratio;
+                }
+                else {
+                    src.height = src.height * ratio;
+                }
+            }
+            else {
+                src.width = fixedSize;
+            }
+        }
+    }
+//);
 </script>

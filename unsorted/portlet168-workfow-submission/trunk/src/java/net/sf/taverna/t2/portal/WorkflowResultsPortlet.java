@@ -262,9 +262,9 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
                 outputsTableHTML.append("<table class=\"results\">\n");
                 outputsTableHTML.append("<tr>\n");
-                outputsTableHTML.append("<th width=\"15%\">Output port</th>\n");
+                outputsTableHTML.append("<th width=\"20%\">Output port</th>\n");
                 outputsTableHTML.append("<th width=\"15%\">Data</th>\n");
-                outputsTableHTML.append("<th width=\"70%\">Data preview</th>\n");
+                outputsTableHTML.append("<th>Data preview</th>\n");
                 outputsTableHTML.append("</tr>\n");
                 int rowCount = 1;
                 // Get all output ports and data associated with them
@@ -290,7 +290,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                         }
                         // Get data's MIME type as given by the Baclava file
                         String mimeType = resultDataThing.getMostInterestingMIMETypeForObject(dataObject);
-                        outputsTableHTML.append("<td width=\"15%\">\n");
+                        outputsTableHTML.append("<td width=\"20%\">\n");
                         outputsTableHTML.append("<div class=\"output_name\">" + outputPortName + "<span class=\"output_depth\"> - " + dataTypeBasedOnDepth + "</span></div>\n");
                         outputsTableHTML.append("<div class=\"output_mime_type\">" + mimeType + "</div>\n");
                         outputsTableHTML.append("</td>");
@@ -300,7 +300,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                                 workflowResourceUUID + Constants.FILE_SEPARATOR +
                                 Constants.OUTPUTS_DIRECTORY_NAME + Constants.FILE_SEPARATOR +
                                 outputPortName;
-                        outputsTableHTML.append("<td><script language=\"javascript\">" + createResultTree(dataObject, dataDepth, dataDepth, "", dataFileParentPath, mimeType, request) + "</script></td>\n");
+                        outputsTableHTML.append("<td width=\"15%\"><script language=\"javascript\">" + createResultTree(dataObject, dataDepth, dataDepth, "", dataFileParentPath, mimeType, request) + "</script></td>\n");
                         if (rowCount == 1){ // Add the data preview cell but only in the first row as it spans across the table height
                             outputsTableHTML.append("<td style=\"border:none;\" colspan=\""+resultDataThingMap.keySet().size()+"\"><div id=\"data_preview\"></div></td>\n");
                         }
