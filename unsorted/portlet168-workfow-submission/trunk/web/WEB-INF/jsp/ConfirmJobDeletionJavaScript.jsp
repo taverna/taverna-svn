@@ -4,9 +4,6 @@
 
 <%@ page import="net.sf.taverna.t2.portal.Constants" %>
 
-<%-- Include various constants --%>
-<%--<%@ include file="CommonConstants.jsp" %>--%>
-
 <script type="text/javascript">
 function confirm_deletion(confirmText)
 {

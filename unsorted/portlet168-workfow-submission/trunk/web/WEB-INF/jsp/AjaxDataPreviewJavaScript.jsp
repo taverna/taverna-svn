@@ -1,3 +1,6 @@
+<%@ page import="net.sf.taverna.t2.portal.Constants" %>
+<%@ page import="net.sf.taverna.t2.portal.WorkflowResultsPortlet" %>
+
 <script type="text/javascript">
 
 /***********************************************
@@ -40,10 +43,19 @@ function ajaxpage(url, containerid){
     page_request.send(null);
 }
 
+<% long MAX_PREVIEW_DATA_SIZE_IN_KB = WorkflowResultsPortlet.MAX_PREVIEW_DATA_SIZE_IN_KB; %>
+
 function loadpage(page_request, containerid, url){
     if (page_request.readyState == 4 && (page_request.status==200 || window.location.href.indexOf("http")==-1)){
 
-        var mime_type = get_url_parameter_value(url, "mime_type");
+        var mime_type = get_url_parameter_value(url, "<%= Constants.MIME_TYPE %>");
+        var data_size_in_kb = get_url_parameter_value(url, "<%= Constants.DATA_SIZE_IN_KB %>");
+
+        if (data_size_in_kb > <%=MAX_PREVIEW_DATA_SIZE_IN_KB%>){
+            document.getElementById(containerid).innerHTML="The size of the data (~"+data_size_in_kb+" KB) is too big to preview.<br>"+
+                "You may try to view the <a target=\"_blank\" href=\""+url+"\">data</a> in a separate browser window, or save the data (right-click on the link then choose 'Save Link As') and view it in an external application.";
+            return;
+        }
 
         if (typeof(mime_type) == "undefined"){
             document.getElementById(containerid).innerHTML="MIME type of the data value is undefined - cannot preview the value.<br>Try saving <a target=\"_blank\" href=\""+url+"\">the data value</a> and viewing it in an external application.";
@@ -51,14 +63,14 @@ function loadpage(page_request, containerid, url){
         else if (mime_type.indexOf("text/") === 0 || mime_type.indexOf("application/xml") === 0){
             document.getElementById(containerid).innerHTML="<textarea id=\"data_preview_textarea\" readonly='true' style=\"width:100%; overflow:visible;\">"+
                 page_request.responseText+"</textarea><br><br>View <a target=\"_blank\" href=\""+url+
-                "\">the data</a> in a separate window or download it by right-clicking on the link and choosing 'Save Link As'.";
+                "\">the data</a> in a separate browser window or download it by right-clicking on the link and choosing 'Save Link As'.";
             adjustRows(document.getElementById("data_preview_textarea"));
         }
         else if (mime_type.indexOf("image/") === 0){
             document.getElementById(containerid).innerHTML="<img onload=\"autoImageResize(this,250)\" src=\""+url+
                 "\" alt=\"If you see this text - you are trying to view image of type "+mime_type+
                 " which your browser cannot display properly.\"/><br><br>View the <a target=\"_blank\" href=\""+url+
-                "\">full image</a> in a separate window or download it by right-clicking on the link and choosing 'Save Link As'.";
+                "\">full image</a> in a separate browser window or download it by right-clicking on the link and choosing 'Save Link As'.";
         }
         else if (mime_type == "application/octet-stream"){
             document.getElementById(containerid).innerHTML="Cannot preview binary data. Try saving <a href=\""+url+"\">the data value</a> and viewing it in an external application.";

@@ -33,7 +33,8 @@ public class FileServingServlet extends HttpServlet {
 
     // Directory where info for all submitted jobs for all users is persisted
     private File JOBS_DIR;
-    
+
+
     @Override
     public void init(){
 
@@ -132,8 +133,8 @@ public class FileServingServlet extends HttpServlet {
             }
             else {
                 response.setContentType("text/plain");
-                response.getWriter().write("Error: You are trying to view a file that does not belong to you.");
-                System.err.println("File Serving Servlet: The user "+user+" is trying to view the file "+ dataFilePath +" that does not belong to them.");
+                response.getWriter().write("Error: You do not have permission to view this file.");
+                System.err.println("File Serving Servlet: The user "+user+" is trying to view the file "+ dataFilePath +" that they do not have access permission to.");
             }
         }
         catch (IOException ex) {

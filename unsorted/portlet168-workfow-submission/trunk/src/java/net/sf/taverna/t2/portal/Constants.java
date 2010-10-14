@@ -24,7 +24,9 @@ public class Constants {
     public static final String FETCH_RESULTS="fetch_results";
     public static final String DELETE_JOB = "delete_job";
     public static final String MIME_TYPE="mime_type";
-    
+    public static final String FULL_DATA="full_data";
+    public static final String DATA_SIZE_IN_KB = "data_size_in_kb";
+
     // Anonymous user
     public static final String USER_ANONYMOUS = "anonymous";
 
@@ -44,7 +46,7 @@ public class Constants {
     public static final String FILE_SERVLET_URL = "FILE_SERVLET_URL";
     public static final String JOBS_DIRECTORY_PATH = "JOBS_DIRECTORY_PATH";
     public static final String JOBS_DIRECTORY_NAME = "T2WorkflowSubmissionJobs";
-    public static final String MAX_PREVIEW_DATA_SIZE = "MAX_PREVIEW_DATA_SIZE";
+    public static final String MAX_PREVIEW_DATA_SIZE_IN_KB = "MAX_PREVIEW_DATA_SIZE_IN_KB";
 
     // .t2flow XML namespace
     public static final Namespace T2_WORKFLOW_NAMESPACE = Namespace.getNamespace("http://taverna.sf.net/2008/xml/t2flow");

@@ -64,8 +64,8 @@ public class WorkflowResultsPortlet extends GenericPortlet{
     // URL of the file serving servlet
     private String FILE_SERVLET_URL;
 
-    //
-    private float MAX_PREVIEW_DATA_SIZE;
+    // Max size of data to be sent as preview (in KB)
+    public static long MAX_PREVIEW_DATA_SIZE_IN_KB;
 
     /*
      * Do the init stuff one at portlet loading time.
@@ -80,16 +80,6 @@ public class WorkflowResultsPortlet extends GenericPortlet{
         // Get the directory where info for submitted jobs for all users is persisted
         JOBS_DIR = new File(getPortletContext().getInitParameter(Constants.JOBS_DIRECTORY_PATH),
                 Constants.JOBS_DIRECTORY_NAME);
-
-        FILE_SERVLET_URL = getPortletContext().getInitParameter(Constants.FILE_SERVLET_URL);
-
-        try{
-            MAX_PREVIEW_DATA_SIZE = Float.valueOf((String)getPortletContext().getInitParameter(Constants.MAX_PREVIEW_DATA_SIZE));
-        }
-        catch(Exception ex){
-            MAX_PREVIEW_DATA_SIZE = 0.3f;
-        }
-
         if (!JOBS_DIR.exists()){
             try{
                 JOBS_DIR.mkdir();
@@ -100,6 +90,15 @@ public class WorkflowResultsPortlet extends GenericPortlet{
             }
         }
         System.out.println("Workflow Results Portlet: Directory where jobs will be persisted set to " + JOBS_DIR.getAbsolutePath());
+
+        FILE_SERVLET_URL = getPortletContext().getInitParameter(Constants.FILE_SERVLET_URL);
+
+        try{
+            MAX_PREVIEW_DATA_SIZE_IN_KB = Long.valueOf((String)getPortletContext().getInitParameter(Constants.MAX_PREVIEW_DATA_SIZE_IN_KB));
+        }
+        catch(Exception ex){
+            MAX_PREVIEW_DATA_SIZE_IN_KB = 250;
+        }
     }
 
     @Override
@@ -454,11 +453,19 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
         if (maxDepth == 0){ // Result data is a single item only
             String dataFilePath = dataFileParentPath + Constants.FILE_SEPARATOR + "Value";
+            long dataSizeInKB = 0;
+            if (dataObject instanceof String){
+                dataSizeInKB = ((String)dataObject).getBytes().length / 1000; // size in kilobytes (divided by 1000 not 1024!!!), do not care about string encoding
+            }
+            else if (dataObject instanceof byte[]){
+                dataSizeInKB = ((byte[])dataObject).length / 1000; // size in kilobytes (divided by 1000 not 1024!!!)
+            }
             try{
                 String dataFileURL = request.getContextPath() + FILE_SERVLET_URL +
                         "?"+ Constants.DATA_FILE_PATH +"=" + URLEncoder.encode(dataFilePath, "UTF-8") +
-                        "&" + Constants.MIME_TYPE + "=" + URLEncoder.encode(mimeType, "UTF-8");
-                resultTreeHTML.append("addNode2(\"Value\", \""+dataFileURL+"\", \"data_preview\");\n");
+                        "&" + Constants.MIME_TYPE + "=" + URLEncoder.encode(mimeType, "UTF-8") +
+                        "&" + Constants.DATA_SIZE_IN_KB + "=" + URLEncoder.encode(Long.toString(dataSizeInKB), "UTF-8");
+               resultTreeHTML.append("addNode2(\"Value\", \""+dataFileURL+"\", \"data_preview\");\n");
             }
             catch(Exception ex){
                 resultTreeHTML.append("addNode2(\"Value\", \"\", \"data_preview\");\n");
@@ -467,10 +474,18 @@ public class WorkflowResultsPortlet extends GenericPortlet{
         else{
             if (currentDepth == 0){ // A leaf in the tree
                 String dataFilePath = dataFileParentPath + Constants.FILE_SEPARATOR + "Value" + parentIndex;
+                long dataSizeInKB = 0;
+                if (dataObject instanceof String){
+                    dataSizeInKB = ((String)dataObject).getBytes().length / 1024; // size in kilobytes, do not care about encoding
+                }
+                else if (dataObject instanceof byte[]){
+                    dataSizeInKB = ((byte[])dataObject).length;
+                }
                 try{
                     String dataFileURL = request.getContextPath() + FILE_SERVLET_URL +
                         "?"+ Constants.DATA_FILE_PATH +"=" + URLEncoder.encode(dataFilePath, "UTF-8") +
-                        "&" + Constants.MIME_TYPE + "=" + URLEncoder.encode(mimeType, "UTF-8");
+                        "&" + Constants.MIME_TYPE + "=" + URLEncoder.encode(mimeType, "UTF-8") +
+                        "&" + Constants.DATA_SIZE_IN_KB + "=" + URLEncoder.encode(Long.toString(dataSizeInKB), "UTF-8");
                     resultTreeHTML.append("addNode2(\"Value" + parentIndex + "\", \""+dataFileURL+"\", \"data_preview\");\n");
                 }
                 catch(Exception ex){

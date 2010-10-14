@@ -37,7 +37,7 @@
         <description>Relative URL to the servlet that reads files from a local disk and sends their content to a browser</description>
     </context-param>
     <context-param>
-        <param-name>MAX_PREVIEW_DATA_SIZE</param-name>
-        <param-value>0.3</param-value>
-        <description>Max size of the data file that will be shown in preview window (in MBs)</description>
+        <param-name>MAX_PREVIEW_DATA_SIZE_IN_KB</param-name>
+        <param-value>250</param-value>
+        <description>Max size of the data file that will be shown in preview window (in KBs)</description>
     </context-param></web-app>
