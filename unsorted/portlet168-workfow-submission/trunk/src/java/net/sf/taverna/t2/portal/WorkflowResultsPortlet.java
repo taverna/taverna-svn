@@ -455,10 +455,10 @@ public class WorkflowResultsPortlet extends GenericPortlet{
             String dataFilePath = dataFileParentPath + Constants.FILE_SEPARATOR + "Value";
             long dataSizeInKB = 0;
             if (dataObject instanceof String){
-                dataSizeInKB = ((String)dataObject).getBytes().length / 1000; // size in kilobytes (divided by 1000 not 1024!!!), do not care about string encoding
+                dataSizeInKB = Math.round(((String)dataObject).getBytes().length / 1000d); // size in kilobytes (divided by 1000 not 1024!!!), do not care about string encoding
             }
             else if (dataObject instanceof byte[]){
-                dataSizeInKB = ((byte[])dataObject).length / 1000; // size in kilobytes (divided by 1000 not 1024!!!)
+                dataSizeInKB = Math.round(((byte[])dataObject).length / 1000d); // size in kilobytes (divided by 1000 not 1024!!!)
             }
             try{
                 String dataFileURL = request.getContextPath() + FILE_SERVLET_URL +
