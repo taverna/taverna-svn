@@ -430,8 +430,9 @@ public class SADIUtils {
 			throws IOException {
 		boolean result = false;
 		if (node.getValues(id) == null && node.isSelected()) {
-			Resource type = resource.getModel().createResource(node.getOntClass());
-			resource.addProperty(node.getOntProperty(), type);
+//			Resource type = resource.getModel().createResource(node.getOntClass());
+			Resource type = node.getOntClass();
+			resource.addProperty(node.getOntProperty(), node.getOntClass());
 			for (RestrictionNode child : node.getChildren()) {
 				if (child.isSelected()) {
 					if (addInputResources(child, type, id)) {
