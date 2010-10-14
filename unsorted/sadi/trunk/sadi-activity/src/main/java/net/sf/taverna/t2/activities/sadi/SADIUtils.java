@@ -503,12 +503,15 @@ public class SADIUtils {
 		int[] pos = new int[node.getDepth()];
 		for (int i = 0; i < inputResources.size(); i++) {
 			pos[node.getLevel()] = i;
-			Node inputNode = inputResources.get(i).asNode();
+			Resource inputResource = inputResources.get(i);
 //			Resource output = model.createResource(node.getOntClass());
-			Resource output = model.createResource(inputNode.getURI(), node.getOntClass());
+//			Resource output = model.createResource(inputNode.getURI(), node.getOntClass());
+			Resource output = inputResource.isURIResource() ?
+					model.createResource(inputResource.getURI(), node.getOntClass()) :
+					model.createResource(node.getOntClass());
 			rdfNodes.add(output);
 			for (RestrictionNode child : node.getChildren()) {
-				putOutputResources(child, output, inputNode, outputTriples,
+				putOutputResources(child, output, inputResource.asNode(), outputTriples,
 						pos, id);
 			}
 		}
