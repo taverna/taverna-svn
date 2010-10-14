@@ -22,6 +22,7 @@ package net.sf.taverna.t2.activities.sadi.views;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -50,17 +51,22 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTree;
 import javax.swing.SwingConstants;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeNode;
+
+import org.apache.log4j.Logger;
 
 import net.sf.taverna.t2.activities.sadi.RestrictionNode;
 import net.sf.taverna.t2.activities.sadi.SADIActivity;
 import net.sf.taverna.t2.activities.sadi.SADIActivityConfigurationBean;
 import net.sf.taverna.t2.activities.sadi.actions.SADIActivityConfigurationAction;
+import net.sf.taverna.t2.activities.sadi.views.RestrictionTree.RestrictionNodeSelectionListener;
 import net.sf.taverna.t2.lang.ui.DialogTextArea;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationPanel;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
@@ -75,7 +81,8 @@ public class SADIConfigurationPanel extends
 		ActivityConfigurationPanel<SADIActivity, SADIActivityConfigurationBean> {
 
 	private static final long serialVersionUID = 1L;
-
+	private static final Logger log = Logger.getLogger(SADIConfigurationPanel.class);
+	
 	private SADIActivity activity;
 
 	private SADIActivityConfigurationBean oldConfiguration, newConfiguration;
@@ -121,30 +128,30 @@ public class SADIConfigurationPanel extends
 		titleMessage.setFocusable(false);
 		
 		// input tree
-		try {
-			RestrictionNode restrictionTree = activity.getInputRestrictionTree();
-			sadiInputTree = new SADITreeNode();
-			convertTree(restrictionTree, true, sadiInputTree);
-			selectComponents(sadiInputTree, newConfiguration.getInputRestrictionPaths());
-			addActions(sadiInputTree, true);
-		} catch (SADIException e) {
-			sadiInputTree = null;
-		} catch (IOException e) {
-			sadiInputTree = null;
-		}
+//		try {
+//			RestrictionNode restrictionTree = activity.getInputRestrictionTree();
+//			sadiInputTree = new SADITreeNode();
+//			convertTree(restrictionTree, true, sadiInputTree);
+//			selectComponents(sadiInputTree, newConfiguration.getInputRestrictionPaths());
+//			addActions(sadiInputTree, true);
+//		} catch (SADIException e) {
+//			sadiInputTree = null;
+//		} catch (IOException e) {
+//			sadiInputTree = null;
+//		}
 
 		// output tree
-		try {
-			RestrictionNode restrictionTree = activity.getOutputRestrictionTree();
-			sadiOutputTree = new SADITreeNode();
-			convertTree(restrictionTree, true, sadiOutputTree);
-			selectComponents(sadiOutputTree, newConfiguration.getOutputRestrictionPaths());
-			addActions(sadiOutputTree, false);
-		} catch (SADIException e) {
-			sadiOutputTree = null;
-		} catch (IOException e) {
-			sadiOutputTree = null;
-		}
+//		try {
+//			RestrictionNode restrictionTree = activity.getOutputRestrictionTree();
+//			sadiOutputTree = new SADITreeNode();
+//			convertTree(restrictionTree, true, sadiOutputTree);
+//			selectComponents(sadiOutputTree, newConfiguration.getOutputRestrictionPaths());
+//			addActions(sadiOutputTree, false);
+//		} catch (SADIException e) {
+//			sadiOutputTree = null;
+//		} catch (IOException e) {
+//			sadiOutputTree = null;
+//		}
 
 		inputPanel = new JPanel(new GridBagLayout());
 		outputPanel = new JPanel(new GridBagLayout());
@@ -173,6 +180,29 @@ public class SADIConfigurationPanel extends
 		layoutPanel();
 	}
 
+//	private static class SADITreeExpansionListener implements TreeExpansionListener
+//	{
+//		public void treeExpanded(TreeExpansionEvent event)
+//		{
+//			Object lastPathComponent = event.getPath().getLastPathComponent();
+//			if (lastPathComponent instanceof RestrictionNode) {
+//				RestrictionNode node = (RestrictionNode)lastPathComponent;
+//				if (log.isTraceEnabled())
+//					log.trace(String.format("about to expand %s", node));
+//				if (!node.isExpanded()) {
+//					SADIUtils.buildChildren(node);
+//				}
+//			} else {
+//				log.warn(String.format("ignoring tree node of unexpected type %s", lastPathComponent.getClass()));
+//			}
+//		}
+//		
+//		public void treeCollapsed(TreeExpansionEvent event)
+//		{
+//			// don't care at all...
+//		}	
+//	}
+	
 	/**
 	 * 
 	 */
@@ -194,26 +224,75 @@ public class SADIConfigurationPanel extends
 		c.gridx = 1;
 		c.weightx = 1;
 
-		if (sadiInputTree != null) {
-			JPanel treePanel = new JPanel(new GridBagLayout());
-			layoutComponents(treePanel, c, sadiInputTree, 0);
-			c.insets = new Insets(5, 5, 5, 5);
-			c.weighty = 1;
-			inputPanel.add(treePanel, c);
-		} else {
-			inputPanel.add(new JLabel("Error fetching activity input class"), c);
+//		if (sadiInputTree != null) {
+//			JPanel treePanel = new JPanel(new GridBagLayout());
+//			layoutComponents(treePanel, c, sadiInputTree, 0);
+//			c.insets = new Insets(5, 5, 5, 5);
+//			c.weighty = 1;
+//			inputPanel.add(treePanel, c);
+//		} else {
+//			inputPanel.add(new JLabel("Error fetching activity input class"), c);
+//		}
+		try {
+//			JTree inputTree = new JTree(activity.getInputRestrictionTree());
+//			inputTree.addTreeExpansionListener(new SADITreeExpansionListener());
+//			inputTree.setCellRenderer(new SADITreeCellRenderer(true));
+			RestrictionTree inputTree = new RestrictionTree(activity.getInputRestrictionTree());
+			if (log.isDebugEnabled()) {
+				log.debug(String.format("initial input restriction paths are %s", newConfiguration.getInputRestrictionPaths()));
+			}
+			inputTree.addNodeSelectionListener(new RestrictionNodeSelectionListener() {
+				public void nodeSelected(RestrictionNode node, boolean selected) {
+					if (selected) {
+						newConfiguration.addInputRestrictionPath(getRestrictionPath(node));
+					} else {
+						newConfiguration.removeInputRestrictionPath(getRestrictionPath(node));
+					}
+					if (log.isDebugEnabled()) {
+						log.debug(String.format("new input restriction paths are %s", newConfiguration.getInputRestrictionPaths()));
+					}
+				}
+			});
+			JScrollPane inputTreePane = new JScrollPane(inputTree);
+			inputPanel.add(inputTreePane);
+		} catch (Exception e) {
+			log.error("error building input tree", e);
+			inputPanel.add(new JLabel("Error fetching activity input class"));
 		}
-
+		
 		c.weighty = 0;
 		
-		if (sadiOutputTree != null) {
-			JPanel treePanel = new JPanel(new GridBagLayout());
-			layoutComponents(treePanel, c, sadiOutputTree, 0);
-			c.insets = new Insets(5, 5, 5, 5);
-			c.weighty = 1.0;
-			outputPanel.add(treePanel, c);
-		} else {
-			outputPanel.add(new JLabel("Error fetching activity output class"), c);
+//		if (sadiOutputTree != null) {
+//			JPanel treePanel = new JPanel(new GridBagLayout());
+//			layoutComponents(treePanel, c, sadiOutputTree, 0);
+//			c.insets = new Insets(5, 5, 5, 5);
+//			c.weighty = 1.0;
+//			outputPanel.add(treePanel, c);
+//		} else {
+//			outputPanel.add(new JLabel("Error fetching activity output class"), c);
+//		}
+		try {
+//			JTree outputTree = new JTree(activity.getOutputRestrictionTree());
+//			outputTree.setCellRenderer(new SADITreeCellRenderer(false));
+//			outputTree.addTreeExpansionListener(new SADITreeExpansionListener());
+			RestrictionTree outputTree = new RestrictionTree(activity.getOutputRestrictionTree());
+			outputTree.addNodeSelectionListener(new RestrictionNodeSelectionListener() {
+				public void nodeSelected(RestrictionNode node, boolean selected) {
+					if (selected) {
+						newConfiguration.addOutputRestrictionPath(getRestrictionPath(node));
+					} else {
+						newConfiguration.removeOutputRestrictionPath(getRestrictionPath(node));
+					}
+					if (log.isDebugEnabled()) {
+						log.debug(String.format("new output restriction paths are %s", newConfiguration.getOutputRestrictionPaths()));
+					}
+				}
+			});
+			JScrollPane outputTreePane = new JScrollPane(outputTree);
+			outputPanel.add(outputTreePane);
+		} catch (Exception e) {
+			log.error("error building input tree", e);
+			outputPanel.add(new JLabel("Error fetching activity input class"));
 		}
 		
 		add(tabbedPane, BorderLayout.CENTER);
@@ -327,6 +406,17 @@ public class SADIConfigurationPanel extends
 		List<String> restrictionPath = new ArrayList<String>();
 		for (SADITreeNode pathNode : node.getPath()) {
 			RestrictionNode restrictedProperty = pathNode.getRestrictedProperty();
+			if (restrictedProperty != null) {
+				restrictionPath.add(restrictedProperty.toString());
+			}
+		}
+		return restrictionPath;
+	}
+	
+	protected List<String> getRestrictionPath(RestrictionNode node) {
+		List<String> restrictionPath = new ArrayList<String>();
+		for (TreeNode treeNode : node.getPath()) {
+			RestrictionNode restrictedProperty = (RestrictionNode)treeNode;
 			if (restrictedProperty != null) {
 				restrictionPath.add(restrictedProperty.toString());
 			}
@@ -481,18 +571,18 @@ public class SADIConfigurationPanel extends
 	}
 
 	public static void main(String[] args) throws ActivityConfigurationException, SADIException, IOException {
-		final JFrame frame = new JFrame();
-		SADIActivity activity = new SADIActivity();
-		SADIActivityConfigurationBean configurationBean = new SADIActivityConfigurationBean();
-		configurationBean.setSparqlEndpoint("http://biordf.net/sparql");
-		configurationBean.setGraphName("http://sadiframework.org/registry/");
-		configurationBean.setServiceURI("http://sadiframework.org/examples/ermineJgo");
-		activity.configure(configurationBean);
-
-		final SADIConfigurationPanel config = new SADIConfigurationPanel(activity);
-		frame.add(config);
-		frame.pack();
-		frame.setVisible(true);
+//		final JFrame frame = new JFrame();
+//		SADIActivity activity = new SADIActivity();
+//		SADIActivityConfigurationBean configurationBean = new SADIActivityConfigurationBean();
+//		configurationBean.setSparqlEndpoint("http://biordf.net/sparql");
+//		configurationBean.setGraphName("http://sadiframework.org/registry/");
+//		configurationBean.setServiceURI("http://sadiframework.org/examples/ermineJgo");
+//		activity.configure(configurationBean);
+//
+//		final SADIConfigurationPanel config = new SADIConfigurationPanel(activity);
+//		frame.add(config);
+//		frame.pack();
+//		frame.setVisible(true);
 
 		final JFrame frame2 = new JFrame();
 		SADIActivity activity2 = new SADIActivity();

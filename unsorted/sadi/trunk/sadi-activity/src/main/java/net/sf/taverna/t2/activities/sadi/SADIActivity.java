@@ -21,6 +21,7 @@
 package net.sf.taverna.t2.activities.sadi;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -179,8 +180,15 @@ public class SADIActivity extends AbstractAsynchronousActivity<SADIActivityConfi
 
 					Collection<SADIActivityOutputPort> outputPorts = outputPortMapping.values();
 					for (SADIActivityOutputPort outputPort : outputPorts) {
-						outputData.put(outputPort.getName(), referenceService.register(outputPort
-								.getValues(inputUri), outputPort.getDepth(), true, context));
+						if (outputPort.getValues(inputUri) != null) {
+                            outputData.put(outputPort.getName(), referenceService.register(outputPort
+                                    .getValues(inputUri), outputPort.getDepth(), true, context));
+                        } else {
+                            // FIXME populate with an empty list?
+                            System.out.println(String.format("Empty output detected for '%s'!", outputPort.getName()));
+                            outputData.put(outputPort.getName(), referenceService.register(new ArrayList(),
+                                    outputPort.getDepth(), true, context));
+                        }
 						outputPort.clearValues(inputUri);
 					}
 
@@ -349,8 +357,9 @@ public class SADIActivity extends AbstractAsynchronousActivity<SADIActivityConfi
 	 */
 	public RestrictionNode getInputRestrictionTree() throws SADIException, IOException {
 		if (inputRestrictionTree == null) {
-			inputRestrictionTree = SADIUtils
-					.buildInputRestrictionTree(getService().getInputClass());
+			inputRestrictionTree = SADIUtils.buildRestrictionTree(
+				getService().getInputClass(), null, configurationBean.getInputRestrictionPaths()
+			);
 		}
 		return inputRestrictionTree;
 	}
@@ -364,8 +373,9 @@ public class SADIActivity extends AbstractAsynchronousActivity<SADIActivityConfi
 	 */
 	public RestrictionNode getOutputRestrictionTree() throws SADIException, IOException {
 		if (outputRestrictionTree == null) {
-			outputRestrictionTree = SADIUtils.buildOutputRestrictionTree(getService()
-					.getInputClass(), getService().getOutputClass());
+			outputRestrictionTree = SADIUtils.buildRestrictionTree(
+				getService().getOutputClass(), getService().getInputClass(), configurationBean.getOutputRestrictionPaths()
+			);
 		}
 		return outputRestrictionTree;
 	}

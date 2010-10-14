@@ -46,14 +46,18 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.ontology.Restriction;
+import com.hp.hpl.jena.ontology.UnionClass;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.RDFList;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.ResourceUtils;
 import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
  * Utility methods for SADI activities.
@@ -139,9 +143,10 @@ public class SADIUtils {
 	}
 
 	/**
-	 * Returns the paths to the leaf {@link RestrictionNode}s from the given
+	 * Returns the paths to the first children of the given
 	 * RestrictionNode. If a RestrictionNode is exclusive the first sibling is
-	 * chosen.
+	 * chosen. If an input/output class is an LSRN class, just use that
+	 * for backwards compatibility.
 	 * 
 	 * @param node
 	 *            the root node of the restriction tree
@@ -155,25 +160,34 @@ public class SADIUtils {
 			List<String> path) {
 		List<List<String>> defaultRestrictionPaths = new ArrayList<List<String>>();
 		path.add(node.toString());
-		if (node.isLeaf()) {
+		if (node.getChildCount() == 0 || LSRNUtils.isLSRNType(node.getOntClass())) {
 			defaultRestrictionPaths.add(path);
 		} else {
-			boolean exclusiveSelected = false;
-			for (RestrictionNode child : node.getChildren()) {
-				if (child.isExclusive()) {
-					if (!exclusiveSelected) {
-						List<String> newPath = new ArrayList<String>();
-						newPath.addAll(path);
-						defaultRestrictionPaths.addAll(getDefaultRestrictionPaths(child, newPath));
-						exclusiveSelected = true;
-					}
-				} else {
-					List<String> newPath = new ArrayList<String>();
-					newPath.addAll(path);
-					defaultRestrictionPaths.addAll(getDefaultRestrictionPaths(child, newPath));
-				}
+			for (RestrictionNode child: node.getChildren()) {
+				List<String> newPath = new ArrayList<String>(path);
+				newPath.add(child.toString());
+				defaultRestrictionPaths.add(newPath);
 			}
 		}
+//		if (node.isLeaf()) {
+//			defaultRestrictionPaths.add(path);
+//		} else {
+//			boolean exclusiveSelected = false;
+//			for (RestrictionNode child : node.getChildren()) {
+//				if (child.isExclusive()) {
+//					if (!exclusiveSelected) {
+//						List<String> newPath = new ArrayList<String>();
+//						newPath.addAll(path);
+//						defaultRestrictionPaths.addAll(getDefaultRestrictionPaths(child, newPath));
+//						exclusiveSelected = true;
+//					}
+//				} else {
+//					List<String> newPath = new ArrayList<String>();
+//					newPath.addAll(path);
+//					defaultRestrictionPaths.addAll(getDefaultRestrictionPaths(child, newPath));
+//				}
+//			}
+//		}
 		return defaultRestrictionPaths;
 	}
 
@@ -237,6 +251,7 @@ public class SADIUtils {
 	 * @param outputClass
 	 *            the output class of the SADI service
 	 * @return a tree of {@link RestrictionNode}s
+	 * @deprecated
 	 */
 	public static RestrictionNode buildOutputRestrictionTree(OntClass inputClass,
 			OntClass outputClass) {
@@ -254,6 +269,7 @@ public class SADIUtils {
 	 * @param inputClass
 	 *            the input class of the SADI service
 	 * @return a tree of {@link RestrictionNode}s
+	 * @deprecated
 	 */
 	public static RestrictionNode buildInputRestrictionTree(OntClass inputClass) {
 		RestrictionNode node = new RestrictionNode(inputClass);
@@ -263,14 +279,57 @@ public class SADIUtils {
 		return node;
 	}
 
+	public static RestrictionNode buildRestrictionTree(OntClass root, OntClass relativeTo, List<List<String>> selectedPaths) {
+		RestrictionNode rootNode = new RestrictionNode(root);
+		buildChildren(rootNode, relativeTo);
+		for (List<String> path: selectedPaths) {
+			buildRestrictionTreeForPath(rootNode, path);
+		}
+		makeNodesNamesUnique(rootNode);
+		return rootNode;
+	}
+	
+	public static void buildRestrictionTreeForPath(RestrictionNode node, List<String> path) {
+		if (path.isEmpty())
+			return;
+		
+		if (node.toString().equals(path.get(0))) {
+			if (!node.isExpanded()) {
+				buildChildren(node);
+			}
+			for (RestrictionNode child: node.getChildren()) {
+				buildRestrictionTreeForPath(child, path.subList(1, path.size()));
+			}
+		}
+	}
+	
+	public static void buildChildren(RestrictionNode node) {
+		buildChildren(node, null);
+	}
+	public static void buildChildren(RestrictionNode node, OntClass relativeTo) {
+		if (logger.isTraceEnabled()) {
+			logger.trace(String.format("building children for %s", node));
+		}
+		for (Restriction r: LocalOwlUtils.listRestrictions(node.getOntClass(), relativeTo)) {
+			RestrictionNode child = new RestrictionNode(r.getOnProperty(), LocalOwlUtils.getValuesFromAsClass(r, true));
+			if (logger.isTraceEnabled()) {
+				logger.trace(String.format("\tadding child %s", child));
+			}
+			node.add(child);
+		}
+		node.setExpanded(true);
+	}
+	
 	private static void buildRestrictionTree(OntClass clazz, Set<OntClass> seenClasses,
 			RestrictionNode node, Map<OntProperty, RestrictionNode> seenProperties,
 			Set<Restriction> ignore, boolean exclusive) {
 		if (seenClasses.contains(clazz) || clazz.equals(OWL.Thing) || LSRNUtils.isLSRNType(clazz)) {
+			System.out.println(String.format("bailing from recursion into '%s'", OwlUtils.getLabel(clazz)));
 			return;
 		}
+		System.out.println(String.format("visiting '%s' (%s)", OwlUtils.getLabel(clazz), clazz));
+		System.out.println(String.format("classes already seen: %s", seenClasses));
 		seenClasses.add(clazz);
-		System.out.println(String.format("visiting %s", clazz));
 		
 		for (Restriction r: OwlUtils.listRestrictions(clazz)) {
 			if (ignore.contains(r))
@@ -280,7 +339,7 @@ public class SADIUtils {
 			if (property == null) {
 				// TOOD this is problematic; create OwlUtils.getOnProperty(r)...
 			}
-			OntClass valuesFrom = OwlUtils.getValuesFromAsClass(r);
+			OntClass valuesFrom = LocalOwlUtils.getValuesFromAsClass(r, false);
 			if (valuesFrom != null) {
 				RestrictionNode restrictionNode = new RestrictionNode(property, valuesFrom, exclusive);
 				// check if we've already seen a restriction on this
@@ -305,6 +364,7 @@ public class SADIUtils {
 				}
 				HashSet<OntClass> seenClassesCopy = new HashSet<OntClass>();
 				seenClassesCopy.addAll(seenClasses);
+				System.out.println(String.format("recursing into '%s' ('%s' has restriction on '%s'):", OwlUtils.getLabel(valuesFrom), OwlUtils.getLabel(clazz), OwlUtils.getLabel(property)));
 				buildRestrictionTree(valuesFrom, seenClassesCopy, restrictionNode,
 						new HashMap<OntProperty, RestrictionNode>(), ignore, false);
 			}
@@ -556,4 +616,109 @@ public class SADIUtils {
 		return resultTriples;
 	}
 
+	private static class LocalOwlUtils
+	{
+		public static OntClass getValuesFromAsClass(Restriction restriction)
+		{
+			return getValuesFromAsClass(restriction, false);
+		}
+
+		public static OntClass getValuesFromAsClass(Restriction restriction, boolean fallbackToRange)
+		{
+			OntResource valuesFrom = getValuesFrom(restriction);
+			if (valuesFrom != null && valuesFrom.isClass()) {
+				return valuesFrom.asClass();
+			} else if (fallbackToRange) {
+				OntProperty p = restriction.getOnProperty();
+				if (p != null) {
+					if (p.isDatatypeProperty())
+						return p.getOntModel().getOntClass(RDFS.Literal.getURI());
+					else if (p.isObjectProperty())
+						return p.getOntModel().getOntClass(OWL.Thing.getURI());
+					else
+						return p.getOntModel().getOntClass(RDFS.Resource.getURI());
+				}
+			}
+			return restriction.getOntModel().getOntClass(OWL.Thing.getURI());
+		}
+		
+		public static OntResource getValuesFrom(Restriction restriction)
+		{
+			if (restriction.isAllValuesFromRestriction()) {
+				return restriction.getOntModel().getOntResource(restriction.asAllValuesFromRestriction().getAllValuesFrom());
+			} else if (restriction.isSomeValuesFromRestriction()) {
+				return restriction.getOntModel().getOntResource(restriction.asSomeValuesFromRestriction().getSomeValuesFrom());
+			} else {
+				return null;
+			}
+		}
+		
+		public static Set<Restriction> listRestrictions(OntClass clazz)
+		{
+			return listRestrictions(clazz, null);
+		}
+		
+		public static Set<Restriction> listRestrictions(OntClass clazz, OntClass relativeTo)
+		{
+			Set<Restriction> restrictions;
+			if (relativeTo != null) {
+				restrictions = OwlUtils.listRestrictions(clazz, relativeTo);
+			} else {
+				restrictions = OwlUtils.listRestrictions(clazz);
+			}
+			
+			// filter restrictions for restrictions on the same property...
+			Map<OntProperty, Restriction> seen = new HashMap<OntProperty, Restriction>();
+			for (Restriction r: restrictions) {
+				OntProperty p = r.getOnProperty();
+				if (p == null) {
+					logger.warn(String.format("skipping restriction on undefined property %s", r.getPropertyValue(OWL.onProperty)));
+					continue;
+				}
+				if (seen.containsKey(p)) {
+					OntClass thisValuesFrom = LocalOwlUtils.getValuesFromAsClass(r);
+					OntClass storedValuesFrom = LocalOwlUtils.getValuesFromAsClass(seen.get(p));
+					if (storedValuesFrom.hasSubClass(thisValuesFrom)) {
+						// this restriction is more specific; use it...
+						seen.put(p, r);
+					} else if (storedValuesFrom.hasSuperClass(thisValuesFrom)) {
+						// stored restriction is more specific; do nothing...
+					} else {
+						// multiple values from; create a union class...
+						//seen.put(p, LocalOwlUtils.createUnionClass(storedValuesFrom, thisValuesFrom));
+						// for now, just do what David was doing...
+						seen.put(p, r);
+					}
+				} else {
+					seen.put(p, r);
+				}
+			}
+			
+			restrictions.clear();
+			restrictions.addAll(seen.values());
+			return restrictions;
+		}
+
+		public static UnionClass createUnionClass(OntClass c1, OntClass c2)
+		{
+			if (c1.isUnionClass()) {
+				UnionClass union = c1.asUnionClass();
+				if (c2.isUnionClass()) {
+					for (OntClass operand: c2.asUnionClass().listOperands().toList())
+						union.addOperand(operand);
+				} else {
+					union.addOperand(c2);
+				}
+				return union;
+			} else if (c2.isUnionClass()) {
+				// quick and dirty...
+				return createUnionClass(c2, c1);
+			} else {
+				RDFList operands = c1.getModel().createList();
+				operands.add(c1);
+				operands.add(c2);
+				return c1.getOntModel().createUnionClass(null, operands);
+			}
+		}
+	}
 }

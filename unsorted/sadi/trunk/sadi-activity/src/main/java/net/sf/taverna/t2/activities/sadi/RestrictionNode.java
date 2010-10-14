@@ -27,7 +27,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
+
+import org.apache.log4j.Logger;
 
 import ca.wilkinsonlab.sadi.utils.OwlUtils;
 
@@ -40,13 +41,13 @@ import com.hp.hpl.jena.ontology.OntProperty;
  * @author David Withers
  */
 public class RestrictionNode extends DefaultMutableTreeNode {
-
+	private static final Logger log = Logger.getLogger(RestrictionNode.class);
 	private static final long serialVersionUID = 1L;
 
 	private OntProperty ontProperty;
 	private OntClass ontClass;
 	private Map<String, List<?>> values;
-	private boolean exclusive, selected;
+	private boolean exclusive, selected, expanded;
 	private String name;
 
 	/**
@@ -88,6 +89,7 @@ public class RestrictionNode extends DefaultMutableTreeNode {
 		this.ontProperty = ontProperty;
 		this.ontClass = ontClass;
 		this.exclusive = exclusive;
+		expanded = false;
 		values = new HashMap<String, List<?>>();
 		name = createName();
 	}
@@ -151,12 +153,37 @@ public class RestrictionNode extends DefaultMutableTreeNode {
 	 * Sets this node and its parent node as selected.
 	 */
 	public void setSelected() {
-		selected = true;
-		TreeNode parentNode = getParent();
-		if (parentNode instanceof RestrictionNode) {
-			RestrictionNode restrictionNode = (RestrictionNode) parentNode;
-			restrictionNode.setSelected();
-		}
+		setSelected(true);
+//		selected = true;
+//		TreeNode parentNode = getParent();
+//		if (parentNode instanceof RestrictionNode) {
+//			RestrictionNode restrictionNode = (RestrictionNode) parentNode;
+//			restrictionNode.setSelected();
+//		}
+	}
+	
+	/**
+	 * Set just this node to selected or unselected as specified.
+	 */
+	public void setSelected(boolean selected) {
+		this.selected = selected;
+		log.trace(String.format("node %s %s", toString(), this.selected ? "selected" : "unselected"));
+	}
+
+	/**
+	 * @return the expanded
+	 */
+	public boolean isExpanded()
+	{
+		return expanded;
+	}
+
+	/**
+	 * @param expanded the expanded to set
+	 */
+	public void setExpanded(boolean expanded)
+	{
+		this.expanded = expanded;
 	}
 
 	/**
@@ -215,6 +242,21 @@ public class RestrictionNode extends DefaultMutableTreeNode {
 			}
 		}
 		return children;
+	}
+	
+	/* (non-Javadoc)
+	 * @see javax.swing.tree.DefaultMutableTreeNode#isLeaf()
+	 */
+	@Override
+	public boolean isLeaf()
+	{
+		/* this should only be called by the tree model, so it should
+		 * be safe to compute children here...
+		 */
+		if (!isExpanded()) {
+			SADIUtils.buildChildren(this);
+		}
+		return getChildren().isEmpty();
 	}
 
 	/**
