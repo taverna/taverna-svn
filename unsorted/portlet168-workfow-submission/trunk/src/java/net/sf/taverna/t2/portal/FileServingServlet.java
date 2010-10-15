@@ -133,7 +133,7 @@ public class FileServingServlet extends HttpServlet {
             }
             else {
                 response.setContentType("text/plain");
-                response.getWriter().write("Error: You do not have permission to view this file.");
+                response.getWriter().write("Error: You do not have the permission to view this file.");
                 System.err.println("File Serving Servlet: The user "+user+" is trying to view the file "+ dataFilePath +" that they do not have access permission to.");
             }
         }
