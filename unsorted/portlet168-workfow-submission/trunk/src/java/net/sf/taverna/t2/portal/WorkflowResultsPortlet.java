@@ -94,11 +94,10 @@ public class WorkflowResultsPortlet extends GenericPortlet{
         T2_SERVER_URL = getPortletContext().getInitParameter(Constants.T2_SERVER_URL);
 
         // Get the directory where info for submitted jobs for all users is persisted
-        JOBS_DIR = new File(getPortletContext().getInitParameter(Constants.JOBS_DIRECTORY_PATH),
-                Constants.JOBS_DIRECTORY_NAME);
+        JOBS_DIR = new File(getPortletContext().getInitParameter(Constants.JOBS_DIRECTORY_PATH));
         if (!JOBS_DIR.exists()){
             try{
-                JOBS_DIR.mkdir();
+                JOBS_DIR.mkdirs(); // create all intermediate directories as well if neccessary
             }
             catch(Exception ex){
                 System.out.println("Workflow Results Portlet: Failed to create a directory "+JOBS_DIR.getAbsolutePath()+" where submitted jobs are to be persisted.");
@@ -325,7 +324,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                         }
                         // Get data's MIME type as given by the Baclava file
                         String mimeType = resultDataThing.getMostInterestingMIMETypeForObject(dataObject);
-                        outputsTableHTML.append("<td width=\"20%\">\n");
+                        outputsTableHTML.append("<td width=\"20%\" style=\"vertical-align:top;\">\n");
                         outputsTableHTML.append("<div class=\"output_name\">" + outputPortName + "<span class=\"output_depth\"> - " + dataTypeBasedOnDepth + "</span></div>\n");
                         outputsTableHTML.append("<div class=\"output_mime_type\">" + mimeType + "</div>\n");
                         outputsTableHTML.append("</td>");
@@ -335,7 +334,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                                 workflowResourceUUID + Constants.FILE_SEPARATOR +
                                 Constants.OUTPUTS_DIRECTORY_NAME + Constants.FILE_SEPARATOR +
                                 outputPortName;
-                        outputsTableHTML.append("<td width=\"15%\"><script language=\"javascript\">" + createResultTree(dataObject, dataDepth, dataDepth, "", dataFileParentPath, mimeType, request) + "</script></td>\n");
+                        outputsTableHTML.append("<td width=\"15%\" style=\"vertical-align:top;\"><script language=\"javascript\">" + createResultTree(dataObject, dataDepth, dataDepth, "", dataFileParentPath, mimeType, request) + "</script></td>\n");
                         if (rowCount == 1){ // Add the data preview cell but only in the first row as it spans across the table height
                             outputsTableHTML.append("<td style=\"border:none;vertical-align:top;\" colspan=\""+resultDataThingMap.keySet().size()+"\"><div style=\"vertical-align:top;\" id=\"data_preview\"></div></td>\n");
                         }

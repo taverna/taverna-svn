@@ -16,6 +16,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -108,8 +109,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         T2_SERVER_URL = getPortletContext().getInitParameter(Constants.T2_SERVER_URL);
 
         // Get the directory where info for submitted jobs for all users is persisted
-        JOBS_DIR = new File(getPortletContext().getInitParameter(Constants.JOBS_DIRECTORY_PATH),
-                Constants.JOBS_DIRECTORY_NAME);
+        JOBS_DIR = new File(getPortletContext().getInitParameter(Constants.JOBS_DIRECTORY_PATH));
 
         // Directory containing workflows
         File dir = new File(getPortletContext().getRealPath(Constants.WORKFLOWS_DIRECTORY));
@@ -128,6 +128,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             }
         };*/
         String[] workflowFileNames = dir.list(WorkflowResultsPortlet.t2flowFileFilter);
+        Collections.sort(Arrays.asList(workflowFileNames)); // sort file names alphabetically
         int numberOfLoadedWorkflowFiles = 0;
        
         SAXBuilder builder = new SAXBuilder();

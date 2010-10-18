@@ -45,7 +45,6 @@ public class Constants {
     public static final String T2_SERVER_URL = "T2_SERVER_URL";
     public static final String FILE_SERVLET_URL = "FILE_SERVLET_URL";
     public static final String JOBS_DIRECTORY_PATH = "JOBS_DIRECTORY_PATH";
-    public static final String JOBS_DIRECTORY_NAME = "T2WorkflowSubmissionJobs";
     public static final String MAX_PREVIEW_DATA_SIZE_IN_KB = "MAX_PREVIEW_DATA_SIZE_IN_KB";
 
     // .t2flow XML namespace
