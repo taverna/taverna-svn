@@ -462,11 +462,13 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
                             // Run the workflow on the T2 Server
                             if (inputsSubmitted){
+                                Date startDate = new Date();
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
                                 System.out.println("Workflow Submission Portlet: Inputs for workflow " + workflowFileName + " successfully submitted to the Server.");
 
                                 boolean runSubmitted = runWorkflow(workflowFileName, workflowResourceUUID, request);
                                 if (runSubmitted){
-                                    System.out.println("Workflow Submission Portlet: Execution of workflow " + workflowFileName + " successfully initiated on the Server. Job Id: " + workflowResourceUUID +".");
+                                    System.out.println("Workflow Submission Portlet: Execution of workflow " + workflowFileName + " successfully initiated on the Server at " + dateFormat.format(startDate) +" with job id: " + workflowResourceUUID +".");
 
                                     // Add this workflowResourceUUID to the list of submitted workflow UUIDs
                                     // to be read by the Workflow Results portlet and used to fetch results for
@@ -476,7 +478,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                             PortletSession.APPLICATION_SCOPE); // should not be null at this point
                                             
                                     WorkflowSubmissionJob job = new WorkflowSubmissionJob(workflowResourceUUID, workflowFileName, Constants.JOB_STATUS_OPERATING);
-                                    job.setStartDate(new Date());
+                                    job.setStartDate(startDate);
                                     workflowSubmissionJobs.add(0,job);
 
                                     // Persist the detains of the newly created job on disk
@@ -540,7 +542,9 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
                             boolean runSubmitted = runWorkflow(workflowFileName, workflowResourceUUID, request);
                             if (runSubmitted){
-                                System.out.println("Workflow Submission Portlet: Execution of workflow " + workflowFileName + " successfully initiated on the Server.");
+                                Date startDate = new Date();
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+                                System.out.println("Workflow Submission Portlet: Execution of workflow " + workflowFileName + " successfully initiated on the Server at " + dateFormat.format(startDate) +" with job id: " + workflowResourceUUID +".");
 
                                 // Add this workflowResourceUUID to the list of submitted workflow UUIDs
                                 // to be read by the Workflow Results portlet and used to fetch results for
@@ -550,7 +554,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                         getAttribute(Constants.WORKFLOW_SUBMISSION_JOBS, PortletSession.APPLICATION_SCOPE);
                                 WorkflowSubmissionJob job = new WorkflowSubmissionJob(workflowResourceUUID, workflowFileName, Constants.JOB_STATUS_OPERATING);
                                 workflowSubmissionJobs.add(job);
-                                job.setStartDate(new Date());
+                                job.setStartDate(startDate);
 
                                 // Persist the detains of the newly created job on disk
                                 persistJobOnDisk(request, job, worfklowInputsDocument);
@@ -664,6 +668,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         inputFormJSP.append("<%@ taglib uri=\"http://java.sun.com/portlet\" prefix=\"portlet\" %>\n");
         inputFormJSP.append("<portlet:defineObjects />\n\n");
         inputFormJSP.append("<%@ include file=\"/WEB-INF/jsp/InputsValidationJavaScript.jsp\" %>\n\n");
+        inputFormJSP.append("<%@ include file=\"/WEB-INF/jsp/AjaxDataPreviewJavaScript.jsp\" %>\n\n");
         inputFormJSP.append("<%@ include file=\"/WEB-INF/jsp/InputsCSS.jsp\" %>\n\n");
 
         // Workflow name and description
@@ -712,12 +717,20 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                     }
                     inputFormJSP.append("<td>" + inputPort.getName()+ "</td>\n");
                     inputFormJSP.append("<td>single value</td>\n");
-                    String descriptionString = " ";
-                    if (inputPort.getDescription() != null){
-                        descriptionString += inputPort.getDescription();
+                    String descriptionString = "";
+                    if (inputPort.getDescription() != null && !inputPort.getDescription().equals("")){
+                        descriptionString += inputPort.getDescription().trim();
                     }
                     if (inputPort.getExampleValue() != null && !inputPort.getExampleValue().equals("")){
-                        descriptionString += "<br><br><b>Example value:</b> "+inputPort.getExampleValue();
+                        if (!descriptionString.equals("")){
+                            descriptionString += "<br><br>";
+                        }
+                        descriptionString += "<b>Example value:</b><textarea id=\"textarea_with_no_decoration"+
+                                counter+
+                                "\" readonly=\"true\" style=\"border:none;overflow:hidden;\">"+
+                                inputPort.getExampleValue() +
+                                "</textarea><script language=\"javascript\">adjustRows(document.getElementById(\"textarea_with_no_decoration"+
+                                counter+"\"));</script>";
                     }
                     inputFormJSP.append("<td>" + descriptionString + "</td>\n");
                     inputFormJSP.append("<td>\n");
@@ -737,12 +750,20 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                     }
                     inputFormJSP.append("<td>" + inputPort.getName()+ "</td>\n");
                     inputFormJSP.append("<td>list</td>\n");
-                    String descriptionString = " ";
-                    if (inputPort.getDescription() != null){
-                        descriptionString += inputPort.getDescription();
+                    String descriptionString = "";
+                    if (inputPort.getDescription() != null && !inputPort.getDescription().equals("")){
+                        descriptionString += inputPort.getDescription().trim();
                     }
                     if (inputPort.getExampleValue() != null && !inputPort.getExampleValue().equals("")){
-                        descriptionString += "<br><br><b>Example value:</b> "+inputPort.getExampleValue();
+                        if (!descriptionString.equals("")){
+                            descriptionString += "<br><br>";
+                        }
+                        descriptionString += "<b>Example value:</b><textarea id=\"textarea_with_no_decoration"+
+                                counter+
+                                "\" readonly=\"true\" style=\"border:none;overflow:hidden;\">"+
+                                inputPort.getExampleValue() +
+                                "</textarea><script language=\"javascript\">adjustRows(document.getElementById(\"textarea_with_no_decoration"+
+                                counter+"\"));</script>";
                     }
                     inputFormJSP.append("<td>" + descriptionString + "</td>\n");
                     inputFormJSP.append("<td>\n");
