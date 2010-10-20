@@ -727,7 +727,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                         }
                         descriptionString += "<b>Example value:</b><textarea id=\"textarea_with_no_decoration"+
                                 counter+
-                                "\" readonly=\"true\" style=\"border:none;overflow:hidden;\" onclick=\"\">"+
+                                "\" readonly=\"true\" style=\"border:none;overflow:hidden;\">"+
                                 inputPort.getExampleValue() +
                                 "</textarea><script language=\"javascript\">adjustRows(document.getElementById(\"textarea_with_no_decoration"+
                                 counter+"\"));</script>";
@@ -760,7 +760,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                         }
                         descriptionString += "<b>Example value:</b><textarea id=\"textarea_with_no_decoration"+
                                 counter+
-                                "\" readonly=\"true\" style=\"border:none;overflow:hidden;\" onclick=\"\" >"+
+                                "\" readonly=\"true\" style=\"border:none;overflow:hidden;\">"+
                                 inputPort.getExampleValue() +
                                 "</textarea><script language=\"javascript\">adjustRows(document.getElementById(\"textarea_with_no_decoration"+
                                 counter+"\"));</script>";
