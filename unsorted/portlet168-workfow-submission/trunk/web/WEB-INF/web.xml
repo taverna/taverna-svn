@@ -28,7 +28,7 @@
     </context-param>
     <context-param>
         <param-name>JOBS_DIRECTORY_PATH</param-name>
-        <param-value>/Users/alex/Desktop/portal-results/once/twice/again</param-value>
+        <param-value>/Users/alex/Desktop/portal-results</param-value>
         <description>Absolute path to a directory on the local file system where the app can write info about submitted jobs to</description>
     </context-param>
     <context-param>
