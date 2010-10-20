@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -411,6 +412,9 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                             }
                             else{
                                 job.setStatus(statusOnServer);
+                                Date endDate = new Date();
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+                                System.out.println("Workflow Submission Portlet: Execution of workflow " + job.getWorkflowFileName() + " finished on the Server. Results fetched at " + dateFormat.format(endDate) +" with job id: " + job.getUuid() +".");
                                 // Persist the new status for this job on a disk
                                 updateJobStatusOnDiskForUser(job.getUuid(), statusOnServer, user);
                             }
