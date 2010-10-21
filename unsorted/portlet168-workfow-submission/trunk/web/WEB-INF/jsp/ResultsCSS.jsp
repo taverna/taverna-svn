@@ -98,7 +98,7 @@ table.result_data, table.result_data th, table.result_data td
 
 .output_depth{
     font-weight: normal;
-    color: #088A4B;
+    color: #000000;
 }
 
 .output_mime_type{
