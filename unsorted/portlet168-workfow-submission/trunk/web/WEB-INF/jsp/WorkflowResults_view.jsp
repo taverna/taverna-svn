@@ -87,7 +87,7 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z"
         <td><%= workflowSubmissionJobs.get(i).getWorkflowFileName() %></td>
         <td><%= dateFormat.format(workflowSubmissionJobs.get(i).getStartDate()) %></td>
         <td><%= workflowSubmissionJobs.get(i).getStatus() %></td>
-        <td><a onclick="return confirm_deletion('<%=confirmDeletionText%>');" href="<portlet:actionURL/>&<%=Constants.DELETE_JOB%>=<%= URLEncoder.encode(workflowSubmissionJobs.get(i).getUuid(), "UTF-8")%>"><img src="<%=renderRequest.getContextPath()%>/images/delete.png" alt="Delete job"></a></td>
+        <td><a onclick="return confirm_deletion('<%=confirmDeletionText%>');" href="<portlet:actionURL/>&<%=Constants.DELETE_JOB%>=<%= URLEncoder.encode(workflowSubmissionJobs.get(i).getUuid(), "UTF-8")%>"><img src="<%=renderRequest.getContextPath()%>/images/trash.png" alt="Delete job"></a></td>
         </tr>
     <%}%>
 </table>

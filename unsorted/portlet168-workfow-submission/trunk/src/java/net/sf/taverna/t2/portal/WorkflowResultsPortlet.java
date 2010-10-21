@@ -290,7 +290,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                 outputsTableHTML.append("<td valign=\"bottom\"><b>Results:</b></td>\n");
                 outputsTableHTML.append("<td align=\"right\">Download the results as a <a target=\"_blank\" href=\"" +
                         baclavaOutputsFileURL +
-                        "\">single XML file</a>.<br>" +
+                        "\">single Baclava XML file</a>.<br>" +
                         "You can view the file with Taverna's DataViewer tool.</td>\n");
                 outputsTableHTML.append("</tr>\n");
                 outputsTableHTML.append("</table>\n");
@@ -348,7 +348,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
                 response.getWriter().println("Download the results as a <a target=\"_blank\" href=\"" + 
                         baclavaOutputsFileURL+
-                        "\">single XML file</a>. " +
+                        "\">single Baclava XML file</a>. " +
                         "You can view the file with Taverna's DataViewer tool.");
             }
         }
