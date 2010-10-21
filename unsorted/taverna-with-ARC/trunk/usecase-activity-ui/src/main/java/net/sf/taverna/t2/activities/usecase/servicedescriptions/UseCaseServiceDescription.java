@@ -61,7 +61,7 @@ public class UseCaseServiceDescription extends ServiceDescription<UseCaseActivit
 	}
 
 	public Icon getIcon() {
-		return KnowARCConfigurationFactory.getConfiguration().getIcon();
+		return UseCaseActivityIcon.getUseCaseIcon();
 	}
 
 	public Class<? extends Activity<UseCaseActivityConfigurationBean>> getActivityClass() {

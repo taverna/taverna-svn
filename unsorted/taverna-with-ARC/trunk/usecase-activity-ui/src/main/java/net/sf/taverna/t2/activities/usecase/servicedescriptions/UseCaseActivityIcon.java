@@ -23,8 +23,8 @@
 package net.sf.taverna.t2.activities.usecase.servicedescriptions;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
-import net.sf.taverna.t2.activities.usecase.KnowARCConfigurationFactory;
 import net.sf.taverna.t2.activities.usecase.UseCaseActivity;
 import net.sf.taverna.t2.workbench.activityicons.ActivityIconSPI;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
@@ -36,6 +36,8 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
  */
 public class UseCaseActivityIcon implements ActivityIconSPI{
 	
+	private static Icon icon;
+	
 	public int canProvideIconScore(Activity<?> activity) {
 		if (activity.getClass().getName().equals(UseCaseActivity.class.getName()))
 			return DEFAULT_ICON + 1;
@@ -44,7 +46,14 @@ public class UseCaseActivityIcon implements ActivityIconSPI{
 	}
 
 	public Icon getIcon(Activity<?> activity) {
-		return KnowARCConfigurationFactory.getConfiguration().getIcon();
+		return getUseCaseIcon();
+	}
+	
+	public static Icon getUseCaseIcon() {
+		if (icon == null) {
+			icon = new ImageIcon(UseCaseActivityIcon.class.getResource("/usecase.png"));
+		}
+		return icon;
 	}
 }
 

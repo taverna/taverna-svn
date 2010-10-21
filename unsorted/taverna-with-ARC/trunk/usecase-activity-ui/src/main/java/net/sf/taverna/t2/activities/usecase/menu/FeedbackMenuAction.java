@@ -51,8 +51,8 @@ public class FeedbackMenuAction extends AbstractMenuAction {
 	}
 
 	protected Action createAction() {
-		final ImageIcon icon = KnowARCConfigurationFactory.getConfiguration().getIcon();
-		return new SendFeedbackAction("Send Feedback...", icon);
+	    // final ImageIcon icon = KnowARCConfigurationFactory.getConfiguration().getIcon();
+		return new SendFeedbackAction("Send Feedback...", null);
 	}
 
 	private final class SendFeedbackAction extends AbstractAction {

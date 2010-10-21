@@ -95,7 +95,7 @@ public class UseCaseServiceProvider extends AbstractConfigurableServiceProvider<
 	}
 
 	public Icon getIcon() {
-		return KnowARCConfigurationFactory.getConfiguration().getIcon();
+	    return UseCaseActivityIcon.getUseCaseIcon();
 	}
 
 	@Override
