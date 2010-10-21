@@ -41,6 +41,25 @@ table.results th {
     color: #526652;
 }
 
+<%-- data_preview table style --%>
+table.data_preview
+{
+    border-collapse:collapse;
+    margin-bottom:10px;
+    margin-left:10px;
+    width:100%;
+}
+table.data_preview, table.data_preview th, table.data_preview td
+{
+    border: 1px solid #4A5C4A;
+    padding: 5px;
+}
+table.data_preview th {
+    background-color: #ECFFB3;
+    color: #526652;
+}
+
+<%-- result_data table style --%>
 table.result_data
 {
     border-collapse:collapse;
@@ -91,6 +110,7 @@ table.result_data, table.result_data th, table.result_data td
 	background-color: #EEEEEE;
 	border: 1px solid #000000;
 }
+<%-- END Andrew Vos' Cross Browser (JavaScript/DHTML) TreeView CSS style --%>
 
 .output_name{
     font-weight: bold;

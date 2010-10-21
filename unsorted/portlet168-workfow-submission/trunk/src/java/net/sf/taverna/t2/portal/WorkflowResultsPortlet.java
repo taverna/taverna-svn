@@ -295,11 +295,12 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                 outputsTableHTML.append("</tr>\n");
                 outputsTableHTML.append("</table>\n");
 
+                outputsTableHTML.append("<table width=\"100%\">\n");// table that contains the results table and preview table
+                outputsTableHTML.append("<tr><td style=\"vertical-align:top;\">\n");
                 outputsTableHTML.append("<table class=\"results\">\n");
                 outputsTableHTML.append("<tr>\n");
                 outputsTableHTML.append("<th width=\"20%\">Output port</th>\n");
                 outputsTableHTML.append("<th width=\"15%\">Data</th>\n");
-                outputsTableHTML.append("<th>Data preview</th>\n");
                 outputsTableHTML.append("</tr>\n");
                 int rowCount = 1;
                 // Get all output ports and data associated with them
@@ -336,19 +337,22 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                                 Constants.OUTPUTS_DIRECTORY_NAME + Constants.FILE_SEPARATOR +
                                 outputPortName;
                         outputsTableHTML.append("<td width=\"15%\" style=\"vertical-align:top;\"><script language=\"javascript\">" + createResultTree(dataObject, dataDepth, dataDepth, "", dataFileParentPath, mimeType, request) + "</script></td>\n");
-                        if (rowCount == 1){ // Add the data preview cell but only in the first row as it spans across the table height
-                            outputsTableHTML.append("<td style=\"border:none;vertical-align:top;\" colspan=\""+resultDataThingMap.keySet().size()+"\"><div style=\"vertical-align:top;\" id=\"data_preview\"></div></td>\n");
-                        }
                         rowCount++;
                         outputsTableHTML.append("</tr>\n");
                 }
+                outputsTableHTML.append("</table>\n");
+                outputsTableHTML.append("</td>\n");
+                outputsTableHTML.append("<td style=\"vertical-align:top;\">\n");
+                outputsTableHTML.append("<table class=\"data_preview\"><tr><th>Data preview</th></tr><tr><td><div style=\"vertical-align:top;\" id=\"data_preview\">When you select a data item - a preview of its value will appear here.</div></td></tr></table>\n");
+                outputsTableHTML.append("</td>\n");
+                outputsTableHTML.append("</tr>\n");
                 outputsTableHTML.append("</table>\n");
                 outputsTableHTML.append("</br>\n");
                 response.getWriter().println(outputsTableHTML.toString());
 
                 response.getWriter().println("Download the results as a <a target=\"_blank\" href=\"" + 
                         baclavaOutputsFileURL+
-                        "\">single Baclava XML file</a>. " +
+                        "\">single Baclava XML file</a>.<br>" +
                         "You can view the file with Taverna's DataViewer tool.");
             }
         }
