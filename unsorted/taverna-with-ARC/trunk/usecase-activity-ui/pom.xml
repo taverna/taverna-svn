@@ -3,13 +3,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>net.sf.taverna.t2</groupId>
-		<artifactId>ui-activities</artifactId>
-		<version>1.2</version>
+		<artifactId>usecase-plugin</artifactId>
+		<groupId>net.sf.taverna.t2.usecase</groupId>
+		<version>0.2</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.ui-activities</groupId>
 	<artifactId>usecase-activity-ui</artifactId>
-	<version>1.2-SNAPSHOT</version>
 	<name>Taverna 2 UseCase Activity UI</name>
 	<repositories>
 		<repository>
@@ -56,6 +55,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+                        <version>4.4</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -75,7 +75,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>usecase-activity</artifactId>
-			<version>1.2-SNAPSHOT</version>
+			<version>${usecase.version}</version>
 		</dependency>
 
 		<!-- for the feedback action -->
