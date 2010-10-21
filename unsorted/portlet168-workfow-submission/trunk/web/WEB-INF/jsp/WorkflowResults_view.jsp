@@ -82,7 +82,7 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z"
             <td><%= workflowSubmissionJobs.get(i).getUuid() %></td>
         <%}
         else {%>
-            <td><a href="<portlet:actionURL/>&<%=Constants.FETCH_RESULTS%>=<%= URLEncoder.encode(workflowSubmissionJobs.get(i).getUuid(), "UTF-8")%>"><%= workflowSubmissionJobs.get(i).getUuid() %></a></td>
+            <td><a href="<portlet:actionURL/>&<%=Constants.FETCH_RESULTS%>=<%= URLEncoder.encode(workflowSubmissionJobs.get(i).getUuid(), "UTF-8")%>#<%=Constants.RESULTS_ANCHOR%>"><%= workflowSubmissionJobs.get(i).getUuid() %></a></td>
         <%}%>
         <td><%= workflowSubmissionJobs.get(i).getWorkflowFileName() %></td>
         <td><%= dateFormat.format(workflowSubmissionJobs.get(i).getStartDate()) %></td>

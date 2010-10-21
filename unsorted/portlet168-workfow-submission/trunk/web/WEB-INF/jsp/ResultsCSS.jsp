@@ -106,4 +106,12 @@ table.result_data, table.result_data th, table.result_data td
     color: #666;
 }
 
+.nohover_nounderline a{
+    text-decoration:none;
+    color: #000000;
+}
+
+.nohover_nounderline a:hover { 
+    background-color: transparent;
+}
 </style>

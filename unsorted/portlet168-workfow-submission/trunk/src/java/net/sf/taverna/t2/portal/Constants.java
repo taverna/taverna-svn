@@ -114,4 +114,6 @@ public class Constants {
     public static final String WORKFLOW_INPUT_FILE_SUFFIX = "_file";
 
     public static final String REFRESH_WORKFLOW_JOBS = "refresh_workflow_jobs";
+
+    public static final String RESULTS_ANCHOR = "results_anchor";
 }

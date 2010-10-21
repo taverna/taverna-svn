@@ -287,7 +287,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
                 outputsTableHTML.append("<table width=\"100%\" style=\"margin-bottom:3px;\">\n");
                 outputsTableHTML.append("<tr>\n");
-                outputsTableHTML.append("<td valign=\"bottom\"><b>Results:</b></td>\n");
+                outputsTableHTML.append("<td valign=\"bottom\"><div class=\"nohover_nounderline\"><b><a name=\""+Constants.RESULTS_ANCHOR+"\">Results:</a></b></div></td>\n");
                 outputsTableHTML.append("<td align=\"right\">Download the results as a <a target=\"_blank\" href=\"" +
                         baclavaOutputsFileURL +
                         "\">single Baclava XML file</a>.<br>" +
