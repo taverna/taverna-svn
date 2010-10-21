@@ -499,10 +499,10 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         else{ // just a standard application/x-www-form-urlencoded form submission request
 
             // Was there a request to run a workflow?
-            if (request.getParameter(Constants.RUN_WORKFLOW) != null){
+            if (request.getParameter(PORTLET_NAMESPACE + Constants.RUN_WORKFLOW) != null){
 
                 // Workflow to run
-                String workflowFileName = request.getParameter(WORKFLOW_FILE_NAME);
+                String workflowFileName = request.getParameter(PORTLET_NAMESPACE + WORKFLOW_FILE_NAME);
 
                 // Workflow's input ports
                 ArrayList<WorkflowInputPort> workflowInputPorts = workflowInputPortsList.get(workflowFileNamesList.indexOf(workflowFileName));
@@ -510,7 +510,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                 // Get the workflow inputs from the submitted form and fill the
                 // list of inputs with the submitted values
                 for (WorkflowInputPort inputPort : workflowInputPorts){
-                    inputPort.setValue(request.getParameter(inputPort.getName()));
+                    inputPort.setValue(request.getParameter(PORTLET_NAMESPACE + inputPort.getName()));
                 }
                 // Submit the workflow to the T2 Server in preparation for execution
                 HttpResponse httpResponse = submitWorkflow(workflowFileName, request);
@@ -593,11 +593,11 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         PortletRequestDispatcher dispatcher;
         dispatcher = getPortletContext().getRequestDispatcher("/WEB-INF/jsp/WorkflowSubmission_view.jsp");
         dispatcher.include(request, response);
-        if (request.getParameter(Constants.WORKFLOW_SELECTION_SUBMISSION) != null){
+        if (request.getParameter(PORTLET_NAMESPACE + Constants.WORKFLOW_SELECTION_SUBMISSION) != null){
             response.getWriter().println("<br />");
             response.getWriter().println("<hr />");
             response.getWriter().println("<br />");
-            String selectedWorkflowFileName = request.getParameter(Constants.SELECTED_WORKFLOW);
+            String selectedWorkflowFileName = request.getParameter(PORTLET_NAMESPACE + Constants.SELECTED_WORKFLOW);
 
             // By now we should have generated the corresponding JSP file containing
             // workflow's input form snippet. Dispatch to this file now.

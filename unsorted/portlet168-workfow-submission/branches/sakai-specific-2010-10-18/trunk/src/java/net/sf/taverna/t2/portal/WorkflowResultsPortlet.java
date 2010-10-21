@@ -84,7 +84,9 @@ public class WorkflowResultsPortlet extends GenericPortlet{
     static final Object statusLock = new Object();
     static final Object resultsLock = new Object();
 
-    public static String namespace;
+    // Namespace of this portlet
+    private static String PORTLET_NAMESPACE;
+
     /*
      * Do the init stuff one at portlet loading time.
      */
@@ -144,11 +146,11 @@ public class WorkflowResultsPortlet extends GenericPortlet{
         PortletSession.APPLICATION_SCOPE);
 
         // If there was a request to refresh the job statuses
-        if (request.getParameter(Constants.REFRESH_WORKFLOW_JOBS) != null){
+        if (request.getParameter(PORTLET_NAMESPACE + Constants.REFRESH_WORKFLOW_JOBS) != null){
             updateJobStatusesForUser(workflowSubmissionJobs, request);
         }
         // If there was a request to show results of a workflow run
-        else if (request.getParameter(Constants.FETCH_RESULTS) != null){
+        else if (request.getParameter(PORTLET_NAMESPACE + Constants.FETCH_RESULTS) != null){
 
             // If workflowSubmissionJobs is null or does not contain this job id
             // this is just a page refresh after redeployment of the app/restart of
@@ -156,7 +158,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
             // managed to linger in the URL in the browser from the previous
             // session so just ignore it.
             if (workflowSubmissionJobs != null){
-                String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(Constants.FETCH_RESULTS)[0], "UTF-8");
+                String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(PORTLET_NAMESPACE + Constants.FETCH_RESULTS)[0], "UTF-8");
                 for (WorkflowSubmissionJob job : workflowSubmissionJobs){
                     if (job.getUuid().equals(workflowResourceUUID)){
                         System.out.println("Workflow Results Portlet: Fetching results for job id " + workflowResourceUUID);
@@ -172,14 +174,14 @@ public class WorkflowResultsPortlet extends GenericPortlet{
             }
         }
         // If there was a request to delete a workflow run
-        else if (request.getParameter(Constants.DELETE_JOB) != null){
+        else if (request.getParameter(PORTLET_NAMESPACE + Constants.DELETE_JOB) != null){
             // If workflowSubmissionJobs is null or does not contain this job id
             // this is just a page refresh after redeployment of the app/restart of
             // the sever/some form or refresh while the URL parameter DELETE_JOB
             // managed to linger in the URL in the browser from the previous
             // session so just ignore it.
             if (workflowSubmissionJobs != null){
-                String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(Constants.DELETE_JOB)[0], "UTF-8");
+                String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(PORTLET_NAMESPACE + Constants.DELETE_JOB)[0], "UTF-8");
                 
                 Iterator<WorkflowSubmissionJob> iter = workflowSubmissionJobs.iterator();
                 while (iter.hasNext()) {
@@ -202,8 +204,8 @@ public class WorkflowResultsPortlet extends GenericPortlet{
     @Override
     public void doView(RenderRequest request, RenderResponse response) throws PortletException,IOException {
 
-        if (namespace == null){
-            namespace = response.getNamespace();
+        if (PORTLET_NAMESPACE == null){
+            PORTLET_NAMESPACE = response.getNamespace();
         }
 
         response.setContentType("text/html");
@@ -258,7 +260,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
         dispatcher.include(request, response);
 
         // If there was a request to show results of a workflow run
-        if (request.getParameter(Constants.FETCH_RESULTS) != null){
+        if (request.getParameter(PORTLET_NAMESPACE + Constants.FETCH_RESULTS) != null){
             
             // But if workflowSubmissionJobs is null or does not contain this job id
             // this is just a page refresh after redeployment of the app/restart of
@@ -272,8 +274,8 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                     (Map<String, DataThing>)request.
                     getAttribute(Constants.OUTPUTS_MAP_ATTRIBUTE); // just populated in the processAction method
             if (resultDataThingMap != null){
-                String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(Constants.FETCH_RESULTS)[0], "UTF-8");
-                WorkflowSubmissionJob job = (WorkflowSubmissionJob)request.getAttribute(Constants.WORKFLOW_SUBMISSION_JOB);
+                String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(PORTLET_NAMESPACE + Constants.FETCH_RESULTS)[0], "UTF-8");
+                WorkflowSubmissionJob job = (WorkflowSubmissionJob)request.getAttribute(PORTLET_NAMESPACE + Constants.WORKFLOW_SUBMISSION_JOB);
 
                 response.getWriter().println("<br>\n");
                 response.getWriter().println("<hr/>\n");
@@ -293,19 +295,20 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
                 outputsTableHTML.append("<table width=\"100%\" style=\"margin-bottom:3px;\">\n");
                 outputsTableHTML.append("<tr>\n");
-                outputsTableHTML.append("<td valign=\"bottom\"><b>Results:</b></td>\n");
+                outputsTableHTML.append("<td valign=\"bottom\"><div class=\"nohover_nounderline\"><b><a name=\""+Constants.RESULTS_ANCHOR+"\">Results:</a></b></div></td>\n");
                 outputsTableHTML.append("<td align=\"right\">Download the results as a <a target=\"_blank\" href=\"" +
                         baclavaOutputsFileURL +
-                        "\">single XML file</a>.<br>" +
+                        "\">single Baclava XML file</a>.<br>" +
                         "You can view the file with Taverna's DataViewer tool.</td>\n");
                 outputsTableHTML.append("</tr>\n");
                 outputsTableHTML.append("</table>\n");
 
+                outputsTableHTML.append("<table width=\"100%\">\n");// table that contains the results table and preview table
+                outputsTableHTML.append("<tr><td style=\"vertical-align:top;\">\n");
                 outputsTableHTML.append("<table class=\"results\">\n");
                 outputsTableHTML.append("<tr>\n");
                 outputsTableHTML.append("<th width=\"20%\">Output port</th>\n");
                 outputsTableHTML.append("<th width=\"15%\">Data</th>\n");
-                outputsTableHTML.append("<th>Data preview</th>\n");
                 outputsTableHTML.append("</tr>\n");
                 int rowCount = 1;
                 // Get all output ports and data associated with them
@@ -342,19 +345,22 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                                 Constants.OUTPUTS_DIRECTORY_NAME + Constants.FILE_SEPARATOR +
                                 outputPortName;
                         outputsTableHTML.append("<td width=\"15%\" style=\"vertical-align:top;\"><script language=\"javascript\">" + createResultTree(dataObject, dataDepth, dataDepth, "", dataFileParentPath, mimeType, request) + "</script></td>\n");
-                        if (rowCount == 1){ // Add the data preview cell but only in the first row as it spans across the table height
-                            outputsTableHTML.append("<td style=\"border:none;vertical-align:top;\" colspan=\""+resultDataThingMap.keySet().size()+"\"><div style=\"vertical-align:top;\" id=\"data_preview\"></div></td>\n");
-                        }
                         rowCount++;
                         outputsTableHTML.append("</tr>\n");
                 }
+                outputsTableHTML.append("</table>\n");
+                outputsTableHTML.append("</td>\n");
+                outputsTableHTML.append("<td style=\"vertical-align:top;\">\n");
+                outputsTableHTML.append("<table class=\"data_preview\"><tr><th>Data preview</th></tr><tr><td><div style=\"vertical-align:top;\" id=\"data_preview\">When you select a data item - a preview of its value will appear here.</div></td></tr></table>\n");
+                outputsTableHTML.append("</td>\n");
+                outputsTableHTML.append("</tr>\n");
                 outputsTableHTML.append("</table>\n");
                 outputsTableHTML.append("</br>\n");
                 response.getWriter().println(outputsTableHTML.toString());
 
                 response.getWriter().println("Download the results as a <a target=\"_blank\" href=\"" + 
                         baclavaOutputsFileURL+
-                        "\">single XML file</a>. " +
+                        "\">single Baclava XML file</a>.<br>" +
                         "You can view the file with Taverna's DataViewer tool.");
             }
         }

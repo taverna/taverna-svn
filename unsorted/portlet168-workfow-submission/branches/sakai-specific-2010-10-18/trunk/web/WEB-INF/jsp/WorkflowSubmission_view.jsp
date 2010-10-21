@@ -50,7 +50,7 @@ ArrayList<String> workflowFileNamesList = (ArrayList<String>) renderRequest.getA
             <%
             for (int i = 0; i < workflowFileNamesList.size(); i++ ) {
                 // If this workflow was selected then show it as selected in the list
-                if (workflowFileNamesList.get(i).equals(renderRequest.getParameter(Constants.SELECTED_WORKFLOW))){
+                if (workflowFileNamesList.get(i).equals(renderRequest.getParameter(renderResponse.getNamespace() + Constants.SELECTED_WORKFLOW))){
             %>  
                     <option selected="selected" value="<%=workflowFileNamesList.get(i)%>"><%=workflowFileNamesList.get(i)%></option>
             <%
