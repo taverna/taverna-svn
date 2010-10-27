@@ -27,15 +27,15 @@ ArrayList<String> workflowFileNamesList = (ArrayList<String>) renderRequest.getA
 <%
     if (renderRequest.getAttribute(Constants.ERROR_MESSAGE) != null){%>
         <p style="color:red;"><b><%=renderRequest.getAttribute(Constants.ERROR_MESSAGE)%></b></p>
-        <br />
-        <hr />
-        <br />
+        <br>
+        <hr>
+        <br>
     <%}
     if (renderRequest.getAttribute(Constants.INFO_MESSAGE) != null){%>
         <p><b><%=renderRequest.getAttribute(Constants.INFO_MESSAGE)%></b></p>
-        <br />
-        <hr />
-        <br />
+        <br>
+        <hr>
+        <br>
     <%}
 %>
 
