@@ -8,6 +8,32 @@
         <servlet-name>FileServingServlet</servlet-name>
         <url-pattern>/FileServingServlet</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>WorkflowSubmission</servlet-name>
+        <servlet-class>org.apache.pluto.core.PortletServlet</servlet-class>
+        <init-param>
+            <param-name>portlet-name</param-name>
+            <param-value>WorkflowSubmission</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>WorkflowSubmission</servlet-name>
+        <url-pattern>/PlutoInvoker/WorkflowSubmission</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>WorkflowResults</servlet-name>
+        <servlet-class>org.apache.pluto.core.PortletServlet</servlet-class>
+        <init-param>
+            <param-name>portlet-name</param-name>
+            <param-value>WorkflowResults</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>WorkflowResults</servlet-name>
+        <url-pattern>/PlutoInvoker/WorkflowResults</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             30
@@ -16,10 +42,6 @@
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
-    <taglib id="PortletTLD">
-        <taglib-uri>http://java.sun.com/portlet</taglib-uri>
-        <taglib-location>/WEB-INF/tld/std-portlet.tld</taglib-location>
-    </taglib>
     <context-param>
         <param-name>T2_SERVER_URL</param-name>
         <param-value>http://localhost:8081/taverna-server</param-value>

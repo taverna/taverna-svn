@@ -134,4 +134,8 @@ table.result_data, table.result_data th, table.result_data td
 .nohover_nounderline a:hover { 
     background-color: transparent;
 }
+
+img {
+    border:none;
+}
 </style>

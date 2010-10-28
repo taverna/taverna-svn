@@ -101,8 +101,8 @@ public class FileServingServlet extends HttpServlet {
             // We do not serve arbritarty files here - just those in the JOBS_DIR so make sure
             // we check that here. Also check that the file we are serving belongs to the
             // current user.
-
-            if (dataFile.getCanonicalPath().startsWith(JOBS_DIR.getAbsolutePath() + Constants.FILE_SEPARATOR + user)){
+            //if (dataFile.getCanonicalPath().startsWith(JOBS_DIR.getAbsolutePath() + Constants.FILE_SEPARATOR + user)){
+            if (dataFile.getCanonicalPath().startsWith(JOBS_DIR.getAbsolutePath())){
                if (dataFile.exists()) {
                     OutputStream os = response.getOutputStream();
 

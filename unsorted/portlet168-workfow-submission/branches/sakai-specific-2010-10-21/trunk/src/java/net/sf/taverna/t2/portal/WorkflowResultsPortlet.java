@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Timer;
@@ -84,6 +85,9 @@ public class WorkflowResultsPortlet extends GenericPortlet{
     static final Object statusLock = new Object();
     static final Object resultsLock = new Object();
 
+    // Namespace of this portlet
+    private static String PORTLET_NAMESPACE;
+
     /*
      * Do the init stuff one at portlet loading time.
      */
@@ -137,13 +141,21 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
     @Override
     public void processAction(ActionRequest request, ActionResponse response) throws PortletException,IOException {
+        // Just print all the parameters we have received, for testing purposes
+        Enumeration names = request.getParameterNames();
+        while(names.hasMoreElements()){
+            String parameterName = (String) names.nextElement();
+            System.out.println("\nWorkflow Results Portlet (processAction): parameter name: " + parameterName);
+            System.out.println("Workflow Results Portlet (processAction): parameter value: " + request.getParameter(parameterName));
+            System.out.println();
+        }
 
         ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)request.getPortletSession().
         getAttribute(Constants.WORKFLOW_SUBMISSION_JOBS,
         PortletSession.APPLICATION_SCOPE);
 
         // If there was a request to refresh the job statuses
-        if (request.getParameter(Constants.REFRESH_WORKFLOW_JOBS) != null){
+        if (request.getParameter(PORTLET_NAMESPACE + Constants.REFRESH_WORKFLOW_JOBS) != null){
             updateJobStatusesForUser(workflowSubmissionJobs, request);
         }
         // If there was a request to show results of a workflow run
@@ -163,8 +175,8 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                         // See if results are already downloaded from the T2 Server -
                         // if not download and save the Baclava file with outputs now.
                         Map<String, DataThing> resultDataThingMap = fetchJobResultsForUser(job, request);
-                        request.setAttribute(Constants.OUTPUTS_MAP_ATTRIBUTE, resultDataThingMap);
-                        request.setAttribute(Constants.WORKFLOW_SUBMISSION_JOB, job);
+                        request.getPortletSession().setAttribute(Constants.OUTPUTS_MAP_ATTRIBUTE, resultDataThingMap);
+                        request.getPortletSession().setAttribute(Constants.WORKFLOW_SUBMISSION_JOB, job);
                         break; 
                     } // else just ignore it if it is not in the job id list
                 }
@@ -186,33 +198,56 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                         System.out.println("Workflow Results Portlet: Deleting job " + workflowResourceUUID);
                         iter.remove();
                         deleteJobForUser(workflowResourceUUID, request);
-                        request.setAttribute(Constants.WORKFLOW_SUBMISSION_JOBS, workflowSubmissionJobs);
+                        //request.setAttribute(Constants.WORKFLOW_SUBMISSION_JOBS, workflowSubmissionJobs);
+                        request.getPortletSession().setAttribute(Constants.WORKFLOW_SUBMISSION_JOBS,
+                            workflowSubmissionJobs,
+                            PortletSession.APPLICATION_SCOPE);
                         break;
                     }
                 } // else just ignore it if it is not in the job id list
             }
         }
 
-        // Pass all request parameters over to the doView() and other render stage methods
+        // Pass all request parameters and attributes over to the doView() and other render stage methods
         response.setRenderParameters(request.getParameterMap());
-
+        String errorMessageAttribute = (String) request.getAttribute(Constants.ERROR_MESSAGE);
+        if (errorMessageAttribute != null){
+            response.setRenderParameter(Constants.ERROR_MESSAGE, errorMessageAttribute);
+        }
+        String infoMessageAttribute = (String) request.getAttribute(Constants.INFO_MESSAGE);
+        if (infoMessageAttribute != null){
+            response.setRenderParameter(Constants.INFO_MESSAGE, infoMessageAttribute);
+        }
     }
 
     @Override
     public void doView(RenderRequest request, RenderResponse response) throws PortletException,IOException {
+        // Just print all the parameters we have received, for testing purposes
+        Enumeration names = request.getParameterNames();
+        while(names.hasMoreElements()){
+            String parameterName = (String) names.nextElement();
+            System.out.println("\nWorkflow Results Portlet (doView): parameter name: " + parameterName);
+            System.out.println("Workflow Results Portlet (doView): parameter value: " + request.getParameter(parameterName));
+            System.out.println();
+        }
+
+        if (PORTLET_NAMESPACE == null){
+            PORTLET_NAMESPACE = response.getNamespace();
+        }
+
         response.setContentType("text/html");
 
         // Print out a message to the user, if any
-        if (request.getAttribute(Constants.ERROR_MESSAGE) != null){
-            response.getWriter().println("<p style=\"color:red;\"><b>"+ request.getAttribute(Constants.ERROR_MESSAGE)+ "</b></p>\n");
+        if (request.getParameter(Constants.ERROR_MESSAGE) != null){
+            response.getWriter().println("<p style=\"color:red;\"><b>"+ request.getParameter(Constants.ERROR_MESSAGE)+ "</b></p>\n");
             response.getWriter().println("<br>");
-            response.getWriter().println("<hr/>");
+            response.getWriter().println("<hr>");
             response.getWriter().println("<br>");
         }
-        if (request.getAttribute(Constants.INFO_MESSAGE) != null){
-            response.getWriter().println("<p><b>"+ request.getAttribute(Constants.INFO_MESSAGE)+ "</b></p>\n");
+        if (request.getParameter(Constants.INFO_MESSAGE) != null){
+            response.getWriter().println("<p><b>"+ request.getParameter(Constants.INFO_MESSAGE)+ "</b></p>\n");
             response.getWriter().println("<br>");
-            response.getWriter().println("<hr/>");
+            response.getWriter().println("<hr>");
             response.getWriter().println("<br>");
         }
 
@@ -253,7 +288,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
         // If there was a request to show results of a workflow run
         if (request.getParameter(Constants.FETCH_RESULTS) != null){
-            
+
             // But if workflowSubmissionJobs is null or does not contain this job id
             // this is just a page refresh after redeployment of the app/restart of
             // the sever/some form or refresh while the URL parameter FETCH_RESULTS
@@ -263,14 +298,14 @@ public class WorkflowResultsPortlet extends GenericPortlet{
             // with fetching the outputs - the map will be null so do not show anything -
             // an error message will be displayed to the user.
             Map<String, DataThing> resultDataThingMap = 
-                    (Map<String, DataThing>)request.
+                    (Map<String, DataThing>)request.getPortletSession().
                     getAttribute(Constants.OUTPUTS_MAP_ATTRIBUTE); // just populated in the processAction method
             if (resultDataThingMap != null){
                 String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(Constants.FETCH_RESULTS)[0], "UTF-8");
-                WorkflowSubmissionJob job = (WorkflowSubmissionJob)request.getAttribute(Constants.WORKFLOW_SUBMISSION_JOB);
+                WorkflowSubmissionJob job = (WorkflowSubmissionJob)request.getPortletSession().getAttribute(Constants.WORKFLOW_SUBMISSION_JOB);
 
                 response.getWriter().println("<br>\n");
-                response.getWriter().println("<hr/>\n");
+                response.getWriter().println("<hr>\n");
                 response.getWriter().println("<br>\n");
 
                 // Parse the result values from the Baclava file
@@ -355,6 +390,11 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                         "\">single Baclava XML file</a>.<br>" +
                         "You can view the file with Taverna's DataViewer tool.");
             }
+
+            // Clean some attributes which we had to stuff in PortletSession object when
+            // they should simply be request-response cycle attributes, not for the whole session
+            request.getPortletSession().setAttribute(Constants.OUTPUTS_MAP_ATTRIBUTE, null);
+            request.getPortletSession().setAttribute(Constants.WORKFLOW_SUBMISSION_JOB, null);
         }
     }
 
@@ -687,7 +727,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
         synchronized(resultsLock){
             String workflowResultsBaclavaFileURL = T2_SERVER_URL + Constants.RUNS_URL + "/"+ job.getUuid() + Constants.WD_URL + "/" + Constants.BACLAVA_OUTPUT_FILE_NAME;
-            request.setAttribute(Constants.WORKFLOW_RESULTS_BACLAVA_FILE_URL, workflowResultsBaclavaFileURL);
+            //request.setAttribute(Constants.WORKFLOW_RESULTS_BACLAVA_FILE_URL, workflowResultsBaclavaFileURL);
 
             // First try to get the Baclava file from the local disk.
             // Get the current user first.
@@ -722,7 +762,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                         InputStream inputStream;
                         try{ // Read from the previously saved output Baclava file
                             File workflowResultsBaclavaFile  = new File (jobDir, Constants.OUTPUTS_BACLAVA_FILE);
-                            System.out.println("Workflow Results Portlet: Fetching results for from local disk " + workflowResultsBaclavaFile.getAbsolutePath());
+                            System.out.println("Workflow Results Portlet: Fetching results from local disk " + workflowResultsBaclavaFile.getAbsolutePath());
                             inputStream = new FileInputStream(workflowResultsBaclavaFile);
                         }
                         catch(Exception ex){

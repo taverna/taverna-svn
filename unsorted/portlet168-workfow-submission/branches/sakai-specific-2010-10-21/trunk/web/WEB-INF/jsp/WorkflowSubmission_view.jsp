@@ -25,17 +25,17 @@ ArrayList<String> workflowFileNamesList = (ArrayList<String>) renderRequest.getA
 
 <%-- Print out a message to the user, if any --%>
 <%
-    if (renderRequest.getAttribute(Constants.ERROR_MESSAGE) != null){%>
-        <p style="color:red;"><b><%=renderRequest.getAttribute(Constants.ERROR_MESSAGE)%></b></p>
-        <br />
-        <hr />
-        <br />
+    if (renderRequest.getParameter(Constants.ERROR_MESSAGE) != null){%>
+        <p style="color:red;"><b><%=renderRequest.getParameter(Constants.ERROR_MESSAGE)%></b></p>
+        <br>
+        <hr>
+        <br>
     <%}
-    if (renderRequest.getAttribute(Constants.INFO_MESSAGE) != null){%>
-        <p><b><%=renderRequest.getAttribute(Constants.INFO_MESSAGE)%></b></p>
-        <br />
-        <hr />
-        <br />
+    if (renderRequest.getParameter(Constants.INFO_MESSAGE) != null){%>
+        <p><b><%=renderRequest.getParameter(Constants.INFO_MESSAGE)%></b></p>
+        <br>
+        <hr>
+        <br>
     <%}
 %>
 
@@ -50,7 +50,7 @@ ArrayList<String> workflowFileNamesList = (ArrayList<String>) renderRequest.getA
             <%
             for (int i = 0; i < workflowFileNamesList.size(); i++ ) {
                 // If this workflow was selected then show it as selected in the list
-                if (workflowFileNamesList.get(i).equals(renderRequest.getParameter(Constants.SELECTED_WORKFLOW))){
+                if (workflowFileNamesList.get(i).equals(renderRequest.getParameter(renderResponse.getNamespace() + Constants.SELECTED_WORKFLOW))){
             %>  
                     <option selected="selected" value="<%=workflowFileNamesList.get(i)%>"><%=workflowFileNamesList.get(i)%></option>
             <%
