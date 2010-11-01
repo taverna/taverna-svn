@@ -268,7 +268,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		loadRScriptButton.setToolTipText("Load an R script from a file");
 		loadRScriptButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String newScript = FileTools.readStringFromFile(RshellActivityConfigView.this);
+			    String newScript = FileTools.readStringFromFile(RshellActivityConfigView.this, "Load R script", ".r");
 				if (newScript != null) {
 					scriptTextArea.setText(newScript);
 				}
