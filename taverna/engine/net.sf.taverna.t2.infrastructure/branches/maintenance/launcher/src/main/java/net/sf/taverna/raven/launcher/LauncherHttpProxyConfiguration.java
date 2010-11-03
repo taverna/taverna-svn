@@ -211,7 +211,7 @@ public class LauncherHttpProxyConfiguration {
 
 	/**
 	 * Change the specified System property to the given value. If the value is
-	 * null then the property is cleared.ì
+	 * null then the property is cleared.
 	 * 
 	 * @param key
 	 * @param value
