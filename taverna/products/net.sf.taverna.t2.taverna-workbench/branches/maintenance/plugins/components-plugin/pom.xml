@@ -152,6 +152,11 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-exts</groupId>
+			<artifactId>perspective-biocatalogue</artifactId>
+			<version>${t2.ui.exts.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-exts</groupId>
 			<artifactId>renderers-exts</artifactId>
 			<version>${t2.ui.exts.version}</version>
 		</dependency>
@@ -181,12 +186,12 @@
 		<dependency>
 			<groupId>jaxen</groupId>
 			<artifactId>jaxen</artifactId>
-			<version>1.0-FCS</version>
+			<version>${jaxen.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>
-			<version>1.6</version>
+			<version>${dom4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>xerces</groupId>
@@ -196,7 +201,7 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.12</version>
+			<version>${log4j.version}</version>
 		</dependency>
 
 	</dependencies>
