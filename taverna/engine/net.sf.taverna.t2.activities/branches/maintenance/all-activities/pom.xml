@@ -42,6 +42,11 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
+			<artifactId>rest-activity</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>rshell-activity</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -63,6 +68,11 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>wsdl-activity</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.activities</groupId>
+			<artifactId>xpath-activity</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
