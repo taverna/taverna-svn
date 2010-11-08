@@ -9,9 +9,6 @@
 	<groupId>net.sf.taverna.t2.integration-testing</groupId>
 	<artifactId>raven-integration-testing</artifactId>
 	<name>Raven integration testing</name>
-	<properties>
-		<derby.version>10.4.1.3</derby.version>
-	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
