@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<description>net.sf.taverna.t2.taverna-workbench</description>
 	<parent>
@@ -23,8 +24,7 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	<repositories>		
-
+	<repositories>
 		<repository>
 			<releases />
 			<snapshots>
@@ -35,6 +35,15 @@
 			<url>http://www.mygrid.org.uk/maven/repository</url>
 		</repository>
 		<repository>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots />
+			<id>mygrid-snapshot-repository</id>
+			<name>myGrid Snapshot Repository</name>
+			<url>http://www.mygrid.org.uk/maven/snapshot-repository</url>
+		</repository>
+		<repository>
 			<id>eviware</id>
 			<name>Eviware repository</name>
 			<url>http://www.eviware.com/repository/maven2</url>
@@ -42,7 +51,7 @@
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-		</repository>		
+		</repository>
 		<repository>
 			<id>biomoby</id>
 			<url>http://biomoby.org/m2repo</url>
@@ -75,17 +84,12 @@
 			<name>tupelo2</name>
 			<url>http://dlt-dev.ncsa.uiuc.edu/m2</url>
 		</repository>
-<!--
-		<repository>
-			<releases />
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<id>opm-releases</id>
-			<name>opm</name>
+		<!--
+			<repository> <releases /> <snapshots> <enabled>false</enabled>
+			</snapshots> <id>opm-releases</id> <name>opm</name>
 			<url>http://openprovenance.org/java/maven-releases</url>
-		</repository>
--->
+			</repository>
+		-->
 	</repositories>
 	<scm>
 		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/products/net.sf.taverna.t2.taverna-workbench/trunk/</connection>
