@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<description>net.sf.taverna.t2.taverna-workbench</description>
 	<parent>
@@ -26,7 +25,7 @@
 	</dependencyManagement>
 	<repositories>
 		<repository>
-			<releases />
+			<releases/>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -38,7 +37,7 @@
 			<releases>
 				<enabled>false</enabled>
 			</releases>
-			<snapshots />
+			<snapshots/>
 			<id>mygrid-snapshot-repository</id>
 			<name>myGrid Snapshot Repository</name>
 			<url>http://www.mygrid.org.uk/maven/snapshot-repository</url>
@@ -47,7 +46,7 @@
 			<id>eviware</id>
 			<name>Eviware repository</name>
 			<url>http://www.eviware.com/repository/maven2</url>
-			<releases />
+			<releases/>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -55,7 +54,7 @@
 		<repository>
 			<id>biomoby</id>
 			<url>http://biomoby.org/m2repo</url>
-			<releases />
+			<releases/>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -63,7 +62,7 @@
 		<repository>
 			<id>java.net</id>
 			<url>http://download.java.net/maven/2</url>
-			<releases />
+			<releases/>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -71,7 +70,7 @@
 		<repository>
 			<id>jboss.org</id>
 			<url>http://repository.jboss.org/maven2</url>
-			<releases />
+			<releases/>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -101,5 +100,6 @@
 		<module>workbench-common</module>
 		<module>workbench-dev</module>
 		<module>workbench-distro</module>
-	</modules>
+    	<module>taverna-javadocs</module>
+  </modules>
 </project>
