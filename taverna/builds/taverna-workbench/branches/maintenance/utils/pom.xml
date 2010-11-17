@@ -20,6 +20,5 @@
 		<module>net.sf.taverna.wsdl-generic</module>
 		<module>org.biomart.martservice</module>
 		<module>org.fife.ui.hexeditor</module>
-		<module>org.jdesktop.swingworker</module>
 	</modules>
 </project>
