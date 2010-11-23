@@ -166,22 +166,17 @@
 		<dependency>
 			<groupId>xalan</groupId>
 			<artifactId>xalan</artifactId>
-			<version>2.6.0</version>
-		</dependency>
-		<dependency>
-			<groupId>xalan</groupId>
-			<artifactId>xalan</artifactId>
-			<version>2.7.0</version>
+			<version>${xalan.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>saxpath</groupId>
 			<artifactId>saxpath</artifactId>
-			<version>1.0-FCS</version>
+			<version>${saxpath.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>stax</groupId>
 			<artifactId>stax-api</artifactId>
-			<version>1.0</version>
+			<version>${stax.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>jaxen</groupId>
@@ -196,7 +191,7 @@
 		<dependency>
 			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>
-			<version>2.7.1</version>
+			<version>${xerces.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
