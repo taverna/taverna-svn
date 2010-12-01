@@ -151,6 +151,8 @@ public class RshellActivity extends
 
 						try {
 
+					String script = configurationBean.getScript();
+
 					// pass input form input ports to RServe
 					for (ActivityInputPort inputPort : getInputPorts()) {
 						String inputName = inputPort.getName();
@@ -183,12 +185,15 @@ public class RshellActivity extends
 							}
 							if (value.isLogical()) {
 								if (((REXPLogical)value).length() == 1) {
-									connection.voidEval(inputName + " <- " + value.asString() + ";");
+								    script = inputName + " <- " + value.asString() + ";\n" + script;
 								} else {
 									String[] strings = value.asStrings();
 									String completeString = "c(" + StringUtils.join(strings, ",") + ")";
-									connection.voidEval(inputName + " <- " + completeString + ";");
+									script = inputName + " <- " + completeString + ";\n" + script;
 								}
+							} else if (symanticType == SemanticTypes.R_EXP) {
+							    connection.assign(inputName, value);
+							    script = inputName + " <- " + "eval(parse(text=" + inputName + "));\n" + script;
 							} else {
 								connection.assign(inputName, value);
 							}
@@ -201,11 +206,12 @@ public class RshellActivity extends
 						if (outputSymanticTypes.get(outputPort.getName()).isFile) {
 							connection.assign(outputPort.getName(),
 									generateFilename(outputPort));
+						} else if (outputSymanticTypes.get(outputPort.getName()) == SemanticTypes.R_EXP) {
+						    script = script + outputPort.getName() + " <- deparse(" + outputPort.getName() + ");\n";
 						}
 					}
 
 					// execute script
-					String script = configurationBean.getScript();
 					if (script.length() != 0) {
 						connection.assign(".tmp.", script);
 						REXP r = connection.parseAndEval("try(eval(parse(text=.tmp.)),silent=TRUE)");
@@ -256,14 +262,14 @@ public class RshellActivity extends
 
 							switch (symanticType) {
 							case PNG_FILE: {
-								byte[] data = (byte[]) readRServeFile(
+								Object data = readRServeFile(
 										outputPort, connection);
 								outputData.put(portName, referenceService
 										.register(data, 0, true, callback.getContext()));
 								break;
 							}
 							case TEXT_FILE: {
-								String data = (String) readRServeFile(
+								Object data = readRServeFile(
 										outputPort, connection);
 								outputData.put(portName, referenceService
 										.register(data, 0, true, callback.getContext()));
@@ -430,9 +436,6 @@ public class RshellActivity extends
 	private REXP javaToRExp(Object value, SemanticTypes symanticType)
 			throws ActivityConfigurationException {
 		switch (symanticType) {
-		case REXP:
-			return (REXP) value;
-
 		case BOOL:
 			if (value instanceof String) {
 				return stringToREXPLogical((String) value);
@@ -471,7 +474,8 @@ public class RshellActivity extends
 			}
 			return new REXPInteger(ints);
 		}
-		case STRING_LIST: {
+		case STRING_LIST:
+		case R_EXP: {
 			List values = (List) value;
 			String[] strings = new String[values.size()];
 			for (int i = 0; i < values.size(); i++) {
@@ -570,9 +574,6 @@ public class RshellActivity extends
 			throws ActivityConfigurationException, REXPMismatchException {
 
 		switch (symanticType) {
-		case REXP:
-			return rExp;
-
 		case BOOL:
 			if (rExp.isNull()) {
 				return stringNA;
@@ -748,6 +749,7 @@ public class RshellActivity extends
 			break;
 
 		case STRING_LIST:
+		case R_EXP:
 			ArrayList<String> stringResult = new ArrayList<String>();
 			if (rExp.isNull()) {
 				return stringResult;

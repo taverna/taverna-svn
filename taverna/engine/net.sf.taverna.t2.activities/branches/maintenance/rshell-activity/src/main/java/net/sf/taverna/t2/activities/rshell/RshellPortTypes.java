@@ -70,14 +70,14 @@ public abstract class RshellPortTypes {
         BOOL("Logical", PLAIN_TEXT_MIME_TYPE, String.class, 0),
         DOUBLE("Numeric", PLAIN_TEXT_MIME_TYPE, Double.class, 0),
         INTEGER("Integer", PLAIN_TEXT_MIME_TYPE, Integer.class, 0),
-        REXP("R-expression", JAVA_SERIALIZED_OBJECT_MIME_TYPE, Object.class, 0),
+        R_EXP("R-expression", PLAIN_TEXT_LIST_MIME_TYPE, String.class, 1),
         STRING("String", PLAIN_TEXT_MIME_TYPE, String.class, 0),
         BOOL_LIST("Logical vector", PLAIN_TEXT_LIST_MIME_TYPE, String.class, 1),
         DOUBLE_LIST("Numeric vector", PLAIN_TEXT_LIST_MIME_TYPE, Double.class, 1),
         INTEGER_LIST("Integer vector", PLAIN_TEXT_LIST_MIME_TYPE, Integer.class, 1),
         STRING_LIST("String vector", PLAIN_TEXT_LIST_MIME_TYPE, String.class, 1),
         PNG_FILE("PNG-image", PNG_IMAGE_MIME_TYPE, byte[].class, 0, true),
-        TEXT_FILE("Text-file", TEXT_FILE_MIME_TYPE, String.class, 0, true);
+        TEXT_FILE("Text-file", TEXT_FILE_MIME_TYPE, String.class, 0, true)
         // PDF is currently not supported by Taverna
         // PDF("PDF-file", PDF_APPLICATION_MIME_TYPE, true)
         ;
@@ -125,10 +125,8 @@ public abstract class RshellPortTypes {
 		inputSymanticTypes = new ArrayList<SemanticTypes>(Arrays.asList(SemanticTypes.values()));		
 //		inputSymanticTypes.remove(SemanticTypes.PDF_FILE);
 		inputSymanticTypes.remove(SemanticTypes.PNG_FILE);
-		inputSymanticTypes.remove(SemanticTypes.REXP);
 		
 		outputSymanticTypes = new ArrayList<SemanticTypes>(Arrays.asList(SemanticTypes.values()));
-		outputSymanticTypes.remove(SemanticTypes.REXP);
    }
 
 	/**
