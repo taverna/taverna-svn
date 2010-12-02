@@ -5,14 +5,14 @@ import javax.swing.ImageIcon;
 
 import net.sf.taverna.t2.workbench.activityicons.ActivityIconSPI;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.ExampleActivity;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerActivity;
 
-public class ExampleServiceIcon implements ActivityIconSPI {
+public class RapidMinerServiceIcon implements ActivityIconSPI {
 
 	private static Icon icon;
 
 	public int canProvideIconScore(Activity<?> activity) {
-		if (activity instanceof ExampleActivity) {
+		if (activity instanceof RapidMinerActivity) {
 			return DEFAULT_ICON;
 		}
 		return NO_ICON;
@@ -24,7 +24,7 @@ public class ExampleServiceIcon implements ActivityIconSPI {
 	
 	public static Icon getIcon() {
 		if (icon == null) {
-			icon = new ImageIcon(ExampleServiceIcon.class.getResource("/exampleIcon.png"));
+			icon = new ImageIcon(RapidMinerServiceIcon.class.getResource("/exampleIcon.png"));
 		}
 		return icon;
 	}

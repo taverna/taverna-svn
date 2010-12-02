@@ -9,16 +9,16 @@ import javax.swing.JPanel;
 
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.ExampleActivity;
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.ExampleActivityConfigurationBean;
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.config.ExampleConfigureAction;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerActivity;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerActivityConfigurationBean;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.config.RapidMinerConfigureAction;
 
 @SuppressWarnings("serial")
-public class ExampleContextualView extends ContextualView {
-	private final ExampleActivity activity;
+public class RapidMinerContextualView extends ContextualView {
+	private final RapidMinerActivity activity;
 	private JLabel description = new JLabel("ads");
 
-	public ExampleContextualView(ExampleActivity activity) {
+	public RapidMinerContextualView(RapidMinerActivity activity) {
 		this.activity = activity;
 		initView();
 	}
@@ -33,7 +33,7 @@ public class ExampleContextualView extends ContextualView {
 
 	@Override
 	public String getViewTitle() {
-		ExampleActivityConfigurationBean configuration = activity
+		RapidMinerActivityConfigurationBean configuration = activity
 				.getConfiguration();
 		return "Example service " + configuration.getOperatorName();
 	}
@@ -43,7 +43,7 @@ public class ExampleContextualView extends ContextualView {
 	 */
 	@Override
 	public void refreshView() {
-		ExampleActivityConfigurationBean configuration = activity
+		RapidMinerActivityConfigurationBean configuration = activity
 				.getConfiguration();
 		description.setText("Example service "
 				+ " - " + configuration.getOperatorName());
@@ -62,7 +62,7 @@ public class ExampleContextualView extends ContextualView {
 	
 	@Override
 	public Action getConfigureAction(final Frame owner) {
-		return new ExampleConfigureAction(activity, owner);
+		return new RapidMinerConfigureAction(activity, owner);
 	}
 
 }

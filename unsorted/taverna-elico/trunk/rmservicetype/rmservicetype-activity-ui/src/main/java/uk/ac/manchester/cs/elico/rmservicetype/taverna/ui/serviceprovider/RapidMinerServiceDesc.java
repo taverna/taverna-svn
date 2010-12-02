@@ -11,18 +11,18 @@ import net.sf.taverna.t2.lang.beans.PropertyAnnotation;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescription;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.ExampleActivity;
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.ExampleActivityConfigurationBean;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerActivity;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerActivityConfigurationBean;
 
-public class ExampleServiceDesc extends ServiceDescription<ExampleActivityConfigurationBean> {
+public class RapidMinerServiceDesc extends ServiceDescription<RapidMinerActivityConfigurationBean> {
 
 	/**
 	 * The subclass of Activity which should be instantiated when adding a service
 	 * for this description 
 	 */
 	@Override
-	public Class<? extends Activity<ExampleActivityConfigurationBean>> getActivityClass() {
-		return ExampleActivity.class;
+	public Class<? extends Activity<RapidMinerActivityConfigurationBean>> getActivityClass() {
+		return RapidMinerActivity.class;
 	}
 
 	/**
@@ -32,8 +32,8 @@ public class ExampleServiceDesc extends ServiceDescription<ExampleActivityConfig
 	 * 
 	 */
 	@Override
-	public ExampleActivityConfigurationBean getActivityConfiguration() {
-		ExampleActivityConfigurationBean bean = new ExampleActivityConfigurationBean();
+	public RapidMinerActivityConfigurationBean getActivityConfiguration() {
+		RapidMinerActivityConfigurationBean bean = new RapidMinerActivityConfigurationBean();
 		bean.setOperatorName(operatorName);
 		bean.setCallName(callName);
 		bean.setIsExplicit(true); // by default
@@ -45,7 +45,7 @@ public class ExampleServiceDesc extends ServiceDescription<ExampleActivityConfig
 	 */
 	@Override
 	public Icon getIcon() {
-		return ExampleServiceIcon.getIcon();
+		return RapidMinerServiceIcon.getIcon();
 	}
 
 	/**

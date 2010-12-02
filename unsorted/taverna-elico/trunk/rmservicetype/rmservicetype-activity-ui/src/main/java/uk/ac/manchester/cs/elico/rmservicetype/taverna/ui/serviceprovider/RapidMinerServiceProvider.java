@@ -37,7 +37,7 @@ import net.sf.taverna.t2.servicedescriptions.ServiceDescriptionProvider;
 import net.sf.taverna.wsdl.parser.WSDLParser;
 import net.sf.taverna.wsdl.soap.WSDLSOAPInvoker;
 
-public class ExampleServiceProvider implements ServiceDescriptionProvider {
+public class RapidMinerServiceProvider implements ServiceDescriptionProvider {
 	
 	private static final URI providerId = URI
 		.create("http://example.com/2010/service-provider/example-activity-ui");
@@ -69,7 +69,7 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 		
 		for (int i = 1; i < operatorCount; i++) {
 			
-			ExampleServiceDesc service = new ExampleServiceDesc();
+			RapidMinerServiceDesc service = new RapidMinerServiceDesc();
 			// Populate the service description bean
 			service.setOperatorName(displayHash.get(keys[i].toString()));
 			service.setExampleUri(URI.create("http://rapid-i.dyndns.org:8080/e-LICO/ExecutorService"));
@@ -559,7 +559,7 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 	 * Icon for service provider
 	 */
 	public Icon getIcon() {
-		return ExampleServiceIcon.getIcon();
+		return RapidMinerServiceIcon.getIcon();
 	}
 
 	/**
