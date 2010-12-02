@@ -1,5 +1,7 @@
 package uk.ac.manchester.cs.elico.rmservicetype.taverna;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
@@ -18,6 +20,10 @@ import javax.xml.rpc.ServiceException;
 import org.apache.axis.MessageContext;
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
+import org.apache.xml.serialize.OutputFormat;
+import org.apache.xml.serialize.XMLSerializer;
+import org.jdom.output.XMLOutputter;
+import org.w3c.dom.Attr;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -26,6 +32,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import net.sf.taverna.t2.activities.wsdl.T2WSDLSOAPInvoker;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivity;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
 import net.sf.taverna.t2.activities.wsdl.security.SecurityProfiles;
@@ -37,6 +44,8 @@ import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.security.credentialmanager.CMException;
 import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
 import net.sf.taverna.t2.security.credentialmanager.UsernamePassword;
+import net.sf.taverna.t2.workflowmodel.InputPort;
+import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivity;
@@ -57,10 +66,12 @@ public class ExampleActivity extends
 	private static final String IN_FIRST_INPUT = "firstInput";
 	private static final String IN_EXTRA_DATA = "extraData";
 	private static final String OUT_MORE_OUTPUTS = "moreOutputs";
-	private static final String OUT_SIMPLE_OUTPUT = "Output";
+	private static final String OUT_SIMPLE_OUTPUT = "output";
 	private static final String OUT_REPORT = "report";
 	
     static String securityProfile = SecurityProfiles.HTTP_BASIC_AUTHN;
+	
+    NodeList myTempList = null;
 
 	
 	private ExampleActivityConfigurationBean configBean;
@@ -70,33 +81,151 @@ public class ExampleActivity extends
 			throws ActivityConfigurationException {
 
 		// Any pre-config sanity checks
-		if (configBean.getExampleString().equals("invalidExample")) {
+		if (configBean.getOperatorName().equals("invalidExample")) {
 			throw new ActivityConfigurationException(
 					"Example string can't be 'invalidExample'");
 		}
 		// Store for getConfiguration(), but you could also make
 		// getConfiguration() return a new bean from other sources
 		this.configBean = configBean;
-		
+		System.out.println(" THE CALL NAME IS " + this.configBean.getCallName());
+	
 		// OPTIONAL: 
 		// Do any server-side lookups and configuration, like resolving WSDLs
 
 		// myClient = new MyClient(configBean.getExampleUri());
 		// this.service = myClient.getService(configBean.getExampleString());
-		portListing = getParametersForOperation(configBean.getExampleString());
+		
+		portListing = getParametersForOperation(configBean.getCallName());
+		List<RapidMinerParameterDescription> descList = getParameterDescriptions(myTempList);
+
+		Iterator myIterator = descList.iterator();
+		
+		/*
+		while (myIterator.hasNext()) {
+			
+			RapidMinerParameterDescription desc = (RapidMinerParameterDescription)myIterator.next();
+			System.out.println("\n[VERIFY] name " + desc.getParameterName());
+			System.out.println("[VERIFY] description " + desc.getDescription());
+			System.out.println("[VERIFY] expert " + desc.getExpert());
+			System.out.println("[VERIFY] mandatory " + desc.getMandatory());
+			System.out.println("[VERIFY] max " + desc.getMax());
+			System.out.println("[VERIFY] min " + desc.getMin());
+			System.out.println("[VERIFY] defaultValue " + desc.getDefaultValue());
+			System.out.println("[VERIFY] type " + desc.getType());
+			System.out.println("[VERIFY] choices " + desc.getChoices().toString());
+			
+			
+		}
+		*/
+		
+		configBean.setParameterDescriptions(descList);
+		
+		/*	TESTER SCRIPT
+		 * 
+		RapidMinerParameterDescription desc1 = new RapidMinerParameterDescription();
+		RapidMinerParameterDescription desc2 = new RapidMinerParameterDescription();
+		desc1.setParameterName("a parameter Name 1");
+		desc2.setParameterName("a parameter Name 2");
+		List<RapidMinerParameterDescription> descList = new ArrayList<RapidMinerParameterDescription>();
+		descList.add(desc1);
+		descList.add(desc2);
+		configBean.setParameterDescriptions(descList);
+		
+		*/
+		
+		// tester
 		
 		// REQUIRED: (Re)create input/output ports depending on configuration
 		configurePorts();
 	}
 
+	public List<RapidMinerParameterDescription> getParameterDescriptions(NodeList myList) {
+		
+		System.out.println(" number of RETURNS " + myList.getLength());
+		List<RapidMinerParameterDescription> listOfDescriptions = new ArrayList<RapidMinerParameterDescription>();
+		
+		for (int i = 0; i < myList.getLength(); i++) {			// for each "return" node	 (parameter)
+			
+			NodeList returnList = myList.item(i).getChildNodes();		// get "return"s children
+			RapidMinerParameterDescription aDescription = new RapidMinerParameterDescription();
+			List<String> choices = new ArrayList<String>();
+			
+			for (int j = 0; j < returnList.getLength(); j++) {	// for each of "returns" children check..
+				
+				if (returnList.item(j).getNodeName().equals("name")) {
+					//System.out.println(" names " +getCharacterDataFromElement((Element)returnList.item(j)));
+					aDescription.setParameterName(getCharacterDataFromElement((Element)returnList.item(j)));
+				}
+				
+				if (returnList.item(j).getNodeName().equals("description")) {
+					//System.out.println(" descriptions " +getCharacterDataFromElement((Element)returnList.item(j)));
+					aDescription.setDescription(getCharacterDataFromElement((Element)returnList.item(j)));
+
+				}
+				
+				if (returnList.item(j).getNodeName().equals("expert")) {
+					//System.out.println(" expert " +getCharacterDataFromElement((Element)returnList.item(j)));
+					aDescription.setExpert(getCharacterDataFromElement((Element)returnList.item(j)));
+				}
+				
+				if (returnList.item(j).getNodeName().equals("mandatory")) {
+					//System.out.println(" mandatory " +getCharacterDataFromElement((Element)returnList.item(j)));
+					aDescription.setMandatory(getCharacterDataFromElement((Element)returnList.item(j)));
+
+				}
+				
+				if (returnList.item(j).getNodeName().equals("max")) {
+					//System.out.println(" max " +getCharacterDataFromElement((Element)returnList.item(j)));
+					aDescription.setMax(getCharacterDataFromElement((Element)returnList.item(j)));
+
+				}
+				
+				if (returnList.item(j).getNodeName().equals("min")) {
+					//System.out.println(" min " +getCharacterDataFromElement((Element)returnList.item(j)));
+					aDescription.setMin(getCharacterDataFromElement((Element)returnList.item(j)));
+
+				}
+				
+				if (returnList.item(j).getNodeName().equals("defaultValue")) {
+					//System.out.println(" defaultValue " +getCharacterDataFromElement((Element)returnList.item(j)));
+					aDescription.setDefaultValue(getCharacterDataFromElement((Element)returnList.item(j)));
+				}
+				
+				if (returnList.item(j).getNodeName().equals("type")) {
+					//System.out.println(" type " +getCharacterDataFromElement((Element)returnList.item(j)));
+					aDescription.setType(getCharacterDataFromElement((Element)returnList.item(j)));
+
+				}
+				
+				if (returnList.item(j).getNodeName().equals("choices")) {
+					//System.out.println(" choices " +getCharacterDataFromElement((Element)returnList.item(j)));
+					choices.add(getCharacterDataFromElement((Element)returnList.item(j)));
+				}
+		
+			}
+			aDescription.setChoices(choices);
+			listOfDescriptions.add(aDescription);
+		}
+		return listOfDescriptions;
+		
+	
+	}
+	
 	protected void configurePorts() {
 		// In case we are being reconfigured - remove existing ports first
 		// to avoid duplicates
 		removeInputs();
 		removeOutputs();
+		/*[important]
+		try {
+			createXMLDocument();
 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		// FIXME: Replace with your input and output port definitions
-		
+				*/
 		Iterator inputIterator = portListing.iterator();
 		
 		while (inputIterator.hasNext()) {
@@ -105,12 +234,12 @@ public class ExampleActivity extends
 			addInput((String)inputIterator.next(), 0, true, null, String.class);
 			
 		}
-		
+
 		// Hard coded input port, expecting a single String
 		//addInput(IN_FIRST_INPUT, 0, true, null, String.class);
 
 		// Optional ports depending on configuration
-		if (configBean.getExampleString().equals("specialCase")) {
+		if (configBean.getOperatorName().equals("specialCase")) {
 			// depth 1, ie. list of binary byte[] arrays
 			addInput(IN_EXTRA_DATA, 1, true, null, byte[].class);
 			addOutput(OUT_REPORT, 0);
@@ -132,16 +261,197 @@ public class ExampleActivity extends
 		callback.requestRun(new Runnable() {
 			
 			public void run() {
+	
+				// tester
+				HashMap<String, String> params = new HashMap<String, String>();
+				params.put("attribute_type_filter", "single");
+				params.put("attribute", "a1");
+				String inputDoc;
+				
+				inputDoc = createInputDocument(null, "discretize_by_bins", params, "/groups/elico/templates/data/Iris/", "/home/jupp/fromPlugin/");
+				
+				Map<Object, String> inputMap = new HashMap<Object, String>();
+				inputMap.put("executeBasicOperatorExplicitOutput", inputDoc);
+				// end of test
+				
 				InvocationContext context = callback
 						.getContext();
 				ReferenceService referenceService = context
 						.getReferenceService();
+				
+				System.out.println(" +++ ONE +++");
+
 				// Resolve inputs 				
-				String firstInput = (String) referenceService.renderIdentifier(inputs.get(IN_FIRST_INPUT), 
-						String.class, context);
+				String oneParam = createXMLDocument("attribute_type_filter","single");
+				String twoParam = createXMLDocument("attribute","a1");
+
+				List<String> operatorParams = new ArrayList<String>();
+				operatorParams.add(oneParam);
+				operatorParams.add(twoParam);
+				
+				System.out.println(" +++ TWO +++");
+			
+				// ++
+                Map<String, Object> invokerInputMap = new HashMap<String, Object>();
+
+                T2Reference operatorParameters = referenceService.register(operatorParams, 1, true, context);
+				System.out.println(" +++ THREE +++");
+
+                //T2Reference inputLocation  = referenceService.referenceFromString("/groups/elico/templates/data/Iris/");
+                T2Reference inputLocation  = referenceService.register("/groups/elico/templates/data/Iris/", 0, true, context);
+				
+                //T2Reference operatorName = referenceService.referenceFromString("discretize_by_bins");
+                T2Reference operatorName = referenceService.register("discretize_by_bins", 0, true, context);
+
+                //T2Reference outputLocations = referenceService.referenceFromString("/home/jupp/fromPlugin/");
+                T2Reference outputLocations = referenceService.register("/home/jupp/fromPlugin/", 0, true, context);
+                
+				//String firstInput = (String) referenceService.renderIdentifier(inputs.get(IN_FIRST_INPUT), 
+				//		String.class, context);
+
+                
+				invokerInputMap.put("inputLocations", (Object)inputLocation);
+				invokerInputMap.put("operatorName", (Object)operatorName);
+				invokerInputMap.put("operatorParameters", (Object)operatorParameters);
+				invokerInputMap.put("outputLocations", (Object)outputLocations);
+			
+
+				System.out.println(" +++ FOUR +++");
+
+				WSDLActivity wrapper = new WSDLActivity();
+				WSDLActivityConfigurationBean myBean = new WSDLActivityConfigurationBean();
+				myBean.setWsdl("http://rapid-i.dyndns.org:8080/e-LICO/ExecutorService?wsdl");
+				myBean.setOperation("executeBasicOperatorExplicitOutput");
+				//myBean.setSecurityProfile(securityProfile);
+				
+				try {
+					wrapper.configure(myBean);
+				} catch (ActivityConfigurationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				WSDLParser parser = null;
+				
+				try {
+					 parser = new WSDLParser(myBean.getWsdl()) ;
+				} catch (ParserConfigurationException e1) {
+					e1.printStackTrace();
+				} catch (WSDLException e1) {
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				} catch (SAXException e1) {
+					e1.printStackTrace();
+				}
+				
+				List<String> outputNames = new ArrayList<String>();
+				List<String> inputNames = new ArrayList<String>();
+
+				for (OutputPort port: wrapper.getOutputPorts()) {
+					outputNames.add(port.getName());
+				}
+				
+				for (InputPort port: wrapper.getInputPorts()) {
+					inputNames.add(port.getName());
+				}
+				System.out.println(" INPUT NAMES ARE " + inputNames.toString() + " " + myBean.getOperation());
+
+				System.out.println(" OUTPUT NAMES ARE " + outputNames.toString() + " " + myBean.getOperation());
+				T2WSDLSOAPInvoker invoker = new T2WSDLSOAPInvoker(parser, myBean.getOperation(), outputNames);
+				
+				// call
+				Service service = new Service();
+				Call call = null;
+				
+				try {
+					call = (Call)service.createCall();
+				} catch (ServiceException e3) {
+					e3.printStackTrace();
+				}
+				
+				System.out.println("^^^Point 4");
+				
+				// Set Username and Password (credential manager)
+				UsernamePassword usernamePassword = null;
+				
+				try {
+					usernamePassword = getUsernameAndPasswordForService(myBean, true);
+				} catch (CMException e2) {
+					e2.printStackTrace();
+				}
+				
+				System.out.println("^^^Point 5");
+				
+
+				MessageContext context1 = call.getMessageContext();
+				context1.setUsername(usernamePassword.getUsername());
+				context1.setPassword(usernamePassword.getPasswordAsString());
+				usernamePassword.resetPassword();
+				
+				call.setTargetEndpointAddress("http://rapid-i.dyndns.org:8080/e-LICO/ExecutorService?wsdl");
+				call.setOperationName("executeBasicOperatorExplicitOutput");
+				
+				// end of call
+				System.out.println(" INPUT MAP : " + invokerInputMap.toString());
+				try {
+					Map<String, Object> invokerOutputMap = invoker.invoke(inputMap, call);
+					
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}			
+
+				/* +++++
+
+				
+				WSDLActivity wrapper = new WSDLActivity();
+				
+				System.out.println(" +++ FIVE +++");
+
+				WSDLActivityConfigurationBean bean = new WSDLActivityConfigurationBean();
+				System.out.println(" +++ SIX +++");
+
+				bean.setOperation("executeBasicOperatorExplicitOutput_input");
+				System.out.println(" +++ SEVEN +++");
+
+				bean.setWsdl("http://rapid-i.dyndns.org:8080/e-LICO/ExecutorService");
+				System.out.println(" +++ EIGHT +++");
+
+				bean.setSecurityProfile(securityProfile);
+				System.out.println(" +++ NINE +++");
+				
+				List<String> outputNames = new ArrayList<String>();
+				
+				System.out.println(" +++ TEN +++");
+				
+				for (InputPort port: wrapper.getInputPorts()) {
+					
+					System.out.println(" INPUT PORTS ARE " + port.getName());
+					
+				}
+				
+							
+				for (OutputPort port: wrapper.getOutputPorts()) {
+					outputNames.add(port.getName());
+				}
+				System.out.println(" output names " + outputNames.toString());
+				System.out.println(" +++ ELEVEN +++");
+				
+				
+				
+				wrapper.executeAsynch(invokerInputMap, callback);
+		
+				System.out.println(" +++ TWELVE +++");
+
 				
 				// Support our configuration-dependendent input
 				boolean optionalPorts = configBean.getExampleString().equals("specialCase"); 
+				
+				System.out.println(" +++ THIRTEEN +++");
+
+				
+				// test 
 				
 				List<byte[]> special = null;
 				// We'll also allow IN_EXTRA_DATA to be optionally not provided
@@ -151,29 +461,17 @@ public class ExampleActivity extends
 							inputs.get(IN_EXTRA_DATA), byte[].class, context);
 				}
 				
-				WSDLActivity wrapper = new WSDLActivity();
-				WSDLActivityConfigurationBean bean = new WSDLActivityConfigurationBean();;
-				bean.setOperation("executeBasicOperatorExplicitOutput_input");
-				bean.setWsdl("http://rpc295.cs.man.ac.uk:8081/e-LICO/ExecutorService?wsdl");
-				bean.setSecurityProfile(securityProfile);
+				Map<String, T2Reference> outputs = new HashMap<String, T2Reference>();
+				String simpleValue = "output";
+				T2Reference simpleRef = referenceService.register(simpleValue, 0, true, context);
+				outputs.put("output", simpleRef);
 				
-				try {
+				callback.receiveResult(outputs, new int[0]);
 				
-					wrapper.configure(bean);
+				System.out.println(" OUTPUT " + outputs.toString());
 				
-				} catch (ActivityConfigurationException e) {
 				
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
-				
-				//XMLInputSplitterActivity mySplitter = new XMLInputSplitterActivity();
-				//XMLSplitterConfigurationBean beansplitter = new XMLSplitterConfigurationBean();
-				//ActivityInputPortDefinitionBean activityInputBean = new ActivityInputPortDefinitionBean();
-				//activityInputBean.
-				//beansplitter.setInputPortDefinitions(portDefinitions)
-				//mySplitter.configure(config)
-				
+				/*
 				// TODO: Do the actual service invocation
 //				try {
 //					results = this.service.invoke(firstInput, special)
@@ -185,6 +483,7 @@ public class ExampleActivity extends
 //				}
 
 				// Register outputs
+				/*
 				Map<String, T2Reference> outputs = new HashMap<String, T2Reference>();
 				String simpleValue = "simple";
 				T2Reference simpleRef = referenceService.register(simpleValue, 0, true, context);
@@ -204,11 +503,12 @@ public class ExampleActivity extends
 					outputs.put(OUT_REPORT, referenceService.register(report,
 							0, true, context));
 				}
+				*/
 				
 				// return map of output data, with empty index array as this is
 				// the only and final result (this index parameter is used if
 				// pipelining output)
-				callback.receiveResult(outputs, new int[0]);
+				// IMPORTANT  callback.receiveResult(outputs, new int[0]);
 			}
 		});
 	}
@@ -218,24 +518,234 @@ public class ExampleActivity extends
 		return this.configBean;
 	}
 	
+	public String createInputDocument(String executorType, String operatorName, HashMap<String, String> operatorParameters, String inputLocations, String outputLocations) {
+		
+		// for explicit output
+		
+		// Root executeBasicOperatorExplicitOutput
+		
+		org.jdom.Element root = new org.jdom.Element("executeBasicOperatorExplicitOutput","http://elico.rapid_i.com/");
+		
+		// operatorName
+		org.jdom.Element operatorNameElement = new org.jdom.Element("operatorName");
+			
+			operatorNameElement.setText(operatorName);
+		
+			root.addContent(operatorNameElement);
+			
+		// operatorParameters
+				
+		Iterator keys = operatorParameters.keySet().iterator();
+		
+		while (keys.hasNext()) 
+		{
+			// parameters root element
+			org.jdom.Element operatorParameterElement = new org.jdom.Element("operatorParameters");
+			
+			// for this key
+			String key, value;
+			
+			key =  (String) keys.next();
+	
+			value = operatorParameters.get(key);
+			
+			// make an element
+			org.jdom.Element parameterKey = new org.jdom.Element("key", "");
+			
+				parameterKey.setText(key);
+			
+			org.jdom.Element parameterValue = new org.jdom.Element("value", "");
+				
+				parameterValue.setText(value);
+			
+			// add it to the element
+			operatorParameterElement.addContent(parameterKey);
+			operatorParameterElement.addContent(parameterValue);
+			
+			// add this to the root doc element
+			root.addContent(operatorParameterElement);
+		}
+		
+		// input location
+		
+		org.jdom.Element inputLocationElement = new org.jdom.Element("inputLocations");
+		
+			inputLocationElement.setText(inputLocations);
+			
+			root.addContent(inputLocationElement);
+			
+		// output location
+			
+		org.jdom.Element outputLocationElement = new org.jdom.Element("outputLocations");
+		
+			outputLocationElement.setText(outputLocations);
+			
+			root.addContent(outputLocationElement);
+			
+		// create the document
+		org.jdom.Document myDoc = new org.jdom.Document(root);
+		
+		// print the contents of the document
+		String finalOutput = new String();
+		try {
+			
+			System.out.println("THE XML Document OUTPUT : ");
+			new XMLOutputter().output(myDoc, System.out);
+			finalOutput = new XMLOutputter().outputString(myDoc);
+			
+		} catch (IOException e) {
+			
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+		}
+
+		return finalOutput;
+		
+	}
+	
+	public String createXMLDocument(String key, String value) {
+		org.jdom.Element childElement = new org.jdom.Element("key", "");
+		childElement.setText(key);
+		
+		org.jdom.Element childElement2 = new org.jdom.Element("value", "");
+		childElement2.setText(value);
+		
+		org.jdom.Element root = new org.jdom.Element("operatorParameter", "http://elico.rapid_i.com/");
+		root.addContent(childElement);
+		root.addContent(childElement2);
+		
+		org.jdom.Document myDoc = new org.jdom.Document(root);
+		String returnVal = new String();
+		try {
+			new XMLOutputter().output(myDoc, System.out);
+			returnVal = new XMLOutputter().outputString(myDoc);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		// this method will need to know what parameters need filling in
+		/*
+		Element e = null;
+		Node n = null;
+		Document xmlDocument = null;
+		
+		DocumentBuilderFactory dbf =
+            DocumentBuilderFactory.newInstance();
+		dbf.setNamespaceAware(true);
+		
+		try {
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			xmlDocument = db.newDocument();
+		} catch (ParserConfigurationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		*/
+		
+		//Element root =  xmlDocument.createElementNS("http://eli", "operatorParameter");
+		//root.setAttributeNS(null, qualifiedName, value)
+		//root.setAttributeNS(null, "asd", "namespacevalue");
+		/*
+		org.jdom.Element root = new org.jdom.Element("ns", "oper");
+		e = xmlDocument.createElement("key");
+		
+		
+		n = xmlDocument.createTextNode("myKey");
+		e.appendChild(n);
+		((Node) root).appendChild(e);
+		
+			
+		Element root = xmlDocument.createElement("USERS");
+		String[] id = {"PWD122","MX787","A4Q45"};
+		String[] type = {"customer","manager","employee"};
+		String[] desc = {"Tim@Home","Jack&Moud","John D'oé"};
+		for (int i=0;i<id.length;i++)
+		{
+		  // Child i.
+		  e = xmlDocument.createElementNS(null, "USER");
+		  e.setAttributeNS(null, "ID", id[i]);
+		  e.setAttributeNS(null, "TYPE", type[i]);
+		  n = xmlDocument.createTextNode(desc[i]);
+		  e.appendChild(n);
+		  root.appendChild(e);
+		}
+		
+		
+		xmlDocument.appendChild((Node) root);
+		FileOutputStream fos = null;
+		try {
+			fos = new FileOutputStream("myfile123");
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		// XERCES 1 or 2 additionnal classes.
+		OutputFormat of = new OutputFormat("XML","ISO-8859-1",true);
+		of.setIndent(1);
+		of.setIndenting(true);
+		of.setDoctype(null,"users.dtd");
+		XMLSerializer serializer = new XMLSerializer(fos,of);
+		// As a DOM Serializer
+		try {
+			serializer.asDOMSerializer();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			serializer.serialize( xmlDocument.getDocumentElement() );
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			fos.close();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		*/
+		return returnVal;
+		
+	}
+	
+	
+	public String transformOperatorName(String myString) {
+		
+		//String[] tokens = myString.split("[ ]+");
+		//String a;
+		//for (int i = 0; i < tokens.length; i++) {
+		//	tokens[i].replaceAll(regex, replacement)
+		//}
+		String updatedName = myString.toLowerCase();
+		updatedName = updatedName.replace(" ", "_");
+		System.out.println(" UPDATED NAME " + updatedName);
+		return updatedName;
+	}
+	
 	public List <String> getParametersForOperation(String operationName) {
+		
+		//operationName = transformOperatorName(operationName);
+		
 		System.out.println("^^^Starting tester");
 
 		Map<Object, String> inputMap = new HashMap<Object, String>();
-		String inputString = "<parameters xmlns=\"http://elico.rapid_i.com/\"><operatorName xmlns=\"\">" + operationName + "</operatorName></parameters>";
-		inputMap.put("parameters", inputString);
+		String inputString = "<getParameterTypes xmlns=\"http://elico.rapid_i.com/\"><operatorName xmlns=\"\">" + operationName + "</operatorName></getParameterTypes>";
+		inputMap.put("getParameterTypes", inputString);
 		
 		System.out.println("^^^Starting tester2");
 		
 		// WSDLActivityConfigurationBean
 		WSDLActivityConfigurationBean myBean = new WSDLActivityConfigurationBean();
-		myBean.setWsdl("http://rpc295.cs.man.ac.uk:8081/e-LICO/ExecutorService?wsdl");
-		myBean.setOperation("getParameterNames");
+		myBean.setWsdl("http://rapid-i.dyndns.org:8080/e-LICO/ExecutorService?wsdl");
+		myBean.setOperation("getParameterTypes");
 		
 		// Output and Parser for WSDLSOAPInvoker
 		List<String> outputNames = new ArrayList<String>();
 		outputNames.add("attachmentList");
-		outputNames.add("parameters");
+		outputNames.add("getParameterTypesResponce");
 		
 		System.out.println("^^^Point 1");
 		
@@ -253,16 +763,19 @@ public class ExampleActivity extends
 			e1.printStackTrace();
 		}
 		
-		WSDLSOAPInvoker myInvoker = new WSDLSOAPInvoker(parser, "getParameterNames", outputNames);
+		WSDLSOAPInvoker myInvoker = new WSDLSOAPInvoker(parser, "getParameterTypes", outputNames);
 		
 		System.out.println("^^^Point 2");
 
-		Service service = new Service();
-		Call call = null;
+		
 		
 		System.out.println("^^^Point 3");
 		
 		// Create Call Object
+		
+		Service service = new Service();
+		Call call = null;
+		
 		try {
 			call = (Call)service.createCall();
 		} catch (ServiceException e3) {
@@ -288,15 +801,16 @@ public class ExampleActivity extends
 		context.setPassword(usernamePassword.getPasswordAsString());
 		usernamePassword.resetPassword();
 		
+		
 		System.out.println("^^^Point 6");
 	
 		// Set wsdl endpoint address and operation name
 		
 		System.out.println("^^^Point 7");
 
-		call.setTargetEndpointAddress("http://rpc295.cs.man.ac.uk:8081/e-LICO/ExecutorService?wsdl");
-		call.setOperationName("getParameterNames");
-		
+		call.setTargetEndpointAddress("http://rapid-i.dyndns.org:8080/e-LICO/ExecutorService?wsdl");
+		call.setOperationName("getParameterTypes");
+
 		System.out.println("^^^Point 8");
 		
 		// Invoke 
@@ -324,41 +838,49 @@ public class ExampleActivity extends
 		b += 9;
 		String newOutput = myOutput.substring(a, b);
 		
-		String finalOutput = "<myroot>" + newOutput +  "</myroot>";
-		System.out.println("parsed Paraeters " + finalOutput);
+		String finalOutput = "<myroot>" + newOutput +  "</myroot>";;
 		
+		System.out.println("parsed Parameters " + finalOutput);
 		
-		// rip elements out of xml
+		// get names for parameters
+		NodeList rtnList;
+		NodeList children = null;
+		
+		try { 
 			
-		
-		List<String> portList = new ArrayList<String>();
-		try  {
-			
-			DocumentBuilderFactory dbf =
-	            DocumentBuilderFactory.newInstance();
-			dbf.setNamespaceAware(false);
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			dbf.setNamespaceAware(true);
 			DocumentBuilder db = dbf.newDocumentBuilder();
-	        InputSource is = new InputSource();
-	        is.setCharacterStream(new StringReader(finalOutput));
-		
-	        Document doc = db.parse(is);
-	        NodeList nodes = doc.getElementsByTagName("return");
-	        
-	        System.out.println(" length " + nodes.getLength());
-	        
-	        for (int i = 0; i < nodes.getLength(); i++) {
-	        	
-	        	Element element = (Element) nodes.item(i);
-	        	Element line = (Element) nodes.item(i);
-	        	//System.out.println("value: " + getCharacterDataFromElement(line));
-	        	portList.add(getCharacterDataFromElement(line));
-	        }
-		 		
+			InputSource is = new InputSource();
+			is.setCharacterStream(new StringReader(finalOutput));
+			
+			Document doc = db.parse(is);
+			
+			children = doc.getElementsByTagName("name");	//	All children nodes
+			myTempList = doc.getElementsByTagName("return");
+			
+			System.out.println(" The number of children returned by Parameter Types is :" + children.getLength());
+			
 		} catch (Exception e) {
-			e.printStackTrace();
+			
 		}
 		
-		return portList;
+		List <String> myParameters = new ArrayList<String>();
+		
+		for (int i = 0; i < children.getLength(); i++) {
+			
+			//[confirmed]System.out.println(" the parameters are " + getCharacterDataFromElement((Element)children.item(i)));
+			myParameters.add(getCharacterDataFromElement((Element)children.item(i)));
+		}
+		
+
+		return myParameters;
+	}
+	
+	public List <String> getParameterNames() {
+		
+		return null;
+		
 	}
 	
 	protected UsernamePassword getUsernameAndPasswordForService(
@@ -388,3 +910,34 @@ public class ExampleActivity extends
 	  }
 
 }
+
+// rip elements out of xml
+
+/*	METHOD TO REPLACE
+List<String> portList = new ArrayList<String>();
+try  {
+	
+	DocumentBuilderFactory dbf =
+        DocumentBuilderFactory.newInstance();
+	dbf.setNamespaceAware(false);
+	DocumentBuilder db = dbf.newDocumentBuilder();
+    InputSource is = new InputSource();
+    is.setCharacterStream(new StringReader(finalOutput));
+
+    Document doc = db.parse(is);
+    NodeList nodes = doc.getElementsByTagName("return");
+    
+    System.out.println(" length " + nodes.getLength());
+    
+    for (int i = 0; i < nodes.getLength(); i++) {
+    	
+    	Element element = (Element) nodes.item(i);
+    	Element line = (Element) nodes.item(i);
+    	//System.out.println("value: " + getCharacterDataFromElement(line));
+    	portList.add(getCharacterDataFromElement(line));
+    }
+ 		
+} catch (Exception e) {
+	e.printStackTrace();
+}
+*/ 

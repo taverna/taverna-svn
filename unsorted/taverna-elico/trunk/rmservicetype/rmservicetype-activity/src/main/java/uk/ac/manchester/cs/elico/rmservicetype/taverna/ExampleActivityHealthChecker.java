@@ -37,15 +37,8 @@ public class ExampleActivityHealthChecker implements
 		// We'll build a list of subreports
 		List<VisitReport> subReports = new ArrayList<VisitReport>();
 
-		if (!config.getExampleUri().isAbsolute()) {
-			// Report Severe problems we know won't work
-			VisitReport report = new VisitReport(HealthCheck.getInstance(),
-					activity, "Example URI must be absolute", HealthCheck.INVALID_URL,
-					Status.SEVERE);
-			subReports.add(report);
-		}
 
-		if (config.getExampleString().equals("")) {
+		if (config.getOperatorName().equals("")) {
 			// Warning on possible problems
 			subReports.add(new VisitReport(HealthCheck.getInstance(), activity,
 					"Example string empty", HealthCheck.NO_CONFIGURATION,

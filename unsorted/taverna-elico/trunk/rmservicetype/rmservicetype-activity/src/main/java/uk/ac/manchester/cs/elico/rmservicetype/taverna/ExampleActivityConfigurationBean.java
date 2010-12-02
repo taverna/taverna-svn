@@ -2,6 +2,8 @@ package uk.ac.manchester.cs.elico.rmservicetype.taverna;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Example activity configuration bean.
@@ -28,24 +30,52 @@ public class ExampleActivityConfigurationBean implements Serializable {
 	 */
 	
 	// TODO: Remove the example fields and getters/setters and add your own	
-	private String exampleString;
-
-	private URI exampleUri;
-
-	public String getExampleString() {
-		return exampleString;
+	private String operatorName;
+	private String callName;
+	private List<RapidMinerParameterDescription> parameterDescriptions;
+	private HashMap<String, String> invocationParameters = new HashMap<String, String>();
+	private boolean isExplicit;
+	
+	public void setIsExplicit(boolean val) {
+		isExplicit = val;
+	}
+	
+	public boolean getIsExplicit() {
+		return isExplicit;
+	}
+	
+	public String getOperatorName() {
+		return operatorName;
 	}
 
-	public void setExampleString(String exampleString) {
-		this.exampleString = exampleString;
+	public void setOperatorName(String exampleString) {
+		this.operatorName = exampleString;
+	}
+	
+	public void setCallName(String name) {
+		callName = name;
+	}
+	
+	public void setInvocationParameters(HashMap<String, String> params) {
+		invocationParameters = params;
+	}
+	
+	public HashMap<String, String> getInvocationParameters() {
+		return invocationParameters;
+	}
+	
+	public String getCallName() {
+		return callName;
+	}
+	
+	public void setParameterDescriptions(List<RapidMinerParameterDescription> desc) {
+		parameterDescriptions = desc;
+	}
+	 
+	public List<RapidMinerParameterDescription> getParameterDescriptions() {
+		return parameterDescriptions;
 	}
 
-	public URI getExampleUri() {
-		return exampleUri;
-	}
-
-	public void setExampleUri(URI exampleUri) {
-		this.exampleUri = exampleUri;
-	}
-
+	
+	
 }
