@@ -35,7 +35,7 @@ public class ExampleContextualView extends ContextualView {
 	public String getViewTitle() {
 		ExampleActivityConfigurationBean configuration = activity
 				.getConfiguration();
-		return "Example service " + configuration.getExampleString();
+		return "Example service " + configuration.getOperatorName();
 	}
 
 	/**
@@ -45,8 +45,8 @@ public class ExampleContextualView extends ContextualView {
 	public void refreshView() {
 		ExampleActivityConfigurationBean configuration = activity
 				.getConfiguration();
-		description.setText("Example service " + configuration.getExampleUri()
-				+ " - " + configuration.getExampleString());
+		description.setText("Example service "
+				+ " - " + configuration.getOperatorName());
 		// TODO: Might also show extra service information looked
 		// up dynamically from endpoint/registry
 	}
