@@ -54,9 +54,9 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPo
 import net.sf.taverna.wsdl.parser.WSDLParser;
 import net.sf.taverna.wsdl.soap.WSDLSOAPInvoker;
 
-public class ExampleActivity extends
-		AbstractAsynchronousActivity<ExampleActivityConfigurationBean>
-		implements AsynchronousActivity<ExampleActivityConfigurationBean> {
+public class RapidMinerActivity extends
+		AbstractAsynchronousActivity<RapidMinerActivityConfigurationBean>
+		implements AsynchronousActivity<RapidMinerActivityConfigurationBean> {
 
 	/*
 	 * Best practice: Keep port names as constants to avoid misspelling. This
@@ -74,10 +74,10 @@ public class ExampleActivity extends
     NodeList myTempList = null;
 
 	
-	private ExampleActivityConfigurationBean configBean;
+	private RapidMinerActivityConfigurationBean configBean;
 	List<String> portListing;
 	@Override
-	public void configure(ExampleActivityConfigurationBean configBean)
+	public void configure(RapidMinerActivityConfigurationBean configBean)
 			throws ActivityConfigurationException {
 
 		// Any pre-config sanity checks
@@ -514,7 +514,7 @@ public class ExampleActivity extends
 	}
 
 	@Override
-	public ExampleActivityConfigurationBean getConfiguration() {
+	public RapidMinerActivityConfigurationBean getConfiguration() {
 		return this.configBean;
 	}
 	

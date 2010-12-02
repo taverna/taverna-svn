@@ -9,7 +9,7 @@ import java.util.List;
  * Example activity configuration bean.
  * 
  */
-public class ExampleActivityConfigurationBean implements Serializable {
+public class RapidMinerActivityConfigurationBean implements Serializable {
 
 	/*
 	 * TODO: Remove this comment.

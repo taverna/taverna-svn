@@ -20,20 +20,20 @@ import org.junit.Test;
 
 public class ExampleActivityTest {
 
-	private ExampleActivityConfigurationBean configBean;
+	private RapidMinerActivityConfigurationBean configBean;
 	
-	private ExampleActivity activity = new ExampleActivity();
+	private RapidMinerActivity activity = new RapidMinerActivity();
 
 	@Before
 	public void makeConfigBean() throws Exception {
-		configBean = new ExampleActivityConfigurationBean();
+		configBean = new RapidMinerActivityConfigurationBean();
 		configBean.setOperatorName("something");
 	
 	}
 
 	@Test(expected = ActivityConfigurationException.class)
 	public void invalidConfiguration() throws ActivityConfigurationException {
-		ExampleActivityConfigurationBean invalidBean = new ExampleActivityConfigurationBean();
+		RapidMinerActivityConfigurationBean invalidBean = new RapidMinerActivityConfigurationBean();
 		invalidBean.setOperatorName("invalidExample");
 		// Should throw ActivityConfigurationException
 		activity.configure(invalidBean);

@@ -13,14 +13,14 @@ import net.sf.taverna.t2.workflowmodel.health.HealthChecker;
  * 
  */
 public class ExampleActivityHealthChecker implements
-		HealthChecker<ExampleActivity> {
+		HealthChecker<RapidMinerActivity> {
 
 	public boolean canVisit(Object o) {
 		// Return True if we can visit the object. We could do
 		// deeper (but not time consuming) checks here, for instance
 		// if the health checker only deals with ExampleActivity where
 		// a certain configuration option is enabled.
-		return o instanceof ExampleActivity;
+		return o instanceof RapidMinerActivity;
 	}
 
 	public boolean isTimeConsuming() {
@@ -31,8 +31,8 @@ public class ExampleActivityHealthChecker implements
 		return false;
 	}
 
-	public VisitReport visit(ExampleActivity activity, List<Object> ancestry) {
-		ExampleActivityConfigurationBean config = activity.getConfiguration();
+	public VisitReport visit(RapidMinerActivity activity, List<Object> ancestry) {
+		RapidMinerActivityConfigurationBean config = activity.getConfiguration();
 
 		// We'll build a list of subreports
 		List<VisitReport> subReports = new ArrayList<VisitReport>();
