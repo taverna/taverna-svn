@@ -30,7 +30,8 @@ public class RapidMinerConfigureAction
 				getActivity());
 		ActivityConfigurationDialog<RapidMinerExampleActivity, RapidMinerActivityConfigurationBean> dialog = new ActivityConfigurationDialog<RapidMinerExampleActivity, RapidMinerActivityConfigurationBean>(
 				getActivity(), panel);
-
+		
+				
 		ActivityConfigurationAction.setDialog(getActivity(), dialog);
 
 	}

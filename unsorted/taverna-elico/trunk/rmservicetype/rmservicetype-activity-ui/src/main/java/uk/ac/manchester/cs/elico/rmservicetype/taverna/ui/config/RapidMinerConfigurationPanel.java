@@ -1,6 +1,9 @@
 package uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.config;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,6 +20,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -46,6 +50,11 @@ public class RapidMinerConfigurationPanel
 	private JRadioButton implicitButton;
 	private JRadioButton explicitButton;
 	
+	private JLabel operatorNameLabel;
+	private JLabel cardDescription;
+	
+    private JPanel titlePanel, contentPanel, buttonPanel, page1, page2;
+	
 	String first = new String("Explicit");
 	String second = new String("Implicit");
 
@@ -56,17 +65,24 @@ public class RapidMinerConfigurationPanel
 
 	protected void initGui() {
 		removeAll();
-		setLayout(new GridLayout(0, 1));
-		setPreferredSize(new Dimension(400,400));
+		setLayout(new FlowLayout());
+		setPreferredSize(new Dimension(600,400));
 		
 		// FIXME: Create GUI depending on activity configuration bean
-		JLabel labelString = new JLabel("Operator Name");
-		add(labelString);
-		operatorNamefieldString = new JTextField(20);
-		operatorNamefieldString.setEditable(false);
-		add(operatorNamefieldString);
-		labelString.setLabelFor(operatorNamefieldString);
-
+		
+		// title Panel 
+		 operatorNameLabel = new JLabel(" Operator");
+		 cardDescription = new JLabel(" Please select whether you want to explicitly set the Output Location");
+			 
+		 titlePanel = new JPanel(new BorderLayout());
+         titlePanel.setBackground(Color.WHITE);	
+         titlePanel.setPreferredSize(new Dimension(600, 50));
+         
+         titlePanel.add(operatorNameLabel, BorderLayout.NORTH);
+         titlePanel.add(cardDescription, BorderLayout.EAST);
+         
+         add(titlePanel);
+         		
 		// Data-Location 
 		
 	    explicitButton = new JRadioButton(first);
@@ -90,22 +106,8 @@ public class RapidMinerConfigurationPanel
 		
 		add(explicitButton);
 		add(implicitButton);
+		
 		// End of Data-Location
-		
-		//ParameterTableModel parameterTableModel = new ParameterTableModel();
-		//Object rowData[][] = { { "Row1-Column1", "Row1-Column2", "Row1-Column3"},
-       //         { "Row2-Column1", "Row2-Column2", "Row2-Column3"} };
-		
-		
-		//Object[] columnNames = new Object[] {
-		//		"Use", "Name", "description", "Min", "Max", "Default Value", "Value"};
-		
-		//JTable table = new JTable(rowData, columnNames);
-		
-		//add(table.getTableHeader());
-		
-		//add(table);
-
 		// Populate fields from activity configuration bean
 		refreshConfiguration();
 	}
@@ -138,10 +140,9 @@ public class RapidMinerConfigurationPanel
 		String originalString = configBean.getOperatorName();
 		
 		boolean originalLocation = configBean.getIsExplicit();
-		
+		boolean currentLocation = explicitButton.isSelected();
 		// true (changed) unless all fields match the originals
-		return ! (originalString.equals(operatorNamefieldString.getText())
-		);
+		return ! (originalLocation == currentLocation);
 	}
 
 	/**
@@ -153,8 +154,8 @@ public class RapidMinerConfigurationPanel
 		//configBean = new ExampleActivityConfigurationBean();
 		
 		// FIXME: Update bean fields from your UI elements
-		configBean.setOperatorName(operatorNamefieldString.getText());
-		//configBean.setIsExplicit(explicitButton.isSelected());
+
+		configBean.setIsExplicit(explicitButton.isSelected());
 	}
 
 	/**
@@ -163,12 +164,13 @@ public class RapidMinerConfigurationPanel
 	 */
 	@Override
 	public void refreshConfiguration() {
+		
 		configBean = activity.getConfiguration();
 		
 		// FIXME: Update UI elements from your bean fields
-		operatorNamefieldString.setText(configBean.getOperatorName());
-		//explicitButton.setSelected(configBean.getIsExplicit());
-		//implicitButton.setSelected(!configBean.getIsExplicit());
+		explicitButton.setSelected(configBean.getIsExplicit());
+		implicitButton.setSelected(!configBean.getIsExplicit());
+		
 	}
 	
 class RadioButtonListener implements ActionListener, ChangeListener, ItemListener {  
