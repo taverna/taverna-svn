@@ -92,19 +92,19 @@ public class RapidMinerConfigurationPanel
 		add(implicitButton);
 		// End of Data-Location
 		
-		ParameterTableModel parameterTableModel = new ParameterTableModel();
-		Object rowData[][] = { { "Row1-Column1", "Row1-Column2", "Row1-Column3"},
-                { "Row2-Column1", "Row2-Column2", "Row2-Column3"} };
+		//ParameterTableModel parameterTableModel = new ParameterTableModel();
+		//Object rowData[][] = { { "Row1-Column1", "Row1-Column2", "Row1-Column3"},
+       //         { "Row2-Column1", "Row2-Column2", "Row2-Column3"} };
 		
 		
-		Object[] columnNames = new Object[] {
-				"Use", "Name", "description", "Min", "Max", "Default Value", "Value"};
+		//Object[] columnNames = new Object[] {
+		//		"Use", "Name", "description", "Min", "Max", "Default Value", "Value"};
 		
-		JTable table = new JTable(rowData, columnNames);
+		//JTable table = new JTable(rowData, columnNames);
 		
-		add(table.getTableHeader());
+		//add(table.getTableHeader());
 		
-		add(table);
+		//add(table);
 
 		// Populate fields from activity configuration bean
 		refreshConfiguration();

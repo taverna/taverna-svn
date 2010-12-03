@@ -6,10 +6,10 @@ import net.sf.taverna.t2.workbench.activitytools.AbstractConfigureActivityMenuAc
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerExampleActivity;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.config.RapidMinerConfigureAction;
 
-public class RapidMinerConfigureMenuAction extends
+public class ExampleConfigureMenuAction extends
 		AbstractConfigureActivityMenuAction<RapidMinerExampleActivity> {
 
-	public RapidMinerConfigureMenuAction() {
+	public ExampleConfigureMenuAction() {
 		super(RapidMinerExampleActivity.class);
 	}
 
