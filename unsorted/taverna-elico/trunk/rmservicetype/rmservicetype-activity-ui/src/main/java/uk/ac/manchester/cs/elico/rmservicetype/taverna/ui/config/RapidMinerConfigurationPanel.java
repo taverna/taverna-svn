@@ -104,8 +104,7 @@ public class RapidMinerConfigurationPanel
 		implicitButton.addChangeListener(radioListener);
 		implicitButton.addItemListener(radioListener);
 		
-		add(explicitButton);
-		add(implicitButton);
+		
 		
 		// End of Data-Location
 		// Populate fields from activity configuration bean
