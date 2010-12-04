@@ -32,9 +32,26 @@ public class RapidMinerActivityConfigurationBean implements Serializable {
 	// TODO: Remove the example fields and getters/setters and add your own	
 	private String operatorName;
 	private String callName;
+	private String inputLocation, outputLocation;
 	private List<RapidMinerParameterDescription> parameterDescriptions;
 	private HashMap<String, String> invocationParameters = new HashMap<String, String>();
 	private boolean isExplicit;
+	
+	public void setInputLocation(String input) {
+		inputLocation = input;
+	}
+	
+	public String getInputLocation() {
+		return inputLocation;
+	}
+	
+	public void setOutputLocation(String output) {
+		outputLocation = output;
+	}
+	
+	public String getOutputLocation() {
+		return outputLocation;
+	}
 	
 	public void setIsExplicit(boolean val) {
 		isExplicit = val;
