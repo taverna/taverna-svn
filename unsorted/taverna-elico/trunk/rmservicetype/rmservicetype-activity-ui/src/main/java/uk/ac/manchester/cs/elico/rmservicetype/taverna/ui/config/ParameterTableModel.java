@@ -9,10 +9,12 @@ public class ParameterTableModel extends AbstractTableModel {
 	public ParameterTableModel() {
 		// TODO Auto-generated constructor stub
 		columnNames = new String[] {
-				"Use", "Name", "description", "Min", "Max", "Default Value", "Value"};
+				"Use", "Name", "Description", "Min", "Max", "Default Value", "Value"};
 		
 	}
+	
 
+	@Override
 	public String getColumnName(int iCol)
     {
         return columnNames[iCol];

@@ -559,7 +559,7 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 	 * Icon for service provider
 	 */
 	public Icon getIcon() {
-		return RapidMinerServiceIcon.getIcon();
+		return RapidMinerIcon.getIcon();
 	}
 
 	/**

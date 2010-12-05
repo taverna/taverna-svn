@@ -23,6 +23,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
@@ -30,13 +32,17 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableColumn;
 
 import net.sf.taverna.t2.lang.ui.DialogTextArea;
+import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
 
 
 
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerActivityConfigurationBean;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerExampleActivity;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.config.ParameterTableModel;
 
 public class RapidMinerConfigurationView extends JPanel {
 
@@ -59,13 +65,17 @@ public class RapidMinerConfigurationView extends JPanel {
 	private JRadioButton implicitButton;
 	private JRadioButton explicitButton;
 	
+	private JTable parameterTable;
+	
 	private JButton nextButton, finishButton;
 	
 	private String first = new String("Explicit");
 	private String second = new String("Implicit");
 	
 	public RapidMinerConfigurationView(RapidMinerExampleActivity activity) {
-		
+
+		ActivityIconManager.getInstance().resetIcon(activity);
+
 		oldConfiguration = activity.getConfiguration();
 		newConfiguration = oldConfiguration;
 		initialise();
@@ -168,12 +178,56 @@ public class RapidMinerConfigurationView extends JPanel {
 		buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		addDivider(buttonPanel, SwingConstants.TOP, true);	
 		
+		// add table 
+		ParameterTableModel tableModel = new ParameterTableModel();
+		Object[][] data = {
+			    {"One", "Two",
+			     "Three", "Four", "Five", "Six", "Seven"},
+			     {"One", "Two",
+				     "Three", "Four", "Five", "Six", "Seven"},
+				     {"One", "Two",
+					     "Three", "Four", "Five", "Six", "Seven"},
+					     {"One", "Two",
+						     "Three", "Four", "Five", "Six", "Seven"}
+			};
+		
+		Object[] columnNames = new Object[] {
+				"Use", "Name", "Description", "Min", "Max", "Default Value", "Value"};
+		
+		parameterTable = new JTable(data, columnNames);
+		parameterTable.setRowSelectionAllowed(false);
+		parameterTable.getTableHeader().setReorderingAllowed(false);
+		parameterTable.setGridColor(Color.LIGHT_GRAY);
+		parameterTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		parameterTable.setRowHeight(20);
+		parameterTable.getTableHeader().getColumnModel().getColumn(0).setPreferredWidth(35);
+		parameterTable.getTableHeader().getColumnModel().getColumn(1).setPreferredWidth(120);
+		parameterTable.getTableHeader().getColumnModel().getColumn(2).setPreferredWidth(150);
+		parameterTable.getTableHeader().getColumnModel().getColumn(3).setPreferredWidth(35);
+		parameterTable.getTableHeader().getColumnModel().getColumn(4).setPreferredWidth(35);
+		parameterTable.getTableHeader().getColumnModel().getColumn(5).setPreferredWidth(120);
+		parameterTable.getTableHeader().getColumnModel().getColumn(6).setPreferredWidth(120);
+
+
+		/*
+		parameterTable.setColumnModel(new DefaultTableColumnModel() {
+			public TableColumn getColumn(int columnIndex) {
+				TableColumn column = super.getColumn(columnIndex);
+				if (columnIndex == 0) {
+					//column.setMaxWidth(100);
+				}
+				return column;
+			}
+		});
+		 */
+		//parameterTable.setModel(tableModel);
+		
 		firstCardShown = true;
 	}
 	
 	private void layoutPanel() {
 		// TODO Auto-generated method stub
-		setPreferredSize(new Dimension(450, 400));
+		setPreferredSize(new Dimension(600, 400));
 		setLayout(new BorderLayout());
 		
 		page1 = new JPanel(new GridBagLayout());
@@ -242,6 +296,16 @@ public class RapidMinerConfigurationView extends JPanel {
 		//buttons
 		buttonPanel.add(nextButton);
 		buttonPanel.add(finishButton);
+		
+		// page 2
+		//page2.add(new JScrollPane(parameterTable));
+		//parameterTable.setFillsViewportHeight(true);
+		
+		page2.setLayout(new BorderLayout());
+		page2.add(new JScrollPane(parameterTable));
+		
+		//page2.add(parameterTable.getTableHeader(), BorderLayout.PAGE_START);
+		//page2.add(parameterTable, BorderLayout.CENTER);
 
 		add(buttonPanel, BorderLayout.SOUTH);
 	}

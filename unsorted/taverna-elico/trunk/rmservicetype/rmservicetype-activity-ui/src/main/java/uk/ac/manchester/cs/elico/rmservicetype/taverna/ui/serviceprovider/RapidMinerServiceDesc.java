@@ -45,7 +45,7 @@ public class RapidMinerServiceDesc extends ServiceDescription<RapidMinerActivity
 	 */
 	@Override
 	public Icon getIcon() {
-		return RapidMinerServiceIcon.getIcon();
+		return RapidMinerIcon.getIcon();
 	}
 
 	/**

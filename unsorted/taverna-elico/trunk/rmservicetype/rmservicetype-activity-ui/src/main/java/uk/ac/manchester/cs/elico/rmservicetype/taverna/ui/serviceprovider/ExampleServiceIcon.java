@@ -7,7 +7,7 @@ import net.sf.taverna.t2.workbench.activityicons.ActivityIconSPI;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerExampleActivity;
 
-public class RapidMinerServiceIcon implements ActivityIconSPI {
+public class ExampleServiceIcon implements ActivityIconSPI {
 
 	private static Icon icon;
 
@@ -24,7 +24,7 @@ public class RapidMinerServiceIcon implements ActivityIconSPI {
 	
 	public static Icon getIcon() {
 		if (icon == null) {
-			icon = new ImageIcon(RapidMinerServiceIcon.class.getResource("/exampleIcon.png"));
+			icon = new ImageIcon(ExampleServiceIcon.class.getResource("/exampleIcon.png"));
 		}
 		return icon;
 	}
