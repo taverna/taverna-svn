@@ -16,15 +16,21 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.FlowLayout;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
@@ -32,8 +38,11 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import net.sf.taverna.t2.lang.ui.DialogTextArea;
 import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
@@ -42,6 +51,7 @@ import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
 
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerActivityConfigurationBean;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerExampleActivity;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerParameterDescription;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.config.ParameterTableModel;
 
 public class RapidMinerConfigurationView extends JPanel {
@@ -65,12 +75,14 @@ public class RapidMinerConfigurationView extends JPanel {
 	private JRadioButton implicitButton;
 	private JRadioButton explicitButton;
 	
-	private JTable parameterTable;
+	private JTableParameters parameterTable;
 	
 	private JButton nextButton, finishButton;
 	
 	private String first = new String("Explicit");
 	private String second = new String("Implicit");
+	
+	private String[] fillValues = new String[] { "true", "false"};
 	
 	public RapidMinerConfigurationView(RapidMinerExampleActivity activity) {
 
@@ -179,35 +191,66 @@ public class RapidMinerConfigurationView extends JPanel {
 		addDivider(buttonPanel, SwingConstants.TOP, true);	
 		
 		// add table 
-		ParameterTableModel tableModel = new ParameterTableModel();
-		Object[][] data = {
-			    {"One", "Two",
-			     "Three", "Four", "Five", "Six", "Seven"},
-			     {"One", "Two",
-				     "Three", "Four", "Five", "Six", "Seven"},
-				     {"One", "Two",
-					     "Three", "Four", "Five", "Six", "Seven"},
-					     {"One", "Two",
-						     "Three", "Four", "Five", "Six", "Seven"}
-			};
 		
-		Object[] columnNames = new Object[] {
-				"Use", "Name", "Description", "Min", "Max", "Default Value", "Value"};
+		// first find rows with combo boxes
+		List rowsWithCombobox = new ArrayList();
+		List<RapidMinerParameterDescription> ParameterDescriptions = oldConfiguration.getParameterDescriptions();
+
+		Iterator parameterIterator = ParameterDescriptions.iterator();
+		int i = 0;
+		while (parameterIterator.hasNext()) {
+			
+			// get the parameter
+			RapidMinerParameterDescription param = (RapidMinerParameterDescription) parameterIterator.next();
+			if (param.getType().equals("boolean") || param.getType().equals("choice")) {
+				rowsWithCombobox.add(i);
+				System.out.println("BOOLEAN FOUND");
+			}
+			i++;
+		}	// rows found and set in rowsWithCombobox
 		
-		parameterTable = new JTable(data, columnNames);
+		ParameterTableModel tableModel = null;
+
+		tableModel = new ParameterTableModel(ParameterDescriptions);
+
+		parameterTable = new JTableParameters(tableModel);
+		
+		// add combo boxes to specific rows
+		RowEditorModel rm = new RowEditorModel();
+		parameterTable.setRowEditorModel(rm);
+		
+		Iterator rowIterator = rowsWithCombobox.iterator();
+		
+		while (rowIterator.hasNext()) {
+			// add combo box to row column
+			int n = (Integer) rowIterator.next();
+			
+			JComboBox cb = new JComboBox(fillValues);
+			DefaultCellEditor ed = new DefaultCellEditor(cb);
+			
+			rm.addEditorForRow(n,ed);
+		}
+		
+		System.out.println(" HERE 3");
+
 		parameterTable.setRowSelectionAllowed(false);
 		parameterTable.getTableHeader().setReorderingAllowed(false);
 		parameterTable.setGridColor(Color.LIGHT_GRAY);
 		parameterTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		parameterTable.setRowHeight(20);
+		parameterTable.setRowHeight(50);
+		
 		parameterTable.getTableHeader().getColumnModel().getColumn(0).setPreferredWidth(35);
-		parameterTable.getTableHeader().getColumnModel().getColumn(1).setPreferredWidth(120);
-		parameterTable.getTableHeader().getColumnModel().getColumn(2).setPreferredWidth(150);
+		parameterTable.getTableHeader().getColumnModel().getColumn(1).setPreferredWidth(150);
+		parameterTable.getTableHeader().getColumnModel().getColumn(2).setPreferredWidth(245);
 		parameterTable.getTableHeader().getColumnModel().getColumn(3).setPreferredWidth(35);
 		parameterTable.getTableHeader().getColumnModel().getColumn(4).setPreferredWidth(35);
-		parameterTable.getTableHeader().getColumnModel().getColumn(5).setPreferredWidth(120);
+		parameterTable.getTableHeader().getColumnModel().getColumn(5).setPreferredWidth(75);
 		parameterTable.getTableHeader().getColumnModel().getColumn(6).setPreferredWidth(120);
+		parameterTable.setEditingColumn(6);
+		parameterTable.setEditingColumn(0);
 
+		parameterTable.getColumnModel().getColumn(2).setCellRenderer(
+		        new TextAreaRenderer());
 
 		/*
 		parameterTable.setColumnModel(new DefaultTableColumnModel() {
@@ -224,10 +267,11 @@ public class RapidMinerConfigurationView extends JPanel {
 		
 		firstCardShown = true;
 	}
-	
+
+
 	private void layoutPanel() {
 		// TODO Auto-generated method stub
-		setPreferredSize(new Dimension(600, 400));
+		setPreferredSize(new Dimension(700, 400));
 		setLayout(new BorderLayout());
 		
 		page1 = new JPanel(new GridBagLayout());
@@ -303,6 +347,7 @@ public class RapidMinerConfigurationView extends JPanel {
 		
 		page2.setLayout(new BorderLayout());
 		page2.add(new JScrollPane(parameterTable));
+		
 		
 		//page2.add(parameterTable.getTableHeader(), BorderLayout.PAGE_START);
 		//page2.add(parameterTable, BorderLayout.CENTER);
@@ -413,6 +458,24 @@ public class RapidMinerConfigurationView extends JPanel {
 			
 		}
 	}
+	
+	public class TextAreaRenderer extends JTextArea
+    implements TableCellRenderer {
+
+	public TextAreaRenderer() {
+	    setLineWrap(true);
+	    setWrapStyleWord(true);
+	    setAutoscrolls(true);
+
+	}
+
+	public Component getTableCellRendererComponent(JTable jTable,
+	      Object obj, boolean isSelected, boolean hasFocus, int row,
+	      int column) {
+		  setText((String)obj);
+		  return this;
+	  }
+	};
 
 
 }
