@@ -150,7 +150,9 @@ public class RapidMinerExampleActivity extends
 			NodeList returnList = myList.item(i).getChildNodes();		// get "return"s children
 			RapidMinerParameterDescription aDescription = new RapidMinerParameterDescription();
 			List<String> choices = new ArrayList<String>();
-			
+			boolean use = false;
+		
+			aDescription.setUseParameter(use);
 			for (int j = 0; j < returnList.getLength(); j++) {	// for each of "returns" children check..
 				
 				if (returnList.item(j).getNodeName().equals("name")) {
@@ -204,6 +206,7 @@ public class RapidMinerExampleActivity extends
 				}
 		
 			}
+			
 			aDescription.setChoices(choices);
 			listOfDescriptions.add(aDescription);
 		}

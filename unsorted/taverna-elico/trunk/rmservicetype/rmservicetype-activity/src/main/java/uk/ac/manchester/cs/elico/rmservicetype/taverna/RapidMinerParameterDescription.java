@@ -14,8 +14,13 @@ public class RapidMinerParameterDescription {
 	String type;
 	String executionValue;
 	List<String> choices;
+	boolean useParameter;
 	
 	// Setters
+	public void setUseParameter(boolean val) {
+		useParameter = val;
+	}
+	
 	public void setParameterName(String name) {
 		parameterName = name;
 	}
@@ -98,5 +103,8 @@ public class RapidMinerParameterDescription {
 		return executionValue;
 	}
 	
+	public boolean getUseParameter() {
+		return useParameter;
+	}
 	
 }
