@@ -111,6 +111,9 @@ public class HexEditor extends JScrollPane {
 		setHighlightSelectionInAsciiDumpColor(new Color(255,255,192));
 		
 		setTransferHandler(DEFAULT_TRANSFER_HANDLER);
+		
+		setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_NEVER);
+		setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
 
 	}
 

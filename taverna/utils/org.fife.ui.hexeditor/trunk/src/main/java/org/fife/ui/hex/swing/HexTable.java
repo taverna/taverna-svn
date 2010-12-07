@@ -85,7 +85,7 @@ class HexTable extends JTable {
 		enableEvents(AWTEvent.KEY_EVENT_MASK);
 		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		setFont(new Font("Monospaced", Font.PLAIN, 14));
-//setRowHeight(28);
+		//setRowHeight(28);
 		setCellSelectionEnabled(true);
 		setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		setDefaultEditor(Object.class, new CellEditor());
@@ -300,7 +300,8 @@ class HexTable extends JTable {
 
 
 	public boolean isCellEditable(int row, int col) {
-		return cellToOffset(row, col)>-1;
+		return false;
+		//return cellToOffset(row, col)>-1;
 	}
 
 
