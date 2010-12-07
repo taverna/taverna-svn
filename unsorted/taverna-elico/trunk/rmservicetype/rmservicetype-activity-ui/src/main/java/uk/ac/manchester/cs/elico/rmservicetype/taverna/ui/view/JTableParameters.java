@@ -76,7 +76,7 @@ public class JTableParameters extends JTable {
 	      {
 	          TableCellEditor tmpEditor = null;
 	          if (rm!=null)
-	        	  if (col == 6){
+	        	  if (col == 7){
 	        		  tmpEditor = rm.getEditor(row);
 	        	  }
 	          

@@ -17,6 +17,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -83,6 +84,8 @@ public class RapidMinerConfigurationView extends JPanel {
 	private String second = new String("Implicit");
 	
 	private String[] fillValues = new String[] { "true", "false"};
+	
+	private HashMap<Integer, String[]> choicesMap = new HashMap<Integer,String[]>();
 	
 	public RapidMinerConfigurationView(RapidMinerExampleActivity activity) {
 
@@ -175,7 +178,7 @@ public class RapidMinerConfigurationView extends JPanel {
 				} else {				// move to first card
 					
 					nextButton.setText("Next");
-;					cardLayout.first(contentPanel);
+					cardLayout.first(contentPanel);
 					firstCardShown =  true;
 					
 				}
@@ -203,10 +206,38 @@ public class RapidMinerConfigurationView extends JPanel {
 			// get the parameter
 			RapidMinerParameterDescription param = (RapidMinerParameterDescription) parameterIterator.next();
 			if (param.getType().equals("boolean") || param.getType().equals("choice")) {
+				
 				rowsWithCombobox.add(i);
-				System.out.println("BOOLEAN FOUND");
+				System.out.println("BOOLEAN or CHOICE FOUND");
+				
+				if (param.getType().equals("choice")) {
+					
+					// it's a choice - add its choices to the hashmap
+					String [] theChoice;
+					List<String> tempChoices = param.getChoices();
+					theChoice = new String[tempChoices.size()];
+					Iterator choicesIterator = tempChoices.iterator();
+					
+					int j = 0;
+					
+					while (choicesIterator.hasNext()) {
+						
+						theChoice[j] = (String) choicesIterator.next();
+						j++;
+						
+					}
+
+					choicesMap.put(i, theChoice);
+					
+				} else {
+					
+					choicesMap.put(i, fillValues);
+					
+				}
 			}
+			
 			i++;
+			
 		}	// rows found and set in rowsWithCombobox
 		
 		ParameterTableModel tableModel = null;
@@ -225,10 +256,11 @@ public class RapidMinerConfigurationView extends JPanel {
 			// add combo box to row column
 			int n = (Integer) rowIterator.next();
 			
-			JComboBox cb = new JComboBox(fillValues);
+			JComboBox cb = new JComboBox(choicesMap.get(n));
 			DefaultCellEditor ed = new DefaultCellEditor(cb);
 			
 			rm.addEditorForRow(n,ed);
+			
 		}
 		
 		System.out.println(" HERE 3");
@@ -236,22 +268,27 @@ public class RapidMinerConfigurationView extends JPanel {
 		parameterTable.setRowSelectionAllowed(false);
 		parameterTable.getTableHeader().setReorderingAllowed(false);
 		parameterTable.setGridColor(Color.LIGHT_GRAY);
-		parameterTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		parameterTable.setSelectionBackground(Color.WHITE);
+		parameterTable.setSelectionForeground(Color.WHITE);
+		//parameterTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		parameterTable.setRowHeight(50);
 		
 		parameterTable.getTableHeader().getColumnModel().getColumn(0).setPreferredWidth(35);
 		parameterTable.getTableHeader().getColumnModel().getColumn(1).setPreferredWidth(150);
 		parameterTable.getTableHeader().getColumnModel().getColumn(2).setPreferredWidth(245);
-		parameterTable.getTableHeader().getColumnModel().getColumn(3).setPreferredWidth(35);
+		parameterTable.getTableHeader().getColumnModel().getColumn(3).setPreferredWidth(55);
 		parameterTable.getTableHeader().getColumnModel().getColumn(4).setPreferredWidth(35);
-		parameterTable.getTableHeader().getColumnModel().getColumn(5).setPreferredWidth(75);
-		parameterTable.getTableHeader().getColumnModel().getColumn(6).setPreferredWidth(120);
-		parameterTable.setEditingColumn(6);
+		parameterTable.getTableHeader().getColumnModel().getColumn(5).setPreferredWidth(35);
+		parameterTable.getTableHeader().getColumnModel().getColumn(6).setPreferredWidth(80);
+		parameterTable.getTableHeader().getColumnModel().getColumn(7).setPreferredWidth(110);
+		
+		parameterTable.setEditingColumn(7);
 		parameterTable.setEditingColumn(0);
-
+		
 		parameterTable.getColumnModel().getColumn(2).setCellRenderer(
 		        new TextAreaRenderer());
 
+		
 		/*
 		parameterTable.setColumnModel(new DefaultTableColumnModel() {
 			public TableColumn getColumn(int columnIndex) {
@@ -270,8 +307,8 @@ public class RapidMinerConfigurationView extends JPanel {
 
 
 	private void layoutPanel() {
-		// TODO Auto-generated method stub
-		setPreferredSize(new Dimension(700, 400));
+
+		setPreferredSize(new Dimension(745, 400));
 		setLayout(new BorderLayout());
 		
 		page1 = new JPanel(new GridBagLayout());
@@ -342,16 +379,10 @@ public class RapidMinerConfigurationView extends JPanel {
 		buttonPanel.add(finishButton);
 		
 		// page 2
-		//page2.add(new JScrollPane(parameterTable));
-		//parameterTable.setFillsViewportHeight(true);
-		
+				
 		page2.setLayout(new BorderLayout());
 		page2.add(new JScrollPane(parameterTable));
 		
-		
-		//page2.add(parameterTable.getTableHeader(), BorderLayout.PAGE_START);
-		//page2.add(parameterTable, BorderLayout.CENTER);
-
 		add(buttonPanel, BorderLayout.SOUTH);
 	}
 
