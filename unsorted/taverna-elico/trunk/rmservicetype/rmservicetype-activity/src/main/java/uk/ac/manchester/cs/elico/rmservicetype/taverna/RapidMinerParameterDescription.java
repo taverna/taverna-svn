@@ -2,7 +2,7 @@ package uk.ac.manchester.cs.elico.rmservicetype.taverna;
 
 import java.util.List;
 
-public class RapidMinerParameterDescription {
+public class RapidMinerParameterDescription implements Comparable<RapidMinerParameterDescription>{
 
 	String parameterName;
 	String description;
@@ -105,6 +105,17 @@ public class RapidMinerParameterDescription {
 	
 	public boolean getUseParameter() {
 		return useParameter;
+	}
+
+	public int compareTo(RapidMinerParameterDescription compareObject) {
+		
+	   //int lastCmp = lastName.compareTo(n.lastName);
+       // return (lastCmp != 0 ? lastCmp :
+       //         firstName.compareTo(n.firstName));
+	
+		int lastCmp = parameterName.compareTo(compareObject.getParameterName());
+			
+		return lastCmp;
 	}
 	
 }

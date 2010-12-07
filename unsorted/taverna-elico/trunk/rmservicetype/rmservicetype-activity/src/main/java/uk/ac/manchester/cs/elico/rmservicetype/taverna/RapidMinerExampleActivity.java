@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -210,6 +211,10 @@ public class RapidMinerExampleActivity extends
 			aDescription.setChoices(choices);
 			listOfDescriptions.add(aDescription);
 		}
+		
+		// sort before returning
+		Collections.sort(listOfDescriptions);
+		
 		return listOfDescriptions;
 		
 	
