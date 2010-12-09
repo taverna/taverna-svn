@@ -72,7 +72,7 @@ public class RapidMinerExampleActivity extends
 	
     static String securityProfile = SecurityProfiles.HTTP_BASIC_AUTHN;
 	
-    NodeList myTempList = null;
+    NodeList myTempList;
 
 	
 	private RapidMinerActivityConfigurationBean configBean;
@@ -97,48 +97,36 @@ public class RapidMinerExampleActivity extends
 		// myClient = new MyClient(configBean.getExampleUri());
 		// this.service = myClient.getService(configBean.getExampleString());
 		
-		portListing = getParametersForOperation(configBean.getCallName());
-		List<RapidMinerParameterDescription> descList = getParameterDescriptions(myTempList);
-
-		Iterator myIterator = descList.iterator();
+		if (configBean.getHasDescriptions()) {
+			
+			
+		} else {
+			
+			List<String> locationPorts = new ArrayList<String>();
+			locationPorts.add("inputLocation");
+			locationPorts.add("outputLocation");
+			
+			portListing = getParametersForOperation(configBean.getCallName());
+			portListing = locationPorts;
+			
 		
-		/*
-		while (myIterator.hasNext()) {
+				List<RapidMinerParameterDescription> descList = getParameterDescriptions(myTempList);
 			
-			RapidMinerParameterDescription desc = (RapidMinerParameterDescription)myIterator.next();
-			System.out.println("\n[VERIFY] name " + desc.getParameterName());
-			System.out.println("[VERIFY] description " + desc.getDescription());
-			System.out.println("[VERIFY] expert " + desc.getExpert());
-			System.out.println("[VERIFY] mandatory " + desc.getMandatory());
-			System.out.println("[VERIFY] max " + desc.getMax());
-			System.out.println("[VERIFY] min " + desc.getMin());
-			System.out.println("[VERIFY] defaultValue " + desc.getDefaultValue());
-			System.out.println("[VERIFY] type " + desc.getType());
-			System.out.println("[VERIFY] choices " + desc.getChoices().toString());
+	
 			
+			if (!configBean.getIsParametersConfigured()) {
+				configBean.setParameterDescriptions(descList);
+	
+			}
+					
+			// REQUIRED: (Re)create input/output ports depending on configuration
+			configurePorts();
+			configBean.setHasDescriptions(true);
 			
 		}
-		*/
+			
+			
 		
-		configBean.setParameterDescriptions(descList);
-		
-		/*	TESTER SCRIPT
-		 * 
-		RapidMinerParameterDescription desc1 = new RapidMinerParameterDescription();
-		RapidMinerParameterDescription desc2 = new RapidMinerParameterDescription();
-		desc1.setParameterName("a parameter Name 1");
-		desc2.setParameterName("a parameter Name 2");
-		List<RapidMinerParameterDescription> descList = new ArrayList<RapidMinerParameterDescription>();
-		descList.add(desc1);
-		descList.add(desc2);
-		configBean.setParameterDescriptions(descList);
-		
-		*/
-		
-		// tester
-		
-		// REQUIRED: (Re)create input/output ports depending on configuration
-		configurePorts();
 	}
 
 	public List<RapidMinerParameterDescription> getParameterDescriptions(NodeList myList) {
@@ -260,6 +248,39 @@ public class RapidMinerExampleActivity extends
 
 	}
 	
+	public Map<Object, String> constructInvocationInputMap() {
+		
+		// add parameters to the hashmap from Parameter Configurations
+		HashMap<String, String> params = new HashMap<String, String>();
+		
+			List<RapidMinerParameterDescription>  paramDescriptions = configBean.getParameterDescriptions();
+		
+			Iterator paramIterator = paramDescriptions.iterator();
+			
+			while (paramIterator.hasNext()) {
+				
+				// check whether the current parameter is Use (true)
+				RapidMinerParameterDescription des = (RapidMinerParameterDescription)paramIterator.next();
+				
+				if (des.getUseParameter()) {	// true
+					
+					params.put(des.getParameterName(), des.getExecutionValue());
+					
+				}
+				
+			}
+			System.out.println(" THE PARAMETERS AND THEIR VALUES : " + params.toString());
+			
+		String inputDoc;
+		//String executorType, String operatorName, HashMap<String, String> operatorParameters, String inputLocations, String outputLocations
+		inputDoc = createInputDocument("executeBasicOperatorExplicitOutput", configBean.getCallName(), params, configBean.getInputLocation(), configBean.getOutputLocation());
+		
+		Map<Object, String> inputMap = new HashMap<Object, String>();
+		inputMap.put("executeBasicOperatorExplicitOutput", inputDoc);
+		
+		return inputMap;
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void executeAsynch(final Map<String, T2Reference> inputs,
@@ -271,16 +292,21 @@ public class RapidMinerExampleActivity extends
 			public void run() {
 	
 				// tester
-				HashMap<String, String> params = new HashMap<String, String>();
-				params.put("attribute_type_filter", "single");
-				params.put("attribute", "a1");
-				String inputDoc;
+					/*	WORKING TEST CASE
+					HashMap<String, String> params = new HashMap<String, String>();
+					params.put("attribute_type_filter", "single");
+					params.put("attribute", "a1");
+					String inputDoc;
+					
+					inputDoc = createInputDocument(null, "discretize_by_bins", params, "/groups/elico/templates/data/Iris/", "/home/jupp/fromPluginAgain/");
+					
+					Map<Object, String> inputMap = new HashMap<Object, String>();
+					inputMap.put("executeBasicOperatorExplicitOutput", inputDoc);
+					// end of test
+					*/
 				
-				inputDoc = createInputDocument(null, "discretize_by_bins", params, "/groups/elico/templates/data/Iris/", "/home/jupp/fromPlugin/");
+				Map<Object, String> inputMap = constructInvocationInputMap();
 				
-				Map<Object, String> inputMap = new HashMap<Object, String>();
-				inputMap.put("executeBasicOperatorExplicitOutput", inputDoc);
-				// end of test
 				
 				InvocationContext context = callback
 						.getContext();
@@ -288,7 +314,8 @@ public class RapidMinerExampleActivity extends
 						.getReferenceService();
 				
 				System.out.println(" +++ ONE +++");
-
+				
+				/*
 				// Resolve inputs 				
 				String oneParam = createXMLDocument("attribute_type_filter","single");
 				String twoParam = createXMLDocument("attribute","a1");
@@ -323,7 +350,8 @@ public class RapidMinerExampleActivity extends
 				invokerInputMap.put("operatorParameters", (Object)operatorParameters);
 				invokerInputMap.put("outputLocations", (Object)outputLocations);
 			
-
+				*/
+				
 				System.out.println(" +++ FOUR +++");
 
 				WSDLActivity wrapper = new WSDLActivity();
@@ -401,7 +429,7 @@ public class RapidMinerExampleActivity extends
 				call.setOperationName("executeBasicOperatorExplicitOutput");
 				
 				// end of call
-				System.out.println(" INPUT MAP : " + invokerInputMap.toString());
+
 				try {
 					Map<String, Object> invokerOutputMap = invoker.invoke(inputMap, call);
 					
@@ -516,7 +544,11 @@ public class RapidMinerExampleActivity extends
 				// return map of output data, with empty index array as this is
 				// the only and final result (this index parameter is used if
 				// pipelining output)
-				// IMPORTANT  callback.receiveResult(outputs, new int[0]);
+				Map<String, T2Reference> outputs = new HashMap<String, T2Reference>();
+				String simpleValue = configBean.getOutputLocation();
+				T2Reference simpleRef = referenceService.register(simpleValue, 0, true, context);
+				outputs.put(OUT_SIMPLE_OUTPUT, simpleRef);
+				 callback.receiveResult(outputs, new int[0]);
 			}
 		});
 	}
@@ -595,6 +627,7 @@ public class RapidMinerExampleActivity extends
 		
 		// print the contents of the document
 		String finalOutput = new String();
+		
 		try {
 			
 			System.out.println("THE XML Document OUTPUT : ");
@@ -633,88 +666,7 @@ public class RapidMinerExampleActivity extends
 			e.printStackTrace();
 		}
 		
-		// this method will need to know what parameters need filling in
-		/*
-		Element e = null;
-		Node n = null;
-		Document xmlDocument = null;
 		
-		DocumentBuilderFactory dbf =
-            DocumentBuilderFactory.newInstance();
-		dbf.setNamespaceAware(true);
-		
-		try {
-			DocumentBuilder db = dbf.newDocumentBuilder();
-			xmlDocument = db.newDocument();
-		} catch (ParserConfigurationException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		*/
-		
-		//Element root =  xmlDocument.createElementNS("http://eli", "operatorParameter");
-		//root.setAttributeNS(null, qualifiedName, value)
-		//root.setAttributeNS(null, "asd", "namespacevalue");
-		/*
-		org.jdom.Element root = new org.jdom.Element("ns", "oper");
-		e = xmlDocument.createElement("key");
-		
-		
-		n = xmlDocument.createTextNode("myKey");
-		e.appendChild(n);
-		((Node) root).appendChild(e);
-		
-			
-		Element root = xmlDocument.createElement("USERS");
-		String[] id = {"PWD122","MX787","A4Q45"};
-		String[] type = {"customer","manager","employee"};
-		String[] desc = {"Tim@Home","Jack&Moud","John D'oé"};
-		for (int i=0;i<id.length;i++)
-		{
-		  // Child i.
-		  e = xmlDocument.createElementNS(null, "USER");
-		  e.setAttributeNS(null, "ID", id[i]);
-		  e.setAttributeNS(null, "TYPE", type[i]);
-		  n = xmlDocument.createTextNode(desc[i]);
-		  e.appendChild(n);
-		  root.appendChild(e);
-		}
-		
-		
-		xmlDocument.appendChild((Node) root);
-		FileOutputStream fos = null;
-		try {
-			fos = new FileOutputStream("myfile123");
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		// XERCES 1 or 2 additionnal classes.
-		OutputFormat of = new OutputFormat("XML","ISO-8859-1",true);
-		of.setIndent(1);
-		of.setIndenting(true);
-		of.setDoctype(null,"users.dtd");
-		XMLSerializer serializer = new XMLSerializer(fos,of);
-		// As a DOM Serializer
-		try {
-			serializer.asDOMSerializer();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		try {
-			serializer.serialize( xmlDocument.getDocumentElement() );
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		try {
-			fos.close();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		*/
 		return returnVal;
 		
 	}
@@ -896,15 +848,18 @@ public class RapidMinerExampleActivity extends
 
 			// Try to get username and password for this service from Credential
 			// Manager (which should pop up UI if needed)
+		
 			CredentialManager credManager = null;
 			credManager = CredentialManager.getInstance();
 			String wsdl = bean
 			.getWsdl();
 			URI serviceUri = URI.create(wsdl); 
 			UsernamePassword username_password = credManager.getUsernameAndPasswordForService(serviceUri, usePathRecursion, null);
+			
 			if (username_password == null) {
 				throw new CMException("No username/password provided for service " + bean.getWsdl());
 			} 
+			
 			return username_password;
 	}
 	
@@ -949,3 +904,119 @@ try  {
 	e.printStackTrace();
 }
 */ 
+
+//this method will need to know what parameters need filling in
+/*
+Element e = null;
+Node n = null;
+Document xmlDocument = null;
+
+DocumentBuilderFactory dbf =
+    DocumentBuilderFactory.newInstance();
+dbf.setNamespaceAware(true);
+
+try {
+	DocumentBuilder db = dbf.newDocumentBuilder();
+	xmlDocument = db.newDocument();
+} catch (ParserConfigurationException e1) {
+	// TODO Auto-generated catch block
+	e1.printStackTrace();
+}
+*/
+
+//Element root =  xmlDocument.createElementNS("http://eli", "operatorParameter");
+//root.setAttributeNS(null, qualifiedName, value)
+//root.setAttributeNS(null, "asd", "namespacevalue");
+/*
+org.jdom.Element root = new org.jdom.Element("ns", "oper");
+e = xmlDocument.createElement("key");
+
+
+n = xmlDocument.createTextNode("myKey");
+e.appendChild(n);
+((Node) root).appendChild(e);
+
+	
+Element root = xmlDocument.createElement("USERS");
+String[] id = {"PWD122","MX787","A4Q45"};
+String[] type = {"customer","manager","employee"};
+String[] desc = {"Tim@Home","Jack&Moud","John D'oé"};
+for (int i=0;i<id.length;i++)
+{
+  // Child i.
+  e = xmlDocument.createElementNS(null, "USER");
+  e.setAttributeNS(null, "ID", id[i]);
+  e.setAttributeNS(null, "TYPE", type[i]);
+  n = xmlDocument.createTextNode(desc[i]);
+  e.appendChild(n);
+  root.appendChild(e);
+}
+
+
+xmlDocument.appendChild((Node) root);
+FileOutputStream fos = null;
+try {
+	fos = new FileOutputStream("myfile123");
+} catch (FileNotFoundException e1) {
+	// TODO Auto-generated catch block
+	e1.printStackTrace();
+}
+// XERCES 1 or 2 additionnal classes.
+OutputFormat of = new OutputFormat("XML","ISO-8859-1",true);
+of.setIndent(1);
+of.setIndenting(true);
+of.setDoctype(null,"users.dtd");
+XMLSerializer serializer = new XMLSerializer(fos,of);
+// As a DOM Serializer
+try {
+	serializer.asDOMSerializer();
+} catch (IOException e1) {
+	// TODO Auto-generated catch block
+	e1.printStackTrace();
+}
+try {
+	serializer.serialize( xmlDocument.getDocumentElement() );
+} catch (IOException e1) {
+	// TODO Auto-generated catch block
+	e1.printStackTrace();
+}
+try {
+	fos.close();
+} catch (IOException e1) {
+	// TODO Auto-generated catch block
+	e1.printStackTrace();
+}
+*/
+
+/*
+while (myIterator.hasNext()) {
+	
+	RapidMinerParameterDescription desc = (RapidMinerParameterDescription)myIterator.next();
+	System.out.println("\n[VERIFY] name " + desc.getParameterName());
+	System.out.println("[VERIFY] description " + desc.getDescription());
+	System.out.println("[VERIFY] expert " + desc.getExpert());
+	System.out.println("[VERIFY] mandatory " + desc.getMandatory());
+	System.out.println("[VERIFY] max " + desc.getMax());
+	System.out.println("[VERIFY] min " + desc.getMin());
+	System.out.println("[VERIFY] defaultValue " + desc.getDefaultValue());
+	System.out.println("[VERIFY] type " + desc.getType());
+	System.out.println("[VERIFY] choices " + desc.getChoices().toString());
+	
+	
+}
+*/
+
+/*	TESTER SCRIPT
+ * 
+RapidMinerParameterDescription desc1 = new RapidMinerParameterDescription();
+RapidMinerParameterDescription desc2 = new RapidMinerParameterDescription();
+desc1.setParameterName("a parameter Name 1");
+desc2.setParameterName("a parameter Name 2");
+List<RapidMinerParameterDescription> descList = new ArrayList<RapidMinerParameterDescription>();
+descList.add(desc1);
+descList.add(desc2);
+configBean.setParameterDescriptions(descList);
+
+*/
+
+// tester

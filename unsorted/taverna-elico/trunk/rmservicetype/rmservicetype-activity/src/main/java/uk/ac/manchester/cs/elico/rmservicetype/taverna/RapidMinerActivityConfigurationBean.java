@@ -36,6 +36,17 @@ public class RapidMinerActivityConfigurationBean implements Serializable {
 	private List<RapidMinerParameterDescription> parameterDescriptions;
 	private HashMap<String, String> invocationParameters = new HashMap<String, String>();
 	private boolean isExplicit;
+	private boolean isParametersConfigured = false;
+	private boolean hasDescriptions = false;
+	
+	public void setIsParametersConfigured(boolean val) {
+		isParametersConfigured = val;
+	}
+	
+	public boolean getIsParametersConfigured() {
+		return isParametersConfigured;
+	}
+	
 	
 	public void setInputLocation(String input) {
 		inputLocation = input;
@@ -91,6 +102,14 @@ public class RapidMinerActivityConfigurationBean implements Serializable {
 	 
 	public List<RapidMinerParameterDescription> getParameterDescriptions() {
 		return parameterDescriptions;
+	}
+	
+	public void setHasDescriptions(boolean val) {
+		hasDescriptions = val;
+	}
+	
+	public boolean getHasDescriptions() {
+		return hasDescriptions;
 	}
 
 	
