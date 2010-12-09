@@ -19,3 +19,4 @@ public class TavernaWorkbenchWithExamplePlugin {
 		Launcher.main(args);
 	}
 }
+

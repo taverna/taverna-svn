@@ -1,5 +1,6 @@
 package uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.config;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -15,6 +16,8 @@ public class ParameterTableModel extends AbstractTableModel {
 	
 	private int parameterCount;
 	
+	public List<RapidMinerParameterDescription> newTableParameters;
+	
 	public ParameterTableModel(List<RapidMinerParameterDescription> parameterDescriptions) {
 
 		columnNames = new String[] {
@@ -22,9 +25,10 @@ public class ParameterTableModel extends AbstractTableModel {
 		
 	
 		// fill in data table
+		newTableParameters = parameterDescriptions;
 		parameterCount = parameterDescriptions.size();	// number of rows
 		data = new Object[parameterCount][8];
-
+		
 		
 		Iterator parameterIterator = parameterDescriptions.iterator();
 		
@@ -46,13 +50,11 @@ public class ParameterTableModel extends AbstractTableModel {
 				            	 break;											// name
 		            	case 2:	 data[i][n] = currentParam.getDescription(); 
 				            	 break;											// desc
-				            	
 		            	case 3:  data[i][n] = currentParam.getType();			// type
 		            			 break;
 		            	case 4:  data[i][n] = currentParam.getMin();			// min
 		         
-		            			 
-		            			 if (data[i][n].equals("NaN")) {
+		            		     if (data[i][n].equals("NaN")) {
 		            				 data[i][n] = "";
 		            			 }
 		            			 
@@ -117,11 +119,14 @@ public class ParameterTableModel extends AbstractTableModel {
         //Note that the data/cell address is constant,
         //no matter where the cell appears onscreen.
         if (col == 7 || col == 0) {
+        	
             return true;
         } else {
+        	
             return false;
         }
     }
+	
 	public void setValueAt(Object value, int row, int col) {
        
             System.out.println("Setting value at " + row + "," + col
@@ -130,8 +135,22 @@ public class ParameterTableModel extends AbstractTableModel {
                                + value.getClass() + ")");
         data[row][col] = value;
         fireTableCellUpdated(row, col);
+        
+        // if column 0 - in use is checked
+        if (col == 0) {
+            newTableParameters.get(row).setUseParameter((Boolean)value);
+        }
 
+        if (col == 7) {
+        	newTableParameters.get(row).setExecutionValue((String)value);
+        }
+        
     }
+	
+	public List<RapidMinerParameterDescription> getUpdatedParameters() {
+		//System.out.println(" new table parameters" + newTableParameters.toString());
+		return newTableParameters;
+	}
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		//if (columnIndex == 6) {
 		//	return  "False";

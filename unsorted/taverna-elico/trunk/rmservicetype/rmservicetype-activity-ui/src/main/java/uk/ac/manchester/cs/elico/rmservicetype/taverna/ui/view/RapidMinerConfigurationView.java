@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
@@ -77,6 +78,7 @@ public class RapidMinerConfigurationView extends JPanel {
 	private JRadioButton explicitButton;
 	
 	private JTableParameters parameterTable;
+	private ParameterTableModel tableModel = null;
 	
 	private JButton nextButton, finishButton;
 	
@@ -174,12 +176,14 @@ public class RapidMinerConfigurationView extends JPanel {
 					nextButton.setText("Back");
 					cardLayout.last(contentPanel);
 					firstCardShown = false;
+					finishButton.setEnabled(true);
 					
 				} else {				// move to first card
 					
 					nextButton.setText("Next");
 					cardLayout.first(contentPanel);
 					firstCardShown =  true;
+					finishButton.setEnabled(false);
 					
 				}
 				
@@ -189,6 +193,7 @@ public class RapidMinerConfigurationView extends JPanel {
 		finishButton = new JButton("Finish");
 		finishButton.setFocusable(false);
 		finishButton.setEnabled(false);
+			
 		
 		buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		addDivider(buttonPanel, SwingConstants.TOP, true);	
@@ -201,6 +206,7 @@ public class RapidMinerConfigurationView extends JPanel {
 
 		Iterator parameterIterator = ParameterDescriptions.iterator();
 		int i = 0;
+		
 		while (parameterIterator.hasNext()) {
 			
 			// get the parameter
@@ -240,7 +246,7 @@ public class RapidMinerConfigurationView extends JPanel {
 			
 		}	// rows found and set in rowsWithCombobox
 		
-		ParameterTableModel tableModel = null;
+		//ParameterTableModel tableModel = null;
 
 		tableModel = new ParameterTableModel(ParameterDescriptions);
 
@@ -288,7 +294,6 @@ public class RapidMinerConfigurationView extends JPanel {
 		parameterTable.getColumnModel().getColumn(2).setCellRenderer(
 		        new TextAreaRenderer());
 
-		
 		/*
 		parameterTable.setColumnModel(new DefaultTableColumnModel() {
 			public TableColumn getColumn(int columnIndex) {
@@ -300,12 +305,11 @@ public class RapidMinerConfigurationView extends JPanel {
 			}
 		});
 		 */
-		//parameterTable.setModel(tableModel);
 		
 		firstCardShown = true;
 	}
-
-
+	
+	
 	private void layoutPanel() {
 
 		setPreferredSize(new Dimension(745, 400));
@@ -489,11 +493,44 @@ public class RapidMinerConfigurationView extends JPanel {
 			
 		}
 	}
+	public RapidMinerActivityConfigurationBean getConfiguration() {
+		
+		System.out.println("[DEBUG] the parameter count is " + tableModel.getColumnCount());
+		
+		try {
+			//System.out.println("[DEBUG] INSIDE TABLE MODEL " + tableModel.getUpdatedParameters().get(0).getExecutionValue());
+			newConfiguration.setParameterDescriptions(tableModel.getUpdatedParameters());
+			
+			Iterator myiter = newConfiguration.getParameterDescriptions().iterator();
+			
+			while (myiter.hasNext()) {
+				
+				RapidMinerParameterDescription des = (RapidMinerParameterDescription) myiter.next();
+				System.out.println(" new parameters to set " + des.getUseParameter() + " " + des.getExecutionValue());
+				
+			}
+			
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+		newConfiguration.setIsParametersConfigured(true);
+		tableModel = new ParameterTableModel(newConfiguration.getParameterDescriptions());
+		return newConfiguration;
+		
+	}
+
+	public void setOkAction(Action okAction) {
+		finishButton.setAction(okAction);
+	}
 	
 	public class TextAreaRenderer extends JTextArea
     implements TableCellRenderer {
 
 	public TextAreaRenderer() {
+		
 	    setLineWrap(true);
 	    setWrapStyleWord(true);
 	    setAutoscrolls(true);
@@ -503,8 +540,10 @@ public class RapidMinerConfigurationView extends JPanel {
 	public Component getTableCellRendererComponent(JTable jTable,
 	      Object obj, boolean isSelected, boolean hasFocus, int row,
 	      int column) {
+		
 		  setText((String)obj);
 		  return this;
+		  
 	  }
 	};
 

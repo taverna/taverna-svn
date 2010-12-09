@@ -89,10 +89,14 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 
 		// No more results will be coming
 		callBack.finished();
+		
+		rootHash.clear();
+		displayHash.clear();
 	}
 	
 	HashMap<String, String> rootHash = new HashMap<String, String>();
 	HashMap<String, String> displayHash = new HashMap<String, String>();
+
 	
 	public void getOperatorTree() {
 		
