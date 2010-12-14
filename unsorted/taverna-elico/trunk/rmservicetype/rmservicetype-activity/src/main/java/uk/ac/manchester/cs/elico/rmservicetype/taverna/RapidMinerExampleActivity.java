@@ -67,7 +67,7 @@ public class RapidMinerExampleActivity extends
 	private static final String IN_FIRST_INPUT = "firstInput";
 	private static final String IN_EXTRA_DATA = "extraData";
 	private static final String OUT_MORE_OUTPUTS = "moreOutputs";
-	private static final String OUT_SIMPLE_OUTPUT = "output";
+	private static final String OUT_SIMPLE_OUTPUT = "outputLocation";
 	private static final String OUT_REPORT = "report";
 	
     static String securityProfile = SecurityProfiles.HTTP_BASIC_AUTHN;
@@ -80,7 +80,7 @@ public class RapidMinerExampleActivity extends
 	@Override
 	public void configure(RapidMinerActivityConfigurationBean configBean)
 			throws ActivityConfigurationException {
-
+		
 		// Any pre-config sanity checks
 		if (configBean.getOperatorName().equals("invalidExample")) {
 			throw new ActivityConfigurationException(
@@ -96,18 +96,21 @@ public class RapidMinerExampleActivity extends
 
 		// myClient = new MyClient(configBean.getExampleUri());
 		// this.service = myClient.getService(configBean.getExampleString());
-		
+		List<String> locationPorts = new ArrayList<String>();
+			locationPorts.add("inputLocation");
+			locationPorts.add("outputLocation");
+			portListing = locationPorts;
+			
 		if (configBean.getHasDescriptions()) {
 			
+			configurePorts();
 			
 		} else {
 			
-			List<String> locationPorts = new ArrayList<String>();
-			locationPorts.add("inputLocation");
-			locationPorts.add("outputLocation");
+			
 			
 			portListing = getParametersForOperation(configBean.getCallName());
-			portListing = locationPorts;
+			//portListing = locationPorts;
 			
 		
 				List<RapidMinerParameterDescription> descList = getParameterDescriptions(myTempList);
@@ -221,7 +224,55 @@ public class RapidMinerExampleActivity extends
 			e.printStackTrace();
 		}
 		// FIXME: Replace with your input and output port definitions
+		 * 
+		 * 
 				*/
+		
+		
+		
+		if (configBean.getIsExplicit()) {
+			
+			//check if both input and output locations are set
+			
+			if(configBean.getInputLocation().equals("") && configBean.getOutputLocation().equals("")) {
+				
+				System.out.println(" NO INPUT OR OUTPUT LOCATIONS SPECIFIED >>>>* SHOW BOTH PORTS");
+				removeInputs();
+				portListing.clear();
+				portListing.add("inputLocation");
+				portListing.add("outputLocation");
+				
+			} else {	// both are filled in 
+			
+				System.out.println(" BOTH PORTS ARE SPECIFIED >>>>>>* REMOVING ALL PORTS ");
+				removeInputs();
+				portListing.clear();
+			}
+			
+			if (configBean.getInputLocation().equals("") && !configBean.getOutputLocation().equals("")) {	// only input is filled in
+				
+				System.out.println(" ONLY OUTPUT LOCATION IS SPECIFIED >>>>* SHOW INPUT PORT ONLY");
+				removeInputs();
+				portListing.clear();
+				portListing.add("inputLocation");
+			
+			}
+			
+			if (!configBean.getInputLocation().equals("") && configBean.getOutputLocation().equals("")) {	// only output is filled in
+				
+				System.out.println(" ONLY INPUT LOCATION IS SPECIFIED >>>>* SHOW OUTPUT PORT ONLY");
+				removeInputs();
+				portListing.clear();
+				portListing.add("outputLocation");
+				
+			}
+						
+			
+		} else {	// Implicit
+				
+			
+		}
+		
 		Iterator inputIterator = portListing.iterator();
 		
 		while (inputIterator.hasNext()) {
@@ -248,7 +299,7 @@ public class RapidMinerExampleActivity extends
 
 	}
 	
-	public Map<Object, String> constructInvocationInputMap() {
+	public Map<Object, String> constructInvocationInputMap(String inputLocation, String outputLocation) {
 		
 		// add parameters to the hashmap from Parameter Configurations
 		HashMap<String, String> params = new HashMap<String, String>();
@@ -273,7 +324,7 @@ public class RapidMinerExampleActivity extends
 			
 		String inputDoc;
 		//String executorType, String operatorName, HashMap<String, String> operatorParameters, String inputLocations, String outputLocations
-		inputDoc = createInputDocument("executeBasicOperatorExplicitOutput", configBean.getCallName(), params, configBean.getInputLocation(), configBean.getOutputLocation());
+		inputDoc = createInputDocument("executeBasicOperatorExplicitOutput", configBean.getCallName(), params, inputLocation, outputLocation);
 		
 		Map<Object, String> inputMap = new HashMap<Object, String>();
 		inputMap.put("executeBasicOperatorExplicitOutput", inputDoc);
@@ -291,66 +342,60 @@ public class RapidMinerExampleActivity extends
 			
 			public void run() {
 	
-				// tester
-					/*	WORKING TEST CASE
-					HashMap<String, String> params = new HashMap<String, String>();
-					params.put("attribute_type_filter", "single");
-					params.put("attribute", "a1");
-					String inputDoc;
-					
-					inputDoc = createInputDocument(null, "discretize_by_bins", params, "/groups/elico/templates/data/Iris/", "/home/jupp/fromPluginAgain/");
-					
-					Map<Object, String> inputMap = new HashMap<Object, String>();
-					inputMap.put("executeBasicOperatorExplicitOutput", inputDoc);
-					// end of test
-					*/
-				
-				Map<Object, String> inputMap = constructInvocationInputMap();
-				
-				
 				InvocationContext context = callback
 						.getContext();
 				ReferenceService referenceService = context
 						.getReferenceService();
 				
+				Map<Object, String> inputMap = null;
+				// if explicit
+				
+					// if both input and output locations are specified - dont get from ports (because they won't exist)
+
+					// if both input and output locations are not specified - get info from ports
+				
+					// if just input is specified - get the input from the config bean and the output from the port
+				
+					// if just output is specified - get the output from the configbean and the input from the port
+				
+				if (configBean.getIsExplicit()) {		// is explicit
+					
+					// if both input and output locations are specified - dont get from ports (because they won't exist)
+					if (!configBean.getInputLocation().equals("") && !configBean.getOutputLocation().equals("")) {
+						
+						System.out.println(" TEST CASE 1. " + configBean.getInputLocation() + " " + configBean.getOutputLocation());
+
+						inputMap = constructInvocationInputMap(configBean.getInputLocation(), configBean.getOutputLocation());
+						
+					}
+					
+					// if both input and output locations are not specified - get info from ports
+					if (configBean.getInputLocation().equals("") && configBean.getOutputLocation().equals("")) {
+		
+						String inputValue = (String) referenceService.renderIdentifier(inputs.get("inputLocation"), String.class, context);
+						String outputValue = (String) referenceService.renderIdentifier(inputs.get("outputLocation"), String.class, context);
+						
+						System.out.println(" TEST CASE 2. " + inputValue + " " + outputValue);
+
+						inputMap = constructInvocationInputMap(inputValue, outputValue);
+					}
+					
+					
+				} else {								// is implicit	
+					
+										
+					
+				}
+				
+			//	String firstInput = (String) referenceService.renderIdentifier(inputs.get(IN_FIRST_INPUT),
+            //            String.class, context);
+
+				
+			
+				
 				System.out.println(" +++ ONE +++");
 				
-				/*
-				// Resolve inputs 				
-				String oneParam = createXMLDocument("attribute_type_filter","single");
-				String twoParam = createXMLDocument("attribute","a1");
 
-				List<String> operatorParams = new ArrayList<String>();
-				operatorParams.add(oneParam);
-				operatorParams.add(twoParam);
-				
-				System.out.println(" +++ TWO +++");
-			
-				// ++
-                Map<String, Object> invokerInputMap = new HashMap<String, Object>();
-
-                T2Reference operatorParameters = referenceService.register(operatorParams, 1, true, context);
-				System.out.println(" +++ THREE +++");
-
-                //T2Reference inputLocation  = referenceService.referenceFromString("/groups/elico/templates/data/Iris/");
-                T2Reference inputLocation  = referenceService.register("/groups/elico/templates/data/Iris/", 0, true, context);
-				
-                //T2Reference operatorName = referenceService.referenceFromString("discretize_by_bins");
-                T2Reference operatorName = referenceService.register("discretize_by_bins", 0, true, context);
-
-                //T2Reference outputLocations = referenceService.referenceFromString("/home/jupp/fromPlugin/");
-                T2Reference outputLocations = referenceService.register("/home/jupp/fromPlugin/", 0, true, context);
-                
-				//String firstInput = (String) referenceService.renderIdentifier(inputs.get(IN_FIRST_INPUT), 
-				//		String.class, context);
-
-                
-				invokerInputMap.put("inputLocations", (Object)inputLocation);
-				invokerInputMap.put("operatorName", (Object)operatorName);
-				invokerInputMap.put("operatorParameters", (Object)operatorParameters);
-				invokerInputMap.put("outputLocations", (Object)outputLocations);
-			
-				*/
 				
 				System.out.println(" +++ FOUR +++");
 
@@ -548,7 +593,8 @@ public class RapidMinerExampleActivity extends
 				String simpleValue = configBean.getOutputLocation();
 				T2Reference simpleRef = referenceService.register(simpleValue, 0, true, context);
 				outputs.put(OUT_SIMPLE_OUTPUT, simpleRef);
-				 callback.receiveResult(outputs, new int[0]);
+				callback.receiveResult(outputs, new int[0]);
+				
 			}
 		});
 	}
@@ -1020,3 +1066,54 @@ configBean.setParameterDescriptions(descList);
 */
 
 // tester
+
+// tester
+/*	WORKING TEST CASE
+HashMap<String, String> params = new HashMap<String, String>();
+params.put("attribute_type_filter", "single");
+params.put("attribute", "a1");
+String inputDoc;
+
+inputDoc = createInputDocument(null, "discretize_by_bins", params, "/groups/elico/templates/data/Iris/", "/home/jupp/fromPluginAgain/");
+
+Map<Object, String> inputMap = new HashMap<Object, String>();
+inputMap.put("executeBasicOperatorExplicitOutput", inputDoc);
+// end of test
+*/
+
+/*
+// Resolve inputs 				
+String oneParam = createXMLDocument("attribute_type_filter","single");
+String twoParam = createXMLDocument("attribute","a1");
+
+List<String> operatorParams = new ArrayList<String>();
+operatorParams.add(oneParam);
+operatorParams.add(twoParam);
+
+System.out.println(" +++ TWO +++");
+
+// ++
+Map<String, Object> invokerInputMap = new HashMap<String, Object>();
+
+T2Reference operatorParameters = referenceService.register(operatorParams, 1, true, context);
+System.out.println(" +++ THREE +++");
+
+//T2Reference inputLocation  = referenceService.referenceFromString("/groups/elico/templates/data/Iris/");
+T2Reference inputLocation  = referenceService.register("/groups/elico/templates/data/Iris/", 0, true, context);
+
+//T2Reference operatorName = referenceService.referenceFromString("discretize_by_bins");
+T2Reference operatorName = referenceService.register("discretize_by_bins", 0, true, context);
+
+//T2Reference outputLocations = referenceService.referenceFromString("/home/jupp/fromPlugin/");
+T2Reference outputLocations = referenceService.register("/home/jupp/fromPlugin/", 0, true, context);
+
+//String firstInput = (String) referenceService.renderIdentifier(inputs.get(IN_FIRST_INPUT), 
+//		String.class, context);
+
+
+invokerInputMap.put("inputLocations", (Object)inputLocation);
+invokerInputMap.put("operatorName", (Object)operatorName);
+invokerInputMap.put("operatorParameters", (Object)operatorParameters);
+invokerInputMap.put("outputLocations", (Object)outputLocations);
+
+*/
