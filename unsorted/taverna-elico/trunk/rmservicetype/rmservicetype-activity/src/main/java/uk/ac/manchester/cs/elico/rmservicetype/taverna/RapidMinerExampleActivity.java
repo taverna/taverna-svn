@@ -380,6 +380,29 @@ public class RapidMinerExampleActivity extends
 						inputMap = constructInvocationInputMap(inputValue, outputValue);
 					}
 					
+					// if just input is specified - get the input from the config bean and the output from the port
+					if (!configBean.getInputLocation().equals("") && configBean.getOutputLocation().equals("")) {
+						
+						String outputValue = (String) referenceService.renderIdentifier(inputs.get("outputLocation"), String.class, context);
+						
+						System.out.println(" TEST CASE 3. " + configBean.getInputLocation() + " " + outputValue);
+						
+						inputMap = constructInvocationInputMap(configBean.getInputLocation(), outputValue);
+
+						
+					}
+					
+					// if just output is specified - get the output from the configbean and the input from the port
+					if (configBean.getInputLocation().equals("") && !configBean.getOutputLocation().equals("")) {
+						
+						String inputValue = (String) referenceService.renderIdentifier(inputs.get("inputLocation"), String.class, context);
+						System.out.println(" TEST CASE 4. " + inputValue + " " + configBean.getOutputLocation());
+						
+						inputMap = constructInvocationInputMap(inputValue, configBean.getOutputLocation());
+						
+					}
+					
+					
 					
 				} else {								// is implicit	
 					
