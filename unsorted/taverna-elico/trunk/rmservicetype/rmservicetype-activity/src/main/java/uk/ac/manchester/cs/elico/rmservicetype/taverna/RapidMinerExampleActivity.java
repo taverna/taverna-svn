@@ -327,7 +327,7 @@ public class RapidMinerExampleActivity extends
 		inputDoc = createInputDocument("executeBasicOperatorExplicitOutput", configBean.getCallName(), params, inputLocation, outputLocation);
 		
 		Map<Object, String> inputMap = new HashMap<Object, String>();
-		inputMap.put("executeBasicOperatorExplicitOutput", inputDoc);
+		inputMap.put("parameters", inputDoc);
 		
 		return inputMap;
 	}
@@ -424,7 +424,7 @@ public class RapidMinerExampleActivity extends
 
 				WSDLActivity wrapper = new WSDLActivity();
 				WSDLActivityConfigurationBean myBean = new WSDLActivityConfigurationBean();
-				myBean.setWsdl("http://rapid-i.dyndns.org:8080/e-LICO/ExecutorService?wsdl");
+				myBean.setWsdl("http://rpc295.cs.man.ac.uk:8081/e-LICO/ExecutorService?wsdl");
 				myBean.setOperation("executeBasicOperatorExplicitOutput");
 				//myBean.setSecurityProfile(securityProfile);
 				
@@ -493,7 +493,7 @@ public class RapidMinerExampleActivity extends
 				context1.setPassword(usernamePassword.getPasswordAsString());
 				usernamePassword.resetPassword();
 				
-				call.setTargetEndpointAddress("http://rapid-i.dyndns.org:8080/e-LICO/ExecutorService?wsdl");
+				call.setTargetEndpointAddress("http://rpc295.cs.man.ac.uk:8081/e-LICO/ExecutorService?wsdl");
 				call.setOperationName("executeBasicOperatorExplicitOutput");
 				
 				// end of call
@@ -758,23 +758,23 @@ public class RapidMinerExampleActivity extends
 		
 		//operationName = transformOperatorName(operationName);
 		
-		System.out.println("^^^Starting tester");
+		System.out.println("^^^Starting tester " + operationName);
 
 		Map<Object, String> inputMap = new HashMap<Object, String>();
 		String inputString = "<getParameterTypes xmlns=\"http://elico.rapid_i.com/\"><operatorName xmlns=\"\">" + operationName + "</operatorName></getParameterTypes>";
-		inputMap.put("getParameterTypes", inputString);
+		inputMap.put("parameters", inputString);
 		
 		System.out.println("^^^Starting tester2");
 		
 		// WSDLActivityConfigurationBean
 		WSDLActivityConfigurationBean myBean = new WSDLActivityConfigurationBean();
-		myBean.setWsdl("http://rapid-i.dyndns.org:8080/e-LICO/ExecutorService?wsdl");
+		myBean.setWsdl("http://rpc295.cs.man.ac.uk:8081/e-LICO/ExecutorService?wsdl");
 		myBean.setOperation("getParameterTypes");
 		
 		// Output and Parser for WSDLSOAPInvoker
 		List<String> outputNames = new ArrayList<String>();
 		outputNames.add("attachmentList");
-		outputNames.add("getParameterTypesResponce");
+		outputNames.add("parameters");
 		
 		System.out.println("^^^Point 1");
 		
@@ -837,7 +837,7 @@ public class RapidMinerExampleActivity extends
 		
 		System.out.println("^^^Point 7");
 
-		call.setTargetEndpointAddress("http://rapid-i.dyndns.org:8080/e-LICO/ExecutorService?wsdl");
+		call.setTargetEndpointAddress("http://rpc295.cs.man.ac.uk:8081/e-LICO/ExecutorService?wsdl");
 		call.setOperationName("getParameterTypes");
 
 		System.out.println("^^^Point 8");
