@@ -72,7 +72,7 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 			RapidMinerServiceDesc service = new RapidMinerServiceDesc();
 			// Populate the service description bean
 			service.setOperatorName(displayHash.get(keys[i].toString()));
-			service.setExampleUri(URI.create("http://rapid-i.dyndns.org:8080/e-LICO/ExecutorService"));
+			service.setExampleUri(URI.create("http://rpc295.cs.man.ac.uk:8081/e-LICO/ExecutorService"));
 			System.out.println(" CALL NAME " + keys[i].toString());
 			service.setCallName(keys[i].toString());
 			List<String> myList = seperateGroupName(rootHash.get(keys[i]));
@@ -106,7 +106,7 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 		
 		// WSDLActivityConfigurationBean
 		WSDLActivityConfigurationBean myBean = new WSDLActivityConfigurationBean();
-		myBean.setWsdl("http://rapid-i.dyndns.org:8080/e-LICO/ExecutorService?wsdl");
+		myBean.setWsdl("http://rpc295.cs.man.ac.uk:8081/e-LICO/ExecutorService?wsdl");
 		myBean.setOperation("getOperatorTree");
 		
 		// Output and Parser for WSDLSOAPInvoker
@@ -170,7 +170,7 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 		
 		System.out.println("Point 7");
 		
-		call.setTargetEndpointAddress("http://rapid-i.dyndns.org:8080/e-LICO/ExecutorService?wsdl");
+		call.setTargetEndpointAddress("http://rpc295.cs.man.ac.uk:8081/e-LICO/ExecutorService?wsdl");
 		call.setOperationName("getOperatorTree");
 		
 		System.out.println("Point 8");
