@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>ui-impl</artifactId>
+		<version>1.2</version>
+	</parent>
+	
+	<groupId>uk.org.chemtav.renderers</groupId>
+	<artifactId>webbrowser</artifactId>
+	<version>0.2</version>
+	<name>Web browser renderer plugin</name>
+
+	<!-- Define location to place plugin for downloading here -->
+	<!-- 
+	<distributionManagement>
+		<repository>
+			<id>mcisb-repository</id>
+			<name>MCISB maven repository</name>
+			<url>file:///var/www/maven/repository</url>
+		</repository>
+	</distributionManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<repositories>
+		<repository>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>  
+		<repository>
+			<id>mcisb-repository</id>
+			<name>MCISB maven repository</name>
+			<url>http://dbk-ed.mib.man.ac.uk/maven/repository</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>repo1-repository</id>
+			<name>Repo1 maven repository</name>
+			<url>http://repo1.maven.org/maven2/jexcelapi</url>
+		</repository>
+	</repositories>
+	-->
+
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-api</groupId>
+			<artifactId>renderers-api</artifactId>
+			<version>${t2.ui.api.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.lang</groupId>
+			<artifactId>ui</artifactId>
+			<version>${t2.lang.version}</version>
+		</dependency>
+	</dependencies>
+</project>
