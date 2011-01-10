@@ -67,7 +67,7 @@ public class HTMLBrowserRenderer implements Renderer
 
     public String getType()
     {
-        return "Text/HTML Browser";
+        return "Text/Html (in Web browser)";
     }
 
     public boolean canHandle(ReferenceService referenceService,
