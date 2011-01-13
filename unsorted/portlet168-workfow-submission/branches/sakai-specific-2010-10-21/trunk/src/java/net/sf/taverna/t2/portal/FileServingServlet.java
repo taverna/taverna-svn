@@ -20,7 +20,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import org.sakaiproject.component.cover.ComponentManager;
+import org.sakaiproject.tool.api.SessionManager;
 /**
  * This servlet reads the file path from the session object and
  * sends the file back to the user as a response.
@@ -95,7 +96,15 @@ public class FileServingServlet extends HttpServlet {
            try {
 
             File dataFile = new File(dataFilePath);
-            String user = (String)request.getSession().getAttribute(Constants.USER);
+            
+            String user0 = (String)request.getSession().getAttribute(Constants.USER); // this does not work in Sakai
+            System.out.println("File Serving Servlet: Fetching file " + dataFilePath + " for user (obtained from session) " + user0 + "; file mime type: "+mimeType);
+            // Sakai-specific way of getting the current user
+            SessionManager sessionManager = (SessionManager) ComponentManager.get(org.sakaiproject.tool.api.SessionManager.class); // Sakai-specific
+            String user = sessionManager.getCurrentSession().getUserEid(); // get user's display name - Sakai-specific
+            if (user == null){ //if user is null - then make them ANONYMOUS (should not be null now)
+                user = Constants.USER_ANONYMOUS;
+            } // Still gives me nul1!!!!
             System.out.println("File Serving Servlet: Fetching file " + dataFilePath + " for user " + user + "; file mime type: "+mimeType);
 
             // We do not serve arbritarty files here - just those in the JOBS_DIR so make sure
