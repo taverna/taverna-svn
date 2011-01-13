@@ -49,6 +49,8 @@ import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
 import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
+import org.sakaiproject.component.cover.ComponentManager;
+import org.sakaiproject.tool.api.SessionManager;
 
 /**
  * Workflow Results Portlet - enables user to view status of
@@ -256,12 +258,13 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                                             getAttribute(Constants.USER,
                                             PortletSession.APPLICATION_SCOPE);
         if (user == null){
-            if (request.getUserPrincipal() == null){
+            SessionManager sessionManager = (SessionManager) ComponentManager.get(org.sakaiproject.tool.api.SessionManager.class); // Sakai-specific
+            user = sessionManager.getCurrentSession().getUserEid(); // get user's display name - Sakai-specific
+
+            if (user == null){ //if user is still null - then make them ANONYMOUS
                 user = Constants.USER_ANONYMOUS;
             }
-            else{
-                user = request.getUserPrincipal().getName();
-            }
+
             System.out.println("Workflow Results Portlet: Session started for user " + user + "." );
             request.getPortletSession().setAttribute(Constants.USER,
                     user,
