@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.taverna</groupId>
 	<artifactId>parent</artifactId>
-	<version>0.2.2011-01-21</version>
+	<version>0.2.2011-01-24</version>
 	<packaging>pom</packaging>
 	<name>Taverna Maven parent</name>
 	<description>
@@ -29,6 +29,10 @@
 		<name>myGrid</name>
 		<url>http://www.mygrid.org.uk/</url>
 	</organization>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
 	<build>
 		<plugins>
 			<plugin>
