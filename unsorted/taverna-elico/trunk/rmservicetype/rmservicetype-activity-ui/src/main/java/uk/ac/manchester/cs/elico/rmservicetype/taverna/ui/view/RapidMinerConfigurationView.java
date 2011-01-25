@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -27,6 +28,8 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -35,6 +38,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -81,6 +85,7 @@ public class RapidMinerConfigurationView extends JPanel {
 	private ParameterTableModel tableModel = null;
 	
 	private JButton nextButton, finishButton;
+	private JButton uploadButton;
 	
 	private String first = new String("Explicit");
 	private String second = new String("Implicit");
@@ -97,6 +102,7 @@ public class RapidMinerConfigurationView extends JPanel {
 		newConfiguration = oldConfiguration;
 		initialise();
 		layoutPanel();
+			
 	}
 
 	private void initialise() {
@@ -151,6 +157,31 @@ public class RapidMinerConfigurationView extends JPanel {
 		inputLocationField.setText(oldConfiguration.getInputLocation());
 		outputLocationField.setText(oldConfiguration.getOutputLocation());
 
+		uploadButton = new JButton("Upload");
+		uploadButton.setFocusable(false);
+		uploadButton.setVisible(true);
+	
+		uploadButton.addActionListener(new ActionListener() {
+	
+			public void actionPerformed(ActionEvent arg0) {
+
+				//RapidAnalyticsRepositoryBrowser browser = new RapidAnalyticsRepositoryBrowser();
+				//browser.createAndShowGUI();
+				//browser.setVisible(true);
+				//add(browser.frame);
+							
+				JDialog frame = new JDialog((JDialog)SwingUtilities.getAncestorOfClass(JDialog.class, RapidMinerConfigurationView.this), "Rapid Analytics Repository Browser");
+				RapidAnalyticsRepositoryBrowser browser = new RapidAnalyticsRepositoryBrowser();
+				browser.setOpaque(true);
+				frame.add(browser);
+				frame.setPreferredSize(new Dimension(200,200));
+				frame.pack();
+				frame.setVisible(true);
+				
+			}
+			
+		});
+		
 		// buttons
 		buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		addDivider(buttonPanel, SwingConstants.TOP, true);	
@@ -177,6 +208,7 @@ public class RapidMinerConfigurationView extends JPanel {
 					cardLayout.last(contentPanel);
 					firstCardShown = false;
 					finishButton.setEnabled(true);
+					titleMessage.setText("Please choose which parameters you want to use and their corresponding configurations");
 					
 				} else {				// move to first card
 					
@@ -365,17 +397,23 @@ public class RapidMinerConfigurationView extends JPanel {
 		c.gridx = 1;
 		page1.add(inputLocationField, c);
 		
+		c.gridx = 2;
+		page1.add(uploadButton, c);
+		
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.ipady = 20;
 		c.gridwidth = 2;
 		c.gridx = 0;
 		c.gridy = 4;
 		
+		
+		
 		page1.add(outputLocationLabel, c);
 		
 		c.gridx = 1;
 		
 		page1.add(outputLocationField, c);
+		
 		
 		
 		//buttons
@@ -509,7 +547,6 @@ public class RapidMinerConfigurationView extends JPanel {
 				System.out.println(" new parameters to set " + des.getUseParameter() + " " + des.getExecutionValue());
 				
 			}
-			
 			
 		} catch (Exception e) {
 			
