@@ -327,7 +327,7 @@ public class RapidMinerExampleActivity extends
 		inputDoc = createInputDocument("executeBasicOperatorExplicitOutput", configBean.getCallName(), params, inputLocation, outputLocation);
 		
 		Map<Object, String> inputMap = new HashMap<Object, String>();
-		inputMap.put("parameters", inputDoc);
+		inputMap.put("executeBasicOperatorExplicitOutput", inputDoc);
 		
 		return inputMap;
 	}
@@ -406,7 +406,7 @@ public class RapidMinerExampleActivity extends
 					
 				} else {								// is implicit	
 					
-										
+						System.out.println(" Implicit execution selected, get output xml and parse.");
 					
 				}
 				
@@ -499,6 +499,7 @@ public class RapidMinerExampleActivity extends
 				// end of call
 
 				try {
+					System.out.println(" INPUT MAP CONTENTS " + inputMap.toString());
 					Map<String, Object> invokerOutputMap = invoker.invoke(inputMap, call);
 					
 				} catch (Exception e) {
@@ -612,6 +613,7 @@ public class RapidMinerExampleActivity extends
 				// return map of output data, with empty index array as this is
 				// the only and final result (this index parameter is used if
 				// pipelining output)
+							
 				Map<String, T2Reference> outputs = new HashMap<String, T2Reference>();
 				String simpleValue = configBean.getOutputLocation();
 				T2Reference simpleRef = referenceService.register(simpleValue, 0, true, context);
@@ -715,6 +717,7 @@ public class RapidMinerExampleActivity extends
 	}
 	
 	public String createXMLDocument(String key, String value) {
+		
 		org.jdom.Element childElement = new org.jdom.Element("key", "");
 		childElement.setText(key);
 		
@@ -734,8 +737,7 @@ public class RapidMinerExampleActivity extends
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+				
 		return returnVal;
 		
 	}
@@ -752,6 +754,7 @@ public class RapidMinerExampleActivity extends
 		updatedName = updatedName.replace(" ", "_");
 		System.out.println(" UPDATED NAME " + updatedName);
 		return updatedName;
+		
 	}
 	
 	public List <String> getParametersForOperation(String operationName) {
@@ -762,7 +765,7 @@ public class RapidMinerExampleActivity extends
 
 		Map<Object, String> inputMap = new HashMap<Object, String>();
 		String inputString = "<getParameterTypes xmlns=\"http://elico.rapid_i.com/\"><operatorName xmlns=\"\">" + operationName + "</operatorName></getParameterTypes>";
-		inputMap.put("parameters", inputString);
+		inputMap.put("getParameterTypes", inputString);
 		
 		System.out.println("^^^Starting tester2");
 		
@@ -774,7 +777,7 @@ public class RapidMinerExampleActivity extends
 		// Output and Parser for WSDLSOAPInvoker
 		List<String> outputNames = new ArrayList<String>();
 		outputNames.add("attachmentList");
-		outputNames.add("parameters");
+		outputNames.add("getParameterTypesResponse");
 		
 		System.out.println("^^^Point 1");
 		
