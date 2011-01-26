@@ -27,6 +27,8 @@ import net.sf.taverna.t2.annotation.annotationbeans.HostInstitution;
 
 public class LocalworkerActivity extends BeanshellActivity{
 	
+	public static final String URI = "http://ns.taverna.org.uk/2010/activity/localworker";
+
 	@Override
 	public LocalworkerActivityConfigurationBean getConfiguration() {
 		super.getConfiguration();

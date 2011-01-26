@@ -21,7 +21,10 @@
 package net.sf.taverna.t2.activities.localworker;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ConfigurationBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ConfigurationProperty;
 
+@ConfigurationBean(uri = LocalworkerActivity.URI + "/configuration")
 public class LocalworkerActivityConfigurationBean extends BeanshellActivityConfigurationBean{
 	
 	private String localworkerName;
@@ -30,6 +33,7 @@ public class LocalworkerActivityConfigurationBean extends BeanshellActivityConfi
 		return localworkerName;
 	}
 
+	@ConfigurationProperty(name = "localworkerName", label = "Localworker Name", description = "The name of the localworker")
 	public void setLocalworkerName(String localworkerName) {
 		this.localworkerName = localworkerName;
 	}
