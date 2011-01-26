@@ -54,6 +54,8 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCa
 public class ApiConsumerActivity extends
 	AbstractAsynchronousDependencyActivity<ApiConsumerActivityConfigurationBean> {
 	
+	public static final String URI = "http://ns.taverna.org.uk/2010/activity/apiconsumer";
+
 	/**
 	 * Configuration bean containing API consumer activity-specific settigs. 
 	 */

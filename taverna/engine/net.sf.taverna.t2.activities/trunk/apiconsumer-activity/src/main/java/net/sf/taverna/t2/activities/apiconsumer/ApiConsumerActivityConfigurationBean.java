@@ -21,6 +21,9 @@
 package net.sf.taverna.t2.activities.apiconsumer;
 
 import net.sf.taverna.t2.activities.dependencyactivity.DependencyActivityConfigurationBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ConfigurationBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ConfigurationProperty;
+
 
 /**
  * A configuration bean for the API Consumer activity. 
@@ -28,7 +31,8 @@ import net.sf.taverna.t2.activities.dependencyactivity.DependencyActivityConfigu
  * @author Alex Nenadic
  *
  */
-public class ApiConsumerActivityConfigurationBean extends DependencyActivityConfigurationBean{
+@ConfigurationBean(uri = ApiConsumerActivity.URI + "/configuration")
+public class ApiConsumerActivityConfigurationBean extends DependencyActivityConfigurationBean {
 	
 	/**
 	 * The name of the API consumer that wrapped the method to be invoked.
@@ -95,6 +99,7 @@ public class ApiConsumerActivityConfigurationBean extends DependencyActivityConf
 	/**
 	 * @param apiConsumerDescription the apiConsumerDescription to set
 	 */
+	@ConfigurationProperty(name = "apiConsumerDescription", label = "API Consumer Description", description = "The description of the API consumer that wrapped the method to be invoked", required = false)
 	public void setApiConsumerDescription(String apiConsumerDescription) {
 		this.apiConsumerDescription = apiConsumerDescription;
 	}
@@ -109,6 +114,7 @@ public class ApiConsumerActivityConfigurationBean extends DependencyActivityConf
 	/**
 	 * @param apiConsumerName the apiConsumerName to set
 	 */
+	@ConfigurationProperty(name = "apiConsumerName", label = "API Consumer Name", description = "The name of the API consumer that wrapped the method to be invoked", required = false)
 	public void setApiConsumerName(String apiConsumerName) {
 		this.apiConsumerName = apiConsumerName;
 	}
@@ -123,6 +129,7 @@ public class ApiConsumerActivityConfigurationBean extends DependencyActivityConf
 	/**
 	 * @param description the description to set
 	 */
+	@ConfigurationProperty(name = "description", label = "Method Description", description = "The description of the method to invoke", required = false)
 	public void setDescription(String description) {
 		this.description = description;
 	}
@@ -137,6 +144,7 @@ public class ApiConsumerActivityConfigurationBean extends DependencyActivityConf
 	/**
 	 * @param className the className to set
 	 */
+	@ConfigurationProperty(name = "className", label = "Class Name", description = "The name of the class the method will be invoked on")
 	public void setClassName(String className) {
 		this.className = className;
 	}
@@ -151,6 +159,7 @@ public class ApiConsumerActivityConfigurationBean extends DependencyActivityConf
 	/**
 	 * @param methodName the methodName to set
 	 */
+	@ConfigurationProperty(name = "methodName", label = "Method Name", description = "The name of the method to invoke")
 	public void setMethodName(String methodName) {
 		this.methodName = methodName;
 	}
@@ -165,6 +174,7 @@ public class ApiConsumerActivityConfigurationBean extends DependencyActivityConf
 	/**
 	 * @param parameterNames the parameterNames to set
 	 */
+	@ConfigurationProperty(name = "parameterNames", label = "Parameter Names", description = "List of parameter names")
 	public void setParameterNames(String[] pNames) {
 		this.parameterNames = pNames;
 	}
@@ -179,6 +189,7 @@ public class ApiConsumerActivityConfigurationBean extends DependencyActivityConf
 	/**
 	 * @param parameterDimensions the parameterDimensions to set
 	 */
+	@ConfigurationProperty(name = "parameterDimensions", label = "Parameter Dimensions", description = "List of parameter dimensions (0 for single object, 1 for a list of objects, etc.)")
 	public void setParameterDimensions(int[] pDimensions) {
 		this.parameterDimensions = pDimensions;
 	}
@@ -193,6 +204,7 @@ public class ApiConsumerActivityConfigurationBean extends DependencyActivityConf
 	/**
 	 * @param parameterTypes the parameterTypes to set
 	 */
+	@ConfigurationProperty(name = "parameterTypes", label = "Parameter Types", description = "List of parameter types")
 	public void setParameterTypes(String[] pTypes) {
 		this.parameterTypes = pTypes;
 	}
@@ -208,6 +220,7 @@ public class ApiConsumerActivityConfigurationBean extends DependencyActivityConf
 	/**
 	 * @param returnType the returnType to set
 	 */
+	@ConfigurationProperty(name = "returnType", label = "Return Type", description = "Method's return parameter type")
 	public void setReturnType(String returnType) {
 		this.returnType = returnType;
 	}
@@ -222,6 +235,7 @@ public class ApiConsumerActivityConfigurationBean extends DependencyActivityConf
 	/**
 	 * @param returnDimension the returnDimension to set
 	 */
+	@ConfigurationProperty(name = "returnDimension", label = "Return Dimension", description = "Method's return parameter dimension")
 	public void setReturnDimension(int returnDimension) {
 		this.returnDimension = returnDimension;
 	}
@@ -236,6 +250,7 @@ public class ApiConsumerActivityConfigurationBean extends DependencyActivityConf
 	/**
 	 * @param isMethodConstructor the isMethodConstructor to set
 	 */
+	@ConfigurationProperty(name = "isMethodConstructor", label = "Is Method Constructor?", description = "Is the method  to be invoked a contructor?", required = false)
 	public void setIsMethodConstructor(boolean isConstructor) {
 		this.isMethodConstructor = isConstructor;
 	}
@@ -250,6 +265,7 @@ public class ApiConsumerActivityConfigurationBean extends DependencyActivityConf
 	/**
 	 * @param isMethodStatic the isMethodStatic to set
 	 */
+	@ConfigurationProperty(name = "isMethodStatic", label = "Is Method Static?", description = "Is the method  to be invoked static?", required = false)
 	public void setIsMethodStatic(boolean isStatic) {
 		this.isMethodStatic = isStatic;
 	}
