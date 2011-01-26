@@ -3,8 +3,6 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
                            http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="localworkerActivityHealthChecker" class="net.sf.taverna.t2.activities.stringconstant.LocalworkerActivityHealthChecker" />
-
-	<bean id="localworkerActivityFactory" class="net.sf.taverna.t2.activities.stringconstant.LocalworkerActivityFactory" />
+	<bean id="localworkerActivityFactory" class="net.sf.taverna.t2.activities.localworker.LocalworkerActivityFactory" />
 
 </beans>
