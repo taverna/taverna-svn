@@ -43,6 +43,22 @@
 			<artifactId>workflowmodel-api</artifactId>
 			<version>${t2.core.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>reference-core-extensions</artifactId>
+			<version>${t2.core.refexts.version}</version>
+		</dependency>
+		<!--================================================================================= -->
+		<!-- Work around for java compiler bug : -->
+		<!-- An exception has occurred in the compiler (1.6.0_22) -->
+		<!-- com.sun.tools.javac.code.Symbol$CompletionFailure: -->
+		<!-- class file for org.springframework.transaction.annotation.Propagation not found -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>org.springframework.transaction</artifactId>
+			<version>3.0.5.RELEASE</version>
+		</dependency>
+		<!--================================================================================= -->
 
 		<dependency>
 			<groupId>junit</groupId>
