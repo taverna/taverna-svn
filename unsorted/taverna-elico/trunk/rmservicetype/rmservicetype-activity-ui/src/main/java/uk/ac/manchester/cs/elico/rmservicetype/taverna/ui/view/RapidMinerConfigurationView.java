@@ -44,6 +44,8 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
@@ -64,7 +66,6 @@ public class RapidMinerConfigurationView extends JPanel {
 
 	private RapidMinerActivityConfigurationBean oldConfiguration;
 	private RapidMinerActivityConfigurationBean newConfiguration;
-
 	
 	private JPanel titlePanel, contentPanel, buttonPanel, page1, page2;
 	
@@ -199,7 +200,7 @@ public class RapidMinerConfigurationView extends JPanel {
 					System.out.println("Configuration Changed");
 					newConfiguration.setInputLocation(inputLocationField.getText());
 					newConfiguration.setOutputLocation(outputLocationField.getText());
-
+					
 				}
 				
 				if (firstCardShown) {	// move to next card
@@ -582,7 +583,8 @@ public class RapidMinerConfigurationView extends JPanel {
 		  return this;
 		  
 	  }
-	};
+	}
+
 
 
 }

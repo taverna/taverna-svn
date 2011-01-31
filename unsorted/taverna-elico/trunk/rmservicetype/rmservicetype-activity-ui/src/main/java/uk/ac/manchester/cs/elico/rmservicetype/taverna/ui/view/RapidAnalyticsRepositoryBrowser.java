@@ -3,26 +3,21 @@ package uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.view;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.HashMap;
 
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -30,9 +25,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
@@ -46,7 +39,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 public class RapidAnalyticsRepositoryBrowser extends JPanel implements
-		ActionListener {
+		ActionListener, TreeExpansionListener {
 
 	private RapidAnalyticsRepositoryTree myTreePanel;
 	public static JFrame frame;
@@ -70,8 +63,11 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		setPreferredSize(new Dimension(200, 200));
 		
 		myTreePanel = new RapidAnalyticsRepositoryTree();
-		populateTree(myTreePanel, getRepositoryStructure(""));
-	
+		myTreePanel.myTree.addTreeExpansionListener(this);
+		
+		// populate tree with root elements
+		initialiseTreeContents();
+		
 		JButton addButton = new JButton("Add");
 		addButton.setActionCommand("add");
 		addButton.addActionListener(this);
@@ -92,10 +88,15 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
         panel.add(removeButton); 
         panel.add(clearButton);
         add(panel, BorderLayout.SOUTH);
-        
-        //setFocusable(true);
-        //setVisible(true);
-      		
+        		
+	}
+	
+	public void initialiseTreeContents() {
+		
+		//set the root structure
+		populateTree(myTreePanel, getRepositoryStructure(""));
+
+		
 	}
 	
 	public void populateTreeTest(RapidAnalyticsRepositoryTree treePanel) {
@@ -117,12 +118,53 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	        treePanel.addObject(p2, c1Name);
 	        treePanel.addObject(p2, c2Name);
 	        	
-	        
 	}
 	
 	public void populateTree(RapidAnalyticsRepositoryTree treePanel, Object [] stuff) {
 		
+		/*
+		String p1Name = new String("Parent 1");
+        String p2Name = new String("Parent 2");
+        String c1Name = new String("Child 1");
+        String c2Name = new String("Child 2");
+
+        DefaultMutableTreeNode p1, p2;
+
+        p1 = treePanel.addObject(null, p1Name);
+        p2 = treePanel.addObject(null, p2Name);
+
+        treePanel.addObject(p1, c1Name);
+        treePanel.addObject(p1, c2Name);
+
+        treePanel.addObject(p2, c1Name);
+        treePanel.addObject(p2, c2Name);
+		*/
 		
+        //
+        
+        String rootNodeName = new String();
+        
+        String childNodeName = new String();
+        
+        DefaultMutableTreeNode parentNode;
+ 
+        
+        for (Object myParentObject : stuff) {
+        	
+        	// add root contents to root tree node 
+        	parentNode = treePanel.addObject(null, myParentObject);
+        	
+        	// check whether the parentNode has any children (if it's a folder)
+        	if (objectType.get(myParentObject).equals("folder")) {
+        		
+        		System.out.println("This object is a folder : " + myParentObject);        		
+        		
+        	}
+        	
+        	
+        }
+        
+		/*
 		for (Object myList : stuff) {
 			
 			System.out.println(" ABOUT TO POPULATE TREE WITH " + stuff);
@@ -132,14 +174,24 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 				
 				System.out.println(" here's a folder, fetch its contents");
 				Object [] contents = getRepositoryStructure((String)myList);
-				stuff[stuff.length + 1] = getRepositoryStructure((String)myList);
 				
+				for (Object objectList : contents) {
+					
+					DefaultMutableTreeNode p1 = new DefaultMutableTreeNode(myList);
+
+					treePanel.addObject(p1 ,objectList);
+					
+					System.out.println("        the contents " + objectList);
+					//treePanel.addObject( p1 , objectList);
+					
+				}
 			}
 			
 		}
+		*/
 		
 	}
-	
+		
 	public void actionPerformed(ActionEvent event) {
 		// TODO Auto-generated method stub
 		 String command = event.getActionCommand();
@@ -163,9 +215,9 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		//http://rpc295.cs.man.ac.uk:8081/RAWS/resources/
 		String username = "rishi";
 		//String host = "http://rpc295.cs.man.ac.uk";
-		String password = "rishipwd";
+		String password = "";
 		
-		String urlBasePath = "http://rpc295.cs.man.ac.uk:8081/RAWS/resources/home/" + username + "/" + path;
+		String urlBasePath = "http://rpc295.cs.man.ac.uk:8081/RAWS/resources/" + path;
 		String urlApiCall = urlBasePath;
 		Object content = null;
 		
@@ -180,16 +232,15 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 			UsernamePasswordCredentials upc = new UsernamePasswordCredentials(
                     username, password);
  
-          //  ((DefaultHttpClient) client).getCredentialsProvider()
-          //          .setCredentials(as, upc);
+            //  ((DefaultHttpClient) client).getCredentialsProvider()
+            //          .setCredentials(as, upc);
             
             CredentialsProvider credsProvider = new BasicCredentialsProvider();
             credsProvider.setCredentials(new AuthScope("rpc295.cs.man.ac.uk", 8081, "RapidAnalyticsRealm"), new UsernamePasswordCredentials("rishi", "rishipwd"));
             
             ((DefaultHttpClient) client).setCredentialsProvider(credsProvider);
             
-            
-			BasicScheme basicAuth = new BasicScheme();
+  			BasicScheme basicAuth = new BasicScheme();
 			localContext.setAttribute("http", basicAuth);
 			
 			//HttpHost targetHost= new HttpHost(host, 8081);
@@ -210,9 +261,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 			content = EntityUtils.toString(response.getEntity());
 			
 			System.out.println(" THE RESPONSE BODY IS : " + content);
-			
-			
-			
+					
 		} catch (Exception e) {
 			
 			e.printStackTrace();			
@@ -242,8 +291,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 			children = doc.getElementsByTagName("entry");
 					
 			System.out.println(" The number of elements parsed from REST output: " + folders.getLength() + " , " + children.getLength());
-			
-			
+
 		} catch (Exception e) {
 			
 			e.printStackTrace();
@@ -282,29 +330,19 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	    return "?";
 	    
 	  }
-	
+			
+	public void treeCollapsed(TreeExpansionEvent arg0) {
 		
-	public JFrame createAndShowGUI() {
+		// TODO Auto-generated method stub
+		System.out.println("A node on the tree has been collapsed. " + arg0.getPath().toString());
 		
-		frame = new JFrame("Rapid Analytics Repository Browser");
-		//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);		
-				
-		RapidAnalyticsRepositoryBrowser browser = new RapidAnalyticsRepositoryBrowser();
-		browser.setOpaque(true);
-		frame.setContentPane(browser);
+	}
+
+	public void treeExpanded(TreeExpansionEvent arg0) {
 		
-		frame.pack();
-		frame.setVisible(true);
-				
-		//JDialog myDialog = new JDialog();
-		//myDialog.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		// TODO Auto-generated method stub
+		System.out.println("A node on the tree has been expanded." + arg0.getPath().toString());
 		
-		//this.setOpaque(true);
-		//frame.setContentPane(this);
-		//frame.pack();
-		//frame.setVisible(true);
-				
-		return null;
 	}
 
 }

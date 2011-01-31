@@ -26,7 +26,7 @@ public class RapidAnalyticsRepositoryTree extends JPanel {
 
 		super(new GridLayout(1,0));
 		
-		myRootTreeNode = new DefaultMutableTreeNode("Root Node");
+		myRootTreeNode = new DefaultMutableTreeNode("RapidAnalytics Repository");
 		myTreeModel = new DefaultTreeModel(myRootTreeNode);
 		myTreeModel.addTreeModelListener(new MyTreeModelListener());		
 		myTree = new JTree(myTreeModel);
@@ -106,11 +106,14 @@ public class RapidAnalyticsRepositoryTree extends JPanel {
 		
 	}
 	
+	
 	public void clearNodes() { 
+		
 		myRootTreeNode.removeAllChildren();
 		myTreeModel.reload();
+		
 	}
-
+	
 	class MyTreeModelListener implements TreeModelListener {
 		
 	    public void treeNodesChanged(TreeModelEvent e) {
@@ -118,10 +121,10 @@ public class RapidAnalyticsRepositoryTree extends JPanel {
 	        node = (DefaultMutableTreeNode)(e.getTreePath().getLastPathComponent());
 	
 	        /*
-	         * If the event lists children, then the changed
-	         * node is the child of the node we've already
-	         * gotten.  Otherwise, the changed node and the
-	         * specified node are the same.
+	         * 		If the event lists children, then the changed
+	         *		 node is the child of the node we've already
+	         * 			gotten.  Otherwise, the changed node and the
+	         * 				specified node are the same.
 	         */
 	
 	            int index = e.getChildIndices()[0];
