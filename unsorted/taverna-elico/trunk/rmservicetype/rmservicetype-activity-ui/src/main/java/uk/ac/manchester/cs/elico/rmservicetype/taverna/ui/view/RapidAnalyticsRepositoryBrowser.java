@@ -15,6 +15,8 @@ import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -45,6 +47,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	public static JFrame frame;
 	
     private int newNodeSuffix = 1;
+    private String repositoryUsername;    
     private static String ADD_COMMAND = "add";
     private static String REMOVE_COMMAND = "remove";
     private static String CLEAR_COMMAND = "clear";
@@ -121,75 +124,61 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	}
 	
 	public void populateTree(RapidAnalyticsRepositoryTree treePanel, Object [] stuff) {
-		
-		/*
-		String p1Name = new String("Parent 1");
-        String p2Name = new String("Parent 2");
-        String c1Name = new String("Child 1");
-        String c2Name = new String("Child 2");
-
-        DefaultMutableTreeNode p1, p2;
-
-        p1 = treePanel.addObject(null, p1Name);
-        p2 = treePanel.addObject(null, p2Name);
-
-        treePanel.addObject(p1, c1Name);
-        treePanel.addObject(p1, c2Name);
-
-        treePanel.addObject(p2, c1Name);
-        treePanel.addObject(p2, c2Name);
-		*/
-		
-        //
-        
+	   
         String rootNodeName = new String();
         
         String childNodeName = new String();
         
-        DefaultMutableTreeNode parentNode;
- 
+        DefaultMutableTreeNode parentNode, userNode, childNode;
+      
+        TreeNode[] treeNode = null;
         
         for (Object myParentObject : stuff) {
         	
         	// add root contents to root tree node 
         	parentNode = treePanel.addObject(null, myParentObject);
-        	
+    	
         	// check whether the parentNode has any children (if it's a folder)
         	if (objectType.get(myParentObject).equals("folder")) {
         		
+        		// add the folder contents to 
         		System.out.println("This object is a folder : " + myParentObject);        		
+        		
+        		// add contents to parents 
+        		Object [] contents = getRepositoryStructure(parentNode.toString());
+        		
+        			for (Object myChildObject : contents) {
+        				
+        				System.out.println("	contents of parent " + contents.toString());
+        				userNode = treePanel.addObject(parentNode, myChildObject);     
+        				
+        				// now fill in contents for the users directory from repositoryUsername
+        				if (myChildObject.equals(repositoryUsername)) {
+        					        					
+        					System.out.println("	Got the username stuff");
+        					
+        					
+            				Object [] userContents = getRepositoryStructure(parentNode.toString() + "/" + myChildObject);
+            				
+            					for (Object userObject : userContents) {
+            						            						
+            						System.out.println("	contents of user object : " + userObject);
+            						childNode = treePanel.addObject(userNode, userObject);
+            						treeNode = childNode.getPath();
+            						
+            					}
+        				}
+        				
+        			}
         		
         	}
         	
-        	
         }
         
-		/*
-		for (Object myList : stuff) {
-			
-			System.out.println(" ABOUT TO POPULATE TREE WITH " + stuff);
-			treePanel.addObject(myList);
-			
-			if (objectType.get(myList).equals("folder")) {
-				
-				System.out.println(" here's a folder, fetch its contents");
-				Object [] contents = getRepositoryStructure((String)myList);
-				
-				for (Object objectList : contents) {
-					
-					DefaultMutableTreeNode p1 = new DefaultMutableTreeNode(myList);
-
-					treePanel.addObject(p1 ,objectList);
-					
-					System.out.println("        the contents " + objectList);
-					//treePanel.addObject( p1 , objectList);
-					
-				}
-			}
-			
-		}
-		*/
-		
+        TreePath path = new TreePath(treeNode);
+        treePanel.myTree.setExpandsSelectedPaths(true);
+        treePanel.myTree.setSelectionPath(path);
+        
 	}
 		
 	public void actionPerformed(ActionEvent event) {
@@ -214,6 +203,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 
 		//http://rpc295.cs.man.ac.uk:8081/RAWS/resources/
 		String username = "rishi";
+		repositoryUsername = username;
 		//String host = "http://rpc295.cs.man.ac.uk";
 		String password = "";
 		
@@ -330,19 +320,71 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	    return "?";
 	    
 	  }
+	
+	public void parseRepositoryTreePath(TreePath treePath) {
+		
+		// the path is:
+		System.out.println(" The path is " + treePath);
+		
+	}
 			
-	public void treeCollapsed(TreeExpansionEvent arg0) {
+	public void treeCollapsed(TreeExpansionEvent event) {
 		
 		// TODO Auto-generated method stub
-		System.out.println("A node on the tree has been collapsed. " + arg0.getPath().toString());
+		System.out.println("A node on the tree has been collapsed. " + event.getPath().toString());
 		
 	}
 
-	public void treeExpanded(TreeExpansionEvent arg0) {
+	public void treeExpanded(TreeExpansionEvent event) {
 		
 		// TODO Auto-generated method stub
-		System.out.println("A node on the tree has been expanded." + arg0.getPath().toString());
-		
+		System.out.println("A node on the tree has been expanded." + event.getPath().toString());
+		parseRepositoryTreePath(event.getPath());
 	}
 
 }
+/*
+for (Object myList : stuff) {
+	
+	System.out.println(" ABOUT TO POPULATE TREE WITH " + stuff);
+	treePanel.addObject(myList);
+	
+	if (objectType.get(myList).equals("folder")) {
+		
+		System.out.println(" here's a folder, fetch its contents");
+		Object [] contents = getRepositoryStructure((String)myList);
+		
+		for (Object objectList : contents) {
+			
+			DefaultMutableTreeNode p1 = new DefaultMutableTreeNode(myList);
+
+			treePanel.addObject(p1 ,objectList);
+			
+			System.out.println("        the contents " + objectList);
+			//treePanel.addObject( p1 , objectList);
+			
+		}
+	}
+	
+}
+*/
+
+/*
+String p1Name = new String("Parent 1");
+String p2Name = new String("Parent 2");
+String c1Name = new String("Child 1");
+String c2Name = new String("Child 2");
+
+DefaultMutableTreeNode p1, p2;
+
+p1 = treePanel.addObject(null, p1Name);
+p2 = treePanel.addObject(null, p2Name);
+
+treePanel.addObject(p1, c1Name);
+treePanel.addObject(p1, c2Name);
+
+treePanel.addObject(p2, c1Name);
+treePanel.addObject(p2, c2Name);
+*/
+
+//
