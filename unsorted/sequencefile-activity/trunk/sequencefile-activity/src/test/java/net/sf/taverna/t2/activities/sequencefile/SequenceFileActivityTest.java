@@ -24,7 +24,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,6 +65,7 @@ public class SequenceFileActivityTest {
 		Map<String, Object> inputs = new HashMap<String, Object>();
 		inputs.put("fileurl", "src/test/resources/fasta_protein.txt");
 		Map<String, Class<?>> expectedOutputs = new HashMap<String, Class<?>>();
+		expectedOutputs.put("name", String.class);
 		expectedOutputs.put("sequences", String.class);
 
 		configurationBean.setFileFormat(FileFormat.fasta);
@@ -71,6 +74,11 @@ public class SequenceFileActivityTest {
 
 		Map<String, Object> outputs = ActivityInvoker.invokeAsyncActivity(activity, inputs,
 				expectedOutputs);
+		assertTrue(outputs.containsKey("name"));
+		assertTrue(outputs.get("name") instanceof List<?>);
+		List<?> names = (List<?>) outputs.get("name");
+		assertEquals(245, names.size());
+		assertEquals("ENSG00000008130|ENST00000160596", names.get(7));
 		assertTrue(outputs.containsKey("sequences"));
 		assertTrue(outputs.get("sequences") instanceof List<?>);
 		List<?> sequences = (List<?>) outputs.get("sequences");
@@ -90,11 +98,13 @@ public class SequenceFileActivityTest {
 		assertEquals("fileurl", inputPort.getName());
 		assertEquals(0, inputPort.getDepth());
 
+		Set<String> expectedPortNames = new HashSet(Arrays.asList("name", "sequences"));
 		Set<OutputPort> outputPorts = activity.getOutputPorts();
-		assertEquals(1, outputPorts.size());
-		OutputPort outputPort = outputPorts.iterator().next();
-		assertEquals("sequences", outputPort.getName());
-		assertEquals(1, outputPort.getDepth());
+		assertEquals(2, outputPorts.size());
+		for (OutputPort outputPort : outputPorts) {
+			assertTrue(expectedPortNames.remove(outputPort.getName()));
+			assertEquals(1, outputPort.getDepth());
+			assertEquals(0, outputPort.getGranularDepth());
+		}
 	}
-
 }

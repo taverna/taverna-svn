@@ -47,6 +47,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCa
 
 import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
+import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.seq.SequenceIterator;
 import org.biojava.bio.seq.io.SeqIOTools;
 
@@ -63,7 +64,9 @@ public class SequenceFileActivity extends
 
 	private static final String INPUT_PORT_NAME = "fileurl";
 
-	private static final String OUTPUT_PORT_NAME = "sequences";
+	private static final String SEQUENCE_OUTPUT_PORT_NAME = "sequences";
+	
+	private static final String NAME_OUTPUT_PORT_NAME = "name";
 
 	private static Logger logger = Logger.getLogger(SequenceFileActivity.class);
 
@@ -121,20 +124,28 @@ public class SequenceFileActivity extends
 					SequenceIterator sequenceIterator = (SequenceIterator) SeqIOTools
 							.fileToBiojava(fileFormat.name(), sequenceType.name(), inputReader);
 
-					List<T2Reference> outputList = new ArrayList<T2Reference>();
-					//
+					List<T2Reference> nameOutputList = new ArrayList<T2Reference>();
+					List<T2Reference> sequenceOutputList = new ArrayList<T2Reference>();
 					for (long index = 0; sequenceIterator.hasNext(); index++) {
-						String sequence = sequenceIterator.nextSequence().seqString();
-						T2Reference data = referenceService.register(sequence, 0, true, context);
-						outputList.add((int) index, data);
-						outputData.put(OUTPUT_PORT_NAME, data);
+						Sequence nextSequence = sequenceIterator.nextSequence();
+						String name = nextSequence.getName();
+						String sequence = nextSequence.seqString();
+						T2Reference nameReference = referenceService.register(name, 0, true, context);
+						nameOutputList.add((int) index, nameReference);
+						outputData.put(NAME_OUTPUT_PORT_NAME, nameReference);
+						T2Reference sequenceReference = referenceService.register(sequence, 0, true, context);
+						sequenceOutputList.add((int) index, sequenceReference);
+						outputData.put(SEQUENCE_OUTPUT_PORT_NAME, sequenceReference);
 						callback.receiveResult(outputData, new int[] { (int) index });
 					}
 
 					// register outputs
-					T2Reference outputReference = referenceService.register(outputList, 1, true,
+					T2Reference nameOutputReference = referenceService.register(nameOutputList, 1, true,
 							context);
-					outputData.put(OUTPUT_PORT_NAME, outputReference);
+					T2Reference sequenceOutputReference = referenceService.register(sequenceOutputList, 1, true,
+							context);
+					outputData.put(NAME_OUTPUT_PORT_NAME, nameOutputReference);
+					outputData.put(SEQUENCE_OUTPUT_PORT_NAME, sequenceOutputReference);
 
 					// send result to the callback
 					callback.receiveResult(outputData, new int[0]);
@@ -158,7 +169,8 @@ public class SequenceFileActivity extends
 		addInput(INPUT_PORT_NAME, 0, false, null, null);
 
 		removeOutputs();
-		addOutput(OUTPUT_PORT_NAME, 1, 0);
+		addOutput(NAME_OUTPUT_PORT_NAME, 1, 0);
+		addOutput(SEQUENCE_OUTPUT_PORT_NAME, 1, 0);		
 	}
 
 	private InputStream getInputStream(InvocationContext context,
