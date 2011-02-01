@@ -175,7 +175,7 @@ public class RapidMinerConfigurationView extends JPanel {
 				RapidAnalyticsRepositoryBrowser browser = new RapidAnalyticsRepositoryBrowser();
 				browser.setOpaque(true);
 				frame.add(browser);
-				frame.setPreferredSize(new Dimension(200,200));
+				frame.setPreferredSize(new Dimension(300,400));
 				frame.pack();
 				frame.setVisible(true);
 				

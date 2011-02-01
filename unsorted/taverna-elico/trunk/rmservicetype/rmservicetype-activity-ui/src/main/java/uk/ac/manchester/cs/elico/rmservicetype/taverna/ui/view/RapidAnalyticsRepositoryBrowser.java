@@ -63,7 +63,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		
 		setLayout(new BorderLayout());
 		
-		setPreferredSize(new Dimension(200, 200));
+		setPreferredSize(new Dimension(300, 400));
 		
 		myTreePanel = new RapidAnalyticsRepositoryTree();
 		myTreePanel.myTree.addTreeExpansionListener(this);
@@ -156,8 +156,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
         				if (myChildObject.equals(repositoryUsername)) {
         					        					
         					System.out.println("	Got the username stuff");
-        					
-        					
+        					        					
             				Object [] userContents = getRepositoryStructure(parentNode.toString() + "/" + myChildObject);
             				
             					for (Object userObject : userContents) {
@@ -321,10 +320,33 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	    
 	  }
 	
-	public void parseRepositoryTreePath(TreePath treePath) {
+	public String parseRepositoryTreePath(TreePath treePath) {
 		
 		// the path is:
 		System.out.println(" The path is " + treePath);
+		
+		Object [] objects = treePath.getPath();
+		boolean first =  true;
+		String path = "/";
+		
+		for (Object myObject : objects) {
+			
+			if (!first) {
+				
+				path += myObject;		
+				path += "/";
+			}
+			
+			first = false;
+		}
+		
+		System.out.println(" The path is now " + path);
+		return path;
+	}
+	
+	public void addToTree(String path) {
+		
+		
 		
 	}
 			
@@ -339,7 +361,10 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		
 		// TODO Auto-generated method stub
 		System.out.println("A node on the tree has been expanded." + event.getPath().toString());
-		parseRepositoryTreePath(event.getPath());
+		
+		String usersPath = parseRepositoryTreePath(event.getPath());
+		
+		
 	}
 
 }
