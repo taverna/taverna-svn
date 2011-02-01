@@ -69,7 +69,7 @@ public class SequenceFileActivityConfigurationAction extends
 		spreadsheetConfigView.setOkAction(new AbstractAction("OK") {
 			public void actionPerformed(ActionEvent arg0) {
 				if (spreadsheetConfigView.isConfigurationChanged()) {
-					ActivityConfigurationDialog.configureActivity(owningDataflow, activity,
+					ActivityConfigurationDialog.configureActivityStatic(owningDataflow, activity,
 							spreadsheetConfigView.getConfiguration());
 				}
 				dialog.setVisible(false);

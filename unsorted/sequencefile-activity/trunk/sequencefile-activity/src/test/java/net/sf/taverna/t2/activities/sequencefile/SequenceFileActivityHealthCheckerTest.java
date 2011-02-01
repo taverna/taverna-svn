@@ -24,8 +24,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import net.sf.taverna.t2.workflowmodel.health.HealthReport;
-import net.sf.taverna.t2.workflowmodel.health.HealthReport.Status;
+
+import java.util.ArrayList;
+
+import net.sf.taverna.t2.visit.VisitReport;
+import net.sf.taverna.t2.visit.VisitReport.Status;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 
@@ -46,14 +49,15 @@ public class SequenceFileActivityHealthCheckerTest {
 	@Before
 	public void setUp() throws Exception {
 		activity = new SequenceFileActivity();
+		activity.configure(new SequenceFileActivityConfigurationBean());
 		activityHealthChecker = new SequenceFileActivityHealthChecker();
 	}
 
 	@Test
 	public void testCanHandle() {
-		assertFalse(activityHealthChecker.canHandle(null));
-		assertFalse(activityHealthChecker.canHandle(new Object()));
-		assertFalse(activityHealthChecker.canHandle(new AbstractActivity<Object>() {
+		assertFalse(activityHealthChecker.canVisit(null));
+		assertFalse(activityHealthChecker.canVisit(new Object()));
+		assertFalse(activityHealthChecker.canVisit(new AbstractActivity<Object>() {
 			public void configure(Object conf) throws ActivityConfigurationException {
 			}
 
@@ -61,18 +65,14 @@ public class SequenceFileActivityHealthCheckerTest {
 				return null;
 			}
 		}));
-		assertTrue(activityHealthChecker.canHandle(activity));
+		assertTrue(activityHealthChecker.canVisit(activity));
 	}
 
 	@Test
-	public void testCheckHealth() throws Exception {
-		HealthReport healthReport = activityHealthChecker.checkHealth(activity);
-		assertNotNull(healthReport);
-		assertEquals(Status.SEVERE, healthReport.getStatus());
-		activity.configure(new SequenceFileActivityConfigurationBean());
-		healthReport = activityHealthChecker.checkHealth(activity);
-		assertNotNull(healthReport);
-		assertEquals(Status.OK, healthReport.getStatus());
+	public void testVisit() throws Exception {
+		VisitReport visitReport = activityHealthChecker.visit(activity, new ArrayList<Object>());
+		assertNotNull(visitReport);
+		assertEquals(Status.OK, visitReport.getStatus());
 	}
 
 }

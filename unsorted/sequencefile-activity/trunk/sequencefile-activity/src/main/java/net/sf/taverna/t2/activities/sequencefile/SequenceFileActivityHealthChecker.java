@@ -20,9 +20,13 @@
  ******************************************************************************/
 package net.sf.taverna.t2.activities.sequencefile;
 
+import java.util.List;
+
+import net.sf.taverna.t2.visit.VisitReport;
+import net.sf.taverna.t2.visit.VisitReport.Status;
+import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.health.HealthCheck;
 import net.sf.taverna.t2.workflowmodel.health.HealthChecker;
-import net.sf.taverna.t2.workflowmodel.health.HealthReport;
-import net.sf.taverna.t2.workflowmodel.health.HealthReport.Status;
 
 /**
  * A health checker for the SequenceFileActivity.
@@ -31,19 +35,21 @@ import net.sf.taverna.t2.workflowmodel.health.HealthReport.Status;
  */
 public class SequenceFileActivityHealthChecker implements HealthChecker<SequenceFileActivity> {
 
-	public boolean canHandle(Object subject) {
+	public boolean canVisit(Object subject) {
 		return (subject instanceof SequenceFileActivity);
 	}
 
-	public HealthReport checkHealth(SequenceFileActivity activity) {
-		HealthReport healthReport;
-		if (activity.getConfiguration() == null) {
-			healthReport = new HealthReport("Sequence File Reader Service",
-					"Service not configured", Status.SEVERE);
-		} else {
-			healthReport = new HealthReport("Sequence File Reader Service", "Service OK", Status.OK);
+	public boolean isTimeConsuming() {
+		return false;
+	}
+
+	public VisitReport visit(SequenceFileActivity activity, List<Object> ancestors) {
+		Object subject = (Processor) VisitReport.findAncestor(ancestors, Processor.class);
+		if (subject == null) {
+			// Fall back to using the activity itself as the subject of the reports
+			subject = activity;
 		}
-		return healthReport;
+		return new VisitReport(HealthCheck.getInstance(), subject, "Sequence File Reader Report", HealthCheck.NO_PROBLEM, Status.OK);
 	}
 
 }

@@ -20,6 +20,8 @@
  ******************************************************************************/
 package net.sf.taverna.t2.activities.sequencefile.servicedescriptions;
 
+import java.net.URI;
+
 import javax.swing.Icon;
 
 import net.sf.taverna.t2.activities.sequencefile.SequenceFileActivity;
@@ -34,6 +36,8 @@ import net.sf.taverna.t2.servicedescriptions.ServiceDescription;
  */
 public class SequenceFileTemplateService extends
 		AbstractTemplateService<SequenceFileActivityConfigurationBean> {
+
+	public static final URI PROVIDER_ID = URI.create("http://taverna.sf.net/2010/service-provider/sequencefile");
 
 	public static final String SERVICE_NAME = "Sequence File Reader";
 
@@ -66,6 +70,10 @@ public class SequenceFileTemplateService extends
 	public static ServiceDescription<SequenceFileActivityConfigurationBean> getServiceDescription() {
 		SequenceFileTemplateService service = new SequenceFileTemplateService();
 		return service.templateService;
+	}
+
+	public String getId() {
+		return PROVIDER_ID.toString();
 	}
 
 }
