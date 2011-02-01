@@ -1,0 +1,3 @@
+net.sf.taverna.t2.activities.sequencefile.menu.SequenceFileConfigurationMenuAction
+net.sf.taverna.t2.activities.sequencefile.menu.SequenceFileAddTemplateAction
+net.sf.taverna.t2.activities.sequencefile.menu.SequenceFileAddTemplateMenuAction

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins:plugin xmlns:plugins="http://taverna.sf.net/2008/xml/plugins"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://taverna.sf.net/2008/xml/plugins http://taverna.sourceforge.net/2008/xml/plugins/plugins-2008-10-16.xsd ">
+	<provider>taverna.sf.net</provider>
+	<identifier>net.sf.taverna.t2.sequencefile-plugin</identifier>
+	<version>0.1.0</version>
+	<name>Taverna 2 Sequence File Reader</name>
+	<description>A Taverna 2 service that reads sequence files</description>
+	<enabled>true</enabled>
+
+	<repositories>
+		<repository>http://www.mygrid.org.uk/maven/repository/</repository>
+		<repository>http://dev.biordf.net/maven/</repository>
+		<repository>http://es-01.chibi.ubc.ca/nexus/content/groups/public/</repository>
+	</repositories>
+
+	<profile>
+		<dependency>
+			<groupId>net.sf.taverna.t2.activities</groupId>
+			<artifactId>sequencefile-activity</artifactId>
+			<version>0.9</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-activities</groupId>
+			<artifactId>sequencefile-activity-ui</artifactId>
+			<version>0.13</version>
+		</dependency>
+	</profile>
+
+	<compatibility>
+		<application>
+			<version>2.1-rc-1</version>
+		</application>
+	</compatibility>
+	
+</plugins:plugin>
