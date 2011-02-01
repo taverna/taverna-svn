@@ -2,11 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<artifactId>parent</artifactId>
+		<artifactId>taverna-parent</artifactId>
 		<groupId>net.sf.taverna</groupId>
-		<version>0.2.2011-01-24</version>
+		<version>3.0-SNAPSHOT</version>
 	</parent>
-
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>activities</artifactId>
 	<version>2.0-SNAPSHOT</version>
@@ -21,14 +20,12 @@
 	</description>
 
 	<properties>
-
 		<t2.infrastructure.version>3.0-SNAPSHOT</t2.infrastructure.version>
 		<t2.core.version>2.0-SNAPSHOT</t2.core.version>
 		<t2.lang.version>2.0-SNAPSHOT</t2.lang.version>
 		<t2.security.version>2.0-SNAPSHOT</t2.security.version>
 		<t2.core.refexts.version>2.0-SNAPSHOT</t2.core.refexts.version>
         <org.biomart.martservice.version>2.0-SNAPSHOT</org.biomart.martservice.version>
-        <wsdl.generic.version>1.7-SNAPSHOT</wsdl.generic.version>
 	</properties>
 
 	<modules>
