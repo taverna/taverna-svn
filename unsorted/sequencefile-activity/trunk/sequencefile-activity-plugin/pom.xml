@@ -5,21 +5,17 @@
 	<artifactId>sequencefile-plugin</artifactId>
 	<packaging>taverna-plugin</packaging>
 	<name>Sequence file reader activity plugin</name>
-	<version>0.2.0</version>
+	<version>0.3.0-SNAPSHOT</version>
 	<description>Sequence file reader activity plugin for Taverna 2.1</description>
 	<repositories>
 		<repository>
-			<id>biordf-repository</id>
-			<name>biordf Repository</name>
-			<url>http://dev.biordf.net/maven</url>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
 		</repository>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
-			<releases />
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
 			<id>mygrid-repository</id>
 			<name>myGrid Repository</name>
 			<url>http://www.mygrid.org.uk/maven/repository</url>
@@ -30,37 +26,37 @@
 			<plugin>
 				<groupId>net.sf.taverna.t2.maven.plugins</groupId>
 				<artifactId>maven-taverna-plugin</artifactId>
-				<version>0.1.0</version>
+				<version>0.1.1</version>
 				<extensions>true</extensions>
 				<configuration>
-					<provider>biordf.net</provider>
-					<tavernaVersion>2.1</tavernaVersion>
+					<provider>taverna.org.uk</provider>
+					<tavernaVersion>2.2.0</tavernaVersion>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
 	<distributionManagement>
 		<repository>
-			<id>biordf-repository</id>
-			<name>dev.biordf.net Repository</name>
-			<url>scpexe://dev.biordf.net/var/www/taverna/plugins</url>
+			<id>taverna-update-site</id>
+			<name>Taverna Update Site</name>
+			<url>scpexe://rosalind/local/www/mygrid/taverna/updates/2.2.0/plugins/prototype/</url>
 		</repository>
 		<snapshotRepository>
-			<id>biordf-repository</id>
-			<name>dev.biordf.net Repository</name>
-			<url>scpexe://dev.biordf.net/var/www/taverna/plugins/sandbox</url>
+			<id>local</id>
+			<name>Taverna plugin repository at dev.biordf.net</name>
+      		<url>file:///Library/WebServer/Documents/taverna/</url>
 		</snapshotRepository>
 	</distributionManagement>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>sequencefile-activity</artifactId>
-			<version>0.2.0</version>
+			<version>0.3.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-activities</groupId>
 			<artifactId>sequencefile-activity-ui</artifactId>
-			<version>0.2.0</version>
+			<version>0.3.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
