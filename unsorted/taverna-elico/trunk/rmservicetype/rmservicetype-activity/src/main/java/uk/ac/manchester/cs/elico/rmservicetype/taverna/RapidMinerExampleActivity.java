@@ -679,7 +679,7 @@ public class RapidMinerExampleActivity extends
 		System.out.println("^^^Point 1");
 		
 		WSDLParser parser = null;
-			
+		
 		try {
 			 parser = new WSDLParser(myBean.getWsdl()) ;
 		} catch (ParserConfigurationException e1) {
@@ -693,11 +693,9 @@ public class RapidMinerExampleActivity extends
 		}
 		
 		WSDLSOAPInvoker myInvoker = new WSDLSOAPInvoker(parser, "getParameterTypes", outputNames);
-		
-		System.out.println("^^^Point 2");
 
-		
-		
+		System.out.println("^^^Point 2");
+	
 		System.out.println("^^^Point 3");
 		
 		// Create Call Object
@@ -817,23 +815,29 @@ public class RapidMinerExampleActivity extends
 
 			// Try to get username and password for this service from Credential
 			// Manager (which should pop up UI if needed)
-		
-			CredentialManager credManager = null;
-			credManager = CredentialManager.getInstance();
-			String wsdl = bean
-			.getWsdl();
-			URI serviceUri = URI.create(wsdl); 
-			UsernamePassword username_password = credManager.getUsernameAndPasswordForService(serviceUri, usePathRecursion, null);
+			UsernamePassword username_password;
 			
-			if (username_password == null) {
+			if (configBean.getUsername().equals(null) && (configBean.getPassword().equals(null))) {
+				
+				CredentialManager credManager = null;
+				credManager = CredentialManager.getInstance();
+				String wsdl = bean
+				.getWsdl();
+				URI serviceUri = URI.create(wsdl); 
+				username_password = credManager.getUsernameAndPasswordForService(serviceUri, usePathRecursion, null);
+				
+				if (username_password == null) {
+							
+					throw new CMException("No username/password provided for service , Using config bean username and password instead" + bean.getWsdl());
+				} 
+				
+			} else {	// use config bean username and password
 				
 				username_password = new UsernamePassword();
-				username_password.setUsername(configBean.getUsername());
 				username_password.setPassword(configBean.getPassword().toCharArray());
-				
-				throw new CMException("No username/password provided for service , Using config bean username and password instead" + bean.getWsdl());
-			} 
-			
+				username_password.setUsername(configBean.getUsername());
+			}
+					
 			return username_password;
 	}
 	
