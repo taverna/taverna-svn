@@ -228,8 +228,6 @@ public class RapidMinerExampleActivity extends
 		 * 
 				*/
 		
-		
-		
 		if (configBean.getIsExplicit()) {
 			
 			//check if both input and output locations are set
@@ -270,7 +268,7 @@ public class RapidMinerExampleActivity extends
 			
 		} else {	// Implicit
 				
-			
+
 		}
 		
 		Iterator inputIterator = portListing.iterator();
@@ -507,108 +505,7 @@ public class RapidMinerExampleActivity extends
 					e.printStackTrace();
 				}			
 
-				/* +++++
-
 				
-				WSDLActivity wrapper = new WSDLActivity();
-				
-				System.out.println(" +++ FIVE +++");
-
-				WSDLActivityConfigurationBean bean = new WSDLActivityConfigurationBean();
-				System.out.println(" +++ SIX +++");
-
-				bean.setOperation("executeBasicOperatorExplicitOutput_input");
-				System.out.println(" +++ SEVEN +++");
-
-				bean.setWsdl("http://rapid-i.dyndns.org:8080/e-LICO/ExecutorService");
-				System.out.println(" +++ EIGHT +++");
-
-				bean.setSecurityProfile(securityProfile);
-				System.out.println(" +++ NINE +++");
-				
-				List<String> outputNames = new ArrayList<String>();
-				
-				System.out.println(" +++ TEN +++");
-				
-				for (InputPort port: wrapper.getInputPorts()) {
-					
-					System.out.println(" INPUT PORTS ARE " + port.getName());
-					
-				}
-				
-							
-				for (OutputPort port: wrapper.getOutputPorts()) {
-					outputNames.add(port.getName());
-				}
-				System.out.println(" output names " + outputNames.toString());
-				System.out.println(" +++ ELEVEN +++");
-				
-				
-				
-				wrapper.executeAsynch(invokerInputMap, callback);
-		
-				System.out.println(" +++ TWELVE +++");
-
-				
-				// Support our configuration-dependendent input
-				boolean optionalPorts = configBean.getExampleString().equals("specialCase"); 
-				
-				System.out.println(" +++ THIRTEEN +++");
-
-				
-				// test 
-				
-				List<byte[]> special = null;
-				// We'll also allow IN_EXTRA_DATA to be optionally not provided
-				if (optionalPorts && inputs.containsKey(IN_EXTRA_DATA)) {
-					// Resolve as a list of byte[]
-					special = (List<byte[]>) referenceService.renderIdentifier(
-							inputs.get(IN_EXTRA_DATA), byte[].class, context);
-				}
-				
-				Map<String, T2Reference> outputs = new HashMap<String, T2Reference>();
-				String simpleValue = "output";
-				T2Reference simpleRef = referenceService.register(simpleValue, 0, true, context);
-				outputs.put("output", simpleRef);
-				
-				callback.receiveResult(outputs, new int[0]);
-				
-				System.out.println(" OUTPUT " + outputs.toString());
-				
-				
-				/*
-				// TODO: Do the actual service invocation
-//				try {
-//					results = this.service.invoke(firstInput, special)
-//				} catch (ServiceException ex) {
-//					callback.fail("Could not invoke Example service " + configBean.getExampleUri(),
-//							ex);
-//					// Make sure we don't call callback.receiveResult later 
-//					return;
-//				}
-
-				// Register outputs
-				/*
-				Map<String, T2Reference> outputs = new HashMap<String, T2Reference>();
-				String simpleValue = "simple";
-				T2Reference simpleRef = referenceService.register(simpleValue, 0, true, context);
-				outputs.put(OUT_SIMPLE_OUTPUT, simpleRef);
-
-				// For list outputs, only need to register the top level list
-				List<String> moreValues = new ArrayList<String>();
-				moreValues.add("Value 1");
-				moreValues.add("Value 2");
-				T2Reference moreRef = referenceService.register(moreValues, 1, true, context);
-				outputs.put(OUT_MORE_OUTPUTS, moreRef);
-
-				if (optionalPorts) {
-					// Populate our optional output port					
-					// NOTE: Need to return output values for all defined output ports
-					String report = "Everything OK";
-					outputs.put(OUT_REPORT, referenceService.register(report,
-							0, true, context));
-				}
-				*/
 				
 				// return map of output data, with empty index array as this is
 				// the only and final result (this index parameter is used if
@@ -929,7 +826,12 @@ public class RapidMinerExampleActivity extends
 			UsernamePassword username_password = credManager.getUsernameAndPasswordForService(serviceUri, usePathRecursion, null);
 			
 			if (username_password == null) {
-				throw new CMException("No username/password provided for service " + bean.getWsdl());
+				
+				username_password = new UsernamePassword();
+				username_password.setUsername(configBean.getUsername());
+				username_password.setPassword(configBean.getPassword().toCharArray());
+				
+				throw new CMException("No username/password provided for service , Using config bean username and password instead" + bean.getWsdl());
 			} 
 			
 			return username_password;
@@ -1142,4 +1044,107 @@ invokerInputMap.put("operatorName", (Object)operatorName);
 invokerInputMap.put("operatorParameters", (Object)operatorParameters);
 invokerInputMap.put("outputLocations", (Object)outputLocations);
 
+*/
+
+/* +++++
+
+
+WSDLActivity wrapper = new WSDLActivity();
+
+System.out.println(" +++ FIVE +++");
+
+WSDLActivityConfigurationBean bean = new WSDLActivityConfigurationBean();
+System.out.println(" +++ SIX +++");
+
+bean.setOperation("executeBasicOperatorExplicitOutput_input");
+System.out.println(" +++ SEVEN +++");
+
+bean.setWsdl("http://rapid-i.dyndns.org:8080/e-LICO/ExecutorService");
+System.out.println(" +++ EIGHT +++");
+
+bean.setSecurityProfile(securityProfile);
+System.out.println(" +++ NINE +++");
+
+List<String> outputNames = new ArrayList<String>();
+
+System.out.println(" +++ TEN +++");
+
+for (InputPort port: wrapper.getInputPorts()) {
+	
+	System.out.println(" INPUT PORTS ARE " + port.getName());
+	
+}
+
+			
+for (OutputPort port: wrapper.getOutputPorts()) {
+	outputNames.add(port.getName());
+}
+System.out.println(" output names " + outputNames.toString());
+System.out.println(" +++ ELEVEN +++");
+
+
+
+wrapper.executeAsynch(invokerInputMap, callback);
+
+System.out.println(" +++ TWELVE +++");
+
+
+// Support our configuration-dependendent input
+boolean optionalPorts = configBean.getExampleString().equals("specialCase"); 
+
+System.out.println(" +++ THIRTEEN +++");
+
+
+// test 
+
+List<byte[]> special = null;
+// We'll also allow IN_EXTRA_DATA to be optionally not provided
+if (optionalPorts && inputs.containsKey(IN_EXTRA_DATA)) {
+	// Resolve as a list of byte[]
+	special = (List<byte[]>) referenceService.renderIdentifier(
+			inputs.get(IN_EXTRA_DATA), byte[].class, context);
+}
+
+Map<String, T2Reference> outputs = new HashMap<String, T2Reference>();
+String simpleValue = "output";
+T2Reference simpleRef = referenceService.register(simpleValue, 0, true, context);
+outputs.put("output", simpleRef);
+
+callback.receiveResult(outputs, new int[0]);
+
+System.out.println(" OUTPUT " + outputs.toString());
+
+
+/*
+// TODO: Do the actual service invocation
+//try {
+//	results = this.service.invoke(firstInput, special)
+//} catch (ServiceException ex) {
+//	callback.fail("Could not invoke Example service " + configBean.getExampleUri(),
+//			ex);
+//	// Make sure we don't call callback.receiveResult later 
+//	return;
+//}
+
+// Register outputs
+/*
+Map<String, T2Reference> outputs = new HashMap<String, T2Reference>();
+String simpleValue = "simple";
+T2Reference simpleRef = referenceService.register(simpleValue, 0, true, context);
+outputs.put(OUT_SIMPLE_OUTPUT, simpleRef);
+
+// For list outputs, only need to register the top level list
+List<String> moreValues = new ArrayList<String>();
+moreValues.add("Value 1");
+moreValues.add("Value 2");
+T2Reference moreRef = referenceService.register(moreValues, 1, true, context);
+outputs.put(OUT_MORE_OUTPUTS, moreRef);
+
+if (optionalPorts) {
+	// Populate our optional output port					
+	// NOTE: Need to return output values for all defined output ports
+	String report = "Everything OK";
+	outputs.put(OUT_REPORT, referenceService.register(report,
+			0, true, context));
+}
 */

@@ -30,6 +30,7 @@ public class RapidMinerActivityConfigurationBean implements Serializable {
 	 */
 	
 	// TODO: Remove the example fields and getters/setters and add your own	
+	private String username, password, serverLocation;
 	private String operatorName;
 	private String callName;
 	private String inputLocation = new String(), outputLocation = new String();
@@ -39,6 +40,26 @@ public class RapidMinerActivityConfigurationBean implements Serializable {
 	private boolean isParametersConfigured = false;
 	private boolean hasDescriptions = false;
 	
+	public void setUsername(String val) {
+		username = val;
+	}
+	
+	public String getUsername() {
+		return username;
+	}
+	
+	public void setPassword(String val) {
+		password = val;
+	}
+	
+	public String getPassword() {
+		return password;
+	}
+	
+	public void setServerLocation(String val) {
+		serverLocation = val;
+	}
+		
 	public void setIsParametersConfigured(boolean val) {
 		isParametersConfigured = val;
 	}
@@ -46,7 +67,6 @@ public class RapidMinerActivityConfigurationBean implements Serializable {
 	public boolean getIsParametersConfigured() {
 		return isParametersConfigured;
 	}
-	
 	
 	public void setInputLocation(String input) {
 		inputLocation = input;
@@ -112,6 +132,5 @@ public class RapidMinerActivityConfigurationBean implements Serializable {
 		return hasDescriptions;
 	}
 
-	
 	
 }
