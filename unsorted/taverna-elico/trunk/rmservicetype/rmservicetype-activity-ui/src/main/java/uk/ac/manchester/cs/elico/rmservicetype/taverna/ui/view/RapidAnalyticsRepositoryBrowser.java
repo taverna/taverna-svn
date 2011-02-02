@@ -156,7 +156,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
         				if (myChildObject.equals(repositoryUsername)) {
         					        					
         					System.out.println("	Got the username stuff");
-        					        					
+        								
             				Object [] userContents = getRepositoryStructure(parentNode.toString() + "/" + myChildObject);
             				
             					for (Object userObject : userContents) {
