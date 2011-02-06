@@ -34,6 +34,7 @@ import java.util.Set;
 import net.sf.taverna.t2.activities.testutils.ActivityInvoker;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
+import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
@@ -55,6 +56,7 @@ public class RshellActivityTest {
 	@Before
 	public void setUp() throws Exception {
 		activity = new RshellActivity();
+		activity.setEdits(new EditsImpl());
 		configurationBean = new RshellActivityConfigurationBean();
 
 		ActivityInputPortDefinitionBean inputPortBean = new ActivityInputPortDefinitionBean();
