@@ -70,6 +70,8 @@ import org.rosuda.REngine.Rserve.RserveException;
 public class RshellActivity extends
 		AbstractAsynchronousActivity<RshellActivityConfigurationBean> {
 	
+	public static final String URI = "http://ns.taverna.org.uk/2010/activity/rshell";
+
 	private static Logger logger = Logger.getLogger(RshellActivity.class);
 
 	private static int BUF_SIZE = 1024;

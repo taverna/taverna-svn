@@ -30,10 +30,14 @@ package net.sf.taverna.t2.activities.rshell;
 
 import java.io.Serializable;
 
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ConfigurationBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ConfigurationProperty;
+
 /**
  * Class containing the connection settings
  * 
  */
+@ConfigurationBean(uri = RshellActivity.URI + "/connection/configuration")
 public class RshellConnectionSettings implements Serializable {
 	public static final String DEFAULT_HOST = "localhost";
 
@@ -103,6 +107,7 @@ public class RshellConnectionSettings implements Serializable {
 	 * @param host
 	 *            the new host value
 	 */
+	@ConfigurationProperty(name = "host", label = "Host", description = "The host name for the R server", required = false)
 	public void setHost(String host) {
 		this.host = (host == null) ? DEFAULT_HOST : host;
 	}
@@ -122,6 +127,7 @@ public class RshellConnectionSettings implements Serializable {
 	 * @param port
 	 *            the new port value
 	 */
+	@ConfigurationProperty(name = "port", label = "Port", description = "The port number for the R server", required = false)
 	public void setPort(int port) {
 		
 			this.port = (port < 0 || port > 65535) ? DEFAULT_PORT : port;
@@ -153,6 +159,7 @@ public class RshellConnectionSettings implements Serializable {
 	 * @param username
 	 *            the new username
 	 */
+	@ConfigurationProperty(name = "username", label = "Username", description = "The username to connect with", required = false)
 	public void setUsername(String username) {
 		this.username = (username == null) ? DEFAULT_USERNAME : username;
 	}
@@ -172,6 +179,7 @@ public class RshellConnectionSettings implements Serializable {
 	 * @param password
 	 *            the new password
 	 */
+	@ConfigurationProperty(name = "password", label = "Password", description = "The password to connect with", required = false)
 	public void setPassword(String password) {
 		this.password = (password == null) ? DEFAULT_PASSWORD : password;
 	}
@@ -191,6 +199,7 @@ public class RshellConnectionSettings implements Serializable {
 	 * @param keepSessionAlive
 	 *            the new value
 	 */
+	@ConfigurationProperty(name = "keepSessionAlive", label = "Keep Session Alive", description = "If the session should be kept alive", required = false)
 	public void setKeepSessionAlive(boolean keepSessionAlive) {
 		this.keepSessionAlive = keepSessionAlive;
 	}
@@ -243,6 +252,7 @@ public class RshellConnectionSettings implements Serializable {
 		return stringRepresentation.toString().hashCode();
 	}
 
+	@ConfigurationProperty(name = "newRVersion", label = "Is New R Version", description = "If the R version is 2.4-2.5 or 2.6+", required = false)
 	public void setNewRVersion(boolean newRVersion) {
 		this.newRVersion = newRVersion;
 	}

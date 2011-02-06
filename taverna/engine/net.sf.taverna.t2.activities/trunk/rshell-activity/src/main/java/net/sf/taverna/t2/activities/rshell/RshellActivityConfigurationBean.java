@@ -31,11 +31,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortsDefinitionBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ConfigurationBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ConfigurationProperty;
 
 /**
  * A configuration bean specific to the Rshell activity.
  * 
  */
+@ConfigurationBean(uri = RshellActivity.URI + "/configuration")
 public class RshellActivityConfigurationBean extends
 		ActivityPortsDefinitionBean {
 	
@@ -68,6 +71,7 @@ public class RshellActivityConfigurationBean extends
 	 * @param script
 	 *            the new script
 	 */
+	@ConfigurationProperty(name = "script", label = "R Script", description = "The R script to be executed")
 	public void setScript(String script) {
 		this.script = script;
 	}
@@ -90,6 +94,7 @@ public class RshellActivityConfigurationBean extends
 	 * @param connectionSettings
 	 *            the new connectionSettings
 	 */
+	@ConfigurationProperty(name = "connectionSettings", label = "Connection Settings", description = "Settings for connecting to the R server", required = false)
 	public void setConnectionSettings(
 			RshellConnectionSettings connectionSettings) {
 		this.connectionSettings = connectionSettings;
@@ -109,6 +114,7 @@ public class RshellActivityConfigurationBean extends
 	 *
 	 * @param inputSymanticTypes the new inputSymanticTypes
 	 */
+	@ConfigurationProperty(name = "inputSemanticTypes", label = "Semantic Input Ports", description = "Inputs to the R script", required = false)
 	public void setInputSymanticTypes(
 			List<RShellPortSymanticTypeBean> inputSymanticTypes) {
 		this.inputSymanticTypes = inputSymanticTypes;
@@ -128,6 +134,7 @@ public class RshellActivityConfigurationBean extends
 	 *
 	 * @param outputSymanticTypes the new outputSymanticTypes
 	 */
+	@ConfigurationProperty(name = "outputSemanticTypes", label = "Semantic Output Ports", description = "Outputs from the R script", required = false)
 	public void setOutputSymanticTypes(
 			List<RShellPortSymanticTypeBean> outputSymanticTypes) {
 		this.outputSymanticTypes = outputSymanticTypes;
