@@ -10,6 +10,7 @@
 	</parent>
 	<groupId>net.sf.taverna.jedit</groupId>
 	<artifactId>jedit-syntax</artifactId>
+	<packaging>bundle</packaging>
 	<name>JEdit Syntax editor</name>
 	<version>2.2.4-SNAPSHOT</version>
 	<description>
@@ -19,6 +20,15 @@
 		Both the original jedit-syntax 2.2.2 and soapUI's version are licensed under the
 		LGPL.
 	</description>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+			</plugin>
+		</plugins>
+	</build>
 	<repositories>
 		<repository>
 			<releases />
@@ -46,9 +56,9 @@
 	</scm>
 	<dependencies>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.13</version>
+			<groupId>org.apache.log4j</groupId>
+			<artifactId>com.springsource.org.apache.log4j</artifactId>
+			<version>1.2.16</version>
 		</dependency>
 	</dependencies>
 </project>
