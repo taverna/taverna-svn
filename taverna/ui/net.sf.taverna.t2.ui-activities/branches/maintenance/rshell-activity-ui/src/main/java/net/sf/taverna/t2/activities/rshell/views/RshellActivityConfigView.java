@@ -30,6 +30,7 @@ package net.sf.taverna.t2.activities.rshell.views;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -83,6 +84,7 @@ import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SemanticTypes;
 import net.sf.taverna.t2.lang.ui.ExtensionFileFilter;
 import net.sf.taverna.t2.lang.ui.FileTools;
 import net.sf.taverna.t2.lang.ui.LineEnabledTextPanel;
+import net.sf.taverna.t2.lang.ui.KeywordDocument;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.visit.VisitReport;
 import net.sf.taverna.t2.visit.VisitReport.Status;
@@ -218,11 +220,13 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 
 		scriptTextArea = new JTextPane();
 
-		final RshellDocument doc = new RshellDocument();
+		final KeywordDocument doc = new KeywordDocument(RshellKeySetManager.getKeySet());
 		// NOTE: Due to T2-1145 - always set editor kit BEFORE setDocument
 		scriptTextArea.setEditorKit( new NoWrapEditorKit() );
+		scriptTextArea.setFont(new Font("Monospaced",Font.PLAIN,14));
 		scriptTextArea.setDocument(doc);
 		scriptTextArea.setText(configBean.getScript());
+
 		scriptTextArea.setCaretPosition(0);
 		scriptTextArea.setPreferredSize(new Dimension(200, 100));
 
