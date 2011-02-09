@@ -15,7 +15,6 @@
 	<modules>
 		<module>eu.medsea.mimeutil.mime-util</module>
 		<module>net.java.dev.jai-imageio</module>
-		<module>net.sf.taverna.jedit.jedit-syntax</module>
 		<module>net.sf.taverna.t2.lang</module>
 		<module>net.sf.taverna.wsdl-generic</module>
 		<module>org.biomart.martservice</module>
