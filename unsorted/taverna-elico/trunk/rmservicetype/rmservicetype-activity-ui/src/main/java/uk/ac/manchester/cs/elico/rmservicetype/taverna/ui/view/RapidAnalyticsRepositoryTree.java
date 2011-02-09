@@ -3,6 +3,7 @@ package uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.view;
 import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.Toolkit;
+import java.util.Enumeration;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -12,6 +13,7 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -59,6 +61,40 @@ public class RapidAnalyticsRepositoryTree extends JPanel {
 		myToolkit.beep();
 		
 	}
+	
+	public DefaultMutableTreeNode getNodeAt(TreePath path) {
+		
+		Object [] myObjects = path.getPath();
+		System.out.println(" path " + myObjects[0] + " , " + myObjects[1]);
+		
+		//	for (Enumeration e = myRootTreeNode.children(); e.hasMoreElements();) {
+					
+		//	}
+		
+		return null;
+		
+	}
+	
+	public DefaultMutableTreeNode searchNode(String nodeStr) {
+		
+	    DefaultMutableTreeNode node = null;
+	    
+	    Enumeration e = myRootTreeNode.breadthFirstEnumeration();
+	    
+	    while (e.hasMoreElements()) {
+	    	
+	      node = (DefaultMutableTreeNode) e.nextElement();
+	      
+	      if (nodeStr.equals(node.getUserObject().toString())) {
+	    	  
+	        return node;
+	        
+	      }
+	      
+	    }
+	    
+	    return null;
+	  }
 	
 	public DefaultMutableTreeNode addObject(Object child) {
 		

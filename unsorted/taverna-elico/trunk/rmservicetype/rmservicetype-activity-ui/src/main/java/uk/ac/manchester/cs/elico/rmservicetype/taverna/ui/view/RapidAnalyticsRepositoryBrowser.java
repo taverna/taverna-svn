@@ -5,10 +5,15 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.util.HashMap;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.event.TreeExpansionEvent;
@@ -20,13 +25,18 @@ import javax.swing.tree.TreePath;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.FileEntity;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -39,6 +49,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXParseException;
 
 public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		ActionListener, TreeExpansionListener {
@@ -48,15 +59,23 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	
     private int newNodeSuffix = 1;
     private String repositoryUsername;    
-    private static String ADD_COMMAND = "add";
-    private static String REMOVE_COMMAND = "remove";
-    private static String CLEAR_COMMAND = "clear";
-	private HashMap<Object, String> objectType = new HashMap<Object, String>();
+    private static String UPLOAD_COMMAND = "upload";
+    private static String NEWFOLDER_COMMAND = "newfolder";
+    private static String USE_COMMAND = "use";
     
+    private String ARFF_HEADER = "application/arff";
+    private String RAPIDMINER_PROCESS_HEADER = "application/vnd.rapidminer.rmp+xml";
+    private String RAPIDMINER_BINARY_HEADER = "application/vnd.rapidminer.ioo";
+
+    private boolean populated = false;
+	private HashMap<Object, String> objectType = new HashMap<Object, String>();
+    	
+	JFileChooser fc;
+	 
 	public RapidAnalyticsRepositoryBrowser() {
 	
 		fillContents();
-	
+		
 	}
 	
 	public void fillContents() {
@@ -71,65 +90,43 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		// populate tree with root elements
 		initialiseTreeContents();
 		
-		JButton addButton = new JButton("Add");
-		addButton.setActionCommand("add");
+		fc = new JFileChooser();
+		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		
+		JButton addButton = new JButton("Upload File");
+		addButton.setActionCommand("upload");
 		addButton.addActionListener(this);
 					
-		JButton removeButton = new JButton("Remove");
-		removeButton.setActionCommand("remove");
-		removeButton.addActionListener(this);
+		JButton newFolderButton = new JButton("New Folder");
+		newFolderButton.setActionCommand("newfolder");
+		newFolderButton.addActionListener(this);
 		
-		JButton clearButton = new JButton("Clear");
-        clearButton.setActionCommand("clear");
-        clearButton.addActionListener(this);
+		JButton useButton = new JButton("Use Location");
+		useButton.setActionCommand("use");
+		useButton.addActionListener(this);
 		
         myTreePanel.setPreferredSize(new Dimension(300, 150));
         add(myTreePanel, BorderLayout.CENTER);
 
         JPanel panel = new JPanel(new GridLayout(0,3));
         panel.add(addButton);
-        panel.add(removeButton); 
-        panel.add(clearButton);
+        panel.add(newFolderButton); 
+        panel.add(useButton);
         add(panel, BorderLayout.SOUTH);
         		
 	}
 	
 	public void initialiseTreeContents() {
-		
+	
 		//set the root structure
 		populateTree(myTreePanel, getRepositoryStructure(""));
-
+		populated = true;
 		
-	}
-	
-	public void populateTreeTest(RapidAnalyticsRepositoryTree treePanel) {
-		 
-			// TEST CASE - to remove
-			String p1Name = new String("Parent 1");
-	        String p2Name = new String("Parent 2");
-	        String c1Name = new String("Child 1");
-	        String c2Name = new String("Child 2");
-
-	        DefaultMutableTreeNode p1, p2;
-
-	        p1 = treePanel.addObject(null, p1Name);
-	        p2 = treePanel.addObject(null, p2Name);
-
-	        treePanel.addObject(p1, c1Name);
-	        treePanel.addObject(p1, c2Name);
-
-	        treePanel.addObject(p2, c1Name);
-	        treePanel.addObject(p2, c2Name);
-	        	
 	}
 	
 	public void populateTree(RapidAnalyticsRepositoryTree treePanel, Object [] stuff) {
-	   
-        String rootNodeName = new String();
-        
-        String childNodeName = new String();
-        
-        DefaultMutableTreeNode parentNode, userNode, childNode;
+		  
+        DefaultMutableTreeNode parentNode, userNode, childNode, dummy;
       
         TreeNode[] treeNode = null;
         
@@ -152,6 +149,10 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
         				System.out.println("	contents of parent " + contents.toString());
         				userNode = treePanel.addObject(parentNode, myChildObject);     
         				
+        				if (!userNode.toString().equals(repositoryUsername)) {
+            				dummy = treePanel.addObject(userNode, "dummy");
+        				}
+        				        				
         				// now fill in contents for the users directory from repositoryUsername
         				if (myChildObject.equals(repositoryUsername)) {
         					        					
@@ -165,6 +166,11 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
             						childNode = treePanel.addObject(userNode, userObject);
             						treeNode = childNode.getPath();
             						
+            						if (objectType.get(userObject).equals("folder")) {
+            							System.out.println("*** ADDING " + userObject + " to objectType");
+            							myTreePanel.addObject(childNode, "dummy");
+            						}
+            					            						
             					}
         				}
         				
@@ -179,24 +185,72 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
         treePanel.myTree.setSelectionPath(path);
         
 	}
-		
+	
+	public void populateTreeTest(RapidAnalyticsRepositoryTree treePanel) {
+		 
+			// TEST CASE - to remove
+			String p1Name = new String("Parent 1");
+	        String p2Name = new String("Parent 2");
+	        String c1Name = new String("Child 1");
+	        String c2Name = new String("Child 2");
+
+	        DefaultMutableTreeNode p1, p2;
+
+	        p1 = treePanel.addObject(null, p1Name);
+	        p2 = treePanel.addObject(null, p2Name);
+
+	        treePanel.addObject(p1, c1Name);
+	        treePanel.addObject(p1, c2Name);
+
+	        treePanel.addObject(p2, c1Name);
+	        treePanel.addObject(p2, c2Name);
+	        	
+	}
+			
 	public void actionPerformed(ActionEvent event) {
-		// TODO Auto-generated method stub
-		 String command = event.getActionCommand();
-	        
-	        if (ADD_COMMAND.equals(command)) {
+
+		String command = event.getActionCommand();
+	    String filePath = null;
+	    
+	        if (UPLOAD_COMMAND.equals(command)) {
+	        	
 	            //Add button clicked
-	        	myTreePanel.addObject("New Node " + newNodeSuffix++);
-	        } else if (REMOVE_COMMAND.equals(command)) {
+	        	//	myTreePanel.addObject("New Node " + newNodeSuffix++);
+	        	
+	        	int returnVal = fc.showOpenDialog(this);
+
+	            if (returnVal == JFileChooser.APPROVE_OPTION) {
+	            	
+	                File file = fc.getSelectedFile();
+	                filePath = file.getPath();
+	                //This is where a real application would open the file.
+	                System.out.println("Opening: " + file.getName() + " path " + file.getPath());
+	                
+	                System.out.println(" FILE EXTENSION " + getFileExtension(filePath));
+	                
+	                uploadFile(filePath);
+	                
+	            } else {
+	            	
+	            	 System.out.println("Open command cancelled by user.");
+	            	 
+	            }
+	              	
+	        } else if (NEWFOLDER_COMMAND.equals(command)) {
+	        	
 	            //Remove button clicked
-	        	myTreePanel.removeCurrentNode();
-	        } else if (CLEAR_COMMAND.equals(command)) {
+	        	//myTreePanel.removeCurrentNode();
+	        	
+	        } else if (USE_COMMAND.equals(command)) {
+	        	
 	            //Clear button clicked.
-	        	myTreePanel.clearNodes();
+	        	//myTreePanel.clearNodes();
+	        	
 	        }
 	}
 	
 	public Object[] getRepositoryStructure(String path) {
+
 		
 		// get the repository structure
 
@@ -246,6 +300,11 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
                     localContext);
 			
 			System.out.println(" REST OUTPUT IS : " + response.toString());
+			System.out.println(" REST Status Line : " + response.getStatusLine().toString());
+			if (response.getStatusLine().toString().equals("HTTP/1.1 403 Forbidden")) {
+				return null;
+			}
+			
 			
 			content = EntityUtils.toString(response.getEntity());
 			
@@ -254,6 +313,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		} catch (Exception e) {
 			
 			e.printStackTrace();			
+			System.out.println(" just caught an exception ");
 			
 		}
 		
@@ -261,7 +321,26 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		
 	}
 	
-	public Object [] parseStructureOutput(String outputData) {
+	public void addObjectsToPath(TreePath path, DefaultMutableTreeNode node) {
+		
+		String repositoryFolderPath = parseRepositoryTreePath(path);
+		Object [] pathObjects = getRepositoryStructure(repositoryFolderPath);
+		if (pathObjects == null) {
+			return;
+		}
+		for (Object myObject : pathObjects) {
+			
+			DefaultMutableTreeNode addedNode = myTreePanel.addObject(node, myObject);
+			
+			if (objectType.get(myObject).equals("folder")) {
+				myTreePanel.addObject(addedNode, "dummy");
+			}
+			
+		}
+		
+	}
+	
+ 	public Object [] parseStructureOutput(String outputData) {
 		
 		Object [] myList;
 		NodeList folders = null;
@@ -287,7 +366,6 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 			
 		}
 		
-		String location;
 		myList = new Object [children.getLength()];
 		
 		for (int i = 0; i < children.getLength(); i++) {
@@ -304,7 +382,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
    		return myList;
 		
 	}
-	
+	 	
 	public static String getCharacterDataFromElement(Element e) {
 		
 	    Node child = e.getFirstChild();
@@ -321,7 +399,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	  }
 	
 	public String parseRepositoryTreePath(TreePath treePath) {
-		
+
 		// the path is:
 		System.out.println(" The path is " + treePath);
 		
@@ -343,73 +421,247 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		System.out.println(" The path is now " + path);
 		return path;
 	}
-	
-	public void addToTree(String path) {
-		
-		
-		
-	}
-			
+				
 	public void treeCollapsed(TreeExpansionEvent event) {
 		
-		// TODO Auto-generated method stub
-		System.out.println("A node on the tree has been collapsed. " + event.getPath().toString());
 		
 	}
 
 	public void treeExpanded(TreeExpansionEvent event) {
+
+		// after the tree has been populated with the users root directory already expanded on initialisation
+
+		if (populated) {
+			
+			TreePath path = event.getPath();
+			DefaultMutableTreeNode nodeOfPath = (DefaultMutableTreeNode) path.getLastPathComponent();
+			
+			if (nodeOfPath.getChildCount() == 1 && nodeOfPath.getFirstChild().toString().equals("dummy")) {
+				
+				System.out.println("	THIS NODE CONTAINS A DUMMY ");
+				
+				myTreePanel.myTree.setSelectionPath(path.pathByAddingChild(nodeOfPath.getFirstChild()));
+				nodeOfPath.getFirstChild();
+				
+				myTreePanel.removeCurrentNode();
+				
+				//myTreePanel.addObject(nodeOfPath, " not a dummy!");	// add the contents here
+				addObjectsToPath(path, nodeOfPath);
+				
+				myTreePanel.myTree.expandPath(event.getPath());
+				
+			}
 		
-		// TODO Auto-generated method stub
-		System.out.println("A node on the tree has been expanded." + event.getPath().toString());
+			System.out.println("	EXPANDED " + path + " NODE OF PATH " + nodeOfPath);
 		
-		String usersPath = parseRepositoryTreePath(event.getPath());
-		
-		
+		}
+				
 	}
-
-}
-/*
-for (Object myList : stuff) {
 	
-	System.out.println(" ABOUT TO POPULATE TREE WITH " + stuff);
-	treePanel.addObject(myList);
+	public String getFileExtension(String fileName) {
+		
+	    String fname="";
+	    String ext="";
+	    int mid= fileName.lastIndexOf(".");
+	    fname=fileName.substring(0,mid);
+	    ext=fileName.substring(mid+1,fileName.length());  
+	    System.out.println("File name ="+fname);
+	    System.out.println("Extension ="+ext);   
+	    
+	    return ext;
+	}
 	
-	if (objectType.get(myList).equals("folder")) {
+	public String getFileName(String path) {
+	
+		String fname = "";
+		int mid = path.lastIndexOf("/");
+		fname = path.substring(mid+1, path.length());
 		
-		System.out.println(" here's a folder, fetch its contents");
-		Object [] contents = getRepositoryStructure((String)myList);
-		
-		for (Object objectList : contents) {
+		return fname;
+	}
+	
+	public String getContentType(String extension) {
+	
+		if (extension.equals("arff")) {
 			
-			DefaultMutableTreeNode p1 = new DefaultMutableTreeNode(myList);
-
-			treePanel.addObject(p1 ,objectList);
-			
-			System.out.println("        the contents " + objectList);
-			//treePanel.addObject( p1 , objectList);
+			return ARFF_HEADER;
 			
 		}
+		
+		if (extension.equals("ioo")) {
+			
+			return RAPIDMINER_BINARY_HEADER;
+		}
+		
+		if (extension.equals("xml")) {
+			
+			return RAPIDMINER_PROCESS_HEADER;
+			
+		}
+				
+		// if there is no match set it as a blob
+		return "application/blob"; 
+		
+	}
+	
+	public static byte[] getBytesFromFile(File file) throws IOException {
+
+        InputStream is = new FileInputStream(file);
+    
+        // Get the size of the file
+        long length = file.length();
+    
+        if (length > Integer.MAX_VALUE) {
+            // File is too large
+        }
+    
+        // Create the byte array to hold the data
+        byte[] bytes = new byte[(int)length];
+    
+        
+        // Read in the bytes
+        int offset = 0;
+        int numRead = 0;
+       
+        try {
+        	
+             while (offset < bytes.length && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
+                
+            	 offset += numRead;		
+            
+             }
+             
+        } catch (Exception e) {
+        	
+        	e.printStackTrace();
+        	
+        }
+       
+        // Ensure all the bytes have been read in
+        if (offset < bytes.length) {
+       
+        	throw new IOException("Could not completely read file "+file.getName());
+      
+        }
+    
+        // Close the input stream and return bytes
+        is.close();
+        
+        return bytes;
+    }
+
+	public void uploadFile(String filePath) {
+
+	
+		// get the users selected node on the tree then get its path
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) myTreePanel.myTree.getLastSelectedPathComponent();
+		TreePath selectionPath = new TreePath(node.getPath());
+		String updatedSelectionPath = parseRepositoryTreePath(selectionPath);
+		System.out.println(" updated selection path " + updatedSelectionPath);
+		
+		String fileExtension = getFileExtension(filePath);
+		String contentType = getContentType(fileExtension);
+		String fname = getFileName(filePath);
+		String fileURI = "http://rpc295.cs.man.ac.uk:8081/RAWS/resources" + updatedSelectionPath + fname;
+		System.out.println(" THE FILENAME TO APPEND IS : " + fname);		
+		
+		System.out.println(" THE CONTENT TYPE IS : " + contentType);
+			
+		HttpPut httpPut = new HttpPut(fileURI);
+		httpPut.setHeader("Content-Type", contentType);
+		Object inputMessageBody;
+		File myFile = new File(filePath);
+		inputMessageBody = myFile;
+		byte[] b = null;
+		
+		try {
+			//b = getBytesFromFile(myFile);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			
+			//InputStream is = new FileInputStream(myFile);
+		
+		    // Get the size of the file
+		    //long length = myFile.length();
+			//InputStreamEntity myStreamEntity = new InputStreamEntity(is, length);
+			
+			//System.out.println("[debug] INPUT STREAM REPEATIBLE " + myStreamEntity.isRepeatable());
+			//HttpEntity entity = null;
+			
+			 //entity = myStreamEntity;
+			 //httpPut.setEntity(myStreamEntity);
+			
+			FileEntity fileEntity = new FileEntity(myFile, contentType);
+			httpPut.setEntity(fileEntity);
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+		doRequest(httpPut, contentType, fileURI, node);
+	
+	}
+	
+	public void doRequest(HttpRequestBase httpRequest, String contentType, String URI, DefaultMutableTreeNode parentNode) {
+		
+		String urlBasePath = URI;
+
+		httpRequest.setHeader("Content-Type", contentType);
+		
+		try {
+		      
+			HttpClient httpClient = new DefaultHttpClient();
+			AuthScope as = new AuthScope(urlBasePath, 8081);
+			
+			HttpContext localContext = new BasicHttpContext();
+			
+			UsernamePasswordCredentials upc = new UsernamePasswordCredentials(
+                    "rishi", "");
+ 
+            //  ((DefaultHttpClient) client).getCredentialsProvider()
+            //          .setCredentials(as, upc);
+            
+            CredentialsProvider credsProvider = new BasicCredentialsProvider();
+            credsProvider.setCredentials(new AuthScope("rpc295.cs.man.ac.uk", 8081, "RapidAnalyticsRealm"), new UsernamePasswordCredentials("rishi", ""));
+            
+            ((DefaultHttpClient) httpClient).setCredentialsProvider(credsProvider);
+            
+  			BasicScheme basicAuth = new BasicScheme();
+			localContext.setAttribute("http", basicAuth);
+			
+			HttpResponse response = httpClient.execute(httpRequest, localContext);
+			
+			Object content = EntityUtils.toString(response.getEntity());
+			
+			System.out.println(" REST UPLOAD RESPONSE : " + content);
+			
+			// refresh tree branch
+			updateTreePath(parentNode);
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+		
+	}
+
+	public void updateTreePath(DefaultMutableTreeNode parentNode) {
+	
+		// RE-FACTOR
+		System.out.println(" TO UPDATE NODE " + parentNode.getPath());
+		String path = parseRepositoryTreePath(new TreePath(parentNode.getPath()));
+		// get new objects
+		Object [] myObjects = getRepositoryStructure(path);
+		System.out.println(" TO UPDATE NODE WITH " + myObjects.toString());
+		
+		myTreePanel.getNodeAt(new TreePath(parentNode.getPath())).removeAllChildren();
+		addObjectsToPath(new TreePath(parentNode.getPath()), parentNode);
 	}
 	
 }
-*/
-
-/*
-String p1Name = new String("Parent 1");
-String p2Name = new String("Parent 2");
-String c1Name = new String("Child 1");
-String c2Name = new String("Child 2");
-
-DefaultMutableTreeNode p1, p2;
-
-p1 = treePanel.addObject(null, p1Name);
-p2 = treePanel.addObject(null, p2Name);
-
-treePanel.addObject(p1, c1Name);
-treePanel.addObject(p1, c2Name);
-
-treePanel.addObject(p2, c1Name);
-treePanel.addObject(p2, c2Name);
-*/
-
-//

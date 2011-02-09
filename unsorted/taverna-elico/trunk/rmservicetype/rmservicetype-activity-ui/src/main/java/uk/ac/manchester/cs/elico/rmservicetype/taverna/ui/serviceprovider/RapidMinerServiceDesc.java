@@ -37,6 +37,8 @@ public class RapidMinerServiceDesc extends ServiceDescription<RapidMinerActivity
 		bean.setOperatorName(operatorName);
 		bean.setCallName(callName);
 		bean.setIsExplicit(true); // by default
+		bean.setUsername("");
+		bean.setPassword("");
 		return bean;
 	}
 
