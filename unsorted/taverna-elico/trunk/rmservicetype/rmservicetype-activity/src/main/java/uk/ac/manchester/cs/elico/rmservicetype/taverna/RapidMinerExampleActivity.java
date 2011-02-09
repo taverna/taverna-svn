@@ -475,6 +475,7 @@ public class RapidMinerExampleActivity extends
 				System.out.println("^^^Point 4");
 				
 				// Set Username and Password (credential manager)
+				
 				UsernamePassword usernamePassword = null;
 				
 				try {
@@ -490,6 +491,7 @@ public class RapidMinerExampleActivity extends
 				context1.setUsername(usernamePassword.getUsername());
 				context1.setPassword(usernamePassword.getPasswordAsString());
 				usernamePassword.resetPassword();
+				
 				
 				call.setTargetEndpointAddress("http://rpc295.cs.man.ac.uk:8081/e-LICO/ExecutorService?wsdl");
 				call.setOperationName("executeBasicOperatorExplicitOutput");
@@ -681,7 +683,9 @@ public class RapidMinerExampleActivity extends
 		WSDLParser parser = null;
 		
 		try {
-			 parser = new WSDLParser(myBean.getWsdl()) ;
+			
+			 parser = new WSDLParser(myBean.getWsdl());
+			 
 		} catch (ParserConfigurationException e1) {
 			e1.printStackTrace();
 		} catch (WSDLException e1) {
@@ -816,9 +820,7 @@ public class RapidMinerExampleActivity extends
 			// Try to get username and password for this service from Credential
 			// Manager (which should pop up UI if needed)
 			UsernamePassword username_password;
-			
-			if (configBean.getUsername().equals(null) && (configBean.getPassword().equals(null))) {
-				
+							
 				CredentialManager credManager = null;
 				credManager = CredentialManager.getInstance();
 				String wsdl = bean
@@ -827,28 +829,28 @@ public class RapidMinerExampleActivity extends
 				username_password = credManager.getUsernameAndPasswordForService(serviceUri, usePathRecursion, null);
 				
 				if (username_password == null) {
-							
+					
 					throw new CMException("No username/password provided for service , Using config bean username and password instead" + bean.getWsdl());
+				
 				} 
-				
-			} else {	// use config bean username and password
-				
-				username_password = new UsernamePassword();
-				username_password.setPassword(configBean.getPassword().toCharArray());
-				username_password.setUsername(configBean.getUsername());
-			}
 					
 			return username_password;
 	}
 	
 	public static String getCharacterDataFromElement(Element e) {
+		
 	    Node child = e.getFirstChild();
+	    
 	    if (child instanceof CharacterData) {
+	    	
 	       CharacterData cd = (CharacterData) child;
+	       
 	       return cd.getData();
+	       
 	    }
 	    return "?";
-	  }
+	    
+	}
 
 }
 
