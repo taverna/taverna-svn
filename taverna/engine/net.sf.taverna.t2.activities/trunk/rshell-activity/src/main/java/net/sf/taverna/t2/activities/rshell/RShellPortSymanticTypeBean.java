@@ -28,8 +28,8 @@
 package net.sf.taverna.t2.activities.rshell;
 
 import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SemanticTypes;
-import net.sf.taverna.t2.workflowmodel.processor.activity.config.ConfigurationBean;
-import net.sf.taverna.t2.workflowmodel.processor.activity.config.ConfigurationProperty;
+import net.sf.taverna.t2.workflowmodel.processor.config.ConfigurationBean;
+import net.sf.taverna.t2.workflowmodel.processor.config.ConfigurationProperty;
 
 @ConfigurationBean(uri = RshellActivity.URI + "/port/configuration")
 public class RShellPortSymanticTypeBean {
