@@ -22,7 +22,9 @@
 		<module>net.sf.taverna.t2.core.provenance-mysql</module>
 		<module>net.sf.taverna.t2.taverna-commandline</module>
 -->
+<!--
 		<module>net.sf.taverna.t2.infrastructure</module>
+        -->
 		<module>net.sf.taverna.t2.security</module>
 
 <!-- disabled as integraton tests depend on network access and external services
