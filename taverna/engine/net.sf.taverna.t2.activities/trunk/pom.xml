@@ -5,6 +5,7 @@
 		<artifactId>taverna-parent</artifactId>
 		<groupId>net.sf.taverna</groupId>
 		<version>3.0-SNAPSHOT</version>
+        <relativePath>../../taverna-parent/</relativePath>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>activities</artifactId>
