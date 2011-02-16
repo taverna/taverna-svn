@@ -9,14 +9,6 @@
 	<artifactId>esc-activity-plugin</artifactId>
 	<name>eScience Central activity</name>
         <packaging>taverna-plugin</packaging>
-
-  <repositories>
-    <repository>
-      <id>my-repository</id>
-      <name>My Repository</name>
-      <url>file:/Users/alanrw/.m2/repository</url>
-    </repository>
-  </repositories>
  
   <!-- The repository for the Maven plugin -->
   <pluginRepositories>
@@ -44,6 +36,7 @@
   </build>
  
   <!-- The location of your plugin site -->
+  <!-- 
   <distributionManagement>
     <repository>
       <id>my-plugin-site</id>
@@ -56,6 +49,7 @@
       <url>file:///Users/alanrw/tmp</url>
     </snapshotRepository>
   </distributionManagement>
+   -->
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
