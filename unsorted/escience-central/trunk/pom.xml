@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>uk.ac.manchester.cs.img.esc</groupId>
@@ -12,6 +13,8 @@
 		<t2.core.version>1.2</t2.core.version>
 		<t2.activities.version>1.2</t2.activities.version>
 		<t2.ui.api.version>1.2</t2.ui.api.version>
+		<t2.ui.impl.version>1.2</t2.ui.impl.version>
+
 		<t2.workbench.version>2.2.0</t2.workbench.version>
 		<t2.lang.version>1.1</t2.lang.version>
 		<t2.security.version>1.2</t2.security.version>
@@ -73,14 +76,14 @@
 		</dependency>
 	</dependencies>
 
-<distributionManagement>
-  <!-- use the following if you ARE using a snapshot version. -->
-  <snapshotRepository>
-    <id>repo</id>
-    <name>Repository Name</name>
-    <url>scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/snapshot-repository</url>
-  </snapshotRepository>
-</distributionManagement>
+	<distributionManagement>
+		<!-- use the following if you ARE using a snapshot version. -->
+		<snapshotRepository>
+			<id>repo</id>
+			<name>Repository Name</name>
+			<url>scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/snapshot-repository</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 	<repositories>
 		<repository>
@@ -96,5 +99,6 @@
 	<modules>
 		<module>esc-activity</module>
 		<module>esc-activity-ui</module>
+		<module>esc-activity-plugin</module>
 	</modules>
 </project>

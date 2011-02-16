@@ -3,7 +3,6 @@ package uk.ac.manchester.cs.img.esc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,11 +15,9 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationE
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-
-import uk.ac.manchester.cs.img.esc.EscActivity;
-import uk.ac.manchester.cs.img.esc.EscActivityConfigurationBean;
-
+@Ignore
 public class ExampleActivityTest {
 
 	private EscActivityConfigurationBean configBean;
