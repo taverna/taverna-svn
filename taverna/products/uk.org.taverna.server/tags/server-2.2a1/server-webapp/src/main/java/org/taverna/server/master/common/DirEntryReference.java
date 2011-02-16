@@ -23,7 +23,7 @@ import org.taverna.server.master.interfaces.DirectoryEntry;
 @XmlType(name = "DirectoryEntry")
 @XmlSeeAlso( { DirEntryReference.DirectoryReference.class,
 		DirEntryReference.FileReference.class })
-public abstract class DirEntryReference {
+public class DirEntryReference {
 	/** A link to the entry. */
 	@XmlAttribute(name = "href", namespace = XLINK)
 	public URI link;
@@ -72,13 +72,13 @@ public abstract class DirEntryReference {
 
 	/** A reference to a directory, done with JAXB. */
 	@XmlRootElement(name = "dir")
-	@XmlType(name = "")
+	@XmlType(name = "DirectoryReference")
 	public static class DirectoryReference extends DirEntryReference {
 	}
 
 	/** A reference to a file, done with JAXB. */
 	@XmlRootElement(name = "file")
-	@XmlType(name = "")
+	@XmlType(name = "FileReference")
 	public static class FileReference extends DirEntryReference {
 	}
 }
