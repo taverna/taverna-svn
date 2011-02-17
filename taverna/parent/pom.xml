@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.taverna</groupId>
 	<artifactId>parent</artifactId>
-	<version>0.2.2011-01-24</version>
+	<version>0.2.2011-02-17</version>
 	<packaging>pom</packaging>
 	<name>Taverna Maven parent</name>
 	<description>
@@ -21,7 +21,7 @@
 	<licenses>
 		<license>
 			<name>GNU Lesser General Public License</name>
-			<url>http://www.gnu.org/licenses/lgpl.txt</url>
+			<url>http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
