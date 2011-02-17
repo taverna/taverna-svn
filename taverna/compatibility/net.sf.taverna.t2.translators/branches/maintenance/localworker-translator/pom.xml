@@ -134,10 +134,6 @@
 			    </exclusion>
 			    <exclusion>
 			      <groupId>uk.org.mygrid.resources</groupId>
-			      <artifactId>jedit-syntax</artifactId>
-			    </exclusion>
-			    <exclusion>
-			      <groupId>uk.org.mygrid.resources</groupId>
 			      <artifactId>biojava</artifactId>
 			    </exclusion>
 			    <exclusion>
