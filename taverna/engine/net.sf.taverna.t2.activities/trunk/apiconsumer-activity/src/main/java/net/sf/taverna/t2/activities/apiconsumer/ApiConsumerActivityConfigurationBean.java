@@ -31,7 +31,7 @@ import net.sf.taverna.t2.workflowmodel.processor.config.ConfigurationProperty;
  * @author Alex Nenadic
  *
  */
-@ConfigurationBean(uri = ApiConsumerActivity.URI + "/configuration")
+@ConfigurationBean(uri = ApiConsumerActivity.URI + "#Config")
 public class ApiConsumerActivityConfigurationBean extends DependencyActivityConfigurationBean {
 	
 	/**

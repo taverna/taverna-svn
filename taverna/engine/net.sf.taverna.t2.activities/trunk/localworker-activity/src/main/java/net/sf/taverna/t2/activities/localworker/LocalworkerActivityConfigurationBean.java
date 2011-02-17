@@ -24,7 +24,7 @@ import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean
 import net.sf.taverna.t2.workflowmodel.processor.config.ConfigurationBean;
 import net.sf.taverna.t2.workflowmodel.processor.config.ConfigurationProperty;
 
-@ConfigurationBean(uri = LocalworkerActivity.URI + "/configuration")
+@ConfigurationBean(uri = LocalworkerActivity.URI + "#Config")
 public class LocalworkerActivityConfigurationBean extends BeanshellActivityConfigurationBean{
 	
 	private String localworkerName;
