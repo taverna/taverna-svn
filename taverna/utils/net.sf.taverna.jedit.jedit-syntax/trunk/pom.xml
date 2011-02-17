@@ -29,7 +29,19 @@
 			</plugin>
 		</plugins>
 	</build>
-	<repositories>
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.log4j</groupId>
+			<artifactId>com.springsource.org.apache.log4j</artifactId>
+			<version>1.2.16</version>
+		</dependency>
+	</dependencies>
+	<scm>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/utils/net.sf.taverna.jedit.jedit-syntax/trunk/</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/utils/net.sf.taverna.jedit.jedit-syntax/trunk/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/utils/net.sf.taverna.jedit.jedit-syntax/trunk/</url>
+	</scm>
+    <repositories>
 		<repository>
 			<releases />
 			<snapshots>
@@ -48,17 +60,15 @@
 			<name>myGrid Snapshot Repository</name>
 			<url>http://www.mygrid.org.uk/maven/snapshot-repository</url>
 		</repository>
-	</repositories>
-	<scm>
-		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/utils/net.sf.taverna.jedit.jedit-syntax/trunk/</connection>
-		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/utils/net.sf.taverna.jedit.jedit-syntax/trunk/</developerConnection>
-		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/utils/net.sf.taverna.jedit.jedit-syntax/trunk/</url>
-	</scm>
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.log4j</groupId>
-			<artifactId>com.springsource.org.apache.log4j</artifactId>
-			<version>1.2.16</version>
-		</dependency>
-	</dependencies>
+        <repository>
+            <id>com.springsource.repository.bundles.release</id>
+            <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
+            <url>http://repository.springsource.com/maven/bundles/release</url>
+        </repository>
+        <repository>
+            <id>com.springsource.repository.bundles.external</id>
+            <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
+            <url>http://repository.springsource.com/maven/bundles/external</url>
+        </repository>
+    </repositories>
 </project>
