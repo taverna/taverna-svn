@@ -38,7 +38,7 @@ import net.sf.taverna.t2.workflowmodel.processor.config.ConfigurationProperty;
  * A configuration bean specific to the Rshell activity.
  * 
  */
-@ConfigurationBean(uri = RshellActivity.URI + "/configuration")
+@ConfigurationBean(uri = RshellActivity.URI + "#Config")
 public class RshellActivityConfigurationBean extends
 		ActivityPortsDefinitionBean {
 	
