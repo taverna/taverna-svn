@@ -34,7 +34,6 @@ public class RapidAnalyticsRepositoryTree extends JPanel {
 		myTree = new JTree(myTreeModel);
 		myTree.setEditable(true);
 		myTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		myTree.setShowsRootHandles(true);
 		
 		JScrollPane scrollPane = new JScrollPane(myTree);
 		add(scrollPane);
@@ -70,8 +69,8 @@ public class RapidAnalyticsRepositoryTree extends JPanel {
 		//	for (Enumeration e = myRootTreeNode.children(); e.hasMoreElements();) {
 					
 		//	}
-		
-		return null;
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+		return node;
 		
 	}
 	
@@ -94,6 +93,7 @@ public class RapidAnalyticsRepositoryTree extends JPanel {
 	    }
 	    
 	    return null;
+	    
 	  }
 	
 	public DefaultMutableTreeNode addObject(Object child) {

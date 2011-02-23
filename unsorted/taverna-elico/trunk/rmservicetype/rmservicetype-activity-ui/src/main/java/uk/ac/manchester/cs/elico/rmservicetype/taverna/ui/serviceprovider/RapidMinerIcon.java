@@ -1,5 +1,7 @@
 package uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.serviceprovider;
 
+import java.awt.Color;
+
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
@@ -7,11 +9,19 @@ import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerActivityConfigu
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerExampleActivity;
 
 import net.sf.taverna.t2.workbench.activityicons.ActivityIconSPI;
+import net.sf.taverna.t2.workbench.ui.impl.configuration.colour.ColourManager;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 public class RapidMinerIcon implements ActivityIconSPI {
 
 	private static Icon icon;
+	
+	private static final Color COLOUR = Color.decode("#E6E6FA");
+
+	static {
+		ColourManager.getInstance().setPreferredColour(
+				"uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerExampleActivity", COLOUR);
+	}
 	
 	public int canProvideIconScore(Activity<?> activity) {
 		if (activity instanceof RapidMinerExampleActivity) {

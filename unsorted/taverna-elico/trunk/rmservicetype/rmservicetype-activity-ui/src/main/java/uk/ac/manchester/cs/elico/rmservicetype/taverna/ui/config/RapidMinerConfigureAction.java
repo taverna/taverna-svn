@@ -58,18 +58,17 @@ public class RapidMinerConfigureAction
 			public void actionPerformed(ActionEvent arg0) {
 				
 				System.out.println(" Dialog position 1");
+									
+				Iterator myiter = panel.getConfiguration().getParameterDescriptions().iterator();
 				
-				
-			Iterator myiter = panel.getConfiguration().getParameterDescriptions().iterator();
-			
-			while (myiter.hasNext()) {
-				
-				RapidMinerParameterDescription des = (RapidMinerParameterDescription) myiter.next();
-				System.out.println("[DEBUG] new parameters to set " + des.getUseParameter() + " " + des.getExecutionValue());
-				
-			}
-				
-					ActivityConfigurationDialog.configureActivityStatic(owningDataflow, activity, panel.getConfiguration());
+				while (myiter.hasNext()) {
+					
+					RapidMinerParameterDescription des = (RapidMinerParameterDescription) myiter.next();
+					System.out.println("[DEBUG] new parameters to set " + des.getUseParameter() + " " + des.getExecutionValue());
+					
+				}
+					
+				ActivityConfigurationDialog.configureActivityStatic(owningDataflow, activity, panel.getConfiguration());
 					
 				System.out.println(" Dialog position 2");
 				dialog.setVisible(false);

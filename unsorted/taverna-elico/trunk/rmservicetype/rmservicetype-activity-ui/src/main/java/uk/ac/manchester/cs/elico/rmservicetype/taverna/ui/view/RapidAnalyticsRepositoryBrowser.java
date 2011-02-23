@@ -12,13 +12,19 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.util.HashMap;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -57,6 +63,8 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	private RapidAnalyticsRepositoryTree myTreePanel;
 	public static JFrame frame;
 	
+	private JLabel myIconLabel;
+	
     private int newNodeSuffix = 1;
     private String repositoryUsername;    
     private static String UPLOAD_COMMAND = "upload";
@@ -69,7 +77,9 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 
     private boolean populated = false;
 	private HashMap<Object, String> objectType = new HashMap<Object, String>();
-    	
+    private String password;	
+	public String returnedRepositoryLocation;
+    
 	JFileChooser fc;
 	 
 	public RapidAnalyticsRepositoryBrowser() {
@@ -86,6 +96,15 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		
 		myTreePanel = new RapidAnalyticsRepositoryTree();
 		myTreePanel.myTree.addTreeExpansionListener(this);
+		
+		Icon leafIcon = new ImageIcon(getClass().getResource("/file.png"));
+		Icon openIcon = new ImageIcon(getClass().getResource("/folder-open.png"));
+		Icon closedIcon = new ImageIcon(getClass().getResource("/folder-closed.png"));
+		
+		DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer)myTreePanel.myTree.getCellRenderer();
+		renderer.setLeafIcon(leafIcon);
+		renderer.setClosedIcon(closedIcon);
+		renderer.setOpenIcon(openIcon);
 		
 		// populate tree with root elements
 		initialiseTreeContents();
@@ -104,18 +123,24 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		JButton useButton = new JButton("Use Location");
 		useButton.setActionCommand("use");
 		useButton.addActionListener(this);
+	
+		ImageIcon icon = new ImageIcon(getClass().getResource("/loading.gif"),
+        "your file is being uploaded");
+		myIconLabel = new JLabel(icon);
+		myIconLabel.setVisible(false);
 		
         myTreePanel.setPreferredSize(new Dimension(300, 150));
         add(myTreePanel, BorderLayout.CENTER);
 
-        JPanel panel = new JPanel(new GridLayout(0,3));
+        JPanel panel = new JPanel(new GridLayout(0,4));
         panel.add(addButton);
         panel.add(newFolderButton); 
         panel.add(useButton);
+        panel.add(myIconLabel);
         add(panel, BorderLayout.SOUTH);
         		
 	}
-	
+
 	public void initialiseTreeContents() {
 	
 		//set the root structure
@@ -227,13 +252,14 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	                System.out.println("Opening: " + file.getName() + " path " + file.getPath());
 	                
 	                System.out.println(" FILE EXTENSION " + getFileExtension(filePath));
-	                
+	                myIconLabel.setVisible(true);
 	                uploadFile(filePath);
+	                myIconLabel.setVisible(false);
 	                
 	            } else {
-	            	
+	            		
 	            	 System.out.println("Open command cancelled by user.");
-	            	 
+	
 	            }
 	              	
 	        } else if (NEWFOLDER_COMMAND.equals(command)) {
@@ -243,14 +269,31 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	        	
 	        } else if (USE_COMMAND.equals(command)) {
 	        	
-	            //Clear button clicked.
-	        	//myTreePanel.clearNodes();
+	           // set a variable of the chosen respository structure
+	        	TreePath myPath = myTreePanel.myTree.getSelectionPath();
+	        	String parsedPath = parseRepositoryTreePath(myPath);
+	        	//[DEBUG] System.out.println(" the parsed repository path is " + parsedPath);
+	        	returnedRepositoryLocation = parsedPath;
 	        	
+	        	// rip out last slash (for individual files)
+	        		//int i = returnedRepositoryLocation.lastIndexOf("/");
+	        		//returnedRepositoryLocation = returnedRepositoryLocation.substring(0, i);
+	        	
+	        	JDialog dialog = (JDialog) SwingUtilities.getAncestorOfClass(JDialog.class, this);
+	        	dialog.dispose();
+	        
 	        }
 	}
 	
+	public String getChosenRepositoryPath() {
+		return returnedRepositoryLocation;
+	}
+	
+	public void setRepositoryLocation(String value) {
+		returnedRepositoryLocation = value;
+	}
+	
 	public Object[] getRepositoryStructure(String path) {
-
 		
 		// get the repository structure
 
@@ -279,7 +322,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
             //          .setCredentials(as, upc);
             
             CredentialsProvider credsProvider = new BasicCredentialsProvider();
-            credsProvider.setCredentials(new AuthScope("rpc295.cs.man.ac.uk", 8081, "RapidAnalyticsRealm"), new UsernamePasswordCredentials("rishi", "rishipwd"));
+            credsProvider.setCredentials(new AuthScope("rpc295.cs.man.ac.uk", 8081, "RapidAnalyticsRealm"), new UsernamePasswordCredentials("rishi", ""));
             
             ((DefaultHttpClient) client).setCredentialsProvider(credsProvider);
             
@@ -328,14 +371,15 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		if (pathObjects == null) {
 			return;
 		}
+		
 		for (Object myObject : pathObjects) {
-			
+		
 			DefaultMutableTreeNode addedNode = myTreePanel.addObject(node, myObject);
-			
+					
 			if (objectType.get(myObject).equals("folder")) {
 				myTreePanel.addObject(addedNode, "dummy");
 			}
-			
+				
 		}
 		
 	}
@@ -423,7 +467,6 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	}
 				
 	public void treeCollapsed(TreeExpansionEvent event) {
-		
 		
 	}
 
@@ -572,6 +615,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		Object inputMessageBody;
 		File myFile = new File(filePath);
 		inputMessageBody = myFile;
+		
 		byte[] b = null;
 		
 		try {
@@ -603,6 +647,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 			e.printStackTrace();
 			
 		}
+		
 		doRequest(httpPut, contentType, fileURI, node);
 	
 	}
@@ -656,12 +701,22 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		// RE-FACTOR
 		System.out.println(" TO UPDATE NODE " + parentNode.getPath());
 		String path = parseRepositoryTreePath(new TreePath(parentNode.getPath()));
+		
 		// get new objects
 		Object [] myObjects = getRepositoryStructure(path);
 		System.out.println(" TO UPDATE NODE WITH " + myObjects.toString());
 		
-		myTreePanel.getNodeAt(new TreePath(parentNode.getPath())).removeAllChildren();
+		//System.out.println(" DEBUG TREE PATH : " + myTreePanel.getNodeAt(new TreePath(parentNode.getPath())).getPath());
+		DefaultMutableTreeNode lastNode = myTreePanel.getNodeAt(new TreePath(parentNode.getPath()));
+		lastNode.removeAllChildren();
+		myTreePanel.myTreeModel.reload();
+	        
 		addObjectsToPath(new TreePath(parentNode.getPath()), parentNode);
+		
+		 TreePath lastPath = new TreePath(lastNode.getPath());
+	        myTreePanel.myTree.setExpandsSelectedPaths(true);
+	        myTreePanel.myTree.setSelectionPath(lastPath);
+	        myTreePanel.updateUI();
 	}
 	
 }

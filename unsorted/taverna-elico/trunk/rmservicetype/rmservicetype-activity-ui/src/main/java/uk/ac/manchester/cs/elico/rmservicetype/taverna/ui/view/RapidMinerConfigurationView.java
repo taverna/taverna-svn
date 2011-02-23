@@ -95,6 +95,8 @@ public class RapidMinerConfigurationView extends JPanel {
 	
 	private HashMap<Integer, String[]> choicesMap = new HashMap<Integer,String[]>();
 	
+	RapidAnalyticsRepositoryBrowser browser = null;
+	
 	public RapidMinerConfigurationView(RapidMinerExampleActivity activity) {
 
 		ActivityIconManager.getInstance().resetIcon(activity);
@@ -106,6 +108,10 @@ public class RapidMinerConfigurationView extends JPanel {
 			
 	}
 
+	public void setInputLocationField(String loc) {
+		inputLocationField.setText(loc);
+	}
+	
 	private void initialise() {
 		
 		titlePanel = new JPanel(new BorderLayout());
@@ -158,6 +164,7 @@ public class RapidMinerConfigurationView extends JPanel {
 		inputLocationField.setText(oldConfiguration.getInputLocation());
 		outputLocationField.setText(oldConfiguration.getOutputLocation());
 
+		
 		uploadButton = new JButton("Upload");
 		uploadButton.setFocusable(false);
 		uploadButton.setVisible(true);
@@ -172,12 +179,15 @@ public class RapidMinerConfigurationView extends JPanel {
 				//add(browser.frame);
 							
 				JDialog frame = new JDialog((JDialog)SwingUtilities.getAncestorOfClass(JDialog.class, RapidMinerConfigurationView.this), "Rapid Analytics Repository Browser");
-				RapidAnalyticsRepositoryBrowser browser = new RapidAnalyticsRepositoryBrowser();
+				browser = new RapidAnalyticsRepositoryBrowser();
 				browser.setOpaque(true);
+				frame.setModal(true);
 				frame.add(browser);
-				frame.setPreferredSize(new Dimension(300,400));
+				frame.setPreferredSize(new Dimension(400,400));
 				frame.pack();
 				frame.setVisible(true);
+				
+				setInputLocationField(browser.getChosenRepositoryPath());
 				
 			}
 			
@@ -194,6 +204,7 @@ public class RapidMinerConfigurationView extends JPanel {
 		nextButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
+				System.out.println("[DEBUG] --> RETURNED REPOSITORY LOCATION " + browser.getChosenRepositoryPath());
 				//check if the configuration has changed
 				if(!(inputLocationField.getText() == oldConfiguration.getInputLocation()) || (outputLocationField.getText() == oldConfiguration.getOutputLocation()) ) {
 					
@@ -561,7 +572,9 @@ public class RapidMinerConfigurationView extends JPanel {
 	}
 
 	public void setOkAction(Action okAction) {
+		
 		finishButton.setAction(okAction);
+		finishButton.setEnabled(false);
 	}
 	
 	public class TextAreaRenderer extends JTextArea
