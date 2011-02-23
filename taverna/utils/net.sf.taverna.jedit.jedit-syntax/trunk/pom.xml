@@ -25,23 +25,12 @@
 			<plugin>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
+				<version>2.3.4</version>
 				<extensions>true</extensions>
 			</plugin>
 		</plugins>
 	</build>
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.log4j</groupId>
-			<artifactId>com.springsource.org.apache.log4j</artifactId>
-			<version>1.2.16</version>
-		</dependency>
-	</dependencies>
-	<scm>
-		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/utils/net.sf.taverna.jedit.jedit-syntax/trunk/</connection>
-		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/utils/net.sf.taverna.jedit.jedit-syntax/trunk/</developerConnection>
-		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/utils/net.sf.taverna.jedit.jedit-syntax/trunk/</url>
-	</scm>
-    <repositories>
+	<repositories>
 		<repository>
 			<releases />
 			<snapshots>
@@ -70,5 +59,17 @@
             <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
             <url>http://repository.springsource.com/maven/bundles/external</url>
         </repository>
-    </repositories>
+	</repositories>
+	<scm>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/utils/net.sf.taverna.jedit.jedit-syntax/trunk/</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/utils/net.sf.taverna.jedit.jedit-syntax/trunk/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/utils/net.sf.taverna.jedit.jedit-syntax/trunk/</url>
+	</scm>
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.log4j</groupId>
+			<artifactId>com.springsource.org.apache.log4j</artifactId>
+			<version>1.2.16</version>
+		</dependency>
+	</dependencies>
 </project>
