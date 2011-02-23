@@ -71,12 +71,11 @@ public class RapidMinerExampleActivity extends
 	private static final String OUT_REPORT = "report";
 	
     static String securityProfile = SecurityProfiles.HTTP_BASIC_AUTHN;
-	
-    NodeList myTempList;
-
-	
+		
 	private RapidMinerActivityConfigurationBean configBean;
 	List<String> portListing;
+	NodeList myTempList;
+	
 	@Override
 	public void configure(RapidMinerActivityConfigurationBean configBean)
 			throws ActivityConfigurationException {
@@ -86,6 +85,7 @@ public class RapidMinerExampleActivity extends
 			throw new ActivityConfigurationException(
 					"Example string can't be 'invalidExample'");
 		}
+		
 		// Store for getConfiguration(), but you could also make
 		// getConfiguration() return a new bean from other sources
 		this.configBean = configBean;
@@ -106,17 +106,12 @@ public class RapidMinerExampleActivity extends
 			configurePorts();
 			
 		} else {
-			
-			
-			
+	
 			portListing = getParametersForOperation(configBean.getCallName());
 			//portListing = locationPorts;
 			
-		
 				List<RapidMinerParameterDescription> descList = getParameterDescriptions(myTempList);
-			
-	
-			
+						
 			if (!configBean.getIsParametersConfigured()) {
 				configBean.setParameterDescriptions(descList);
 	
@@ -127,8 +122,6 @@ public class RapidMinerExampleActivity extends
 			configBean.setHasDescriptions(true);
 			
 		}
-			
-			
 		
 	}
 
@@ -155,7 +148,6 @@ public class RapidMinerExampleActivity extends
 				if (returnList.item(j).getNodeName().equals("description")) {
 					//System.out.println(" descriptions " +getCharacterDataFromElement((Element)returnList.item(j)));
 					aDescription.setDescription(getCharacterDataFromElement((Element)returnList.item(j)));
-
 				}
 				
 				if (returnList.item(j).getNodeName().equals("expert")) {
@@ -166,19 +158,16 @@ public class RapidMinerExampleActivity extends
 				if (returnList.item(j).getNodeName().equals("mandatory")) {
 					//System.out.println(" mandatory " +getCharacterDataFromElement((Element)returnList.item(j)));
 					aDescription.setMandatory(getCharacterDataFromElement((Element)returnList.item(j)));
-
 				}
 				
 				if (returnList.item(j).getNodeName().equals("max")) {
 					//System.out.println(" max " +getCharacterDataFromElement((Element)returnList.item(j)));
 					aDescription.setMax(getCharacterDataFromElement((Element)returnList.item(j)));
-
 				}
 				
 				if (returnList.item(j).getNodeName().equals("min")) {
 					//System.out.println(" min " +getCharacterDataFromElement((Element)returnList.item(j)));
 					aDescription.setMin(getCharacterDataFromElement((Element)returnList.item(j)));
-
 				}
 				
 				if (returnList.item(j).getNodeName().equals("defaultValue")) {
@@ -189,7 +178,6 @@ public class RapidMinerExampleActivity extends
 				if (returnList.item(j).getNodeName().equals("type")) {
 					//System.out.println(" type " +getCharacterDataFromElement((Element)returnList.item(j)));
 					aDescription.setType(getCharacterDataFromElement((Element)returnList.item(j)));
-
 				}
 				
 				if (returnList.item(j).getNodeName().equals("choices")) {
@@ -266,9 +254,28 @@ public class RapidMinerExampleActivity extends
 			}
 						
 			
-		} else {	// Implicit
+		} else {	// Implicit		
 				
-
+			System.out.println(" IMPLICIT CHOSEN ONLY INPUT LOCATION SHOULD BE SPECIFIED OR SET");
+			
+			if (configBean.getInputLocation().equals("")) {		// if no input is set then show an input port
+			
+				System.out.println(" INPUT LOCATION NOT SET >>> SHOW INPUT PORT");
+				removeInputs();
+				portListing.clear();
+				portListing.add("inputLocation");
+			
+			}
+			
+			if (!configBean.getInputLocation().equals("")) {
+								
+				System.out.println(" INPUT LOCATION SET >>> REMOVE PORTS");
+				removeInputs();
+				portListing.clear();
+			}
+			
+			
+			
 		}
 		
 		Iterator inputIterator = portListing.iterator();
@@ -303,7 +310,7 @@ public class RapidMinerExampleActivity extends
 		HashMap<String, String> params = new HashMap<String, String>();
 		
 			List<RapidMinerParameterDescription>  paramDescriptions = configBean.getParameterDescriptions();
-		
+			
 			Iterator paramIterator = paramDescriptions.iterator();
 			
 			while (paramIterator.hasNext()) {
@@ -311,13 +318,14 @@ public class RapidMinerExampleActivity extends
 				// check whether the current parameter is Use (true)
 				RapidMinerParameterDescription des = (RapidMinerParameterDescription)paramIterator.next();
 				
-				if (des.getUseParameter()) {	// true
+				if (des.getUseParameter()) {	// true	
 					
-					params.put(des.getParameterName(), des.getExecutionValue());
+					params.put(des.getParameterName(), des.getExecutionValue());				
 					
 				}
 				
 			}
+			
 			System.out.println(" THE PARAMETERS AND THEIR VALUES : " + params.toString());
 			
 		String inputDoc;
@@ -376,6 +384,7 @@ public class RapidMinerExampleActivity extends
 						System.out.println(" TEST CASE 2. " + inputValue + " " + outputValue);
 
 						inputMap = constructInvocationInputMap(inputValue, outputValue);
+					
 					}
 					
 					// if just input is specified - get the input from the config bean and the output from the port
@@ -386,7 +395,6 @@ public class RapidMinerExampleActivity extends
 						System.out.println(" TEST CASE 3. " + configBean.getInputLocation() + " " + outputValue);
 						
 						inputMap = constructInvocationInputMap(configBean.getInputLocation(), outputValue);
-
 						
 					}
 					
@@ -400,24 +408,16 @@ public class RapidMinerExampleActivity extends
 						
 					}
 					
-					
-					
-				} else {								// is implicit	
+				} else {	// is implicit	
 					
 						System.out.println(" Implicit execution selected, get output xml and parse.");
-					
+						
 				}
 				
 			//	String firstInput = (String) referenceService.renderIdentifier(inputs.get(IN_FIRST_INPUT),
             //            String.class, context);
-
-				
-			
-				
+	
 				System.out.println(" +++ ONE +++");
-				
-
-				
 				System.out.println(" +++ FOUR +++");
 
 				WSDLActivity wrapper = new WSDLActivity();
@@ -436,15 +436,25 @@ public class RapidMinerExampleActivity extends
 				WSDLParser parser = null;
 				
 				try {
-					 parser = new WSDLParser(myBean.getWsdl()) ;
+					
+					 parser = new WSDLParser(myBean.getWsdl());
+					 
 				} catch (ParserConfigurationException e1) {
+					
 					e1.printStackTrace();
+					
 				} catch (WSDLException e1) {
+					
 					e1.printStackTrace();
+					
 				} catch (IOException e1) {
+					
 					e1.printStackTrace();
+					
 				} catch (SAXException e1) {
+					
 					e1.printStackTrace();
+					
 				}
 				
 				List<String> outputNames = new ArrayList<String>();
@@ -457,6 +467,7 @@ public class RapidMinerExampleActivity extends
 				for (InputPort port: wrapper.getInputPorts()) {
 					inputNames.add(port.getName());
 				}
+				
 				System.out.println(" INPUT NAMES ARE " + inputNames.toString() + " " + myBean.getOperation());
 
 				System.out.println(" OUTPUT NAMES ARE " + outputNames.toString() + " " + myBean.getOperation());
@@ -479,26 +490,29 @@ public class RapidMinerExampleActivity extends
 				UsernamePassword usernamePassword = null;
 				
 				try {
+					
 					usernamePassword = getUsernameAndPasswordForService(myBean, true);
+					
 				} catch (CMException e2) {
+					
 					e2.printStackTrace();
+					
 				}
 				
 				System.out.println("^^^Point 5");
 				
-
 				MessageContext context1 = call.getMessageContext();
 				context1.setUsername(usernamePassword.getUsername());
 				context1.setPassword(usernamePassword.getPasswordAsString());
 				usernamePassword.resetPassword();
 				
-				
 				call.setTargetEndpointAddress("http://rpc295.cs.man.ac.uk:8081/e-LICO/ExecutorService?wsdl");
 				call.setOperationName("executeBasicOperatorExplicitOutput");
 				
 				// end of call
-
+				
 				try {
+					
 					System.out.println(" INPUT MAP CONTENTS " + inputMap.toString());
 					Map<String, Object> invokerOutputMap = invoker.invoke(inputMap, call);
 					
@@ -507,8 +521,6 @@ public class RapidMinerExampleActivity extends
 					e.printStackTrace();
 				}			
 
-				
-				
 				// return map of output data, with empty index array as this is
 				// the only and final result (this index parameter is used if
 				// pipelining output)
@@ -640,8 +652,7 @@ public class RapidMinerExampleActivity extends
 		return returnVal;
 		
 	}
-	
-	
+
 	public String transformOperatorName(String myString) {
 		
 		//String[] tokens = myString.split("[ ]+");
@@ -649,6 +660,7 @@ public class RapidMinerExampleActivity extends
 		//for (int i = 0; i < tokens.length; i++) {
 		//	tokens[i].replaceAll(regex, replacement)
 		//}
+		
 		String updatedName = myString.toLowerCase();
 		updatedName = updatedName.replace(" ", "_");
 		System.out.println(" UPDATED NAME " + updatedName);
@@ -726,12 +738,10 @@ public class RapidMinerExampleActivity extends
 		
 		System.out.println("^^^Point 5");
 		
-
 		MessageContext context = call.getMessageContext();
 		context.setUsername(usernamePassword.getUsername());
 		context.setPassword(usernamePassword.getPasswordAsString());
 		usernamePassword.resetPassword();
-		
 		
 		System.out.println("^^^Point 6");
 	
@@ -804,7 +814,6 @@ public class RapidMinerExampleActivity extends
 			myParameters.add(getCharacterDataFromElement((Element)children.item(i)));
 		}
 		
-
 		return myParameters;
 	}
 	
@@ -981,8 +990,7 @@ while (myIterator.hasNext()) {
 	System.out.println("[VERIFY] defaultValue " + desc.getDefaultValue());
 	System.out.println("[VERIFY] type " + desc.getType());
 	System.out.println("[VERIFY] choices " + desc.getChoices().toString());
-	
-	
+		
 }
 */
 
