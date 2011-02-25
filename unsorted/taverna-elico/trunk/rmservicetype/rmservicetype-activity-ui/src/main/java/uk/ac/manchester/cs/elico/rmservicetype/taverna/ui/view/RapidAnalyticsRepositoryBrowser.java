@@ -70,7 +70,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
     private static String UPLOAD_COMMAND = "upload";
     private static String NEWFOLDER_COMMAND = "newfolder";
     private static String USE_COMMAND = "use";
-    
+     
     private String ARFF_HEADER = "application/arff";
     private String RAPIDMINER_PROCESS_HEADER = "application/vnd.rapidminer.rmp+xml";
     private String RAPIDMINER_BINARY_HEADER = "application/vnd.rapidminer.ioo";
@@ -591,10 +591,10 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
         is.close();
         
         return bytes;
+        
     }
 
 	public void uploadFile(String filePath) {
-
 	
 		// get the users selected node on the tree then get its path
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) myTreePanel.myTree.getLastSelectedPathComponent();
