@@ -108,15 +108,15 @@ public class RapidMinerExampleActivity extends
 		} else {
 	
 			portListing = getParametersForOperation(configBean.getCallName());
-			//portListing = locationPorts;
 			
-				List<RapidMinerParameterDescription> descList = getParameterDescriptions(myTempList);
+			List<RapidMinerParameterDescription> descList = getParameterDescriptions(myTempList);
 						
 			if (!configBean.getIsParametersConfigured()) {
+				
 				configBean.setParameterDescriptions(descList);
-	
+				
 			}
-					
+			
 			// REQUIRED: (Re)create input/output ports depending on configuration
 			configurePorts();
 			configBean.setHasDescriptions(true);
@@ -127,6 +127,41 @@ public class RapidMinerExampleActivity extends
 
 	public List<RapidMinerParameterDescription> getParameterDescriptions(NodeList myList) {
 		
+		// [for programmatic access] check whether the config bean already has any RapidMinerParameterDescriptions set
+		List<RapidMinerParameterDescription> presetListOfDescriptions;
+		HashMap<String, String> parameterNameToExecutionValue = null;
+		System.out.println("	[DEBUG] HERE 1");		
+	
+		// see if there's any descriptions already set
+		int presetDescriptionSize = 0;
+		try {
+			
+			presetDescriptionSize = configBean.getParameterDescriptions().size();
+			
+		} catch (NullPointerException e) {
+			System.out.println("		[DEBUG] no parameter descriptions");	
+		}
+		
+		if (presetDescriptionSize > 0) {
+			
+			System.out.println("	[DEBUG] HERE 2");			
+			
+			//get the descriptions
+			presetListOfDescriptions = configBean.getParameterDescriptions(); 
+			System.out.println("	[DEBUG] HERE 3");			
+
+			parameterNameToExecutionValue = new HashMap<String, String>();
+			System.out.println("	[DEBUG] HERE 4");			
+
+			for (RapidMinerParameterDescription description : presetListOfDescriptions) {
+			
+				// for each parameter put a paramName & executionValue as input
+				parameterNameToExecutionValue.put(description.getParameterName(), description.getExecutionValue());
+				
+			}
+	
+		}
+		//  parse into a list
 		System.out.println(" number of RETURNS " + myList.getLength());
 		List<RapidMinerParameterDescription> listOfDescriptions = new ArrayList<RapidMinerParameterDescription>();
 		
@@ -142,7 +177,11 @@ public class RapidMinerExampleActivity extends
 				
 				if (returnList.item(j).getNodeName().equals("name")) {
 					//System.out.println(" names " +getCharacterDataFromElement((Element)returnList.item(j)));
-					aDescription.setParameterName(getCharacterDataFromElement((Element)returnList.item(j)));
+					String paramName = getCharacterDataFromElement((Element)returnList.item(j));
+					aDescription.setParameterName(paramName);
+					
+					// check whether a name has been set
+					
 				}
 				
 				if (returnList.item(j).getNodeName().equals("description")) {
@@ -190,6 +229,24 @@ public class RapidMinerExampleActivity extends
 			aDescription.setChoices(choices);
 			listOfDescriptions.add(aDescription);
 		}
+		
+		// for the just added list of descriptions, set their execution values if they exist
+		if (presetDescriptionSize > 0) {
+			for (RapidMinerParameterDescription aDescription : listOfDescriptions) {
+				
+				// for the current description, check whether it is in the list of 
+				String paramName = aDescription.getParameterName();
+				
+				if (parameterNameToExecutionValue.containsKey(paramName)) {
+					
+					// set it's execution value
+					aDescription.setExecutionValue(parameterNameToExecutionValue.get(paramName));
+					aDescription.setUseParameter(true);
+				}
+				
+			}
+		}
+
 		
 		// sort before returning
 		Collections.sort(listOfDescriptions);
@@ -760,9 +817,11 @@ public class RapidMinerExampleActivity extends
 			children = doc.getElementsByTagName("return");	//	All children nodes
 			
 			
-			System.out.println(" The number of children returned by Parameter Types is :" + children.getLength());
+			System.out.println(" number of returns from XML : " + children.getLength());
 			
 		} catch (Exception e) {
+			
+			e.printStackTrace();
 			
 		}
 		
@@ -922,6 +981,8 @@ public class RapidMinerExampleActivity extends
 			System.out.println(" The number of children returned by Parameter Types is :" + children.getLength());
 			
 		} catch (Exception e) {
+			
+			e.printStackTrace();
 			
 		}
 		
