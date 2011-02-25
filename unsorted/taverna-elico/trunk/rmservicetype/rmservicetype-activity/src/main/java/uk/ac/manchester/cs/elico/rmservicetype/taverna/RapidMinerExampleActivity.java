@@ -256,7 +256,7 @@ public class RapidMinerExampleActivity extends
 			
 		} else {	// Implicit		
 				
-			System.out.println(" IMPLICIT CHOSEN ONLY INPUT LOCATION SHOULD BE SPECIFIED OR SET");
+			System.out.println(" IMPLICIT CHOSEN ONLY INPUT LOCATION SHOULD BE SPECIFIED OR SET ");
 			
 			if (configBean.getInputLocation().equals("")) {		// if no input is set then show an input port
 			
@@ -272,10 +272,9 @@ public class RapidMinerExampleActivity extends
 				System.out.println(" INPUT LOCATION SET >>> REMOVE PORTS");
 				removeInputs();
 				portListing.clear();
+				
 			}
-			
-			
-			
+				
 		}
 		
 		Iterator inputIterator = portListing.iterator();
@@ -288,7 +287,7 @@ public class RapidMinerExampleActivity extends
 		}
 
 		// Hard coded input port, expecting a single String
-		//addInput(IN_FIRST_INPUT, 0, true, null, String.class);
+		// addInput(IN_FIRST_INPUT, 0, true, null, String.class);
 
 		// Optional ports depending on configuration
 		if (configBean.getOperatorName().equals("specialCase")) {
@@ -300,11 +299,11 @@ public class RapidMinerExampleActivity extends
 		// Single value output port (depth 0)
 		addOutput(OUT_SIMPLE_OUTPUT, 0);
 		// Output port with list of values (depth 1)
-		//addOutput(OUT_MORE_OUTPUTS, 1);
+		// addOutput(OUT_MORE_OUTPUTS, 1);
 
 	}
 	
-	public Map<Object, String> constructInvocationInputMap(String inputLocation, String outputLocation) {
+	public Map<Object, String> constructInvocationInputMap(String inputLocation, String outputLocation, boolean isExplicit) {
 		
 		// add parameters to the hashmap from Parameter Configurations
 		HashMap<String, String> params = new HashMap<String, String>();
@@ -330,10 +329,29 @@ public class RapidMinerExampleActivity extends
 			
 		String inputDoc;
 		//String executorType, String operatorName, HashMap<String, String> operatorParameters, String inputLocations, String outputLocations
-		inputDoc = createInputDocument("executeBasicOperatorExplicitOutput", configBean.getCallName(), params, inputLocation, outputLocation);
 		
+		if (isExplicit) {
+			
+			inputDoc = createInputDocument("executeBasicOperatorExplicitOutput", configBean.getCallName(), params, inputLocation, outputLocation);
+	
+		} else {	// get an implicit input document
+	
+			inputDoc = createInputDocument("executeBasicOperatorImplicitOutput", configBean.getCallName(), params, inputLocation, null);
+			
+		}
+		
+		// construct the final input map
 		Map<Object, String> inputMap = new HashMap<Object, String>();
-		inputMap.put("executeBasicOperatorExplicitOutput", inputDoc);
+		
+		if (isExplicit) {
+			
+			inputMap.put("executeBasicOperatorExplicitOutput", inputDoc);
+			
+		} else {
+			
+			inputMap.put("executeBasicOperatorImplicitOutput", inputDoc);
+			
+		}
 		
 		return inputMap;
 	}
@@ -342,6 +360,7 @@ public class RapidMinerExampleActivity extends
 	@Override
 	public void executeAsynch(final Map<String, T2Reference> inputs,
 			final AsynchronousActivityCallback callback) {
+		
 		// Don't execute service directly now, request to be run ask to be run
 		// from thread pool and return asynchronously
 		callback.requestRun(new Runnable() {
@@ -371,7 +390,7 @@ public class RapidMinerExampleActivity extends
 						
 						System.out.println(" TEST CASE 1. " + configBean.getInputLocation() + " " + configBean.getOutputLocation());
 
-						inputMap = constructInvocationInputMap(configBean.getInputLocation(), configBean.getOutputLocation());
+						inputMap = constructInvocationInputMap(configBean.getInputLocation(), configBean.getOutputLocation(), true);
 						
 					}
 					
@@ -383,7 +402,7 @@ public class RapidMinerExampleActivity extends
 						
 						System.out.println(" TEST CASE 2. " + inputValue + " " + outputValue);
 
-						inputMap = constructInvocationInputMap(inputValue, outputValue);
+						inputMap = constructInvocationInputMap(inputValue, outputValue, true);
 					
 					}
 					
@@ -391,10 +410,9 @@ public class RapidMinerExampleActivity extends
 					if (!configBean.getInputLocation().equals("") && configBean.getOutputLocation().equals("")) {
 						
 						String outputValue = (String) referenceService.renderIdentifier(inputs.get("outputLocation"), String.class, context);
-						
 						System.out.println(" TEST CASE 3. " + configBean.getInputLocation() + " " + outputValue);
 						
-						inputMap = constructInvocationInputMap(configBean.getInputLocation(), outputValue);
+						inputMap = constructInvocationInputMap(configBean.getInputLocation(), outputValue, true);
 						
 					}
 					
@@ -404,26 +422,54 @@ public class RapidMinerExampleActivity extends
 						String inputValue = (String) referenceService.renderIdentifier(inputs.get("inputLocation"), String.class, context);
 						System.out.println(" TEST CASE 4. " + inputValue + " " + configBean.getOutputLocation());
 						
-						inputMap = constructInvocationInputMap(inputValue, configBean.getOutputLocation());
+						inputMap = constructInvocationInputMap(inputValue, configBean.getOutputLocation(), true);
 						
 					}
 					
 				} else {	// is implicit	
 					
-						System.out.println(" Implicit execution selected, get output xml and parse.");
+					System.out.println(" Implicit execution selected.");
 						
+					// if the input is specified - get the input from the configbean and leave the output
+					if (!configBean.getInputLocation().equals("")) {
+						
+						String inputValue = configBean.getInputLocation();
+						
+						inputMap = constructInvocationInputMap(inputValue, null, false);
+				
+					}
+								
+					// if the input is not specified - get the input from the port
+					if (configBean.getInputLocation().equals("")) {
+						
+						String inputValue = (String) referenceService.renderIdentifier(inputs.get("inputLocation"), String.class, context);
+						
+						inputMap = constructInvocationInputMap(inputValue, null, false);
+						
+					}
+					
+					
 				}
 				
 			//	String firstInput = (String) referenceService.renderIdentifier(inputs.get(IN_FIRST_INPUT),
             //            String.class, context);
 	
-				System.out.println(" +++ ONE +++");
-				System.out.println(" +++ FOUR +++");
+				System.out.println(" +++ ONE +++ ");
+				System.out.println(" +++ FOUR +++ ");
 
 				WSDLActivity wrapper = new WSDLActivity();
 				WSDLActivityConfigurationBean myBean = new WSDLActivityConfigurationBean();
 				myBean.setWsdl("http://rpc295.cs.man.ac.uk:8081/e-LICO/ExecutorService?wsdl");
-				myBean.setOperation("executeBasicOperatorExplicitOutput");
+				
+				if (configBean.getIsExplicit()) {
+					
+					myBean.setOperation("executeBasicOperatorExplicitOutput");
+
+				} else {
+					
+					myBean.setOperation("executeBasicOperatorImplicitOutput");
+					
+				}
 				//myBean.setSecurityProfile(securityProfile);
 				
 				try {
@@ -461,16 +507,21 @@ public class RapidMinerExampleActivity extends
 				List<String> inputNames = new ArrayList<String>();
 
 				for (OutputPort port: wrapper.getOutputPorts()) {
+					
 					outputNames.add(port.getName());
+					
 				}
 				
 				for (InputPort port: wrapper.getInputPorts()) {
+					
 					inputNames.add(port.getName());
+					
 				}
 				
-				System.out.println(" INPUT NAMES ARE " + inputNames.toString() + " " + myBean.getOperation());
+					System.out.println(" INPUT NAMES ARE " + inputNames.toString() + " " + myBean.getOperation());
 
-				System.out.println(" OUTPUT NAMES ARE " + outputNames.toString() + " " + myBean.getOperation());
+					System.out.println(" OUTPUT NAMES ARE " + outputNames.toString() + " " + myBean.getOperation());
+			
 				T2WSDLSOAPInvoker invoker = new T2WSDLSOAPInvoker(parser, myBean.getOperation(), outputNames);
 				
 				// call
@@ -507,27 +558,45 @@ public class RapidMinerExampleActivity extends
 				usernamePassword.resetPassword();
 				
 				call.setTargetEndpointAddress("http://rpc295.cs.man.ac.uk:8081/e-LICO/ExecutorService?wsdl");
-				call.setOperationName("executeBasicOperatorExplicitOutput");
+				
+				if (configBean.getIsExplicit()) {
+					call.setOperationName("executeBasicOperatorExplicitOutput");
+				} else {
+					call.setOperationName("executeBasicOperatorImplicitOutput");
+				}
 				
 				// end of call
-				
+				Map<String, Object> invokerOutputMap = null;
 				try {
 					
 					System.out.println(" INPUT MAP CONTENTS " + inputMap.toString());
-					Map<String, Object> invokerOutputMap = invoker.invoke(inputMap, call);
-					
+					invokerOutputMap = invoker.invoke(inputMap, call);
+					System.out.println(" [DEBUG] OUTPUT MAP CONTENTS " + invokerOutputMap.toString());
+
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}			
-
+				
+				String resultantOutputLocation = getOutputLocationfromOutputResult(invokerOutputMap);
 				// return map of output data, with empty index array as this is
 				// the only and final result (this index parameter is used if
 				// pipelining output)
 							
 				Map<String, T2Reference> outputs = new HashMap<String, T2Reference>();
-				String simpleValue = configBean.getOutputLocation();
-				T2Reference simpleRef = referenceService.register(simpleValue, 0, true, context);
+				
+				T2Reference simpleRef = null;
+				if (configBean.getIsExplicit()) {
+					
+					String simpleValue = configBean.getOutputLocation();
+					simpleRef = referenceService.register(simpleValue, 0, true, context);
+					
+				} else {
+					
+					simpleRef = referenceService.register(resultantOutputLocation, 0, true, context);
+					
+				}
+							
 				outputs.put(OUT_SIMPLE_OUTPUT, simpleRef);
 				callback.receiveResult(outputs, new int[0]);
 				
@@ -545,9 +614,18 @@ public class RapidMinerExampleActivity extends
 		// for explicit output
 		
 		// Root executeBasicOperatorExplicitOutput
+		org.jdom.Element root;
 		
-		org.jdom.Element root = new org.jdom.Element("executeBasicOperatorExplicitOutput","http://elico.rapid_i.com/");
-		
+		if (executorType.equals("executeBasicOperatorExplicitOutput")) {
+			
+			root = new org.jdom.Element("executeBasicOperatorExplicitOutput","http://elico.rapid_i.com/");
+
+		} else {
+			
+			root = new org.jdom.Element("executeBasicOperatorImplicitOutput","http://elico.rapid_i.com/");
+			
+		}
+			
 		// operatorName
 		org.jdom.Element operatorNameElement = new org.jdom.Element("operatorName");
 			
@@ -597,13 +675,17 @@ public class RapidMinerExampleActivity extends
 			root.addContent(inputLocationElement);
 			
 		// output location
+		// only give the output location if it's explicity specified
+		if (executorType.equals("executeBasicOperatorExplicitOutput")) {		
 			
-		org.jdom.Element outputLocationElement = new org.jdom.Element("outputLocations");
+			org.jdom.Element outputLocationElement = new org.jdom.Element("outputLocations");
 		
 			outputLocationElement.setText(outputLocations);
 			
 			root.addContent(outputLocationElement);
 			
+		} 
+		
 		// create the document
 		org.jdom.Document myDoc = new org.jdom.Document(root);
 		
@@ -641,15 +723,52 @@ public class RapidMinerExampleActivity extends
 		
 		org.jdom.Document myDoc = new org.jdom.Document(root);
 		String returnVal = new String();
+		
 		try {
+			
 			new XMLOutputter().output(myDoc, System.out);
 			returnVal = new XMLOutputter().outputString(myDoc);
+			
 		} catch (IOException e) {
+			
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			
 		}
 				
 		return returnVal;
+		
+	}
+	
+	public String getOutputLocationfromOutputResult(Map<String, Object> invokerOutputMap) {
+		
+		String xmlOutput = (String) invokerOutputMap.get("executeBasicOperatorImplicitOutputResponse");
+		System.out.println(" the resultant xml output is " + xmlOutput);
+		
+		NodeList children = null;
+		
+		try { 
+			
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			dbf.setNamespaceAware(true);
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			InputSource is = new InputSource();
+			is.setCharacterStream(new StringReader(xmlOutput));
+			
+			Document doc = db.parse(is);
+			
+			children = doc.getElementsByTagName("return");	//	All children nodes
+			
+			
+			System.out.println(" The number of children returned by Parameter Types is :" + children.getLength());
+			
+		} catch (Exception e) {
+			
+		}
+		
+		String output = getCharacterDataFromElement((Element)children.item(0));
+		System.out.println(" FINAL IMPLICIT OUTPUT " + output);
+		return output;
 		
 	}
 
@@ -812,6 +931,7 @@ public class RapidMinerExampleActivity extends
 			
 			//[confirmed]System.out.println(" the parameters are " + getCharacterDataFromElement((Element)children.item(i)));
 			myParameters.add(getCharacterDataFromElement((Element)children.item(i)));
+			
 		}
 		
 		return myParameters;
