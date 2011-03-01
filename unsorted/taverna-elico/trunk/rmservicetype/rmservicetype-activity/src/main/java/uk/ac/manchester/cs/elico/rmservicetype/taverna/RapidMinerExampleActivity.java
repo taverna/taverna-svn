@@ -70,6 +70,8 @@ public class RapidMinerExampleActivity extends
 	private static final String OUT_SIMPLE_OUTPUT = "outputLocation";
 	private static final String OUT_REPORT = "report";
 	
+	private RapidAnalyticsPreferences preferences;
+	
     static String securityProfile = SecurityProfiles.HTTP_BASIC_AUTHN;
 		
 	private RapidMinerActivityConfigurationBean configBean;
@@ -81,10 +83,13 @@ public class RapidMinerExampleActivity extends
 			throws ActivityConfigurationException {
 		
 		// Any pre-config sanity checks
-		if (configBean.getOperatorName().equals("invalidExample")) {
-			throw new ActivityConfigurationException(
-					"Example string can't be 'invalidExample'");
-		}
+			// [testing] preferences
+				RapidAnalyticsPreferences pref = new RapidAnalyticsPreferences();
+				pref.setUsername("rishi");
+				pref.setPassword("");
+				pref.setRepositoryLocation("http://rpc295.cs.man.ac.uk:8081");
+			
+			setPreferences(pref);
 		
 		// Store for getConfiguration(), but you could also make
 		// getConfiguration() return a new bean from other sources
@@ -124,6 +129,18 @@ public class RapidMinerExampleActivity extends
 		}
 		
 	}
+	
+	public void setPreferences(RapidAnalyticsPreferences pref) {
+		System.out.println(" the pass is " + pref.getPassword());
+		preferences = pref; 
+		
+	}
+	
+	public RapidAnalyticsPreferences getPreferences() {
+		
+		return preferences;
+		
+	}
 
 	public List<RapidMinerParameterDescription> getParameterDescriptions(NodeList myList) {
 		
@@ -161,6 +178,7 @@ public class RapidMinerExampleActivity extends
 			}
 	
 		}
+		
 		//  parse into a list
 		System.out.println(" number of RETURNS " + myList.getLength());
 		List<RapidMinerParameterDescription> listOfDescriptions = new ArrayList<RapidMinerParameterDescription>();
@@ -516,7 +534,7 @@ public class RapidMinerExampleActivity extends
 
 				WSDLActivity wrapper = new WSDLActivity();
 				WSDLActivityConfigurationBean myBean = new WSDLActivityConfigurationBean();
-				myBean.setWsdl("http://rpc295.cs.man.ac.uk:8081/e-LICO/ExecutorService?wsdl");
+				myBean.setWsdl(preferences.getExecutorServiceLocation());
 				
 				if (configBean.getIsExplicit()) {
 					
@@ -586,9 +604,13 @@ public class RapidMinerExampleActivity extends
 				Call call = null;
 				
 				try {
+					
 					call = (Call)service.createCall();
+					
 				} catch (ServiceException e3) {
+					
 					e3.printStackTrace();
+					
 				}
 				
 				System.out.println("^^^Point 4");
@@ -614,12 +636,16 @@ public class RapidMinerExampleActivity extends
 				context1.setPassword(usernamePassword.getPasswordAsString());
 				usernamePassword.resetPassword();
 				
-				call.setTargetEndpointAddress("http://rpc295.cs.man.ac.uk:8081/e-LICO/ExecutorService?wsdl");
+				call.setTargetEndpointAddress(preferences.getExecutorServiceLocation());
 				
 				if (configBean.getIsExplicit()) {
+					
 					call.setOperationName("executeBasicOperatorExplicitOutput");
+					
 				} else {
+					
 					call.setOperationName("executeBasicOperatorImplicitOutput");
+					
 				}
 				
 				// end of call
@@ -860,7 +886,7 @@ public class RapidMinerExampleActivity extends
 		
 		// WSDLActivityConfigurationBean
 		WSDLActivityConfigurationBean myBean = new WSDLActivityConfigurationBean();
-		myBean.setWsdl("http://rpc295.cs.man.ac.uk:8081/e-LICO/ExecutorService?wsdl");
+		myBean.setWsdl(preferences.getExecutorServiceLocation());
 		myBean.setOperation("getParameterTypes");
 		
 		// Output and Parser for WSDLSOAPInvoker
@@ -927,7 +953,7 @@ public class RapidMinerExampleActivity extends
 		
 		System.out.println("^^^Point 7");
 
-		call.setTargetEndpointAddress("http://rpc295.cs.man.ac.uk:8081/e-LICO/ExecutorService?wsdl");
+		call.setTargetEndpointAddress(preferences.getExecutorServiceLocation());
 		call.setOperationName("getParameterTypes");
 
 		System.out.println("^^^Point 8");
@@ -941,6 +967,7 @@ public class RapidMinerExampleActivity extends
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		System.out.println("^^^Point 9");
 		
 		System.out.println("Complete");
@@ -1007,10 +1034,27 @@ public class RapidMinerExampleActivity extends
 	protected UsernamePassword getUsernameAndPasswordForService(
 			WSDLActivityConfigurationBean bean, boolean usePathRecursion) throws CMException {
 
+		
+			UsernamePassword username_password = null;
+		
 			// Try to get username and password for this service from Credential
 			// Manager (which should pop up UI if needed)
-			UsernamePassword username_password;
-							
+	
+		
+			try {
+						String username = preferences.getUsername();
+						String password  = preferences.getPassword();
+				if (username.equals(null) || password.equals(null)) {
+				} else {
+					
+					username_password = preferences.getUsernamePasswordObject();
+					System.out.println(" using preferences manager");
+
+				}
+				
+			} catch (NullPointerException e) {
+			
+				e.printStackTrace();
 				CredentialManager credManager = null;
 				credManager = CredentialManager.getInstance();
 				String wsdl = bean
@@ -1023,6 +1067,10 @@ public class RapidMinerExampleActivity extends
 					throw new CMException("No username/password provided for service , Using config bean username and password instead" + bean.getWsdl());
 				
 				} 
+				System.out.println(" using credentials manager");
+
+			}
+							
 					
 			return username_password;
 	}
