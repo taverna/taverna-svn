@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.Icon;
+import javax.swing.JOptionPane;
 import javax.wsdl.WSDLException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -28,6 +29,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidAnalyticsPreferences;
+
 import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
 import net.sf.taverna.t2.security.credentialmanager.CMException;
 import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
@@ -41,6 +44,8 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 	
 	private static final URI providerId = URI
 		.create("http://example.com/2010/service-provider/example-activity-ui");
+	RapidAnalyticsPreferences myPreferences = new RapidAnalyticsPreferences();
+
 	
 	/**
 	 * Do the actual search for services. Return using the callBack parameter.
@@ -48,15 +53,37 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 	@SuppressWarnings("unchecked")
 	public void findServiceDescriptionsAsync(
 			FindServiceDescriptionsCallBack callBack) {
+		
+				
 		// Use callback.status() for long-running searches
-		// callBack.status("Resolving example services");
+		 callBack.status("Obtaining RapidMiner Operators, please wait...");
 
 		List<ServiceDescription> results = new ArrayList<ServiceDescription>();
-		//String[] ops = getRegisteredOperatorNames();
+		
+		// [testing] initial preferences
+			
+			myPreferences.setUsername("rishi");
+			myPreferences.setPassword("");
+			myPreferences.setRepositoryLocation("http://rpc295.cs.man.ac.uk:8081");
+		
+			
+		// if the repository location isnt set in the preferences, prompt for it	
+		String inputValue;
+			
+		if (myPreferences.getRepositoryLocation().isEmpty()) {
+			
+			inputValue = JOptionPane.showInputDialog("Please input a value");
+			myPreferences.setRepositoryLocation(inputValue);
+		}
+				
 		try {
+			
 			getOperatorTree();
+			
 		} catch (Exception e) {
+			
 			e.printStackTrace();
+			
 		}
 				
 		// FIXME: Implement the actual service search/lookup instead
@@ -106,7 +133,7 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 		
 		// WSDLActivityConfigurationBean
 		WSDLActivityConfigurationBean myBean = new WSDLActivityConfigurationBean();
-		myBean.setWsdl("http://rpc295.cs.man.ac.uk:8081/e-LICO/ExecutorService?wsdl");
+		myBean.setWsdl(myPreferences.getExecutorServiceLocation());
 		myBean.setOperation("getOperatorTree");
 		
 		// Output and Parser for WSDLSOAPInvoker
@@ -149,14 +176,41 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 		System.out.println("Point 4");
 		
 		// Set Username and Password (credential manager)
+			//	usernamePassword = getUsernameAndPasswordForService(myBean, true);
+
 		UsernamePassword usernamePassword = null;
+		// check whether the Username and Password is set
+		
+		String username = myPreferences.getUsername();
+		String password  = myPreferences.getPassword();
 		
 		try {
-			usernamePassword = getUsernameAndPasswordForService(myBean, true);
-		} catch (CMException e2) {
-			e2.printStackTrace();
+			
+			if (username.equals(null) || password.equals(null)) {
+			} else {
+				
+				usernamePassword = myPreferences.getUsernamePasswordObject();
+				System.out.println(" using preferences manager");
+
+			}
+			
+		} catch (NullPointerException e) {
+			
+			e.printStackTrace();
+			
+			try {
+				usernamePassword = getUsernameAndPasswordForService(myBean, true);
+				System.out.println(" using credential manager");
+
+			} catch (CMException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
 		}
+			
 		
+			
 		System.out.println("Point 5");
 
 		MessageContext context = call.getMessageContext();
@@ -170,7 +224,7 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 		
 		System.out.println("Point 7");
 		
-		call.setTargetEndpointAddress("http://rpc295.cs.man.ac.uk:8081/e-LICO/ExecutorService?wsdl");
+		call.setTargetEndpointAddress(myPreferences.getExecutorServiceLocation());
 		call.setOperationName("getOperatorTree");
 		
 		System.out.println("Point 8");
@@ -376,6 +430,8 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 		return null;
 	}
 	
+	
+	// DEPRECIATED
 	public String[] getRegisteredOperatorNames() {
 		
 		Map inputMap = null;

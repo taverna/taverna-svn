@@ -57,6 +57,7 @@ import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
 
 
 
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidAnalyticsPreferences;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerActivityConfigurationBean;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerExampleActivity;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerParameterDescription;
@@ -94,18 +95,20 @@ public class RapidMinerConfigurationView extends JPanel {
 	private String[] fillValues = new String[] { "true", "false"};
 	
 	private HashMap<Integer, String[]> choicesMap = new HashMap<Integer,String[]>();
-	
+			
 	RapidAnalyticsRepositoryBrowser browser = null;
+	
 	
 	public RapidMinerConfigurationView(RapidMinerExampleActivity activity) {
 
 		ActivityIconManager.getInstance().resetIcon(activity);
-
+		
+	
 		oldConfiguration = activity.getConfiguration();
 		newConfiguration = oldConfiguration;
 		initialise();
 		layoutPanel();
-			
+		
 	}
 
 	public void setInputLocationField(String loc) {
@@ -173,13 +176,14 @@ public class RapidMinerConfigurationView extends JPanel {
 	
 			public void actionPerformed(ActionEvent arg0) {
 
-				//RapidAnalyticsRepositoryBrowser browser = new RapidAnalyticsRepositoryBrowser();
-				//browser.createAndShowGUI();
-				//browser.setVisible(true);
-				//add(browser.frame);
-							
+					// [testing] Preferences
+					RapidAnalyticsPreferences pref = new RapidAnalyticsPreferences();
+					pref.setUsername("rishi");
+					pref.setPassword("");
+					pref.setRepositoryLocation("http://rpc295.cs.man.ac.uk:8081");
+				
 				JDialog frame = new JDialog((JDialog)SwingUtilities.getAncestorOfClass(JDialog.class, RapidMinerConfigurationView.this), "Rapid Analytics Repository Browser");
-				browser = new RapidAnalyticsRepositoryBrowser();
+				browser = new RapidAnalyticsRepositoryBrowser(pref);
 				browser.setOpaque(true);
 				frame.setModal(true);
 				frame.add(browser);

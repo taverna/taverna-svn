@@ -10,6 +10,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 
 import javax.swing.Icon;
@@ -57,6 +59,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
 
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidAnalyticsPreferences;
+
 public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		ActionListener, TreeExpansionListener {
 
@@ -80,10 +84,21 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
     private String password;	
 	public String returnedRepositoryLocation;
     
+	public RapidAnalyticsPreferences preferences;
+	
 	JFileChooser fc;
 	 
-	public RapidAnalyticsRepositoryBrowser() {
 	
+	
+	public RapidAnalyticsRepositoryBrowser() {
+		
+		fillContents();
+		
+	}
+	
+	public RapidAnalyticsRepositoryBrowser(RapidAnalyticsPreferences pref) {
+
+		preferences = pref;
 		fillContents();
 		
 	}
@@ -92,7 +107,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		
 		setLayout(new BorderLayout());
 		
-		setPreferredSize(new Dimension(300, 400));
+		setPreferredSize(new Dimension(400, 400));
 		
 		myTreePanel = new RapidAnalyticsRepositoryTree();
 		myTreePanel.myTree.addTreeExpansionListener(this);
@@ -139,6 +154,12 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
         panel.add(myIconLabel);
         add(panel, BorderLayout.SOUTH);
         		
+	}
+	
+	public void setPreferences(RapidAnalyticsPreferences pref) {
+		
+		preferences = pref;
+		
 	}
 
 	public void initialiseTreeContents() {
@@ -293,36 +314,61 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		returnedRepositoryLocation = value;
 	}
 	
+	public int getPortFromString(String value) {
+		
+		URL myURL = null;
+		try {
+			myURL = new URL(value);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		return myURL.getPort();
+	}
+	
 	public Object[] getRepositoryStructure(String path) {
 		
 		// get the repository structure
 
 		//http://rpc295.cs.man.ac.uk:8081/RAWS/resources/
-		String username = "rishi";
+		String username = preferences.getUsername();
 		repositoryUsername = username;
 		//String host = "http://rpc295.cs.man.ac.uk";
-		String password = "";
-		
-		String urlBasePath = "http://rpc295.cs.man.ac.uk:8081/RAWS/resources/" + path;
+		String password = preferences.getPassword();
+
+		String urlBasePath = preferences.getBrowserServiceLocation() + path;
 		String urlApiCall = urlBasePath;
+		URL urlBase = null;
+
+		try {
+			
+			urlBase = new URL(preferences.getBrowserServiceLocation());
+			
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
 		Object content = null;
 		
 		try {
 			
 			HttpClient client = new DefaultHttpClient();
 			
-			AuthScope as = new AuthScope(urlBasePath, 8081);
+			AuthScope as = new AuthScope(urlBasePath, urlBase.getPort());
 			
 			HttpContext localContext = new BasicHttpContext();
 			
-			UsernamePasswordCredentials upc = new UsernamePasswordCredentials(
-                    username, password);
+			//UsernamePasswordCredentials upc = new UsernamePasswordCredentials(
+           //         username, password);
  
             //  ((DefaultHttpClient) client).getCredentialsProvider()
             //          .setCredentials(as, upc);
             
             CredentialsProvider credsProvider = new BasicCredentialsProvider();
-            credsProvider.setCredentials(new AuthScope("rpc295.cs.man.ac.uk", 8081, "RapidAnalyticsRealm"), new UsernamePasswordCredentials("rishi", ""));
+            credsProvider.setCredentials(new AuthScope(urlBase.getHost(), urlBase.getPort(), "RapidAnalyticsRealm"), new UsernamePasswordCredentials(username, password));
             
             ((DefaultHttpClient) client).setCredentialsProvider(credsProvider);
             
@@ -605,7 +651,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		String fileExtension = getFileExtension(filePath);
 		String contentType = getContentType(fileExtension);
 		String fname = getFileName(filePath);
-		String fileURI = "http://rpc295.cs.man.ac.uk:8081/RAWS/resources" + updatedSelectionPath + fname;
+		String fileURI = preferences.getRepositoryLocation() + "/RAWS/resources" + updatedSelectionPath + fname;
 		System.out.println(" THE FILENAME TO APPEND IS : " + fname);		
 		
 		System.out.println(" THE CONTENT TYPE IS : " + contentType);
@@ -655,24 +701,31 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	public void doRequest(HttpRequestBase httpRequest, String contentType, String URI, DefaultMutableTreeNode parentNode) {
 		
 		String urlBasePath = URI;
-
+		URL urlBaseTemp = null;
+		try {
+			urlBaseTemp = new URL(urlBasePath);
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		httpRequest.setHeader("Content-Type", contentType);
 		
 		try {
 		      
 			HttpClient httpClient = new DefaultHttpClient();
-			AuthScope as = new AuthScope(urlBasePath, 8081);
+			//AuthScope as = new AuthScope(urlBasePath, urlBaseTemp.getPort());
 			
 			HttpContext localContext = new BasicHttpContext();
 			
-			UsernamePasswordCredentials upc = new UsernamePasswordCredentials(
-                    "rishi", "");
+			//UsernamePasswordCredentials upc = new UsernamePasswordCredentials(
+            //         "rishi", "");
  
             //  ((DefaultHttpClient) client).getCredentialsProvider()
             //          .setCredentials(as, upc);
             
             CredentialsProvider credsProvider = new BasicCredentialsProvider();
-            credsProvider.setCredentials(new AuthScope("rpc295.cs.man.ac.uk", 8081, "RapidAnalyticsRealm"), new UsernamePasswordCredentials("rishi", ""));
+            credsProvider.setCredentials(new AuthScope(urlBaseTemp.getHost(), urlBaseTemp.getPort(), "RapidAnalyticsRealm"), new UsernamePasswordCredentials(preferences.getUsername(), preferences.getPassword()));
             
             ((DefaultHttpClient) httpClient).setCredentialsProvider(credsProvider);
             
