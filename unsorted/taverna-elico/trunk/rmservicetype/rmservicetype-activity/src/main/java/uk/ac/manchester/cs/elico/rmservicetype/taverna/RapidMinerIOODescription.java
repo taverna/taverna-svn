@@ -84,7 +84,7 @@ public class RapidMinerIOODescription {
                 username_password = credManager.getUsernameAndPasswordForService(URI.create(preferences.getExecutorServiceWSDL()), true, null);
 
                 preferences.setUsername(username_password.getUsername());
-                preferences.setUsername(username_password.getPasswordAsString());
+                preferences.setPassword(username_password.getPasswordAsString());
             } catch (CMException e) {
                 e.printStackTrace();
 

@@ -210,7 +210,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	
 	public void populateTree(RapidAnalyticsRepositoryTree treePanel, Object [] stuff) {
 		  
-        DefaultMutableTreeNode parentNode, userNode, childNode;
+        DefaultMutableTreeNode parentNode, userNode, childNode, dummy;
       
         TreeNode[] treeNode = null;
         
@@ -233,9 +233,9 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
         				System.out.println("	contents of parent " + contents.toString());
         				userNode = treePanel.addObject(parentNode, myChildObject);     
         				
-//        				if (!userNode.toString().equals(repositoryUsername)) {
-//            				dummy = treePanel.addObject(userNode, "dummy");
-//        				}
+        				if (!userNode.toString().equals(repositoryUsername)) {
+            				dummy = treePanel.addObject(userNode, "dummy");
+        				}
         				        				
         				// now fill in contents for the users directory from repositoryUsername
         				if (myChildObject.equals(repositoryUsername)) {
