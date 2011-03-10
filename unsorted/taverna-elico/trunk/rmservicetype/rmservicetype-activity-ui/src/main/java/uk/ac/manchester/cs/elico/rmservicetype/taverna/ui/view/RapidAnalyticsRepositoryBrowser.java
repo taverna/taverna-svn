@@ -21,7 +21,7 @@ import org.apache.http.util.EntityUtils;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidAnalyticsPreferences;
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.config.RapidMinerPluginConfiguration;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.config.RapidMinerPluginConfiguration;
 
 import javax.swing.*;
 import javax.swing.event.TreeExpansionEvent;
@@ -50,11 +50,9 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 
 	private JLabel myIconLabel;
 	
-    private int newNodeSuffix = 1;
-    private String repositoryUsername;    
+    private String repositoryUsername;
     private static String UPLOAD_COMMAND = "upload";
     private static String NEWFOLDER_COMMAND = "newfolder";
-    private static String USE_COMMAND = "use";
 
     private String CSV_HEADER = "text/csv";
     private String ARFF_HEADER = "application/arff";
@@ -63,7 +61,6 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 
     private boolean populated = false;
 	private HashMap<Object, String> objectType = new HashMap<Object, String>();
-    private String password;	
 	public String returnedRepositoryLocation;
 
     private UsernamePassword username_password;
@@ -79,7 +76,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		fillContents();
         preferences = getPreferences();
         if (preferences != null) {
-            CredentialManager credManager = null;
+            CredentialManager credManager;
             try {
                 credManager = CredentialManager.getInstance();
                 username_password = credManager.getUsernameAndPasswordForService(URI.create(preferences.getBrowserServiceLocation()), true, null);
@@ -213,7 +210,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	
 	public void populateTree(RapidAnalyticsRepositoryTree treePanel, Object [] stuff) {
 		  
-        DefaultMutableTreeNode parentNode, userNode, childNode, dummy;
+        DefaultMutableTreeNode parentNode, userNode, childNode;
       
         TreeNode[] treeNode = null;
         
@@ -236,9 +233,9 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
         				System.out.println("	contents of parent " + contents.toString());
         				userNode = treePanel.addObject(parentNode, myChildObject);     
         				
-        				if (!userNode.toString().equals(repositoryUsername)) {
-            				dummy = treePanel.addObject(userNode, "dummy");
-        				}
+//        				if (!userNode.toString().equals(repositoryUsername)) {
+//            				dummy = treePanel.addObject(userNode, "dummy");
+//        				}
         				        				
         				// now fill in contents for the users directory from repositoryUsername
         				if (myChildObject.equals(repositoryUsername)) {
@@ -276,10 +273,10 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	public void populateTreeTest(RapidAnalyticsRepositoryTree treePanel) {
 		 
 			// TEST CASE - to remove
-			String p1Name = new String("Parent 1");
-	        String p2Name = new String("Parent 2");
-	        String c1Name = new String("Child 1");
-	        String c2Name = new String("Child 2");
+			String p1Name = "Parent 1";
+	        String p2Name = "Parent 2";
+	        String c1Name = "Child 1";
+	        String c2Name = "Child 2";
 
 	        DefaultMutableTreeNode p1, p2;
 
@@ -297,7 +294,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	public void actionPerformed(ActionEvent event) {
 
 		String command = event.getActionCommand();
-	    String filePath = null;
+	    String filePath;
 	    
 	        if (UPLOAD_COMMAND.equals(command)) {
 	        	
@@ -394,8 +391,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
         System.err.println(username + " - " + password);
 
 		String urlBasePath = preferences.getBrowserServiceLocation() + path;
-		String urlApiCall = urlBasePath;
-		URL urlBase = null;
+        URL urlBase = null;
 
 		try {
 			
@@ -412,7 +408,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 			
 			HttpClient client = new DefaultHttpClient();
 			
-			AuthScope as = new AuthScope(urlBasePath, urlBase.getPort());
+//			AuthScope as = new AuthScope(urlBasePath, urlBase.getPort());
 			
 			HttpContext localContext = new BasicHttpContext();
 			
@@ -423,6 +419,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
             //          .setCredentials(as, upc);
             
             CredentialsProvider credsProvider = new BasicCredentialsProvider();
+            assert urlBase != null;
             credsProvider.setCredentials(new AuthScope(urlBase.getHost(), urlBase.getPort(), "RapidAnalyticsRealm"), new UsernamePasswordCredentials(username, password));
 
             ((DefaultHttpClient) client).setCredentialsProvider(credsProvider);
@@ -432,13 +429,14 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 			
 			//HttpHost targetHost= new HttpHost(host, 8081);
 			
-			HttpGet httpget = new HttpGet(urlApiCall);
+			HttpGet httpget = new HttpGet(urlBasePath);
 						
 			httpget.setHeader("Content-Type", "application/xml");
 
-			HttpGet httpGet = new HttpGet(urlBasePath);
-			
-			HttpRequestBase base = httpGet;
+			HttpGet httpGet;
+            httpGet = new HttpGet(urlBasePath);
+
+            HttpRequestBase base = httpGet;
 						
 			HttpResponse response = client.execute(base,
                     localContext);
@@ -460,9 +458,9 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 			System.out.println(" just caught an exception ");
 			
 		}
-		
-		return (parseStructureOutput(content.toString()));
-		
+
+		return parseStructureOutput(content.toString());
+
 	}
 	
 	public void addObjectsToPath(TreePath path, DefaultMutableTreeNode node) {
@@ -488,7 +486,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
  	public Object [] parseStructureOutput(String outputData) {
 		
 		Object [] myList;
-		NodeList folders = null;
+		NodeList folders;
 		NodeList children = null;
 		
 		try { 
@@ -604,8 +602,8 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	
 	public String getFileExtension(String fileName) {
 		
-	    String fname="";
-	    String ext="";
+	    String fname;
+	    String ext;
 	    int mid= fileName.lastIndexOf(".");
 	    fname=fileName.substring(0,mid);
 	    ext=fileName.substring(mid+1,fileName.length());  
@@ -617,7 +615,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	
 	public String getFileName(String path) {
 	
-		String fname = "";
+		String fname;
 		int mid = path.lastIndexOf("/");
 		fname = path.substring(mid+1, path.length());
 		
@@ -672,7 +670,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
         // Read in the bytes
         int offset = 0;
         int numRead = 0;
-       
+
         try {
         	
              while (offset < bytes.length && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {

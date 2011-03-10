@@ -21,9 +21,11 @@ public class RapidMinerConfigurationView extends JPanel {
 	private RapidMinerActivityConfigurationBean oldConfiguration;
 	private RapidMinerActivityConfigurationBean newConfiguration;
 	
-	private JPanel titlePanel, contentPanel, buttonPanel, page1, page2;
-	
-	private boolean firstCardShown;
+	private JPanel titlePanel;
+    private JPanel contentPanel;
+    private JPanel buttonPanel;
+
+    private boolean firstCardShown;
 	
 	private CardLayout cardLayout = new CardLayout();
 	
@@ -148,7 +150,7 @@ public class RapidMinerConfigurationView extends JPanel {
 		// add table 
 		
 		// first find rows with combo boxes
-		List rowsWithCombobox = new ArrayList();
+		List<Integer> rowsWithCombobox = new ArrayList<Integer>();
 		List<RapidMinerParameterDescription> ParameterDescriptions = oldConfiguration.getParameterDescriptions();
 
 		Iterator parameterIterator = ParameterDescriptions.iterator();
@@ -205,19 +207,16 @@ public class RapidMinerConfigurationView extends JPanel {
 		// add combo boxes to specific rows
 		RowEditorModel rm = new RowEditorModel();
 		parameterTable.setRowEditorModel(rm);
-		
-		Iterator rowIterator = rowsWithCombobox.iterator();
-		
-		while (rowIterator.hasNext()) {
-			// add combo box to row column
-			int n = (Integer) rowIterator.next();
-			
-			JComboBox cb = new JComboBox(choicesMap.get(n));
-			DefaultCellEditor ed = new DefaultCellEditor(cb);
-			
-			rm.addEditorForRow(n,ed);
-			
-		}
+
+        for (Integer aRowsWithCombobox : rowsWithCombobox) {
+            // add combo box to row column
+
+            JComboBox cb = new JComboBox(choicesMap.get(aRowsWithCombobox));
+            DefaultCellEditor ed = new DefaultCellEditor(cb);
+
+            rm.addEditorForRow(aRowsWithCombobox, ed);
+
+        }
 		
 		System.out.println(" HERE 3");
 
@@ -366,9 +365,9 @@ public class RapidMinerConfigurationView extends JPanel {
 
 		setPreferredSize(new Dimension(745, 400));
 		setLayout(new BorderLayout());
-		
-		page1 = new JPanel(new BorderLayout());
-		page2 = new JPanel(new GridBagLayout());
+
+        JPanel page1 = new JPanel(new BorderLayout());
+        JPanel page2 = new JPanel(new GridBagLayout());
 		
 		contentPanel = new JPanel(cardLayout);
 		contentPanel.add(page1, "page1");
@@ -500,6 +499,8 @@ public class RapidMinerConfigurationView extends JPanel {
 	 * Adds a light gray or etched border to the top or bottom of a JComponent.
 	 * 
 	 * @param component
+     * @param position
+     * @param etched
 	 */
 	protected void addDivider(JComponent component, final int position, final boolean etched) {
 		component.setBorder(new Border() {
@@ -619,15 +620,12 @@ public class RapidMinerConfigurationView extends JPanel {
 		try {
 			//System.out.println("[DEBUG] INSIDE TABLE MODEL " + tableModel.getUpdatedParameters().get(0).getExecutionValue());
 			newConfiguration.setParameterDescriptions(tableModel.getUpdatedParameters());
-			
-			Iterator myiter = newConfiguration.getParameterDescriptions().iterator();
-			
-			while (myiter.hasNext()) {
-				
-				RapidMinerParameterDescription des = (RapidMinerParameterDescription) myiter.next();
-				System.out.println(" new parameters to set " + des.getUseParameter() + " " + des.getExecutionValue());
-				
-			}
+
+            for (RapidMinerParameterDescription rapidMinerParameterDescription : newConfiguration.getParameterDescriptions()) {
+
+                System.out.println(" new parameters to set " + rapidMinerParameterDescription.getUseParameter() + " " + rapidMinerParameterDescription.getExecutionValue());
+
+            }
 
 
 

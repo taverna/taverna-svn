@@ -4,6 +4,7 @@ import javax.swing.JPanel;
 
 import net.sf.taverna.t2.workbench.configuration.Configurable;
 import net.sf.taverna.t2.workbench.configuration.ConfigurationUIFactory;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.config.RapidMinerPluginConfiguration;
 
 public class RapidMinerConfigurationUIFactory implements ConfigurationUIFactory {
 

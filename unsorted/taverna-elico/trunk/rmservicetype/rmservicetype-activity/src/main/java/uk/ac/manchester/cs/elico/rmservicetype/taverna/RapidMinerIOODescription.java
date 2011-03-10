@@ -9,10 +9,13 @@ import net.sf.taverna.wsdl.soap.WSDLSOAPInvoker;
 import org.apache.axis.MessageContext;
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
-import org.w3c.dom.*;
+import org.w3c.dom.CharacterData;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.config.RapidMinerPluginConfiguration;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.config.RapidMinerPluginConfiguration;
 
 import javax.swing.*;
 import javax.wsdl.WSDLException;
@@ -208,7 +211,7 @@ public class RapidMinerIOODescription {
             b += 9;
             String newOutput = myOutput.substring(a, b);
 
-            String finalOutput = "<myroot>" + newOutput +  "</myroot>";;
+            String finalOutput = "<myroot>" + newOutput +  "</myroot>";
 
             System.out.println("parsed Parameters " + finalOutput);
 

@@ -1,9 +1,9 @@
-package uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.config;
+package uk.ac.manchester.cs.elico.rmservicetype.taverna.config;
+
+import net.sf.taverna.t2.workbench.configuration.AbstractConfigurable;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import net.sf.taverna.t2.workbench.configuration.AbstractConfigurable;
 
 public class RapidMinerPluginConfiguration extends AbstractConfigurable {
 
@@ -39,9 +39,9 @@ public class RapidMinerPluginConfiguration extends AbstractConfigurable {
 		
 		if (defaultPropertyMap == null) {
 			defaultPropertyMap = new HashMap<String, String>();
-	        defaultPropertyMap.put(RA_REPOSITORY_LOCATION, "default_repository_location");
-	        defaultPropertyMap.put(FL_LOCATION, "fl_default_location");
-	        defaultPropertyMap.put(FL_TEMPDIR, "fl_temp_dir");
+	        defaultPropertyMap.put(RA_REPOSITORY_LOCATION, "");
+	        defaultPropertyMap.put(FL_LOCATION, "");
+	        defaultPropertyMap.put(FL_TEMPDIR, "");
 	    }
 	    return defaultPropertyMap;
 		

@@ -12,7 +12,7 @@ import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 import uk.ac.manchester.cs.elico.converter.IDAWorkflowConfiguration;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidAnalyticsPreferences;
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.config.RapidMinerPluginConfiguration;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.config.RapidMinerPluginConfiguration;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.idawizard.IDAWizard;
 
 import javax.swing.*;

@@ -25,7 +25,7 @@ import org.jdom.output.XMLOutputter;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.config.RapidMinerPluginConfiguration;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.config.RapidMinerPluginConfiguration;
 
 import javax.swing.*;
 import javax.wsdl.WSDLException;
@@ -445,14 +445,12 @@ public class RapidMinerExampleActivity extends
 
         List<RapidMinerParameterDescription>  paramDescriptions = configBean.getParameterDescriptions();
 
-        Iterator paramIterator = paramDescriptions.iterator();
-
-        while (paramIterator.hasNext()) {
+        for (RapidMinerParameterDescription paramDescription : paramDescriptions) {
 
             // check whether the current parameter is Use (true)
-            RapidMinerParameterDescription des = (RapidMinerParameterDescription)paramIterator.next();
+            RapidMinerParameterDescription des = paramDescription;
 
-            if (des.getUseParameter()) {	// true
+            if (des.getUseParameter()) {    // true
 
                 params.put(des.getParameterName(), des.getExecutionValue());
 
@@ -543,8 +541,7 @@ public class RapidMinerExampleActivity extends
                         // find the base path to this file and use that
                         String currentFile = inputPorts.get(key).getFileLocation();
                         int lastSlash = currentFile.lastIndexOf("/");
-                        String basePath = currentFile.substring(0, lastSlash + 1);
-                        filePath = basePath;
+                        filePath = currentFile.substring(0, lastSlash + 1);
 
                     }
                 }
@@ -560,7 +557,7 @@ public class RapidMinerExampleActivity extends
 
                         // create a temp file name
                         String opName = configBean.getOperatorName();
-                        String outputFile = filePath + opName.replace(" ", "_") + "_" + key + "_tmpFile" + x;
+                        String outputFile = filePath + key + opName.replace(" ", "_").toLowerCase() + "_"  + "_tmp_" + x;
                         x++;
                         configBean.getOutputPorts().get(key).setFileLocation(outputFile);
 
@@ -836,37 +833,34 @@ public class RapidMinerExampleActivity extends
 			root.addContent(operatorNameElement);
 			
 		// operatorParameters
-				
-		Iterator keys = operatorParameters.keySet().iterator();
-		
-		while (keys.hasNext()) 
-		{
-			// parameters root element
-			org.jdom.Element operatorParameterElement = new org.jdom.Element("operatorParameters");
-			
-			// for this key
-			String key, value;
-			
-			key =  (String) keys.next();
-	
-			value = operatorParameters.get(key);
-			
-			// make an element
-			org.jdom.Element parameterKey = new org.jdom.Element("key", "");
-			
-				parameterKey.setText(key);
-			
-			org.jdom.Element parameterValue = new org.jdom.Element("value", "");
-				
-				parameterValue.setText(value);
-			
-			// add it to the element
-			operatorParameterElement.addContent(parameterKey);
-			operatorParameterElement.addContent(parameterValue);
-			
-			// add this to the root doc element
-			root.addContent(operatorParameterElement);
-		}
+
+        for (String s : operatorParameters.keySet()) {
+            // parameters root element
+            org.jdom.Element operatorParameterElement = new org.jdom.Element("operatorParameters");
+
+            // for this key
+            String key, value;
+
+            key = s;
+
+            value = operatorParameters.get(key);
+
+            // make an element
+            org.jdom.Element parameterKey = new org.jdom.Element("key", "");
+
+            parameterKey.setText(key);
+
+            org.jdom.Element parameterValue = new org.jdom.Element("value", "");
+
+            parameterValue.setText(value);
+
+            // add it to the element
+            operatorParameterElement.addContent(parameterKey);
+            operatorParameterElement.addContent(parameterValue);
+
+            // add this to the root doc element
+            root.addContent(operatorParameterElement);
+        }
 		
 		// input location
 
@@ -909,7 +903,7 @@ public class RapidMinerExampleActivity extends
 		org.jdom.Document myDoc = new org.jdom.Document(root);
 		
 		// print the contents of the document
-		String finalOutput = new String();
+		String finalOutput = "";
 		
 		try {
 			
@@ -1120,7 +1114,7 @@ public class RapidMinerExampleActivity extends
 		b += 9;
 		String newOutput = myOutput.substring(a, b);
 		
-		String finalOutput = "<myroot>" + newOutput +  "</myroot>";;
+		String finalOutput = "<myroot>" + newOutput +  "</myroot>";
 		
 		System.out.println("parsed Parameters " + finalOutput);
 		

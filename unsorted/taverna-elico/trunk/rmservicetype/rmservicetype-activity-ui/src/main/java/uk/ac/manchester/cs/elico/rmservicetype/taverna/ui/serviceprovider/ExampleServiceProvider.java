@@ -15,7 +15,7 @@ import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidAnalyticsPreferences;
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.config.RapidMinerPluginConfiguration;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.config.RapidMinerPluginConfiguration;
 
 import javax.swing.*;
 import javax.wsdl.WSDLException;
@@ -184,13 +184,9 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 		
 		System.out.println("Point 4");
 		
-		// Set Username and Password (credential manager)
-			//	usernamePassword = getUsernameAndPasswordForService(myBean, true);
+        // check whether the Username and Password is set
 
-		UsernamePassword usernamePassword = null;
-		// check whether the Username and Password is set
-		
-        usernamePassword = myPreferences.getUsernamePasswordObject();
+        UsernamePassword usernamePassword = myPreferences.getUsernamePasswordObject();
 
         if (usernamePassword.getUsername() == null) {
             try {
@@ -260,17 +256,18 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 		b += 9;
 		String newOutput = myOutput.substring(a, b);
 		
-		System.out.println(" new Output " + newOutput.toString());
+		System.out.println(" new Output " + newOutput);
 		// New parsing bit
 		
-		NodeList rtnList = null;
-		NodeList children = null;
-		NodeList groupName = null;
-		NodeList operatorNames = null;
-		
+		NodeList rtnList;
+		NodeList children;
+
+		NodeList groupName;
+		NodeList operatorNames;
+
 		HashMap myHashMap = new HashMap();
-		
-		try { 
+
+		try {
 			
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			dbf.setNamespaceAware(true);
@@ -290,7 +287,6 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 			System.out.println(" all length " + all.getLength());
 					
 			// lists
-			NodeList rootChildren = null;
 			for (int i = 0; i < all.getLength(); i++) { 	// for all Root elements
 				
 				if (all.item(i).getNodeName().equals("children")) {	// if it equals children (should be 11 children)
@@ -298,7 +294,6 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 					System.out.println(" a child node " + i + " " + all.item(i).getNodeName());
 					NodeList childrenList = all.item(i).getChildNodes();
 					
-					List<String> myTemporaryList = new ArrayList<String>();
 					String operationName = null;
 					String displayName = null;
 					String path = null;
@@ -307,8 +302,6 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 						
 						if (childrenList.item(j).getNodeName().equals("groupName")) {	// if there's a groupname, set it to the operatorNames path
 							
-				//			System.out.println(" inner child " + getCharacterDataFromElement((Element)childrenList.item(j)));
-							myTemporaryList.add(getCharacterDataFromElement((Element)childrenList.item(j)));
 							path = getCharacterDataFromElement((Element)childrenList.item(j));
 						}
 						
@@ -363,8 +356,7 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 		
 		List<String> parsed = new ArrayList<String>();
 		String[] tokens = myString.split("[.]+");
-		for (int j = 0; j < tokens.length; j++)
-		    parsed.add(tokens[j]);
+        for (String token : tokens) parsed.add(token);
 		
 		return parsed;
 	}
@@ -590,7 +582,7 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 
 			// Try to get username and password for this service from Credential
 			// Manager (which should pop up UI if needed)
-			CredentialManager credManager = null;
+			CredentialManager credManager;
 			credManager = CredentialManager.getInstance();
 			String wsdl = bean
 			.getWsdl();
