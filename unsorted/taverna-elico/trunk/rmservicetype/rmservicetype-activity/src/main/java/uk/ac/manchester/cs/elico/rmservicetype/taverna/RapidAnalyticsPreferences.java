@@ -5,7 +5,27 @@ import net.sf.taverna.t2.security.credentialmanager.UsernamePassword;
 public class RapidAnalyticsPreferences {
 
 	private UsernamePassword usernamePassword = new UsernamePassword();
-	private String repositoryLocation = new String();
+	private String repositoryLocation;
+
+    public String getPathToTmpDir() {
+        return pathToTmpDir;
+    }
+
+    public void setPathToTmpDir(String pathToTmpDir) {
+        this.pathToTmpDir = pathToTmpDir;
+    }
+
+    public String getPathToFlora() {
+        return pathToFlora;
+    }
+
+    public void setPathToFlora(String pathToFlora) {
+        this.pathToFlora = pathToFlora;
+    }
+
+    private String pathToTmpDir;
+    private String pathToFlora;
+
 	
 	// getters
 	
@@ -13,10 +33,14 @@ public class RapidAnalyticsPreferences {
 		return usernamePassword.getUsername();
 	}
 	
-	public String getPassword() {
-		return usernamePassword.getPasswordAsString();
+	public char[] getPassword() {
+		return usernamePassword.getPassword();
 	}
-	
+
+    public String getPasswordAsString() {
+        return String.valueOf(usernamePassword.getPassword());
+    }
+
 	public UsernamePassword getUsernamePasswordObject() {
 		return usernamePassword;
 	}
@@ -38,17 +62,26 @@ public class RapidAnalyticsPreferences {
 		repositoryLocation = location;
 	}
 
-	public String getExecutorServiceLocation() {
-	
-		String newLocation = repositoryLocation + "/e-LICO/ExecutorService?wsdl";
-		
-		return newLocation;
+	public String getExecutorServiceWSDL() {
+
+        return repositoryLocation + "/e-LICO/ExecutorService?wsdl";
 	}
-	
+
+    public String getExecutorServiceLocation() {
+
+        return repositoryLocation + "/e-LICO/ExecutorService";
+    }
+
+
 	public String getBrowserServiceLocation() {
-		
-		String newLocation = repositoryLocation + "/RAWS/resources/";
-		
-		return newLocation;
+
+        return repositoryLocation + "/RAWS/resources/";
 	}
+
+    public String getMetaDataServiceLocation() {
+
+        return repositoryLocation + "/e-LICO/MetaDataService";
+    }
+
+
 }

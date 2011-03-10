@@ -1,36 +1,5 @@
 package uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.serviceprovider;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.Icon;
-import javax.swing.JOptionPane;
-import javax.wsdl.WSDLException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.rpc.ServiceException;
-
-import org.apache.axis.MessageContext;
-import org.apache.axis.client.Call;
-import org.apache.axis.client.Service;
-import org.w3c.dom.CharacterData;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidAnalyticsPreferences;
-
 import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
 import net.sf.taverna.t2.security.credentialmanager.CMException;
 import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
@@ -39,6 +8,28 @@ import net.sf.taverna.t2.servicedescriptions.ServiceDescription;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescriptionProvider;
 import net.sf.taverna.wsdl.parser.WSDLParser;
 import net.sf.taverna.wsdl.soap.WSDLSOAPInvoker;
+import org.apache.axis.MessageContext;
+import org.apache.axis.client.Call;
+import org.apache.axis.client.Service;
+import org.w3c.dom.*;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidAnalyticsPreferences;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.config.RapidMinerPluginConfiguration;
+
+import javax.swing.*;
+import javax.wsdl.WSDLException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.rpc.ServiceException;
+import java.io.IOException;
+import java.io.StringReader;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ExampleServiceProvider implements ServiceDescriptionProvider {
 	
@@ -59,69 +50,87 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 		 callBack.status("Obtaining RapidMiner Operators, please wait...");
 
 		List<ServiceDescription> results = new ArrayList<ServiceDescription>();
-		
-		// [testing] initial preferences
-			
-			myPreferences.setUsername("rishi");
-			myPreferences.setPassword("");
-			myPreferences.setRepositoryLocation("http://rpc295.cs.man.ac.uk:8081");
-		
-			
-		// if the repository location isnt set in the preferences, prompt for it	
-		String inputValue;
-			
-		if (myPreferences.getRepositoryLocation().isEmpty()) {
-			
-			inputValue = JOptionPane.showInputDialog("Please input a value");
-			myPreferences.setRepositoryLocation(inputValue);
-		}
-				
-		try {
-			
-			getOperatorTree();
-			
-		} catch (Exception e) {
-			
-			e.printStackTrace();
-			
-		}
-				
-		// FIXME: Implement the actual service search/lookup instead
-		// of dummy for-loop
-						
-		Object [] keys = rootHash.keySet().toArray();
-		int operatorCount = rootHash.keySet().size();
-		System.out.println(" OPERATOR COUNT " + operatorCount + " \n " + keys[0] + " " + keys[1]);
-		String a; 
-		
-		for (int i = 1; i < operatorCount; i++) {
-			
-			RapidMinerServiceDesc service = new RapidMinerServiceDesc();
-			// Populate the service description bean
-			service.setOperatorName(displayHash.get(keys[i].toString()));
-			service.setExampleUri(URI.create("http://rpc295.cs.man.ac.uk:8081/e-LICO/ExecutorService"));
-			System.out.println(" CALL NAME " + keys[i].toString());
-			service.setCallName(keys[i].toString());
-			List<String> myList = seperateGroupName(rootHash.get(keys[i]));
-			service.setPath(myList);
-			
-			// Optional: set description
-			//service.setDescription("Rapid Miner Operation " + i);
-			results.add(service);
-		}
 
-		// partialResults() can also be called several times from inside
-		// for-loop if the full search takes a long time
-		callBack.partialResults(results);
+        myPreferences = getPreferences();
 
-		// No more results will be coming
-		callBack.finished();
-		
-		rootHash.clear();
-		displayHash.clear();
+        if (myPreferences != null) {
+
+            // if the repository location isnt set in the preferences, prompt for it
+            String inputValue;
+
+            if (myPreferences.getRepositoryLocation().isEmpty()) {
+
+                inputValue = JOptionPane.showInputDialog("Please input a value");
+                myPreferences.setRepositoryLocation(inputValue);
+            }
+
+            try {
+
+                getOperatorTree();
+
+            } catch (Exception e) {
+
+                e.printStackTrace();
+
+            }
+
+            // FIXME: Implement the actual service search/lookup instead
+            // of dummy for-loop
+
+            Object [] keys = rootHash.keySet().toArray();
+            int operatorCount = rootHash.keySet().size();
+            System.out.println(" OPERATOR COUNT " + operatorCount + " \n " + keys[0] + " " + keys[1]);
+            String a;
+
+            for (int i = 1; i < operatorCount; i++) {
+
+                RapidMinerServiceDesc service = new RapidMinerServiceDesc();
+                // Populate the service description bean
+                service.setOperatorName(displayHash.get(keys[i].toString()));
+                service.setExampleUri(URI.create(myPreferences.getExecutorServiceWSDL()));
+                System.out.println(" CALL NAME " + keys[i].toString());
+                service.setCallName(keys[i].toString());
+                List<String> myList = seperateGroupName(rootHash.get(keys[i]));
+                service.setPath(myList);
+
+                // Optional: set description
+                //service.setDescription("Rapid Miner Operation " + i);
+                results.add(service);
+            }
+
+            // partialResults() can also be called several times from inside
+            // for-loop if the full search takes a long time
+            callBack.partialResults(results);
+
+            // No more results will be coming
+            callBack.finished();
+
+
+            rootHash.clear();
+            displayHash.clear();
+
+        }
+
+
+			
 	}
-	
-	HashMap<String, String> rootHash = new HashMap<String, String>();
+
+    private RapidAnalyticsPreferences getPreferences() {
+
+        RapidMinerPluginConfiguration config = RapidMinerPluginConfiguration.getInstance();
+        String repos = config.getProperty(RapidMinerPluginConfiguration.RA_REPOSITORY_LOCATION);
+        System.err.println("Got repository location: " + repos);
+        if (repos.equals("")) {
+            return null;
+        }
+
+        RapidAnalyticsPreferences pref = new RapidAnalyticsPreferences();
+        pref.setRepositoryLocation(repos);
+        return pref;
+
+    }
+
+    HashMap<String, String> rootHash = new HashMap<String, String>();
 	HashMap<String, String> displayHash = new HashMap<String, String>();
 
 	
@@ -133,7 +142,7 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 		
 		// WSDLActivityConfigurationBean
 		WSDLActivityConfigurationBean myBean = new WSDLActivityConfigurationBean();
-		myBean.setWsdl(myPreferences.getExecutorServiceLocation());
+		myBean.setWsdl(myPreferences.getExecutorServiceWSDL());
 		myBean.setOperation("getOperatorTree");
 		
 		// Output and Parser for WSDLSOAPInvoker
@@ -181,37 +190,24 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 		UsernamePassword usernamePassword = null;
 		// check whether the Username and Password is set
 		
-		String username = myPreferences.getUsername();
-		String password  = myPreferences.getPassword();
-		
-		try {
-			
-			if (username.equals(null) || password.equals(null)) {
-			} else {
-				
-				usernamePassword = myPreferences.getUsernamePasswordObject();
-				System.out.println(" using preferences manager");
+        usernamePassword = myPreferences.getUsernamePasswordObject();
 
-			}
-			
-		} catch (NullPointerException e) {
-			
-			e.printStackTrace();
-			
-			try {
-				usernamePassword = getUsernameAndPasswordForService(myBean, true);
-				System.out.println(" using credential manager");
+        if (usernamePassword.getUsername() == null) {
+            try {
+                usernamePassword = getUsernameAndPasswordForService(myBean, true);
+                System.out.println(" using credential manager");
 
-			} catch (CMException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			
-		}
-			
-		
-			
-		System.out.println("Point 5");
+            } catch (CMException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+
+        }
+
+
+
+
+        System.out.println("Point 5");
 
 		MessageContext context = call.getMessageContext();
 		context.setUsername(usernamePassword.getUsername());
@@ -224,7 +220,7 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 		
 		System.out.println("Point 7");
 		
-		call.setTargetEndpointAddress(myPreferences.getExecutorServiceLocation());
+		call.setTargetEndpointAddress(myPreferences.getExecutorServiceWSDL());
 		call.setOperationName("getOperatorTree");
 		
 		System.out.println("Point 8");
@@ -440,7 +436,7 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 		
 		// WSDLActivityConfigurationBean
 		WSDLActivityConfigurationBean myBean = new WSDLActivityConfigurationBean();
-		myBean.setWsdl("http://rpc295.cs.man.ac.uk:8081/e-LICO/ExecutorService?wsdl");
+		myBean.setWsdl(myPreferences.getExecutorServiceWSDL());
 		myBean.setOperation("getRegisteredOperatorNames");
 		
 		// Output and Parser for WSDLSOAPInvoker

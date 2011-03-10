@@ -1,67 +1,20 @@
 package uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.view;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.LayoutManager;
-import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.FlowLayout;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import net.sf.taverna.t2.lang.ui.DialogTextArea;
+import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.*;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.config.ParameterTableModel;
 
-import javax.swing.Action;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultCellEditor;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeExpansionListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-
-import net.sf.taverna.t2.lang.ui.DialogTextArea;
-import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
-
-
-
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidAnalyticsPreferences;
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerActivityConfigurationBean;
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerExampleActivity;
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerParameterDescription;
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.config.ParameterTableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
+import java.util.List;
 
 public class RapidMinerConfigurationView extends JPanel {
 
@@ -74,29 +27,25 @@ public class RapidMinerConfigurationView extends JPanel {
 	
 	private CardLayout cardLayout = new CardLayout();
 	
-	private JLabel titleLabel, titleIcon, inputLocationLabel, outputLocationLabel;
+	private JLabel titleLabel, titleIcon;
 		
-	private DialogTextArea titleMessage, choiceDescription;
-	
-	private JTextField inputLocationField, outputLocationField;
-	
-	private JRadioButton implicitButton;
-	private JRadioButton explicitButton;
+	private DialogTextArea titleMessage;
 	
 	private JTableParameters parameterTable;
+
 	private ParameterTableModel tableModel = null;
 	
 	private JButton nextButton, finishButton;
-	private JButton uploadButton;
-	
-	private String first = new String("Explicit");
-	private String second = new String("Implicit");
 	
 	private String[] fillValues = new String[] { "true", "false"};
 	
 	private HashMap<Integer, String[]> choicesMap = new HashMap<Integer,String[]>();
 			
-	RapidAnalyticsRepositoryBrowser browser = null;
+    private List<PortField> inputFields;
+
+    private List<PortField> outputFields;
+
+	private RapidAnalyticsRepositoryBrowser browser = null;
 	
 	
 	public RapidMinerConfigurationView(RapidMinerExampleActivity activity) {
@@ -111,10 +60,11 @@ public class RapidMinerConfigurationView extends JPanel {
 		
 	}
 
-	public void setInputLocationField(String loc) {
-		inputLocationField.setText(loc);
-	}
-	
+//	public void setInputLocationField(String loc) {
+//		inputLocationField.setText(loc);
+//	}
+
+
 	private void initialise() {
 		
 		titlePanel = new JPanel(new BorderLayout());
@@ -122,82 +72,31 @@ public class RapidMinerConfigurationView extends JPanel {
 		addDivider(titlePanel, SwingConstants.BOTTOM, true);
 		
 		// title
-		titleLabel = new JLabel(" Operator : " + newConfiguration.getOperatorName());
+		titleLabel = new JLabel("Configure Operator : " + newConfiguration.getOperatorName());
 		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 13.5f));
-		
+
 		titleIcon = new JLabel("");
-		titleMessage = new DialogTextArea("Please chose whether you want to explicitly set the operator output location");
+		titleMessage = new DialogTextArea("You can explicitly set the input and output files for this activity or leave the fields blank");
 		titleMessage.setMargin(new Insets(5, 10, 10, 10));
 		titleMessage.setFont(titleMessage.getFont().deriveFont(11f));
 		titleMessage.setEditable(false);
 		titleMessage.setFocusable(false);
-		
-		// buttons
-		explicitButton = new JRadioButton(first);
-		explicitButton.setActionCommand(first);
-		explicitButton.setSelected(oldConfiguration.getIsExplicit());
-		
-		implicitButton = new JRadioButton(second);
-		implicitButton.setActionCommand(second);
-		implicitButton.setSelected(!oldConfiguration.getIsExplicit());
 
-		
-		ButtonGroup buttonGroup = new ButtonGroup();
-		buttonGroup.add(explicitButton);
-		buttonGroup.add(implicitButton);
-		
-		RadioButtonListener radioListener = new RadioButtonListener();
-		explicitButton.addActionListener(radioListener);
-		explicitButton.addChangeListener(radioListener);
-		explicitButton.addItemListener(radioListener);
-		implicitButton.addActionListener(radioListener);
-		implicitButton.addChangeListener(radioListener);
-		implicitButton.addItemListener(radioListener);
-		
-		choiceDescription = new DialogTextArea("\n  Choosing Explicit will allow you to specify your own output location,\n    Implicit will automatically generate an outputlocation");;
-		choiceDescription.setBackground(getBackground());
-		
-		// input fields
-		inputLocationLabel = new JLabel("			Input Location");
-		outputLocationLabel = new JLabel("			OutputLocation");
-		
-		inputLocationField = new JTextField();
-		outputLocationField = new JTextField();
-		
-		inputLocationField.setText(oldConfiguration.getInputLocation());
-		outputLocationField.setText(oldConfiguration.getOutputLocation());
+        RapidMinerIOODescription desc = getRMIOODescription(newConfiguration);
 
-		
-		uploadButton = new JButton("Upload");
-		uploadButton.setFocusable(false);
-		uploadButton.setVisible(true);
-	
-		uploadButton.addActionListener(new ActionListener() {
-	
-			public void actionPerformed(ActionEvent arg0) {
+        this.inputFields = getInputFields(desc.getInputPort());
 
-					// [testing] Preferences
-					RapidAnalyticsPreferences pref = new RapidAnalyticsPreferences();
-					pref.setUsername("rishi");
-					pref.setPassword("");
-					pref.setRepositoryLocation("http://rpc295.cs.man.ac.uk:8081");
-				
-				JDialog frame = new JDialog((JDialog)SwingUtilities.getAncestorOfClass(JDialog.class, RapidMinerConfigurationView.this), "Rapid Analytics Repository Browser");
-				browser = new RapidAnalyticsRepositoryBrowser(pref);
-				browser.setOpaque(true);
-				frame.setModal(true);
-				frame.add(browser);
-				frame.setPreferredSize(new Dimension(400,400));
-				frame.pack();
-				frame.setVisible(true);
-				
-				setInputLocationField(browser.getChosenRepositoryPath());
-				
-			}
-			
-		});
-		
-		// buttons
+
+//        JPanel outputPanel = new JPanel(new BorderLayout());
+        this.outputFields = getOutputFields(desc.getOutputPort());
+
+//        outputPanel.setBorder(BorderFactory.createTitledBorder("Output Ports"));
+//
+//        inputOutputBox.add(inputPanel);
+//        inputOutputBox.add(Box.createVerticalStrut(6));
+//        inputOutputBox.add(outputPanel);
+
+
 		buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		addDivider(buttonPanel, SwingConstants.TOP, true);	
 		
@@ -210,13 +109,13 @@ public class RapidMinerConfigurationView extends JPanel {
 				
 				//System.out.println("[DEBUG] --> RETURNED REPOSITORY LOCATION " + browser.getChosenRepositoryPath());
 				//check if the configuration has changed
-				if(!(inputLocationField.getText() == oldConfiguration.getInputLocation()) || (outputLocationField.getText() == oldConfiguration.getOutputLocation()) ) {
-					
-					System.out.println("Configuration Changed");
-					newConfiguration.setInputLocation(inputLocationField.getText());
-					newConfiguration.setOutputLocation(outputLocationField.getText());
-					
-				}
+//				if(!(inputLocationField.getText() == oldConfiguration.getInputLocation()) || (outputLocationField.getText() == oldConfiguration.getOutputLocation()) ) {
+//
+//					System.out.println("Configuration Changed");
+//					newConfiguration.setInputLocation(inputLocationField.getText());
+//					newConfiguration.setOutputLocation(outputLocationField.getText());
+//
+//				}
 				
 				if (firstCardShown) {	// move to next card
 					
@@ -256,40 +155,43 @@ public class RapidMinerConfigurationView extends JPanel {
 		int i = 0;
 		
 		while (parameterIterator.hasNext()) {
-			
-			// get the parameter
-			RapidMinerParameterDescription param = (RapidMinerParameterDescription) parameterIterator.next();
-			if (param.getType().equals("boolean") || param.getType().equals("choice")) {
-				
-				rowsWithCombobox.add(i);
-				System.out.println("BOOLEAN or CHOICE FOUND");
-				
-				if (param.getType().equals("choice")) {
-					
-					// it's a choice - add its choices to the hashmap
-					String [] theChoice;
-					List<String> tempChoices = param.getChoices();
-					theChoice = new String[tempChoices.size()];
-					Iterator choicesIterator = tempChoices.iterator();
-					
-					int j = 0;
-					
-					while (choicesIterator.hasNext()) {
-						
-						theChoice[j] = (String) choicesIterator.next();
-						j++;
-						
-					}
 
-					choicesMap.put(i, theChoice);
-					
-				} else {
-					
-					choicesMap.put(i, fillValues);
-					
-				}
+            // get the parameter
+            RapidMinerParameterDescription param = (RapidMinerParameterDescription) parameterIterator.next();
+            if (param.getType() != null) {
+                if (param.getType().equals("boolean") || param.getType().equals("choice")) {
+
+                    rowsWithCombobox.add(i);
+//                    System.out.println("BOOLEAN or CHOICE FOUND");
+
+                    if (param.getType().equals("choice")) {
+
+                        // it's a choice - add its choices to the hashmap
+                        String [] theChoice;
+                        List<String> tempChoices = param.getChoices();
+                        theChoice = new String[tempChoices.size()];
+                        Iterator choicesIterator = tempChoices.iterator();
+
+                        int j = 0;
+
+                        while (choicesIterator.hasNext()) {
+
+                            theChoice[j] = (String) choicesIterator.next();
+                            j++;
+
+                        }
+
+                        choicesMap.put(i, theChoice);
+
+                    } else {
+
+                        choicesMap.put(i, fillValues);
+
+                    }
+
+                }
 			}
-			
+
 			i++;
 			
 		}	// rows found and set in rowsWithCombobox
@@ -356,14 +258,116 @@ public class RapidMinerConfigurationView extends JPanel {
 		
 		firstCardShown = true;
 	}
-	
-	
-	private void layoutPanel() {
+
+
+    private class PortField extends JPanel {
+
+        public IOObjectPort getPort() {
+            return port;
+        }
+
+        public String getFileLocation() {
+            return location.getText();
+        }
+
+        IOObjectPort port;
+
+        JLabel label;
+        JTextField location;
+        JButton upload;
+
+        public PortField (IOObjectPort port) {
+            this.port = port;
+
+            Box row = new Box(BoxLayout.X_AXIS);
+
+            row.add(label = new JLabel(port.getPortName()));
+            row.add(Box.createHorizontalStrut(2));
+            row.add(location = new JTextField(20));
+            if (port.getFileLocation() != null) {
+                location.setText(port.getFileLocation());
+            }
+
+            row.add(Box.createHorizontalStrut(4));
+            upload = new JButton("Browse");
+            upload.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent arg0) {
+
+                    final JDialog frame = new JDialog((JDialog)SwingUtilities.getAncestorOfClass(JDialog.class, RapidMinerConfigurationView.this), "Rapid Analytics Repository Browser");
+
+                    browser = new RapidAnalyticsRepositoryBrowser(){
+                        @Override
+                        public void fileSelectedButtonPress() {
+                            super.fileSelectedButtonPress();
+                            location.setText(browser.getChosenRepositoryPath());
+                            frame.dispose();
+                        }
+                    };
+
+                    browser.setOpaque(true);
+                    browser.initialiseTreeContents();
+
+
+                    Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+                    frame.setLocation(dim.width / 2 - getWidth() / 2, dim.height / 2 - getHeight() / 2);
+
+                    frame.setModal(true);
+                    frame.add(browser);
+                    frame.setPreferredSize(new Dimension(400,400));
+                    frame.pack();
+                    frame.setVisible(true);
+
+                }
+
+            });
+            row.add(upload);
+            row.add(Box.createHorizontalStrut(12));
+            this.add(row);
+        }
+    }
+
+    private List<PortField> getInputFields(LinkedHashMap<String, IOInputPort> inputPort) {
+
+        LinkedHashMap<String, IOInputPort> currentPorts =  newConfiguration.getInputPorts();
+
+        List<PortField> ports = new ArrayList<PortField>();
+        for (String key : inputPort.keySet()) {
+            if (currentPorts.containsKey(key)) {
+                System.err.println("looked up key " + key + " and intput loc is " + currentPorts.get(key).getFileLocation());
+                ports.add(new PortField(currentPorts.get(key)));
+            }
+            else {
+                ports.add(new PortField(inputPort.get(key)));
+            }
+        }
+        return ports;
+    }
+
+    private List<PortField> getOutputFields(LinkedHashMap<String, IOOutputPort> outputPort) {
+
+        LinkedHashMap<String, IOOutputPort> currentPorts =  newConfiguration.getOutputPorts();
+
+        List<PortField> ports = new ArrayList<PortField>();
+        for (String key : outputPort.keySet()) {
+            if (currentPorts.containsKey(key)) {
+                System.err.println("looked up key " + key + " and output loc is " + currentPorts.get(key).getFileLocation());
+                ports.add(new PortField(currentPorts.get(key)));
+
+            }
+            else {
+                ports.add(new PortField(outputPort.get(key)));
+            }
+        }
+        return ports;
+    }
+
+
+    private void layoutPanel() {
 
 		setPreferredSize(new Dimension(745, 400));
 		setLayout(new BorderLayout());
 		
-		page1 = new JPanel(new GridBagLayout());
+		page1 = new JPanel(new BorderLayout());
 		page2 = new JPanel(new GridBagLayout());
 		
 		contentPanel = new JPanel(cardLayout);
@@ -379,56 +383,89 @@ public class RapidMinerConfigurationView extends JPanel {
 		titlePanel.add(titleIcon, BorderLayout.WEST);
 		titlePanel.add(titleMessage, BorderLayout.CENTER);
 
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 0.5;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0;
-		c.gridy = 0;
-		
-		page1.add(explicitButton, c);
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 0.5;
-		c.gridx = 1;
-		c.gridy = 0;
-		
-		page1.add(implicitButton, c);
-		
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.ipady = 20;      //make this component tall
-		c.weightx = 0.0;
-		c.gridwidth = 3;
-		c.gridx = 0;
-		c.gridy = 1;
-		page1.add(choiceDescription, c);
-		
-		// input fields + label
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.ipady = 20;
-		c.gridwidth = 2;
-		c.gridx = 0;
-		c.gridy = 3;
-		page1.add(inputLocationLabel, c);
-		
-		c.gridx = 1;
-		page1.add(inputLocationField, c);
-		
-		c.gridx = 2;
-		page1.add(uploadButton, c);
-		
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.ipady = 20;
-		c.gridwidth = 2;
-		c.gridx = 0;
-		c.gridy = 4;
-		
-		
-		
-		page1.add(outputLocationLabel, c);
-		
-		c.gridx = 1;
-		
-		page1.add(outputLocationField, c);
+//		GridBagConstraints c = new GridBagConstraints();
+//		c.fill = GridBagConstraints.HORIZONTAL;
+//		c.weightx = 0.5;
+//		c.fill = GridBagConstraints.HORIZONTAL;
+//		c.gridx = 0;
+//		c.gridy = 0;
+
+        Box inputOutputBox = new Box(BoxLayout.Y_AXIS);
+
+        //
+        JPanel inputPanel = new JPanel(new BorderLayout());
+        inputPanel.setBorder(BorderFactory.createTitledBorder("Input Ports"));
+        Box inputRows = new Box (BoxLayout.Y_AXIS);
+        int x = 2;
+        for (PortField p : inputFields) {
+            inputRows.add(p);
+            inputRows.add(Box.createVerticalStrut(x));
+            x = x+2;
+        }
+        inputPanel.add(inputRows, BorderLayout.WEST);
+        inputOutputBox.add(new JScrollPane(inputPanel));
+
+        //
+        JPanel outputPanel = new JPanel(new BorderLayout());
+        outputPanel.setBorder(BorderFactory.createTitledBorder("Output Ports"));
+        Box outputRows = new Box (BoxLayout.Y_AXIS);
+        int y = 2;
+        for (PortField p : outputFields) {
+            outputRows.add(p);
+            outputRows.add(Box.createVerticalStrut(y));
+            y = y+2;
+        }
+        outputPanel.add(outputRows, BorderLayout.WEST);
+
+        inputOutputBox.add(Box.createVerticalStrut(4));
+
+        inputOutputBox.add(new JScrollPane(outputPanel));
+
+        page1.add(inputOutputBox, BorderLayout.CENTER);
+
+//		page1.add(explicitButton, c);
+//		c.fill = GridBagConstraints.HORIZONTAL;
+//		c.weightx = 0.5;
+//		c.gridx = 1;
+//		c.gridy = 0;
+//
+//		page1.add(implicitButton, c);
+//
+//		c.fill = GridBagConstraints.HORIZONTAL;
+//		c.ipady = 20;      //make this component tall
+//		c.weightx = 0.0;
+//		c.gridwidth = 3;
+//		c.gridx = 0;
+//		c.gridy = 1;
+//		page1.add(choiceDescription, c);
+//
+//		// input fields + label
+//		c.fill = GridBagConstraints.HORIZONTAL;
+//		c.ipady = 20;
+//		c.gridwidth = 2;
+//		c.gridx = 0;
+//		c.gridy = 3;
+//		page1.add(inputLocationLabel, c);
+//
+//		c.gridx = 1;
+//		page1.add(inputLocationField, c);
+//
+//		c.gridx = 2;
+//		page1.add(uploadButton, c);
+//
+//		c.fill = GridBagConstraints.HORIZONTAL;
+//		c.ipady = 20;
+//		c.gridwidth = 2;
+//		c.gridx = 0;
+//		c.gridy = 4;
+//
+//
+//
+//		page1.add(outputLocationLabel, c);
+//
+//		c.gridx = 1;
+//
+//		page1.add(outputLocationField, c);
 		
 		
 		
@@ -506,51 +543,79 @@ public class RapidMinerConfigurationView extends JPanel {
 
 		});
 	}
-	
-	class RadioButtonListener implements ActionListener, ChangeListener, ItemListener {  
-		public void actionPerformed(ActionEvent e) {
-			//String factoryName = null;
 
-			System.out.print("ActionEvent received: ");
-			if (e.getActionCommand() == first) {
-				System.out.println(first + " pressed.");	// the user chose explicit
-				
-				outputLocationLabel.setEnabled(true);
-				outputLocationField.setEnabled(true);
-				
-				// set in config bean
-				newConfiguration.setIsExplicit(true);
+    public RapidMinerIOODescription getRMIOODescription(RapidMinerActivityConfigurationBean config) {
+        return new RapidMinerIOODescription(config.getCallName());
+    }
 
-			} else {
-				System.out.println(second + " pressed.");	//	the user chose implicit
-				
-				// gray out output field + label
-				outputLocationLabel.setEnabled(false);
-				outputLocationField.setEnabled(false);
-				
-				// set in config bean
-				newConfiguration.setIsExplicit(false);
-			}
-		}
+//    class RadioButtonListener implements ActionListener, ChangeListener, ItemListener {
+//		public void actionPerformed(ActionEvent e) {
+//			//String factoryName = null;
+//
+//			System.out.print("ActionEvent received: ");
+//			if (e.getActionCommand() == first) {
+//				System.out.println(first + " pressed.");	// the user chose explicit
+//
+//				outputLocationLabel.setEnabled(true);
+//				outputLocationField.setEnabled(true);
+//
+//				// set in config bean
+//				newConfiguration.setIsExplicit(true);
+//
+//			} else {
+//				System.out.println(second + " pressed.");	//	the user chose implicit
+//
+//				// gray out output field + label
+//				outputLocationLabel.setEnabled(false);
+//				outputLocationField.setEnabled(false);
+//
+//				// set in config bean
+//				newConfiguration.setIsExplicit(false);
+//			}
+//		}
+//
+//		public void itemStateChanged(ItemEvent e) {
+//			//System.out.println("ItemEvent received: "
+//			//	+ e.getItem()
+//			//	+ " is now "
+//	  	 	//	+ ((e.getStateChange() == ItemEvent.SELECTED)?
+//	  	 	//			"selected.":"unselected"));
+//		}
+//
+//		public void stateChanged(ChangeEvent e) {
+//			//System.out.println("ChangeEvent received from: "
+//			//	+ e.getSource());
+//
+//		}
+//	}
 
-		public void itemStateChanged(ItemEvent e) {
-			//System.out.println("ItemEvent received: " 
-			//	+ e.getItem()
-			//	+ " is now "
-	  	 	//	+ ((e.getStateChange() == ItemEvent.SELECTED)?
-	  	 	//			"selected.":"unselected"));
-		}
-
-		public void stateChanged(ChangeEvent e) {
-			//System.out.println("ChangeEvent received from: "
-			//	+ e.getSource());
-			
-		}
-	}
 	public RapidMinerActivityConfigurationBean getConfiguration() {
 		
 		System.out.println("[DEBUG] the parameter count is " + tableModel.getColumnCount());
-		
+
+        LinkedHashMap<String, IOInputPort> inputs = new LinkedHashMap<String, IOInputPort>();
+        for (PortField p : inputFields) {
+            IOInputPort port = (IOInputPort) p.getPort();
+            if (p.getFileLocation() != null) {
+                port.setFileLocation(p.getFileLocation());
+            }
+            inputs.put(port.getPortName().replace(" ", "_"), port);
+
+        }
+        newConfiguration.setInputPorts(inputs);
+
+        LinkedHashMap<String, IOOutputPort> outputs = new LinkedHashMap<String, IOOutputPort>();
+        for (PortField p : outputFields) {
+            IOOutputPort port = (IOOutputPort) p.getPort();
+            if (p.getFileLocation() != null) {
+                port.setFileLocation(p.getFileLocation());
+            }
+            outputs.put(port.getPortName().replace(" ", "_"), port);
+
+        }
+        newConfiguration.setOutputPorts(outputs);
+
+
 		try {
 			//System.out.println("[DEBUG] INSIDE TABLE MODEL " + tableModel.getUpdatedParameters().get(0).getExecutionValue());
 			newConfiguration.setParameterDescriptions(tableModel.getUpdatedParameters());
@@ -563,6 +628,9 @@ public class RapidMinerConfigurationView extends JPanel {
 				System.out.println(" new parameters to set " + des.getUseParameter() + " " + des.getExecutionValue());
 				
 			}
+
+
+
 			
 		} catch (Exception e) {
 			

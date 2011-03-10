@@ -1,13 +1,10 @@
 package uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.config;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerParameterDescription;
 
 import javax.swing.table.AbstractTableModel;
-
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerParameterDescription;
+import java.util.Iterator;
+import java.util.List;
 
 public class ParameterTableModel extends AbstractTableModel {
 
@@ -48,28 +45,60 @@ public class ParameterTableModel extends AbstractTableModel {
 		            			 break;											// use
 		            	case 1:  data[i][n] = currentParam.getParameterName();	
 				            	 break;											// name
-		            	case 2:	 data[i][n] = currentParam.getDescription(); 
-				            	 break;											// desc
-		            	case 3:  data[i][n] = currentParam.getType();			// type
-		            			 break;
-		            	case 4:  data[i][n] = currentParam.getMin();			// min
-		         
-		            		     if (data[i][n].equals("NaN")) {
-		            				 data[i][n] = "";
-		            			 }
-		            			 
+		            	case 2:
+                                 if (currentParam.getDescription() != null) {
+                                     data[i][n] = currentParam.getDescription();
+                                 }
+                                else {
+                                     data[i][n] = "";
+                                 }
+
+                            break;											// desc
+		            	case 3:
+                                 if (currentParam.getType() != null) {
+                                     data[i][n] = currentParam.getType();			// type
+                                 }
+                                 else {
+                                      data[i][n] = "";
+                                  }
+                                break;
+		            	case 4:
+                                 if (currentParam.getMin() != null) {
+                                     data[i][n] = currentParam.getMin();			// min
+
+                                     if (data[i][n].equals("NaN")) {
+                                         data[i][n] = "";
+                                     }
+                                 }
+                                 else {
+                                      data[i][n] = "";
+                                  }
+
 		            			 break;											
-		            	case 5:	 data[i][n] = currentParam.getMax();			// max
-		            			
-		            			 if (data[i][n].equals("NaN")) {
-		            				 data[i][n] = "";
-		            			 }
-		            			 
-		            			 break;											
-		            	case 6:  data[i][n] = currentParam.getDefaultValue();
-		            			 if (data[i][n].equals("?")) {
-		            				 data[i][n] = "";
-		            			 }
+		            	case 5:
+                                 if (currentParam.getMax() != null) {
+                                     data[i][n] = currentParam.getMax();			// max
+
+                                     if (data[i][n].equals("NaN")) {
+                                         data[i][n] = "";
+                                     }
+
+                                 }
+                                 else {
+                                      data[i][n] = "";
+                                  }
+                                break;
+		            	case 6:
+                                 if (currentParam.getDefaultValue() != null) {
+                                     data[i][n] = currentParam.getDefaultValue();
+                                     if (data[i][n].equals("?")) {
+                                         data[i][n] = "";
+                                     }
+                                 }
+                                 else {
+                                      data[i][n] = "";
+                                  }
+
 		            			 break;											// default val
 		            	case 7:  data[i][n] = currentParam.getExecutionValue();
 		            			 if (data[i][n].equals("?")) {

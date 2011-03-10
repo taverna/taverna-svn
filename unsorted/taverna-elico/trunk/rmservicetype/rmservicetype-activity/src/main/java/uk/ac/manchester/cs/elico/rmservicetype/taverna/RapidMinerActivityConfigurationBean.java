@@ -1,9 +1,7 @@
 package uk.ac.manchester.cs.elico.rmservicetype.taverna;
 
 import java.io.Serializable;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Example activity configuration bean.
@@ -30,36 +28,42 @@ public class RapidMinerActivityConfigurationBean implements Serializable {
 	 */
 	
 	// TODO: Remove the example fields and getters/setters and add your own	
-	private String username, password, serverLocation;
+
 	private String operatorName;
 	private String callName;
-	private String inputLocation = new String(), outputLocation = new String();
+
+//    private String inputLocation = new String();
+//    private String outputLocation = new String();
+
+    private LinkedHashMap<String, IOInputPort> inputPorts = new LinkedHashMap<String, IOInputPort>();
+    private LinkedHashMap<String, IOOutputPort> outputPorts = new LinkedHashMap<String, IOOutputPort>();
+
+    public LinkedHashMap<String, IOInputPort> getInputPorts() {
+        return inputPorts;
+    }
+
+    public void setInputPorts(LinkedHashMap<String, IOInputPort> inputPorts) {
+        this.inputPorts = inputPorts;
+    }
+
+    public LinkedHashMap<String, IOOutputPort> getOutputPorts() {
+        return outputPorts;
+    }
+
+    public void setOutputPorts(LinkedHashMap<String, IOOutputPort> outputPorts) {
+        this.outputPorts = outputPorts;
+    }
+
+
 	private List<RapidMinerParameterDescription> parameterDescriptions;
 	private HashMap<String, String> invocationParameters = new HashMap<String, String>();
 	private boolean isExplicit;
 	private boolean isParametersConfigured = false;
 	private boolean hasDescriptions = false;
-	
-	public void setUsername(String val) {
-		username = val;
-	}
-	
-	public String getUsername() {
-		return username;
-	}
-	
-	public void setPassword(String val) {
-		password = val;
-	}
-	
-	public String getPassword() {
-		return password;
-	}
-	
-	public void setServerLocation(String val) {
-		serverLocation = val;
-	}
-		
+
+
+
+
 	public void setIsParametersConfigured(boolean val) {
 		isParametersConfigured = val;
 	}
@@ -68,29 +72,13 @@ public class RapidMinerActivityConfigurationBean implements Serializable {
 		return isParametersConfigured;
 	}
 	
-	public void setInputLocation(String input) {
-		inputLocation = input;
-	}
-	
-	public String getInputLocation() {
-		return inputLocation;
-	}
-	
-	public void setOutputLocation(String output) {
-		outputLocation = output;
-	}
-	
-	public String getOutputLocation() {
-		return outputLocation;
-	}
-	
-	public void setIsExplicit(boolean val) {
-		isExplicit = val;
-	}
-	
-	public boolean getIsExplicit() {
-		return isExplicit;
-	}
+//	public void setIsExplicit(boolean val) {
+//		isExplicit = val;
+//	}
+//
+//	public boolean getIsExplicit() {
+//		return isExplicit;
+//	}
 	
 	public String getOperatorName() {
 		return operatorName;
@@ -132,5 +120,5 @@ public class RapidMinerActivityConfigurationBean implements Serializable {
 		return hasDescriptions;
 	}
 
-	
+
 }

@@ -1,20 +1,6 @@
 package uk.ac.manchester.cs.elico.rmservicetype.taverna;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.net.URI;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import net.sf.taverna.t2.activities.testutils.ActivityInvoker;
-import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
-
 import org.junit.Before;
 import org.junit.Test;
 

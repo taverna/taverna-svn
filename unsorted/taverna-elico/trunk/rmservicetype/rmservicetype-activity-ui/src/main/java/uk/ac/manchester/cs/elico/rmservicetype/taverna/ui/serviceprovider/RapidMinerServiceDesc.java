@@ -1,18 +1,16 @@
 package uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.serviceprovider;
 
+import net.sf.taverna.t2.lang.beans.PropertyAnnotation;
+import net.sf.taverna.t2.servicedescriptions.ServiceDescription;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerActivityConfigurationBean;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerExampleActivity;
+
+import javax.swing.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.swing.Icon;
-
-import net.sf.taverna.t2.lang.beans.PropertyAnnotation;
-import net.sf.taverna.t2.servicedescriptions.ServiceDescription;
-import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
-
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerExampleActivity;
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerActivityConfigurationBean;
 
 public class RapidMinerServiceDesc extends ServiceDescription<RapidMinerActivityConfigurationBean> {
 
@@ -36,9 +34,9 @@ public class RapidMinerServiceDesc extends ServiceDescription<RapidMinerActivity
 		RapidMinerActivityConfigurationBean bean = new RapidMinerActivityConfigurationBean();
 		bean.setOperatorName(operatorName);
 		bean.setCallName(callName);
-		bean.setIsExplicit(true); // by default
-		bean.setUsername("");
-		bean.setPassword("");
+//		bean.setIsExplicit(true); // by default
+//		bean.setUsername("");
+//		bean.setPassword("");
 		return bean;
 	}
 
@@ -74,7 +72,7 @@ public class RapidMinerServiceDesc extends ServiceDescription<RapidMinerActivity
 		
 		//return Arrays.asList("e-LICO Rapid Miner Services @ " + exampleUri, "something");
 		if (!set) {
-			myPath.add(0, "e-LICO Rapid Miner Services");
+			myPath.add(0, "Rapid Miner Services");
 			set = true;
 			return myPath;
 		} else {

@@ -1,44 +1,9 @@
 package uk.ac.manchester.cs.elico.rmservicetype.taverna;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.StringReader;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.wsdl.WSDLException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.rpc.ServiceException;
-
-import org.apache.axis.MessageContext;
-import org.apache.axis.client.Call;
-import org.apache.axis.client.Service;
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
-import org.jdom.output.XMLOutputter;
-import org.w3c.dom.Attr;
-import org.w3c.dom.CharacterData;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
 import net.sf.taverna.t2.activities.wsdl.T2WSDLSOAPInvoker;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivity;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
 import net.sf.taverna.t2.activities.wsdl.security.SecurityProfiles;
-import net.sf.taverna.t2.activities.wsdl.xmlsplitter.XMLInputSplitterActivity;
-import net.sf.taverna.t2.activities.wsdl.xmlsplitter.XMLSplitterConfigurationBean;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.T2Reference;
@@ -51,9 +16,27 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousAc
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
-import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.wsdl.parser.WSDLParser;
 import net.sf.taverna.wsdl.soap.WSDLSOAPInvoker;
+import org.apache.axis.MessageContext;
+import org.apache.axis.client.Call;
+import org.apache.axis.client.Service;
+import org.jdom.output.XMLOutputter;
+import org.w3c.dom.*;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.config.RapidMinerPluginConfiguration;
+
+import javax.swing.*;
+import javax.wsdl.WSDLException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.rpc.ServiceException;
+import java.io.IOException;
+import java.io.StringReader;
+import java.net.URI;
+import java.util.*;
 
 public class RapidMinerExampleActivity extends
 		AbstractAsynchronousActivity<RapidMinerActivityConfigurationBean>
@@ -67,29 +50,81 @@ public class RapidMinerExampleActivity extends
 	private static final String IN_FIRST_INPUT = "firstInput";
 	private static final String IN_EXTRA_DATA = "extraData";
 	private static final String OUT_MORE_OUTPUTS = "moreOutputs";
-	private static final String OUT_SIMPLE_OUTPUT = "outputLocation";
 	private static final String OUT_REPORT = "report";
-	
+
+    private UsernamePassword username_password;
+
 	private RapidAnalyticsPreferences preferences;
 	
     static String securityProfile = SecurityProfiles.HTTP_BASIC_AUTHN;
 		
 	private RapidMinerActivityConfigurationBean configBean;
-	List<String> portListing;
 	NodeList myTempList;
-	
+    private static final String EXECUTE_BASIC_OPERATOR_EXPLICIT_OUTPUT = "executeBasicOperatorExplicitOutput";
+    private static final String HTTP_ELICO_RAPID_I_COM = "http://elico.rapid_i.com/";
+
+    public RapidMinerExampleActivity () {
+
+        setUpUserNamePassword();
+    }
+
+
+    public void setUpUserNamePassword () {
+
+
+        preferences = getPreferences();
+        if (preferences != null) {
+            CredentialManager credManager = null;
+            try {
+                credManager = CredentialManager.getInstance();
+                username_password = credManager.getUsernameAndPasswordForService(URI.create(preferences.getExecutorServiceWSDL()), true, null);
+
+                preferences.setUsername(username_password.getUsername());
+                preferences.setUsername(username_password.getPasswordAsString());
+            } catch (CMException e) {
+                e.printStackTrace();
+
+            }
+        }
+        else {
+            JOptionPane.showMessageDialog(new JFrame(),
+                    new JLabel("<html>Please set the Rapid Analytics repository location <br> " +
+                            "in the preferences panel</html>"));
+        }
+    }
+
+    private RapidAnalyticsPreferences getPreferences() {
+
+        RapidMinerPluginConfiguration config = RapidMinerPluginConfiguration.getInstance();
+        String repos = config.getProperty(RapidMinerPluginConfiguration.RA_REPOSITORY_LOCATION);
+        System.err.println("Got repository location: " + repos);
+        if (repos.equals("")) {
+            return null;
+        }
+
+        RapidAnalyticsPreferences pref = new RapidAnalyticsPreferences();
+        pref.setRepositoryLocation(repos);
+        return pref;
+
+    }
+
+    public RapidMinerExampleActivity (RapidAnalyticsPreferences prefs) {
+        preferences = prefs;
+        username_password = new UsernamePassword(preferences.getUsername(), preferences.getPasswordAsString());
+    }
+
 	@Override
 	public void configure(RapidMinerActivityConfigurationBean configBean)
 			throws ActivityConfigurationException {
 		
 		// Any pre-config sanity checks
 			// [testing] preferences
-				RapidAnalyticsPreferences pref = new RapidAnalyticsPreferences();
-				pref.setUsername("rishi");
-				pref.setPassword("");
-				pref.setRepositoryLocation("http://rpc295.cs.man.ac.uk:8081");
+//				RapidAnalyticsPreferences pref = new RapidAnalyticsPreferences();
+//				pref.setUsername("rishi");
+//				pref.setPassword("");
+//				pref.setRepositoryLocation("http://rpc295.cs.man.ac.uk:8081");
 			
-			setPreferences(pref);
+//			setPreferences(pref);
 		
 		// Store for getConfiguration(), but you could also make
 		// getConfiguration() return a new bean from other sources
@@ -101,21 +136,32 @@ public class RapidMinerExampleActivity extends
 
 		// myClient = new MyClient(configBean.getExampleUri());
 		// this.service = myClient.getService(configBean.getExampleString());
-		List<String> locationPorts = new ArrayList<String>();
-			locationPorts.add("inputLocation");
-			locationPorts.add("outputLocation");
-			portListing = locationPorts;
+
+
+//        List<String> locationPorts = new ArrayList<String>();
+//
+//
+//
+//			locationPorts.add("inputLocation");
+//			locationPorts.add("outputLocation");
+//			portListing = locationPorts;
 			
 		if (configBean.getHasDescriptions()) {
 			
 			configurePorts();
 			
 		} else {
-	
-			portListing = getParametersForOperation(configBean.getCallName());
-			
-			List<RapidMinerParameterDescription> descList = getParameterDescriptions(myTempList);
-						
+
+            List<RapidMinerParameterDescription> descList;
+
+            if (getParametersForOperation(configBean.getCallName()).size() == 0) {
+                descList = new ArrayList<RapidMinerParameterDescription>();
+            }
+            else {
+                descList = getParameterDescriptions(myTempList);
+            }
+
+
 			if (!configBean.getIsParametersConfigured()) {
 				
 				configBean.setParameterDescriptions(descList);
@@ -130,17 +176,16 @@ public class RapidMinerExampleActivity extends
 		
 	}
 	
-	public void setPreferences(RapidAnalyticsPreferences pref) {
-		System.out.println(" the pass is " + pref.getPassword());
-		preferences = pref; 
-		
-	}
-	
-	public RapidAnalyticsPreferences getPreferences() {
-		
-		return preferences;
-		
-	}
+//	public void setPreferences(RapidAnalyticsPreferences pref) {
+//		preferences = pref;
+//
+//	}
+//
+//	public RapidAnalyticsPreferences getPreferences() {
+//
+//		return preferences;
+//
+//	}
 
 	public List<RapidMinerParameterDescription> getParameterDescriptions(NodeList myList) {
 		
@@ -290,145 +335,168 @@ public class RapidMinerExampleActivity extends
 		 * 
 		 * 
 				*/
-		
-		if (configBean.getIsExplicit()) {
-			
-			//check if both input and output locations are set
-			
-			if(configBean.getInputLocation().equals("") && configBean.getOutputLocation().equals("")) {
-				
-				System.out.println(" NO INPUT OR OUTPUT LOCATIONS SPECIFIED >>>>* SHOW BOTH PORTS");
-				removeInputs();
-				portListing.clear();
-				portListing.add("inputLocation");
-				portListing.add("outputLocation");
-				
-			} else {	// both are filled in 
-			
-				System.out.println(" BOTH PORTS ARE SPECIFIED >>>>>>* REMOVING ALL PORTS ");
-				removeInputs();
-				portListing.clear();
-			}
-			
-			if (configBean.getInputLocation().equals("") && !configBean.getOutputLocation().equals("")) {	// only input is filled in
-				
-				System.out.println(" ONLY OUTPUT LOCATION IS SPECIFIED >>>>* SHOW INPUT PORT ONLY");
-				removeInputs();
-				portListing.clear();
-				portListing.add("inputLocation");
-			
-			}
-			
-			if (!configBean.getInputLocation().equals("") && configBean.getOutputLocation().equals("")) {	// only output is filled in
-				
-				System.out.println(" ONLY INPUT LOCATION IS SPECIFIED >>>>* SHOW OUTPUT PORT ONLY");
-				removeInputs();
-				portListing.clear();
-				portListing.add("outputLocation");
-				
-			}
-						
-			
-		} else {	// Implicit		
-				
-			System.out.println(" IMPLICIT CHOSEN ONLY INPUT LOCATION SHOULD BE SPECIFIED OR SET ");
-			
-			if (configBean.getInputLocation().equals("")) {		// if no input is set then show an input port
-			
-				System.out.println(" INPUT LOCATION NOT SET >>> SHOW INPUT PORT");
-				removeInputs();
-				portListing.clear();
-				portListing.add("inputLocation");
-			
-			}
-			
-			if (!configBean.getInputLocation().equals("")) {
-								
-				System.out.println(" INPUT LOCATION SET >>> REMOVE PORTS");
-				removeInputs();
-				portListing.clear();
-				
-			}
-				
-		}
-		
-		Iterator inputIterator = portListing.iterator();
-		
-		while (inputIterator.hasNext()) {
-			
-			//System.out.println("port " + inputIterator.next());
-			addInput((String)inputIterator.next(), 0, true, null, String.class);
-			
-		}
+
+//
+//
+//
+//		if (configBean.getIsExplicit()) {
+//
+//			//check if both input and output locations are set
+//
+//			if(configBean.getInputLocation().equals("") && configBean.getOutputLocation().equals("")) {
+//
+//				System.out.println(" NO INPUT OR OUTPUT LOCATIONS SPECIFIED >>>>* SHOW BOTH PORTS");
+//				removeInputs();
+//				portListing.clear();
+//				portListing.add("inputLocation");
+//				portListing.add("outputLocation");
+//
+//			} else {	// both are filled in
+//
+//				System.out.println(" BOTH PORTS ARE SPECIFIED >>>>>>* REMOVING ALL PORTS ");
+//				removeInputs();
+//				portListing.clear();
+//			}
+//
+//			if (configBean.getInputLocation().equals("") && !configBean.getOutputLocation().equals("")) {	// only input is filled in
+//
+//				System.out.println(" ONLY OUTPUT LOCATION IS SPECIFIED >>>>* SHOW INPUT PORT ONLY");
+//				removeInputs();
+//				portListing.clear();
+//				portListing.add("inputLocation");
+//
+//			}
+//
+//			if (!configBean.getInputLocation().equals("") && configBean.getOutputLocation().equals("")) {	// only output is filled in
+//
+//				System.out.println(" ONLY INPUT LOCATION IS SPECIFIED >>>>* SHOW OUTPUT PORT ONLY");
+//				removeInputs();
+//				portListing.clear();
+//				portListing.add("outputLocation");
+//
+//			}
+//
+//
+//		} else {	// Implicit
+//
+//			System.out.println(" IMPLICIT CHOSEN ONLY INPUT LOCATION SHOULD BE SPECIFIED OR SET ");
+//
+//			if (configBean.getInputLocation().equals("")) {		// if no input is set then show an input port
+//
+//				System.out.println(" INPUT LOCATION NOT SET >>> SHOW INPUT PORT");
+//				removeInputs();
+//				portListing.clear();
+//				portListing.add("inputLocation");
+//
+//			}
+//
+//			if (!configBean.getInputLocation().equals("")) {
+//
+//				System.out.println(" INPUT LOCATION SET >>> REMOVE PORTS");
+//				removeInputs();
+//				portListing.clear();
+//
+//			}
+//
+//		}
+
+
+//		Iterator inputIterator = portListing.iterator();
+
+        for (IOInputPort inputP : configBean.getInputPorts().values()) {
+            if (inputP.getFileLocation().isEmpty()) {
+                addInput(inputP.getPortName(), 0, true, null, String.class);
+            }
+        }
+
+        for (IOOutputPort outputP : configBean.getOutputPorts().values()) {
+            addOutput(outputP.getPortName(), 0);
+        }
+
+
+//		while (inputIterator.hasNext()) {
+//
+//			//System.out.println("port " + inputIterator.next());
+//			addInput((String)inputIterator.next(), 0, true, null, String.class);
+//
+//		}
 
 		// Hard coded input port, expecting a single String
 		// addInput(IN_FIRST_INPUT, 0, true, null, String.class);
 
 		// Optional ports depending on configuration
-		if (configBean.getOperatorName().equals("specialCase")) {
-			// depth 1, ie. list of binary byte[] arrays
-			addInput(IN_EXTRA_DATA, 1, true, null, byte[].class);
-			addOutput(OUT_REPORT, 0);
-		}
+//		if (configBean.getOperatorName().equals("specialCase")) {
+//			// depth 1, ie. list of binary byte[] arrays
+//			addInput(IN_EXTRA_DATA, 1, true, null, byte[].class);
+//			addOutput(OUT_REPORT, 0);
+//		}
 		
 		// Single value output port (depth 0)
-		addOutput(OUT_SIMPLE_OUTPUT, 0);
+//		addOutput(OUT_SIMPLE_OUTPUT, 0);
 		// Output port with list of values (depth 1)
 		// addOutput(OUT_MORE_OUTPUTS, 1);
 
 	}
 	
-	public Map<Object, String> constructInvocationInputMap(String inputLocation, String outputLocation, boolean isExplicit) {
+	public Map<Object, String> constructInvocationInputMap() {
 		
 		// add parameters to the hashmap from Parameter Configurations
 		HashMap<String, String> params = new HashMap<String, String>();
-		
-			List<RapidMinerParameterDescription>  paramDescriptions = configBean.getParameterDescriptions();
-			
-			Iterator paramIterator = paramDescriptions.iterator();
-			
-			while (paramIterator.hasNext()) {
-				
-				// check whether the current parameter is Use (true)
-				RapidMinerParameterDescription des = (RapidMinerParameterDescription)paramIterator.next();
-				
-				if (des.getUseParameter()) {	// true	
-					
-					params.put(des.getParameterName(), des.getExecutionValue());				
-					
-				}
-				
-			}
-			
-			System.out.println(" THE PARAMETERS AND THEIR VALUES : " + params.toString());
-			
-		String inputDoc;
+
+        List<RapidMinerParameterDescription>  paramDescriptions = configBean.getParameterDescriptions();
+
+        Iterator paramIterator = paramDescriptions.iterator();
+
+        while (paramIterator.hasNext()) {
+
+            // check whether the current parameter is Use (true)
+            RapidMinerParameterDescription des = (RapidMinerParameterDescription)paramIterator.next();
+
+            if (des.getUseParameter()) {	// true
+
+                params.put(des.getParameterName(), des.getExecutionValue());
+
+            }
+
+        }
+
+        System.out.println(" THE PARAMETERS AND THEIR VALUES : " + params.toString());
+
+
+
+        String inputDoc = createInputDocument(configBean.getCallName(), params, configBean.getInputPorts(), configBean.getOutputPorts());
+
+        Map<Object, String> inputMap = new HashMap<Object, String>();
+
+        inputMap.put(EXECUTE_BASIC_OPERATOR_EXPLICIT_OUTPUT, inputDoc);
+        return inputMap;
+
 		//String executorType, String operatorName, HashMap<String, String> operatorParameters, String inputLocations, String outputLocations
 		
-		if (isExplicit) {
-			
-			inputDoc = createInputDocument("executeBasicOperatorExplicitOutput", configBean.getCallName(), params, inputLocation, outputLocation);
-	
-		} else {	// get an implicit input document
-	
-			inputDoc = createInputDocument("executeBasicOperatorImplicitOutput", configBean.getCallName(), params, inputLocation, null);
-			
-		}
+//		if (isExplicit) {
+//
+//			inputDoc = createInputDocument(EXECUTE_BASIC_OPERATOR_EXPLICIT_OUTPUT, configBean.getCallName(), params, inputLocation, outputLocation);
+//
+//		} else {	// get an implicit input document
+//
+//			inputDoc = createInputDocument("executeBasicOperatorImplicitOutput", configBean.getCallName(), params, inputLocation, null);
+//
+//		}
 		
 		// construct the final input map
-		Map<Object, String> inputMap = new HashMap<Object, String>();
-		
-		if (isExplicit) {
-			
-			inputMap.put("executeBasicOperatorExplicitOutput", inputDoc);
-			
-		} else {
-			
-			inputMap.put("executeBasicOperatorImplicitOutput", inputDoc);
-			
-		}
-		
-		return inputMap;
+//		Map<Object, String> inputMap = new HashMap<Object, String>();
+//
+//		if (isExplicit) {
+//
+//			inputMap.put(EXECUTE_BASIC_OPERATOR_EXPLICIT_OUTPUT, inputDoc);
+//
+//		} else {
+//
+//			inputMap.put("executeBasicOperatorImplicitOutput", inputDoc);
+//
+//		}
+//
+//		return inputMap;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -439,7 +507,8 @@ public class RapidMinerExampleActivity extends
 		// Don't execute service directly now, request to be run ask to be run
 		// from thread pool and return asynchronously
 		callback.requestRun(new Runnable() {
-			
+
+
 			public void run() {
 	
 				InvocationContext context = callback
@@ -448,83 +517,133 @@ public class RapidMinerExampleActivity extends
 						.getReferenceService();
 				
 				Map<Object, String> inputMap = null;
-				// if explicit
-				
-					// if both input and output locations are specified - dont get from ports (because they won't exist)
 
-					// if both input and output locations are not specified - get info from ports
-				
+				// if both inputs are not specified, get from incoming connection
+
+                String filePath = "/demo/";
+
+                if (!preferences.getUsername().isEmpty()) {
+                    filePath = "/home/" + preferences.getUsername() + "/tmp/";
+
+                }
+                LinkedHashMap<String, IOInputPort> inputPorts = configBean.getInputPorts();
+                for (String key  : inputPorts.keySet()) {
+                    if (inputPorts.get(key).getFileLocation().isEmpty()) {
+                        try {
+                        String inputValue = (String) referenceService.renderIdentifier(inputs.get(key), String.class, context);
+                        configBean.getInputPorts().get(key).setFileLocation(inputValue);
+                        }
+                        catch (NullPointerException e) {
+                            callback.fail("You must specify some inputs for this service", e);
+                            e.printStackTrace();
+
+                        }
+                    }
+                    else {
+                        // find the base path to this file and use that
+                        String currentFile = inputPorts.get(key).getFileLocation();
+                        int lastSlash = currentFile.lastIndexOf("/");
+                        String basePath = currentFile.substring(0, lastSlash + 1);
+                        filePath = basePath;
+
+                    }
+                }
+
+
+                // if outputs not specified, create random output file names
+
+                LinkedHashMap<String, IOOutputPort> outputPorts = configBean.getOutputPorts();
+                int x = 0;
+                for (String key  : outputPorts.keySet()) {
+
+                    if (outputPorts.get(key).getFileLocation().isEmpty()) {
+
+                        // create a temp file name
+                        String opName = configBean.getOperatorName();
+                        String outputFile = filePath + opName.replace(" ", "_") + "_" + key + "_tmpFile" + x;
+                        x++;
+                        configBean.getOutputPorts().get(key).setFileLocation(outputFile);
+
+                    }
+
+                }
+
+
 					// if just input is specified - get the input from the config bean and the output from the port
 				
 					// if just output is specified - get the output from the configbean and the input from the port
-				
-				if (configBean.getIsExplicit()) {		// is explicit
-					
-					// if both input and output locations are specified - dont get from ports (because they won't exist)
-					if (!configBean.getInputLocation().equals("") && !configBean.getOutputLocation().equals("")) {
-						
-						System.out.println(" TEST CASE 1. " + configBean.getInputLocation() + " " + configBean.getOutputLocation());
 
-						inputMap = constructInvocationInputMap(configBean.getInputLocation(), configBean.getOutputLocation(), true);
-						
-					}
-					
-					// if both input and output locations are not specified - get info from ports
-					if (configBean.getInputLocation().equals("") && configBean.getOutputLocation().equals("")) {
-		
-						String inputValue = (String) referenceService.renderIdentifier(inputs.get("inputLocation"), String.class, context);
-						String outputValue = (String) referenceService.renderIdentifier(inputs.get("outputLocation"), String.class, context);
-						
-						System.out.println(" TEST CASE 2. " + inputValue + " " + outputValue);
 
-						inputMap = constructInvocationInputMap(inputValue, outputValue, true);
-					
-					}
-					
-					// if just input is specified - get the input from the config bean and the output from the port
-					if (!configBean.getInputLocation().equals("") && configBean.getOutputLocation().equals("")) {
-						
-						String outputValue = (String) referenceService.renderIdentifier(inputs.get("outputLocation"), String.class, context);
-						System.out.println(" TEST CASE 3. " + configBean.getInputLocation() + " " + outputValue);
-						
-						inputMap = constructInvocationInputMap(configBean.getInputLocation(), outputValue, true);
-						
-					}
-					
-					// if just output is specified - get the output from the configbean and the input from the port
-					if (configBean.getInputLocation().equals("") && !configBean.getOutputLocation().equals("")) {
-						
-						String inputValue = (String) referenceService.renderIdentifier(inputs.get("inputLocation"), String.class, context);
-						System.out.println(" TEST CASE 4. " + inputValue + " " + configBean.getOutputLocation());
-						
-						inputMap = constructInvocationInputMap(inputValue, configBean.getOutputLocation(), true);
-						
-					}
-					
-				} else {	// is implicit	
-					
-					System.out.println(" Implicit execution selected.");
-						
-					// if the input is specified - get the input from the configbean and leave the output
-					if (!configBean.getInputLocation().equals("")) {
-						
-						String inputValue = configBean.getInputLocation();
-						
-						inputMap = constructInvocationInputMap(inputValue, null, false);
-				
-					}
-								
-					// if the input is not specified - get the input from the port
-					if (configBean.getInputLocation().equals("")) {
-						
-						String inputValue = (String) referenceService.renderIdentifier(inputs.get("inputLocation"), String.class, context);
-						
-						inputMap = constructInvocationInputMap(inputValue, null, false);
-						
-					}
-					
-					
-				}
+                inputMap = constructInvocationInputMap();
+
+
+//				if (configBean.getIsExplicit()) {		// is explicit
+//
+//					// if both input and output locations are specified - dont get from ports (because they won't exist)
+//					if (!configBean.getInputLocation().equals("") && !configBean.getOutputLocation().equals("")) {
+//
+//						System.out.println(" TEST CASE 1. " + configBean.getInputLocation() + " " + configBean.getOutputLocation());
+//
+//						inputMap = constructInvocationInputMap(configBean.getInputLocation(), configBean.getOutputLocation(), true);
+//
+//					}
+//
+//					// if both input and output locations are not specified - get info from ports
+//					if (configBean.getInputLocation().equals("") && configBean.getOutputLocation().equals("")) {
+//
+//						String inputValue = (String) referenceService.renderIdentifier(inputs.get("inputLocation"), String.class, context);
+//						String outputValue = (String) referenceService.renderIdentifier(inputs.get("outputLocation"), String.class, context);
+//
+//						System.out.println(" TEST CASE 2. " + inputValue + " " + outputValue);
+//
+//						inputMap = constructInvocationInputMap(inputValue, outputValue, true);
+//
+//					}
+//
+//					// if just input is specified - get the input from the config bean and the output from the port
+//					if (!configBean.getInputLocation().equals("") && configBean.getOutputLocation().equals("")) {
+//
+//						String outputValue = (String) referenceService.renderIdentifier(inputs.get("outputLocation"), String.class, context);
+//						System.out.println(" TEST CASE 3. " + configBean.getInputLocation() + " " + outputValue);
+//
+//						inputMap = constructInvocationInputMap(configBean.getInputLocation(), outputValue, true);
+//
+//					}
+//
+//					// if just output is specified - get the output from the configbean and the input from the port
+//					if (configBean.getInputLocation().equals("") && !configBean.getOutputLocation().equals("")) {
+//
+//						String inputValue = (String) referenceService.renderIdentifier(inputs.get("inputLocation"), String.class, context);
+//						System.out.println(" TEST CASE 4. " + inputValue + " " + configBean.getOutputLocation());
+//
+//						inputMap = constructInvocationInputMap(inputValue, configBean.getOutputLocation(), true);
+//
+//					}
+//
+//				} else {	// is implicit
+//
+//					System.out.println(" Implicit execution selected.");
+//
+//					// if the input is specified - get the input from the configbean and leave the output
+//					if (!configBean.getInputLocation().equals("")) {
+//
+//						String inputValue = configBean.getInputLocation();
+//
+//						inputMap = constructInvocationInputMap(inputValue, null, false);
+//
+//					}
+//
+//					// if the input is not specified - get the input from the port
+//					if (configBean.getInputLocation().equals("")) {
+//
+//						String inputValue = (String) referenceService.renderIdentifier(inputs.get("inputLocation"), String.class, context);
+//
+//						inputMap = constructInvocationInputMap(inputValue, null, false);
+//
+//					}
+//
+//
+//				}
 				
 			//	String firstInput = (String) referenceService.renderIdentifier(inputs.get(IN_FIRST_INPUT),
             //            String.class, context);
@@ -534,17 +653,17 @@ public class RapidMinerExampleActivity extends
 
 				WSDLActivity wrapper = new WSDLActivity();
 				WSDLActivityConfigurationBean myBean = new WSDLActivityConfigurationBean();
-				myBean.setWsdl(preferences.getExecutorServiceLocation());
-				
-				if (configBean.getIsExplicit()) {
-					
-					myBean.setOperation("executeBasicOperatorExplicitOutput");
+				myBean.setWsdl(preferences.getExecutorServiceWSDL());
+                myBean.setOperation(EXECUTE_BASIC_OPERATOR_EXPLICIT_OUTPUT);
 
-				} else {
-					
-					myBean.setOperation("executeBasicOperatorImplicitOutput");
-					
-				}
+//				if (configBean.getIsExplicit()) {
+//
+//
+//				} else {
+//
+//					myBean.setOperation("executeBasicOperatorImplicitOutput");
+//
+//				}
 				//myBean.setSecurityProfile(securityProfile);
 				
 				try {
@@ -617,36 +736,35 @@ public class RapidMinerExampleActivity extends
 				
 				// Set Username and Password (credential manager)
 				
-				UsernamePassword usernamePassword = null;
-				
-				try {
-					
-					usernamePassword = getUsernameAndPasswordForService(myBean, true);
-					
-				} catch (CMException e2) {
-					
-					e2.printStackTrace();
-					
-				}
+//				try {
+//
+//					usernamePassword = getUsernameAndPasswordForService(myBean, true);
+//
+//				} catch (CMException e2) {
+//
+//					e2.printStackTrace();
+//
+//				}
 				
 				System.out.println("^^^Point 5");
-				
+
 				MessageContext context1 = call.getMessageContext();
-				context1.setUsername(usernamePassword.getUsername());
-				context1.setPassword(usernamePassword.getPasswordAsString());
-				usernamePassword.resetPassword();
+				context1.setUsername(username_password.getUsername());
+				context1.setPassword(username_password.getPasswordAsString());
+				username_password.resetPassword();
 				
-				call.setTargetEndpointAddress(preferences.getExecutorServiceLocation());
-				
-				if (configBean.getIsExplicit()) {
-					
-					call.setOperationName("executeBasicOperatorExplicitOutput");
-					
-				} else {
-					
-					call.setOperationName("executeBasicOperatorImplicitOutput");
-					
-				}
+				call.setTargetEndpointAddress(preferences.getExecutorServiceWSDL());
+				call.setOperationName(EXECUTE_BASIC_OPERATOR_EXPLICIT_OUTPUT);
+
+//				if (configBean.getIsExplicit()) {
+//
+//					call.setOperationName(EXECUTE_BASIC_OPERATOR_EXPLICIT_OUTPUT);
+//
+//				} else {
+//
+//					call.setOperationName("executeBasicOperatorImplicitOutput");
+//
+//				}
 				
 				// end of call
 				Map<String, Object> invokerOutputMap = null;
@@ -660,27 +778,34 @@ public class RapidMinerExampleActivity extends
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}			
-				
-				String resultantOutputLocation = getOutputLocationfromOutputResult(invokerOutputMap);
+
+
 				// return map of output data, with empty index array as this is
 				// the only and final result (this index parameter is used if
 				// pipelining output)
 							
 				Map<String, T2Reference> outputs = new HashMap<String, T2Reference>();
 				
-				T2Reference simpleRef = null;
-				if (configBean.getIsExplicit()) {
-					
-					String simpleValue = configBean.getOutputLocation();
-					simpleRef = referenceService.register(simpleValue, 0, true, context);
-					
-				} else {
-					
-					simpleRef = referenceService.register(resultantOutputLocation, 0, true, context);
-					
-				}
-							
-				outputs.put(OUT_SIMPLE_OUTPUT, simpleRef);
+//				T2Reference simpleRef = null;
+//				if (configBean.getIsExplicit()) {
+//
+//					String simpleValue = configBean.getOutputLocation();
+//					simpleRef = referenceService.register(simpleValue, 0, true, context);
+//
+//				} else {
+//
+//                    String resultantOutputLocation = getOutputLocationfromOutputResult(invokerOutputMap);
+//					simpleRef = referenceService.register(resultantOutputLocation, 0, true, context);
+//
+//				}
+
+                for (String opName : configBean.getOutputPorts().keySet()) {
+                    T2Reference simpleRef = referenceService.register(configBean.getOutputPorts().get(opName).getFileLocation(), 0, true, context);;
+    				outputs.put(opName, simpleRef);
+
+
+                }
+//				outputs.put(OUT_SIMPLE_OUTPUT, simpleRef);
 				callback.receiveResult(outputs, new int[0]);
 				
 			}
@@ -692,23 +817,17 @@ public class RapidMinerExampleActivity extends
 		return this.configBean;
 	}
 	
-	public String createInputDocument(String executorType, String operatorName, HashMap<String, String> operatorParameters, String inputLocations, String outputLocations) {
+	public String createInputDocument(String operatorName, HashMap<String, String> operatorParameters,
+                                      LinkedHashMap<String, IOInputPort> inputPorts, LinkedHashMap<String, IOOutputPort> outputPorts) {
 		
 		// for explicit output
 		
 		// Root executeBasicOperatorExplicitOutput
 		org.jdom.Element root;
 		
-		if (executorType.equals("executeBasicOperatorExplicitOutput")) {
-			
-			root = new org.jdom.Element("executeBasicOperatorExplicitOutput","http://elico.rapid_i.com/");
+     	root = new org.jdom.Element(EXECUTE_BASIC_OPERATOR_EXPLICIT_OUTPUT, HTTP_ELICO_RAPID_I_COM);
 
-		} else {
-			
-			root = new org.jdom.Element("executeBasicOperatorImplicitOutput","http://elico.rapid_i.com/");
-			
-		}
-			
+
 		// operatorName
 		org.jdom.Element operatorNameElement = new org.jdom.Element("operatorName");
 			
@@ -750,24 +869,41 @@ public class RapidMinerExampleActivity extends
 		}
 		
 		// input location
-		
-		org.jdom.Element inputLocationElement = new org.jdom.Element("inputLocations");
-		
-			inputLocationElement.setText(inputLocations);
-			
-			root.addContent(inputLocationElement);
-			
-		// output location
-		// only give the output location if it's explicity specified
-		if (executorType.equals("executeBasicOperatorExplicitOutput")) {		
-			
-			org.jdom.Element outputLocationElement = new org.jdom.Element("outputLocations");
-		
-			outputLocationElement.setText(outputLocations);
-			
-			root.addContent(outputLocationElement);
-			
-		} 
+
+        for (String ip : inputPorts.keySet()) {
+
+            org.jdom.Element inputLocationElement = new org.jdom.Element("inputLocations");
+
+            System.err.println("looking up input port key: " + ip);
+            inputLocationElement.setText(inputPorts.get(ip).getFileLocation());
+
+            root.addContent(inputLocationElement);
+
+        }
+
+        for (String op : outputPorts.keySet()) {
+
+            org.jdom.Element outputLocationElement = new org.jdom.Element("outputLocations");
+
+            System.err.println("looking up output port key: " + op);
+            outputLocationElement.setText(outputPorts.get(op).getFileLocation());
+
+            root.addContent(outputLocationElement);
+
+        }
+
+
+//		// output location
+//		// only give the output location if it's explicity specified
+//		if (executorType.equals(EXECUTE_BASIC_OPERATOR_EXPLICIT_OUTPUT)) {
+//
+//			org.jdom.Element outputLocationElement = new org.jdom.Element("outputLocations");
+//
+//			outputLocationElement.setText(outputLocations);
+//
+//			root.addContent(outputLocationElement);
+//
+//		}
 		
 		// create the document
 		org.jdom.Document myDoc = new org.jdom.Document(root);
@@ -800,7 +936,7 @@ public class RapidMinerExampleActivity extends
 		org.jdom.Element childElement2 = new org.jdom.Element("value", "");
 		childElement2.setText(value);
 		
-		org.jdom.Element root = new org.jdom.Element("operatorParameter", "http://elico.rapid_i.com/");
+		org.jdom.Element root = new org.jdom.Element("operatorParameter", HTTP_ELICO_RAPID_I_COM);
 		root.addContent(childElement);
 		root.addContent(childElement2);
 		
@@ -886,7 +1022,7 @@ public class RapidMinerExampleActivity extends
 		
 		// WSDLActivityConfigurationBean
 		WSDLActivityConfigurationBean myBean = new WSDLActivityConfigurationBean();
-		myBean.setWsdl(preferences.getExecutorServiceLocation());
+		myBean.setWsdl(preferences.getExecutorServiceWSDL());
 		myBean.setOperation("getParameterTypes");
 		
 		// Output and Parser for WSDLSOAPInvoker
@@ -932,20 +1068,14 @@ public class RapidMinerExampleActivity extends
 		System.out.println("^^^Point 4");
 		
 		// Set Username and Password (credential manager)
-		UsernamePassword usernamePassword = null;
-		
-		try {
-			usernamePassword = getUsernameAndPasswordForService(myBean, true);
-		} catch (CMException e2) {
-			e2.printStackTrace();
-		}
-		
+
+
 		System.out.println("^^^Point 5");
 		
 		MessageContext context = call.getMessageContext();
-		context.setUsername(usernamePassword.getUsername());
-		context.setPassword(usernamePassword.getPasswordAsString());
-		usernamePassword.resetPassword();
+		context.setUsername(username_password.getUsername());
+		context.setPassword(username_password.getPasswordAsString());
+		username_password.resetPassword();
 		
 		System.out.println("^^^Point 6");
 	
@@ -953,7 +1083,7 @@ public class RapidMinerExampleActivity extends
 		
 		System.out.println("^^^Point 7");
 
-		call.setTargetEndpointAddress(preferences.getExecutorServiceLocation());
+		call.setTargetEndpointAddress(preferences.getExecutorServiceWSDL());
 		call.setOperationName("getParameterTypes");
 
 		System.out.println("^^^Point 8");
@@ -978,8 +1108,14 @@ public class RapidMinerExampleActivity extends
 		int a, b;
 		a = myOutput.indexOf("<return>");
 		System.out.println(" number : " + a);
-		
+
+        if (a == -1) {
+            return new ArrayList<String>();
+        }
 		b = myOutput.indexOf("</return></");
+
+
+
 		System.out.println(" second number : " + b);
 		b += 9;
 		String newOutput = myOutput.substring(a, b);
@@ -1030,50 +1166,19 @@ public class RapidMinerExampleActivity extends
 		return null;
 		
 	}
-	
-	protected UsernamePassword getUsernameAndPasswordForService(
-			WSDLActivityConfigurationBean bean, boolean usePathRecursion) throws CMException {
 
-		
-			UsernamePassword username_password = null;
-		
-			// Try to get username and password for this service from Credential
-			// Manager (which should pop up UI if needed)
-	
-		
-			try {
-						String username = preferences.getUsername();
-						String password  = preferences.getPassword();
-				if (username.equals(null) || password.equals(null)) {
-				} else {
-					
-					username_password = preferences.getUsernamePasswordObject();
-					System.out.println(" using preferences manager");
+    protected UsernamePassword getUsernameAndPasswordForService(
+            WSDLActivityConfigurationBean bean, boolean usePathRecursion) throws CMException {
 
-				}
-				
-			} catch (NullPointerException e) {
-			
-				e.printStackTrace();
-				CredentialManager credManager = null;
-				credManager = CredentialManager.getInstance();
-				String wsdl = bean
-				.getWsdl();
-				URI serviceUri = URI.create(wsdl); 
-				username_password = credManager.getUsernameAndPasswordForService(serviceUri, usePathRecursion, null);
-				
-				if (username_password == null) {
-					
-					throw new CMException("No username/password provided for service , Using config bean username and password instead" + bean.getWsdl());
-				
-				} 
-				System.out.println(" using credentials manager");
 
-			}
-							
-					
-			return username_password;
-	}
+        UsernamePassword username_password = new UsernamePassword();
+        username_password.setUsername(preferences.getUsername());
+        username_password.setPassword(preferences.getPassword());
+
+        // Try to get username and password for this service from Credential
+        // Manager (which should pop up UI if needed)
+        return username_password;
+    }
 	
 	public static String getCharacterDataFromElement(Element e) {
 		

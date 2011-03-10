@@ -1,22 +1,17 @@
 package uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.config;
 
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.util.Iterator;
-
-import javax.swing.AbstractAction;
-
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.helper.HelpEnabledDialog;
 import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationAction;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationDialog;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
-
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerExampleActivity;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerActivityConfigurationBean;
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerParameterDescription;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerExampleActivity;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.view.RapidMinerConfigurationView;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 
 @SuppressWarnings("serial")
 public class RapidMinerConfigureAction
@@ -59,14 +54,14 @@ public class RapidMinerConfigureAction
 				
 				System.out.println(" Dialog position 1");
 									
-				Iterator myiter = panel.getConfiguration().getParameterDescriptions().iterator();
-				
-				while (myiter.hasNext()) {
-					
-					RapidMinerParameterDescription des = (RapidMinerParameterDescription) myiter.next();
-					System.out.println("[DEBUG] new parameters to set " + des.getUseParameter() + " " + des.getExecutionValue());
-					
-				}
+//				Iterator myiter = panel.getConfiguration().getParameterDescriptions().iterator();
+//
+//				while (myiter.hasNext()) {
+//
+//					RapidMinerParameterDescription des = (RapidMinerParameterDescription) myiter.next();
+//					System.out.println("[DEBUG] new parameters to set " + des.getUseParameter() + " " + des.getExecutionValue());
+//
+//				}
 					
 				ActivityConfigurationDialog.configureActivityStatic(owningDataflow, activity, panel.getConfiguration());
 					
