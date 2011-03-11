@@ -127,6 +127,7 @@ public class OntologyBrowser extends JTree {
             return node;
         }
 
+
         public String toString () {
             if (node instanceof Goal) {
                 return ((Goal) node).getGoalName();

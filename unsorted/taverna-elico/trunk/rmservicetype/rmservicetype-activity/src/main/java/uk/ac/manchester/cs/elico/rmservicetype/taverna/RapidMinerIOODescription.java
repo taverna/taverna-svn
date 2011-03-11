@@ -73,6 +73,19 @@ public class RapidMinerIOODescription {
     private LinkedHashMap<String, IOInputPort> inputPort = new LinkedHashMap<String, IOInputPort>();
     private LinkedHashMap<String, IOOutputPort> outputPort = new LinkedHashMap<String, IOOutputPort>();
 
+    public RapidMinerIOODescription(RapidAnalyticsPreferences preferences, String operatorName) {
+        this.preferences = preferences;
+        username_password = new UsernamePassword(preferences.getUsername(), preferences.getPasswordAsString());
+        getPortDescriptions(operatorName);
+    }
+
+    public RapidMinerIOODescription (String operatorName) {
+        setUpUserNamePassword();
+        getPortDescriptions(operatorName);
+    }
+
+
+
     public void setUpUserNamePassword () {
 
 
@@ -112,7 +125,7 @@ public class RapidMinerIOODescription {
 
     }
 
-    public RapidMinerIOODescription (String operatorName) {
+    private void getPortDescriptions(String operatorName) {
 
         System.out.println("Getting IOO descriptions for " + operatorName);
 
@@ -123,7 +136,6 @@ public class RapidMinerIOODescription {
         System.out.println("Starting get io description wsdl config");
 
         // WSDLActivityConfigurationBean
-        setUpUserNamePassword();
         WSDLActivityConfigurationBean myBean = new WSDLActivityConfigurationBean();
         myBean.setWsdl(preferences.getExecutorServiceWSDL());
         myBean.setOperation("getIODescription");
@@ -235,7 +247,7 @@ public class RapidMinerIOODescription {
                             getCharacterDataFromElement((Element)portName),
                             null);
 
-                    System.out.println("New Input port created: " + tmpInputPort.getClassName() + " -> " + tmpInputPort.getPortName());
+                    System.out.println("New Input port created: " + tmpInputPort.getPortClass() + " -> " + tmpInputPort.getPortName());
                     inputPort.put(tmpInputPort.getPortName(), tmpInputPort);
                 }
 
@@ -246,7 +258,7 @@ public class RapidMinerIOODescription {
                     IOOutputPort tmpOutputPort = new IOOutputPort(getCharacterDataFromElement((Element)className),
                             getCharacterDataFromElement((Element)portName),
                             null);
-                    System.out.println("New Output port created: " + tmpOutputPort.getClassName() + " -> " + tmpOutputPort.getPortName());
+                    System.out.println("New Output port created: " + tmpOutputPort.getPortClass() + " -> " + tmpOutputPort.getPortName());
                     outputPort.put(tmpOutputPort.getPortName(), tmpOutputPort);
                 }
 
@@ -260,6 +272,7 @@ public class RapidMinerIOODescription {
             }
 
         }
+
 
     }
 

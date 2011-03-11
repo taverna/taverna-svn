@@ -35,7 +35,7 @@ public interface IOObjectPort {
     void setPortName(String s);
     void setFileLocation(String s);
 
-    String getClassName();
+    String getPortClass();
     String getPortName();
     String getFileLocation();
 

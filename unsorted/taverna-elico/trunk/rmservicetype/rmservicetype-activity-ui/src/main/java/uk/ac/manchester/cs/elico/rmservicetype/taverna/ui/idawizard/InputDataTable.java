@@ -109,11 +109,13 @@ public class InputDataTable extends JTable {
                 return l;
             }
         });
-        
+
         if (columns == 1) {
             for (DataRequirement dr : ds) {
-                comboBox.addItem(dr);
-                comboBox.setSelectedItem(dr);
+                if (!dr.getClassName().equals("Thing")) {
+                    comboBox.addItem(dr);
+                    comboBox.setSelectedItem(dr);
+                }
             }
             return new DefaultCellEditor(comboBox);
         }

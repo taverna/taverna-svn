@@ -404,7 +404,7 @@ public class RapidMinerExampleActivity extends
 //		Iterator inputIterator = portListing.iterator();
 
         for (IOInputPort inputP : configBean.getInputPorts().values()) {
-            if (inputP.getFileLocation().isEmpty()) {
+            if (inputP.getFileLocation() == null || inputP.getFileLocation().isEmpty()) {
                 addInput(inputP.getPortName(), 0, true, null, String.class);
             }
         }
@@ -526,7 +526,7 @@ public class RapidMinerExampleActivity extends
                 }
                 LinkedHashMap<String, IOInputPort> inputPorts = configBean.getInputPorts();
                 for (String key  : inputPorts.keySet()) {
-                    if (inputPorts.get(key).getFileLocation().isEmpty()) {
+                    if (inputPorts.get(key).getFileLocation() == null || inputPorts.get(key).getFileLocation().trim().equals("")) {
                         try {
                         String inputValue = (String) referenceService.renderIdentifier(inputs.get(key), String.class, context);
                         configBean.getInputPorts().get(key).setFileLocation(inputValue);
@@ -552,13 +552,14 @@ public class RapidMinerExampleActivity extends
                 LinkedHashMap<String, IOOutputPort> outputPorts = configBean.getOutputPorts();
                 for (String key  : outputPorts.keySet()) {
 
-                    if (outputPorts.get(key).getFileLocation().isEmpty()) {
+                    if (outputPorts.get(key).getFileLocation()== null || outputPorts.get(key).getFileLocation().trim().equals("")) {
 
                         // create a temp file name
                         
                         String opName = configBean.getOperatorName();
                         int random = (int)(Math.random() * 9999)+1000;
-                        String outputFile = filePath + key + "_"+  opName.replace(" ", "_").toLowerCase() + "_" + outputPorts.get(key).getClassName() + "_" + random;
+                        System.err.println("am i here!! without class.. key" + key);
+                        String outputFile = filePath + key + "_"+  opName.replace(" ", "_").toLowerCase() + "_" + outputPorts.get(key).getPortClass() + "_" + random;
                         configBean.getOutputPorts().get(key).setFileLocation(outputFile);
 
                     }

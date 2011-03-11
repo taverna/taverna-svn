@@ -58,7 +58,7 @@ public class IOOutputPort implements IOObjectPort {
         fileLocation = s;
     }
 
-    public String getClassName() {
+    public String getPortClass() {
         return className;
     }
 
