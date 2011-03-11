@@ -1,5 +1,6 @@
 package uk.ac.manchester.cs.elico.converter;
 
+import ch.uzh.ifi.ddis.ida.api.IOObjectDescription;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerExampleActivity;
 
 import java.util.LinkedList;
@@ -36,46 +37,103 @@ import java.util.List;
  */
 public class Connection {
 
+    private String ioObjectId;
+
+    private RapidMinerExampleActivity producer;
+
+    public String getOutputPort() {
+        return outputPort;
+    }//    private String  producesProperty;
+
+    public void setOutputPort(String outputPort) {
+        this.outputPort = outputPort;
+    }
+
+    private String outputPort;
+
+    private DMWFProperty  producesProperty;
+
+    private String location;
+
+    private List<User> users = new LinkedList<User>();
+
+
+    public class DMWFProperty {
+
+        private String propertyName;
+        private String propertyType;
+
+        public DMWFProperty(String propertyName, String propertyType) {
+            this.propertyName = propertyName;
+            this.propertyType = propertyType;
+        }
+
+        public String getPropertyName() {
+
+            return propertyName;
+        }
+
+        public void setPropertyName(String propertyName) {
+            this.propertyName = propertyName;
+        }
+
+        public String getPropertyType() {
+            return propertyType;
+        }
+
+        public void setPropertyType(String propertyType) {
+            this.propertyType = propertyType;
+        }
+    }
+
  	public class User {
 		private final RapidMinerExampleActivity user;
-		private final String usesProperty;
-		private User(RapidMinerExampleActivity operator, String usesProperty) {
+//		private final String usesProperty;
+
+         public String getInputPort() {
+             return inputPort;
+         }
+
+         public void setInputPort(String inputPort) {
+             this.inputPort = inputPort;
+         }
+
+         private String inputPort;
+
+        private final DMWFProperty dmwfProperty;
+		private User(RapidMinerExampleActivity operator, DMWFProperty usesProperty) {
 			this.user = operator;
-			this.usesProperty = usesProperty;
+			this.dmwfProperty = usesProperty;
 		}
-		public String getUsesProperty() {
-			return usesProperty;
+
+		public DMWFProperty getUsesProperty() {
+			return dmwfProperty;
 		}
 		public RapidMinerExampleActivity getOperator() {
 			return user;
 		}
-//		public InputPort getInputPort() throws ConversionException {
-//			return getPortForRoleName(getOperator().getInputPorts(), getUsesProperty());
-//		}
-//		public String toString() {
-//			return user.getName() + " " + usesProperty;
-//		}
 	}
 	
-	private String ioObjectId;
-
-	private RapidMinerExampleActivity producer;
-	private String  producesProperty;
-
-	private String location;
-
-	private List<User> users = new LinkedList<User>();
 
 	public Connection(String id) {
 		this.ioObjectId = id;
 	}
 
-	public void addUser(RapidMinerExampleActivity operator, String roleName) {
-		users.add(new User(operator, roleName));
+//	public void addUser(RapidMinerExampleActivity operator, String roleName) {
+//		users.add(new User(operator, roleName));
+//	}
+
+    public void addUser(RapidMinerExampleActivity operator, IOObjectDescription ioObjectDescription) {
+
+        DMWFProperty dmwfProperty = new DMWFProperty(ioObjectDescription.getRoleName(), ioObjectDescription.getIOObjectTypeID());
+		users.add(new User(operator, dmwfProperty));
 	}
-	public void setProducer(RapidMinerExampleActivity operator, String roleName) {
+
+
+	public void setProducer(RapidMinerExampleActivity operator, IOObjectDescription ioObjectDescription) {
+        DMWFProperty dmwfProperty = new DMWFProperty(ioObjectDescription.getRoleName(), ioObjectDescription.getIOObjectTypeID());
 		this.producer = operator;
-		this.producesProperty = roleName;
+		this.producesProperty = dmwfProperty;
 	}
 
 	public String getIoObjectId() {
@@ -87,7 +145,7 @@ public class Connection {
 	public RapidMinerExampleActivity getProducer() {
 		return producer;
 	}
-	public String getProducesProperty() {
+	public DMWFProperty getProducesProperty() {
 		return producesProperty;
 	}
 

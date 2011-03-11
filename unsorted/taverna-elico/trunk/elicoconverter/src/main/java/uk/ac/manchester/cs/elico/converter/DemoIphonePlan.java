@@ -2,7 +2,6 @@ package uk.ac.manchester.cs.elico.converter;
 
 import ch.uzh.ifi.ddis.ida.api.*;
 import ch.uzh.ifi.ddis.ida.api.exception.IDAException;
-import ch.uzh.ifi.ddis.ida.core.fact.Fact;
 import com.rapid_i.elico.DataTableResponse;
 import com.rapid_i.elico.MetaDataServicePortBindingStub;
 import com.rapid_i.elico.MetaDataService_ServiceLocator;
@@ -22,9 +21,7 @@ import java.io.IOException;
 import java.net.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.List;
-
-/*
+import java.util.List;/*
  * Copyright (C) 2007, University of Manchester
  *
  * Modifications to the initial code base are copyright of their
@@ -49,11 +46,11 @@ import java.util.List;
 
 /**
  * Author: Simon Jupp<br>
- * Date: Jan 12, 2011<br>
+ * Date: Mar 10, 2011<br>
  * The University of Manchester<br>
  * Bio-Health Informatics Group<br>
  */
-public class TestConverter {
+public class DemoIphonePlan {
 
     MainGoal mainGoal;
 
@@ -66,12 +63,12 @@ public class TestConverter {
 
 
 
-    public TestConverter () {
+    public DemoIphonePlan () {
 
         IDAPreferences prefs = new IDAPreferences("/Applications/Unix/flora2",
                 "/Users/simon/tmp/elico/flora2/");
 
-        
+
 
         IDAInterface ida = IDAFactory.getIDA();
 
@@ -79,7 +76,7 @@ public class TestConverter {
 		try {
 
 			ida.startPlanner(prefs);
-            
+
 
             gFactory = ida.createEmptyGoalSpecification();
 
@@ -107,20 +104,28 @@ public class TestConverter {
                 stub.setUsername("jupp");
                 stub.setPassword("jupppwd");
 
-                DataTableResponse response = stub.getOWLIndividualsFromRepository("http://example.owl", "test1", "/demo/example_data/Iris.ioo");
+                DataTableResponse training = stub.getOWLIndividualsFromRepository("http://example.owl#", "training", "/demo/example/iphone/smallTrainingSetWithSetRoles");
+                DataTableResponse holdout = stub.getOWLIndividualsFromRepository("http://example.owl#", "holdout", "/demo/example/iphone/smallHoldoutsetWithSetRoles");
 
                 System.out.println("Setting main goal: " + mainGoal.getGoalName() );
                 String mainGoalID = gFactory.setMainGoal(mainGoal);
 
-                if (response.getErrorMessage() != null) {
-                    System.out.println("getting OWL error response: " + response.getErrorMessage());
+                if (training.getErrorMessage() != null) {
+                    System.out.println("getting OWL error response for training: " + training.getErrorMessage());
                 }
-                else {
-                    System.out.println("OWL response: " + response.getOwlXML());
-                }
-                URI uri = setMetaData(response.getOwlXML());
 
-                System.out.println("URI for data : " + uri.toString());
+                if (holdout.getErrorMessage() != null) {
+                    System.out.println("getting OWL error response for holdout: " + holdout.getErrorMessage());
+                }
+
+//                else {
+//                    System.out.println("OWL response: " + response.getOwlXML());
+//                }
+                URI trainingURI = setMetaData(training.getOwlXML());
+                URI holdoutURI = setMetaData(holdout.getOwlXML());
+
+                System.out.println("URI for data training: " + trainingURI.toString());
+                System.out.println("URI for data training: " + holdoutURI.toString());
 
 
                 for (DataRequirement dr : mainGoal.getDataRequirement()) {
@@ -129,25 +134,31 @@ public class TestConverter {
                     if (dr.getRoleName().equals("trainingData")
                             && dr.getClassName().equals("Data")) {
 
-                        System.out.println("Adding last data requirment");
+                        System.out.println("Adding training data requirment");
                         gFactory.addDataRequirement(mainGoalID, dr,
-                                uri);
+                                trainingURI);
+                    }
+                    if (dr.getRoleName().equals("testData")) {
+                        System.out.println("Adding testing data requirment");
+                        gFactory.addDataRequirement(mainGoalID, dr,
+                                holdoutURI);
+
                     }
                 }
 
                 System.out.println("using task: " + task.getTaskName());
                 gFactory.addUseTask(mainGoalID, task);
 
-                for (Fact f : gFactory.getFacts()) {
-                    System.out.println("Fact:" + f.toString() + " type: " + f.getFactType());
-                }
+//                for (Fact f : gFactory.getFacts()) {
+//                    System.out.println("Fact:" + f.toString() + " type: " + f.getFactType());
+//                }
 
-                System.err.println("Getting plans");
+                System.out.println("Getting plans");
 //
                 //ida.getCaseIndex()
-                List<Plan> plans = ida.getPlans(task, gFactory.getFacts(), 10);
+                List<Plan> plans = ida.getPlans(task, gFactory.getFacts(), 1);
 //
-                System.err.println("Got plans");
+                System.out.println("Got plans");
                 int x = 0;
                 for (Plan p : plans) {
 
@@ -236,17 +247,22 @@ public class TestConverter {
 
             for (IOObjectDescription desc: opAp.getProducedObject()) {
 
-                System.out.println("Produces: " + desc.getIOObjectID());
-                System.out.println("Produces: " + desc.getIOOLocation());
-                System.out.println("Produces: " + desc.getIOObjectType());
+                System.out.println("Produces id: " + desc.getIOObjectID());
+                System.out.println("Produces type id: " + desc.getIOObjectTypeID());
+                System.out.println("Produces name: " + desc.getIOObjectName());
+                System.out.println("Produces location: " + desc.getIOOLocation());
+                System.out.println("Produces type: " + desc.getIOObjectType());
+                System.out.println("Produces role: " + desc.getRoleName());
             }
 
             for (IOObjectDescription desc: opAp.getUsedObject()) {
                 System.out.println("Uses id: " + desc.getIOObjectID());
+                System.out.println("Uses type id: " + desc.getIOObjectTypeID());
                 System.out.println("Uses name: " + desc.getIOObjectName());
                 System.out.println("Uses location: " + desc.getIOOLocation());
                 System.out.println("Uses type: " + desc.getIOObjectType());
                 System.out.println("Uses role: " + desc.getRoleName());
+
             }
 
             System.out.println("Generate dataflow:");
@@ -262,7 +278,7 @@ public class TestConverter {
 
     private URI setMetaData(String OWLxml) {
 
-        
+
 
         OntologyStreamReader reader = new OntologyStreamReader(OWLxml);
 			OWLOntologyManager ontManager = OWLManager
@@ -436,7 +452,7 @@ public class TestConverter {
 
     public void getTaskChildren (Tree<Task> tTask) {
 
-        if (tTask.getData().getTaskName().equals("DiscretizeAll")) {
+        if (tTask.getData().getTaskName().equals("DataMining")) {
             task = tTask.getData();
         }
         System.out.println(tTask.getData().getTaskName());
@@ -448,7 +464,7 @@ public class TestConverter {
 
     public static void main(String[] args) {
 
-        new TestConverter();
+        new DemoIphonePlan();
 
     }
 

@@ -10,9 +10,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityOutputPort;
 import net.sf.taverna.t2.workflowmodel.utils.Tools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerActivityConfigurationBean;
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerExampleActivity;
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerParameterDescription;
+import uk.ac.manchester.cs.elico.rmservicetype.taverna.*;
 
 import java.util.*;
 
@@ -73,6 +71,8 @@ import java.util.*;
 
     private Set<RapidMinerExampleActivity> terminatingOperators = new HashSet<RapidMinerExampleActivity>();
 
+    private Map<String, Set<PortMapper>> portMapping = new HashMap<String, Set<PortMapper>>();
+
 //    private ServiceDescription sd;
 
     public DataFlowGenerator() {
@@ -93,61 +93,6 @@ import java.util.*;
 
 
 
-
-    private List<OperatorApplication> processOperatorApplication(OperatorApplication opAp) {
-        List<OperatorApplication> basicOpApps = new ArrayList<OperatorApplication>();
-        if (opAp.getOpType().name().equals("BASIC")) {
-            basicOpApps.add(opAp);
-
-            logger.info("Type:" + opAp.getOpType().name());
-            logger.info("Operator Execution Name: " + opAp.getAnnOperatorName());
-
-            logger.info("id:" + opAp.getOperatorID());
-            logger.info("name:" + opAp.getOperatorName());
-            logger.info("Type name " + opAp.getOperatorTypeName());
-
-            for (SimpleParameter sparams : opAp.getSimpleParameters()) {
-                logger.info("simple:" + sparams.getDataPropertyID());
-                logger.info("simple:" + sparams.getDataPropertyName());
-                logger.info("simple:" + sparams.getDataType());
-                logger.info("simple:" + sparams.getValue());
-            }
-
-
-            for (Parameter params : opAp.getParameters()) {
-
-                logger.info("Param" + params.getInstClassID());
-                logger.info("Param" + params.getInstID());
-                logger.info("Param" + params.getInstName());
-                logger.info("Param" + params.getInstTypeName());
-                logger.info("Param" + params.getRoleID());
-                logger.info("Param" + params.getRoleName());
-            }
-
-            for (IOObjectDescription desc: opAp.getProducedObject()) {
-
-                logger.info("Produces: " + desc.getIOObjectID());
-                logger.info("Produces: " + desc.getIOOLocation());
-                logger.info("Produces: " + desc.getIOObjectType());
-            }
-
-            for (IOObjectDescription desc: opAp.getUsedObject()) {
-                logger.info("Uses id: " + desc.getIOObjectID());
-                logger.info("Uses name: " + desc.getIOObjectName());
-                logger.info("Uses location: " + desc.getIOOLocation());
-                logger.info("Uses type: " + desc.getIOObjectType());
-                logger.info("Uses role: " + desc.getRoleName());
-            }
-
-
-        }
-        else {
-            for (OperatorApplication steps : opAp.getSteps()) {
-                basicOpApps.addAll(processOperatorApplication(steps));
-            }
-        }
-        return basicOpApps;
-    }
 
 
     public Dataflow getDataFlow (Plan p) {
@@ -190,14 +135,150 @@ import java.util.*;
 
                 for (Connection.User activityUser : con.getUsers()) {
                     RapidMinerExampleActivity activity = rmActivity.get(activityUser.getOperator().getConfiguration().getOperatorName());
-                    logger.info("Setting input location on " + activity.getConfiguration().getOperatorName() + " to " + fileLocation );
-//                    activity.getConfiguration().setInputLocation(fileLocation);
+
+                    Connection.DMWFProperty dmwfProperty = activityUser.getUsesProperty();
+
+                    String dmwfPropertyName = dmwfProperty.getPropertyName();
+                    String dmwfPropertyType = dmwfProperty.getPropertyType();
+
+                    // get the activity ports on the input ports of the incoming activity
+                    LinkedHashMap<String, IOInputPort> ioObjectDescription = activity.getConfiguration().getInputPorts();
+
+                    boolean seenFirstModel = false;
+                    for (String key : ioObjectDescription.keySet()) {
+
+                        String portName = ioObjectDescription.get(key).getPortName();
+                        String portClass = ioObjectDescription.get(key).getPortClass();
+
+                        if (dmwfPropertyName.equals("uses")) {
+                            // we know it just a plain uses, so set it!
+                            ioObjectDescription.get(key).setFileLocation(fileLocation);
+                            logger.info("Setting input location:" + fileLocation + " uses by " + activity.getConfiguration().getOperatorName() +
+                            " on port " + key);
+
+                        }
+                        else if (dmwfPropertyName.equals("usesAW")) {
+                            if (portName.contains("weights")) {
+                                ioObjectDescription.get(key).setFileLocation(fileLocation);
+                                logger.info("Setting input location:" + fileLocation + " usesAw " + activity.getConfiguration().getOperatorName() +
+                                " on port " + key);
+                            }
+                        }
+                        else if (dmwfPropertyName.equals("usesModel")) {
+                            if (portName.equals("model")) {
+                                ioObjectDescription.get(key).setFileLocation(fileLocation);
+                                logger.info("Setting input location:" + fileLocation + " usesModel " + activity.getConfiguration().getOperatorName() +
+                                " on port " + key);
+                            }
+                        }
+                        else if (dmwfPropertyName.equals("usesFirstModel")) {
+                            // if filelocation is not set on the bean, then it must be the first model
+                            if (portName.contains("model") && !seenFirstModel) {
+                                ioObjectDescription.get(key).setFileLocation(fileLocation);
+                                logger.info("Setting input location:" + fileLocation + " usesFirstModel " + activity.getConfiguration().getOperatorName() +
+                                " on port " + key);
+
+                                seenFirstModel = true;
+                            }
+                        }
+                        else if (dmwfPropertyName.equals("usesSecondModel")) {
+                            // if filelocation is not set on the bean, then it must be the first model
+                            if (seenFirstModel) {
+                                ioObjectDescription.get(key).setFileLocation(fileLocation);
+                                logger.info("Setting input location:" + fileLocation + " usesSecondModel " + activity.getConfiguration().getOperatorName() +
+                                " on port " + key);
+                            }
+                        }
+                        else if (dmwfPropertyName.equals("usesData")) {
+                            // else it is an example set
+                            if (portClass.equals("ExampleSet")) {
+                                ioObjectDescription.get(key).setFileLocation(fileLocation);
+                                logger.info("Setting input location:" + fileLocation + " usesData " + activity.getConfiguration().getOperatorName() +
+                                " on port " + key);
+                            }
+                        }
+
+                    }
+
+
+                    // update the configuration
+                    activity.getConfiguration().setInputPorts(ioObjectDescription);
                 }
             }
             else {
 
+                // it does have a produces, set the file location on the producer
+
+
                 RapidMinerExampleActivity activity = rmActivity.get(con.getProducer().getConfiguration().getOperatorName());
-//                activity.getConfiguration().setOutputLocation(fileLocation);
+
+                LinkedHashMap<String, IOOutputPort> ioOutputPorts = activity.getConfiguration().getOutputPorts();
+
+                for (String key : ioOutputPorts.keySet()) {
+                    // go the producer output ports and set the file location
+                    String portName = ioOutputPorts.get(key).getPortName();
+                    String portClass = ioOutputPorts.get(key).getPortClass();
+
+                    Connection.DMWFProperty dmwfProperty = con.getProducesProperty();
+
+                    logger.debug("looping through port: " + key + " (" + portName + ":" + portClass +")");
+                    logger.debug("dmwfProperty: " + dmwfProperty.getPropertyName() + " (" + dmwfProperty.getPropertyType() + ")");
+                    if (!key.equals("original")) {
+                        // not all operators output the original file it seems...
+                        if (dmwfProperty.getPropertyName().equals("producesData")) {
+                            if (portClass.equals("ExampleSet") && dmwfProperty.getPropertyType().equals("DataTable")) {
+                                ioOutputPorts.get(key).setFileLocation(fileLocation);
+                                logger.info("Setting output location:" + fileLocation + " producesData " + activity.getConfiguration().getOperatorName() +
+                                                                        " on port " + key);
+                            }
+                        }
+                        else if (dmwfProperty.getPropertyName().equals("producesPrePropModel")) {
+                            if (portName.contains("preprocessing_model")) {
+                                ioOutputPorts.get(key).setFileLocation(fileLocation);
+                                logger.info("Setting output location:" + fileLocation + " producesPrePropModel " + activity.getConfiguration().getOperatorName() +
+                                                                        " on port " + key);
+
+                            }
+                        }
+                        else if (dmwfProperty.getPropertyName().equals("produces")) {
+                            if (portClass.equals("ExampleSet") && dmwfProperty.getPropertyType().equals("DataTable")) {
+                                ioOutputPorts.get(key).setFileLocation(fileLocation);
+                                logger.info("Setting output location:" + fileLocation + " produces " + activity.getConfiguration().getOperatorName() +
+                                                                        " on port " + key);
+                            }
+                            else if (portClass.equals("Model") && dmwfProperty.getPropertyType().equals("Model")) {
+                                ioOutputPorts.get(key).setFileLocation(fileLocation);
+                                logger.info("Setting output location:" + fileLocation + " produces " + activity.getConfiguration().getOperatorName() +
+                                                                        " on port " + key);
+                            }
+                            else if (portName.contains("model") && dmwfProperty.getPropertyType().equals("Model")) {
+                                ioOutputPorts.get(key).setFileLocation(fileLocation);
+                                logger.info("Setting output location:" + fileLocation + " produces " + activity.getConfiguration().getOperatorName() +
+                                                                        " on port " + key);
+                            }
+                            else if (portName.contains("model") && dmwfProperty.getPropertyType().endsWith("Model")) {
+                                ioOutputPorts.get(key).setFileLocation(fileLocation);
+                                logger.info("Setting output location:" + fileLocation + " produces " + activity.getConfiguration().getOperatorName() +
+                                                                        " on port " + key);
+                            }
+                            else if (portClass.contains("Performance")) {
+                                ioOutputPorts.get(key).setFileLocation(fileLocation);
+                                logger.info("Setting output location:" + fileLocation + " produces " + activity.getConfiguration().getOperatorName() +
+                                                                        " on port " + key);
+                            }
+                            else if (portClass.equals("AttributeWeights") && dmwfProperty.getPropertyType().equals("AttributeWeights")) {
+                                ioOutputPorts.get(key).setFileLocation(fileLocation);
+                                logger.info("Setting output location:" + fileLocation + " produces " + activity.getConfiguration().getOperatorName() +
+                                                                        " on port " + key);
+
+                            }
+
+                        }
+                    }
+                    activity.getConfiguration().setOutputPorts(ioOutputPorts);
+
+                }
+
                 logger.info("Setting output location on producer " + activity.getConfiguration().getOperatorName() + " to " + fileLocation );
 
                 // need to connect producer to all the users
@@ -212,9 +293,27 @@ import java.util.*;
                 }
 
                 for (Connection.User activityUser : con.getUsers()) {
-                    logger.info("Setting producer to user on : " + IOObjectID +
+
+                    PortMapper pM = new PortMapper(activity.getConfiguration().getOperatorName(),
+                            con.getProducesProperty().getPropertyType(),
+                            activityUser.getUsesProperty().getPropertyType(),
+                            con.getProducesProperty().getPropertyName(),
+                            fileLocation,
+                            activityUser.getOperator().getConfiguration().getOperatorName(),
+                            activityUser.getUsesProperty().getPropertyName());
+
+                    if (portMapping.containsKey(activity.getConfiguration().getOperatorName())) {
+                        portMapping.get(activity.getConfiguration().getOperatorName()).add(pM);
+                    }
+                    else {
+                        portMapping.put(activity.getConfiguration().getOperatorName(), new HashSet<PortMapper>());
+                        portMapping.get(activity.getConfiguration().getOperatorName()).add(pM);
+                    }
+
+                    logger.info("Setting producer to user on : " + fileLocation +
                             " to " + activity.getConfiguration().getOperatorName() + " --> "
                             + activityUser.getOperator().getConfiguration().getOperatorName());
+
                     producerToUser.get(activity).add(activityUser.getOperator());
                 }
 
@@ -246,6 +345,7 @@ import java.util.*;
             for (RapidMinerExampleActivity userActivity : producerToUser.get(activity)) {
 
                 logger.info(activity.getConfiguration().getOperatorName() + " uses " + userActivity.getConfiguration().getOperatorName());
+
                 String userId = userActivity.getConfiguration().getOperatorName();
                 if (!processors.containsKey(userId)) {
                     Processor user = createProcessor(userActivity);
@@ -255,9 +355,11 @@ import java.util.*;
                 }
 
 
+                LinkedHashMap<String, IOOutputPort> outputPortsMap = activity.getConfiguration().getOutputPorts();
+                LinkedHashMap<String, IOInputPort> inputPortsMap = userActivity.getConfiguration().getInputPorts();
 
                 try {
-                    connectProcessors (producer, processors.get(userId));
+                    connectProcessors (producer, outputPortsMap, processors.get(userId), inputPortsMap);
                 } catch (EditException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
@@ -265,10 +367,10 @@ import java.util.*;
             }
 
 
-            // handle the final output activity
-            for (RapidMinerExampleActivity terminatingActivities :  terminatingOperators) {
-                connectFinalActivity(terminatingActivities);
-            }
+             // handle the final output activity
+//            for (RapidMinerExampleActivity terminatingActivities :  terminatingOperators) {
+//                connectFinalActivity(terminatingActivities);
+//            }
 
 
 
@@ -278,18 +380,170 @@ import java.util.*;
 
     }
 
+    public class PortMapper {
+
+        public PortMapper(String producerName, String producerType, String userType, String producerProperty, String fileName, String userName, String userProperty) {
+            this.producerName = producerName;
+            this.producerType = producerType;
+            this.userType = userType;
+            this.producerProperty = producerProperty;
+            this.fileName = fileName;
+            this.userName = userName;
+            this.userProperty = userProperty;
+        }
+
+        String producerName;
+        String producerType;
+
+        public String getProducerType() {
+            return producerType;
+        }
+
+        public void setProducerType(String producerType) {
+            this.producerType = producerType;
+        }
+
+        public String getUserType() {
+            return userType;
+        }
+
+        public void setUserType(String userType) {
+            this.userType = userType;
+        }
+
+        String userType;
+        String producerProperty;
+
+        public String getProducerName() {
+            return producerName;
+        }
+
+        public void setProducerName(String producerName) {
+            this.producerName = producerName;
+        }
+
+        public String getProducerProperty() {
+            return producerProperty;
+        }
+
+        public void setProducerProperty(String producerProperty) {
+            this.producerProperty = producerProperty;
+        }
+
+        public String getFileName() {
+            return fileName;
+        }
+
+        public void setFileName(String fileName) {
+            this.fileName = fileName;
+        }
+
+        public String getUserName() {
+            return userName;
+        }
+
+        public void setUserName(String userName) {
+            this.userName = userName;
+        }
+
+        public String getUserProperty() {
+            return userProperty;
+        }
+
+        public void setUserProperty(String userProperty) {
+            this.userProperty = userProperty;
+        }
+
+        String fileName;
+        String userName;
+        String userProperty;
+
+
+
+    }
+
+
+
+    private List<OperatorApplication> processOperatorApplication(OperatorApplication opAp) {
+        List<OperatorApplication> basicOpApps = new ArrayList<OperatorApplication>();
+        if (opAp.getOpType().name().equals("BASIC")) {
+            basicOpApps.add(opAp);
+
+            logger.info("Type:" + opAp.getOpType().name());
+            logger.info("Operator Execution Name: " + opAp.getAnnOperatorName());
+
+            logger.info("id:" + opAp.getOperatorID());
+            logger.info("name:" + opAp.getOperatorName());
+            logger.info("Type name " + opAp.getOperatorTypeName());
+
+            for (SimpleParameter sparams : opAp.getSimpleParameters()) {
+                logger.info("simple:" + sparams.getDataPropertyID());
+                logger.info("simple:" + sparams.getDataPropertyName());
+                logger.info("simple:" + sparams.getDataType());
+                logger.info("simple:" + sparams.getValue());
+            }
+
+
+            for (Parameter params : opAp.getParameters()) {
+
+                logger.info("Param" + params.getInstClassID());
+                logger.info("Param" + params.getInstID());
+                logger.info("Param" + params.getInstName());
+                logger.info("Param" + params.getInstTypeName());
+                logger.info("Param" + params.getRoleID());
+                logger.info("Param" + params.getRoleName());
+            }
+
+            for (IOObjectDescription desc: opAp.getProducedObject()) {
+
+                logger.info("Produces id: " + desc.getIOObjectID());
+                logger.info("Produces type id: " + desc.getIOObjectTypeID());
+                logger.info("Produces name: " + desc.getIOObjectName());
+                logger.info("Produces location: " + desc.getIOOLocation());
+                logger.info("Produces type: " + desc.getIOObjectType());
+                logger.info("Produces role: " + desc.getRoleName());
+            }
+
+            for (IOObjectDescription desc: opAp.getUsedObject()) {
+                logger.info("Uses id: " + desc.getIOObjectID());
+                logger.info("Uses type id: " + desc.getIOObjectTypeID());
+                logger.info("Uses name: " + desc.getIOObjectName());
+                logger.info("Uses location: " + desc.getIOOLocation());
+                logger.info("Uses type: " + desc.getIOObjectType());
+                logger.info("Uses role: " + desc.getRoleName());
+            }
+
+
+        }
+        else {
+            for (OperatorApplication steps : opAp.getSteps()) {
+                basicOpApps.addAll(processOperatorApplication(steps));
+            }
+        }
+        return basicOpApps;
+    }
+
+
     private void connectFinalActivity(RapidMinerExampleActivity activity) {
         String activityName = activity.getConfiguration().getOperatorName();
         logger.info("Final Processors: " + activityName);
+        int rand = (int)(Math.random() * 9999)+1000;
         for (Processor p : df.getProcessors()) {
             if (p.getLocalName().equals(activityName)) {
-                ActivityOutputPort out = getOutputPort(p, "outputLocation");
-                DataflowOutputPort dfop= edits.createDataflowOutputPort("out_" + activityName, df);
-                try {
-                    edits.getAddDataflowOutputPortEdit(df, dfop).doEdit();
-                    Tools.getCreateAndConnectDatalinkEdit(df, out, dfop.getInternalInputPort()).doEdit();
-                } catch (EditException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                for (String outP : activity.getConfiguration().getOutputPorts().keySet()) {
+
+                    if (!outP.equals("original")) {
+                        ActivityOutputPort out = getOutputPort(p, outP);
+                        String name = Tools.uniqueProcessorName(outP + "_" + activityName + "_" + rand, df);
+                        DataflowOutputPort dfop= edits.createDataflowOutputPort( name , df);
+                        try {
+                            edits.getAddDataflowOutputPortEdit(df, dfop).doEdit();
+                            Tools.getCreateAndConnectDatalinkEdit(df, out, dfop.getInternalInputPort()).doEdit();
+                        } catch (EditException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        }
+
+                    }
                 }
 
 
@@ -300,29 +554,342 @@ import java.util.*;
     }
 
 
-    public void connectProcessors(Processor producer, Processor user) throws EditException {
+    public void connectProcessors(Processor producer, LinkedHashMap<String, IOOutputPort> outputPortsMap, Processor user, LinkedHashMap<String, IOInputPort> inputPortsMap) throws EditException {
 
         logger.info("Connecting Processors: " + producer.getLocalName() + " --> " + user.getLocalName());
 
-        ActivityOutputPort out = getOutputPort(producer, "outputLocation");
-        ActivityInputPort in = getInputPort(user, "inputLocation");
 
-        logger.info("Creating data link between: " + out.getName() + " --> " + in.getName());
-        Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, in);
-        e4.doEdit();
+        for (PortMapper p  : portMapping.get(producer.getLocalName())) {
+
+            if (p.getUserName().equals(user.getLocalName())) {
+
+                for (String producer_outputPort : outputPortsMap.keySet()) {
+
+                    ActivityOutputPort out = getOutputPort(producer, producer_outputPort);
+                    // get the port class
+                    String outportClass = outputPortsMap.get(producer_outputPort).getPortClass();
+
+                    for (String inputKey : inputPortsMap.keySet()) {
+
+                        ActivityInputPort ip = getInputPort(user, inputKey);
+                        String inportClass  = inputPortsMap.get(inputKey).getPortClass();
+
+                        if (!out.getName().equals("original")) {
+
+                            if (p.getProducerProperty().equals("produces") && p.getUserProperty().equals("uses")) {
+                                if (outportClass.equals(inportClass)) {
+                                    logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+                                    Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+                                    e4.doEdit();
+                                }
+
+                            }
+                            else if (p.getProducerProperty().equals("produces") && p.getUserProperty().equals("usesData")) {
+                                if (outportClass.equals(inportClass)) {
+                                    logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+                                    Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+                                    e4.doEdit();
+                                }
+
+                            }
+                            else if (p.getProducerProperty().equals("produces") && p.getUserProperty().equals("usesAW")) {
+                                if (outportClass.equals(inportClass)) {
+                                    logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+                                    Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+                                    e4.doEdit();
+                                }
+                                else if (outportClass.endsWith(inportClass)) {
+                                    logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+                                    Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+                                    e4.doEdit();
+                                }
+
+                            }
+                            else if (p.getProducerProperty().equals("produces") && p.getUserProperty().equals("usesModel")) {
+                                if (outportClass.equals(inportClass)) {
+                                    logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+                                    Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+                                    e4.doEdit();
+                                }
+
+                            }
+                            else if (p.getProducerProperty().equals("produces") && p.getUserProperty().equals("usesFirstModel")) {
+                                if (outportClass.equals(inportClass)  && ip.getName().endsWith("1")) {
+                                    logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+                                    Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+                                    e4.doEdit();
+                                }
+
+                            }
+                            else if (p.getProducerProperty().equals("produces") && p.getUserProperty().equals("usesSecondModel")) {
+                                if (outportClass.equals(inportClass) && ip.getName().endsWith("2")) {
+                                    logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+                                    Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+                                    e4.doEdit();
+                                }
+
+                            }
+                            else if (p.getProducerProperty().equals("producesData") && p.getUserProperty().equals("uses")) {
+                                if (outportClass.equals(inportClass)) {
+                                    logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+                                    Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+                                    e4.doEdit();
+                                }
+
+                            }
+                            else if (p.getProducerProperty().equals("producesData") && p.getUserProperty().equals("usesData")) {
+                                if (outportClass.equals(inportClass)) {
+                                    logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+                                    Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+                                    e4.doEdit();
+                                }
+
+                            }
+                            else if (p.getProducerProperty().equals("producesPrePropModel") && p.getUserProperty().equals("uses")) {
+                                if (outportClass.equals(inportClass)) {
+                                    logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+                                    Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+                                    e4.doEdit();
+                                }
+
+                            }
+                            else if (p.getProducerProperty().equals("producesPrePropModel") && p.getUserProperty().equals("usesModel")) {
+                                if (outportClass.equals(inportClass)) {
+                                    logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+                                    Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+                                    e4.doEdit();
+                                }
+
+                            }
+                            else if (p.getProducerProperty().equals("producesPrePropModel") && p.getUserProperty().equals("usesFirstModel")) {
+                                if (outportClass.equals(inportClass) && ip.getName().endsWith("1")) {
+                                    logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+                                    Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+                                    e4.doEdit();
+                                }
+                                else if (outportClass.endsWith(inportClass) && ip.getName().endsWith("1")) {
+                                    logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+                                    Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+                                    e4.doEdit();
+                                }
+                                else if (outportClass.contains(inportClass) && ip.getName().endsWith("1")) {
+                                    logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+                                    Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+                                    e4.doEdit();
+                                }
+
+                            }
+                            else if (p.getProducerProperty().equals("producesPrePropModel") && p.getUserProperty().equals("usesSecondModel")) {
+                                if (outportClass.equals(inportClass) && ip.getName().endsWith("2")) {
+                                    logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+                                    Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+                                    e4.doEdit();
+                                }
+                                else if (outportClass.endsWith(inportClass) && ip.getName().endsWith("2")) {
+                                    logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+                                    Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+                                    e4.doEdit();
+                                }
+                                else if (outportClass.contains(inportClass) && ip.getName().endsWith("2")) {
+                                    logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+                                    Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+                                    e4.doEdit();
+                                }
+
+                            }
+
+
+//                            if (p.getProducerProperty().equals("producesData")) {
+//                                if (outportClass.equals(inportClass)) {
+//
+//                                }
+//                            }
+//                            else if (p.getProducerProperty().equals("producesPrePropModel")) {
+//                                if (out.getName().equals("preprocessing_model")) {
+//
+//                                    if (inportClass.toLowerCase().contains("model")) {
+//                                        if (p.getUserProperty().equals("usesFirstModel")) {
+//                                            logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+//                                            Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+//                                            e4.doEdit();
+//                                        }
+//                                        else if (p.getUserProperty().equals("usesSecondModel")) {
+//                                            logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+//                                            Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+//                                            e4.doEdit();
+//
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                            else if (p.getProducerProperty().equals("produces")) {
+//                                if  (outportClass.toLowerCase().endsWith("model") && inportClass.toLowerCase().endsWith("model")) {
+//                                    logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+//                                    Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+//                                    e4.doEdit();
+//                                }
+//                            }
+
+                        }
+
+                    }
+                }
+            }
+        }
+
+//        Map<String, String> outputPortTypes = new HashMap<String, String>();
+//        for (String key : outputPortsMap.keySet()) {
+//            outputPortTypes.put(key, outputPortsMap.get(key).getPortClass());
+//        }
+//
+//        Set<String> inputPortTypes = new HashSet<String>();
+//        for (String key : inputPortsMap.keySet()) {
+//            inputPortTypes.add(inputPortsMap.get(key).getPortClass());
+//        }
+//
+//
+//
+//        for (PortMapper p  : portMapping.get(producer.getLocalName())) {
+//
+//            if (p.getUserName().equals(user.getLocalName())) {
+//
+//                if (p.getProducerType().equals("DataTable")) {
+//
+//                    ActivityOutputPort out = getOutputPort(producer, producer_outputPort);
+//
+//
+//                }
+//
+//                for (String producer_outputPort : outputPortsMap.keySet()) {
+//                    ActivityOutputPort out = getOutputPort(producer, producer_outputPort);
+//
+//                    if (p.getProducerProperty().equals("produces")) {
+//                        // then there is only onc connection between these two
+//                        // get the type
+//                        if (p.getProducerType().equals("DataTable")) {
+//
+//                            // then it must connect to a port that takes a DataTable
+//
+//                        }
+//
+//                    }
+//
+//
+//                }
+//
+//
+//            }
+//
+//        }
+//
+//
+//        // go through through all the output, and try and work out which inputs can connect
+//        for (String producer_outputPort : outputPortsMap.keySet()) {
+//            ActivityOutputPort out = getOutputPort(producer, producer_outputPort);
+//
+//            // get the class
+//            String portName = outputPortsMap.get(producer_outputPort).getPortName();
+//
+//            for (PortMapper p  : portMapping.get(producer.getLocalName())) {
+//
+//                if (p.getUserName().equals(user.getLocalName())) {
+//
+//
+//                }
+//
+//            }
+//
+//
+//            // see if the user can take this type ignoring the original output for now
+//            if (!portName.equals("original")) {
+//                List<ActivityInputPort> possibleInputPorts = getPossibleInputPorts(outputPortsMap.get(producer_outputPort), user, inputPortsMap);
+//                if (possibleInputPorts.size() == 1) {
+//
+//                    ActivityInputPort in = possibleInputPorts.get(0);
+//                    logger.info("Creating data link between: " + out.getName() + " --> " + in.getName());
+//                    Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, in);
+//                    e4.doEdit();
+//
+//                }
+//                else if (possibleInputPorts.size() > 1) {
+//
+//
+//                    for (ActivityInputPort ip : possibleInputPorts) {
+//
+//                        if (outputPortsMap.get(producer_outputPort).getFileLocation() != null && !outputPortsMap.get(producer_outputPort).getFileLocation().trim().equals("")) {
+//
+//                            String fileLoc = outputPortsMap.get(producer_outputPort).getFileLocation();
+//                            int last = fileLoc.lastIndexOf("/");
+//                            String ioName = fileLoc.substring(last + 1);
+//                            Connection con = connectionsByIOObjectId.get(ioName);
+//                            if (con.getUsers().size() == 1) {
+//                                logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+//                                Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+//                                e4.doEdit();
+//                            }
+//                            else {
+//                                for (Connection.User users : con.getUsers()) {
+//                                   if (users.getUsesProperty().getPropertyName().contains("first")) {
+//                                       logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+//                                       Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+//                                       e4.doEdit();
+//                                   }
+//                                   else if (users.getUsesProperty().getPropertyName().contains("second")) {
+//                                        logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+//                                        Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+//                                        e4.doEdit();
+//                                    }
+//                                }
+//                            }
+//
+//                        }
+//                    }
+//                }
+//            }
+//        }
+        
+//        ActivityOutputPort out = getOutputPort(producer, "outputLocation");
+//        ActivityInputPort in = getInputPort(user, "inputLocation");
+
 //        editList.add(e4);
 
+
+    }
+
+    private List<ActivityInputPort> getPossibleInputPorts(IOOutputPort ioOutputPort, Processor user, LinkedHashMap<String, IOInputPort> inputPortsMap) {
+
+        String portName = ioOutputPort.getPortName();
+        String portClass = ioOutputPort.getPortClass();
+
+        List<ActivityInputPort> validInputPorts = new ArrayList<ActivityInputPort>();
+        logger.debug("The producers output port is " + portName + ":" + portClass);
+        for (String key : inputPortsMap.keySet()) {
+            IOInputPort ip = inputPortsMap.get(key);
+            logger.debug("The users input port is " + key + ":" + ip.getPortClass());
+
+            if (ip.getPortClass().equals(portClass)) {
+                validInputPorts.add(getInputPort(user, key));
+            }
+            else if (ip.getPortClass().equals("Model") && portClass.contains("Model") ) {
+                validInputPorts.add(getInputPort(user, key));
+            }
+        }
+        return validInputPorts;
 
     }
 
     public ActivityOutputPort getOutputPort (Processor p, String name) {
 
         for (Activity a : p.getActivityList()) {
-            for (Object outPort : a.getOutputPorts()) {
-                ActivityOutputPort x = (ActivityOutputPort) outPort;
-                if (x.getName().equals(name)) {
-                    return x;
+            if (a instanceof RapidMinerExampleActivity) {
+
+                for (Object outPort : a.getOutputPorts()) {
+                    ActivityOutputPort x = (ActivityOutputPort) outPort;
+                    if (x.getName().equals(name)) {
+                        return x;
+                    }
                 }
+
             }
         }
         return null;
@@ -379,8 +946,8 @@ import java.util.*;
         bean.setIsParametersConfigured(true);
         bean.setOperatorName(opApp.getOperatorName());
         bean.setCallName(opApp.getAnnOperatorName());
-//        bean.setIsExplicit(true);
         bean.setHasDescriptions(false);
+
 
         List<RapidMinerParameterDescription> paramDescription = new ArrayList<RapidMinerParameterDescription>();
 
@@ -409,14 +976,22 @@ import java.util.*;
 
         bean.setParameterDescriptions(paramDescription);
 
-//        RapidAnalyticsPreferences prefs = new RapidAnalyticsPreferences();
-//        prefs.setRepositoryLocation("http://rpc295.cs.man.ac.uk:8081");
-//        prefs.setUsername("jupp");
-//        prefs.setPassword("jupppwd");
-//        RapidMinerExampleActivity activity = new RapidMinerExampleActivity(prefs);
+
+        RapidAnalyticsPreferences prefs = new RapidAnalyticsPreferences();
+        prefs.setRepositoryLocation("http://rpc295.cs.man.ac.uk:8081");
+        prefs.setUsername("jupp");
+        prefs.setPassword("jupppwd");
+
+        // get the IO port description
+        RapidMinerIOODescription portDescription = new RapidMinerIOODescription(prefs, opApp.getAnnOperatorName());
+        bean.setInputPorts(portDescription.getInputPort());
+        bean.setOutputPorts(portDescription.getOutputPort());
 
 
-        RapidMinerExampleActivity activity = new RapidMinerExampleActivity();
+        RapidMinerExampleActivity activity = new RapidMinerExampleActivity(prefs);
+
+    // todo sort this out for main taverna execution
+      //  RapidMinerExampleActivity activity = new RapidMinerExampleActivity();
 
 
 //        editList.add(edits.getConfigureActivityEdit(activity, bean));
@@ -430,7 +1005,8 @@ import java.util.*;
 
 //				log("Used: "+ioobject.getRoleName()+", "+ioobject.getIOObjectID());
             Connection connection = getConnectionByIOObjectId(ioobject);
-            connection.addUser(activity, ioobject.getRoleName());
+
+            connection.addUser(activity, ioobject);
             connection.setLocation(ioobject.getIOOLocation());
 
         }
@@ -439,7 +1015,7 @@ import java.util.*;
 
 //				log("Used: "+ioobject.getRoleName()+", "+ioobject.getIOObjectID());
             Connection connection = getConnectionByIOObjectId(ioobject);
-            connection.setProducer(activity, ioobject.getIOOLocation());
+            connection.setProducer(activity, ioobject);
 
         }
 

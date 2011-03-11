@@ -132,7 +132,7 @@ public class FloryTest {
 						if (indURI != null)
 							for (DataRequirement dr : g.getDataRequirement()) {
 //								logger.info(dr.getRoleName() + " "
-//										+ dr.getClassName() + " " + dr.getID());
+//										+ dr.getPortClass() + " " + dr.getID());
 								if (dr.getRoleName().equals("trainingData")
 										&& dr.getClassName().equals("Data")) {
 
@@ -256,7 +256,7 @@ public class FloryTest {
 						if (indURI != null)
 							for (DataRequirement dr : g.getDataRequirement()) {
 //								logger.info(dr.getRoleName() + " "
-//										+ dr.getClassName() + " " + dr.getID());
+//										+ dr.getPortClass() + " " + dr.getID());
 								if (dr.getRoleName().equals("trainingData")
 										&& dr.getClassName().equals("Data")) {
 
