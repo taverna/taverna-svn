@@ -104,8 +104,9 @@ public class DemoIphonePlan {
                 stub.setUsername("jupp");
                 stub.setPassword("jupppwd");
 
-                DataTableResponse training = stub.getOWLIndividualsFromRepository("http://example.owl#", "training", "/demo/example/iphone/smallTrainingSetWithSetRoles");
-                DataTableResponse holdout = stub.getOWLIndividualsFromRepository("http://example.owl#", "holdout", "/demo/example/iphone/smallHoldoutsetWithSetRoles");
+                DataTableResponse training = stub.getOWLIndividualsFromRepository("http://example.owl/", "training", "/demo/example/iphone/smallTrainingSetWithSetRoles");
+                DataTableResponse holdout = stub.getOWLIndividualsFromRepository("http://example.owl/", "holdout", "/demo/example/iphone/smallHoldoutsetWithSetRoles");
+
 
                 System.out.println("Setting main goal: " + mainGoal.getGoalName() );
                 String mainGoalID = gFactory.setMainGoal(mainGoal);
@@ -156,7 +157,7 @@ public class DemoIphonePlan {
                 System.out.println("Getting plans");
 //
                 //ida.getCaseIndex()
-                List<Plan> plans = ida.getPlans(task, gFactory.getFacts(), 1);
+                List<Plan> plans = ida.getPlans(task, gFactory.getFacts(), 10);
 //
                 System.out.println("Got plans");
                 int x = 0;

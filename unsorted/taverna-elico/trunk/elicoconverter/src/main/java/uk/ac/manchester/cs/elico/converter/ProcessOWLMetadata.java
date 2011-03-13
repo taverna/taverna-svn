@@ -56,6 +56,10 @@ public class ProcessOWLMetadata {
         parseOntology();
     }
 
+    public GoalFactory getGoalFactory () {
+        return gFactory;
+    }
+
     private void parseOntology() {
 
         // adding the class assertions to the fact list
@@ -191,7 +195,7 @@ public class ProcessOWLMetadata {
 
     public OWLClass getIOObjectClass() {
         for (OWLClass cls : ontology.getReferencedClasses()) {
-            if (cls.toString().equals(DATATABLE))
+            if (!cls.toString().equals("Thing"))
                 return cls;
         }
         return null;

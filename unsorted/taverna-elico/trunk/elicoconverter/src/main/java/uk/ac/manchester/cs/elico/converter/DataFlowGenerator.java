@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.*;
 
+import java.net.URL;
 import java.util.*;
 
 
@@ -132,6 +133,7 @@ import java.util.*;
             // set it as the input location on the activity
             if (con.getProducer() == null) {
                 logger.info("No producer for: " + IOObjectID + " loc:" + fileLocation);
+                System.err.println("No producer for: " + IOObjectID + " loc:" + fileLocation);
 
                 for (Connection.User activityUser : con.getUsers()) {
                     RapidMinerExampleActivity activity = rmActivity.get(activityUser.getOperator().getConfiguration().getOperatorName());
@@ -365,16 +367,12 @@ import java.util.*;
                 }
 
             }
-
-
-             // handle the final output activity
-//            for (RapidMinerExampleActivity terminatingActivities :  terminatingOperators) {
-//                connectFinalActivity(terminatingActivities);
-//            }
-
-
-
         }
+
+        // handle the final output activity
+       for (RapidMinerExampleActivity terminatingActivities :  terminatingOperators) {
+           connectFinalActivity(terminatingActivities);
+       }
 
         return df;
 
@@ -533,14 +531,17 @@ import java.util.*;
                 for (String outP : activity.getConfiguration().getOutputPorts().keySet()) {
 
                     if (!outP.equals("original")) {
-                        ActivityOutputPort out = getOutputPort(p, outP);
-                        String name = Tools.uniqueProcessorName(outP + "_" + activityName + "_" + rand, df);
-                        DataflowOutputPort dfop= edits.createDataflowOutputPort( name , df);
-                        try {
-                            edits.getAddDataflowOutputPortEdit(df, dfop).doEdit();
-                            Tools.getCreateAndConnectDatalinkEdit(df, out, dfop.getInternalInputPort()).doEdit();
-                        } catch (EditException e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        if (activity.getConfiguration().getOutputPorts().get(outP).getFileLocation() != null) {
+
+                            ActivityOutputPort out = getOutputPort(p, outP);
+                            String name = Tools.uniqueProcessorName(outP + "_" + activityName + "_" + rand, df);
+                            DataflowOutputPort dfop= edits.createDataflowOutputPort( name , df);
+                            try {
+                                edits.getAddDataflowOutputPortEdit(df, dfop).doEdit();
+                                Tools.getCreateAndConnectDatalinkEdit(df, out, dfop.getInternalInputPort()).doEdit();
+                            } catch (EditException e) {
+                                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                            }
                         }
 
                     }
@@ -563,8 +564,14 @@ import java.util.*;
 
             if (p.getUserName().equals(user.getLocalName())) {
 
+
                 for (String producer_outputPort : outputPortsMap.keySet()) {
 
+                    if (outputPortsMap.get(producer_outputPort).getFileLocation() == null ||
+                            outputPortsMap.get(producer_outputPort).getFileLocation().trim().isEmpty()) {
+                        continue;
+
+                    }
                     ActivityOutputPort out = getOutputPort(producer, producer_outputPort);
                     // get the port class
                     String outportClass = outputPortsMap.get(producer_outputPort).getPortClass();
@@ -611,6 +618,11 @@ import java.util.*;
                                     Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
                                     e4.doEdit();
                                 }
+                                else if (producer_outputPort.startsWith("model") && inputKey.contains("model")) {
+                                    logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+                                    Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+                                    e4.doEdit();
+                                }
 
                             }
                             else if (p.getProducerProperty().equals("produces") && p.getUserProperty().equals("usesFirstModel")) {
@@ -619,10 +631,20 @@ import java.util.*;
                                     Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
                                     e4.doEdit();
                                 }
+                                else if (producer_outputPort.startsWith("model") && ip.getName().endsWith("1")) {
+                                    logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+                                    Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+                                    e4.doEdit();
+                                }
 
                             }
                             else if (p.getProducerProperty().equals("produces") && p.getUserProperty().equals("usesSecondModel")) {
                                 if (outportClass.equals(inportClass) && ip.getName().endsWith("2")) {
+                                    logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+                                    Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+                                    e4.doEdit();
+                                }
+                                else if (producer_outputPort.startsWith("model") && ip.getName().endsWith("2")) {
                                     logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
                                     Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
                                     e4.doEdit();
@@ -655,6 +677,11 @@ import java.util.*;
                             }
                             else if (p.getProducerProperty().equals("producesPrePropModel") && p.getUserProperty().equals("usesModel")) {
                                 if (outportClass.equals(inportClass)) {
+                                    logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
+                                    Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
+                                    e4.doEdit();
+                                }
+                                else if (outportClass.endsWith(inportClass)) {
                                     logger.info("Creating data link between: " + out.getName() + " --> " + ip.getName());
                                     Edit e4 = Tools.getCreateAndConnectDatalinkEdit(df, out, ip);
                                     e4.doEdit();
@@ -976,22 +1003,23 @@ import java.util.*;
 
         bean.setParameterDescriptions(paramDescription);
 
+        // todo sort this out for main taverna execution
+//        RapidAnalyticsPreferences prefs = new RapidAnalyticsPreferences();
+//        prefs.setRepositoryLocation("http://rpc295.cs.man.ac.uk:8081");
+//        prefs.setUsername("jupp");
+//        prefs.setPassword("jupppwd");
+//
+//        RapidMinerExampleActivity activity = new RapidMinerExampleActivity(prefs);
+//        RapidMinerIOODescription portDescription = new RapidMinerIOODescription(prefs, opApp.getAnnOperatorName());
 
-        RapidAnalyticsPreferences prefs = new RapidAnalyticsPreferences();
-        prefs.setRepositoryLocation("http://rpc295.cs.man.ac.uk:8081");
-        prefs.setUsername("jupp");
-        prefs.setPassword("jupppwd");
+        RapidMinerExampleActivity activity = new RapidMinerExampleActivity();
+        RapidMinerIOODescription portDescription = new RapidMinerIOODescription(opApp.getAnnOperatorName());
 
-        // get the IO port description
-        RapidMinerIOODescription portDescription = new RapidMinerIOODescription(prefs, opApp.getAnnOperatorName());
         bean.setInputPorts(portDescription.getInputPort());
         bean.setOutputPorts(portDescription.getOutputPort());
 
 
-        RapidMinerExampleActivity activity = new RapidMinerExampleActivity(prefs);
 
-    // todo sort this out for main taverna execution
-      //  RapidMinerExampleActivity activity = new RapidMinerExampleActivity();
 
 
 //        editList.add(edits.getConfigureActivityEdit(activity, bean));

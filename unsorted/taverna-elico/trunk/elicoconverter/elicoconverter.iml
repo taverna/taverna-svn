@@ -10,7 +10,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Library" level="project" />
     <orderEntry type="library" exported="" name="Maven: log4j:log4j:1.2.13" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.4" level="project" />
     <orderEntry type="library" exported="" name="Maven: net.sf.taverna.t2.core:workflowmodel-api:1.2" level="project" />
@@ -114,6 +113,7 @@
     <orderEntry type="library" exported="" name="Maven: org.apache.xmlgraphics:batik-svggen:1.7" level="project" />
     <orderEntry type="library" exported="" name="Maven: commons-beanutils:commons-beanutils:1.7.0" level="project" />
     <orderEntry type="library" exported="" name="Maven: net.sf.taverna.t2.ui-components:perspective-results:1.2" level="project" />
+    <orderEntry type="library" name="LIB" level="project" />
   </component>
 </module>
 
