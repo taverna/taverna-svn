@@ -711,6 +711,9 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		String contentType = getContentType(fileExtension);
 		String fname = getFileName(filePath);
 		String fileURI = preferences.getRepositoryLocation() + "/RAWS/resources" + updatedSelectionPath + "/" + fname;
+        if (contentType.equals(CSV_HEADER)) {
+//            fileURI = fileURI + "";
+        }
 		System.out.println(" THE FILENAME TO APPEND IS : " + fname);		
 		
 		System.out.println(" THE CONTENT TYPE IS : " + contentType);
@@ -729,7 +732,66 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
+
+
+        String query = "PREFIX protein:<http://bio2rdf.org/ns/protein:>\n" +
+                "PREFIX bio2rdf:<http://bio2rdf.org/ns/bio2rdf:>\n" +
+                "PREFIX taxonomy:<http://bio2rdf.org/ns/taxonomy:>\n" +
+                "PREFIX MA:<http://purl.org/obo/owl/MA#>\n" +
+                "PREFIX PATO:<http://purl.org/obo/owl/PATO#>\n" +
+                "PREFIX kupkb:<http://www.e-lico.eu/data/kupkb/>\n" +
+                "PREFIX owl:<http://www.w3.org/2002/07/owl#>\n" +
+                "PREFIX uniprot:<http://bio2rdf.org/ns/uniprot:>\n" +
+                "PREFIX go:<http://bio2rdf.org/ns/go:>\n" +
+                "PREFIX obo:<http://purl.obolibrary.org/obo/>\n" +
+                "PREFIX obo2:<http://bio2rdf.org/ns/obo:>\n" +
+                "PREFIX GO:<http://purl.org/obo/owl/GO#>\n" +
+                "PREFIX xsd:<http://www.w3.org/2001/XMLSchema#>\n" +
+                "PREFIX efo:<http://www.ebi.ac.uk/efo/>\n" +
+                "PREFIX homologene:<http://bio2rdf.org/ns/homologene:>\n" +
+                "PREFIX unigene:<http://bio2rdf.org/ns/unigene:>\n" +
+                "PREFIX experiment:<http://www.e-lico.eu/data/kupkb/experiment/>\n" +
+                "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+                "PREFIX bio2rdf-2008:<http://bio2rdf.org/bio2rdf-2008.owl#>\n" +
+                "PREFIX OBO_REL:<http://purl.org/obo/owl/OBO_REL#>\n" +
+                "PREFIX dc:<http://purl.org/dc/elements/1.1/>\n" +
+                "PREFIX symbol:<http://bio2rdf.org/ns/symbol:>\n" +
+                "PREFIX NCBITaxon:<http://purl.org/obo/owl/NCBITaxon#>\n" +
+                "PREFIX kupo:<http://www.e-lico.eu/data/kupo/>\n" +
+                "PREFIX disease_ontology:<http://purl.org/obo/owlapi/disease_ontology#>\n" +
+                "PREFIX ro:<http://www.obofoundry.org/ro/ro.owl#>\n" +
+                "PREFIX owl2:<http://www.w3.org/2006/12/owl2#onClass>\n" +
+                "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" +
+                "PREFIX bibtex:<http://bio2rdf.org/ns/bibtex:>\n" +
+                "PREFIX swrl:<http://www.w3.org/2003/11/swrl#>\n" +
+                "PREFIX geneid:<http://bio2rdf.org/ns/geneid:>\n" +
+                "PREFIX skos:<http://www.w3.org/2004/02/skos/core#>\n" +
+                "PREFIX CL:<http://purl.org/obo/owl/CL#>\n" +
+                "SELECT DISTINCT  ?uniprot ?experiment ?expressionStrength ?bioMaterial WHERE \n" +
+                "{{\n" +
+                "?ipi <http://purl.uniprot.org/core/ipi2acc> ?uniprotid .\n" +
+                "?uniprotid rdfs:label ?uniprot .\n" +
+                "?geneid uniprot:xProtein ?uniprotid . \n" +
+                "?geneid rdf:type geneid:Gene .\n" +
+                "?geneid skos:notation ?entrezid . \n" +
+                "?geneid bio2rdf:symbol ?genesymbol .\n" +
+                "{ \n" +
+                "{?listMember kupkb:hasDatabaseRef ?geneid} UNION {?listMember kupkb:hasDatabaseRef ?uniprotid}\n" +
+                "}\n" +
+                "?listMember kupkb:hasExpression?expression .\n" +
+                "?expression rdfs:label ?expressionStrength .\n" +
+                "?compoundList kupkb:hasMember ?listMember .\n" +
+                "?analysis kupkb:produces ?compoundList .\n" +
+                "?experiment kupkb:hasAnalysis ?analysis .\n" +
+                "?experiment rdfs:comment ?description .\n" +
+                "?analysis kupkb:annotatedWith ?annotation .\n" +
+                "?annotation kupkb:bioMaterial ?bioid .\n" +
+                "?bioid rdfs:label ?bioMaterial \n" +
+                "}\n" +
+                "\n" +
+                ".  FILTER (?ipi = <http://purl.uniprot.org/core/ipi/IPI00018305>)\n" +
+                "}";
 		try {
 			
 			//InputStream is = new FileInputStream(myFile);

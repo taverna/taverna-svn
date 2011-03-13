@@ -4,6 +4,7 @@ import ch.uzh.ifi.ddis.ida.api.GoalFactory;
 import ch.uzh.ifi.ddis.ida.api.MainGoal;
 import ch.uzh.ifi.ddis.ida.api.Tree;
 import ch.uzh.ifi.ddis.ida.api.exception.IDAException;
+import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.manchester.cs.elico.converter.IDAManager;
@@ -101,6 +102,10 @@ public class IDAWizardGoalSelect extends AbstractWizardPanel {
                 dlg.setVisible(false);
                 JOptionPane.showMessageDialog(parent, "Error starting planner!\n\n" + idaException.getMessage());
                 getWizard().dispose();
+            }
+
+            public void handle(OWLOntologyCreationException e) {
+                dlg.setVisible(false);
             }
 
             public void updateProgress(int i) {

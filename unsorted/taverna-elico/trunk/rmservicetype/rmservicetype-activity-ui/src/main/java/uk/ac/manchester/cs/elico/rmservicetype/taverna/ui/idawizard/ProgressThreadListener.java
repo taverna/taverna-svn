@@ -1,6 +1,7 @@
 package uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.idawizard;
 
-import ch.uzh.ifi.ddis.ida.api.exception.IDAException;/*
+import ch.uzh.ifi.ddis.ida.api.exception.IDAException;
+import org.semanticweb.owl.model.OWLOntologyCreationException;/*
  * Copyright (C) 2007, University of Manchester
  *
  * Modifications to the initial code base are copyright of their
@@ -34,6 +35,8 @@ public interface ProgressThreadListener {
     void processComplete();
 
     void handle(IDAException idaException);
+
+    void handle(OWLOntologyCreationException e);
 
     void updateProgress(int i);
 

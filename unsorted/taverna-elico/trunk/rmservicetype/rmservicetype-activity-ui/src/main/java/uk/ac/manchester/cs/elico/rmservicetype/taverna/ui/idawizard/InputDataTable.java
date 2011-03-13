@@ -112,9 +112,10 @@ public class InputDataTable extends JTable {
 
         if (columns == 1) {
             for (DataRequirement dr : ds) {
-                if (!dr.getClassName().equals("Thing")) {
+                if (dr.getClassName().equals("Thing")) {
                     comboBox.addItem(dr);
                     comboBox.setSelectedItem(dr);
+
                 }
             }
             return new DefaultCellEditor(comboBox);

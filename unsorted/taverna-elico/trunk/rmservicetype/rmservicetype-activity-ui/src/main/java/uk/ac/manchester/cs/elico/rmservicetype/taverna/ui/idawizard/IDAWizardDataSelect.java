@@ -67,8 +67,14 @@ public class IDAWizardDataSelect extends AbstractWizardPanel {
                 inputTable.addItem(reposBrowser.getChosenRepositoryPath());
             }
         };
-        parent.add(new JScrollPane (reposBrowser), BorderLayout.NORTH);
-        parent.add(new JScrollPane(inputTable), BorderLayout.CENTER);
+        
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+                           new JScrollPane (reposBrowser), new JScrollPane(inputTable));
+        splitPane.setOneTouchExpandable(true);
+        splitPane.setDividerLocation(300);
+        parent.add(splitPane, BorderLayout.CENTER);
+//        parent.add(, BorderLayout.CENTER);
 
 //        parent.add(inputPanel);
     }

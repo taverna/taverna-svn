@@ -1,7 +1,6 @@
 package uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.idawizard;
 
-import ch.uzh.ifi.ddis.ida.api.OperatorApplication;
-import ch.uzh.ifi.ddis.ida.api.Plan;
+import ch.uzh.ifi.ddis.ida.api.*;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
@@ -63,15 +62,31 @@ public class PlansTableModel  extends AbstractTableModel {
             return row + 1;
         }
         else {
-            StringBuilder sb = new StringBuilder();
 
+            String planDesc ="";
             for (OperatorApplication opAp : p.getOperatorApplications()) {
-                sb.append(opAp.getOperatorName());
-                sb.append(", ");
+                planDesc = processOperatorApplication(opAp);
             }
-            return sb.toString();
+            return planDesc;
         }
     }
+
+    private String processOperatorApplication(OperatorApplication opAp) {
+        StringBuilder sb = new StringBuilder();
+        List<OperatorApplication> basicOpApps = new ArrayList<OperatorApplication>();
+        if (opAp.getOpType().name().equals("BASIC")) {
+
+            sb.append(opAp.getOperatorName());
+            sb.append(", ");
+        }
+        else {
+            for (OperatorApplication steps : opAp.getSteps()) {
+                sb.append(processOperatorApplication(steps));
+            }
+        }
+        return sb.toString();
+    }
+
 
     public Class<?> getColumnClass(int columnIndex) {
         if(columnIndex == 0) {

@@ -2,6 +2,7 @@ package uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.view;
 
 import net.sf.taverna.t2.lang.ui.DialogTextArea;
 import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
+import org.apache.commons.lang.WordUtils;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.*;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.config.ParameterTableModel;
 
@@ -271,23 +272,80 @@ public class RapidMinerConfigurationView extends JPanel {
 
         IOObjectPort port;
 
-        JLabel label;
+//        final JLabel label;
         JTextField location;
         JButton upload;
 
         public PortField (IOObjectPort port) {
             this.port = port;
 
-            Box row = new Box(BoxLayout.X_AXIS);
+//            Box row = new Box(BoxLayout.X_AXIS);
+//
+//            String prettyLabel = port.getPortName();
+//
+//            label = new JLabel(WordUtils.capitalize(prettyLabel.replace("_", " ")));
+//            Dimension d = label.getPreferredSize();
+//            label.setPreferredSize(new Dimension(d.width+60,d.height));//<-----------
+//            row.add(label);
+//            row.add(Box.createHorizontalStrut(2));
+//            row.add(location = new JTextField(20));
+//            if (port.getFileLocation() != null) {
+//                location.setText(port.getFileLocation());
+//            }
+//
+//            row.add(Box.createHorizontalStrut(4));
+//            upload = new JButton("Browse");
+//            upload.addActionListener(new ActionListener() {
+//                public void actionPerformed(ActionEvent arg0) {
+//
+//                    final JDialog frame = new JDialog((JDialog)SwingUtilities.getAncestorOfClass(JDialog.class, RapidMinerConfigurationView.this), "Rapid Analytics Repository Browser");
+//
+//                    browser = new RapidAnalyticsRepositoryBrowser(){
+//                        @Override
+//                        public void fileSelectedButtonPress() {
+//                            super.fileSelectedButtonPress();
+//                            location.setText(browser.getChosenRepositoryPath());
+//                            frame.dispose();
+//                        }
+//                    };
+//
+//                    browser.setOpaque(true);
+//                    browser.initialiseTreeContents();
+//
+//
+//                    Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+//                    frame.setLocation(dim.width / 2 - getWidth() / 2, dim.height / 2 - getHeight() / 2);
+//
+//                    frame.setModal(true);
+//                    frame.add(browser);
+//                    frame.setPreferredSize(new Dimension(400,400));
+//                    frame.pack();
+//                    frame.setVisible(true);
+//
+//                }
+//
+//            });
+//            row.add(upload);
+//            row.add(Box.createHorizontalStrut(12));
+//            this.add(row);
 
-            row.add(label = new JLabel(port.getPortName()));
-            row.add(Box.createHorizontalStrut(2));
-            row.add(location = new JTextField(20));
+            JPanel pane = new JPanel();
+            pane.setLayout(new GridBagLayout());
+
+            FormUtility formUtility = new FormUtility();
+            
+            String prettyLabel = port.getPortName();
+
+//            label = new JLabel();
+//            Dimension d = label.getPreferredSize();
+//            label.setPreferredSize(new Dimension(d.width+60,d.height));//<-----------
+
+            formUtility.addLabel(WordUtils.capitalize(prettyLabel.replace("_", " ")), pane);
+            formUtility.addMiddleField(location = new JTextField(20), pane);
             if (port.getFileLocation() != null) {
                 location.setText(port.getFileLocation());
             }
 
-            row.add(Box.createHorizontalStrut(4));
             upload = new JButton("Browse");
             upload.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent arg0) {
@@ -319,11 +377,117 @@ public class RapidMinerConfigurationView extends JPanel {
                 }
 
             });
-            row.add(upload);
-            row.add(Box.createHorizontalStrut(12));
-            this.add(row);
+
+            formUtility.addLastField(upload, pane);
+            this.add(pane);
+
+
         }
     }
+
+  /**
+ * Simple application for demonstrating the use of FormUtility
+ * to hide the details of creating a form layout with
+ * GridBagLayout.
+ * <P>
+ * Philip Isenhour - 060628 - http://javatechniques.com/
+ */
+// todo Jupp - need to do this properly, nicked this code for a quick and dirty solution...
+    public class FormUtility {
+    /**
+     * Grid bag constraints for fields and labels
+     */
+    private GridBagConstraints lastConstraints = null;
+    private GridBagConstraints middleConstraints = null;
+    private GridBagConstraints labelConstraints = null;
+
+    public FormUtility() {
+        // Set up the constraints for the "last" field in each
+        // row first, then copy and modify those constraints.
+
+        // weightx is 1.0 for fields, 0.0 for labels
+        // gridwidth is REMAINDER for fields, 1 for labels
+        lastConstraints = new GridBagConstraints();
+
+        // Stretch components horizontally (but not vertically)
+        lastConstraints.fill = GridBagConstraints.HORIZONTAL;
+
+        // Components that are too short or narrow for their space
+        // Should be pinned to the northwest (upper left) corner
+        lastConstraints.anchor = GridBagConstraints.NORTHWEST;
+
+        // Give the "last" component as much space as possible
+        lastConstraints.weightx = 1.0;
+
+        // Give the "last" component the remainder of the row
+        lastConstraints.gridwidth = GridBagConstraints.REMAINDER;
+
+        // Add a little padding
+        lastConstraints.insets = new Insets(1, 1, 1, 1);
+
+        // Now for the "middle" field components
+        middleConstraints =
+             (GridBagConstraints) lastConstraints.clone();
+
+        // These still get as much space as possible, but do
+        // not close out a row
+        middleConstraints.gridwidth = GridBagConstraints.RELATIVE;
+
+        // And finally the "label" constrains, typically to be
+        // used for the first component on each row
+        labelConstraints =
+            (GridBagConstraints) lastConstraints.clone();
+
+        // Give these as little space as necessary
+        labelConstraints.weightx = 0.0;
+        labelConstraints.gridwidth = 1;
+    }
+
+    /**
+     * Adds a field component. Any component may be used. The
+     * component will be stretched to take the remainder of
+     * the current row.
+     */
+    public void addLastField(Component c, Container parent) {
+        GridBagLayout gbl = (GridBagLayout) parent.getLayout();
+        gbl.setConstraints(c, lastConstraints);
+        parent.add(c);
+    }
+
+    /**
+     * Adds an arbitrary label component, starting a new row
+     * if appropriate. The width of the component will be set
+     * to the minimum width of the widest component on the
+     * form.
+     */
+    public void addLabel(Component c, Container parent) {
+        GridBagLayout gbl = (GridBagLayout) parent.getLayout();
+        gbl.setConstraints(c, labelConstraints);
+        parent.add(c);
+    }
+
+    /**
+     * Adds a JLabel with the given string to the label column
+     */
+    public JLabel addLabel(String s, Container parent) {
+        JLabel c = new JLabel(s);
+        addLabel(c, parent);
+        return c;
+    }
+
+    /**
+     * Adds a "middle" field component. Any component may be
+     * used. The component will be stretched to take all of
+     * the space between the label and the "last" field. All
+     * "middle" fields in the layout will be the same width.
+     */
+    public void addMiddleField(Component c, Container parent) {
+        GridBagLayout gbl = (GridBagLayout) parent.getLayout();
+        gbl.setConstraints(c, middleConstraints);
+        parent.add(c);
+    }
+
+}
 
     private List<PortField> getInputFields(LinkedHashMap<String, IOInputPort> inputPort) {
 
