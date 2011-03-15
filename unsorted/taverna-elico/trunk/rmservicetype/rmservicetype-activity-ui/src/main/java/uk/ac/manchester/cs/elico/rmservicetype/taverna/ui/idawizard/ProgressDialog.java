@@ -41,12 +41,18 @@ public class ProgressDialog extends JDialog{
         super((JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, component));
         setModal(true);
         setTitle(title);
+
+        ImageIcon img = new ImageIcon(getClass().getResource("/IDA-API_logo_small.png"));
+        
         JPanel contentPane = new JPanel(new BorderLayout(7, 7));
         setContentPane(contentPane);
         this.progressBar = new JProgressBar(0,100);
 //        progressBar.setIndeterminate(true);
         contentPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         contentPane.add(label = new JLabel("Please wait...                                                  "));
+        JLabel imagL = new JLabel();
+        imagL.setIcon(img);
+        contentPane.add(imagL, BorderLayout.WEST);
         contentPane.add(progressBar, BorderLayout.SOUTH);
         pack();
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();

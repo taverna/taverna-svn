@@ -1,5 +1,6 @@
 package uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.idawizard.components;
 
+
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
@@ -96,7 +97,7 @@ public abstract class AbstractWizardPanel extends WizardPanel {
     }
 
     final protected void createUI() {
-//        backgroundImage = Icons.getIcon("logo.wizard.png");
+        backgroundImage = new ImageIcon(getClass().getResource("/elico-logo4-2-480px-240ppi-blackOnWhite-4Wabi-topspace40px.png"));
         setLayout(new BorderLayout(7, 7));
         marginPanel = new JPanel(new BorderLayout());
         marginPanel.setPreferredSize(new Dimension(150, 400));
