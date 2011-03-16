@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.*;
 
-import java.net.URL;
 import java.util.*;
 
 
