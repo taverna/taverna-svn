@@ -83,6 +83,21 @@
 			<name>tupelo2</name>
 			<url>http://dlt-dev.ncsa.uiuc.edu/m2</url>
 		</repository>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>opm</id>
+            <name>opm</name>
+            <url>http://openprovenance.org/java/maven-releases</url>
+        </repository>
+
+        <repository>
+            <id>odftoolkit</id>
+            <name>Odftoolkit Repository</name>
+            <url>http://odftoolkit.org/svn/odfdom~maven2/release/</url>
+        </repository>
+
 		<!--
 			<repository> <releases /> <snapshots> <enabled>false</enabled>
 			</snapshots> <id>opm-releases</id> <name>opm</name>
