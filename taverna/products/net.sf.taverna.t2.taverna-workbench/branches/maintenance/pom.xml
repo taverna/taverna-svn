@@ -6,6 +6,7 @@
 		<artifactId>taverna-parent</artifactId>
 		<groupId>net.sf.taverna</groupId>
 		<version>2.3-SNAPSHOT</version>
+        <relativePath>../../taverna-parent/pom.xml</relativePath>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>taverna-workbench</artifactId>
@@ -25,22 +26,22 @@
 	</dependencyManagement>
 	<repositories>
 		<repository>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
 			<releases/>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-			<id>mygrid-repository</id>
-			<name>myGrid Repository</name>
-			<url>http://www.mygrid.org.uk/maven/repository</url>
 		</repository>
 		<repository>
+			<id>mygrid-snapshot-repository</id>
+			<name>myGrid Snapshot Repository</name>
+			<url>http://www.mygrid.org.uk/maven/snapshot-repository</url>
 			<releases>
 				<enabled>false</enabled>
 			</releases>
 			<snapshots/>
-			<id>mygrid-snapshot-repository</id>
-			<name>myGrid Snapshot Repository</name>
-			<url>http://www.mygrid.org.uk/maven/snapshot-repository</url>
 		</repository>
 		<repository>
 			<id>eviware</id>
@@ -76,26 +77,29 @@
 			</snapshots>
 		</repository>
 		<repository>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
 			<id>tupelo2</id>
 			<name>tupelo2</name>
 			<url>http://dlt-dev.ncsa.uiuc.edu/m2</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
 		</repository>
         <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
             <id>opm</id>
             <name>opm</name>
             <url>http://openprovenance.org/java/maven-releases</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
 
         <repository>
             <id>odftoolkit</id>
             <name>Odftoolkit Repository</name>
             <url>http://odftoolkit.org/svn/odfdom~maven2/release/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
 
 		<!--
