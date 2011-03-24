@@ -69,7 +69,8 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z"
         <th>Workflow run description</th>
         <th>Workflow name</th>
         <th>Status</th>
-        <th>Start date</th>
+        <th>Start time</th>
+        <th>End time</th>
         <th>Delete run</th>
     </tr>
     <%
@@ -93,6 +94,15 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z"
         <td><%= workflowSubmissionJobs.get(i).getWorkflowFileName() %></td>
         <td><%= workflowSubmissionJobs.get(i).getStatus() %></td>
         <td><%= dateFormat.format(workflowSubmissionJobs.get(i).getStartDate()) %></td>
+
+        <%
+        if(workflowSubmissionJobs.get(i).getEndDate()==null){%>
+            <td>N/A</td>
+        <%}
+        else {%>
+            <td><%= dateFormat.format(workflowSubmissionJobs.get(i).getEndDate())%></td>
+        <%}%>
+
         <td><a onclick="return confirm_deletion('<%=confirmDeletionText%>');" href="<portlet:actionURL/>&<%=Constants.DELETE_JOB%>=<%= URLEncoder.encode(workflowSubmissionJobs.get(i).getUuid(), "UTF-8")%>"><img src="<%=renderRequest.getContextPath()%>/images/trash.png" alt="Delete job"></a></td>
         </tr>
     <%}%>
