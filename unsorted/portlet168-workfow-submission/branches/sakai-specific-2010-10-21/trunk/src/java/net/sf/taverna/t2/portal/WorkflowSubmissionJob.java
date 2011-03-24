@@ -20,6 +20,9 @@ public class WorkflowSubmissionJob {
     // Name of the workflow file submitted
     private String workflowFileName;
 
+    // Description of the job as entered by the user
+    private String workflowRunDescription;
+
     // Workflow inputs
     private Object inputs;
 
@@ -33,10 +36,11 @@ public class WorkflowSubmissionJob {
 
     private Date endDate;
 
-    public WorkflowSubmissionJob(String uuid, String workflowFileName, String status){
+    public WorkflowSubmissionJob(String uuid, String workflowFileName, String status, String workflowRunDescription){
         this.uuid = uuid;
         this.workflowFileName = workflowFileName;
         this.status = status;
+        this.workflowRunDescription = workflowRunDescription;
     }
 
     /**
@@ -107,6 +111,20 @@ public class WorkflowSubmissionJob {
      */
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    /**
+     * @return the workflowRunDescription
+     */
+    public String getWorkflowRunDescription() {
+        return workflowRunDescription;
+    }
+
+    /**
+     * @param workflowRunDescription the workflowRunDescription to set
+     */
+    public void setWorkflowRunDescription(String workflowRunDescription) {
+        this.workflowRunDescription = workflowRunDescription;
     }
 
 }

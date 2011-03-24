@@ -100,8 +100,12 @@ public class FileServingServlet extends HttpServlet {
             String user0 = (String)request.getSession().getAttribute(Constants.USER); // this does not work in Sakai
             System.out.println("File Serving Servlet: Fetching file " + dataFilePath + " for user (obtained from session) " + user0 + "; file mime type: "+mimeType);
             // Sakai-specific way of getting the current user
+            
             SessionManager sessionManager = (SessionManager) ComponentManager.get(org.sakaiproject.tool.api.SessionManager.class); // Sakai-specific
-            String user = sessionManager.getCurrentSession().getUserEid(); // get user's display name - Sakai-specific
+            String user = sessionManager.getCurrentSession().getUserEid(); // get user's display name - Sakai-specific 
+            /*UserDirectoryService userDirectoryService = (UserDirectoryService) ComponentManager.get(UserDirectoryService.class);
+            String user = userDirectoryService.getCurrentUser().getEid();
+             */
             if (user == null){ //if user is null - then make them ANONYMOUS (should not be null now)
                 user = Constants.USER_ANONYMOUS;
             } // Still gives me nul1!!!!

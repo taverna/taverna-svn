@@ -15,6 +15,7 @@ public class Constants {
     public static final String STATUS_FILE_EXT = ".status";
     public static final String STARTDATE_FILE_EXT = ".startdate";
     public static final String ENDDATE_FILE_EXT = ".enddate";
+    public static final String WORKFLOW_RUN_DESCRIPTION_FILE = "workflow_run_description.txt";
     public static final String INPUTS_BACLAVA_FILE = "inputs.baclava";// saved on local disk
     public static final String OUTPUTS_BACLAVA_FILE = "outputs.baclava"; // saved on local disk
     public static final String OUTPUTS_DIRECTORY_NAME = "outputs"; // name of the dir where individual outputs  for all port are saved
@@ -104,6 +105,7 @@ public class Constants {
     public static final String WORKFLOW_FILE_NAMES = "workflow_file_names";
     public static final String WORKFLOW_SELECTION_SUBMISSION_FORM = "workflow_selection_form";
     public static final String WORKFLOW_SELECTION_SUBMISSION = "workflow_selection";
+    public static final String WORKFLOW_RUN_DESCRIPTION = "workflow_run_description";
     public static final String SELECTED_WORKFLOW = "selected_workflow";
     public static final String WORKFLOW_INPUTS_FORM = "workflow_inputs_form";
     public static final String RUN_WORKFLOW = "run_workflow";

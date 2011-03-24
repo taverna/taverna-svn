@@ -644,7 +644,14 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                     String statusFileName = jobDir.list(statusFileFilter)[0]; // should be only 1 element or else we are in trouble
                     String status = statusFileName.substring(0, statusFileName.indexOf(Constants.STATUS_FILE_EXT));
 
-                    WorkflowSubmissionJob workflowSubmissionJob =  new WorkflowSubmissionJob(uuid, workflowFileName, status);
+                    // Added workflow run description file later on so some jobs may not have it saved - check for it
+                    File workflowRunDescriptionFile = new File(jobDir, Constants.WORKFLOW_RUN_DESCRIPTION_FILE);
+                    String workflowRunDescription = "";
+                    if (workflowRunDescriptionFile.exists()){
+                        workflowRunDescription = FileUtils.readFileToString(workflowRunDescriptionFile, "UTF-8");
+                    }
+
+                    WorkflowSubmissionJob workflowSubmissionJob =  new WorkflowSubmissionJob(uuid, workflowFileName, status, workflowRunDescription);
 
                     String startdateFileName = jobDir.list(startdateFileFilter)[0]; // should be only 1 element or else we are in trouble
                     String startdate = startdateFileName.substring(0, startdateFileName.indexOf(Constants.STARTDATE_FILE_EXT));
@@ -702,6 +709,12 @@ public class WorkflowResultsPortlet extends GenericPortlet{
             return name.endsWith(Constants.T2_FLOW_FILE_EXT);
         }
     };
+//    // This file filter only returns files named 'workflow_run_description.txt'
+//    public static FilenameFilter workflowRunDescriptionFileFilter = new FilenameFilter() {
+//        public boolean accept(File dir, String name) {
+//            return name.equals(Constants.WORKFLOW_RUN_DESCRIPTION_FILE);
+//        }
+//    };
     // This file filter only returns files with .startdate extension
     public static FilenameFilter startdateFileFilter = new FilenameFilter() {
         public boolean accept(File dir, String name) {
