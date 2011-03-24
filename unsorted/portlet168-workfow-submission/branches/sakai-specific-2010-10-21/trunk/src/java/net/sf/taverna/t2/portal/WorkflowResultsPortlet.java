@@ -91,7 +91,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
     private static String PORTLET_NAMESPACE;
 
     /*
-     * Do the init stuff one at portlet loading time.
+     * Do the init stuff once at portlet loading time.
      */
     @Override
     public void init(){
@@ -446,6 +446,18 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
                     if (statusOnDisk != null && !statusOnDisk.equals(job.getStatus())){ // status changed
                         job.setStatus(statusOnDisk);
+                        if (statusOnDisk.equals(Constants.JOB_STATUS_FINISHED)){
+                            // Read the end date from .enddate file name and update the job object
+                            String[] enddateFileNames = jobDir.list(enddateFileFilter);
+                            if (enddateFileNames.length != 0){
+                                String enddateFileName = enddateFileNames[0]; // should be only 1 element or else we are in trouble
+                                String enddate = enddateFileName.substring(0, enddateFileName.indexOf(Constants.ENDDATE_FILE_EXT));
+                                job.setEndDate(new Date(Long.parseLong(enddate)));
+                            }
+                            else{// this is not good (the status file should be there) - skip this job
+                                continue;
+                            }
+                        }
                     }
                     else{
                         // Get the updated job's status from the T2 Server
@@ -455,15 +467,23 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                             if (statusOnServer.equals(Constants.UNKNOWN_RUN_UUID)){
                                 job.setStatus(Constants.JOB_STATUS_EXPIRED);
                                 // Persist the new status for this job on a disk
-                                updateJobStatusOnDiskForUser(job.getUuid(), Constants.JOB_STATUS_EXPIRED, user);
+                                updateJobStatusOnDiskForUser(job.getUuid(), Constants.JOB_STATUS_EXPIRED, user, null);
                             }
                             else{
                                 job.setStatus(statusOnServer);
-                                Date endDate = new Date();
-                                SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
-                                System.out.println("Workflow Submission Portlet: Execution of workflow " + job.getWorkflowFileName() + " finished on the Server. Results fetched at " + dateFormat.format(endDate) +" with job id: " + job.getUuid() +".");
+                                // If the job has not expired and the status changed - then the job has finished.
+                                // Check it here nevertheless.
+                                Date endDate = null;
+                                if (statusOnServer.equals(Constants.JOB_STATUS_FINISHED)){
+                                    // Record this as the time when the workflow run has finished -
+                                    // this is the best we can do regarding actual finish time
+                                    endDate = new Date();
+                                    job.setEndDate(endDate);
+                                    SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+                                    System.out.println("Workflow Submission Portlet: Execution of workflow " + job.getWorkflowFileName() + " finished on the Server. Results fetched at " + dateFormat.format(endDate) +" with job id: " + job.getUuid() +".");
+                                }
                                 // Persist the new status for this job on a disk
-                                updateJobStatusOnDiskForUser(job.getUuid(), statusOnServer, user);
+                                updateJobStatusOnDiskForUser(job.getUuid(), statusOnServer, user, endDate);
                             }
                         }
                     }
@@ -540,8 +560,10 @@ public class WorkflowResultsPortlet extends GenericPortlet{
      * Update the status of the user's job status on a local disk.
      * Job's status is saved in a file with name <JOB_STATUS>.status in
      * a directory for that job (named after the job's UUID) and the owning user.
+     *
+     * If new status is 'Finished' then an end date is provided as well.
      */
-    private void updateJobStatusOnDiskForUser(String workflowSubmissionJobId, String newStatus, String user){
+    private void updateJobStatusOnDiskForUser(String workflowSubmissionJobId, String newStatus, String user, Date endDate){
         synchronized (statusLock){
             File userDir = new File (JOBS_DIR, user);
             File[] userJobsDir = userDir.listFiles(dirFilter);
@@ -554,6 +576,19 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                     File statusFile = new File(jobDir, statusFileName);
                     statusFile.renameTo(new File(jobDir, newStatus + Constants.STATUS_FILE_EXT));
                     System.out.println("Workflow Results Portlet: Updated status for job " + jobDir.getAbsolutePath() + " from '" + oldStatus + "' to '" + newStatus + "'.");
+                    // If job has finished - save the job's end date by creating
+                    // an empty .enddate file named after the date
+                    if (newStatus.equals(Constants.JOB_STATUS_FINISHED)){
+                        File enddateFile = new File(jobDir, endDate.getTime() + Constants.ENDDATE_FILE_EXT);
+                        try{
+                            FileUtils.touch(enddateFile);
+                        }
+                        catch(Exception ex){
+                            System.out.println("Workflow Submission Portlet: Failed to create the job's end date file " + enddateFile.getAbsolutePath());
+                            ex.printStackTrace();
+                        }
+                        System.out.println("Workflow Submission Portlet: Job's end date set at " + enddateFile.getAbsolutePath());
+                    }
                 }
             }
         }
@@ -657,6 +692,15 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                     String startdate = startdateFileName.substring(0, startdateFileName.indexOf(Constants.STARTDATE_FILE_EXT));
                     workflowSubmissionJob.setStartDate(new Date(Long.parseLong(startdate)));
 
+                    if (status.equals(Constants.JOB_STATUS_FINISHED)){
+                        String[] enddateFileNames = jobDir.list(enddateFileFilter); // should be only 1 element or else we are in trouble
+                        if (enddateFileNames.length != 0){
+                            String enddateFileName = enddateFileNames[0];
+                            String enddate = enddateFileName.substring(0, enddateFileName.indexOf(Constants.ENDDATE_FILE_EXT));
+                            workflowSubmissionJob.setEndDate(new Date(Long.parseLong(enddate)));
+                        }
+                    }
+
                     workflowSubmissionJobs.add(workflowSubmissionJob);
 
                     System.out.println("Workflow Results Portlet: Found job: " + uuid + "; workflow: " + workflowFileName + "; status: " + status + "\n");
@@ -719,6 +763,12 @@ public class WorkflowResultsPortlet extends GenericPortlet{
     public static FilenameFilter startdateFileFilter = new FilenameFilter() {
         public boolean accept(File dir, String name) {
             return name.endsWith(Constants.STARTDATE_FILE_EXT);
+        }
+    };
+    // This file filter only returns files with .enddate extension
+    public static FilenameFilter enddateFileFilter = new FilenameFilter() {
+        public boolean accept(File dir, String name) {
+            return name.endsWith(Constants.ENDDATE_FILE_EXT);
         }
     };
     // This file filter only returns files named 'inputs.baclava'
@@ -836,16 +886,20 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                     }
                 }
                 else{
-                    // Update the job's status from the T2 Server
+                    // Get the (possibly updated) job's status from the T2 Server
                     String statusOnServer = getWorkflowSubmissionJobStatusFromServer(jobDir.getName());
                     if (!statusOnServer.equals(statusOnDisk)){
                         if (statusOnServer.equals(Constants.UNKNOWN_RUN_UUID)){
-                            updateJobStatusOnDiskForUser(jobDir.getName(), Constants.JOB_STATUS_EXPIRED, userDir.getName());
+                            updateJobStatusOnDiskForUser(jobDir.getName(), Constants.JOB_STATUS_EXPIRED, userDir.getName(), null);
                             //System.out.println("Workflow Results Portlet (update job status thread): Updating status of job "+ jobDir.getName()+" from "+statusOnDisk+" to " + Constants.JOB_STATUS_EXPIRED);
                         }
                         else if (statusOnServer.equals(Constants.JOB_STATUS_FINISHED)){
-                            updateJobStatusOnDiskForUser(jobDir.getName(), statusOnServer, userDir.getName());
+                            Date endDate = new Date();
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+                            System.out.println("Workflow Results Portlet (update job status thread): Execution of job " + jobDir.getName() + " finished on the Server at " + dateFormat.format(endDate) + ".");
+                            updateJobStatusOnDiskForUser(jobDir.getName(), statusOnServer, userDir.getName(), endDate);
                             //System.out.println("Workflow Results Portlet (update job status thread): Updating status of job "+ jobDir.getName()+" from "+statusOnDisk+" to " + statusOnServer);
+
                             // Download the results as well
                             try{
                                 InputStream inputStream;

@@ -1317,7 +1317,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             System.out.println("Workflow Submission Portlet: Failed to create the job's start date file " + startdateFile.getAbsolutePath());
             ex.printStackTrace();
         }
-        System.out.println("Workflow Submission Portlet: Job's start date file name set at " + startdateFile.getAbsolutePath());
+        System.out.println("Workflow Submission Portlet: Job's start date set at " + startdateFile.getAbsolutePath());
 
         // Save the job's input Baclava file in a file called inputs.baclava
         File inputsFile = new File(jobDir, Constants.INPUTS_BACLAVA_FILE);
