@@ -40,7 +40,7 @@ ArrayList<String> workflowFileNamesList = (ArrayList<String>) renderRequest.getA
 %>
 
 <%-- Form for selecting the workflow to be sent for execution --%>
-<b> Select a workflow to run:</b>
+<p><b>Select a workflow to run:</b></p>
 
 <form name="<portlet:namespace/><%= Constants.WORKFLOW_SELECTION_SUBMISSION_FORM%>" action="<portlet:actionURL/>" method="post">
 <table>

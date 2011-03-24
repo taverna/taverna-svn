@@ -39,8 +39,12 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z"
 
 <%-- Form for selecting the workflow job to show results for --%>
 <% if (workflowSubmissionJobs != null && !workflowSubmissionJobs.isEmpty()){ %>
-<b>To view results of a workflow run, click on the workflow run id once the workflow run status becomes "Finished".</b><br>
-<b>To refresh workflow run statuses, click on the "Refresh" button.</b><br><br>
+<p>
+    <b>
+        To view results of a workflow run, click on the workflow run id once the workflow run status becomes "Finished".<br>
+        To refresh workflow run statuses, click on the "Refresh" button.
+    </b>
+</p>
 <table width="100%" style="margin-bottom:3px;">
     <tr>
         <td valign="bottom">

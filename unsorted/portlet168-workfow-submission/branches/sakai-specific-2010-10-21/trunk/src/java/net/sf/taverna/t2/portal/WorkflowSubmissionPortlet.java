@@ -491,7 +491,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                             setAttribute(Constants.WORKFLOW_SUBMISSION_JOBS,
                                             workflowSubmissionJobs,
                                             PortletSession.APPLICATION_SCOPE);
-                                    request.setAttribute(Constants.INFO_MESSAGE, "Workflow "+workflowFileName+" successfully submitted for execution with job id: " + workflowResourceUUID + ". You may use this id to monitor the progress of the workflow run.");
+                                    request.setAttribute(Constants.INFO_MESSAGE, "Workflow "+workflowFileName+" successfully submitted for execution with run id: " + workflowResourceUUID + ". You may use this id to monitor the progress of the workflow run.");
                                 }
                             }
                         }
