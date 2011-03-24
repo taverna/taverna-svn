@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>elicoconverter</groupId>
+    <artifactId>elicoconverter</artifactId>
+    <version>1.0</version>
+
+	<properties>
+		<t2.core.version>1.2</t2.core.version>
+		<t2.activities.version>1.2</t2.activities.version>
+		<t2.ui.api.version>1.2</t2.ui.api.version>
+		<t2.workbench.version>2.2.0</t2.workbench.version>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>jar</goal>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<systemProperties>
+						<property>
+							<name>java.awt.headless</name>
+							<value>true</value>
+						</property>
+					</systemProperties>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.13</version>
+        </dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.4</version>
+			<scope>test</scope>
+		</dependency>
+        <dependency>
+            <groupId>net.sf.taverna.t2.core</groupId>
+            <artifactId>workflowmodel-api</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.taverna.t2.activities</groupId>
+            <artifactId>dataflow-activity</artifactId>
+                <version>1.2</version>
+        </dependency>
+
+         <dependency>
+            <groupId>net.sf.taverna.t2.ui-api</groupId>
+            <artifactId>file-api</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.taverna.t2.ui-impl</groupId>
+            <artifactId>file-impl</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.taverna.t2.lang</groupId>
+            <artifactId>observer</artifactId>
+            <version>1.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.taverna.t2.ui-api</groupId>
+            <artifactId>edits-api</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.taverna.t2.ui-impl</groupId>
+            <artifactId>edits-impl</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>axis</groupId>
+            <artifactId>axis</artifactId>
+            <version>1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>axis</groupId>
+            <artifactId>axis</artifactId>
+            <version>1.4</version>
+        </dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.activities</groupId>
+			<artifactId>wsdl-activity</artifactId>
+			<version>${t2.activities.version}</version>
+
+		</dependency>
+
+        <dependency>
+
+        <groupId>uk.ac.manchester.cs.elico.rmservicetype</groupId>
+		<artifactId>rmservicetype</artifactId>
+		<version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.6.1</version>
+      </dependency>
+        <dependency>
+            <groupId>uk.ac.manchester.cs.elico.rmservicetype</groupId>
+            <artifactId>rmservicetype-activity</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.taverna.t2.ui-activities</groupId>
+            <artifactId>dataflow-activity-ui</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.taverna.t2.ui-api</groupId>
+            <artifactId>activity-palette-api</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+    </dependencies>
+
+	<repositories>
+		<repository>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+		</repository>
+	</repositories>
+
+
+    
+</project>
