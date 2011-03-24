@@ -39,12 +39,12 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z"
 
 <%-- Form for selecting the workflow job to show results for --%>
 <% if (workflowSubmissionJobs != null && !workflowSubmissionJobs.isEmpty()){ %>
-<b>To view results of a workflow submission job, click on its id, once its status becomes "Finished".</b><br>
-<b>To refresh job statuses, click on the "Refresh" button.</b><br><br>
+<b>To view results of a workflow run, click on the workflow run id once the workflow run status becomes "Finished".</b><br>
+<b>To refresh workflow run statuses, click on the "Refresh" button.</b><br><br>
 <table width="100%" style="margin-bottom:3px;">
     <tr>
         <td valign="bottom">
-            <b>Workflow submission jobs:</b>
+            <b>Workflow runs:</b>
         </td>
         <td align="right">
         <form action="<portlet:actionURL/>" method="post">
@@ -61,15 +61,16 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z"
 <div style="float:left; margin-bottom:3px;"><b>Workflow submission jobs:</b></div>--%>
 <table class="jobs">
     <tr>
-        <th>Job Id</th>
+        <th>Workflow run id</th>
+        <th>Workflow run description</th>
         <th>Workflow name</th>
-        <th>Start date</th>
         <th>Status</th>
-        <th>Delete job</th>
+        <th>Start date</th>
+        <th>Delete run</th>
     </tr>
     <%
     for (int i=0; i< workflowSubmissionJobs.size(); i++ ) {
-        String confirmDeletionText = "Are you sure you want to delete job "+ workflowSubmissionJobs.get(i).getUuid()+ "?";
+        String confirmDeletionText = "Are you sure you want to delete the run "+ workflowSubmissionJobs.get(i).getUuid()+ "?";
 
         if (i % 2 == 0){%>
             <tr>
@@ -84,9 +85,10 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z"
         else {%>
             <td><a href="<portlet:actionURL/>&<%=Constants.FETCH_RESULTS%>=<%= URLEncoder.encode(workflowSubmissionJobs.get(i).getUuid(), "UTF-8")%>#<%=Constants.RESULTS_ANCHOR%>"><%= workflowSubmissionJobs.get(i).getUuid() %></a></td>
         <%}%>
+        <td><%= workflowSubmissionJobs.get(i).getWorkflowRunDescription() %></td>
         <td><%= workflowSubmissionJobs.get(i).getWorkflowFileName() %></td>
-        <td><%= dateFormat.format(workflowSubmissionJobs.get(i).getStartDate()) %></td>
         <td><%= workflowSubmissionJobs.get(i).getStatus() %></td>
+        <td><%= dateFormat.format(workflowSubmissionJobs.get(i).getStartDate()) %></td>
         <td><a onclick="return confirm_deletion('<%=confirmDeletionText%>');" href="<portlet:actionURL/>&<%=Constants.DELETE_JOB%>=<%= URLEncoder.encode(workflowSubmissionJobs.get(i).getUuid(), "UTF-8")%>"><img src="<%=renderRequest.getContextPath()%>/images/trash.png" alt="Delete job"></a></td>
         </tr>
     <%}%>

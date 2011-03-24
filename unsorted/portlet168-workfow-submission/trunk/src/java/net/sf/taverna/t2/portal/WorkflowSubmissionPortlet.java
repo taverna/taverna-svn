@@ -297,7 +297,10 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
                 // Workflow to run
                 String workflowFileName = (String) formItems.get(WORKFLOW_FILE_NAME);
-                
+
+                // Description of the wf run
+                String workflowRunDescription = (String) formItems.get(Constants.WORKFLOW_RUN_DESCRIPTION);
+
                 // Workflow's input ports
                 ArrayList<WorkflowInputPort> workflowInputPorts = workflowInputPortsList.get(workflowFileNamesList.indexOf(workflowFileName));
 
@@ -477,7 +480,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                             getAttribute(Constants.WORKFLOW_SUBMISSION_JOBS,
                                             PortletSession.APPLICATION_SCOPE); // should not be null at this point
                                             
-                                    WorkflowSubmissionJob job = new WorkflowSubmissionJob(workflowResourceUUID, workflowFileName, Constants.JOB_STATUS_OPERATING);
+                                    WorkflowSubmissionJob job = new WorkflowSubmissionJob(workflowResourceUUID, workflowFileName, Constants.JOB_STATUS_OPERATING, workflowRunDescription);
                                     job.setStartDate(startDate);
                                     workflowSubmissionJobs.add(0,job);
 
@@ -503,6 +506,9 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
                 // Workflow to run
                 String workflowFileName = request.getParameter(WORKFLOW_FILE_NAME);
+
+                // Description of the wf run
+                String workflowRunDescription = (String) request.getParameter(PORTLET_NAMESPACE + Constants.WORKFLOW_RUN_DESCRIPTION);
 
                 // Workflow's input ports
                 ArrayList<WorkflowInputPort> workflowInputPorts = workflowInputPortsList.get(workflowFileNamesList.indexOf(workflowFileName));
@@ -552,7 +558,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
                                 ArrayList<WorkflowSubmissionJob> workflowSubmissionJobs = (ArrayList<WorkflowSubmissionJob>)request.getPortletSession().
                                         getAttribute(Constants.WORKFLOW_SUBMISSION_JOBS, PortletSession.APPLICATION_SCOPE);
-                                WorkflowSubmissionJob job = new WorkflowSubmissionJob(workflowResourceUUID, workflowFileName, Constants.JOB_STATUS_OPERATING);
+                                WorkflowSubmissionJob job = new WorkflowSubmissionJob(workflowResourceUUID, workflowFileName, Constants.JOB_STATUS_OPERATING, workflowRunDescription);
                                 workflowSubmissionJobs.add(job);
                                 job.setStartDate(startDate);
 
@@ -797,11 +803,14 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             inputFormJSP.append("</table>\n");
         }
         
+        inputFormJSP.append("<%-- A field for the user to enter a description for the wf run. --%>\n");
+        inputFormJSP.append("<br><b>Enter a short description of the workflow run (so you can more easily identify it later):</b><br>");
+        inputFormJSP.append("<input type=\"text\" size=\"50\" name=\"<portlet:namespace/><%= Constants.WORKFLOW_RUN_DESCRIPTION%>\"/><br><br>");
 
         inputFormJSP.append("<%-- Hidden field to convey which workflow we want to execute --%>\n");
         inputFormJSP.append("<input type=\"hidden\" name=\"<portlet:namespace/><%= Constants.WORKFLOW_FILE_NAME%>\" value=\""+ workflowFileName + "\" />\n");
         inputFormJSP.append("<input type=\"submit\" name=\"<portlet:namespace/><%= Constants.RUN_WORKFLOW%>\" value=\"Run workflow\" />\n");
-        inputFormJSP.append("</form>\n");
+        inputFormJSP.append("</form><br>\n");
 
         // Write this JSP snippet to a file
         try{
@@ -1247,6 +1256,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
      *  - an empty file initially named Operating.status to indicate the status of the job
      *  - the input Baclava document in input.baclava file to hold the job's inputs
      *  - an empty file named <long>.startdate where <long> represents the Date in miliseconds after the "epoch"
+     *  - a file named workflow_run_description.txt to hold the user-entered description for the wf run
      */
     private void persistJobOnDisk(PortletRequest request, WorkflowSubmissionJob job, Document worfklowInputsDocument){
 
@@ -1302,9 +1312,10 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
         // Save the job's input Baclava file in a file called inputs.baclava
         File inputsFile = new File(jobDir, Constants.INPUTS_BACLAVA_FILE);
+        java.io.FileWriter writer = null;
         try{
             XMLOutputter out = new XMLOutputter();
-            java.io.FileWriter writer = new java.io.FileWriter(inputsFile);
+            writer = new java.io.FileWriter(inputsFile);
             out.output(worfklowInputsDocument, writer);
             writer.flush();
             writer.close();
@@ -1313,7 +1324,31 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             System.out.println("Workflow Submission Portlet: Failed to save job's inputs to file " + inputsFile.getAbsolutePath());
             ex.printStackTrace();
         }
+        finally{
+            try{
+                writer.close();
+            }
+            catch (Exception ex2){
+                // Ignore
+            }
+        }
         System.out.println("Workflow Submission Portlet: Job's inputs saved to Baclava file " + inputsFile.getAbsolutePath());
+
+        // Save the job's description entered by the user in a file called workflow_run_description.txt
+        File wfRunDescriptionFile = new File(jobDir, Constants.WORKFLOW_RUN_DESCRIPTION_FILE);
+        String wfRunDescription = job.getWorkflowRunDescription(); // should not be null, at least empty string
+        System.out.println("Workflow Submission Portlet: wfRunDescription " + wfRunDescription);
+        if (wfRunDescription == null){
+            wfRunDescription = ""; // empty description
+        }
+        try{
+            FileUtils.writeStringToFile(wfRunDescriptionFile, wfRunDescription, "UTF-8");
+        }
+        catch(Exception ex){
+            System.out.println("Workflow Submission Portlet: Failed to save job's description to file " + wfRunDescriptionFile.getAbsolutePath());
+            ex.printStackTrace();
+        }
+        System.out.println("Workflow Submission Portlet: Job's description saved to file " + wfRunDescriptionFile.getAbsolutePath());
     }
 
     static final String HEXES = "0123456789ABCDEF";

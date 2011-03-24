@@ -604,7 +604,14 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                     String statusFileName = jobDir.list(statusFileFilter)[0]; // should be only 1 element or else we are in trouble
                     String status = statusFileName.substring(0, statusFileName.indexOf(Constants.STATUS_FILE_EXT));
 
-                    WorkflowSubmissionJob workflowSubmissionJob =  new WorkflowSubmissionJob(uuid, workflowFileName, status);
+                    // Added workflow run description file later on so some jobs may not have it saved - check for it
+                    File workflowRunDescriptionFile = new File(jobDir, Constants.WORKFLOW_RUN_DESCRIPTION_FILE);
+                    String workflowRunDescription = "";
+                    if (workflowRunDescriptionFile.exists()){
+                        workflowRunDescription = FileUtils.readFileToString(workflowRunDescriptionFile, "UTF-8");
+                    }
+
+                    WorkflowSubmissionJob workflowSubmissionJob =  new WorkflowSubmissionJob(uuid, workflowFileName, status, workflowRunDescription);
 
                     String startdateFileName = jobDir.list(startdateFileFilter)[0]; // should be only 1 element or else we are in trouble
                     String startdate = startdateFileName.substring(0, startdateFileName.indexOf(Constants.STARTDATE_FILE_EXT));

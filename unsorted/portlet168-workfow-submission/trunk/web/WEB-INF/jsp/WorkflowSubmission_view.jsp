@@ -66,4 +66,5 @@ ArrayList<String> workflowFileNamesList = (ArrayList<String>) renderRequest.getA
     </td>
 </tr>
 </table>
+<br>
 </form>
