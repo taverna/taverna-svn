@@ -186,7 +186,10 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                         System.out.println("Workflow Results Portlet: Deleting job " + workflowResourceUUID);
                         iter.remove();
                         deleteJobForUser(workflowResourceUUID, request);
-                        request.setAttribute(Constants.WORKFLOW_SUBMISSION_JOBS, workflowSubmissionJobs);
+                        //request.setAttribute(Constants.WORKFLOW_SUBMISSION_JOBS, workflowSubmissionJobs);
+                        request.getPortletSession().setAttribute(Constants.WORKFLOW_SUBMISSION_JOBS,
+                            workflowSubmissionJobs,
+                            PortletSession.APPLICATION_SCOPE);
                         break;
                     }
                 } // else just ignore it if it is not in the job id list
@@ -687,7 +690,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
         synchronized(resultsLock){
             String workflowResultsBaclavaFileURL = T2_SERVER_URL + Constants.RUNS_URL + "/"+ job.getUuid() + Constants.WD_URL + "/" + Constants.BACLAVA_OUTPUT_FILE_NAME;
-            request.setAttribute(Constants.WORKFLOW_RESULTS_BACLAVA_FILE_URL, workflowResultsBaclavaFileURL);
+            //request.setAttribute(Constants.WORKFLOW_RESULTS_BACLAVA_FILE_URL, workflowResultsBaclavaFileURL);
 
             // First try to get the Baclava file from the local disk.
             // Get the current user first.
