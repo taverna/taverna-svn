@@ -83,6 +83,7 @@ public class DemoIphonePlan {
 			// test main goal tree
 
 			Tree<MainGoal> tMainGoal = ida.getMainGoals();
+
             getGoalChildren(tMainGoal);
 
             Tree<Task> tTask = ida.getTasks();

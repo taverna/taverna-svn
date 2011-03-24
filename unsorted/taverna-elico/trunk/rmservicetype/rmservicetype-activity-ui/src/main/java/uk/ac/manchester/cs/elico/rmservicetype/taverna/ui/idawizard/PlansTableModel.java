@@ -1,9 +1,12 @@
 package uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.idawizard;
 
-import ch.uzh.ifi.ddis.ida.api.*;
+import ch.uzh.ifi.ddis.ida.api.OperatorApplication;
+import ch.uzh.ifi.ddis.ida.api.Plan;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;/*
  * Copyright (C) 2007, University of Manchester
  *
@@ -59,7 +62,7 @@ public class PlansTableModel  extends AbstractTableModel {
             return selectedPlans.contains(p);
         }
         if (col == 1) {
-            return row + 1;
+            return String.valueOf(p.getRank());
         }
         else {
 
@@ -122,8 +125,18 @@ public class PlansTableModel  extends AbstractTableModel {
         fireTableDataChanged();
     }
 
+    public class PlansComarator implements Comparator<Plan> {
+
+
+        public int compare(Plan plan, Plan plan1) {
+            return Double.compare(plan1.getRank(),plan.getRank());
+        }
+    }
 
     public void addPlans(List<Plan> plans) {
+
+        Collections.sort(plans, new PlansComarator());
+
         this.plans.addAll(plans);
         fireTableDataChanged();
     }

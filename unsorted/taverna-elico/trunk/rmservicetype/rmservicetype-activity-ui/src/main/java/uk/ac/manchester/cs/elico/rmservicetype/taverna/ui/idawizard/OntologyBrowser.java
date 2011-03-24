@@ -9,6 +9,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;/*
  * Copyright (C) 2007, University of Manchester
@@ -71,7 +72,6 @@ public class OntologyBrowser extends JTree {
         this.setCellRenderer(new MyCellRenderer(icon));
     }
 
-
     public void setRootNode(Tree nodeTree) {
         MyNode root = new MyNode(nodeTree.getData());
 
@@ -127,6 +127,18 @@ public class OntologyBrowser extends JTree {
             return node;
         }
 
+        public String getToolTipText() {
+            if (node instanceof Goal) {
+                System.err.println("Long desc:" + ((Goal) node).getLongHelp());
+                return ((Goal) node).getLongHelp();
+            }
+            else if (node instanceof Task) {
+                System.err.println("Long desc:" + ((Task) node).getLongHelp());
+                return ((Task) node).getLongHelp();
+            }
+            return "";
+
+        }
 
         public String toString () {
             if (node instanceof Goal) {
@@ -152,6 +164,7 @@ public class OntologyBrowser extends JTree {
         public Component getTreeCellRendererComponent(JTree jTree, Object o, boolean b, boolean b1, boolean b2, int i, boolean b3) {
             super.getTreeCellRendererComponent(jTree, o, b, b1, b2, i, b3);    //To change body of overridden methods use File | Settings | File Templates
             setIcon(icon);
+            setToolTipText(((MyNode) o).getToolTipText());
             return this;
         }
     }
