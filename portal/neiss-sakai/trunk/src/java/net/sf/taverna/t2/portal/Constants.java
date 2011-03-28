@@ -17,6 +17,7 @@ public class Constants {
     public static final String ENDDATE_FILE_EXT = ".enddate";
     public static final String WORKFLOW_RUN_DESCRIPTION_FILE = "workflow_run_description.txt";
     public static final String INPUTS_BACLAVA_FILE = "inputs.baclava";// saved on local disk
+    public static final String INPUTS_DIRECTORY_NAME = "inputs"; // name of the dir where individual outputs  for all port are saved
     public static final String OUTPUTS_BACLAVA_FILE = "outputs.baclava"; // saved on local disk
     public static final String OUTPUTS_DIRECTORY_NAME = "outputs"; // name of the dir where individual outputs  for all port are saved
     public static final String DATA_FILE_PATH = "data_file_path"; // absolute path to the file with data
@@ -41,6 +42,7 @@ public class Constants {
     public static final String ERROR_MESSAGE = "error_message";
     public static final String INFO_MESSAGE = "info_message";
     public static final String OUTPUTS_MAP_ATTRIBUTE = "outputs_map";
+    public static final String INPUTS_MAP_ATTRIBUTE = "inputs_map";
 
     // Init parameters
     public static final String T2_SERVER_URL = "T2_SERVER_URL";

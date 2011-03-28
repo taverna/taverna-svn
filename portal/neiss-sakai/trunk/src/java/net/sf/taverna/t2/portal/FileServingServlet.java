@@ -97,15 +97,15 @@ public class FileServingServlet extends HttpServlet {
 
             File dataFile = new File(dataFilePath);
             
-            String user0 = (String)request.getSession().getAttribute(Constants.USER); // this does not work in Sakai
-            System.out.println("File Serving Servlet: Fetching file " + dataFilePath + " for user (obtained from session) " + user0 + "; file mime type: "+mimeType);
-            // Sakai-specific way of getting the current user
-            
+            //String user0 = (String)request.getSession().getAttribute(Constants.USER); // this does not work in Sakai
+
+            // Sakai-specific way of getting the current user            
             SessionManager sessionManager = (SessionManager) ComponentManager.get(org.sakaiproject.tool.api.SessionManager.class); // Sakai-specific
             String user = sessionManager.getCurrentSession().getUserEid(); // get user's display name - Sakai-specific 
-            /*UserDirectoryService userDirectoryService = (UserDirectoryService) ComponentManager.get(UserDirectoryService.class);
-            String user = userDirectoryService.getCurrentUser().getEid();
-             */
+            //UserDirectoryService userDirectoryService = (UserDirectoryService) ComponentManager.get(UserDirectoryService.class);
+            //String user1 = userDirectoryService.getCurrentUser().getEid();
+             
+            System.out.println("File Serving Servlet: Fetching file " + dataFilePath + " for user (obtained from session) " + user + "; file mime type: "+mimeType);
             if (user == null){ //if user is null - then make them ANONYMOUS (should not be null now)
                 user = Constants.USER_ANONYMOUS;
             } // Still gives me nul1!!!!
@@ -139,7 +139,7 @@ public class FileServingServlet extends HttpServlet {
                 }
                 else{
                     response.setContentType("text/plain");
-                    response.getWriter().write("Error: The file with the result data does not exist.");
+                    response.getWriter().write("Error: The file with the requested data does not exist.");
                     System.err.println("File Serving Servlet: The file "+ dataFilePath +" does not exist.");
                 }
             }
@@ -152,7 +152,7 @@ public class FileServingServlet extends HttpServlet {
         catch (IOException ex) {
             try{
                 response.setContentType("text/plain");
-                response.getWriter().write("An error occured while trying to read the file with the result data.\n" + ex.getMessage());
+                response.getWriter().write("An error occured while trying to read the file with the requested data.\n" + ex.getMessage());
                 System.out.println("File Serving Servlet: An error occured while trying to read the file " + dataFilePath);
                 ex.printStackTrace();
             }

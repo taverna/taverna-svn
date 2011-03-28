@@ -41,20 +41,20 @@ table.results th {
     color: #526652;
 }
 
-<%-- data_preview table style --%>
-table.data_preview
+<%-- results_data_preview table style - to show the actual data value --%>
+table.results_data_preview
 {
     border-collapse:collapse;
     margin-bottom:10px;
     margin-left:10px;
     width:100%;
 }
-table.data_preview, table.data_preview th, table.data_preview td
+table.results_data_preview, table.results_data_preview th, table.results_data_preview td
 {
     border: 1px solid #4A5C4A;
     padding: 5px;
 }
-table.data_preview th {
+table.results_data_preview th {
     background-color: #ECFFB3;
     color: #526652;
 }
@@ -65,6 +65,52 @@ table.result_data
     border-collapse:collapse;
 }
 table.result_data, table.result_data th, table.result_data td
+{
+    border: none;
+    padding: 0px;
+}
+
+<%-- inputs table style --%>
+table.inputs
+{
+    border-collapse:collapse;
+    margin-bottom:10px;
+    width: 100%;
+}
+table.inputs, table.inputs th, table.inputs td
+{
+    border: 1px solid #4A5C4A;
+    padding: 5px;
+}
+table.inputs th {
+    background-color: #B8E6B8;
+    color: #526652;
+}
+
+<%-- inputs_data_preview table style - to show the actual data value --%>
+table.inputs_data_preview
+{
+    border-collapse:collapse;
+    margin-bottom:10px;
+    margin-left:10px;
+    width:100%;
+}
+table.inputs_data_preview, table.inputs_data_preview th, table.inputs_data_preview td
+{
+    border: 1px solid #4A5C4A;
+    padding: 5px;
+}
+table.inputs_data_preview th {
+    background-color: #ECFFB3;
+    color: #526652;
+}
+
+<%-- input_data table style --%>
+table.input_data
+{
+    border-collapse:collapse;
+}
+table.input_data, table.input_data th, table.input_data td
 {
     border: none;
     padding: 0px;
@@ -122,6 +168,20 @@ table.result_data, table.result_data th, table.result_data td
 }
 
 .output_mime_type{
+    font-style: italic;
+    color: #666;
+}
+
+.input_name{
+    font-weight: bold;
+}
+
+.input_depth{
+    font-weight: normal;
+    color: #000000;
+}
+
+.input_mime_type{
     font-style: italic;
     color: #666;
 }

@@ -45,6 +45,7 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
+import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
 import org.jdom.Text;
 import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
@@ -711,7 +712,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         else{
             inputFormJSP.append("<form name=\"<portlet:namespace/><%= Constants.WORKFLOW_INPUTS_FORM%>\" action=\"<portlet:actionURL/>\" method=\"post\" enctype=\"multipart/form-data\" onSubmit=\"return validateForm(this)\">\n");
 
-            inputFormJSP.append("<table class=\"inputs\">\n");
+            inputFormJSP.append("<table class=\"inputs_entry\">\n");
             inputFormJSP.append("<tr>\n");
             inputFormJSP.append("<th>Name</th>\n");
             inputFormJSP.append("<th>Type</th>\n");
@@ -1264,6 +1265,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
      *  - an empty .t2flow file named after the workflow file just to hold the worflow file name
      *  - an empty file initially named Operating.status to indicate the status of the job
      *  - the input Baclava document in input.baclava file to hold the job's inputs
+     *  - the <job_directory>/inputs directory where input values are individually saved in a directory structure - first level sub-dirs are port names that inside contain the port value
      *  - an empty file named <long>.startdate where <long> represents the Date in miliseconds after the "epoch"
      *  - a file named workflow_run_description.txt to hold the user-entered description for the wf run
      */
@@ -1342,6 +1344,27 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             }
         }
         System.out.println("Workflow Submission Portlet: Job's inputs saved to Baclava file " + inputsFile.getAbsolutePath());
+
+        // Also save the individual input data values in <job_directory>/inputs directory
+        // where first level sub-dirs are port names that inside contain the port value
+        File inputsDir = new File(jobDir, Constants.INPUTS_DIRECTORY_NAME);
+        try{
+            Map<String, DataThing> inputsDataThingMap = DataThingXMLFactory.parseDataDocument(worfklowInputsDocument);
+            try{
+                if (!inputsDir.exists()){ // should not exist but hey
+                    inputsDir.mkdir();
+                }
+                Utils.saveDataThingMapToDisk(inputsDataThingMap, inputsDir);
+            }
+            catch(Exception ex){
+                System.out.println("Workflow Submission Portlet: Failed to create directory "+inputsDir.getAbsolutePath()+" where individual values for all input ports are to be saved.");
+                ex.printStackTrace();
+            }
+        }
+        catch(Exception ex){ // not fatal, so return the result map rather than null
+            System.out.println("Workflow Submission Portlet: An error occured while trying to save the Baclava file with inputs to " + inputsDir.getAbsolutePath());
+            ex.printStackTrace();
+        }
 
         // Save the job's description entered by the user in a file called workflow_run_description.txt
         File wfRunDescriptionFile = new File(jobDir, Constants.WORKFLOW_RUN_DESCRIPTION_FILE);

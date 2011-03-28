@@ -14,7 +14,7 @@ var loadedobjects="";
 var rootdomain="http://"+window.location.hostname;
 var bustcacheparameter="";
 
-function ajaxpage(url, containerid){
+function ajaxpage(textarea_id, url, containerid){
     var page_request = false;
     if (window.XMLHttpRequest){ // if Mozilla, Safari etc
         page_request = new XMLHttpRequest();
@@ -34,7 +34,7 @@ function ajaxpage(url, containerid){
         return false;
     }
     page_request.onreadystatechange=function(){
-        loadpage(page_request, containerid, url);
+        loadpage(textarea_id, page_request, containerid, url);
     }
     if (bustcachevar){ //if bust caching of external page
         bustcacheparameter=(url.indexOf("?")!=-1)? "&"+new Date().getTime() : "?"+new Date().getTime();
@@ -45,7 +45,7 @@ function ajaxpage(url, containerid){
 
 <% long MAX_PREVIEW_DATA_SIZE_IN_KB = WorkflowResultsPortlet.MAX_PREVIEW_DATA_SIZE_IN_KB; %>
 
-function loadpage(page_request, containerid, url){
+function loadpage(textarea_id, page_request, containerid, url){
     if (page_request.readyState == 4 && (page_request.status==200 || window.location.href.indexOf("http")==-1)){
 
         var mime_type = get_url_parameter_value(url, "<%= Constants.MIME_TYPE %>");
@@ -61,10 +61,10 @@ function loadpage(page_request, containerid, url){
             document.getElementById(containerid).innerHTML="MIME type of the data value is undefined - cannot preview the value.<br>Try saving <a target=\"_blank\" href=\""+url+"\">the data value</a> and viewing it in an external application.";
         }
         else if (mime_type.indexOf("text/") === 0 || mime_type.indexOf("application/xml") === 0){
-            document.getElementById(containerid).innerHTML="<textarea id=\"data_preview_textarea\" readonly='true' style=\"width:100%; overflow:visible;\">"+
+            document.getElementById(containerid).innerHTML="<textarea id=\""+textarea_id+"\" readonly='true' style=\"width:100%; overflow:visible;\">"+
                 page_request.responseText+"</textarea><br><br>View <a target=\"_blank\" href=\""+url+
                 "\">the data</a> in a separate browser window or download it by right-clicking on the link and choosing 'Save Link As'.";
-            adjustRows(document.getElementById("data_preview_textarea"));
+            adjustRows(document.getElementById(textarea_id));
         }
         else if (mime_type.indexOf("image/") === 0){
             document.getElementById(containerid).innerHTML="<a href=\""+url+"\" target=\"_blank\"><img onload=\"autoImageResize(this,200)\" src=\""+url+

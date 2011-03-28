@@ -176,8 +176,13 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
                         // See if results are already downloaded from the T2 Server -
                         // if not download and save the Baclava file with outputs now.
-                        Map<String, DataThing> resultDataThingMap = fetchJobResultsForUser(job, request);
+                        Map<String, DataThing> resultDataThingMap = fetchJobResults(job, request);
+
+                        // Also fetch the inputs from the disk
+                        Map<String, DataThing> inputsDataThingMap = fetchJobInputs(job, request);
+
                         request.getPortletSession().setAttribute(Constants.OUTPUTS_MAP_ATTRIBUTE, resultDataThingMap);
+                        request.getPortletSession().setAttribute(Constants.INPUTS_MAP_ATTRIBUTE, inputsDataThingMap);
                         request.getPortletSession().setAttribute(Constants.WORKFLOW_SUBMISSION_JOB, job);
                         break; 
                     } // else just ignore it if it is not in the job id list
@@ -292,6 +297,17 @@ public class WorkflowResultsPortlet extends GenericPortlet{
         // If there was a request to show results of a workflow run
         if (request.getParameter(Constants.FETCH_RESULTS) != null){
 
+            String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(Constants.FETCH_RESULTS)[0], "UTF-8");
+            WorkflowSubmissionJob job = (WorkflowSubmissionJob)request.getPortletSession().getAttribute(Constants.WORKFLOW_SUBMISSION_JOB);
+
+            response.getWriter().println("<br>\n");
+            response.getWriter().println("<hr>\n");
+            response.getWriter().println("<br>\n");
+
+            // Parse the result values from the Baclava file
+            response.getWriter().println("<b>Workflow run id: " + job.getUuid() + "</b><br>\n");
+            response.getWriter().println("<b>Workflow: " + job.getWorkflowFileName() + "</b><br><br>\n");
+
             // But if workflowSubmissionJobs is null or does not contain this job id
             // this is just a page refresh after redeployment of the app/restart of
             // the sever/some form or refresh while the URL parameter FETCH_RESULTS
@@ -304,18 +320,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                     (Map<String, DataThing>)request.getPortletSession().
                     getAttribute(Constants.OUTPUTS_MAP_ATTRIBUTE); // just populated in the processAction method
             if (resultDataThingMap != null){
-                String workflowResourceUUID = URLDecoder.decode(request.getParameterValues(Constants.FETCH_RESULTS)[0], "UTF-8");
-                WorkflowSubmissionJob job = (WorkflowSubmissionJob)request.getPortletSession().getAttribute(Constants.WORKFLOW_SUBMISSION_JOB);
-
-                response.getWriter().println("<br>\n");
-                response.getWriter().println("<hr>\n");
-                response.getWriter().println("<br>\n");
-
-                // Parse the result values from the Baclava file
-                StringBuffer outputsTableHTML = new StringBuffer();
-                response.getWriter().println("<b>Job Id: " + job.getUuid() + "</b><br>\n");
-                response.getWriter().println("<b>Workflow: " + job.getWorkflowFileName() + "</b><br><br>\n");
-
+       
                 String baclavaOutputsFilePath = JOBS_DIR + Constants.FILE_SEPARATOR +
                         user + Constants.FILE_SEPARATOR +
                         workflowResourceUUID + Constants.FILE_SEPARATOR +
@@ -323,75 +328,35 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                 String baclavaOutputsFileURL = request.getContextPath() + FILE_SERVLET_URL + "?"+ Constants.DATA_FILE_PATH +"=" + URLEncoder.encode(baclavaOutputsFilePath, "UTF-8") +
                         "&" + Constants.MIME_TYPE + "=" + URLEncoder.encode(Constants.CONTENT_TYPE_APPLICATION_XML, "UTF-8");
 
-                outputsTableHTML.append("<table width=\"100%\" style=\"margin-bottom:3px;\">\n");
-                outputsTableHTML.append("<tr>\n");
-                outputsTableHTML.append("<td valign=\"bottom\"><div class=\"nohover_nounderline\"><b><a name=\""+Constants.RESULTS_ANCHOR+"\">Results:</a></b></div></td>\n");
-                outputsTableHTML.append("<td align=\"right\">Download the results as a <a target=\"_blank\" href=\"" +
-                        baclavaOutputsFileURL +
-                        "\">single Baclava XML file</a>.<br>" +
-                        "You can view the file with Taverna's DataViewer tool.</td>\n");
-                outputsTableHTML.append("</tr>\n");
-                outputsTableHTML.append("</table>\n");
+                String outputsTableHTML = createHTMLTableFromResultsDataThingMap(baclavaOutputsFileURL, resultDataThingMap, user, workflowResourceUUID, request);
 
-                outputsTableHTML.append("<table width=\"100%\">\n");// table that contains the results table and preview table
-                outputsTableHTML.append("<tr><td style=\"vertical-align:top;\">\n");
-                outputsTableHTML.append("<table class=\"results\">\n");
-                outputsTableHTML.append("<tr>\n");
-                outputsTableHTML.append("<th width=\"20%\">Output port</th>\n");
-                outputsTableHTML.append("<th width=\"15%\">Data</th>\n");
-                outputsTableHTML.append("</tr>\n");
-                int rowCount = 1;
-                // Get all output ports and data associated with them
-                for (Iterator i = resultDataThingMap.keySet().iterator(); i.hasNext();) {
-                        String outputPortName = (String) i.next();
-                        DataThing resultDataThing = resultDataThingMap.get(outputPortName);
+                response.getWriter().println(outputsTableHTML);
 
-                        // Calculate the depth of the result data for the port
-                        Object dataObject = resultDataThing.getDataObject();
-                        int dataDepth = calculateDataDepth(dataObject);
-                        if (rowCount % 2 != 0){
-                            outputsTableHTML.append("<tr>\n");
-                        }
-                        else{
-                            outputsTableHTML.append("<tr style=\"background-color: #F0FFF0;\">\n");
-                        }
-                        String dataTypeBasedOnDepth;
-                        if (dataDepth==0){
-                            dataTypeBasedOnDepth = "single value";
-                        }
-                        else{
-                            dataTypeBasedOnDepth = "list of depth " + dataDepth;
-                        }
-                        // Get data's MIME type as given by the Baclava file
-                        String mimeType = resultDataThing.getMostInterestingMIMETypeForObject(dataObject);
-                        outputsTableHTML.append("<td width=\"20%\" style=\"vertical-align:top;\">\n");
-                        outputsTableHTML.append("<div class=\"output_name\">" + outputPortName + "<span class=\"output_depth\"> - " + dataTypeBasedOnDepth + "</span></div>\n");
-                        outputsTableHTML.append("<div class=\"output_mime_type\">" + mimeType + "</div>\n");
-                        outputsTableHTML.append("</td>");
-                        // Create result tree
-                        String dataFileParentPath = JOBS_DIR + Constants.FILE_SEPARATOR + 
-                                user + Constants.FILE_SEPARATOR +
-                                workflowResourceUUID + Constants.FILE_SEPARATOR +
-                                Constants.OUTPUTS_DIRECTORY_NAME + Constants.FILE_SEPARATOR +
-                                outputPortName;
-                        outputsTableHTML.append("<td width=\"15%\" style=\"vertical-align:top;\"><script language=\"javascript\">" + createResultTree(dataObject, dataDepth, dataDepth, "", dataFileParentPath, mimeType, request) + "</script></td>\n");
-                        rowCount++;
-                        outputsTableHTML.append("</tr>\n");
-                }
-                outputsTableHTML.append("</table>\n");
-                outputsTableHTML.append("</td>\n");
-                outputsTableHTML.append("<td style=\"vertical-align:top;\">\n");
-                outputsTableHTML.append("<table class=\"data_preview\"><tr><th>Data preview</th></tr><tr><td><div style=\"vertical-align:top;\" id=\"data_preview\">When you select a data item - a preview of its value will appear here.</div></td></tr></table>\n");
-                outputsTableHTML.append("</td>\n");
-                outputsTableHTML.append("</tr>\n");
-                outputsTableHTML.append("</table>\n");
-                outputsTableHTML.append("</br>\n");
-                response.getWriter().println(outputsTableHTML.toString());
+                // Add some space before we print the inputs data table
+                response.getWriter().println("<br>\n");
+                response.getWriter().println("<br>\n");
 
-                response.getWriter().println("Download the results as a <a target=\"_blank\" href=\"" + 
-                        baclavaOutputsFileURL+
-                        "\">single Baclava XML file</a>.<br>" +
-                        "You can view the file with Taverna's DataViewer tool.");
+            }
+            // Do the similar thing for the inputs - show them in a table
+            // unless they are null.
+            Map<String, DataThing> inputsDataThingMap = 
+                    (Map<String, DataThing>)request.getPortletSession().
+                    getAttribute(Constants.INPUTS_MAP_ATTRIBUTE); // just populated in the processAction method
+            if (inputsDataThingMap != null){ // if is null - error message will be displayed so do not do anything here
+
+                // Parse the input values from the Baclava file
+                String baclavaInputsFilePath = JOBS_DIR + Constants.FILE_SEPARATOR +
+                        user + Constants.FILE_SEPARATOR +
+                        workflowResourceUUID + Constants.FILE_SEPARATOR +
+                        Constants.INPUTS_BACLAVA_FILE;
+                String baclavaInputsFileURL = request.getContextPath() + FILE_SERVLET_URL + "?"+ Constants.DATA_FILE_PATH +"=" + URLEncoder.encode(baclavaInputsFilePath, "UTF-8") +
+                        "&" + Constants.MIME_TYPE + "=" + URLEncoder.encode(Constants.CONTENT_TYPE_APPLICATION_XML, "UTF-8");
+
+                String inputsTableHTML = createHTMLTableFromInputsDataThingMap(baclavaInputsFileURL, inputsDataThingMap, user, workflowResourceUUID, request);
+
+                response.getWriter().println(inputsTableHTML);
+                response.getWriter().println("<br>\n");
+                response.getWriter().println("<br>\n");
             }
 
             // Clean some attributes which we had to stuff in PortletSession object when
@@ -609,10 +574,10 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                         "?"+ Constants.DATA_FILE_PATH +"=" + URLEncoder.encode(dataFilePath, "UTF-8") +
                         "&" + Constants.MIME_TYPE + "=" + URLEncoder.encode(mimeType, "UTF-8") +
                         "&" + Constants.DATA_SIZE_IN_KB + "=" + URLEncoder.encode(Long.toString(dataSizeInKB), "UTF-8");
-                resultTreeHTML.append("addNode2(\"Value\", \""+dataFileURL+"\", \"data_preview\");\n");
+                resultTreeHTML.append("addNode2(\"result_data\", \"result_data_preview_textarea\", \"Value\", \""+dataFileURL+"\", \"results_data_preview\");\n");
             }
             catch(Exception ex){
-                resultTreeHTML.append("addNode2(\"Value\", \"\", \"data_preview\");\n");
+                resultTreeHTML.append("addNode2(\"result_data\", \"result_data_preview_textarea\", \"Value\", \"\", \"results_data_preview\");\n");
             }
         }
         else{
@@ -624,14 +589,14 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                         "?"+ Constants.DATA_FILE_PATH +"=" + URLEncoder.encode(dataFilePath, "UTF-8") +
                         "&" + Constants.MIME_TYPE + "=" + URLEncoder.encode(mimeType, "UTF-8") +
                         "&" + Constants.DATA_SIZE_IN_KB + "=" + URLEncoder.encode(Long.toString(dataSizeInKB), "UTF-8");
-                    resultTreeHTML.append("addNode2(\"Value" + parentIndex + "\", \""+dataFileURL+"\", \"data_preview\");\n");
+                    resultTreeHTML.append("addNode2(\"result_data\", \"result_data_preview_textarea\", \"Value" + parentIndex + "\", \""+dataFileURL+"\", \"results_data_preview\");\n");
                 }
                 catch(Exception ex){
-                    resultTreeHTML.append("addNode2(\"Value" + parentIndex + "\", \"\", \"data_preview\");\n");
+                    resultTreeHTML.append("addNode2(\"result_data\", \"result_data_preview_textarea\", \"Value" + parentIndex + "\", \"\", \"results_data_preview\");\n");
                 }
             }
             else{ // Result data is a list of (lists of ... ) items
-                resultTreeHTML.append("startParentNode(\"List" + parentIndex +"\");\n");
+                resultTreeHTML.append("startParentNode(\"result_data\", \"List" + parentIndex +"\");\n");
                 for (int i=0; i < ((Collection)dataObject).size(); i++){
                     String newParentIndex = parentIndex.equals("") ? (new Integer(i+1)).toString() : (parentIndex +"."+(i+1));
                     resultTreeHTML.append(createResultTree(((ArrayList)dataObject).get(i),
@@ -646,6 +611,60 @@ public class WorkflowResultsPortlet extends GenericPortlet{
             }
         }
         return resultTreeHTML.toString();
+    }
+
+        /*
+     * Create a inputs tree in JavaScript for an input data item.
+     */
+    private String createInputsTree(Object dataObject, int maxDepth, int currentDepth, String parentIndex, String dataFileParentPath, String mimeType, PortletRequest request){
+
+        StringBuffer inputsTreeHTML = new StringBuffer();
+
+        if (maxDepth == 0){ // Input data is a single item only
+            try{
+                String dataFilePath = dataFileParentPath + Constants.FILE_SEPARATOR + "Value";
+                long dataSizeInKB = Math.round(new File(dataFilePath).length()/1000d); // size in kilobytes (divided by 1000 not 1024!!!)
+                String dataFileURL = request.getContextPath() + FILE_SERVLET_URL +
+                        "?"+ Constants.DATA_FILE_PATH +"=" + URLEncoder.encode(dataFilePath, "UTF-8") +
+                        "&" + Constants.MIME_TYPE + "=" + URLEncoder.encode(mimeType, "UTF-8") +
+                        "&" + Constants.DATA_SIZE_IN_KB + "=" + URLEncoder.encode(Long.toString(dataSizeInKB), "UTF-8");
+                inputsTreeHTML.append("addNode2(\"input_data\", \"input_data_preview_textarea\", \"Value\", \""+dataFileURL+"\", \"inputs_data_preview\");\n");
+            }
+            catch(Exception ex){
+                inputsTreeHTML.append("addNode2(\"input_data\", \"input_data_preview_textarea\", \"Value\", \"\", \"inputs_data_preview\");\n");
+            }
+        }
+        else{
+            if (currentDepth == 0){ // A leaf in the tree
+                try{
+                    String dataFilePath = dataFileParentPath + Constants.FILE_SEPARATOR + "Value" + parentIndex;
+                    long dataSizeInKB = Math.round(new File(dataFilePath).length()/1000d); // size in kilobytes (divided by 1000 not 1024!!!)
+                    String dataFileURL = request.getContextPath() + FILE_SERVLET_URL +
+                        "?"+ Constants.DATA_FILE_PATH +"=" + URLEncoder.encode(dataFilePath, "UTF-8") +
+                        "&" + Constants.MIME_TYPE + "=" + URLEncoder.encode(mimeType, "UTF-8") +
+                        "&" + Constants.DATA_SIZE_IN_KB + "=" + URLEncoder.encode(Long.toString(dataSizeInKB), "UTF-8");
+                    inputsTreeHTML.append("addNode2(\"input_data\", \"input_data_preview_textarea\", \"Value" + parentIndex + "\", \""+dataFileURL+"\", \"inputs_data_preview\");\n");
+                }
+                catch(Exception ex){
+                    inputsTreeHTML.append("addNode2(\"input_data\", \"input_data_preview_textarea\", \"Value" + parentIndex + "\", \"\", \"inputs_data_preview\");\n");
+                }
+            }
+            else{ // Result data is a list of (lists of ... ) items
+                inputsTreeHTML.append("startParentNode(\"input_data\", \"List" + parentIndex +"\");\n");
+                for (int i=0; i < ((Collection)dataObject).size(); i++){
+                    String newParentIndex = parentIndex.equals("") ? (new Integer(i+1)).toString() : (parentIndex +"."+(i+1));
+                    inputsTreeHTML.append(createResultTree(((ArrayList)dataObject).get(i),
+                            maxDepth,
+                            currentDepth - 1,
+                            newParentIndex,
+                            dataFileParentPath + Constants.FILE_SEPARATOR + "List" + parentIndex,
+                            mimeType,
+                            request));
+                }
+                inputsTreeHTML.append("endParentNode();\n");
+            }
+        }
+        return inputsTreeHTML.toString();
     }
 
     /*
@@ -789,7 +808,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
      * by downloading from the T2 Server, parse it and return the map of
      * data objects.
      */
-    private Map<String, DataThing> fetchJobResultsForUser(WorkflowSubmissionJob job, PortletRequest request){
+    private Map<String, DataThing> fetchJobResults(WorkflowSubmissionJob job, PortletRequest request){
 
         synchronized(resultsLock){
             String workflowResultsBaclavaFileURL = T2_SERVER_URL + Constants.RUNS_URL + "/"+ job.getUuid() + Constants.WD_URL + "/" + Constants.BACLAVA_OUTPUT_FILE_NAME;
@@ -815,7 +834,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                             inputStream = url.openStream();
                             // Parse the result values from the downloaded Baclava file
                             // and save the file locally
-                            resultDataThingMap = parseBaclavaFile(inputStream, true, jobDir, request);
+                            resultDataThingMap = getDataThingMapWithResultsFromBaclava(inputStream, true, jobDir, request);
                         }
                         catch(Exception ex){
                             System.out.println("Workflow Results Portlet: An error occured while trying to download the XML Baclava file with outputs for job " + job.getUuid() + " from the Server.");
@@ -838,7 +857,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                             return null;
                         }
                         // Parse the result values from the Baclava file
-                        resultDataThingMap = parseBaclavaFile(inputStream, false, null, request);
+                        resultDataThingMap = getDataThingMapWithResultsFromBaclava(inputStream, false, jobDir, request);
                     }
 
                 }
@@ -846,6 +865,51 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
             return resultDataThingMap;
         }
+    }
+
+    /*
+     * Fetch a Baclava file with workflow input values saved locally on a disk.
+     */
+    private Map<String, DataThing> fetchJobInputs(WorkflowSubmissionJob job, PortletRequest request){
+    
+        // Try to get the Baclava file from the local disk.
+        // Get the current user first.
+        String user = (String)request.getPortletSession().
+            getAttribute(Constants.USER,
+            PortletSession.APPLICATION_SCOPE);
+
+        File userDir = new File (JOBS_DIR, user);
+        File[] userJobsDir = userDir.listFiles(dirFilter);
+        Map<String, DataThing> inputsDataThingMap = null;
+        for (File jobDir : userJobsDir){
+            if (jobDir.getName().equals(job.getUuid())){
+                String[] inputsBaclavaFiles = jobDir.list(inputsBaclavaFileFilter);
+                if (inputsBaclavaFiles.length == 0){ // no such file on local disk - send an error message back to the user
+                    System.out.println("Workflow Results Portlet: No XML Baclava file with inputs for job " + job.getUuid() + " found on the local disk at " + jobDir.getAbsolutePath());
+                    request.setAttribute(Constants.ERROR_MESSAGE, "No file with inputs for job " + job.getUuid() + " found.");
+                    return null;
+                }
+                else {
+                        InputStream inputStream;
+                        try{ // Read from the Baclava file
+                            File workflowInputsBaclavaFile  = new File (jobDir, Constants.INPUTS_BACLAVA_FILE);
+                            System.out.println("Workflow Results Portlet: Fetching inputs from local disk " + workflowInputsBaclavaFile.getAbsolutePath());
+                            inputStream = new FileInputStream(workflowInputsBaclavaFile);
+                        }
+                        catch(Exception ex){
+                            System.out.println("Workflow Results Portlet: An error occured while trying to open the XML Baclava file with inputs for job " + job.getUuid() + ".");
+                            ex.printStackTrace();
+                            request.setAttribute(Constants.ERROR_MESSAGE, "An error occured while trying to open file with inputs for job " + job.getUuid() + ".<br>" + ex.getMessage());
+                            return null;
+                        }
+                        // Parse the input values from the Baclava file
+                        inputsDataThingMap = getDataThingMapWithInputsFromBaclava(inputStream, jobDir, request);
+                    }
+
+                }
+            }
+
+            return inputsDataThingMap;
     }
 
     /* Polls statuses of all unfinished jobs for all users and
@@ -877,7 +941,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                             inputStream = url.openStream();
                             // Parse the result values from the downloaded Baclava file
                             // and save the file locally
-                            parseBaclavaFile(inputStream, true, jobDir, null);
+                            getDataThingMapWithResultsFromBaclava(inputStream, true, jobDir, null);
                         }
                         catch(Exception ex){
                             System.out.println("Workflow Results Portlet (update job status thread): An error occured while trying to download the XML Baclava file with outputs for job " + jobDir.getName() + " from the Server.");
@@ -909,7 +973,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                                 inputStream = url.openStream();
                                 // Parse the result values from the downloaded Baclava file
                                 // and save the file locally
-                                parseBaclavaFile(inputStream, true, jobDir, null);
+                                getDataThingMapWithResultsFromBaclava(inputStream, true, jobDir, null);
                             }
                             catch(Exception ex){
                                 System.out.println("Workflow Results Portlet (update job status thread): An error occured while trying to download the XML Baclava file with outputs for job " + jobDir.getName() + " from the Server.");
@@ -925,118 +989,11 @@ public class WorkflowResultsPortlet extends GenericPortlet{
    }
 
     /*
-     * Saves a map of data objects for all workflow output ports
-     * to individual files. Each port gets its own directory where
-     * its data gets saved and all of these are contained in the
-     * <job_directory>/outputs directory.
+     * Parse the input stream with workflow run results
+     * (read from a Baclava XML file) into a DataThing map
+     * and optionally save it to disk.
      */
-    private void saveDataThingMapToDisk(Map<String, DataThing> resultDataThingMap, File jobDir){
-        File outputsDir = new File(jobDir, Constants.OUTPUTS_DIRECTORY_NAME);
-        try{
-            if (!outputsDir.exists()){ // should not exist but hey
-                outputsDir.mkdir();
-            }
-        }
-        catch(Exception ex){// not fatal, so return the result map rather than null
-            System.out.println("Workflow Results Portlet: Failed to create a directory "+outputsDir.getAbsolutePath()+" where individual values for all output ports are to be saved.");
-            ex.printStackTrace();
-        }
-
-        for (String outputPortName : resultDataThingMap.keySet()){
-            File outputPortDir = new File (outputsDir, outputPortName);
-            try{
-                if (!outputPortDir.exists()){// should not exist but hey
-                    outputPortDir.mkdir();
-                }
-                int dataDepth = calculateDataDepth(resultDataThingMap.get(outputPortName).getDataObject());
-                if (!saveResultsForPort(resultDataThingMap.get(outputPortName).getDataObject(), outputPortDir, dataDepth, dataDepth, "")){
-                    System.out.println("Workflow Results Portlet: Failed to save individual output data item for output port "+outputPortName + " to " + outputPortDir.getAbsolutePath());
-                }
-            }
-            catch(Exception ex){
-                System.out.println("Workflow Results Portlet: Failed to create a directory "+outputPortDir.getAbsolutePath()+" where result value for output port "+outputPortName+" are to be saved.");
-                ex.printStackTrace();
-            }
-        }
-    }
-
-    private boolean saveResultsForPort(Object dataObject, File parentDirectory, int maxDepth, int currentDepth, String parentIndex){
-
-        boolean success = true;
-
-        if (maxDepth == 0){ // Result data is a single item only
-            return saveDataObjectToFile(new File(parentDirectory, "Value"), dataObject);
-        }
-        else{
-            if (currentDepth == 0){ // A leaf in the tree
-                return saveDataObjectToFile(new File(parentDirectory, "Value" + parentIndex), dataObject);
-            }
-            else{ // Result data is a list of (lists of ... ) items
-                File currentDirectory;
-                if (parentIndex.equals("")){
-                    currentDirectory = new File(parentDirectory, "List");
-                    try{
-                        currentDirectory.mkdir();
-                    }
-                    catch(Exception ex){
-                        System.out.println("Workflow Results Portlet: Failed to create a directory "+currentDirectory.getAbsolutePath());
-                        ex.printStackTrace();
-                        return false;
-                    }
-                }
-                else{
-                    currentDirectory = new File(parentDirectory, "List" + parentIndex);
-                    try{
-                        currentDirectory.mkdir();
-                    }
-                    catch(Exception ex){
-                        System.out.println("Workflow Results Portlet: Failed to create a directory "+currentDirectory.getAbsolutePath());
-                        ex.printStackTrace();
-                        return false;
-                    }
-                }
-                for (int i=0; i < ((Collection)dataObject).size(); i++){
-                    String newParentIndex = parentIndex.equals("") ? (new Integer(i+1)).toString() : (parentIndex +"."+(i+1));
-                    success = success && saveResultsForPort(((ArrayList)dataObject).get(i), currentDirectory, maxDepth, currentDepth - 1, newParentIndex);
-                }
-            }
-        }
-        return success;
-    }
-
-    private boolean saveDataObjectToFile(File file, Object dataObject){
-        if (dataObject instanceof String){
-            try{
-                FileUtils.writeStringToFile(file, (String)dataObject, "UTF-8");
-                return true;
-            }
-            catch(Exception ex){
-                System.out.println("Workflow Results Portlet: Failed to save data object to " + file);
-                ex.printStackTrace();
-                return false;
-            }
-        }
-        else if (dataObject instanceof byte[]){
-            try{
-                FileUtils.writeByteArrayToFile(file, (byte[])dataObject);
-                return true;
-            }
-            catch(Exception ex){
-                System.out.println("Workflow Results Portlet: Failed to save data object to " + file);
-                ex.printStackTrace();
-                return false;
-            }
-        }
-        else{ // unrecognised data type
-            return false;
-        }
-    }
-
-    /*
-     * Parse the input stream into a Baclava document and optionally save the
-     * document to a disk.
-     */
-    private Map<String, DataThing> parseBaclavaFile(InputStream inputStream, boolean saveLocally, File jobDir, PortletRequest request){
+    private Map<String, DataThing> getDataThingMapWithResultsFromBaclava(InputStream inputStream, boolean saveLocally, File jobDir, PortletRequest request){
  
         synchronized(resultsLock){
             Map<String, DataThing> resultDataThingMap = null;
@@ -1049,8 +1006,21 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                         File outputsFile = new File (jobDir, Constants.OUTPUTS_BACLAVA_FILE);
                         FileUtils.writeStringToFile(outputsFile, new XMLOutputter().outputString(doc));
                         System.out.println("Workflow Results Portlet: Saved the XML Baclava file with outputs of job " + jobDir.getName() + " to " + outputsFile.getAbsolutePath());
-                        // Also save the individual data objects to files in <job_directory>/outputs
-                        saveDataThingMapToDisk(resultDataThingMap, jobDir);
+              
+                        // Also save the individual output data values in
+                        // <job_directory>/outputs directory where first level
+                        // sub-dirs are port names that inside contain the data value for an output port
+                        File outputsDir = new File(jobDir, Constants.OUTPUTS_DIRECTORY_NAME);
+                        try{
+                            if (!outputsDir.exists()){ // should not exist but hey
+                                outputsDir.mkdir();
+                            }
+                            Utils.saveDataThingMapToDisk(resultDataThingMap, outputsDir);
+                        }
+                        catch(Exception ex){
+                            System.out.println("Workflow Results Portlet: Failed to create directory "+outputsDir.getAbsolutePath()+" where individual values for all output ports are to be saved.");
+                            ex.printStackTrace();
+                        }
                     }
                     catch(Exception ex){ // not fatal, so return the result map rather than null
                         System.out.println("Workflow Results Portlet: An error occured while trying to save the Baclava file with outputs to " + jobDir.getAbsolutePath() + Constants.FILE_SEPARATOR + Constants.OUTPUTS_BACLAVA_FILE);
@@ -1077,6 +1047,219 @@ public class WorkflowResultsPortlet extends GenericPortlet{
             }
             return resultDataThingMap;
         }
+    }
+
+     /*
+     * Parse the input stream with workflow inputs (read from a Baclava XML file)
+     * into a DataThing map.
+     */
+    private Map<String, DataThing> getDataThingMapWithInputsFromBaclava(InputStream inputStream, File jobDir, PortletRequest request){
+
+            Map<String, DataThing> inputsDataThingMap = null;
+            try{
+                SAXBuilder builder = new SAXBuilder();
+                Document doc = builder.build(inputStream);
+                inputsDataThingMap = DataThingXMLFactory.parseDataDocument(doc);
+            }
+            catch(Exception ex){
+                System.out.println("Workflow Results Portlet: An error occured while trying to parse the XML Baclava file with inputs for job " + jobDir.getName() + ".");
+                ex.printStackTrace();
+                if (request != null){
+                    request.setAttribute(Constants.ERROR_MESSAGE, "An error occured while trying to parse the inputs for job " + jobDir.getName() + ".");
+                }
+                return null;
+            }
+            finally{
+                try{
+                    inputStream.close();
+                }
+                catch(Exception ex2){
+                    // Do nothing
+                }
+            }
+            return inputsDataThingMap;
+    }
+
+    /**
+     * Creates a HTML table that contains a table with data structure contained
+     * in a DataThing map (port->data) that is linked to a data preview table where
+     * actual data values can be viewed once user clicks on the link. 
+     * 
+     * The DataThing map contains workflow results.
+     */
+    private String createHTMLTableFromResultsDataThingMap(String baclavaFileURL, Map<String, DataThing> dataThingMap, String user, String workflowResourceUUID, PortletRequest request) {
+
+        // Parse the data values from the Baclava file
+        StringBuffer dataTableHTML = new StringBuffer();
+
+       if (dataThingMap == null || dataThingMap.keySet().isEmpty()){ // should not be null
+            dataTableHTML.append("<p><b>Results:</b></p><p>No results available for this workflow run.</p>");
+            return dataTableHTML.toString();
+        }
+
+        dataTableHTML.append("<table width=\"100%\" style=\"margin-bottom:3px;\">\n");
+        dataTableHTML.append("<tr>\n");
+        dataTableHTML.append("<td valign=\"bottom\"><div class=\"nohover_nounderline\"><b><a name=\"" + Constants.RESULTS_ANCHOR + "\">Results:</a></b></div></td>\n");
+        dataTableHTML.append("<td align=\"right\">Download the results as a <a target=\"_blank\" href=\""
+                + baclavaFileURL
+                + "\">single Baclava XML file</a>.<br>"
+                + "You can view the file with Taverna's DataViewer tool.</td>\n");
+        dataTableHTML.append("</tr>\n");
+        dataTableHTML.append("</table>\n");
+
+        dataTableHTML.append("<table width=\"100%\">\n");// table that contains the data links table and data preview table
+        dataTableHTML.append("<tr><td style=\"vertical-align:top;\">\n");
+        dataTableHTML.append("<table class=\"results\">\n");
+        dataTableHTML.append("<tr>\n");
+        dataTableHTML.append("<th width=\"20%\">Output port</th>\n");
+        dataTableHTML.append("<th width=\"15%\">Data</th>\n");
+        dataTableHTML.append("</tr>\n");
+        int rowCount = 1;
+        // Get all the ports and data associated with them
+        for (Iterator i = dataThingMap.keySet().iterator(); i.hasNext();) {
+            String portName = (String) i.next();
+            DataThing dataThing = dataThingMap.get(portName);
+
+            // Calculate the depth of the data for the port
+            Object dataObject = dataThing.getDataObject();
+            int dataDepth = calculateDataDepth(dataObject);
+            if (rowCount % 2 != 0) {
+                dataTableHTML.append("<tr>\n");
+            } else {
+                dataTableHTML.append("<tr style=\"background-color: #F0FFF0;\">\n");
+            }
+            String dataTypeBasedOnDepth;
+            if (dataDepth == 0) {
+                dataTypeBasedOnDepth = "single value";
+            } else {
+                dataTypeBasedOnDepth = "list of depth " + dataDepth;
+            }
+            // Get data's MIME type as given by the Baclava file
+            String mimeType = dataThing.getMostInterestingMIMETypeForObject(dataObject);
+            dataTableHTML.append("<td width=\"20%\" style=\"vertical-align:top;\">\n");
+            dataTableHTML.append("<div class=\"output_name\">" + portName + "<span class=\"output_depth\"> - " + dataTypeBasedOnDepth + "</span></div>\n");
+            dataTableHTML.append("<div class=\"output_mime_type\">" + mimeType + "</div>\n");
+            dataTableHTML.append("</td>");
+
+            // Create the data tree (with links to actual data vales)
+            String dataFileParentPath = null;
+
+            dataFileParentPath = JOBS_DIR + Constants.FILE_SEPARATOR
+                    + user + Constants.FILE_SEPARATOR
+                    + workflowResourceUUID + Constants.FILE_SEPARATOR
+                    + Constants.OUTPUTS_DIRECTORY_NAME + Constants.FILE_SEPARATOR
+                    + portName;
+
+            dataTableHTML.append("<td width=\"15%\" style=\"vertical-align:top;\"><script language=\"javascript\">" + createResultTree(dataObject, dataDepth, dataDepth, "", dataFileParentPath, mimeType, request) + "</script></td>\n");
+            rowCount++;
+            dataTableHTML.append("</tr>\n");
+        }
+        dataTableHTML.append("</table>\n");
+        dataTableHTML.append("</td>\n");
+        dataTableHTML.append("<td style=\"vertical-align:top;\">\n");
+        dataTableHTML.append("<table class=\"results_data_preview\"><tr><th>Data preview</th></tr><tr><td><div style=\"vertical-align:top;\" id=\"results_data_preview\">When you select a data item - a preview of its value will appear here.</div></td></tr></table>\n");
+        dataTableHTML.append("</td>\n");
+        dataTableHTML.append("</tr>\n");
+        dataTableHTML.append("</table>\n");
+        dataTableHTML.append("</br>\n");
+
+        dataTableHTML.append("Download the results as a <a target=\"_blank\" href=\""
+            + baclavaFileURL
+            + "\">single Baclava XML file</a>.<br>"
+            + "You can view the file with Taverna's DataViewer tool.");
+
+        return dataTableHTML.toString();
+    }
+
+    /**
+     * Creates a HTML table that contains a table with data structure contained
+     * in a DataThing map (port->data) that is linked to a data preview table where
+     * actual data values can be viewed once user clicks on the link.
+     *
+     * The DataThing map contains workflow inputs.
+     */
+    private String createHTMLTableFromInputsDataThingMap(String baclavaFileURL, Map<String, DataThing> dataThingMap, String user, String workflowResourceUUID, PortletRequest request) {
+
+        // Parse the data values from the Baclava file
+        StringBuffer dataTableHTML = new StringBuffer();
+
+        if (dataThingMap == null || dataThingMap.keySet().isEmpty()){ // should not be nulls
+            dataTableHTML.append("<p><b>Inputs:</b></p><p>This workflow has no inputs.</p>");
+            return dataTableHTML.toString();
+        }
+
+        dataTableHTML.append("<table width=\"100%\" style=\"margin-bottom:3px;\">\n");
+        dataTableHTML.append("<tr>\n");
+        dataTableHTML.append("<td valign=\"bottom\"><div class=\"nohover_nounderline\"><b>Inputs:</b></div></td>\n");
+        dataTableHTML.append("<td align=\"right\">Download the inputs as a <a target=\"_blank\" href=\""
+                + baclavaFileURL
+                + "\">single Baclava XML file</a>.<br>"
+                + "You can view the file with Taverna's DataViewer tool.</td>\n");
+        dataTableHTML.append("</tr>\n");
+        dataTableHTML.append("</table>\n");
+
+        dataTableHTML.append("<table width=\"100%\">\n");// table that contains the data links table and data preview table
+        dataTableHTML.append("<tr><td style=\"vertical-align:top;\">\n");
+        dataTableHTML.append("<table class=\"inputs\">\n");
+        dataTableHTML.append("<tr>\n");
+        dataTableHTML.append("<th width=\"20%\">Input port</th>\n");
+        dataTableHTML.append("<th width=\"15%\">Data</th>\n");
+        dataTableHTML.append("</tr>\n");
+        int rowCount = 1;
+        // Get all the ports and data associated with them
+        for (Iterator i = dataThingMap.keySet().iterator(); i.hasNext();) {
+            String portName = (String) i.next();
+            DataThing dataThing = dataThingMap.get(portName);
+
+            // Calculate the depth of the data for the port
+            Object dataObject = dataThing.getDataObject();
+            int dataDepth = calculateDataDepth(dataObject);
+            if (rowCount % 2 != 0) {
+                dataTableHTML.append("<tr>\n");
+            } else {
+                dataTableHTML.append("<tr style=\"background-color: #F0FFF0;\">\n");
+            }
+            String dataTypeBasedOnDepth;
+            if (dataDepth == 0) {
+                dataTypeBasedOnDepth = "single value";
+            } else {
+                dataTypeBasedOnDepth = "list of depth " + dataDepth;
+            }
+            // Get data's MIME type as given by the Baclava file
+            String mimeType = dataThing.getMostInterestingMIMETypeForObject(dataObject);
+            dataTableHTML.append("<td width=\"20%\" style=\"vertical-align:top;\">\n");
+            dataTableHTML.append("<div class=\"input_name\">" + portName + "<span class=\"input_depth\"> - " + dataTypeBasedOnDepth + "</span></div>\n");
+            dataTableHTML.append("<div class=\"input_mime_type\">" + mimeType + "</div>\n");
+            dataTableHTML.append("</td>");
+
+            // Create the data tree (with links to actual data vales)
+            String dataFileParentPath = null;
+
+            dataFileParentPath = JOBS_DIR + Constants.FILE_SEPARATOR
+                    + user + Constants.FILE_SEPARATOR
+                    + workflowResourceUUID + Constants.FILE_SEPARATOR
+                    + Constants.INPUTS_DIRECTORY_NAME + Constants.FILE_SEPARATOR
+                    + portName;
+
+            dataTableHTML.append("<td width=\"15%\" style=\"vertical-align:top;\"><script language=\"javascript\">" + createInputsTree(dataObject, dataDepth, dataDepth, "", dataFileParentPath, mimeType, request) + "</script></td>\n");
+            rowCount++;
+            dataTableHTML.append("</tr>\n");
+        }
+        dataTableHTML.append("</table>\n");
+        dataTableHTML.append("</td>\n");
+        dataTableHTML.append("<td style=\"vertical-align:top;\">\n");
+        dataTableHTML.append("<table class=\"inputs_data_preview\"><tr><th>Data preview</th></tr><tr><td><div style=\"vertical-align:top;\" id=\"inputs_data_preview\">When you select a data item - a preview of its value will appear here.</div></td></tr></table>\n");
+        dataTableHTML.append("</td>\n");
+        dataTableHTML.append("</tr>\n");
+        dataTableHTML.append("</table>\n");
+        dataTableHTML.append("</br>\n");
+
+        dataTableHTML.append("Download the inputs as a <a target=\"_blank\" href=\""
+            + baclavaFileURL
+            + "\">single Baclava XML file</a>.<br>"
+            + "You can view the file with Taverna's DataViewer tool.");
+
+        return dataTableHTML.toString();
     }
 
     private void deleteJobForUser(String jobId, PortletRequest request){
