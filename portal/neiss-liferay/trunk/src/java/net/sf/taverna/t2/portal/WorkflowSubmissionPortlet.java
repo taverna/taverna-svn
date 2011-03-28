@@ -45,6 +45,7 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
+import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
 import org.jdom.Text;
 import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
@@ -702,7 +703,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         else{
             inputFormJSP.append("<form name=\"<portlet:namespace/><%= Constants.WORKFLOW_INPUTS_FORM%>\" action=\"<portlet:actionURL/>\" method=\"post\" enctype=\"multipart/form-data\" onSubmit=\"return validateForm(this)\">\n");
 
-            inputFormJSP.append("<table class=\"inputs\">\n");
+            inputFormJSP.append("<table class=\"inputs_entry\">\n");
             inputFormJSP.append("<tr>\n");
             inputFormJSP.append("<th>Name</th>\n");
             inputFormJSP.append("<th>Type</th>\n");
@@ -1255,34 +1256,33 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
      *  - an empty .t2flow file named after the workflow file just to hold the worflow file name
      *  - an empty file initially named Operating.status to indicate the status of the job
      *  - the input Baclava document in input.baclava file to hold the job's inputs
+     *  - the <job_directory>/inputs directory where input values are individually saved in a directory structure - first level sub-dirs are port names that inside contain the port value
      *  - an empty file named <long>.startdate where <long> represents the Date in miliseconds after the "epoch"
      *  - a file named workflow_run_description.txt to hold the user-entered description for the wf run
      */
-    private void persistJobOnDisk(PortletRequest request, WorkflowSubmissionJob job, Document worfklowInputsDocument){
+    private void persistJobOnDisk(PortletRequest request, WorkflowSubmissionJob job, Document worfklowInputsDocument) {
 
         // Get the current user
-        String user = (String)request.getPortletSession().
-                                    getAttribute(Constants.USER,
-                                    PortletSession.APPLICATION_SCOPE); // should not be null at this point
-        File userDir = new File (JOBS_DIR, user);
+        String user = (String) request.getPortletSession().
+                getAttribute(Constants.USER,
+                PortletSession.APPLICATION_SCOPE); // should not be null at this point
+        File userDir = new File(JOBS_DIR, user);
 
         // Create a new directory for this job
         File jobDir = new File(userDir, job.getUuid());
-        try{ // should not have existed so far
+        try { // should not have existed so far
             jobDir.mkdir();
-        }
-        catch(Exception ex){
-            System.out.println("Workflow Submission Portlet: Failed to create a directory "+jobDir.getAbsolutePath()+" to save the job.");
+        } catch (Exception ex) {
+            System.out.println("Workflow Submission Portlet: Failed to create a directory " + jobDir.getAbsolutePath() + " to save the job.");
             ex.printStackTrace();
         }
-        System.out.println("Workflow Submission Portlet: Job's directory " + jobDir.getAbsolutePath() + " created." );
+        System.out.println("Workflow Submission Portlet: Job's directory " + jobDir.getAbsolutePath() + " created.");
 
         // Set the status to "Operating" by creating an empty file
         File statusFile = new File(jobDir, Constants.JOB_STATUS_OPERATING + Constants.STATUS_FILE_EXT);
-        try{
+        try {
             FileUtils.touch(statusFile);
-        }
-        catch(Exception ex){
+        } catch (Exception ex) {
             System.out.println("Workflow Submission Portlet: Failed to create the job's status file " + statusFile.getAbsolutePath());
             ex.printStackTrace();
         }
@@ -1290,10 +1290,9 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
         // Save the workflow name by creating an empty file with the same name
         File workflowFile = new File(jobDir, job.getWorkflowFileName() + Constants.T2_FLOW_FILE_EXT);
-        try{
+        try {
             FileUtils.touch(workflowFile);
-        }
-        catch(Exception ex){
+        } catch (Exception ex) {
             System.out.println("Workflow Submission Portlet: Failed to create the job's status file " + workflowFile.getAbsolutePath());
             ex.printStackTrace();
         }
@@ -1301,10 +1300,9 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
         // Save the job's start date by creating an empty file named after the date
         File startdateFile = new File(jobDir, job.getStartDate().getTime() + Constants.STARTDATE_FILE_EXT);
-        try{
+        try {
             FileUtils.touch(startdateFile);
-        }
-        catch(Exception ex){
+        } catch (Exception ex) {
             System.out.println("Workflow Submission Portlet: Failed to create the job's start date file " + startdateFile.getAbsolutePath());
             ex.printStackTrace();
         }
@@ -1313,38 +1311,53 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         // Save the job's input Baclava file in a file called inputs.baclava
         File inputsFile = new File(jobDir, Constants.INPUTS_BACLAVA_FILE);
         java.io.FileWriter writer = null;
-        try{
+        try {
             XMLOutputter out = new XMLOutputter();
             writer = new java.io.FileWriter(inputsFile);
             out.output(worfklowInputsDocument, writer);
             writer.flush();
             writer.close();
-        }
-        catch(Exception ex){
+        } catch (Exception ex) {
             System.out.println("Workflow Submission Portlet: Failed to save job's inputs to file " + inputsFile.getAbsolutePath());
             ex.printStackTrace();
-        }
-        finally{
-            try{
+        } finally {
+            try {
                 writer.close();
-            }
-            catch (Exception ex2){
+            } catch (Exception ex2) {
                 // Ignore
             }
         }
         System.out.println("Workflow Submission Portlet: Job's inputs saved to Baclava file " + inputsFile.getAbsolutePath());
 
+        // Also save the individual input data values in <job_directory>/inputs directory
+        // where first level sub-dirs are port names that inside contain the port value
+        File inputsDir = new File(jobDir, Constants.INPUTS_DIRECTORY_NAME);
+        try {
+            Map<String, DataThing> inputsDataThingMap = DataThingXMLFactory.parseDataDocument(worfklowInputsDocument);
+            try {
+                if (!inputsDir.exists()) { // should not exist but hey
+                    inputsDir.mkdir();
+                }
+                Utils.saveDataThingMapToDisk(inputsDataThingMap, inputsDir);
+            } catch (Exception ex) {
+                System.out.println("Workflow Submission Portlet: Failed to create directory " + inputsDir.getAbsolutePath() + " where individual values for all input ports are to be saved.");
+                ex.printStackTrace();
+            }
+        } catch (Exception ex) { // not fatal, so return the result map rather than null
+            System.out.println("Workflow Submission Portlet: An error occured while trying to save the Baclava file with inputs to " + inputsDir.getAbsolutePath());
+            ex.printStackTrace();
+        }
+
         // Save the job's description entered by the user in a file called workflow_run_description.txt
         File wfRunDescriptionFile = new File(jobDir, Constants.WORKFLOW_RUN_DESCRIPTION_FILE);
         String wfRunDescription = job.getWorkflowRunDescription(); // should not be null, at least empty string
         System.out.println("Workflow Submission Portlet: wfRunDescription " + wfRunDescription);
-        if (wfRunDescription == null){
+        if (wfRunDescription == null) {
             wfRunDescription = ""; // empty description
         }
-        try{
+        try {
             FileUtils.writeStringToFile(wfRunDescriptionFile, wfRunDescription, "UTF-8");
-        }
-        catch(Exception ex){
+        } catch (Exception ex) {
             System.out.println("Workflow Submission Portlet: Failed to save job's description to file " + wfRunDescriptionFile.getAbsolutePath());
             ex.printStackTrace();
         }

@@ -126,7 +126,7 @@ public class FileServingServlet extends HttpServlet {
                 }
                 else{
                     response.setContentType("text/plain");
-                    response.getWriter().write("Error: The file with the result data does not exist.");
+                    response.getWriter().write("Error: The file with the requested data does not exist.");
                     System.err.println("File Serving Servlet: The file "+ dataFilePath +" does not exist.");
                 }
             }
@@ -139,7 +139,7 @@ public class FileServingServlet extends HttpServlet {
         catch (IOException ex) {
             try{
                 response.setContentType("text/plain");
-                response.getWriter().write("An error occured while trying to read the file with the result data.\n" + ex.getMessage());
+                response.getWriter().write("An error occured while trying to read the file with the requested data.\n" + ex.getMessage());
                 System.out.println("File Serving Servlet: An error occured while trying to read the file " + dataFilePath);
                 ex.printStackTrace();
             }

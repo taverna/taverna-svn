@@ -23,9 +23,11 @@ public class WorkflowSubmissionJob {
     // Description of the job as entered by the user
     private String workflowRunDescription;
 
+    // No point in caching inputs and outputs, they can be large.
+    // Load them from the file on disk where they are saved each
+    // time user wants to see them.
     // Workflow inputs
     private Object inputs;
-
     // Workflow outputs
     private Object outputs;
 

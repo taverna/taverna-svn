@@ -66,8 +66,8 @@ function collapseAll(){
 	}
 }
 
-function startParentNode(text){
-	document.write('<table class="result_data">');
+function startParentNode(table_class, text){
+	document.write('<table class="'+table_class+'">');
 	document.write('  <tr>');
 	document.write('    <td><img src="<%= imagesPath %>plus.png" name="parentNodeImage' + parentNodeCount + '" onclick="onParentNodeImageClick(this)" style="cursor:pointer;"/></td>');
 	document.write('    <td><a class="parentTreeNode" name="parentNodeText' + parentNodeCount + '" onclick="onParentNodeTextClick(this)" style="cursor:pointer;">');
@@ -85,8 +85,8 @@ function endParentNode(){
 	document.write('  </tr>');
 	document.write('</table>');
 }
-function addNode(text, url, target){
-	document.write('<table class="result_data">');
+function addNode(table_class, text, url, target){
+	document.write('<table class="'+table_class+'">');
 	document.write('  <tr>');
 	document.write('	<td>');
         document.write('<a href="' + url + '" target="' + target + '" onfocus="this.hideFocus=true;" style="outline-style:none;">');
@@ -98,21 +98,21 @@ function addNode(text, url, target){
 	document.write('</table>');
         this.nodeCount = this.nodeCount + 1;
 }
-function addNode2(text, url, content_id){
-	document.write('<table class="result_data">');
+function addNode2(table_class, textarea_id, text, url, content_id){
+	document.write('<table class="'+table_class+'">');
 	document.write('  <tr>');
 	document.write('	<td>');
-        document.write('<a href="javascript:ajaxpage(\''+url+'\', \''+content_id+'\');" onfocus="this.hideFocus=true;" style="outline-style:none;">');
+        document.write('<a href="javascript:ajaxpage(\''+textarea_id+'\', \''+url+'\', \''+content_id+'\');" onfocus="this.hideFocus=true;" style="outline-style:none;">');
 	document.write('<img src="<%= imagesPath %>page.png" border="0" name="nodeImage' + this.nodeCount + '" onclick="onNodeImageClick(this);" />');
         document.write('</a>');
 	document.write('	</td>');
-	document.write('    <td><a name="nodeText' + this.nodeCount + '" onclick="onNodeTextClick(this);" href="javascript:ajaxpage(\''+url+'\', \''+content_id +'\');" class="normalTreeNode" onfocus="this.hideFocus=true;" style="outline-style:none;">' + text + '</a></td>');
+	document.write('    <td><a name="nodeText' + this.nodeCount + '" onclick="onNodeTextClick(this);" href="javascript:ajaxpage(\''+textarea_id+'\', \''+url+'\', \''+content_id +'\');" class="normalTreeNode" onfocus="this.hideFocus=true;" style="outline-style:none;">' + text + '</a></td>');
 	document.write('  </tr>');
 	document.write('</table>');
         this.nodeCount = this.nodeCount + 1;
 }
-function addExpandCollapseAll(){
-	document.write('<table class="result_data">');
+function addExpandCollapseAll(table_class){
+	document.write('<table class="'+table_class+'">');
 	document.write('  <tr>');
 	document.write('    <td align="right" width="50%"><a onclick="expandAll();" class="expandCollapse" style="cursor:pointer;">Expand All</a></td>');
 	document.write('    <td alight="left" width="50%"><a onclick="collapseAll();" class="expandCollapse" style="cursor:pointer;">Collapse All</a></td>');
