@@ -51,9 +51,9 @@ public class RshellConnectionSettings implements Serializable {
 
 	private int port = DEFAULT_PORT;
 
-	private String username = DEFAULT_USERNAME;
+	private transient String username = DEFAULT_USERNAME;
 
-	private String password = DEFAULT_PASSWORD;
+	private transient String password = DEFAULT_PASSWORD;
 
 	private boolean keepSessionAlive = false;
 

@@ -46,6 +46,11 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+				<dependency>
+			<groupId>net.sf.taverna.t2.security</groupId>
+			<artifactId>credential-manager</artifactId>
+		<version>${t2.security.version}</version>
+		</dependency>
 	</dependencies>
 
 </project>
