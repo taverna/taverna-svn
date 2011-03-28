@@ -51,8 +51,9 @@ public class RshellConnectionSettings implements Serializable {
 
 	private int port = DEFAULT_PORT;
 
+	// Make username and password transient fields so we do not store them
+	// in the workflow definition any more file but in Credential Manager instead
 	private transient String username = DEFAULT_USERNAME;
-
 	private transient String password = DEFAULT_PASSWORD;
 
 	private boolean keepSessionAlive = false;

@@ -54,8 +54,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPo
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
+//import org.apache.log4j.Logger;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPDouble;
 import org.rosuda.REngine.REXPInteger;
@@ -75,7 +74,7 @@ import org.rosuda.REngine.Rserve.RserveException;
 public class RshellActivity extends
 AbstractAsynchronousActivity<RshellActivityConfigurationBean> {
 
-	private static Logger logger = Logger.getLogger(RshellActivity.class);
+	//private static Logger logger = Logger.getLogger(RshellActivity.class);
 
 	private static int BUF_SIZE = 1024;
 
@@ -142,42 +141,60 @@ AbstractAsynchronousActivity<RshellActivityConfigurationBean> {
 
 				synchronized(lock) {
 
-					URI rServerURI = URI.create("rserve://"+settings.getHost()+":"+settings.getPort());
+					URI rServerURI = URI.create("rserve://"
+							+ settings.getHost() + ":" + settings.getPort()); // this URI is used to identify Rshell service in Credential Manager
 					// create connection
 					try {
-						if(hasUsernameAndPasswordForService(rServerURI)){
+						// If Credential Manager has username and password for this service - use it to open a connection
+						if (hasUsernameAndPasswordForService(rServerURI)) {
 							UsernamePassword username_password = getUsernameAndPasswordForService(rServerURI);
-							settings.setUsername(username_password.getUsername());
-							settings.setPassword(new String(username_password.getPassword()));
+							settings.setUsername(username_password
+									.getUsername());
+							settings.setPassword(new String(username_password
+									.getPassword()));
 							connection = RshellConnectionManager.INSTANCE
-							.createConnection(settings);
-							
-						}else{
-						connection = RshellConnectionManager.INSTANCE
-						.createConnection(settings);
-						//hack to check if credentials are required to access
-						//this R server
-						connection.assign("x","3" );
+									.createConnection(settings);
+
+						} 
+						else {
+							// Try without credentials - just do a simple assign and watch for any
+							// authentication exceptions
+							connection = RshellConnectionManager.INSTANCE
+									.createConnection(settings);
+							// Hack to check if credentials are required to
+							// access this R server
+							connection.assign("x", "3");
 						}
 					} catch (RserveException rSrvException) {
-						if(rSrvException.getMessage().toLowerCase().contains("authorization failed")){
-							//since the connection has no valid credentials, 
-							//using credential manager
-							try{
+						if (rSrvException.getMessage().toLowerCase().contains(
+								"authorization failed")) {
+							// The simple assign test failed because the connection
+							// requires user's credentials
+
+							// Since the connection has no valid credentials,
+							// get Credential Manager to ask the user for some
+							try {
 								UsernamePassword username_password = getUsernameAndPasswordForService(rServerURI);
-								settings.setUsername(username_password.getUsername());
-								settings.setPassword(new String(username_password.getPassword()));
-								connection = RshellConnectionManager.INSTANCE.createConnection(settings);								
-							}catch (Exception ex) {
-								callback.fail("Could not establish connection to "
-										+ settings.getHost() + " using port "
-										+ settings.getPort() + ": " + ex.getMessage(),
-										ex);
+								settings.setUsername(username_password
+										.getUsername());
+								settings.setPassword(new String(
+										username_password.getPassword()));
+								connection = RshellConnectionManager.INSTANCE
+										.createConnection(settings);
+							} catch (Exception ex) {
+								callback.fail(
+										"Could not establish connection to "
+												+ settings.getHost()
+												+ " using port "
+												+ settings.getPort() + ": "
+												+ ex.getMessage(), ex);
 								return;
 							}
-						}else{
-							callback.fail("Invalid RShell connection: " + rSrvException.getMessage(),
-									rSrvException);
+						} else {
+							callback
+									.fail("Invalid RShell connection: "
+											+ rSrvException.getMessage(),
+											rSrvException);
 						}
 
 					} catch (Exception ex) {
@@ -189,7 +206,6 @@ AbstractAsynchronousActivity<RshellActivityConfigurationBean> {
 					}
 
 					try {
-
 						String script = configurationBean.getScript();
 
 						// pass input form input ports to RServe
