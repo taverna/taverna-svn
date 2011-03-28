@@ -28,7 +28,6 @@
 package net.sf.taverna.t2.activities.rshell.views;
 
 import java.awt.BorderLayout;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -62,8 +61,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.BoxView;
 import javax.swing.text.ComponentView;
@@ -114,6 +111,7 @@ import org.apache.log4j.Logger;
  * @author Ingo Wassink
  * 
  */
+@SuppressWarnings("serial")
 public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellActivity, RshellActivityConfigurationBean> {
 	
 	private static final String EXTENSION = ".r";
@@ -413,13 +411,13 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 //		passwordLabel.setLabelFor(passwordField);
 //		passwordField.setText(connectionSettings.getPassword());
 		
-		// Set username and password button;
+		// "Set username and password" button
 		ActionListener usernamePasswordListener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Get Credential Manager UI to get the username and password for the service
+				// Get Credential Manager to pop up a dialog to ask for the username and password for the service
 				CredentialManagerUI credManagerUI = CredentialManagerUI.getInstance();
 				if (credManagerUI != null)
-					credManagerUI.newPasswordForService("rserve://"+hostnameField.getText()+":"+portField.getText());
+					credManagerUI.newPasswordForService("rserve://"+hostnameField.getText()+":"+portField.getText()); // this is used as a key for the service in Credential Manager
 			}
 		};
 		setHttpUsernamePasswordButton = new JButton("Set username and password");
