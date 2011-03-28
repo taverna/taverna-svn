@@ -28,6 +28,7 @@
 package net.sf.taverna.t2.activities.rshell.views;
 
 import java.awt.BorderLayout;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -88,6 +89,7 @@ import net.sf.taverna.t2.lang.ui.KeywordDocument;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.visit.VisitReport;
 import net.sf.taverna.t2.visit.VisitReport.Status;
+import net.sf.taverna.t2.workbench.ui.credentialmanager.CredentialManagerUI;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationPanel;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Port;
@@ -158,13 +160,18 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	private JPanel outerInputPanel;
 	private JTextField hostnameField;
 	private JTextField portField;
-	private JTextField usernameField;
-	private JTextField passwordField;
+	//private JTextField usernameField;
+	//private JTextField passwordField;
+	
+	//REPLACED USERNAME PASSWORD WITH CREDENTIAL MANAGER
+	private JButton setHttpUsernamePasswordButton;
+	
 	private JCheckBox keepSessionAliveCheckBox;
 	private JPanel settingsPanel;
 	private JTabbedPane tabbedPane;
 	private JTabbedPane ports;
 
+	
 	/**
 	 * Stores the {@link RshellActivity}, gets its
 	 * {@link RshellActivityConfigurationBean}, sets the layout and calls
@@ -200,6 +207,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	 * {@link #setPortPanel()}
 	 */
 	private void initialise() {
+		//this.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);		
 		configuration = activity.getConfiguration();
 		setLayout(new GridBagLayout());
 		inputViewList = new ArrayList<RshellInputViewer>();
@@ -364,6 +372,13 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		fieldConstraints.gridx = 1;
 		fieldConstraints.gridy = 0;
 		fieldConstraints.fill = GridBagConstraints.HORIZONTAL;
+		
+		GridBagConstraints buttonConstraints = new GridBagConstraints();
+		buttonConstraints.weightx = 1.0;
+		buttonConstraints.gridx = 1;
+		buttonConstraints.gridy = 2;
+		buttonConstraints.fill = GridBagConstraints.NONE;
+		buttonConstraints.anchor = GridBagConstraints.WEST;
 
 		Dimension dimension = new Dimension(0, 0);
 
@@ -384,19 +399,33 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		portLabel.setLabelFor(portField);
 		portField.setText(Integer.toString(connectionSettings.getPort()));
 
-		usernameField = new JTextField();
-		JLabel usernameLabel = new JLabel("Username");
-		usernameField.setSize(dimension);
-		usernameLabel.setSize(dimension);
-		usernameLabel.setLabelFor(usernameField);
-		usernameField.setText(connectionSettings.getUsername());
-
-		passwordField = new JTextField();
-		JLabel passwordLabel = new JLabel("Password");
-		passwordField.setSize(dimension);
-		passwordLabel.setSize(dimension);
-		passwordLabel.setLabelFor(passwordField);
-		passwordField.setText(connectionSettings.getPassword());
+//		usernameField = new JTextField();
+//		JLabel usernameLabel = new JLabel("Username");
+//		usernameField.setSize(dimension);
+//		usernameLabel.setSize(dimension);
+//		usernameLabel.setLabelFor(usernameField);
+//		usernameField.setText(connectionSettings.getUsername());
+//
+//		passwordField = new JTextField();
+//		JLabel passwordLabel = new JLabel("Password");
+//		passwordField.setSize(dimension);
+//		passwordLabel.setSize(dimension);
+//		passwordLabel.setLabelFor(passwordField);
+//		passwordField.setText(connectionSettings.getPassword());
+		
+		// Set username and password button;
+		ActionListener usernamePasswordListener = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// Get Credential Manager UI to get the username and password for the service
+				CredentialManagerUI credManagerUI = CredentialManagerUI.getInstance();
+				if (credManagerUI != null)
+					credManagerUI.newPasswordForService("rserve://"+hostnameField.getText()+":"+portField.getText());
+			}
+		};
+		setHttpUsernamePasswordButton = new JButton("Set username and password");
+		setHttpUsernamePasswordButton.setSize(dimension);
+		setHttpUsernamePasswordButton.addActionListener(usernamePasswordListener);
+		
 
 		keepSessionAliveCheckBox = new JCheckBox("Keep Session Alive");
 		keepSessionAliveCheckBox.setSelected(connectionSettings
@@ -412,14 +441,20 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		settingsPanel.add(portField, fieldConstraints);
 		fieldConstraints.gridy++;
 		
-		settingsPanel.add(usernameLabel, labelConstraints);
-		labelConstraints.gridy++;
-		settingsPanel.add(usernameField, fieldConstraints);
-		fieldConstraints.gridy++;
+//		settingsPanel.add(usernameLabel, labelConstraints);
+//		labelConstraints.gridy++;
+//		settingsPanel.add(usernameField, fieldConstraints);
+//		fieldConstraints.gridy++;
+//		
+//		settingsPanel.add(passwordLabel, labelConstraints);
+//		labelConstraints.gridy++;
+//		settingsPanel.add(passwordField, fieldConstraints);
+//		fieldConstraints.gridy++;
 		
-		settingsPanel.add(passwordLabel, labelConstraints);
-		labelConstraints.gridy++;
-		settingsPanel.add(passwordField, fieldConstraints);
+
+		settingsPanel.add(setHttpUsernamePasswordButton, buttonConstraints);
+		buttonConstraints.gridy++;
+	
 		fieldConstraints.gridy++;
 		settingsPanel.add(keepSessionAliveCheckBox, fieldConstraints);
 		fieldConstraints.gridy++;
@@ -980,9 +1015,9 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 				.setOutputPortDefinitions(outputBeanList);
 		RshellConnectionSettings connectionSettings = new RshellConnectionSettings();
 
-		connectionSettings.setUsername(usernameField.getText());
+		//connectionSettings.setUsername(usernameField.getText());
 		connectionSettings.setHost(hostnameField.getText());
-		connectionSettings.setPassword(passwordField.getText());
+		//connectionSettings.setPassword(passwordField.getText());
 		connectionSettings.setKeepSessionAlive(keepSessionAliveCheckBox
 				.isSelected());
 		connectionSettings.setPort(portField.getText());
