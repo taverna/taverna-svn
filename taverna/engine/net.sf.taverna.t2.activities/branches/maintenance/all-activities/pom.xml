@@ -35,13 +35,11 @@
 			<artifactId>dataflow-activity</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-        <!--
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>external-tool-activity</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-        -->
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>localworker-activity</artifactId>
