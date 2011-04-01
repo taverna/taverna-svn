@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Timer;
@@ -77,6 +78,9 @@ public class WorkflowResultsPortlet extends GenericPortlet {
     static final Object statusLock = new Object();
     static final Object resultsLock = new Object();
 
+    // Namespace of this portlet
+    private static String PORTLET_NAMESPACE;
+    
     /*
      * Do the init stuff once at portlet loading time.
      */
@@ -193,25 +197,33 @@ public class WorkflowResultsPortlet extends GenericPortlet {
 
         // Pass all request parameters over to the doView() and other render stage methods
         response.setRenderParameters(request.getParameterMap());
-
     }
 
     @Override
     public void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException {
+        // Just print all the parameters we have received, for testing purposes
+        Enumeration names = request.getParameterNames();
+        while(names.hasMoreElements()){
+            String parameterName = (String) names.nextElement();
+            System.out.println("\nWorkflow Results Portlet (doView): parameter name: " + parameterName);
+            System.out.println("Workflow Results Portlet (doView): parameter value: " + request.getParameter(parameterName));
+            System.out.println();
+        }
+
+        if (PORTLET_NAMESPACE == null){
+            PORTLET_NAMESPACE = response.getNamespace();
+        }
+
         response.setContentType("text/html");
 
         // Print out a message to the user, if any
-        if (request.getAttribute(Constants.ERROR_MESSAGE) != null) {
-            response.getWriter().println("<p style=\"color:red;\"><b>" + request.getAttribute(Constants.ERROR_MESSAGE) + "</b></p>\n");
-            response.getWriter().println("<br>");
-            response.getWriter().println("<hr/>");
-            response.getWriter().println("<br>");
+        if (request.getAttribute(Constants.ERROR_MESSAGE) != null){
+            response.getWriter().println("<p style=\"color:red;\"><b>"+ request.getAttribute(Constants.ERROR_MESSAGE)+ "</b></p>\n");
+            response.getWriter().println("<hr>");
         }
-        if (request.getAttribute(Constants.INFO_MESSAGE) != null) {
-            response.getWriter().println("<p><b>" + request.getAttribute(Constants.INFO_MESSAGE) + "</b></p>\n");
-            response.getWriter().println("<br>");
-            response.getWriter().println("<hr/>");
-            response.getWriter().println("<br>");
+        if (request.getAttribute(Constants.INFO_MESSAGE) != null){
+            response.getWriter().println("<p style=\"color:green;\"><b>"+ request.getAttribute(Constants.INFO_MESSAGE)+ "</b></p>\n");
+            response.getWriter().println("<hr>");
         }
 
         // Get currently logged in user
@@ -255,8 +267,18 @@ public class WorkflowResultsPortlet extends GenericPortlet {
             WorkflowSubmissionJob job = (WorkflowSubmissionJob) request.getAttribute(Constants.WORKFLOW_SUBMISSION_JOB);
 
             response.getWriter().println("<br>\n");
-            response.getWriter().println("<hr>\n");
-            response.getWriter().println("<br>\n");
+            response.getWriter().println("<a name=\""+Constants.RESULTS_ANCHOR+"\"<hr></a>\n");
+
+            // The close button to clear the results view
+            //dispatcher = getPortletContext().getRequestDispatcher("/WEB-INF/jsp/CloseResultsViewForm.jsp");
+            //dispatcher.include(request, response);
+
+            response.getWriter().println("<form name=\""+PORTLET_NAMESPACE+Constants.CLOSE_RESULTS_VIEW+"\" action=\"" + response.createRenderURL()+"\" >\n");
+            response.getWriter().println("<p>\n");
+            response.getWriter().println("<input type=\"image\" src=\""+request.getContextPath()+"/images/close.gif\" style=\"border:0;\" >\n");
+            response.getWriter().println("</p>\n");
+            response.getWriter().println("</form>\n");
+
 
             // Parse the result values from the Baclava file
             response.getWriter().println("<b>Workflow run id: " + job.getUuid() + "</b><br>\n");
@@ -1006,7 +1028,7 @@ public class WorkflowResultsPortlet extends GenericPortlet {
 
         dataTableHTML.append("<table width=\"100%\" style=\"margin-bottom:3px;\">\n");
         dataTableHTML.append("<tr>\n");
-        dataTableHTML.append("<td valign=\"bottom\"><div class=\"nohover_nounderline\"><b><a name=\"" + Constants.RESULTS_ANCHOR + "\">Results:</a></b></div></td>\n");
+        dataTableHTML.append("<td valign=\"bottom\"><div class=\"nohover_nounderline\"><b>Results:</b></div></td>\n");
         dataTableHTML.append("<td align=\"right\">Download the results as a <a target=\"_blank\" href=\""
                 + baclavaFileURL
                 + "\">single Baclava XML file</a>.<br>"

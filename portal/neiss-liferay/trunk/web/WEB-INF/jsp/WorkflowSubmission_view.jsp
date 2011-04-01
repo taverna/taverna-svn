@@ -21,21 +21,19 @@
 <%
 // List of workflow file names. Workflow files are located in /WEB-INF/workflows folder in the app root.
 ArrayList<String> workflowFileNamesList = (ArrayList<String>) renderRequest.getAttribute(Constants.WORKFLOW_FILE_NAMES);
+// Current user
+String user = (String) renderRequest.getPortletSession().getAttribute(Constants.USER, PortletSession.APPLICATION_SCOPE);
 %>
 
 <%-- Print out a message to the user, if any --%>
 <%
     if (renderRequest.getAttribute(Constants.ERROR_MESSAGE) != null){%>
         <p style="color:red;"><b><%=renderRequest.getAttribute(Constants.ERROR_MESSAGE)%></b></p>
-        <br>
         <hr>
-        <br>
     <%}
     if (renderRequest.getAttribute(Constants.INFO_MESSAGE) != null){%>
-        <p><b><%=renderRequest.getAttribute(Constants.INFO_MESSAGE)%></b></p>
-        <br>
+        <p style="color:green;"><b><%=renderRequest.getAttribute(Constants.INFO_MESSAGE)%></b></p>
         <hr>
-        <br>
     <%}
 %>
 
@@ -65,6 +63,14 @@ ArrayList<String> workflowFileNamesList = (ArrayList<String>) renderRequest.getA
         <input type="submit" name="<portlet:namespace/><%= Constants.WORKFLOW_SELECTION_SUBMISSION%>" value="Select"/>
     </td>
 </tr>
+<% if (user != null && !user.equals(Constants.USER_ANONYMOUS)){%>
+<!-- Only logged in users are allowed to upload new workflows -->
+<tr>
+    <td>
+        <input type="submit" name="<portlet:namespace/><%= Constants.WORKFLOW_UPLOAD_SUMBISSION%>" value="Add a new workflow">
+    </td>
+</tr>
+<%}%>
 </table>
 <br>
 </form>

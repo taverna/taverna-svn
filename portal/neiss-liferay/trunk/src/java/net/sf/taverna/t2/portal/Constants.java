@@ -112,6 +112,13 @@ public class Constants {
     public static final String WORKFLOW_INPUTS_FORM = "workflow_inputs_form";
     public static final String RUN_WORKFLOW = "run_workflow";
     public static final String WORKFLOW_FILE_NAME = "workflow_file_name";
+    public static final String WORKFLOW_UPLOAD_SUMBISSION = "workflow_uploading"; // action on the submit button to take the user to the page to upload a file
+    public static final String WORKFLOW_UPLOAD_FORM = "workflow_upload_form";
+    public static final String WORKFLOW_UPLOAD_FORM_FILE = "workflow_upload_form_file";
+    public static final String WORKFLOW_UPLOAD_FORM_SHARING_PUBLIC = "workflow_upload_sharing_public";
+    public static final String UPLOAD_WORKFLOW = "upload_workflow"; // action on the submit button to upload a file
+    public static final String CLOSE_UPLOAD_WORKFLOW = "close_upload_workflow"; // action to close the upload workflow
+    public static final String CLOSE_RESULTS_VIEW = "close_results_view"; // action to close the results view
 
     public static final String INPUT_PORT_NAME_ATTRIBUTE = "inputPortName";
     public static final String WORKFLOW_INPUT_CONTENT_SUFFIX = "_content";
