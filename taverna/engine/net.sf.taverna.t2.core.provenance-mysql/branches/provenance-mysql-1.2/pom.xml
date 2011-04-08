@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>net.sf.taverna.t2.core</groupId>
 	<artifactId>provenance-mysql</artifactId>
-	<version>1.2</version>
+	<version>1.2.1</version>
 	<name>mySQL provenance</name>
 
 	<properties>		
@@ -56,8 +56,8 @@
         </dependency>    
     </dependencies>
     <scm>
-		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.core.provenance-mysql/tags/provenance-mysql-1.2/</connection>
-		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.core.provenance-mysql/tags/provenance-mysql-1.2/</developerConnection>
-		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/engine/net.sf.taverna.t2.core.provenance-mysql/tags/provenance-mysql-1.2/</url>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.core.provenance-mysql/tags/provenance-mysql-1.2.1/</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.core.provenance-mysql/tags/provenance-mysql-1.2.1/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/engine/net.sf.taverna.t2.core.provenance-mysql/tags/provenance-mysql-1.2.1/</url>
 	</scm>
 </project>
