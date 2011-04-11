@@ -144,6 +144,8 @@ public class PluginManager implements PluginListener {
 	private List<Plugin> updatedPlugins = new ArrayList<Plugin>();
 
 	private Profile profile = ProfileFactory.getInstance().getProfile();
+	
+	private static int TIMEOUT = 5000;
 
 	/**
 	 * Constructs an instance of PluginManager.
@@ -439,6 +441,7 @@ public class PluginManager implements PluginListener {
 	public List<Plugin> getPluginsFromSite(PluginSite pluginSite) {
 		List<Plugin> plugins = new ArrayList<Plugin>();
 		HttpClient client = new HttpClient();
+		client.setConnectionTimeout(TIMEOUT);
 		setProxy(client);
 
 		if (pluginSite.getUrl() == null) {
@@ -914,7 +917,7 @@ public class PluginManager implements PluginListener {
 		return result;
 	}
 
-	private void setProxy(HttpClient client) {
+	public static void setProxy(HttpClient client) {
 		String host = System.getProperty("http.proxyHost");
 		String port = System.getProperty("http.proxyPort");
 		String user = System.getProperty("http.proxyUser");
