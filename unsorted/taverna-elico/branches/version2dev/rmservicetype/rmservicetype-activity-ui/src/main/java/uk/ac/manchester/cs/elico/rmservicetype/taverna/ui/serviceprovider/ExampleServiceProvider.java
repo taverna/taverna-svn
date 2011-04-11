@@ -14,8 +14,9 @@ import org.apache.axis.client.Service;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidAnalyticsPreferences;
-import uk.ac.manchester.cs.elico.rmservicetype.taverna.config.RapidMinerPluginConfiguration;
+
+import uk.ac.manchester.cs.elico.utilities.configuration.RapidAnalyticsPreferences;
+import uk.ac.manchester.cs.elico.utilities.configuration.RapidMinerPluginConfiguration;
 
 import javax.swing.*;
 import javax.wsdl.WSDLException;
@@ -110,8 +111,6 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
             displayHash.clear();
 
         }
-
-
 			
 	}
 

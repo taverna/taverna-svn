@@ -5,6 +5,7 @@ import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
 import org.apache.commons.lang.WordUtils;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.*;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.config.ParameterTableModel;
+import uk.ac.manchester.cs.elico.utilities.repositorybrowser.RapidAnalyticsRepositoryBrowser;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -55,7 +56,6 @@ public class RapidMinerConfigurationView extends JPanel {
 
 		ActivityIconManager.getInstance().resetIcon(activity);
 		
-	
 		oldConfiguration = activity.getConfiguration();
 		newConfiguration = oldConfiguration;
 		initialise();
@@ -126,7 +126,7 @@ public class RapidMinerConfigurationView extends JPanel {
 					cardLayout.last(contentPanel);
 					firstCardShown = false;
 					finishButton.setEnabled(true);
-					titleMessage.setText("Please choose which parameters you want to use and their corresponding configurations");
+					titleMessage.setText("Please choose which parameters you want to Use and their corresponding configurations (Execution Value)");
 					
 				} else {				// move to first card
 					
@@ -259,7 +259,6 @@ public class RapidMinerConfigurationView extends JPanel {
 		firstCardShown = true;
 	}
 
-
     private class PortField extends JPanel {
 
         public IOObjectPort getPort() {
@@ -366,8 +365,8 @@ public class RapidMinerConfigurationView extends JPanel {
 
 
                     Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+                   
                     frame.setLocation(dim.width / 2 - getWidth() / 2, dim.height / 2 - getHeight() / 2);
-
                     frame.setModal(true);
                     frame.add(browser);
                     frame.setPreferredSize(new Dimension(400,400));
@@ -423,7 +422,7 @@ public class RapidMinerConfigurationView extends JPanel {
         lastConstraints.gridwidth = GridBagConstraints.REMAINDER;
 
         // Add a little padding
-        lastConstraints.insets = new Insets(1, 1, 1, 1);
+        lastConstraints.insets = new Insets(5, 5, 5, 5);
 
         // Now for the "middle" field components
         middleConstraints =
@@ -437,9 +436,10 @@ public class RapidMinerConfigurationView extends JPanel {
         // used for the first component on each row
         labelConstraints =
             (GridBagConstraints) lastConstraints.clone();
-
+        
+        labelConstraints.anchor = GridBagConstraints.NORTHEAST;
         // Give these as little space as necessary
-        labelConstraints.weightx = 0.0;
+        labelConstraints.weightx = 0.9;
         labelConstraints.gridwidth = 1;
     }
 
@@ -471,6 +471,9 @@ public class RapidMinerConfigurationView extends JPanel {
      */
     public JLabel addLabel(String s, Container parent) {
         JLabel c = new JLabel(s);
+        Dimension preferredSize = c.getPreferredSize();
+        preferredSize.width = 200;
+        c.setPreferredSize(preferredSize);
         addLabel(c, parent);
         return c;
     }
@@ -554,8 +557,9 @@ public class RapidMinerConfigurationView extends JPanel {
 //		c.gridy = 0;
 
         Box inputOutputBox = new Box(BoxLayout.Y_AXIS);
-
-        //
+        inputOutputBox.setBorder(null);
+        
+        // Input Panel
         JPanel inputPanel = new JPanel(new BorderLayout());
         inputPanel.setBorder(BorderFactory.createTitledBorder("Input Ports"));
         Box inputRows = new Box (BoxLayout.Y_AXIS);
@@ -566,9 +570,11 @@ public class RapidMinerConfigurationView extends JPanel {
             x = x+2;
         }
         inputPanel.add(inputRows, BorderLayout.WEST);
-        inputOutputBox.add(new JScrollPane(inputPanel));
+        JScrollPane inputScrollPane = new JScrollPane(inputPanel);
+        inputScrollPane.setBorder(null);
+        inputOutputBox.add(inputScrollPane);
 
-        //
+        // Output Panel
         JPanel outputPanel = new JPanel(new BorderLayout());
         outputPanel.setBorder(BorderFactory.createTitledBorder("Output Ports"));
         Box outputRows = new Box (BoxLayout.Y_AXIS);
@@ -581,8 +587,9 @@ public class RapidMinerConfigurationView extends JPanel {
         outputPanel.add(outputRows, BorderLayout.WEST);
 
         inputOutputBox.add(Box.createVerticalStrut(4));
-
-        inputOutputBox.add(new JScrollPane(outputPanel));
+        JScrollPane outputScrollPane = new JScrollPane(outputPanel);
+        outputScrollPane.setBorder(null);
+        inputOutputBox.add(outputScrollPane);
 
         page1.add(inputOutputBox, BorderLayout.CENTER);
 
