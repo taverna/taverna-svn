@@ -442,6 +442,7 @@ public class PluginManager implements PluginListener {
 		List<Plugin> plugins = new ArrayList<Plugin>();
 		HttpClient client = new HttpClient();
 		client.setConnectionTimeout(TIMEOUT);
+		client.setTimeout(TIMEOUT);
 		setProxy(client);
 
 		if (pluginSite.getUrl() == null) {
