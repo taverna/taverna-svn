@@ -57,7 +57,6 @@ public class Connection {
 
     private List<User> users = new LinkedList<User>();
 
-
     public class DMWFProperty {
 
         private String propertyName;
