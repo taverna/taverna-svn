@@ -69,13 +69,15 @@
 			<scope>test</scope>
 		</dependency>
 
+
+
         <dependency>
-            <groupId>elicoconverter</groupId>
-            <artifactId>elicoconverter</artifactId>
-            <version>1.0</version>
+        	<groupId>uk.ac.manchester.cs.elico.elico-utilities</groupId>
+        	<artifactId>elico-utilities</artifactId>
+        	<version>0.0.1-SNAPSHOT</version>
+        	<type>jar</type>
+        	<scope>compile</scope>
         </dependency>
-
-
 	</dependencies>
 
 	<repositories>
