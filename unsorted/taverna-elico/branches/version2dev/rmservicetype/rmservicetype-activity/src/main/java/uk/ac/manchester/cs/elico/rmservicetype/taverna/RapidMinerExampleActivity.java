@@ -141,6 +141,10 @@ public class RapidMinerExampleActivity extends
 				configBean.setParameterDescriptions(descList);
 				configBean.setHasDescriptions(true);
 				
+			} else {
+				
+				configBean.setParameterDescriptions( new ArrayList<RapidMinerParameterDescription>());
+				
 			}
 			
 		}
@@ -157,7 +161,12 @@ public class RapidMinerExampleActivity extends
 				
 				configBean.setParameterDescriptions(setExecutionValuesToParameters(descList));
 								
+			} else {
+				
+				configBean.setParameterDescriptions( new ArrayList<RapidMinerParameterDescription>());
+
 			}
+			
 		}
 		
 		configurePorts();
