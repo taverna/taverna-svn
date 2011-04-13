@@ -121,8 +121,8 @@ public class RapidMinerExampleActivity extends
 
 		// Store for getConfiguration(), but you could also make
 		// getConfiguration() return a new bean from other sources
-		
 		setUpUserNamePassword();
+		
 		this.configBean = configBean;
        
 		System.out.println(" THE CALL NAME IS " + this.configBean.getCallName());
@@ -132,6 +132,7 @@ public class RapidMinerExampleActivity extends
 
 		if (!configBean.getHasDescriptions()) {
 			System.out.println(" ALPHA 1");
+			
 			// does not have descriptions - go fetch them
 			if (getParametersForOperation(configBean.getCallName()).size() > 0) {
 				
@@ -147,27 +148,30 @@ public class RapidMinerExampleActivity extends
 				
 			}
 			
-		}
+		} else {
 			
-		if (configBean.getIsParametersConfigured()) {
+			if (configBean.getIsParametersConfigured()) {
 
-			System.out.println(" ALPHA 2");
-			// make sure all the parameter descriptions are retrieved & set execution value
+				System.out.println(" ALPHA 2");
+				// make sure all the parameter descriptions are retrieved & set execution value
 
-			if (getParametersForOperation(configBean.getCallName()).size() > 0) {
+				if (getParametersForOperation(configBean.getCallName()).size() > 0) {
+				
+					descList = getParameterDescriptions(myTempList);
+					//System.out.println(" list value " + descList.size());
+					
+					configBean.setParameterDescriptions(setExecutionValuesToParameters(descList));
+									
+				} else {
+					
+					configBean.setParameterDescriptions( new ArrayList<RapidMinerParameterDescription>());
+	
+				}
 			
-				descList = getParameterDescriptions(myTempList);
-				//System.out.println(" list value " + descList.size());
-				
-				configBean.setParameterDescriptions(setExecutionValuesToParameters(descList));
-								
-			} else {
-				
-				configBean.setParameterDescriptions( new ArrayList<RapidMinerParameterDescription>());
-
 			}
-			
 		}
+			
+	
 		
 		configurePorts();
 		
