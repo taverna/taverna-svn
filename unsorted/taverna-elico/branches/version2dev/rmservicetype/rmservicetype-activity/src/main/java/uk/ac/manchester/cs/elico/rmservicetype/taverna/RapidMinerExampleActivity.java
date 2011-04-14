@@ -338,7 +338,18 @@ public class RapidMinerExampleActivity extends
         }
 
         for (IOOutputPort outputP : configBean.getOutputPorts().values()) {
-            addOutput(outputP.getPortName(), 0);
+        	
+        	// for every outputP - get the setText and parse the shit
+        	List<String> outputLocations = parseOutputLocationsToList(outputP.getFileLocation());
+        	int i = 0;
+        	for (String output : outputLocations) {
+        		
+        		addOutput(outputP.getPortName() + i, 0);
+        		i++;
+        	}
+           		
+           		
+        		
         }
 
 		// Optional ports depending on configuration
@@ -586,9 +597,21 @@ public class RapidMinerExampleActivity extends
 //				}
 
                 for (String opName : configBean.getOutputPorts().keySet()) {
-                    T2Reference simpleRef = referenceService.register(configBean.getOutputPorts().get(opName).getFileLocation(), 0, true, context);;
-    				outputs.put(opName, simpleRef);
+                	
+                    String outputsForOutputPort = configBean.getOutputPorts().get(opName).getFileLocation();
+                    List<String> outputLocs = parseOutputLocationsToList(outputsForOutputPort);
+                    
+                    int i = 0;
+                    for (String output : outputLocs) {
+                    	
+                        System.out.println(" output --> " + configBean.getOutputPorts().get(opName).getPortName() + i);
+                    	T2Reference simpleRef = referenceService.register(output, 0, true, context);
 
+                        outputs.put(configBean.getOutputPorts().get(opName).getPortName() + i, simpleRef);
+                        i++;
+                    }
+    				
+                    
 
                 }
 //				outputs.put(OUT_SIMPLE_OUTPUT, simpleRef);
@@ -666,12 +689,22 @@ public class RapidMinerExampleActivity extends
 
         for (String op : outputPorts.keySet()) {
 
-            org.jdom.Element outputLocationElement = new org.jdom.Element("outputLocations");
 
             System.err.println("looking up output port key: " + op);
-            outputLocationElement.setText(outputPorts.get(op).getFileLocation());
+            
+            String wholeOutputText = outputPorts.get(op).getFileLocation();
+           
+            List<String> outputs = parseOutputLocationsToList(wholeOutputText);
+            
+            for (String output : outputs) {
+                
+            	org.jdom.Element outputLocationElement = new org.jdom.Element("outputLocations");
 
-            root.addContent(outputLocationElement);
+                outputLocationElement.setText(output);
+
+                root.addContent(outputLocationElement);
+
+            }
 
         }
 
@@ -708,6 +741,22 @@ public class RapidMinerExampleActivity extends
 		}
 
 		return finalOutput;
+		
+	}
+	
+	public List<String> parseOutputLocationsToList(String wholeOutputLocation) {
+		
+		List<String> outputLocations = new ArrayList<String>();
+
+		String [] outputs = wholeOutputLocation.split(",");
+		
+		for (String outputFile : outputs) {
+			
+			outputLocations.add(outputFile);
+			System.out.println(" output location --> " + outputFile);
+		}
+		
+		return outputLocations;
 		
 	}
 	
