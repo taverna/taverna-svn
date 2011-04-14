@@ -254,15 +254,14 @@ public class RapidMinerExampleActivity extends
 			boolean use = false;
 		
 			aDescription.setUseParameter(use);
+			
 			for (int j = 0; j < returnList.getLength(); j++) {	// for each of "returns" children check..
 				
 				if (returnList.item(j).getNodeName().equals("name")) {
 					//System.out.println(" names " +getCharacterDataFromElement((Element)returnList.item(j)));
 					String paramName = getCharacterDataFromElement((Element)returnList.item(j));
 					aDescription.setParameterName(paramName);
-					
-					// check whether a name has been set
-					
+							
 				}
 				
 				if (returnList.item(j).getNodeName().equals("description")) {
@@ -293,6 +292,7 @@ public class RapidMinerExampleActivity extends
 				if (returnList.item(j).getNodeName().equals("defaultValue")) {
 					//System.out.println(" defaultValue " +getCharacterDataFromElement((Element)returnList.item(j)));
 					aDescription.setDefaultValue(getCharacterDataFromElement((Element)returnList.item(j)));
+										
 				}
 				
 				if (returnList.item(j).getNodeName().equals("type")) {
@@ -307,10 +307,14 @@ public class RapidMinerExampleActivity extends
 		
 			}
 			
+			// HACK <-- split_data returns no defaultValue element
+			if (aDescription.getParameterName().equals("partitions") && configBean.getCallName().equals("split_data")) {
+				aDescription.setDefaultValue("?");
+			}
+			
 			aDescription.setChoices(choices);
 			listOfDescriptions.add(aDescription);
 		}
-		
 		
 		// sort before returning
 		Collections.sort(listOfDescriptions);
@@ -393,7 +397,7 @@ public class RapidMinerExampleActivity extends
 
 
 			public void run() {
-	
+				
 				setUpUserNamePassword();
 				
 				InvocationContext context = callback
