@@ -13,6 +13,7 @@
 		<t2.activities.version>1.2</t2.activities.version>
 		<t2.ui.api.version>1.2</t2.ui.api.version>
 		<t2.workbench.version>2.2.0</t2.workbench.version>
+		<t2.ui.impl.version>1.2</t2.ui.impl.version>
 	</properties>
 
 	<build>
@@ -71,13 +72,6 @@
 
 
 
-        <dependency>
-        	<groupId>uk.ac.manchester.cs.elico.elico-utilities</groupId>
-        	<artifactId>elico-utilities</artifactId>
-        	<version>0.0.1-SNAPSHOT</version>
-        	<type>jar</type>
-        	<scope>compile</scope>
-        </dependency>
 	</dependencies>
 
 	<repositories>
