@@ -112,6 +112,16 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 
         }
 			
+	} 
+	
+	public void filterList() {
+		
+		System.out.println(" to remove set list of operators ");
+		
+		List <String> bannedOperators = new ArrayList<String>();
+		
+		//bannedOperators.add("")
+		
 	}
 
     private RapidAnalyticsPreferences getPreferences() {

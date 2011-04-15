@@ -30,7 +30,7 @@ public class ParameterTableModel extends AbstractTableModel {
 		Iterator parameterIterator = parameterDescriptions.iterator();
 		
 		int i = 0;
-		
+		boolean opHack = true;
 		while (parameterIterator.hasNext()) {
 			
 			// get the current parameter description
@@ -44,6 +44,9 @@ public class ParameterTableModel extends AbstractTableModel {
 		            	case 0:  data[i][n] = currentParam.getUseParameter(); 
 		            			 break;											// use
 		            	case 1:  data[i][n] = currentParam.getParameterName();	
+		            			 if (currentParam.getParameterName().equals("partitions")) {
+		            				 opHack = true;
+		            			 }
 				            	 break;											// name
 		            	case 2:
                                  if (currentParam.getDescription() != null) {
@@ -98,7 +101,7 @@ public class ParameterTableModel extends AbstractTableModel {
                                  else {
                                       data[i][n] = "";
                                   }
-
+                        
 		            			 break;											// default val
 		            	case 7:  data[i][n] = currentParam.getExecutionValue();
 		            			 if (data[i][n].equals("?")) {
