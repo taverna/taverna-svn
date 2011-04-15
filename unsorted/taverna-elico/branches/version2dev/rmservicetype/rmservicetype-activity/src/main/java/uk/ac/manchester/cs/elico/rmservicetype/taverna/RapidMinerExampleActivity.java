@@ -137,7 +137,7 @@ public class RapidMinerExampleActivity extends
 			if (getParametersForOperation(configBean.getCallName()).size() > 0) {
 				
 				descList = getParameterDescriptions(myTempList);
-				//System.out.println(" list value " + descList.size());
+				System.out.println(" [debug] list value " + descList.size());
 				
 				configBean.setParameterDescriptions(descList);
 				configBean.setHasDescriptions(true);
@@ -174,7 +174,6 @@ public class RapidMinerExampleActivity extends
 	
 		
 		configurePorts();
-		
 		
 		/*
 		if (configBean.getHasDescriptions()) {
