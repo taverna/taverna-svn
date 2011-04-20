@@ -3,7 +3,9 @@
  */
 package net.sf.taverna.t2.provenance.client.Janus;
 
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -34,7 +36,7 @@ public class StandAloneRDFProvenanceWriter {
 	static Logger logger = Logger.getLogger(StandAloneRDFProvenanceWriter.class);
 
 	private static final String DEF_MODEL_NAME = "janus-instance-graph.rdf";
-	private static final String BASE_DIR = "src/main/resources/";
+	private static final String BASE_DIR = "/tmp";
 	private static final String URI_QUALIFIER_SEPARATOR = "/";
 	private static final String PROVENIR_PREFIX = "knoesis";
 	private static final String PROVENIR_NS = "http://knoesis.wright.edu/provenir/provenir.owl#";
@@ -60,16 +62,31 @@ public class StandAloneRDFProvenanceWriter {
 	// not sure this is ever needed. just in case addArcs is called before the corresponding vars are added
 	HashMap<String, String> unresolvedArc = new HashMap<String, String> ();
 
-	private ProvenanceQuery pq; 
+	private ProvenanceQuery pq;
 
+	private OutputStream outputStream; 
+
+	public StandAloneRDFProvenanceWriter() {
+		init(null, null);
+	}
 	
-	public StandAloneRDFProvenanceWriter(ProvenanceQuery pq) {
-		
+	
+	public StandAloneRDFProvenanceWriter(ProvenanceQuery pq) throws FileNotFoundException {
+		String file = BASE_DIR+"/"+DEF_MODEL_NAME;
+		logger.info("creating file-based model. Writing to  ["+file +"]");
+		FileOutputStream os = new FileOutputStream(file);				
+		init(pq, os);
+	}
+	
+	public StandAloneRDFProvenanceWriter(ProvenanceQuery pq, OutputStream outStream){
+		init(pq, outStream);
+	}
+
+	protected void init(ProvenanceQuery pq, OutputStream outStream) {
+		setOutputStream(outStream);
 		setQuery(pq);
 		
 		mm =     ModelFactory.createFileModelMaker(modelName);		
-		logger.info("creating file-based model. Writing to  ["+this.BASE_DIR+this.modelName+"]");
-
 		// TODO add open model to append to existing models
 		m = mm.createModel(this.modelName);		
 		m.setNsPrefix("janus",JanusOntology.getURI());
@@ -87,8 +104,8 @@ public class StandAloneRDFProvenanceWriter {
 
 		if (m != null) {
 			logger.info("writing  RDF model ");
-			dumpCurrentModel(BASE_DIR+"/"+DEF_MODEL_NAME);
-			logger.debug("model written to "+BASE_DIR+DEF_MODEL_NAME);
+			dumpCurrentModel(getOutputStream());
+			logger.debug("model written");
 		} else {
 			logger.info("Error: cannot close  model.");
 		}
@@ -111,17 +128,16 @@ public class StandAloneRDFProvenanceWriter {
 	}
 
 
-	public void dumpCurrentModel(String fileName) {	
+	public void dumpCurrentModel(OutputStream outputStream) {	
 		if (m!=null) {
 			try {
-				OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(fileName));
-				m.write(osw);	
-				logger.info("Model written to ["+fileName+"]");
+				m.write(outputStream);
+				logger.info("Model written.");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		} else {
-			logger.fatal("could not write current model to ["+fileName+"]");
+			logger.fatal("could not write current model");
 		}
 	}
 
@@ -205,16 +221,6 @@ public class StandAloneRDFProvenanceWriter {
 
 	}
 	
-
-	public void addPorts(List<Port> vars) throws SQLException {
-		for (Port v : vars) {  addPort(v); }
-	}
-
-
-	public void addDataLink(Port sourceVar, Port sinkVar, String wfId) throws SQLException {
-		addDataLink(sourceVar.getPortName(), sourceVar.getProcessorName(), sinkVar.getPortName(), sinkVar.getProcessorName(), sourceVar.getWorkflowId());
-	}
-
 
 	public void addDataLink(String sourceVarName, String sourceProcName,
 			String sinkVarName, String sinkProcName, String wfId) {
@@ -320,12 +326,6 @@ public class StandAloneRDFProvenanceWriter {
 		return makeURI(tokens[1]);
 	}
 
-
-	private String makePBindingURI(String execIDRef, String pNameRef) {
-		return makeURI(execIDRef+URI_QUALIFIER_SEPARATOR+pNameRef);
-	}
-
-
 	private String makeWFInstanceURI(String wfInstanceId) {
 		return makeURI(wfInstanceId);
 	}
@@ -373,5 +373,15 @@ public class StandAloneRDFProvenanceWriter {
 	public void setQuery(ProvenanceQuery query) { this.pq  = query; }
 
 	public ProvenanceQuery getQuery() { return this.pq; }
+
+
+	public void setOutputStream(OutputStream outputStream) {
+		this.outputStream = outputStream;
+	}
+
+
+	public OutputStream getOutputStream() {
+		return outputStream;
+	}
 
 }

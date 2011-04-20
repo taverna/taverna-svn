@@ -397,8 +397,8 @@ public class NativeToDataONEModel extends ProvenanceBaseClient {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				Object value = ic.getReferenceService().renderIdentifier(
-						ic.getReferenceService().referenceFromString(bindings.get(0).getValue()), Object.class, ic);
+				Object value = getInvocationContext().getReferenceService().renderIdentifier(
+						getInvocationContext().getReferenceService().referenceFromString(bindings.get(0).getValue()), Object.class, getInvocationContext());
 
 				logger.info("\tvalue at position "+path+" is:\n\t "+value);
 				
@@ -416,9 +416,9 @@ public class NativeToDataONEModel extends ProvenanceBaseClient {
 
 						// resolve reference if so desired
 						if (derefValues && record.getValue() != null) {
-							T2Reference ref = ic.getReferenceService().referenceFromString(record.getValue());
+							T2Reference ref = getInvocationContext().getReferenceService().referenceFromString(record.getValue());
 
-							Object o = ic.getReferenceService().renderIdentifier(ref, Object.class, ic); 
+							Object o = getInvocationContext().getReferenceService().renderIdentifier(ref, Object.class, getInvocationContext()); 
 							logger.info("\t\t\tvalue: "+o);
 						}
 					}

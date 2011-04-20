@@ -3,6 +3,8 @@
  */
 package net.sf.taverna.t2.provenance.client;
 
+import java.io.FileNotFoundException;
+import java.io.OutputStream;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -50,17 +52,20 @@ public class NativeToRDF extends ProvenanceBaseClient {
 
 	private String topLevelWorkflowID;
 
-	void generateRDF() throws SQLException {
+	public void generateRDF() throws SQLException, FileNotFoundException {
 
+		String latestRun = pAccess.getLatestRunID();		
 		StandAloneRDFProvenanceWriter  RDFpw = new StandAloneRDFProvenanceWriter(pAccess.getPq());
+		generateRDF(latestRun, RDFpw);
+	}
 
-		String latestRun = pAccess.getLatestRunID();
+	public void generateRDF(String runId, StandAloneRDFProvenanceWriter RDFpw)
+			throws SQLException {
+		logger.info("generating RDF for run ID: "+runId);
 
-		logger.info("generating RDF for run ID: "+latestRun);
+		List<Workflow> latestWorkflows = pAccess.getWorkflowsForRun(runId);
 
-		List<Workflow> latestWorkflows = pAccess.getWorkflowsForRun(latestRun);
-
-		topLevelWorkflowID = pAccess.getTopLevelWorkflowID(latestRun);
+		topLevelWorkflowID = pAccess.getTopLevelWorkflowID(runId);
 
 		for (Workflow w:latestWorkflows) {
 			// add each wfID to the RDF graph
@@ -69,13 +74,13 @@ public class NativeToRDF extends ProvenanceBaseClient {
 			RDFpw.addWFId(w.getWorkflowId(), w.getParentWorkflowId(), w.getExternalName(), null);
 
 			// also add the <workflow ID, wfinstanceID> pair
-			RDFpw.addWorkflowRun(w.getWorkflowId(), latestRun);
-		}
+			RDFpw.addWorkflowRun(w.getWorkflowId(), runId);
+		
 
 
 
 		// add all processors. 
-		List<ProvenanceProcessor> allProcessors = pAccess.getProcessorsForWorkflowID(topLevelWorkflowID);
+		List<ProvenanceProcessor> allProcessors = pAccess.getProcessorsForWorkflowID(w.getWorkflowId());
 
 		for (ProvenanceProcessor pp:allProcessors) {
 			boolean isTopLevel = (pp.getFirstActivityClassName().equals("net.sf.taverna.t2.activities.dataflow.DataflowActivity") &&
@@ -84,19 +89,20 @@ public class NativeToRDF extends ProvenanceBaseClient {
 		}
 
 		// add all Ports		
-		List<Port> allPorts = pAccess.getAllPortsInDataflow(topLevelWorkflowID);
+		List<Port> allPorts = pAccess.getAllPortsInDataflow(w.getWorkflowId());
 
 		for (Port v:allPorts) { RDFpw.addPort(v); }
 
 		// add all DataLinks
 		HashMap<String, String> queryConstraints = new HashMap<String, String>();
-		queryConstraints.put("instanceID", latestRun);
+		queryConstraints.put("instanceID", runId);
 		
-		List<DataLink> arcs = pAccess.getDataLinks(topLevelWorkflowID);
+		List<DataLink> arcs = pAccess.getDataLinks(w.getWorkflowId());
 
 		for (DataLink a:arcs) {
 			RDFpw.addDataLink(a.getSourcePortName(), a.getSourceProcessorName(), 
 					a.getDestinationPortName(), a.getDestinationProcessorName(), a.getWorkflowId());
+		}
 		}
 
 
@@ -110,20 +116,20 @@ public class NativeToRDF extends ProvenanceBaseClient {
 
 
 		// add all collections CHECK this appears to be incomplete!!
-		List<Collection> collections = pAccess.getCollectionsForRun(latestRun);
+		List<Collection> collections = pAccess.getCollectionsForRun(runId);
 		for (Collection c:collections) { RDFpw.addCollection(c.getCollId()); }
 
 		// add all varBindings
-		queryConstraints.clear();
-		queryConstraints.put("VB.wfInstanceRef", latestRun);
+		HashMap<String, String> queryConstraints = new HashMap<String, String>();
+		queryConstraints.put("VB.workflowRunId", runId);
 		List<PortBinding> varBindings = pAccess.getPortBindings(queryConstraints);
 
 		for (PortBinding vb:varBindings) { 
-			T2Reference ref = ic.getReferenceService().referenceFromString(vb.getValue());			
+			T2Reference ref = getInvocationContext().getReferenceService().referenceFromString(vb.getValue());			
 
 			// Identified data = ic.getReferenceService().resolveIdentifier(ref, null, ic);
 
-			Object data = ic.getReferenceService().renderIdentifier(ref, Object.class, ic); 
+			Object data = getInvocationContext().getReferenceService().renderIdentifier(ref, Object.class, getInvocationContext()); 
 
 			//			logger.info("data for ref "+vb.getValue()+" : "+ data);
 

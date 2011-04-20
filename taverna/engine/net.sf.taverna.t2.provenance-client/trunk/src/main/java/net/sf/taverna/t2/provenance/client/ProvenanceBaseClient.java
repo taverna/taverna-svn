@@ -15,6 +15,7 @@ import net.sf.taverna.t2.provenance.api.ProvenanceAccess;
 import net.sf.taverna.t2.provenance.api.ProvenanceConnectorType;
 import net.sf.taverna.t2.provenance.api.Query;
 import net.sf.taverna.t2.provenance.client.XMLQuery.ProvenanceQueryParser;
+import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.reference.T2ReferenceType;
 import net.sf.taverna.t2.reference.impl.T2ReferenceImpl;
@@ -35,12 +36,20 @@ public class ProvenanceBaseClient {
 	String DB_PASSWD = null;
 
 	ProvenanceAccess pAccess = null;
+	public final ProvenanceAccess getpAccess() {
+		return pAccess;
+	}
+
+	public final void setpAccess(ProvenanceAccess pAccess) {
+		this.pAccess = pAccess;
+	}
+
 	ProvenanceQueryParser pqp = null;
 	Query q = null;
 	private String workflowAnnotationsFile;
 
 	
-	InvocationContext ic = null;
+	private InvocationContext ic = null;
 	boolean derefValues = false;
 
 	private static Logger logger = Logger.getLogger(ProvenanceBaseClient.class);
@@ -80,11 +89,11 @@ public class ProvenanceBaseClient {
 	
 		
 	/**
-	 * default connector type is MySQL
+	 * default connector type is Derby
 	 * @throws Exception
 	 */
 	protected void setUp() throws Exception {
-		setUp(ProvenanceConnectorType.MYSQL);   
+		setUp(ProvenanceConnectorType.DERBY);   
 	}
 
 
@@ -104,7 +113,7 @@ public class ProvenanceBaseClient {
 
 		configureInterface();              // sets user-defined preferences
 
-		if (derefValues) ic = pAccess.getInvocationContext();	
+		if (derefValues) setInvocationContext(pAccess.getInvocationContext());	
 	}
 
 
@@ -275,7 +284,7 @@ public class ProvenanceBaseClient {
 		T2Reference ref = referenceFromString(stringRef);
 
 		if ( ref != null ) {
-			return ic.getReferenceService().resolveIdentifier(ref, null, ic);		
+			return getInvocationContext().getReferenceService().resolveIdentifier(ref, null, getInvocationContext());		
 		}
 		return null;
 	}
@@ -299,6 +308,14 @@ public class ProvenanceBaseClient {
 	 * @param pqp the pqp to set
 	 */
 	public void setPqp(ProvenanceQueryParser pqp) { this.pqp = pqp; }
+
+	public void setInvocationContext(InvocationContext ic) {
+		this.ic = ic;
+	}
+
+	public InvocationContext getInvocationContext() {
+		return ic;
+	}
 
 	
 }
