@@ -30,6 +30,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>provenance-client</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>provenanceconnector</artifactId>
 			<version>${t2.core.version}</version>
@@ -40,13 +46,13 @@
 			<artifactId>reference-impl</artifactId>
 			<version>${t2.core.version}</version>
 		</dependency>
-		
-		<dependency>   
-		   <groupId>net.sf.json-lib</groupId>   
-		   <artifactId>json-lib</artifactId>   
-		   <version>${json.lib.version}</version>   
-		   <classifier>jdk15</classifier>   
-		</dependency> 
+
+		<dependency>
+			<groupId>net.sf.json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+			<version>${json.lib.version}</version>
+			<classifier>jdk15</classifier>
+		</dependency>
 
 
 		<dependency>

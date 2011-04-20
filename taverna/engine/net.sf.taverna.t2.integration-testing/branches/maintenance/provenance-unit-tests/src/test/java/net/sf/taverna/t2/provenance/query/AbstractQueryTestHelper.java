@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -35,6 +36,9 @@ import net.sf.taverna.t2.provenance.api.NativeAnswer;
 import net.sf.taverna.t2.provenance.api.ProvenanceAccess;
 import net.sf.taverna.t2.provenance.api.Query;
 import net.sf.taverna.t2.provenance.api.QueryAnswer;
+import net.sf.taverna.t2.provenance.client.NativeToRDF;
+import net.sf.taverna.t2.provenance.client.Janus.StandAloneRDFProvenanceWriter;
+import net.sf.taverna.t2.provenance.client.XMLQuery.ProvenanceQueryParser;
 import net.sf.taverna.t2.provenance.connector.ProvenanceConnector;
 import net.sf.taverna.t2.provenance.lineageservice.Dependencies;
 import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
@@ -62,10 +66,20 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.NestedDataflow;
 import net.sf.taverna.t2.workflowmodel.serialization.DeserializationException;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.jdom.JDOMException;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.Syntax;
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 /**
  * Test provenance queries after a dataflow run.
@@ -83,7 +97,7 @@ public abstract class AbstractQueryTestHelper {
 
 	@BeforeClass
 	public static void clearDataflow() {
-		dataflow = null; 
+		dataflow = null;
 		workflowIdToPaths.clear();
 		workflowPaths.clear();
 	}
@@ -190,7 +204,7 @@ public abstract class AbstractQueryTestHelper {
 	protected abstract Map<String, Object> getExpectedCollections();
 
 	protected abstract Set<String> getExpectedProcesses();
-	
+
 	protected Map<String, Object> getExpectedIntermediateValues() {
 		Map<String, Object> expectedIntermediateValues = new HashMap<String, Object>();
 
@@ -199,7 +213,7 @@ public abstract class AbstractQueryTestHelper {
 
 	protected Map<String, Object> getExpectedWorkflowInputs() {
 		Map<String, Object> workflowInputs = new HashMap<String, Object>();
-		for (Entry<String,Object> entry : getWorkflowInputs().entrySet()) {
+		for (Entry<String, Object> entry : getWorkflowInputs().entrySet()) {
 			workflowInputs.put(entry.getKey() + "[]", entry.getValue());
 		}
 		return workflowInputs;
@@ -306,15 +320,14 @@ public abstract class AbstractQueryTestHelper {
 		}
 		assertEquals(expectedWorkflowInputs, recordedInputs);
 	}
-	
+
 	private static Timestamp notExecutedBefore;
-	
+
 	@BeforeClass
 	public static void findEarlyTimestamp() {
 		notExecutedBefore = new Timestamp(System.currentTimeMillis());
 	}
-	
-	
+
 	@Test
 	public void listEnactments() {
 		Timestamp notExecutedAfter = new Timestamp(System.currentTimeMillis());
@@ -322,53 +335,57 @@ public abstract class AbstractQueryTestHelper {
 		Set<String> processors = new HashSet<String>();
 
 		String wfRunId = getFacade().getWorkflowRunId();
-		List<ProcessorEnactment> enactments = getProvenanceAccess().getProcessorEnactments(wfRunId);
-		assertTrue(! enactments.isEmpty());
-		
+		List<ProcessorEnactment> enactments = getProvenanceAccess()
+				.getProcessorEnactments(wfRunId);
+		assertTrue(!enactments.isEmpty());
+
 		for (ProcessorEnactment enactment : enactments) {
-			ProvenanceProcessor proc = getProvenanceAccess().getProvenanceProcessor(enactment.getProcessorId());		
+			ProvenanceProcessor proc = getProvenanceAccess()
+					.getProvenanceProcessor(enactment.getProcessorId());
 			String pName = proc.getProcessorName();
 			String processorKey = pName + enactment.getIteration();
 			processors.add(processorKey);
-			
+
 			Timestamp enactmentStarted = enactment.getEnactmentStarted();
 			Timestamp enactmentEnded = enactment.getEnactmentEnded();
-			
+
 			assertTrue(enactmentStarted.after(notExecutedBefore));
 			assertTrue(enactmentEnded.after(enactmentStarted));
 			assertTrue(notExecutedAfter.after(enactmentEnded));
-		}			
+		}
 		Set<String> expectedProcesses = getExpectedProcesses();
 		assertEquals(expectedProcesses, processors);
 	}
-	
+
 	@Test
 	public void listEnactmentsByProcessor() {
-		// TODO: Check processor paths from nested workflow 
-		for (Processor p : dataflow.getProcessors()) {		
+		// TODO: Check processor paths from nested workflow
+		for (Processor p : dataflow.getProcessors()) {
 			String pName = p.getLocalName();
 			String wfRunId = getFacade().getWorkflowRunId();
-			List<ProcessorEnactment> enactments = getProvenanceAccess().getProcessorEnactments(wfRunId, pName);
-			assertTrue(! enactments.isEmpty());
+			List<ProcessorEnactment> enactments = getProvenanceAccess()
+					.getProcessorEnactments(wfRunId, pName);
+			assertTrue(!enactments.isEmpty());
 			for (ProcessorEnactment enactment : enactments) {
-				ProvenanceProcessor proc = getProvenanceAccess().getProvenanceProcessor(enactment.getProcessorId());
+				ProvenanceProcessor proc = getProvenanceAccess()
+						.getProvenanceProcessor(enactment.getProcessorId());
 				assertEquals(pName, proc.getProcessorName());
-			}			
+			}
 		}
 
 	}
-	
+
 	protected Map<String, Object> getExpectedIntermediates() {
 		Map<String, Object> intermediates = new HashMap<String, Object>();
-		
-		Map<String, Object> expectedIntermediateValues = getExpectedIntermediateValues(); 
-			
+
+		Map<String, Object> expectedIntermediateValues = getExpectedIntermediateValues();
+
 		Map<String, Object> expectedCollections = getExpectedCollections();
 		intermediates.putAll(expectedCollections);
-		
+
 		for (String collectionKey : expectedCollections.keySet()) {
 			String collectionPrefix = collectionKey.split("\\]", 2)[0];
-			if (! collectionPrefix.endsWith("[")) {
+			if (!collectionPrefix.endsWith("[")) {
 				collectionPrefix = collectionPrefix + ",";
 			}
 			Set<String> removeItems = new HashSet<String>();
@@ -382,44 +399,49 @@ public abstract class AbstractQueryTestHelper {
 		}
 		intermediates.putAll(expectedIntermediateValues);
 		return intermediates;
-		
+
 	}
-	
+
 	@Test
 	public void fetchEnactmentValues() {
-		// TODO: Check processors in nested workflow 
-		Map<String, Object>  intermediateValues = new HashMap<String, Object>();
+		// TODO: Check processors in nested workflow
+		Map<String, Object> intermediateValues = new HashMap<String, Object>();
 
 		String wfRunId = getFacade().getWorkflowRunId();
-		List<ProcessorEnactment> enactments = getProvenanceAccess().getProcessorEnactments(wfRunId);
-		assertTrue(! enactments.isEmpty());
+		List<ProcessorEnactment> enactments = getProvenanceAccess()
+				.getProcessorEnactments(wfRunId);
+		assertTrue(!enactments.isEmpty());
 		for (ProcessorEnactment enactment : enactments) {
-			ProvenanceProcessor proc = getProvenanceAccess().getProvenanceProcessor(enactment.getProcessorId());	
+			ProvenanceProcessor proc = getProvenanceAccess()
+					.getProvenanceProcessor(enactment.getProcessorId());
 			String inputsId = enactment.getInitialInputsDataBindingId();
 			String outputsId = enactment.getFinalOutputsDataBindingId();
-			
-			Map<Port, T2Reference> bindings = getProvenanceAccess().getDataBindings(inputsId);
-			if (! outputsId.equals(inputsId)) {
-				bindings.putAll(getProvenanceAccess().getDataBindings(outputsId));
-			}			
-			for (Entry<Port,T2Reference> binding : bindings.entrySet()) {
+
+			Map<Port, T2Reference> bindings = getProvenanceAccess()
+					.getDataBindings(inputsId);
+			if (!outputsId.equals(inputsId)) {
+				bindings.putAll(getProvenanceAccess()
+						.getDataBindings(outputsId));
+			}
+			for (Entry<Port, T2Reference> binding : bindings.entrySet()) {
 				Port port = binding.getKey();
 				assertEquals(port.getProcessorName(), proc.getProcessorName());
 				assertEquals(port.getWorkflowId(), proc.getWorkflowId());
-				//assertEquals(port.getProcessorId(), proc.getIdentifier());
-				String key = proc.getWorkflowId() + "/" + proc.getProcessorName()
-				+ "/" + (port.isInputPort() ? "i:" : "o:") + port.getPortName()
-				+ enactment.getIteration();
+				// assertEquals(port.getProcessorId(), proc.getIdentifier());
+				String key = proc.getWorkflowId() + "/"
+						+ proc.getProcessorName() + "/"
+						+ (port.isInputPort() ? "i:" : "o:")
+						+ port.getPortName() + enactment.getIteration();
 				Object resolved = getReferenceService().renderIdentifier(
 						binding.getValue(), Object.class, getContext());
 				intermediateValues.put(key, resolved);
 			}
-			
-		}			
-		
+
+		}
+
 		Map<String, Object> expectedIntermediateValues = getExpectedIntermediates();
-		
-		assertMapsEquals("Unexpected intermediate values", 
+
+		assertMapsEquals("Unexpected intermediate values",
 				expectedIntermediateValues, intermediateValues);
 	}
 
@@ -432,8 +454,8 @@ public abstract class AbstractQueryTestHelper {
 		for (String workflowPath : workflowPaths.keySet()) {
 			String[] split = workflowPath.split("/");
 			List<String> prefix = new ArrayList(Arrays.asList(split));
-			if (! prefix.isEmpty() && prefix.get(0).equals("")) {
-				prefix.remove(0); 
+			if (!prefix.isEmpty() && prefix.get(0).equals("")) {
+				prefix.remove(0);
 			}
 			Dataflow workflow = workflowPaths.get(workflowPath);
 			String workflowId = workflow.getIdentifier();
@@ -479,54 +501,59 @@ public abstract class AbstractQueryTestHelper {
 		assertMapsEquals("Unexpected intermediate values",
 				expectedIntermediateValues, intermediateValues);
 	}
-	
+
 	@Test
 	public void fetchWorkflowValues() {
-		// TODO: Check processors in nested workflow 
+		// TODO: Check processors in nested workflow
 		Timestamp now = new Timestamp(System.currentTimeMillis());
-		Map<String, Object>  portValues = new HashMap<String, Object>();
+		Map<String, Object> portValues = new HashMap<String, Object>();
 
 		String wfRunId = getFacade().getWorkflowRunId();
-		DataflowInvocation dataflowInvocation = getProvenanceAccess().getDataflowInvocation(wfRunId);
+		DataflowInvocation dataflowInvocation = getProvenanceAccess()
+				.getDataflowInvocation(wfRunId);
 		assertNotNull(dataflowInvocation);
 		assertNotNull(dataflowInvocation.getInvocationStarted());
-		assertNotNull(dataflowInvocation.getInvocationEnded());		
-		assertTrue(dataflowInvocation.getInvocationEnded().after(dataflowInvocation.getInvocationStarted()));
+		assertNotNull(dataflowInvocation.getInvocationEnded());
+		assertTrue(dataflowInvocation.getInvocationEnded().after(
+				dataflowInvocation.getInvocationStarted()));
 		assertTrue(dataflowInvocation.getInvocationEnded().before(now));
-		assertTrue(dataflowInvocation.getInvocationStarted().after(notExecutedBefore));
+		assertTrue(dataflowInvocation.getInvocationStarted().after(
+				notExecutedBefore));
 
 		String inputsId = dataflowInvocation.getInputsDataBindingId();
 		String outputsId = dataflowInvocation.getOutputsDataBindingId();
-		
-		Map<Port, T2Reference> bindings = getProvenanceAccess().getDataBindings(inputsId);
-		if (! outputsId.equals(inputsId)) {
+
+		Map<Port, T2Reference> bindings = getProvenanceAccess()
+				.getDataBindings(inputsId);
+		if (!outputsId.equals(inputsId)) {
 			bindings.putAll(getProvenanceAccess().getDataBindings(outputsId));
 		}
-		for (Entry<Port,T2Reference> binding : bindings.entrySet()) {
+		for (Entry<Port, T2Reference> binding : bindings.entrySet()) {
 			Port port = binding.getKey();
-			//assertEquals(port.getProcessorId(), proc.getIdentifier());
-			String key = 
-			(port.isInputPort() ? "i:" : "o:") + port.getPortName() + "[]";
+			// assertEquals(port.getProcessorId(), proc.getIdentifier());
+			String key = (port.isInputPort() ? "i:" : "o:")
+					+ port.getPortName() + "[]";
 			Object resolved = getReferenceService().renderIdentifier(
 					binding.getValue(), Object.class, getContext());
 			portValues.put(key, resolved);
 		}
-		
+
 		Map<String, Object> expectedWorkflowValues = getExpectedWorkflowPortCollections();
-		assertMapsEquals("Unexpected workflow port values", 
+		assertMapsEquals("Unexpected workflow port values",
 				expectedWorkflowValues, portValues);
 	}
-	
+
 	@Test
 	public void getDataflowInvocations() {
 		Timestamp now = new Timestamp(System.currentTimeMillis());
-		// TODO: Check processors in nested workflow 
-		Map<String, Object>  portValues = new HashMap<String, Object>();
+		// TODO: Check processors in nested workflow
+		Map<String, Object> portValues = new HashMap<String, Object>();
 
 		String wfRunId = getFacade().getWorkflowRunId();
-		List<DataflowInvocation> dataflowInvocations = getProvenanceAccess().getDataflowInvocations(wfRunId);
-		assertTrue(! (dataflowInvocations.isEmpty()));
-		
+		List<DataflowInvocation> dataflowInvocations = getProvenanceAccess()
+				.getDataflowInvocations(wfRunId);
+		assertTrue(!(dataflowInvocations.isEmpty()));
+
 		Set<String> invocationsForWorkflows = new HashSet<String>();
 		for (DataflowInvocation dataflowInvocation : dataflowInvocations) {
 
@@ -534,37 +561,57 @@ public abstract class AbstractQueryTestHelper {
 			invocationsForWorkflows.add(dataflowInvocation.getWorkflowId());
 			assertNotNull(dataflowInvocation.getInvocationStarted());
 			assertNotNull(dataflowInvocation.getInvocationEnded());
-			assertTrue(dataflowInvocation.getInvocationEnded().after(dataflowInvocation.getInvocationStarted()));
+			assertTrue(dataflowInvocation.getInvocationEnded().after(
+					dataflowInvocation.getInvocationStarted()));
 			assertTrue(dataflowInvocation.getInvocationEnded().before(now));
-			assertTrue(dataflowInvocation.getInvocationStarted().after(notExecutedBefore));
-			
-			Set<T2Reference> dataflowValues = new HashSet<T2Reference>(getProvenanceAccess().getDataBindings(dataflowInvocation.getInputsDataBindingId()).values());
-			dataflowValues.addAll(getProvenanceAccess().getDataBindings(dataflowInvocation.getOutputsDataBindingId()).values());
-			
-			String procEnactId = dataflowInvocation.getParentProcessorEnactmentId();
-			if (dataflowInvocation.getWorkflowId().equals(dataflow.getIdentifier())) {
-				assertNull("Unexpected parent process enactment id for top-level workflow", procEnactId);
+			assertTrue(dataflowInvocation.getInvocationStarted().after(
+					notExecutedBefore));
+
+			Set<T2Reference> dataflowValues = new HashSet<T2Reference>(
+					getProvenanceAccess().getDataBindings(
+							dataflowInvocation.getInputsDataBindingId())
+							.values());
+			dataflowValues.addAll(getProvenanceAccess().getDataBindings(
+					dataflowInvocation.getOutputsDataBindingId()).values());
+
+			String procEnactId = dataflowInvocation
+					.getParentProcessorEnactmentId();
+			if (dataflowInvocation.getWorkflowId().equals(
+					dataflow.getIdentifier())) {
+				assertNull(
+						"Unexpected parent process enactment id for top-level workflow",
+						procEnactId);
 			} else {
-				ProcessorEnactment procEnact = getProvenanceAccess().getProcessorEnactment(procEnactId);
-				assertTrue(dataflowInvocation.getInvocationStarted().after(procEnact.getEnactmentStarted()));
+				ProcessorEnactment procEnact = getProvenanceAccess()
+						.getProcessorEnactment(procEnactId);
+				assertTrue(dataflowInvocation.getInvocationStarted().after(
+						procEnact.getEnactmentStarted()));
 
-				// This is not always true as the data is delivered out to the processor before the workflow is complete
+				// This is not always true as the data is delivered out to the
+				// processor before the workflow is complete
 				// assertTrue(dataflowInvocation.getInvocationEnded().before(procEnact.getEnactmentEnded()));
-				
-				Set<T2Reference> processorValues = new HashSet<T2Reference>(getProvenanceAccess().getDataBindings(procEnact.getInitialInputsDataBindingId()).values());
-				processorValues.addAll(getProvenanceAccess().getDataBindings(procEnact.getFinalOutputsDataBindingId()).values());
 
-				// Remember, the processor ports are different from the workflow ports, but the values
+				Set<T2Reference> processorValues = new HashSet<T2Reference>(
+						getProvenanceAccess().getDataBindings(
+								procEnact.getInitialInputsDataBindingId())
+								.values());
+				processorValues.addAll(getProvenanceAccess().getDataBindings(
+						procEnact.getFinalOutputsDataBindingId()).values());
+
+				// Remember, the processor ports are different from the workflow
+				// ports, but the values
 				// should stay the same
-				assertSetsEquals("Dataflow data don't match processor data", processorValues, dataflowValues);
-				
-				assertTrue("Too short process identifier " + procEnact.getProcessIdentifier(), procEnact.getProcessIdentifier().split(":").length > 2);
-			}				
+				assertSetsEquals("Dataflow data don't match processor data",
+						processorValues, dataflowValues);
+
+				assertTrue(
+						"Too short process identifier "
+								+ procEnact.getProcessIdentifier(), procEnact
+								.getProcessIdentifier().split(":").length > 2);
+			}
 		}
-		
-		
+
 	}
-	
 
 	protected Map<String, Object> getExpectedWorkflowPortCollections() {
 		Map<String, Object> expected = new HashMap<String, Object>();
@@ -579,12 +626,10 @@ public abstract class AbstractQueryTestHelper {
 		return expected;
 	}
 
-	
 	@Test
 	public void listRuns() throws JDOMException, IOException,
 			DeserializationException, EditException {
-		List<WorkflowRun> runs = getProvenanceAccess()
-				.listRuns(null, null);
+		List<WorkflowRun> runs = getProvenanceAccess().listRuns(null, null);
 		Set<String> wfIds = new HashSet<String>();
 		for (WorkflowRun run : runs) {
 			assertEquals(getFacade().getWorkflowRunId(), run.getWorkflowRunId());
@@ -616,8 +661,7 @@ public abstract class AbstractQueryTestHelper {
 			byte[] blob = run.getDataflowBlob();
 			Dataflow loadedDf = testHelper
 					.loadDataflow(new ByteArrayInputStream(blob));
-			assertEquals(run.getWorkflowId(), loadedDf
-					.getIdentifier());
+			assertEquals(run.getWorkflowId(), loadedDf.getIdentifier());
 		}
 		assertEquals(workflowIdToPaths.keySet(), wfIds);
 	}
@@ -626,12 +670,11 @@ public abstract class AbstractQueryTestHelper {
 	public void listRunsSpecificWfId() throws JDOMException, IOException,
 			DeserializationException, EditException {
 		for (String dfId : workflowIdToPaths.keySet()) {
-			List<WorkflowRun> runs = getProvenanceAccess().listRuns(dfId,
-					null);			
+			List<WorkflowRun> runs = getProvenanceAccess().listRuns(dfId, null);
 			assertEquals(1, runs.size());
 			for (WorkflowRun run : runs) {
-				assertEquals(getFacade().getWorkflowRunId(), run
-						.getWorkflowRunId());
+				assertEquals(getFacade().getWorkflowRunId(),
+						run.getWorkflowRunId());
 				assertEquals(dfId, run.getWorkflowId());
 			}
 		}
@@ -667,6 +710,65 @@ public abstract class AbstractQueryTestHelper {
 	}
 
 	@Test
+	public void generateJanusRDF() throws Exception {
+
+		NativeToRDF nativeToRdf = new NativeToRDF();
+		ProvenanceQueryParser pqp = new ProvenanceQueryParser();
+		pqp.setPAccess(getProvenanceAccess());
+		nativeToRdf.setPqp(pqp);
+		nativeToRdf.setpAccess(getProvenanceAccess());
+		nativeToRdf.setInvocationContext(getContext());
+		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+		StandAloneRDFProvenanceWriter rdfWriter = new StandAloneRDFProvenanceWriter(
+				getProvenanceAccess().getPq(), outStream);
+		nativeToRdf.generateRDF(getFacade().getWorkflowRunId(), rdfWriter);
+		System.out.println(outStream);
+
+		Model model = ModelFactory.createDefaultModel();
+		model.read(new ByteArrayInputStream(outStream.toByteArray()), null);
+
+		String q = "PREFIX janus: <http://purl.org/taverna/janus#>"
+				+ "   PREFIX obo: <http://obofoundry.org/ro/ro.owl#>"
+				+ "   PREFIX knoesis: <http://knoesis.wright.edu/provenir/provenir.owl#> "
+				+ "   PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+				+ "SELECT ?wfPortName ?iteration ?value ?someProcessor " + "WHERE {"
+				+ "   ?wf janus:has_execution ?exec ."				
+				+ "   ?top obo:part_of ?wf ."
+				+ "   ?top janus:is_top_level true ."
+				+ "   ?top knoesis:has_parameter ?wfPort ."
+				+ "   ?wfPort janus:links_from ?someProcessor ."
+				+"    ?wfPort janus:is_processor_input false ." //sic
+				+ "   ?wfPort rdfs:comment ?wfPortName ."
+				+ "   ?wfPort janus:has_value_binding ?valueBinding ."
+				+ "   ?valueBinding janus:has_iteration ?iteration ."
+				+ "   ?valueBinding rdfs:comment ?value ." 
+				//+ "  FILTER (NOT EXISTS { ?incoming janus:links_from ?wfPort } ) "
+				+ "}";
+
+		Map<String, String> returnedValues = new HashMap<String, String>();
+		com.hp.hpl.jena.query.Query query = QueryFactory.create(q, null, Syntax.syntaxSPARQL_11);
+		QueryExecution qe = QueryExecutionFactory.create(query, model);
+		try {
+			com.hp.hpl.jena.query.ResultSet results = qe.execSelect();
+			while (results.hasNext()) {
+				QuerySolution result = results.next();
+
+				String portName = result.getLiteral("wfPortName").getString();
+				String iteration = result.getLiteral("iteration").getString();
+				String value = result.getLiteral("value").getString();
+				String someProc = result.getResource("someProcessor").getURI();
+				System.out.println(portName + " " + iteration + ": " + value + " --" + someProc);
+				String key = portName + iteration;
+				returnedValues.put(key, value);				
+			}
+		} finally {
+			qe.close();
+		}
+		assertMapsEquals("Did not return expected workflow outputs", getExpectedWorkflowOutputs(), returnedValues);
+
+	}
+
+	@Test
 	public void fetchProcessorData() throws Exception {
 		Map<String, Object> expectedWorkflowOutputs = getExpectedIntermediateValues();
 		Map<String, Object> recordedOutputs = new HashMap<String, Object>();
@@ -698,8 +800,8 @@ public abstract class AbstractQueryTestHelper {
 						Object resolved = getReferenceService()
 								.renderIdentifier(referenceValue, Object.class,
 										getContext());
-						String key = df.getIdentifier() + "/" + pName
-								+ "/" + (isInput ? "i:" : "o:") + portName
+						String key = df.getIdentifier() + "/" + pName + "/"
+								+ (isInput ? "i:" : "o:") + portName
 								+ iteration;
 						recordedOutputs.put(key, resolved);
 					}
@@ -707,11 +809,9 @@ public abstract class AbstractQueryTestHelper {
 			}
 		}
 
-		assertMapsEquals("Mismatch workflow outputs ", expectedWorkflowOutputs, recordedOutputs);
+		assertMapsEquals("Mismatch workflow outputs ", expectedWorkflowOutputs,
+				recordedOutputs);
 	}
-	
-	
-	
 
 	public void waitForCompletion() throws InterruptedException,
 			DataflowTimeoutException {
