@@ -40,4 +40,10 @@
         <param-name>MAX_PREVIEW_DATA_SIZE_IN_KB</param-name>
         <param-value>250</param-value>
         <description>Max size of the data file that will be shown in preview window (in KBs)</description>
-    </context-param></web-app>
+    </context-param>
+    <context-param>
+        <param-name>MYEXPERIMENT_BASE_URL</param-name>
+        <param-value>http://neiss.myexperiment.org</param-value>
+        <description>Base URL of myExperiment instance to connect to</description>
+    </context-param>
+</web-app>

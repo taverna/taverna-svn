@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,7 +49,6 @@ import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
 import org.jdom.Text;
 import org.jdom.output.XMLOutputter;
-import org.jdom.xpath.XPath;
 import sun.misc.BASE64Encoder;
 
 /**
@@ -618,18 +616,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         dispatcher.include(request, response);
     }
 
-    private Element getTopDataflow(Element element) {
-	Element result = null;
-	for (Object elObj : element.getChildren(Constants.DATAFLOW_ELEMENT, Constants.T2_WORKFLOW_NAMESPACE)) {
-		Element dataflowElement = (Element)elObj;
-		if (Constants.DATAFLOW_ROLE_TOP.equals(dataflowElement.getAttribute(Constants.DATAFLOW_ROLE).getValue())) {
-			result=dataflowElement;
-		}
-	}
-	return result;
-    }
-
-        private boolean addWorkflow(String workflowFileName){
+    private boolean addWorkflow(String workflowFileName){
 
         System.out.println("Workflow Submission Portlet: Adding workflow " + workflowFileName + " to the list.");
 
@@ -665,12 +652,12 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             }
 
             // Get the workflow annotations, such as description, title etc.
-            Element topWorkflow = getTopDataflow(workflowDocument.getRootElement()); // top workflow, ignore nested workflows
+            Element topWorkflow = Utils.getTopDataflow(workflowDocument.getRootElement()); // top workflow, ignore nested workflows
             Workflow workflow = new Workflow();
             Element workflowAnnotationsElement = topWorkflow.getChild(Constants.ANNOTATIONS_ELEMENT, Constants.T2_WORKFLOW_NAMESPACE);
-            workflow.setDescription(getLatestAnnotationAssertionImplElementValue(workflowAnnotationsElement, Constants.ANNOTATION_BEAN_ELEMENT_FREETEXT_CLASS, workflowFileName));
-            workflow.setTitle(getLatestAnnotationAssertionImplElementValue(workflowAnnotationsElement, Constants.ANNOTATION_BEAN_ELEMENT_DESCRIPTIVETITLE_CLASS, workflowFileName));
-            workflow.setAuthor(getLatestAnnotationAssertionImplElementValue(workflowAnnotationsElement, Constants.ANNOTATION_BEAN_ELEMENT_AUTHOR_CLASS, workflowFileName));
+            workflow.setDescription(Utils.getLatestAnnotationAssertionImplElementValue(workflowAnnotationsElement, Constants.ANNOTATION_BEAN_ELEMENT_FREETEXT_CLASS, workflowFileName));
+            workflow.setTitle(Utils.getLatestAnnotationAssertionImplElementValue(workflowAnnotationsElement, Constants.ANNOTATION_BEAN_ELEMENT_DESCRIPTIVETITLE_CLASS, workflowFileName));
+            workflow.setAuthor(Utils.getLatestAnnotationAssertionImplElementValue(workflowAnnotationsElement, Constants.ANNOTATION_BEAN_ELEMENT_AUTHOR_CLASS, workflowFileName));
 
             System.out.println("Workflow Submission Portlet: Parsing workflow " + workflowFileNameNoExtension + " finished.");
             System.out.println("Workflow Submission Portlet: Workflow name: " + workflow.getTitle() + ", description: " + workflow.getDescription() + ".\n");
@@ -690,8 +677,8 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                 WorkflowInputPort inputPort = new WorkflowInputPort();
                 inputPort.setName(inputPortName);
                 inputPort.setDepth(inputPortDepth);
-                inputPort.setDescription(getLatestAnnotationAssertionImplElementValue(workflowInputPortAnnotationsElement, Constants.ANNOTATION_BEAN_ELEMENT_FREETEXT_CLASS, workflowFileName));
-                inputPort.setExampleValue(getLatestAnnotationAssertionImplElementValue(workflowInputPortAnnotationsElement, Constants.ANNOTATION_BEAN_ELEMENT_EXAMPLEVALUE_CLASS, workflowFileName));
+                inputPort.setDescription(Utils.getLatestAnnotationAssertionImplElementValue(workflowInputPortAnnotationsElement, Constants.ANNOTATION_BEAN_ELEMENT_FREETEXT_CLASS, workflowFileName));
+                inputPort.setExampleValue(Utils.getLatestAnnotationAssertionImplElementValue(workflowInputPortAnnotationsElement, Constants.ANNOTATION_BEAN_ELEMENT_EXAMPLEVALUE_CLASS, workflowFileName));
                 workflowInputPorts.add(inputPort);
 
                 System.out.println("Workflow Submission Portlet: Input port name: " + inputPortName + ", depth: " + inputPortDepth + ", description: " + inputPort.getDescription() + ", example value: " + inputPort.getExampleValue());
@@ -1262,67 +1249,6 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         }
 
         return separatorValue;
-    }
-
-    /*
-     * Given an <annotations> element from the .t2flow file,
-     * it finds the latest <net.sf.taverna.t2.annotation.AnnotationAssertionImpl> 
-     * element regardless of its location in the <annotations>, element whose 
-     * <annotationBean> sub-element has a class attribute that matches the
-     * passed value. It then returns the value of the <text> element inside that
-     * <annotationBean> element.
-     */
-    public String getLatestAnnotationAssertionImplElementValue(Element annotationsElement, String annotationBeanClassName, String workflowFileName){
-
-        //System.out.println("Getting annotations with class='" + annotationBeanClassName + "' from element " + new XMLOutputter().outputString(annotationsElement) + "\n");
-
-        // Select all <net.sf.taverna.t2.annotation.AnnotationAssertionImpl>
-        // elements no matter where they are located inside the <assertions> element passed.
-        List<Element> annotationAssertionImplElements = null;
-        try{
-            //JDOMXPath path = new JDOMXPath(".//"+Constants.ANNOTATION_ASSERTION_IMPL_ELEMENT);
-            //annotationAssertionImplElements = path.selectNodes(annotationsElement);
-
-            annotationAssertionImplElements = XPath.selectNodes(annotationsElement,".//"+Constants.ANNOTATION_ASSERTION_IMPL_ELEMENT);
-        }
-        catch(Exception ex){
-            System.out.println("Workflow Submission Portlet: Failed to parse the annotations element when looking for " + annotationBeanClassName + " in worklow " + workflowFileName +".");
-            ex.printStackTrace();
-            return null;
-        }
-
-        // Loop over all the annotation assertion implementation elements
-        // and find the latest that has an annotation bean whose class
-        // matches the one we are looking for.
-        String latestValue = null;
-        Date latestDate = new Date(0);
-        if (annotationAssertionImplElements != null){
-            for (Element annotationAssertionImplElement : annotationAssertionImplElements){
-
-                Element annotationBeanElement = annotationAssertionImplElement
-                        .getChild(Constants.ANNOTATION_BEAN_ELEMENT);
-
-                Date date = null;
-                String pattern = "yyyy-MM-dd HH:mm:ss.SSS z";
-                SimpleDateFormat format = new SimpleDateFormat(pattern);
-                if (annotationBeanElement.getAttributeValue(Constants.ANNOTATION_BEAN_ELEMENT_CLASS_ATTRIBUTE).equals(annotationBeanClassName)){
-                    String value = annotationBeanElement.getChildText(Constants.TEXT_ELEMENT);
-
-                    try {
-                        date = format.parse(annotationAssertionImplElement.getChildText(Constants.DATE_ELEMENT));
-                        if (latestDate.before(date)){
-                            latestValue = value;
-                            latestDate = date;
-                        }
-                    } catch (ParseException ex) {
-                        System.out.println("Workflow Submission Portlet: Failed to parse the annotation bean date for " + annotationBeanClassName + " in workflow "+workflowFileName+". Skipping this element.");
-                        ex.printStackTrace();
-                        continue;
-                    }
-                }
-            }
-        }
-        return latestValue;
     }
 
     /*

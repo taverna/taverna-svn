@@ -49,6 +49,7 @@ public class Constants {
     public static final String FILE_SERVLET_URL = "FILE_SERVLET_URL";
     public static final String JOBS_DIRECTORY_PATH = "JOBS_DIRECTORY_PATH";
     public static final String MAX_PREVIEW_DATA_SIZE_IN_KB = "MAX_PREVIEW_DATA_SIZE_IN_KB";
+    public static final String MYEXPERIMENT_BASE_URL = "MYEXPERIMENT_BASE_URL";
 
     // .t2flow XML namespace
     public static final Namespace T2_WORKFLOW_NAMESPACE = Namespace.getNamespace("http://taverna.sf.net/2008/xml/t2flow");
@@ -119,6 +120,9 @@ public class Constants {
     public static final String UPLOAD_WORKFLOW = "upload_workflow"; // action on the submit button to upload a file
     public static final String CLOSE_UPLOAD_WORKFLOW = "close_upload_workflow"; // action to close the upload workflow
     public static final String CLOSE_RESULTS_VIEW = "close_results_view"; // action to close the results view
+    public static final String MYEXPERIMENT_WORKFLOW_SEARCH = "myexperiment_workflow_search;";
+    public static final String MYEXPERIMENT_SEARCH_TERMS = "myexperiment_search_terms;";
+    public static final String MYEXPERIMENT_SEARCH_ALL = "myexperiment_search_all;";
 
     public static final String INPUT_PORT_NAME_ATTRIBUTE = "inputPortName";
     public static final String WORKFLOW_INPUT_CONTENT_SUFFIX = "_content";
