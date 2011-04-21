@@ -6,6 +6,7 @@
 		<groupId>net.sf.taverna</groupId>
 		<artifactId>taverna-parent</artifactId>
 		<version>2.3-SNAPSHOT</version>
+        <relativePath>../../taverna-parent/pom.xml</relativePath>
 	</parent>
 	<groupId>net.sf.taverna.t2.core</groupId>
 	<artifactId>provenance-mysql</artifactId>
@@ -31,11 +32,6 @@
 			<name>myGrid Snapshot Repository</name>
 			<url>http://www.mygrid.org.uk/maven/snapshot-repository</url>
 		</repository>
-        <repository>
-            <id>tupelo2</id>
-            <name>tupelo2</name>
-            <url>http://dlt-dev.ncsa.uiuc.edu/m2</url>
-        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -48,11 +44,6 @@
             <groupId>net.sf.taverna.t2.core</groupId>
             <artifactId>provenanceconnector</artifactId>
             <version>${t2.core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.tupeloproject</groupId>
-            <artifactId>tupelo-cet</artifactId>
-            <version>2.4.3</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
