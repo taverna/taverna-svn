@@ -98,11 +98,13 @@
 			<artifactId>xercesImpl</artifactId>
 			<version>2.7.1</version>
 		</dependency>
+		<!-- Disabled - cause of various bugs with 'indent-number' 
 		<dependency>
 			<groupId>xalan</groupId>
 			<artifactId>xalan</artifactId>
 			<version>2.6.0</version>
 		</dependency>
+		 -->
 		<dependency>
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>
