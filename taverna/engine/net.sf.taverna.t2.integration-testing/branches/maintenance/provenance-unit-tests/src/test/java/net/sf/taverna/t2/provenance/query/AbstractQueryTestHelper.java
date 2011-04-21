@@ -39,6 +39,8 @@ import net.sf.taverna.t2.provenance.api.QueryAnswer;
 import net.sf.taverna.t2.provenance.client.NativeToRDF;
 import net.sf.taverna.t2.provenance.client.Janus.StandAloneRDFProvenanceWriter;
 import net.sf.taverna.t2.provenance.client.XMLQuery.ProvenanceQueryParser;
+import net.sf.taverna.t2.provenance.client.XMLQuery.QueryParseException;
+import net.sf.taverna.t2.provenance.client.XMLQuery.QueryValidationException;
 import net.sf.taverna.t2.provenance.connector.ProvenanceConnector;
 import net.sf.taverna.t2.provenance.lineageservice.Dependencies;
 import net.sf.taverna.t2.provenance.lineageservice.LineageQueryResultRecord;
@@ -291,7 +293,32 @@ public abstract class AbstractQueryTestHelper {
 		QueryAnswer answer = getProvenanceAccess()
 				.executeQuery(provenanceQuery);
 		NativeAnswer provenanceAnswer = answer.getNativeAnswer();
-		System.out.println(provenanceAnswer.getAnswer());
+	}
+	
+	@Test
+	public void testOPMQuery() throws JDOMException, QueryParseException, QueryValidationException, SQLException {
+		
+		String query = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+				"<!-- example of a fully specified provenance query -->\n" + 
+				"<pquery xmlns=\"http://taverna.org.uk/2009/provenance/pquery/\"\n" + 
+				"        xsi:schemaLocation=\"http://taverna.org.uk/2009/provenance/pquery/ pquery.xsd\" \n" + 
+				"        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" + 
+				"	<scope workflowId='" + getFacade().getDataflow().getIdentifier() + "'>\n" +
+				"		<runs>\n" + 				 
+				"			<run id='" + getFacade().getWorkflowRunId() + "' />\n" + 				 
+				"		</runs>\n" + 
+				"	</scope>\n" + 
+				"</pquery>";
+		
+		
+		ProvenanceQueryParser queryParser = new ProvenanceQueryParser();
+		queryParser.setPAccess(getProvenanceAccess());
+
+		Query provQuery = queryParser.parseProvenanceQueryXml(query);
+		
+		QueryAnswer answer = getProvenanceAccess()
+				.executeQuery(provQuery);
+		System.out.println(answer.getOPMAnswer_AsRDF());
 	}
 
 	@Test
