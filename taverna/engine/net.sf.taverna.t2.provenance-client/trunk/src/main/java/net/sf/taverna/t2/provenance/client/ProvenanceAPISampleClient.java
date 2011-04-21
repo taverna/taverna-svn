@@ -101,7 +101,7 @@ public class ProvenanceAPISampleClient extends ProvenanceBaseClient {
 		// pm added 9/10
 		// optionally set the workflow annotations file here to support semantic queries
 		
-		q = getPqp().parseProvenanceQuery(querySpecFile);
+		q = getPqp().parseProvenanceQueryFile(querySpecFile);
 
 		if (q == null) {
 			logger.fatal("query processing failed. So sorry.");

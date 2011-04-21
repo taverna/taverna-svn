@@ -340,7 +340,7 @@ public class NativeToDataONEModel extends ProvenanceBaseClient {
 //		pqp.setPAccess(pAccess);
 //
 //		q = pqp.parseProvenanceQuery(querySpecFile);
-		q = getPqp().parseProvenanceQuery(querySpecFile);
+		q = getPqp().parseProvenanceQueryFile(querySpecFile);
 
 
 		if (q == null) {
