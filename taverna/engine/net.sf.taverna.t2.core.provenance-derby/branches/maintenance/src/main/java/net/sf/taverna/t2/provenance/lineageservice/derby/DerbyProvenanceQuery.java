@@ -44,6 +44,11 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
 
     public DerbyProvenanceQuery() {
     }
+    
+	private String escapeValue(final String s) {
+		return s.replaceAll("\\'", "\\'\\'");
+	}
+
 
     /*
      * Overrides super class because Derby has issues with non-numerical values
@@ -75,7 +80,7 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
                 if (entry.getKey().equals("V.isInputPort") || entry.getKey().equals("VB.positionInColl") || entry.getKey().equals("isInputPort")) {
                     q.append(" " + entry.getKey() + " = " + entry.getValue());
                 } else {
-                    q.append(" " + entry.getKey() + " = \'" + entry.getValue() + "\' ");
+                    q.append(" " + entry.getKey() + " = \'" + escapeValue(entry.getValue()) + "\' ");
                 }
                 first = false;
             }
