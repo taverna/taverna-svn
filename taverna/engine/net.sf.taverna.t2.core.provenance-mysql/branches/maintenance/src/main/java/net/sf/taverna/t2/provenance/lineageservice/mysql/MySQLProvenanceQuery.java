@@ -47,7 +47,7 @@ public class MySQLProvenanceQuery extends ProvenanceQuery {
 	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery#addWhereClauseToQuery(java.lang.String, java.util.Map, boolean)
 	 */
 	@Override
-	protected String addWhereClauseToQuery(String q0,
+	public String addWhereClauseToQuery(String q0,
 			Map<String, String> queryConstraints, boolean terminate) {
 
 		// complete query according to constraints
