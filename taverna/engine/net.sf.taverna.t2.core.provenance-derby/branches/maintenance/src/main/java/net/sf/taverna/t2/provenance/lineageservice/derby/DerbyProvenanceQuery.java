@@ -1,3 +1,4 @@
+
 /*******************************************************************************
  * Copyright (C) 2007 The University of Manchester   
  * 
@@ -59,7 +60,7 @@ public class DerbyProvenanceQuery extends ProvenanceQuery {
      */
     @Override
     @SuppressWarnings("unused")
-    protected String addWhereClauseToQuery(String q0,
+    public String addWhereClauseToQuery(String q0,
             Map<String, String> queryConstraints, boolean terminate) {
         //FIXME terminate not required (I think!)
 
