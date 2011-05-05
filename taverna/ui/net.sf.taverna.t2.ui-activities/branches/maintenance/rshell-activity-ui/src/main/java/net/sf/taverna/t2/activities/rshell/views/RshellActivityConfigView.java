@@ -83,6 +83,8 @@ import net.sf.taverna.t2.lang.ui.ExtensionFileFilter;
 import net.sf.taverna.t2.lang.ui.FileTools;
 import net.sf.taverna.t2.lang.ui.LineEnabledTextPanel;
 import net.sf.taverna.t2.lang.ui.KeywordDocument;
+import net.sf.taverna.t2.lang.ui.LinePainter;
+import net.sf.taverna.t2.lang.ui.NoWrapEditorKit;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.visit.VisitReport;
 import net.sf.taverna.t2.visit.VisitReport.Status;
@@ -225,6 +227,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 
 
 		scriptTextArea = new JTextPane();
+		new LinePainter(scriptTextArea);
 
 		final KeywordDocument doc = new KeywordDocument(RshellKeySetManager.getKeySet());
 		// NOTE: Due to T2-1145 - always set editor kit BEFORE setDocument
@@ -1127,65 +1130,5 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 				infoConstraints);
 		return infoPanel;
 	}
-
-	/**
-	 * 
-	 * The following classes are copied from http://forums.sun.com/thread.jspa?threadID=622683
-	 *
-	 */
-	private class NoWrapEditorKit extends StyledEditorKit
-	{
-		public ViewFactory getViewFactory()
-		{
-				return new StyledViewFactory();
-		} 
-	}
-	 
-		static class StyledViewFactory implements ViewFactory
-		{
-			public View create(Element elem)
-			{
-				String kind = elem.getName();
-	 
-				if (kind != null)
-				{
-					if (kind.equals(AbstractDocument.ContentElementName))
-					{
-						return new LabelView(elem);
-					}
-					else if (kind.equals(AbstractDocument.ParagraphElementName))
-					{
-						return new ParagraphView(elem);
-					}
-					else if (kind.equals(AbstractDocument.SectionElementName))
-					{
-						return new NoWrapBoxView(elem, View.Y_AXIS);
-					}
-					else if (kind.equals(StyleConstants.ComponentElementName))
-					{
-						return new ComponentView(elem);
-					}
-					else if (kind.equals(StyleConstants.IconElementName))
-					{
-						return new IconView(elem);
-					}
-				}
-	 
-		 		return new LabelView(elem);
-			}
-		}
-
-		static class NoWrapBoxView extends BoxView {
-	        public NoWrapBoxView(Element elem, int axis) {
-	            super(elem, axis);
-	        }
-	 
-	        public void layout(int width, int height) {
-	            super.layout(32768, height);
-	        }
-	        public float getMinimumSpan(int axis) {
-	            return super.getPreferredSpan(axis);
-	        }
-	    }
 
 }
