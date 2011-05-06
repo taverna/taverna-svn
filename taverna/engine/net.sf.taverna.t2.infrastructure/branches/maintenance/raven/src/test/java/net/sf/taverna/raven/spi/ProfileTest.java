@@ -145,7 +145,7 @@ public class ProfileTest extends TestCase {
 	public void testGoodProfile() throws InvalidProfileException {
 		Profile p = new Profile(getClass().getResourceAsStream(
 				"goodProfile.xml"), true);
-		assertEquals("NO VERSION", p.getVersion());
+		assertEquals("NO-VERSION", p.getVersion());
 	}
 
 	public void testVersionedProfile() throws InvalidProfileException {
