@@ -61,17 +61,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.BoxView;
-import javax.swing.text.ComponentView;
-import javax.swing.text.Element;
-import javax.swing.text.IconView;
-import javax.swing.text.LabelView;
-import javax.swing.text.ParagraphView;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledEditorKit;
-import javax.swing.text.View;
-import javax.swing.text.ViewFactory;
 
 import net.sf.taverna.t2.activities.rshell.RShellPortSymanticTypeBean;
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
@@ -79,10 +68,11 @@ import net.sf.taverna.t2.activities.rshell.RshellActivityConfigurationBean;
 import net.sf.taverna.t2.activities.rshell.RshellActivityHealthChecker;
 import net.sf.taverna.t2.activities.rshell.RshellConnectionSettings;
 import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SemanticTypes;
+import net.sf.taverna.t2.lang.ui.EditorKeySetUtil;
 import net.sf.taverna.t2.lang.ui.ExtensionFileFilter;
 import net.sf.taverna.t2.lang.ui.FileTools;
-import net.sf.taverna.t2.lang.ui.LineEnabledTextPanel;
 import net.sf.taverna.t2.lang.ui.KeywordDocument;
+import net.sf.taverna.t2.lang.ui.LineEnabledTextPanel;
 import net.sf.taverna.t2.lang.ui.LinePainter;
 import net.sf.taverna.t2.lang.ui.NoWrapEditorKit;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
@@ -171,7 +161,9 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	private JTabbedPane tabbedPane;
 	private JTabbedPane ports;
 
-	
+	private static Set<String> keys = EditorKeySetUtil.loadKeySet(RshellActivityConfigView.class.getResourceAsStream("keys.txt"));
+
+
 	/**
 	 * Stores the {@link RshellActivity}, gets its
 	 * {@link RshellActivityConfigurationBean}, sets the layout and calls
@@ -229,7 +221,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		scriptTextArea = new JTextPane();
 		new LinePainter(scriptTextArea);
 
-		final KeywordDocument doc = new KeywordDocument(RshellKeySetManager.getKeySet());
+		final KeywordDocument doc = new KeywordDocument(keys);
 		// NOTE: Due to T2-1145 - always set editor kit BEFORE setDocument
 		scriptTextArea.setEditorKit( new NoWrapEditorKit() );
 		scriptTextArea.setFont(new Font("Monospaced",Font.PLAIN,14));
