@@ -183,6 +183,7 @@
 		<url>http://mime-util.svn.sourceforge.net/viewvc/mime-util/</url>
 	</scm>
 
+	<!-- 
 	<distributionManagement>
 		<repository>
 			<id>sourceforge</id>
@@ -197,12 +198,15 @@
 		<site>
 			<id>sourceforge</id>
 			<url>scp://smcardle@shell.sourceforge.net/home/groups/m/mi/mime-util/htdocs</url>
+	 -->
 			<!--
 				To create and login to a shell use : ssh -t
 				USER,PROJECT@shell.sourceforge.net create
 			-->
+			<!-- 
 		</site>
 	</distributionManagement>
+			 -->
 	<repositories>
 		<repository>
 			<releases />

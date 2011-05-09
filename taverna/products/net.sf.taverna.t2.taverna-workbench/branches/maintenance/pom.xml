@@ -42,72 +42,7 @@
 				<enabled>false</enabled>
 			</releases>
 			<snapshots/>
-		</repository>
-		<repository>
-			<id>eviware</id>
-			<name>Eviware repository</name>
-			<url>http://www.eviware.com/repository/maven2</url>
-			<releases/>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>biomoby</id>
-			<url>http://biomoby.org/m2repo</url>
-			<releases/>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>java.net</id>
-			<url>http://download.java.net/maven/2</url>
-			<releases/>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>jboss.org</id>
-			<url>http://repository.jboss.org/maven2</url>
-			<releases/>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>tupelo2</id>
-			<name>tupelo2</name>
-			<url>http://dlt-dev.ncsa.uiuc.edu/m2</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-        <repository>
-            <id>opm</id>
-            <name>opm</name>
-            <url>http://openprovenance.org/java/maven-releases</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-
-        <repository>
-            <id>odftoolkit</id>
-            <name>Odftoolkit Repository</name>
-            <url>http://odftoolkit.org/svn/odfdom~maven2/release/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-
-		<!--
-			<repository> <releases /> <snapshots> <enabled>false</enabled>
-			</snapshots> <id>opm-releases</id> <name>opm</name>
-			<url>http://openprovenance.org/java/maven-releases</url>
-			</repository>
-		-->
+		</repository>		
 	</repositories>
 	<scm>
 		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/products/net.sf.taverna.t2.taverna-workbench/trunk/</connection>
