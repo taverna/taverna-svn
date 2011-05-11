@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:f7810d5f-38ab-40bb-9027-96f92430a230" author="" title="tripple-iterate-cross" />
+  <s:processor name="bean">
+    <s:beanshell>
+      <s:scriptvalue>List fish = new ArrayList();
+fish.add("k");
+fish.add("l");
+fish.add("m");</s:scriptvalue>
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">fish</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="fish">
+    <s:beanshell>
+      <s:scriptvalue>List fish = new ArrayList();
+fish.add("a");
+fish.add("b");
+fish.add("c");</s:scriptvalue>
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">fish</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="soup">
+    <s:beanshell>
+      <s:scriptvalue>List fish = new ArrayList();
+fish.add("x");
+fish.add("y");
+fish.add("z");</s:scriptvalue>
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">fish</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="iterate">
+    <s:beanshell>
+      <s:scriptvalue>out = in0 + in1 + in2;</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">in0</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">in1</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">in2</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">out</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+    <s:iterationstrategy>
+      <i:cross xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+        <i:iterator name="in2" />
+        <i:iterator name="in1" />
+        <i:iterator name="in0" />
+      </i:cross>
+    </s:iterationstrategy>
+  </s:processor>
+  <s:link source="bean:fish" sink="iterate:in2" />
+  <s:link source="fish:fish" sink="iterate:in0" />
+  <s:link source="soup:fish" sink="iterate:in1" />
+  <s:link source="iterate:out" sink="iterated" />
+  <s:sink name="iterated" />
+</s:scufl>
+

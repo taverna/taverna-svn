@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                      http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="ApiConsumerActivityIcon" class="net.sf.taverna.t2.activities.apiconsumer.servicedescriptions.ApiConsumerActivityIcon" />
+
+	<bean id="ApiConsumerServiceProvider" class="net.sf.taverna.t2.activities.apiconsumer.servicedescriptions.ApiConsumerServiceProvider" />
+
+	<bean id="ConfigureApiConsumerActivityMenuAction" class="net.sf.taverna.t2.activities.apiconsumer.menu.ConfigureApiConsumerActivityMenuAction" />
+
+	<bean id="ApiConsumerContextualViewFactory" class="net.sf.taverna.t2.activities.apiconsumer.views.ApiConsumerContextualViewFactory" />
+
+</beans>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sf.taverna</groupId>
+		<artifactId>parent</artifactId>
+		<version>0.1.2009-02-12</version>
+		<relativePath>parent/pom.xml</relativePath>
+	</parent>
+
+	<groupId>net.sf.taverna.t2.builds</groupId>
+	<artifactId>taverna-workbench</artifactId>
+	<packaging>pom</packaging>
+
+	<name>Taverna 2 workbench virtual build tree</name>
+	<version>2.1.1</version>
+	<description>
+		Build tree for all of Taverna 2 using svn:externals. It is normally 
+		recommended to check out only the needed individual projects separately
+		as nightly snapshots of all modules are build automatically by
+		Hudson at http://www.mygrid.org.uk/hudson/ and deployed to our
+		snapshot repository at http://www.mygrid.org.uk/maven/snapshot-repository/.
+	</description>
+	<scm>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/builds/taverna-workbench/trunk/</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/builds/taverna-workbench/trunk/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/builds/taverna-workbench/trunk/</url>
+	</scm>
+
+	<modules>
+		<module>compatibility</module>
+		<module>engine</module>
+		<!-- 
+		<module>parent</module>
+		 -->
+		<module>products</module>
+		<module>ui</module>
+		<!-- 
+		<module>utils</module>
+		 -->
+	</modules>
+</project>

@@ -1,0 +1,61 @@
+DataViewer Tool 2.2.0
+=====================
+
+DataViewer Tool is a utility for viewing Baclava data files. Baclava is an XML
+format used to save workflow inputs and/or outputs from the Workbench or
+Command Line Tool for later re-use or inspection. It is useful for saving all
+workflow inputs or outputs in a single file but is not really meant for reading
+by humans as the data inside is Base64-encoded.
+
+DataViewer Tool 2.2.0 comes in the form of a command prompt script called
+dataviewer, which used to be shipped together with the Taverna Workbench 1.x. It
+has now been updated to use come of the Taverna 2.x codebase (most notably 
+data renderers for displaying various data types) and is available as a
+separate download as well. The functionality of the Tool remained almost the same 
+as in the previous 1.x version. Below we list the minor UI changes to the Tool.
+
+Changes from 1.x
+================
+
+File menu option names have changed:
+(1) "Load" in 1.x is now "Open file..."
+(2) "Reset" in 1.x is now "Close file"
+(3) "Exit" in 1.x is now "Quit DataViewer"
+
+The toolbar from 1.x with various "Save" buttons is now replaced by a "Save all values" 
+File menu option and "Save all values" button that both bring up a dialog where users
+can choose format they want to save the data to.
+
+New File menu options in 2.2.0:
+(1) "Recent files" (remembers 10 last opened Baclava data files).
+(2) "Save all values" (brings up a dialog with various format options as to 
+how to save the data).
+
+There is a new "Save value" button on the panel where data is rendered to save
+a individual data value.
+
+There is a new "Refresh" button on the panel where data is rendered to refresh 
+the data. This option is useful for large data that is only partially rendered or not 
+rendered at all due to its size.
+
+Users can now choose how their data will be displayed from a set of available 
+renders (HTML, XML, image, etc.). The MIME type of data is not displayed in the 
+data tree any more as the Tool "guesses" what kind of data is being displayed.
+
+Creating Baclava files
+======================
+
+From the Workbench, you can save the inputs you have specified for a workflow to a 
+Baclava file from the Run Dialog (which is used to launch a workflow). From the 
+same dialog you can also load inputs from a previously saved Baclava file so you 
+do not have to specify them manually. 
+
+From the Results Perspective of the Workbench you can save workflow inputs and 
+outputs, once workflow has finished executing and results become available. 
+You have the option to select input and output ports which you want to include in 
+the saved Baclava file.  
+
+Command Line Tool can load workflow inputs from a Baclava data file using the -inputdoc 
+option and save the workflow results in a Baclava data file using the
+-outputdoc option.
+

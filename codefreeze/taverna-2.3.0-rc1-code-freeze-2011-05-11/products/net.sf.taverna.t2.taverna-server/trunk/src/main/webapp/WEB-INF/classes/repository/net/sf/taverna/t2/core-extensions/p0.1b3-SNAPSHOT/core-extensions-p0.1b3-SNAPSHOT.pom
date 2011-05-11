@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<artifactId>core</artifactId>
+		<groupId>net.sf.taverna.t2</groupId>
+		<version>p0.1b3-SNAPSHOT</version>
+	</parent>
+
+	<groupId>net.sf.taverna.t2</groupId>
+	<artifactId>core-extensions</artifactId>
+	<packaging>pom</packaging>
+
+	<name>Taverna 2 Core Extensions (parent)</name>
+	<description>
+		Functionality that users would regard as 'core' but which is
+		actually implementented within plug-in packages. This includes
+		the default set of dispatch layers (including the invoker!),
+		basic reference schemes such as http URL, file and the inline
+		'value' reference types and the core set of activities provided
+		by the myGrid team including the web service invoker, scripting
+		support and similar.
+	</description>
+
+	<properties>
+		<t2.core-extensions.version>p0.1b2</t2.core-extensions.version>
+		<taverna.version>1.7.2.1-SNAPSHOT</taverna.version>
+	</properties>
+	
+	<modules>
+		<module>activities</module>
+		<module>dispatchlayers</module>
+		<module>reference-core-extensions</module>
+	</modules>
+
+</project>

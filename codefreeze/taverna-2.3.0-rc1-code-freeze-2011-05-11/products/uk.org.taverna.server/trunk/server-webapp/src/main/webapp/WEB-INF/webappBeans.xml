@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2010-2011 The University of Manchester See the file "LICENSE.txt" 
+	for license terms. -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xmlns:cxf="http://cxf.apache.org/core" xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+	http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
+	http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+	http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+	http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
+
+	<description>
+		The Taverna Server bean, plus supporting configuration.
+	</description>
+
+	<context:annotation-config />
+	<context:component-scan base-package="org.taverna.server" />
+
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-extension-jaxrs-binding.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-extension-jaxws.xml" />
+
+	<import resource="providers.xml" />
+
+	<jaxws:server id="master_SOAP"
+		serviceClass="org.taverna.server.master.TavernaServerImpl" address="/soap">
+		<jaxws:serviceBean>
+			<ref bean="webapp" />
+		</jaxws:serviceBean>
+		<!-- <jaxws:dataBinding><ref bean="addStylesheet"/></jaxws:dataBinding> -->
+	</jaxws:server>
+
+	<jaxrs:server id="root_REST" address="/">
+		<jaxrs:serviceBeans>
+			<ref bean="root_facade" />
+		</jaxrs:serviceBeans>
+		<jaxrs:properties>
+			<entry key="org.apache.cxf.endpoint.private" value="true" />
+		</jaxrs:properties>
+	</jaxrs:server>
+
+	<jaxrs:server id="master_REST" address="/rest"
+		staticSubresourceResolution="true">
+		<jaxrs:serviceBeans>
+			<ref bean="webapp" />
+		</jaxrs:serviceBeans>
+		<jaxrs:features>
+			<!-- <cxf:logging /> -->
+		</jaxrs:features>
+		<!-- We register these because of a CXF (or Spring?) bug. Yuck! -->
+		<jaxrs:providers>
+			<ref bean="ExceptionProvider.AccessDenied" />
+			<ref bean="ExceptionProvider.BadInputPortName" />
+			<ref bean="ExceptionProvider.BadPropertyValue" />
+			<ref bean="ExceptionProvider.BadStateChange" />
+			<ref bean="ExceptionProvider.FilesystemAccess" />
+			<ref bean="ExceptionProvider.GeneralFailure" />
+			<ref bean="ExceptionProvider.IllegalArgument" />
+			<ref bean="ExceptionProvider.ImplementationProblem" />
+			<ref bean="ExceptionProvider.InvalidCredential" />
+			<ref bean="ExceptionProvider.JAXBException" />
+			<ref bean="ExceptionProvider.NoCreate" />
+			<ref bean="ExceptionProvider.NoCredential" />
+			<ref bean="ExceptionProvider.NoDestroy" />
+			<ref bean="ExceptionProvider.NoDirectoryEntry" />
+			<ref bean="ExceptionProvider.NoListener" />
+			<ref bean="ExceptionProvider.NoUpdate" />
+			<ref bean="ExceptionProvider.NotOwner" />
+			<ref bean="ExceptionProvider.UnknownRun" />
+			<ref bean="MessagingProvider.File" />
+			<ref bean="MessagingProvider.InputStream" />
+		</jaxrs:providers>
+		<!-- <jaxrs:dataBinding><ref bean="addStylesheet"/></jaxrs:dataBinding> -->
+	</jaxrs:server>
+
+	<jaxrs:server id="AtomFeed" address="/feed">
+		<jaxrs:serviceBeans>
+			<ref bean="feed" />
+		</jaxrs:serviceBeans>
+		<jaxrs:properties>
+			<entry key="org.apache.cxf.endpoint.private" value="true" />
+		</jaxrs:properties>
+		<jaxrs:providers>
+			<ref bean="MessagingProvider.Atom" />
+		</jaxrs:providers>
+	</jaxrs:server>
+
+	<jaxrs:server id="AdministrationInterface" address="/admin"
+		staticSubresourceResolution="true">
+		<jaxrs:serviceBeans>
+			<ref bean="admin" />
+		</jaxrs:serviceBeans>
+		<!-- <jaxrs:dataBinding><ref bean="addStylesheet"/></jaxrs:dataBinding> -->
+	</jaxrs:server>
+
+	<!-- How to supply a stylesheet with the results so that browsers can
+	     show things properly; requires selecting a stylesheet to use. -->
+<!--
+	<bean id="addStylesheet" class="org.apache.cxf.jaxb.JAXBDataBinding">
+		<property name="marshallerProperties">
+			<map>
+				<entry key="com.sun.xml.bind.xmlHeaders">
+					<value><![CDATA[
+						<?xml-stylesheet type='text/xsl' href='xml2html.xsl'?>
+					]]></value>
+				</entry>
+			</map>
+		</property>
+	</bean>
+-->
+
+	<bean id="root_facade" class="org.taverna.server.master.facade.Facade">
+		<property name="file" value="welcome.html" />
+		<property name="pattern" value="SERVICE_URI/" />
+	</bean>
+
+	<bean id="MBeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">
+		<property name="locateExistingServerIfPossible" value="true" />
+	</bean>
+	<context:mbean-export server="MBeanServer"
+		default-domain="${my.domain}" registration="ignoreExisting" />
+
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+	<security:http realm="tavernaserver" create-session="never">
+		<security:http-basic />
+		<security:intercept-url pattern="/" filters="none" />
+		<security:intercept-url pattern="/services"
+			filters="none" />
+		<!-- These next one doesn't work; only authorized users may get schemas 
+			:-( -->
+		<!-- <security:intercept-url pattern="/soap?wsdl**" filters="none" /> -->
+		<security:intercept-url pattern="/soap/**"
+			access="ROLE_tavernauser" requires-channel="https" method="POST" />
+		<security:intercept-url pattern="/rest"
+			filters="none" />
+		<security:intercept-url pattern="/rest/runs"
+			access="ROLE_tavernauser" requires-channel="https" />
+		<security:intercept-url pattern="/rest/runs/**"
+			access="ROLE_tavernauser" requires-channel="https" />
+		<security:intercept-url pattern="/rest/policy"
+			filters="none" />
+		<security:intercept-url pattern="/rest/policy/**"
+			access="ROLE_tavernauser" requires-channel="https" />
+		<security:intercept-url pattern="/feed"
+			access="ROLE_tavernauser" requires-channel="https" />
+		<security:intercept-url pattern="/admin"
+			access="ROLE_tavernauser" requires-channel="https" />
+	</security:http>
+	<bean class="org.taverna.server.master.common.Uri.Rewriter"
+		autowire="byType" id="URI-Rewriter-Thunk" />
+	<security:global-method-security
+		jsr250-annotations="enabled" />
+	<security:authentication-manager>
+		<security:authentication-provider>
+			<security:user-service id="users"
+				properties="/WEB-INF/security/users.properties">
+				<!-- FIXME -->
+			</security:user-service>
+		</security:authentication-provider>
+	</security:authentication-manager>
+</beans>

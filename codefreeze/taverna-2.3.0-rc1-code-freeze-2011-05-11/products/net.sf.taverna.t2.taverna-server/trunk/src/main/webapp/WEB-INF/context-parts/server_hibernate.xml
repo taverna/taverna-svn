@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+           http://www.springframework.org/schema/aop 
+           http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+           http://www.springframework.org/schema/tx 
+           http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+	<!--============= Session Factory ==============-->
+	
+	<bean id="hibernate.sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource" ref="server.dataSource" />
+		<property name="mappingResources">
+			<list>
+				<value>hibernate/Data.hbm.xml</value>
+				<value>hibernate/Job.hbm.xml</value>
+				<value>hibernate/Workflow.hbm.xml</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
+				<prop key="hibernate.current_session_context_class">thread</prop>
+				<prop key="hibernate.cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
+				<!--<prop key="hibernate.show_sql">true</prop>-->
+				<prop key="hibernate.hbm2ddl.auto">create</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!--============================================-->
+
+	<!--============ Data Access Beans =============-->
+	
+	<bean id="jobDao"
+		class="net.sf.taverna.t2.service.store.hibernate.HibernateJobDao">
+		<property name="sessionFactory" ref="hibernate.sessionFactory" />
+	</bean>
+	<bean id="dataDao"
+		class="net.sf.taverna.t2.service.store.hibernate.HibernateDataDao">
+		<property name="sessionFactory" ref="hibernate.sessionFactory" />
+	</bean>
+	<bean id="workflowDao"
+		class="net.sf.taverna.t2.service.store.hibernate.HibernateWorkflowDao">
+		<property name="sessionFactory" ref="hibernate.sessionFactory" />
+	</bean>
+
+	<!--============================================-->
+
+	<!--========== Transaction Management ==========-->
+	
+	<bean id="hibernate.transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="hibernate.sessionFactory" />
+	</bean>
+
+	<aop:config>
+		<aop:pointcut id="dataManagerMethods"
+			expression="execution(* net.sf.taverna.t2.service.DataManager.*Data*(..))" />
+		<aop:pointcut id="jobManagerMethods"
+			expression="execution(* net.sf.taverna.t2.service.JobManager.*Job*(..))" />
+		<aop:pointcut id="workflowManagerMethods"
+			expression="execution(* net.sf.taverna.t2.service.WorkflowManager.*Workflow*(..))" />
+		<aop:advisor pointcut-ref="dataManagerMethods" advice-ref="hibernate.txAdvice" />
+		<aop:advisor pointcut-ref="jobManagerMethods" advice-ref="hibernate.txAdvice" />
+		<aop:advisor pointcut-ref="workflowManagerMethods"
+			advice-ref="hibernate.txAdvice" />
+	</aop:config>
+
+	<tx:advice id="hibernate.txAdvice" transaction-manager="hibernate.transactionManager">
+		<tx:attributes>
+			<tx:method name="add*" />
+			<tx:method name="delete*" />
+			<tx:method name="get*" read-only="true" />
+			<tx:method name="setJobStatus" />
+		</tx:attributes>
+	</tx:advice>
+
+</beans>
+           

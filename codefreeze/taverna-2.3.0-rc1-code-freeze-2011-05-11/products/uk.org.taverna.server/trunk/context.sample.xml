@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Example doctype for a Tomcat <Context>; not complete; not really even 
+	correct for Valve. -->
+<!DOCTYPE Context [
+	<!ELEMENT Parameter		EMPTY>
+	<!ELEMENT Environment	EMPTY>
+	<!ELEMENT Resource		EMPTY>
+	<!ELEMENT Valve			EMPTY>
+	<!ELEMENT Context		((Parameter|Environment|Resource|Valve)*)>
+	<!ATTLIST Context		path CDATA #REQUIRED>
+	<!ATTLIST Parameter		name NMTOKEN #REQUIRED
+							override CDATA "false" 
+							value CDATA #REQUIRED
+							description CDATA #IMPLIED>
+	<!ATTLIST Environment	name NMTOKEN #REQUIRED
+							override CDATA "false"
+							value CDATA #REQUIRED
+							type CDATA #REQUIRED
+							description CDATA #IMPLIED>
+	<!ATTLIST Resource		auth NMTOKEN #IMPLIED
+							name CDATA #REQUIRED
+							override CDATA "false"
+							scope NMTOKEN "Shareable"
+							type CDATA #REQUIRED
+							description CDATA #IMPLIED
+							mail.smtp.host CDATA #IMPLIED>
+	<!ATTLIST Valve			className NMTOKEN #REQUIRED
+							directory CDATA #IMPLIED
+							pattern CDATA "common"
+							prefix CDATA "taverna_server."
+							resolveHosts CDATA "false"
+							suffix CDATA ".log"
+							rotatable CDATA "true"
+							condition CDATA #IMPLIED
+							fileDateFormat CDATA #IMPLIED
+							buffered CDATA "true">
+]>
+<Context path="/taverna2">
+	<!-- Sample logging configuration. -->
+	<Valve className="org.apache.catalina.valves.AccessLogValve" />
+
+	<!-- Two parameters that may well need tuning; they do not have sensible 
+		defaults. -->
+	<Parameter name="executeWorkflowScript"
+		value="/usr/local/taverna-commandline-2.2.0/executeworkflow.sh"
+		description="The fully-qualified location of the program to run a workflow." />
+	<Parameter name="secureForkPasswordFile" value="/usr/local/tomcat6.0/conf/sudopass.txt"
+		description="The fully-qualified location of a file containing the password to use with sudo. The password is assumed to be the first line of the file." />
+	<!-- Controls whether URs are logged. -->
+	<Parameter name="usage.logFile" value="%{WEBAPPROOT}/usage.log"
+		description="Full path to name of file that usage records for executed workflow runs will be dumped to. To make it relative to the webapp root, prefix with '%{WEBAPPROOT}/'." />
+	<Parameter name="usage.disableDB" value="no"
+		description="Set to yes to disable writing of URs to the database." />
+	<!-- For email-dispatched notifications. -->
+	<Resource name="mail/Session" auth="Container" type="javax.mail.Session"
+		mail.smtp.host="localhost"
+		description="Where the SMTP server for sending notification emails is located." />
+	<!-- The next two are for Twitter-brokered notification; they may be omitted 
+		if support is not wanted. -->
+	<Parameter name="twitter.oauth.accessToken" value=""
+		description="The access token got from Twitter by registering this *installation* of Taverna Server as an application." />
+	<Parameter name="twitter.oauth.accessTokenSecret" value=""
+		description="The cryptographic secret associated with the access token got from Twitter by registering this *installation* of Taverna Server as an application." />
+	<!-- The next three parameters may be omitted if dispatch via Jabber/XMPP 
+		is not wanted. -->
+	<Parameter name="xmpp.service" value="jabber.org"
+		description="Description of an XMPP service that Jabber notifications will be dispatched via." />
+	<Parameter name="xmpp.user" value="tavernaserver"
+		description="User name to use for XMPP notifications." />
+	<Parameter name="xmpp.password" value="CHANGEME!"
+		description="Password to use for XMPP notifications." />
+	<!-- The next three parameters are for dispatch via SMS. -->
+	<Parameter name="sms.service"
+		value="https://www.intellisoftware.co.uk/smsgateway/sendmsg.aspx"
+		description="The SMS gateway. This is the default value." />
+	<Parameter name="sms.user" value="CHANGEME!"
+		description="The account with the SMS gateway to send the messages by. This needs to have funds associated with it!" />
+	<Parameter name="sms.pass" value="CHANGEME!"
+		description="The password for the account." />
+</Context>

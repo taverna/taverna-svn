@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>taverna-parent</artifactId>
+		<groupId>net.sf.taverna</groupId>
+		<version>3.0-SNAPSHOT</version>
+		<relativePath>../../taverna-parent/pom.xml</relativePath>
+	</parent>
+	<groupId>net.sf.taverna.t2</groupId>
+	<artifactId>activities</artifactId>
+	<version>2.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>Taverna 2 Activities</name>
+	<description>
+		A collection of Taverna 2 Activities. These are the core
+		activities required to cover the functionality of Taverna 1, and
+		includes translators to translate processors from SCUFL
+		workflows.
+	</description>
+
+	<properties>
+		<t2.infrastructure.version>3.0-SNAPSHOT</t2.infrastructure.version>
+		<t2.core.version>2.0-SNAPSHOT</t2.core.version>
+		<t2.lang.version>2.0-SNAPSHOT</t2.lang.version>
+		<t2.security.version>2.0-SNAPSHOT</t2.security.version>
+		<t2.core.refexts.version>2.0-SNAPSHOT</t2.core.refexts.version>
+		<org.biomart.martservice.version>2.0-SNAPSHOT</org.biomart.martservice.version>
+	</properties>
+
+	<modules>
+		<module>activity-test-utils</module>
+		<module>all-activities</module>
+		<module>apiconsumer-activity</module>
+		<module>beanshell-activity</module>
+		<module>biomart-activity</module>
+		<module>biomoby-activity</module>
+		<module>dataflow-activity</module>
+		<module>dependency-activity</module>
+		<module>localworker-activity</module>
+		<module>rshell-activity</module>
+		<module>soaplab-activity</module>
+		<module>spreadsheet-import-activity</module>
+		<module>stringconstant-activity</module>
+		<module>wsdl-activity</module>
+	</modules>
+	<repositories>
+		<repository>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+		</repository>
+		<repository>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots />
+			<id>mygrid-snapshot-repository</id>
+			<name>myGrid Snapshot Repository</name>
+			<url>http://www.mygrid.org.uk/maven/snapshot-repository</url>
+		</repository>
+		<!--<repository>
+			<id>mobycentral</id>
+			<name>MobyCentral Repository</name>
+			<url>http://moby.ucalgary.ca/moby_maven/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>-->
+		<repository>
+			<id>biomoby</id>
+			<name>Biomoby.org Repository</name>
+			<url>http://biomoby.org/m2repo/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>jboss</id>
+			<name>JBoss repository</name>
+			<url>http://repository.jboss.org/maven2/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>javanet</id>
+			<name>java.net</name>
+			<url>http://download.java.net/maven/2/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+	</repositories>
+	<scm>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.activities/trunk/</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.activities/trunk/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/engine/net.sf.taverna.t2.activities/trunk</url>
+	</scm>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.apache.log4j</groupId>
+				<artifactId>com.springsource.org.apache.log4j</artifactId>
+				<version>1.2.16</version>
+			</dependency>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.4</version>
+				<scope>test</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+</project>
+

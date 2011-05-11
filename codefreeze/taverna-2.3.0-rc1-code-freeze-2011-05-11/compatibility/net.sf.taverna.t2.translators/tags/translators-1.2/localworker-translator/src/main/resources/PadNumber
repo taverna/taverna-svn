@@ -1,0 +1,9 @@
+int targetLengthInt = 7;
+if (targetlength != void) {
+	targetLengthInt = Integer.parseInt(targetlength);
+}
+int currentLength = input.length();
+while (input.length() < targetLengthInt) {
+	input = "0" + input;
+}
+padded = input;

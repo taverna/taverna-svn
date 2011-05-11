@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:62918656-a3c7-4a39-85e0-cb0f3687b8b3" author="" title="less-simple-test" />
+  <s:processor name="Beanshell_scripting_host">
+    <s:beanshell>
+      <s:scriptvalue>List list = Arrays.asList(new String[] {"one", "two", "three", "four", "five"});
+List out = new ArrayList();
+out.add(list);
+out.add(list);
+out.add(list);</s:scriptvalue>
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l(l('text/plain'))">out</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="Nested_Workflow">
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:cf5abaf3-5c23-4abb-a6b0-94eebbb83d31" author="" title="less-simple-test-inner-dataflow" />
+        <s:processor name="no_input">
+          <s:beanshell>
+            <s:scriptvalue>String no_input_out = "xxx";</s:scriptvalue>
+            <s:beanshellinputlist />
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">no_input_out</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+        </s:processor>
+        <s:processor name="nested_beanshell">
+          <s:beanshell>
+            <s:scriptvalue>String nested_beanshell_out = nested_beanshell_in + "-" + nested_beanshell_in2;</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="'text/plain'">nested_beanshell_in</s:beanshellinput>
+              <s:beanshellinput s:syntactictype="'text/plain'">nested_beanshell_in2</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">nested_beanshell_out</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+        </s:processor>
+        <s:link source="nested_in" sink="nested_beanshell:nested_beanshell_in" />
+        <s:link source="nested_beanshell:nested_beanshell_out" sink="nested_out" />
+        <s:link source="no_input:no_input_out" sink="nested_beanshell:nested_beanshell_in2" />
+        <s:source name="nested_in" />
+        <s:sink name="nested_out" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:link source="Beanshell_scripting_host:out" sink="Nested_Workflow:nested_in" />
+  <s:link source="Nested_Workflow:nested_out" sink="out" />
+  <s:sink name="out" />
+</s:scufl>
+
