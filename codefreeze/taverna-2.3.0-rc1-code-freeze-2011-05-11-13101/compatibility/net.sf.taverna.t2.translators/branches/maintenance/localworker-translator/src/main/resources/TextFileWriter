@@ -1,0 +1,5 @@
+BufferedWriter out = new BufferedWriter(new FileWriter(outputFile));
+out.write(filecontents);
+out.flush();
+out.close();
+outputFile = filecontents;

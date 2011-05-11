@@ -1,0 +1,4 @@
+<profile>
+	<artifact groupId="group1" artifactId="artifact1" version="1.0.0"/>
+	<artifact groupId="group2" artifactId="artifact2" version="1.0.2"/>
+</profile>

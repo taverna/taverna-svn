@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+>
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.hp.hpl.jena</groupId>
+  <artifactId>arq-extra</artifactId>
+  <version>2.1</version>
+  <packaging>jar</packaging>
+
+  <name>ARQ Extra</name>
+  <url>http://jena.sourceforge.net/ARQ/</url>
+  <inceptionYear>2005</inceptionYear>
+  <description>ARQ is a query engine for Jena that supports the SPARQL RDF Query language. SPARQL is the query language developed by the W3C RDF Data Access Working Group.</description>
+
+  <licenses>
+    <license>
+      <name>BSD</name>
+      <url>http://jena.sourceforge.net/ARQ/license.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <scm>
+    <url>https://jena.svn.sourceforge.net/svnroot/jena/ARQ/</url>
+  </scm>
+
+  <organization>
+    <name>HP Labs</name>
+    <url>http://www.hpl.hp.com/semweb/</url>
+  </organization>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.hp.hpl.jena</groupId>
+      <artifactId>arq</artifactId>
+      <version>2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.hp.hpl.jena</groupId>
+      <artifactId>jenatest</artifactId>
+      <version>2.5.4</version>
+    </dependency>
+  </dependencies>
+
+</project>

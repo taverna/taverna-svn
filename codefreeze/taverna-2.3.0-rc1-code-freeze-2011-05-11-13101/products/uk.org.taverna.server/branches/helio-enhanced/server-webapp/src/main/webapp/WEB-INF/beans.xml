@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2010-2011 The University of Manchester See the file "LICENSE.txt" 
+	for license terms. -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="webapp" class="org.taverna.server.master.TavernaServerImpl">
+		<property name="policy" ref="localworker.policy" />
+		<property name="listenerFactory" ref="listenerFactory" />
+		<property name="runFactory" ref="localworker.factory" />
+		<property name="runStore" ref="localworker.runDB" />
+		<property name="stateModel" ref="webapp.state" />
+		<property name="idMapper" ref="IdentityMapper" />
+		<property name="fileUtils" ref="fileUtils" />
+		<property name="contentsDescriptorBuilder" ref="contentsDescriptorBuilder" />
+	</bean>
+
+	<bean id="contentsDescriptorBuilder" class="org.taverna.server.master.ContentsDescriptorBuilder">
+		<property name="webapp" ref="webapp" />
+		<property name="fileUtils" ref="fileUtils" />
+	</bean>
+
+	<bean id="webapp.state" class="org.taverna.server.master.ManagementState"
+		init-method="load">
+		<description>The initial state of the webapp.</description>
+		<property name="logIncomingWorkflows" value="false" />
+		<property name="allowNewWorkflowRuns" value="true" />
+		<property name="logOutgoingExceptions" value="false" />
+		<property name="persistenceManagerFactory" ref="pmf" />
+	</bean>
+
+	<bean id="ExceptionProvider.BadInputPortName" class="org.taverna.server.master.rest.BadInputPortNameHandler">
+		<property name="managementModel" ref="webapp.state" />
+	</bean>
+	<bean id="ExceptionProvider.BadPropertyValue" class="org.taverna.server.master.rest.BadPropertyValueHandler">
+		<property name="managementModel" ref="webapp.state" />
+	</bean>
+	<bean id="ExceptionProvider.BadStateChange" class="org.taverna.server.master.rest.BadStateChangeHandler">
+		<property name="managementModel" ref="webapp.state" />
+	</bean>
+	<bean id="ExceptionProvider.FilesystemAccess" class="org.taverna.server.master.rest.FilesystemAccessHandler">
+		<property name="managementModel" ref="webapp.state" />
+	</bean>
+	<bean id="ExceptionProvider.InvalidCredential" class="org.taverna.server.master.rest.InvalidCredentialHandler">
+		<property name="managementModel" ref="webapp.state" />
+	</bean>
+	<bean id="ExceptionProvider.NoCreate" class="org.taverna.server.master.rest.NoCreateHandler">
+		<property name="managementModel" ref="webapp.state" />
+	</bean>
+	<bean id="ExceptionProvider.NoCredential" class="org.taverna.server.master.rest.NoCredentialHandler">
+		<property name="managementModel" ref="webapp.state" />
+	</bean>
+	<bean id="ExceptionProvider.NoDestroy" class="org.taverna.server.master.rest.NoDestroyHandler">
+		<property name="managementModel" ref="webapp.state" />
+	</bean>
+	<bean id="ExceptionProvider.NoDirectoryEntry" class="org.taverna.server.master.rest.NoDirectoryEntryHandler">
+		<property name="managementModel" ref="webapp.state" />
+	</bean>
+	<bean id="ExceptionProvider.NoListener" class="org.taverna.server.master.rest.NoListenerHandler">
+		<property name="managementModel" ref="webapp.state" />
+	</bean>
+	<bean id="ExceptionProvider.NoUpdate" class="org.taverna.server.master.rest.NoUpdateHandler">
+		<property name="managementModel" ref="webapp.state" />
+	</bean>
+	<bean id="ExceptionProvider.NotOwner" class="org.taverna.server.master.rest.NotOwnerHandler">
+		<property name="managementModel" ref="webapp.state" />
+	</bean>
+	<bean id="ExceptionProvider.UnknownRun" class="org.taverna.server.master.rest.UnknownRunHandler">
+		<property name="managementModel" ref="webapp.state" />
+	</bean>
+	<bean id="ExceptionProvider.JAXBException" class="org.taverna.server.master.rest.JAXBExceptionHandler">
+		<property name="managementModel" ref="webapp.state" />
+	</bean>
+	<bean id="MessagingProvider.File" class="org.taverna.server.master.rest.FileMessageHandler">
+		<property name="maxChunkSize" value="65536" />
+	</bean>
+	<bean id="MessagingProvider.InputStream"
+		class="org.taverna.server.master.rest.InputStreamMessageHandler">
+	</bean>
+
+	<bean id="IdentityMapper" class="org.taverna.server.master.CompositeIDMapper">
+		<property name="identityMappers">
+			<list>
+				<bean id="ExtractingIDMapper" class="org.taverna.server.master.NameIDMapper">
+					<description>An alternate mechanism for mapping users. This tries
+						to use an RE to extract the user name from the principal name.
+					</description>
+					<property name="regexp">
+						<description>An optional regexp to extract the local user name
+							from
+							the principal's string description. The first capturing group
+							will
+							be the result of the mapping operation.</description>
+						<value>^TAVERNAUSER=(.*)$</value>
+					</property>
+				</bean>
+				<bean id="ConstantIDMapper" class="org.taverna.server.master.ConstantIDMapper">
+					<description>How to map web principals to local users. This one
+						maps everyone to the same user, "taverna".</description>
+					<property name="constantId" value="taverna" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<!-- <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"> 
+		<property name="dataSource" ref="dataSource" /> <property name="hibernateProperties"> 
+		<props> <prop key="hibernate.dialect">org.hibernate.dialect.DerbyDialect</prop> 
+		<prop key="hibernate.hbm2ddl.auto">create</prop> </props> </property> <property 
+		name="annotatedClasses"> <list> </list> </property> </bean> -->
+	<bean id="pmf" class="org.datanucleus.jdo.JDOPersistenceManagerFactory"
+		destroy-method="close">
+		<property name="connectionFactory" ref="dataSource" />
+		<property name="nontransactionalRead" value="true" />
+		<property name="persistenceProperties">
+			<props>
+				<prop key="datanucleus.storeManagerType">rdbms</prop>
+				<prop key="datanucleus.autoCreateTables">true</prop>
+				<prop key="datanucleus.autoCreateTables">true</prop>
+				<prop key="datanucleus.validateTables">true</prop>
+				<prop key="datanucleus.autoCreateColumns">true</prop>
+				<prop key="datanucleus.autoCreateConstraints">true</prop>
+				<prop key="datanucleus.validateConstraints">true</prop>
+				<prop key="datanucleus.autoCreateSchema">true</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- TODO: control the location of the database properly, or move to JNDI 
+		TODO: review whether what we are doing now is correct! -->
+	<bean id="dataSource" class="org.taverna.server.master.utils.WebappAwareDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver" />
+		<property name="url"
+			value="jdbc:derby:directory:%{WEBAPPROOT}tavernaserver;create=true" />
+		<property name="username" value="taverna" />
+		<property name="password" value="" />
+		<property name="contextualizer" ref="contextualizer" />
+	</bean>
+
+	<bean id="contextualizer" class="org.taverna.server.master.utils.Contextualizer" />
+
+	<bean id="localworker.factory"
+		class="org.taverna.server.master.localworker.IdAwareForkRunFactory"
+		scope="singleton" lazy-init="false" init-method="initMetaFactory"
+		destroy-method="killFactories">
+		<description>
+			The simple policy manager and factory for the baseline
+			localworker case.
+		</description>
+		<property name="state" ref="localworker.state" />
+		<property name="runDB" ref="localworker.runDB" />
+		<property name="idMapper" ref="IdentityMapper" />
+		<property name="securityContextFactory" ref="helio.securityContext" />
+	</bean>
+
+	<bean id="helio.securityContext" class="org.taverna.server.helio.SecurityContext.Factory">
+		<property name="runDatabase" ref="localworker.runDB" />
+		<property name="filenameConverter" ref="fileUtils" />
+	</bean>
+
+	<bean id="localworker.state" class="org.taverna.server.master.localworker.LocalWorkerState"
+		scope="singleton" lazy-init="false">
+		<description>
+			The state of the simple factory for the baseline
+			localworker.
+		</description>
+		<property name="defaultLifetime" value="1440">
+			<description>How long the run lasts for by default, in seconds.
+			</description>
+		</property>
+		<property name="maxRuns" value="100">
+			<description>The maximum simultaneous number of runs.</description>
+		</property>
+		<property name="extraArgs">
+			<description>Any extra arguments (memory control, etc.) to pass to
+				the spawned subprocesses.</description>
+			<list>
+			</list>
+		</property>
+		<property name="waitSeconds" value="40">
+			<description>An upper bound (in seconds) on the time to wait for a
+				subprocess to start before failing it.</description>
+		</property>
+		<property name="sleepMS" value="1000">
+			<description>The time to wait (in milliseconds) between polling for
+				the subprocess to complete its registration.</description>
+		</property>
+		<property name="persistenceManagerFactory" ref="pmf" />
+		<!-- <property name="javaBinary"> <description>The name of the java executable 
+			used to run the server worker. Defaults to the executable used to run the 
+			hosting environment.</description> </property> -->
+		<!-- <property name="serverWorkerJar"> <description>The full path to the 
+			executable JAR file containing the implementation of the server worker.</description> 
+			</property> -->
+		<!-- <property name="executeWorkflowScript"> <description>The full path 
+			to the executeworkflow.sh in either the Taverna 2 Workbench distribution 
+			or the Taverna 2 Command Line distribution.</description> </property> -->
+	</bean>
+
+	<bean id="localworker.policy" class="org.taverna.server.master.localworker.PolicyImpl">
+		<description>
+			The implementation of the access control policy
+			supported
+			by the localworker run engine.
+		</description>
+		<property name="state" ref="localworker.state" />
+		<property name="runDB" ref="localworker.runDB" />
+	</bean>
+	<bean id="localworker.runDB" class="org.taverna.server.master.localworker.RunDatabase">
+		<description>
+			The implementation of the catalog of workflow runs
+			supported by the localworker run engine.
+		</description>
+		<property name="state" ref="localworker.state" />
+		<property name="persistenceManagerFactory" ref="pmf" />
+		<property name="notifier" ref="localworker.notifier" />
+		<property name="notificationEngine" ref="notificationFabric" />
+	</bean>
+
+	<bean id="notificationFabric" class="org.taverna.server.master.NotificationEngine">
+		<property name="dispatchers">
+			<map>
+				<entry key="mailto">
+					<ref bean="dispatch.email" />
+				</entry>
+				<entry key="twitter">
+					<ref bean="dispatch.twitter" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="dispatch.email" class="org.taverna.server.master.EmailDispatcher">
+		<property name="from" value="taverna.server@localhost" />
+		<property name="messageContentType" value="text/plain" />
+	</bean>
+	<bean id="dispatch.twitter" class="org.taverna.server.master.TwitterDispatcher" />
+
+	<bean id="localworker.runDB.cleaner" class="org.springframework.scheduling.timer.ScheduledTimerTask">
+		<property name="delay" value="10000" />
+		<property name="period" value="30000" />
+		<property name="timerTask">
+			<bean id="localworker.cleanDBNow"
+				class="org.springframework.scheduling.timer.MethodInvokingTimerTaskFactoryBean">
+				<property name="targetObject" ref="localworker.runDB" />
+				<property name="targetMethod" value="cleanNow" />
+			</bean>
+		</property>
+	</bean>
+	<bean id="localworker.runDB.scanner" class="org.springframework.scheduling.timer.ScheduledTimerTask">
+		<property name="delay" value="25000" />
+		<property name="period" value="12345" />
+		<property name="timerTask">
+			<bean id="localworker.scanRuns"
+				class="org.springframework.scheduling.timer.MethodInvokingTimerTaskFactoryBean">
+				<property name="targetObject" ref="localworker.runDB" />
+				<property name="targetMethod" value="checkForFinishNow" />
+			</bean>
+		</property>
+	</bean>
+	<bean id="localworker.notifier"
+		class="org.taverna.server.master.localworker.SimpleFormattedCompletionNotifier">
+		<property name="subject" value="Taverna workflow run finished" />
+		<property name="messageFormat">
+			<value>Your job with ID={0} has finished with exit code {1,number,integer}.</value>
+		</property>
+	</bean>
+
+	<alias name="localworker.factory" alias="listenerFactory" />
+	<alias name="localworker.runDB.cleaner" alias="timertask.1" />
+	<alias name="localworker.runDB.scanner" alias="timertask.2" />
+
+	<bean id="fileUtils" class="org.taverna.server.master.utils.FilenameUtils" />
+</beans>
