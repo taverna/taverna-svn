@@ -179,6 +179,16 @@ public class ConsumerWizard extends JFrame {
 		    }
 		}
 	    });
+	fileMenu.add(new JSeparator());
+	JMenuItem closeItem = new JMenuItem("Quit API Consumer");
+	closeItem.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+			setVisible(false);
+			System.exit(0); 
+		}
+	});
+	fileMenu.add(closeItem);
+
 	bar.add(fileMenu);
 	return bar;
     }
