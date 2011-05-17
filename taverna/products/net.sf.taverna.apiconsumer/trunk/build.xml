@@ -23,6 +23,9 @@
         <pathelement path="."/>
 		<pathelement path="${build.classes}"/>
 		<pathelement path="${build.src}"/>
+    	<!-- Path to tools.jar of JDK installation -->
+		<pathelement path="${java.home}/../lib/tools.jar"/>
+    	<pathelement path="${java.home}/lib/tools.jar"/>
     </path>
 	
 	<!-- Clean the build -->
