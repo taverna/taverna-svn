@@ -658,7 +658,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                 inputsTreeHTML.append("startParentNode(\"input_data\", \"List" + parentIndex +"\");\n");
                 for (int i=0; i < ((Collection)dataObject).size(); i++){
                     String newParentIndex = parentIndex.equals("") ? (new Integer(i+1)).toString() : (parentIndex +"."+(i+1));
-                    inputsTreeHTML.append(createResultTree(((ArrayList)dataObject).get(i),
+                    inputsTreeHTML.append(createInputsTree(((ArrayList)dataObject).get(i),
                             maxDepth,
                             currentDepth - 1,
                             newParentIndex,
