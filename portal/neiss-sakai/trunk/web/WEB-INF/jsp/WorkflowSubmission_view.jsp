@@ -17,28 +17,31 @@
 
 <%-- Include the styling CSS --%>
 <%@ include file="InputsCSS.jsp" %>
+<%@ include file="MyExperimentCSS.jsp" %>
 
 <%
 // List of workflow file names. Workflow files are located in /WEB-INF/workflows folder in the app root.
 ArrayList<String> workflowFileNamesList = (ArrayList<String>) renderRequest.getAttribute(Constants.WORKFLOW_FILE_NAMES);
-
 // Current user
 String user = (String) renderRequest.getPortletSession().getAttribute(Constants.USER, PortletSession.APPLICATION_SCOPE);
 %>
 
 <%-- Print out a message to the user, if any --%>
 <%
-    if (renderRequest.getParameter(Constants.ERROR_MESSAGE) != null){%>
-        <p style="color:red;"><b><%=renderRequest.getParameter(Constants.ERROR_MESSAGE)%></b></p>
+    if (renderRequest.getAttribute(Constants.ERROR_MESSAGE) != null){%>
+        <p style="color:red;"><b><%=renderRequest.getAttribute(Constants.ERROR_MESSAGE)%></b></p>
         <hr>
     <%}
-    if (renderRequest.getParameter(Constants.INFO_MESSAGE) != null){%>
-        <p style="color:green;"><b><%=renderRequest.getParameter(Constants.INFO_MESSAGE)%></b></p>
+    if (renderRequest.getAttribute(Constants.INFO_MESSAGE) != null){%>
+        <p style="color:green;"><b><%=renderRequest.getAttribute(Constants.INFO_MESSAGE)%></b></p>
         <hr>
     <%}
 %>
 
-<%-- Form for selecting the workflow to be sent for execution --%>
+
+<table>
+<tr><td style="padding-right:25px;">
+<%-- Form for selecting pre-canned uploaded workflows to be sent for execution --%>
 <p><b>Select a workflow to run:</b></p>
 
 <form name="<portlet:namespace/><%= Constants.WORKFLOW_SELECTION_SUBMISSION_FORM%>" action="<portlet:actionURL/>" method="post">
@@ -49,8 +52,8 @@ String user = (String) renderRequest.getPortletSession().getAttribute(Constants.
             <%
             for (int i = 0; i < workflowFileNamesList.size(); i++ ) {
                 // If this workflow was selected then show it as selected in the list
-                if (workflowFileNamesList.get(i).equals(renderRequest.getParameter(renderResponse.getNamespace() + Constants.SELECTED_WORKFLOW))){
-            %>  
+                if (workflowFileNamesList.get(i).equals(renderRequest.getParameter(Constants.SELECTED_WORKFLOW))){
+            %>
                     <option selected="selected" value="<%=workflowFileNamesList.get(i)%>"><%=workflowFileNamesList.get(i)%></option>
             <%
                 }else{%>
@@ -65,7 +68,7 @@ String user = (String) renderRequest.getPortletSession().getAttribute(Constants.
     </td>
 </tr>
 <% if (user != null && !user.equals(Constants.USER_ANONYMOUS)){%>
- <!-- Only logged in users are allowed to upload new workflows -->
+<!-- Only logged in users are allowed to upload new workflows -->
 <tr>
     <td>
         <input type="submit" name="<portlet:namespace/><%= Constants.WORKFLOW_UPLOAD_SUMBISSION%>" value="Add a new workflow">
@@ -73,5 +76,31 @@ String user = (String) renderRequest.getPortletSession().getAttribute(Constants.
 </tr>
 <%}%>
 </table>
-</form>
 <br>
+</form>
+</td>
+
+<td style="padding-left:25px; border-left-style:dotted; border-left-color:grey; border-left-width:1px; ">
+<%-- Form for searhing the myExperiment workflows --%>
+<p><b>Enter terms to search myExperiment for workflows.<br>
+        (All fields will be searched, including workflows, users, groups, tags, etc.).<br>
+        Separate multiple search terms with a blank character.
+    </b>
+</p>
+
+<form action="<portlet:actionURL/>" method="post">
+<table>
+<tr>
+    <td style="padding:5px;">
+        <input type="text" name="<%= Constants.MYEXPERIMENT_SEARCH_TERMS%>" size="30"/>
+    </td>
+    <td style="padding:5px;">
+        <input type="submit" name="<portlet:namespace/><%= Constants.MYEXPERIMENT_WORKFLOW_SEARCH%>" value="Search myExperiment"/>
+    </td>
+</tr>
+</table>
+<br>
+</form>
+</td></tr>
+
+</table>

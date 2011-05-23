@@ -303,7 +303,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
             //dispatcher = getPortletContext().getRequestDispatcher("/WEB-INF/jsp/CloseResultsViewForm.jsp");
             //dispatcher.include(request, response);
 
-            response.getWriter().println("<form name=\""+PORTLET_NAMESPACE+Constants.CLOSE_RESULTS_VIEW+"\" action=\"" + response.createRenderURL()+"\" >\n");
+            response.getWriter().println("<form name=\""+ PORTLET_NAMESPACE+Constants.CLEAR +"\" action=\"" + response.createRenderURL()+"\" >\n");
             response.getWriter().println("<p>\n");
             response.getWriter().println("<input type=\"image\" src=\""+request.getContextPath()+"/images/close.gif\" style=\"border:0;\" >\n");
             response.getWriter().println("</p>\n");
@@ -710,7 +710,10 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                         workflowRunDescription = FileUtils.readFileToString(workflowRunDescriptionFile, "UTF-8");
                     }
 
-                    WorkflowSubmissionJob workflowSubmissionJob =  new WorkflowSubmissionJob(uuid, workflowFileName, status, workflowRunDescription);
+                    Workflow workflow = new Workflow();
+                    workflow.setFileName(workflowFileName);
+
+                    WorkflowSubmissionJob workflowSubmissionJob = new WorkflowSubmissionJob(uuid, workflow, status, workflowRunDescription);
 
                     String startdateFileName = jobDir.list(startdateFileFilter)[0]; // should be only 1 element or else we are in trouble
                     String startdate = startdateFileName.substring(0, startdateFileName.indexOf(Constants.STARTDATE_FILE_EXT));
@@ -1127,7 +1130,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
             // Calculate the depth of the data for the port
             Object dataObject = dataThing.getDataObject();
-            int dataDepth = calculateDataDepth(dataObject);
+            int dataDepth = Utils.calculateDataDepth(dataObject);
             if (rowCount % 2 != 0) {
                 dataTableHTML.append("<tr>\n");
             } else {
@@ -1218,7 +1221,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
             // Calculate the depth of the data for the port
             Object dataObject = dataThing.getDataObject();
-            int dataDepth = calculateDataDepth(dataObject);
+            int dataDepth = Utils.calculateDataDepth(dataObject);
             if (rowCount % 2 != 0) {
                 dataTableHTML.append("<tr>\n");
             } else {
@@ -1313,24 +1316,4 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
         return (responseBodyString.toString());
     }
-
-    /*
-     * Calculate depth of a result data item.
-     */
-    private static int calculateDataDepth(Object dataObject) {
-
-        if (dataObject instanceof Collection<?>){
-            if (((Collection<?>)dataObject).isEmpty()){
-                    return 1;
-            }
-            else{
-                    // Calculate the depth of the first element in collection + 1
-                    return calculateDataDepth(((Collection<?>)dataObject).iterator().next()) + 1;
-            }
-        }
-        else{
-            return 0;
-        }
-    }
-
 }

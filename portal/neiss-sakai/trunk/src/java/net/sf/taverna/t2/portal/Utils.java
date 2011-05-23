@@ -5,11 +5,17 @@
 package net.sf.taverna.t2.portal;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.embl.ebi.escience.baclava.DataThing;
+import org.jdom.Element;
+import org.jdom.xpath.XPath;
 
 /**
  *
@@ -19,7 +25,7 @@ public class Utils {
 
     /*
      * Saves a map of data objects for workflow input or output ports
-     * to individual files in a directory dataDir (which is either 
+     * to individual files in a directory dataDir (which is either
      * <job_directory>/inputs or <job_directory>/outputs).
      * Each port gets its own sub-directory (named after the port name)
      * inside dataDir where its data gets saved.
@@ -133,6 +139,76 @@ public class Utils {
         else{ // unrecognised data type
             return false;
         }
+    }
+
+    public static Element getTopDataflow(Element element) {
+        Element result = null;
+        for (Object elObj : element.getChildren(Constants.DATAFLOW_ELEMENT, Constants.T2_WORKFLOW_NAMESPACE)) {
+            Element dataflowElement = (Element) elObj;
+            if (Constants.DATAFLOW_ROLE_TOP.equals(dataflowElement.getAttribute(Constants.DATAFLOW_ROLE).getValue())) {
+                result = dataflowElement;
+            }
+        }
+        return result;
+    }
+
+    /*
+     * Given an <annotations> element from the .t2flow file,
+     * it finds the latest <net.sf.taverna.t2.annotation.AnnotationAssertionImpl>
+     * element regardless of its location in the <annotations>, element whose
+     * <annotationBean> sub-element has a class attribute that matches the
+     * passed value. It then returns the value of the <text> element inside that
+     * <annotationBean> element.
+     */
+    public static String getLatestAnnotationAssertionImplElementValue(Element annotationsElement, String annotationBeanClassName, String workflowFileName) {
+
+        //System.out.println("Getting annotations with class='" + annotationBeanClassName + "' from element " + new XMLOutputter().outputString(annotationsElement) + "\n");
+
+        // Select all <net.sf.taverna.t2.annotation.AnnotationAssertionImpl>
+        // elements no matter where they are located inside the <assertions> element passed.
+        List<Element> annotationAssertionImplElements = null;
+        try {
+            //JDOMXPath path = new JDOMXPath(".//"+Constants.ANNOTATION_ASSERTION_IMPL_ELEMENT);
+            //annotationAssertionImplElements = path.selectNodes(annotationsElement);
+
+            annotationAssertionImplElements = XPath.selectNodes(annotationsElement, ".//" + Constants.ANNOTATION_ASSERTION_IMPL_ELEMENT);
+        } catch (Exception ex) {
+            System.out.println("Workflow Submission Portlet: Failed to parse the annotations element when looking for " + annotationBeanClassName + " in worklow " + workflowFileName + ".");
+            ex.printStackTrace();
+            return null;
+        }
+
+        // Loop over all the annotation assertion implementation elements
+        // and find the latest that has an annotation bean whose class
+        // matches the one we are looking for.
+        String latestValue = null;
+        Date latestDate = new Date(0);
+        if (annotationAssertionImplElements != null) {
+            for (Element annotationAssertionImplElement : annotationAssertionImplElements) {
+
+                Element annotationBeanElement = annotationAssertionImplElement.getChild(Constants.ANNOTATION_BEAN_ELEMENT);
+
+                Date date = null;
+                String pattern = "yyyy-MM-dd HH:mm:ss.SSS z";
+                SimpleDateFormat format = new SimpleDateFormat(pattern);
+                if (annotationBeanElement.getAttributeValue(Constants.ANNOTATION_BEAN_ELEMENT_CLASS_ATTRIBUTE).equals(annotationBeanClassName)) {
+                    String value = annotationBeanElement.getChildText(Constants.TEXT_ELEMENT);
+
+                    try {
+                        date = format.parse(annotationAssertionImplElement.getChildText(Constants.DATE_ELEMENT));
+                        if (latestDate.before(date)) {
+                            latestValue = value;
+                            latestDate = date;
+                        }
+                    } catch (ParseException ex) {
+                        System.out.println("Workflow Submission Portlet: Failed to parse the annotation bean date for " + annotationBeanClassName + " in workflow " + workflowFileName + ". Skipping this element.");
+                        ex.printStackTrace();
+                        continue;
+                    }
+                }
+            }
+        }
+        return latestValue;
     }
 
 }

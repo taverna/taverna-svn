@@ -15,9 +15,10 @@
 <hr>
 
 <%-- Close form button --%>
-<form name="<portlet:namespace/><%= Constants.CLOSE_UPLOAD_WORKFLOW%>" action="<portlet:renderURL/>" method="post">
+<form action="<portlet:actionURL/>" method="post">
 <p>
     <input type="image" src="<%= renderRequest.getContextPath()%>/images/close.gif" style="border:0;">
+    <input type="hidden" name="<portlet:namespace/><%= Constants.CLEAR%>" value="true">
 </p>
 </form>
 
