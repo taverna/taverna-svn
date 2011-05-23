@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 
 //import org.apache.log4j.Logger;
+import net.sf.taverna.t2.portal.WorkflowInputPort;
 import org.jdom.Document;
 import org.jdom.Element;
 
@@ -35,7 +36,9 @@ public class Workflow extends Resource {
   private String visibleType;
   private String contentType;
   private URI contentUri;
-  byte[] content;
+  private byte[] content;
+  private Document workflowDocument; // XML document parsed out from the workflow content
+  private ArrayList<WorkflowInputPort> workflowInputPorts;
 
   private List<Tag> tags;
   private List<Comment> comments;
@@ -420,6 +423,34 @@ public class Workflow extends Resource {
 	// return created workflow instance
 	return (w);
   }
+
+    /**
+     * @return the workflowDocument
+     */
+    public Document getWorkflowDocument() {
+        return workflowDocument;
+    }
+
+    /**
+     * @param workflowDocument the workflowDocument to set
+     */
+    public void setWorkflowDocument(Document workflowDocument) {
+        this.workflowDocument = workflowDocument;
+    }
+
+    /**
+     * @return the workflowInputPorts
+     */
+    public ArrayList<WorkflowInputPort> getWorkflowInputPorts() {
+        return workflowInputPorts;
+    }
+
+    /**
+     * @param workflowInputPorts the workflowInputPorts to set
+     */
+    public void setWorkflowInputPorts(ArrayList<WorkflowInputPort> workflowInputPorts) {
+        this.workflowInputPorts = workflowInputPorts;
+    }
 
 }
 

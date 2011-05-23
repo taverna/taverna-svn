@@ -37,6 +37,7 @@ public class Constants {
     public static final String WORKFLOW_RESULTS_BACLAVA_FILE_URL = "workflow_results_baclava_file_URL";
     public static final String WORKFLOW_SUBMISSION_JOB = "workflow_submission_job";
     public static final String USER = "user";
+    public static final String MYEXPERIMENT_WORKFLOWS_INPUT_FORM = "myexperiment_workflows_input_forms";
 
     // Portlet scope attributes
     public static final String ERROR_MESSAGE = "error_message";
@@ -113,13 +114,14 @@ public class Constants {
     public static final String WORKFLOW_INPUTS_FORM = "workflow_inputs_form";
     public static final String RUN_WORKFLOW = "run_workflow";
     public static final String WORKFLOW_FILE_NAME = "workflow_file_name";
+    public static final String WORKFLOW_RESOURCE_ON_MYEXPERIMENT = "workflow_resource_on_myexperiment"; // resource URI on myExpriment identifying a workflow
     public static final String WORKFLOW_UPLOAD_SUMBISSION = "workflow_uploading"; // action on the submit button to take the user to the page to upload a file
     public static final String WORKFLOW_UPLOAD_FORM = "workflow_upload_form";
     public static final String WORKFLOW_UPLOAD_FORM_FILE = "workflow_upload_form_file";
     public static final String WORKFLOW_UPLOAD_FORM_SHARING_PUBLIC = "workflow_upload_sharing_public";
     public static final String UPLOAD_WORKFLOW = "upload_workflow"; // action on the submit button to upload a file
-    public static final String CLOSE_UPLOAD_WORKFLOW = "close_upload_workflow"; // action to close the upload workflow
-    public static final String CLOSE_RESULTS_VIEW = "close_results_view"; // action to close the results view
+    public static final String CLEAR = "clear"; // action to clear the upload wf form, input form or search results or workflow run results
+    public static final String MYEXPERIMENT_WORKFLOW_SHOW_INPUT_FORM = "show_input_form"; // action to show the input form for a workflow from myExpriment
     public static final String MYEXPERIMENT_WORKFLOW_SEARCH = "myexperiment_workflow_search;";
     public static final String MYEXPERIMENT_SEARCH_TERMS = "myexperiment_search_terms;";
     public static final String MYEXPERIMENT_SEARCH_ALL = "myexperiment_search_all;";

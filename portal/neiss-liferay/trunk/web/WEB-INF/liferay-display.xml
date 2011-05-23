@@ -4,6 +4,5 @@
   <category name="Taverna Portlets">
     <portlet id="WorkflowSubmission">WorkflowSubmission</portlet>
     <portlet id="WorkflowResults">WorkflowResults</portlet>
-    <portlet id="myExperimentWorkflowSubmission">myExperimentWorkflowSubmission</portlet>
   </category>
 </display>

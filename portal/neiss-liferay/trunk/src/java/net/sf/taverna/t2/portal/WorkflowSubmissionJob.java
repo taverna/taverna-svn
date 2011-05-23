@@ -17,8 +17,12 @@ public class WorkflowSubmissionJob {
     // after submitting a wf for submission
     private String uuid;
 
-    // Name of the workflow file submitted
+    // Name of the file of the workflow submitted for execution
     private String workflowFileName;
+
+    // URI of the workflow resource on myExperiment, if this is an execution
+    // of a workflow from myExperiment
+    private String workflowMyExperimentResource;
 
     // Description of the job as entered by the user
     private String workflowRunDescription;
@@ -38,9 +42,14 @@ public class WorkflowSubmissionJob {
 
     private Date endDate;
 
-    public WorkflowSubmissionJob(String uuid, String workflowFileName, String status, String workflowRunDescription){
+    public WorkflowSubmissionJob(String uuid, Workflow workflow, String status, String workflowRunDescription){
         this.uuid = uuid;
-        this.workflowFileName = workflowFileName;
+        if (workflow.isMyExperimentWorkflow()){
+            this.workflowMyExperimentResource = workflow.getResource();
+        }
+        else{
+            this.workflowFileName = workflow.getFileName();
+        }
         this.status = status;
         this.workflowRunDescription = workflowRunDescription;
     }
@@ -127,6 +136,20 @@ public class WorkflowSubmissionJob {
      */
     public void setWorkflowRunDescription(String workflowRunDescription) {
         this.workflowRunDescription = workflowRunDescription;
+    }
+
+    /**
+     * @return the workflowMyExperimentResource
+     */
+    public String getWorkflowMyExperimentResource() {
+        return workflowMyExperimentResource;
+    }
+
+    /**
+     * @param workflowMyExperimentResource the workflowMyExperimentResource to set
+     */
+    public void setWorkflowMyExperimentResource(String workflowMyExperimentResource) {
+        this.workflowMyExperimentResource = workflowMyExperimentResource;
     }
 
 }

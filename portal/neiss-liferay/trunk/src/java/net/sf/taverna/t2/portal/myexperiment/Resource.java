@@ -8,9 +8,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.io.Serializable;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.EventListener;
 import java.util.List;
+import javax.portlet.RenderResponse;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -22,6 +24,7 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
 //import org.apache.log4j.Logger;
+import net.sf.taverna.t2.portal.Constants;
 import org.jdom.Document;
 import org.jdom.Element;
 
@@ -582,7 +585,7 @@ public class Resource implements Comparable<Resource>, Serializable {
    * holds. Shows reduced amount of information when "bCreateFullSizeView" is
    * set to false.
    */
-  public String createHTMLPreview(boolean bCreateFullSizeView) {
+  public String createHTMLPreview(boolean bCreateFullSizeView, String workflowInputForm, RenderResponse response) {
     try {
 
           StringBuffer content = new StringBuffer();
@@ -680,24 +683,28 @@ public class Resource implements Comparable<Resource>, Serializable {
 	  content.append("</table>");
 	  content.append("</div>");
 
+          String wfId = this.getURI().split("=")[1]; // uri is of form http://neiss.myexperiment.org/workflow.xml?id=1
+          content.append("<a name='"+wfId+"'> </a>"); // anchor for this wf on the page
+
 	  if (bCreateFullSizeView) {
-		content.append("<p style='text-align: left;'><b><a href='"
+            content.append("<p style='text-align: left;'><b><a href='"
 			+ this.getResource() //+ ((this.getItemType() == Resource.WORKFLOW) ? ("?version="+((Workflow)this).getVersion()) : "")
 			+ "' target='blank'>Open in myExperiment</a></b>"
 			+ "&nbsp;&nbsp;&nbsp;");
-	      // We can only run Taverna 2 workflows
-                System.out.println(((Workflow) this).getVersion());
-              //if (this.itemType == Resource.WORKFLOW && ((Workflow) this).getVersion() == 2) {
-                  content.append("<b><a href=\"javascript:loadinputform('"+this.getURI()+"');\">Run workflow</a></b>");
-              //}
-              content.append("</p>");
+            content.append("<b><a href=\""+ response.createActionURL() +"&"+response.getNamespace() + Constants.MYEXPERIMENT_WORKFLOW_SHOW_INPUT_FORM +"=" +URLEncoder.encode(this.getResource(), "UTF-8")+"#"+wfId+"\">Submit workflow for execution</a></b>");
+            content.append("</p>");
           }
 
 	  content.append("</div>");
 
-          // Div for input form
-          content.append("<div id='"+ this.getURI()+"'>");
-	  content.append("</div>");
+          // Input form
+          //content.append("<div id='"+ this.getURI()+"'>");
+	  //content.append("</div>");
+          if (workflowInputForm != null){
+            content.append("<div>");
+            content.append(workflowInputForm);
+            content.append("</div>");
+          }
 
 	  content.append("</div>");
 

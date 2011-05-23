@@ -36,22 +36,4 @@
 			<short-title>Workflow Results</short-title>
 		</portlet-info>
 	</portlet>
-	<portlet>
-		<description>myexperiment_workflow_submission</description>
-		<portlet-name>myExperimentWorkflowSubmission</portlet-name>
-		<display-name>myExperiment Workflow Submission</display-name>
-		<portlet-class>net.sf.taverna.t2.portal.MyExperimentWorkflowSubmissionPortlet</portlet-class>
-		<expiration-cache>0</expiration-cache>
-		<supports>
-			<mime-type>text/html</mime-type>
-			<portlet-mode>VIEW</portlet-mode>
-			<portlet-mode>EDIT</portlet-mode>
-			<portlet-mode>HELP</portlet-mode>
-		</supports>
-		<resource-bundle>net.sf.taverna.t2.portal.messages</resource-bundle>
-		<portlet-info>
-			<title>myExperiment Workflow Submission</title>
-			<short-title>myExperiment Workflow Submission</short-title>
-		</portlet-info>
-	</portlet>
 </portlet-app>

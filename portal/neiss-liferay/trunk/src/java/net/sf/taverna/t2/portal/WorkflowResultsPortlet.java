@@ -273,7 +273,7 @@ public class WorkflowResultsPortlet extends GenericPortlet {
             //dispatcher = getPortletContext().getRequestDispatcher("/WEB-INF/jsp/CloseResultsViewForm.jsp");
             //dispatcher.include(request, response);
 
-            response.getWriter().println("<form name=\""+PORTLET_NAMESPACE+Constants.CLOSE_RESULTS_VIEW+"\" action=\"" + response.createRenderURL()+"\" >\n");
+            response.getWriter().println("<form name=\""+PORTLET_NAMESPACE+Constants.CLEAR+"\" action=\"" + response.createRenderURL()+"\" >\n");
             response.getWriter().println("<p>\n");
             response.getWriter().println("<input type=\"image\" src=\""+request.getContextPath()+"/images/close.gif\" style=\"border:0;\" >\n");
             response.getWriter().println("</p>\n");
@@ -603,7 +603,7 @@ public class WorkflowResultsPortlet extends GenericPortlet {
                 inputsTreeHTML.append("startParentNode(\"input_data\", \"List" + parentIndex + "\");\n");
                 for (int i = 0; i < ((Collection) dataObject).size(); i++) {
                     String newParentIndex = parentIndex.equals("") ? (new Integer(i + 1)).toString() : (parentIndex + "." + (i + 1));
-                    inputsTreeHTML.append(createResultTree(((ArrayList) dataObject).get(i),
+                    inputsTreeHTML.append(createInputsTree(((ArrayList) dataObject).get(i),
                             maxDepth,
                             currentDepth - 1,
                             newParentIndex,
@@ -654,7 +654,10 @@ public class WorkflowResultsPortlet extends GenericPortlet {
                         workflowRunDescription = FileUtils.readFileToString(workflowRunDescriptionFile, "UTF-8");
                     }
 
-                    WorkflowSubmissionJob workflowSubmissionJob = new WorkflowSubmissionJob(uuid, workflowFileName, status, workflowRunDescription);
+                    Workflow workflow = new Workflow();
+                    workflow.setFileName(workflowFileName);
+                    
+                    WorkflowSubmissionJob workflowSubmissionJob = new WorkflowSubmissionJob(uuid, workflow, status, workflowRunDescription);
 
                     String startdateFileName = jobDir.list(startdateFileFilter)[0]; // should be only 1 element or else we are in trouble
                     String startdate = startdateFileName.substring(0, startdateFileName.indexOf(Constants.STARTDATE_FILE_EXT));
