@@ -255,7 +255,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                     net.sf.taverna.t2.portal.myexperiment.Workflow myExperimentWorkflow = myExperimentWorkflows.get(index);
                     workflow = new Workflow();
                     workflow.setIsMyExperimentWorkflow(true);
-                    workflow.setMyExperimentResource(myExperimentWorkflow.getResource());
+                    workflow.setMyExperimentWorkflowResource(myExperimentWorkflow.getResource());
                     workflow.setMyExperimentWorkflowVersion(myExperimentWorkflow.getVersion());
                     workflow.setWorkflowDocument(myExperimentWorkflow.getWorkflowDocument());
                     workflow.setWorkflowInputPorts(myExperimentWorkflow.getWorkflowInputPorts());
@@ -1209,7 +1209,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
         try {
             if (workflow.isMyExperimentWorkflow()) {
-                workflowName = workflow.getMyExperimentResource();
+                workflowName = workflow.getMyExperimentWorkflowResource();
                 // Get the workflow XML Document's string representation
                 Document workflowDocument = (Document) workflow.getWorkflowDocument().clone();
                 // Wrap it inside another <workflow> element as expected by the T2 Server
@@ -1270,7 +1270,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
         String workflowName;
         if (workflow.isMyExperimentWorkflow()){
-            workflowName = workflow.getMyExperimentResource();
+            workflowName = workflow.getMyExperimentWorkflowResource();
         }
         else{
             workflowName = workflow.getFileName();
@@ -1328,9 +1328,9 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         String workflowName;
         String workflowFileName;
         if (workflow.isMyExperimentWorkflow()){
-            String myExperimentWorkflowId = workflow.getMyExperimentResource().substring(workflow.getMyExperimentResource().lastIndexOf("/") + 1);
+            String myExperimentWorkflowId = workflow.getMyExperimentWorkflowResource().substring(workflow.getMyExperimentWorkflowResource().lastIndexOf("/") + 1);
             workflowFileName = MYEXPERIMENT_FILE_NAME_PREFIX + myExperimentWorkflowId;
-            workflowName = workflow.getMyExperimentResource();
+            workflowName = workflow.getMyExperimentWorkflowResource();
         }
         else{
             workflowFileName = workflow.getFileName();
@@ -1454,7 +1454,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     boolean runWorkflow(Workflow workflow, String workflowResourceUUID,  ActionRequest actionRequest){
         String workflowName;
         if (workflow.isMyExperimentWorkflow()){
-            workflowName = workflow.getMyExperimentResource();
+            workflowName = workflow.getMyExperimentWorkflowResource();
         }
         else{
             workflowName = workflow.getFileName();
@@ -1645,7 +1645,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         }
         else{ // this is a workflow from myExperiment
             // Save the info about the workflow, i.e. myExperiment resource for the wf and wf version, as properties
-            props.setProperty(Constants.MYEXPERIMENT_WORKFLOW_RESOURCE, job.getWorkflow().getMyExperimentResource());
+            props.setProperty(Constants.MYEXPERIMENT_WORKFLOW_RESOURCE, job.getWorkflow().getMyExperimentWorkflowResource());
             props.setProperty(Constants.MYEXPERIMENT_WORKFLOW_VERSION, new Integer(job.getWorkflow().getMyExperimentWorkflowVersion()).toString());
         }
 

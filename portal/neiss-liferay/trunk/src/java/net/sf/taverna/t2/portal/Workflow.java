@@ -28,7 +28,7 @@ public class Workflow {
     private boolean isMyExperimentWorkflow;
 
     // Resource URI for workflows from myExperiment (contains the wf id on myExperiment)
-    private String myExperimentResource;
+    private String myExperimentWorkflowResource;
 
     // Version of the workflows on myExperiment (there can be multiple versions of the same wf)
     private int myExperimentWorkflowVersion;
@@ -101,15 +101,15 @@ public class Workflow {
     /**
      * @return the resource
      */
-    public String getMyExperimentResource() {
-        return myExperimentResource;
+    public String getMyExperimentWorkflowResource() {
+        return myExperimentWorkflowResource;
     }
 
     /**
      * @param resource the resource to set
      */
-    public void setMyExperimentResource(String resource) {
-        this.myExperimentResource = resource;
+    public void setMyExperimentWorkflowResource(String resource) {
+        this.myExperimentWorkflowResource = resource;
     }
 
     /**

@@ -288,7 +288,7 @@ public class WorkflowResultsPortlet extends GenericPortlet {
             if (job.getWorkflow().getFileName() != null) { // this is a local workflow
                 workflowName = job.getWorkflow().getFileName();
             } else { // this is a workflow from myExperiment
-                workflowName = job.getWorkflow().getMyExperimentResource();
+                workflowName = job.getWorkflow().getMyExperimentWorkflowResource();
             }
             response.getWriter().println("<b>Workflow: " + workflowName + "</b><br><br>\n");
 
@@ -422,7 +422,7 @@ public class WorkflowResultsPortlet extends GenericPortlet {
                                     if (job.getWorkflow().getFileName() != null) { // this is a local workflow
                                         workflowName = job.getWorkflow().getFileName();
                                     } else { // this is a workflow from myExperiment
-                                        workflowName = job.getWorkflow().getMyExperimentResource();
+                                        workflowName = job.getWorkflow().getMyExperimentWorkflowResource();
                                     }
                                     System.out.println("Workflow Submission Portlet: Execution of workflow " + workflowName + " finished on the Server. Results fetched at " + dateFormat.format(endDate) + " with job id: " + job.getUuid() + ".");
                                 }
@@ -681,7 +681,7 @@ public class WorkflowResultsPortlet extends GenericPortlet {
                         workflow.setFileName(workflowFileName);
                         workflow.setIsMyExperimentWorkflow(false);
                     } else { // this is a workflow from myExperiment
-                        workflow.setMyExperimentResource(myExperimentResource);
+                        workflow.setMyExperimentWorkflowResource(myExperimentResource);
                         workflow.setMyExperimentWorkflowVersion(Integer.parseInt(myExterimentVersion));
                         workflow.setIsMyExperimentWorkflow(true);
                     }
@@ -703,7 +703,7 @@ public class WorkflowResultsPortlet extends GenericPortlet {
 
                     workflowSubmissionJobs.add(workflowSubmissionJob);
 
-                    System.out.println("Workflow Results Portlet: Found job: " + uuid + "; workflow: " + workflowFileName + "; status: " + status + "\n");
+                    System.out.println("Workflow Results Portlet: Found job: " + uuid + "; workflow: " + workflowFileName!=null? workflowFileName : workflow.getMyExperimentWorkflowResource() + "; status: " + status + "\n");
                 } catch (Exception ex) { // something went wrong with getting the files for this job - just skip it
                     System.out.println("Workflow Results Portlet: Failed to load info for a previously submitted job from " + jobsDir.getAbsolutePath());
                     ex.printStackTrace();

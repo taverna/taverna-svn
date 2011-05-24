@@ -91,7 +91,7 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z"
             <td><a href="<portlet:actionURL/>&<%=Constants.FETCH_RESULTS%>=<%= URLEncoder.encode(workflowSubmissionJobs.get(i).getUuid(), "UTF-8")%>#<%=Constants.RESULTS_ANCHOR%>"><%= workflowSubmissionJobs.get(i).getUuid() %></a></td>
         <%}%>
         <td><%= workflowSubmissionJobs.get(i).getWorkflowRunDescription() %></td>
-        <td><%= workflowSubmissionJobs.get(i).getWorkflow().getFileName()!=null ? workflowSubmissionJobs.get(i).getWorkflow().getFileName() : "<a target=\"blank\" href=\""+workflowSubmissionJobs.get(i).getWorkflow().getMyExperimentResource()+"\">"+workflowSubmissionJobs.get(i).getWorkflow().getMyExperimentResource()+"</a>" %></td>
+        <td><%= (workflowSubmissionJobs.get(i).getWorkflow().getFileName()!=null) ? workflowSubmissionJobs.get(i).getWorkflow().getFileName() : "<a target=\"blank\" href=\""+workflowSubmissionJobs.get(i).getWorkflow().getMyExperimentWorkflowResource()+"?version="+workflowSubmissionJobs.get(i).getWorkflow().getMyExperimentWorkflowVersion()+"\">"+workflowSubmissionJobs.get(i).getWorkflow().getMyExperimentWorkflowResource()+"</a>" %></td>
         <td><%= workflowSubmissionJobs.get(i).getStatus() %></td>
         <td><%= dateFormat.format(workflowSubmissionJobs.get(i).getStartDate()) %></td>
 
