@@ -27,8 +27,11 @@ public class Workflow {
     // Is this a workflow from myExperiment?
     private boolean isMyExperimentWorkflow;
 
-    // Resource URI for workflows from myExperiment
-    private String myExperimentResource;
+    // Resource URI for workflows from myExperiment (contains the wf id on myExperiment)
+    private String myExperimentWorkflowResource;
+
+    // Version of the workflows on myExperiment (there can be multiple versions of the same wf)
+    private int myExperimentWorkflowVersion;
 
     // XML document parsed out of the workflow stream
     private Document workflowDocument;
@@ -98,15 +101,15 @@ public class Workflow {
     /**
      * @return the resource
      */
-    public String getResource() {
-        return myExperimentResource;
+    public String getMyExperimentWorkflowResource() {
+        return myExperimentWorkflowResource;
     }
 
     /**
      * @param resource the resource to set
      */
-    public void setResource(String resource) {
-        this.myExperimentResource = resource;
+    public void setMyExperimentWorkflowResource(String resource) {
+        this.myExperimentWorkflowResource = resource;
     }
 
     /**
@@ -149,5 +152,19 @@ public class Workflow {
      */
     public void setWorkflowInputPorts(ArrayList<WorkflowInputPort> workflowInputPorts) {
         this.workflowInputPorts = workflowInputPorts;
+    }
+
+    /**
+     * @return the myExperimentWorkflowVersion
+     */
+    public int getMyExperimentWorkflowVersion() {
+        return myExperimentWorkflowVersion;
+    }
+
+    /**
+     * @param myExperimentWorkflowVersion the myExperimentWorkflowVersion to set
+     */
+    public void setMyExperimentWorkflowVersion(int myExperimentWorkflowVersion) {
+        this.myExperimentWorkflowVersion = myExperimentWorkflowVersion;
     }
 }

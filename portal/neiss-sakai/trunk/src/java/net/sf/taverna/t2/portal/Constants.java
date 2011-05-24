@@ -11,10 +11,12 @@ public class Constants {
     public static final String FILE_SEPARATOR = System.getProperty("file.separator");
 
     public static final String WORKFLOWS_DIRECTORY = "/WEB-INF/workflows"; // relative URL path from the root of the app
-    public static final String T2_FLOW_FILE_EXT = ".t2flow";
+    public static final String T2FLOW_FILE_EXT = ".t2flow";
+    public static final String PROPERTIES_FILE_EXT = ".properties"; // when saving info about wf as part of submitted job
     public static final String STATUS_FILE_EXT = ".status";
     public static final String STARTDATE_FILE_EXT = ".startdate";
     public static final String ENDDATE_FILE_EXT = ".enddate";
+    public static final String WORKFLOW_PROPERTIES_FILE = "workflow.properties";
     public static final String WORKFLOW_RUN_DESCRIPTION_FILE = "workflow_run_description.txt";
     public static final String INPUTS_BACLAVA_FILE = "inputs.baclava";// saved on local disk
     public static final String INPUTS_DIRECTORY_NAME = "inputs"; // name of the dir where individual outputs  for all port are saved
@@ -46,11 +48,11 @@ public class Constants {
     public static final String INPUTS_MAP_ATTRIBUTE = "inputs_map";
 
     // Init parameters
-    public static final String T2_SERVER_URL = "T2_SERVER_URL";
-    public static final String FILE_SERVLET_URL = "FILE_SERVLET_URL";
-    public static final String JOBS_DIRECTORY_PATH = "JOBS_DIRECTORY_PATH";
-    public static final String MAX_PREVIEW_DATA_SIZE_IN_KB = "MAX_PREVIEW_DATA_SIZE_IN_KB";
-    public static final String MYEXPERIMENT_BASE_URL = "MYEXPERIMENT_BASE_URL";
+    public static final String T2_SERVER_URL_PROPERTY = "T2_SERVER_URL";
+    public static final String FILE_SERVLET_URL_PROPERTY = "FILE_SERVLET_URL";
+    public static final String JOBS_DIRECTORY_PATH_PROPERTY = "JOBS_DIRECTORY_PATH";
+    public static final String MAX_PREVIEW_DATA_SIZE_IN_KB_PROPERTY = "MAX_PREVIEW_DATA_SIZE_IN_KB";
+    public static final String MYEXPERIMENT_BASE_URL_PROPERTY = "MYEXPERIMENT_BASE_URL";
 
     // .t2flow XML namespace
     public static final Namespace T2_WORKFLOW_NAMESPACE = Namespace.getNamespace("http://taverna.sf.net/2008/xml/t2flow");
@@ -120,9 +122,7 @@ public class Constants {
     public static final String WORKFLOW_UPLOAD_FORM_FILE = "workflow_upload_form_file";
     public static final String WORKFLOW_UPLOAD_FORM_SHARING_PUBLIC = "workflow_upload_sharing_public";
     public static final String UPLOAD_WORKFLOW = "upload_workflow"; // action on the submit button to upload a file
-    public static final String CLEAR_WORKFLOW_UPLOAD_FORM = "clear_workflow_upload_form"; // action to close the upload workflow form
-    public static final String CLEAR_WORKFLOW_INPUT_FORM = "clear_workflow_input_form"; // action to close the upload workflow form
-    public static final String CLEAR = "clear"; // action to clear the input form or search results or workflow run results
+    public static final String CLEAR = "clear"; // action to clear the upload wf form, input form or search results or workflow run results
     public static final String MYEXPERIMENT_WORKFLOW_SHOW_INPUT_FORM = "show_input_form"; // action to show the input form for a workflow from myExpriment
     public static final String MYEXPERIMENT_WORKFLOW_SEARCH = "myexperiment_workflow_search;";
     public static final String MYEXPERIMENT_SEARCH_TERMS = "myexperiment_search_terms;";
@@ -135,4 +135,7 @@ public class Constants {
     public static final String REFRESH_WORKFLOW_JOBS = "refresh_workflow_jobs";
 
     public static final String RESULTS_ANCHOR = "results_anchor";
+
+    public static final String MYEXPERIMENT_WORKFLOW_RESOURCE = "myExperiment_workflow_resource";
+    public static final String MYEXPERIMENT_WORKFLOW_VERSION = "myExperiment_workflow_version";
 }

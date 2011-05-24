@@ -40,7 +40,7 @@ public class FileServingServlet extends HttpServlet {
     public void init(){
 
         // Get the directory where info for submitted jobs for all users is persisted
-        JOBS_DIR = new File(getServletContext().getInitParameter(Constants.JOBS_DIRECTORY_PATH));
+        JOBS_DIR = new File(getServletContext().getInitParameter(Constants.JOBS_DIRECTORY_PATH_PROPERTY));
     }
 
     /** 

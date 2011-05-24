@@ -13,16 +13,19 @@ import java.util.Date;
  */
 public class WorkflowSubmissionJob {
 
-    // Workflow resource UUID received from a T2 Server
+    // Workflow job resource UUID received from a T2 Server
     // after submitting a wf for submission
     private String uuid;
 
+    // Workflow submitted for execution as part fo this job
+    private Workflow workflow;
+
     // Name of the file of the workflow submitted for execution
-    private String workflowFileName;
+    //private String workflowFileName;
 
     // URI of the workflow resource on myExperiment, if this is an execution
     // of a workflow from myExperiment
-    private String workflowMyExperimentResource;
+    //private String workflowMyExperimentResource;
 
     // Description of the job as entered by the user
     private String workflowRunDescription;
@@ -44,12 +47,7 @@ public class WorkflowSubmissionJob {
 
     public WorkflowSubmissionJob(String uuid, Workflow workflow, String status, String workflowRunDescription){
         this.uuid = uuid;
-        if (workflow.isMyExperimentWorkflow()){
-            this.workflowMyExperimentResource = workflow.getResource();
-        }
-        else{
-            this.workflowFileName = workflow.getFileName();
-        }
+        this.workflow = workflow;
         this.status = status;
         this.workflowRunDescription = workflowRunDescription;
     }
@@ -66,20 +64,6 @@ public class WorkflowSubmissionJob {
      */
     public void setUuid(String uuid) {
         this.uuid = uuid;
-    }
-
-    /**
-     * @return the workflowFileName
-     */
-    public String getWorkflowFileName() {
-        return workflowFileName;
-    }
-
-    /**
-     * @param workflowFileName the workflowFileName to set
-     */
-    public void setWorkflowFileName(String workflowFileName) {
-        this.workflowFileName = workflowFileName;
     }
 
     /**
@@ -139,17 +123,17 @@ public class WorkflowSubmissionJob {
     }
 
     /**
-     * @return the workflowMyExperimentResource
+     * @return the workflow
      */
-    public String getWorkflowMyExperimentResource() {
-        return workflowMyExperimentResource;
+    public Workflow getWorkflow() {
+        return workflow;
     }
 
     /**
-     * @param workflowMyExperimentResource the workflowMyExperimentResource to set
+     * @param workflow the workflow to set
      */
-    public void setWorkflowMyExperimentResource(String workflowMyExperimentResource) {
-        this.workflowMyExperimentResource = workflowMyExperimentResource;
+    public void setWorkflow(Workflow workflow) {
+        this.workflow = workflow;
     }
 
 }

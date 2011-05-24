@@ -5,6 +5,8 @@
 package net.sf.taverna.t2.portal;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -14,7 +16,10 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.embl.ebi.escience.baclava.DataThing;
+import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 
 /**
@@ -211,4 +216,18 @@ public class Utils {
         return latestValue;
     }
 
+    /*
+     * Parse workflow stream and return an XML document.
+     */
+    public static Document parseWorkflow(InputStream inputStream) throws JDOMException, IOException {
+        Document workflowDocument;
+        SAXBuilder builder = new SAXBuilder();
+        workflowDocument = builder.build(inputStream);
+        try {
+            inputStream.close();
+        } catch (Exception ex) {
+            // Ignore
+        }
+        return workflowDocument;
+    }
 }

@@ -38,7 +38,7 @@ String user = (String) renderRequest.getPortletSession().getAttribute(Constants.
     <%}
 %>
 
-
+<br>
 <table>
 <tr><td style="padding-right:25px;">
 <%-- Form for selecting pre-canned uploaded workflows to be sent for execution --%>

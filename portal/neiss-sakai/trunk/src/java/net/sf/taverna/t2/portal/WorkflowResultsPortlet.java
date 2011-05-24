@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.portlet.ActionRequest;
@@ -98,10 +99,10 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
         // Get the URL of the T2 Server defined in web.xml as an
         // app-wide init parameter ( <context-param> element)
-        T2_SERVER_URL = getPortletContext().getInitParameter(Constants.T2_SERVER_URL);
+        T2_SERVER_URL = getPortletContext().getInitParameter(Constants.T2_SERVER_URL_PROPERTY);
 
         // Get the directory where info for submitted jobs for all users is persisted
-        JOBS_DIR = new File(getPortletContext().getInitParameter(Constants.JOBS_DIRECTORY_PATH));
+        JOBS_DIR = new File(getPortletContext().getInitParameter(Constants.JOBS_DIRECTORY_PATH_PROPERTY));
         if (!JOBS_DIR.exists()){
             try{
                 JOBS_DIR.mkdirs(); // create all intermediate directories as well if neccessary
@@ -124,10 +125,10 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
         }, JOB_UPDATE_DELAY_IN_MS, JOB_UPDATE_PERIOD_IN_MS); // delay of 5 minutes for the first execution and runs every 5 minutes
 
-        FILE_SERVLET_URL = getPortletContext().getInitParameter(Constants.FILE_SERVLET_URL);
+        FILE_SERVLET_URL = getPortletContext().getInitParameter(Constants.FILE_SERVLET_URL_PROPERTY);
 
         try{
-            MAX_PREVIEW_DATA_SIZE_IN_KB = Long.valueOf((String)getPortletContext().getInitParameter(Constants.MAX_PREVIEW_DATA_SIZE_IN_KB));
+            MAX_PREVIEW_DATA_SIZE_IN_KB = Long.valueOf((String)getPortletContext().getInitParameter(Constants.MAX_PREVIEW_DATA_SIZE_IN_KB_PROPERTY));
         }
         catch(Exception ex){
             MAX_PREVIEW_DATA_SIZE_IN_KB = DEFAULT_MAX_PREVIEW_DATA_SIZE_IN_KB;
@@ -311,7 +312,14 @@ public class WorkflowResultsPortlet extends GenericPortlet{
             
             // Parse the result values from the Baclava file
             response.getWriter().println("<b>Workflow run id: " + job.getUuid() + "</b><br>\n");
-            response.getWriter().println("<b>Workflow: " + job.getWorkflowFileName() + "</b><br><br>\n");
+
+            String workflowName;
+            if (job.getWorkflow().getFileName() != null) { // this is a local workflow
+                workflowName = job.getWorkflow().getFileName();
+            } else { // this is a workflow from myExperiment
+                workflowName = job.getWorkflow().getMyExperimentWorkflowResource();
+            }
+            response.getWriter().println("<b>Workflow: " + workflowName + "</b><br><br>\n");
 
             // But if workflowSubmissionJobs is null or does not contain this job id
             // this is just a page refresh after redeployment of the app/restart of
@@ -450,7 +458,14 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                                     endDate = new Date();
                                     job.setEndDate(endDate);
                                     SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
-                                    System.out.println("Workflow Submission Portlet: Execution of workflow " + job.getWorkflowFileName() + " finished on the Server. Results fetched at " + dateFormat.format(endDate) +" with job id: " + job.getUuid() +".");
+
+                                    String workflowName;
+                                    if (job.getWorkflow().getFileName() != null) { // this is a local workflow
+                                        workflowName = job.getWorkflow().getFileName();
+                                    } else { // this is a workflow from myExperiment
+                                        workflowName = job.getWorkflow().getMyExperimentWorkflowResource();
+                                    }
+                                    System.out.println("Workflow Submission Portlet: Execution of workflow " + workflowName + " finished on the Server. Results fetched at " + dateFormat.format(endDate) + " with job id: " + job.getUuid() + ".");
                                 }
                                 // Persist the new status for this job on a disk
                                 updateJobStatusOnDiskForUser(job.getUuid(), statusOnServer, user, endDate);
@@ -697,8 +712,15 @@ public class WorkflowResultsPortlet extends GenericPortlet{
             for (File jobDir : jobDirsForUser){
                 String uuid = jobDir.getName();
                 try{
-                    String workflowFileNameWithExtension = jobDir.list(t2flowFileFilter)[0]; // should be only 1 element or else we are in trouble
-                    String workflowFileName = workflowFileNameWithExtension.substring(0, workflowFileNameWithExtension.indexOf(Constants.T2_FLOW_FILE_EXT));
+                    File workflowPropertiesFile = new File(jobDir, Constants.WORKFLOW_PROPERTIES_FILE); // properties file containing local wf file name or myExperiment resource details
+                    Properties props = new Properties();
+                    String workflowFileName = null;
+                    String myExperimentResource = null;
+                    String myExterimentVersion = null;
+                    props.load(new FileInputStream(workflowPropertiesFile));
+                    workflowFileName = props.getProperty(Constants.WORKFLOW_FILE_NAME);
+                    myExperimentResource = props.getProperty(Constants.MYEXPERIMENT_WORKFLOW_RESOURCE);
+                    myExterimentVersion = props.getProperty(Constants.MYEXPERIMENT_WORKFLOW_VERSION);
 
                     String statusFileName = jobDir.list(statusFileFilter)[0]; // should be only 1 element or else we are in trouble
                     String status = statusFileName.substring(0, statusFileName.indexOf(Constants.STATUS_FILE_EXT));
@@ -711,8 +733,15 @@ public class WorkflowResultsPortlet extends GenericPortlet{
                     }
 
                     Workflow workflow = new Workflow();
-                    workflow.setFileName(workflowFileName);
-
+                    if (workflowFileName != null) { // this is a local workflow
+                        workflow.setFileName(workflowFileName);
+                        workflow.setIsMyExperimentWorkflow(false);
+                    } else { // this is a workflow from myExperiment
+                        workflow.setMyExperimentWorkflowResource(myExperimentResource);
+                        workflow.setMyExperimentWorkflowVersion(Integer.parseInt(myExterimentVersion));
+                        workflow.setIsMyExperimentWorkflow(true);
+                    }
+                    
                     WorkflowSubmissionJob workflowSubmissionJob = new WorkflowSubmissionJob(uuid, workflow, status, workflowRunDescription);
 
                     String startdateFileName = jobDir.list(startdateFileFilter)[0]; // should be only 1 element or else we are in trouble
@@ -730,7 +759,7 @@ public class WorkflowResultsPortlet extends GenericPortlet{
 
                     workflowSubmissionJobs.add(workflowSubmissionJob);
 
-                    System.out.println("Workflow Results Portlet: Found job: " + uuid + "; workflow: " + workflowFileName + "; status: " + status + "\n");
+                    System.out.println("Workflow Results Portlet: Found job: " + uuid + "; workflow: " + workflowFileName!=null? workflowFileName : workflow.getMyExperimentWorkflowResource() + "; status: " + status + "\n");
                 }
                 catch(Exception ex){ // something went wrong with getting the files for this job - just skip it
                     System.out.println("Workflow Results Portlet: Failed to load info for a previously submitted job from " + jobsDir.getAbsolutePath());
@@ -777,7 +806,14 @@ public class WorkflowResultsPortlet extends GenericPortlet{
     // This file filter only returns files with .t2flow extension
     public static FilenameFilter t2flowFileFilter = new FilenameFilter() {
         public boolean accept(File dir, String name) {
-            return name.endsWith(Constants.T2_FLOW_FILE_EXT);
+            return name.endsWith(Constants.T2FLOW_FILE_EXT);
+        }
+    };
+    // This file filter only returns files with .properties extension
+    public static FilenameFilter workflowPropertiesFileFilter = new FilenameFilter() {
+
+        public boolean accept(File dir, String name) {
+            return name.endsWith(Constants.PROPERTIES_FILE_EXT);
         }
     };
 //    // This file filter only returns files named 'workflow_run_description.txt'
