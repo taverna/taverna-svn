@@ -12,6 +12,8 @@
 <%@ page import="javax.portlet.PortletContext" %>
 <%@ page import="net.sf.taverna.t2.portal.Constants" %>
 
+<%@ include file="InputsValidationJavaScript.jsp" %>
+
 <hr>
 
 <%-- Close form button --%>
@@ -24,7 +26,7 @@
 
 <%-- Form for uploading a new workflow --%>
 <p><b>Select a workflow to upload:</b></p>
-<form name="<portlet:namespace/><%= Constants.WORKFLOW_UPLOAD_FORM%>" action="<portlet:actionURL/>" method="post" enctype="multipart/form-data">
+<form name="<portlet:namespace/><%= Constants.WORKFLOW_UPLOAD_FORM%>" action="<portlet:actionURL/>" method="post" enctype="multipart/form-data" onSubmit="return validateFileUploadField()">
     <table style="width:100%">
         <tr>
             <td>
