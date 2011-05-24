@@ -97,4 +97,17 @@ function validateForm(workflowInputsForm)
     }
 
 }
+
+function validateFileUploadField(){
+    // Find the file upload field in the form
+    var fileNameField = document.getElementsByName("<portlet:namespace/><%= Constants.WORKFLOW_UPLOAD_FORM_FILE%>")[0];
+    if (fileNameField == null || fileNameField.value == ""){
+        alert("You have to select a file to upload.");
+        return false;
+    }
+    else{
+        return true;
+    }
+}
+
 </script>
