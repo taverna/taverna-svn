@@ -14,6 +14,7 @@
 <%@ page import="javax.portlet.PortletConfig" %>
 <%@ page import="javax.portlet.PortletContext" %>
 <%@ page import="net.sf.taverna.t2.portal.Constants" %>
+<%@ page import="net.sf.taverna.t2.portal.WorkflowSubmissionPortlet" %>
 
 <%-- Include the styling CSS --%>
 <%@ include file="InputsCSS.jsp" %>
@@ -84,7 +85,7 @@ String user = (String) renderRequest.getPortletSession().getAttribute(Constants.
 <%-- Form for searhing the myExperiment workflows --%>
 <p><b>Enter terms to search myExperiment for workflows.<br>
         (All fields will be searched, including workflows, users, groups, tags, etc.).<br>
-        Separate multiple search terms with a blank character.
+        Separate multiple search terms with a blank character or leave empty to get all workflows.
     </b>
 </p>
 
@@ -97,6 +98,10 @@ String user = (String) renderRequest.getPortletSession().getAttribute(Constants.
     <td style="padding:5px;">
         <input type="submit" name="<portlet:namespace/><%= Constants.MYEXPERIMENT_WORKFLOW_SEARCH%>" value="Search myExperiment"/>
     </td>
+</tr>
+<tr>
+    <td><span style="color:grey;">(A maximum of <%= WorkflowSubmissionPortlet.myExperimentResultCountLimit%> results will be returned.)</span></td>
+    <td> </td>
 </tr>
 </table>
 <br>

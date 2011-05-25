@@ -240,7 +240,9 @@ public class Workflow extends Resource {
 
 	try {
 	  // Access type
-	  w.setAccessType(Util.getAccessTypeFromXMLElement(docRootElement.getChild("privileges")));
+          if (docRootElement.getChild("privileges") != null){
+            w.setAccessType(Util.getAccessTypeFromXMLElement(docRootElement.getChild("privileges")));
+          }
 
 	  // URI
 	  w.setURI(docRootElement.getAttributeValue("uri"));

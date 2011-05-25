@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -35,6 +36,7 @@ import javax.portlet.PortletSession;
 import net.sf.taverna.t2.portal.myexperiment.MyExperimentClient;
 import net.sf.taverna.t2.portal.myexperiment.Resource;
 import net.sf.taverna.t2.portal.myexperiment.SearchEngine;
+import net.sf.taverna.t2.portal.myexperiment.ServerResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
@@ -62,9 +64,13 @@ import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.tool.api.SessionManager;
 
 /**
- * Workflow Submission Portlet - enables user to select a workflow,
+ * Workflow Submission Portlet - enables user to select a workflow
+ * from a list of pre-uploaded workflows or search myExperiment to find one,
  * specify the values for its inputs and submit it for execution to
  * a Taverna 2 Server.
+ *
+ * It also enables logged in users to upload new workflows to the list of
+ * pre-selected workflows.
  *
  * @author Alex Nenadic
  */
@@ -115,7 +121,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
     private MyExperimentClient myExperimentClient;
 
-    private int resultCountLimit = 50;
+    public static int myExperimentResultCountLimit = 50;
 
     // List of workflow resources fetched from myExperiment
     private ArrayList<net.sf.taverna.t2.portal.myexperiment.Workflow> myExperimentWorkflows = null;;
@@ -510,39 +516,93 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
                 System.out.println("myExperiment search terms:'" + request.getParameter(Constants.MYEXPERIMENT_SEARCH_TERMS) + "'");
 
+      String errorMessage = null;
                 if (request.getParameter(Constants.MYEXPERIMENT_SEARCH_TERMS).equals("")) {
-                    request.setAttribute(Constants.ERROR_MESSAGE, "Search criteria was empty. Please specify your search terms and try again.");
-                    return;
-                }
+                    //request.setAttribute(Constants.ERROR_MESSAGE, "Search criteria was empty. Please specify your search terms and try again.");
+                    //return;
 
-                SearchEngine searchEngine = new SearchEngine(false, myExperimentClient); // no tag search
+                    // Get all workflows
+                    int page = 1;
+                    myExperimentWorkflows = new ArrayList<net.sf.taverna.t2.portal.myexperiment.Workflow>();
+                    myExperimentWorkflowsInputForms = new HashMap<String, String>();
 
-                // Create a search that will return all workflows available from the myExp Base URL
-                SearchEngine.QuerySearchInstance getAllWorkflowsSearchQuery = new SearchEngine.QuerySearchInstance(request.getParameter(Constants.MYEXPERIMENT_SEARCH_TERMS), resultCountLimit, true, false, false, false, false);
-
-                // Execute the search query to fetch the workflows from myExperiment
-                Map<Integer, ArrayList<Resource>> allResources = searchEngine.searchAndPopulateResults(getAllWorkflowsSearchQuery);
-
-                // We are expecting only workflow resources to be returned
-                if (!allResources.isEmpty()) {
-                    for (int type : allResources.keySet()) {
-                        if (type == Resource.WORKFLOW) {
-                            myExperimentWorkflows = new ArrayList<net.sf.taverna.t2.portal.myexperiment.Workflow>();
-                            myExperimentWorkflowsInputForms = new HashMap<String, String>();
-                            for (Resource resource : allResources.get(type)) {
-                                net.sf.taverna.t2.portal.myexperiment.Workflow workflow = (net.sf.taverna.t2.portal.myexperiment.Workflow) resource;
-                                if (workflow.isTaverna2Workflow()) { // only deal with T2 workflows
-                                    myExperimentWorkflows.add(workflow);
-                                }
-                                //System.out.println("Content URI: "+workflow.getContentUri() + " Resource: "+ workflow.getResource() +" version: "+ workflow.getVersion() +" Uploader: "+ workflow.getUploader() +" Preview: "+ workflow.getPreview());
-                                //System.out.println(" URI: "+workflow.getURI() + " Thumbnail URI: "+workflow.getThumbnail() + " Thumbnail Big: "+ workflow.getThumbnailBig() +" Title: "+ workflow.getTitle() );
+                    outerloop:
+                    while (true){
+                        String queryURL = MYEXPERIMENT_BASE_URL +
+                                    "/workflows.xml?elements=content-uri,content-type,type,thumbnail,thumbnail-big,title,description&page="+page;
+                        //String queryURL = MYEXPERIMENT_BASE_URL + "/workflows.xml?all_elements=yes&page=1";
+                        try {
+                            System.out.println("Starting myExperiment search "+ queryURL);
+                            ServerResponse results = myExperimentClient.doMyExperimentGET(queryURL);
+                            Document responseBodyDocument = results.getResponseBody();
+                            Element rootElement = responseBodyDocument.getRootElement();
+                            List<Element> workflowElements = rootElement.getChildren();
+                            if (workflowElements.isEmpty()){
+                                break; // no more pages
                             }
+                            else{
+                                for (Element workflowElement : workflowElements){
+                                    //net.sf.taverna.t2.portal.myexperiment.Workflow workflow = (net.sf.taverna.t2.portal.myexperiment.Workflow) net.sf.taverna.t2.portal.myexperiment.Workflow.buildFromXML(workflowElement, myExperimentClient);
+                                    net.sf.taverna.t2.portal.myexperiment.Workflow workflow = new net.sf.taverna.t2.portal.myexperiment.Workflow();
+                                    workflow.setResource(workflowElement.getAttributeValue("resource"));
+                                    workflow.setURI(workflowElement.getAttributeValue("uri"));
+                                    workflow.setContentType(workflowElement.getChildText("content-type"));
+                                    workflow.setVersion(Integer.parseInt(workflowElement.getAttributeValue("version")));
+                                    workflow.setTitle(workflowElement.getChildText("title"));
+                                    workflow.setVisibleType(workflowElement.getChildText("type"));
+                                    workflow.setDescription(workflowElement.getChildText("description"));
+                                    workflow.setThumbnail(new URI(workflowElement.getChildText("thumbnail")));
+                                    workflow.setThumbnailBig(new URI(workflowElement.getChildText("thumbnail-big")));
+                                    System.out.println("myExperiment search, found workflow: " + workflow.getResource());
+                                    if (workflow.isTaverna2Workflow()) { // only deal with T2 workflows
+                                        myExperimentWorkflows.add(workflow);
+                                        if (myExperimentWorkflows.size() > myExperimentResultCountLimit){
+                                            break outerloop;
+                                        }
+                                    }
+                                }
+                                page++;
+                            }
+                        } catch (Exception ex) {
+                            errorMessage = "Failed to get workflows from myExperiment";
+                            System.out.println("myExperiment search: Failed to get workflows from myExperiment page " + queryURL);
+                            ex.printStackTrace();
                             break;
                         }
                     }
                 }
+                else{
+                    SearchEngine searchEngine = new SearchEngine(false, myExperimentClient); // no tag search
 
-                if (myExperimentWorkflows == null || myExperimentWorkflows.isEmpty()) {
+                    // Create a search that will return all workflows available from the myExp Base URL
+                    SearchEngine.QuerySearchInstance getAllWorkflowsSearchQuery = new SearchEngine.QuerySearchInstance(request.getParameter(Constants.MYEXPERIMENT_SEARCH_TERMS), myExperimentResultCountLimit, true, false, false, false, false);
+
+                    // Execute the search query to fetch the workflows from myExperiment
+                    Map<Integer, ArrayList<Resource>> allResources = searchEngine.searchAndPopulateResults(getAllWorkflowsSearchQuery);
+
+                    // We are expecting only workflow resources to be returned
+                    if (!allResources.isEmpty()) {
+                        for (int type : allResources.keySet()) {
+                            if (type == Resource.WORKFLOW) {
+                                myExperimentWorkflows = new ArrayList<net.sf.taverna.t2.portal.myexperiment.Workflow>();
+                                myExperimentWorkflowsInputForms = new HashMap<String, String>();
+                                for (Resource resource : allResources.get(type)) {
+                                    net.sf.taverna.t2.portal.myexperiment.Workflow workflow = (net.sf.taverna.t2.portal.myexperiment.Workflow) resource;
+                                    if (workflow.isTaverna2Workflow()) { // only deal with T2 workflows
+                                        myExperimentWorkflows.add(workflow);
+                                    }
+                                    //System.out.println("Content URI: "+workflow.getContentUri() + " Resource: "+ workflow.getResource() +" version: "+ workflow.getVersion() +" Uploader: "+ workflow.getUploader() +" Preview: "+ workflow.getPreview());
+                                    //System.out.println(" URI: "+workflow.getURI() + " Thumbnail URI: "+workflow.getThumbnail() + " Thumbnail Big: "+ workflow.getThumbnailBig() +" Title: "+ workflow.getTitle() );
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (errorMessage != null) {
+                    request.setAttribute(Constants.ERROR_MESSAGE, "Failed to get all workflows from myExperiment.");
+                } else if (myExperimentWorkflows == null || myExperimentWorkflows.isEmpty()) {
                     request.setAttribute(Constants.ERROR_MESSAGE, "0 workflows were found on myExperiment that match your searh criteria.");
                 }
             }
@@ -1235,6 +1295,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         try {
             if (workflow.isMyExperimentWorkflow()) {
                 workflowName = workflow.getMyExperimentWorkflowResource();
+                System.out.println("Workflow Submission Portlet: Preparing to submit workflow to Server " + workflowName );
                 // Get the workflow XML Document's string representation
                 Document workflowDocument = (Document) workflow.getWorkflowDocument().clone();
                 // Wrap it inside another <workflow> element as expected by the T2 Server
@@ -1244,11 +1305,10 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                 System.out.println("Workflow Submission Portlet: Preparing to submit workflow to Server " + workflowName );
                 // Get the XML Document that wraps the workflow document
                 int workflowIndex = workflowFileNamesList.indexOf(workflowName); // get the workflow index
-                System.out.println("Workflow Submission Portlet: Preparing to submit workflow to Server " + workflowName + "index " + workflowIndex);
                 wrappedWorkflowDocumentString = (new XMLOutputter()).outputString(wrappedWorkflowXMLDocumentsList.get(workflowIndex));
             }
 
-            System.out.println("Workflow Submission Portlet: Preparing to submit workflow to Server " + runsURL);
+            //System.out.println("Workflow Submission Portlet: Preparing to submit workflow to Server " + runsURL);
             //System.out.println(workflowString);
 
             StringEntity entity = new StringEntity(wrappedWorkflowDocumentString, "UTF-8");
