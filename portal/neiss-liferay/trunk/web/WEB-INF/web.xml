@@ -46,4 +46,9 @@
         <param-value>http://neiss.myexperiment.org</param-value>
         <description>Base URL of myExperiment instance to connect to</description>
     </context-param>
+    <context-param>
+        <param-name>MYEXPERIMENT_MAX_RESULTS_TO_DISPLAY</param-name>
+        <param-value>50</param-value>
+        <description>Maximum number of workflows to display when doing search over myExperiment</description>
+    </context-param>
 </web-app>

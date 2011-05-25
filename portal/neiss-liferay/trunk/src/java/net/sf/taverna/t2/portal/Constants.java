@@ -53,11 +53,14 @@ public class Constants {
     public static final String JOBS_DIRECTORY_PATH_PROPERTY = "JOBS_DIRECTORY_PATH";
     public static final String MAX_PREVIEW_DATA_SIZE_IN_KB_PROPERTY = "MAX_PREVIEW_DATA_SIZE_IN_KB";
     public static final String MYEXPERIMENT_BASE_URL_PROPERTY = "MYEXPERIMENT_BASE_URL";
+    public static final String MYEXPERIMENT_MAX_RESULTS_TO_DISPLAY_PROPERTY = "MYEXPERIMENT_MAX_RESULTS_TO_DISPLAY";
 
     // .t2flow XML namespace
     public static final Namespace T2_WORKFLOW_NAMESPACE = Namespace.getNamespace("http://taverna.sf.net/2008/xml/t2flow");
+    
     // Baclava documents XML namespace
     public static Namespace BACLAVA_NAMESPACE = Namespace.getNamespace("b","http://org.embl.ebi.escience/baclava/0.1alpha");
+
     // XML workflow elements
     public static final String DATAFLOW_ELEMENT = "dataflow";
     public static final String DATAFLOW_ROLE = "role";
