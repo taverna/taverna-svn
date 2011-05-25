@@ -75,10 +75,9 @@ String user = (String) renderRequest.getPortletSession().getAttribute(Constants.
 </fieldset>
 </form>
 
-<br>
-
 <% if (user != null && !user.equals(Constants.USER_ANONYMOUS)){%>
 <!-- Only logged in users are allowed to upload new workflows -->
+<br>
 <form action="<portlet:actionURL/>" method="post">
 <table>
 <tr>
@@ -86,10 +85,9 @@ String user = (String) renderRequest.getPortletSession().getAttribute(Constants.
         <input type="submit" name="<portlet:namespace/><%= Constants.WORKFLOW_UPLOAD_SUMBISSION%>" value="Add a new workflow">
     </td>
 </tr>
-<%}%>
 </table>
-<br>
 </form>
+<%}%>
 </td>
 
 <td style="padding-left:25px; border-left-style:dotted; border-left-color:gray; border-left-width:1px; ">
@@ -115,12 +113,12 @@ String user = (String) renderRequest.getPortletSession().getAttribute(Constants.
     </td>
 </tr>
 <tr>
-    <td><span style="color:grey;">(A maximum of <%= WorkflowSubmissionPortlet.myExperimentResultCountLimit%> results will be returned.)</span></td>
+    <td><span style="color:gray;">(A maximum of <%= WorkflowSubmissionPortlet.myExperimentResultCountLimit%> results will be returned.)</span></td>
     <td> </td>
 </tr>
 </table>
 </fieldset>
 </form>
-</td></tr>
-
+</td>
+</tr>
 </table>
