@@ -110,7 +110,7 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z"
 <%
 } else{
 %>
-Currently there are no workflows submitted for execution.
+<span class="portlet-msg-info">Currently there are no workflows submitted for execution.</span>
 <%
 }
 %>

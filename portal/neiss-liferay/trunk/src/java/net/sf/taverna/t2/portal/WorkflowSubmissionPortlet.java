@@ -711,7 +711,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                 response.getWriter().println("<input type=\"image\" src=\"" + request.getContextPath() + "/images/close.gif\" style=\"border:0;\" >\n");
                 response.getWriter().println("<input type=\"hidden\" name=\"" + PORTLET_NAMESPACE + Constants.CLEAR + "\" value=\"true\">\n");
                 response.getWriter().println("<br>");
-                response.getWriter().println("<b>Found "+myExperimentWorkflows.size()+" workflow"+(myExperimentWorkflows.size()>1?"s":"")+".</b>\n");
+                response.getWriter().println("<span class=\"portlet-msg-info\">Found "+myExperimentWorkflows.size()+" workflow"+(myExperimentWorkflows.size()>1?"s":"")+".</span>\n");
                 response.getWriter().println("<hr>");
                 response.getWriter().println("</p>\n");
                 response.getWriter().println("</form>\n");

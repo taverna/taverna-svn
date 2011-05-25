@@ -219,11 +219,11 @@ public class WorkflowResultsPortlet extends GenericPortlet {
 
         // Print out a message to the user, if any
         if (request.getAttribute(Constants.ERROR_MESSAGE) != null){
-            response.getWriter().println("<p style=\"color:red;\"><b>"+ request.getAttribute(Constants.ERROR_MESSAGE)+ "</b></p>\n");
+            response.getWriter().println("<span class=\"portlet-msg-error\"><b>"+ request.getAttribute(Constants.ERROR_MESSAGE)+ "</b></span>\n");
             response.getWriter().println("<hr>");
         }
         if (request.getAttribute(Constants.INFO_MESSAGE) != null){
-            response.getWriter().println("<p style=\"color:green;\"><b>"+ request.getAttribute(Constants.INFO_MESSAGE)+ "</b></p>\n");
+            response.getWriter().println("<span class=\"portlet-msg-info\"><b>"+ request.getAttribute(Constants.INFO_MESSAGE)+ "</b></span>\n");
             response.getWriter().println("<hr>");
         }
 
