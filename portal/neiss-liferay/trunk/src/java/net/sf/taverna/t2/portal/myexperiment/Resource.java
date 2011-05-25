@@ -600,16 +600,16 @@ public class Resource implements Comparable<Resource>, Serializable {
 
 	  if (bCreateFullSizeView) {
 		// Uploader / Creator / Administrator
-		if (this.hasUploader()) {
+		if (this.hasUploader() && this.getUploader() != null) {
 		  content.append("<p class='uploader'>");
 		  content.append("Uploader: "
 			  + this.getUploader().getName());
 		  content.append("</p>");
-		} else if (this.hasCreator()) {
+		} else if (this.hasCreator() && this.getCreator()!= null) {
 		  content.append("<p class='uploader'>");
 		  content.append("Creator:" + this.getCreator().getName());
 		  content.append("</p>");
-		} else if (this.hasAdmin()) {
+		} else if (this.hasAdmin() && this.getAdmin() != null) {
 		  content.append("<p class='uploader'>");
 		  content.append("Administrator: " + this.getAdmin().getURI() + "'>"
 			  + this.getAdmin().getName());
