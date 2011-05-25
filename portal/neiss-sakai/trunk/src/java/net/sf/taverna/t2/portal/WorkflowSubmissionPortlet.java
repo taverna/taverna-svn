@@ -121,7 +121,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
     private MyExperimentClient myExperimentClient;
 
-    public static int myExperimentResultCountLimit = 50;
+    public static int myExperimentResultCountLimit;
 
     // List of workflow resources fetched from myExperiment
     private ArrayList<net.sf.taverna.t2.portal.myexperiment.Workflow> myExperimentWorkflows = null;;
@@ -143,6 +143,8 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         // Get the URL of the myExperiment instance defined in web.xml as an
         // app-wide init parameter ( <context-param> element)
         MYEXPERIMENT_BASE_URL = getPortletContext().getInitParameter(Constants.MYEXPERIMENT_BASE_URL_PROPERTY);
+
+        myExperimentResultCountLimit = Integer.parseInt(getPortletContext().getInitParameter(Constants.MYEXPERIMENT_MAX_RESULTS_TO_DISPLAY_PROPERTY));
 
         // Create myExperiment client
         myExperimentClient = new MyExperimentClient(MYEXPERIMENT_BASE_URL);
