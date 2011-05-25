@@ -25,7 +25,10 @@
 </form>
 
 <%-- Form for uploading a new workflow --%>
-<p><b>Select a workflow to upload:</b></p>
+<%--<p><b>Select a workflow to upload:</b></p>--%>
+<form name="<portlet:namespace/><%= Constants.WORKFLOW_UPLOAD_FORM%>" action="<portlet:actionURL/>" method="post" enctype="multipart/form-data" onSubmit="return validateFileUploadField()">
+<fieldset>
+<legend>Select a workflow to upload</legend>
 <form name="<portlet:namespace/><%= Constants.WORKFLOW_UPLOAD_FORM%>" action="<portlet:actionURL/>" method="post" enctype="multipart/form-data" onSubmit="return validateFileUploadField()">
     <table style="width:100%">
         <tr>
@@ -45,4 +48,5 @@
         </tr>
     </table>
 </form>
+</fieldset>
 <br>
