@@ -29,12 +29,12 @@ String user = (String) renderRequest.getPortletSession().getAttribute(Constants.
 
 <%-- Print out a message to the user, if any --%>
 <%
-    if (renderRequest.getAttribute(Constants.ERROR_MESSAGE) != null){%>
-        <p style="color:red;"><b><%=renderRequest.getAttribute(Constants.ERROR_MESSAGE)%></b></p>
+    if (renderRequest.getParameter(Constants.ERROR_MESSAGE) != null){%>
+        <p style="color:red;"><b><%=renderRequest.getParameter(Constants.ERROR_MESSAGE)%></b></p>
         <hr>
     <%}
-    if (renderRequest.getAttribute(Constants.INFO_MESSAGE) != null){%>
-        <p style="color:green;"><b><%=renderRequest.getAttribute(Constants.INFO_MESSAGE)%></b></p>
+    if (renderRequest.getParameter(Constants.INFO_MESSAGE) != null){%>
+        <p style="color:green;"><b><%=renderRequest.getParameter(Constants.INFO_MESSAGE)%></b></p>
         <hr>
     <%}
 %>

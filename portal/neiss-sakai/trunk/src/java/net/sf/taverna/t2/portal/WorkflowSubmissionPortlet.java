@@ -516,15 +516,16 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
                 System.out.println("myExperiment search terms:'" + request.getParameter(Constants.MYEXPERIMENT_SEARCH_TERMS) + "'");
 
-      String errorMessage = null;
+                myExperimentWorkflows = new ArrayList<net.sf.taverna.t2.portal.myexperiment.Workflow>();
+                myExperimentWorkflowsInputForms = new HashMap<String, String>();
+
+                String errorMessage = null;
                 if (request.getParameter(Constants.MYEXPERIMENT_SEARCH_TERMS).equals("")) {
                     //request.setAttribute(Constants.ERROR_MESSAGE, "Search criteria was empty. Please specify your search terms and try again.");
                     //return;
 
                     // Get all workflows
                     int page = 1;
-                    myExperimentWorkflows = new ArrayList<net.sf.taverna.t2.portal.myexperiment.Workflow>();
-                    myExperimentWorkflowsInputForms = new HashMap<String, String>();
 
                     outerloop:
                     while (true){
@@ -584,8 +585,6 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                     if (!allResources.isEmpty()) {
                         for (int type : allResources.keySet()) {
                             if (type == Resource.WORKFLOW) {
-                                myExperimentWorkflows = new ArrayList<net.sf.taverna.t2.portal.myexperiment.Workflow>();
-                                myExperimentWorkflowsInputForms = new HashMap<String, String>();
                                 for (Resource resource : allResources.get(type)) {
                                     net.sf.taverna.t2.portal.myexperiment.Workflow workflow = (net.sf.taverna.t2.portal.myexperiment.Workflow) resource;
                                     if (workflow.isTaverna2Workflow()) { // only deal with T2 workflows
