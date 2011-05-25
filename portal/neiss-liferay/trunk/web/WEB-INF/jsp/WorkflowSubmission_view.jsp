@@ -41,7 +41,8 @@ String user = (String) renderRequest.getPortletSession().getAttribute(Constants.
 
 
 <table>
-<tr><td style="padding-right:25px;">
+<tr>
+<td style="padding-right:25px;">
 <%-- Form for selecting pre-canned uploaded workflows to be sent for execution --%>
 <%--<p><b>Select a workflow to run:</b></p>--%>
 
@@ -74,9 +75,8 @@ String user = (String) renderRequest.getPortletSession().getAttribute(Constants.
 </fieldset>
 </form>
 
-<br>
-
 <% if (user != null && !user.equals(Constants.USER_ANONYMOUS)){%>
+<br>
 <!-- Only logged in users are allowed to upload new workflows -->
 <form action="<portlet:actionURL/>" method="post">
 <table>
@@ -85,13 +85,12 @@ String user = (String) renderRequest.getPortletSession().getAttribute(Constants.
         <input type="submit" name="<portlet:namespace/><%= Constants.WORKFLOW_UPLOAD_SUMBISSION%>" value="Add a new workflow">
     </td>
 </tr>
-<%}%>
 </table>
-<br>
 </form>
+<%}%>
 </td>
 
-<td style="padding-left:25px; border-left-style:dotted; border-left-color:grey; border-left-width:1px; ">
+<td style="padding-left:25px; border-left-style:dotted; border-left-color:gray; border-left-width:1px; ">
 <%-- Form for searhing the myExperiment workflows --%>
 <%--<p><b>Enter terms to search myExperiment for workflows.<br>
         (All fields will be searched, including workflows, users, groups, tags, etc.).<br>
@@ -120,6 +119,6 @@ String user = (String) renderRequest.getPortletSession().getAttribute(Constants.
 </table>
 </fieldset>
 </form>
-</td></tr>
-
+</td>
+</tr>
 </table>
