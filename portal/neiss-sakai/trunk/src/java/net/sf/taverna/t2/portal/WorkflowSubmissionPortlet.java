@@ -560,6 +560,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                     if (workflowElement.getChildText("uploader") != null) {
                                         User myExperimentUser = new User();
                                         myExperimentUser.setName(workflowElement.getChildText("uploader"));
+                                        myExperimentUser.setResource(workflowElement.getChild("uploader").getAttributeValue("resource"));
                                         workflow.setUploader(myExperimentUser);
                                     }
                                     System.out.println("myExperiment search, found workflow: " + workflow.getResource());
