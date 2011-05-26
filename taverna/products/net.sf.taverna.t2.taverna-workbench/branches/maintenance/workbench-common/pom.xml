@@ -74,12 +74,12 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.5.6</version>
+			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.5.6</version>
+			<version>${slf4j.version}</version>
 		</dependency>
 
 		<!-- System artifacts -->
@@ -91,18 +91,20 @@
 		<dependency>
 			<groupId>saxpath</groupId>
 			<artifactId>saxpath</artifactId>
-			<version>1.0-FCS</version>
+			<version>${saxpath.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>
-			<version>2.7.1</version>
+<!--		<version>2.7.1</version>-->
+			<version>${xerces.version}</version>
 		</dependency>
 		<!-- should be disabled -  cause of various bugs with 'indent-number'  -->
 		<dependency>
 			<groupId>xalan</groupId>
 			<artifactId>xalan</artifactId>
-			<version>2.6.0</version>
+<!--  		<version>2.6.0</version> -->
+			<version>${xalan.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>dom4j</groupId>
