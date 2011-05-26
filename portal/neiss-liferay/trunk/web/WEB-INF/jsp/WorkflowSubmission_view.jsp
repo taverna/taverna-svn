@@ -113,7 +113,7 @@ String user = (String) renderRequest.getPortletSession().getAttribute(Constants.
     </td>
 </tr>
 <tr>
-    <td><span style="color:gray;">(A maximum of <%= WorkflowSubmissionPortlet.myExperimentResultCountLimit%> results will be returned.)</span></td>
+    <td><span style="color:gray;">(A maximum of <%= WorkflowSubmissionPortlet.myExperimentResultCountLimit%> results will be returned)</span></td>
     <td> </td>
 </tr>
 </table>
