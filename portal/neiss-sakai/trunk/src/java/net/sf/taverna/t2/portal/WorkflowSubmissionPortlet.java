@@ -722,6 +722,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         else if (request.getParameter(PORTLET_NAMESPACE + Constants.MYEXPERIMENT_WORKFLOW_SEARCH) != null ||
                 (request.getParameter(PORTLET_NAMESPACE + Constants.MYEXPERIMENT_WORKFLOW_SHOW_INPUT_FORM)!= null)){
             if (myExperimentWorkflows != null && !myExperimentWorkflows.isEmpty()){
+                response.getWriter().println("<br>");
                 response.getWriter().println("<hr>");
 
                 //<%-- Clear form button --%>
