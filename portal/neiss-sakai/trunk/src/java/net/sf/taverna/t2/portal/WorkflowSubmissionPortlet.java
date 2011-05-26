@@ -566,7 +566,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                     System.out.println("myExperiment search, found workflow: " + workflow.getResource());
                                     if (workflow.isTaverna2Workflow()) { // only deal with T2 workflows
                                         myExperimentWorkflows.add(workflow);
-                                        if (myExperimentWorkflows.size() > myExperimentResultCountLimit){
+                                        if (myExperimentWorkflows.size() >= myExperimentResultCountLimit){
                                             break outerloop;
                                         }
                                     }
