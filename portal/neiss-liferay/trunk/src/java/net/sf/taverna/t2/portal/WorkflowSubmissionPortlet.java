@@ -37,6 +37,7 @@ import net.sf.taverna.t2.portal.myexperiment.MyExperimentClient;
 import net.sf.taverna.t2.portal.myexperiment.Resource;
 import net.sf.taverna.t2.portal.myexperiment.SearchEngine;
 import net.sf.taverna.t2.portal.myexperiment.ServerResponse;
+import net.sf.taverna.t2.portal.myexperiment.User;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
@@ -531,7 +532,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                     outerloop:
                     while (true){
                         String queryURL = MYEXPERIMENT_BASE_URL +
-                                    "/workflows.xml?elements=content-uri,content-type,type,thumbnail,thumbnail-big,title,description&page="+page;
+                                    "/workflows.xml?elements=content-uri,content-type,type,thumbnail,thumbnail-big,title,description,uploader&page="+page;
                         //String queryURL = MYEXPERIMENT_BASE_URL + "/workflows.xml?all_elements=yes&page=1";
                         try {
                             System.out.println("Starting myExperiment search "+ queryURL);
@@ -555,6 +556,11 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                     workflow.setDescription(workflowElement.getChildText("description"));
                                     workflow.setThumbnail(new URI(workflowElement.getChildText("thumbnail")));
                                     workflow.setThumbnailBig(new URI(workflowElement.getChildText("thumbnail-big")));
+                                    if (workflowElement.getChildText("uploader") != null){
+                                        User myExperimentUser = new User();
+                                        myExperimentUser.setName(workflowElement.getChildText("uploader"));
+                                        workflow.setUploader(myExperimentUser);
+                                    }
                                     System.out.println("myExperiment search, found workflow: " + workflow.getResource());
                                     if (workflow.isTaverna2Workflow()) { // only deal with T2 workflows
                                         myExperimentWorkflows.add(workflow);
