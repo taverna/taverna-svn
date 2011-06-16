@@ -536,7 +536,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                     outerloop:
                     while (true){
                         String queryURL = MYEXPERIMENT_BASE_URL +
-                                    "/workflows.xml?elements=content-uri,content-type,type,thumbnail,thumbnail-big,title,description,uploader&page="+page;
+                                    "/workflows.xml?elements=content-uri,content-type,type,preview,thumbnail,thumbnail-big,title,description,uploader&page="+page;
                         //String queryURL = MYEXPERIMENT_BASE_URL + "/workflows.xml?all_elements=yes&page=1";
                         try {
                             System.out.println("Starting myExperiment search "+ queryURL);
@@ -558,6 +558,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                     workflow.setTitle(workflowElement.getChildText("title"));
                                     workflow.setVisibleType(workflowElement.getChildText("type"));
                                     workflow.setDescription(workflowElement.getChildText("description"));
+                                    workflow.setPreview(new URI(workflowElement.getChildText("preview")));
                                     workflow.setThumbnail(new URI(workflowElement.getChildText("thumbnail")));
                                     workflow.setThumbnailBig(new URI(workflowElement.getChildText("thumbnail-big")));
                                     if (workflowElement.getChildText("uploader") != null){

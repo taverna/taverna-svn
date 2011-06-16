@@ -643,9 +643,26 @@ public class Resource implements Comparable<Resource>, Serializable {
 		content.append("<td valign='top'>");
 
                 if (bCreateFullSizeView) {
-		  if (!bManualResizeNeeded)
-			content.append("<img class='preview' src='" + previewURI
-				+ "'></img>");
+		  if (!bManualResizeNeeded){
+                      if (this.itemType == Resource.WORKFLOW){
+                          if (((Workflow) this).getPreview() != null){
+                              content.append("<a target=\"_blank\" href=\"" + ((Workflow) this).getPreview().toASCIIString() + "\"><img class='preview' src='" + previewURI
+                                      + "'></img></a>");
+                          }
+                          else if (((Workflow) this).getThumbnailBig() != null){
+                              content.append("<a target=\"_blank\" href=\"" + ((Workflow) this).getThumbnailBig().toASCIIString() + "\"><img class='preview' src='" + previewURI
+                                      + "'></img></a>");
+                          }
+                          else{
+                              content.append("<img class='preview' src='" + previewURI
+                                      + "'></img>");
+                          }
+                      }
+                      else{
+                          content.append("<img class='preview' src='" + previewURI
+                                  + "'></img>");
+                      }
+                  }
 		  else {
 			String resizedImageURL = Util.getResizedImageIconTempFileURL(previewURI.toURL(), THUMBNAIL_WIDTH_FOR_FULL_LIST_VIEW, THUMBNAIL_HEIGHT_FOR_FULL_LIST_VIEW);
 			content.append("<img class='preview' src='" + resizedImageURL
