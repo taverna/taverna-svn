@@ -523,6 +523,21 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                 myExperimentWorkflowsInputForms = new HashMap<String, String>();
 
                 String errorMessage = null;
+
+                // Is this NeISS myExperiment we are doing serch over?
+                // Get only workflows from the NeISS 'blessed' superusers group.
+                // For that we need to fetch all users from the group and later filter the
+                // found wfs to only those uploaded by the "blessed" superusers.
+                ArrayList<String> neissSuperUsers = null;
+                if (MYEXPERIMENT_BASE_URL.toLowerCase().contains("neiss")) {
+                    try {
+                        neissSuperUsers = getNeissSuperUsers();
+                    } catch (Exception ex) {
+                        request.setAttribute(Constants.ERROR_MESSAGE, "Failed to get the workflows from the NeISS myExperiment superusers group, which are allowed to be run in the Portal.");
+                        return;
+                    }
+                }
+
                 if (request.getParameter(Constants.MYEXPERIMENT_SEARCH_TERMS).equals("")) {
 
                     // We cannot fetch all wfs from the main myExperiment - there are too many of them
@@ -537,7 +552,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                     outerloop:
                     while (true){
                         String queryURL = MYEXPERIMENT_BASE_URL +
-                                    "/workflows.xml?elements=content-uri,content-type,type,thumbnail,thumbnail-big,title,description,uploader&page="+page;
+                                    "/workflows.xml?elements=content-uri,content-type,type,preview,thumbnail,thumbnail-big,title,description,uploader&page="+page;
                         //String queryURL = MYEXPERIMENT_BASE_URL + "/workflows.xml?all_elements=yes&page=1";
                         try {
                             System.out.println("Starting myExperiment search "+ queryURL);
@@ -551,7 +566,20 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                             else{
                                 for (Element workflowElement : workflowElements){
                                     //net.sf.taverna.t2.portal.myexperiment.Workflow workflow = (net.sf.taverna.t2.portal.myexperiment.Workflow) net.sf.taverna.t2.portal.myexperiment.Workflow.buildFromXML(workflowElement, myExperimentClient);
+
                                     net.sf.taverna.t2.portal.myexperiment.Workflow workflow = new net.sf.taverna.t2.portal.myexperiment.Workflow();
+
+                                    User myExperimentUser = new User();
+                                    myExperimentUser.setName(workflowElement.getChildText("uploader"));
+                                    myExperimentUser.setResource(workflowElement.getChild("uploader").getAttributeValue("resource"));
+                                    workflow.setUploader(myExperimentUser);
+                                    // Is this a "blessed" NeiSS wf?
+                                    if (MYEXPERIMENT_BASE_URL.toLowerCase().contains("neiss")) {
+                                        if (!neissSuperUsers.contains(myExperimentUser.getResource())) {
+                                            continue;
+                                        }
+                                    }
+
                                     workflow.setResource(workflowElement.getAttributeValue("resource"));
                                     workflow.setURI(workflowElement.getAttributeValue("uri"));
                                     workflow.setContentType(workflowElement.getChildText("content-type"));
@@ -559,14 +587,10 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                     workflow.setTitle(workflowElement.getChildText("title"));
                                     workflow.setVisibleType(workflowElement.getChildText("type"));
                                     workflow.setDescription(workflowElement.getChildText("description"));
+                                    workflow.setPreview(new URI(workflowElement.getChildText("preview")));
                                     workflow.setThumbnail(new URI(workflowElement.getChildText("thumbnail")));
                                     workflow.setThumbnailBig(new URI(workflowElement.getChildText("thumbnail-big")));
-                                    if (workflowElement.getChildText("uploader") != null) {
-                                        User myExperimentUser = new User();
-                                        myExperimentUser.setName(workflowElement.getChildText("uploader"));
-                                        myExperimentUser.setResource(workflowElement.getChild("uploader").getAttributeValue("resource"));
-                                        workflow.setUploader(myExperimentUser);
-                                    }
+
                                     System.out.println("myExperiment search, found workflow: " + workflow.getResource());
                                     if (workflow.isTaverna2Workflow()) { // only deal with T2 workflows
                                         myExperimentWorkflows.add(workflow);
@@ -600,6 +624,14 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                             if (type == Resource.WORKFLOW) {
                                 for (Resource resource : allResources.get(type)) {
                                     net.sf.taverna.t2.portal.myexperiment.Workflow workflow = (net.sf.taverna.t2.portal.myexperiment.Workflow) resource;
+
+                                    // Is this a "blessed" NeiSS wf?
+                                    if (MYEXPERIMENT_BASE_URL.toLowerCase().contains("neiss")) {
+                                        if (!neissSuperUsers.contains(workflow.getUploader().getResource())) {
+                                            continue;
+                                        }
+                                    }
+
                                     if (workflow.isTaverna2Workflow()) { // only deal with T2 workflows
                                         myExperimentWorkflows.add(workflow);
                                     }
@@ -1848,5 +1880,40 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         }
         return hex.toString();
   }
+
+  private ArrayList<String> getNeissSuperUsers() throws Exception {
+      // The blessed NeISS group of trusted superusers
+      String queryURL = MYEXPERIMENT_BASE_URL
+              + "/group.xml?id=1&elements=members";
+
+      ArrayList<String> neissSuperUsers = new ArrayList<String>();
+
+      System.out.println("Starting myExperiment search for NeISS superusers " + queryURL);
+      System.out.println();
+
+      // Get all superusers
+      try {
+          ServerResponse results = myExperimentClient.doMyExperimentGET(queryURL);
+          Document responseBodyDocument = results.getResponseBody();
+          Element membersElement = responseBodyDocument.getRootElement().getChild("members");
+          List<Element> userElements = membersElement.getChildren();
+          if (userElements.isEmpty()) {
+              // This is not good - we need to find superusers
+              System.out.println("0 'blessed' users returned from NeISS myExperiment " + queryURL);
+              throw new Exception("0 'blessed' users returned from NeISS myExperiment");
+          } else {
+              for (Element userElement : userElements) {
+                  neissSuperUsers.add(userElement.getAttributeValue("resource"));
+                  System.out.println("myExperiment NeISS 'blessed' users search, found user: " + userElement.getAttributeValue("resource"));
+              }
+          }
+      } catch (Exception ex) {
+          System.out.println("Failed to get the NeISS 'blessed' users from myExperiment " + queryURL);
+          ex.printStackTrace();
+          throw new Exception("Failed to get the NeISS 'blessed' users from myExperiment whose workflows are allowed to be run.");
+      }
+
+      return neissSuperUsers;
+    }
 
 }
