@@ -523,8 +523,12 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
                 String errorMessage = null;
                 if (request.getParameter(Constants.MYEXPERIMENT_SEARCH_TERMS).equals("")) {
-                    //request.setAttribute(Constants.ERROR_MESSAGE, "Search criteria was empty. Please specify your search terms and try again.");
-                    //return;
+
+                    // We cannot fetch all wfs from the main myExperiment - there are too many of them
+                    if (MYEXPERIMENT_BASE_URL.equals("http://www.myexperiment.org")){
+                        request.setAttribute(Constants.ERROR_MESSAGE, "Search criteria was empty. There are too many workflows on myExperiment to fetch them all. Please specify your search terms and try again.");
+                        return;
+                    }
                     
                     // Get all workflows
                     int page = 1;

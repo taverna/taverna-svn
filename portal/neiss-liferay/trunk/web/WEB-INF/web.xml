@@ -43,7 +43,7 @@
     </context-param>
     <context-param>
         <param-name>MYEXPERIMENT_BASE_URL</param-name>
-        <param-value>http://neiss.myexperiment.org</param-value>
+        <param-value>http://www.myexperiment.org</param-value>
         <description>Base URL of myExperiment instance to connect to</description>
     </context-param>
     <context-param>
