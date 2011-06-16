@@ -87,6 +87,12 @@
 			<groupId>jaxen</groupId>
 			<artifactId>jaxen</artifactId>
 			<version>${jaxen.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>icu4j</artifactId>
+					<groupId>com.ibm.icu</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>saxpath</groupId>
@@ -125,6 +131,13 @@
     		<groupId>net.java.dev.jai-imageio</groupId>
     		<artifactId>jai-imageio-core-standalone</artifactId>
     		<version>${jai.imageio.core.standalone.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm.icu</groupId>
+			<artifactId>icu4j</artifactId>
+			<version>${icu4j.version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 </project>
