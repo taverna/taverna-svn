@@ -69,7 +69,7 @@ function loadpage(textarea_id, page_request, containerid, url){
         else if (mime_type.indexOf("image/") === 0){
             document.getElementById(containerid).innerHTML="<a href=\""+url+"\" target=\"_blank\"><img onload=\"autoImageResize(this,200)\" src=\""+url+
                 "\" alt=\"If you see this text - you are trying to view image of type "+mime_type+
-                " which your browser posssibly cannot display properly.\"/></a><br><br>View the <a target=\"_blank\" href=\""+url+
+                " which your browser possibly cannot display properly.\"/></a><br><br>View the <a target=\"_blank\" href=\""+url+
                 "\">full image</a> in a separate browser window or download it by right-clicking on the link and choosing 'Save Link As'.";
         }
         else if (mime_type == "application/octet-stream"){

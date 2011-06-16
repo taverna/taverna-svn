@@ -162,9 +162,9 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
         String[] workflowFileNames = dir.list(WorkflowResultsPortlet.t2flowFileFilter);
         int numberOfLoadedWorkflowFiles = 0;
-       
+
         for (String workflowFileName : workflowFileNames)
-        { 
+        {
             if (addWorkflow(workflowFileName)){
                 numberOfLoadedWorkflowFiles++;
             }
@@ -461,7 +461,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             }
             // Was this a request to upload a new workflow file
             else if (formItems.keySet().contains(Constants.UPLOAD_WORKFLOW)){
-                
+
                 // User is submitting a new workflow file
                 System.out.println("Workflow Submission Portlet: Request to upload a workflow file received.");
 
@@ -491,7 +491,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                     byte[] theBytes = new byte[uploadedWorkfowStream.available()];
                     uploadedWorkfowStream.read(theBytes);
                     out.write(theBytes);
-                    request.setAttribute(Constants.INFO_MESSAGE, "Workflow file " + workflowFileName + " successfully uploaded.");                    
+                    request.setAttribute(Constants.INFO_MESSAGE, "Workflow file " + workflowFileName + " successfully uploaded.");
 
                     // Update the workflow list (and other related lists)
                     addWorkflow(workflowFileName);
@@ -568,6 +568,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                     //net.sf.taverna.t2.portal.myexperiment.Workflow workflow = (net.sf.taverna.t2.portal.myexperiment.Workflow) net.sf.taverna.t2.portal.myexperiment.Workflow.buildFromXML(workflowElement, myExperimentClient);
 
                                     net.sf.taverna.t2.portal.myexperiment.Workflow workflow = new net.sf.taverna.t2.portal.myexperiment.Workflow();
+                                    workflow.setResource(workflowElement.getAttributeValue("resource"));
 
                                     User myExperimentUser = new User();
                                     myExperimentUser.setName(workflowElement.getChildText("uploader"));
@@ -576,11 +577,11 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                                     // Is this a "blessed" NeiSS wf?
                                     if (MYEXPERIMENT_BASE_URL.toLowerCase().contains("neiss")) {
                                         if (!neissSuperUsers.contains(myExperimentUser.getResource())) {
+                                            System.out.println("myExperiment search, found workflow: " + workflow.getResource() + " that is not authored by the blessed group of users. Excluding this workflow from results." );
                                             continue;
                                         }
                                     }
 
-                                    workflow.setResource(workflowElement.getAttributeValue("resource"));
                                     workflow.setURI(workflowElement.getAttributeValue("uri"));
                                     workflow.setContentType(workflowElement.getChildText("content-type"));
                                     workflow.setVersion(Integer.parseInt(workflowElement.getAttributeValue("version")));
@@ -676,7 +677,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             System.out.println("Workflow Submission Portlet doView: parameter value: " + request.getParameter(parameterName));
             System.out.println();
         }
-        
+
         response.setContentType("text/html");
 
         // Set the workflow file names list in the PortletSession if not already set.
@@ -787,7 +788,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
                     if (request.getParameter(PORTLET_NAMESPACE + Constants.MYEXPERIMENT_WORKFLOW_SHOW_INPUT_FORM) != null &&
 
                         URLDecoder.decode(request.getParameter(PORTLET_NAMESPACE + Constants.MYEXPERIMENT_WORKFLOW_SHOW_INPUT_FORM), "UTF-8").equals(myExperimentWorkflow.getResource())){
-                         
+
                         System.out.println("Workflow Submission Portlet: Showing input form for " + myExperimentWorkflow.getResource() + "." );
 
                         // Generate the HTML input form if not already generated
@@ -824,7 +825,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
     @Override
     public void doEdit(RenderRequest request,RenderResponse response) throws PortletException,IOException {
-            response.setContentType("text/html");        
+            response.setContentType("text/html");
         PortletRequestDispatcher dispatcher =
         getPortletContext().getRequestDispatcher("/WEB-INF/jsp/WorkflowSubmission_edit.jsp");
         dispatcher.include(request, response);
@@ -833,7 +834,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     @Override
     public void doHelp(RenderRequest request, RenderResponse response) throws PortletException,IOException {
 
-        response.setContentType("text/html");        
+        response.setContentType("text/html");
         PortletRequestDispatcher dispatcher =
         getPortletContext().getRequestDispatcher("/WEB-INF/jsp/WorkflowSubmission_help.jsp");
         dispatcher.include(request, response);
@@ -963,7 +964,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         if (selectedWorkflowJSPFile.exists()){
             return true;
         }
-        
+
         StringBuffer inputFormJSP = new StringBuffer();
 
         // Various imports - portlet taglib, constants, CSS, JavaScript
@@ -1006,7 +1007,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
             inputFormJSP.append("<th>Description</th>\n");
             inputFormJSP.append("<th>Value</th>\n");
             inputFormJSP.append("</tr>\n");
-        
+
             // Loop over the workflow inputs and create a row with input fields
             // in the table for each one of them
             int counter = 1;
@@ -1323,7 +1324,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
         return inputForm.toString();
     }
 
-  
+
     /*
      * HTTP POSTs a wrapped workflow Document to the T2 Server.
      */
@@ -1389,7 +1390,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
         return httpResponse;
     }
-    
+
     /*
      * PUTs the value for property that keeps the name of the
      * output Baclava file where to save the results. This needs
@@ -1615,7 +1616,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
 
             // Release resource
             httpClient.getConnectionManager().shutdown();
-            
+
             if (httpResponse.getStatusLine().getStatusCode() != 200){ // HTTP/1.1 200 OK
                System.out.println("Workflow Submission Portlet: Failed to initiate the execution of workflow " + workflowName + ". The Server responded with: " + httpResponse.getStatusLine()+".");
                actionRequest.setAttribute(Constants.ERROR_MESSAGE, "Failed to initiate the execution of workflow " + workflowName + ". The Server responded with: " + httpResponse.getStatusLine() +".");
@@ -1660,7 +1661,7 @@ public class WorkflowSubmissionPortlet extends GenericPortlet {
     Map<String, DataThing> bakeDataThingMap(Map<String, Object> inputsMap){
 
         Map<String, DataThing> dataThingMap = new HashMap<String, DataThing>();
-        
+
         for (String inputPortName : inputsMap.keySet()) {
             dataThingMap.put(inputPortName, DataThingFactory.bake(inputsMap.get(inputPortName)));
         }
