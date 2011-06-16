@@ -101,7 +101,7 @@ String user = (String) renderRequest.getPortletSession().getAttribute(Constants.
 <fieldset>
 <legend>Enter terms to search myExperiment for workflows</legend>
 <p>All fields will be searched, including workflows, users, groups, tags, etc.<br>
-        Separate multiple search terms with a blank character or leave empty to get all workflows.
+        Separate multiple search terms with a blank character.
 </p>
 <table>
 <tr>
