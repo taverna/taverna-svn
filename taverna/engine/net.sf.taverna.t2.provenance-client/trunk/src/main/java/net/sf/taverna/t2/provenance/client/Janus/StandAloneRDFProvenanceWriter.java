@@ -16,9 +16,11 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
+import net.sf.taverna.t2.provenance.lineageservice.URIGenerator;
 import net.sf.taverna.t2.provenance.lineageservice.utils.Port;
 import net.sf.taverna.t2.provenance.lineageservice.utils.PortBinding;
 
+import org.apache.derby.catalog.GetProcedureColumns;
 import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.rdf.model.Model;
@@ -37,7 +39,6 @@ public class StandAloneRDFProvenanceWriter {
 
 	private static final String DEF_MODEL_NAME = "janus-instance-graph.rdf";
 	private static final String BASE_DIR = "/tmp";
-	private static final String URI_QUALIFIER_SEPARATOR = "/";
 	private static final String PROVENIR_PREFIX = "knoesis";
 	private static final String PROVENIR_NS = "http://knoesis.wright.edu/provenir/provenir.owl#";
 	private static final String OBO_NS = "http://obofoundry.org/ro/ro.owl#";
@@ -45,6 +46,7 @@ public class StandAloneRDFProvenanceWriter {
 	private static final String RDFS_PREFIX = "rdfs";
 	private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
 
+	private static URIGenerator uriGenerator = new URIGenerator();
 	private static Property RDFS_COMMENT = null;
 
 	ModelMaker mm = null;
@@ -148,7 +150,7 @@ public class StandAloneRDFProvenanceWriter {
 
 	public void addWFId(String wfId, String parentWFname, String externalName, Blob dataflow) throws SQLException {
 
-		String wfNameURI = makeWorkflowURI(wfId);
+		String wfNameURI = uriGenerator.makeWorkflowURI(wfId);
 		Resource wfResource = getModel().createResource(wfNameURI, JanusOntology.workflow_spec);
 
 		// pm added 9/10 -- adds original pname as comment for later use by other apps that need to lookup the native DB
@@ -159,7 +161,7 @@ public class StandAloneRDFProvenanceWriter {
 
 		if (parentWFname != null)  {
 			// do we have a resource for the parent?
-			Resource parentWFResource = workflowToResource.get(makeWorkflowURI(parentWFname));
+			Resource parentWFResource = workflowToResource.get(uriGenerator.makeWorkflowURI(parentWFname));
 			if (parentWFResource != null) {
 				// link wfResource to its parent
 				wfResource.addProperty(JanusOntology.has_parent_workflow, parentWFResource);
@@ -177,7 +179,7 @@ public class StandAloneRDFProvenanceWriter {
 		// pName rdf:type j:Processor
 		// pName part-Of wfNameRef
 
-		String pNameURI = makeProcessorURI(pName, wfNameRef);
+		String pNameURI = uriGenerator.makeProcessorURI(pName, wfNameRef);
 		Resource pResource = getModel().createResource(pNameURI, JanusOntology.processor_spec);
 		pResource.addLiteral(JanusOntology.has_processor_type, type);
 		pResource.addLiteral(JanusOntology.is_top_level, isTopLevel);
@@ -187,7 +189,7 @@ public class StandAloneRDFProvenanceWriter {
 		
 
 		// associate this proc to its workflow
-		Resource wfResource = workflowToResource.get(makeWorkflowURI(wfNameRef));
+		Resource wfResource = workflowToResource.get(uriGenerator.makeWorkflowURI(wfNameRef));
 		if (wfResource != null) {
 			pResource.addProperty(JanusOntology.part_of, wfResource);
 		}
@@ -199,7 +201,7 @@ public class StandAloneRDFProvenanceWriter {
 
 	public void addPort(Port v) throws SQLException {
 	
-		String portURI = makePortURI(v.getWorkflowId(), v.getProcessorName(), v.getPortName());
+		String portURI = uriGenerator.makePortURI(v.getWorkflowId(), v.getProcessorName(), v.getPortName(), v.isInputPort());
 		Resource portResource = getModel().createResource(portURI, JanusOntology.port);
 		//if (v.getType()!=null) portResource.addLiteral(JanusOntology.has_port_type, v.getType());
 		portResource.addLiteral(JanusOntology.has_port_order, v.getIterationStrategyOrder());
@@ -211,7 +213,7 @@ public class StandAloneRDFProvenanceWriter {
 		portToResource.put(portURI, portResource);
 
 		// associate this port to its processor
-		String procURI = makeProcessorURI(v.getProcessorName(), v.getWorkflowId());
+		String procURI = uriGenerator.makeProcessorURI(v.getProcessorName(), v.getWorkflowId());
 
 		Resource procResource = processorToResource.get(procURI);
 
@@ -225,17 +227,17 @@ public class StandAloneRDFProvenanceWriter {
 	public void addDataLink(String sourceVarName, String sourceProcName,
 			String sinkVarName, String sinkProcName, String wfId) {
 
-		logger.debug("addArc called on source: "+makePortURI(wfId, sourceProcName, sourceVarName)+" and sink "+
-				makePortURI(wfId, sinkVarName, sinkProcName));
+		logger.debug("addArc called on source: "+uriGenerator.makePortURI(wfId, sourceProcName, sourceVarName, false)+" and sink "+
+				uriGenerator.makePortURI(wfId, sinkVarName, sinkProcName, true));
 
-		Resource fromPort = portToResource.get(makePortURI(wfId, sourceProcName, sourceVarName));
-		Resource toPort   = portToResource.get(makePortURI(wfId, sinkProcName, sinkVarName));
+		Resource fromPort = portToResource.get(uriGenerator.makePortURI(wfId, sourceProcName, sourceVarName, false));
+		Resource toPort   = portToResource.get(uriGenerator.makePortURI(wfId, sinkProcName, sinkVarName, true));
 
 		if (fromPort != null && toPort != null) {
 			toPort.addProperty(JanusOntology.links_from, fromPort);
 		} else {
 			logger.debug("fromPort or toPort null -- arcs postponed");
-			unresolvedArc.put(makePortURI(wfId, sourceProcName, sourceVarName), makePortURI(wfId, sinkVarName, sinkProcName));
+			unresolvedArc.put(uriGenerator.makePortURI(wfId, sourceProcName, sourceVarName, false), uriGenerator.makePortURI(wfId, sinkVarName, sinkProcName, true));
 		}
 	}
 
@@ -246,11 +248,11 @@ public class StandAloneRDFProvenanceWriter {
 
 	public void addWorkflowRun(String workflowId, String workflowRunId)	throws SQLException {
 
-		String wfInstanceURI = makeWFInstanceURI(workflowRunId);
+		String wfInstanceURI = uriGenerator.makeWFInstanceURI(workflowRunId);
 		Resource wfInstanceResource = getModel().createResource(wfInstanceURI, JanusOntology.workflow_run);
 
 		// associate to static workflow resource
-		Resource workflowResource = workflowToResource.get(makeWorkflowURI(workflowId));
+		Resource workflowResource = workflowToResource.get(uriGenerator.makeWorkflowURI(workflowId));
 
 		if (workflowResource!=null) {
 			workflowResource.addProperty(JanusOntology.has_execution, wfInstanceResource);
@@ -267,7 +269,7 @@ public class StandAloneRDFProvenanceWriter {
 	 */
 	public void addCollection(String collId) throws SQLException {
 
-		String collectionURI = makeCollectionURI(collId);
+		String collectionURI = uriGenerator.makeCollectionURI(collId);
 		Resource collectionResource = getModel().createResource(collectionURI, JanusOntology.collection_structure);
 
 		collectionToResource.put(collectionURI, collectionResource);
@@ -282,7 +284,7 @@ public class StandAloneRDFProvenanceWriter {
 
 		logger.debug("RDF addVarBinding START with pname "+vb.getProcessorName()+" port "+vb.getPortName());
 		
-		String vbURI = makeCollectionURI(vb.getValue());
+		String vbURI = uriGenerator.makeCollectionURI(vb.getValue());
 		Resource vbResource = getModel().createResource(vbURI, JanusOntology.port_value);
 
 		// add various attributes
@@ -297,62 +299,21 @@ public class StandAloneRDFProvenanceWriter {
 		// is it part of a collection structure?
 		if (vb.getCollIDRef() != null) {
 			// get resource for the collection
-			Resource collResource = collectionToResource.get(makeCollectionURI(vb.getCollIDRef()));
+			Resource collResource = collectionToResource.get(uriGenerator.makeCollectionURI(vb.getCollIDRef()));
 			if (collResource != null) {
 				vbResource.addProperty(JanusOntology.part_of, collResource);
 			}
 		}
-
+		
 		// link from the port this comes from
-		Resource portResource = portToResource.get(makePortURI(vb.getWorkflowId(), vb.getProcessorName(), vb.getPortName()));
+		// FIXME: Don't really know if this is input or output port!!!
+		Resource portResource = portToResource.get(uriGenerator.makePortURI(vb.getWorkflowId(), vb.getProcessorName(), vb.getPortName(), vb.isInputPort()));
 		if (portResource != null) {
 			portResource.addProperty(JanusOntology.has_value_binding, vbResource);
 		}
 
 		logger.debug("RDF addVarBinding COMPLETE with pname "+vb.getProcessorName()+" port "+vb.getPortName());
 
-	}
-
-	//////////
-	///  create URIs out of key values
-	///////////
-
-	private String makeCollectionURI(String collId) {
-
-		// collId is of the form t2:list//<UUID>
-		// map to a proper URI
-
-		String[] tokens = collId.split("//");
-		return makeURI(tokens[1]);
-	}
-
-	private String makeWFInstanceURI(String wfInstanceId) {
-		return makeURI(wfInstanceId);
-	}
-
-	private String makeWorkflowURI(String wfId) {
-		return makeURI(wfId);
-	}
-
-
-	private String makePortURI(String wfNameRef, String pName, String vName) {
-		return makeURI(wfNameRef+URI_QUALIFIER_SEPARATOR+pName+URI_QUALIFIER_SEPARATOR+vName);
-	}
-
-	private String makeProcessorURI(String pName, String wfNameRef) {
-		return makeURI(wfNameRef+URI_QUALIFIER_SEPARATOR+pName);
-	}
-
-	private String makeURI(String s) {
-
-		URI u;
-		try {
-			u = new URI(JanusOntology.getURI()+"/"+s);
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-			return null;
-		}
-		return u.toASCIIString();
 	}
 
 	/**

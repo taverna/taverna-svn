@@ -276,40 +276,4 @@ public class ProvenanceSemanticAnnotator extends ProvenanceBaseClient {
 	
 	private String getRunID() { return runID; }
 
-	/**
-	 * creates URI by prepending Janus ontology base URI
-	 * @param s
-	 * @return
-	 */
-	private String makeURI(String s) {
-
-		URI u;
-		try {
-			u = new URI(JanusOntology.getURI()+"#"+s);
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-			return null;
-		}
-		return u.toASCIIString();
-	}
-
-
-	/**
-	 * creates new URI using both Janus ontology base URI and runID 
-	 * @param s
-	 * @param runID
-	 * @return
-	 */
-	private String makeURI(String s, String runID) {
-
-		URI u;
-		try {
-			u = new URI(JanusOntology.getURI()+runID+":"+s);
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-			return null;
-		}
-		return u.toASCIIString();
-	}
-
 }
