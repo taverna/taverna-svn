@@ -548,7 +548,7 @@ public class Util {
 	// result presentation) for all various types
 	String strElements = "";
 	if (queryInstance == null || queryInstance.getSearchWorkflows()) {
-	  strElements += Workflow.getRequiredAPIElements(Resource.REQUEST_FULL_PREVIEW)
+	  strElements += Workflow.getRequiredAPIElements(Resource.REQUEST_FULL_LISTING)
 		  + ",";
 	}
 	if (queryInstance == null || queryInstance.getSearchFiles()) {
