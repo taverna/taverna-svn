@@ -209,7 +209,7 @@ public class Workflow extends Resource {
 	  case Resource.REQUEST_FULL_LISTING:
 		strElements += "uploader,type,";
 	  case Resource.REQUEST_SHORT_LISTING:
-		strElements += "id,title,thumbnail,description,privileges,content-type";
+		strElements += "id,title,preview,thumbnail,description,privileges,content-type";
 		break;
 	  case Resource.REQUEST_WORKFLOW_CONTENT_ONLY:
 		strElements += "type,content-type,content";
