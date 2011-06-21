@@ -16,5 +16,6 @@
 		<module>translators-plugin</module>
 		<module>provenanceconnectors-plugin</module>
 		<module>externaltool-plugin</module>
+		<module>servicecatalogue-plugin</module>
 	</modules>
 </project>
