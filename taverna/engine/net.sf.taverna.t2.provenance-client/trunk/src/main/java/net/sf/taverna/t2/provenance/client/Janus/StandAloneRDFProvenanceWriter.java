@@ -35,6 +35,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
  */
 public class StandAloneRDFProvenanceWriter {
 
+
 	static Logger logger = Logger.getLogger(StandAloneRDFProvenanceWriter.class);
 
 	private static final String DEF_MODEL_NAME = "janus-instance-graph.rdf";
@@ -45,6 +46,8 @@ public class StandAloneRDFProvenanceWriter {
 	private static final String OBO_PREFIX = "obo";
 	private static final String RDFS_PREFIX = "rdfs";
 	private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
+	private static final String XSD_NS = "http://www.w3.org/2001/XMLSchema#";	
+	private static final String XSD_PREFIX = "xsd";
 
 	private static URIGenerator uriGenerator = new URIGenerator();
 	private static Property RDFS_COMMENT = null;
@@ -95,6 +98,7 @@ public class StandAloneRDFProvenanceWriter {
 		m.setNsPrefix(PROVENIR_PREFIX, PROVENIR_NS);
 		m.setNsPrefix(OBO_PREFIX, OBO_NS);
 		m.setNsPrefix(RDFS_PREFIX, RDFS_NS);
+		m.setNsPrefix(XSD_PREFIX, XSD_NS);
 		
 		RDFS_COMMENT = m.createProperty(RDFS_NS, "comment");
 	}
@@ -269,7 +273,7 @@ public class StandAloneRDFProvenanceWriter {
 	 */
 	public void addCollection(String collId) throws SQLException {
 
-		String collectionURI = uriGenerator.makeCollectionURI(collId);
+		String collectionURI = uriGenerator.makeT2ReferenceURI(collId);
 		Resource collectionResource = getModel().createResource(collectionURI, JanusOntology.collection_structure);
 
 		collectionToResource.put(collectionURI, collectionResource);
@@ -284,7 +288,7 @@ public class StandAloneRDFProvenanceWriter {
 
 		logger.debug("RDF addVarBinding START with pname "+vb.getProcessorName()+" port "+vb.getPortName());
 		
-		String vbURI = uriGenerator.makeCollectionURI(vb.getValue());
+		String vbURI = uriGenerator.makeT2ReferenceURI(vb.getValue());
 		Resource vbResource = getModel().createResource(vbURI, JanusOntology.port_value);
 
 		// add various attributes
@@ -299,7 +303,7 @@ public class StandAloneRDFProvenanceWriter {
 		// is it part of a collection structure?
 		if (vb.getCollIDRef() != null) {
 			// get resource for the collection
-			Resource collResource = collectionToResource.get(uriGenerator.makeCollectionURI(vb.getCollIDRef()));
+			Resource collResource = collectionToResource.get(uriGenerator.makeT2ReferenceURI(vb.getCollIDRef()));
 			if (collResource != null) {
 				vbResource.addProperty(JanusOntology.part_of, collResource);
 			}
