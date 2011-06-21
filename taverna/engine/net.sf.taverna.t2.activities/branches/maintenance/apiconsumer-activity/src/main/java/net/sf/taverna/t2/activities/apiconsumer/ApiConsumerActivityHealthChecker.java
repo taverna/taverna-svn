@@ -53,21 +53,24 @@ public class ApiConsumerActivityHealthChecker implements HealthChecker<ApiConsum
 		}
 		
 		List<VisitReport> reports = new ArrayList<VisitReport>();
+		ApiConsumerActivityConfigurationBean configuration = subject.getConfiguration();
 		
+/*		String className = configuration.getClassName();
 		try {
 			// Try to load the API consumer's class
-			subject.getClassLoader().loadClass(subject.getConfiguration().getClassName());
+			ClassLoader classLoader = subject.getClassLoader();
+			classLoader.loadClass(className);
 			reports.add(new VisitReport(HealthCheck.getInstance(), p, "Class found", HealthCheck.NO_PROBLEM, Status.OK));
 			// All is fine
 		} catch (ClassNotFoundException e) {
 			VisitReport vr = new VisitReport(HealthCheck.getInstance(), p, "Class missing", HealthCheck.MISSING_CLASS, Status.SEVERE);
-			vr.setProperty("className", subject.getConfiguration().getClassName());
+			vr.setProperty("className", className);
 				reports.add(vr);
 		}
-
+*/
 		// Check if we can find all the API consumer's dependencies
 		LinkedHashSet<String> localDependencies = new LinkedHashSet<String>();
-		localDependencies.addAll(subject.getConfiguration().getLocalDependencies());
+		localDependencies.addAll(configuration.getLocalDependencies());
 
 		if (!localDependencies.isEmpty()) {
 		String[] jarArray = ApiConsumerActivity.libDir.list(new FileExtFilter(".jar"));
