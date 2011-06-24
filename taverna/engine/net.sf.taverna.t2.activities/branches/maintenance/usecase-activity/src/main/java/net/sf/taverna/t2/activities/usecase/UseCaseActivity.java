@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.activities.usecase;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,8 +32,15 @@ public class UseCaseActivity implements SupersededActivity<UseCaseActivityConfig
 		correctConfiguration.setRepositoryUrl(configuration.getRepositoryUrl());
 		correctConfiguration.setExternaltoolid(configuration.getUsecaseid());
 		
-		List<UseCaseDescription> usecases = UseCaseEnumeration.readDescriptionsFromUrl(configuration.getRepositoryUrl());
-		// retrieve the UseCaseDescription for the given configuration bean
+		List<UseCaseDescription> usecases = new ArrayList<UseCaseDescription>();
+		try {
+			usecases = UseCaseEnumeration.readDescriptionsFromUrl(configuration.getRepositoryUrl());
+		}
+		catch (IOException ex) {
+			throw new ActivityConfigurationException("Unable to find use case description");
+		}
+		// retrieve the UseCaseDescription for the given configuration bean;
+		
 		// and store it into mydesc
 		for (UseCaseDescription usecase : usecases) {
 			if (!usecase.getUsecaseid().equalsIgnoreCase(configuration.getUsecaseid()))
