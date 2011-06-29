@@ -59,7 +59,7 @@ public class AddRshellTemplateAction extends AbstractContextualMenuAction {
 	private static Logger logger = Logger.getLogger(AddRshellTemplateAction.class);
 
 	public AddRshellTemplateAction() {
-		super(insertSection, 50);
+		super(insertSection, 600);
 	}
 
 	@Override
