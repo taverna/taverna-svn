@@ -159,7 +159,7 @@ public class NativeToDataONEModel extends ProvenanceBaseClient {
 	private void reportUsed() {
 		// query the model to extract the relations we need
 		String usedQuery = 
-			"PREFIX t: <http://taverna.opm.org/> \n"+
+			"PREFIX t: <http://ns.taverna.org.uk/2011/provenance/opm/> \n"+
 			"PREFIX opm: <http://www.ipaw.info/2007/opm#> \n"+			
 			"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n"+
 			"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n"+
