@@ -116,7 +116,7 @@ public class SemanticConditionEvaluator {
 		String whereQuery = 
 			"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n " +
 			"PREFIX mygrid: <http://www.mygrid.org.uk/ontology#> \n" +
-			"PREFIX janus: <http://purl.org/taverna/janus#> \n"+
+			"PREFIX janus: <http://purl.org/net/taverna/janus#> \n"+
 			"SELECT ?element \n WHERE { ?element "+clauseElements[0]+" "+clauseElements[1]+" \n"+
 			"OPTIONAL {"+typematch+"}}";
 				
