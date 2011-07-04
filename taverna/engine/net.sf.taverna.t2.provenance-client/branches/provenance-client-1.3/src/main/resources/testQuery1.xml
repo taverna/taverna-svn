@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- example of a fully specified provenance query -->
+<pquery xmlns="http://taverna.org.uk/2009/provenance/pquery/"
+        xsi:schemaLocation="http://taverna.org.uk/2009/provenance/pquery/ pquery.xsd" 
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<scope workflowId="ac41d494-f77c-4dd5-919c-47272aa6a848">
+		<runs>
+		<!--  this defines the global scope. if omitted, it defaults to the latest run of the declared workflow -->
+			<run id="ae1e2b6b-3bc5-4c93-a250-c4dd0210c3b3" />
+			<range from="2009-10-08" />
+		</runs>
+	</scope>
+	<select>
+		<workflow name="Nested_workflow">
+			<processor name="String_constant">
+				<port name="value" index="[]"/>
+			</processor> 
+			<port name="nestout1" />
+		</workflow>
+		<port name="out" /><!--  this is the out port of the top workflow
+-->
+		<processor name="Beanshell" /><!--  all output ports of this processor
+-->
+	</select>
+
+	<focus>
+		<workflow name="Nested_workflow2">
+			<processor name="String_constant" /><!--  a specific processor within a workflow scope
+-->
+		</workflow>
+		<workflow name="Nested_workflow" /><!--  all processors within this workflow
+-->
+		<processor name="Nested_workflow2" />
+	</focus>
+
+</pquery>
