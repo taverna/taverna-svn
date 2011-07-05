@@ -5,7 +5,7 @@
 	<plugin>
 		<provider>taverna.sf.net</provider>
 		<identifier>net.sf.taverna.t2.workbench.ui.imp</identifier>
-		<version>0.3-SNAPSHOT</version>
+		<version>0.3</version>
 		<name>workbench</name>
 		<description>Taverna 2 Workbench</description>
 		<enabled>true</enabled>
@@ -27,33 +27,33 @@
 		</repositories>
 		<profile>
 			<artifact groupId="net.sf.taverna.t2.workbench" artifactId="file-impl"
-				version="0.1-SNAPSHOT" />
+				version="0.1" />
 			<artifact groupId="net.sf.taverna.t2.workbench" artifactId="ui-impl"
-				version="0.1-SNAPSHOT" />
+				version="0.1" />
 			<artifact groupId="net.sf.taverna.t2.workbench" artifactId="menu-impl"
-				version="0.1-SNAPSHOT" />
+				version="0.1" />
 			<artifact groupId="net.sf.taverna.t2.workbench.views"
-				artifactId="graph" version="0.0.1-SNAPSHOT" />
+				artifactId="graph" version="0.0.1" />
 			<artifact groupId="net.sf.taverna.t2.workbench" artifactId="activity-palette-ui"
-				version="0.1-SNAPSHOT" />
+				version="0.1" />
 			<artifact groupId="net.sf.taverna.t2.workbench" artifactId="perspective-design"
-				version="1.7-SNAPSHOT" />
+				version="1.7" />
 			<artifact groupId="net.sf.taverna.t2.workbench" artifactId="contextual-views-api"
-				version="0.1-SNAPSHOT" />
+				version="0.1" />
 			<artifact groupId="net.sf.taverna.t2.workbench" artifactId="contextual-views-impl"
-				version="0.1-SNAPSHOT" />
+				version="0.1" />
 			<artifact groupId="net.sf.taverna.t2.workbench" artifactId="perspective-results"
-				version="0.1-SNAPSHOT" />
+				version="0.1" />
 			<artifact groupId="net.sf.taverna.t2.workbench" artifactId="run-ui"
-				version="0.1-SNAPSHOT" />
+				version="0.1" />
 			<artifact groupId="net.sf.taverna.t2.workbench" artifactId="iteration-strategy-ui"
-				version="0.1-SNAPSHOT" />
+				version="0.1" />
 			<artifact groupId="net.sf.taverna.t2.workbench.views"
-				artifactId="monitor" version="0.0.1-SNAPSHOT" />
+				artifactId="monitor" version="0.0.1" />
 			<artifact groupId="net.sf.taverna.t2.workbench" artifactId="workflow-explorer"
-				version="0.1-SNAPSHOT" />
+				version="0.1" />
 			<artifact groupId="net.sf.taverna.t2.workbench" artifactId="update-manager"
-				version="0.1-SNAPSHOT" />
+				version="0.1" />
 
 			<!--  system artifacts -->
 			<artifact artifactId="saxpath" groupId="saxpath" version="1.0-FCS"
@@ -78,7 +78,7 @@
 	<plugin>
 		<provider>taverna.sf.net</provider>
 		<identifier>net.sf.taverna.t2.all-activities</identifier>
-		<version>0.3-SNAPSHOT</version>
+		<version>0.3</version>
 		<name>all-activities</name>
 		<description>Taverna 2 activities</description>
 		<enabled>true</enabled>
@@ -108,9 +108,9 @@
 		</repositories>
 		<profile>
 			<artifact groupId="net.sf.taverna.t2" artifactId="all-activities"
-				version="0.3-SNAPSHOT" />
+				version="0.3" />
 			<artifact groupId="net.sf.taverna.t2" artifactId="all-activity-uis"
-				version="0.3-SNAPSHOT" />
+				version="0.3" />
 		</profile>
 		<compatibility>
 			<application>
@@ -121,7 +121,7 @@
 	<plugin>
 		<provider>taverna.sf.net</provider>
 		<identifier>  net.sf.taverna.t2.all-activity-translators </identifier>
-		<version>0.3-SNAPSHOT</version>
+		<version>0.3</version>
 		<name>all-activity-translators</name>
 		<description>All Taverna 2 activity translators</description>
 		<enabled>true</enabled>
@@ -156,10 +156,10 @@
 		</repositories>
 		<profile>
 			<artifact groupId="net.sf.taverna.t2" artifactId="all-activity-translators"
-				version="0.3-SNAPSHOT" />
+				version="0.3" />
 
 			<artifact groupId="net.sf.taverna.t2.workbench" artifactId="file-translator"
-				version="0.1-SNAPSHOT" />
+				version="0.1" />
 
 		</profile>
 		<compatibility>
@@ -169,7 +169,7 @@
 			<pluginDependency>
 				<provider>taverna.sf.net</provider>
 				<identifier>net.sf.taverna.t2.all-activity-translators</identifier>
-				<version>0.3-SNAPSHOT</version>
+				<version>0.3</version>
 			</pluginDependency>
 		</compatibility>
 	</plugin>
@@ -178,7 +178,7 @@
 		<identifier>
 			net.sf.taverna.t2.credential-manager
 		</identifier>
-		<version>0.3-SNAPSHOT</version>
+		<version>0.3</version>
 		<name>credential-manager</name>
 		<description>Taverna 2 Credential Manager</description>
 		<enabled>true</enabled>
@@ -205,7 +205,7 @@
 		</repositories>
 		<profile>
 			<artifact groupId="net.sf.taverna.t2.workbench" artifactId="credential-manager-ui"
-				version="0.1-SNAPSHOT" />
+				version="0.1" />
 		</profile>
 		<compatibility>
 			<application>
