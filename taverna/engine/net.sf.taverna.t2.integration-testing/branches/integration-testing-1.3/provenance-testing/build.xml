@@ -55,7 +55,7 @@
         <pathelement location="../../../.m2/repository/stax/stax-api/1.0.1/stax-api-1.0.1.jar"/>
         <pathelement location="../../../.m2/repository/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.jar"/>
         <pathelement location="../../../.m2/repository/commons-codec/commons-codec/1.2/commons-codec-1.2.jar"/>
-        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/mysql-provenance/0.0.1-SNAPSHOT/mysql-provenance-0.0.1-SNAPSHOT.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/mysql-provenance/0.0.1/mysql-provenance-0.0.1.jar"/>
         <pathelement location="../../../.m2/repository/mysql/mysql-connector-java/5.1.5/mysql-connector-java-5.1.5.jar"/>
         <pathelement location="../../../.m2/repository/net/sf/taverna/t2/workbench/contextual-views-api/0.2/contextual-views-api-0.2.jar"/>
         <pathelement location="../../../.m2/repository/net/sf/taverna/t2/workbench/configuration-impl/0.2/configuration-impl-0.2.jar"/>
