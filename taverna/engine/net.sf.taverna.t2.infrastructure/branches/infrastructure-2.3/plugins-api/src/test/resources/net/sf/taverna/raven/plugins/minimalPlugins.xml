@@ -5,12 +5,12 @@
 	<plugin>
 		<provider>taverna.sf.net</provider>
 		<identifier>net.sf.taverna.t2.workbench.ui.imp</identifier>
-		<version>0.3</version>
+		<version>0.3-SNAPSHOT</version>
 		<name>workbench</name>
 		<!--   <description>Missing description</description> -->
 		<profile>
 			<artifact groupId="net.sf.taverna.t2.workbench" artifactId="file-impl"
-				version="0.1" />
+				version="0.1-SNAPSHOT" />
 		</profile>
 	<compatibility>
 		<application>

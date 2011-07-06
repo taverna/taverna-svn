@@ -5,7 +5,7 @@
 	<plugin>
 		<!--  We'll try with elements in an unexpected order -->
 		<name>workbench</name>
-		<version>0.3</version>
+		<version>0.3-SNAPSHOT</version>
 		<compatibility>
 			<application>
 				<version>2.0</version>
@@ -18,12 +18,12 @@
 
 		<profile>
 			<artifact groupId="net.sf.taverna.t2.workbench" artifactId="file-impl"
-				version="0.1" />
+				version="0.1-SNAPSHOT" />
 			<dependency>
 				<groupId>net.sf.taverna.t2.workbench
 				</groupId>
 				<artifactId>ui-impl</artifactId>
-				<version>0.1</version>
+				<version>0.1-SNAPSHOT</version>
 			</dependency>
 			<artifact artifactId="saxpath" groupId="saxpath" version="1.0-FCS"
 				system="true" />
