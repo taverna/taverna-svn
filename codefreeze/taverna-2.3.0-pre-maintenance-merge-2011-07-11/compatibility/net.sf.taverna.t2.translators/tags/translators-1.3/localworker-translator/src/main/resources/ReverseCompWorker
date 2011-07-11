@@ -1,0 +1,15 @@
+import org.biojava.bio.seq.DNATools;
+import org.biojava.bio.symbol.SymbolList;
+
+if ((rawSeq == void) || (rawSeq == null)) {
+    throw new RuntimeException("The rawSeq must be specified");
+}
+
+// make a DNA SymbolList
+SymbolList symL = DNATools.createDNA(rawSeq);
+
+// reverse complement it
+symL = DNATools.reverseComplement(symL);
+
+// prove that it worked
+revSeq = symL.seqString();
