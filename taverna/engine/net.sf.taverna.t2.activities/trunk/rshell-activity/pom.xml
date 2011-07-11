@@ -19,7 +19,7 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
-						<Export-Package>org.rosuda.REngine.*</Export-Package>
+						<Export-Package>net.sf.taverna.t2.activities.rshell,org.rosuda.REngine.*</Export-Package>
 					</instructions>
 				</configuration>
 			</plugin>
