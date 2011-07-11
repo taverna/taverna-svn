@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:8ea86f9b-fdb7-46ea-b135-0fe47e1baa7a" author="" title="apiconsumertest-2" />
+  <s:processor name="hello">
+    <s:description>Says 'hello' to a name.</s:description>
+    <apiconsumer>
+      <class name="apiconsumertest.alex.HelloAPI" />
+      <method name="hello" static="true" constructor="false" type="java.lang.String" dimension="0" />
+      <description>Says 'hello' to a name.</description>
+      <parameter name="name" type="java.lang.String" dimension="0" />
+      <s:dependencies s:classloader="workflow">
+        <s:jarfile>apiconsumertest.jar</s:jarfile>
+      </s:dependencies>
+    </apiconsumer>
+  </s:processor>
+  <s:processor name="helloNonStatic">
+    <s:description>Says 'hello' to a name but in a 'non-static' way :-).</s:description>
+    <apiconsumer>
+      <class name="apiconsumertest.alex.HelloAPI" />
+      <method name="helloNonStatic" static="false" constructor="false" type="java.lang.String" dimension="0" />
+      <description>Says 'hello' to a name but in a 'non-static' way :-).</description>
+      <parameter name="name" type="java.lang.String" dimension="0" />
+      <s:dependencies s:classloader="workflow">
+        <s:jarfile>apiconsumertest.jar</s:jarfile>
+      </s:dependencies>
+    </apiconsumer>
+  </s:processor>
+  <s:processor name="HelloAPI">
+    <s:description>Constructor.</s:description>
+    <apiconsumer>
+      <class name="apiconsumertest.alex.HelloAPI" />
+      <method name="HelloAPI" static="false" constructor="true" type="apiconsumertest.alex.HelloAPI" dimension="0" />
+      <description>Constructor.</description>
+      <s:dependencies s:classloader="workflow">
+        <s:jarfile>apiconsumertest.jar</s:jarfile>
+      </s:dependencies>
+    </apiconsumer>
+  </s:processor>
+  <s:link source="HelloAPI:object" sink="helloNonStatic:object" />
+  <s:link source="helloNonStatic:result" sink="hello:name" />
+  <s:link source="input" sink="helloNonStatic:name" />
+  <s:link source="hello:result" sink="output" />
+  <s:source name="input" />
+  <s:sink name="output" />
+</s:scufl>
+

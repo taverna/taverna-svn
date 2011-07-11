@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>core</artifactId>
+		<version>p0.1b3-SNAPSHOT</version>
+	</parent>
+	<groupId>net.sf.taverna.t2</groupId>
+	<artifactId>platform-taverna-api</artifactId>
+	<name>Taverna 2 Platform Service Bean API</name>
+	<description>
+		Service bean interfaces and platform context profile for the
+		Taverna 2 base profile. Once associated with an appropriate
+		application context these provide a simple entry point to the
+		Taverna 2 code
+	</description>
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>reference-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>workflowmodel-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.infrastructure</groupId>
+			<artifactId>platform-spring</artifactId>
+			<version>${t2.platform.version}</version>
+		</dependency>
+	</dependencies>
+</project>

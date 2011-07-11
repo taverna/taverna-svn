@@ -1,0 +1,27 @@
+ ----------------------
+ Proxy Configuration
+ ----------------------
+ David Withers
+ ----------------------
+ 
+Proxy Configuration
+
+ The workflows that run on <$project.name> typically require access the internet to call out to web services.
+If your server is set up to use an HTTP proxy for internet access you will need to set up the java HTTP proxy system properties.
+
++-------------------------+
+http.proxyHost=proxyURL
+http.proxyPort=proxyPort
++-------------------------+
+
+ If your proxy requires authentication you will also have to set the username and password system properties.
+
++-------------------------+
+http.proxyUser=username
+http.proxyPassword=password
++-------------------------+
+
+ Because <$project.name> is a java web application, you need to configure the proxy system properties in your application server.
+
+ If you are using Apache Tomcat as your application server you can set the proxy system properties in the
+<<<$\{CATALINA_HOME\}/conf/catalina.properties>>> file.

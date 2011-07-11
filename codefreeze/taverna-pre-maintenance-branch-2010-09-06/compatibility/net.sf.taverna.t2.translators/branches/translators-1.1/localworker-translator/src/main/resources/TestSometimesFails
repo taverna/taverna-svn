@@ -1,0 +1,8 @@
+import java.util.Random;
+
+Random r = new Random();
+
+if ((r.nextInt() % 4) == 0) {
+	throw new RuntimeException("Fails every four runs!");
+}
+out = in;

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:2d865bef-19e2-45a2-8338-abd0d93bbb77" author="" title="test error propogation" />
+  <s:processor name="List_Emmitter">
+    <s:beanshell>
+      <s:scriptvalue>List list = new ArrayList();
+
+for (int i=0;i&lt;10;i++) {
+	list.add(String.valueOf(i));
+}</s:scriptvalue>
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">list</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="Error_Emitter">
+    <s:beanshell>
+      <s:scriptvalue>String output = input;
+if (input.equals("7")) {
+	throw new Exception("Your number was a 7");
+}</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">input</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">output</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:link source="Error_Emitter:output" sink="out" />
+  <s:link source="List_Emmitter:list" sink="Error_Emitter:input" />
+  <s:sink name="out" />
+</s:scufl>
+

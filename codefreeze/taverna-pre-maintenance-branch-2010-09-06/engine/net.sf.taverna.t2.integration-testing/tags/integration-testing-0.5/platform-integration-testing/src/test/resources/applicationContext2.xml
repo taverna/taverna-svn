@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:raven="http://taverna.sf.net/schema/artifact-support"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd 
+	http://taverna.sf.net/schema/artifact-support 
+	http://taverna.sf.net/schema/artifact-support/artifact-support.xsd">
+
+	<!-- Example of a bean to be loaded through Raven, this particular -->
+	<!-- bean is one of the dispatch layers from T2 -->
+	<bean id="ravenTestBean"
+		raven:artifact="net.sf.taverna.t2.core:workflowmodel-impl:0.8"
+		raven:repository="ravenRepository"
+		class="net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ErrorBounce" />
+
+	<!-- Example of an SPI accessed through the SPI factory bean -->
+	<bean id="spiBean"
+		class="net.sf.taverna.platform.spring.SpiRegistryFactoryBean">
+		<property name="repository">
+			<ref bean="ravenRepository" />
+		</property>
+		<property name="spiClassName"
+			value="net.sf.taverna.t2.workflowmodel.Edits" />
+	</bean>
+
+	<!-- Compact schema based form of repository configuration, this is -->
+	<!-- exactly equivalent to the configuration in the first test      -->
+	<!-- but uses the schema extension to build the factory bean from   -->
+	<!-- the repository element rather than spring's generic factory    -->
+	<repository id="ravenRepository"
+		xmlns="http://taverna.sf.net/schema/artifact-support"
+		base="${java.io.tmpdir}/t2platform/test-repository">
+		<repositories>
+			<rep url="http://www.mygrid.org.uk/maven/repository/" />
+			<rep url="http://moby.ucalgary.ca/moby_maven/" />
+			<rep url="http://mirrors.sunsite.dk/maven2/" />
+			<rep url="http://mirrors.ibiblio.org/maven2/" />
+			<rep url="http://bioinf.ncl.ac.uk/mirror/maven/repository/" />
+			<rep url="http://mirror.omii.ac.uk/maven/repository/" />
+		</repositories>
+		<system>
+			<sys artifact="net.sf.taverna.t2.infrastructure:raven:1.11" />
+			<sys artifact="org.springframework:spring-core:2.5" />
+			<sys artifact="org.springframework:spring-beans:2.5" />
+			<sys artifact="org.springframework:spring-context:2.5" />
+			<sys artifact="org.springframework:spring-aop:2.5" />
+			<sys artifact="aopalliance:aopalliance:1.0" />
+		</system>
+	</repository>
+
+</beans>

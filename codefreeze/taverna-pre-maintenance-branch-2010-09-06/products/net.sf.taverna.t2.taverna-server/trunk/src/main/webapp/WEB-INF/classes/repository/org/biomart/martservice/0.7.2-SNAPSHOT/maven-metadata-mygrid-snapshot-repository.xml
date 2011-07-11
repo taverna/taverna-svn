@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>org.biomart</groupId>
+  <artifactId>martservice</artifactId>
+  <version>0.7.2-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <timestamp>20090703.133411</timestamp>
+      <buildNumber>118</buildNumber>
+    </snapshot>
+    <lastUpdated>20090703133522</lastUpdated>
+  </versioning>
+</metadata>
