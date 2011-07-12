@@ -1,0 +1,4 @@
+if ((bytes == void) || (bytes == null)) {
+	throw new RuntimeException("The 'bytes' parameter must be specified");
+}
+string = new String(bytes);
