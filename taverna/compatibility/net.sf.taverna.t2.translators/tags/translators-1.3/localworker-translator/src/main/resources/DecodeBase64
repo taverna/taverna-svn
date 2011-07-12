@@ -1,3 +1,0 @@
-import org.apache.commons.codec.binary.Base64;
-
-bytes = Base64.decodeBase64(base64.getBytes());
