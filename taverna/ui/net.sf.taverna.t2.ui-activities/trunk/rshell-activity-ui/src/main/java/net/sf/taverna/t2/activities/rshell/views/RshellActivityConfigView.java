@@ -30,6 +30,7 @@ package net.sf.taverna.t2.activities.rshell.views;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -60,19 +61,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.BoxView;
-import javax.swing.text.ComponentView;
-import javax.swing.text.Element;
-import javax.swing.text.IconView;
-import javax.swing.text.LabelView;
-import javax.swing.text.ParagraphView;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledEditorKit;
-import javax.swing.text.View;
-import javax.swing.text.ViewFactory;
 
 import net.sf.taverna.t2.activities.rshell.RShellPortSymanticTypeBean;
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
@@ -80,12 +68,17 @@ import net.sf.taverna.t2.activities.rshell.RshellActivityConfigurationBean;
 import net.sf.taverna.t2.activities.rshell.RshellActivityHealthChecker;
 import net.sf.taverna.t2.activities.rshell.RshellConnectionSettings;
 import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SemanticTypes;
+import net.sf.taverna.t2.lang.ui.EditorKeySetUtil;
 import net.sf.taverna.t2.lang.ui.ExtensionFileFilter;
 import net.sf.taverna.t2.lang.ui.FileTools;
+import net.sf.taverna.t2.lang.ui.KeywordDocument;
 import net.sf.taverna.t2.lang.ui.LineEnabledTextPanel;
+import net.sf.taverna.t2.lang.ui.LinePainter;
+import net.sf.taverna.t2.lang.ui.NoWrapEditorKit;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.visit.VisitReport;
 import net.sf.taverna.t2.visit.VisitReport.Status;
+import net.sf.taverna.t2.workbench.ui.credentialmanager.CredentialManagerUI;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationPanel;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Port;
@@ -110,6 +103,7 @@ import org.apache.log4j.Logger;
  * @author Ingo Wassink
  * 
  */
+@SuppressWarnings("serial")
 public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellActivity, RshellActivityConfigurationBean> {
 	
 	private static final String EXTENSION = ".r";
@@ -156,12 +150,19 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	private JPanel outerInputPanel;
 	private JTextField hostnameField;
 	private JTextField portField;
-	private JTextField usernameField;
-	private JTextField passwordField;
+	//private JTextField usernameField;
+	//private JTextField passwordField;
+	
+	//REPLACED USERNAME PASSWORD WITH CREDENTIAL MANAGER
+	private JButton setHttpUsernamePasswordButton;
+	
 	private JCheckBox keepSessionAliveCheckBox;
 	private JPanel settingsPanel;
 	private JTabbedPane tabbedPane;
 	private JTabbedPane ports;
+
+	private static Set<String> keys = EditorKeySetUtil.loadKeySet(RshellActivityConfigView.class.getResourceAsStream("keys.txt"));
+
 
 	/**
 	 * Stores the {@link RshellActivity}, gets its
@@ -198,6 +199,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	 * {@link #setPortPanel()}
 	 */
 	private void initialise() {
+		//this.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);		
 		configuration = activity.getConfiguration();
 		setLayout(new GridBagLayout());
 		inputViewList = new ArrayList<RshellInputViewer>();
@@ -217,12 +219,15 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 
 
 		scriptTextArea = new JTextPane();
+		new LinePainter(scriptTextArea);
 
-		final RshellDocument doc = new RshellDocument();
+		final KeywordDocument doc = new KeywordDocument(keys);
 		// NOTE: Due to T2-1145 - always set editor kit BEFORE setDocument
 		scriptTextArea.setEditorKit( new NoWrapEditorKit() );
+		scriptTextArea.setFont(new Font("Monospaced",Font.PLAIN,14));
 		scriptTextArea.setDocument(doc);
 		scriptTextArea.setText(configBean.getScript());
+
 		scriptTextArea.setCaretPosition(0);
 		scriptTextArea.setPreferredSize(new Dimension(200, 100));
 
@@ -268,7 +273,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		loadRScriptButton.setToolTipText("Load an R script from a file");
 		loadRScriptButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String newScript = FileTools.readStringFromFile(RshellActivityConfigView.this);
+			    String newScript = FileTools.readStringFromFile(RshellActivityConfigView.this, "Load R script", ".r");
 				if (newScript != null) {
 					scriptTextArea.setText(newScript);
 				}
@@ -360,6 +365,13 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		fieldConstraints.gridx = 1;
 		fieldConstraints.gridy = 0;
 		fieldConstraints.fill = GridBagConstraints.HORIZONTAL;
+		
+		GridBagConstraints buttonConstraints = new GridBagConstraints();
+		buttonConstraints.weightx = 1.0;
+		buttonConstraints.gridx = 1;
+		buttonConstraints.gridy = 2;
+		buttonConstraints.fill = GridBagConstraints.NONE;
+		buttonConstraints.anchor = GridBagConstraints.WEST;
 
 		Dimension dimension = new Dimension(0, 0);
 
@@ -380,19 +392,33 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		portLabel.setLabelFor(portField);
 		portField.setText(Integer.toString(connectionSettings.getPort()));
 
-		usernameField = new JTextField();
-		JLabel usernameLabel = new JLabel("Username");
-		usernameField.setSize(dimension);
-		usernameLabel.setSize(dimension);
-		usernameLabel.setLabelFor(usernameField);
-		usernameField.setText(connectionSettings.getUsername());
-
-		passwordField = new JTextField();
-		JLabel passwordLabel = new JLabel("Password");
-		passwordField.setSize(dimension);
-		passwordLabel.setSize(dimension);
-		passwordLabel.setLabelFor(passwordField);
-		passwordField.setText(connectionSettings.getPassword());
+//		usernameField = new JTextField();
+//		JLabel usernameLabel = new JLabel("Username");
+//		usernameField.setSize(dimension);
+//		usernameLabel.setSize(dimension);
+//		usernameLabel.setLabelFor(usernameField);
+//		usernameField.setText(connectionSettings.getUsername());
+//
+//		passwordField = new JTextField();
+//		JLabel passwordLabel = new JLabel("Password");
+//		passwordField.setSize(dimension);
+//		passwordLabel.setSize(dimension);
+//		passwordLabel.setLabelFor(passwordField);
+//		passwordField.setText(connectionSettings.getPassword());
+		
+		// "Set username and password" button
+		ActionListener usernamePasswordListener = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// Get Credential Manager to pop up a dialog to ask for the username and password for the service
+				CredentialManagerUI credManagerUI = CredentialManagerUI.getInstance();
+				if (credManagerUI != null)
+					credManagerUI.newPasswordForService("rserve://"+hostnameField.getText()+":"+portField.getText()); // this is used as a key for the service in Credential Manager
+			}
+		};
+		setHttpUsernamePasswordButton = new JButton("Set username and password");
+		setHttpUsernamePasswordButton.setSize(dimension);
+		setHttpUsernamePasswordButton.addActionListener(usernamePasswordListener);
+		
 
 		keepSessionAliveCheckBox = new JCheckBox("Keep Session Alive");
 		keepSessionAliveCheckBox.setSelected(connectionSettings
@@ -408,14 +434,20 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		settingsPanel.add(portField, fieldConstraints);
 		fieldConstraints.gridy++;
 		
-		settingsPanel.add(usernameLabel, labelConstraints);
-		labelConstraints.gridy++;
-		settingsPanel.add(usernameField, fieldConstraints);
-		fieldConstraints.gridy++;
+//		settingsPanel.add(usernameLabel, labelConstraints);
+//		labelConstraints.gridy++;
+//		settingsPanel.add(usernameField, fieldConstraints);
+//		fieldConstraints.gridy++;
+//		
+//		settingsPanel.add(passwordLabel, labelConstraints);
+//		labelConstraints.gridy++;
+//		settingsPanel.add(passwordField, fieldConstraints);
+//		fieldConstraints.gridy++;
 		
-		settingsPanel.add(passwordLabel, labelConstraints);
-		labelConstraints.gridy++;
-		settingsPanel.add(passwordField, fieldConstraints);
+
+		settingsPanel.add(setHttpUsernamePasswordButton, buttonConstraints);
+		buttonConstraints.gridy++;
+	
 		fieldConstraints.gridy++;
 		settingsPanel.add(keepSessionAliveCheckBox, fieldConstraints);
 		fieldConstraints.gridy++;
@@ -976,9 +1008,9 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 				.setOutputPortDefinitions(outputBeanList);
 		RshellConnectionSettings connectionSettings = new RshellConnectionSettings();
 
-		connectionSettings.setUsername(usernameField.getText());
+		//connectionSettings.setUsername(usernameField.getText());
 		connectionSettings.setHost(hostnameField.getText());
-		connectionSettings.setPassword(passwordField.getText());
+		//connectionSettings.setPassword(passwordField.getText());
 		connectionSettings.setKeepSessionAlive(keepSessionAliveCheckBox
 				.isSelected());
 		connectionSettings.setPort(portField.getText());
@@ -1090,65 +1122,5 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 				infoConstraints);
 		return infoPanel;
 	}
-
-	/**
-	 * 
-	 * The following classes are copied from http://forums.sun.com/thread.jspa?threadID=622683
-	 *
-	 */
-	private class NoWrapEditorKit extends StyledEditorKit
-	{
-		public ViewFactory getViewFactory()
-		{
-				return new StyledViewFactory();
-		} 
-	}
-	 
-		static class StyledViewFactory implements ViewFactory
-		{
-			public View create(Element elem)
-			{
-				String kind = elem.getName();
-	 
-				if (kind != null)
-				{
-					if (kind.equals(AbstractDocument.ContentElementName))
-					{
-						return new LabelView(elem);
-					}
-					else if (kind.equals(AbstractDocument.ParagraphElementName))
-					{
-						return new ParagraphView(elem);
-					}
-					else if (kind.equals(AbstractDocument.SectionElementName))
-					{
-						return new NoWrapBoxView(elem, View.Y_AXIS);
-					}
-					else if (kind.equals(StyleConstants.ComponentElementName))
-					{
-						return new ComponentView(elem);
-					}
-					else if (kind.equals(StyleConstants.IconElementName))
-					{
-						return new IconView(elem);
-					}
-				}
-	 
-		 		return new LabelView(elem);
-			}
-		}
-
-		static class NoWrapBoxView extends BoxView {
-	        public NoWrapBoxView(Element elem, int axis) {
-	            super(elem, axis);
-	        }
-	 
-	        public void layout(int width, int height) {
-	            super.layout(32768, height);
-	        }
-	        public float getMinimumSpan(int axis) {
-	            return super.getPreferredSpan(axis);
-	        }
-	    }
 
 }

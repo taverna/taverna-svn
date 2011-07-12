@@ -35,9 +35,20 @@
 			<artifactId>disabled-activity-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+<!--		<dependency>
+			<groupId>net.sf.taverna.t2.ui-activities</groupId>
+			<artifactId>external-tool-activity-ui</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		-->
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-activities</groupId>
 			<artifactId>localworker-activity-ui</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-activities</groupId>
+			<artifactId>rest-activity-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -73,6 +84,11 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-activities</groupId>
 			<artifactId>apiconsumer-activity-ui</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-activities</groupId>
+			<artifactId>xpath-activity-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>

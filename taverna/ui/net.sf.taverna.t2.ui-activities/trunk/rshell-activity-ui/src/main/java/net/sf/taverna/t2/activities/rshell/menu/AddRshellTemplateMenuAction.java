@@ -62,7 +62,7 @@ public class AddRshellTemplateMenuAction extends AbstractMenuAction {
 	private static Logger logger = Logger.getLogger(AddRshellTemplateMenuAction.class);
 
 	public AddRshellTemplateMenuAction() {
-		super(InsertMenu.INSERT, 23, ADD_RSHELL_URI);
+		super(InsertMenu.INSERT, 600, ADD_RSHELL_URI);
 	}
 
 	@Override
