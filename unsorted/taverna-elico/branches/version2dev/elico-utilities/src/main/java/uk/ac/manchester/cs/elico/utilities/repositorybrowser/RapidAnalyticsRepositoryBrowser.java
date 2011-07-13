@@ -1,5 +1,6 @@
 package uk.ac.manchester.cs.elico.utilities.repositorybrowser;
 
+import net.sf.taverna.t2.lang.ui.DialogTextArea;
 import net.sf.taverna.t2.security.credentialmanager.CMException;
 import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
 import net.sf.taverna.t2.security.credentialmanager.UsernamePassword;
@@ -23,8 +24,12 @@ import org.xml.sax.InputSource;
 
 import uk.ac.manchester.cs.elico.utilities.configuration.RapidAnalyticsPreferences;
 import uk.ac.manchester.cs.elico.utilities.configuration.RapidMinerPluginConfiguration;
+import uk.ac.manchester.cs.elico.utilities.csvimporter.CSVImporter;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -41,6 +46,35 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
+
+/*
+ * Copyright (C) 2007, University of Manchester
+ *
+ * Modifications to the initial code base are copyright of their
+ * respective authors, or their employers as appropriate.  Authorship
+ * of the modifications may be determined from the ChangeLog placed at
+ * the end of this file.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
+/**
+ * Author: Rishi Ramgolam<br>
+ * Date: Jul 13, 2011<br>
+ * The University of Manchester<br>
+ **/
 
 public class RapidAnalyticsRepositoryBrowser extends JPanel implements
         ActionListener, TreeExpansionListener {
@@ -67,8 +101,14 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
     private UsernamePassword username_password;
 
 	public RapidAnalyticsPreferences preferences;
-	
-//	JFileChooser fc;
+
+	private JPanel titlePanel;
+
+	private JLabel titleLabel;
+
+	private JLabel titleIcon;
+
+	private DialogTextArea titleMessage;
 
 	public RapidAnalyticsRepositoryBrowser() {
 		
@@ -122,7 +162,6 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		setLayout(new BorderLayout());
 		
 //		setPreferredSize(new Dimension(200, 400));
-
 		myTreePanel = new RapidAnalyticsRepositoryTree();
 		myTreePanel.myTree.addTreeExpansionListener(this);
 		
@@ -134,6 +173,30 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		renderer.setLeafIcon(leafIcon);
 		renderer.setClosedIcon(closedIcon);
 		renderer.setOpenIcon(openIcon);
+		
+		// title panel
+		titlePanel = new JPanel(new BorderLayout());
+		titlePanel.setBackground(Color.WHITE);
+		addDivider(titlePanel, SwingConstants.BOTTOM, true);
+		
+		// title
+		titleLabel = new JLabel("RapidAnalytics Repository Browser / Uploader");
+		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 13.5f));
+		
+		titleIcon = new JLabel("");
+		titleMessage = new DialogTextArea("Here you can browse and upload files to your repository.");
+		titleMessage.setMargin(new Insets(5, 10, 10, 10));
+		titleMessage.setFont(titleMessage.getFont().deriveFont(11f));
+		titleMessage.setEditable(false);
+		titleMessage.setFocusable(false);
+		
+		// add title panel 
+		// title panel
+		titlePanel.setBorder(new CompoundBorder(titlePanel.getBorder(), new EmptyBorder(10, 10, 0, 10)));
+		titlePanel.add(titleLabel, BorderLayout.NORTH);
+		titlePanel.add(titleIcon, BorderLayout.WEST);
+		titlePanel.add(titleMessage, BorderLayout.CENTER);
+		add(titlePanel, BorderLayout.NORTH);
 		
 		// populate tree with root elements
 //		initialiseTreeContents();
@@ -156,7 +219,6 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
             }
         });
 		useButton.setActionCommand("use");
-//		useButton.addActionListener(this);
 
 		ImageIcon icon = new ImageIcon(getClass().getResource("/loading.gif"),
         "your file is being uploaded");
@@ -172,7 +234,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
         panel.add(useButton);
         panel.add(myIconLabel);
         add(panel, BorderLayout.SOUTH);
-        		
+       
 	}
 	
 	public void setPreferences(RapidAnalyticsPreferences pref) {
@@ -200,9 +262,9 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	public void initialiseTreeContents() {
 	
 		//set the root structure
-        System.err.println("am i here 1");
+		//[debug]System.err.println("am i here 1");
 		populateTree(myTreePanel, getRepositoryStructure(""));
-        System.err.println("am i here 2");
+		//[debug]System.err.println("am i here 2");
 		populated = true;
 		
 	}
@@ -222,14 +284,14 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
         	if (objectType.get(myParentObject).equals("folder")) {
         		
         		// add the folder contents to 
-        		System.out.println("This object is a folder : " + myParentObject);        		
+        		//[debug]System.out.println("This object is a folder : " + myParentObject);        		
         		
         		// add contents to parents 
         		Object [] contents = getRepositoryStructure(parentNode.toString());
         		
         			for (Object myChildObject : contents) {
         				
-        				System.out.println("	contents of parent " + contents.toString());
+        				//[debug]System.out.println("	contents of parent " + contents.toString());
         				userNode = treePanel.addObject(parentNode, myChildObject);     
         				
         				if (!userNode.toString().equals(repositoryUsername)) {
@@ -239,18 +301,18 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
         				// now fill in contents for the users directory from repositoryUsername
         				if (myChildObject.equals(repositoryUsername)) {
         					        					
-        					System.out.println("	Got the username stuff");
+        					//[debug]System.out.println("	Got the username stuff");
         								
             				Object [] userContents = getRepositoryStructure(parentNode.toString() + "/" + myChildObject);
             				
             					for (Object userObject : userContents) {
             						            						
-            						System.out.println("	contents of user object : " + userObject);
+            						//[debug]System.out.println("	contents of user object : " + userObject);
             						childNode = treePanel.addObject(userNode, userObject);
             						treeNode = childNode.getPath();
             						
             						if (objectType.get(userObject).equals("folder")) {
-            							System.out.println("*** ADDING " + userObject + " to objectType");
+            							//[debug]System.out.println("*** ADDING " + userObject + " to objectType");
             							myTreePanel.addObject(childNode, "dummy");
             						}
             					            						
@@ -289,7 +351,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	        treePanel.addObject(p2, c2Name);
 	        	
 	}
-			
+	char delimiter = 0;
 	public void actionPerformed(ActionEvent event) {
 
 		String command = event.getActionCommand();
@@ -311,16 +373,40 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
                     File f = new File(dir, file);
 	                filePath = f.getPath();
 	                //This is where a real application would open the file.
-	                System.out.println("Opening: " + file + " path " + dir);
+	              //[debug]System.out.println("Opening: " + file + " path " + dir);
 	                
-	                System.out.println(" FILE EXTENSION " + getFileExtension(filePath));
-	                myIconLabel.setVisible(true);
-	                uploadFile(filePath);
-	                myIconLabel.setVisible(false);
+	              //[debug]System.out.println(" FILE EXTENSION " + getFileExtension(filePath) + " filepath " + filePath);
+	               
 	                
+	                // if it's a csv file, then open the CSV importer and get the chosen delimiter
+                    final JDialog csvFrame = new JDialog((JDialog)SwingUtilities.getAncestorOfClass(JDialog.class, RapidAnalyticsRepositoryBrowser.this), "CSV Importer");
+                    
+	                CSVImporter importer = new CSVImporter(filePath) {
+	        			
+	        			public void getChosenFileDelimiter() {
+	        				
+	        				delimiter = getChosenDelimiter();
+	        				csvFrame.dispose();
+	        			}
+	        		};
+
+	        		//final JFrame frame = new JFrame();
+	        		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+	                   
+	        		csvFrame.setLocation(dim.width / 2 - getWidth() / 2, dim.height / 2 - getHeight() / 2);
+                    csvFrame.add(importer);
+                    csvFrame.setModal(true);
+                    csvFrame.pack();
+                    csvFrame.setVisible(true);
+	        		
+	               
+                  //[debug]System.out.println(" the chosen delimiter is : " + delimiter);
+	               
+	                uploadFile(filePath, delimiter);
+	        	                
 	            } else {
 	            		
-	            	 System.out.println("Open command cancelled by user.");
+	            	//[debug]System.out.println("Open command cancelled by user.");
 	
 	            }
 	              	
@@ -438,8 +524,8 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 			HttpResponse response = client.execute(base,
                     localContext);
 			
-			System.out.println(" REST OUTPUT IS : " + response.toString());
-			System.out.println(" REST Status Line : " + response.getStatusLine().toString());
+			//[debug]System.out.println(" REST OUTPUT IS : " + response.toString());
+			//[debug]System.out.println(" REST Status Line : " + response.getStatusLine().toString());
 			if (response.getStatusLine().toString().equals("HTTP/1.1 403 Forbidden")) {
 				return null;
 			}
@@ -447,12 +533,12 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 			
 			content = EntityUtils.toString(response.getEntity());
 			
-			System.out.println(" THE RESPONSE BODY IS : " + content);
+			//[debug]System.out.println(" THE RESPONSE BODY IS : " + content);
 					
 		} catch (Exception e) {
 			
 			e.printStackTrace();			
-			System.out.println(" just caught an exception ");
+			//[debug]System.out.println(" just caught an exception ");
 			
 		}
 
@@ -498,7 +584,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 			folders = doc.getElementsByTagName("contents");
 			children = doc.getElementsByTagName("entry");
 					
-			System.out.println(" The number of elements parsed from REST output: " + folders.getLength() + " , " + children.getLength());
+			//[debug]System.out.println(" The number of elements parsed from REST output: " + folders.getLength() + " , " + children.getLength());
 
 		} catch (Exception e) {
 			
@@ -512,7 +598,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 			
 			Element line = (Element) children.item(i);
 			
-			System.out.println(" TO PUT IN LIST " + getCharacterDataFromElement(line) + " attribute " + line.getAttribute("type"));
+			//[debug]System.out.println(" TO PUT IN LIST " + getCharacterDataFromElement(line) + " attribute " + line.getAttribute("type"));
 			
 			myList[i] = getCharacterDataFromElement(line);
 			objectType.put(myList[i], line.getAttribute("type"));
@@ -541,7 +627,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	public String parseRepositoryTreePath(TreePath treePath) {
 
 		// the path is:
-		System.out.println(" The path is " + treePath);
+		//[debug]System.out.println(" The path is " + treePath);
 		
 		Object [] objects = treePath.getPath();
 		boolean first =  true;
@@ -558,7 +644,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 			first = false;
 		}
 		
-		System.out.println(" The path is now " + path);
+		//[debug]System.out.println(" The path is now " + path);
 		return path;
 	}
 				
@@ -577,7 +663,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 			
 			if (nodeOfPath.getChildCount() == 1 && nodeOfPath.getFirstChild().toString().equals("dummy")) {
 				
-				System.out.println("	THIS NODE CONTAINS A DUMMY ");
+				//[debug]System.out.println("	THIS NODE CONTAINS A DUMMY ");
 				
 				myTreePanel.myTree.setSelectionPath(path.pathByAddingChild(nodeOfPath.getFirstChild()));
 				nodeOfPath.getFirstChild();
@@ -591,7 +677,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 				
 			}
 		
-			System.out.println("	EXPANDED " + path + " NODE OF PATH " + nodeOfPath);
+			//[debug]System.out.println("	EXPANDED " + path + " NODE OF PATH " + nodeOfPath);
 		
 		}
 				
@@ -604,8 +690,8 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	    int mid= fileName.lastIndexOf(".");
 	    fname=fileName.substring(0,mid);
 	    ext=fileName.substring(mid+1,fileName.length());  
-	    System.out.println("File name ="+fname);
-	    System.out.println("Extension ="+ext);   
+	  //[debug]System.out.println("File name ="+fname);
+	  //[debug]System.out.println("Extension ="+ext);   
 	    
 	    return ext;
 	}
@@ -696,24 +782,24 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
         
     }
 
-	public void uploadFile(String filePath) {
+	public void uploadFile(String filePath, char delimiter) {
 	
 		// get the users selected node on the tree then get its path
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) myTreePanel.myTree.getLastSelectedPathComponent();
 		TreePath selectionPath = new TreePath(node.getPath());
 		String updatedSelectionPath = parseRepositoryTreePath(selectionPath);
-		System.out.println(" updated selection path " + updatedSelectionPath);
+		//[debug]System.out.println(" updated selection path " + updatedSelectionPath);
 		
 		String fileExtension = getFileExtension(filePath);
 		String contentType = getContentType(fileExtension);
 		String fname = getFileName(filePath);
-		String fileURI = preferences.getRepositoryLocation() + "/RAWS/resources" + updatedSelectionPath + "/" + fname + "?column_separators=,";
+		String fileURI = preferences.getRepositoryLocation() + "/RAWS/resources" + updatedSelectionPath + "/" + fname + "?column_separators=" + delimiter;
         if (contentType.equals(CSV_HEADER)) {
 //            fileURI = fileURI + "?column_separators=%3b";
         }
-		System.out.println(" THE FILENAME TO APPEND IS : " + fname);		
+      //[debug]System.out.println(" THE FILENAME TO APPEND IS : " + fname);		
 		
-		System.out.println(" THE CONTENT TYPE IS : " + contentType);
+      //[debug]System.out.println(" THE CONTENT TYPE IS : " + contentType);
 			
 		HttpPut httpPut = new HttpPut(fileURI);
 		httpPut.setHeader("Content-Type", contentType);
@@ -754,8 +840,14 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 			
 		}
 		
-		doRequest(httpPut, contentType, fileURI, node);
-	
+		// [ THREAD SWITCH ] doRequest(httpPut, contentType, fileURI, node);
+		UploaderThread thread = new UploaderThread();
+		thread.setContentType(contentType);
+		thread.setHttpRequest(httpPut);
+		thread.setURI(fileURI);
+		thread.setParentNode(node);
+		
+		thread.execute();
 	}
 	
 	public void doRequest(HttpRequestBase httpRequest, String contentType, String URI, DefaultMutableTreeNode parentNode) {
@@ -791,12 +883,16 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
             
   			BasicScheme basicAuth = new BasicScheme();
 			localContext.setAttribute("http", basicAuth);
-			
+			            
 			HttpResponse response = httpClient.execute(httpRequest, localContext);
+			
+			myIconLabel.setVisible(false);
 			
 			Object content = EntityUtils.toString(response.getEntity());
 			
-			System.out.println(" REST UPLOAD RESPONSE : " + content);
+			//[debug]System.out.println(" REST UPLOAD RESPONSE : " + content);
+			
+			JOptionPane.showMessageDialog(this, content);
 			
 			// refresh tree branch
 			updateTreePath(parentNode);
@@ -809,15 +905,127 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		
 	}
 
+	class UploaderThread extends SwingWorker<String, Object> {
+		
+		   private HttpRequestBase httpRequest;
+		   private String contentType;
+		   private String URI;
+		   private DefaultMutableTreeNode parentNode;
+		
+	       @Override
+	       public String doInBackground() {
+	    	   
+	    	   doRequest(httpRequest, contentType, URI, parentNode);
+	           return null;
+	       }
+
+	       @Override
+	       protected void done() {
+	           try { 
+	              // label.setText(get());
+	        	   myIconLabel.setVisible(false);
+	           } catch (Exception ignore) {
+	           }
+	       }
+	       
+	   	public void doRequest(HttpRequestBase httpRequest, String contentType, String URI, DefaultMutableTreeNode parentNode) {
+	   		
+	   		myIconLabel.setVisible(true);
+			String urlBasePath = URI;
+			URL urlBaseTemp = null;
+			try {
+				urlBaseTemp = new URL(urlBasePath);
+			} catch (MalformedURLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			httpRequest.setHeader("Content-Type", contentType);
+			
+			try {
+			      
+				HttpClient httpClient = new DefaultHttpClient();
+				//AuthScope as = new AuthScope(urlBasePath, urlBaseTemp.getPort());
+				
+				HttpContext localContext = new BasicHttpContext();
+				
+				//	UsernamePasswordCredentials upc = new UsernamePasswordCredentials(
+	            //         "rishi", "");
+	            //  ((DefaultHttpClient) client).getCredentialsProvider()
+	            //          .setCredentials(as, upc);
+	            
+	            CredentialsProvider credsProvider = new BasicCredentialsProvider();
+
+	            credsProvider.setCredentials(new AuthScope(urlBaseTemp.getHost(), urlBaseTemp.getPort(), "RapidAnalyticsRealm"), new UsernamePasswordCredentials(preferences.getUsername(), preferences.getPasswordAsString()));
+	            
+	            ((DefaultHttpClient) httpClient).setCredentialsProvider(credsProvider);
+	            
+	  			BasicScheme basicAuth = new BasicScheme();
+				localContext.setAttribute("http", basicAuth);
+				            
+				HttpResponse response = httpClient.execute(httpRequest, localContext);
+				
+				myIconLabel.setVisible(false);
+				
+				Object content = EntityUtils.toString(response.getEntity());
+				
+				//[debug]System.out.println(" REST UPLOAD RESPONSE : " + content);
+				
+				JOptionPane.showMessageDialog(null, content);
+				
+				// refresh tree branch
+				updateTreePath(parentNode);
+				
+			} catch (Exception e) {
+				
+				e.printStackTrace();
+				
+			}
+			
+		}
+
+		public void setHttpRequest(HttpRequestBase httpRequest) {
+			this.httpRequest = httpRequest;
+		}
+
+		public HttpRequestBase getHttpRequest() {
+			return httpRequest;
+		}
+
+		public void setContentType(String contentType) {
+			this.contentType = contentType;
+		}
+
+		public String getContentType() {
+			return contentType;
+		}
+
+		public void setURI(String uRI) {
+			URI = uRI;
+		}
+
+		public String getURI() {
+			return URI;
+		}
+
+		public void setParentNode(DefaultMutableTreeNode parentNode) {
+			this.parentNode = parentNode;
+		}
+
+		public DefaultMutableTreeNode getParentNode() {
+			return parentNode;
+		}
+	}
+	
 	public void updateTreePath(DefaultMutableTreeNode parentNode) {
 	
 		// RE-FACTOR
-		System.out.println(" TO UPDATE NODE " + parentNode.getPath());
+		//[debug]System.out.println(" TO UPDATE NODE " + parentNode.getPath());
 		String path = parseRepositoryTreePath(new TreePath(parentNode.getPath()));
 		
 		// get new objects
 		Object [] myObjects = getRepositoryStructure(path);
-		System.out.println(" TO UPDATE NODE WITH " + myObjects.toString());
+		//[debug]System.out.println(" TO UPDATE NODE WITH " + myObjects.toString());
 		
 		//System.out.println(" DEBUG TREE PATH : " + myTreePanel.getNodeAt(new TreePath(parentNode.getPath())).getPath());
 		DefaultMutableTreeNode lastNode = myTreePanel.getNodeAt(new TreePath(parentNode.getPath()));
@@ -830,6 +1038,56 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	        myTreePanel.myTree.setExpandsSelectedPaths(true);
 	        myTreePanel.myTree.setSelectionPath(lastPath);
 	        myTreePanel.updateUI();
+	}
+	
+	/**
+	 * Adds a light gray or etched border to the top or bottom of a JComponent.
+	 * 
+	 * @param component
+     * @param position
+     * @param etched
+	 */
+	protected void addDivider(JComponent component, final int position, final boolean etched) {
+		component.setBorder(new Border() {
+			private final Color borderColor = new Color(.6f, .6f, .6f);
+			
+			public Insets getBorderInsets(Component c) {
+				if (position == SwingConstants.TOP) {
+					return new Insets(5, 0, 0, 0);
+				} else {
+					return new Insets(0, 0, 5, 0);
+				}
+			}
+
+			public boolean isBorderOpaque() {
+				return false;
+			}
+
+			public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+				if (position == SwingConstants.TOP) {
+					if (etched) {
+						g.setColor(borderColor);
+						g.drawLine(x, y, x + width, y);
+						g.setColor(Color.WHITE);
+						g.drawLine(x, y + 1, x + width, y + 1);
+					} else {
+						g.setColor(Color.LIGHT_GRAY);
+						g.drawLine(x, y, x + width, y);
+					}
+				} else {
+					if (etched) {
+						g.setColor(borderColor);
+						g.drawLine(x, y + height - 2, x + width, y + height - 2);
+						g.setColor(Color.WHITE);
+						g.drawLine(x, y + height - 1, x + width, y + height - 1);
+					} else {
+						g.setColor(Color.LIGHT_GRAY);
+						g.drawLine(x, y + height - 1, x + width, y + height - 1);
+					}
+				}
+			}
+
+		});
 	}
 
 }
