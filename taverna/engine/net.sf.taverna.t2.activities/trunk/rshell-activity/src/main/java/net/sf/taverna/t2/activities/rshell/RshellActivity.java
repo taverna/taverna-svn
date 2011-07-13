@@ -29,6 +29,7 @@ package net.sf.taverna.t2.activities.rshell;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -40,6 +41,9 @@ import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SemanticTypes;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceServiceException;
 import net.sf.taverna.t2.reference.T2Reference;
+import net.sf.taverna.t2.security.credentialmanager.CMException;
+import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
+import net.sf.taverna.t2.security.credentialmanager.UsernamePassword;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Port;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
@@ -50,7 +54,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPo
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPDouble;
 import org.rosuda.REngine.REXPInteger;
@@ -72,7 +76,7 @@ public class RshellActivity extends
 	
 	public static final String URI = "http://ns.taverna.org.uk/2010/activity/rshell";
 
-	private static Logger logger = Logger.getLogger(RshellActivity.class);
+	//private static Logger logger = Logger.getLogger(RshellActivity.class);
 
 	private static int BUF_SIZE = 1024;
 
@@ -81,16 +85,16 @@ public class RshellActivity extends
 	private Map<String, SemanticTypes> inputSymanticTypes = new HashMap<String, SemanticTypes>();
 
 	private Map<String, SemanticTypes> outputSymanticTypes = new HashMap<String, SemanticTypes>();
-	
+
 	private static HashMap<RshellConnectionSettings, Object> lockMap = new HashMap<RshellConnectionSettings, Object> ();
-	
+
 	private static String stringNA = "NA";
 	private static String stringTrue = "TRUE";
 	private static String stringFalse = "FALSE";
 
 	@Override
 	public synchronized void configure(RshellActivityConfigurationBean configurationBean)
-			throws ActivityConfigurationException {
+	throws ActivityConfigurationException {
 		this.configurationBean = configurationBean;
 		configureSymanticTypes(configurationBean);
 		for (ActivityInputPortDefinitionBean ip : configurationBean.getInputPortDefinitions()) {
@@ -132,17 +136,69 @@ public class RshellActivity extends
 
 				RshellConnection connection = null;
 
-					RshellConnectionSettings settings = configurationBean
-							.getConnectionSettings();
-					
-					Object lock = getLock(settings);
-					
-					synchronized(lock) {
+				RshellConnectionSettings settings = configurationBean
+				.getConnectionSettings();
 
+				Object lock = getLock(settings);
+
+				synchronized(lock) {
+
+					URI rServerURI = URI.create("rserve://"
+							+ settings.getHost() + ":" + settings.getPort()); // this URI is used to identify Rshell service in Credential Manager
 					// create connection
 					try {
-						connection = RshellConnectionManager.INSTANCE
-								.createConnection(settings);
+						// If Credential Manager has username and password for this service - use it to open a connection
+						if (hasUsernameAndPasswordForService(rServerURI)) {
+							UsernamePassword username_password = getUsernameAndPasswordForService(rServerURI);
+							settings.setUsername(username_password
+									.getUsername());
+							settings.setPassword(new String(username_password
+									.getPassword()));
+							connection = RshellConnectionManager.INSTANCE
+									.createConnection(settings);
+
+						} 
+						else {
+							// Try without credentials - just do a simple assign and watch for any
+							// authentication exceptions
+							connection = RshellConnectionManager.INSTANCE
+									.createConnection(settings);
+							// Hack to check if credentials are required to
+							// access this R server
+							connection.assign("x", "3");
+						}
+					} catch (RserveException rSrvException) {
+						if (rSrvException.getMessage().toLowerCase().contains(
+								"authorization failed")) {
+							// The simple assign test failed because the connection
+							// requires user's credentials
+
+							// Since the connection has no valid credentials,
+							// get Credential Manager to ask the user for some
+							try {
+								UsernamePassword username_password = getUsernameAndPasswordForService(rServerURI);
+								settings.setUsername(username_password
+										.getUsername());
+								settings.setPassword(new String(
+										username_password.getPassword()));
+								connection = RshellConnectionManager.INSTANCE
+										.createConnection(settings);
+							} catch (Exception ex) {
+								callback.fail(
+										"Could not establish connection to "
+												+ settings.getHost()
+												+ " using port "
+												+ settings.getPort() + ": "
+												+ ex.getMessage(), ex);
+								return;
+							}
+						} else {
+							callback
+									.fail("Invalid RShell connection: "
+											+ rSrvException.getMessage(),
+											rSrvException);
+						}
+
 					} catch (Exception ex) {
 						callback.fail("Could not establish connection to "
 								+ settings.getHost() + " using port "
@@ -151,178 +207,183 @@ public class RshellActivity extends
 						return;
 					}
 
-						try {
+					try {
+						String script = configurationBean.getScript();
 
-					// pass input form input ports to RServe
-					for (ActivityInputPort inputPort : getInputPorts()) {
-						String inputName = inputPort.getName();
-						SemanticTypes symanticType = inputSymanticTypes
-								.get(inputName);
-						T2Reference inputId = data.get(inputName);
-						if (inputId == null) {
-							callback.fail("Input to rserve '" + inputName
-									+ "' was defined but not provided.");
-							closeConnection(connection);
-							return;
-						}
-
-						Object input = referenceService.renderIdentifier(inputId, symanticType.getSemanticClass(), callback.getContext());
-						if (symanticType.isFile) {
-							connection.assign(inputName,
-									generateFilename(inputPort));
-							writeRServeFile(inputPort, connection, input);
-						} else {
-
-							REXP value = javaToRExp(input, symanticType);
-							if (value == null) {
-								callback.fail("Input to web service '"
-										+ inputName
-										+ "' could not be interpreted as a "
-										+ symanticType + ", it is a "
-										+ input.getClass());
+						// pass input form input ports to RServe
+						for (ActivityInputPort inputPort : getInputPorts()) {
+							String inputName = inputPort.getName();
+							SemanticTypes symanticType = inputSymanticTypes
+							.get(inputName);
+							T2Reference inputId = data.get(inputName);
+							if (inputId == null) {
+								callback.fail("Input to rserve '" + inputName
+										+ "' was defined but not provided.");
 								closeConnection(connection);
 								return;
 							}
-							if (value.isLogical()) {
-								if (((REXPLogical)value).length() == 1) {
-									connection.voidEval(inputName + " <- " + value.asString() + ";");
-								} else {
-									String[] strings = value.asStrings();
-									String completeString = "c(" + StringUtils.join(strings, ",") + ")";
-									connection.voidEval(inputName + " <- " + completeString + ";");
-								}
+
+							Object input = referenceService.renderIdentifier(inputId, symanticType.getSemanticClass(), callback.getContext());
+							if (symanticType.isFile) {
+								connection.assign(inputName,
+										generateFilename(inputPort));
+								writeRServeFile(inputPort, connection, input);
 							} else {
-								connection.assign(inputName, value);
+
+								REXP value = javaToRExp(input, symanticType);
+								if (value == null) {
+									callback.fail("Input to web service '"
+											+ inputName
+											+ "' could not be interpreted as a "
+											+ symanticType + ", it is a "
+											+ input.getClass());
+									closeConnection(connection);
+									return;
+								}
+								if (value.isLogical()) {
+									if (((REXPLogical)value).length() == 1) {
+										script = inputName + " <- " + value.asString() + ";\n" + script;
+									} else {
+										String[] strings = value.asStrings();
+										String completeString = "c(" + StringUtils.join(strings, ",") + ")";
+										script = inputName + " <- " + completeString + ";\n" + script;
+									}
+								} else if (symanticType == SemanticTypes.R_EXP) {
+									connection.assign(inputName, value);
+									script = inputName + " <- " + "eval(parse(text=" + inputName + "));\n" + script;
+								} else {
+									connection.assign(inputName, value);
+								}
 							}
 						}
-					}
 
-					// create filename variables for output ports that are
-					// files
-					for (OutputPort outputPort : getOutputPorts()) {
-						if (outputSymanticTypes.get(outputPort.getName()).isFile) {
-							connection.assign(outputPort.getName(),
-									generateFilename(outputPort));
+						// create filename variables for output ports that are
+						// files
+						for (OutputPort outputPort : getOutputPorts()) {
+							if (outputSymanticTypes.get(outputPort.getName()).isFile) {
+								connection.assign(outputPort.getName(),
+										generateFilename(outputPort));
+							} else if (outputSymanticTypes.get(outputPort.getName()) == SemanticTypes.R_EXP) {
+								script = script + outputPort.getName() + " <- deparse(" + outputPort.getName() + ");\n";
+							}
 						}
-					}
 
-					// execute script
-					String script = configurationBean.getScript();
-					if (script.length() != 0) {
-						connection.assign(".tmp.", script);
-						REXP r = connection.parseAndEval("try(eval(parse(text=.tmp.)),silent=TRUE)");
-						if (r.inherits("try-error")) {
-							String errorString = r.asString();
+						// execute script
+						if (script.length() != 0) {
+							connection.assign(".tmp.", script);
+							REXP r = connection.parseAndEval("try(eval(parse(text=.tmp.)),silent=TRUE)");
+							if (r.inherits("try-error")) {
+								String errorString = r.asString();
+								if (errorString.contains(": ")) {
+									errorString = errorString.substring(errorString.indexOf(": ") + 2);
+								}
+								throw new RserveException(connection, errorString);
+							}
+						}
+
+						// create last statement for getting output for output
+						// ports
+						Set<OutputPort> outputPorts = getOutputPorts();
+						StringBuffer returnString = new StringBuffer("list(");
+						boolean first = true;
+						for (OutputPort outputPort : outputPorts) {
+							if (first) {
+								first = false;
+							} else {
+								returnString.append(", ");
+							}
+							String portName = outputPort.getName();
+							returnString.append(portName);
+							returnString.append("=");
+							returnString.append(portName);
+						}
+						returnString.append(")\n");
+						connection.assign(".tmp.", returnString.toString());
+						REXP results = connection.parseAndEval("try(eval(parse(text=.tmp.)),silent=TRUE)");
+						if (results.inherits("try-error")) {
+							String errorString = results.asString();
 							if (errorString.contains(": ")) {
 								errorString = errorString.substring(errorString.indexOf(": ") + 2);
 							}
 							throw new RserveException(connection, errorString);
 						}
-					}
 
-					// create last statement for getting output for output
-					// ports
-					Set<OutputPort> outputPorts = getOutputPorts();
-					StringBuffer returnString = new StringBuffer("list(");
-					boolean first = true;
-					for (OutputPort outputPort : outputPorts) {
-						if (first) {
-							first = false;
+						if (results.isList()) {
+							RList resultList = results.asList();
+
+							assert (resultList.keys().length == outputPorts.size());
+							for (OutputPort outputPort : outputPorts) {
+								String portName = outputPort.getName();
+								SemanticTypes symanticType = outputSymanticTypes
+								.get(portName);
+
+								switch (symanticType) {
+								case PNG_FILE: {
+									Object data = readRServeFile(
+											outputPort, connection);
+									outputData.put(portName, referenceService
+											.register(data, 0, true, callback.getContext()));
+									break;
+								}
+								case TEXT_FILE: {
+									Object data = readRServeFile(
+											outputPort, connection);
+									outputData.put(portName, referenceService
+											.register(data, 0, true, callback.getContext()));
+									break;
+								}
+								default: {
+									REXP expression = resultList.at(portName);
+									Object object = rExpToJava(expression,
+											symanticType);
+									outputData.put(portName, referenceService
+											.register(object, outputPort.getDepth(), true, callback.getContext()));
+								}
+								}
+							}
+						}
+						else if (results.isVector()) {
+							if (outputPorts.size() == 0) {
+								//							break;
+							} else {
+							}
 						} else {
-							returnString.append(", ");
+							callback.fail("Unexpected result");
+							closeConnection(connection);
+							return;
 						}
-						String portName = outputPort.getName();
-						returnString.append(portName);
-						returnString.append("=");
-						returnString.append(portName);
-					}
-					returnString.append(")\n");
-					connection.assign(".tmp.", returnString.toString());
-					REXP results = connection.parseAndEval("try(eval(parse(text=.tmp.)),silent=TRUE)");
-					if (results.inherits("try-error")) {
-						String errorString = results.asString();
-						if (errorString.contains(": ")) {
-							errorString = errorString.substring(errorString.indexOf(": ") + 2);
-						}
-						throw new RserveException(connection, errorString);
-					}
 
-					if (results.isList()) {
-						RList resultList = results.asList();
-
-						assert (resultList.keys().length == outputPorts.size());
-						for (OutputPort outputPort : outputPorts) {
-							String portName = outputPort.getName();
-							SemanticTypes symanticType = outputSymanticTypes
-									.get(portName);
-
-							switch (symanticType) {
-							case PNG_FILE: {
-								byte[] data = (byte[]) readRServeFile(
-										outputPort, connection);
-								outputData.put(portName, referenceService
-										.register(data, 0, true, callback.getContext()));
-								break;
-							}
-							case TEXT_FILE: {
-								String data = (String) readRServeFile(
-										outputPort, connection);
-								outputData.put(portName, referenceService
-										.register(data, 0, true, callback.getContext()));
-								break;
-							}
-							default: {
-								REXP expression = resultList.at(portName);
-								Object object = rExpToJava(expression,
-										symanticType);
-								outputData.put(portName, referenceService
-										.register(object, outputPort.getDepth(), true, callback.getContext()));
-							}
-							}
-						}
-					}
-					else if (results.isVector()) {
-						if (outputPorts.size() == 0) {
-//							break;
-						} else {
-						}
-					} else {
-						callback.fail("Unexpected result");
+						// close the connection
 						closeConnection(connection);
-						return;
+
+						// send result to the callback
+						callback.receiveResult(outputData, new int[0]);
+
+					} catch (ActivityConfigurationException ace) {
+						callback.fail("RShell failed", ace);
+					} catch (RserveException rSrvException) {
+						callback.fail("RShell failed: " + rSrvException.getMessage(),
+								rSrvException);
+					} catch (ReferenceServiceException e) {
+						callback.fail("Error accessing input/output data", e);
+					} catch (REXPMismatchException e) {
+						callback.fail("RShell failed: "
+								+ e.getMessage(),
+								e);
+					} catch (REngineException e) {
+						callback.fail("RShell failed: "
+								+ e.getMessage(),
+								e);
+					} finally {
+						closeConnection(connection);
 					}
-
-					// close the connection
-					closeConnection(connection);
-
-					// send result to the callback
-					callback.receiveResult(outputData, new int[0]);
-
-				} catch (ActivityConfigurationException ace) {
-					callback.fail("RShell failed", ace);
-				} catch (RserveException rSrvException) {
-					callback.fail("RShell failed: " + rSrvException.getMessage(),
-							rSrvException);
-				} catch (ReferenceServiceException e) {
-					callback.fail("Error accessing input/output data", e);
-				} catch (REXPMismatchException e) {
-					callback.fail("RShell failed: "
-							+ e.getMessage(),
-							e);
-				} catch (REngineException e) {
-					callback.fail("RShell failed: "
-							+ e.getMessage(),
-							e);
-				} finally {
-					closeConnection(connection);
 				}
-					}
 			}
 
 		});
 
 	}
-	
+
 	private static Object getLock(RshellConnectionSettings settings) {
 		Object result = null;
 		result = lockMap.get(settings);
@@ -332,15 +393,15 @@ public class RshellActivity extends
 		}
 		return result;
 	}
-	
+
 	private void closeConnection(RshellConnection connection) {
 		if (connection != null && connection.isConnected()) {
 			cleanUpServerFiles(connection);
 			RshellConnectionManager.INSTANCE
-					.releaseConnection(connection);
+			.releaseConnection(connection);
 			connection = null;
 		}
-		
+
 	}
 
 	private void configureSymanticTypes(
@@ -399,7 +460,7 @@ public class RshellActivity extends
 
 		String portName = port.getName();
 		SemanticTypes semanticType = outputSymanticTypes
-				.get(portName);
+		.get(portName);
 
 		String extension;
 		if (semanticType == RshellPortTypes.SemanticTypes.PNG_FILE) {
@@ -407,9 +468,9 @@ public class RshellActivity extends
 		} else if (semanticType == RshellPortTypes.SemanticTypes.TEXT_FILE) {
 			extension = ".txt";
 		}
-//		else if (semanticType == RshellPortTypes.SemanticTypes.PDF_FILE) {
-//			extension = ".pdf";
-//		}
+		//		else if (semanticType == RshellPortTypes.SemanticTypes.PDF_FILE) {
+		//			extension = ".pdf";
+		//		}
 		else {
 			extension = "";
 		}
@@ -430,11 +491,8 @@ public class RshellActivity extends
 	 */
 	@SuppressWarnings("unchecked")
 	private REXP javaToRExp(Object value, SemanticTypes symanticType)
-			throws ActivityConfigurationException {
+	throws ActivityConfigurationException {
 		switch (symanticType) {
-		case REXP:
-			return (REXP) value;
-
 		case BOOL:
 			if (value instanceof String) {
 				return stringToREXPLogical((String) value);
@@ -473,7 +531,8 @@ public class RshellActivity extends
 			}
 			return new REXPInteger(ints);
 		}
-		case STRING_LIST: {
+		case STRING_LIST:
+		case R_EXP: {
 			List values = (List) value;
 			String[] strings = new String[values.size()];
 			for (int i = 0; i < values.size(); i++) {
@@ -487,11 +546,11 @@ public class RshellActivity extends
 					+ symanticType + " not supported");
 		}
 	}
-	
+
 	private static REXPLogical stringToREXPLogical(String value) {
 		return new REXPLogical (stringToByte(value));
 	}
-	
+
 	private static byte stringToByte(String value) {
 		if (value.equalsIgnoreCase(stringTrue)) {
 			return REXPLogical.TRUE;
@@ -500,7 +559,7 @@ public class RshellActivity extends
 			return REXPLogical.FALSE;
 		}
 		return REXPLogical.NA;
-		
+
 	}
 
 	/**
@@ -569,12 +628,9 @@ public class RshellActivity extends
 	 * @throw TaskExecutionException if rExp type is unsupported
 	 */
 	private Object rExpToJava(REXP rExp, SemanticTypes symanticType)
-			throws ActivityConfigurationException, REXPMismatchException {
+	throws ActivityConfigurationException, REXPMismatchException {
 
 		switch (symanticType) {
-		case REXP:
-			return rExp;
-
 		case BOOL:
 			if (rExp.isNull()) {
 				return stringNA;
@@ -651,7 +707,7 @@ public class RshellActivity extends
 				// Cannot cope
 			}
 			break;
-			
+
 		case DOUBLE_LIST:
 			ArrayList<Double> doubleResult = new ArrayList<Double>();
 			if (rExp.isNull()) {
@@ -728,7 +784,7 @@ public class RshellActivity extends
 				// Cannot cope
 			}
 			break;
-			
+
 		case STRING:
 			if (rExp.isNull()) {
 				return ("null");
@@ -750,6 +806,7 @@ public class RshellActivity extends
 			break;
 
 		case STRING_LIST:
+		case R_EXP:
 			ArrayList<String> stringResult = new ArrayList<String>();
 			if (rExp.isNull()) {
 				return stringResult;
@@ -779,16 +836,16 @@ public class RshellActivity extends
 				}
 				return stringResult;
 			}
-	
+
 			break;
-			default:
+		default:
 		}
-		
+
 		// can end here with strange R scripts
 		throw new ActivityConfigurationException(
 				"Cannot convert R expression '" + rExp.toString()
-						+ "' to the semantic type '" + symanticType.description
-						+ "'");
+				+ "' to the semantic type '" + symanticType.description
+				+ "'");
 
 	}
 
@@ -804,7 +861,7 @@ public class RshellActivity extends
 	 */
 	private void writeRServeFile(ActivityInputPort inputPort,
 			RshellConnection connection, Object data)
-			throws ActivityConfigurationException {
+	throws ActivityConfigurationException {
 
 		RFileOutputStream outputStream = null;
 		String filename = generateFilename(inputPort);
@@ -834,6 +891,30 @@ public class RshellActivity extends
 			throw new ActivityConfigurationException("Cannot read file '"
 					+ filename + "' from Rserve: " + ioe.getMessage());
 		}
+	}
+	
+	/**
+	 * Get username and password from Credential Manager or ask user to supply
+	 * one. Username is the first element of the returned array, and the
+	 * password is the second.
+	 */
+	protected UsernamePassword getUsernameAndPasswordForService(URI rServerURI) throws CMException {
+
+		// Try to get username and password for this service from Credential
+		// Manager (which should pop up UI if needed)
+		CredentialManager credManager = null;
+		credManager = CredentialManager.getInstance(); 
+		UsernamePassword username_password = credManager.getUsernameAndPasswordForService(rServerURI,false,null);
+		if (username_password == null) {
+			throw new CMException("No username/password provided for service " + rServerURI);
+		} 
+		return username_password;
+	}
+	
+	protected boolean hasUsernameAndPasswordForService(URI rServerURI) throws CMException{
+		CredentialManager credManager = null;
+		credManager = CredentialManager.getInstance(); 
+		return credManager.hasUsernamePasswordForService(rServerURI);
 	}
 
 }

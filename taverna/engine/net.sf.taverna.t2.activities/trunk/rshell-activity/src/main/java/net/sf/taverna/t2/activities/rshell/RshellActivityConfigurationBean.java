@@ -28,8 +28,10 @@
 package net.sf.taverna.t2.activities.rshell;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
+import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortsDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.config.ConfigurationBean;
 import net.sf.taverna.t2.workflowmodel.processor.config.ConfigurationProperty;
@@ -53,6 +55,21 @@ public class RshellActivityConfigurationBean extends
 
 	private List<RShellPortSymanticTypeBean> outputSymanticTypes = new ArrayList<RShellPortSymanticTypeBean>();
 
+	/**
+	 * As XStream is not calling the default constructor during deserialization,
+	 * we have to set the default values here. This method will be called by XStream
+	 * after instantiating this bean.
+	 */
+	private Object readResolve(){
+		if (connectionSettings != null){
+			if (connectionSettings.getUsername() == null) 
+				connectionSettings.setUsername("");
+			if (connectionSettings.getPassword() == null) 
+				connectionSettings.setPassword("");			
+		}
+			return this;
+	}
+	
 	/**
 	 * Returns the script.
 	 * 
