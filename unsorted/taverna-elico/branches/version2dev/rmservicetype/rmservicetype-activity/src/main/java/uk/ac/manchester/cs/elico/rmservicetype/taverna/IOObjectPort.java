@@ -1,4 +1,6 @@
-package uk.ac.manchester.cs.elico.rmservicetype.taverna;/*
+package uk.ac.manchester.cs.elico.rmservicetype.taverna;
+import java.util.List;
+/*
  * Copyright (C) 2007, University of Manchester
  *
  * Modifications to the initial code base are copyright of their
@@ -33,15 +35,18 @@ public interface IOObjectPort {
 
     void setClassName(String s);
     void setPortName(String s);
-    void setFileLocation(String s);
-
+    void setFileLocationAt(int i, String s); 
+    void setNumberOfPorts(int numberOfPorts);
+    
     String getPortClass();
     String getPortName();
-    String getFileLocation();
-
-
+    List<String> getFileLocations();
+    String getFileLocationAt(int i);
+    int getNumberOfPorts();
+    
+    void removeFileLocation(String location);
+    
     boolean isInputPort();
     boolean isOutputPort();
-
 
 }

@@ -51,11 +51,33 @@ import java.util.*;/*
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+/*
+ * Copyright (C) 2007, University of Manchester
+ *
+ * Modifications to the initial code base are copyright of their
+ * respective authors, or their employers as appropriate.  Authorship
+ * of the modifications may be determined from the ChangeLog placed at
+ * the end of this file.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 /**
- * Author: Simon Jupp<br>
+ * Author: Simon Jupp, Rishi Ramgolam<br>
  * Date: Mar 9, 2011<br>
  * The University of Manchester<br>
- * Bio-Health Informatics Group<br>
  */
 public class RapidMinerIOODescription {
 
@@ -129,13 +151,13 @@ public class RapidMinerIOODescription {
 
     private void getPortDescriptions(String operatorName) {
 
-        System.out.println("Getting IOO descriptions for " + operatorName);
+    	//[debug]System.out.println("Getting IOO descriptions for " + operatorName);
 
         Map<Object, String> inputMap = new HashMap<Object, String>();
         String inputString = "<getIODescription xmlns=\"http://elico.rapid_i.com/\"><operatorName xmlns=\"\">" + operatorName + "</operatorName></getIODescription>";
         inputMap.put("getIODescription", inputString);
 
-        System.out.println("Starting get io description wsdl config");
+      //[debug]System.out.println("Starting get io description wsdl config");
 
         // WSDLActivityConfigurationBean
         WSDLActivityConfigurationBean myBean = new WSDLActivityConfigurationBean();
@@ -147,7 +169,7 @@ public class RapidMinerIOODescription {
         outputNames.add("attachmentList");
         outputNames.add("getIODescriptionResponse");
 
-        System.out.println("^^^Point 1 IO");
+      //[debug]System.out.println("^^^Point 1 IO");
 
         WSDLParser parser = null;
 
@@ -184,11 +206,11 @@ public class RapidMinerIOODescription {
 		context.setPassword(username_password.getPasswordAsString());
 		username_password.resetPassword();
 
-		System.out.println("^^^Point 6");
+		//[debug]System.out.println("^^^Point 6");
 
 		// Set wsdl endpoint address and operation name
 
-		System.out.println("^^^Point 7");
+		//[debug]System.out.println("^^^Point 7");
 
 		call.setTargetEndpointAddress(preferences.getExecutorServiceWSDL());
 		call.setOperationName("getIODescription");
@@ -203,17 +225,17 @@ public class RapidMinerIOODescription {
 			e.printStackTrace();
 		}
 
-		System.out.println("^^^Point 9");
+		//[debug]System.out.println("^^^Point 9");
 
-		System.out.println("Complete");
-		System.out.println( "NEW IO port description " + myOutputs.toString());
+		//[debug]System.out.println("Complete");
+		//[debug]System.out.println( "NEW IO port description " + myOutputs.toString());
 
 		// Parse stuff
 		String myOutput = myOutputs.toString();
 
         		int a, b;
 		a = myOutput.indexOf("<return>");
-		System.out.println(" number : " + a);
+		//[debug]System.out.println(" number : " + a);
 
         if (a > -1) {
 
@@ -221,13 +243,13 @@ public class RapidMinerIOODescription {
 
 
 
-            System.out.println(" second number : " + b);
+          //[debug]System.out.println(" second number : " + b);
             b += 9;
             String newOutput = myOutput.substring(a, b);
 
             String finalOutput = "<myroot>" + newOutput +  "</myroot>";
 
-            System.out.println("parsed Parameters " + finalOutput);
+          //[debug]System.out.println("parsed Parameters " + finalOutput);
 
             // get names for parameters
 
@@ -247,9 +269,9 @@ public class RapidMinerIOODescription {
                     Node portName = doc.getElementsByTagName("inputPortDescription").item(x).getLastChild();
                     IOInputPort tmpInputPort = new IOInputPort(getCharacterDataFromElement((Element)className),
                             getCharacterDataFromElement((Element)portName),
-                            null);
+                            "");
 
-                    System.out.println("New Input port created: " + tmpInputPort.getPortClass() + " -> " + tmpInputPort.getPortName());
+                  //[debug]System.out.println("New Input port created: " + tmpInputPort.getPortClass() + " -> " + tmpInputPort.getPortName());
                     inputPort.put(tmpInputPort.getPortName(), tmpInputPort);
                 }
 
@@ -259,8 +281,8 @@ public class RapidMinerIOODescription {
                     Node portName = doc.getElementsByTagName("outputPortDescription").item(x).getLastChild();
                     IOOutputPort tmpOutputPort = new IOOutputPort(getCharacterDataFromElement((Element)className),
                             getCharacterDataFromElement((Element)portName),
-                            null);
-                    System.out.println("New Output port created: " + tmpOutputPort.getPortClass() + " -> " + tmpOutputPort.getPortName());
+                            "");
+                  //[debug]System.out.println("New Output port created: " + tmpOutputPort.getPortClass() + " -> " + tmpOutputPort.getPortName());
                     outputPort.put(tmpOutputPort.getPortName(), tmpOutputPort);
                 }
 

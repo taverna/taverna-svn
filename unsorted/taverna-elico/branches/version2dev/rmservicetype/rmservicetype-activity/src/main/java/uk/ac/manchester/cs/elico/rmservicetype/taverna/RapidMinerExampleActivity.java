@@ -40,6 +40,35 @@ import java.io.StringReader;
 import java.net.URI;
 import java.util.*;
 
+/*
+ * Copyright (C) 2007, University of Manchester
+ *
+ * Modifications to the initial code base are copyright of their
+ * respective authors, or their employers as appropriate.  Authorship
+ * of the modifications may be determined from the ChangeLog placed at
+ * the end of this file.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
+/**
+ * Author: Rishi Ramgolam<br>
+ * Date: Jul 13, 2011<br>
+ * The University of Manchester<br>
+ **/
+
 public class RapidMinerExampleActivity extends
 		AbstractAsynchronousActivity<RapidMinerActivityConfigurationBean>
 		implements AsynchronousActivity<RapidMinerActivityConfigurationBean> {
@@ -125,19 +154,19 @@ public class RapidMinerExampleActivity extends
 		
 		this.configBean = configBean;
        
-		System.out.println(" THE CALL NAME IS " + this.configBean.getCallName());
-		System.out.println(" config bean " + configBean.getHasDescriptions() + " configured? " + configBean.getIsParametersConfigured());
+		//[debug]System.out.println(" THE CALL NAME IS " + this.configBean.getCallName());
+		//[debug]System.out.println(" config bean " + configBean.getHasDescriptions() + " configured? " + configBean.getIsParametersConfigured());
 		
 		List<RapidMinerParameterDescription> descList = new ArrayList<RapidMinerParameterDescription>();	
 
 		if (!configBean.getHasDescriptions()) {
-			System.out.println(" ALPHA 1");
+			//[debug]System.out.println(" ALPHA 1");
 			
 			// does not have descriptions - go fetch them
 			if (getParametersForOperation(configBean.getCallName()).size() > 0) {
 				
 				descList = getParameterDescriptions(myTempList);
-				System.out.println(" [debug] list value " + descList.size());
+				//[debug]System.out.println(" [debug] list value " + descList.size());
 				
 				configBean.setParameterDescriptions(descList);
 				configBean.setHasDescriptions(true);
@@ -152,7 +181,7 @@ public class RapidMinerExampleActivity extends
 			
 			if (configBean.getIsParametersConfigured()) {
 
-				System.out.println(" ALPHA 2");
+				//[debug]System.out.println(" ALPHA 2");
 				// make sure all the parameter descriptions are retrieved & set execution value
 
 				if (getParametersForOperation(configBean.getCallName()).size() > 0) {
@@ -225,7 +254,7 @@ public class RapidMinerExampleActivity extends
 			
 			if (parameterNameToExecutionValue.containsKey(paramName)) {
 				
-				System.out.println( " MATCH --> setting USE and Execution Value");
+				//[debug]System.out.println( " MATCH --> setting USE and Execution Value");
 				aDescription.setExecutionValue(parameterNameToExecutionValue.get(paramName));
 				aDescription.setUseParameter(true);
 
@@ -242,7 +271,7 @@ public class RapidMinerExampleActivity extends
 
 		
 		//  parse into a list
-		System.out.println(" number of RETURNS " + myList.getLength());
+		//[debug]System.out.println(" number of RETURNS " + myList.getLength());
 		List<RapidMinerParameterDescription> listOfDescriptions = new ArrayList<RapidMinerParameterDescription>();
 		
 		for (int i = 0; i < myList.getLength(); i++) {			// for each "return" node	 (parameter)
@@ -331,23 +360,53 @@ public class RapidMinerExampleActivity extends
 		
 
         for (IOInputPort inputP : configBean.getInputPorts().values()) {
-            if (inputP.getFileLocation() == null || inputP.getFileLocation().isEmpty()) {
-                addInput(inputP.getPortName(), 0, true, null, String.class);
+           // if (inputP.getFileLocationAt(0) == null || inputP.getFileLocationAt(0).isEmpty()) {	//REDO -done
+           //     addInput(inputP.getPortName(), 0, true, null, String.class);
+           // }
+            
+            // go through each port and check whether there mulitple file locataions
+            // add inputs to empty file locations
+            int iP = inputP.getNumberOfPorts();
+            List<String> inputLocations = inputP.getFileLocations();
+            for (int i = 0 ; i < iP; i++) {
+            	
+            	if (inputLocations.get(i) == null || inputLocations.get(i).isEmpty()) {
+            		
+            		addInput(inputP.getPortName() + i, 0, true, null, String.class);
+            		
+            	}
+            	
             }
+            
         }
 
         for (IOOutputPort outputP : configBean.getOutputPorts().values()) {
         	
-        	// for every outputP - get the setText and parse the shit
-        	List<String> outputLocations = parseOutputLocationsToList(outputP.getFileLocation());
+        	// for every outputP - get the setText and parse
+        	/*List<String> outputLocations = parseOutputLocationsToList(outputP.getFileLocation());
         	int i = 0;
         	for (String output : outputLocations) {
         		
         		addOutput(outputP.getPortName() + i, 0);
         		i++;
         	}
-           		
-           		
+            */
+        	//if (outputP.getFileLocationAt(0) == null || outputP.getFileLocationAt(0).isEmpty()) {	//REDO -done
+            //    addOutput(outputP.getPortName(), 0);
+           // }
+        	// go through each port and check whether there mulitple file locataions
+            // add inputs to empty file locations
+            int iP = outputP.getNumberOfPorts();
+            List<String> outputLocations = outputP.getFileLocations();
+            for (int i = 0 ; i < iP; i++) {
+            	
+            	//if (outputLocations.get(i) == null || outputLocations.get(i).isEmpty()) {
+            		
+            		addOutput(outputP.getPortName() + i, 0);
+            		
+            	//}
+            	
+            }
         		
         }
 
@@ -385,7 +444,7 @@ public class RapidMinerExampleActivity extends
 
         }
 
-        System.out.println(" THE PARAMETERS AND THEIR VALUES : " + params.toString());
+      //[debug]System.out.println(" THE PARAMETERS AND THEIR VALUES : " + params.toString());
 
         String inputDoc = createInputDocument(configBean.getCallName(), params, configBean.getInputPorts(), configBean.getOutputPorts());
 
@@ -425,12 +484,13 @@ public class RapidMinerExampleActivity extends
                     filePath = "/home/" + preferences.getUsername() + "/tmp/";
 
                 }
+                /*	OLD POST MULITPLE INPUT LOCATIONS IMPLEMENTATION
                 LinkedHashMap<String, IOInputPort> inputPorts = configBean.getInputPorts();
                 for (String key  : inputPorts.keySet()) {
-                    if (inputPorts.get(key).getFileLocation() == null || inputPorts.get(key).getFileLocation().trim().equals("")) {
+                    if (inputPorts.get(key).getFileLocationAt(0) == null || inputPorts.get(key).getFileLocationAt(0).trim().equals("")) {	// REDO
                         try {
                         String inputValue = (String) referenceService.renderIdentifier(inputs.get(key), String.class, context);
-                        configBean.getInputPorts().get(key).setFileLocation(inputValue);
+                        configBean.getInputPorts().get(key).setFileLocationAt(0, inputValue);												// REDO
                         }
                         catch (NullPointerException e) {
 //                            callback.fail("You must specify some inputs for this service", e);
@@ -440,20 +500,55 @@ public class RapidMinerExampleActivity extends
                     }
                     else {
                         // find the base path to this file and use that
-                        String currentFile = inputPorts.get(key).getFileLocation();
+                        String currentFile = inputPorts.get(key).getFileLocationAt(0);														// REDO
                         int lastSlash = currentFile.lastIndexOf("/");
                         filePath = currentFile.substring(0, lastSlash + 1);
 
-                    }
-                }
+                    }}
+                    */
+                    // for each each input port
+                	LinkedHashMap<String, IOInputPort> inputPorts = configBean.getInputPorts();
+                  
+                	  for (String akey  : inputPorts.keySet()) {
+                      	
+                      	List<String> fileLocations = inputPorts.get(akey).getFileLocations();
+                      	int iP = inputPorts.get(akey).getNumberOfPorts();
+                      	
+                      	for (int i = 0; i < iP; i++) {	// for each file location
+                      		
+                      		if (fileLocations.get(i) == null || fileLocations.get(i).trim().equals("")) {
+                      			
+                      			try {
+                      				
+                                      String inputValue = (String) referenceService.renderIdentifier(inputs.get(akey), String.class, context);
+                                      configBean.getInputPorts().get(akey).setFileLocationAt(i, inputValue);	
+                      				
+                      			} catch (NullPointerException e) {
+                      				
+                      			}
+                      			
+                      		} else {
+                      			
+                      			// find the base path to this file and use that
+                                  String currentFile = inputPorts.get(akey).getFileLocationAt(i);														// REDO
+                                  int lastSlash = currentFile.lastIndexOf("/");
+                                  filePath = currentFile.substring(0, lastSlash + 1);
+                      			
+                      		}
+                      		
+                      	}
+                      	
+                      }
+                
 
 
                 // if outputs not specified, create random output file names
 
                 LinkedHashMap<String, IOOutputPort> outputPorts = configBean.getOutputPorts();
                 for (String key  : outputPorts.keySet()) {
-
-                    if (outputPorts.get(key).getFileLocation()== null || outputPorts.get(key).getFileLocation().trim().equals("")) {
+                	
+                	/* OLD POST MULITPLE OUTPUT LOCATIONS IMPLEMENTATION
+                    if (outputPorts.get(key).getFileLocationAt(0)== null || outputPorts.get(key).getFileLocationAt(0).trim().equals("")) {	// REDO
 
                         // create a temp file name
                         
@@ -461,9 +556,30 @@ public class RapidMinerExampleActivity extends
                         int random = (int)(Math.random() * 9999)+1000;
                         System.err.println("am i here!! without class.. key" + key);
                         String outputFile = filePath + key + "_"+  opName.replace(" ", "_").toLowerCase() + "_" + outputPorts.get(key).getPortClass() + "_" + random;
-                        configBean.getOutputPorts().get(key).setFileLocation(outputFile);
+                        configBean.getOutputPorts().get(key).setFileLocationAt(0,outputFile);												// REDO
 
                     }
+                    */
+                    // for each output
+                    int iP = outputPorts.get(key).getNumberOfPorts();
+                    List<String> outputLocations =  outputPorts.get(key).getFileLocations();
+                    
+                    for (int i = 0; i < iP; i++) {
+                    	
+                    	if (outputLocations.get(i) == null || outputLocations.get(i).trim().equals("")) {
+                    		
+                    		// create a temp file name
+                            
+                            String opName = configBean.getOperatorName();
+                            int random = (int)(Math.random() * 9999)+1000;
+                            System.err.println("am i here!! without class.. key" + key);
+                            String outputFile = filePath + key + "_"+  opName.replace(" ", "_").toLowerCase() + "_" + outputPorts.get(key).getPortClass() + "_" + random;
+                            configBean.getOutputPorts().get(key).setFileLocationAt(i,outputFile);	
+                    		
+                    	}
+                    	
+                    }
+                    
 
                 }
 
@@ -474,8 +590,8 @@ public class RapidMinerExampleActivity extends
 
                 inputMap = constructInvocationInputMap();
 
-				System.out.println(" +++ ONE +++ ");
-				System.out.println(" +++ FOUR +++ ");
+              //[debug]System.out.println(" +++ ONE +++ ");
+              //[debug]System.out.println(" +++ FOUR +++ ");
 
 				WSDLActivity wrapper = new WSDLActivity();
 				WSDLActivityConfigurationBean myBean = new WSDLActivityConfigurationBean();
@@ -528,9 +644,9 @@ public class RapidMinerExampleActivity extends
 					
 				}
 				
-					System.out.println(" INPUT NAMES ARE " + inputNames.toString() + " " + myBean.getOperation());
+				//[debug]System.out.println(" INPUT NAMES ARE " + inputNames.toString() + " " + myBean.getOperation());
 
-					System.out.println(" OUTPUT NAMES ARE " + outputNames.toString() + " " + myBean.getOperation());
+				//[debug]System.out.println(" OUTPUT NAMES ARE " + outputNames.toString() + " " + myBean.getOperation());
 			
 				T2WSDLSOAPInvoker invoker = new T2WSDLSOAPInvoker(parser, myBean.getOperation(), outputNames);
 				
@@ -548,11 +664,11 @@ public class RapidMinerExampleActivity extends
 					
 				}
 				
-				System.out.println("^^^Point 4");
+				//[debug]System.out.println("^^^Point 4");
 				
 				// Set Username and Password (credential manager)
 					
-				System.out.println("^^^Point 5");
+				//[debug]System.out.println("^^^Point 5");
 
 				MessageContext context1 = call.getMessageContext();
 				context1.setUsername(username_password.getUsername());
@@ -566,9 +682,9 @@ public class RapidMinerExampleActivity extends
 				Map<String, Object> invokerOutputMap = null;
 				try {
 					
-					System.out.println(" INPUT MAP CONTENTS " + inputMap.toString());
+					//[debug]System.out.println(" INPUT MAP CONTENTS " + inputMap.toString());
 					invokerOutputMap = invoker.invoke(inputMap, call);
-					System.out.println(" [DEBUG] OUTPUT MAP CONTENTS " + invokerOutputMap.toString());
+					//[debug]System.out.println(" [DEBUG] OUTPUT MAP CONTENTS " + invokerOutputMap.toString());
 
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -597,13 +713,13 @@ public class RapidMinerExampleActivity extends
 
                 for (String opName : configBean.getOutputPorts().keySet()) {
                 	
-                    String outputsForOutputPort = configBean.getOutputPorts().get(opName).getFileLocation();
-                    List<String> outputLocs = parseOutputLocationsToList(outputsForOutputPort);
-                    
+                   // String outputsForOutputPort = configBean.getOutputPorts().get(opName).getFileLocationAt(0);	// REDO
+                   // List<String> outputLocs = parseOutputLocationsToList(outputsForOutputPort);
+                    List<String> outputLocs = configBean.getOutputPorts().get(opName).getFileLocations();
                     int i = 0;
                     for (String output : outputLocs) {
                     	
-                        System.out.println(" output --> " + configBean.getOutputPorts().get(opName).getPortName() + i);
+                    	//[debug]System.out.println(" output --> " + configBean.getOutputPorts().get(opName).getPortName() + i);
                     	T2Reference simpleRef = referenceService.register(output, 0, true, context);
 
                         outputs.put(configBean.getOutputPorts().get(opName).getPortName() + i, simpleRef);
@@ -676,25 +792,37 @@ public class RapidMinerExampleActivity extends
 		// input location
 
         for (String ip : inputPorts.keySet()) {
-
+        	/*
             org.jdom.Element inputLocationElement = new org.jdom.Element("inputLocations");
 
             System.err.println("looking up input port key: " + ip);
-            inputLocationElement.setText(inputPorts.get(ip).getFileLocation());
+            inputLocationElement.setText(inputPorts.get(ip).getFileLocationAt(0));							// REDO
 
             root.addContent(inputLocationElement);
-
+            */
+            // NEW for this input port, find it's locations
+            int iP = inputPorts.get(ip).getNumberOfPorts();
+            List<String> inputLocations = inputPorts.get(ip).getFileLocations();
+            
+            for (String input : inputLocations) {
+            	
+            	org.jdom.Element inputLocationElement = new org.jdom.Element("inputLocations");
+            	System.err.println("looking up input port key: " + ip);
+            	
+            	inputLocationElement.setText(input);
+            	root.addContent(inputLocationElement);
+            }
+            
         }
 
         for (String op : outputPorts.keySet()) {
 
-
             System.err.println("looking up output port key: " + op);
             
-            String wholeOutputText = outputPorts.get(op).getFileLocation();
+            //String wholeOutputText = outputPorts.get(op).getFileLocationAt(0);								// REDO
            
-            List<String> outputs = parseOutputLocationsToList(wholeOutputText);
-            
+            //List<String> outputs = parseOutputLocationsToList(wholeOutputText);
+            List<String> outputs = outputPorts.get(op).getFileLocations();
             for (String output : outputs) {
                 
             	org.jdom.Element outputLocationElement = new org.jdom.Element("outputLocations");
@@ -728,7 +856,7 @@ public class RapidMinerExampleActivity extends
 		
 		try {
 			
-			System.out.println("THE XML Document OUTPUT : ");
+			//[debug]System.out.println("THE XML Document OUTPUT : ");
 			new XMLOutputter().output(myDoc, System.out);
 			finalOutput = new XMLOutputter().outputString(myDoc);
 			
@@ -752,7 +880,7 @@ public class RapidMinerExampleActivity extends
 		for (String outputFile : outputs) {
 			
 			outputLocations.add(outputFile);
-			System.out.println(" output location --> " + outputFile);
+			//[debug]System.out.println(" output location --> " + outputFile);
 		}
 		
 		return outputLocations;
@@ -793,7 +921,7 @@ public class RapidMinerExampleActivity extends
 	public String getOutputLocationfromOutputResult(Map<String, Object> invokerOutputMap) {
 		
 		String xmlOutput = (String) invokerOutputMap.get("executeBasicOperatorImplicitOutputResponse");
-		System.out.println(" the resultant xml output is " + xmlOutput);
+		//[debug]System.out.println(" the resultant xml output is " + xmlOutput);
 		
 		NodeList children = null;
 		
@@ -810,7 +938,7 @@ public class RapidMinerExampleActivity extends
 			children = doc.getElementsByTagName("return");	//	All children nodes
 			
 			
-			System.out.println(" number of returns from XML : " + children.getLength());
+			//[debug]System.out.println(" number of returns from XML : " + children.getLength());
 			
 		} catch (Exception e) {
 			
@@ -819,7 +947,7 @@ public class RapidMinerExampleActivity extends
 		}
 		
 		String output = getCharacterDataFromElement((Element)children.item(0));
-		System.out.println(" FINAL IMPLICIT OUTPUT " + output);
+		//[debug]System.out.println(" FINAL IMPLICIT OUTPUT " + output);
 		return output;
 		
 	}
@@ -834,7 +962,7 @@ public class RapidMinerExampleActivity extends
 		
 		String updatedName = myString.toLowerCase();
 		updatedName = updatedName.replace(" ", "_");
-		System.out.println(" UPDATED NAME " + updatedName);
+		//[debug]System.out.println(" UPDATED NAME " + updatedName);
 		return updatedName;
 		
 	}
@@ -843,13 +971,13 @@ public class RapidMinerExampleActivity extends
 		
 		//operationName = transformOperatorName(operationName);
 		
-		System.out.println("^^^Starting tester " + operationName);
+		//[debug]System.out.println("^^^Starting tester " + operationName);
 
 		Map<Object, String> inputMap = new HashMap<Object, String>();
 		String inputString = "<getParameterTypes xmlns=\"http://elico.rapid_i.com/\"><operatorName xmlns=\"\">" + operationName + "</operatorName></getParameterTypes>";
 		inputMap.put("getParameterTypes", inputString);
 		
-		System.out.println("^^^Starting tester2");
+		//[debug]System.out.println("^^^Starting tester2");
 		
 		// WSDLActivityConfigurationBean
 		WSDLActivityConfigurationBean myBean = new WSDLActivityConfigurationBean();
@@ -861,7 +989,7 @@ public class RapidMinerExampleActivity extends
 		outputNames.add("attachmentList");
 		outputNames.add("getParameterTypesResponse");
 		
-		System.out.println("^^^Point 1");
+		//[debug]System.out.println("^^^Point 1");
 		
 		WSDLParser parser = null;
 		
@@ -881,9 +1009,9 @@ public class RapidMinerExampleActivity extends
 		
 		WSDLSOAPInvoker myInvoker = new WSDLSOAPInvoker(parser, "getParameterTypes", outputNames);
 
-		System.out.println("^^^Point 2");
+		//[debug]System.out.println("^^^Point 2");
 	
-		System.out.println("^^^Point 3");
+		//[debug]System.out.println("^^^Point 3");
 		
 		// Create Call Object
 		
@@ -896,28 +1024,28 @@ public class RapidMinerExampleActivity extends
 			e3.printStackTrace();
 		}
 		
-		System.out.println("^^^Point 4");
+		//[debug]System.out.println("^^^Point 4");
 		
 		// Set Username and Password (credential manager)
 
 
-		System.out.println("^^^Point 5");
+		//[debug]System.out.println("^^^Point 5");
 		
 		MessageContext context = call.getMessageContext();
 		context.setUsername(username_password.getUsername());
 		context.setPassword(username_password.getPasswordAsString());
 		username_password.resetPassword();
 		
-		System.out.println("^^^Point 6");
+		//[debug]System.out.println("^^^Point 6");
 	
 		// Set wsdl endpoint address and operation name
 		
-		System.out.println("^^^Point 7");
+		//[debug]System.out.println("^^^Point 7");
 
 		call.setTargetEndpointAddress(preferences.getExecutorServiceWSDL());
 		call.setOperationName("getParameterTypes");
 
-		System.out.println("^^^Point 8");
+		//[debug]System.out.println("^^^Point 8");
 		
 		// Invoke 
 		Map<String, Object> myOutputs = new HashMap<String, Object>();
@@ -929,16 +1057,16 @@ public class RapidMinerExampleActivity extends
 			e.printStackTrace();
 		}
 		
-		System.out.println("^^^Point 9");
+		//[debug]System.out.println("^^^Point 9");
 		
-		System.out.println("Complete");
-		System.out.println( "NEW NEW NEW NEW PARAMETERS " + myOutputs.toString());
+		//[debug]System.out.println("Complete");
+		//[debug]System.out.println( "NEW NEW NEW NEW PARAMETERS " + myOutputs.toString());
 
 		// Parse stuff
 		String myOutput = myOutputs.toString();
 		int a, b;
 		a = myOutput.indexOf("<return>");
-		System.out.println(" number : " + a);
+		//[debug]System.out.println(" number : " + a);
 
         if (a == -1) {
             return new ArrayList<String>();
@@ -947,13 +1075,13 @@ public class RapidMinerExampleActivity extends
 
 
 
-		System.out.println(" second number : " + b);
+		//[debug]System.out.println(" second number : " + b);
 		b += 9;
 		String newOutput = myOutput.substring(a, b);
 		
 		String finalOutput = "<myroot>" + newOutput +  "</myroot>";
 		
-		System.out.println("parsed Parameters " + finalOutput);
+		//[debug]System.out.println("parsed Parameters " + finalOutput);
 		
 		// get names for parameters
 		NodeList rtnList;
@@ -972,7 +1100,7 @@ public class RapidMinerExampleActivity extends
 			children = doc.getElementsByTagName("name");	//	All children nodes
 			myTempList = doc.getElementsByTagName("return");
 			
-			System.out.println(" The number of children returned by Parameter Types is :" + children.getLength());
+			//[debug]System.out.println(" The number of children returned by Parameter Types is :" + children.getLength());
 			
 		} catch (Exception e) {
 			

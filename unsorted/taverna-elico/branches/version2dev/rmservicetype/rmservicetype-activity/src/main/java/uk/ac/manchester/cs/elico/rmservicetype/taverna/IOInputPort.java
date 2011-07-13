@@ -1,4 +1,8 @@
-package uk.ac.manchester.cs.elico.rmservicetype.taverna;/*
+package uk.ac.manchester.cs.elico.rmservicetype.taverna;
+import java.util.ArrayList;
+import java.util.List;
+/*
+
  * Copyright (C) 2007, University of Manchester
  *
  * Modifications to the initial code base are copyright of their
@@ -31,14 +35,26 @@ public class IOInputPort implements IOObjectPort {
 
     private String className;
     private String portName;
-    private String fileLocation;
-
+    private List<String> fileLocations;
+    private int numberOfPorts = 1;
+     
     static String INPUTPORT = "INPUTPORT";
 
     public IOInputPort(String className, String portName, String fileLocation) {
         this.className = className;
         this.portName = portName.replace(" ", "_");
-        this.fileLocation = fileLocation;
+        this.fileLocations = new ArrayList<String>();
+        
+        if (fileLocation == null || fileLocation.isEmpty()) {
+        	
+        	this.fileLocations.add("");
+        	
+        } else {
+        	
+        	this.fileLocations.add(0, fileLocation);
+        	
+        }
+       
     }
 
     public String getPortType() {
@@ -53,8 +69,33 @@ public class IOInputPort implements IOObjectPort {
         portName = s.replace(" ", "_");
     }
 
-    public void setFileLocation(String s) {
-        fileLocation = s;
+    public void setFileLocationAt(int i, String s) {
+    	
+    	if (s.isEmpty()) {
+    		 
+    		 if (i >= fileLocations.size()) {
+    	    	fileLocations.add(i, "");
+    			//[debug]System.out.println(" adding " + fileLocations.get(i));
+
+    	     } else {
+    	    	 fileLocations.set(i, "");
+    	    	//[debug]System.out.println(" setting " + fileLocations.get(i));
+
+    	     }
+    		 
+    	} else {
+    		
+    		if (i >= fileLocations.size()) {
+    	    	fileLocations.add(i, s);
+    	    	//[debug]System.out.println(" adding " + fileLocations.get(i));
+
+    	    } else {
+    	    	 fileLocations.set(i, s);
+    	    	//[debug]System.out.println(" setting " + fileLocations.get(i));
+
+    	    }
+    	}
+        
     }
 
     public String getPortClass() {
@@ -65,10 +106,9 @@ public class IOInputPort implements IOObjectPort {
         return portName;
     }
 
-    public String getFileLocation() {
-        return fileLocation;
+    public List<String> getFileLocations() {
+        return fileLocations;
     }
-
 
     public boolean isInputPort() {
         return true;
@@ -78,5 +118,21 @@ public class IOInputPort implements IOObjectPort {
         return false;
     }
 
+	public String getFileLocationAt(int i) {
+		
+		return fileLocations.get(i);
+	}
+
+	public void setNumberOfPorts(int numberOfPorts) {
+		this.numberOfPorts = numberOfPorts;
+	}
+
+	public int getNumberOfPorts() {
+		return numberOfPorts;
+	}
+
+	public void removeFileLocation(String location) {
+		fileLocations.remove(location);
+	}
 
 }
