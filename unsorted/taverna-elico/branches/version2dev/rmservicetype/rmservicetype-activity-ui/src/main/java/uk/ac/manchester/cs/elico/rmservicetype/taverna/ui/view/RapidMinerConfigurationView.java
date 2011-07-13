@@ -18,6 +18,35 @@ import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
 
+/*
+ * Copyright (C) 2007, University of Manchester
+ *
+ * Modifications to the initial code base are copyright of their
+ * respective authors, or their employers as appropriate.  Authorship
+ * of the modifications may be determined from the ChangeLog placed at
+ * the end of this file.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
+/**
+ * Author: Rishi Ramgolam<br>
+ * Date: Jul 13, 2011<br>
+ * The University of Manchester<br>
+ **/
+
 public class RapidMinerConfigurationView extends JPanel {
 
 	private RapidMinerActivityConfigurationBean oldConfiguration;
@@ -50,6 +79,11 @@ public class RapidMinerConfigurationView extends JPanel {
     private List<PortField> outputFields;
 
 	private RapidAnalyticsRepositoryBrowser browser = null;
+	private Box  inputRows;
+	private JPanel  inputPanel;
+	private Box inputOutputBox;
+	private JPanel outputPanel;
+	private Box outputRows;
 	
 	
 	public RapidMinerConfigurationView(RapidMinerExampleActivity activity) {
@@ -88,7 +122,6 @@ public class RapidMinerConfigurationView extends JPanel {
         RapidMinerIOODescription desc = getRMIOODescription(newConfiguration);
 
         this.inputFields = getInputFields(desc.getInputPort());
-
 
 //        JPanel outputPanel = new JPanel(new BorderLayout());
         this.outputFields = getOutputFields(desc.getOutputPort());
@@ -219,7 +252,7 @@ public class RapidMinerConfigurationView extends JPanel {
 
         }
 		
-		System.out.println(" HERE 3");
+      //[debug]System.out.println(" HERE 3");
 
 		parameterTable.setRowSelectionAllowed(false);
 		parameterTable.getTableHeader().setReorderingAllowed(false);
@@ -274,59 +307,9 @@ public class RapidMinerConfigurationView extends JPanel {
 //        final JLabel label;
         JTextField location;
         JButton upload;
-
+        private int fileLocationIndex = 0;
         public PortField (IOObjectPort port) {
             this.port = port;
-
-//            Box row = new Box(BoxLayout.X_AXIS);
-//
-//            String prettyLabel = port.getPortName();
-//
-//            label = new JLabel(WordUtils.capitalize(prettyLabel.replace("_", " ")));
-//            Dimension d = label.getPreferredSize();
-//            label.setPreferredSize(new Dimension(d.width+60,d.height));//<-----------
-//            row.add(label);
-//            row.add(Box.createHorizontalStrut(2));
-//            row.add(location = new JTextField(20));
-//            if (port.getFileLocation() != null) {
-//                location.setText(port.getFileLocation());
-//            }
-//
-//            row.add(Box.createHorizontalStrut(4));
-//            upload = new JButton("Browse");
-//            upload.addActionListener(new ActionListener() {
-//                public void actionPerformed(ActionEvent arg0) {
-//
-//                    final JDialog frame = new JDialog((JDialog)SwingUtilities.getAncestorOfClass(JDialog.class, RapidMinerConfigurationView.this), "Rapid Analytics Repository Browser");
-//
-//                    browser = new RapidAnalyticsRepositoryBrowser(){
-//                        @Override
-//                        public void fileSelectedButtonPress() {
-//                            super.fileSelectedButtonPress();
-//                            location.setText(browser.getChosenRepositoryPath());
-//                            frame.dispose();
-//                        }
-//                    };
-//
-//                    browser.setOpaque(true);
-//                    browser.initialiseTreeContents();
-//
-//
-//                    Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-//                    frame.setLocation(dim.width / 2 - getWidth() / 2, dim.height / 2 - getHeight() / 2);
-//
-//                    frame.setModal(true);
-//                    frame.add(browser);
-//                    frame.setPreferredSize(new Dimension(400,400));
-//                    frame.pack();
-//                    frame.setVisible(true);
-//
-//                }
-//
-//            });
-//            row.add(upload);
-//            row.add(Box.createHorizontalStrut(12));
-//            this.add(row);
 
             JPanel pane = new JPanel();
             pane.setLayout(new GridBagLayout());
@@ -341,8 +324,8 @@ public class RapidMinerConfigurationView extends JPanel {
 
             formUtility.addLabel(WordUtils.capitalize(prettyLabel.replace("_", " ")), pane);
             formUtility.addMiddleField(location = new JTextField(20), pane);
-            if (port.getFileLocation() != null) {
-                location.setText(port.getFileLocation());
+            if (port.getFileLocationAt(fileLocationIndex) != null) {
+                location.setText(port.getFileLocationAt(fileLocationIndex));
             }
 
             upload = new JButton("Browse");
@@ -382,6 +365,17 @@ public class RapidMinerConfigurationView extends JPanel {
 
 
         }
+
+		public void setFileLocationIndex(int fileLocationIndex) {
+			this.fileLocationIndex = fileLocationIndex;
+			if (port.getFileLocationAt(fileLocationIndex) != null) {
+                location.setText(port.getFileLocationAt(fileLocationIndex));
+            }
+		}
+
+		public int getFileLocationIndex() {
+			return fileLocationIndex;
+		}
     }
 
   /**
@@ -495,14 +489,54 @@ public class RapidMinerConfigurationView extends JPanel {
     private List<PortField> getInputFields(LinkedHashMap<String, IOInputPort> inputPort) {
 
         LinkedHashMap<String, IOInputPort> currentPorts =  newConfiguration.getInputPorts();
-
+    
         List<PortField> ports = new ArrayList<PortField>();
         for (String key : inputPort.keySet()) {
-            if (currentPorts.containsKey(key)) {
-                System.err.println("looked up key " + key + " and intput loc is " + currentPorts.get(key).getFileLocation());
-                ports.add(new PortField(currentPorts.get(key)));
+            if (currentPorts.containsKey(key)) {		// has saved ports
+            
+            	System.err.println("looked up key " + key + " num of ports " + currentPorts.get(key).getNumberOfPorts() + " " + currentPorts.get(key).getFileLocations());
+            	//System.err.println("looked up key " + key + " and intput loc is " + currentPorts.get(key).getFileLocation());
+     
+            	int iPorts = currentPorts.get(key).getNumberOfPorts();
+            	
+            	for (int i = 0; i < iPorts; i++) {
+                	
+            		System.err.println("looked up key " + key + " and intput loc is " + currentPorts.get(key).getFileLocations());
+            		            		
+            		final PortField aPortField = new PortField(currentPorts.get(key));
+            		aPortField.setFileLocationIndex(i);
+            		
+            		// add remove button if it's now the primary port
+            		if (i > 0) {
+            			JButton removeInputButton = new JButton("-");
+            			removeInputButton.addActionListener(new ActionListener() {
+
+						public void actionPerformed(ActionEvent arg0) {
+
+							aPortField.getPort().setNumberOfPorts(aPortField.getPort().getNumberOfPorts()-1);
+							aPortField.getPort().removeFileLocation(aPortField.getFileLocation());
+        					inputFields.remove(aPortField);
+        					inputRows.remove(aPortField);
+        					
+        					inputRows.revalidate();
+                        	inputRows.repaint();
+                        	inputPanel.revalidate();
+                        	inputPanel.repaint();
+                        	inputOutputBox.revalidate();
+                        	inputOutputBox.repaint();
+							
+						}
+                		
+                	});
+            		aPortField.add(removeInputButton);
+            		}
+            		
+            		ports.add(aPortField);	
+            		
+            	}
+            	
             }
-            else {
+            else {										// does not have saved ports
                 ports.add(new PortField(inputPort.get(key)));
             }
         }
@@ -516,9 +550,46 @@ public class RapidMinerConfigurationView extends JPanel {
         List<PortField> ports = new ArrayList<PortField>();
         for (String key : outputPort.keySet()) {
             if (currentPorts.containsKey(key)) {
-                System.err.println("looked up key " + key + " and output loc is " + currentPorts.get(key).getFileLocation());
-                ports.add(new PortField(currentPorts.get(key)));
+                //System.err.println("looked up key " + key + " and output loc is " + currentPorts.get(key).getFileLocations());
+                //ports.add(new PortField(currentPorts.get(key)));
+                int iPorts = currentPorts.get(key).getNumberOfPorts();
+                
+            	for (int i = 0; i < iPorts; i++) {
+                	
+            		System.err.println("looked up key " + key + " and intput loc is " + currentPorts.get(key).getFileLocations());
 
+            		final PortField aPortField = new PortField(currentPorts.get(key));
+            		aPortField.setFileLocationIndex(i);
+            		
+            		// add remove button if it's now the primary port
+            		if (i > 0) {
+            			JButton removeInputButton = new JButton("-");
+            			removeInputButton.addActionListener(new ActionListener() {
+
+						public void actionPerformed(ActionEvent arg0) {
+
+							aPortField.getPort().setNumberOfPorts(aPortField.getPort().getNumberOfPorts()-1);
+							aPortField.getPort().removeFileLocation(aPortField.getFileLocation());
+        					outputFields.remove(aPortField);
+        					outputRows.remove(aPortField);
+        					
+        					outputRows.revalidate();
+        					outputRows.repaint();
+                        	outputPanel.revalidate();
+                        	outputPanel.repaint();
+                        	inputOutputBox.revalidate();
+                        	inputOutputBox.repaint();
+							
+						}
+                		
+                	});
+            		aPortField.add(removeInputButton);
+            		}
+            		
+            		ports.add(aPortField);	
+            		
+            	}	// end of loop
+                
             }
             else {
                 ports.add(new PortField(outputPort.get(key)));
@@ -527,7 +598,7 @@ public class RapidMinerConfigurationView extends JPanel {
         return ports;
     }
 
-
+    
     private void layoutPanel() {
 
 		setPreferredSize(new Dimension(745, 400));
@@ -556,15 +627,74 @@ public class RapidMinerConfigurationView extends JPanel {
 //		c.gridx = 0;
 //		c.gridy = 0;
 
-        Box inputOutputBox = new Box(BoxLayout.Y_AXIS);
+        inputOutputBox = new Box(BoxLayout.Y_AXIS);
         inputOutputBox.setBorder(null);
         
         // Input Panel
-        JPanel inputPanel = new JPanel(new BorderLayout());
+        inputPanel = new JPanel(new BorderLayout());
         inputPanel.setBorder(BorderFactory.createTitledBorder("Input Ports"));
-        Box inputRows = new Box (BoxLayout.Y_AXIS);
+        inputRows = new Box (BoxLayout.Y_AXIS);
         int x = 2;
-        for (PortField p : inputFields) {
+        for (final PortField p : inputFields) {
+        	
+        	JButton addInputButton = new JButton("+");
+        	addInputButton.addActionListener(new ActionListener() {
+
+				public void actionPerformed(ActionEvent arg0) {
+
+					inputRows.add(Box.createVerticalStrut(10));
+					p.getPort().setNumberOfPorts(p.getPort().getNumberOfPorts()+1);
+					
+					//[debug]System.out.println(" number of ports set " + p.getPort().getNumberOfPorts());
+					final PortField extraField = new PortField(p.getPort());
+					int newIndex = p.getPort().getNumberOfPorts()-1;
+					p.getPort().setFileLocationAt(newIndex, "");
+					//[debug]System.out.println(" [debug] here ");
+					extraField.setFileLocationIndex(newIndex);
+				
+					//[debug]System.out.println(" file location index : " + extraField.getFileLocationIndex());
+					
+					inputFields.add(extraField);
+										
+					inputRows.add(extraField);
+					
+					inputRows.revalidate();
+                	inputRows.repaint();
+                	inputPanel.revalidate();
+                	inputPanel.repaint();
+                	inputOutputBox.revalidate();
+                	inputOutputBox.repaint();
+					
+                	// delete button
+                	JButton removeInputButton = new JButton("-");
+                	removeInputButton.addActionListener(new ActionListener() {
+
+        				public void actionPerformed(ActionEvent arg0) {
+
+        					//[debug]System.out.println(" Removing port");
+        					p.getPort().setNumberOfPorts(p.getPort().getNumberOfPorts()-1);
+        					p.getPort().removeFileLocation(p.getFileLocation());
+        					inputFields.remove(extraField);
+        					inputRows.remove(extraField);
+        					
+        					inputRows.revalidate();
+                        	inputRows.repaint();
+                        	inputPanel.revalidate();
+                        	inputPanel.repaint();
+                        	inputOutputBox.revalidate();
+                        	inputOutputBox.repaint();
+        				}
+                		
+                	});
+                	extraField.add(removeInputButton);
+				}
+        		
+        	});
+        	
+        	if (p.getFileLocationIndex() == 0) {	// only add the add button to the primary port
+        		p.add(addInputButton);
+        	}
+        	        	
             inputRows.add(p);
             inputRows.add(Box.createVerticalStrut(x));
             x = x+2;
@@ -575,11 +705,70 @@ public class RapidMinerConfigurationView extends JPanel {
         inputOutputBox.add(inputScrollPane);
 
         // Output Panel
-        JPanel outputPanel = new JPanel(new BorderLayout());
+        outputPanel = new JPanel(new BorderLayout());
         outputPanel.setBorder(BorderFactory.createTitledBorder("Output Ports"));
-        Box outputRows = new Box (BoxLayout.Y_AXIS);
+        outputRows = new Box (BoxLayout.Y_AXIS);
         int y = 2;
-        for (PortField p : outputFields) {
+        for (final PortField p : outputFields) {
+        	
+        	JButton addInputButton = new JButton("+");
+        	addInputButton.addActionListener(new ActionListener() {
+
+				public void actionPerformed(ActionEvent arg0) {
+
+					outputRows.add(Box.createVerticalStrut(10));
+					p.getPort().setNumberOfPorts(p.getPort().getNumberOfPorts()+1);
+					
+					//[debug]System.out.println(" number of ports set " + p.getPort().getNumberOfPorts());
+					final PortField extraField = new PortField(p.getPort());
+					int newIndex = p.getPort().getNumberOfPorts()-1;
+					p.getPort().setFileLocationAt(newIndex, "");
+					//[debug]System.out.println(" [debug] here ");
+					extraField.setFileLocationIndex(newIndex);
+				
+					//[debug]System.out.println(" file location index : " + extraField.getFileLocationIndex());
+					
+					outputFields.add(extraField);
+										
+					outputRows.add(extraField);
+					
+					outputRows.revalidate();
+					outputRows.repaint();
+                	outputPanel.revalidate();
+                	outputPanel.repaint();
+                	inputOutputBox.revalidate();
+                	inputOutputBox.repaint();
+					
+                	// delete button
+                	JButton removeInputButton = new JButton("-");
+                	removeInputButton.addActionListener(new ActionListener() {
+
+        				public void actionPerformed(ActionEvent arg0) {
+
+        					System.out.println(" Removing port");
+        					p.getPort().setNumberOfPorts(p.getPort().getNumberOfPorts()-1);
+        					p.getPort().removeFileLocation(p.getFileLocation());
+        					outputFields.remove(extraField);
+        					outputRows.remove(extraField);
+        					
+        					outputRows.revalidate();
+        					outputRows.repaint();
+                        	outputPanel.revalidate();
+                        	outputPanel.repaint();
+                        	inputOutputBox.revalidate();
+                        	inputOutputBox.repaint();
+        				}
+                		
+                	});
+                	extraField.add(removeInputButton);
+				}
+        		
+        	});
+        	
+        	if (p.getFileLocationIndex() == 0) {	// only add the add button to the primary port
+        		p.add(addInputButton);
+        	}
+        	
             outputRows.add(p);
             outputRows.add(Box.createVerticalStrut(y));
             y = y+2;
@@ -593,52 +782,6 @@ public class RapidMinerConfigurationView extends JPanel {
 
         page1.add(inputOutputBox, BorderLayout.CENTER);
 
-//		page1.add(explicitButton, c);
-//		c.fill = GridBagConstraints.HORIZONTAL;
-//		c.weightx = 0.5;
-//		c.gridx = 1;
-//		c.gridy = 0;
-//
-//		page1.add(implicitButton, c);
-//
-//		c.fill = GridBagConstraints.HORIZONTAL;
-//		c.ipady = 20;      //make this component tall
-//		c.weightx = 0.0;
-//		c.gridwidth = 3;
-//		c.gridx = 0;
-//		c.gridy = 1;
-//		page1.add(choiceDescription, c);
-//
-//		// input fields + label
-//		c.fill = GridBagConstraints.HORIZONTAL;
-//		c.ipady = 20;
-//		c.gridwidth = 2;
-//		c.gridx = 0;
-//		c.gridy = 3;
-//		page1.add(inputLocationLabel, c);
-//
-//		c.gridx = 1;
-//		page1.add(inputLocationField, c);
-//
-//		c.gridx = 2;
-//		page1.add(uploadButton, c);
-//
-//		c.fill = GridBagConstraints.HORIZONTAL;
-//		c.ipady = 20;
-//		c.gridwidth = 2;
-//		c.gridx = 0;
-//		c.gridy = 4;
-//
-//
-//
-//		page1.add(outputLocationLabel, c);
-//
-//		c.gridx = 1;
-//
-//		page1.add(outputLocationField, c);
-		
-		
-		
 		//buttons
 		buttonPanel.add(nextButton);
 		buttonPanel.add(finishButton);
@@ -720,57 +863,19 @@ public class RapidMinerConfigurationView extends JPanel {
         return new RapidMinerIOODescription(config.getCallName());
     }
 
-//    class RadioButtonListener implements ActionListener, ChangeListener, ItemListener {
-//		public void actionPerformed(ActionEvent e) {
-//			//String factoryName = null;
-//
-//			System.out.print("ActionEvent received: ");
-//			if (e.getActionCommand() == first) {
-//				System.out.println(first + " pressed.");	// the user chose explicit
-//
-//				outputLocationLabel.setEnabled(true);
-//				outputLocationField.setEnabled(true);
-//
-//				// set in config bean
-//				newConfiguration.setIsExplicit(true);
-//
-//			} else {
-//				System.out.println(second + " pressed.");	//	the user chose implicit
-//
-//				// gray out output field + label
-//				outputLocationLabel.setEnabled(false);
-//				outputLocationField.setEnabled(false);
-//
-//				// set in config bean
-//				newConfiguration.setIsExplicit(false);
-//			}
-//		}
-//
-//		public void itemStateChanged(ItemEvent e) {
-//			//System.out.println("ItemEvent received: "
-//			//	+ e.getItem()
-//			//	+ " is now "
-//	  	 	//	+ ((e.getStateChange() == ItemEvent.SELECTED)?
-//	  	 	//			"selected.":"unselected"));
-//		}
-//
-//		public void stateChanged(ChangeEvent e) {
-//			//System.out.println("ChangeEvent received from: "
-//			//	+ e.getSource());
-//
-//		}
-//	}
-
 	public RapidMinerActivityConfigurationBean getConfiguration() {
 		
-		System.out.println("[DEBUG] the parameter count is " + tableModel.getColumnCount());
+		//[debug]System.out.println("[DEBUG] the parameter count is " + tableModel.getColumnCount());
 
         LinkedHashMap<String, IOInputPort> inputs = new LinkedHashMap<String, IOInputPort>();
         for (PortField p : inputFields) {
             IOInputPort port = (IOInputPort) p.getPort();
-            if (p.getFileLocation() != null) {
-                port.setFileLocation(p.getFileLocation());
-            }
+          //  if (p.getFileLocation() != null) {
+          //      port.setFileLocationAt(0, p.getFileLocation());	// REDO
+          //  }
+          //[debug]System.out.println("[DEBUG] 1 file locations " + port.getFileLocations());
+            port.setFileLocationAt(p.getFileLocationIndex(), p.getFileLocation());
+          //[debug]System.out.println("[DEBUG] 2");
             inputs.put(port.getPortName().replace(" ", "_"), port);
 
         }
@@ -779,9 +884,11 @@ public class RapidMinerConfigurationView extends JPanel {
         LinkedHashMap<String, IOOutputPort> outputs = new LinkedHashMap<String, IOOutputPort>();
         for (PortField p : outputFields) {
             IOOutputPort port = (IOOutputPort) p.getPort();
-            if (p.getFileLocation() != null) {
-                port.setFileLocation(p.getFileLocation());
-            }
+           // if (p.getFileLocation() != null) {
+           //     port.setFileLocation(p.getFileLocation());
+           // }
+            port.setFileLocationAt(p.getFileLocationIndex(), p.getFileLocation());
+            
             outputs.put(port.getPortName().replace(" ", "_"), port);
 
         }
@@ -794,7 +901,7 @@ public class RapidMinerConfigurationView extends JPanel {
 
             for (RapidMinerParameterDescription rapidMinerParameterDescription : newConfiguration.getParameterDescriptions()) {
 
-                System.out.println(" new parameters to set " + rapidMinerParameterDescription.getUseParameter() + " " + rapidMinerParameterDescription.getExecutionValue());
+            	//[debug]System.out.println(" new parameters to set " + rapidMinerParameterDescription.getUseParameter() + " " + rapidMinerParameterDescription.getExecutionValue());
 
             }
 
@@ -838,7 +945,6 @@ public class RapidMinerConfigurationView extends JPanel {
 		  
 	  }
 	}
-
-
-
 }
+
+

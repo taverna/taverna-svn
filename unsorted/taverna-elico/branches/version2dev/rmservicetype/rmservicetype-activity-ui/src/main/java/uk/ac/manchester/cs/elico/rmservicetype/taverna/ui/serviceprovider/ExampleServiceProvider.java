@@ -32,6 +32,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/*
+ * Copyright (C) 2007, University of Manchester
+ *
+ * Modifications to the initial code base are copyright of their
+ * respective authors, or their employers as appropriate.  Authorship
+ * of the modifications may be determined from the ChangeLog placed at
+ * the end of this file.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
+/**
+ * Author: Rishi Ramgolam<br>
+ * Date: Jul 13, 2011<br>
+ * The University of Manchester<br>
+ **/
+
 public class ExampleServiceProvider implements ServiceDescriptionProvider {
 	
 	private static final URI providerId = URI
@@ -52,6 +81,8 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 
 		List<ServiceDescription> results = new ArrayList<ServiceDescription>();
 
+		List<String> bannedOperators = getFilterList();
+		
         myPreferences = getPreferences();
 
         if (myPreferences != null) {
@@ -80,23 +111,30 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 
             Object [] keys = rootHash.keySet().toArray();
             int operatorCount = rootHash.keySet().size();
-            System.out.println(" OPERATOR COUNT " + operatorCount + " \n " + keys[0] + " " + keys[1]);
+          //[debug]System.out.println(" OPERATOR COUNT " + operatorCount + " \n " + keys[0] + " " + keys[1]);
             String a;
 
             for (int i = 1; i < operatorCount; i++) {
 
-                RapidMinerServiceDesc service = new RapidMinerServiceDesc();
-                // Populate the service description bean
-                service.setOperatorName(displayHash.get(keys[i].toString()));
-                service.setExampleUri(URI.create(myPreferences.getExecutorServiceWSDL()));
-                System.out.println(" CALL NAME " + keys[i].toString());
-                service.setCallName(keys[i].toString());
-                List<String> myList = seperateGroupName(rootHash.get(keys[i]));
-                service.setPath(myList);
+            	if (!bannedOperators.contains(keys[i].toString())) {		// don't add the operator if it's in the ban list
+            		
+            	      RapidMinerServiceDesc service = new RapidMinerServiceDesc();
+                      // Populate the service description bean
+                      service.setOperatorName(displayHash.get(keys[i].toString()));
+                      service.setExampleUri(URI.create(myPreferences.getExecutorServiceWSDL()));
+                    //[debug]System.out.println(" CALL NAME " + keys[i].toString());
+                      service.setCallName(keys[i].toString());
+                      List<String> myList = seperateGroupName(rootHash.get(keys[i]));
+                      service.setPath(myList);
 
-                // Optional: set description
-                //service.setDescription("Rapid Miner Operation " + i);
-                results.add(service);
+                      // Optional: set description
+                      //service.setDescription("Rapid Miner Operation " + i);
+                      results.add(service);
+                      
+            	}
+            	
+            	
+          
             }
 
             // partialResults() can also be called several times from inside
@@ -114,14 +152,87 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 			
 	} 
 	
-	public void filterList() {
+	public List<String> getFilterList() {
 		
-		System.out.println(" to remove set list of operators ");
+		//[debug]System.out.println(" ...to remove set list of operators ");
 		
 		List <String> bannedOperators = new ArrayList<String>();
+
+		//bannedOperators.add("se");
 		
-		//bannedOperators.add("")
+		// validation
+		bannedOperators.add("x_validation");
+		bannedOperators.add("wrapper_x_validation");
+		bannedOperators.add("split_validation");
+		bannedOperators.add("bootstrapping_validation");
+		bannedOperators.add("batch_x_validation");
+		bannedOperators.add("wrapper_split_validation");
 		
+		bannedOperators.add("select_subprocess");
+		bannedOperators.add("branch");
+		bannedOperators.add("subprocess");
+		
+		bannedOperators.add("optimize_parameters_evolutionary");
+		bannedOperators.add("optimize_parameters_grid");
+		bannedOperators.add("optimize_parameters_quadratic");
+		
+		bannedOperators.add("loop");
+		bannedOperators.add("loop_and_average");
+		bannedOperators.add("loop_and_deliver_best");
+		bannedOperators.add("loop_attribute_subsets");
+		bannedOperators.add("loop_attributes");
+		bannedOperators.add("loop_batches");
+		bannedOperators.add("loop_clusters");
+		bannedOperators.add("loop_collection");
+		bannedOperators.add("loop_data_fractions");
+		bannedOperators.add("loop_data_sets");
+		bannedOperators.add("loop_examples");
+		bannedOperators.add("loop_files");
+		bannedOperators.add("loop_labels");
+		bannedOperators.add("loop_parameters");
+		bannedOperators.add("loop_until");
+		bannedOperators.add("loop_values");
+		
+		bannedOperators.add("adaboost");
+		bannedOperators.add("additive_regression");
+		bannedOperators.add("bagging");
+		bannedOperators.add("bayesian_boosting");
+		bannedOperators.add("classification_by_regression");
+		bannedOperators.add("compare_rocs");
+		bannedOperators.add("decision_tree_multiway");
+		bannedOperators.add("decision_tree_weight_based");
+		bannedOperators.add("find_threshold_meta");
+		bannedOperators.add("handle_exception");
+		bannedOperators.add("hierachical_classification");
+		bannedOperators.add("metacost");
+		
+		bannedOperators.add("optimize_by_generation_aga");
+		bannedOperators.add("optimize_by_generation_evolutionary_aggregation");
+		bannedOperators.add("optimize_by_generation_gga");
+		bannedOperators.add("optimize_by_generation_yagga");
+		bannedOperators.add("optimize_by_generation_yagga2");
+		bannedOperators.add("optimize_parameters_evolutionary");
+		bannedOperators.add("optimize_parameters_grid");
+		bannedOperators.add("optimize_parameters_quadratic");
+		bannedOperators.add("optimize_selection");
+		bannedOperators.add("optimize_selection_backwards");
+		bannedOperators.add("optimize_selection_brute_force");
+		bannedOperators.add("optimize_selection_evolutionary");
+		bannedOperators.add("optimize_selection_forward");
+		bannedOperators.add("optimize_selection_pso");
+		
+		bannedOperators.add("polynomial_by_binomial_classification");
+		bannedOperators.add("relative_regression");
+		
+		bannedOperators.add("stacking");
+		bannedOperators.add("subgroup_discovery");
+		bannedOperators.add("top_down_clustering");
+		bannedOperators.add("transformed_regression");
+		bannedOperators.add("tree_to_rules");
+		bannedOperators.add("vote");
+		bannedOperators.add("work_on_subnet");
+		
+		return bannedOperators;
 	}
 
     private RapidAnalyticsPreferences getPreferences() {
@@ -147,7 +258,7 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 		
 		Map inputMap = null;
 		
-		System.out.println("Starting get Operator Tree");
+		//[debug]System.out.println("Starting get Operator Tree");
 		
 		// WSDLActivityConfigurationBean
 		WSDLActivityConfigurationBean myBean = new WSDLActivityConfigurationBean();
@@ -159,7 +270,7 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 		outputNames.add("attachmentList");
 		outputNames.add("getOperatorTreeResponse");
 		
-		System.out.println("Point 1");
+		//[debug]System.out.println("Point 1");
 		
 		WSDLParser parser = null;
 		
@@ -177,12 +288,12 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 					
 		WSDLSOAPInvoker myInvoker = new WSDLSOAPInvoker(parser, "getOperatorTree", outputNames);
 			
-		System.out.println("Point 2");
+		//[debug]System.out.println("Point 2");
 		
 		Service service = new Service();
 		Call call = null;
 		
-		System.out.println("Point 3");
+		//[debug]System.out.println("Point 3");
 		
 		// Create Call Object
 		try {
@@ -191,7 +302,7 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 			e3.printStackTrace();
 		}
 		
-		System.out.println("Point 4");
+		//[debug]System.out.println("Point 4");
 		
         // check whether the Username and Password is set
 
@@ -200,7 +311,7 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
         if (usernamePassword.getUsername() == null) {
             try {
                 usernamePassword = getUsernameAndPasswordForService(myBean, true);
-                System.out.println(" using credential manager");
+              //[debug]System.out.println(" using credential manager");
 
             } catch (CMException e1) {
                 // TODO Auto-generated catch block
@@ -212,23 +323,23 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 
 
 
-        System.out.println("Point 5");
+      //[debug]System.out.println("Point 5");
 
 		MessageContext context = call.getMessageContext();
 		context.setUsername(usernamePassword.getUsername());
 		context.setPassword(usernamePassword.getPasswordAsString());
 		usernamePassword.resetPassword();
 		
-		System.out.println("Point 6");
+		//[debug]System.out.println("Point 6");
 	
 		// Set wsdl endpoint address and operation name
 		
-		System.out.println("Point 7");
+		//[debug]System.out.println("Point 7");
 		
 		call.setTargetEndpointAddress(myPreferences.getExecutorServiceWSDL());
 		call.setOperationName("getOperatorTree");
 		
-		System.out.println("Point 8");
+		//[debug]System.out.println("Point 8");
 
 		// Invoke 
 		Map<String, Object> myOutputs = null;
@@ -238,34 +349,34 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("Point 9");
+		//[debug]System.out.println("Point 9");
 		
-		System.out.println("Complete");
+		//[debug]System.out.println("Complete");
 		
-		System.out.println("Here 1");
+		//[debug]System.out.println("Here 1");
 		
-		System.out.println(myOutputs.toString());
+		//[debug]System.out.println(myOutputs.toString());
 		
-		System.out.println("Complete");
+		//[debug]System.out.println("Complete");
 		
-		System.out.println("Here 1");
+		//[debug]System.out.println("Here 1");
 		
-		System.out.println(myOutputs.toString());
+		//[debug]System.out.println(myOutputs.toString());
 		
 		Object myObjs = myOutputs.get("getRegisteredOperatorTreeResponse");
-		System.out.println("Here 2");
+		//[debug]System.out.println("Here 2");
 		
 		String myOutput = myOutputs.toString();
 		int a, b;
 		a = myOutput.indexOf("<return>");
-		System.out.println(" number : " + a);
+		//[debug]System.out.println(" number : " + a);
 		
 		b = myOutput.indexOf("</return></");
-		System.out.println(" second number : " + b);
+		//[debug]System.out.println(" second number : " + b);
 		b += 9;
 		String newOutput = myOutput.substring(a, b);
 		
-		System.out.println(" new Output " + newOutput);
+		//[debug]System.out.println(" new Output " + newOutput);
 		// New parsing bit
 		
 		NodeList rtnList;
@@ -289,18 +400,18 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 			children = doc.getElementsByTagName("children");	//	All children nodes
 			operatorNames = doc.getElementsByTagName("operatorNames");
 			
-			System.out.println(" the number of elements in rtnList is " + rtnList.getLength());
-			System.out.println(" the number of elements in children is " + children.getLength());
+			//[debug]System.out.println(" the number of elements in rtnList is " + rtnList.getLength());
+			//[debug]System.out.println(" the number of elements in children is " + children.getLength());
 			
 			NodeList all = rtnList.item(0).getChildNodes();
-			System.out.println(" all length " + all.getLength());
+			//[debug]System.out.println(" all length " + all.getLength());
 					
 			// lists
 			for (int i = 0; i < all.getLength(); i++) { 	// for all Root elements
 				
 				if (all.item(i).getNodeName().equals("children")) {	// if it equals children (should be 11 children)
 					
-					System.out.println(" a child node " + i + " " + all.item(i).getNodeName());
+					//[debug]System.out.println(" a child node " + i + " " + all.item(i).getNodeName());
 					NodeList childrenList = all.item(i).getChildNodes();
 					
 					String operationName = null;
@@ -354,11 +465,8 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 		} catch (Exception e) {
 			
 		}
-		System.out.println(" set " + rootHash.keySet().size());
+		//[debug]System.out.println(" set " + rootHash.keySet().size());
 
-		
-		
-		
 	}
 	
 	public List<String> seperateGroupName(String myString) {
@@ -381,7 +489,7 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 			
 			if (children.item(i).getNodeName().equals("groupName")) {
 				
-				System.out.println(" found the groupname for this list of children " + getCharacterDataFromElement((Element)children.item(i)));
+				//[debug]System.out.println(" found the groupname for this list of children " + getCharacterDataFromElement((Element)children.item(i)));
 				groupName = getCharacterDataFromElement((Element)children.item(i));
 				break;
 
@@ -409,7 +517,7 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 					
 				}				
 				displayHash.put(name, displayName);
-				System.out.println(" operator name " + getCharacterDataFromElement((Element)children.item(i)) + " in group " + groupName);
+				//System.out.println(" operator name " + getCharacterDataFromElement((Element)children.item(i)) + " in group " + groupName);
 				//rootHash.put(getCharacterDataFromElement((Element)children.item(i)), seperateGroupName(groupName) );
 			}
 			
@@ -638,81 +746,3 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 
 }
 
-
-
-/*
-for (int i = 0; i < children.getLength(); i++) {
-	
-	if (children.item(i).hasChildNodes()) {
-							
-		temporaryChild = children.item(i).getChildNodes();
-		
-		System.out.println(" child " + i + " has " + temporaryChild.getLength());
-		
-			for (int j = 0; j < temporaryChild.getLength(); j++) {
-				
-				System.out.println(" something " + temporaryChild.item(j).getNodeName());
-
-			}
-	
-	}
-	
-}
-*/
-
-
-/*
-//String newnewOutput = "<myroot>" + newOutput +  "</myroot>";
-//System.out.println("newOutput " + newnewOutput);
-
-// Parsing bit
-
-NodeList name = null;
-NodeList returnnodes = null;
-NodeList operatorNamesNodes = null;
-NodeList operatorNamesNodesAbba = null;
-
-try  {
-	
-	DocumentBuilderFactory dbf =
-        DocumentBuilderFactory.newInstance();
-	dbf.setNamespaceAware(true);
-	DocumentBuilder db = dbf.newDocumentBuilder();
-    InputSource is = new InputSource();
-    is.setCharacterStream(new StringReader(newOutput));
-
-    Document doc = db.parse(is);
-    returnnodes = doc.getElementsByTagName("children");
-
-    NodeList nodes = doc.getElementsByTagName("return");
-    
-    operatorNamesNodes = doc.getElementsByTagName("operatorNames");
-    
-    System.out.println("The number of nodes : " + returnnodes.getLength());
-    
-        for (int i = 0; i < nodes.getLength(); i++) {
-	    
-        	//Element element = (Element) nodes.item(i);
-        	//System.out.println( " A element " + i + " " + nodes.item(i).toString());
-        	Element element = (Element) nodes.item(i);
-        	name = element.getElementsByTagName("groupName");
-        	Element line = (Element) name.item(0);
-        	System.out.println("Element " + i + " " + getCharacterDataFromElement(line));
-        	
-        }
-
-} catch (Exception e) {
-	e.printStackTrace();
-}
-
-int num = returnnodes.getLength();
-String[] registeredOperatorNames = new String[num];
-		
-for (int i = 0; i < num; i++) {
-	
-	Element line = (Element) name.item(i);
-	System.out.println(" my list " + i + " " + getCharacterDataFromElement(line));
-	registeredOperatorNames[i] = getCharacterDataFromElement(line);
-	
-}
-*/
