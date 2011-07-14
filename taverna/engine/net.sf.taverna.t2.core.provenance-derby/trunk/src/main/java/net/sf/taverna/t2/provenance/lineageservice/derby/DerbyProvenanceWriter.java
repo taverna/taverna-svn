@@ -20,12 +20,7 @@
  ******************************************************************************/
 package net.sf.taverna.t2.provenance.lineageservice.derby;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
-import net.sf.taverna.t2.provenance.lineageservice.utils.Port;
 
 /**
  * Uses Apache Derby database to write workflow provenance
@@ -38,44 +33,6 @@ import net.sf.taverna.t2.provenance.lineageservice.utils.Port;
 public class DerbyProvenanceWriter extends ProvenanceWriter {
 	
 	public DerbyProvenanceWriter() {
-		
-	}	
-	
-	/**
-	 * persists port v back to DB
-	 * 
-	 * @param v
-	 * @throws SQLException
-	 */
-	@Override
-	public void updatePort(Port v) throws SQLException {
-		
-		PreparedStatement ps = null;
-                Connection connection = null;
-		
-		try {
-                        connection = getConnection();
-			ps = connection
-			.prepareStatement(
-					"UPDATE Port SET isInputPort=?, depth=?,"
-					+ "resolvedDepth=?, iterationStrategyOrder=? " +
-							"WHERE portId=?");
-			int i = v.isInputPort() ? 1 : 0;
-			ps.setInt(1, i);
-			ps.setInt(2, v.getDepth());
-			if (v.isResolvedDepthSet()) {
-				ps.setInt(3, v.getResolvedDepth()); 
-			} else {
-				ps.setString(3, null);
-			}
-			ps.setInt(4, v.getIterationStrategyOrder());
-			ps.setString(5, v.getIdentifier());
-			ps.execute();
-		
-		} finally {
-                    if (connection != null) connection.close();
-                }
-
-	}
+	}		
 
 }
