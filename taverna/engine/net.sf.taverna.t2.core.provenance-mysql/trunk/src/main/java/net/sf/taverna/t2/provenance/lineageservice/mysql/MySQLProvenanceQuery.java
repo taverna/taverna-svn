@@ -21,6 +21,9 @@
 package net.sf.taverna.t2.provenance.lineageservice.mysql;
 
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
 
 
@@ -34,6 +37,36 @@ public class MySQLProvenanceQuery extends ProvenanceQuery {
 	
 	public MySQLProvenanceQuery() {
 		
+	}
+	
+	private String escapeValue(final String s) {
+		return s.replaceAll("\\'", "\\\\\\'");
+	}
+
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery#addWhereClauseToQuery(java.lang.String, java.util.Map, boolean)
+	 */
+	@Override
+	public String addWhereClauseToQuery(String q0,
+			Map<String, String> queryConstraints, boolean terminate) {
+
+		// complete query according to constraints
+		StringBuffer q = new StringBuffer(q0);
+
+		boolean first = true;
+		if (queryConstraints != null && queryConstraints.size() > 0) {
+			q.append(" where ");
+
+			for (Entry<String, String> entry : queryConstraints.entrySet()) {
+				if (!first) {
+					q.append(" and ");
+				}
+				q.append(" " + entry.getKey() + " = \'" + escapeValue(entry.getValue()) + "\' ");
+				first = false;
+			}
+		}
+
+		return q.toString();
 	}
 	
 	
