@@ -397,12 +397,12 @@ public class Profile extends AbstractArtifactFilter {
 	}
 
 	/**
-	 * Return the version string of the Profile, or 'NO VERSION' if a version is
+	 * Return the version string of the Profile, or 'NO-VERSION' if a version is
 	 * not defined
 	 */
 	public String getVersion() {
 		if (version == null) {
-			return "NO VERSION";
+			return "NO-VERSION";
 		}
 		return version;
 	}
