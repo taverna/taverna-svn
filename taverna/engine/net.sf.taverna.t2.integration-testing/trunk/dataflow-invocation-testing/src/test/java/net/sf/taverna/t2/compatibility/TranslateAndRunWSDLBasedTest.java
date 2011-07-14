@@ -32,10 +32,12 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TranslateAndRunWSDLBasedTest extends InvocationTestHelper {
 
+	@Ignore("eInfo service no longer available")
 	@SuppressWarnings("unchecked")
 	@Test
 	//uses a dataflow based upon the eutils run_eInfo that contains both

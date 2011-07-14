@@ -15,18 +15,24 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.4</version>
+			<version>${junit.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>jdom</groupId>
+			<groupId>org.jdom</groupId>
 			<artifactId>jdom</artifactId>
-			<version>1.0</version>
+			<version>${jdom.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>1.4</version>
+			<version>${commons.io.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>provenance-client</artifactId>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
@@ -40,13 +46,13 @@
 			<artifactId>reference-impl</artifactId>
 			<version>${t2.core.version}</version>
 		</dependency>
-		
-		<dependency>   
-		   <groupId>net.sf.json-lib</groupId>   
-		   <artifactId>json-lib</artifactId>   
-		   <version>1.0</version>   
-		   <classifier>jdk15</classifier>   
-		</dependency> 
+
+		<dependency>
+			<groupId>net.sf.json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+			<version>${json.lib.version}</version>
+			<classifier>jdk15</classifier>
+		</dependency>
 
 
 		<dependency>
@@ -76,13 +82,13 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.5</version>
+			<version>${mysql.connector.java.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derby</artifactId>
-			<version>10.5.3.0_1</version>
+			<version>${derby.version}</version>
 		</dependency>
 
 		<dependency>
@@ -122,7 +128,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>reference-core-extensions</artifactId>
-			<version>${t2.reference.core.extensions.version}</version>
+			<version>${t2.reference-core-extensions.version}</version>
 		</dependency>
 	</dependencies>
 </project>

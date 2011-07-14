@@ -64,13 +64,5 @@ public class WorkflowPortSameNameQueryTest extends AbstractQueryTestHelper {
 				"Concatenate_two_strings[]");
 		return new HashSet<String>(processes);
 	}
-
-	@Test
-	@Ignore("Disabled while doing T2-1308")
-	@Override
-	public void fetchOutputPortData() throws Exception {
-		// TODO Auto-generated method stub
-		super.fetchOutputPortData();
-	}
 	
 }
