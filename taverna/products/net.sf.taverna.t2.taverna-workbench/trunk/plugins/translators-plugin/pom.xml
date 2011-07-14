@@ -13,7 +13,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.translators</groupId>
 			<artifactId>all-activity-translators</artifactId>
-			<version>${t2.compatibility.translators.version}</version>
+			<version>${t2.translators.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-exts</groupId>

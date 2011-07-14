@@ -25,7 +25,7 @@
 			</activation>
 			<properties>
 				<!-- To be inserted into plugins.xml -->
-				<m2Repository>&lt;repository&gt;file:/${user.home}/.m2/repository/&lt;/repository&gt;</m2Repository>
+				<m2Repository>&lt;repository&gt;file:/${settings.localRepository}/&lt;/repository&gt;</m2Repository>
 			</properties>
 			<build>
 				<finalName>taverna-dev-${project.version}-${buildNumber}</finalName>
@@ -33,7 +33,7 @@
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>buildnumber-maven-plugin</artifactId>
-						<!--<version>1.0-beta-2</version>-->
+						<version>1.0-beta-3</version>
 						<executions>
 							<execution>
 								<id>buildnumber-validate</id>
@@ -55,8 +55,9 @@
 					</plugin>
 
 					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-assembly-plugin</artifactId>
-						<version>2.2-beta-4</version>
+						 <version>2.2</version>
 						<executions>
 							<execution>
 								<phase>package</phase>
@@ -96,7 +97,7 @@
 			</activation>
 			<properties>
 				<!-- To be inserted into plugins.xml -->
-				<m2Repository>&lt;repository&gt;file:${user.home}/.m2/repository/&lt;/repository&gt;</m2Repository>
+				<m2Repository>&lt;repository&gt;file:${settings.localRepository}/&lt;/repository&gt;</m2Repository>
 			</properties>
 			<build>
 				<finalName>taverna-dev-${project.version}-${buildNumber}</finalName>
@@ -104,7 +105,7 @@
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>buildnumber-maven-plugin</artifactId>
-						<!--<version>1.0-beta-2</version>-->
+						<version>1.0-beta-3</version>
 						<executions>
 							<execution>
 								<id>buildnumber-validate</id>
@@ -126,8 +127,9 @@
 					</plugin>
 
 					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-assembly-plugin</artifactId>
-						<version>2.2-beta-4</version>
+						 <version>2.2</version>
 						<executions>
 							<execution>
 								<phase>package</phase>
@@ -173,7 +175,7 @@
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>buildnumber-maven-plugin</artifactId>
-						<!--<version>1.0-beta-2</version>-->
+						<version>1.0-beta-3</version>
 						<executions>
 							<execution>
 								<phase>validate</phase>
@@ -206,7 +208,7 @@
 									<overWriteReleases>false</overWriteReleases>
 									<overWriteSnapshots>true</overWriteSnapshots>
 									<artifactItems>
-										<!-- 
+<!--
 					Produced by first doing a nightly build (-Pnightly) but with this plugin
 					commented out. When unzipping taverna-XXXX-bin.zip the repository/ folder
 					will be missing these artifacts below (mainly due to Raven not merging version
@@ -233,19 +235,48 @@
 					need to redo this procedure, as this means that an artifactItem is adding a file already
 					added by the repositories-component of the assembly plugin. 
 					
-					 -->
-								<artifactItem>
-                                    <groupId>antlr</groupId>
-                                    <artifactId>antlr</artifactId>
-                                    <version>2.7.5</version>
+-->
+                                <artifactItem>
+                                    <groupId>com.sun.xml.bind</groupId>
+                                    <artifactId>jaxb-impl</artifactId>
+                                    <version>2.1.6</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/sun/xml/bind/jaxb-impl/2.1.6</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.sun.xml.bind</groupId>
+                                    <artifactId>jaxb-impl</artifactId>
+                                    <version>2.1.6</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/antlr/antlr/2.7.5</outputDirectory>
-                                </artifactItem>					 
+                                    <outputDirectory>${project.build.directory}/repository/com/sun/xml/bind/jaxb-impl/2.1.6</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>javax.xml.stream</groupId>
+                                    <artifactId>stax-api</artifactId>
+                                    <version>1.0</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/javax/xml/stream/stax-api/1.0</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>javax.xml.stream</groupId>
+                                    <artifactId>stax-api</artifactId>
+                                    <version>1.0</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/javax/xml/stream/stax-api/1.0</outputDirectory>
+                                </artifactItem>
+
                                 <artifactItem>
                                     <groupId>antlr</groupId>
                                     <artifactId>antlr</artifactId>
                                     <version>2.7.5</version>
                                     <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/antlr/antlr/2.7.5</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>antlr</groupId>
+                                    <artifactId>antlr</artifactId>
+                                    <version>2.7.5</version>
+                                    <type>pom</type>
                                     <outputDirectory>${project.build.directory}/repository/antlr/antlr/2.7.5</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
@@ -291,18 +322,102 @@
                                     <outputDirectory>${project.build.directory}/repository/axis/axis-saaj/1.3</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>com.ibm.icu</groupId>
-                                    <artifactId>icu4j</artifactId>
-                                    <version>2.6.1</version>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>arq</artifactId>
+                                    <version>2.1</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/com/ibm/icu/icu4j/2.6.1</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/arq/2.1</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>com.ibm.icu</groupId>
-                                    <artifactId>icu4j</artifactId>
-                                    <version>2.6.1</version>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>arq</artifactId>
+                                    <version>2.1</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/com/ibm/icu/icu4j/2.6.1</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/arq/2.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>arq-extra</artifactId>
+                                    <version>2.1</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/arq-extra/2.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>arq-extra</artifactId>
+                                    <version>2.1</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/arq-extra/2.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>concurrent-jena</artifactId>
+                                    <version>1.3.2</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/concurrent-jena/1.3.2</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>concurrent-jena</artifactId>
+                                    <version>1.3.2</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/concurrent-jena/1.3.2</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>iri</artifactId>
+                                    <version>0.5</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/iri/0.5</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>iri</artifactId>
+                                    <version>0.5</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/iri/0.5</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>jena</artifactId>
+                                    <version>2.5.4</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/jena/2.5.4</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>jena</artifactId>
+                                    <version>2.5.4</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/jena/2.5.4</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>jenatest</artifactId>
+                                    <version>2.5.4</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/jenatest/2.5.4</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>jenatest</artifactId>
+                                    <version>2.5.4</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/jenatest/2.5.4</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>json-jena</artifactId>
+                                    <version>1.0</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/json-jena/1.0</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>json-jena</artifactId>
+                                    <version>1.0</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/json-jena/1.0</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>com.ibm.icu</groupId>
@@ -317,6 +432,20 @@
                                     <version>3.4.4</version>
                                     <type>pom</type>
                                     <outputDirectory>${project.build.directory}/repository/com/ibm/icu/icu4j/3.4.4</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.ibm.icu</groupId>
+                                    <artifactId>icu4j</artifactId>
+                                    <version>3.8</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/ibm/icu/icu4j/3.8</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.ibm.icu</groupId>
+                                    <artifactId>icu4j</artifactId>
+                                    <version>3.8</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/ibm/icu/icu4j/3.8</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>commons-beanutils</groupId>
@@ -361,6 +490,20 @@
                                     <outputDirectory>${project.build.directory}/repository/commons-codec/commons-codec/1.3</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
+                                    <groupId>commons-codec</groupId>
+                                    <artifactId>commons-codec</artifactId>
+                                    <version>1.4</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-codec/commons-codec/1.4</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-codec</groupId>
+                                    <artifactId>commons-codec</artifactId>
+                                    <version>1.4</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-codec/commons-codec/1.4</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
                                     <groupId>commons-collections</groupId>
                                     <artifactId>commons-collections</artifactId>
                                     <version>2.0</version>
@@ -387,6 +530,20 @@
                                     <version>2.1.1</version>
                                     <type>pom</type>
                                     <outputDirectory>${project.build.directory}/repository/commons-collections/commons-collections/2.1.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-collections</groupId>
+                                    <artifactId>commons-collections</artifactId>
+                                    <version>3.2</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-collections/commons-collections/3.2</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-collections</groupId>
+                                    <artifactId>commons-collections</artifactId>
+                                    <version>3.2</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-collections/commons-collections/3.2</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>commons-dbcp</groupId>
@@ -503,6 +660,20 @@
                                 <artifactItem>
                                     <groupId>commons-lang</groupId>
                                     <artifactId>commons-lang</artifactId>
+                                    <version>2.2</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-lang/commons-lang/2.2</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-lang</groupId>
+                                    <artifactId>commons-lang</artifactId>
+                                    <version>2.2</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-lang/commons-lang/2.2</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-lang</groupId>
+                                    <artifactId>commons-lang</artifactId>
                                     <version>2.3</version>
                                     <type>jar</type>
                                     <outputDirectory>${project.build.directory}/repository/commons-lang/commons-lang/2.3</outputDirectory>
@@ -513,34 +684,6 @@
                                     <version>2.3</version>
                                     <type>pom</type>
                                     <outputDirectory>${project.build.directory}/repository/commons-lang/commons-lang/2.3</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>commons-lang</groupId>
-                                    <artifactId>commons-lang</artifactId>
-                                    <version>2.4</version>
-                                    <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/commons-lang/commons-lang/2.4</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>commons-lang</groupId>
-                                    <artifactId>commons-lang</artifactId>
-                                    <version>2.4</version>
-                                    <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/commons-lang/commons-lang/2.4</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>commons-logging</groupId>
-                                    <artifactId>commons-logging</artifactId>
-                                    <version>1.0.3</version>
-                                    <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/commons-logging/commons-logging/1.0.3</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>commons-logging</groupId>
-                                    <artifactId>commons-logging</artifactId>
-                                    <version>1.0.3</version>
-                                    <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/commons-logging/commons-logging/1.0.3</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>commons-logging</groupId>
@@ -559,16 +702,16 @@
                                 <artifactItem>
                                     <groupId>commons-logging</groupId>
                                     <artifactId>commons-logging</artifactId>
-                                    <version>1.1.1</version>
+                                    <version>1.0.3</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/commons-logging/commons-logging/1.1.1</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/commons-logging/commons-logging/1.0.3</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>commons-logging</groupId>
                                     <artifactId>commons-logging</artifactId>
-                                    <version>1.1.1</version>
+                                    <version>1.0.3</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/commons-logging/commons-logging/1.1.1</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/commons-logging/commons-logging/1.0.3</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>commons-logging</groupId>
@@ -583,6 +726,48 @@
                                     <version>1.1</version>
                                     <type>pom</type>
                                     <outputDirectory>${project.build.directory}/repository/commons-logging/commons-logging/1.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-logging</groupId>
+                                    <artifactId>commons-logging</artifactId>
+                                    <version>1.1.1</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-logging/commons-logging/1.1.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-logging</groupId>
+                                    <artifactId>commons-logging</artifactId>
+                                    <version>1.1.1</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-logging/commons-logging/1.1.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-logging</groupId>
+                                    <artifactId>commons-logging-api</artifactId>
+                                    <version>1.1</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-logging/commons-logging-api/1.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-logging</groupId>
+                                    <artifactId>commons-logging-api</artifactId>
+                                    <version>1.1</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-logging/commons-logging-api/1.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-net</groupId>
+                                    <artifactId>commons-net</artifactId>
+                                    <version>1.1.0</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-net/commons-net/1.1.0</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-net</groupId>
+                                    <artifactId>commons-net</artifactId>
+                                    <version>1.1.0</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-net/commons-net/1.1.0</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>commons-pool</groupId>
@@ -601,16 +786,30 @@
                                 <artifactItem>
                                     <groupId>dom4j</groupId>
                                     <artifactId>dom4j</artifactId>
-                                    <version>1.6.1</version>
+                                    <version>1.6</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/dom4j/dom4j/1.6.1</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/dom4j/dom4j/1.6</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>dom4j</groupId>
                                     <artifactId>dom4j</artifactId>
-                                    <version>1.6.1</version>
+                                    <version>1.6</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/dom4j/dom4j/1.6.1</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/dom4j/dom4j/1.6</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>javax.activation</groupId>
+                                    <artifactId>activation</artifactId>
+                                    <version>1.1</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/javax/activation/activation/1.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>javax.activation</groupId>
+                                    <artifactId>activation</artifactId>
+                                    <version>1.1</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/javax/activation/activation/1.1</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>javax.mail</groupId>
@@ -643,16 +842,16 @@
                                 <artifactItem>
                                     <groupId>jaxen</groupId>
                                     <artifactId>jaxen</artifactId>
-                                    <version>1.1.1</version>
+                                    <version>1.0-FCS</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/jaxen/jaxen/1.1.1</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/jaxen/jaxen/1.0-FCS</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>jaxen</groupId>
                                     <artifactId>jaxen</artifactId>
-                                    <version>1.1.1</version>
+                                    <version>1.0-FCS</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/jaxen/jaxen/1.1.1</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/jaxen/jaxen/1.0-FCS</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>jdom</groupId>
@@ -699,16 +898,30 @@
                                 <artifactItem>
                                     <groupId>junit</groupId>
                                     <artifactId>junit</artifactId>
-                                    <version>4.4</version>
+                                    <version>4.8.1</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/junit/junit/4.4</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/junit/junit/4.8.1</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>junit</groupId>
                                     <artifactId>junit</artifactId>
-                                    <version>4.4</version>
+                                    <version>4.8.1</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/junit/junit/4.4</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/junit/junit/4.8.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>log4j</groupId>
+                                    <artifactId>log4j</artifactId>
+                                    <version>1.2.12</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/log4j/log4j/1.2.12</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>log4j</groupId>
+                                    <artifactId>log4j</artifactId>
+                                    <version>1.2.12</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/log4j/log4j/1.2.12</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>log4j</groupId>
@@ -727,16 +940,16 @@
                                 <artifactItem>
                                     <groupId>log4j</groupId>
                                     <artifactId>log4j</artifactId>
-                                    <version>1.2.12</version>
+                                    <version>1.2.14</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/log4j/log4j/1.2.12</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/log4j/log4j/1.2.14</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>log4j</groupId>
                                     <artifactId>log4j</artifactId>
-                                    <version>1.2.12</version>
+                                    <version>1.2.14</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/log4j/log4j/1.2.12</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/log4j/log4j/1.2.14</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>logkit</groupId>
@@ -767,53 +980,18 @@
                                     <outputDirectory>${project.build.directory}/repository/mysql/mysql-connector-java/3.1.14</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>net.sf.taverna.t2</groupId>
-                                    <artifactId>lang</artifactId>
-                                    <version>1.0</version>
-                                    <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/net/sf/taverna/t2/lang/1.0</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>net.sf.taverna.t2.lang</groupId>
-                                    <artifactId>observer</artifactId>
-                                    <version>1.0</version>
+                                    <groupId>net.sf.taverna</groupId>
+                                    <artifactId>wsdl-generic</artifactId>
+                                    <version>1.5</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/net/sf/taverna/t2/lang/observer/1.0</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>net.sf.taverna.t2.lang</groupId>
-                                    <artifactId>observer</artifactId>
-                                    <version>1.0</version>
-                                    <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/net/sf/taverna/t2/lang/observer/1.0</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>net.sf.taverna.t2.lang</groupId>
-                                    <artifactId>ui</artifactId>
-                                    <version>1.0</version>
-                                    <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/net/sf/taverna/t2/lang/ui/1.0</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>net.sf.taverna.t2.lang</groupId>
-                                    <artifactId>ui</artifactId>
-                                    <version>1.0</version>
-                                    <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/net/sf/taverna/t2/lang/ui/1.0</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/net/sf/taverna/wsdl-generic/1.5</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>net.sf.taverna</groupId>
                                     <artifactId>wsdl-generic</artifactId>
-                                    <version>1.3</version>
-                                    <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/net/sf/taverna/wsdl-generic/1.3</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>net.sf.taverna</groupId>
-                                    <artifactId>wsdl-generic</artifactId>
-                                    <version>1.3</version>
+                                    <version>1.5</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/net/sf/taverna/wsdl-generic/1.3</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/net/sf/taverna/wsdl-generic/1.5</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.apache</groupId>
@@ -821,13 +999,6 @@
                                     <version>1</version>
                                     <type>pom</type>
                                     <outputDirectory>${project.build.directory}/repository/org/apache/apache/1</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.apache</groupId>
-                                    <artifactId>apache</artifactId>
-                                    <version>4</version>
-                                    <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/org/apache/apache/4</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.apache.commons</groupId>
@@ -844,25 +1015,18 @@
                                     <outputDirectory>${project.build.directory}/repository/org/apache/commons/commons-parent/7</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>org.apache.commons</groupId>
-                                    <artifactId>commons-parent</artifactId>
-                                    <version>9</version>
-                                    <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/org/apache/commons/commons-parent/9</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.apache.poi</groupId>
-                                    <artifactId>poi</artifactId>
-                                    <version>3.5-FINAL</version>
+                                    <groupId>org.apache.lucene</groupId>
+                                    <artifactId>lucene-core</artifactId>
+                                    <version>2.0.0</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/org/apache/poi/poi/3.5-FINAL</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/org/apache/lucene/lucene-core/2.0.0</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>org.apache.poi</groupId>
-                                    <artifactId>poi</artifactId>
-                                    <version>3.5-FINAL</version>
+                                    <groupId>org.apache.lucene</groupId>
+                                    <artifactId>lucene-core</artifactId>
+                                    <version>2.0.0</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/org/apache/poi/poi/3.5-FINAL</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/org/apache/lucene/lucene-core/2.0.0</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.apache.xmlbeans</groupId>
@@ -877,6 +1041,20 @@
                                     <version>2.3.0</version>
                                     <type>pom</type>
                                     <outputDirectory>${project.build.directory}/repository/org/apache/xmlbeans/xmlbeans/2.3.0</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.xmlgraphics</groupId>
+                                    <artifactId>batik-js</artifactId>
+                                    <version>1.7</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/apache/xmlgraphics/batik-js/1.7</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.xmlgraphics</groupId>
+                                    <artifactId>batik-js</artifactId>
+                                    <version>1.7</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/apache/xmlgraphics/batik-js/1.7</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.biomart</groupId>
@@ -895,30 +1073,37 @@
                                 <artifactItem>
                                     <groupId>org.biomoby</groupId>
                                     <artifactId>jmoby</artifactId>
-                                    <version>1.1.1-taverna</version>
+                                    <version>1.1.3-taverna</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/org/biomoby/jmoby/1.1.1-taverna</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/org/biomoby/jmoby/1.1.3-taverna</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.biomoby</groupId>
                                     <artifactId>jmoby</artifactId>
-                                    <version>1.1.1-taverna</version>
+                                    <version>1.1.3-taverna</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/org/biomoby/jmoby/1.1.1-taverna</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/org/biomoby/jmoby/1.1.3-taverna</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.biomoby</groupId>
                                     <artifactId>jmoby-dashboard</artifactId>
-                                    <version>1.1.0-taverna-1</version>
+                                    <version>1.1.3-taverna</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/org/biomoby/jmoby-dashboard/1.1.0-taverna-1</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/org/biomoby/jmoby-dashboard/1.1.3-taverna</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.biomoby</groupId>
                                     <artifactId>jmoby-dashboard</artifactId>
-                                    <version>1.1.0-taverna-1</version>
+                                    <version>1.1.3-taverna</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/org/biomoby/jmoby-dashboard/1.1.0-taverna-1</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/org/biomoby/jmoby-dashboard/1.1.3-taverna</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.codehaus.woodstox</groupId>
+                                    <artifactId>wstx-asl</artifactId>
+                                    <version>3.0.0</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/codehaus/woodstox/wstx-asl/3.0.0</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.codehaus.woodstox</groupId>
@@ -985,10 +1170,117 @@
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.slf4j</groupId>
+                                    <artifactId>slf4j-api</artifactId>
+                                    <version>1.5.8</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/slf4j/slf4j-api/1.5.8</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.slf4j</groupId>
+                                    <artifactId>slf4j-api</artifactId>
+                                    <version>1.5.8</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/slf4j/slf4j-api/1.5.8</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.slf4j</groupId>
+                                    <artifactId>slf4j-log4j12</artifactId>
+                                    <version>1.5.8</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/slf4j/slf4j-log4j12/1.5.8</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.slf4j</groupId>
+                                    <artifactId>slf4j-log4j12</artifactId>
+                                    <version>1.5.8</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/slf4j/slf4j-log4j12/1.5.8</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.slf4j</groupId>
                                     <artifactId>slf4j-parent</artifactId>
                                     <version>1.4.3</version>
                                     <type>pom</type>
                                     <outputDirectory>${project.build.directory}/repository/org/slf4j/slf4j-parent/1.4.3</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.slf4j</groupId>
+                                    <artifactId>slf4j-parent</artifactId>
+                                    <version>1.5.8</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/slf4j/slf4j-parent/1.5.8</outputDirectory>
+                                </artifactItem>
+                                <!-- 
+                                <artifactItem>
+                                    <groupId>org.tupeloproject</groupId>
+                                    <artifactId>tupelo-all</artifactId>
+                                    <version>2.4.3</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/tupeloproject/tupelo-all/2.4.3</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.tupeloproject</groupId>
+                                    <artifactId>tupelo-cet</artifactId>
+                                    <version>2.4.3</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/tupeloproject/tupelo-cet/2.4.3</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.tupeloproject</groupId>
+                                    <artifactId>tupelo-cet</artifactId>
+                                    <version>2.4.3</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/tupeloproject/tupelo-cet/2.4.3</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.tupeloproject</groupId>
+                                    <artifactId>tupelo-core</artifactId>
+                                    <version>2.4.3</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/tupeloproject/tupelo-core/2.4.3</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.tupeloproject</groupId>
+                                    <artifactId>tupelo-kernel</artifactId>
+                                    <version>2.4.3</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/tupeloproject/tupelo-kernel/2.4.3</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.tupeloproject</groupId>
+                                    <artifactId>tupelo-kernel</artifactId>
+                                    <version>2.4.3</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/tupeloproject/tupelo-kernel/2.4.3</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.tupeloproject</groupId>
+                                    <artifactId>tupelo-util</artifactId>
+                                    <version>2.4.3</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/tupeloproject/tupelo-util/2.4.3</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.tupeloproject</groupId>
+                                    <artifactId>tupelo-util</artifactId>
+                                    <version>2.4.3</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/tupeloproject/tupelo-util/2.4.3</outputDirectory>
+                                </artifactItem>
+                                 -->
+                                <artifactItem>
+                                    <groupId>oro</groupId>
+                                    <artifactId>oro</artifactId>
+                                    <version>2.0.7</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/oro/oro/2.0.7</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>oro</groupId>
+                                    <artifactId>oro</artifactId>
+                                    <version>2.0.7</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/oro/oro/2.0.7</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>poi</groupId>
@@ -1040,6 +1332,34 @@
                                     <outputDirectory>${project.build.directory}/repository/stax/stax-api/1.0.1</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
+                                    <groupId>uk.org.mygrid.resources.mimeutil</groupId>
+                                    <artifactId>mime-util</artifactId>
+                                    <version>2.1.2-3</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/uk/org/mygrid/resources/mimeutil/mime-util/2.1.2-3</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>uk.org.mygrid.resources.mimeutil</groupId>
+                                    <artifactId>mime-util</artifactId>
+                                    <version>2.1.2-3</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/uk/org/mygrid/resources/mimeutil/mime-util/2.1.2-3</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>uk.org.mygrid.taverna.raven</groupId>
+                                    <artifactId>raven</artifactId>
+                                    <version>1.9</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/uk/org/mygrid/taverna/raven/raven/1.9</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>uk.org.mygrid.taverna.raven</groupId>
+                                    <artifactId>raven</artifactId>
+                                    <version>1.9</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/uk/org/mygrid/taverna/raven/raven/1.9</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
                                     <groupId>xalan</groupId>
                                     <artifactId>xalan</artifactId>
                                     <version>2.7.0</version>
@@ -1126,30 +1446,30 @@
                                 <artifactItem>
                                     <groupId>xerces</groupId>
                                     <artifactId>xmlParserAPIs</artifactId>
-                                    <version>2.6.2</version>
+                                    <version>2.2.1</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/xerces/xmlParserAPIs/2.6.2</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/xerces/xmlParserAPIs/2.2.1</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>xerces</groupId>
                                     <artifactId>xmlParserAPIs</artifactId>
-                                    <version>2.6.2</version>
+                                    <version>2.2.1</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/xerces/xmlParserAPIs/2.6.2</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/xerces/xmlParserAPIs/2.2.1</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>xml-apis</groupId>
                                     <artifactId>xml-apis</artifactId>
-                                    <version>1.3.02</version>
+                                    <version>1.0.b2</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/xml-apis/xml-apis/1.3.02</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/xml-apis/xml-apis/1.0.b2</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>xml-apis</groupId>
                                     <artifactId>xml-apis</artifactId>
-                                    <version>1.3.02</version>
+                                    <version>1.0.b2</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/xml-apis/xml-apis/1.3.02</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/xml-apis/xml-apis/1.0.b2</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>xml-apis</groupId>
@@ -1193,28 +1513,16 @@
                                     <type>pom</type>
                                     <outputDirectory>${project.build.directory}/repository/xml-apis/xml-apis/2.0.2</outputDirectory>
                                 </artifactItem>
-                                <artifactItem>
-                                    <groupId>xom</groupId>
-                                    <artifactId>xom</artifactId>
-                                    <version>1.0</version>
-                                    <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/xom/xom/1.0</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>xom</groupId>
-                                    <artifactId>xom</artifactId>
-                                    <version>1.0</version>
-                                    <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/xom/xom/1.0</outputDirectory>
-                                </artifactItem>										
+
 									</artifactItems>
 								</configuration>
 							</execution>
 						</executions>
 					</plugin>
 					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-assembly-plugin</artifactId>
-						<version>2.2-beta-4</version>
+						 <version>2.2</version>
 						<executions>
 							<execution>
 								<phase>package</phase>
@@ -1245,7 +1553,7 @@
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>buildnumber-maven-plugin</artifactId>
-						<!--<version>1.0-beta-2</version>-->
+						<version>1.0-beta-3</version>
 						<executions>
 							<execution>
 								<phase>validate</phase>
@@ -1306,18 +1614,47 @@
 					added by the repositories-component of the assembly plugin. 
 					
 					 -->
-								<artifactItem>
-                                    <groupId>antlr</groupId>
-                                    <artifactId>antlr</artifactId>
-                                    <version>2.7.5</version>
-                                    <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/antlr/antlr/2.7.5</outputDirectory>
+					            <artifactItem>
+                                    <groupId>com.sun.xml.bind</groupId>
+                                    <artifactId>jaxb-impl</artifactId>
+                                    <version>2.1.6</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/sun/xml/bind/jaxb-impl/2.1.6</outputDirectory>
                                 </artifactItem>
-				                <artifactItem>
+                                <artifactItem>
+                                    <groupId>com.sun.xml.bind</groupId>
+                                    <artifactId>jaxb-impl</artifactId>
+                                    <version>2.1.6</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/sun/xml/bind/jaxb-impl/2.1.6</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>javax.xml.stream</groupId>
+                                    <artifactId>stax-api</artifactId>
+                                    <version>1.0</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/javax/xml/stream/stax-api/1.0</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>javax.xml.stream</groupId>
+                                    <artifactId>stax-api</artifactId>
+                                    <version>1.0</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/javax/xml/stream/stax-api/1.0</outputDirectory>
+                                </artifactItem>
+					 
+                                <artifactItem>
                                     <groupId>antlr</groupId>
                                     <artifactId>antlr</artifactId>
                                     <version>2.7.5</version>
                                     <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/antlr/antlr/2.7.5</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>antlr</groupId>
+                                    <artifactId>antlr</artifactId>
+                                    <version>2.7.5</version>
+                                    <type>pom</type>
                                     <outputDirectory>${project.build.directory}/repository/antlr/antlr/2.7.5</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
@@ -1363,18 +1700,102 @@
                                     <outputDirectory>${project.build.directory}/repository/axis/axis-saaj/1.3</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>com.ibm.icu</groupId>
-                                    <artifactId>icu4j</artifactId>
-                                    <version>2.6.1</version>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>arq</artifactId>
+                                    <version>2.1</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/com/ibm/icu/icu4j/2.6.1</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/arq/2.1</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>com.ibm.icu</groupId>
-                                    <artifactId>icu4j</artifactId>
-                                    <version>2.6.1</version>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>arq</artifactId>
+                                    <version>2.1</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/com/ibm/icu/icu4j/2.6.1</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/arq/2.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>arq-extra</artifactId>
+                                    <version>2.1</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/arq-extra/2.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>arq-extra</artifactId>
+                                    <version>2.1</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/arq-extra/2.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>concurrent-jena</artifactId>
+                                    <version>1.3.2</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/concurrent-jena/1.3.2</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>concurrent-jena</artifactId>
+                                    <version>1.3.2</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/concurrent-jena/1.3.2</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>iri</artifactId>
+                                    <version>0.5</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/iri/0.5</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>iri</artifactId>
+                                    <version>0.5</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/iri/0.5</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>jena</artifactId>
+                                    <version>2.5.4</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/jena/2.5.4</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>jena</artifactId>
+                                    <version>2.5.4</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/jena/2.5.4</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>jenatest</artifactId>
+                                    <version>2.5.4</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/jenatest/2.5.4</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>jenatest</artifactId>
+                                    <version>2.5.4</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/jenatest/2.5.4</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>json-jena</artifactId>
+                                    <version>1.0</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/json-jena/1.0</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.hp.hpl.jena</groupId>
+                                    <artifactId>json-jena</artifactId>
+                                    <version>1.0</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/hp/hpl/jena/json-jena/1.0</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>com.ibm.icu</groupId>
@@ -1389,6 +1810,20 @@
                                     <version>3.4.4</version>
                                     <type>pom</type>
                                     <outputDirectory>${project.build.directory}/repository/com/ibm/icu/icu4j/3.4.4</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.ibm.icu</groupId>
+                                    <artifactId>icu4j</artifactId>
+                                    <version>3.8</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/ibm/icu/icu4j/3.8</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.ibm.icu</groupId>
+                                    <artifactId>icu4j</artifactId>
+                                    <version>3.8</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/com/ibm/icu/icu4j/3.8</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>commons-beanutils</groupId>
@@ -1433,6 +1868,20 @@
                                     <outputDirectory>${project.build.directory}/repository/commons-codec/commons-codec/1.3</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
+                                    <groupId>commons-codec</groupId>
+                                    <artifactId>commons-codec</artifactId>
+                                    <version>1.4</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-codec/commons-codec/1.4</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-codec</groupId>
+                                    <artifactId>commons-codec</artifactId>
+                                    <version>1.4</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-codec/commons-codec/1.4</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
                                     <groupId>commons-collections</groupId>
                                     <artifactId>commons-collections</artifactId>
                                     <version>2.0</version>
@@ -1459,6 +1908,20 @@
                                     <version>2.1.1</version>
                                     <type>pom</type>
                                     <outputDirectory>${project.build.directory}/repository/commons-collections/commons-collections/2.1.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-collections</groupId>
+                                    <artifactId>commons-collections</artifactId>
+                                    <version>3.2</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-collections/commons-collections/3.2</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-collections</groupId>
+                                    <artifactId>commons-collections</artifactId>
+                                    <version>3.2</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-collections/commons-collections/3.2</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>commons-dbcp</groupId>
@@ -1575,6 +2038,20 @@
                                 <artifactItem>
                                     <groupId>commons-lang</groupId>
                                     <artifactId>commons-lang</artifactId>
+                                    <version>2.2</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-lang/commons-lang/2.2</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-lang</groupId>
+                                    <artifactId>commons-lang</artifactId>
+                                    <version>2.2</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-lang/commons-lang/2.2</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-lang</groupId>
+                                    <artifactId>commons-lang</artifactId>
                                     <version>2.3</version>
                                     <type>jar</type>
                                     <outputDirectory>${project.build.directory}/repository/commons-lang/commons-lang/2.3</outputDirectory>
@@ -1585,34 +2062,6 @@
                                     <version>2.3</version>
                                     <type>pom</type>
                                     <outputDirectory>${project.build.directory}/repository/commons-lang/commons-lang/2.3</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>commons-lang</groupId>
-                                    <artifactId>commons-lang</artifactId>
-                                    <version>2.4</version>
-                                    <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/commons-lang/commons-lang/2.4</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>commons-lang</groupId>
-                                    <artifactId>commons-lang</artifactId>
-                                    <version>2.4</version>
-                                    <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/commons-lang/commons-lang/2.4</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>commons-logging</groupId>
-                                    <artifactId>commons-logging</artifactId>
-                                    <version>1.0.3</version>
-                                    <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/commons-logging/commons-logging/1.0.3</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>commons-logging</groupId>
-                                    <artifactId>commons-logging</artifactId>
-                                    <version>1.0.3</version>
-                                    <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/commons-logging/commons-logging/1.0.3</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>commons-logging</groupId>
@@ -1631,16 +2080,16 @@
                                 <artifactItem>
                                     <groupId>commons-logging</groupId>
                                     <artifactId>commons-logging</artifactId>
-                                    <version>1.1.1</version>
+                                    <version>1.0.3</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/commons-logging/commons-logging/1.1.1</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/commons-logging/commons-logging/1.0.3</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>commons-logging</groupId>
                                     <artifactId>commons-logging</artifactId>
-                                    <version>1.1.1</version>
+                                    <version>1.0.3</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/commons-logging/commons-logging/1.1.1</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/commons-logging/commons-logging/1.0.3</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>commons-logging</groupId>
@@ -1655,6 +2104,48 @@
                                     <version>1.1</version>
                                     <type>pom</type>
                                     <outputDirectory>${project.build.directory}/repository/commons-logging/commons-logging/1.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-logging</groupId>
+                                    <artifactId>commons-logging</artifactId>
+                                    <version>1.1.1</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-logging/commons-logging/1.1.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-logging</groupId>
+                                    <artifactId>commons-logging</artifactId>
+                                    <version>1.1.1</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-logging/commons-logging/1.1.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-logging</groupId>
+                                    <artifactId>commons-logging-api</artifactId>
+                                    <version>1.1</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-logging/commons-logging-api/1.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-logging</groupId>
+                                    <artifactId>commons-logging-api</artifactId>
+                                    <version>1.1</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-logging/commons-logging-api/1.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-net</groupId>
+                                    <artifactId>commons-net</artifactId>
+                                    <version>1.1.0</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-net/commons-net/1.1.0</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-net</groupId>
+                                    <artifactId>commons-net</artifactId>
+                                    <version>1.1.0</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-net/commons-net/1.1.0</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>commons-pool</groupId>
@@ -1673,16 +2164,30 @@
                                 <artifactItem>
                                     <groupId>dom4j</groupId>
                                     <artifactId>dom4j</artifactId>
-                                    <version>1.6.1</version>
+                                    <version>1.6</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/dom4j/dom4j/1.6.1</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/dom4j/dom4j/1.6</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>dom4j</groupId>
                                     <artifactId>dom4j</artifactId>
-                                    <version>1.6.1</version>
+                                    <version>1.6</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/dom4j/dom4j/1.6.1</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/dom4j/dom4j/1.6</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>javax.activation</groupId>
+                                    <artifactId>activation</artifactId>
+                                    <version>1.1</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/javax/activation/activation/1.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>javax.activation</groupId>
+                                    <artifactId>activation</artifactId>
+                                    <version>1.1</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/javax/activation/activation/1.1</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>javax.mail</groupId>
@@ -1715,16 +2220,16 @@
                                 <artifactItem>
                                     <groupId>jaxen</groupId>
                                     <artifactId>jaxen</artifactId>
-                                    <version>1.1.1</version>
+                                    <version>1.0-FCS</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/jaxen/jaxen/1.1.1</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/jaxen/jaxen/1.0-FCS</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>jaxen</groupId>
                                     <artifactId>jaxen</artifactId>
-                                    <version>1.1.1</version>
+                                    <version>1.0-FCS</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/jaxen/jaxen/1.1.1</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/jaxen/jaxen/1.0-FCS</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>jdom</groupId>
@@ -1771,16 +2276,30 @@
                                 <artifactItem>
                                     <groupId>junit</groupId>
                                     <artifactId>junit</artifactId>
-                                    <version>4.4</version>
+                                    <version>4.8.1</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/junit/junit/4.4</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/junit/junit/4.8.1</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>junit</groupId>
                                     <artifactId>junit</artifactId>
-                                    <version>4.4</version>
+                                    <version>4.8.1</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/junit/junit/4.4</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/junit/junit/4.8.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>log4j</groupId>
+                                    <artifactId>log4j</artifactId>
+                                    <version>1.2.12</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/log4j/log4j/1.2.12</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>log4j</groupId>
+                                    <artifactId>log4j</artifactId>
+                                    <version>1.2.12</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/log4j/log4j/1.2.12</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>log4j</groupId>
@@ -1799,16 +2318,16 @@
                                 <artifactItem>
                                     <groupId>log4j</groupId>
                                     <artifactId>log4j</artifactId>
-                                    <version>1.2.12</version>
+                                    <version>1.2.14</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/log4j/log4j/1.2.12</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/log4j/log4j/1.2.14</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>log4j</groupId>
                                     <artifactId>log4j</artifactId>
-                                    <version>1.2.12</version>
+                                    <version>1.2.14</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/log4j/log4j/1.2.12</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/log4j/log4j/1.2.14</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>logkit</groupId>
@@ -1839,53 +2358,18 @@
                                     <outputDirectory>${project.build.directory}/repository/mysql/mysql-connector-java/3.1.14</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>net.sf.taverna.t2</groupId>
-                                    <artifactId>lang</artifactId>
-                                    <version>1.0</version>
-                                    <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/net/sf/taverna/t2/lang/1.0</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>net.sf.taverna.t2.lang</groupId>
-                                    <artifactId>observer</artifactId>
-                                    <version>1.0</version>
+                                    <groupId>net.sf.taverna</groupId>
+                                    <artifactId>wsdl-generic</artifactId>
+                                    <version>1.5</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/net/sf/taverna/t2/lang/observer/1.0</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>net.sf.taverna.t2.lang</groupId>
-                                    <artifactId>observer</artifactId>
-                                    <version>1.0</version>
-                                    <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/net/sf/taverna/t2/lang/observer/1.0</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>net.sf.taverna.t2.lang</groupId>
-                                    <artifactId>ui</artifactId>
-                                    <version>1.0</version>
-                                    <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/net/sf/taverna/t2/lang/ui/1.0</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>net.sf.taverna.t2.lang</groupId>
-                                    <artifactId>ui</artifactId>
-                                    <version>1.0</version>
-                                    <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/net/sf/taverna/t2/lang/ui/1.0</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/net/sf/taverna/wsdl-generic/1.5</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>net.sf.taverna</groupId>
                                     <artifactId>wsdl-generic</artifactId>
-                                    <version>1.3</version>
-                                    <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/net/sf/taverna/wsdl-generic/1.3</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>net.sf.taverna</groupId>
-                                    <artifactId>wsdl-generic</artifactId>
-                                    <version>1.3</version>
+                                    <version>1.5</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/net/sf/taverna/wsdl-generic/1.3</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/net/sf/taverna/wsdl-generic/1.5</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.apache</groupId>
@@ -1893,13 +2377,6 @@
                                     <version>1</version>
                                     <type>pom</type>
                                     <outputDirectory>${project.build.directory}/repository/org/apache/apache/1</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.apache</groupId>
-                                    <artifactId>apache</artifactId>
-                                    <version>4</version>
-                                    <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/org/apache/apache/4</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.apache.commons</groupId>
@@ -1916,25 +2393,18 @@
                                     <outputDirectory>${project.build.directory}/repository/org/apache/commons/commons-parent/7</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>org.apache.commons</groupId>
-                                    <artifactId>commons-parent</artifactId>
-                                    <version>9</version>
-                                    <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/org/apache/commons/commons-parent/9</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.apache.poi</groupId>
-                                    <artifactId>poi</artifactId>
-                                    <version>3.5-FINAL</version>
+                                    <groupId>org.apache.lucene</groupId>
+                                    <artifactId>lucene-core</artifactId>
+                                    <version>2.0.0</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/org/apache/poi/poi/3.5-FINAL</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/org/apache/lucene/lucene-core/2.0.0</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>org.apache.poi</groupId>
-                                    <artifactId>poi</artifactId>
-                                    <version>3.5-FINAL</version>
+                                    <groupId>org.apache.lucene</groupId>
+                                    <artifactId>lucene-core</artifactId>
+                                    <version>2.0.0</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/org/apache/poi/poi/3.5-FINAL</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/org/apache/lucene/lucene-core/2.0.0</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.apache.xmlbeans</groupId>
@@ -1949,6 +2419,20 @@
                                     <version>2.3.0</version>
                                     <type>pom</type>
                                     <outputDirectory>${project.build.directory}/repository/org/apache/xmlbeans/xmlbeans/2.3.0</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.xmlgraphics</groupId>
+                                    <artifactId>batik-js</artifactId>
+                                    <version>1.7</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/apache/xmlgraphics/batik-js/1.7</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.xmlgraphics</groupId>
+                                    <artifactId>batik-js</artifactId>
+                                    <version>1.7</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/apache/xmlgraphics/batik-js/1.7</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.biomart</groupId>
@@ -1967,30 +2451,37 @@
                                 <artifactItem>
                                     <groupId>org.biomoby</groupId>
                                     <artifactId>jmoby</artifactId>
-                                    <version>1.1.1-taverna</version>
+                                    <version>1.1.3-taverna</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/org/biomoby/jmoby/1.1.1-taverna</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/org/biomoby/jmoby/1.1.3-taverna</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.biomoby</groupId>
                                     <artifactId>jmoby</artifactId>
-                                    <version>1.1.1-taverna</version>
+                                    <version>1.1.3-taverna</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/org/biomoby/jmoby/1.1.1-taverna</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/org/biomoby/jmoby/1.1.3-taverna</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.biomoby</groupId>
                                     <artifactId>jmoby-dashboard</artifactId>
-                                    <version>1.1.0-taverna-1</version>
+                                    <version>1.1.3-taverna</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/org/biomoby/jmoby-dashboard/1.1.0-taverna-1</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/org/biomoby/jmoby-dashboard/1.1.3-taverna</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.biomoby</groupId>
                                     <artifactId>jmoby-dashboard</artifactId>
-                                    <version>1.1.0-taverna-1</version>
+                                    <version>1.1.3-taverna</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/org/biomoby/jmoby-dashboard/1.1.0-taverna-1</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/org/biomoby/jmoby-dashboard/1.1.3-taverna</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.codehaus.woodstox</groupId>
+                                    <artifactId>wstx-asl</artifactId>
+                                    <version>3.0.0</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/codehaus/woodstox/wstx-asl/3.0.0</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.codehaus.woodstox</groupId>
@@ -2057,10 +2548,117 @@
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.slf4j</groupId>
+                                    <artifactId>slf4j-api</artifactId>
+                                    <version>1.5.8</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/slf4j/slf4j-api/1.5.8</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.slf4j</groupId>
+                                    <artifactId>slf4j-api</artifactId>
+                                    <version>1.5.8</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/slf4j/slf4j-api/1.5.8</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.slf4j</groupId>
+                                    <artifactId>slf4j-log4j12</artifactId>
+                                    <version>1.5.8</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/slf4j/slf4j-log4j12/1.5.8</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.slf4j</groupId>
+                                    <artifactId>slf4j-log4j12</artifactId>
+                                    <version>1.5.8</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/slf4j/slf4j-log4j12/1.5.8</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.slf4j</groupId>
                                     <artifactId>slf4j-parent</artifactId>
                                     <version>1.4.3</version>
                                     <type>pom</type>
                                     <outputDirectory>${project.build.directory}/repository/org/slf4j/slf4j-parent/1.4.3</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.slf4j</groupId>
+                                    <artifactId>slf4j-parent</artifactId>
+                                    <version>1.5.8</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/slf4j/slf4j-parent/1.5.8</outputDirectory>
+                                </artifactItem>
+                                <!-- 
+                                <artifactItem>
+                                    <groupId>org.tupeloproject</groupId>
+                                    <artifactId>tupelo-all</artifactId>
+                                    <version>2.4.3</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/tupeloproject/tupelo-all/2.4.3</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.tupeloproject</groupId>
+                                    <artifactId>tupelo-cet</artifactId>
+                                    <version>2.4.3</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/tupeloproject/tupelo-cet/2.4.3</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.tupeloproject</groupId>
+                                    <artifactId>tupelo-cet</artifactId>
+                                    <version>2.4.3</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/tupeloproject/tupelo-cet/2.4.3</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.tupeloproject</groupId>
+                                    <artifactId>tupelo-core</artifactId>
+                                    <version>2.4.3</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/tupeloproject/tupelo-core/2.4.3</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.tupeloproject</groupId>
+                                    <artifactId>tupelo-kernel</artifactId>
+                                    <version>2.4.3</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/tupeloproject/tupelo-kernel/2.4.3</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.tupeloproject</groupId>
+                                    <artifactId>tupelo-kernel</artifactId>
+                                    <version>2.4.3</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/tupeloproject/tupelo-kernel/2.4.3</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.tupeloproject</groupId>
+                                    <artifactId>tupelo-util</artifactId>
+                                    <version>2.4.3</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/tupeloproject/tupelo-util/2.4.3</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.tupeloproject</groupId>
+                                    <artifactId>tupelo-util</artifactId>
+                                    <version>2.4.3</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/tupeloproject/tupelo-util/2.4.3</outputDirectory>
+                                </artifactItem>
+                                 -->                                
+                                <artifactItem>
+                                    <groupId>oro</groupId>
+                                    <artifactId>oro</artifactId>
+                                    <version>2.0.7</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/oro/oro/2.0.7</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>oro</groupId>
+                                    <artifactId>oro</artifactId>
+                                    <version>2.0.7</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/oro/oro/2.0.7</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>poi</groupId>
@@ -2112,6 +2710,34 @@
                                     <outputDirectory>${project.build.directory}/repository/stax/stax-api/1.0.1</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
+                                    <groupId>uk.org.mygrid.resources.mimeutil</groupId>
+                                    <artifactId>mime-util</artifactId>
+                                    <version>2.1.2-3</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/uk/org/mygrid/resources/mimeutil/mime-util/2.1.2-3</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>uk.org.mygrid.resources.mimeutil</groupId>
+                                    <artifactId>mime-util</artifactId>
+                                    <version>2.1.2-3</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/uk/org/mygrid/resources/mimeutil/mime-util/2.1.2-3</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>uk.org.mygrid.taverna.raven</groupId>
+                                    <artifactId>raven</artifactId>
+                                    <version>1.9</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/uk/org/mygrid/taverna/raven/raven/1.9</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>uk.org.mygrid.taverna.raven</groupId>
+                                    <artifactId>raven</artifactId>
+                                    <version>1.9</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/uk/org/mygrid/taverna/raven/raven/1.9</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
                                     <groupId>xalan</groupId>
                                     <artifactId>xalan</artifactId>
                                     <version>2.7.0</version>
@@ -2198,30 +2824,30 @@
                                 <artifactItem>
                                     <groupId>xerces</groupId>
                                     <artifactId>xmlParserAPIs</artifactId>
-                                    <version>2.6.2</version>
+                                    <version>2.2.1</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/xerces/xmlParserAPIs/2.6.2</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/xerces/xmlParserAPIs/2.2.1</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>xerces</groupId>
                                     <artifactId>xmlParserAPIs</artifactId>
-                                    <version>2.6.2</version>
+                                    <version>2.2.1</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/xerces/xmlParserAPIs/2.6.2</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/xerces/xmlParserAPIs/2.2.1</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>xml-apis</groupId>
                                     <artifactId>xml-apis</artifactId>
-                                    <version>1.3.02</version>
+                                    <version>1.0.b2</version>
                                     <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/xml-apis/xml-apis/1.3.02</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/xml-apis/xml-apis/1.0.b2</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>xml-apis</groupId>
                                     <artifactId>xml-apis</artifactId>
-                                    <version>1.3.02</version>
+                                    <version>1.0.b2</version>
                                     <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/xml-apis/xml-apis/1.3.02</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/repository/xml-apis/xml-apis/1.0.b2</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>xml-apis</groupId>
@@ -2264,20 +2890,6 @@
                                     <version>2.0.2</version>
                                     <type>pom</type>
                                     <outputDirectory>${project.build.directory}/repository/xml-apis/xml-apis/2.0.2</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>xom</groupId>
-                                    <artifactId>xom</artifactId>
-                                    <version>1.0</version>
-                                    <type>jar</type>
-                                    <outputDirectory>${project.build.directory}/repository/xom/xom/1.0</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>xom</groupId>
-                                    <artifactId>xom</artifactId>
-                                    <version>1.0</version>
-                                    <type>pom</type>
-                                    <outputDirectory>${project.build.directory}/repository/xom/xom/1.0</outputDirectory>
                                 </artifactItem>
 
 									</artifactItems>							
@@ -2286,8 +2898,9 @@
 						</executions>
 					</plugin>
 					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-assembly-plugin</artifactId>
-						<version>2.2-beta-4</version>
+						<version>2.2</version>
 						<executions>
 							<execution>
 								<phase>package</phase>
@@ -2307,37 +2920,6 @@
 			</build>
 		</profile>
 	</profiles>
-
-	<repositories>
-		<repository>
-			<id>eviware</id>
-			<name>Eviware repository</name>
-			<url>http://www.eviware.com/repository/maven2/
-			</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<id>tupelo2</id>
-			<name>tupelo2</name>
-			<url>http://dlt-dev.ncsa.uiuc.edu/m2</url>
-		</repository>
-		<repository>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<id>opm</id>
-			<name>opm</name>
-			<url>http://openprovenance.org/java/maven-snapshots</url>
-		</repository>
-	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2.taverna-workbench
@@ -2355,6 +2937,8 @@
 			</version>
 			<scope>test</scope>
 		</dependency>
+        <!-- Each of the plugins/ must be included here to ensure their
+        JARs end up in repository/-->
 		<dependency>
 			<groupId>net.sf.taverna.t2.taverna-workbench.plugins
 			</groupId>
@@ -2373,6 +2957,18 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
+			<artifactId>externaltool-plugin</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
+			<artifactId>servicecatalogue-plugin</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
 			<artifactId>provenanceconnectors-plugin</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
@@ -2384,4 +2980,38 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<repositories>
+		<repository>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>mygrid-snapshot-repository</id>
+			<name>myGrid Snapshot Repository</name>
+			<url>http://www.mygrid.org.uk/maven/snapshot-repository</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots />
+		</repository>
+		<repository>
+			<!-- WARNING: Might give silly 405 errors 
+			 -->
+			<id>odftoolkit</id>
+			<name>Odftoolkit Repository</name>
+			<url>http://odftoolkit.org/svn/odfdom~maven2/release/</url>
+			<releases>						
+				<checksumPolicy>fail</checksumPolicy>				
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>				
+			</snapshots>
+		</repository>
+	</repositories>
 </project>

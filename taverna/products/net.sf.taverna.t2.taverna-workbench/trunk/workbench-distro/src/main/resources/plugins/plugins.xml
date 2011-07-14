@@ -12,11 +12,8 @@
         <repositories>
             ${m2Repository}
             <repository>http://www.mygrid.org.uk/maven/repository/</repository>
-            <repository>http://bioinf.ncl.ac.uk/mirror/maven/repository/</repository>
-            <repository>http://mirror.omii.ac.uk/maven/repository/</repository>
             <repository>http://www.mygrid.org.uk/maven/repo1/</repository>
-            <repository>http://moby.ucalgary.ca/moby_maven/</repository>
-            <repository>http://biomoby.org/m2repo/</repository>
+            <repository>http://www.mygrid.org.uk/maven/biomoby/biomoby.org/m2repo/</repository>            
             <repository>http://repository.jboss.com/maven2/</repository>
             <repository>http://download.java.net/maven/2/</repository>
             <repository>http://ibiblio.lsu.edu/main/pub/packages/maven2/</repository>
@@ -46,21 +43,51 @@
         <repositories>
             ${m2Repository}
             <repository>http://www.mygrid.org.uk/maven/repository/</repository>
-            <repository>http://bioinf.ncl.ac.uk/mirror/maven/repository/</repository>
-            <repository>http://mirror.omii.ac.uk/maven/repository/</repository>
             <repository>http://www.mygrid.org.uk/maven/repo1/</repository>
-            <repository>http://moby.ucalgary.ca/moby_maven/</repository>
-            <repository>http://biomoby.org/m2repo/</repository>
+            <repository>http://www.mygrid.org.uk/maven/biomoby/biomoby.org/m2repo/</repository>            
             <repository>http://repository.jboss.com/maven2/</repository>
             <repository>http://download.java.net/maven/2/</repository>
             <repository>http://ibiblio.lsu.edu/main/pub/packages/maven2/</repository>
             <repository>http://ws.zones.apache.org/repository2/</repository>
             <repository>http://www.eviware.com/repository/maven2/</repository>
+            <repository>http://odftoolkit.org/svn/odfdom~maven2/release/</repository>
         </repositories>
         <profile>
             <dependency>
                 <groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
                 <artifactId>activities-plugin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </profile>
+        <compatibility>
+            <application>
+                <version>${project.version}</version>
+            </application>
+        </compatibility>
+    </plugin>
+    <plugin>
+        <provider>taverna.sf.net</provider>
+        <identifier>net.sf.taverna.t2.activities.external-tool-activity</identifier>
+		<version>${project.version}-${buildNumber}</version>
+        <name>External tool service (required)</name>
+        <description>Taverna 2 Tool service</description>
+        <enabled>true</enabled>
+        <repositories>
+            ${m2Repository}
+            <repository>http://www.mygrid.org.uk/maven/repository/</repository>
+            <repository>http://www.mygrid.org.uk/maven/repo1/</repository>
+            <repository>http://www.mygrid.org.uk/maven/biomoby/biomoby.org/m2repo/</repository>            
+            <repository>http://repository.jboss.com/maven2/</repository>
+            <repository>http://download.java.net/maven/2/</repository>
+            <repository>http://ibiblio.lsu.edu/main/pub/packages/maven2/</repository>
+            <repository>http://ws.zones.apache.org/repository2/</repository>
+            <repository>http://www.eviware.com/repository/maven2/</repository>
+            <repository>http://odftoolkit.org/svn/odfdom~maven2/release/</repository>
+        </repositories>
+        <profile>
+            <dependency>
+                <groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
+                <artifactId>externaltool-plugin</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </profile>
@@ -80,16 +107,15 @@
         <repositories>
             ${m2Repository}
             <repository>http://www.mygrid.org.uk/maven/repository/</repository>
-            <repository>http://bioinf.ncl.ac.uk/mirror/maven/repository/</repository>
-            <repository>http://mirror.omii.ac.uk/maven/repository/</repository>
             <repository>http://www.mygrid.org.uk/maven/repo1/</repository>
-            <repository>http://moby.ucalgary.ca/moby_maven/</repository>
-            <repository>http://biomoby.org/m2repo/</repository>
             <repository>http://repository.jboss.com/maven2/</repository>
             <repository>http://download.java.net/maven/2/</repository>
             <repository>http://ibiblio.lsu.edu/main/pub/packages/maven2/</repository>
             <repository>http://ws.zones.apache.org/repository2/</repository>
             <repository>http://www.eviware.com/repository/maven2/</repository>
+			<repository>http://dlt-dev.ncsa.uiuc.edu/m2/</repository>
+			<repository>http://openprovenance.org/java/maven-releases/</repository>
+			<repository>http://openjena.org/repo/</repository>
         </repositories>
         <profile>
             <dependency>
@@ -114,12 +140,8 @@
         <repositories>
             ${m2Repository}
             <repository>http://www.mygrid.org.uk/maven/repository/</repository>
-            <repository>http://bioinf.ncl.ac.uk/mirror/maven/repository/</repository>
-            <repository>http://mirror.omii.ac.uk/maven/repository/</repository>
             <repository>http://www.mygrid.org.uk/maven/repo1/</repository>
-            <repository>http://moby.ucalgary.ca/moby_maven/</repository>
-            <repository>http://biomoby.org/m2repo/</repository>
-            <repository>http://repository.jboss.com/maven2/</repository>
+            <repository>http://repo.fusesource.com/maven2-all</repository>
             <repository>http://download.java.net/maven/2/</repository>
             <repository>http://ibiblio.lsu.edu/main/pub/packages/maven2/</repository>
             <repository>http://ws.zones.apache.org/repository2/</repository>
@@ -138,6 +160,36 @@
             </application>
         </compatibility>
     </plugin>
+        <plugin>
+        <provider>taverna.sf.net</provider>
+        <identifier>net.sf.taverna.t2.servicecatalogue</identifier>
+		<version>${project.version}-${buildNumber}</version>
+        <name>Service catalogue (required)</name>
+        <description>Taverna 2 service catalogue.</description>
+        <enabled>true</enabled>
+        <repositories>
+            ${m2Repository}
+            <repository>http://www.mygrid.org.uk/maven/repository/</repository>
+            <repository>http://www.mygrid.org.uk/maven/repo1/</repository>
+            <repository>http://repo.fusesource.com/maven2-all</repository>
+            <repository>http://download.java.net/maven/2/</repository>
+            <repository>http://ibiblio.lsu.edu/main/pub/packages/maven2/</repository>
+            <repository>http://ws.zones.apache.org/repository2/</repository>
+            <repository>http://www.eviware.com/repository/maven2/</repository>
+        </repositories>
+        <profile>
+            <dependency>
+                <groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
+                <artifactId>servicecatalogue-plugin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </profile>
+        <compatibility>
+            <application>
+                <version>${project.version}</version>
+            </application>
+        </compatibility>
+    </plugin>
     <plugin>
         <provider>taverna.sf.net</provider>
         <identifier>net.sf.taverna.t2.commandline</identifier>
@@ -147,11 +199,7 @@
         <enabled>true</enabled>
         <repositories>            
             <repository>http://www.mygrid.org.uk/maven/repository/</repository>
-            <repository>http://bioinf.ncl.ac.uk/mirror/maven/repository/</repository>
-            <repository>http://mirror.omii.ac.uk/maven/repository/</repository>
             <repository>http://www.mygrid.org.uk/maven/repo1/</repository>
-            <repository>http://moby.ucalgary.ca/moby_maven/</repository>
-            <repository>http://biomoby.org/m2repo/</repository>
             <repository>http://repository.jboss.com/maven2/</repository>
             <repository>http://download.java.net/maven/2/</repository>
             <repository>http://ibiblio.lsu.edu/main/pub/packages/maven2/</repository>
