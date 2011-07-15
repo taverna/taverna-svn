@@ -22,6 +22,7 @@
 		<!-- A hack to get them built together with ui.. -->
 		<module> ../engine/net.sf.taverna.t2.core.provenance-derby</module>
 		<module> ../engine/net.sf.taverna.t2.core.provenance-mysql</module>
+		<module> ../engine/net.sf.taverna.t2.provenance-client</module>
         <module>../engine/net.sf.taverna.t2.taverna-commandline</module>
 	</modules>
 </project>
