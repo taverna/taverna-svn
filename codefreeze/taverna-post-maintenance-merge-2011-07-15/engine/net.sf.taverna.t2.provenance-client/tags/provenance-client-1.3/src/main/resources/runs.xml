@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!-- example of a fully specified provenance query -->
+<pquery xmlns="http://taverna.org.uk/2009/provenance/pquery/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://taverna.org.uk/2009/provenance/pquery/ pquery.xsd">
+	<scope workflowId="e589d90b-01f2-4de6-87c6-684e8d6e9781">
+		<runs>
+			<run id="c14248df-2b51-4f04-a82e-eb0a10fb0afa"/>	
+			<run id="d7da4a46-9cd7-48c9-aa65-3c28ff32f15a"/>		
+		</runs>
+	</scope>
+</pquery>

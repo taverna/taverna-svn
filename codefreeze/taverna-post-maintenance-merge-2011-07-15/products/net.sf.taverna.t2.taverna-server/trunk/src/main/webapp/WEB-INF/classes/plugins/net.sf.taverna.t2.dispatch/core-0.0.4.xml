@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Plug-in definition for default dispatch layers -->
+<plugin xmlns="http://taverna.sf.net/pluginDescription"
+	xmlns:author="http://taverna.sf.net/authorDescription">
+
+	<name>Core dispatch layers</name>
+	<description>
+		Provides core dispatch layer functionality, invocation, retry,
+		failover and parallelization
+	</description>
+
+	<id>plugin:net.sf.taverna.t2.dispatch:core:0.0.4</id>
+
+	<quality>beta</quality>
+
+	<author>
+		<author:name>Tom Oinn</author:name>
+		<author:affiliation>myGrid</author:affiliation>
+		<author:email>tomoinn@crypticsquid.com</author:email>
+		<author:url>http://www.crypticsquid.com</author:url>
+	</author>
+
+	<tag>dispatchlayer</tag>
+
+	<!-- This really should be a dispatch layer specific link here -->
+	<url>http://www.mygrid.org.uk</url>
+
+	<link>
+		<linkdescription>myGrid Project Homepage</linkdescription>
+		<link>http://www.mygrid.org.uk</link>
+	</link>
+	<link>
+		<linkdescription>
+			Open Middleware Infrastructure Institute UK
+		</linkdescription>
+		<link>http://omii.ac.uk</link>
+	</link>
+
+	<artifact>
+		net.sf.taverna.t2.dispatchlayers:core-dispatchlayers:p0.1b3-SNAPSHOT
+	</artifact>
+
+	<target>Taverna2</target>
+
+</plugin>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project 
+  xmlns="http://maven.apache.org/POM/4.0.0" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>javax.xml</groupId>
+  <artifactId>jsr173</artifactId>
+  <version>1.0</version>
+  <name>JSR 173 - Streaming API for XML</name>
+  <description>JSR 173 - Streaming API for XML</description>
+  <url>http://dev2dev.bea.com/xml/stax.html</url>
+  <distributionManagement>
+    <downloadUrl>http://ftpna2.bea.com/pub/downloads/jsr173.jar</downloadUrl>
+  </distributionManagement>
+
+  <licenses>
+    <license>
+      <name>BEA JSR 173 Spec</name>
+      <url>http://www.ibiblio.org/maven2/javax/xml/jsr173/1.0/jsr173-1.0-license.txt</url>
+      <distribution>manual</distribution>
+    </license>
+  </licenses>
+
+  <organization>
+    <name>BEA</name>
+    <url>http://www.bea.com</url>
+  </organization>
+
+</project>

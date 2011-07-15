@@ -1,0 +1,49 @@
+Build instructions
+==================
+
+See http://www.taverna.org.uk/developers/source-code/ for updated details.
+
+You'll need these to compile:
+
+Sun Java JDK 1.5 or newer (1.6 recommended)
+ * http://java.sun.com/javase/downloads
+
+Maven 2.0.10 or newer (2.2.1 recommended)
+ * http://maven.apache.org/
+
+Graphviz  (for diagram generation in the compiled product)
+ * http://www.graphviz.org/
+
+
+
+Compiling
+---------
+
+Run:
+
+  export MAVEN_OPTS=-Xmx128m    (or equivalent for your shell/OS)
+  mvn clean install -Prelease 
+
+At first time run this will download various external dependencies from public
+Maven repositories. Note that these dependencies are available under various
+free licences such as the Apache licence and LGPL. 
+
+    For Taverna 1 support some dependencies from Taverna 1 are also downloaded
+    from the myGrid repositories. The source code for these can be found at
+    http://launchpad.net/taverna/t1/1.7.2/+download/taverna-workbench-1.7.2-src.zip
+
+
+When the build is complete, go to
+products/net.sf.taverna.t2.taverna-workbench/workbench-distro/target where you
+should find taverna-workbench-2.1.0.zip - unzip and run Taverna from there.
+
+
+Subversion
+----------
+Note that in Subversion all modules have separate trunk/branches/tags structures
+to facilitate individual release cycles. 
+
+This virtual build tree uses svn:external properties to link say 
+engine/net.sf.taverna.t2.core from /taverna/engine/net.sf.taverna.t2.core/trunk 
+or equivalent tag.  You will need Subversion 1.5 or newer for this functionality. 
+

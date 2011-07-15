@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!-- example of a fully specified provenance query -->
+<pquery xmlns="http://taverna.org.uk/2009/provenance/pquery/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://taverna.org.uk/2009/provenance/pquery/ pquery.xsd">
+	<scope workflowId="ac41d494-f77c-4dd5-919c-47272aa6a848">
+		<runs>
+			<!-- Should not really be allowed by schema -->
+			<range />
+			
+			<!-- From 2009-02-15 till today -->
+			<range from="2009-02-15"/>			
+			
+			<!-- Up to (and including?) 2005-12-31  -->
+			<range to="2005-12-31" />
+			
+			<!-- The 14 (13?) first days of 2009 -->
+			<range from="2009-01-01" to="2009-01-14"/>
+			
+		</runs>
+	</scope>
+</pquery>

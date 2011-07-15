@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>core</artifactId>
+		<version>2.0-SNAPSHOT</version>
+	</parent>
+	<groupId>net.sf.taverna.t2.core</groupId>
+	<artifactId>reference-api</artifactId>
+	<packaging>bundle</packaging>
+	<name>API package for the T2 reference manager</name>
+	<description>
+		Core APIs and extension points for the T2 reference manager.
+		This includes the SPIs for external references, translators and
+		publishers.
+	</description>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Import-Package>org.springframework.transaction.*;resolution:=optional, *</Import-Package>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>org.springframework.transaction</artifactId>
+			<version>${spring.version}</version>
+			<!--<optional>true</optional> -->
+			<!-- Made non-optional as work around for java compiler bug : -->
+			<!-- An exception has occurred in the compiler (1.6.0_22) -->
+			<!-- com.sun.tools.javac.code.Symbol$CompletionFailure: -->
+			<!-- class file for org.springframework.transaction.annotation.Propagation not found -->
+		</dependency>
+	</dependencies>
+</project>
