@@ -6,7 +6,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
 if ((selectionValues == void) || (selectionValues == null) || (selectionValues.isEmpty())) {
-	throw new RuntimeException("selectionValues cannot be empty");
+	throw new RuntimeException("selectionValues must be specified and non-empty");
 }
 
 ButtonGroup group = new ButtonGroup();
