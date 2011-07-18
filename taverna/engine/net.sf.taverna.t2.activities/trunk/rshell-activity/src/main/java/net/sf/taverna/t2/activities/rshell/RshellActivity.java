@@ -143,7 +143,7 @@ public class RshellActivity extends
 
 				synchronized(lock) {
 
-					URI rServerURI = URI.create("rserve://"
+					URI rServerURI = java.net.URI.create("rserve://"
 							+ settings.getHost() + ":" + settings.getPort()); // this URI is used to identify Rshell service in Credential Manager
 					// create connection
 					try {
