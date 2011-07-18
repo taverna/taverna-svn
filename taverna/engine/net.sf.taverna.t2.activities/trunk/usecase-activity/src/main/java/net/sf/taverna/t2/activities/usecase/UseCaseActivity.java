@@ -14,6 +14,7 @@ import net.sf.taverna.t2.activities.externaltool.ExternalToolActivityConfigurati
 import net.sf.taverna.t2.activities.externaltool.manager.InvocationGroupManager;
 import net.sf.taverna.t2.annotation.AnnotationChain;
 import net.sf.taverna.t2.workflowmodel.Edit;
+import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
@@ -107,6 +108,11 @@ public class UseCaseActivity implements SupersededActivity<UseCaseActivityConfig
 	@Override
 	public UseCaseActivityConfigurationBean getConfiguration() {
 		return null;
+	}
+
+	@Override
+	public void setEdits(Edits edits) {
+		
 	}
 
 }
