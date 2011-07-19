@@ -1,20 +1,20 @@
 /*******************************************************************************
  * Copyright (C) 2009 Ingo Wassink of University of Twente, Netherlands and
- * The University of Manchester   
- * 
+ * The University of Manchester
+ *
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
- * 
+ *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public License
  *  as published by the Free Software Foundation; either version 2.1 of
  *  the License, or (at your option) any later version.
- *    
+ *
  *  This program is distributed in the hope that it will be useful, but
  *  WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
- *    
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
@@ -28,22 +28,20 @@
 package net.sf.taverna.t2.activities.rshell;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 
-import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortsDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.config.ConfigurationBean;
 import net.sf.taverna.t2.workflowmodel.processor.config.ConfigurationProperty;
 
 /**
  * A configuration bean specific to the Rshell activity.
- * 
+ *
  */
 @ConfigurationBean(uri = RshellActivity.URI + "#Config")
 public class RshellActivityConfigurationBean extends
 		ActivityPortsDefinitionBean {
-	
+
 	/** false for old r versions, true for newer (1.6+) */
 	private boolean rVersion;
 
@@ -62,17 +60,17 @@ public class RshellActivityConfigurationBean extends
 	 */
 	private Object readResolve(){
 		if (connectionSettings != null){
-			if (connectionSettings.getUsername() == null) 
+			if (connectionSettings.getUsername() == null)
 				connectionSettings.setUsername("");
-			if (connectionSettings.getPassword() == null) 
-				connectionSettings.setPassword("");			
+			if (connectionSettings.getPassword() == null)
+				connectionSettings.setPassword("");
 		}
 			return this;
 	}
-	
+
 	/**
 	 * Returns the script.
-	 * 
+	 *
 	 * @return the script
 	 */
 	public String getScript() {
@@ -84,7 +82,7 @@ public class RshellActivityConfigurationBean extends
 
 	/**
 	 * Sets the script.
-	 * 
+	 *
 	 * @param script
 	 *            the new script
 	 */
@@ -95,7 +93,7 @@ public class RshellActivityConfigurationBean extends
 
 	/**
 	 * Returns the connectionSettings.
-	 * 
+	 *
 	 * @return the connectionSettings
 	 */
 	public RshellConnectionSettings getConnectionSettings() {
@@ -107,7 +105,7 @@ public class RshellActivityConfigurationBean extends
 
 	/**
 	 * Sets the connectionSettings.
-	 * 
+	 *
 	 * @param connectionSettings
 	 *            the new connectionSettings
 	 */
