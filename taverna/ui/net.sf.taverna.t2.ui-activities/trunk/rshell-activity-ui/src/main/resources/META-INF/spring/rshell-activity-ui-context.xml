@@ -1,16 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
                       http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<bean id="RshellActivityIcon" class="net.sf.taverna.t2.activities.rshell.servicedescriptions.RshellActivityIcon" />
 
 	<bean id="RshellTemplateService" class="net.sf.taverna.t2.activities.rshell.servicedescriptions.RshellTemplateService" />
 
-	<bean id="AddRshellTemplateAction" class="net.sf.taverna.t2.activities.rshell.menu.AddRshellTemplateAction" />
-	<bean id="AddRshellTemplateMenuAction" class="net.sf.taverna.t2.activities.rshell.menu.AddRshellTemplateMenuAction" />
-	<bean id="ConfigureRshellMenuAction" class="net.sf.taverna.t2.activities.rshell.menu.ConfigureRshellMenuAction" />
+	<bean id="AddRshellTemplateAction" class="net.sf.taverna.t2.activities.rshell.menu.AddRshellTemplateAction">
+			<property name="editManager" ref="editManager" />
+			<property name="menuManager" ref="menuManager" />
+			<property name="dataflowSelectionManager" ref="dataflowSelectionManager" />
+	</bean>
+	<bean id="AddRshellTemplateMenuAction" class="net.sf.taverna.t2.activities.rshell.menu.AddRshellTemplateMenuAction">
+			<property name="editManager" ref="editManager" />
+			<property name="menuManager" ref="menuManager" />
+			<property name="dataflowSelectionManager" ref="dataflowSelectionManager" />
+	</bean>
+	<bean id="ConfigureRshellMenuAction" class="net.sf.taverna.t2.activities.rshell.menu.ConfigureRshellMenuAction">
+			<property name="editManager" ref="editManager" />
+			<property name="fileManager" ref="fileManager" />
+	</bean>
 
-	<bean id="RshellActivityContextualViewFactory" class="net.sf.taverna.t2.activities.rshell.views.RshellActivityContextualViewFactory" />
+	<bean id="RshellActivityContextualViewFactory" class="net.sf.taverna.t2.activities.rshell.views.RshellActivityContextualViewFactory">
+			<property name="editManager" ref="editManager" />
+			<property name="fileManager" ref="fileManager" />
+	</bean>
 
 </beans>

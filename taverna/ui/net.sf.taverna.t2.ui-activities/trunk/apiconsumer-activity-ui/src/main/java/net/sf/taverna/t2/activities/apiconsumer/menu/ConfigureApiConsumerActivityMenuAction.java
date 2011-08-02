@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package net.sf.taverna.t2.activities.apiconsumer.menu;
 
@@ -8,6 +8,8 @@ import javax.swing.Action;
 import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivity;
 import net.sf.taverna.t2.activities.apiconsumer.actions.ApiConsumerActivityConfigurationAction;
 import net.sf.taverna.t2.workbench.activitytools.AbstractConfigureActivityMenuAction;
+import net.sf.taverna.t2.workbench.edits.EditManager;
+import net.sf.taverna.t2.workbench.file.FileManager;
 
 /**
  * @author alanrw
@@ -16,17 +18,28 @@ import net.sf.taverna.t2.workbench.activitytools.AbstractConfigureActivityMenuAc
 public class ConfigureApiConsumerActivityMenuAction extends
 		AbstractConfigureActivityMenuAction<ApiConsumerActivity> {
 
+	private EditManager editManager;
+	private FileManager fileManager;
+
 	public ConfigureApiConsumerActivityMenuAction() {
 		super(ApiConsumerActivity.class);
 	}
-	
+
 	@Override
 	protected Action createAction() {
 		ApiConsumerActivityConfigurationAction configAction = new ApiConsumerActivityConfigurationAction(
-				findActivity(), getParentFrame());
+				findActivity(), getParentFrame(), editManager, fileManager);
 		configAction.putValue(Action.NAME, ApiConsumerActivityConfigurationAction.CONFIGURE_APICONSUMER_ACTIVITY);
 		addMenuDots(configAction);
 		return configAction;
+	}
+
+	public void setEditManager(EditManager editManager) {
+		this.editManager = editManager;
+	}
+
+	public void setFileManager(FileManager fileManager) {
+		this.fileManager = fileManager;
 	}
 
 }
