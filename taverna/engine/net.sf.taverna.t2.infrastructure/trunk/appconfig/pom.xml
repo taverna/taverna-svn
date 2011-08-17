@@ -14,17 +14,17 @@
 			NOTE: Always update ApplicationRuntime.getSystemArtifacts() to
 			include these dependencies as system artifacts.
 		-->
-		<dependency>
+		<!-- <dependency>
 			<groupId>net.sf.taverna.t2.infrastructure</groupId>
 			<artifactId>launcher-api</artifactId>
 			<version>${project.version}</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>net.sf.taverna.t2.infrastructure</groupId>
 			<artifactId>prelauncher</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>net.sf.taverna.t2.infrastructure</groupId>
 			<artifactId>raven</artifactId>
 			<version>${project.version}</version>
@@ -33,7 +33,7 @@
 			<groupId>net.sf.taverna.t2.infrastructure</groupId>
 			<artifactId>raven-log4j</artifactId>
 			<version>${project.version}</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

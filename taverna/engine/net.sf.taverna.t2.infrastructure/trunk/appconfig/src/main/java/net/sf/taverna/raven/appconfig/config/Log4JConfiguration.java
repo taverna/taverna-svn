@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright (C) 2007 The University of Manchester   
- * 
+ * Copyright (C) 2007 The University of Manchester
+ *
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
- * 
+ *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public License
  *  as published by the Free Software Foundation; either version 2.1 of
  *  the License, or (at your option) any later version.
- *    
+ *
  *  This program is distributed in the hope that it will be useful, but
  *  WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
- *    
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
@@ -27,8 +27,6 @@ import java.util.Properties;
 import net.sf.taverna.raven.appconfig.ApplicationConfig;
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.raven.appconfig.bootstrap.AbstractConfiguration;
-import net.sf.taverna.raven.log.Log;
-import net.sf.taverna.raven.log.Log4jLog;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -38,13 +36,13 @@ import org.apache.log4j.RollingFileAppender;
 
 public class Log4JConfiguration extends AbstractConfiguration {
 	public final static String LOG4J_PROPERTIES = "log4j.properties";
-	
+
 	protected static class Singleton {
 		protected static Log4JConfiguration instance = new Log4JConfiguration();
 	}
-	
+
 	protected static boolean log4jConfigured = false;
-	
+
 	protected Log4JConfiguration() {
 		prepareLog4J();
 	}
@@ -52,15 +50,15 @@ public class Log4JConfiguration extends AbstractConfiguration {
 	public static Log4JConfiguration getInstance() {
 		return Singleton.instance;
 	}
-	
+
 	public void prepareLog4J() {
 		if (log4jConfigured) {
 			return;
 		}
 		LogManager.resetConfiguration();
 		//BasicConfigurator.configure();
-		
-		
+
+
 		Properties log4jProperties = getProperties();
 		if (log4jProperties != null && ! log4jProperties.isEmpty()) {
 			LogManager.resetConfiguration();
@@ -85,16 +83,16 @@ public class Log4JConfiguration extends AbstractConfiguration {
 		} catch (IOException e) {
 			System.err.println("Could not log to " + logFilePath);
 		}
-		
-		
-		
-		if (! (Log.getImplementation() instanceof Log4jLog)) {
-			Log.setImplementation(new Log4jLog());
-		}
+
+
+
+//		if (! (Log.getImplementation() instanceof Log4jLog)) {
+//			Log.setImplementation(new Log4jLog());
+//		}
 		log4jConfigured = true;
 		// FIXME: Why is this here?
 		// Profile profile = ProfileFactory.getInstance().getProfile();
-		
+
 	}
 
 	public File getLogFile() {
@@ -110,7 +108,7 @@ public class Log4JConfiguration extends AbstractConfiguration {
 		}
 		return logDir;
 	}
-	
+
 
 	@Override
 	protected String getConfigurationFilename() {

@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright (C) 2007 The University of Manchester   
- * 
+ * Copyright (C) 2007 The University of Manchester
+ *
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
- * 
+ *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public License
  *  as published by the Free Software Foundation; either version 2.1 of
  *  the License, or (at your option) any later version.
- *    
+ *
  *  This program is distributed in the hope that it will be useful, but
  *  WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
- *    
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
@@ -24,14 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
-
-import net.sf.taverna.raven.repository.Artifact;
-import net.sf.taverna.raven.repository.BasicArtifact;
-import net.sf.taverna.raven.repository.Repository;
-import net.sf.taverna.raven.repository.impl.DummyRepository;
-import net.sf.taverna.raven.repository.impl.LocalRepository;
 
 import org.apache.log4j.Logger;
 
@@ -63,7 +55,7 @@ public class ApplicationRuntime {
 
 	private ApplicationUserHome appUserHome;
 
-	private Repository ravenRepository;
+//	private Repository ravenRepository;
 
 	private static class ApplicationRuntimeHolder {
 		private static ApplicationRuntime instance = new ApplicationRuntime();
@@ -83,7 +75,7 @@ public class ApplicationRuntime {
 
 	/**
 	 * Get the application runtime settings.
-	 * 
+	 *
 	 * @return
 	 */
 	public static ApplicationRuntime getInstance() {
@@ -92,7 +84,7 @@ public class ApplicationRuntime {
 
 	/**
 	 * Get the local repository directory.
-	 * 
+	 *
 	 * @return
 	 */
 	public synchronized File getLocalRepositoryDir() {
@@ -149,7 +141,7 @@ public class ApplicationRuntime {
 	/**
 	 * Set (and if necessary create) the local repository directory to be
 	 * returned by {@link #getLocalRepositoryDir()}.
-	 * 
+	 *
 	 * @param localRepositoryDir
 	 *            Directory that is to be the the new local repository
 	 * @throws IOException
@@ -166,98 +158,98 @@ public class ApplicationRuntime {
 		}
 	}
 
-	public synchronized Repository getRavenRepository() {
-		if (ravenRepository != null) {
-			return ravenRepository;
-		}
-		ravenRepository = makeRavenRepository();
-		ravenRepository.update();
-		return ravenRepository;
-	}
-
-	private Repository makeRavenRepository() {
-		Repository repository;
-		if (!appConfig.isUsingRaven()) {
-			// FIXME: Avoid raven.eclipse hack
-			System.setProperty("raven.eclipse", "true");
-			repository = new DummyRepository();
-			return repository;
-		}
-		repository = LocalRepository.getRepository(getLocalRepositoryDir(),
-				getClassLoader(), getSystemArtifacts());
-		
-		URL defaultRepository = getDefaultRepositoryDir();
-		if (defaultRepository != null) {
-			repository.addRemoteRepository(defaultRepository);
-		}		
-		return repository;
-	}
-
-	public Set<Artifact> getSystemArtifacts() {
-		Set<Artifact> artifacts = new HashSet<Artifact>();
-		// Raven, Launcher and plugin system
-		artifacts.add(new BasicArtifact(INFRASTRUCTURE_GROUPID, "raven",
-				INFRASTRUCTURE_VERSION));
-		artifacts.add(new BasicArtifact(INFRASTRUCTURE_GROUPID,
-				"raven-log4j", INFRASTRUCTURE_VERSION));
-		artifacts.add(new BasicArtifact(INFRASTRUCTURE_GROUPID,
-				"prelauncher", INFRASTRUCTURE_VERSION));
-		artifacts.add(new BasicArtifact(INFRASTRUCTURE_GROUPID,
-				"launcher", INFRASTRUCTURE_VERSION));
-		artifacts.add(new BasicArtifact(INFRASTRUCTURE_GROUPID,
-				"launcher-api", INFRASTRUCTURE_VERSION));
-		artifacts.add(new BasicArtifact(INFRASTRUCTURE_GROUPID,
-				"plugins-api", INFRASTRUCTURE_VERSION));
-		artifacts.add(new BasicArtifact(INFRASTRUCTURE_GROUPID,
-				"appconfig", INFRASTRUCTURE_VERSION));
-		artifacts.add(new BasicArtifact("net.sf.taverna.t2.workbench",
-				"reference-config", PLATFORM_VERSION));
-
-		// External dependencies for Raven
-		artifacts
-				.add(new BasicArtifact("commons-codec", "commons-codec", "1.2"));
-		artifacts.add(new BasicArtifact("commons-httpclient",
-				"commons-httpclient", "3.1"));
-		artifacts.add(new BasicArtifact("commons-logging", "commons-logging",
-				"1.0.4"));
-		artifacts.add(new BasicArtifact("jdom", "jdom", "1.0"));
-		artifacts.add(new BasicArtifact("log4j", "log4j", "1.2.12"));
-
-		// t2reference, Spring and Hibernate (From raven_local.xml)
-		artifacts.add(new BasicArtifact("net.sf.taverna.t2", "t2reference-api",
-				REFERENCE_VERSION));
-		artifacts.add(new BasicArtifact("net.sf.taverna.t2", "platform",
-				PLATFORM_VERSION));
-		artifacts.add(new BasicArtifact("commons-logging", "commons-logging",
-				"1.1.1"));
-
-		artifacts.add(new BasicArtifact("org.springframework", "spring-beans",
-				SPRING_VERSION));
-		artifacts.add(new BasicArtifact("org.springframework",
-				"spring-context", SPRING_VERSION));
-		artifacts.add(new BasicArtifact("org.springframework", "spring-core",
-				SPRING_VERSION));
-		artifacts.add(new BasicArtifact("org.springframework", "spring-jdbc",
-				SPRING_VERSION));
-		artifacts.add(new BasicArtifact("org.springframework", "spring-orm",
-				SPRING_VERSION));
-		artifacts.add(new BasicArtifact("org.springframework", "spring-tx",
-				SPRING_VERSION));
-
-		artifacts.add(new BasicArtifact("aopalliance", "aopalliance", "1.0"));
-		artifacts.add(new BasicArtifact("geronimo-spec", "geronimo-spec-jta",
-				"1.0-M1"));
-
-		artifacts.add(new BasicArtifact("org.hibernate", "hibernate",
-				"3.2.5.ga.raven"));
-		artifacts.add(new BasicArtifact("dom4j", "dom4j", "1.6.1"));
-		artifacts.add(new BasicArtifact("cglib", "cglib", "2.1_3"));
-		artifacts.add(new BasicArtifact("asm", "asm", "1.5.3"));
-		artifacts.add(new BasicArtifact("commons-collections",
-				"commons-collections", "2.1.1"));
-
-		return artifacts;
-	}
+//	public synchronized Repository getRavenRepository() {
+//		if (ravenRepository != null) {
+//			return ravenRepository;
+//		}
+//		ravenRepository = makeRavenRepository();
+//		ravenRepository.update();
+//		return ravenRepository;
+//	}
+//
+//	private Repository makeRavenRepository() {
+//		Repository repository;
+//		if (!appConfig.isUsingRaven()) {
+//			// FIXME: Avoid raven.eclipse hack
+//			System.setProperty("raven.eclipse", "true");
+//			repository = new DummyRepository();
+//			return repository;
+//		}
+//		repository = LocalRepository.getRepository(getLocalRepositoryDir(),
+//				getClassLoader(), getSystemArtifacts());
+//
+//		URL defaultRepository = getDefaultRepositoryDir();
+//		if (defaultRepository != null) {
+//			repository.addRemoteRepository(defaultRepository);
+//		}
+//		return repository;
+//	}
+//
+//	public Set<Artifact> getSystemArtifacts() {
+//		Set<Artifact> artifacts = new HashSet<Artifact>();
+//		// Raven, Launcher and plugin system
+//		artifacts.add(new BasicArtifact(INFRASTRUCTURE_GROUPID, "raven",
+//				INFRASTRUCTURE_VERSION));
+//		artifacts.add(new BasicArtifact(INFRASTRUCTURE_GROUPID,
+//				"raven-log4j", INFRASTRUCTURE_VERSION));
+//		artifacts.add(new BasicArtifact(INFRASTRUCTURE_GROUPID,
+//				"prelauncher", INFRASTRUCTURE_VERSION));
+//		artifacts.add(new BasicArtifact(INFRASTRUCTURE_GROUPID,
+//				"launcher", INFRASTRUCTURE_VERSION));
+//		artifacts.add(new BasicArtifact(INFRASTRUCTURE_GROUPID,
+//				"launcher-api", INFRASTRUCTURE_VERSION));
+//		artifacts.add(new BasicArtifact(INFRASTRUCTURE_GROUPID,
+//				"plugins-api", INFRASTRUCTURE_VERSION));
+//		artifacts.add(new BasicArtifact(INFRASTRUCTURE_GROUPID,
+//				"appconfig", INFRASTRUCTURE_VERSION));
+//		artifacts.add(new BasicArtifact("net.sf.taverna.t2.workbench",
+//				"reference-config", PLATFORM_VERSION));
+//
+//		// External dependencies for Raven
+//		artifacts
+//				.add(new BasicArtifact("commons-codec", "commons-codec", "1.2"));
+//		artifacts.add(new BasicArtifact("commons-httpclient",
+//				"commons-httpclient", "3.1"));
+//		artifacts.add(new BasicArtifact("commons-logging", "commons-logging",
+//				"1.0.4"));
+//		artifacts.add(new BasicArtifact("jdom", "jdom", "1.0"));
+//		artifacts.add(new BasicArtifact("log4j", "log4j", "1.2.12"));
+//
+//		// t2reference, Spring and Hibernate (From raven_local.xml)
+//		artifacts.add(new BasicArtifact("net.sf.taverna.t2", "t2reference-api",
+//				REFERENCE_VERSION));
+//		artifacts.add(new BasicArtifact("net.sf.taverna.t2", "platform",
+//				PLATFORM_VERSION));
+//		artifacts.add(new BasicArtifact("commons-logging", "commons-logging",
+//				"1.1.1"));
+//
+//		artifacts.add(new BasicArtifact("org.springframework", "spring-beans",
+//				SPRING_VERSION));
+//		artifacts.add(new BasicArtifact("org.springframework",
+//				"spring-context", SPRING_VERSION));
+//		artifacts.add(new BasicArtifact("org.springframework", "spring-core",
+//				SPRING_VERSION));
+//		artifacts.add(new BasicArtifact("org.springframework", "spring-jdbc",
+//				SPRING_VERSION));
+//		artifacts.add(new BasicArtifact("org.springframework", "spring-orm",
+//				SPRING_VERSION));
+//		artifacts.add(new BasicArtifact("org.springframework", "spring-tx",
+//				SPRING_VERSION));
+//
+//		artifacts.add(new BasicArtifact("aopalliance", "aopalliance", "1.0"));
+//		artifacts.add(new BasicArtifact("geronimo-spec", "geronimo-spec-jta",
+//				"1.0-M1"));
+//
+//		artifacts.add(new BasicArtifact("org.hibernate", "hibernate",
+//				"3.2.5.ga.raven"));
+//		artifacts.add(new BasicArtifact("dom4j", "dom4j", "1.6.1"));
+//		artifacts.add(new BasicArtifact("cglib", "cglib", "2.1_3"));
+//		artifacts.add(new BasicArtifact("asm", "asm", "1.5.3"));
+//		artifacts.add(new BasicArtifact("commons-collections",
+//				"commons-collections", "2.1.1"));
+//
+//		return artifacts;
+//	}
 
 	public ClassLoader getClassLoader() {
 		ClassLoader ourClassLoader = getClass().getClassLoader();
@@ -317,7 +309,7 @@ public class ApplicationRuntime {
 			return null;
 		}
 		return repositoryURI;
-		
+
 	}
 
 	public URL getSplashScreenURL() {

@@ -18,18 +18,15 @@
 		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.infrastructure/trunk/</developerConnection>
 		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/engine/net.sf.taverna.t2.infrastructure/trunk</url>
 	</scm>
-	
+
 	<modules>
 		<module>appconfig</module>
-		<module>helloworld</module>
-		<module>helloworld-launcher</module>
-		<module>launcher</module>
-		<module>launcher-api</module>
-		<module>plugins-api</module>
+		<!-- <module>helloworld</module> -->
+		<!-- <module>helloworld-launcher</module> -->
+		<!-- <module>launcher</module> -->
+		<!-- <module>launcher-api</module> -->
+		<!-- <module>plugins-api</module> -->
 		<module>prelauncher</module>
-		<module>raven</module>
-		<module>raven-log4j</module>
-		<module>spi-discovery-api</module>
 	</modules>
 	<repositories>
 		<repository>
