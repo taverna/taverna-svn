@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package net.sf.taverna.t2.provenance.client;
 
@@ -30,21 +30,21 @@ public class NativeToRDF extends ProvenanceBaseClient {
 	static Logger logger = Logger.getLogger(NativeToRDF.class);
 	private static URL resource;
 
-	/**
-	 * @param args
-	 * @throws Exception 
-	 */
-	public static void main(String[] args) throws Exception {
-
-		NativeToRDF n2RDF = null;
-		if (System.getProperty("conf") != null) {
-			n2RDF = new NativeToRDF(System.getProperty("conf") );
-		} else {
-			n2RDF = new NativeToRDF();
-		}
-		n2RDF.setUp();
-		n2RDF.generateRDF();
-	}
+//	/**
+//	 * @param args
+//	 * @throws Exception
+//	 */
+//	public static void main(String[] args) throws Exception {
+//
+//		NativeToRDF n2RDF = null;
+//		if (System.getProperty("conf") != null) {
+//			n2RDF = new NativeToRDF(System.getProperty("conf") );
+//		} else {
+//			n2RDF = new NativeToRDF();
+//		}
+//		n2RDF.setUp();
+//		n2RDF.generateRDF();
+//	}
 
 	public NativeToRDF() { super(); }
 
@@ -54,7 +54,7 @@ public class NativeToRDF extends ProvenanceBaseClient {
 
 	public void generateRDF() throws SQLException, FileNotFoundException {
 
-		String latestRun = pAccess.getLatestRunID();		
+		String latestRun = pAccess.getLatestRunID();
 		StandAloneRDFProvenanceWriter  RDFpw = new StandAloneRDFProvenanceWriter(pAccess.getPq());
 		generateRDF(latestRun, RDFpw);
 	}
@@ -75,11 +75,11 @@ public class NativeToRDF extends ProvenanceBaseClient {
 
 			// also add the <workflow ID, wfinstanceID> pair
 			RDFpw.addWorkflowRun(w.getWorkflowId(), runId);
-		
 
 
 
-		// add all processors. 
+
+		// add all processors.
 		List<ProvenanceProcessor> allProcessors = pAccess.getProcessorsForWorkflowID(w.getWorkflowId());
 
 		for (ProvenanceProcessor pp:allProcessors) {
@@ -88,7 +88,7 @@ public class NativeToRDF extends ProvenanceBaseClient {
 			RDFpw.addProcessor(pp.getProcessorName(), pp.getFirstActivityClassName(), pp.getWorkflowId(), isTopLevel);
 		}
 
-		// add all Ports		
+		// add all Ports
 		List<Port> allPorts = pAccess.getAllPortsInDataflow(w.getWorkflowId());
 
 		for (Port v:allPorts) { RDFpw.addPort(v); }
@@ -96,17 +96,17 @@ public class NativeToRDF extends ProvenanceBaseClient {
 		// add all DataLinks
 		HashMap<String, String> queryConstraints = new HashMap<String, String>();
 		queryConstraints.put("instanceID", runId);
-		
+
 		List<DataLink> arcs = pAccess.getDataLinks(w.getWorkflowId());
 
 		for (DataLink a:arcs) {
-			RDFpw.addDataLink(a.getSourcePortName(), a.getSourceProcessorName(), 
+			RDFpw.addDataLink(a.getSourcePortName(), a.getSourceProcessorName(),
 					a.getDestinationPortName(), a.getDestinationProcessorName(), a.getWorkflowId());
 		}
 		}
 
 
-		// add all processorBindings 
+		// add all processorBindings
 		//		for (Workflow w: latestWorkflows) {
 		//queryConstraints.clear();
 		//queryConstraints.put("workflowRunId", latestRun);
@@ -124,12 +124,12 @@ public class NativeToRDF extends ProvenanceBaseClient {
 		queryConstraints.put("VB.workflowRunId", runId);
 		List<PortBinding> varBindings = pAccess.getPortBindings(queryConstraints);
 
-		for (PortBinding vb:varBindings) { 
-			T2Reference ref = getInvocationContext().getReferenceService().referenceFromString(vb.getValue());			
+		for (PortBinding vb:varBindings) {
+			T2Reference ref = getInvocationContext().getReferenceService().referenceFromString(vb.getValue());
 
 			// Identified data = ic.getReferenceService().resolveIdentifier(ref, null, ic);
 
-			Object data = getInvocationContext().getReferenceService().renderIdentifier(ref, Object.class, getInvocationContext()); 
+			Object data = getInvocationContext().getReferenceService().renderIdentifier(ref, Object.class, getInvocationContext());
 
 			//			logger.info("data for ref "+vb.getValue()+" : "+ data);
 

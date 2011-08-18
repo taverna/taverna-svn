@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package net.sf.taverna.t2.provenance.client;
 
@@ -41,9 +41,9 @@ import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
  * @author Paolo Missier<p/>
- * This is a provenance API client designed to extract a complete set of dependencies from a native provenance DB 
+ * This is a provenance API client designed to extract a complete set of dependencies from a native provenance DB
  * so that it can be uploaded into the DataONE common provenance model<br/>
- * this class simplifies the users' task by using the hard-coded provenance query <it>completeGraph.xml</it> rather than reading 
+ * this class simplifies the users' task by using the hard-coded provenance query <it>completeGraph.xml</it> rather than reading
  * a query file from an explicit user config.<br/>
  * All of the info extracted refers to the <it>latest run</it> stored in the DB. Therefore if you want to extract provenance
  * for a specific workflow, first run it in Taverna, then run this app.
@@ -56,7 +56,7 @@ public class NativeToDataONEModel extends ProvenanceBaseClient {
 	private static String queryFile = "src/main/resources/completeGraph.xml";
 
 	private static Logger logger = Logger.getLogger(NativeToDataONEModel.class);
-	
+
 	Model m = null;
 
 	public static void main(String[] args) throws Exception {
@@ -67,35 +67,35 @@ public class NativeToDataONEModel extends ProvenanceBaseClient {
 
 		NativeToDataONEModel client = new NativeToDataONEModel();
 
-		client.setUp();
+//		client.setUp();
 
-		////// 
+		//////
 		// step 1: extract structural information from the DB
 		//////
 		client.reportStructure();
 
-		////// 
+		//////
 		// step 2: extract dynamic provenance trace for the latest run, using a provenance query
-		//////		
+		//////
 		QueryAnswer answer = client.queryProvenance(p);
 
 		// look at this for clues on how to extract information from the native trace
 		if (answer!=null) client.reportAnswer(answer);
 
-		
+
 		/// technical step:
 		//  load OPM graph from answer into a Jena model
 		client.setModel(client.loadOPMGraph(answer));
-		
-		
-		////// 
+
+
+		//////
 		// step 4: upload data using references from the OPM graph.
 		//         This generates a new graph with added assertions for the public data references
 		//////
 		client.setModel(client.publishDataAndMapReferences(client.getModel()));
-		
-		
-		////// 
+
+
+		//////
 		// step 5: retrieve OPM relationships from the new OPM graph. Optionally report sameAs equivalences
 		//////
 		client.reportOPMRelations(client.getModel());
@@ -108,17 +108,17 @@ public class NativeToDataONEModel extends ProvenanceBaseClient {
 	 * uses class OPMDAtaUploader, which can also be used as a standalone util that operates on OPM graph files in XML format
 	 * @param model
 	 * @return
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private Model publishDataAndMapReferences(Model model) throws IOException {
-		
+
 		OPMDataUploader uploader = new OPMDataUploader();
 		Model m  = null;
-		
+
 		FTPClient ftp = uploader.ftpConnect();
 
-		if (ftp != null) { 
-			 m = uploader.uploadAllData(model, ftp);		
+		if (ftp != null) {
+			 m = uploader.uploadAllData(model, ftp);
 		} else {
 			logger.fatal("could not connect to ftp server, exiting");
 		}
@@ -132,20 +132,20 @@ public class NativeToDataONEModel extends ProvenanceBaseClient {
 	private Model loadOPMGraph(QueryAnswer answer) {
 
 		String OPMGraph = answer.getOPMAnswer_AsRDF();
-		
+
 		// get the OPM graph, if available
 		if (answer.getOPMAnswer_AsRDF() == null) {
 			logger.info("save OPM graph: OPM graph was NOT generated.");
 			return null;
 		}
-		return openModel(OPMGraph);		
+		return openModel(OPMGraph);
 	}
 
 
 
 	/**
-	 * reads in the OPM graph associated to the query answer in the RDF format and loads it into a Jena model so it can be queried easily 
-	 * @param answer 
+	 * reads in the OPM graph associated to the query answer in the RDF format and loads it into a Jena model so it can be queried easily
+	 * @param answer
 	 */
 	private void reportOPMRelations(Model m) {
 
@@ -158,15 +158,15 @@ public class NativeToDataONEModel extends ProvenanceBaseClient {
 
 	private void reportUsed() {
 		// query the model to extract the relations we need
-		String usedQuery = 
+		String usedQuery =
 			"PREFIX t: <http://ns.taverna.org.uk/2011/provenance/opm/> \n"+
-			"PREFIX opm: <http://www.ipaw.info/2007/opm#> \n"+			
+			"PREFIX opm: <http://www.ipaw.info/2007/opm#> \n"+
 			"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n"+
 			"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n"+
 			"PREFIX owl:  <http://www.w3.org/2002/07/owl#> \n"+
 			"SELECT ?a ?p ?r ?a1\n"+
 			"WHERE  { \n"+
-			"?u rdf:type opm:Used .\n"+	
+			"?u rdf:type opm:Used .\n"+
 			"?u opm:usedArtifact ?a . \n"+
 			"?u opm:usedByProcess ?p . \n"+
 			"?u opm:usedRole  ?r . \n" +
@@ -184,40 +184,40 @@ public class NativeToDataONEModel extends ProvenanceBaseClient {
 			String publicArtifactID=null;
 			String processID =null;
 			String roleID = null;
-			
-			Resource artifactResource =  sol.getResource("a"); 
+
+			Resource artifactResource =  sol.getResource("a");
 			if (artifactResource!= null) artifactID = artifactResource.getURI();
-			
-			Resource publicArtifactResource =  sol.getResource("a1"); 
+
+			Resource publicArtifactResource =  sol.getResource("a1");
 			if (publicArtifactResource!= null) {
 				publicArtifactID = publicArtifactResource.getURI();
 				logger.info("public reference: "+publicArtifactID+" maps to local reference: "+artifactID);
-			}			
-			
-			Resource processResource =  sol.getResource("p"); 
+			}
+
+			Resource processResource =  sol.getResource("p");
 			if (processResource!= null) processID = processResource.getURI();
 
-			Resource roleResource =  sol.getResource("r"); 
+			Resource roleResource =  sol.getResource("r");
 			if (roleResource!= null) roleID = roleResource.getURI();
 
 			logger.info("found Used("+artifactID+","+roleID+","+processID+")");
-		}		
+		}
 	}
 
 
 	private void reportWasGeneratedBy() {
 
 		// query the model to extract the relations we need
-		String usedQuery = 
+		String usedQuery =
 			"PREFIX t: <http://taverna.opm.org/> \n"+
-			"PREFIX opm: <http://www.ipaw.info/2007/opm#> \n"+			
+			"PREFIX opm: <http://www.ipaw.info/2007/opm#> \n"+
 			"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n"+
 			"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n"+
 			"PREFIX owl:  <http://www.w3.org/2002/07/owl#> \n"+
 			"PREFIX owl:  <http://www.w3.org/2002/07/owl#> \n"+
 			"SELECT ?a ?p ?r\n"+
 			"WHERE  { \n"+
-			"?u rdf:type opm:Generated .\n"+	
+			"?u rdf:type opm:Generated .\n"+
 			"?u opm:generatedArtifact ?a . \n"+
 			"?u opm:generatedByProcess ?p . \n"+
 			"?u opm:generatedRole  ?r  \n"  +
@@ -235,25 +235,25 @@ public class NativeToDataONEModel extends ProvenanceBaseClient {
 			String publicArtifactID=null;
 			String processID =null;
 			String roleID = null;
-			
-			Resource artifactResource =  sol.getResource("a"); 
+
+			Resource artifactResource =  sol.getResource("a");
 			if (artifactResource!= null) artifactID = artifactResource.getURI();
-			
-			Resource publicArtifactResource =  sol.getResource("a1"); 
+
+			Resource publicArtifactResource =  sol.getResource("a1");
 			if (publicArtifactResource!= null) {
 				publicArtifactID = publicArtifactResource.getURI();
 				logger.info("public reference: "+publicArtifactID+" maps to local reference: "+artifactID);
-			}			
+			}
 
-			Resource processResource =  sol.getResource("p"); 
+			Resource processResource =  sol.getResource("p");
 			if (processResource!= null) processID = processResource.getURI();
 
-			Resource roleResource =  sol.getResource("r"); 
+			Resource roleResource =  sol.getResource("r");
 			if (roleResource!= null) roleID = roleResource.getURI();
 
 			logger.info("found wasGeneratedBy("+artifactID+","+roleID+","+processID+")");
-		}		
-	
+		}
+
 	}
 
 
@@ -262,14 +262,14 @@ public class NativeToDataONEModel extends ProvenanceBaseClient {
 
 		// get the ID for the latest run in the DB
 		String latestRunID = pAccess.getLatestRunID();
-		
+
 		String mainWorkflowUUID = pAccess.getTopLevelWorkflowID(latestRunID);
-		
+
 		WorkflowTree nestingStructure  = pAccess.getWorkflowNestingStructure(mainWorkflowUUID);
-		
+
 		logger.info("static workflow nestingStructure: ");
 		logger.info(nestingStructure.toString());
-		
+
 		logger.info("extracting provenance for workflow: "+mainWorkflowUUID+ " and for run with ID: "+latestRunID);
 
 		// ports for the entire workflow
@@ -290,10 +290,10 @@ public class NativeToDataONEModel extends ProvenanceBaseClient {
 
 		List<ProvenanceProcessor> myProcs = allProcessors.get(mainWorkflowUUID);  // processors for this specific workflow
 		for (ProvenanceProcessor pp:myProcs) {
-			
+
 			String pname = pp.getProcessorName();
 			logger.info("processor: "+pname);
-			
+
 			logger.info("\twith ports: ");
 			ports = pAccess.getPortsForProcessor(pp.getWorkflowId(), pname);
 
@@ -306,7 +306,7 @@ public class NativeToDataONEModel extends ProvenanceBaseClient {
 			}
 		}
 
-		
+
 	}
 
 
@@ -317,10 +317,10 @@ public class NativeToDataONEModel extends ProvenanceBaseClient {
 
 
 	/**
-	 * parses an XML provenance query into a Query object and invokes {@link ProvenanceAccess.executeQuery()} 
+	 * parses an XML provenance query into a Query object and invokes {@link ProvenanceAccess.executeQuery()}
 	 * @return a bean representing the query answer
-	 * @throws QueryValidationException 
-	 * @throws QueryParseException 
+	 * @throws QueryValidationException
+	 * @throws QueryParseException
 	 * @see QueryAnswer
 	 */
 	protected  QueryAnswer queryProvenance(Properties p) throws QueryParseException, QueryValidationException {
@@ -328,7 +328,7 @@ public class NativeToDataONEModel extends ProvenanceBaseClient {
 		Query q = new Query();
 
 		String querySpecFile = null;
-		if (p != null && p.get("query.file") != null)  
+		if (p != null && p.get("query.file") != null)
 			querySpecFile = (String) p.get("query.file");
 		else {
 			// get filename for XML query spec
@@ -369,12 +369,12 @@ public class NativeToDataONEModel extends ProvenanceBaseClient {
 
 		NativeAnswer nAnswer = answer.getNativeAnswer();
 
-		// nAnswer contains a Map of the form 
+		// nAnswer contains a Map of the form
 		// 	Map<QueryVar, Map<String, List<Dependencies>>>  answer;
 
 		logger.info("*** list of all provenance paths ***");
-		
-		Map<QueryPort, Map<String, List<Dependencies>>>  dependenciesByVar = nAnswer.getAnswer();	
+
+		Map<QueryPort, Map<String, List<Dependencies>>>  dependenciesByVar = nAnswer.getAnswer();
 		for (QueryPort v:dependenciesByVar.keySet()) {
 			logger.info("reporting provenance paths for values on TARGET port: "+v.getProcessorName()+":"+v.getPortName()+":"+v.getPath());
 
@@ -382,7 +382,7 @@ public class NativeToDataONEModel extends ProvenanceBaseClient {
 			for (String path:deps.keySet()) {
 
 				logger.info("provenance of value at position "+path);
-				
+
 				Map<String, String> constraints = new HashMap<String, String>();
 				constraints.put("VB.portName", v.getPortName());
 				constraints.put("VB.processorName", v.getProcessorName());
@@ -401,7 +401,7 @@ public class NativeToDataONEModel extends ProvenanceBaseClient {
 						getInvocationContext().getReferenceService().referenceFromString(bindings.get(0).getValue()), Object.class, getInvocationContext());
 
 				logger.info("\tvalue at position "+path+" is:\n\t "+value);
-				
+
 				// for each Dependencies in the list
 				for (Dependencies dep:deps.get(path)) {
 
@@ -411,31 +411,31 @@ public class NativeToDataONEModel extends ProvenanceBaseClient {
 
 						// we now resolve values on the client, there are no values in the record
 						// returned through the API
-						record.setPrintResolvedValue(false);  
+						record.setPrintResolvedValue(false);
 						logger.info("\t\t\t"+"depends on: "+record.toString());
 
 						// resolve reference if so desired
 						if (derefValues && record.getValue() != null) {
 							T2Reference ref = getInvocationContext().getReferenceService().referenceFromString(record.getValue());
 
-							Object o = getInvocationContext().getReferenceService().renderIdentifier(ref, Object.class, getInvocationContext()); 
+							Object o = getInvocationContext().getReferenceService().renderIdentifier(ref, Object.class, getInvocationContext());
 							logger.info("\t\t\tvalue: "+o);
 						}
 					}
 				}
 			}
-		}		
+		}
 	}
 
-	
+
 	//////////
 	/// Jena-specific stuff
 	//////////
-	
+
 	private Model getModel() { return m; }
 
 	private void setModel(Model m) {
-	       this.m = m;		
+	       this.m = m;
 		}
 
 
@@ -471,16 +471,16 @@ public class NativeToDataONEModel extends ProvenanceBaseClient {
 
 			// read the RDF/XML string
 		m.read(fromString(OPMGraph),null);
-		return m;		
+		return m;
 	}
-	
-	
+
+
 	public static InputStream fromString(String str)
 	{
 	byte[] bytes = str.getBytes();
 	return new ByteArrayInputStream(bytes);
 	}
-	
+
 
 
 }

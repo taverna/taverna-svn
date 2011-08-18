@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package net.sf.taverna.t2.provenance.client;
 
@@ -48,7 +48,7 @@ public class ProvenanceBaseClient {
 	Query q = null;
 	private String workflowAnnotationsFile;
 
-	
+
 	private InvocationContext ic = null;
 	boolean derefValues = false;
 
@@ -63,7 +63,7 @@ public class ProvenanceBaseClient {
 		} catch (Exception e) {
 			logger.fatal(e.getMessage()+" -- cannot continue");
 			System.exit(1);
-		}		
+		}
 
 	}
 
@@ -80,41 +80,41 @@ public class ProvenanceBaseClient {
 		}
 	}
 
-	
+
 	void setDB() {
 		DB_URL_LOCAL = pr.getString("dbhost");  // URL of database server //$NON-NLS-1$
 		DB_USER = pr.getString("dbuser");                        // database user id //$NON-NLS-1$
 		DB_PASSWD = pr.getString("dbpassword"); //$NON-NLS-1$
 	}
-	
-		
-	/**
-	 * default connector type is Derby
-	 * @throws Exception
-	 */
-	protected void setUp() throws Exception {
-		setUp(ProvenanceConnectorType.DERBY);   
-	}
 
 
-	/**
-	 * use explicit connector type
-	 * @param db
-	 * @throws Exception
-	 */
-	protected void setUp(String connectorType) throws Exception {
-
-		setDataSource(connectorType);
-		System.setProperty("raven.eclipse","true");
-
-		pAccess = new ProvenanceAccess(connectorType);  // creates and initializes the provenance API
-
-		pqp = new ProvenanceQueryParser();  // also creates QueryParser for clients that need to process XML queries
-
-		configureInterface();              // sets user-defined preferences
-
-		if (derefValues) setInvocationContext(pAccess.getInvocationContext());	
-	}
+//	/**
+//	 * default connector type is Derby
+//	 * @throws Exception
+//	 */
+//	protected void setUp() throws Exception {
+//		setUp(ProvenanceConnectorType.DERBY);
+//	}
+//
+//
+//	/**
+//	 * use explicit connector type
+//	 * @param db
+//	 * @throws Exception
+//	 */
+//	protected void setUp(String connectorType) throws Exception {
+//
+//		setDataSource(connectorType);
+//		System.setProperty("raven.eclipse","true");
+//
+//		pAccess = new ProvenanceAccess(connectorType);  // creates and initializes the provenance API
+//
+//		pqp = new ProvenanceQueryParser();  // also creates QueryParser for clients that need to process XML queries
+//
+//		configureInterface();              // sets user-defined preferences
+//
+//		if (derefValues) setInvocationContext(pAccess.getInvocationContext());
+//	}
 
 
 
@@ -179,7 +179,7 @@ public class ProvenanceBaseClient {
 
 		// do we need to record actual values as part of the OPM graph?
 		String recordArtifacValuesPref = pr.getString("OPM.recordArtifactValues");
-		if (recordArtifacValuesPref != null) {			
+		if (recordArtifacValuesPref != null) {
 			pAccess.toggleAttachOPMArtifactValues(Boolean.parseBoolean(recordArtifacValuesPref));
 			logger.info("OPM.recordArtifactValues: "+ pAccess.isAttachOPMArtifactValues());
 		}
@@ -188,7 +188,7 @@ public class ProvenanceBaseClient {
 		String computeOPMGraph = pr.getString("OPM.computeGraph");
 		if (computeOPMGraph != null) {
 			pAccess.toggleOPMGeneration(Boolean.parseBoolean(computeOPMGraph));
-			logger.info("OPM.computeGraph: "+pAccess.isOPMGenerationActive());			
+			logger.info("OPM.computeGraph: "+pAccess.isOPMGenerationActive());
 		}
 
 
@@ -198,17 +198,17 @@ public class ProvenanceBaseClient {
 			logger.info("query.returnDataValues: "+derefValuesString);
 			derefValues = Boolean.parseBoolean(derefValuesString);
 		}
-		
-		
+
+
 		// annotations file used to answer semantic queries
 		String workflowAnnotationsFile = pr.getString("workflow.annotations");
 		if (workflowAnnotationsFile != null) {
 			activateSemanticAnnotations(workflowAnnotationsFile);
-			logger.info("workflow.annotations: "+getWorkflowAnnotationsFile());			
+			logger.info("workflow.annotations: "+getWorkflowAnnotationsFile());
 		}  else {
 			logger.info(" no workflowAnnotationsFile specified -- semantic queries will not be supported");
 		}
-		
+
 	}
 
 
@@ -246,7 +246,7 @@ public class ProvenanceBaseClient {
 	/**
 	 * Parse the reference and return a map with localPart, namespace, depth,
 	 * contains errors and the type
-	 * 
+	 *
 	 * @param ref
 	 * @return
 	 */
@@ -275,7 +275,7 @@ public class ProvenanceBaseClient {
 
 		return refPartsMap;
 
-	}       
+	}
 
 
 
@@ -284,21 +284,21 @@ public class ProvenanceBaseClient {
 		T2Reference ref = referenceFromString(stringRef);
 
 		if ( ref != null ) {
-			return getInvocationContext().getReferenceService().resolveIdentifier(ref, null, getInvocationContext());		
+			return getInvocationContext().getReferenceService().resolveIdentifier(ref, null, getInvocationContext());
 		}
 		return null;
 	}
 
 
 
-	public void activateSemanticAnnotations(String workflowAnnotationsFile) { 
-		this.workflowAnnotationsFile = workflowAnnotationsFile; 
+	public void activateSemanticAnnotations(String workflowAnnotationsFile) {
+		this.workflowAnnotationsFile = workflowAnnotationsFile;
 		getPqp().setWorkflowAnnotationsFile(workflowAnnotationsFile);
 	}
 
 	public String getWorkflowAnnotationsFile() { return workflowAnnotationsFile; }
 
-	
+
 	/**
 	 * @return the pqp
 	 */
@@ -317,5 +317,5 @@ public class ProvenanceBaseClient {
 		return ic;
 	}
 
-	
+
 }

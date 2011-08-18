@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package net.sf.taverna.t2.provenance.client;
 
@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
  * Example provenance API client.  <br/>
  * this class reads config file APIClient.properties from folder api.client.resources to find the filename of a query to execute,
  * for instance query.file=src/main/resources/minimal.xml
- *   
+ *
  */
 public class ProvenanceAPISampleClient extends ProvenanceBaseClient {
 
@@ -45,7 +45,7 @@ public class ProvenanceAPISampleClient extends ProvenanceBaseClient {
 	private static Logger logger = Logger.getLogger(ProvenanceAPISampleClient.class);
 
 	/**
-	 * Creates an instance of the client, uses it to submit a pre-defined query, and displays the results on a console 
+	 * Creates an instance of the client, uses it to submit a pre-defined query, and displays the results on a console
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
@@ -59,7 +59,7 @@ public class ProvenanceAPISampleClient extends ProvenanceBaseClient {
 
 		Properties p = null;  // not used
 
-		client.setUp();
+//		client.setUp();
 		OPMGraphFilename = client.setOPMFilename();
 
 		QueryAnswer answer = client.queryProvenance(p);
@@ -79,10 +79,10 @@ public class ProvenanceAPISampleClient extends ProvenanceBaseClient {
 
 
 	/**
-	 * parses an XML provenance query into a Query object and invokes {@link ProvenanceAccess.executeQuery()} 
+	 * parses an XML provenance query into a Query object and invokes {@link ProvenanceAccess.executeQuery()}
 	 * @return a bean representing the query answer
-	 * @throws QueryValidationException 
-	 * @throws QueryParseException 
+	 * @throws QueryValidationException
+	 * @throws QueryParseException
 	 * @see QueryAnswer
 	 */
 	protected  QueryAnswer queryProvenance(Properties p) throws QueryParseException, QueryValidationException {
@@ -90,7 +90,7 @@ public class ProvenanceAPISampleClient extends ProvenanceBaseClient {
 		Query q = new Query();
 
 		String querySpecFile = null;
-		if (p != null && p.get("query.file") != null)  
+		if (p != null && p.get("query.file") != null)
 			querySpecFile = (String) p.get("query.file");
 		else {
 			// get filename for XML query spec
@@ -100,7 +100,7 @@ public class ProvenanceAPISampleClient extends ProvenanceBaseClient {
 
 		// pm added 9/10
 		// optionally set the workflow annotations file here to support semantic queries
-		
+
 		q = getPqp().parseProvenanceQueryFile(querySpecFile);
 
 		if (q == null) {
@@ -131,7 +131,7 @@ public class ProvenanceAPISampleClient extends ProvenanceBaseClient {
 		String OPMGraphFilename = pr.getString("OPM.rdf.file");
 		if (OPMGraphFilename == null) {
 			OPMGraphFilename = DEFAULT_OPM_FILENAME;
-			logger.info("OPM.filename: "+OPMGraphFilename);			
+			logger.info("OPM.filename: "+OPMGraphFilename);
 		}
 		return OPMGraphFilename;
 	}
@@ -166,12 +166,12 @@ public class ProvenanceAPISampleClient extends ProvenanceBaseClient {
 
 		NativeAnswer nAnswer = answer.getNativeAnswer();
 
-		// nAnswer contains a Map of the form 
+		// nAnswer contains a Map of the form
 		// 	Map<QueryPort, Map<String, List<Dependencies>>>  answer;
 
 		System.out.println("*** native answer to the query ***");
 
-		Map<QueryPort, Map<String, List<Dependencies>>>  dependenciesByVar = nAnswer.getAnswer();	
+		Map<QueryPort, Map<String, List<Dependencies>>>  dependenciesByVar = nAnswer.getAnswer();
 		for (QueryPort v:dependenciesByVar.keySet()) {
 			System.out.println("reporting dependencies for values on TARGET port: "+v.getProcessorName()+":"+v.getPortName()+":"+v.getPath());
 
@@ -202,20 +202,20 @@ public class ProvenanceAPISampleClient extends ProvenanceBaseClient {
 
 						// we now resolve values on the client, there are no values in the record
 						// returned through the API
-						record.setPrintResolvedValue(false);  
+						record.setPrintResolvedValue(false);
 						System.out.println("\t\t"+record.toString());
 
 						// resolve reference if so desired
 						if (derefValues && record.getValue() != null) {
 							T2Reference ref = getInvocationContext().getReferenceService().referenceFromString(record.getValue());
 
-							Object o = getInvocationContext().getReferenceService().renderIdentifier(ref, Object.class, getInvocationContext()); 
+							Object o = getInvocationContext().getReferenceService().renderIdentifier(ref, Object.class, getInvocationContext());
 							System.out.println("\t\tvalue: "+o);
 						}
 					}
 				}
 			}
-		}		
+		}
 	}
 
 

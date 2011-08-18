@@ -29,7 +29,7 @@
 			<id>mygrid-snapshot-repository</id>
 			<name>myGrid Snapshot Repository</name>
 			<url>http://www.mygrid.org.uk/maven/snapshot-repository</url>
-		</repository>		
+		</repository>
 	</repositories>
 	<dependencies>
 		<dependency>
@@ -38,11 +38,11 @@
 			<version>${t2.core.version}</version>
 		</dependency>
 
-		<dependency>
+		<!-- <dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>provenance-mysql</artifactId>
 			<version>${t2.core.version}</version>
-		</dependency>
+		</dependency> -->
 
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
@@ -50,11 +50,11 @@
 			<version>${t2.core.version}</version>
 		</dependency>
 
-		<dependency>
+		<!-- <dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>provenance-derby</artifactId>
 			<version>${t2.core.version}</version>
-		</dependency>
+		</dependency> -->
 
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-impl</groupId>
