@@ -26,7 +26,7 @@
 		<!-- <module>launcher</module> -->
 		<!-- <module>launcher-api</module> -->
 		<!-- <module>plugins-api</module> -->
-		<module>prelauncher</module>
+		<!-- <module>prelauncher</module> -->
 	</modules>
 	<repositories>
 		<repository>

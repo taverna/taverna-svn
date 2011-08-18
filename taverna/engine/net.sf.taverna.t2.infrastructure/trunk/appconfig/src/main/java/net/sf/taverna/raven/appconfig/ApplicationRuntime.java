@@ -29,16 +29,6 @@ import org.apache.log4j.Logger;
 
 public class ApplicationRuntime {
 
-	private static final String INFRASTRUCTURE_GROUPID = "net.sf.taverna.t2.infrastructure";
-
-	private static final String SPRING_VERSION = "2.5.4";
-
-	private static final String PLATFORM_VERSION = "0.1";
-
-	private static final String REFERENCE_VERSION = "0.1";
-
-	private static final String INFRASTRUCTURE_VERSION = "1.12";
-
 	private static final String PLUGINS = "plugins";
 
 	private static final String LAUNCHER_SPLASHSCREEN_PNG = "/launcher_splashscreen.png";
@@ -54,8 +44,6 @@ public class ApplicationRuntime {
 	private File applicationHomeDir;
 
 	private ApplicationUserHome appUserHome;
-
-//	private Repository ravenRepository;
 
 	private static class ApplicationRuntimeHolder {
 		private static ApplicationRuntime instance = new ApplicationRuntime();
@@ -157,99 +145,6 @@ public class ApplicationRuntime {
 			throw new IOException("Invalid directory " + localRepositoryDir);
 		}
 	}
-
-//	public synchronized Repository getRavenRepository() {
-//		if (ravenRepository != null) {
-//			return ravenRepository;
-//		}
-//		ravenRepository = makeRavenRepository();
-//		ravenRepository.update();
-//		return ravenRepository;
-//	}
-//
-//	private Repository makeRavenRepository() {
-//		Repository repository;
-//		if (!appConfig.isUsingRaven()) {
-//			// FIXME: Avoid raven.eclipse hack
-//			System.setProperty("raven.eclipse", "true");
-//			repository = new DummyRepository();
-//			return repository;
-//		}
-//		repository = LocalRepository.getRepository(getLocalRepositoryDir(),
-//				getClassLoader(), getSystemArtifacts());
-//
-//		URL defaultRepository = getDefaultRepositoryDir();
-//		if (defaultRepository != null) {
-//			repository.addRemoteRepository(defaultRepository);
-//		}
-//		return repository;
-//	}
-//
-//	public Set<Artifact> getSystemArtifacts() {
-//		Set<Artifact> artifacts = new HashSet<Artifact>();
-//		// Raven, Launcher and plugin system
-//		artifacts.add(new BasicArtifact(INFRASTRUCTURE_GROUPID, "raven",
-//				INFRASTRUCTURE_VERSION));
-//		artifacts.add(new BasicArtifact(INFRASTRUCTURE_GROUPID,
-//				"raven-log4j", INFRASTRUCTURE_VERSION));
-//		artifacts.add(new BasicArtifact(INFRASTRUCTURE_GROUPID,
-//				"prelauncher", INFRASTRUCTURE_VERSION));
-//		artifacts.add(new BasicArtifact(INFRASTRUCTURE_GROUPID,
-//				"launcher", INFRASTRUCTURE_VERSION));
-//		artifacts.add(new BasicArtifact(INFRASTRUCTURE_GROUPID,
-//				"launcher-api", INFRASTRUCTURE_VERSION));
-//		artifacts.add(new BasicArtifact(INFRASTRUCTURE_GROUPID,
-//				"plugins-api", INFRASTRUCTURE_VERSION));
-//		artifacts.add(new BasicArtifact(INFRASTRUCTURE_GROUPID,
-//				"appconfig", INFRASTRUCTURE_VERSION));
-//		artifacts.add(new BasicArtifact("net.sf.taverna.t2.workbench",
-//				"reference-config", PLATFORM_VERSION));
-//
-//		// External dependencies for Raven
-//		artifacts
-//				.add(new BasicArtifact("commons-codec", "commons-codec", "1.2"));
-//		artifacts.add(new BasicArtifact("commons-httpclient",
-//				"commons-httpclient", "3.1"));
-//		artifacts.add(new BasicArtifact("commons-logging", "commons-logging",
-//				"1.0.4"));
-//		artifacts.add(new BasicArtifact("jdom", "jdom", "1.0"));
-//		artifacts.add(new BasicArtifact("log4j", "log4j", "1.2.12"));
-//
-//		// t2reference, Spring and Hibernate (From raven_local.xml)
-//		artifacts.add(new BasicArtifact("net.sf.taverna.t2", "t2reference-api",
-//				REFERENCE_VERSION));
-//		artifacts.add(new BasicArtifact("net.sf.taverna.t2", "platform",
-//				PLATFORM_VERSION));
-//		artifacts.add(new BasicArtifact("commons-logging", "commons-logging",
-//				"1.1.1"));
-//
-//		artifacts.add(new BasicArtifact("org.springframework", "spring-beans",
-//				SPRING_VERSION));
-//		artifacts.add(new BasicArtifact("org.springframework",
-//				"spring-context", SPRING_VERSION));
-//		artifacts.add(new BasicArtifact("org.springframework", "spring-core",
-//				SPRING_VERSION));
-//		artifacts.add(new BasicArtifact("org.springframework", "spring-jdbc",
-//				SPRING_VERSION));
-//		artifacts.add(new BasicArtifact("org.springframework", "spring-orm",
-//				SPRING_VERSION));
-//		artifacts.add(new BasicArtifact("org.springframework", "spring-tx",
-//				SPRING_VERSION));
-//
-//		artifacts.add(new BasicArtifact("aopalliance", "aopalliance", "1.0"));
-//		artifacts.add(new BasicArtifact("geronimo-spec", "geronimo-spec-jta",
-//				"1.0-M1"));
-//
-//		artifacts.add(new BasicArtifact("org.hibernate", "hibernate",
-//				"3.2.5.ga.raven"));
-//		artifacts.add(new BasicArtifact("dom4j", "dom4j", "1.6.1"));
-//		artifacts.add(new BasicArtifact("cglib", "cglib", "2.1_3"));
-//		artifacts.add(new BasicArtifact("asm", "asm", "1.5.3"));
-//		artifacts.add(new BasicArtifact("commons-collections",
-//				"commons-collections", "2.1.1"));
-//
-//		return artifacts;
-//	}
 
 	public ClassLoader getClassLoader() {
 		ClassLoader ourClassLoader = getClass().getClassLoader();

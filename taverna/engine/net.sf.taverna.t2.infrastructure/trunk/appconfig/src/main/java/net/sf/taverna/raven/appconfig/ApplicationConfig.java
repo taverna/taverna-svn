@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright (C) 2007 The University of Manchester   
- * 
+ * Copyright (C) 2007 The University of Manchester
+ *
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
- * 
+ *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public License
  *  as published by the Free Software Foundation; either version 2.1 of
  *  the License, or (at your option) any later version.
- *    
+ *
  *  This program is distributed in the hope that it will be useful, but
  *  WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
- *    
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
@@ -34,8 +34,6 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.Map.Entry;
 
-import net.sf.taverna.raven.prelauncher.ClassLocation;
-
 /**
  * Represent the application config as it has been specified in
  * {@value #PROPERTIES}. This configuration specifies which application is to be
@@ -48,9 +46,9 @@ import net.sf.taverna.raven.prelauncher.ClassLocation;
  * application's distribution directory (assuming that {@link ApplicationConfig}
  * is loaded from a JAR-file placed in the directory <code>lib</code> below the
  * distribution directory).
- * 
+ *
  * @author Stian Soiland-Reyes
- * 
+ *
  */
 public class ApplicationConfig {
 
@@ -198,10 +196,10 @@ public class ApplicationConfig {
 	 * <p>
 	 * If none of these sources could find a non-empty property file, a warning
 	 * is logged, and an empty {@link Properties} instance is returned.
-	 * 
+	 *
 	 * @param resourceName
 	 *            Relative filename of property file
-	 * 
+	 *
 	 * @return Loaded or empty {@link Properties} instance.
 	 */
 	protected Properties loadProperties(String resourceName) {
@@ -271,7 +269,7 @@ public class ApplicationConfig {
 	 * <p>
 	 * See {@link ApplicationUserHome#getAppUserHome()} that will also calculate
 	 * the user's home directory for most normal cases.
-	 * 
+	 *
 	 * @return
 	 */
 	public String getApplicationHome() {
