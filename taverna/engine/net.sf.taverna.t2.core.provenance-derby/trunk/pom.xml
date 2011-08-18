@@ -28,12 +28,18 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.ui-impl</groupId>
-			<artifactId>data-management-config</artifactId>
-			<version>${t2.ui.impl.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
+            <groupId>simple-jndi</groupId>
+            <artifactId>simple-jndi</artifactId>
+            <version>0.11.1</version>
+ 			<scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <version>${derby.version}</version>
+ 			<scope>test</scope>
+        </dependency>
+        <dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>reference-core-extensions</artifactId>
 			<version>${t2.reference-core-extensions.version}</version>
