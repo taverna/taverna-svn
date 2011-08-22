@@ -1,20 +1,20 @@
 /*******************************************************************************
  * Copyright (C) 2009 Ingo Wassink of University of Twente, Netherlands and
- * The University of Manchester   
- * 
+ * The University of Manchester
+ *
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
- * 
+ *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public License
  *  as published by the Free Software Foundation; either version 2.1 of
  *  the License, or (at your option) any later version.
- *    
+ *
  *  This program is distributed in the hope that it will be useful, but
  *  WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
- *    
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
@@ -69,11 +69,11 @@ import org.rosuda.REngine.Rserve.RserveException;
 
 /**
  * An Activity providing Rshell functionality.
- * 
+ *
  */
 public class RshellActivity extends
 		AbstractAsynchronousActivity<RshellActivityConfigurationBean> {
-	
+
 	public static final String URI = "http://ns.taverna.org.uk/2010/activity/rshell";
 
 	//private static Logger logger = Logger.getLogger(RshellActivity.class);
@@ -91,6 +91,12 @@ public class RshellActivity extends
 	private static String stringNA = "NA";
 	private static String stringTrue = "TRUE";
 	private static String stringFalse = "FALSE";
+
+	private CredentialManager credentialManager;
+
+	public RshellActivity(CredentialManager credentialManager) {
+		this.credentialManager = credentialManager;
+	}
 
 	@Override
 	public synchronized void configure(RshellActivityConfigurationBean configurationBean)
@@ -157,7 +163,7 @@ public class RshellActivity extends
 							connection = RshellConnectionManager.INSTANCE
 									.createConnection(settings);
 
-						} 
+						}
 						else {
 							// Try without credentials - just do a simple assign and watch for any
 							// authentication exceptions
@@ -420,7 +426,7 @@ public class RshellActivity extends
 
 	/**
 	 * Method for cleaing up all generated files
-	 * 
+	 *
 	 * @param connection
 	 *            the connection to be used
 	 */
@@ -450,11 +456,11 @@ public class RshellActivity extends
 
 	/**
 	 * Method for generating a valid filename for a port
-	 * 
+	 *
 	 * @param Port
 	 *            the port to generate a filename for
 	 * @return the filename
-	 * 
+	 *
 	 */
 	private String generateFilename(Port port) {
 
@@ -481,7 +487,7 @@ public class RshellActivity extends
 	 * Convert workflow input to an REXP using the given javaType. For instance,
 	 * if javaType is double[], and input is a list of strings, each string will
 	 * be converted to a double, and the array will be wrapped in an REXP.
-	 * 
+	 *
 	 * @param input
 	 *            the input object to be converted
 	 * @param symantic
@@ -564,7 +570,7 @@ public class RshellActivity extends
 
 	/**
 	 * Method for reading the png image
-	 * 
+	 *
 	 * @param outputPort
 	 *            the output port to read the file from
 	 * @param connection
@@ -618,13 +624,13 @@ public class RshellActivity extends
 
 	/**
 	 * Convert REXP to suitable (list of)
-	 * 
+	 *
 	 * @param rExp
 	 *            the r expression
 	 * @param symanticType
 	 *            the type of the output port
 	 * @return a Java object which is a representation of the rExpression
-	 * @throws REXPMismatchException 
+	 * @throws REXPMismatchException
 	 * @throw TaskExecutionException if rExp type is unsupported
 	 */
 	private Object rExpToJava(REXP rExp, SemanticTypes symanticType)
@@ -666,7 +672,7 @@ public class RshellActivity extends
 			if (rExp.isLogical()) {
 				for (String s : rExp.asStrings()) {
 					boolResult.add(s);
-				}		
+				}
 				return boolResult;
 			}
 			if (rExp.isInteger()) {
@@ -743,7 +749,7 @@ public class RshellActivity extends
 			}
 			if (rExp.isLogical()) {
 				REXPLogical logical = (REXPLogical) rExp;
-				return (new Integer(logical.isTRUE()[0] ? 1 : 0));			
+				return (new Integer(logical.isTRUE()[0] ? 1 : 0));
 			}
 			if (rExp.isInteger()) {
 				return new Integer(rExp.asIntegers()[0]);
@@ -791,7 +797,7 @@ public class RshellActivity extends
 			}
 			if (rExp.isLogical()) {
 				REXPLogical logical = (REXPLogical) rExp;
-				return (Arrays.toString(logical.isTRUE()));							
+				return (Arrays.toString(logical.isTRUE()));
 			}
 			if (rExp.isInteger()) {
 				return (Arrays.toString(rExp.asIntegers()));
@@ -851,7 +857,7 @@ public class RshellActivity extends
 
 	/**
 	 * Method for writing the server file
-	 * 
+	 *
 	 * @param inputPort
 	 *            the input port to write a file to
 	 * @param connection
@@ -892,7 +898,7 @@ public class RshellActivity extends
 					+ filename + "' from Rserve: " + ioe.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Get username and password from Credential Manager or ask user to supply
 	 * one. Username is the first element of the returned array, and the
@@ -902,19 +908,15 @@ public class RshellActivity extends
 
 		// Try to get username and password for this service from Credential
 		// Manager (which should pop up UI if needed)
-		CredentialManager credManager = null;
-		credManager = CredentialManager.getInstance(); 
-		UsernamePassword username_password = credManager.getUsernameAndPasswordForService(rServerURI,false,null);
+		UsernamePassword username_password = credentialManager.getUsernameAndPasswordForService(rServerURI,false,null);
 		if (username_password == null) {
 			throw new CMException("No username/password provided for service " + rServerURI);
-		} 
+		}
 		return username_password;
 	}
-	
+
 	protected boolean hasUsernameAndPasswordForService(URI rServerURI) throws CMException{
-		CredentialManager credManager = null;
-		credManager = CredentialManager.getInstance(); 
-		return credManager.hasUsernamePasswordForService(rServerURI);
+		return credentialManager.hasUsernamePasswordForService(rServerURI);
 	}
 
 }

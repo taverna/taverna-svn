@@ -35,22 +35,22 @@
 			<artifactId>dataflow-activity</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-<!--		<dependency>
+		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>external-tool-activity</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		-->
+
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>localworker-activity</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>rest-activity</artifactId>
 			<version>${project.version}</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>rshell-activity</artifactId>
@@ -76,11 +76,11 @@
 			<artifactId>wsdl-activity</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>xpath-activity</artifactId>
 			<version>${project.version}</version>
-		</dependency>
+		</dependency> -->
 	</dependencies>
 </project>
 
