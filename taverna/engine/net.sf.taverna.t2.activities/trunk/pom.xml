@@ -32,14 +32,14 @@
 		<module>dependency-activity</module>
 		<module>external-tool-activity</module>
 		<module>localworker-activity</module>
-		<!-- <module>rest-activity</module> -->
+		<module>rest-activity</module>
 		<module>rshell-activity</module>
 		<module>soaplab-activity</module>
 		<module>spreadsheet-import-activity</module>
 		<module>stringconstant-activity</module>
 		<module>usecase-activity</module>
 		<module>wsdl-activity</module>
-		<!-- <module>xpath-activity</module> -->
+		<module>xpath-activity</module>
 	</modules>
 	<repositories>
 		<repository>
