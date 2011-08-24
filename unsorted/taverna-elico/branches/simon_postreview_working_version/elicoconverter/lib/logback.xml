@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <Pattern>%d{HH:mm:ss.SSS}\t%level\t%C\t%M\t%L\t[%t]\t%msg%n</Pattern>
+    </layout>
+  </appender>
+  
+ <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <File>testFile.log</File>
+    <Append>true</Append>
+                
+    <layout class="ch.qos.logback.classic.PatternLayout">
+       <Pattern>%d{HH:mm:ss.SSS}\t%level\t%C\t%M\t%L\t[%t]\t-> %msg%n</Pattern>
+    </layout>
+  </appender>
+  
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <File>testFile2.log</File>
+    <Append>true</Append>
+                
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <Pattern>%d{HH:mm:ss.SSS}\t%level\t%C\t%M\t%L\t[%t]\t %msg%n</Pattern>
+    </layout>
+  </appender>
+  
+  <root level="DEBUG">
+  	<appender-ref ref="STDOUT" />
+    <appender-ref ref="FILE" />
+  </root>
+
+</configuration>
