@@ -39,7 +39,6 @@ public class ConfigPanel extends JPanel {
 
         JPanel main = new JPanel(new BorderLayout());
 
-        
 
         frame.add(main);
 

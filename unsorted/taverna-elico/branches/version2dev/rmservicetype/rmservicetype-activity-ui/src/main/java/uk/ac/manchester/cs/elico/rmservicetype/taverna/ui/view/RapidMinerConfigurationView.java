@@ -123,16 +123,9 @@ public class RapidMinerConfigurationView extends JPanel {
 
         this.inputFields = getInputFields(desc.getInputPort());
 
-//        JPanel outputPanel = new JPanel(new BorderLayout());
         this.outputFields = getOutputFields(desc.getOutputPort());
 
-//        outputPanel.setBorder(BorderFactory.createTitledBorder("Output Ports"));
-//
-//        inputOutputBox.add(inputPanel);
-//        inputOutputBox.add(Box.createVerticalStrut(6));
-//        inputOutputBox.add(outputPanel);
-
-
+        
 		buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		addDivider(buttonPanel, SwingConstants.TOP, true);	
 		
@@ -142,17 +135,7 @@ public class RapidMinerConfigurationView extends JPanel {
 		
 		nextButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				//System.out.println("[DEBUG] --> RETURNED REPOSITORY LOCATION " + browser.getChosenRepositoryPath());
-				//check if the configuration has changed
-//				if(!(inputLocationField.getText() == oldConfiguration.getInputLocation()) || (outputLocationField.getText() == oldConfiguration.getOutputLocation()) ) {
-//
-//					System.out.println("Configuration Changed");
-//					newConfiguration.setInputLocation(inputLocationField.getText());
-//					newConfiguration.setOutputLocation(outputLocationField.getText());
-//
-//				}
-				
+			
 				if (firstCardShown) {	// move to next card
 					
 					nextButton.setText("Back");

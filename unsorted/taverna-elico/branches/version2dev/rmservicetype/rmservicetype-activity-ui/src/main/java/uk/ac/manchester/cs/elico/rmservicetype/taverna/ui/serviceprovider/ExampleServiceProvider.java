@@ -11,6 +11,7 @@ import net.sf.taverna.wsdl.soap.WSDLSOAPInvoker;
 import org.apache.axis.MessageContext;
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
+import org.apache.commons.lang.WordUtils;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -130,7 +131,7 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
                       // Optional: set description
                       //service.setDescription("Rapid Miner Operation " + i);
                       results.add(service);
-                      
+                    
             	}
             	
             	
@@ -473,8 +474,11 @@ public class ExampleServiceProvider implements ServiceDescriptionProvider {
 		
 		List<String> parsed = new ArrayList<String>();
 		String[] tokens = myString.split("[.]+");
-        for (String token : tokens) parsed.add(token);
-		
+        for (String token : tokens) {
+        	String currentToken = token.replace("_", " ");
+        	parsed.add(WordUtils.capitalize(currentToken));
+        }
+        
 		return parsed;
 	}
 	
