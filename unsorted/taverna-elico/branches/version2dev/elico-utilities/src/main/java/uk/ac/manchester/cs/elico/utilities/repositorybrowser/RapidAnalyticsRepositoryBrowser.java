@@ -109,6 +109,9 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	private JLabel titleIcon;
 
 	private DialogTextArea titleMessage;
+	
+	char delimiter = 0;
+	boolean userCancel = false;
 
 	public RapidAnalyticsRepositoryBrowser() {
 		
@@ -119,7 +122,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
             try {
                 credManager = CredentialManager.getInstance();
                 username_password = credManager.getUsernameAndPasswordForService(URI.create(preferences.getBrowserServiceLocation()), true, null);
-
+         
                 preferences.setUsername(username_password.getUsername());
                 preferences.setPassword(username_password.getPasswordAsString());
             } catch (CMException e) {
@@ -208,9 +211,9 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		addButton.setActionCommand("upload");
 		addButton.addActionListener(this);
 					
-		JButton newFolderButton = new JButton("New Folder");
-		newFolderButton.setActionCommand("newfolder");
-		newFolderButton.addActionListener(this);
+		//JButton newFolderButton = new JButton("New Folder");
+		//newFolderButton.setActionCommand("newfolder");
+		//newFolderButton.addActionListener(this);
 		
 		this.useButton = new JButton(new AbstractAction("Select file") {
 
@@ -230,7 +233,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 
         JPanel panel = new JPanel(new GridLayout(0,4));
         panel.add(addButton);
-        panel.add(newFolderButton); 
+        //panel.add(newFolderButton); 
         panel.add(useButton);
         panel.add(myIconLabel);
         add(panel, BorderLayout.SOUTH);
@@ -305,6 +308,13 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
         								
             				Object [] userContents = getRepositoryStructure(parentNode.toString() + "/" + myChildObject);
             				
+            				//[debug]System.out.println("user contents" + userContents + " length " + userContents.length);
+            				
+            				if (userContents.length == 0) {
+            					
+            					treeNode = userNode.getPath();
+            				}
+            				
             					for (Object userObject : userContents) {
             						            						
             						//[debug]System.out.println("	contents of user object : " + userObject);
@@ -325,9 +335,15 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
         	
         }
         
-        TreePath path = new TreePath(treeNode);
-        treePanel.myTree.setExpandsSelectedPaths(true);
-        treePanel.myTree.setSelectionPath(path);
+        //System.out.println(" TREE LENGTH " + treeNode.length);
+        
+        if (treeNode != null) {
+        	 
+        	 TreePath path = new TreePath(treeNode);
+        	 treePanel.myTree.setExpandsSelectedPaths(true);
+        	 treePanel.myTree.setSelectionPath(path);
+        	
+        }
         
 	}
 	
@@ -351,12 +367,12 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	        treePanel.addObject(p2, c2Name);
 	        	
 	}
-	char delimiter = 0;
+
 	public void actionPerformed(ActionEvent event) {
 
 		String command = event.getActionCommand();
 	    String filePath;
-	    
+	   
 	        if (UPLOAD_COMMAND.equals(command)) {
 	        	
 	            //Add button clicked
@@ -376,33 +392,51 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	              //[debug]System.out.println("Opening: " + file + " path " + dir);
 	                
 	              //[debug]System.out.println(" FILE EXTENSION " + getFileExtension(filePath) + " filepath " + filePath);
-	               
+
 	                
 	                // if it's a csv file, then open the CSV importer and get the chosen delimiter
-                    final JDialog csvFrame = new JDialog((JDialog)SwingUtilities.getAncestorOfClass(JDialog.class, RapidAnalyticsRepositoryBrowser.this), "CSV Importer");
-                    
-	                CSVImporter importer = new CSVImporter(filePath) {
-	        			
-	        			public void getChosenFileDelimiter() {
-	        				
-	        				delimiter = getChosenDelimiter();
-	        				csvFrame.dispose();
-	        			}
-	        		};
+	                	                
+	                if (getFileExtension(filePath).equals("csv")) {
+	                	
+	                	final JDialog csvFrame = new JDialog((JDialog)SwingUtilities.getAncestorOfClass(JDialog.class, RapidAnalyticsRepositoryBrowser.this), "CSV Importer");
+	                    
+		                CSVImporter importer = new CSVImporter(filePath) {
+		        			
+		        			public void getChosenFileDelimiter() {
+		        				
+		        				delimiter = getChosenDelimiter();
+		        				csvFrame.dispose();
+		        			}
+		        			
+		        			public void closeImporter() {
+		        				
+		        				csvFrame.dispose();
+		        				userCancel = true;
+		        			}
+		        			
+		        		};
 
-	        		//final JFrame frame = new JFrame();
-	        		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-	                   
-	        		csvFrame.setLocation(dim.width / 2 - getWidth() / 2, dim.height / 2 - getHeight() / 2);
-                    csvFrame.add(importer);
-                    csvFrame.setModal(true);
-                    csvFrame.pack();
-                    csvFrame.setVisible(true);
-	        		
+		        		//final JFrame frame = new JFrame();
+		        		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		                   
+		        		csvFrame.setLocation(dim.width / 2 - getWidth() / 2, dim.height / 2 - getHeight() / 2);
+		        		csvFrame.setResizable(false);
+	                    csvFrame.add(importer);
+	                    csvFrame.setModal(true);
+	                    csvFrame.pack();
+	                    csvFrame.setVisible(true);
+		        		
+	                	
+	                }
+                    
 	               
                   //[debug]System.out.println(" the chosen delimiter is : " + delimiter);
-	               
-	                uploadFile(filePath, delimiter);
+	                if (!userCancel) {
+	                	
+	                	uploadFile(filePath, delimiter);
+	                }
+	                
+	                
 	        	                
 	            } else {
 	            		
@@ -500,10 +534,11 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
  
             //  ((DefaultHttpClient) client).getCredentialsProvider()
             //          .setCredentials(as, upc);
-            
+			
             CredentialsProvider credsProvider = new BasicCredentialsProvider();
             assert urlBase != null;
-            credsProvider.setCredentials(new AuthScope(urlBase.getHost(), urlBase.getPort(), "RapidAnalyticsRealm"), new UsernamePasswordCredentials(username, password));
+            credsProvider.setCredentials(new AuthScope(urlBase.getHost(), urlBase.getPort(), "Spring Security Application"), new UsernamePasswordCredentials(username, password));
+            //[debug-old RA] credsProvider.setCredentials(new AuthScope(urlBase.getHost(), urlBase.getPort(), "RapidAnalyticsRealm"), new UsernamePasswordCredentials(username, password));
 
             ((DefaultHttpClient) client).setCredentialsProvider(credsProvider);
             
@@ -542,6 +577,8 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 			
 		}
 
+		//[debug]System.out.println("content brought back : " + content.toString());
+		
 		return parseStructureOutput(content.toString());
 
 	}
@@ -568,6 +605,8 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	
  	public Object [] parseStructureOutput(String outputData) {
 		
+ 		System.out.println(" [debug] output data" + outputData);
+ 		
 		Object [] myList;
 		NodeList folders;
 		NodeList children = null;
@@ -793,9 +832,9 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 		String fileExtension = getFileExtension(filePath);
 		String contentType = getContentType(fileExtension);
 		String fname = getFileName(filePath);
-		String fileURI = preferences.getRepositoryLocation() + "/RAWS/resources" + updatedSelectionPath + "/" + fname + "?column_separators=" + delimiter;
+		String fileURI = preferences.getRepositoryLocation() + "/RAWS/resources" + updatedSelectionPath + "/" + fname;
         if (contentType.equals(CSV_HEADER)) {
-//            fileURI = fileURI + "?column_separators=%3b";
+            fileURI = fileURI + "?column_separators=" + delimiter;
         }
       //[debug]System.out.println(" THE FILENAME TO APPEND IS : " + fname);		
 		
@@ -962,7 +1001,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	            
 	  			BasicScheme basicAuth = new BasicScheme();
 				localContext.setAttribute("http", basicAuth);
-				            
+				        
 				HttpResponse response = httpClient.execute(httpRequest, localContext);
 				
 				myIconLabel.setVisible(false);
@@ -971,7 +1010,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 				
 				//[debug]System.out.println(" REST UPLOAD RESPONSE : " + content);
 				
-				JOptionPane.showMessageDialog(null, content);
+				JOptionPane.showMessageDialog(null, content.toString());
 				
 				// refresh tree branch
 				updateTreePath(parentNode);

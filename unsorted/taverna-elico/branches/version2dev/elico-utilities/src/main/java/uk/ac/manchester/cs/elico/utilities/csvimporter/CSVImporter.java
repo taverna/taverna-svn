@@ -226,6 +226,16 @@ public class CSVImporter extends JPanel
 		cancelButton.setFocusable(false);
 		cancelButton.setVisible(true);
 		//	<< needs listener >>
+		cancelButton = new JButton(new AbstractAction("Cancel") {
+
+			public void actionPerformed(ActionEvent arg0) {
+
+				closeImporter();
+				
+			}
+						
+		});
+		
 		
 		uploadButton = new JButton("Upload");
 		uploadButton =  new JButton(new AbstractAction("Upload") {
@@ -243,7 +253,7 @@ public class CSVImporter extends JPanel
 		addDivider(buttonPanel, SwingConstants.TOP, true);	
         
 	}	
-	
+		
 	private void layoutPanel() {
 		
 		// set this panels preferences
@@ -559,6 +569,11 @@ public class CSVImporter extends JPanel
 
 	public char getChosenDelimiter() {
 		return chosenDelimiter;
+	}
+	
+	public void closeImporter() {
+		
+		
 	}
 
 }
