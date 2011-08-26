@@ -726,8 +726,6 @@ public class RapidMinerExampleActivity extends
                         i++;
                     }
     				
-                    
-
                 }
 //				outputs.put(OUT_SIMPLE_OUTPUT, simpleRef);
 				callback.receiveResult(outputs, new int[0]);
