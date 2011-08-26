@@ -1,0 +1,48 @@
+15384807	AL365366.20	46.1	Human DNA sequence from clone RP11-553N16 on chromosome 1, complete sequence
+7717376	AL163282.2	44.1	Homo sapiens chromosome 21 segment HS21C082
+5629923	AC007298.17	44.1	Homo sapiens 12q22 BAC RPCI11-256L6 (Roswell Park Cancer Institute Human BAC Library) complete sequence
+34367431	BX648272.1	44.1	Homo sapiens mRNA; cDNA DKFZp686G08119 (from clone DKFZp686G08119)
+16304790	AL133523.5	44.1	Human chromosome 14 DNA sequence BAC R-775G15 of library RPCI-11 from chromosome 14 of Homo sapiens (Human), complete sequence
+34533695	AK126986.1	44.1	Homo sapiens cDNA FLJ45040 fis, clone BRAWH3020486
+20377057	AC069363.10	44.1	Homo sapiens chromosome 17, clone RP11-104J23, complete sequence
+17977487	AC093690.5	44.1	Homo sapiens BAC clone RP11-731I19 from 2, complete sequence
+17048246	AC012568.7	44.1	Homo sapiens chromosome 15, clone RP11-342M21, complete sequence
+5757554	AC007074.2	44.1	Homo sapiens PAC clone RP3-368G6 from X, complete sequence
+4176355	AC005509.1	44.1	Homo sapiens chromosome 4 clone B200N5 map 4q25, complete sequence
+4191263	AL031674.1	44.1	Human DNA sequence from clone RP4-715N11 on chromosome 20q13.1-13.2 Contains two putative novel genes, ESTs, STSs and GSSs, complete sequence
+14485328	AL355339.7	44.1	Human DNA sequence from clone RP11-461K13 on chromosome 10, complete sequence
+2829108	AF042090.1	44.1	Homo sapiens chromosome 21q22.3 PAC 171F15, complete sequence
+2828772	AC003976.1	44.1	Homo sapiens chromosome 17, clone hCIT.91_J_4, complete sequence
+9798442	AL034405.16	42.1	Human DNA sequence from clone RP4-537K23 on chromosome Xq25-26.1 Contains the 3' end of the gene for CGI-89 protein, a pseudogene similar to SALL1 (SAL(drosophila)-like 1), the 5' end of a gene for KIAA0266 protein and CpG islands, complete sequence
+4375975	AL031664.1	42.1	Human DNA sequence from clone RP4-531H16 on chromosome 20p11.22-12. Contains the 3' end of the PCSK2 gene for proprotein convertase subtilisin/kexin type 2 (NEC2), the BFSP1 gene for beaded filament structural protein 1 (filensin), a protein 91/23 (mouse Dynein light chain, TCTEX-1 like) pseudogene, a Ubiquitin-40S Ribosomal protein S27A fusion protein pseudogene, ESTs, STSs, GSSs and a CpG island, complete sequence
+11323329	AL031675.4	42.1	Human DNA sequence from clone RP4-751L1 on chromosome 20p11.2-12.1. Contains part of the PCSK2 gene for proprotein convertase subtilisin/kexin type 2, ESTs, STSs, GSSs and genomic marker D20S112, complete sequence
+13750876	AL360080.21	42.1	Human DNA sequence from clone RP11-483I8 on chromosome 1, complete sequence
+20218553	AL356267.27	42.1	Human DNA sequence from clone RP11-309G3 on chromosome 1, complete sequence
+15620620	AL359710.15	42.1	Human DNA sequence from clone RP11-30L7 on chromosome 9, complete sequence
+22087482	AF508982.1	42.1	Homo sapiens Na+/Ca2+ exchanger isoform 3 (SLC8A3) gene, promoter region and complete cds
+5931374	AC008119.6	42.1	Homo sapiens 12 BAC RP11-951I11 (Roswell Park Cancer Institute Human BAC Library) complete sequence
+13276121	AL135747.4	42.1	Human chromosome 14 DNA sequence BAC R-1023I22 of library RPCI-11 from chromosome 14 of Homo sapiens (Human), complete sequence
+13990341	AL355886.4	42.1	Human chromosome 14 DNA sequence BAC R-372C16 of library RPCI-11 from chromosome 14 of Homo sapiens (Human), complete sequence
+14715172	AL160191.3	42.1	Human chromosome 14 DNA sequence BAC R-486O13 of library RPCI-11 from chromosome 14 of Homo sapiens (Human), complete sequence
+6624576	AL133233.2	42.1	Human chromosome 14 DNA sequence BAC R-34O18 of library RPCI-11 from chromosome 14 of Homo sapiens (Human), complete sequence
+13872728	AL139296.4	42.1	Human chromosome 14 DNA sequence BAC C-2504D12 of library CalTech-D from chromosome 14 of Homo sapiens (Human), complete sequence
+21211653	AL353140.13	42.1	Human DNA sequence from clone RP13-153N15 on chromosome X, complete sequence
+13560000	AL160281.17	42.1	Human DNA sequence from clone RP11-21M7 on chromosome 1, complete sequence
+9863548	AL157413.18	42.1	Human DNA sequence from clone RP11-526K17 on chromosome 20 Contains part of a novel gene, ESTs, GSSs and STSs, complete sequence
+23462895	AC105180.8	42.1	Homo sapiens chromosome 8, clone RP11-345J1, complete sequence
+8217575	AL139352.16	42.1	Human DNA sequence from clone RP11-445H22 on chromosome 20 Contains an part of the ADA (adenosine deaminase) gene, the WISP2 (WNT1 inducible signaling pathway protein 2) gene, a novel transcript (MGC5566), a putative novel gene and a CpG island, complete sequence
+15027717	AC087880.24	42.1	Homo sapiens 12q BAC RP11-121J20 (Roswell Park Cancer Institute Human BAC Library) complete sequence
+22380675	AC121337.7	42.1	Homo sapiens 12 BAC RP11-96H19 (Roswell Park Cancer Institute Human BAC Library) complete sequence
+31873507	AL390150.2	42.1	Homo sapiens mRNA; cDNA DKFZp547L156 (from clone DKFZp547L156)
+29124089	AC130464.3	42.1	Homo sapiens chromosome 16 clone CTA-88D1, complete sequence
+29029234	AC093515.4	42.1	Homo sapiens chromosome 16 clone CTD-2535I10, complete sequence
+29029220	AC009158.7	42.1	Homo sapiens chromosome 16 clone RP11-67I10, complete sequence
+4007152	AL023754.1	42.1	Human DNA sequence from clone RP1-272L16 on chromosome 1q32.1-32.3 Contains the 3' end of the LAMB3 gene for Laminin, Beta 3 (Nicein, Kalinin, BM600) and a novel Rat Ca2+/Calmodulin dependent Protein Kinase LIKE gene. Contains ESTs, STSs, GSSs, genomic marker D1S491 and a ca repeat polymorphism, complete sequence
+28951165	AC009117.8	42.1	Homo sapiens chromosome 16 clone RP11-481E4, complete sequence
+28951173	AC092351.3	42.1	Homo sapiens chromosome 16 clone RP11-2L4, complete sequence
+28933869	AC125421.9	42.1	Homo sapiens chromosome 17, clone CTD-2532D12, complete sequence
+21240537	AC119741.3	42.1	Homo sapiens 3 BAC RP11-570O24 (Roswell Park Cancer Institute Human BAC Library) complete sequence
+15624852	AC087311.23	42.1	Homo sapiens 12 BAC RP11-267D19 (Roswell Park Cancer Institute Human BAC Library) complete sequence
+16554315	AC087892.16	42.1	Homo sapiens 12q BAC RP11-3L23 (Roswell Park Cancer Institute Human BAC Library) complete sequence
+29367464	AL355388.30	42.1	Human DNA sequence from clone RP11-336K24 on chromosome 1, complete sequence
+12000442	AC074034.18	42.1	Homo sapiens Xp BAC RP11-143E20 (Roswell Park Cancer Institute Human BAC Library) complete sequence

@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.1" log="0">
+  <s:processor name="KEGGBASEURL">
+    <s:stringconstant maxretries="0" retrydelay="0" retrybackoff="1.0">http://soap.genome.ad.jp/tmp/</s:stringconstant>
+  </s:processor>
+  <s:processor name="DatabaseId2">
+    <s:stringconstant maxretries="0" retrydelay="0" retrybackoff="1.0">MEDLINE</s:stringconstant>
+  </s:processor>
+  <s:processor name="ProbeSetId">
+    <s:stringconstant maxretries="0" retrydelay="0" retrybackoff="1.0">1085_s_at</s:stringconstant>
+  </s:processor>
+  <s:processor name="DatabaseId3">
+    <s:stringconstant maxretries="0" retrydelay="0" retrybackoff="1.0">pdb</s:stringconstant>
+  </s:processor>
+  <s:processor name="KEGGORG">
+    <s:stringconstant maxretries="0" retrydelay="0" retrybackoff="1.0">hsa</s:stringconstant>
+  </s:processor>
+  <s:processor name="GETIMAGE">
+    <s:local maxretries="0" retrydelay="0" retrybackoff="1.0">org.embl.ebi.escience.scuflworkers.java.WebImageFetcher</s:local>
+  </s:processor>
+  <s:processor name="GetHSAIds">
+    <s:arbitrarywsdl maxretries="1" retrydelay="0" retrybackoff="1.0">
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/keggmapper?wsdl</s:wsdl>
+      <s:operation>getHsaIds</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="GetMedlineRecords">
+    <s:arbitrarywsdl maxretries="0" retrydelay="0" retrybackoff="1.0">
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/SrsEbiQuery?wsdl</s:wsdl>
+      <s:operation>queryByArrayIds</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="GetSwissprotRecord">
+    <s:arbitrarywsdl maxretries="0" retrydelay="0" retrybackoff="1.0">
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/SrsEbiQuery?wsdl</s:wsdl>
+      <s:operation>queryById</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getDotFromViz">
+    <s:arbitrarywsdl maxretries="0" retrydelay="0" retrybackoff="1.0">
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>getDot</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="GetMedlineIds">
+    <s:arbitrarywsdl maxretries="0" retrydelay="0" retrybackoff="1.0">
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/SrsEbiQuery?wsdl</s:wsdl>
+      <s:operation>queryByXRef</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="destroyVizSession">
+    <s:arbitrarywsdl maxretries="0" retrydelay="0" retrybackoff="1.0">
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>destroySession</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="GetEmblRecord">
+    <s:arbitrarywsdl maxretries="0" retrydelay="0" retrybackoff="1.0">
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/SrsEbiQuery?wsdl</s:wsdl>
+      <s:operation>queryById</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="GetEmblAccNumber">
+    <s:arbitrarywsdl maxretries="0" retrydelay="0" retrybackoff="1.0">
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/affymapper?wsdl</s:wsdl>
+      <s:operation>getAccessionNumber</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="GetSequence">
+    <s:arbitrarywsdl maxretries="0" retrydelay="0" retrybackoff="1.0">
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/affymapper?wsdl</s:wsdl>
+      <s:operation>getSequence</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="GetSwissprotId">
+    <s:arbitrarywsdl maxretries="0" retrydelay="0" retrybackoff="1.0">
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/affymapper?wsdl</s:wsdl>
+      <s:operation>getSwissProtId</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="GetGoIds">
+    <s:arbitrarywsdl maxretries="0" retrydelay="0" retrybackoff="1.0">
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/affymapper?wsdl</s:wsdl>
+      <s:operation>getMolecularFunctionGOIds</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="addTermToViz">
+    <s:arbitrarywsdl maxretries="0" retrydelay="0" retrybackoff="1.0">
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>addTerm</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="createVizSession">
+    <s:arbitrarywsdl maxretries="0" retrydelay="0" retrybackoff="1.0">
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>createSession</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="Pepstats">
+    <s:description>Protein statistics</s:description>
+    <s:soaplabwsdl maxretries="0" retrydelay="0" retrybackoff="1.0">http://industry.ebi.ac.uk/soap/soaplab/protein_composition::pepstats</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="BlastX">
+    <s:soaplabwsdl maxretries="0" retrydelay="0" retrybackoff="1.0">http://www.ebi.ac.uk/collab/mygrid/service4/soap/services/alignment::blastx_ncbi</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="GETKEGGENTRIES">
+    <s:arbitrarywsdl maxretries="1" retrydelay="0" retrybackoff="1.0">
+      <s:wsdl>http://soap.genome.ad.jp/KEGG.wsdl</s:wsdl>
+      <s:operation>get_entries</s:operation>
+    </s:arbitrarywsdl>
+    <s:alternate>
+      <s:stringconstant maxretries="1" retrydelay="0" retrybackoff="1.0">KEGG entry</s:stringconstant>
+      <s:outputmap key="return" value="value" />
+    </s:alternate>
+  </s:processor>
+  <s:processor name="GETPATHWAYS">
+    <s:arbitrarywsdl maxretries="0" retrydelay="0" retrybackoff="1.0">
+      <s:wsdl>http://soap.genome.ad.jp/KEGG.wsdl</s:wsdl>
+      <s:operation>mark_all_pathways_by_genes</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link>
+    <s:input>destroyVizSession:sessionID</s:input>
+    <s:output>createVizSession:createSessionReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>addTermToViz:sessionID</s:input>
+    <s:output>createVizSession:createSessionReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getDotFromViz:sessionID</s:input>
+    <s:output>createVizSession:createSessionReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>goDiagram</s:input>
+    <s:output>getDotFromViz:getDotReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>GetSwissprotId:probeSetId</s:input>
+    <s:output>ProbeSetId:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>GetEmblAccNumber:probeSetId</s:input>
+    <s:output>ProbeSetId:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>GetEmblRecord:usa</s:input>
+    <s:output>GetEmblAccNumber:getAccessionNumberReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>embl</s:input>
+    <s:output>GetEmblRecord:queryByIdReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>GetSwissprotRecord:usa</s:input>
+    <s:output>GetSwissprotId:getSwissProtIdReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>swissprot</s:input>
+    <s:output>GetSwissprotRecord:queryByIdReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>GetSequence:probeSetId</s:input>
+    <s:output>ProbeSetId:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>BlastX:query_sequence</s:input>
+    <s:output>GetSequence:getSequenceReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>blastx</s:input>
+    <s:output>BlastX:search_result</s:output>
+  </s:link>
+  <s:link>
+    <s:input>BlastX:database</s:input>
+    <s:output>DatabaseId3:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>GetMedlineIds:XRefDatabankId</s:input>
+    <s:output>DatabaseId2:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>GetMedlineIds:usa</s:input>
+    <s:output>GetEmblAccNumber:getAccessionNumberReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>GetMedlineRecords:usas</s:input>
+    <s:output>GetMedlineIds:queryByXRefReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>medline</s:input>
+    <s:output>GetMedlineRecords:queryByArrayIdsReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>GetHSAIds:query</s:input>
+    <s:output>GetEmblAccNumber:getAccessionNumberReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>GETPATHWAYS:oids</s:input>
+    <s:output>GetHSAIds:getHsaIdsReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>GETPATHWAYS:abbr</s:input>
+    <s:output>KEGGORG:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>GETKEGGENTRIES:kids</s:input>
+    <s:output>GetHSAIds:getHsaIdsReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>KEGGentries</s:input>
+    <s:output>GETKEGGENTRIES:return</s:output>
+  </s:link>
+  <s:link>
+    <s:input>GETIMAGE:base</s:input>
+    <s:output>KEGGBASEURL:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>GETIMAGE:url</s:input>
+    <s:output>GETPATHWAYS:return</s:output>
+  </s:link>
+  <s:link>
+    <s:input>KEGGpathways</s:input>
+    <s:output>GETIMAGE:image</s:output>
+  </s:link>
+  <s:link>
+    <s:input>Pepstats:sequence_direct_data</s:input>
+    <s:output>GetSwissprotRecord:queryByIdReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>Pepstats</s:input>
+    <s:output>Pepstats:outfile</s:output>
+  </s:link>
+  <s:link>
+    <s:input>GetGoIds:probeSetId</s:input>
+    <s:output>ProbeSetId:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>addTermToViz:geneOntologyID</s:input>
+    <s:output>GetGoIds:getMolecularFunctionGOIdsReturn</s:output>
+  </s:link>
+  <s:sink>
+    goDiagram
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/x-graphviz</s:mimeType>
+      </s:mimeTypes>
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    embl
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    medline
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/xml</s:mimeType>
+      </s:mimeTypes>
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    swissprot
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    blastx
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    KEGGentries
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    KEGGpathways
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    Pepstats
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+  <s:coordination name="getDotFromViz_BLOCKON_addTermToViz">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>addTermToViz</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>getDotFromViz</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="destroyVizSession_BLOCKON_getDotFromViz">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>getDotFromViz</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>destroyVizSession</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+</s:scufl>
+
+

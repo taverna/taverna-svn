@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:MMFKVDABRD0" author="Tom Oinn" title="Test the Artemis based Interaction Pattern">Fetches a substantial EMBL record (AL121903) from the EBI DBFetch web service and submits it to a 'review' process using the Artemis based interaction pattern launched from the test public interaction server at the EBI. The recipient should get a link in the email which launches a modified annotation editor via web start, the workflow completes when the remote user has either accepted and reviewed or rejected the annotations.</s:workflowdescription>
+  <s:processor name="sendAnnotationForReview">
+    <s:description>Review a single genome annotation flatfile (EMBL, GenBank, GFF etc.)</s:description>
+    <s:defaults>
+      <s:default name="emailAddress">tomoinn@gmail.com</s:default>
+      <s:default name="title">title goes here</s:default>
+      <s:default name="comment">some comment...</s:default>
+    </s:defaults>
+    <s:interaction>
+      <s:baseurl>http://api.bioinfo.no/interaction-service/</s:baseurl>
+      <s:patternname>annotation.GenomeAnnotationFlatfile</s:patternname>
+    </s:interaction>
+  </s:processor>
+  <s:processor name="GetEMBLRecord">
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:MMFKVDABRD0" author="Tom Oinn" title="Test the Artemis based Interaction Pattern">Fetches a substantial EMBL record (AL121903) from the EBI DBFetch web service and submits it to a 'review' process using the Artemis based interaction pattern launched from the test public interaction server at the EBI. The recipient should get a link in the email which launches a modified annotation editor via web start, the workflow completes when the remote user has either accepted and reviewed or rejected the annotations.</s:workflowdescription>
+        <s:processor name="createSingleFile">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringListMerge</s:local>
+        </s:processor>
+        <s:processor name="fetch_AL121903">
+          <s:defaults>
+            <s:default name="query">embl:AL121903</s:default>
+            <s:default name="format">default</s:default>
+            <s:default name="style">raw</s:default>
+          </s:defaults>
+          <s:arbitrarywsdl>
+            <s:wsdl>http://www.ebi.ac.uk/ws/services/urn:Dbfetch?wsdl</s:wsdl>
+            <s:operation>fetchData</s:operation>
+          </s:arbitrarywsdl>
+        </s:processor>
+        <s:link source="createSingleFile:concatenated" sink="EMBLFile" />
+        <s:link source="fetch_AL121903:fetchDataReturn" sink="createSingleFile:stringlist" />
+        <s:sink name="EMBLFile" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:link source="emailAddress" sink="sendAnnotationForReview:emailAddress" />
+  <s:link source="GetEMBLRecord:EMBLFile" sink="sendAnnotationForReview:annotation" />
+  <s:link source="sendAnnotationForReview:reviewed_result" sink="modifiedAnnotation" />
+  <s:source name="emailAddress" />
+  <s:sink name="modifiedAnnotation" />
+</s:scufl>
+
+

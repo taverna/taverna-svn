@@ -1,0 +1,42 @@
+Local: Consensus vs XLRHODOP_1
+Score: 2398.01
+
+Consensus       1        MERSHLPE.TPDALAHLGPR.FEAQSGGNGSVL.DNVLPDM.ADL 41      
+                         |: :  :| :: :: :: |:   :::|:::| : :   |:: : |
+XLRHODOP_1      1        MNGT..TEGPN.NFYVP.PMSN.NKTGVVRSPFDY..YPQYYL.L 37      
+
+Consensus       42       VNPHWSRFAPMDP.MMSKILGLFTLAIMIISCCGNGVVVYI.F.G 83      
+                         ::|:  ::::::: |:  :| |: |::: :::  | ::::: :  
+XLRHODOP_1      38       AEPWQ.QYSALAAYMF..FL.LL.LILLGLPIN.NFMTLFVTIQH 76      
+
+Consensus       84       GTKSLRTPANLLVLNLAFSDFCMMASQSPV.MIINF..YYETWVL 125     
+                           |:|||| |:::|||:|:: :|:::: :| |::::  |:  :::
+XLRHODOP_1      77       .HKKLRTPLNYILLNLVFANHFMVLCGFTVTMYTSMHGYF..FIF 118     
+
+Consensus       126      GPLWC..D.IYAACGS.LFGCVSIWSMCMIAFDRYNVIVKGINGT 166     
+                         |:  |  : ::|: |: : : |::||::::|::|| |::|:::: 
+XLRHODOP_1      119      GQTGCYIEGFFATLGGEV.V.VALWSLVVLAVERYMVVCKPMANF 161     
+
+Consensus       167      PMTIKTSIMKIAFIWMMA.VFW.TIMPLI.GIWSAYVPE.GNL.T 206     
+                         :::::::|| :||:|:||   : :: ||:   ||:|:||   : :
+XLRHODOP_1      162      RFGENHAIMGVAFTWIMALS.SCAAPPLFGW.WSRYIPEGM.MQC 203     
+
+Consensus       207      ACSIDYMT.R.DWNPRSYLITYSLF.VYYT.PLF.LICYSYW.FI 245     
+                         :|::||:| : : |::|::|:: :| |::| ||: :: :::: ::
+XLRHODOP_1      204      SCGVDYYTLKPEVNNESFVIYM.MFIVHFTIPLIVIF.FFCYGRL 246     
+
+Consensus       246      IAAVA.AHEKAMRDQAKKMNVKS.LRSSEDCDKSSAEGK.LAK.V 286     
+                         :::|: | : | :::  : : :|   :::: ::: :: | ::: |
+XLRHODOP_1      247      LCTVKEA.AAAQQQE..E.E.ESAT.TTQK.KAE.EK.KEVTRMV 282     
+
+Consensus       287      A.LTTISLWFMAWTPYLVICY.FGLFKNIDG.LTP.LTT.IWGAT 326     
+                         : :::: :::::|:||: ::: : :|:: :: ::| : |   :| 
+XLRHODOP_1      283      VIMVVF.FFLICWVPYAYVAFYI.IFTHQGSNFGPVFMTVP.PAF 324     
+
+Consensus       327      FAKTSAVYNPIVYGISHPKDR.AVLKEKCPM.CVCGETDEP.SKP 368     
+                         |||:||:|||::| : ::::|  ::::  :: | ||::: | :::
+XLRHODOP_1      325      FAKSSAIYNPVIYIVLNKQFRNCLITT..TLCC.CGKNP.PFGDE 365     
+
+Consensus       369      DAPASDT.ETTSEADSKAA                           386     
+                         |:::::| :|: ||:| ::
+XLRHODOP_1      366      DGSSAATSKTE.EASSVSS                           383     

@@ -1,0 +1,32 @@
+<assembly>
+  <id>bin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <fileSets>
+    <fileSet>
+      <directory>src/main/resources/workbench</directory>
+      <excludes>
+      	<exclude>broken-examples/</exclude>
+      	<exclude>dubious-examples/</exclude>
+      </excludes>
+      <outputDirectory>/</outputDirectory>
+    </fileSet>
+    <!-- contrib examples -->
+    <fileSet>
+      <directory>taverna-contrib/examples</directory>
+      <outputDirectory>examples</outputDirectory>
+    </fileSet>
+  </fileSets>
+  <moduleSets>
+    <moduleSet>
+      <includes>
+        <include>uk.org.mygrid.taverna:taverna-bootstrap</include>
+      </includes>
+      <binaries>
+        <outputDirectory>/</outputDirectory>
+        <unpack>false</unpack>
+      </binaries>
+    </moduleSet>
+  </moduleSets>
+</assembly>

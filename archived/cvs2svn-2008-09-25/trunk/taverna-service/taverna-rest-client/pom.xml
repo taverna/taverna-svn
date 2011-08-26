@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>uk.org.mygrid.remotetaverna</groupId>
+		<artifactId>remotetaverna</artifactId>
+		<version>0.5.0</version>
+	</parent>
+	<groupId>uk.org.mygrid.remotetaverna</groupId>
+	<artifactId>taverna-rest-client</artifactId>
+	<version>0.5.0</version>
+	<packaging>jar</packaging>
+	<name>Taverna service REST client</name>
+	<description>
+		Client library interfacing Taverna REST service. Based on the
+		Restlet framework.
+	</description>
+	<dependencies>
+		<!--  Standard libraries -->
+		<dependency>
+			<groupId>jdom</groupId>
+			<artifactId>jdom</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</dependency>
+
+		<!--  Remote Tavera -->
+		<dependency>
+			<groupId>uk.org.mygrid.remotetaverna</groupId>
+			<artifactId>taverna-interface</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.remotetaverna</groupId>
+			<artifactId>taverna-rest-xmlbeans</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.remotetaverna</groupId>
+			<artifactId>taverna-rest</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.remotetaverna</groupId>
+			<artifactId>taverna-rest</artifactId>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.remotetaverna</groupId>
+			<artifactId>taverna-datastore</artifactId>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+
+
+		<!--  Restlet -->
+		<dependency>
+			<groupId>com.noelios.restlet</groupId>
+			<artifactId>com.noelios.restlet.ext.httpclient</artifactId>
+		</dependency>
+
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>start derby test db</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<!--<echo message="Starting Apache Derby" />-->
+								<java
+									classname="org.apache.derby.drda.NetworkServerControl"
+									fork="yes" spawn="yes" dir="target">
+									<classpath
+										refid="maven.test.classpath" />
+									<arg line="start -p 1337" />
+								</java>
+								<echo message="Started Apache Derby" />
+							</tasks>
+						</configuration>
+					</execution>
+					<execution>
+						<id>stop derby test db</id>
+						<phase>test</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<!--<echo message="Stopping Apache Derby" />-->
+								<java
+									classname="org.apache.derby.drda.NetworkServerControl"
+									fork="yes">
+									<classpath
+										refid="maven.test.classpath" />
+									<arg line="shutdown -p 1337" />
+								</java>
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

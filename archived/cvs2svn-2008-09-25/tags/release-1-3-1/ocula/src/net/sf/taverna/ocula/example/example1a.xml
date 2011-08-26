@@ -1,0 +1,74 @@
+<!-- A top level page, the specified title is pushed to the first JFrame -->
+<!-- containing the Ocula instance. If there isn't such a component the  -->
+<!-- title attribute has no effect.                                      -->
+<page title="Simple example">
+  <header>
+    <!-- The init tag contains actions to be run when the page is first loaded -->
+    <!-- and before the methods on the display are called. This allows it to   -->
+    <!-- populate the Ocula context as in this example, check for neccessary   -->
+    <!-- preconditions or other utility                                        -->
+    <init>
+      <!-- The run action invokes the contained beanshell script, extracting all -->
+      <!-- named bound variables in the interpreter into the Ocula context on    -->
+      <!-- completion. The extract property can specify multiple value names as  -->
+      <!-- a comma seperated list.                                               -->
+      <run extract="addressBook">import net.sf.taverna.ocula.example.*; addressBook = new PhoneBook();</run>
+    </init>
+  </header>
+  <!-- The contents section contains arbitrarily many tags recognized by registered -->
+  <!-- instances of the FrameSPI. In this example there are two, the grid and table -->
+  <contents>
+    <!-- The grid FrameSPI implementation renders components in a grid layout with  -->
+    <!-- a title / icon at the top of the frame and a progress bar at the base. The -->
+    <!-- colour of this frame is defined by the ocula.panelborder property in the   -->
+    <!-- current style, background is the ocula.panelbackground with the colour of  -->
+    <!-- the title (bound to the name attribute) is ocula.panelforeground           -->
+    <grid name="People" icon="users" cols="3">
+      <!-- The script is evaluated by prepending 'resultValue = ' to the supplied text -->
+      <!-- and interpeting it in the context of the current Ocula environment. Return  -->
+      <!-- values of either array or Collection types are displayed, single objects    -->
+      <!-- are wrapped in a single item array first. The RendererSPI is used to create -->
+      <!-- appropriate Component subclasses within the UI                              -->
+      <script>
+        addressBook.getPeople()
+      </script>
+      <!-- If a doubleclick element is defined (optional) the grid layout registers   -->
+      <!-- a mouse event handler that intercepts any double click, inserts the object -->
+      <!-- corresponding to the component in the script result into the Ocula context -->
+      <!-- as 'selectedObject' and runs the child actions. The 'selectedObject' key   -->
+      <!-- is removed from the Ocula context when all actions have completed.         -->
+      <doubleclick>
+        <!-- Inserts the value of 'resultValue = selectedObject' into the context with -->
+	<!-- the name 'user'.                                                          -->
+        <put key="user">selectedObject</put>
+	<!-- Redirects to a new page relative to the URL of the current one. -->
+	<load url="example2.xml"/>
+      </doubleclick>
+      <!-- The optional contextmenu allows right click menus to be created. The title -->
+      <!-- and icon are used in the menu title, all child 'item' elements are used    -->
+      <!-- to create menu items, child elements of each item are passed to the action -->
+      <!-- handler in the same way as the init and doubleclick elements, including    -->
+      <!-- binding of the selectedObject key in the context                           -->
+      <contextmenu title="Example menu" icon="stop">
+        <item name="Hello" icon="reload"/>
+      </contextmenu>
+    </grid>
+    <!-- The table view performs the same method call logic as the grid view but    -->
+    <!-- then calls additional methods on each returned object to construct columns -->
+    <!-- within a standard table model.                                             -->
+    <table name="People as table" icon="list">
+      <!-- Interpreted in the same way as for the grid layout -->
+      <script>
+        addressBook.getPeople();
+      </script>
+      <!-- For each 'column' element a column is created in the table model. Data   -->
+      <!-- for the column in each row is created by evaluating the beanshell script -->
+      <!-- contained within the column tag with the value property bound to the     -->
+      <!-- object representing the current column row. Values are cached and only   -->
+      <!-- computed once per instantiation of the page.                             -->
+      <column name="Name">value.getName()</column>
+      <column name="Country">value.getCountry()</column>
+      <column name="Phone">value.getPhone()</column>
+    </table>    
+  </contents>	
+</page>

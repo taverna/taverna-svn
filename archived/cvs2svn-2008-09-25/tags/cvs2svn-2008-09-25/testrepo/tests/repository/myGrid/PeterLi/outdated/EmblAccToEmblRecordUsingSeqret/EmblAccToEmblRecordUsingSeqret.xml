@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="3">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:15" author="" title="" />
+  <s:processor name="getEMBL_DDBJ">
+    <s:description>Retrieves the EMBL record associated with a given EMBL accession number using the DDBJ service</s:description>
+    <s:arbitrarywsdl>
+      <s:wsdl>http://xml.nig.ac.jp/wsdl/GetEntry.wsdl</s:wsdl>
+      <s:operation>getEMBLEntry</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link source="EmblAccNumber" sink="getEMBL_DDBJ:accession" />
+  <s:link source="getEMBL_DDBJ:Result" sink="EmblRecord" />
+  <s:source name="EmblAccNumber">
+    <s:metadata>
+      <s:description>An EMBL accession number.  No database Id prefix required in the input; just the accession number itself.  Try D00137 as a test</s:description>
+      <s:semanticType>http://www.mygrid.org.uk/ontology#EMBL_nucleotide_sequence_accession</s:semanticType>
+    </s:metadata>
+  </s:source>
+  <s:sink name="EmblRecord">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+        <s:mimeType>chemical/x-embl-dl-nucleotide</s:mimeType>
+      </s:mimeTypes>
+      <s:description>An EMBL record</s:description>
+      <s:semanticType>http://www.mygrid.org.uk/ontology#EMBL_record</s:semanticType>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+
+

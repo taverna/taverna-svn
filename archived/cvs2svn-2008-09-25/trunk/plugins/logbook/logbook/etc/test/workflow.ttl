@@ -1,0 +1,266 @@
+@prefix processRun:  <urn:www.mygrid.org.uk/process_run#> .
+@prefix processProperty:  <urn:www.mygrid.org.uk/process_property#> .
+@prefix provenance:  <http://www.mygrid.org.uk/provenance#> .
+@prefix process:  <urn:www.mygrid.org.uk/process#> .
+@prefix :        <#> .
+
+<urn:lsid:www.people.org:person:p1234>
+      a       provenance:Experimenter ;
+      provenance:belongsTo
+              <urn:lsid:www.scientific_organisations.org:lab:l5678> .
+
+processProperty:1132151385136
+      a       provenance:ProcessProperty ;
+      provenance:key "WorkerClass"^^<http://www.w3.org/2001/XMLSchema#string> ;
+      provenance:value "org.embl.ebi.escience.scuflworkers.java.SplitByRegex"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+<urn:lsid:www.mygrid.org.uk:operation:F3A9LEOZFX14>
+      a       provenance:Workflow ;
+      provenance:workflowAuthor
+              "Daniele Turi"^^<http://www.w3.org/2001/XMLSchema#string> ;
+      provenance:workflowTitle
+              "Subworkflow Example"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+process:regex
+      a       provenance:DataName ;
+      provenance:mimeType "text/plain"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+<urn:lsid:net.sf.taverna:dataItem:28>
+      a       provenance:DataObject , provenance:AtomicData ;
+      provenance:inputDataHasName
+              <urn:www.mygrid.org.uk/process#Split_string_into_string_list_by_regular_expression:regex> .
+
+<urn:lsid:net.sf.taverna:dataItem:40>
+      a       provenance:DataObject .
+
+<urn:www.mygrid.org.uk/process#NestedWorkflow:subworkflowOut>
+      a       provenance:OutputDataName ;
+      provenance:dataSyntacticType
+              "l('text/plain')"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+processRun:1132151385136
+      a       provenance:ProcessRun ;
+      provenance:endTime "\"2005-11-16T14:29:45.136Z\"^^http://www.w3.org/2001/XMLSchema#dateTime" ;
+      provenance:processInput
+              <urn:lsid:net.sf.taverna:dataItem:18> , <urn:lsid:net.sf.taverna:dataCollection:26> ;
+      provenance:processOutput
+              <urn:lsid:net.sf.taverna:dataCollection:35> ;
+      provenance:runsProcess
+              process:Split_string_into_string_list_by_regular_expression .
+
+<urn:lsid:net.sf.taverna:dataItem:29>
+      a       provenance:DataObject , provenance:AtomicData ;
+      provenance:inputDataHasName
+              <urn:www.mygrid.org.uk/process#Split_string_into_string_list_by_regular_expression:regex> .
+
+processProperty:1132151385133
+      a       provenance:ProcessProperty ;
+      provenance:key "WorkerClass"^^<http://www.w3.org/2001/XMLSchema#string> ;
+      provenance:value "org.embl.ebi.escience.scuflworkers.java.SplitByRegex"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+process:String_Constant
+      a       provenance:Process ;
+      provenance:className
+              "org.embl.ebi.escience.scuflworkers.stringconstant.StringConstantProcessor"^^<http://www.w3.org/2001/XMLSchema#string> ;
+      provenance:hasProperty
+              processProperty:1132151384801 .
+
+<urn:lsid:net.sf.taverna:dataCollection:39>
+      a       provenance:DataCollection , provenance:DataObject ;
+      provenance:containsData
+              <urn:lsid:net.sf.taverna:dataItem:41> , <urn:lsid:net.sf.taverna:dataItem:40> ;
+      provenance:dataDerivedFrom
+              <urn:lsid:net.sf.taverna:dataItem:18> , <urn:lsid:net.sf.taverna:dataItem:28> ;
+      provenance:outputDataHasName
+              <urn:www.mygrid.org.uk/process#Split_string_into_string_list_by_regular_expression:split> .
+
+process:split
+      a       provenance:DataName ;
+      provenance:mimeType "text/plain"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+<urn:lsid:net.sf.taverna:dataItem:38>
+      a       provenance:DataObject .
+
+<urn:www.mygrid.org.uk/process#Split_string_into_string_list_by_regular_expression:split>
+      a       provenance:OutputDataName ;
+      provenance:dataSyntacticType
+              "l('text/plain')"^^<http://www.w3.org/2001/XMLSchema#string> , "l(l('text/plain'))"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+processRun:1132151385129
+      a       provenance:ProcessRun ;
+      provenance:endTime "\"2005-11-16T14:29:45.130Z\"^^http://www.w3.org/2001/XMLSchema#dateTime" ;
+      provenance:processInput
+              <urn:lsid:net.sf.taverna:dataItem:18> , <urn:lsid:net.sf.taverna:dataItem:28> ;
+      provenance:processOutput
+              <urn:lsid:net.sf.taverna:dataCollection:39> ;
+      provenance:runsProcess
+              process:Split_string_into_string_list_by_regular_expression .
+
+processRun:1132151385124
+      a       provenance:ProcessRun ;
+      provenance:endTime "\"2005-11-16T14:29:45.124Z\"^^http://www.w3.org/2001/XMLSchema#dateTime" ;
+      provenance:processOutput
+              <urn:lsid:net.sf.taverna:dataCollection:26> ;
+      provenance:runsProcess
+              process:NestedWorkflow .
+
+processProperty:1132151384801
+      a       provenance:ProcessProperty ;
+      provenance:key "String Value"^^<http://www.w3.org/2001/XMLSchema#string> ;
+      provenance:value "aabb;skl;jk"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+<urn:www.mygrid.org.uk/process#Split_string_into_string_list_by_regular_expression:string>
+      a       provenance:InputDataName ;
+      provenance:dataSyntacticType
+              "'text/plain'"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+<urn:lsid:net.sf.taverna:wfInstance:8:list>
+      a       provenance:OutputDataName ;
+      provenance:dataSyntacticType
+              "l(l('text/plain'))"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+processProperty:1132151385127
+      a       provenance:ProcessProperty ;
+      provenance:key "WorkerClass"^^<http://www.w3.org/2001/XMLSchema#string> ;
+      provenance:value "org.embl.ebi.escience.scuflworkers.java.SplitByRegex"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+process:subworkflowOut
+      a       provenance:DataName ;
+      provenance:mimeType "text/plain"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+<urn:lsid:net.sf.taverna:wfInstance:8>
+      a       provenance:WorkflowRun ;
+      provenance:endTime "\"2005-11-16T14:29:45.142Z\"^^http://www.w3.org/2001/XMLSchema#dateTime" ;
+      provenance:executedProcessRun
+              processRun:1132151385132 , processRun:1132151385136 , processRun:1132151384801 , processRun:1132151385129 , processRun:1132151385127 , processRun:1132151385124 ;
+      provenance:launchedBy
+              <urn:lsid:www.people.org:person:p1234> ;
+      provenance:runsWorkflow
+              <urn:lsid:www.mygrid.org.uk:operation:F3A9LEOZFX14> ;
+      provenance:startTime
+              "\"2005-11-16T14:29:33.648Z\"^^http://www.w3.org/2001/XMLSchema#dateTime" ;
+      provenance:workflowOutput
+              <urn:lsid:net.sf.taverna:dataCollection:35> .
+
+<urn:lsid:net.sf.taverna:dataItem:41>
+      a       provenance:DataObject .
+
+process:value
+      a       provenance:DataName ;
+      provenance:mimeType "text/plain"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+process:NestedWorkflow
+      a       provenance:Process ;
+      provenance:className
+              "org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+<urn:lsid:net.sf.taverna:dataCollection:26>
+      a       provenance:DataCollection , provenance:DataObject ;
+      provenance:containsData
+              <urn:lsid:net.sf.taverna:dataItem:29> , <urn:lsid:net.sf.taverna:dataItem:27> , <urn:lsid:net.sf.taverna:dataItem:28> ;
+      provenance:inputDataHasName
+              <urn:www.mygrid.org.uk/process#Split_string_into_string_list_by_regular_expression:regex> ;
+      provenance:outputDataHasName
+              <urn:www.mygrid.org.uk/process#NestedWorkflow:subworkflowOut> .
+
+<urn:lsid:net.sf.taverna:dataItem:18>
+      a       provenance:DataObject , provenance:AtomicData ;
+      provenance:inputDataHasName
+              <urn:www.mygrid.org.uk/process#Split_string_into_string_list_by_regular_expression:string> ;
+      provenance:outputDataHasName
+              <urn:www.mygrid.org.uk/process#String_Constant:value> .
+
+<urn:www.mygrid.org.uk/process#Split_string_into_string_list_by_regular_expression:regex>
+      a       provenance:InputDataName ;
+      provenance:dataSyntacticType
+              "'text/plain'"^^<http://www.w3.org/2001/XMLSchema#string> , "l('text/plain')"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+processRun:1132151385127
+      a       provenance:ProcessRun ;
+      provenance:endTime "\"2005-11-16T14:29:45.127Z\"^^http://www.w3.org/2001/XMLSchema#dateTime" ;
+      provenance:processInput
+              <urn:lsid:net.sf.taverna:dataItem:27> , <urn:lsid:net.sf.taverna:dataItem:18> ;
+      provenance:processOutput
+              <urn:lsid:net.sf.taverna:dataCollection:36> ;
+      provenance:runsProcess
+              process:Split_string_into_string_list_by_regular_expression .
+
+process:string
+      a       provenance:DataName ;
+      provenance:mimeType "text/plain"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+<urn:lsid:net.sf.taverna:dataItem:43>
+      a       provenance:DataObject .
+
+processRun:1132151385132
+      a       provenance:ProcessRun ;
+      provenance:endTime "\"2005-11-16T14:29:45.133Z\"^^http://www.w3.org/2001/XMLSchema#dateTime" ;
+      provenance:processInput
+              <urn:lsid:net.sf.taverna:dataItem:29> , <urn:lsid:net.sf.taverna:dataItem:18> ;
+      provenance:processOutput
+              <urn:lsid:net.sf.taverna:dataCollection:42> ;
+      provenance:runsProcess
+              process:Split_string_into_string_list_by_regular_expression .
+
+processProperty:1132151385129
+      a       provenance:ProcessProperty ;
+      provenance:key "WorkerClass"^^<http://www.w3.org/2001/XMLSchema#string> ;
+      provenance:value "org.embl.ebi.escience.scuflworkers.java.SplitByRegex"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+<urn:lsid:net.sf.taverna:dataCollection:36>
+      a       provenance:DataCollection , provenance:DataObject ;
+      provenance:containsData
+              <urn:lsid:net.sf.taverna:dataItem:37> , <urn:lsid:net.sf.taverna:dataItem:38> ;
+      provenance:dataDerivedFrom
+              <urn:lsid:net.sf.taverna:dataItem:27> , <urn:lsid:net.sf.taverna:dataItem:18> ;
+      provenance:outputDataHasName
+              <urn:www.mygrid.org.uk/process#Split_string_into_string_list_by_regular_expression:split> .
+
+<urn:lsid:net.sf.taverna:dataItem:37>
+      a       provenance:DataObject .
+
+<urn:lsid:net.sf.taverna:dataCollection:35>
+      a       provenance:DataCollection , provenance:DataObject ;
+      provenance:containsData
+              <urn:lsid:net.sf.taverna:dataCollection:36> , <urn:lsid:net.sf.taverna:dataCollection:39> , <urn:lsid:net.sf.taverna:dataCollection:42> ;
+      provenance:dataDerivedFrom
+              <urn:lsid:net.sf.taverna:dataCollection:26> , <urn:lsid:net.sf.taverna:dataItem:18> ;
+      provenance:outputDataHasName
+              <urn:lsid:net.sf.taverna:wfInstance:8:list> , <urn:www.mygrid.org.uk/process#Split_string_into_string_list_by_regular_expression:split> .
+
+processRun:1132151384801
+      a       provenance:ProcessRun ;
+      provenance:endTime "\"2005-11-16T14:29:44.802Z\"^^http://www.w3.org/2001/XMLSchema#dateTime" ;
+      provenance:processOutput
+              <urn:lsid:net.sf.taverna:dataItem:18> ;
+      provenance:runsProcess
+              process:String_Constant .
+
+<urn:lsid:net.sf.taverna:dataItem:27>
+      a       provenance:DataObject , provenance:AtomicData ;
+      provenance:inputDataHasName
+              <urn:www.mygrid.org.uk/process#Split_string_into_string_list_by_regular_expression:regex> .
+
+<urn:www.mygrid.org.uk/process#String_Constant:value>
+      a       provenance:OutputDataName ;
+      provenance:dataSyntacticType
+              "'text/plain'"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+<urn:lsid:net.sf.taverna:dataCollection:42>
+      a       provenance:DataCollection , provenance:DataObject ;
+      provenance:containsData
+              <urn:lsid:net.sf.taverna:dataItem:43> ;
+      provenance:dataDerivedFrom
+              <urn:lsid:net.sf.taverna:dataItem:29> , <urn:lsid:net.sf.taverna:dataItem:18> ;
+      provenance:outputDataHasName
+              <urn:www.mygrid.org.uk/process#Split_string_into_string_list_by_regular_expression:split> .
+
+process:Split_string_into_string_list_by_regular_expression
+      a       provenance:Process ;
+      provenance:className
+              "org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor"^^<http://www.w3.org/2001/XMLSchema#string> ;
+      provenance:hasProperty
+              processProperty:1132151385129 , processProperty:1132151385127 , processProperty:1132151385133 , processProperty:1132151385136 .
+
+<urn:lsid:www.scientific_organisations.org:lab:l5678>
+      a       provenance:Organization .

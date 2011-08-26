@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:VI9FMF5HBQ5" author="Tom Oinn" title="Use biomoby to fetch mutant flower images">Shows the use of Biomoby services and the associated local XML manipulation plugins to fetch image and annotation data from a server located via mobycentral.</s:workflowdescription>
+  <s:processor name="id">
+    <s:stringconstant>cho</s:stringconstant>
+  </s:processor>
+  <s:processor name="namespace">
+    <s:stringconstant>DragonDB:Allele</s:stringconstant>
+  </s:processor>
+  <s:processor name="Create_moby_data">
+    <s:local>org.embl.ebi.escience.scuflworkers.biomoby.CreateMobyData</s:local>
+  </s:processor>
+  <s:processor name="Parse_moby_data">
+    <s:local>org.embl.ebi.escience.scuflworkers.biomoby.ExtractMobyData</s:local>
+  </s:processor>
+  <s:processor name="Decode_base64_to_byte">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.DecodeBase64</s:local>
+  </s:processor>
+  <s:processor name="getDragonSimpleAnnotatedImages">
+    <s:description>Retrieves image collections of Antirrhinum mutants based on their Allele designation</s:description>
+    <s:biomobywsdl>
+      <s:mobyEndpoint>http://mobycentral.cbr.nrc.ca/cgi-bin/MOBY05/mobycentral.pl</s:mobyEndpoint>
+      <s:serviceName>getDragonSimpleAnnotatedImages</s:serviceName>
+      <s:authorityName>antirrhinum.net</s:authorityName>
+    </s:biomobywsdl>
+  </s:processor>
+  <s:link source="getDragonSimpleAnnotatedImages:output" sink="Parse_moby_data:mobydata" />
+  <s:link source="Create_moby_data:mobydata" sink="getDragonSimpleAnnotatedImages:input" />
+  <s:link source="id:value" sink="Create_moby_data:id" />
+  <s:link source="namespace:value" sink="Create_moby_data:namespace" />
+  <s:link source="Parse_moby_data:value" sink="Decode_base64_to_byte:base64" />
+  <s:link source="Decode_base64_to_byte:bytes" sink="images" />
+  <s:sink name="images">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>image/jpeg</s:mimeType>
+        <s:mimeType>application/octet-stream</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+
+

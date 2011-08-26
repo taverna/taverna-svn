@@ -1,0 +1,10 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX o: <http://www.mygrid.org.uk/testrepo/o/>
+PREFIX : <http://www.mygrid.org.uk/testrepo/>
+SELECT DISTINCT ?test ?got_port
+WHERE {
+    ?got_port o:match ?exp_port . 
+    ?run o:returned ?got_port .
+    ?run o:runs ?test
+}

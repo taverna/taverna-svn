@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.1" log="0">
+  <s:processor name="getHsaIds">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/keggmapper?wsdl</s:wsdl>
+      <s:operation>getHsaIds</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getGeneEntries">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://soap.genome.ad.jp/KEGG.wsdl</s:wsdl>
+      <s:operation>get_entries</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link>
+    <s:input>getHsaIds:query</s:input>
+    <s:output>emblAcc</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getGeneEntries:kids</s:input>
+    <s:output>getHsaIds:getHsaIdsReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>results</s:input>
+    <s:output>getGeneEntries:return</s:output>
+  </s:link>
+  <s:source>
+    emblAcc
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:source>
+  <s:sink>
+    results
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+
+

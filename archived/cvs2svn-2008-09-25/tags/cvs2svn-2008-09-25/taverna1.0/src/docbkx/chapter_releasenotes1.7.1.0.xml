@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="release_notes_1.7.0.0_chapter">
+  <title>Version 1.7.1 release notes</title>
+
+  <toc></toc>
+
+  <section id="taverna_1_7_1_overview">
+    <title>Overview</title>
+
+    <para>Release notes for the Spring 2008 release of the Taverna Workbench,
+    v1.7.1.</para>
+  </section>
+
+  <section id="known_issues">
+    <title>Known Issues</title>
+
+    <section id="known_issues_examples">
+      <title>Examples</title>
+
+      <para>The following examples do not work in the Taverna 2 preview</para>
+
+      <orderedlist>
+        <listitem>
+          <para>ConditionalBranchChoice - This will translate but may not run
+          correctly</para>
+        </listitem>
+
+        <listitem>
+          <para>SeqVistaRendering - This will not translate</para>
+        </listitem>
+
+        <listitem>
+          <para>gbseq - This will not translate</para>
+        </listitem>
+      </orderedlist>
+    </section>
+  </section>
+
+  <section>
+    <title>Fixes and new features in Taverna 1 codebase in this
+    release</title>
+
+    <para>See myGrid JIRA issue tracking for more detail at
+    http://www.mygrid.org.uk/jira. The following outstanding issues with older
+    releases have been fixed in this one :</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>TAV-732 : documentation is out of date</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-553 : Fetching results unpredictable</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-709 : T2 Enactment Error with pauls workflow</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-700 : Column 'thing' too short in LogBook database
+        schema</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-716 : Remote execution service using outdated Taverna
+        profile</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-721 : T2 Validation fails for processors containing merged
+        ports</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-200 : Embedded browser within taverna (recommended work
+        around using beanshell)</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-737 : Allow multiple implementations of the Monitor
+        interface</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-682 : Disconnected outputs fails workflow</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-726 : Mac OS X plist file improvements</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-664 : Serialise bean to stream instead of file</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-724 : T2 FileDataManager and FileBlobStore uses File.mkdirs
+        which isn't thread-safe</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-736 : T2 Renderers</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-710 : T2 input dialogue doesn't open after an error</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-244 : The execution version of the workflow should be the
+        same as the edit version</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-731 : goViz is not there</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-715 : Avoid Raven/maven dependency for remote execution
+        service</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-680 : Failing workflows goes to empty results</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-742 : JTidyWorkerTest fails due to character set
+        assumptions</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-713 : Workflow scavenger dropping ports and script content
+        for Rshell</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-679 : Default "Metadata" tab for input/output ports
+        confusing</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-574 : Nested workflow location</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-719 : TestJavaProcess failed during Maven build</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-728 : Add Unknown Host Exception in PluginManager</para>
+      </listitem>
+    </itemizedlist>
+
+    <para></para>
+  </section>
+
+  <section id="t2_tech_preview_1">
+    <title>Taverna 2 Technology Preview 2</title>
+
+    <para>Has various updates to the look and feel, including a monitor based
+    view of the workflow which shows where events are happening during a
+    workflow run and result rendering according to their MIME type.</para>
+  </section>
+</chapter>

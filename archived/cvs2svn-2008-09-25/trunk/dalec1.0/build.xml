@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="dalec1.0" default="main">
+
+    <!-- Compiler options -->
+
+    <property name="compiler.debug" value="on"/>
+    <property name="compiler.generate.no.warnings" value="off"/>
+    <property name="compiler.max.memory" value="128m"/>
+    <patternset id="ignored.files">
+        <exclude name="**/CVS/**"/>
+    </patternset>
+    <patternset id="compiler.resources">
+        <include name="**/?*.properties"/>
+        <include name="**/?*.xml"/>
+        <include name="**/?*.gif"/>
+        <include name="**/?*.png"/>
+        <include name="**/?*.jpeg"/>
+        <include name="**/?*.jpg"/>
+        <include name="**/?*.html"/>
+        <include name="**/?*.dtd"/>
+        <include name="**/?*.tld"/>
+    </patternset>
+
+    <!-- Libraries to be used -->
+
+    <path id="library.dalec_library.classpath">
+        <pathelement location="${basedir}/lib/dazzle.jar"/>
+        <pathelement location="${basedir}/lib/taverna-1.2.jar"/>
+        <pathelement location="${basedir}/lib/biojava-1.4.jar"/>
+    </path>
+
+    <path id="library.taverna_library.classpath">
+        <pathelement location="${basedir}/taverna-lib/notification-processor.jar"/>
+        <pathelement location="${basedir}/taverna-lib/talisman1.4.5.11.jar"/>
+        <pathelement location="${basedir}/taverna-lib/ecp1_0beta.jar"/>
+        <pathelement location="${basedir}/taverna-lib/wsif-hacked.jar"/>
+        <pathelement location="${basedir}/taverna-lib/seqhound-3.0.jar"/>
+        <pathelement location="${basedir}/taverna-lib/alltools.jar"/>
+        <pathelement location="${basedir}/taverna-lib/freefluo.jar"/>
+        <pathelement location="${basedir}/taverna-lib/lsid-client-1.1.jar"/>
+        <pathelement location="${basedir}/taverna-lib/Jmol.jar"/>
+        <pathelement location="${basedir}/taverna-lib/jstyx-0.03.jar"/>
+        <pathelement location="${basedir}/taverna-lib/freefluo-taverna-exts.jar"/>
+        <pathelement location="${basedir}/taverna-lib/antlr.jar"/>
+        <pathelement location="${basedir}/taverna-lib/mail.jar"/>
+        <pathelement location="${basedir}/taverna-lib/icu4j.jar"/>
+        <pathelement location="${basedir}/taverna-lib/jakarta-oro-2.0.5.jar"/>
+        <pathelement location="${basedir}/taverna-lib/jmoby.jar"/>
+        <pathelement location="${basedir}/taverna-lib/jena.jar"/>
+        <pathelement location="${basedir}/taverna-lib/ensj-util.jar"/>
+        <pathelement location="${basedir}/taverna-lib/jedit-syntax-2.2.2.jar"/>
+        <pathelement location="${basedir}/taverna-lib/activation.jar"/>
+        <pathelement location="${basedir}/taverna-lib/martj.jar"/>
+        <pathelement location="${basedir}/taverna-lib/tl-netty2-1.7.3.jar"/>
+        <pathelement location="${basedir}/taverna-lib/jgraph.jar"/>
+        <pathelement location="${basedir}/taverna-lib/seqvista-hacked.jar"/>
+        <pathelement location="${basedir}/taverna-netlib/junit-3.8.jar"/>
+        <pathelement location="${basedir}/taverna-netlib/xercesImpl-2.6.2.jar"/>
+        <pathelement location="${basedir}/taverna-netlib/jdom-1.0.jar"/>
+        <pathelement location="${basedir}/taverna-netlib/dom4j-1.5.jar"/>
+        <pathelement location="${basedir}/taverna-netlib/log4j-1.2.8.jar"/>
+        <pathelement location="${basedir}/taverna-netlib/commons-httpclient-2.0.jar"/>
+        <pathelement location="${basedir}/taverna-netlib/axis-1.2-RC3.jar"/>
+        <pathelement location="${basedir}/taverna-netlib/axis-jaxrpc-1.2-RC3.jar"/>
+        <pathelement location="${basedir}/taverna-netlib/poi-2.0-final-20040126.jar"/>
+        <pathelement location="${basedir}/taverna-netlib/servlet-api-2.4-20040521.jar"/>
+        <pathelement location="${basedir}/taverna-netlib/axis-wsdl4j-1.2-RC3.jar"/>
+        <pathelement location="${basedir}/taverna-netlib/bsh-2.0b1.jar"/>
+        <pathelement location="${basedir}/taverna-netlib/concurrent-1.3.4.jar"/>
+        <pathelement location="${basedir}/taverna-netlib/mysql-connector-java-3.0.10-stable-bin.jar"/>
+        <pathelement location="${basedir}/taverna-netlib/xmlParserAPIs-2.2.1.jar"/>
+        <pathelement location="${basedir}/taverna-netlib/axis-saaj-1.2-RC3.jar"/>
+        <pathelement location="${basedir}/taverna-netlib/commons-logging-1.0.4.jar"/>
+        <pathelement location="${basedir}/taverna-netlib/commons-discovery-0.2.jar"/>
+    </path>
+
+    <!-- Dalec1.0 tasks -->
+
+    <dirname property="dalec1.0.basedir" file="${ant.file}"/>
+
+    <property name="src.dir" value="${basedir}/src"/>
+    <property name="configUI.src.dir" value="${basedir}/src/net/sf/taverna/dalec/configurator"/>
+    <property name="classes.dir" value="${basedir}/classes"/>
+    <property name="configUI.classes.dir" value="net/sf/taverna/dalec/configurator"/>
+    <property name="lib.dir" value="${basedir}/lib"/>
+    <property name="taverna-lib.dir" value="${basedir}/taverna-lib"/>
+    <property name="taverna-netlib.dir" value="${basedir}/taverna-netlib"/>
+    <property name="test.dir" value="${basedir}/test"/>
+    <property name="docs.dir" value="${basedir}/docs"/>
+    <property name="webapp.dir" value="${basedir}/dalec-webapp"/>
+    <property environment="env"/>
+
+    <path id="dalec.classpath">
+        <path refid="library.dalec_library.classpath"/>
+        <path refid="library.taverna_library.classpath"/>
+    </path>
+
+    <path id="dalec.sourcepath">
+        <dirset dir="${src.dir}"/>
+    </path>
+
+    <path id="dalec.test.sourcepath">
+        <dirset dir="${test.dir}"/>
+    </path>
+
+    <patternset id="excluded.from.dalec1.0">
+        <patternset refid="ignored.files"/>
+    </patternset>
+
+    <patternset id="excluded.from.compilation.dalec1.0">
+        <patternset refid="excluded.from.dalec1.0"/>
+    </patternset>
+
+    <target name="compile.dalec1.0" depends="compile.dalec1.0.source,compile.dalec1.0.tests"
+            description="compile dalec1.0"/>
+
+    <target name="compile.dalec1.0.source" description="compile dalec1.0 source classes">
+        <mkdir dir="${classes.dir}"/>
+        <javac destdir="${classes.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}"
+               memoryMaximumSize="${compiler.max.memory}" fork="true">
+            <classpath refid="dalec.classpath"/>
+            <src refid="dalec.sourcepath"/>
+        </javac>
+        <copy todir="${classes.dir}">
+            <fileset dir="${src.dir}">
+                <patternset refid="compiler.resources"/>
+                <type type="file"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="compile.dalec1.0.tests" depends="compile.dalec1.0.source" description="compile dalec1.0 test classes">
+        <mkdir dir="${classes.dir}"/>
+        <javac destdir="${classes.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}"
+               memoryMaximumSize="${compiler.max.memory}" fork="true">
+            <classpath refid="dalec.classpath"/>
+            <classpath location="${classes.dir}"/>
+            <src refid="dalec.test.sourcepath"/>
+        </javac>
+        <copy todir="${classes.dir}">
+            <fileset dir="${test.dir}">
+                <patternset refid="compiler.resources"/>
+                <type type="file"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="fetch.jars" depends="fetch.biojava.jars, fetch.taverna-lib.jars, fetch.taverna-netlib.jars"
+            description="retrieve required jar files from the web"/>
+
+    <!-- retrieve jars from taverna source lib via CVS -->
+    <target name="fetch.taverna-lib.jars" description="retrieve taverna jars from CVS repository">
+        <mkdir dir="${taverna-lib.dir}"/>
+        <cvs cvsRoot=":pserver:anonymous@cvs.sourceforge.net:/cvsroot/taverna"
+             package="taverna1.0/lib"
+             dest="${taverna-lib.dir}"/>
+        <copy todir="${taverna-lib.dir}">
+            <fileset dir="${taverna-lib.dir}/taverna1.0/lib" includes="**/*.jar"/>
+        </copy>
+        <delete dir="${taverna-lib.dir}/taverna1.0"/>
+    </target>
+
+    <!-- retrieve ibiblio jars -->
+    <target name="fetch.taverna-netlib.jars"
+            description="retrieve additional taverna jars from ibiblio">
+        <mkdir dir="${taverna-netlib.dir}"/>
+        <get src="http://www.ibiblio.org/maven/bsh/jars/bsh-2.0b1.jar"
+             dest="${taverna-netlib.dir}/bsh-2.0b1.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/jdom/jars/jdom-1.0.jar"
+             dest="${taverna-netlib.dir}/jdom-1.0.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/axis/jars/axis-1.2-RC3.jar"
+             dest="${taverna-netlib.dir}/axis-1.2-RC3.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/axis/jars/axis-jaxrpc-1.2-RC3.jar"
+             dest="${taverna-netlib.dir}/axis-jaxrpc-1.2-RC3.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/axis/jars/axis-saaj-1.2-RC3.jar"
+             dest="${taverna-netlib.dir}/axis-saaj-1.2-RC3.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/axis/jars/axis-wsdl4j-1.2-RC3.jar"
+             dest="${taverna-netlib.dir}/axis-wsdl4j-1.2-RC3.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/commons-discovery/jars/commons-discovery-0.2.jar"
+             dest="${taverna-netlib.dir}/commons-discovery-0.2.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/commons-logging/jars/commons-logging-1.0.4.jar"
+             dest="${taverna-netlib.dir}/commons-logging-1.0.4.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/commons-httpclient/jars/commons-httpclient-2.0.jar"
+             dest="${taverna-netlib.dir}/commons-httpclient-2.0.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/log4j/jars/log4j-1.2.8.jar"
+             dest="${taverna-netlib.dir}/log4j-1.2.8.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/dom4j/jars/dom4j-1.5.jar"
+             dest="${taverna-netlib.dir}/dom4j-1.5.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/xerces/jars/xmlParserAPIs-2.2.1.jar"
+             dest="${taverna-netlib.dir}/xmlParserAPIs-2.2.1.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/xerces/jars/xercesImpl-2.6.2.jar"
+             dest="${taverna-netlib.dir}/xercesImpl-2.6.2.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/concurrent/jars/concurrent-1.3.4.jar"
+             dest="${taverna-netlib.dir}/concurrent-1.3.4.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/servletapi/jars/servlet-api-2.4.jar"
+             dest="${taverna-netlib.dir}/servlet-api-2.4-20040521.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/junit/jars/junit-3.8.jar"
+             dest="${taverna-netlib.dir}/junit-3.8.jar"
+             usetimestamp="yes"/>
+<!--        <get src="http://www.ibiblio.org/maven/poi/jars/poi-2.0-final-20040126.jar"
+             dest="${taverna-netlib.dir}/poi-2.0-final-20040126.jar"
+             usetimestamp="yes"/> -->
+        <get src="http://www.ibiblio.org/maven/poi/jars/poi-2.5.1.jar"
+             dest="${taverna-netlib.dir}/poi-2.5.1.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/mysql/jars/mysql-connector-java-3.0.10.jar"
+             dest="${taverna-netlib.dir}/mysql-connector-java-3.0.10-stable-bin.jar"
+             usetimestamp="yes"/>
+    </target>
+
+    <!-- retrieve biojava and dazzle jars -->
+    <target name="fetch.biojava.jars" description="retrieve all jars compulsory for biojava and dazzle">
+        <get src="http://www.biojava.org/download/binaries/biojava-1.4.jar"
+             dest="${lib.dir}/biojava-1.4.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.biojava.org/download/binaries/bytecode-0.92.jar"
+             dest="${lib.dir}/bytecode-0.92.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.biojava.org/download/binaries/commons-cli.jar"
+             dest="${lib.dir}/commons-cli.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.biojava.org/download/binaries/commons-collections-2.1.jar"
+             dest="${lib.dir}/commons-collections-2.1.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.biojava.org/download/binaries/commons-dbcp-1.1.jar"
+             dest="${lib.dir}/commons-dbcp-1.1.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.biojava.org/download/binaries/commons-pool-1.1.jar"
+             dest="${lib.dir}/commons-pool-1.1.jar"
+             usetimestamp="yes"/>
+    </target>
+
+    <!-- make the dalec jar file -->
+    <target name="dalec.jar" depends="compile.dalec1.0">
+        <jar destfile="${lib.dir}\dalec-1.0.jar" basedir="${classes.dir}"
+             excludes="${configUI.classes.dir}\**\*.class"/>
+    </target>
+
+    <!-- Make the configUI utility into an executable jar file -->
+    <target name="configurator.jar" depends="compile.dalec1.0" description="Constructing Configurator.jar">
+        <jar destfile="configurator.jar" basedir="${classes.dir}" includes="${configUI.classes.dir}\**\*.class"
+             update="true">
+            <manifest>
+                <attribute name="Main-Class" value="net.sf.taverna.dalec.configurator.ConfiguratorUI"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <!-- make the Javadocs -->
+    <target name="javadocs">
+        <mkdir dir="${docs.dir}\api"/>
+        <javadoc destdir="${docs.dir}\api" windowtitle="net.sf.taverna.dalec.configurator.DalecModel-1.0 Javadocs"
+                 linksource="true">
+            <packageset dir="${src.dir}"/>
+        </javadoc>
+    </target>
+
+    <!-- make the web-app structure -->
+    <target name="make.webapp" depends="dalec.jar, edit.existing.webapp, make.default.webapp"/>
+
+    <target name="webapp.exists">
+        <condition property="das.war.exists">
+            <available file="${env.TOMCAT_HOME}\webapps\das.war"/>
+        </condition>
+    </target>
+
+    <!-- Edit an old webapp if it existed before -->
+    <target name="edit.existing.webapp" depends="webapp.exists" if="das.war.exists">
+        <echo message="das.war already exists = ${das.war.exists}"/>
+        <mkdir dir="${webapp.dir}"/>
+        <copy tofile="${basedir}\deployment\das.old">
+            <fileset file="${env.TOMCAT_HOME}\webapps\das.war"/>
+        </copy>
+        <unwar src="${env.TOMCAT_HOME}\webapps\das.war" dest="${webapp.dir}"/>
+        <delete dir="${webapp.dir}\META-INF" />
+        <copy todir="${webapp.dir}\WEB-INF\lib">
+            <fileset dir="${lib.dir}">
+                <include name="**\*.jar"/>
+            </fileset>
+            <fileset dir="${taverna-lib.dir}">
+                <include name="**\*.jar"/>
+            </fileset>
+            <fileset dir="${taverna-netlib.dir}">
+                <include name="**\*.jar"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <!-- Make a new default webapp if there isn't one already -->
+    <target name="make.default.webapp" depends="webapp.exists" unless="das.war.exists">
+        <echo message="das.war already exists = ${das.war.exists}"/>
+        <mkdir dir="${webapp.dir}"/>
+        <mkdir dir="${webapp.dir}\WEB-INF\lib"/>
+        <copy todir="${webapp.dir}\WEB-INF\lib">
+            <fileset dir="${lib.dir}">
+                <include name="**\*.jar"/>
+            </fileset>
+            <fileset dir="${taverna-lib.dir}">
+                <include name="**\*.jar"/>
+            </fileset>
+            <fileset dir="${taverna-netlib.dir}">
+                <include name="**\*.jar"/>
+            </fileset>
+        </copy>
+        <copy todir="${webapp.dir}\WEB-INF" file="${basedir}\deployment\web.xml" />
+        <copy todir="${webapp.dir}" file="${basedir}\deployment\dazzlecfg.xml"/>
+        <copy todir="${webapp.dir}" file="${basedir}\deployment\welcome.html"/>
+        <copy todir="${webapp.dir}" file="${basedir}\deployment\dalec.style"/>
+        <copy todir="${webapp.dir}" file="${basedir}\deployment\test.embl"/>
+        <copy todir="${webapp.dir}" file="${basedir}\deployment\test.style"/>
+    </target>
+
+    <!-- clean up the source directory -->
+    <target name="clean" depends="default.clean, clean.fetched.jars" description="cleanup Dalec1.0"/>
+
+    <target name="default.clean" description="cleanup all file operations, not including fetching of external jars">
+        <delete dir="${classes.dir}"/>
+        <delete dir="${webapp.dir}"/>
+        <delete file="${lib.dir}\dalec-1.0.jar"/>
+        <delete file="configurator.jar"/>
+    </target>
+
+    <target name="clean.fetched.jars" description="delete all fetched jars">
+        <delete dir="${taverna-netlib.dir}"/>
+        <delete dir="${taverna-lib.dir}"/>
+        <delete file="${lib.dir}/biojava-1.4.jar"/>
+        <delete file="${lib.dir}/bytecode-0.92.jar"/>
+        <delete file="${lib.dir}/commons-cli.jar"/>
+        <delete file="${lib.dir}/commons-collections-2.1.jar"/>
+        <delete file="${lib.dir}/commons-dbcp-1.1.jar"/>
+        <delete file="${lib.dir}/commons-pool-1.1.jar"/>
+    </target>
+
+    <target name="init" depends="fetch.jars, make.webapp" description="Build initialization"/>
+
+    <target name="construct.skeleton" depends="make.webapp" description="Construct the webapp from existing jar files"/>
+
+    <!-- Run the configUI utility -->
+    <target name="run.configurator" depends="configurator.jar">
+        <java jar="configurator.jar" fork="true"/>
+    </target>
+
+    <target name="build.without.fetch" depends="default.clean, make.webapp, compile.dalec1.0, run.configurator"/>
+
+    <target name="main.with.clean" depends="clean, init, compile.dalec1.0, run.configurator"
+            description="clean-up then build"/>
+
+    <target name="main" depends="init, run.configurator" description="build all"/>
+</project>

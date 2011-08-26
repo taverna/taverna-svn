@@ -1,0 +1,41 @@
+
+		<center>
+			<h3>Queue: $queue.getId()</h3>
+			<table>
+			<tr><th>ID</th><th>Job Name</th><th>Owner</th><th>Status</th></tr>
+			#foreach ($job in $jobs)
+				#set($joburi=$uriFactory.getURI($job))
+				#set($jobstatusuri=$uriFactory.getURIStatus($job))
+				
+				#set($myjob=$job.getOwner().equals($currentuser))
+				<tr>
+				<td>
+					#if ($myjob)
+						<a href="$joburi">$job.getId()</a>
+					#else
+						$job.getId()
+					#end
+					</td>
+					<td>$!job.name</td>
+					<td>$job.owner.getUsername()</td><td>$job.status</td>
+				#if ($myjob)
+					#if (!$job.hasStarted() || $job.isFinished())
+						<td>
+							<form method="POST" action="$joburi?method=DELETE">
+								<input type="submit" value="Delete"/>
+							</form>
+						</td>
+					#elseif (!$job.isCancelling())
+						<td>
+						<form method="POST" action="$jobstatusuri?method=PUT">					
+							<input type="hidden" name="status" value="CANCELLING" />
+							<input type="submit" value="Cancel" "/>
+						</form>
+						</td>
+					#end
+				#end			
+				</tr>
+			#end
+			</table>
+		</center>
+	

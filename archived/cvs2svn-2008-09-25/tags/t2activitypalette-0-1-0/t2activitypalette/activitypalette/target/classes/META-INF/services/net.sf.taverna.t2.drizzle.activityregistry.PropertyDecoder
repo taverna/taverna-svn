@@ -1,0 +1,15 @@
+net.sf.taverna.t2.drizzle.activityregistry.APIConsumerProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.activityregistry.APProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.activityregistry.BeanshellProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.activityregistry.BiomartProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.activityregistry.BiomobyProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.activityregistry.BiomobyProcessor2FactoryDecoder
+net.sf.taverna.t2.drizzle.activityregistry.BiomobyObjectProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.activityregistry.LocalServiceProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.activityregistry.NotificationProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.activityregistry.RshellProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.activityregistry.SoaplabProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.activityregistry.StringConstantProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.activityregistry.WorkflowProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.activityregistry.WSDLBasedProcessorFactoryDecoder
+net.sf.taverna.t2.drizzle.activityregistry.ScavengerDecoder

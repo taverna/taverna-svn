@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="3">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:VI9FMF5HBQ16" author="Peter Li" title="Fetch probe sequence and blast against PDB">Maps from an affymetrix probe set identifier to fetch a sequence, then uses blastx to do a similarity search against the protein data bank at the EBI</s:workflowdescription>
+  <s:processor name="databaseid">
+    <s:description>An identifier to a database to be Blasted against.  In this case, its pdb.</s:description>
+    <s:stringconstant>pdb</s:stringconstant>
+  </s:processor>
+  <s:processor name="probeSetId">
+    <s:stringconstant>1001_at</s:stringconstant>
+  </s:processor>
+  <s:processor name="AffyMapper_seq">
+    <s:description>Retrieves the nucleotide sequence associated with a given Affymetrix probe set Id in FASTA format</s:description>
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/affymapper?wsdl</s:wsdl>
+      <s:operation>getSequence</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="Blastx">
+    <s:description>BlastX search</s:description>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/collab/mygrid/service4/soap/services/alignment::blastx_ncbi</s:soaplabwsdl>
+  </s:processor>
+  <s:link source="AffyMapper_seq:getSequenceReturn" sink="Blastx:query_sequence" />
+  <s:link source="Blastx:search_result" sink="results_Blastx" />
+  <s:link source="databaseid:value" sink="Blastx:database" />
+  <s:link source="probeSetId:value" sink="AffyMapper_seq:probeSetId" />
+  <s:sink name="results_Blastx">
+    <s:metadata>
+      <s:description>A Blast results report</s:description>
+      <s:semanticType>http://www.mygrid.org.uk/ontology#bioinformatics_report</s:semanticType>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+
+

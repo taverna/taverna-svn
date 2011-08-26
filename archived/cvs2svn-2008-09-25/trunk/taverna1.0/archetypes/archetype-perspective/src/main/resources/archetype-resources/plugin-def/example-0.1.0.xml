@@ -1,0 +1,18 @@
+<plugin>
+	<name>Example</name>
+	<description><!-- add a description here --></description>
+	<identifier>${groupId}</identifier>
+	<version>${version}</version>
+	<provider>example.com</provider>
+	<repositories>
+		<repository>
+			<!-- add the url to the repository you have deployed your plugin to here, e.g. http://www.example.com/maven/repository -->
+		</repository>
+	</repositories>
+	<profile>
+		<artifact groupId="${groupId}" artifactId="${artifactId}" version="${version}" />
+	</profile>
+	<taverna>
+		<version>1.7.2</version>
+	</taverna>
+</plugin>

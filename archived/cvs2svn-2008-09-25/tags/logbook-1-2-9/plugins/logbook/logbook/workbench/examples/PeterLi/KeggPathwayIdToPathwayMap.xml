@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.1" log="0">
+  <s:processor name="markPathway">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://soap.genome.ad.jp/KEGG.wsdl</s:wsdl>
+      <s:operation>mark_pathway_by_genes</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="kegg_getGenesByPathway">
+    <s:description>Returns all the gene id associated with a  given pathway id</s:description>
+    <s:arbitrarywsdl>
+      <s:wsdl>http://soap.genome.ad.jp/KEGG.wsdl</s:wsdl>
+      <s:operation>get_genes_by_pathway</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="pathwayid">
+    <s:stringconstant>path:hsa05040</s:stringconstant>
+  </s:processor>
+  <s:link>
+    <s:input>markPathway:oids</s:input>
+    <s:output>kegg_getGenesByPathway:return</s:output>
+  </s:link>
+  <s:link>
+    <s:input>results</s:input>
+    <s:output>markPathway:return</s:output>
+  </s:link>
+  <s:link>
+    <s:input>genes</s:input>
+    <s:output>kegg_getGenesByPathway:return</s:output>
+  </s:link>
+  <s:link>
+    <s:input>kegg_getGenesByPathway:pathway_id</s:input>
+    <s:output>pathwayid:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>markPathway:map_id</s:input>
+    <s:output>pathwayid:value</s:output>
+  </s:link>
+  <s:sink>
+    results
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>type text/x-taverna-web-url</s:mimeType>
+      </s:mimeTypes>
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    genes
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+
+

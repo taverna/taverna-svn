@@ -1,0 +1,54 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+          http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
+	version="1.0">
+
+	<persistence-unit name="tavernaService">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<!-- Should not really be needed, Hibernate supports auto-detection even in J2SE.
+			However, running inside Eclipse, this IS needed because of classpath issues.
+		-->
+		
+		<class>net.sf.taverna.service.datastore.bean.Job</class>
+		<class>net.sf.taverna.service.datastore.bean.Workflow</class>
+		<class>net.sf.taverna.service.datastore.bean.DataDoc</class>
+		<class>net.sf.taverna.service.datastore.bean.User</class>
+		<class>net.sf.taverna.service.datastore.bean.Worker</class>
+		<class>net.sf.taverna.service.datastore.bean.Queue</class>
+		<class>net.sf.taverna.service.datastore.bean.QueueEntry</class>
+		<class>net.sf.taverna.service.datastore.bean.Configuration</class>
+
+		<properties>
+			<property name="hibernate.archive.autodetection"
+				value="class, hbm" />
+			<property name="hibernate.show_sql" value="false" />
+			<property name="hibernate.format_sql" value="true" />
+			
+			<property name="hibernate.connection.driver_class"
+				value="org.apache.derby.jdbc.EmbeddedDriver" />
+				<property name="hibernate.connection.url"
+				value="jdbc:derby:/tmp/remoteTavernaDB;create=true"
+			/> 
+			
+			<!-- The following is a configuration to connect to a Derby instance running locally on port 1337.  
+			<property name="hibernate.connection.driver_class"
+				value="org.apache.derby.jdbc.ClientDriver" />
+			<property name="hibernate.connection.url"
+				value="jdbc:derby://localhost:1337/remoteTavernaDB;create=true;upgrade=true" />
+			 -->
+
+			<property name="hibernate.c3p0.min_size" value="5" />
+			<property name="hibernate.c3p0.max_size" value="20" />
+			<property name="hibernate.c3p0.timeout" value="300" />
+			<property name="hibernate.c3p0.max_statements" value="50" />
+			<property name="hibernate.c3p0.idle_test_period"
+				value="3000" />
+			<property name="hibernate.dialect"
+				value="org.hibernate.dialect.DerbyDialect" />
+			<property name="hibernate.hbm2ddl.auto" value="update" />
+		</properties>
+	</persistence-unit>
+
+
+</persistence>

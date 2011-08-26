@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:taverna1.0.kubrick.mrl.nott.ac.uk:wfDefinition:48253abbb" author="" title="Replace LSID example" />
+  <s:processor name="Beanshell_scripting_host">
+    <s:beanshell>
+      <s:scriptvalue>output = input;
+System.out.println("input is "+input.getClass().getName());
+replacelsid = "&lt;html&gt;&lt;head&gt;&lt;title&gt;title&lt;/title&gt;&lt;/head&gt;"+
+"&lt;body&gt;&lt;H1&gt;HTML&lt;/H1&gt;&lt;a href=\"replacelsid:output\"&gt;output&lt;/a&gt;\n"+
+"&lt;a href=\"replacelsid:output[0]\"&gt;output.[0]&lt;/a&gt;="+
+output.get(0)+
+" ("+((String)output.get(0)).length()+" chars)\n"+
+"&lt;/body&gt;&lt;/html&gt;\n";</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/plain')">input</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">output</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="'text/html'">replacelsid</s:beanshelloutput>
+      </s:beanshelloutputlist>
+    </s:beanshell>
+  </s:processor>
+  <s:link source="in" sink="Beanshell_scripting_host:input" />
+  <s:link source="Beanshell_scripting_host:output" sink="out" />
+  <s:link source="Beanshell_scripting_host:replacelsid" sink="meta" />
+  <s:source name="in">
+    <s:metadata>
+      <s:description>one or more strings</s:description>
+    </s:metadata>
+  </s:source>
+  <s:sink name="out">
+    <s:metadata>
+      <s:description>a copy of in, so that it is in the outputs for saving.</s:description>
+    </s:metadata>
+  </s:sink>
+  <s:sink name="meta">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/html</s:mimeType>
+      </s:mimeTypes>
+      <s:description>A simple web page including information derived from the input and cross-links to it (as out).</s:description>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+
+

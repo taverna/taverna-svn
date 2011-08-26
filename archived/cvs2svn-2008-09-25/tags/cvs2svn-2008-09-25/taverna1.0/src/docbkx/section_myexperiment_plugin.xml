@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section id="myexperiment_plugin">
+  <title>myExperiment and WHIP Plugin (beta) 0.1.3</title>
+
+  <para>This plugin provides deep integration between, and facilitates end to end use of, myExperiment
+  and the Taverna Workflow Workbench.  This is achieved using the WHIP Launcher application and myExperiment APIs.
+  Currently the plugin only connects with the "mothership" myExperiment site. It provides the following features:</para>
+  <itemizedlist>
+      <listitem>
+        <para>'One click' workflow launch from myExperiment to Taverna (using WHIP)</para>
+        </listitem>
+        <listitem>
+        <para>Browse the example workflows from the myExperiment group "Taverna workflow workbench examples"</para>
+        </listitem>
+        <listitem>
+        <para>Browse the latest workflows from myExperiment</para>
+        </listitem>
+        <listitem>
+        <para>Search for workflows from myExperiment</para>
+        </listitem>
+        <listitem>
+        <para>View a dynamic and resizeable tag cloud from myExperiment</para>
+        </listitem>
+        <listitem>
+        <para>Get workflows based on a tag</para>
+        </listitem>
+       <listitem>
+        <para>'Preview' a workflow - get more information from myExperiment about a workflow</para>
+        </listitem>
+        <listitem>
+        <para>Open a workflow in design mode (when in the myExperiment section of the plugin)</para>
+        </listitem>
+        <listitem>
+        <para>Import a workflow into a current workflow in design mode</para>
+  </listitem>
+  </itemizedlist>
+</section>

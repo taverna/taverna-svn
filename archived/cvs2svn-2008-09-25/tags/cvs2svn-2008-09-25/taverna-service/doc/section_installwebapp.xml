@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section>
+  <title>Getting Started with Remote Taverna Execution.</title>
+
+  <para>This section describes how to install the Remote Taverna Execution
+  application war file.</para>
+
+  <important>
+    <para>Please make sure you read the <link
+    linkend="remotetaverna_security">Security Considerations</link> before
+    using this application.</para>
+  </important>
+
+  <para>Currently this has only been tested on in Tomcat running on Linux and
+  MacOSX, but not Windows.</para>
+
+  <section>
+    <title>Downloading Tomcat</title>
+
+    <para>The recommended version of Tomcat to use is Tomcat 5.5.23 Tomcat can
+    be downloaded from <ulink
+    url="http://tomcat.apache.org/">http://tomcat.apache.org/</ulink>. The
+    <literal>tar.gz</literal> should be used, not the <literal>zip</literal>
+    version. To install Tomcat simply unzip it to the desired location.</para>
+
+    <important>
+      <para>Tomcat should be run as a non-privileged user, as workflows will
+      be executed as that user. User nobody is suggested.</para>
+    </important>
+
+    <para>More details about installing and configuring Tomcat can be found at
+    <ulink
+    url="http://tomcat.apache.org/tomcat-5.5-doc/introduction.html">http://tomcat.apache.org/tomcat-5.5-doc/introduction.html</ulink></para>
+  </section>
+
+  <section>
+    <title>Configuring the database</title>
+
+    <para>Before deploying the war file, the database first needs configuring.
+    This is defined within the war file in the file
+    <literal>WEB-INF/classes/META-INF/persistence.xml</literal>. The war file
+    must first be unzipped to modify this file. Many modern GUI zip tools
+    allow you to edit zipped files without physically unzipping the
+    file.</para>
+
+    <para>By default this is set to use an embedded version of the Apache
+    Derby database. All that needs configuring is the path to which the
+    database will be installed when the war file is deployed. This is
+    configured in the section:</para>
+
+    <screen>&lt;property name="hibernate.connection.driver_class"
+ value="org.apache.derby.jdbc.EmbeddedDriver" /&gt;
+ &lt;property name="hibernate.connection.url"
+ value="jdbc:derby:/tmp/remoteTavernaDB;create=true"
+/&gt;</screen>
+
+    <para>The path <literal>/tmp/remoteTavernaDB</literal> should be changed to
+    somewhere more suitable. The directory will be created and is where all
+    the data is stored.</para>
+  </section>
+
+  <section>
+    <title>Deploying the web application.</title>
+
+    <para>You can deploy the modified war file, or the unzipped directory, by
+    copying it to the webapps directory within the unzipped Tomcat
+    installation.</para>
+
+    <para>For details on how to deploy using Tomcats Manager application
+    please refer to <ulink
+    url="http://tomcat.apache.org/tomcat-5.5-doc/manager-howto.html">http://tomcat.apache.org/tomcat-5.5-doc/manager-howto.html</ulink></para>
+
+    <para>You should now start Tomcat.</para>
+  </section>
+
+  <section>
+    <title>Post installation configuration</title>
+
+    <para>Once the application is deployed and Tomcat is running you should
+    fist browse to its installation location to configure some additional
+    settings. We would encourage you to use the full host name, rather than
+    localhost; for example if Tomcat is running on its default port of 8080
+    this could be
+    <literal>http://mymachine:8080/remotetaverna/</literal></para>
+
+    <para>First you must add an admin user and provide a password. At least
+    one admin user is required to use the application, and others can be added
+    later if necessary.</para>
+
+    <para>You should also check that the Base URL is a valid URL and is
+    accessible by the intended Taverna users.</para>
+
+    <para>Finally you will need to define the location of the Taverna Home.
+    This needs to be a writable directory and is where libraries required for
+    Taverna to run will be downloaded. If the directory does not exist it will
+    be created.</para>
+
+    <para>The installation is now complete. </para>
+  </section>
+
+  <section>
+    <title>Administration</title>
+
+    <para>Once the Remote Taverna Execution application is up and running some
+    further administration is recommended.</para>
+
+    <para>First users should be added. Users can be added by following the Add
+    User link. This is only accessible to an admin user. These are the users
+    that will be submitting workflows through the Remote Execution plugin from
+    Taverna.</para>
+
+    <para>Through the System Configuration link it is recommended to set the
+    upper memory usage value. This is the amount of memory allocation for each
+    workflow invocation. This should be set according to the available memory
+    on the server.<caution>
+        <para>It is possible to have more than one
+        <emphasis>worker</emphasis>. A worker is associated with a separate
+        process that is responsible for invoking a workflow. Each worker is
+        allocated the memory specified by this setting. If there is more than
+        one worker defined then it needs to be considered that the total
+        memory usage may rise to the sum of the memory allocated to all
+        workers.</para>
+      </caution>Registration should only be enabled if you know and trust the
+    users that can access the application. You should read and understand the
+    <link linkend="remotetaverna_security">Security conciderations</link>
+    before enabling this.</para>
+  </section>
+
+  <section id="remotetaverna_security">
+    <title>Security Considerations</title>
+
+    <para>This application is only intended to be used internally on a local
+    network and shared between trusted local users.</para>
+
+    <para>Its important to remember that Workflows submitted may contain local
+    processors or Beanshell scripts that can access the local file system,
+    access network facilities or start new processes. For this reason it is
+    highly recommended that it is not deployed such that it is externally
+    visible on the internet unless it is installed in a highly secure
+    environment, such as within a chroot jail or a virtual machine. We suggest
+    you seek expert advice before doing this.</para>
+  </section>
+</section>

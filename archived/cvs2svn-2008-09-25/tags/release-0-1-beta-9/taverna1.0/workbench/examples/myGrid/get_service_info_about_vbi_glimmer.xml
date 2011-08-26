@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.1" log="0">
+  <s:processor name="glimmer">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.vbi.vt.edu/~pathport/services/wsdls/glimmer.wsdl</s:wsdl>
+      <s:operation>aboutService</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link>
+    <s:input>service_info</s:input>
+    <s:output>glimmer:aboutServiceReturn</s:output>
+  </s:link>
+  <s:sink>
+    service_info
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/html</s:mimeType>
+      </s:mimeTypes>
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+
+

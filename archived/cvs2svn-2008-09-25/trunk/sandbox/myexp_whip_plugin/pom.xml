@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.myexp_whip_plugin</groupId>
+	<artifactId>myexp-whip-plugin</artifactId>
+	<version>0.1.3</version>
+	<name>myExperiment and WHIP Plugin</name>
+	<description>
+		A pilot plugin for Taverna to show integration with myExperiment 
+		and the WHIP platform. 
+	</description>
+	<url></url>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skip>false</skip>
+					<systemProperties>
+						<property>
+							<name>java.awt.headless</name>
+							<value>true</value>
+						</property>
+					</systemProperties>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<repositories>
+		<repository>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+		</repository>
+		<repository>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots />
+			<id>mygrid-snapshot-repository</id>
+			<name>myGrid Snapshot Repository</name>
+			<url>
+				http://www.mygrid.org.uk/maven/snapshot-repository
+			</url>
+		</repository>
+		<repository>
+            <id>trianacode-maven-repos</id>
+            <url>http://trianacode.org/maven</url>
+        </repository>
+	</repositories>
+	<distributionManagement>
+		<repository>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>
+				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/repository
+			</url>
+		</repository>
+		<snapshotRepository>
+			<id>mygrid-snapshot-repository</id>
+			<name>myGrid Snapshot Repository</name>
+			<url>
+				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/snapshot-repository
+			</url>
+		</snapshotRepository>
+	</distributionManagement>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.4</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.13</version>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.perspectives</groupId>
+			<artifactId>perspective-core</artifactId>
+			<version>1.7.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.scufl</groupId>
+			<artifactId>scufl-model</artifactId>
+			<version>1.7.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.scufl</groupId>
+			<artifactId>scufl-ui-api</artifactId>
+			<version>1.7.1.0</version>
+		</dependency>
+		<dependency>
+            <groupId>whip</groupId>
+            <artifactId>whip-all</artifactId>
+            <version>0.1-SNAPSHOT</version>
+            <scope>compile</scope> 
+        </dependency>
+		<dependency>
+		    <groupId>rome</groupId>
+		    <artifactId>rome</artifactId>
+		    <version>0.9</version>
+		</dependency>
+		<dependency>
+		    <groupId>BrowserLauncher2</groupId>
+		    <artifactId>BrowserLauncher2</artifactId>
+		    <version>1.3</version>
+		</dependency>
+		<dependency>
+			<groupId>jdom</groupId>
+  			<artifactId>jdom</artifactId>
+  			<version>1.0</version>
+		</dependency>
+	</dependencies>
+</project>
+

@@ -1,0 +1,28 @@
+<body>
+Provides a Service Provider Interface (SPI) for decomposing objects into data
+facets.
+
+<h2>Overview</h2>
+
+<p>
+Data will be flowing arround taverna as opaque blobs. These may be annotated
+with meta-data, such as their mime types. Often these data blobs can be
+considered to have some properties. For example, the text of an embl entry has
+properties like the ID, or organism. In a GUI or during some analysis, it
+may be usefull to work with these facets, rather than with the object itself.
+This package provides an SPI for decomposing objects into facets in a highly
+configurable way.
+</p>
+
+<p>
+The SPI API is defined totaly by one class and one interface.
+{@link org.embl.ebi.escience.scuflui.facets.FacetFinderSPI}
+defines the interface that must be implemented by a provider.
+{@link org.embl.ebi.escience.scuflui.facets.FacetFinderRegistry}
+ is a registry for all known facet finders.
+There are additional classes, such as {@link org.embl.ebi.escience.scuflui.facets.RegexScanner} which are
+implementations of this SPI, and these provide generic support for facetising
+commonly encountered data items, such as strings.
+</p>
+
+</body>

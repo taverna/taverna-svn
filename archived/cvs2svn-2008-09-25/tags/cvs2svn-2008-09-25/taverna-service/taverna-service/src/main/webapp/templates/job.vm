@@ -1,0 +1,78 @@
+
+		<center>
+			<h3>Job: 
+			#if($job.title)
+ 				$job.title
+			#else
+				$job.id
+			#end
+			</h3>
+			<table>
+				<tr><td>Created:</td><td>$job.created</td></tr>
+				<tr><td>Last modified:</td><td>$job.lastModified</td></tr>
+				
+				<tr><td>Status:</td><td>$job.status</td></tr>
+				<tr><td>&nbsp;</td></tr>
+				<tr><td>Workflow:</td><td><a href="$workflowUri">
+					#if($workflow.name)
+						$workflow.name
+					#else
+						$workflow.id
+					#end
+					</a></td></tr>
+				<tr><td>Inputs: </td><td>
+					#if($input)
+						<a href="$inputUri">$input.id</a>
+					#else
+						No Inputs
+					#end
+				</td></tr>
+				
+				
+				<tr><td>Progress Report: </td><td><a href="$progressUri">report</a>
+				
+				
+				#if($updateInterval)
+				  (updated every $updateInterval)
+				#else
+				  (not updated until complete)
+				#end
+				</td></tr>
+				
+				#if($isFinished)
+					<tr>
+					 <td>Outputs: </td>
+					 <td>
+					#if($output)
+						<a href="$outputUri">$output.id</a>
+					#else
+						No Outputs
+					#end
+					</td></tr>
+				#end
+				<tr>
+				 <td>Console: </td>
+				 <td>
+					#if($consoleUri)
+						<a href="$consoleUri">Console output</a>
+					#else
+						No console output
+					#end
+					</td></tr>
+				</td>                   	
+			</table>
+			<br>		
+					#if (!$job.hasStarted() || $job.isFinished())
+						
+							<form method="POST" action="?method=DELETE">
+								<input type="submit" value="Delete"/>
+							</form>
+					#else
+						<form method="POST" action="$jobstatusUri?method=PUT">					
+							<input type="hidden" name="status" value="CANCELLING" />
+							<input type="submit" value="Cancel" "/>
+						</form>
+					#end
+				
+		</center>
+	

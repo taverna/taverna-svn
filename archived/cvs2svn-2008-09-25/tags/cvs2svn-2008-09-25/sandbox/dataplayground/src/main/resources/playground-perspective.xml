@@ -1,0 +1,93 @@
+<basepane>
+  <child>
+    <znode classname="net.sf.taverna.zaria.ZSplitPane">
+      <split ratio="0.2" orientation="horizontal">
+        <right>
+          <znode classname="net.sf.taverna.zaria.ZSplitPane">
+            <split ratio="0.6" orientation="vertical">
+              <right>
+                <znode classname="net.sf.taverna.zaria.ZSplitPane">
+                  <split ratio="0.5" orientation="horizontal">
+                    <right>
+                      <znode classname="net.sf.taverna.zaria.ZRavenComponent">
+                       <namedcomponent>
+                    <name>PlaygroundInputPanel</name>
+                  </namedcomponent>
+                      </znode>
+                    </right>
+                    <left>
+                      <znode classname="net.sf.taverna.zaria.ZRavenComponent">
+                        <namedcomponent>
+                        <name>PlaygroundRendererPanel</name>
+                        </namedcomponent>
+                      </znode>
+                    </left>
+                  </split>
+                </znode>
+              </right>
+              <left>
+                <znode classname="net.sf.taverna.zaria.ZRavenComponent">
+                  <namedcomponent>
+                    <name>PlaygroundPanel</name>
+                  </namedcomponent>
+                </znode>
+              </left>
+            </split>
+          </znode>
+        </right>
+        <left>
+          <znode classname="net.sf.taverna.zaria.ZSplitPane">
+            <split ratio="0.5" orientation="vertical">
+              <right>
+                <znode classname="net.sf.taverna.zaria.ZRavenComponent">
+                  <namedcomponent>
+                    <name>Moby</name>
+                  </namedcomponent>
+                </znode>
+              </right>
+              <left>
+                <znode classname="net.sf.taverna.zaria.ZRavenComponent">
+                  <namedcomponent>
+                    <name>Services</name>
+                  </namedcomponent>
+                </znode>
+              </left>
+            </split>
+          </znode>
+        </left>
+      </split>
+    </znode>
+  </child>
+  <namedcomponents>
+    <namedcomponent>
+      <groupid>uk.org.mygrid.taverna</groupid>
+      <artifact>taverna-scavenger-ui</artifact>
+      <classname>org.embl.ebi.escience.scuflui.ScavengerTreePanelFactory</classname>
+      <name>Services</name>
+    </namedcomponent>
+    <namedcomponent>
+      <groupid>uk.org.mygrid.dataplayground</groupid>
+      <artifact>dataplayground</artifact>
+      <classname>uk.org.mygrid.dataplaygroundui.PlaygroundUIComponentFactory</classname>
+      <name>PlaygroundPanel</name>
+    </namedcomponent>
+    <namedcomponent>
+      <groupid>uk.org.mygrid.dataplayground</groupid>
+      <artifact>dataplayground</artifact>
+      <classname>uk.org.mygrid.dataplaygroundui.PlaygroundInputPanelFactory</classname>
+      <name>PlaygroundInputPanel</name>
+    </namedcomponent>
+    <namedcomponent>
+      <groupid>uk.org.mygrid.dataplayground</groupid>
+      <artifact>dataplayground</artifact>
+      <classname>uk.org.mygrid.dataplaygroundui.PlaygroundRendererPanelFactory</classname>
+      <name>PlaygroundRendererPanel</name>
+    </namedcomponent>
+    <namedcomponent>
+      <groupid>uk.org.mygrid.dataplayground</groupid>
+      <artifact>dataplayground</artifact>
+      <classname>uk.org.mygrid.dataplaygroundui.PlaygroundMobyPanelFactory</classname>
+      <name>Moby</name>
+    </namedcomponent>
+  </namedcomponents>
+</basepane>

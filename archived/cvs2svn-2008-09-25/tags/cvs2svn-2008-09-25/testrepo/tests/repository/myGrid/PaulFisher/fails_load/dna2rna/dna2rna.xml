@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:JK23LS2YM334" author="" title="" />
+  <s:processor name="nucleotide_seq" boring="true">
+    <s:stringconstant>actgactgatcgtagctgactgatcgtagctagctgatcgtagctgatctagc</s:stringconstant>
+  </s:processor>
+  <s:processor name="Transcribe_DNA">
+    <s:local>net.sourceforge.taverna.scuflworkers.biojava.TranscribeWorker</s:local>
+  </s:processor>
+  <s:link source="Transcribe_DNA:rna_seq" sink="output" />
+  <s:link source="nucleotide_seq:value" sink="Transcribe_DNA:dna_seq" />
+  <s:sink name="output" />
+</s:scufl>
+
+

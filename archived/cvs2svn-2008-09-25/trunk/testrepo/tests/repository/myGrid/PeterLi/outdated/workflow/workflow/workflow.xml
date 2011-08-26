@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:processor name="separate">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+  </s:processor>
+  <s:processor name="regexp">
+    <s:stringconstant>\n</s:stringconstant>
+  </s:processor>
+  <s:processor name="DatabaseId">
+    <s:stringconstant>EMBL</s:stringconstant>
+  </s:processor>
+  <s:processor name="CrossRef">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/SrsEbiQuery?wsdl</s:wsdl>
+      <s:operation>queryByXRef</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getProteinIds">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://xml.nig.ac.jp/wsdl/SRS.wsdl</s:wsdl>
+      <s:operation>searchSimple</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link source="getProteinIds:Result" sink="separate:string" />
+  <s:link source="regexp:value" sink="separate:regex" />
+  <s:link source="separate:split" sink="CrossRef:usa" />
+  <s:link source="DatabaseId:value" sink="CrossRef:XRefDatabankId" />
+  <s:link source="CrossRef:queryByXRefReturn" sink="result" />
+  <s:link source="SrsQuery" sink="getProteinIds:query" />
+  <s:source>
+    SrsQuery
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:source>
+  <s:sink>
+    result
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+
+

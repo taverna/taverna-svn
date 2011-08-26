@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.1" log="3">
+  <s:processor name="keggorg">
+    <s:stringconstant>hsa</s:stringconstant>
+  </s:processor>
+  <s:processor name="baseURLForKEGG">
+    <s:stringconstant>http://soap.genome.ad.jp/</s:stringconstant>
+  </s:processor>
+  <s:processor name="SNP_Id">
+    <s:stringconstant>HGBASE:SNP000000302</s:stringconstant>
+  </s:processor>
+  <s:processor name="Output_format">
+    <s:stringconstant>raw</s:stringconstant>
+  </s:processor>
+  <s:processor name="osformat">
+    <s:stringconstant>embl</s:stringconstant>
+  </s:processor>
+  <s:processor name="feature">
+    <s:stringconstant>true</s:stringconstant>
+  </s:processor>
+  <s:processor name="extractImageURLs">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.ExtractImageLinks</s:local>
+  </s:processor>
+  <s:processor name="getPathwayPages">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.WebPageFetcher</s:local>
+  </s:processor>
+  <s:processor name="getPathwayDiagrams">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.WebImageFetcher</s:local>
+  </s:processor>
+  <s:processor name="compare">
+    <s:talisman>
+      <s:tscript>http://homepages.cs.ncl.ac.uk/peter.li/home.formal/workflow_definitions/tscripts/tscript_compare_restrict.xml</s:tscript>
+    </s:talisman>
+  </s:processor>
+  <s:processor name="getHsaIds">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/keggmapper?wsdl</s:wsdl>
+      <s:operation>getHsaIds</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="Hgvbase_getSnpPosition">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/Hgvbase?wsdl</s:wsdl>
+      <s:operation>getSnpPosition</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="ComputeSnpVariations_createMutantSequence">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/ComputeSnpVariations?wsdl</s:wsdl>
+      <s:operation>createMutantSequence</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="mergeIntoEMBL">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/Embl?wsdl</s:wsdl>
+      <s:operation>addSnpWithRestrictCompareInfo</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="Hgvbase_getEmblAccNumber">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/Hgvbase?wsdl</s:wsdl>
+      <s:operation>getEmblAccNumber</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="Hgvbase_getSnpNucelotide">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/Hgvbase?wsdl</s:wsdl>
+      <s:operation>getSnpNucleotide</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="Hgvbase_SnpPositionAndNucleotide">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/Hgvbase?wsdl</s:wsdl>
+      <s:operation>getSnpPositionAndNucleotide</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="Hgvbase_getSnpDBXRef">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/Hgvbase?wsdl</s:wsdl>
+      <s:operation>getSnpId</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="SrsEbiQuery">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/SrsEbiQuery?wsdl</s:wsdl>
+      <s:operation>queryById</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="seqret_getNormalSequence">
+    <s:description>Reads and writes (returns) sequences</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/edit::seqret</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="seqret_EmblRecord">
+    <s:description>Reads and writes (returns) sequences</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/edit::seqret</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="restrict_mutantSequence">
+    <s:description>Finds restriction enzyme cleavage sites</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/nucleic_restriction::restrict</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="restrict_normalSequence">
+    <s:description>Finds restriction enzyme cleavage sites</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/nucleic_restriction::restrict</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="getPathways">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://soap.genome.ad.jp/KEGG.wsdl</s:wsdl>
+      <s:operation>mark_all_pathways_by_genes</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link>
+    <s:input>getPathways:oids</s:input>
+    <s:output>getHsaIds:getHsaIdsReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getPathways:abbr</s:input>
+    <s:output>keggorg:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getPathwayPages:url</s:input>
+    <s:output>getPathways:return</s:output>
+  </s:link>
+  <s:link>
+    <s:input>extractImageURLs:document</s:input>
+    <s:output>getPathwayPages:contents</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getPathwayDiagrams:url</s:input>
+    <s:output>extractImageURLs:imagelinks</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getPathwayDiagrams:base</s:input>
+    <s:output>baseURLForKEGG:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>pathwayDiagrams</s:input>
+    <s:output>getPathwayDiagrams:image</s:output>
+  </s:link>
+  <s:link>
+    <s:input>Hgvbase_getEmblAccNumber:hgvbaseEntry</s:input>
+    <s:output>SrsEbiQuery:queryByIdReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>seqret_getNormalSequence:sequence_usa</s:input>
+    <s:output>Hgvbase_getEmblAccNumber:getEmblAccNumberReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>Hgvbase_SnpPositionAndNucleotide:hgvbaseEntry</s:input>
+    <s:output>SrsEbiQuery:queryByIdReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>ComputeSnpVariations_createMutantSequence:sequence</s:input>
+    <s:output>seqret_getNormalSequence:outseq</s:output>
+  </s:link>
+  <s:link>
+    <s:input>ComputeSnpVariations_createMutantSequence:snpLocations</s:input>
+    <s:output>Hgvbase_SnpPositionAndNucleotide:getSnpPositionAndNucleotideReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>restrict_normalSequence:sequence_direct_data</s:input>
+    <s:output>seqret_getNormalSequence:outseq</s:output>
+  </s:link>
+  <s:link>
+    <s:input>restrict_mutantSequence:sequence_direct_data</s:input>
+    <s:output>ComputeSnpVariations_createMutantSequence:createMutantSequenceReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>compare:report1</s:input>
+    <s:output>restrict_normalSequence:outfile</s:output>
+  </s:link>
+  <s:link>
+    <s:input>compare:report2</s:input>
+    <s:output>restrict_mutantSequence:outfile</s:output>
+  </s:link>
+  <s:link>
+    <s:input>seqret_EmblRecord:sequence_usa</s:input>
+    <s:output>Hgvbase_getEmblAccNumber:getEmblAccNumberReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>Hgvbase_getSnpNucelotide:hgvbaseEntry</s:input>
+    <s:output>SrsEbiQuery:queryByIdReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>Hgvbase_getSnpPosition:hgvbaseEntry</s:input>
+    <s:output>SrsEbiQuery:queryByIdReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>Hgvbase_getSnpDBXRef:hgvbaseEntry</s:input>
+    <s:output>SrsEbiQuery:queryByIdReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>SrsEbiQuery:usa</s:input>
+    <s:output>SNP_Id:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>seqret_getNormalSequence:osformat</s:input>
+    <s:output>Output_format:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>seqret_EmblRecord:feature</s:input>
+    <s:output>feature:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>seqret_EmblRecord:osformat</s:input>
+    <s:output>osformat:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>snpPosition</s:input>
+    <s:output>Hgvbase_getSnpPosition:getSnpPositionReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>snpDBXRef</s:input>
+    <s:output>Hgvbase_getSnpDBXRef:getSnpIdReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>emblRecord</s:input>
+    <s:output>seqret_EmblRecord:outseq</s:output>
+  </s:link>
+  <s:link>
+    <s:input>restrictionComparison</s:input>
+    <s:output>compare:output</s:output>
+  </s:link>
+  <s:link>
+    <s:input>snpNucleotide</s:input>
+    <s:output>Hgvbase_getSnpNucelotide:getSnpNucleotideReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>mergeIntoEMBL:snpNucleotide</s:input>
+    <s:output>Hgvbase_getSnpNucelotide:getSnpNucleotideReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>mergeIntoEMBL:snpLocation</s:input>
+    <s:output>Hgvbase_getSnpPosition:getSnpPositionReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>mergeIntoEMBL:restrict_compareResults</s:input>
+    <s:output>compare:output</s:output>
+  </s:link>
+  <s:link>
+    <s:input>mergedRecord</s:input>
+    <s:output>mergeIntoEMBL:addSnpWithRestrictCompareInfoReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>mergeIntoEMBL:emblRecord</s:input>
+    <s:output>seqret_EmblRecord:outseq</s:output>
+  </s:link>
+  <s:link>
+    <s:input>mergeIntoEMBL:snpDbXRef</s:input>
+    <s:output>Hgvbase_getSnpDBXRef:getSnpIdReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getHsaIds:query</s:input>
+    <s:output>Hgvbase_getEmblAccNumber:getEmblAccNumberReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>keggGenesIDs</s:input>
+    <s:output>getHsaIds:getHsaIdsReturn</s:output>
+  </s:link>
+  <s:sink>
+    pathwayDiagrams
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    emblRecord
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    restrictionComparison
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/html</s:mimeType>
+      </s:mimeTypes>
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    snpDBXRef
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    snpPosition
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    snpNucleotide
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    mergedRecord
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    keggGenesIDs
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+
+

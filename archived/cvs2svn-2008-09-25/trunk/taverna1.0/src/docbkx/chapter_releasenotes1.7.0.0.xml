@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="release_notes_1.7.0.0_chapter">
+  <title>Version 1.7.0 release notes</title>
+
+  <toc></toc>
+
+  <section id="t2_preview_overview">
+    <title>Overview</title>
+
+    <para>Release notes for the 'Christmas' release of the Taverna Workbench,
+    v1.7.0. This release contains the first technology preview of the new
+    Taverna 2 (T2) codebase in the form of a plugin to translate a version 1.x
+    workflow and run in the new enactor.</para>
+  </section>
+
+  <section>
+    <title>Fixes and new features in Taverna 1 codebase in this
+    release</title>
+
+    <para>See myGrid JIRA issue tracking for more detail at
+    http://www.mygrid.org.uk/jira. The following outstanding issues with older
+    releases have been fixed in this one :</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>TAV-557 : Starting Taverna without network fails with Null
+        Pointer Exception</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-668 : BioMobyScavengerHelper should getFromModel</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-663 : Load system artifacts from plugin profile</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-647 : Open workflow request username/password</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-684 : Check new plugin repositories first</para>
+      </listitem>
+
+      <listitem>
+        <para>TAV-669 : XPath processor doesn't work with Java 1.6</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>This set of changes and fixes should make it easier for plugin
+    authors depending on system level artifacts (such as the next Soaplab2
+    processor). There are relatively few new features in the version one code
+    because we've been focusing on...</para>
+  </section>
+
+  <section id="t2_tech_preview_1">
+    <title>Taverna 2 Technology Preview 1</title>
+
+    <para>The 1.7.0 release of the Taverna Workbench incorporates a technology
+    preview of the new Taverna 2 (henceforth T2) enactment engine. This is not
+    the full T2 release scheduled for June 2008, neither should it be regarded
+    as suitable for production usage. In this release we have implemented the
+    T2 functionality as a plug-in to the standard Taverna Workbench. This
+    means that if you are not interested in the new enactor you can safely
+    ignore it – the workbench will run exactly as normal and you can simply
+    not use the extra perspective the new enactor plug-in will have created;
+    the default ‘run workflow’ option will use the version 1.7 enactor.</para>
+
+    <para>The version of the T2 enactor in this release has certain
+    limitations; as the underlying model manipulated by the workbench is still
+    the Taverna 1.x functionality such as staged iteration and configuration
+    of the dispatch stack (used to define recursive behaviours, dynamic
+    binding to abstract resources and similar) cannot be accessed (although
+    they are implemented and usage of T2 from its API provides access to
+    them).</para>
+
+    <para>As the plug-in works on a ‘translate from T1 and run’ model we can
+    only make use of features in T2 which are inherited from the T1 model –
+    you could run a workflow with staged iteration, for example, but there’s
+    no way to specify it in the UI at the moment. There are also limitations
+    in terms of the available processor types. For each processor class (web
+    service, biomart etc) in Taverna 1 we have to implement a translator and
+    an equivalent activity class from the T2 API. Not all processor types are
+    translated, specifically the API consumer and BioMoby types as well as any
+    third party extensions of which we are unaware.</para>
+
+    <para>The majority of the local worker types are translated, so workflows
+    which make use of web services, local workers, beanshell scripts, biomart
+    and soaplab should be translated without any issues. These limitations
+    notwithstanding, the new enactor is capable of scaling far beyond the old
+    version 1 series both in terms of memory usage and performance. The former
+    is enabled by a pass-by-reference model, the latter through
+    pipelining.</para>
+
+    <para>In addition we have an enhanced monitoring facility which allows the
+    state of nested workflow instances to be exposed and in this release we
+    have implemented a naïve user interface to this functionality in the form
+    of a monitor tree. There is also enhanced error checking, something that
+    will extend throughout the new codebase and which allows us to catch
+    potential problems in the workflow model before they occur, ideally before
+    the workflow is run.</para>
+
+    <para>In summary – the T2 functionality in this release of the workbench
+    is intended to give you some insight into the potential capabilities of
+    the full T2 release scheduled for June of next year. Bearing in mind the
+    caveats above please do try to run your workflows in the new enactor and
+    let us know how you get on – we are particularly concerned with workflows
+    which fail where they worked or which return different results. There may
+    be legitimate reasons for both these cases but we would like to know about
+    them. We anticipate one more release where this T1 / T2 split exists
+    sometime around the end of March next year before migrating across to the
+    full T2 version in June. We should point out that the full T2 workbench
+    will be capable of loading your current workflows, one of the purposes of
+    this six month shakedown period is to ensure that this transition can take
+    place with minimum disruption to your existing work – we understand and
+    value the time you have spent creating it and have no intention of
+    disregarding it.</para>
+
+    <para>We're currently writing up documentation on the core architecture of
+    Taverna 2 (as this is now sufficiently stable to be useful!), this will be
+    made available online and notifications published to the mailing lists
+    early next year.</para>
+  </section>
+
+  <section id="prototype_activity_palette">
+    <title>Prototype Activity Palette</title>
+
+    <para>This release also includes a prototype of the new activity palette
+    (activity is the T2 version of processor, to a reasonable approximation),
+    described in its own section in the user manual for this release. As with
+    the new enactor the aim is to get feedback rather than be ready for
+    mainstream production use.</para>
+
+    <para>A guide to using the Activity Palette can be found at <ulink
+    url="http://www.mygrid.org.uk/usermanual1.7/t2_guide.html#activity_palette">http://www.mygrid.org.uk/usermanual1.7/t2_guide.html#activity_palette</ulink>.</para>
+  </section>
+</chapter>

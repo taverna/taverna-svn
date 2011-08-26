@@ -1,0 +1,17 @@
+<basepane>
+  <child>
+    <znode classname="net.sf.taverna.zaria.ZRavenComponent">
+      <namedcomponent scroll="false">
+        <name>myExperiment Panel</name>
+      </namedcomponent>
+    </znode>
+  </child>
+  <namedcomponents>
+    <namedcomponent>
+      <groupid>org.myexp_whip_plugin</groupid>
+      <artifact>myexp-whip-plugin</artifact>
+      <classname>org.myexp_whip_plugin.ui.MainComponentFactory</classname>
+      <name>myExperiment Panel</name>
+    </namedcomponent>
+  </namedcomponents>
+</basepane>

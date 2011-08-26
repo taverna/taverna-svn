@@ -1,0 +1,46 @@
+body {
+	color: black;
+	background: #fcfcfe;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+}
+
+th.head {
+	color: darkblue;
+	background-color: #ececec;
+	height: 15px;
+	text-align: center;
+}
+
+.STable  {
+width:95%;
+}
+
+.STable tbody tr.selected {
+    background-color: #ccccfc !important;
+}
+
+
+#topspacer {
+	height: 5px;
+}
+
+#typetreepanel {
+	background-color: #f0f0f0;
+}
+
+
+td.headertitle {
+	text-align:center;
+	vertical-align:center;
+	font-size: 18px;
+}
+
+.logotable {
+	width: 100%;
+}
+
+.mygridlogo {
+	width: 300px;
+}

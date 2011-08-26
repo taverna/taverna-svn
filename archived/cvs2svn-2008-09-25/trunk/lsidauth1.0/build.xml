@@ -1,0 +1,234 @@
+<!-- Tom Oinn (tmo@ebi.ac.uk) 7th October 2004 -->
+<project name="LSIDAuth" default="all" basedir=".">
+
+	<!-- Current version of the project, used by doxygen -->
+	<property name="project.version" value="0.1"/>
+
+	<!-- These directories are pretty standard, you probably     -->
+	<!-- don't want to change them                               -->
+	<property name="src.dir" value="./src"/>
+        <property name="test.src.dir" value="./test"/>
+        <property name="reports.tests" value="./reports"/>
+	<property name="build.dir" value="./build"/>
+	<property name="build.src" value="${build.dir}/src"/>
+	<property name="build.classes" value="${build.dir}/classes"/>
+	<property name="build.test.src" value="${build.dir}/test_src"/>
+	<property name="build.test.classes" value="${build.dir}/test_classes"/>
+	<property name="build.javadocs" value="${build.dir}/api"/>
+	<property name="build.compiler" value="modern"/>
+	<property name="build.test.src" value="${build.dir}/test_src"/>
+	<property name="build.test.classes" value="${build.dir}/test_classes"/>
+
+        <path id="base-classpath">
+	        <!-- Jar files used when building or running the project go here -->
+		<fileset dir="./lib">
+			<include name="*.jar"/>
+		</fileset>
+	        <!-- Also include our own source tree -->
+		<pathelement path="${build.classes}"/>
+		<pathelement path="${build.src}"/>
+        </path>
+	<path id="base-compile-classpath">
+	        <path refid="base-classpath"/>
+		<!-- Jar files that are only used when building the project go here -->
+		<fileset dir="./devlib">
+			<include name="*.jar"/>
+		</fileset>
+        </path>
+	<path id="base-run-classpath">
+	        <path refid="base-classpath"/>
+	</path>
+	<path id="base-test-classpath">
+	        <path refid="base-run-classpath"/>
+		<fileset dir="./devlib">
+			<include name="*.jar"/>
+		</fileset>
+        </path>
+	<path id="compile-classpath">
+	        <path refid="base-compile-classpath"/>
+	</path>
+	<path id="run-classpath">
+	        <path refid="base-run-classpath"/>
+	</path>
+	<path id="test-classpath">
+	        <path refid="base-test-classpath"/>
+	</path>
+	
+	<!-- Version class generator task -->
+	<taskdef name="jreleaseinfo" classname="ch.oscg.jreleaseinfo.anttask.JReleaseInfoAntTask">
+	        <classpath refid="compile-classpath"/>
+	</taskdef>
+
+	<target name="all" depends="run-tests,javadoc"/>
+
+	<!-- Fetch .jar files -->
+	<target name="fetchjars">
+	        <mkdir dir="./netlib"/>
+		<get src="http://www.ibiblio.org/maven/jdom/jars/jdom-b10.jar" dest="./netlib/jdom-b10.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/axis/jars/axis-1.2-beta-3.jar" dest="./netlib/axis-1.2-beta-3.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/axis/jars/axis-jaxrpc-1.2-beta-3.jar" dest="./netlib/axis-jaxrpc-1.2-beta-3.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/axis/jars/axis-wsdl4j-1.2-beta-3.jar" dest="./netlib/axis-wsdl4j-1.2-beta-3.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/axis/jars/axis-saaj-1.2-beta-3.jar" dest="./netlib/axis-saaj-1.2-beta-3.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/commons-logging/jars/commons-logging-1.0.4.jar" dest="./netlib/commons-logging-1.0.4.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/log4j/jars/log4j-1.2.8.jar" dest="./netlib/log4j-1.2.8.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/commons-httpclient/jars/commons-httpclient-2.0.jar" dest="./netlib/commons-httpclient-2.0.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/xerces/jars/xmlParserAPIs-2.2.1.jar" dest="./netlib/xmlParserAPIs-2.2.1.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/xerces/jars/xercesImpl-2.6.2.jar" dest="./netlib/xercesImpl-2.6.2.jar" usetimestamp="yes"/>
+		<get src="http://www.xbill.org/dnsjava/download/dnsjava-1.3.2.jar" dest="./netlib/dnsjava-1.3.2.jar" usetimestamp="yes"/>
+		<get src="ftp://ftp.exolab.org/pub/castor/castor_0.9.5/castor-0.9.5.jar" dest="./netlib/castor-0.9.5.jar" usetimestamp="yes"/>
+	</target>
+
+	<!-- Purge all fetched jar files -->
+	<target name="purgejars">
+	        <delete dir="./netlib"/>
+	</target>
+
+	<!-- Clean the build -->
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+		<delete dir="${reports.tests}"/>
+	</target>
+
+	<!-- Prepare the source tree for compilation -->
+	<target name="prepare-src" depends="prepare">
+		<mkdir dir="${build.src}"/>
+		<mkdir dir="${build.classes}"/>
+		<copy todir="${build.src}" filtering="on">
+			<fileset dir="${src.dir}">
+				<exclude name="**/CVS/**"/>
+			</fileset>
+		</copy>
+		<!-- Autogenerate the version information -->
+		<jreleaseinfo targetDir="${build.src}"
+		              className="LSIDAuthReleaseInfo"
+			      packageName="org.embl.ebi.escience.lsidauth"
+			      project="${ant.project.name}"
+			      version="${project.version}"
+			      withViewer="false"/>
+			      
+	</target>
+	
+	<!-- Trivial setup -->
+	<target name="prepare">
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${reports.tests}"/>
+		<mkdir dir="./netlib"/>
+		<!-- Reset the compile classpath to include the newly fetched classes -->	
+		<path id="downloaded-libs">
+		        <fileset dir="./netlib">
+			       <include name="*.jar"/>
+			</fileset>
+		</path>
+		<path id="compile-classpath">
+		        <path refid="base-compile-classpath"/>
+			<path refid="downloaded-libs"/>
+		</path>	
+		<path id="run-classpath">
+		<path refid="base-run-classpath"/>
+			<path refid="downloaded-libs"/>
+		</path>
+		<path id="test-classpath">
+		        <path refid="base-test-classpath"/>
+			<path refid="downloaded-libs"/>
+		</path>	
+	</target>
+
+	<!-- Prepare the test source tree for compilation -->
+	<target name="prepare-test-src" depends="prepare">
+	<mkdir dir="${build.test.src}"/>
+        <mkdir dir="${build.test.classes}"/>
+        <copy todir="${build.test.src}" filtering="on">
+            <fileset dir="${test.src.dir}">
+                <exclude name="**/CVS/**"/>
+            </fileset>
+        </copy>
+	</target>
+
+	<!-- Compile the source files -->
+	<target name="java" depends="prepare-src">
+		<!-- Run javac to turn .java files into .class -->
+		<javac debug="on"
+                       srcdir="${build.src}"
+                       destdir="${build.classes}"
+                       source="1.4"
+		       deprecation="on">
+			<classpath refid="compile-classpath"/>
+		</javac>
+		<!-- Copy over any configuration files that you might have -->
+		<copy todir="${build.classes}" filtering="on">
+			<fileset dir="${src.dir}">
+				<exclude name="**/CVS/**"/>
+				<exclude name="**/*.java"/>
+				<exclude name="**/*.html"/>
+		</fileset>
+		</copy>
+		<!-- Run the RMI Compiler on anything that looks like a remote class -->
+		<rmic base="${build.classes}" verify="true">
+			<classpath refid="compile-classpath"/>
+		</rmic>
+	</target>
+
+	<!-- Create a jar of the classes and configuration files -->
+	<target name="jar" depends="java">
+		<jar destfile="${build.dir}/${ant.project.name}-${project.version}.jar" 
+		     basedir="${build.classes}" 
+		     update="no">
+		</jar>
+	</target>
+
+    <!-- Build tests -->
+    <target name="javac-tests" depends="prepare-test-src">
+        <!-- Run javac to turn .java files into .class -->
+        <javac
+            debug="on"
+            srcdir="${build.test.src}"
+            destdir="${build.test.classes}"
+            source="1.4">
+            <classpath refid="compile-classpath"/>
+        </javac>
+        <!-- Copy over any configuration files that you might have -->
+        <copy todir="${build.classes}" filtering="on">
+            <fileset dir="${test.src.dir}">
+                <exclude name="**/CVS/**"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <!-- Run unit tests -->
+    <target name="run-tests" depends="jar,javac-tests">
+        <junit maxmemory="128m" printsummary="yes" haltonfailure="no">
+	    <formatter type="plain" usefile="true"/>
+            <classpath>
+	        <pathelement path="${build.dir}/${ant.project.name}-${project.version}.jar"/>
+		<pathelement path="${build.test.classes}"/>
+		<path refid="test-classpath"/>
+	    </classpath>
+            <!-- The junit task doesn't support 'if' so we test for JUnit here -->
+            <batchtest fork="no" todir="${reports.tests}">
+                <fileset dir="${build.test.classes}">
+                    <include name="**/*Test.class"/>
+                    <include name="**/*TestSuite.class"/>
+                    <exclude name="**/Abstract*Test.class"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
+    	<!-- Build javadocs -->
+	<target name="javadoc" depends="prepare-src">
+		<mkdir dir="${build.javadocs}"/>
+		<javadoc windowtitle="${ant.project.name} Java Classes"
+			 destdir="${build.javadocs}"
+             linksource="yes"
+             breakiterator="yes"
+			 sourcepath="${build.src}"
+			 doctitle="&lt;h1>${ant.project.name} Java API Documentation&lt;/h1>"
+			 packagenames="*"
+             source="1.4"
+			 version="true">
+			<classpath refid="compile-classpath"/>
+		</javadoc>
+	</target>
+
+</project>

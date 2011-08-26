@@ -1,0 +1,9 @@
+<ul class="menu">
+	<li>
+		<a href="$uriFactory.getURIForMethods()">All methods</a>
+	</li>
+</ul>
+
+<h2>Services using method</h2>
+
+#parse("templates_lib/list_services.vm")

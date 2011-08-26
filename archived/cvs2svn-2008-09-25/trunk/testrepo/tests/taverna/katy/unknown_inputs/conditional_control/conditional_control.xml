@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:R0FKTL9QN80" author="" title="" />
+  <s:processor name="Fail_if_false">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.FailIfFalse</s:local>
+  </s:processor>
+  <s:processor name="Fail_if_true">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.FailIfTrue</s:local>
+  </s:processor>
+  <s:processor name="GetGenBankff">
+    <s:description>GenBank flat file contains comprehensive full annotation of a sequence.</s:description>
+    <s:seqhound>
+      <s:method>SHoundGetGenBankff</s:method>
+      <s:server>seqhound.blueprint.org</s:server>
+      <s:jseqremserver>skinner.blueprint.org:8080</s:jseqremserver>
+      <s:path>/cgi-bin/seqrem</s:path>
+      <s:jseqrempath>/jseqhound/jseqrem</s:jseqrempath>
+    </s:seqhound>
+  </s:processor>
+  <s:processor name="IsProtein">
+    <s:description>Returns where a given gi is a protein or not.</s:description>
+    <s:seqhound>
+      <s:method>SHoundIsProtein</s:method>
+      <s:server>seqhound.blueprint.org</s:server>
+      <s:jseqremserver>skinner.blueprint.org:8080</s:jseqremserver>
+      <s:path>/cgi-bin/seqrem</s:path>
+      <s:jseqrempath>/jseqhound/jseqrem</s:jseqrempath>
+    </s:seqhound>
+  </s:processor>
+  <s:processor name="seqret">
+    <s:description>Reads and writes (returns) sequences</s:description>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/edit.seqret</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="transeq">
+    <s:description>Translate nucleic acid sequences</s:description>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/nucleic_translation.transeq</s:soaplabwsdl>
+  </s:processor>
+  <s:link source="GI" sink="GetGenBankff:gi" />
+  <s:link source="GI" sink="IsProtein:gi" />
+  <s:link source="GetGenBankff:result" sink="seqret:sequence_direct_data" />
+  <s:link source="GetGenBankff:result" sink="transeq:sequence_direct_data" />
+  <s:link source="IsProtein:result" sink="Fail_if_false:test" />
+  <s:link source="IsProtein:result" sink="Fail_if_true:test" />
+  <s:link source="seqret:outseq" sink="proteinSeq" />
+  <s:link source="transeq:outseq" sink="proteinSeq" />
+  <s:source name="GI" />
+  <s:sink name="proteinSeq" />
+  <s:coordination name="transeq_BLOCKON_Fail_if_true">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>Fail_if_true</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>transeq</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="seqret_BLOCKON_Fail_if_false">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>Fail_if_false</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>seqret</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+</s:scufl>
+
+

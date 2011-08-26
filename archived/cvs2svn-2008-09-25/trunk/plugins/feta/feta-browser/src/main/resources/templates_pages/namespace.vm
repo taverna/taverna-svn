@@ -1,0 +1,16 @@
+<ul class="menu">
+	<li>
+		<a href="$uriFactory.getURIForNamespaces()">All namespaces</a>
+	</li>
+</ul>
+
+
+		<h2>Services producing namespace</h2>
+		#set($services=$producingServices)
+		#parse("templates_lib/list_services.vm")
+		</ul>
+		
+		<h2>Services consuming namespace</h2>
+		#set($services=$consumingServices)
+		#parse("templates_lib/list_services.vm")
+		

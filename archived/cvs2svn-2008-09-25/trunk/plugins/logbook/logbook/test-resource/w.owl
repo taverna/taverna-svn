@@ -1,0 +1,118 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://www.mygrid.org.uk/provenance#" >
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataCollection:d80a231d-393d-4d4e-8c3e-be90054cc9d8">
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:53948651-0865-4500-9b17-733c11f2de02"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:3e46c123-7c17-4863-840e-9e9193d5925a"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataCollection"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:be74a992-0494-4f36-b501-c1e45e127ce8">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:wfInstance:cd8ec7d9-ee6e-4de6-8724-b8899cf11f12">
+    <j.0:workflowOutput rdf:resource="urn:lsid:net.sf.taverna:dataCollection:85343ad5-890b-4399-bfea-64bcfee29647"/>
+    <j.0:executedProcessRun rdf:resource="urn:www.mygrid.org.uk/process_run#1170769429993"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#WorkflowRun"/>
+    <j.0:runsWorkflow rdf:resource="urn:lsid:net.sf.taverna:wfDefinition:b66b7661-152e-4864-bb88-67dc834c00e2"/>
+    <j.0:executedProcessRun rdf:resource="urn:www.mygrid.org.uk/process_run#1170769430211"/>
+    <j.0:launchedBy rdf:resource="http://www.someplace/someuser"/>
+    <j.0:executedProcessRun rdf:resource="urn:www.mygrid.org.uk/process_run#1170769431054"/>
+    <j.0:executedProcessRun rdf:resource="urn:www.mygrid.org.uk/process_run#1170769430351"/>
+    <j.0:startTime>"2007-02-06T13:43:38.721Z"^^http://www.w3.org/2001/XMLSchema#dateTime</j.0:startTime>
+    <j.0:executedProcessRun rdf:resource="urn:www.mygrid.org.uk/process_run#1170769428778"/>
+    <j.0:endTime>"2007-02-06T13:43:51.614Z"^^http://www.w3.org/2001/XMLSchema#dateTime</j.0:endTime>
+    <j.0:executedProcessRun rdf:resource="urn:www.mygrid.org.uk/process_run#1170769430509"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:5e12b8cc-a65e-4a66-a9c8-c877f90399f5">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:f683bdef-26e7-4edb-a370-292ae3696f7d">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#list">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataName"/>
+    <j.0:mimeType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/plain</j.0:mimeType>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#subworkflowOut">
+    <j.0:mimeType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/plain</j.0:mimeType>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataName"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:3e46c123-7c17-4863-840e-9e9193d5925a">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#NestedWorkflow">
+    <j.0:className rdf:datatype="http://www.w3.org/2001/XMLSchema#string">org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor</j.0:className>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#Process"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:wfInstance:dbdc835e-41e8-406e-b976-ceafac68b731">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#NestedWorkflowRun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:53948651-0865-4500-9b17-733c11f2de02">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataCollection:85343ad5-890b-4399-bfea-64bcfee29647">
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataCollection:f8f8b5ba-c03b-4e20-89d4-a5c5082e962f"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataCollection:311c2bd0-8cae-4f51-8a14-5fc008ebced9"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataCollection:d80a231d-393d-4d4e-8c3e-be90054cc9d8"/>
+    <j.0:outputDataHasName rdf:resource="urn:www.mygrid.org.uk/workflow#F3A9LEOZFX14_out_list"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataCollection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataCollection:5419d7a5-c83a-4283-9b14-8282156d0091">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataCollection"/>
+    <j.0:outputDataHasName rdf:resource="urn:www.mygrid.org.uk/process#NestedWorkflow_out_subworkflowOut"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:f683bdef-26e7-4edb-a370-292ae3696f7d"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:be74a992-0494-4f36-b501-c1e45e127ce8"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:f90de7f6-dde3-4e04-8677-92fa0909a4c6"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:5490075c-f2ea-4dd3-9ef4-ec173f884dbf">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataCollection:f8f8b5ba-c03b-4e20-89d4-a5c5082e962f">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataCollection"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:5e12b8cc-a65e-4a66-a9c8-c877f90399f5"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.someplace/someuser">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#Experimenter"/>
+    <j.0:belongsTo rdf:resource="http://www.someplace/somelab"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:dd493a1a-1e9b-4109-9bde-f59f091a27f8">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataCollection:311c2bd0-8cae-4f51-8a14-5fc008ebced9">
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:5490075c-f2ea-4dd3-9ef4-ec173f884dbf"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:dd493a1a-1e9b-4109-9bde-f59f091a27f8"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataCollection"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#NestedWorkflow_out_subworkflowOut">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#OutputDataName"/>
+    <j.0:dataSyntacticType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l(text/plain)</j.0:dataSyntacticType>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.someplace/somelab">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#Organization"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/workflow#F3A9LEOZFX14_out_list">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#OutputDataName"/>
+    <j.0:dataSyntacticType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l(l(text/plain))</j.0:dataSyntacticType>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:wfDefinition:b66b7661-152e-4864-bb88-67dc834c00e2">
+    <j.0:workflowAuthor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Daniele Turi</j.0:workflowAuthor>
+    <j.0:workflowInitialLSID rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:lsid:www.mygrid.org.uk:operation:F3A9LEOZFX14</j.0:workflowInitialLSID>
+    <j.0:workflowTitle rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Subworkflow Example</j.0:workflowTitle>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#Workflow"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process_run#1170769429993">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#NestedWorkflowProcessRun"/>
+    <j.0:nestedWorkflow rdf:resource="urn:lsid:net.sf.taverna:wfInstance:dbdc835e-41e8-406e-b976-ceafac68b731"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#ProcessRun"/>
+    <j.0:endTime>"2007-02-06T13:43:50Z"^^http://www.w3.org/2001/XMLSchema#dateTime</j.0:endTime>
+    <j.0:runsProcess rdf:resource="urn:www.mygrid.org.uk/process#NestedWorkflow"/>
+    <j.0:processOutput rdf:resource="urn:lsid:net.sf.taverna:dataCollection:5419d7a5-c83a-4283-9b14-8282156d0091"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:f90de7f6-dde3-4e04-8677-92fa0909a4c6">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+</rdf:RDF>
+

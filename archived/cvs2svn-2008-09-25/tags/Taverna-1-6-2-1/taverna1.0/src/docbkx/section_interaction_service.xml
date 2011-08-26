@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section id="interaction_service">
+  <title>Taverna Interaction Service</title>
+
+  <para>The Taverna Interaction Service plugin is a plugin for Taverna that
+  introduces the concept of an Interaction Service Processor. An Interaction
+  Service mediates between the automated workflow system and a user or
+  users.</para>
+
+  <para>To install the Interaction Service Processor use the Plugin Manager in
+  the Tools Menu.</para>
+
+  <para>The Interaction Service Processor depends upon the presence of
+  Interaction Services already installed on the web. A default Interaction
+  Service is available in the Taverna Utilities subsection under downloads on
+  the Taverna sourceforge site.</para>
+
+  <section id="interaction_service_in_taverna">
+    <title>Using the Interaction Service from Taverna</title>
+
+    <para>After installation, a new option "Add New Interaction Service" is
+    available by right-clicking Available Processors in the service panel.
+    Adding a new Interaction Service prompts for the URL where the Interaction
+    Service has been installed. This will expose all <emphasis
+    role="bold">interaction patterns</emphasis> described by the Interaction
+    Service as processors to add to the workflow. The interaction pattern
+    defines the input data for the interaction, the method by which the
+    interaction takes place and the result data. The default Interaction
+    Service has two patterns, a simple 'accept or reject' pattern and a more
+    complex one based on a modified form of the Artemis sequence
+    editor.</para>
+
+    <para>The default patterns will, when invoked, send an email to the target
+    user. This email consists of various HTTP links which the user selects to
+    either reject the interaction or proceed. In the case of the trivial
+    'accept / reject' pattern the data to be reviewed is sent in the email (so
+    text only) and links below the data allow the user to accept or reject the
+    data, the decision is sent back to the workflow engine and appears as the
+    output of the interaction processor. The sequence review processor is
+    significantly more complex; the link causes a modified version of Artemis
+    to load on the user's desktop - the modification allows us to populate the
+    sequence editor pane with the input data from the interaction processor.
+    The user edits the annotation as per usual and commits it back along with
+    a textual comment describing the changes and, as before, the workflow
+    continues.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/interaction_example.png" />
+      </imageobject>
+    </mediaobject>
+  </section>
+</section>

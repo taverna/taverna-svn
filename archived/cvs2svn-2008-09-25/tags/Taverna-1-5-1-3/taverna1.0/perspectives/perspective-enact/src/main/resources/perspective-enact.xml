@@ -1,0 +1,17 @@
+<basepane>
+  <child>
+    <znode classname="net.sf.taverna.zaria.ZRavenComponent">
+      <namedcomponent>
+        <name>Workflow Instance Container</name>
+      </namedcomponent>
+    </znode>
+  </child>
+  <namedcomponents>
+    <namedcomponent>
+      <groupid>uk.org.mygrid.taverna.scufl.scufl-ui-components</groupid>
+      <artifact>workflow-instance-container</artifact>
+      <classname>org.embl.ebi.escience.scuflui.WorkflowInstanceContainerFactory</classname>
+      <name>Workflow Instance Container</name>
+    </namedcomponent>
+  </namedcomponents>
+</basepane>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>t2integration-testing</artifactId>
+		<version>0.3-SNAPSHOT</version>
+	</parent>
+	<groupId>net.sf.taverna.t2</groupId>
+	<artifactId>activity-testing</artifactId>
+    <version>0.3-SNAPSHOT</version>
+	<name>Testing of Activities</name>
+	<packaging>jar</packaging>
+	
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${depJunit}</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.processors</groupId>
+			<artifactId>taverna-wsdl-processor</artifactId>
+			<version>1.7.1.0</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.org.mygrid.taverna.raven
+					</groupId>
+					<artifactId>raven-log4j</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>wsdl-activity</artifactId>
+			<version>${depT2core}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>soaplab-activity-ui</artifactId>
+			<version>${depT2core}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>biomoby-activity-ui</artifactId>
+			<version>${depT2core}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>wsdl-activity-translator</artifactId>
+			<version>${depT2core}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>activity-test-utils</artifactId>
+			<version>${depT2core}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	
+</project>

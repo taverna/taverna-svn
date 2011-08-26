@@ -1,0 +1,15 @@
+Summary:
+	Completed: Successfully
+	Termination status: 200
+	.HTTP. Connection: close
+	.HTTP. Content-Type: text/html
+	.HTTP. Date: .*
+	.HTTP. Server: Apache/.*
+	Location: http://srs.ebi.ac.uk/srsbin/cgi-bin/wgetz
+	Started: .*
+	Ended: .*
+Report:
+Name: srslinks
+Inputs .using GET, using Query String.:
+.embl-acc:L00727.>uniprot
+--- end of inputs

@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<section id="webservice_dataproxy">
+  <title>Webservice Data Proxy</title>
+
+  <section id="dataproxy_description">
+    <title>Description</title>
+
+    <para>The main purpose of the Data Proxy is to overcome the problem of
+    webservices that return large items of data causing <ulink
+    url="http://taverna.sourceforge.net/index.php">Taverna</ulink> to struggle
+    or fail due to memory constraints. This is particularly the case when the
+    service is invoked within an iteration. It solves this problem by allowing
+    the user to select specific data elements for referencing, leading to the
+    data to be stored on the proxy and the webserivce SOAP response is
+    rewritten to replace the data itself with a URL to the actual data.</para>
+  </section>
+
+  <section id="dataproxy_installation">
+    <title>Initial Configuration and Installation</title>
+
+    <para>The Data Proxy source code can be downloaded from <ulink
+    url="http://sourceforge.net/project/showfiles.php?group_id=74874">http://sourceforge.net/project/showfiles.php?group_id=74874</ulink>,
+    or can be downloaded as a war file from from the same location. It is a
+    JSP based application designed to be deployed in a JSP container such as
+    <ulink url="http://tomcat.apache.org/download-55.cgi">Tomcat
+    5</ulink></para>
+
+    <para>Before deployment some minimal configuration is recommended. These
+    are made by editing the web.xml which is found within the WEB-INF
+    directory of the web-app (src/main/webapp if using the source bundle). The
+    first change to make is to modify the location that the server
+    configuration file is stored. This is configured by uncommented the
+    block:</para>
+
+    <screen>&lt;!-- Uncomment and modify the value to define the location that the configuration file
+is stored. Without this parameter it is stored in the root of the webapp context.  
+&lt;context-param&gt;
+   &lt;param-name&gt;ConfigFileLocation&lt;/param-name&gt;
+   &lt;param-value&gt;/tmp/config.xml&lt;/param-value&gt;
+&lt;/context-param&gt;
+--&gt;</screen>
+
+    <para>and setting a suitable param-value for the ConfigFileLocation. If
+    left commented out, the config.xml is stored in the root of web
+    application context, but is not viewable.</para>
+
+    <para>If your proxy is to be shared with other users, either internally or
+    via the internet, then its advisable to block access to the configuration
+    pages. This is done by uncommenting the block:</para>
+
+    <screen>&lt;!-- Uncomment and modify if necessary to control access to the configuration pages
+ You can define roles and users/passwords in the tomcat-users.xml of your tomcat installation. 
+&lt;security-constraint&gt; 
+  &lt;web-resource-collection&gt;
+    &lt;web-resource-name&gt;Configuration&lt;/web-resource-name&gt;
+    &lt;url-pattern&gt;/config/*&lt;/url-pattern&gt;
+  &lt;/web-resource-collection&gt;
+  &lt;auth-constraint&gt;
+    &lt;role-name&gt;administrator&lt;/role-name&gt;
+  &lt;/auth-constraint&gt;
+&lt;/security-constraint&gt;
+
+&lt;security-role&gt;
+  &lt;role-name&gt;administrator&lt;/role-name&gt;
+&lt;/security-role&gt;
+
+&lt;login-config&gt;
+   &lt;auth-method&gt;BASIC&lt;/auth-method&gt;
+   &lt;realm-name&gt;WebService data proxy administration&lt;/realm-name&gt;
+&lt;/login-config&gt;
+--&gt;</screen>
+
+    <para>You will also need to add a user, together with the role
+    'administrator' (or another if you changed both role-name elements) to
+    your tomcat-users.xml file, stored within your Tomcat installation within
+    the config directory. An example is:</para>
+
+    <screen>&lt;tomcat-users&gt;
+  &lt;role rolename="administrator"/&gt;
+  &lt;role rolename="manager"/&gt;
+  &lt;user name="tomcat" password="tomcat" roles="tomcat,manager"/&gt;
+  &lt;user name="elvis" password="12345" roles="administrator"/&gt;
+&lt;/tomcat-users&gt;</screen>
+
+    <para>By default BASIC authentication is used using the MemoryRealm. This
+    is adequate for most cases, but bear in mind that names and passwords are
+    not stored or transported as encrypted. The paranoid might want to
+    investigate configuring different <ulink
+    url="http://tomcat.apache.org/tomcat-5.0-doc/realm-howto.html">Realms</ulink>.
+    The Realm is defined in META-INF/context.xml - note that with Tomcat 4
+    this needs to be configured in the Tomcat conf/server.xml.</para>
+
+    <para>The application is now ready to be deployed. If using the source
+    code then it first needs to be build using <ulink
+    url="http://maven.apache.org/">Maven2</ulink>, and running 'mvn package'
+    which creates a war file within the target directory. It is deployed by
+    either dropping the war file into the Tomcat installation webapp/
+    directory, or via Tomcats <ulink
+    url="http://tomcat.apache.org/tomcat-5.0-doc/manager-howto.html">Manager</ulink>
+    utility.</para>
+
+    <tip>
+      <para>By default the context name is the same as the war file. If built
+      from source you will probably want to remove the version number from the
+      generated war file.</para>
+    </tip>
+
+    <para>Webservices are added and configured by visiting the address
+    http://&lt;context&gt;/config, e.g
+    http://localhost:8080/data-proxy/config. The first time this is visited
+    some additional settings are requested:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Server Context - this should be the fully qualified context of
+        the server. This needs to be set rather than relying on using the
+        request since it is the base of the URL used to define access to the
+        stored data, and proxied endpoints, wsdl and schemas. It should be set
+        to the full address that the server is visible by, rather than the
+        local address.</para>
+      </listitem>
+
+      <listitem>
+        <para>Data Storage Location - this is the root location that the data
+        will be stored.</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section id="dataproxy_webservices">
+    <title>Adding Webservices</title>
+
+    <para>Once configured you should be presented with a page that gives a
+    table of defined webservices, and a form to add a new webservice.
+    Webservices are added by specifying the WSDL address together with a
+    meaningful name. Once successfully added it will appear in the table, any
+    errors are reported within the page footer.</para>
+
+    <para>The webservice appears in the table with its original WSDL address,
+    and also a Proxy address. The Proxy address should be used when adding the
+    service to Taverna, as this contains rewritten information to proxy any
+    imported schemas and to point at the proxy endpoint. You can click on
+    either link to view the WSDL.</para>
+
+    <para>You can configure or delete the webservice by selecting it (by
+    clicking the left hand table column) and selecting the appropriate icon
+    from the toolbar.</para>
+  </section>
+
+  <section id="dataproxy_configuring">
+    <title>Configuring Webservices</title>
+
+    <para>Once on the configuration screen you are presented with a list of
+    available operations and their response elements in a tree structure.
+    These can be expanded to explore the operation response elements, which if
+    complex can be expanded further to explore each inner element. The format
+    for the element is &lt;name&gt;:&lt;type&gt;.</para>
+
+    <para>Select an element and click the toggle button to turn referencing on
+    or off. Once configuration is complete, click the save button to commit
+    any changes.</para>
+
+    <screenshot>
+      <screeninfo>Toggle elements for referencing.</screeninfo>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dataproxy_toggle.png" />
+        </imageobject>
+      </mediaobject>
+    </screenshot>
+
+    <para>The entire tree can be expanded or collapsed by clicking the '+' or
+    '-' buttons respectively. Expanding the entire tree can be useful for
+    finding elements previously selected to be referenced.</para>
+
+    <note>
+      <para>Bear in mind that selecting elements that are nested within
+      another selected element will have no effect, since the data contained
+      within the parent element is being redirected to a file so is never
+      encountered for referencing.</para>
+    </note>
+  </section>
+
+  <section id="dataproxy_referencing">
+    <title>Referencing in action.</title>
+
+    <para>Once an operation response, or its nested element, has been selected
+    for referencing the data contained within that element is no longer
+    returned from the proxy, but instead is redirected to a file and replaced
+    with a URL that provides access to the data stream. This means that a soap
+    response that would normally return some data, would end up looking
+    something like:</para>
+
+    <screen>&lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+   &lt;soapenv:Body&gt;
+      &lt;getDataChunkResponse xmlns="http://testing.org"&gt;
+         &lt;getDataChunkReturn&gt;http://localhost:8080/data-proxy/data?id=8fa33c3f-c06e5b3a-getDataChunkReturn1&lt;/getDataChunkReturn&gt;
+      &lt;/getDataChunkResponse&gt;
+   &lt;/soapenv:Body&gt;
+&lt;/soapenv:Envelope&gt;</screen>
+
+    <para>So, the data itself has been replaced with a URL
+    http://localhost:8080/data-proxy/data?id=8fa33c3f-c06e5b3a-getDataChunkReturn1.
+    Opening this URL in a browser will either display the data (if text), or
+    allow it to be downloaded (if binary). The identifier to the data is
+    composed of 3 parts - the WSDLID, the Invocation ID, and the elementName
+    The elementname is appended with an iteration count, which is important if
+    the element is an item in a list. On the server itself this data is stored
+    in the location &lt;Data Storage
+    Location&gt;/&lt;wsdlID&gt;/&lt;invocationID&gt;/elementName1.</para>
+
+    <para>This means that when adding the Proxy WSDL to Taverna as a WSDL
+    Processor, the data produced as a processor output will contain the URL
+    string rather than the data entity itself. This URL can be viewed in the
+    results pane, or passed onto another processor. If passed on to another
+    service being filtered by the proxy, then the data is <link
+    linkend="dataproxy_dereferencing">de-referenced</link> back to the original data
+    before reaching the 'real' service endpoint.</para>
+
+    <note>
+      <para>If the data selected for referencing is part of a complex type
+      where there are further child elements, the XML structure gets written
+      to the file unwrapped, and is presented through the URL, just as it
+      occurs within the SOAP message.</para>
+    </note>
+  </section>
+
+  <section id="dataproxy_dereferencing">
+    <title>Data dereferencing</title>
+
+    <para>If in the outgoing soap request a URL matching the data streaming
+    servlet (&lt;Server Context&gt;/data?id=) is encountered within the
+    content of a data element it is dereferenced back to the original data.
+    This is useful so that a Taverna workflow can orchestrate a large data
+    entity being passed between 2 (or more) service operations without ever
+    actually passing through Taverna itself.</para>
+  </section>
+
+  <section id="dataproxy_housekeeping">
+    <title>Data housekeeping</title>
+
+    <para>No code in any of the Data Proxy will EVER delete any data. To
+    remove old unwanted data you need to physically delete the files within
+    the Data Storage Location specified during configuration.</para>
+
+    <para>Data can be moved to a new location, and the Data Storage Location
+    modified, as long as it keeps the original directory structure. The data
+    streaming servlet, and the de-referencing of the data, relies on the
+    components of the identifier in the URL being translated to and from this
+    directory structure. This structure is described in the section on <link
+    linkend="dataproxy_referencing">referencing.</link></para>
+  </section>
+
+  <section id="dataproxy_constraints">
+    <title>Current constraints and future work.</title>
+
+    <para>Being an early release there are currently a few contraints:
+    <itemizedlist>
+        <listitem>
+          <para>The schema is not rewritten to reflect changes in the data
+          structure. If a complex type is set to be referenced then the schema
+          will not reflect that this has changed to a anyURI or xsd:string
+          element. A current workaround for this is to make a copy of the
+          original WSDL to a file, hand craft the schema by hand but leaving
+          the rest of the WSDL intact, and point the Data Proxy at this copy
+          of the WSDL.</para>
+        </listitem>
+
+        <listitem>
+          <para>If a service defined as RPC/encoded and the response consists
+          of a complex type, then the response may use <ulink
+          url="http://www.w3.org/TR/2000/NOTE-SOAP-20000508/#_Toc478383512">SOAP
+          Encoding</ulink> leading to the XML structure being
+          multi-referenced. The data proxy does handle this. This problem does
+          not affect document/literal style services or rpc/encoded services
+          that return a primitive type.</para>
+        </listitem>
+      </itemizedlist> These will be addressed depending upon the uptake of
+    this utility and the impact of these constaints.</para>
+  </section>
+</section>

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://rpc178.cs.man.ac.uk:8080/axis/services/GO_WS" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://rpc178.cs.man.ac.uk:8080/axis/services/GO_WS" xmlns:intf="http://rpc178.cs.man.ac.uk:8080/axis/services/GO_WS" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema targetNamespace="http://rpc178.cs.man.ac.uk:8080/axis/services/GO_WS" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+   <complexType name="ArrayOf_xsd_string">
+    <complexContent>
+     <restriction base="soapenc:Array">
+      <attribute ref="soapenc:arrayType" wsdl:arrayType="xsd:string[]"/>
+     </restriction>
+    </complexContent>
+   </complexType>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="rendererResponse">
+
+      <wsdl:part name="rendererReturn" type="xsd:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getGOIdandTermResponse">
+
+      <wsdl:part name="getGOIdandTermReturn" type="xsd:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="uniprot2GOResponse">
+
+      <wsdl:part name="uniprot2GOReturn" type="impl:ArrayOf_xsd_string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="renderer1Request">
+
+      <wsdl:part name="in0" type="impl:ArrayOf_xsd_string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="rendererRequest">
+
+      <wsdl:part name="in0" type="impl:ArrayOf_xsd_string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getGOIdandTermRequest">
+
+      <wsdl:part name="in0" type="xsd:string"/>
+
+      <wsdl:part name="in1" type="xsd:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="renderer1Response">
+
+      <wsdl:part name="renderer1Return" type="xsd:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="uniprot2GORequest">
+
+      <wsdl:part name="in0" type="xsd:string"/>
+
+   </wsdl:message>
+
+   <wsdl:portType name="GOA">
+
+      <wsdl:operation name="renderer" parameterOrder="in0">
+
+         <wsdl:input message="impl:rendererRequest" name="rendererRequest"/>
+
+         <wsdl:output message="impl:rendererResponse" name="rendererResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="uniprot2GO" parameterOrder="in0">
+
+         <wsdl:input message="impl:uniprot2GORequest" name="uniprot2GORequest"/>
+
+         <wsdl:output message="impl:uniprot2GOResponse" name="uniprot2GOResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getGOIdandTerm" parameterOrder="in0 in1">
+
+         <wsdl:input message="impl:getGOIdandTermRequest" name="getGOIdandTermRequest"/>
+
+         <wsdl:output message="impl:getGOIdandTermResponse" name="getGOIdandTermResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="renderer1" parameterOrder="in0">
+
+         <wsdl:input message="impl:renderer1Request" name="renderer1Request"/>
+
+         <wsdl:output message="impl:renderer1Response" name="renderer1Response"/>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="GO_WSSoapBinding" type="impl:GOA">
+
+      <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="renderer">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="rendererRequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://geneOntologyWS" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="rendererResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://rpc178.cs.man.ac.uk:8080/axis/services/GO_WS" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="uniprot2GO">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="uniprot2GORequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://geneOntologyWS" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="uniprot2GOResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://rpc178.cs.man.ac.uk:8080/axis/services/GO_WS" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getGOIdandTerm">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getGOIdandTermRequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://geneOntologyWS" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getGOIdandTermResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://rpc178.cs.man.ac.uk:8080/axis/services/GO_WS" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="renderer1">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="renderer1Request">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://geneOntologyWS" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="renderer1Response">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://rpc178.cs.man.ac.uk:8080/axis/services/GO_WS" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="GOAService">
+
+      <wsdl:port binding="impl:GO_WSSoapBinding" name="GO_WS">
+
+         <wsdlsoap:address location="http://rpc178.cs.man.ac.uk:8080/axis/services/GO_WS"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

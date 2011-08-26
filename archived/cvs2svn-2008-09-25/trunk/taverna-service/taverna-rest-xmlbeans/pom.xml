@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>uk.org.mygrid.remotetaverna</groupId>
+		<artifactId>remotetaverna</artifactId>
+		<version>0.5.0</version>
+	</parent>
+	<groupId>uk.org.mygrid.remotetaverna</groupId>
+	<artifactId>taverna-rest-xmlbeans</artifactId>
+	<version>0.5.0</version>
+	<packaging>jar</packaging>
+	<name>Taverna service REST XMLBeans bindings</name>
+	<description>Binding of Taverna Rest XSD to XMLBeans.</description>
+	<dependencies>
+		<!-- Standard libraries -->
+		<dependency>
+			<groupId>org.apache.xmlbeans</groupId>
+			<artifactId>xmlbeans</artifactId>
+		</dependency>
+		
+		<!-- Remote Taverna -->
+		<dependency>
+			<groupId>uk.org.mygrid.remotetaverna</groupId>
+			<artifactId>taverna-interface</artifactId>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>xmlbeans-maven-plugin</artifactId>
+				<version>2.3.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>xmlbeans</goal>
+						</goals>
+					</execution>
+				</executions>
+				<inherited>true</inherited>
+				<configuration>
+					<!--
+						<outputJar>${basedir}/target/rest-xmlbeans-0.4.jar</outputJar>
+						<debug>true</debug>
+						<verbose>true</verbose>
+					-->
+					<xmlConfigs>
+						<xmlConfig implementation="java.io.File">
+							src/main/xsd/xsdconfig.xml
+						</xmlConfig>
+					</xmlConfigs>
+
+					<!-- For some reason this doesn't work anymore, and
+						we have to use schemaDirectory instead.. -->
+					<xsdJars>
+						<xsdJar implementation="java.lang.String">
+							uk.org.mygrid.remotetaverna:taverna-interface
+						</xsdJar>
+					</xsdJars>
+					<schemaDirectory>
+						../taverna-interface/src/main/resources
+					</schemaDirectory>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

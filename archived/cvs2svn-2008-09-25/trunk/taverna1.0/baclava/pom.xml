@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <parent>
+    <artifactId>taverna</artifactId>
+    <groupId>uk.org.mygrid.taverna</groupId>
+    <version>1.7.2.0</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>uk.org.mygrid.taverna</groupId>
+  <artifactId>baclava</artifactId>
+  <packaging>pom</packaging>
+  <name>Baclava</name>
+  <version>1.7.2.0</version>
+  <modules>
+    <module>baclava-core</module>
+    <module>baclava-ui</module>
+    <module>baclava-store-implementation</module>
+    <module>baclava-tools</module>
+    <module>baclava-lsid-client</module>
+  </modules>
+</project>

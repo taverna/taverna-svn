@@ -1,0 +1,9 @@
+To build you need the Java SDK 5 available from http://java.sun.com. JDK 6 is also expected to work but has not been tested.
+You also need Maven2. This has been tested with Maven 2.0.4, but is also expected to work with Maven 2.0.6. Maven2 can be downloaded from http://maven.apache.org
+
+To build run 'mvn package' from within the root directory.
+
+Apache Tomcat 5.5.23 is recommended as a JSP container for running this application. Apache Tomcat is available from http://apache.tomcat.org
+
+
+Installation, configuration and usage details can be found in docs/guide.html

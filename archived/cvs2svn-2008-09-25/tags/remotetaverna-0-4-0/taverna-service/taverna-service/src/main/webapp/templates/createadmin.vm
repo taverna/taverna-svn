@@ -1,0 +1,46 @@
+
+#include("uservalidate.js")
+<script language="javascript">
+	
+	function validateDetails(form) {
+		var name=form.name.value;
+		var password=form.password.value;
+		var confirm=form.confirm.value;
+		var email=form.email.value;
+		
+		if (validateName(name) && validatePasswords(password,confirm) && validateEmail(email))
+		{
+			return true;
+		}
+		
+		return false;
+	}
+</script>
+	
+	
+<center>
+	
+<h3>Admin Registration</h3>
+<p>Before you can use the system you must first create an admin user</p>
+
+#if ($errorMsg)
+Error: $errorMsg<br>
+#end
+
+<form name="register" method="POST">
+<table>
+<tr><td>Username</td><td><input type="text" name="name" value="$!name"/></td></tr>
+<tr><td>Password</td><td><input type="password" name="password" value="$!password"/></td></tr>
+<tr><td>Confirm password</td><td><input type="password" name="confirm" value="$!confirm"/></td></tr>
+<tr><td>Email</td><td><input type="text" name="email" value="$!email"/></td></tr>
+</table>
+<p>You also need to configure the base URL of your service. (Up to, but excluding <code>v1</code>.)
+</p>
+<table>
+<tr><td>Base URL</td><td><input type="text" size="40" name="baseuri" value="$!baseuri"></td><tr>
+<tr><td>Taverna home</td><td><input type="text" size="40" name="tavernahome" value="$!tavernahome"></td><tr>
+</table>
+<input type="submit" value="Create" onClick="return validateDetails(this.form)"/>
+</form>
+
+</center>

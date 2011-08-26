@@ -1,0 +1,68 @@
+<html>
+<head>
+    <title>Building Taverna 1.6</title>
+</head>
+<!--
+
+Try to keep this file to a minimum and refer to the wiki page.
+Also remember to update the README.txt at the same time.
+
+-->
+<body>
+  <h1>Building Taverna</h1>
+    <p> 
+        See the wiki page 
+        <a href="http://www.mygrid.org.uk/twiki/bin/view/Mygrid/BuildingTaverna">Building
+        Taverna</a> for more detailed information on how to build Taverna from the latest CVS
+        source code.  
+    </p>
+    <div class="lazy">
+        <h2>For the lazy</h2>
+        <p>
+            For the lazy, here's a quick summary:
+        </p>
+        <ol>
+            <li>Install <a href="http://java.sun.com/j2se/1.5.0/download.jsp">Java SDK 1.5</a>
+                if not included with your operating system
+            </li>
+
+            <li>Install CVS client (if not already installed)</li>
+
+            <li>Install <a href="http://maven.apache.org/download.html">Maven 2.0.4</a> (the build system) 
+
+            <li>Fetch Taverna sourcecode from CVS:<br />
+                <kbd>cvs -z3
+                -d:pserver:anonymous@taverna.cvs.sourceforge.net:/cvsroot/taverna co -P taverna1.0</kbd><br />
+                (Obviously you've already done that as you are reading this file)
+            </li>
+
+            <li>Build Taverna using Maven:<br />
+                <kbd>mvn package assembly:directory</kbd><br>
+                (<kbd>mvn package assembly:assembly</kbd> will create an assembled zip file).
+            </li>  
+            
+            <li>
+            	To run with the actual compiled components, rather than those fetched from a remote repository, first install the artifacts by running <br>
+            	<kbd>mvn install</kbd><br>
+            	Then edit the target/taverna-1.5.0-bin/taverna-1.5.0/runme.bat or target/taverna-1.5.0-bin/taverna-1.5.0/run.sh to add the argument -Draven.repository.0=file://<i>path to local maven repository</i>.<br>
+            	In windows this would involve adding, just before the java command, something similar to the following line, replacing <i>name</i> with your username:<br>
+            	<kbd>set ARGS=%ARGS% "-Draven.repository.0=file:///C:/Documents%20and%20Settings/<i>name</i>/.m2/repository/"</kbd><br>
+            	Likewise, in Linux this would be:<br>
+            	<kbd>ARGS="$ARGS -Draven.repository.0=file:///home/<i>name</i>/.m2/repository"</kbd>
+            	
+            </li>
+
+            <li>Run Taverna from the new distribution directory:<br />
+                <kbd>cd target/taverna-1.5.0-bin/taverna-1.5.0</kbd><br />
+                <kbd>sh runme.sh</kbd> or <kbd>runme.bat</kbd>
+            </li>
+            
+        </ol>
+	<b>Note:</b> Running on Linux requires that the 'graphviz' package is installed.
+	<br>
+    </div>
+    <address>
+        Stuart Owen, 2006-12-14
+    </address>
+</body>
+</html>

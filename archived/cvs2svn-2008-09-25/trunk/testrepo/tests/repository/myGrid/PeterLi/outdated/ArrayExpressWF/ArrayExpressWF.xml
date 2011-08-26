@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:processor name="getUserIdentifiers">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/ArrayExpressWS?wsdl</s:wsdl>
+      <s:operation>getUserIdentifiers</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getExperimentIdsByUserId">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/ArrayExpressWS?wsdl</s:wsdl>
+      <s:operation>getExperimentIdsByUserId</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getCelDataByExperimentId">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/ArrayExpressWS?wsdl</s:wsdl>
+      <s:operation>getCelDataByExperimentId</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link source="getUserIdentifiers:getUserIdentifiersReturn" sink="getExperimentIdsByUserId:userId" />
+  <s:link source="getExperimentIdsByUserId:getExperimentIdsByUserIdReturn" sink="getCelDataByExperimentId:exptId" />
+  <s:link source="getCelDataByExperimentId:getCelDataByExperimentIdReturn" sink="results" />
+  <s:sink>
+    results
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+
+

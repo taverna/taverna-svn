@@ -1,0 +1,24 @@
+<deployment-descriptor xmlns="http://www.ibm.com/LSID/Standard/rsdl">
+
+<maps>
+   <map name="mymap">
+            <pattern auth="www.mygrid.org.uk" ns="*" />
+            <pattern auth="biomoby.org" ns="*" />
+   </map>
+</maps>
+
+<services>
+
+    <service name="FetaMetadataResolutionService" >
+
+            <components>
+
+                <meta map="mymap" type="class">uk.ac.man.cs.img.fetaEngine.webservice.lsid.FetaLSIDMetadataService</meta> 
+
+            </components>
+
+     </service>
+
+</services>
+
+</deployment-descriptor>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workflowReport workflowID="0" workflowStatus="FAILED">
+  <processorList>
+    <processor name="Concatenate_two_strings">
+      <ProcessScheduled TimeStamp="May 19, 2006 5:21:38 PM">
+        <s:local xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha">org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+      </ProcessScheduled>
+    </processor>
+    <processor name="String_Constant">
+      <ProcessComplete TimeStamp="May 19, 2006 5:21:38 PM" />
+      <Invoking TimeStamp="May 19, 2006 5:21:38 PM" />
+      <ProcessScheduled TimeStamp="May 19, 2006 5:21:38 PM">
+        <s:stringconstant xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha">bowl</s:stringconstant>
+      </ProcessScheduled>
+    </processor>
+  </processorList>
+</workflowReport>
+

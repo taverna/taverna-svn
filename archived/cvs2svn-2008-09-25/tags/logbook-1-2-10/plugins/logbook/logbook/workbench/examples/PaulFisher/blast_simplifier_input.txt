@@ -1,0 +1,1278 @@
+BLASTN 2.2.11 [Jun-05-2005]
+
+Reference: Altschul, Stephen F., Thomas L. Madden, Alejandro A. Schäffer, 
+Jinghui Zhang, Zheng Zhang, Webb Miller, and David J. Lipman 
+(1997), "Gapped BLAST and PSI-BLAST: a new generation of 
+protein database search programs", Nucleic Acids Res. 25:3389-3402.
+
+RID: 1124568777-22582-34004018486.BLASTQ2
+
+Query=  
+          (360 letters)
+
+Database: All GenBank+EMBL+DDBJ+PDB sequences (but no EST, STS,
+GSS,environmental samples or phase 0, 1 or 2 HTGS sequences) 
+           3,446,398 sequences; 15,008,617,080 total letters
+
+                                                                   Score     E
+Sequences producing significant alignments:                        (Bits)  Value
+
+gi|39763561|gb|AY407590.1|  Pan troglodytes WBSCR22 gene, VIRT...   333    2e-88 
+gi|57087472|ref|XM_536843.1|  PREDICTED: Canis familiaris simi...   301    7e-79 
+gi|21552767|gb|AF412035.1|  Mus musculus Williams-Beuren syndr...   198    8e-48 
+gi|12846834|dbj|AK011005.1|  Mus musculus 13 days embryo liver...   198    8e-48 
+gi|12834023|dbj|AK003386.1|  Mus musculus 18-day embryo whole ...   198    8e-48 
+gi|61553424|gb|BT021557.1|  Bos taurus Williams Beuren syndrom...   190    2e-45 
+gi|15145617|gb|AC073846.6|  Homo sapiens BAC clone RP11-622P13 fr   190    2e-45 
+gi|62658760|ref|XM_347254.2|  PREDICTED: Rattus norvegicus sim...   174    1e-40 
+gi|13384747|ref|NM_025375.1|  Mus musculus Williams Beuren syn...   129    6e-27 
+gi|12832524|dbj|AK002497.1|  Mus musculus adult male kidney cD...   129    6e-27 
+gi|55628725|ref|XM_527785.1|  PREDICTED: Pan troglodytes simil...   115    9e-23 
+gi|37999253|gb|AC092729.3|  Canis familiaris clone RP81-60B6, com   111    1e-21 
+gi|68442832|ref|XM_696076.1|  PREDICTED: Danio rerio similar t...   109    5e-21 
+gi|56002834|dbj|AK178657.1|  Mus musculus cDNA, clone:Y0G0107H...   103    3e-19 
+gi|12843472|dbj|AK008966.1|  Mus musculus adult male stomach c...   101    1e-18 
+gi|62659109|ref|XM_341103.2|  PREDICTED: Rattus norvegicus sim...  99.6    5e-18 
+gi|39763562|gb|AY407591.1|  Mus musculus WBSCR22 gene, VIRTUAL...  95.6    8e-17 
+gi|33354288|gb|AC135204.3|  Rattus norvegicus 1 BAC CH230-381D...  89.7    5e-15 
+gi|15799595|gb|AC091752.2|  Rattus norvegicus strain Brown Nor...  61.9    1e-06 
+gi|15706057|gb|AC084109.2|  Mus musculus strain C57BL6/J chrom...  58.0    2e-05 
+gi|56346937|emb|CR689858.2|CNS0FV8U  Tetraodon nigroviridis full-  44.1    0.27  
+gi|56346631|emb|CR689287.2|CNS0FUSZ  Tetraodon nigroviridis full-  44.1    0.27  
+gi|56339480|emb|CR676305.2|CNS0FKST  Tetraodon nigroviridis full-  44.1    0.27  
+gi|56333580|emb|CR664920.2|CNS0FC0U  Tetraodon nigroviridis full-  44.1    0.27  
+gi|51154344|emb|CR657899.1|CNS0F6LT  Tetraodon nigroviridis full-  44.1    0.27  
+gi|56329737|emb|CR657388.2|CNS0F67M  Tetraodon nigroviridis full-  44.1    0.27  
+gi|56329613|emb|CR657146.2|CNS0F60W  Tetraodon nigroviridis full-  44.1    0.27  
+gi|26190583|gb|AC129317.3|  Mus musculus BAC clone RP23-443L14...  42.1    1.1   
+gi|24418173|gb|AC126121.2|  Homo sapiens chromosome 3 clone RP11-  42.1    1.1   
+gi|45437002|gb|AE017136.1|  Yersinia pestis biovar Medievalis ...  42.1    1.1   
+gi|51587641|emb|BX936398.1|  Yersinia pseudotuberculosis IP32953   42.1    1.1   
+gi|61816657|ref|XM_595692.1|  PREDICTED: Bos taurus similar to...  42.1    1.1   
+gi|15980576|emb|AJ414153.1|  Yersinia pestis strain CO92 complete  42.1    1.1   
+gi|21958045|gb|AE013731.1|  Yersinia pestis KIM section 131 of 41  42.1    1.1   
+gi|28376746|gb|AC125393.6|  Pan troglodytes clone rp43-22m15, com  42.1    1.1   
+gi|53136607|emb|AJ720974.1|  Gallus gallus mRNA for hypothetical   42.1    1.1   
+
+
+ALIGNMENTS
+
+>gi|21552765|gb|AF412034.1| Homo sapiens Williams-Beuren syndrome critical region protein 
+            22 (WBSCR22) mRNA, complete cds
+          Length=1174
+
+ Score =  714 bits (360),  Expect = 0.0
+ Identities = 360/360 (100%), Gaps = 0/360 (0%)
+ Strand=Plus/Plus
+
+Query  1    CAGGCGCCAGTCGCAGGTGTGCTGCTGAGGCGTGAGAATGGCGTCCCGCGGCCGGCGTCC  60
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  22   CAGGCGCCAGTCGCAGGTGTGCTGCTGAGGCGTGAGAATGGCGTCCCGCGGCCGGCGTCC  81
+
+Query  61   GGAGCATGGCGGACCCCCAGAGCTGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCG  120
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  82   GGAGCATGGCGGACCCCCAGAGCTGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCG  141
+
+Query  121  CAACTCACGGATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTA  180
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  142  CAACTCACGGATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTA  201
+
+Query  181  TCTGCCAGAGAATAAGCCCTGTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGG  240
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  202  TCTGCCAGAGAATAAGCCCTGTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGG  261
+
+Query  241  AAGTTATCTGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCT  300
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  262  AAGTTATCTGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCT  321
+
+Query  301  GGATGAGGCTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  360
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  322  GGATGAGGCTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  381
+
+
+>gi|12804702|gb|BC001780.1| Homo sapiens Williams Beuren syndrome chromosome region 22, mRNA 
+            (cDNA clone MGC:2022 IMAGE:3544156), complete cds
+          Length=1154
+
+ Score =  714 bits (360),  Expect = 0.0
+ Identities = 360/360 (100%), Gaps = 0/360 (0%)
+ Strand=Plus/Plus
+
+Query  1    CAGGCGCCAGTCGCAGGTGTGCTGCTGAGGCGTGAGAATGGCGTCCCGCGGCCGGCGTCC  60
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  1    CAGGCGCCAGTCGCAGGTGTGCTGCTGAGGCGTGAGAATGGCGTCCCGCGGCCGGCGTCC  60
+
+Query  61   GGAGCATGGCGGACCCCCAGAGCTGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCG  120
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  61   GGAGCATGGCGGACCCCCAGAGCTGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCG  120
+
+Query  121  CAACTCACGGATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTA  180
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  121  CAACTCACGGATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTA  180
+
+Query  181  TCTGCCAGAGAATAAGCCCTGTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGG  240
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  181  TCTGCCAGAGAATAAGCCCTGTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGG  240
+
+Query  241  AAGTTATCTGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCT  300
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  241  AAGTTATCTGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCT  300
+
+Query  301  GGATGAGGCTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  360
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  301  GGATGAGGCTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  360
+
+
+>gi|23199994|ref|NM_017528.2| Homo sapiens Williams Beuren syndrome chromosome region 22 (WBSCR22), 
+            mRNA
+          Length=1258
+
+ Score =  714 bits (360),  Expect = 0.0
+ Identities = 360/360 (100%), Gaps = 0/360 (0%)
+ Strand=Plus/Plus
+
+Query  1    CAGGCGCCAGTCGCAGGTGTGCTGCTGAGGCGTGAGAATGGCGTCCCGCGGCCGGCGTCC  60
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  22   CAGGCGCCAGTCGCAGGTGTGCTGCTGAGGCGTGAGAATGGCGTCCCGCGGCCGGCGTCC  81
+
+Query  61   GGAGCATGGCGGACCCCCAGAGCTGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCG  120
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  82   GGAGCATGGCGGACCCCCAGAGCTGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCG  141
+
+Query  121  CAACTCACGGATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTA  180
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  142  CAACTCACGGATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTA  201
+
+Query  181  TCTGCCAGAGAATAAGCCCTGTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGG  240
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  202  TCTGCCAGAGAATAAGCCCTGTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGG  261
+
+Query  241  AAGTTATCTGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCT  300
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  262  AAGTTATCTGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCT  321
+
+Query  301  GGATGAGGCTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  360
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  322  GGATGAGGCTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  381
+
+
+>gi|16226066|gb|AF420248.1| Homo sapiens putative methyltransferase WBMT mRNA, complete cds
+          Length=1224
+
+ Score =  712 bits (359),  Expect = 0.0
+ Identities = 359/359 (100%), Gaps = 0/359 (0%)
+ Strand=Plus/Plus
+
+Query  2    AGGCGCCAGTCGCAGGTGTGCTGCTGAGGCGTGAGAATGGCGTCCCGCGGCCGGCGTCCG  61
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  1    AGGCGCCAGTCGCAGGTGTGCTGCTGAGGCGTGAGAATGGCGTCCCGCGGCCGGCGTCCG  60
+
+Query  62   GAGCATGGCGGACCCCCAGAGCTGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCGC  121
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  61   GAGCATGGCGGACCCCCAGAGCTGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCGC  120
+
+Query  122  AACTCACGGATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTAT  181
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  121  AACTCACGGATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTAT  180
+
+Query  182  CTGCCAGAGAATAAGCCCTGTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGGA  241
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  181  CTGCCAGAGAATAAGCCCTGTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGGA  240
+
+Query  242  AGTTATCTGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTG  301
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  241  AGTTATCTGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTG  300
+
+Query  302  GATGAGGCTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  360
+            |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  301  GATGAGGCTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  359
+
+
+>gi|40225426|gb|BC011696.2| Homo sapiens Williams Beuren syndrome chromosome region 22, mRNA 
+            (cDNA clone MGC:19709 IMAGE:3533955), complete cds
+          Length=1221
+
+ Score =  678 bits (342),  Expect = 0.0
+ Identities = 342/342 (100%), Gaps = 0/342 (0%)
+ Strand=Plus/Plus
+
+Query  19   GTGCTGCTGAGGCGTGAGAATGGCGTCCCGCGGCCGGCGTCCGGAGCATGGCGGACCCCC  78
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  1    GTGCTGCTGAGGCGTGAGAATGGCGTCCCGCGGCCGGCGTCCGGAGCATGGCGGACCCCC  60
+
+Query  79   AGAGCTGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCGCAACTCACGGATGATTGA  138
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  61   AGAGCTGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCGCAACTCACGGATGATTGA  120
+
+Query  139  TATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTATCTGCCAGAGAATAAGCC  198
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  121  TATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTATCTGCCAGAGAATAAGCC  180
+
+Query  199  CTGTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGGAAGTTATCTGTCAGATGA  258
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  181  CTGTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGGAAGTTATCTGTCAGATGA  240
+
+Query  259  AGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGATGAGGCTGTGGACCG  318
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  241  AGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGATGAGGCTGTGGACCG  300
+
+Query  319  AGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  360
+            ||||||||||||||||||||||||||||||||||||||||||
+Sbjct  301  AGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  342
+
+
+>gi|50504379|emb|CR623572.1| full-length cDNA clone CS0DF009YH09 of Fetal brain of Homo sapiens 
+            (human)
+          Length=1181
+
+ Score =  670 bits (338),  Expect = 0.0
+ Identities = 338/338 (100%), Gaps = 0/338 (0%)
+ Strand=Plus/Plus
+
+Query  23   TGCTGAGGCGTGAGAATGGCGTCCCGCGGCCGGCGTCCGGAGCATGGCGGACCCCCAGAG  82
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  1    TGCTGAGGCGTGAGAATGGCGTCCCGCGGCCGGCGTCCGGAGCATGGCGGACCCCCAGAG  60
+
+Query  83   CTGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCGCAACTCACGGATGATTGATATC  142
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  61   CTGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCGCAACTCACGGATGATTGATATC  120
+
+Query  143  CAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTATCTGCCAGAGAATAAGCCCTGT  202
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  121  CAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTATCTGCCAGAGAATAAGCCCTGT  180
+
+Query  203  TACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGGAAGTTATCTGTCAGATGAAGGG  262
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  181  TACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGGAAGTTATCTGTCAGATGAAGGG  240
+
+Query  263  CACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGATGAGGCTGTGGACCGAGAG  322
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  241  CACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGATGAGGCTGTGGACCGAGAG  300
+
+Query  323  ATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  360
+            ||||||||||||||||||||||||||||||||||||||
+Sbjct  301  ATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  338
+
+
+>gi|13111805|gb|BC000169.2| Homo sapiens Williams Beuren syndrome chromosome region 22, mRNA 
+            (cDNA clone MGC:5140 IMAGE:2901188), complete cds
+          Length=1136
+
+ Score =  668 bits (337),  Expect = 0.0
+ Identities = 337/337 (100%), Gaps = 0/337 (0%)
+ Strand=Plus/Plus
+
+Query  24   GCTGAGGCGTGAGAATGGCGTCCCGCGGCCGGCGTCCGGAGCATGGCGGACCCCCAGAGC  83
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  1    GCTGAGGCGTGAGAATGGCGTCCCGCGGCCGGCGTCCGGAGCATGGCGGACCCCCAGAGC  60
+
+Query  84   TGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCGCAACTCACGGATGATTGATATCC  143
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  61   TGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCGCAACTCACGGATGATTGATATCC  120
+
+Query  144  AGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTATCTGCCAGAGAATAAGCCCTGTT  203
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  121  AGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTATCTGCCAGAGAATAAGCCCTGTT  180
+
+Query  204  ACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGGAAGTTATCTGTCAGATGAAGGGC  263
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  181  ACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGGAAGTTATCTGTCAGATGAAGGGC  240
+
+Query  264  ACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGATGAGGCTGTGGACCGAGAGA  323
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  241  ACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGATGAGGCTGTGGACCGAGAGA  300
+
+Query  324  TAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  360
+            |||||||||||||||||||||||||||||||||||||
+Sbjct  301  TAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  337
+
+
+>gi|2911586|emb|AJ224442.1|HASJ4442 Homo sapiens mRNA for putative methyltransferase
+          Length=1815
+
+ Score =  658 bits (332),  Expect = 0.0
+ Identities = 338/340 (99%), Gaps = 0/340 (0%)
+ Strand=Plus/Plus
+
+Query  21   GCTGCTGAGGCGTGAGAATGGCGTCCCGCGGCCGGCGTCCGGAGCATGGCGGACCCCCAG  80
+            ||||||||||||||  ||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  1    GCTGCTGAGGCGTGGTAATGGCGTCCCGCGGCCGGCGTCCGGAGCATGGCGGACCCCCAG  60
+
+Query  81   AGCTGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCGCAACTCACGGATGATTGATA  140
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  61   AGCTGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCGCAACTCACGGATGATTGATA  120
+
+Query  141  TCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTATCTGCCAGAGAATAAGCCCT  200
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  121  TCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTATCTGCCAGAGAATAAGCCCT  180
+
+Query  201  GTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGGAAGTTATCTGTCAGATGAAG  260
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  181  GTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGGAAGTTATCTGTCAGATGAAG  240
+
+Query  261  GGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGATGAGGCTGTGGACCGAG  320
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  241  GGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGATGAGGCTGTGGACCGAG  300
+
+Query  321  AGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  360
+            ||||||||||||||||||||||||||||||||||||||||
+Sbjct  301  AGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  340
+
+
+>gi|50496044|emb|CR615237.1| full-length cDNA clone CS0DG004YC01 of B cells (Ramos cell line) 
+            of Homo sapiens (human)
+          Length=1168
+
+ Score =  644 bits (325),  Expect = 0.0
+ Identities = 325/325 (100%), Gaps = 0/325 (0%)
+ Strand=Plus/Plus
+
+Query  36   GAATGGCGTCCCGCGGCCGGCGTCCGGAGCATGGCGGACCCCCAGAGCTGTTTTATGACG  95
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  1    GAATGGCGTCCCGCGGCCGGCGTCCGGAGCATGGCGGACCCCCAGAGCTGTTTTATGACG  60
+
+Query  96   AGACAGAAGCCCGGAAATACGTTCGCAACTCACGGATGATTGATATCCAGACCAGGATGG  155
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  61   AGACAGAAGCCCGGAAATACGTTCGCAACTCACGGATGATTGATATCCAGACCAGGATGG  120
+
+Query  156  CTGGGCGAGCATTGGAGCTTCTTTATCTGCCAGAGAATAAGCCCTGTTACCTGCTGGATA  215
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  121  CTGGGCGAGCATTGGAGCTTCTTTATCTGCCAGAGAATAAGCCCTGTTACCTGCTGGATA  180
+
+Query  216  TTGGCTGTGGCACTGGGCTGAGTGGAAGTTATCTGTCAGATGAAGGGCACTATTGGGTGG  275
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  181  TTGGCTGTGGCACTGGGCTGAGTGGAAGTTATCTGTCAGATGAAGGGCACTATTGGGTGG  240
+
+Query  276  GCCTGGATATCAGCCCTGCCATGCTGGATGAGGCTGTGGACCGAGAGATAGAGGGAGACC  335
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  241  GCCTGGATATCAGCCCTGCCATGCTGGATGAGGCTGTGGACCGAGAGATAGAGGGAGACC  300
+
+Query  336  TGCTGCTGGGGGATATGGGCCAGGG  360
+            |||||||||||||||||||||||||
+Sbjct  301  TGCTGCTGGGGGATATGGGCCAGGG  325
+
+
+>gi|50484497|emb|CR603690.1| full-length cDNA clone CS0DA010YE20 of Neuroblastoma of Homo 
+            sapiens (human)
+          Length=1219
+
+ Score =  640 bits (323),  Expect = 0.0
+ Identities = 323/323 (100%), Gaps = 0/323 (0%)
+ Strand=Plus/Plus
+
+Query  38   ATGGCGTCCCGCGGCCGGCGTCCGGAGCATGGCGGACCCCCAGAGCTGTTTTATGACGAG  97
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  1    ATGGCGTCCCGCGGCCGGCGTCCGGAGCATGGCGGACCCCCAGAGCTGTTTTATGACGAG  60
+
+Query  98   ACAGAAGCCCGGAAATACGTTCGCAACTCACGGATGATTGATATCCAGACCAGGATGGCT  157
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  61   ACAGAAGCCCGGAAATACGTTCGCAACTCACGGATGATTGATATCCAGACCAGGATGGCT  120
+
+Query  158  GGGCGAGCATTGGAGCTTCTTTATCTGCCAGAGAATAAGCCCTGTTACCTGCTGGATATT  217
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  121  GGGCGAGCATTGGAGCTTCTTTATCTGCCAGAGAATAAGCCCTGTTACCTGCTGGATATT  180
+
+Query  218  GGCTGTGGCACTGGGCTGAGTGGAAGTTATCTGTCAGATGAAGGGCACTATTGGGTGGGC  277
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  181  GGCTGTGGCACTGGGCTGAGTGGAAGTTATCTGTCAGATGAAGGGCACTATTGGGTGGGC  240
+
+Query  278  CTGGATATCAGCCCTGCCATGCTGGATGAGGCTGTGGACCGAGAGATAGAGGGAGACCTG  337
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  241  CTGGATATCAGCCCTGCCATGCTGGATGAGGCTGTGGACCGAGAGATAGAGGGAGACCTG  300
+
+Query  338  CTGCTGGGGGATATGGGCCAGGG  360
+            |||||||||||||||||||||||
+Sbjct  301  CTGCTGGGGGATATGGGCCAGGG  323
+
+
+
+>gi|39763561|gb|AY407590.1| Pan troglodytes WBSCR22 gene, VIRTUAL TRANSCRIPT, partial sequence, 
+            genomic survey sequence
+          Length=608
+
+ Score =  333 bits (168),  Expect = 2e-88
+ Identities = 171/172 (99%), Gaps = 0/172 (0%)
+ Strand=Plus/Plus
+
+Query  131  ATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTATCTGCCAGAG  190
+            ||||||||||||||||||||||||||||||||||||||||||||||||| ||||||||||
+Sbjct  1    ATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTGTCTGCCAGAG  60
+
+Query  191  AATAAGCCCTGTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGGAAGTTATCTG  250
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  61   AATAAGCCCTGTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGGAAGTTATCTG  120
+
+Query  251  TCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGG  302
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  121  TCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGG  172
+
+
+>gi|57087472|ref|XM_536843.1| PREDICTED: Canis familiaris similar to Putative methyltransferase 
+            HUSSY-03 (Williams-Beuren syndrome chromosome region 22 
+            protein homolog) (LOC479717), mRNA
+          Length=1045
+
+ Score =  301 bits (152),  Expect = 7e-79
+ Identities = 278/320 (86%), Gaps = 0/320 (0%)
+ Strand=Plus/Plus
+
+Query  38   ATGGCGTCCCGCGGCCGGCGTCCGGAGCATGGCGGACCCCCAGAGCTGTTTTATGACGAG  97
+            ||||||| ||||||| || | ||||| || ||||| ||||| ||||||||||| ||| ||
+Sbjct  1    ATGGCGTTCCGCGGCAGGAGGCCGGAACACGGCGGGCCCCCGGAGCTGTTTTACGACAAG  60
+
+Query  98   ACAGAAGCCCGGAAATACGTTCGCAACTCACGGATGATTGATATCCAGACCAGGATGGCT  157
+            |  ||||||||||||||||| ||||||||||| ||||||||| ||||||||| |||||||
+Sbjct  61   AATGAAGCCCGGAAATACGTGCGCAACTCACGAATGATTGATGTCCAGACCAAGATGGCT  120
+
+Query  158  GGGCGAGCATTGGAGCTTCTTTATCTGCCAGAGAATAAGCCCTGTTACCTGCTGGATATT  217
+            ||||||||||||||||| |||| |||||| |||  | |||||||||||||| ||||||||
+Sbjct  121  GGGCGAGCATTGGAGCTCCTTTGTCTGCCCGAGGGTCAGCCCTGTTACCTGTTGGATATT  180
+
+Query  218  GGCTGTGGCACTGGGCTGAGTGGAAGTTATCTGTCAGATGAAGGGCACTATTGGGTGGGC  277
+            ||||||||  ||||| ||||||||  |||||| ||||||||||||||||| |||||||||
+Sbjct  181  GGCTGTGGTTCTGGGTTGAGTGGAGATTATCTCTCAGATGAAGGGCACTACTGGGTGGGC  240
+
+Query  278  CTGGATATCAGCCCTGCCATGCTGGATGAGGCTGTGGACCGAGAGATAGAGGGAGACCTG  337
+             | || ||||||||||||||||||||||  ||  |||||||||| |  ||||||||||||
+Sbjct  241  ATCGACATCAGCCCTGCCATGCTGGATGCAGCCTTGGACCGAGACACTGAGGGAGACCTG  300
+
+Query  338  CTGCTGGGGGATATGGGCCA  357
+            || |||||||| ||||||||
+Sbjct  301  CTTCTGGGGGACATGGGCCA  320
+
+
+>gi|21552767|gb|AF412035.1| Mus musculus Williams-Beuren syndrome critical region protein 
+            22 (Wbscr22) mRNA, complete cds
+          Length=1286
+
+ Score =  198 bits (100),  Expect = 8e-48
+ Identities = 244/292 (83%), Gaps = 0/292 (0%)
+ Strand=Plus/Plus
+
+Query  69   GCGGACCCCCAGAGCTGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCGCAACTCAC  128
+            ||||||| || ||||||||||||||| |||  ||||||||||||||||||||||||||||
+Sbjct  61   GCGGACCGCCGGAGCTGTTTTATGACCAGAATGAAGCCCGGAAATACGTTCGCAACTCAC  120
+
+Query  129  GGATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTATCTGCCAG  188
+            |||||||||| |||||||||| |||| ||| ||||||  ||||||| || | | | ||||
+Sbjct  121  GGATGATTGACATCCAGACCAAGATGACTGAGCGAGCGCTGGAGCTCCTCTGTTTACCAG  180
+
+Query  189  AGAATAAGCCCTGTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGGAAGTTATC  248
+            ||  | |||| | ||||||| | || |||||||| ||  ||||||||||||||  |||| 
+Sbjct  181  AGGGTCAGCCTTCTTACCTGTTAGACATTGGCTGCGGTTCTGGGCTGAGTGGAGATTATA  240
+
+Query  249  TGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGATGAGG  308
+            | ||||| || || ||||| ||||||||| | || ||||||||||||||| ||||||  |
+Sbjct  241  TCTCAGAAGAGGGACACTACTGGGTGGGCATTGACATCAGCCCTGCCATGTTGGATGCCG  300
+
+Query  309  CTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  360
+            |  |||||||||| | |||||| ||||||||||| ||||| |||||||||||
+Sbjct  301  CCTTGGACCGAGATACAGAGGGGGACCTGCTGCTAGGGGACATGGGCCAGGG  352
+
+
+>gi|12846834|dbj|AK011005.1| Mus musculus 13 days embryo liver cDNA, RIKEN full-length enriched 
+            library, clone:2510027G19 product:similar to PUTATIVE 
+            METHYLTRANSFERASE WBMT [Homo sapiens], full insert sequence
+          Length=1222
+
+ Score =  198 bits (100),  Expect = 8e-48
+ Identities = 244/292 (83%), Gaps = 0/292 (0%)
+ Strand=Plus/Plus
+
+Query  69   GCGGACCCCCAGAGCTGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCGCAACTCAC  128
+            ||||||| || ||||||||||||||| |||  ||||||||||||||||||||||||||||
+Sbjct  69   GCGGACCGCCGGAGCTGTTTTATGACCAGAATGAAGCCCGGAAATACGTTCGCAACTCAC  128
+
+Query  129  GGATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTATCTGCCAG  188
+            |||||||||| |||||||||| |||| ||| ||||||  ||||||| || | | | ||||
+Sbjct  129  GGATGATTGACATCCAGACCAAGATGACTGAGCGAGCGCTGGAGCTCCTCTGTTTACCAG  188
+
+Query  189  AGAATAAGCCCTGTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGGAAGTTATC  248
+            ||  | |||| | ||||||| | || |||||||| ||  ||||||||||||||  |||| 
+Sbjct  189  AGGGTCAGCCTTCTTACCTGTTAGACATTGGCTGCGGTTCTGGGCTGAGTGGAGATTATA  248
+
+Query  249  TGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGATGAGG  308
+            | ||||| || || ||||| ||||||||| | || ||||||||||||||| ||||||  |
+Sbjct  249  TCTCAGAAGAGGGACACTACTGGGTGGGCATTGACATCAGCCCTGCCATGTTGGATGCCG  308
+
+Query  309  CTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  360
+            |  |||||||||| | |||||| ||||||||||| ||||| |||||||||||
+Sbjct  309  CCTTGGACCGAGATACAGAGGGGGACCTGCTGCTAGGGGACATGGGCCAGGG  360
+
+
+>gi|12834023|dbj|AK003386.1| Mus musculus 18-day embryo whole body cDNA, RIKEN full-length 
+            enriched library, clone:1110003N24 product:similar to PUTATIVE 
+            METHYLTRANSFERASE WBMT [Homo sapiens], full insert sequence
+          Length=1286
+
+ Score =  198 bits (100),  Expect = 8e-48
+ Identities = 244/292 (83%), Gaps = 0/292 (0%)
+ Strand=Plus/Plus
+
+Query  69   GCGGACCCCCAGAGCTGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCGCAACTCAC  128
+            ||||||| || ||||||||||||||| |||  ||||||||||||||||||||||||||||
+Sbjct  62   GCGGACCGCCGGAGCTGTTTTATGACCAGAATGAAGCCCGGAAATACGTTCGCAACTCAC  121
+
+Query  129  GGATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTATCTGCCAG  188
+            |||||||||| |||||||||| |||| ||| ||||||  ||||||| || | | | ||||
+Sbjct  122  GGATGATTGACATCCAGACCAAGATGACTGAGCGAGCGCTGGAGCTCCTCTGTTTACCAG  181
+
+Query  189  AGAATAAGCCCTGTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGGAAGTTATC  248
+            ||  | |||| | ||||||| | || |||||||| ||  ||||||||||||||  |||| 
+Sbjct  182  AGGGTCAGCCTTCTTACCTGTTAGACATTGGCTGCGGTTCTGGGCTGAGTGGAGATTATA  241
+
+Query  249  TGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGATGAGG  308
+            | ||||| || || ||||| ||||||||| | || ||||||||||||||| ||||||  |
+Sbjct  242  TCTCAGAAGAGGGACACTACTGGGTGGGCATTGACATCAGCCCTGCCATGTTGGATGCCG  301
+
+Query  309  CTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  360
+            |  |||||||||| | |||||| ||||||||||| ||||| |||||||||||
+Sbjct  302  CCTTGGACCGAGATACAGAGGGGGACCTGCTGCTAGGGGACATGGGCCAGGG  353
+
+
+>gi|61553424|gb|BT021557.1| Bos taurus Williams Beuren syndrome chromosome region 22 (WBSCR22), 
+            mRNA, complete cds
+          Length=1084
+
+ Score =  190 bits (96),  Expect = 2e-45
+ Identities = 243/292 (83%), Gaps = 0/292 (0%)
+ Strand=Plus/Plus
+
+Query  69   GCGGACCCCCAGAGCTGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCGCAACTCAC  128
+            |||| ||||| ||||||| ||| ||| |||  ||||||||||||||||| ||||||||||
+Sbjct  84   GCGGGCCCCCGGAGCTGTATTACGACAAGAATGAAGCCCGGAAATACGTGCGCAACTCAC  143
+
+Query  129  GGATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTATCTGCCAG  188
+            ||||||||||  |||| | || |||| |||| || ||| |||||||||||| | |||| |
+Sbjct  144  GGATGATTGACGTCCAAATCAAGATGACTGGACGGGCACTGGAGCTTCTTTGTGTGCCCG  203
+
+Query  189  AGAATAAGCCCTGTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGGAAGTTATC  248
+            || | |||||||||||| || ||||||||||||| || ||||| ||||| ||   |||||
+Sbjct  204  AGGACAAGCCCTGTTACGTGTTGGATATTGGCTGCGGTACTGGCCTGAGCGGTGATTATC  263
+
+Query  249  TGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGATGAGG  308
+            | |||||||| |||||||| ||||||||| | || |||||||||||||||||||||||||
+Sbjct  264  TCTCAGATGAGGGGCACTACTGGGTGGGCATTGACATCAGCCCTGCCATGCTGGATGAGG  323
+
+Query  309  CTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  360
+            |  ||||||| ||||   |||||||  || | |||||||| ||||| |||||
+Sbjct  324  CCTTGGACCGTGAGACGCAGGGAGATGTGATTCTGGGGGACATGGGTCAGGG  375
+
+
+>gi|15145617|gb|AC073846.6| Homo sapiens BAC clone RP11-622P13 from 7, complete sequence
+          Length=123004
+
+ Score =  190 bits (96),  Expect = 2e-45
+ Identities = 96/96 (100%), Gaps = 0/96 (0%)
+ Strand=Plus/Minus
+
+Query  124    CTCACGGATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTATCT  183
+              ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  80308  CTCACGGATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTATCT  80249
+
+Query  184    GCCAGAGAATAAGCCCTGTTACCTGCTGGATATTGG  219
+              ||||||||||||||||||||||||||||||||||||
+Sbjct  80248  GCCAGAGAATAAGCCCTGTTACCTGCTGGATATTGG  80213
+
+
+ Score =  168 bits (85),  Expect = 7e-39
+ Identities = 85/85 (100%), Gaps = 0/85 (0%)
+ Strand=Plus/Minus
+
+Query  1      CAGGCGCCAGTCGCAGGTGTGCTGCTGAGGCGTGAGAATGGCGTCCCGCGGCCGGCGTCC  60
+              ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  83355  CAGGCGCCAGTCGCAGGTGTGCTGCTGAGGCGTGAGAATGGCGTCCCGCGGCCGGCGTCC  83296
+
+Query  61     GGAGCATGGCGGACCCCCAGAGCTG  85
+              |||||||||||||||||||||||||
+Sbjct  83295  GGAGCATGGCGGACCCCCAGAGCTG  83271
+
+
+ Score =  167 bits (84),  Expect = 3e-38
+ Identities = 84/84 (100%), Gaps = 0/84 (0%)
+ Strand=Plus/Minus
+
+Query  219    GCTGTGGCACTGGGCTGAGTGGAAGTTATCTGTCAGATGAAGGGCACTATTGGGTGGGCC  278
+              ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  80127  GCTGTGGCACTGGGCTGAGTGGAAGTTATCTGTCAGATGAAGGGCACTATTGGGTGGGCC  80068
+
+Query  279    TGGATATCAGCCCTGCCATGCTGG  302
+              ||||||||||||||||||||||||
+Sbjct  80067  TGGATATCAGCCCTGCCATGCTGG  80044
+
+
+ Score =  117 bits (59),  Expect = 2e-23
+ Identities = 59/59 (100%), Gaps = 0/59 (0%)
+ Strand=Plus/Minus
+
+Query  302    GATGAGGCTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  360
+              |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  79946  GATGAGGCTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  79888
+
+
+ Score = 77.8 bits (39),  Expect = 2e-11
+ Identities = 39/39 (100%), Gaps = 0/39 (0%)
+ Strand=Plus/Minus
+
+Query  85     GTTTTATGACGAGACAGAAGCCCGGAAATACGTTCGCAA  123
+              |||||||||||||||||||||||||||||||||||||||
+Sbjct  83178  GTTTTATGACGAGACAGAAGCCCGGAAATACGTTCGCAA  83140
+
+
+>gi|62658760|ref|XM_347254.2| PREDICTED: Rattus norvegicus similar to Putative methyltransferase 
+            HUSSY-03 (Williams-Beuren syndrome chromosome region 22 
+            protein homolog) (LOC368084), mRNA
+          Length=1280
+
+ Score =  174 bits (88),  Expect = 1e-40
+ Identities = 241/292 (82%), Gaps = 0/292 (0%)
+ Strand=Plus/Plus
+
+Query  69   GCGGACCCCCAGAGCTGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCGCAACTCAC  128
+            ||||||| |||||||||||||||||| |||  ||||||||||||||||||||||||||||
+Sbjct  63   GCGGACCGCCAGAGCTGTTTTATGACCAGAATGAAGCCCGGAAATACGTTCGCAACTCAC  122
+
+Query  129  GGATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTATCTGCCAG  188
+            |||||||||| |||||||||| |||| ||| ||||||| ||||||| || | | ||||||
+Sbjct  123  GGATGATTGACATCCAGACCAAGATGACTGAGCGAGCACTGGAGCTCCTCTGTTTGCCAG  182
+
+Query  189  AGAATAAGCCCTGTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGGAAGTTATC  248
+            ||    |||| | ||| ||| | || || ||||||||  |||| |||||||||   ||| 
+Sbjct  183  AGGGCCAGCCTTCTTATCTGTTAGACATCGGCTGTGGTTCTGGACTGAGTGGAGACTATA  242
+
+Query  249  TGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGATGAGG  308
+            | ||||| || |||||||| ||||||||| | || ||||||||||||||| |||| |  |
+Sbjct  243  TCTCAGAAGAGGGGCACTACTGGGTGGGCATTGACATCAGCCCTGCCATGTTGGACGCCG  302
+
+Query  309  CTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  360
+            |  ||||||| || | |||||||||||| || || ||||| |||||||||||
+Sbjct  303  CCTTGGACCGCGACACAGAGGGAGACCTACTACTAGGGGACATGGGCCAGGG  354
+
+
+>gi|13384747|ref|NM_025375.1| Mus musculus Williams Beuren syndrome chromosome region 22 (Wbscr22), 
+            mRNA
+          Length=1608
+
+ Score =  129 bits (65),  Expect = 6e-27
+ Identities = 194/237 (81%), Gaps = 0/237 (0%)
+ Strand=Plus/Plus
+
+Query  124  CTCACGGATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTATCT  183
+            ||||||||||||||| |||||||||| |||| ||| ||||||  ||||||| || | | |
+Sbjct  438  CTCACGGATGATTGACATCCAGACCAAGATGACTGAGCGAGCGCTGGAGCTCCTCTGTTT  497
+
+Query  184  GCCAGAGAATAAGCCCTGTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGGAAG  243
+             ||||||  | |||| | ||||||| | || |||||||| ||  ||||||||||||||  
+Sbjct  498  ACCAGAGGGTCAGCCTTCTTACCTGTTAGACATTGGCTGCGGTTCTGGGCTGAGTGGAGA  557
+
+Query  244  TTATCTGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGA  303
+            |||| | ||||| || || ||||| ||||||||| | || ||||||||||||||| ||||
+Sbjct  558  TTATATCTCAGAAGAGGGACACTACTGGGTGGGCATTGACATCAGCCCTGCCATGTTGGA  617
+
+Query  304  TGAGGCTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  360
+            ||  ||  |||||||||| | |||||| ||||||||||| ||||| |||||||||||
+Sbjct  618  TGCCGCCTTGGACCGAGATACAGAGGGGGACCTGCTGCTAGGGGACATGGGCCAGGG  674
+
+
+>gi|12832524|dbj|AK002497.1| Mus musculus adult male kidney cDNA, RIKEN full-length enriched 
+            library, clone:0610010L07 product:similar to PUTATIVE METHYLTRANSFERASE 
+            WBMT [Homo sapiens], full insert sequence
+          Length=1608
+
+ Score =  129 bits (65),  Expect = 6e-27
+ Identities = 194/237 (81%), Gaps = 0/237 (0%)
+ Strand=Plus/Plus
+
+Query  124  CTCACGGATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTATCT  183
+            ||||||||||||||| |||||||||| |||| ||| ||||||  ||||||| || | | |
+Sbjct  438  CTCACGGATGATTGACATCCAGACCAAGATGACTGAGCGAGCGCTGGAGCTCCTCTGTTT  497
+
+Query  184  GCCAGAGAATAAGCCCTGTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGGAAG  243
+             ||||||  | |||| | ||||||| | || |||||||| ||  ||||||||||||||  
+Sbjct  498  ACCAGAGGGTCAGCCTTCTTACCTGTTAGACATTGGCTGCGGTTCTGGGCTGAGTGGAGA  557
+
+Query  244  TTATCTGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGA  303
+            |||| | ||||| || || ||||| ||||||||| | || ||||||||||||||| ||||
+Sbjct  558  TTATATCTCAGAAGAGGGACACTACTGGGTGGGCATTGACATCAGCCCTGCCATGTTGGA  617
+
+Query  304  TGAGGCTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  360
+            ||  ||  |||||||||| | |||||| ||||||||||| ||||| |||||||||||
+Sbjct  618  TGCCGCCTTGGACCGAGATACAGAGGGGGACCTGCTGCTAGGGGACATGGGCCAGGG  674
+
+
+>gi|55628725|ref|XM_527785.1| PREDICTED: Pan troglodytes similar to Williams Beuren syndrome 
+            chromosome region 22 protein; Williams-Beuren candidate region 
+            putative methyltransferase (LOC472411), mRNA
+          Length=582
+
+ Score =  115 bits (58),  Expect = 9e-23
+ Identities = 58/58 (100%), Gaps = 0/58 (0%)
+ Strand=Plus/Plus
+
+Query  66   ATGGCGGACCCCCAGAGCTGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCGCAA  123
+            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  1    ATGGCGGACCCCCAGAGCTGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCGCAA  58
+
+
+>gi|37999253|gb|AC092729.3| Canis familiaris clone RP81-60B6, complete sequence
+          Length=165116
+
+ Score =  111 bits (56),  Expect = 1e-21
+ Identities = 86/96 (89%), Gaps = 0/96 (0%)
+ Strand=Plus/Minus
+
+Query  124    CTCACGGATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTATCT  183
+              |||||| ||||||||| ||||||||| |||||||||||||||||||||||| |||| |||
+Sbjct  45376  CTCACGAATGATTGATGTCCAGACCAAGATGGCTGGGCGAGCATTGGAGCTCCTTTGTCT  45317
+
+Query  184    GCCAGAGAATAAGCCCTGTTACCTGCTGGATATTGG  219
+              ||| |||  | |||||||||||||| ||||||||||
+Sbjct  45316  GCCCGAGGGTCAGCCCTGTTACCTGTTGGATATTGG  45281
+
+
+ Score = 87.7 bits (44),  Expect = 2e-14
+ Identities = 74/84 (88%), Gaps = 0/84 (0%)
+ Strand=Plus/Minus
+
+Query  219    GCTGTGGCACTGGGCTGAGTGGAAGTTATCTGTCAGATGAAGGGCACTATTGGGTGGGCC  278
+              |||||||  ||||| ||||||||  |||||| ||||||||||||||||| ||||||||| 
+Sbjct  45193  GCTGTGGTTCTGGGTTGAGTGGAGATTATCTCTCAGATGAAGGGCACTACTGGGTGGGCA  45134
+
+Query  279    TGGATATCAGCCCTGCCATGCTGG  302
+              | || |||||||||||||||||||
+Sbjct  45133  TCGACATCAGCCCTGCCATGCTGG  45110
+
+
+ Score = 52.0 bits (26),  Expect = 0.001
+ Identities = 41/46 (89%), Gaps = 0/46 (0%)
+ Strand=Plus/Minus
+
+Query  312    TGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCA  357
+              |||||||||| |  |||||||||||||| |||||||| ||||||||
+Sbjct  45009  TGGACCGAGACACTGAGGGAGACCTGCTTCTGGGGGACATGGGCCA  44964
+
+
+>gi|68442832|ref|XM_696076.1| PREDICTED: Danio rerio similar to MGC82375 protein (LOC572367), 
+            mRNA
+          Length=1190
+
+ Score =  109 bits (55),  Expect = 5e-21
+ Identities = 145/175 (82%), Gaps = 0/175 (0%)
+ Strand=Plus/Plus
+
+Query  180  ATCTGCCAGAGAATAAGCCCTGTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTG  239
+            ||||||| ||| || |||||||||||||||||||| | ||||||||| |||| |||||||
+Sbjct  236  ATCTGCCCGAGGATCAGCCCTGTTACCTGCTGGATGTGGGCTGTGGCTCTGGCCTGAGTG  295
+
+Query  240  GAAGTTATCTGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGC  299
+            |   ||||||||| || |  || ||||| ||||||||  |||| |||||| | |||||||
+Sbjct  296  GGGATTATCTGTCTGAAGCCGGACACTACTGGGTGGGTGTGGACATCAGCACCGCCATGC  355
+
+Query  300  TGGATGAGGCTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGG  354
+            |||||| |||  |||| |||||| | |||||||| || |||||||| ||||||||
+Sbjct  356  TGGATGTGGCCTTGGAGCGAGAGGTGGAGGGAGATCTCCTGCTGGGCGATATGGG  410
+
+
+>gi|56002834|dbj|AK178657.1| Mus musculus cDNA, clone:Y0G0107H19, strand:minus, reference:ENSEMBL:Mouse-Transcript-ENST:ENSMUST00000005512, 
+            based on BLAT 
+            search
+          Length=195
+
+ Score =  103 bits (52),  Expect = 3e-19
+ Identities = 156/191 (81%), Gaps = 0/191 (0%)
+ Strand=Plus/Plus
+
+Query  115  CGTTCGCAACTCACGGATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCT  174
+            |||||||||||||||||||||||| |||||||||| |||| ||| ||||||  |||||||
+Sbjct  2    CGTTCGCAACTCACGGATGATTGACATCCAGACCAAGATGACTGAGCGAGCGCTGGAGCT  61
+
+Query  175  TCTTTATCTGCCAGAGAATAAGCCCTGTTACCTGCTGGATATTGGCTGTGGCACTGGGCT  234
+             || | | | ||||||  | |||| | ||||||| | || |||||||| ||  |||||||
+Sbjct  62   CCTCTGTTTACCAGAGGGTCAGCCTTCTTACCTGTTAGACATTGGCTGCGGTTCTGGGCT  121
+
+Query  235  GAGTGGAAGTTATCTGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGC  294
+            || ||||  |||| | ||||| || || ||||| ||||||||| | || |||||||||||
+Sbjct  122  GANTGGAGATTATATCTCAGAAGAGGGACACTACTGGGTGGGCATTGACATCAGCCCTGC  181
+
+Query  295  CATGCTGGATG  305
+            |||| ||||||
+Sbjct  182  CATGTTGGATG  192
+
+
+>gi|12843472|dbj|AK008966.1| Mus musculus adult male stomach cDNA, RIKEN full-length enriched 
+            library, clone:2210417I18 product:similar to PUTATIVE METHYLTRANSFERASE 
+            WBMT [Homo sapiens], full insert sequence
+          Length=1119
+
+ Score =  101 bits (51),  Expect = 1e-18
+ Identities = 132/159 (83%), Gaps = 0/159 (0%)
+ Strand=Plus/Plus
+
+Query  202  TTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGGAAGTTATCTGTCAGATGAAGG  261
+            ||||||| | || |||||||| ||  ||||||||||||||  |||| | ||||| || ||
+Sbjct  27   TTACCTGTTAGACATTGGCTGCGGTTCTGGGCTGAGTGGAGATTATATCTCAGAAGAGGG  86
+
+Query  262  GCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGATGAGGCTGTGGACCGAGA  321
+             ||||| ||||||||| | || ||||||||||||||| ||||||  ||  ||||||||||
+Sbjct  87   ACACTACTGGGTGGGCATTGACATCAGCCCTGCCATGTTGGATGCCGCCTTGGACCGAGA  146
+
+Query  322  GATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  360
+             | |||||| ||||||||||| ||||| |||||||||||
+Sbjct  147  TACAGAGGGGGACCTGCTGCTAGGGGACATGGGCCAGGG  185
+
+
+>gi|62659109|ref|XM_341103.2| PREDICTED: Rattus norvegicus similar to Putative methyltransferase 
+            HUSSY-03 (Williams-Beuren syndrome chromosome region 22 
+            protein homolog) (LOC360830), mRNA
+          Length=1203
+
+ Score = 99.6 bits (50),  Expect = 5e-18
+ Identities = 191/238 (80%), Gaps = 0/238 (0%)
+ Strand=Plus/Plus
+
+Query  123  ACTCACGGATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTATC  182
+            |||||||||||||||| |||||||||| |||| ||| ||||||| ||||||| || | | 
+Sbjct  38   ACTCACGGATGATTGACATCCAGACCAAGATGACTGAGCGAGCACTGGAGCTCCTCTGTT  97
+
+Query  183  TGCCAGAGAATAAGCCCTGTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGGAA  242
+            ||||||||    |||| | ||| ||| | || || ||||||||  |||| ||||||||| 
+Sbjct  98   TGCCAGAGGGCCAGCCTTCTTATCTGTTAGACATCGGCTGTGGTTCTGGACTGAGTGGAG  157
+
+Query  243  GTTATCTGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGG  302
+              ||| | ||||| || |||||||| ||||||||| | || ||||||||||||||| |||
+Sbjct  158  ACTATATCTCAGAAGAGGGGCACTACTGGGTGGGCATTGACATCAGCCCTGCCATGTTGG  217
+
+Query  303  ATGAGGCTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  360
+            | |  ||  ||||||| || | |||||||||||| || || ||||| |||||||||||
+Sbjct  218  ACGCCGCCTTGGACCGCGACACAGAGGGAGACCTACTACTAGGGGACATGGGCCAGGG  275
+
+
+>gi|39763562|gb|AY407591.1| Mus musculus WBSCR22 gene, VIRTUAL TRANSCRIPT, partial sequence, 
+            genomic survey sequence
+          Length=554
+
+ Score = 95.6 bits (48),  Expect = 8e-17
+ Identities = 171/212 (80%), Gaps = 0/212 (0%)
+ Strand=Plus/Plus
+
+Query  131  ATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTTCTTTATCTGCCAGAG  190
+            |||||||| |||||||||| |||| ||| ||||||  ||||||| || | | | ||||||
+Sbjct  1    ATGATTGACATCCAGACCAAGATGACTGAGCGAGCGCTGGAGCTCCTCTGTTTACCAGAG  60
+
+Query  191  AATAAGCCCTGTTACCTGCTGGATATTGGCTGTGGCACTGGGCTGAGTGGAAGTTATCTG  250
+              | |||| | ||||||| | || |||||||| ||  ||||||||||||||  |||| | 
+Sbjct  61   GGTCAGCCTTCTTACCTGTTAGACATTGGCTGCGGTTCTGGGCTGAGTGGAGATTATATC  120
+
+Query  251  TCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGATGAGGCT  310
+            ||||| || || ||||| ||||||||| | || ||||||||||||||| ||||||  || 
+Sbjct  121  TCAGAAGAGGGACACTACTGGGTGGGCATTGACATCAGCCCTGCCATGTTGGATGCCGCC  180
+
+Query  311  GTGGACCGAGAGATAGAGGGAGACCTGCTGCT  342
+             |||||||||| | |||||| |||||||||||
+Sbjct  181  TTGGACCGAGATACAGAGGGGGACCTGCTGCT  212
+
+
+>gi|33354288|gb|AC135204.3| Rattus norvegicus 1 BAC CH230-381D2 (Children's Hospital Oakland 
+            Research Institute) complete sequence
+          Length=183322
+
+ Score = 89.7 bits (45),  Expect = 5e-15
+ Identities = 90/105 (85%), Gaps = 0/105 (0%)
+ Strand=Plus/Minus
+
+Query  71     GGACCCCCAGAGCTGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCGCAACTCACGG  130
+              ||||| |||||||||||| |||||  ||   ||||| |||||||||||||||||||||||
+Sbjct  28223  GGACCTCCAGAGCTGTTTAATGACCCGAATAAAGCCTGGAAATACGTTCGCAACTCACGG  28164
+
+Query  131    ATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTT  175
+              |||||||| |||||||||| |||| ||| || |||  ||||||||
+Sbjct  28163  ATGATTGACATCCAGACCAAGATGACTGAGCAAGCGCTGGAGCTT  28119
+
+
+ Score = 87.7 bits (44),  Expect = 2e-14
+ Identities = 89/104 (85%), Gaps = 0/104 (0%)
+ Strand=Plus/Minus
+
+Query  72     GACCCCCAGAGCTGTTTTATGACGAGACAGAAGCCCGGAAATACGTTCGCAACTCACGGA  131
+              |||| |||||||||||| |||||  ||  |||||| |||||||| |||||||||||| ||
+Sbjct  96952  GACCTCCAGAGCTGTTTAATGACCCGAATGAAGCCTGGAAATACATTCGCAACTCACAGA  96893
+
+Query  132    TGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCTT  175
+              ||||||| |||||||||| |||| ||| ||||||  ||||||||
+Sbjct  96892  TGATTGACATCCAGACCAAGATGACTGAGCGAGCGCTGGAGCTT  96849
+
+
+ Score = 54.0 bits (27),  Expect = 3e-04
+ Identities = 39/43 (90%), Gaps = 0/43 (0%)
+ Strand=Plus/Minus
+
+Query  263    CACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGATG  305
+              ||||||||||||||| | || ||||||||||||||| ||||||
+Sbjct  96759  CACTATTGGGTGGGCATTGACATCAGCCCTGCCATGTTGGATG  96717
+
+
+ Score = 44.1 bits (22),  Expect = 0.27
+ Identities = 31/34 (91%), Gaps = 0/34 (0%)
+ Strand=Plus/Minus
+
+Query  264    ACTATTGGGTGGGCCTGGATATCAGCCCTGCCAT  297
+              |||||||||||||| | || ||||||||||||||
+Sbjct  28028  ACTATTGGGTGGGCATTGACATCAGCCCTGCCAT  27995
+
+
+>gi|15799595|gb|AC091752.2| Rattus norvegicus strain Brown Norway clone RP31-202M22, complete 
+            sequence
+          Length=109982
+
+ Score = 61.9 bits (31),  Expect = 1e-06
+ Identities = 46/51 (90%), Gaps = 0/51 (0%)
+ Strand=Plus/Minus
+
+Query  124     CTCACGGATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCT  174
+               ||||||||||||||| |||||||||| |||| ||| ||||||| |||||||
+Sbjct  102578  CTCACGGATGATTGACATCCAGACCAAGATGACTGAGCGAGCACTGGAGCT  102528
+
+
+ Score = 54.0 bits (27),  Expect = 3e-04
+ Identities = 36/39 (92%), Gaps = 0/39 (0%)
+ Strand=Plus/Minus
+
+Query  85      GTTTTATGACGAGACAGAAGCCCGGAAATACGTTCGCAA  123
+               |||||||||| |||  |||||||||||||||||||||||
+Sbjct  104903  GTTTTATGACCAGAATGAAGCCCGGAAATACGTTCGCAA  104865
+
+
+ Score = 48.1 bits (24),  Expect = 0.017
+ Identities = 42/48 (87%), Gaps = 0/48 (0%)
+ Strand=Plus/Minus
+
+Query  251     TCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATG  298
+               ||||| || |||||||| ||||||||| | || |||||||||||||||
+Sbjct  102357  TCAGAAGAGGGGCACTACTGGGTGGGCATTGACATCAGCCCTGCCATG  102310
+
+
+ Score = 42.1 bits (21),  Expect = 1.1
+ Identities = 42/49 (85%), Gaps = 0/49 (0%)
+ Strand=Plus/Minus
+
+Query  312     TGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  360
+               ||||||| || | |||||||||||| || || ||||| |||||||||||
+Sbjct  102074  TGGACCGCGACACAGAGGGAGACCTACTACTAGGGGACATGGGCCAGGG  102026
+
+
+>gi|15706057|gb|AC084109.2| Mus musculus strain C57BL6/J chromosome 5 clone RP23-38B15, complete 
+            sequence
+          Length=149453
+
+ Score = 58.0 bits (29),  Expect = 2e-05
+ Identities = 44/49 (89%), Gaps = 0/49 (0%)
+ Strand=Plus/Minus
+
+Query  312     TGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCAGGG  360
+               |||||||||| | |||||| ||||||||||| ||||| |||||||||||
+Sbjct  107823  TGGACCGAGATACAGAGGGGGACCTGCTGCTAGGGGACATGGGCCAGGG  107775
+
+
+ Score = 54.0 bits (27),  Expect = 3e-04
+ Identities = 60/71 (84%), Gaps = 0/71 (0%)
+ Strand=Plus/Minus
+
+Query  228     CTGGGCTGAGTGGAAGTTATCTGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCA  287
+               ||||||||||||||  |||| | ||||| || || ||||| ||||||||| | || ||||
+Sbjct  108149  CTGGGCTGAGTGGAGATTATATCTCAGAAGAGGGACACTACTGGGTGGGCATTGACATCA  108090
+
+Query  288     GCCCTGCCATG  298
+               |||||||||||
+Sbjct  108089  GCCCTGCCATG  108079
+
+
+ Score = 54.0 bits (27),  Expect = 3e-04
+ Identities = 45/51 (88%), Gaps = 0/51 (0%)
+ Strand=Plus/Minus
+
+Query  124     CTCACGGATGATTGATATCCAGACCAGGATGGCTGGGCGAGCATTGGAGCT  174
+               ||||||||||||||| |||||||||| |||| ||| ||||||  |||||||
+Sbjct  108346  CTCACGGATGATTGACATCCAGACCAAGATGACTGAGCGAGCGCTGGAGCT  108296
+
+
+ Score = 54.0 bits (27),  Expect = 3e-04
+ Identities = 36/39 (92%), Gaps = 0/39 (0%)
+ Strand=Plus/Minus
+
+Query  85      GTTTTATGACGAGACAGAAGCCCGGAAATACGTTCGCAA  123
+               |||||||||| |||  |||||||||||||||||||||||
+Sbjct  110924  GTTTTATGACCAGAATGAAGCCCGGAAATACGTTCGCAA  110886
+
+
+>gi|56346937|emb|CR689858.2|CNS0FV8U Tetraodon nigroviridis full-length cDNA
+          Length=1334
+
+ Score = 44.1 bits (22),  Expect = 0.27
+ Identities = 88/110 (80%), Gaps = 0/110 (0%)
+ Strand=Plus/Plus
+
+Query  248  CTGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGATGAG  307
+            |||||||| || || ||||| ||||| ||| |||| || ||| | || ||||||||||  
+Sbjct  308  CTGTCAGAGGAGGGACACTACTGGGTTGGCATGGACATTAGCACCGCAATGCTGGATGTT  367
+
+Query  308  GCTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCA  357
+            ||  ||||||||||| ||||||| | |||  | |||||||| ||||||||
+Sbjct  368  GCATTGGACCGAGAGGTAGAGGGGGGCCTTTTACTGGGGGACATGGGCCA  417
+
+
+>gi|56346631|emb|CR689287.2|CNS0FUSZ Tetraodon nigroviridis full-length cDNA
+          Length=1398
+
+ Score = 44.1 bits (22),  Expect = 0.27
+ Identities = 88/110 (80%), Gaps = 0/110 (0%)
+ Strand=Plus/Plus
+
+Query  248  CTGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGATGAG  307
+            |||||||| || || ||||| ||||| ||| |||| || ||| | || ||||||||||  
+Sbjct  304  CTGTCAGAGGAGGGACACTACTGGGTTGGCATGGACATTAGCACCGCAATGCTGGATGTT  363
+
+Query  308  GCTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCA  357
+            ||  ||||||||||| ||||||| | |||  | |||||||| ||||||||
+Sbjct  364  GCATTGGACCGAGAGGTAGAGGGGGGCCTTTTACTGGGGGACATGGGCCA  413
+
+
+>gi|56339480|emb|CR676305.2|CNS0FKST Tetraodon nigroviridis full-length cDNA
+          Length=1322
+
+ Score = 44.1 bits (22),  Expect = 0.27
+ Identities = 88/110 (80%), Gaps = 0/110 (0%)
+ Strand=Plus/Plus
+
+Query  248  CTGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGATGAG  307
+            |||||||| || || ||||| ||||| ||| |||| || ||| | || ||||||||||  
+Sbjct  324  CTGTCAGAGGAGGGACACTACTGGGTTGGCATGGACATTAGCACCGCAATGCTGGATGTT  383
+
+Query  308  GCTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCA  357
+            ||  ||||||||||| ||||||| | |||  | |||||||| ||||||||
+Sbjct  384  GCATTGGACCGAGAGGTAGAGGGGGGCCTTTTACTGGGGGACATGGGCCA  433
+
+
+>gi|56333580|emb|CR664920.2|CNS0FC0U Tetraodon nigroviridis full-length cDNA
+          Length=1319
+
+ Score = 44.1 bits (22),  Expect = 0.27
+ Identities = 88/110 (80%), Gaps = 0/110 (0%)
+ Strand=Plus/Plus
+
+Query  248  CTGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGATGAG  307
+            |||||||| || || ||||| ||||| ||| |||| || ||| | || ||||||||||  
+Sbjct  322  CTGTCAGAGGAGGGACACTACTGGGTTGGCATGGACATTAGCACCGCAATGCTGGATGTT  381
+
+Query  308  GCTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCA  357
+            ||  ||||||||||| ||||||| | |||  | |||||||| ||||||||
+Sbjct  382  GCATTGGACCGAGAGGTAGAGGGGGGCCTTTTACTGGGGGACATGGGCCA  431
+
+
+>gi|51154344|emb|CR657899.1|CNS0F6LT Tetraodon nigroviridis full-length cDNA
+          Length=1247
+
+ Score = 44.1 bits (22),  Expect = 0.27
+ Identities = 88/110 (80%), Gaps = 0/110 (0%)
+ Strand=Plus/Plus
+
+Query  248  CTGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGATGAG  307
+            |||||||| || || ||||| ||||| ||| |||| || ||| | || ||||||||||  
+Sbjct  379  CTGTCAGAGGAGGGACACTACTGGGTTGGCATGGACATTAGCACCGCAATGCTGGATGTT  438
+
+Query  308  GCTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCA  357
+            ||  ||||||||||| ||||||| | |||  | |||||||| ||||||||
+Sbjct  439  GCATTGGACCGAGAGGTAGAGGGGGGCCTTTTACTGGGGGACATGGGCCA  488
+
+
+>gi|56329737|emb|CR657388.2|CNS0F67M Tetraodon nigroviridis full-length cDNA
+          Length=1245
+
+ Score = 44.1 bits (22),  Expect = 0.27
+ Identities = 88/110 (80%), Gaps = 0/110 (0%)
+ Strand=Plus/Plus
+
+Query  248  CTGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGATGAG  307
+            |||||||| || || ||||| ||||| ||| |||| || ||| | || ||||||||||  
+Sbjct  369  CTGTCAGAGGAGGGACACTACTGGGTTGGCATGGACATTAGCACCGCAATGCTGGATGTT  428
+
+Query  308  GCTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCA  357
+            ||  ||||||||||| ||||||| | |||  | |||||||| ||||||||
+Sbjct  429  GCATTGGACCGAGAGGTAGAGGGGGGCCTTTTACTGGGGGACATGGGCCA  478
+
+
+>gi|56329613|emb|CR657146.2|CNS0F60W Tetraodon nigroviridis full-length cDNA
+          Length=1215
+
+ Score = 44.1 bits (22),  Expect = 0.27
+ Identities = 88/110 (80%), Gaps = 0/110 (0%)
+ Strand=Plus/Plus
+
+Query  248  CTGTCAGATGAAGGGCACTATTGGGTGGGCCTGGATATCAGCCCTGCCATGCTGGATGAG  307
+            |||||||| || || ||||| ||||| ||| |||| || ||| | || ||||||||||  
+Sbjct  360  CTGTCAGAGGAGGGACACTACTGGGTTGGCATGGACATTAGCACCGCAATGCTGGATGTT  419
+
+Query  308  GCTGTGGACCGAGAGATAGAGGGAGACCTGCTGCTGGGGGATATGGGCCA  357
+            ||  ||||||||||| ||||||| | |||  | |||||||| ||||||||
+Sbjct  420  GCATTGGACCGAGAGGTAGAGGGGGGCCTTTTACTGGGGGACATGGGCCA  469
+
+
+>gi|26190583|gb|AC129317.3| Mus musculus BAC clone RP23-443L14 from chromosome 9, complete 
+            sequence
+          Length=210950
+
+ Score = 42.1 bits (21),  Expect = 1.1
+ Identities = 21/21 (100%), Gaps = 0/21 (0%)
+ Strand=Plus/Plus
+
+Query  336    TGCTGCTGGGGGATATGGGCC  356
+              |||||||||||||||||||||
+Sbjct  94724  TGCTGCTGGGGGATATGGGCC  94744
+
+
+>gi|24418173|gb|AC126121.2| Homo sapiens chromosome 3 clone RP11-719N22, complete sequence
+          Length=215273
+
+ Score = 42.1 bits (21),  Expect = 1.1
+ Identities = 21/21 (100%), Gaps = 0/21 (0%)
+ Strand=Plus/Minus
+
+Query  191     AATAAGCCCTGTTACCTGCTG  211
+               |||||||||||||||||||||
+Sbjct  159414  AATAAGCCCTGTTACCTGCTG  159394
+
+
+>gi|45437002|gb|AE017136.1| Yersinia pestis biovar Medievalis str. 91001 section 10 of 16 
+            of the complete genome
+          Length=290294
+
+ Features in this part of subject sequence:
+   SAM-dependent methyltransferases
+
+ Score = 42.1 bits (21),  Expect = 1.1
+ Identities = 24/25 (96%), Gaps = 0/25 (0%)
+ Strand=Plus/Plus
+
+Query  210     TGGATATTGGCTGTGGCACTGGGCT  234
+               |||||||||||||||||| ||||||
+Sbjct  169232  TGGATATTGGCTGTGGCAGTGGGCT  169256
+
+
+>gi|51587641|emb|BX936398.1| Yersinia pseudotuberculosis IP32953 genome, complete sequence
+          Length=4744671
+
+ Features in this part of subject sequence:
+   conserved hypothetical protein
+
+ Score = 42.1 bits (21),  Expect = 1.1
+ Identities = 24/25 (96%), Gaps = 0/25 (0%)
+ Strand=Plus/Minus
+
+Query  210      TGGATATTGGCTGTGGCACTGGGCT  234
+                |||||||||||||||||| ||||||
+Sbjct  3430823  TGGATATTGGCTGTGGCAGTGGGCT  3430799
+
+
+>gi|61816657|ref|XM_595692.1| PREDICTED: Bos taurus similar to RIKEN cDNA 2410030J07 (LOC517520), 
+            partial mRNA
+          Length=2300
+
+ Score = 42.1 bits (21),  Expect = 1.1
+ Identities = 21/21 (100%), Gaps = 0/21 (0%)
+ Strand=Plus/Minus
+
+Query  293  GCCATGCTGGATGAGGCTGTG  313
+            |||||||||||||||||||||
+Sbjct  750  GCCATGCTGGATGAGGCTGTG  730
+
+
+>gi|15980576|emb|AJ414153.1| Yersinia pestis strain CO92 complete genome; segment 13/20
+          Length=258050
+
+ Features in this part of subject sequence:
+   conserved hypothetical protein
+
+ Score = 42.1 bits (21),  Expect = 1.1
+ Identities = 24/25 (96%), Gaps = 0/25 (0%)
+ Strand=Plus/Plus
+
+Query  210     TGGATATTGGCTGTGGCACTGGGCT  234
+               |||||||||||||||||| ||||||
+Sbjct  123672  TGGATATTGGCTGTGGCAGTGGGCT  123696
+
+
+>gi|21958045|gb|AE013731.1| Yersinia pestis KIM section 131 of 415 of the complete genome
+          Length=10886
+
+ Score = 42.1 bits (21),  Expect = 1.1
+ Identities = 24/25 (96%), Gaps = 0/25 (0%)
+ Strand=Plus/Plus
+
+Query  210   TGGATATTGGCTGTGGCACTGGGCT  234
+             |||||||||||||||||| ||||||
+Sbjct  4349  TGGATATTGGCTGTGGCAGTGGGCT  4373
+
+
+>gi|28376746|gb|AC125393.6| Pan troglodytes clone rp43-22m15, complete sequence
+          Length=187256
+
+ Score = 42.1 bits (21),  Expect = 1.1
+ Identities = 21/21 (100%), Gaps = 0/21 (0%)
+ Strand=Plus/Plus
+
+Query  24     GCTGAGGCGTGAGAATGGCGT  44
+              |||||||||||||||||||||
+Sbjct  92754  GCTGAGGCGTGAGAATGGCGT  92774
+
+
+>gi|53136607|emb|AJ720974.1| Gallus gallus mRNA for hypothetical protein, clone 31i18
+          Length=1214
+
+ Score = 42.1 bits (21),  Expect = 1.1
+ Identities = 51/61 (83%), Gaps = 0/61 (0%)
+ Strand=Plus/Plus
+
+Query  279  TGGATATCAGCCCTGCCATGCTGGATGAGGCTGTGGACCGAGAGATAGAGGGAGACCTGC  338
+            |||| |||||||  ||||||||||||| |||||||||  | ||| | || ||||||||||
+Sbjct  255  TGGACATCAGCCGCGCCATGCTGGATGTGGCTGTGGAGAGGGAGGTTGAAGGAGACCTGC  314
+
+Query  339  T  339
+            |
+Sbjct  315  T  315
+
+
+  Database: All GenBank+EMBL+DDBJ+PDB sequences (but no EST, STS, GSS,environmental 
+samples or phase 0, 1 or 2 HTGS sequences)
+    Posted date:  Aug 17, 2005 10:10 PM
+  Number of letters in database: 2,123,715,192
+  Number of sequences in database:  3,446,398
+Lambda     K      H
+    1.37    0.711     1.31 
+Gapped
+Lambda     K      H
+    1.37    0.711     1.31 
+Matrix: blastn matrix:1 -3
+Gap Penalties: Existence: 5, Extension: 2
+Number of Sequences: 3446398
+Number of Hits to DB: 9582802
+Number of extensions: 501279
+Number of successful extensions: 49007
+Number of sequences better than 10: 11
+Number of HSP's better than 10 without gapping: 11
+Number of HSP's gapped: 49003
+Number of HSP's successfully gapped: 15
+Number of extra gapped extensions for HSPs above 10: 48972
+Length of query: 360
+Length of database: 15008617080
+Length adjustment: 22
+Effective length of query: 338
+Effective length of database: 14932796324
+Effective search space: 5047285157512
+Effective search space used: 5047285157512
+A: 0
+X1: 11 (21.8 bits)
+X2: 15 (29.7 bits)
+X3: 25 (49.6 bits)
+S1: 13 (26.3 bits)
+S2: 20 (40.1 bits)
+
+

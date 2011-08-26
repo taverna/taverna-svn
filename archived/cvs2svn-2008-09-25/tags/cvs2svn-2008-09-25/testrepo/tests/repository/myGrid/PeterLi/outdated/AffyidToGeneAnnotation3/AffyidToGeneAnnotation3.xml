@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.1" log="3">
+  <s:processor name="databaseid">
+    <s:stringconstant>swall</s:stringconstant>
+  </s:processor>
+  <s:processor name="ProbeSetId">
+    <s:description>An Affymetrix probe set identifier from the U95 microarray chip.</s:description>
+    <s:stringconstant>134_at</s:stringconstant>
+  </s:processor>
+  <s:processor name="MEDLINE">
+    <s:stringconstant>MEDLINE</s:stringconstant>
+  </s:processor>
+  <s:processor name="getMedlineRecords">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/SrsEbiQuery?wsdl</s:wsdl>
+      <s:operation>queryByArrayIds</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getUnigeneRecord">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/SrsEbiQuery?wsdl</s:wsdl>
+      <s:operation>queryById</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getEmblRecord">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/SrsEbiQuery?wsdl</s:wsdl>
+      <s:operation>queryById</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getOmimRecord">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/SrsEbiQuery?wsdl</s:wsdl>
+      <s:operation>queryById</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getEmblAccNumber">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/affymapper?wsdl</s:wsdl>
+      <s:operation>getAccessionNumber</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getOmimId">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/affymapper?wsdl</s:wsdl>
+      <s:operation>getOmimId</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getMedlineIds">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/SrsEbiQuery?wsdl</s:wsdl>
+      <s:operation>queryByXRef</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getSwissProtId">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/affymapper?wsdl</s:wsdl>
+      <s:operation>getSwissProtId</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getUnigeneId">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/affymapper?wsdl</s:wsdl>
+      <s:operation>getUnigeneId</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getSequence">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/affymapper?wsdl</s:wsdl>
+      <s:operation>getSequence</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getSwissProtRecord">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mygrid.ncl.ac.uk/axis/services/SrsEbiQuery?wsdl</s:wsdl>
+      <s:operation>queryById</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getProteinStats">
+    <s:description>Protein statistics</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/protein_composition::pepstats</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="Blastx">
+    <s:soaplabwsdl>http://www.ebi.ac.uk/collab/mygrid/service4/soap/services/alignment::blastx_ncbi</s:soaplabwsdl>
+  </s:processor>
+  <s:link>
+    <s:input>Blastx:database</s:input>
+    <s:output>databaseid:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getSequence:probeSetId</s:input>
+    <s:output>ProbeSetId:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>Blastx:query_sequence</s:input>
+    <s:output>getSequence:getSequenceReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getEmblAccNumber:probeSetId</s:input>
+    <s:output>ProbeSetId:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getEmblRecord:usa</s:input>
+    <s:output>getEmblAccNumber:getAccessionNumberReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getOmimId:probeSetId</s:input>
+    <s:output>ProbeSetId:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getOmimRecord:usa</s:input>
+    <s:output>getOmimId:getOmimIdReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getUnigeneRecord:usa</s:input>
+    <s:output>getUnigeneId:getUnigeneIdReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getUnigeneId:probeSetId</s:input>
+    <s:output>ProbeSetId:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getSwissProtId:probeSetId</s:input>
+    <s:output>ProbeSetId:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getSwissProtRecord:usa</s:input>
+    <s:output>getSwissProtId:getSwissProtIdReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getProteinStats:sequencea_direct_data</s:input>
+    <s:output>getSwissProtRecord:queryByIdReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>ProteinStats</s:input>
+    <s:output>getProteinStats:outfile</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getMedlineIds:usa</s:input>
+    <s:output>ProbeSetId:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getMedlineRecords:usas</s:input>
+    <s:output>getMedlineIds:queryByXRefReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getMedlineIds:XRefDatabankId</s:input>
+    <s:output>MEDLINE:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>blastx</s:input>
+    <s:output>Blastx:search_result</s:output>
+  </s:link>
+  <s:link>
+    <s:input>embl</s:input>
+    <s:output>getEmblRecord:queryByIdReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>omim</s:input>
+    <s:output>getOmimRecord:queryByIdReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>unigene</s:input>
+    <s:output>getUnigeneRecord:queryByIdReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>swissprot</s:input>
+    <s:output>getSwissProtRecord:queryByIdReturn</s:output>
+  </s:link>
+  <s:link>
+    <s:input>medline</s:input>
+    <s:output>getMedlineRecords:queryByArrayIdsReturn</s:output>
+  </s:link>
+  <s:sink>
+    ProteinStats
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+      <s:description />
+      <s:semanticType>http://www.mygrid.org.uk/ontology#bioinformatics_record</s:semanticType>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    blastx
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+      <s:description />
+      <s:semanticType>http://www.mygrid.org.uk/ontology#bioinformatics_record</s:semanticType>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    embl
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+      <s:description />
+      <s:semanticType>http://www.mygrid.org.uk/ontology#EMBL_record</s:semanticType>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    omim
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+      <s:description />
+      <s:semanticType>http://www.mygrid.org.uk/ontology#OMIM_record</s:semanticType>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    unigene
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+      <s:description />
+      <s:semanticType>http://www.mygrid.org.uk/ontology#UniGene_record</s:semanticType>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    swissprot
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+      <s:description />
+      <s:semanticType>http://www.mygrid.org.uk/ontology#SWISS-PROT_record</s:semanticType>
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    medline
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+      <s:description />
+      <s:semanticType>http://www.mygrid.org.uk/ontology#MEDLINE_citation</s:semanticType>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+
+

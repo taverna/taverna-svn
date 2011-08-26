@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:Z82W8BBCJD0" author="Daniele Turi" title="Concatenates input and constant">Concatenates input and constant</s:workflowdescription>
+  <s:processor name="subcat">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+  </s:processor>
+  <s:processor name="t" boring="true">
+    <s:stringconstant>t</s:stringconstant>
+  </s:processor>
+  <s:link source="sbin" sink="subcat:string1" />
+  <s:link source="subcat:output" sink="sbout" />
+  <s:link source="t:value" sink="subcat:string2" />
+  <s:source name="sbin" />
+  <s:sink name="sbout" />
+</s:scufl>
+
+

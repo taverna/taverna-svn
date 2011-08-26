@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section id="scufl_language_wb_features">
+  <title>Scufl language and Workbench features</title>
+
+  <para><emphasis role="bold">SCUFL</emphasis> is an acronym standing for
+  '<emphasis role="bold">Simple Conceptual Unified Flow Language</emphasis>'.
+  This section describes some of the features of this language which
+  distinguish it from the various alternatives such as the Business Process
+  Enactment Language (<emphasis role="bold">BPEL</emphasis>).</para>
+
+  <xi:include href="section_implicit_iteration.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+  <xi:include href="section_conditional_branching.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+  <xi:include href="section_beanshell.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+  <xi:include href="section_rshell.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+  <xi:include href="section_biomart.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+  <xi:include href="section_soaplab.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+  <xi:include href="section_wsdl.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+  <xi:include href="section_breakpoints.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+  <xi:include href="section_executeworkflow.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+</section>

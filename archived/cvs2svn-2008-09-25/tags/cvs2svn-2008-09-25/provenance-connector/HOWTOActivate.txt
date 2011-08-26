@@ -1,0 +1,6 @@
+to control which provenance connector is activated at runtime:
+
+integration-testing-common/src/main/resources/context-parts/provenanceconnector.xml
+
+this file is mentioned in
+integration-testing-common/src/main/resources/inMemoryActivityTestsContext.xml

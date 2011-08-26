@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:VZJS5NJL4P0" author="Paul Fisher" title="BLASTP with simplified results returned">Perform a blastp search on protein sequence and extract information based on the user input, e.g. a list of GI numbers.</s:workflowdescription>
+  <s:processor name="database" boring="true">
+    <s:stringconstant>nr</s:stringconstant>
+  </s:processor>
+  <s:processor name="gi_number" boring="true">
+    <s:stringconstant>gi</s:stringconstant>
+  </s:processor>
+  <s:processor name="query_seq" boring="true">
+    <s:stringconstant>MSSRIARALALVVTLLHLTRLALSTCPAACHCPLEAPKCAPGVGLVRDGCGCCKVCAKQL</s:stringconstant>
+  </s:processor>
+  <s:processor name="blastsimplifier">
+    <s:description>Simplifies BLAST output for later use</s:description>
+    <s:soaplabwsdl>http://phoebus.cs.man.ac.uk:1977/axis/services/seq_analysis.blastsimplifier</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="ncbi_blastp">
+    <s:description>Compares an amino acid query sequence against a protein sequence database</s:description>
+    <s:soaplabwsdl>http://dbk-ed.ch.umist.ac.uk:8080/axis/services/ncbi.ncbi_blastp</s:soaplabwsdl>
+  </s:processor>
+  <s:link source="database:value" sink="ncbi_blastp:database" />
+  <s:link source="gi_number:value" sink="blastsimplifier:gi" />
+  <s:link source="ncbi_blastp:result" sink="blastsimplifier:new_direct_data" />
+  <s:link source="query_seq:value" sink="ncbi_blastp:query" />
+  <s:link source="blastsimplifier:output" sink="simplified_report" />
+  <s:link source="ncbi_blastp:result" sink="blast_report" />
+  <s:sink name="blast_report" />
+  <s:sink name="simplified_report" />
+</s:scufl>
+
+

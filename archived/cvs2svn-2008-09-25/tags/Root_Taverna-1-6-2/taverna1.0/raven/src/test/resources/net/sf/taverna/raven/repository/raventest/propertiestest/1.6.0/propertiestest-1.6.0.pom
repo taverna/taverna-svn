@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>raventest</groupId>
+	<artifactId>propertiestest</artifactId>
+	<name>Properties interpolation test</name>
+	<version>1.6.0</version>
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-j2ee-management_1.0_spec</artifactId>
+			<version>${geronimoSpecsJ2eeManagementVersion}</version>
+		</dependency>
+	</dependencies>
+	<properties>
+		<geronimoSpecsVersion>1.1</geronimoSpecsVersion>
+		<geronimoSpecsActivationVersion>
+			1.1
+		</geronimoSpecsActivationVersion>
+		<geronimoSpecsJ2eeManagementVersion>
+			1.0.1
+		</geronimoSpecsJ2eeManagementVersion>
+	</properties>
+	<distributionManagement>
+		<status>deployed</status>
+	</distributionManagement>
+</project>
