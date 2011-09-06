@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.ac.manchester.cs.elico.elico-utilities</groupId>
   <artifactId>elico-utilities</artifactId>
-  <version>1.2.0</version>
+  <version>1.1.0-SNAPSHOT</version>
   <name>elico-utilities</name>
 	<parent>
 		<groupId>net.sf.taverna</groupId>
@@ -45,19 +45,25 @@
   	
   </dependencies>
   
-  	<build>
+  <scm>
+  	<connection>scm:svn:http://taverna.googlecode.com/svn/unsorted/taverna-elico/branches/version2dev/elico-utilities/</connection>
+  	<developerConnection>scm:svn:https://taverna.googlecode.com/svn/unsorted/taverna-elico/branches/version2dev/elico-utilities/</developerConnection>
+  	<url>http://code.google.com/p/taverna/source/browse/#svn/unsorted/taverna-elico/branches/version2dev/elico-utilities/</url>
+  </scm>
+  
+  <!--
+  <build>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
+					<source>1.6</source>
+					<target>1.6</target>
 				</configuration>
 			</plugin>
   		</plugins>
-  	</build>
-  
-  
+  	</build>  
+  -->
   <repositories>
 		<repository>
 			<releases />
