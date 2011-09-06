@@ -537,9 +537,12 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 			
             CredentialsProvider credsProvider = new BasicCredentialsProvider();
             assert urlBase != null;
-            credsProvider.setCredentials(new AuthScope(urlBase.getHost(), urlBase.getPort(), "Spring Security Application"), new UsernamePasswordCredentials(username, password));
-            //[debug-old RA] credsProvider.setCredentials(new AuthScope(urlBase.getHost(), urlBase.getPort(), "RapidAnalyticsRealm"), new UsernamePasswordCredentials(username, password));
 
+            //credsProvider.setCredentials(new AuthScope(urlBase.getHost(), urlBase.getPort(), "Spring Security Application"), new UsernamePasswordCredentials(username, password));
+            credsProvider.setCredentials(new AuthScope(urlBase.getHost(), urlBase.getPort(), AuthScope.ANY_REALM), new UsernamePasswordCredentials(username, password));
+
+            //[debug-old RA] credsProvider.setCredentials(new AuthScope(urlBase.getHost(), urlBase.getPort(), "RapidAnalyticsRealm"), new UsernamePasswordCredentials(username, password));
+            
             ((DefaultHttpClient) client).setCredentialsProvider(credsProvider);
             
   			BasicScheme basicAuth = new BasicScheme();
@@ -605,7 +608,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	
  	public Object [] parseStructureOutput(String outputData) {
 		
- 		System.out.println(" [debug] output data" + outputData);
+ 		//System.out.println(" [debug] output data" + outputData);
  		
 		Object [] myList;
 		NodeList folders;
@@ -995,7 +998,7 @@ public class RapidAnalyticsRepositoryBrowser extends JPanel implements
 	            
 	            CredentialsProvider credsProvider = new BasicCredentialsProvider();
 
-	            credsProvider.setCredentials(new AuthScope(urlBaseTemp.getHost(), urlBaseTemp.getPort(), "RapidAnalyticsRealm"), new UsernamePasswordCredentials(preferences.getUsername(), preferences.getPasswordAsString()));
+	            credsProvider.setCredentials(new AuthScope(urlBaseTemp.getHost(), urlBaseTemp.getPort(), AuthScope.ANY_REALM), new UsernamePasswordCredentials(preferences.getUsername(), preferences.getPasswordAsString()));
 	            
 	            ((DefaultHttpClient) httpClient).setCredentialsProvider(credsProvider);
 	            
