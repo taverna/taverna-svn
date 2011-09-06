@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.ac.manchester.cs.elico.elico-utilities</groupId>
   <artifactId>elico-utilities</artifactId>
-  <version>1.1.0</version>
+  <version>1.2.0</version>
   <name>elico-utilities</name>
 	<parent>
 		<groupId>net.sf.taverna</groupId>
