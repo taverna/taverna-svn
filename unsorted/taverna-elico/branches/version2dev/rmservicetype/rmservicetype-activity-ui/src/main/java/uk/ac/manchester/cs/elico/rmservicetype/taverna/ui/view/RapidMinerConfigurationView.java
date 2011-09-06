@@ -2,6 +2,8 @@ package uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.view;
 
 import net.sf.taverna.t2.lang.ui.DialogTextArea;
 import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
+import net.sf.taverna.t2.workbench.helper.Helper;
+
 import org.apache.commons.lang.WordUtils;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.*;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.ui.config.ParameterTableModel;
@@ -84,6 +86,7 @@ public class RapidMinerConfigurationView extends JPanel {
 	private Box inputOutputBox;
 	private JPanel outputPanel;
 	private Box outputRows;
+	private JButton helpButton;
 	
 	
 	public RapidMinerConfigurationView(RapidMinerExampleActivity activity) {
@@ -128,6 +131,19 @@ public class RapidMinerConfigurationView extends JPanel {
         
 		buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		addDivider(buttonPanel, SwingConstants.TOP, true);	
+		
+		// helper 
+		Helper.registerComponent(this, this.getClass().getCanonicalName());
+				
+		helpButton = new JButton("Help");
+		helpButton.setFocusable(false);
+		helpButton.setVisible(true);
+		
+		helpButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Helper.showHelp(RapidMinerConfigurationView.this);
+			}
+		});
 		
 		nextButton = new JButton("Next");
 		nextButton.setFocusable(false);
@@ -766,7 +782,8 @@ public class RapidMinerConfigurationView extends JPanel {
         page1.add(inputOutputBox, BorderLayout.CENTER);
 
 		//buttons
-		buttonPanel.add(nextButton);
+		buttonPanel.add(helpButton);
+        buttonPanel.add(nextButton);
 		buttonPanel.add(finishButton);
 		
 		// page 2

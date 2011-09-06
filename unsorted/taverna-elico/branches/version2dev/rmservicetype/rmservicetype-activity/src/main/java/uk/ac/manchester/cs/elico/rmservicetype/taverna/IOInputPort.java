@@ -48,13 +48,13 @@ public class IOInputPort implements IOObjectPort {
         if (fileLocation == null || fileLocation.isEmpty()) {
         	
         	this.fileLocations.add("");
-        	
+        
         } else {
         	
         	this.fileLocations.add(0, fileLocation);
         	
         }
-       
+           
     }
 
     public String getPortType() {
@@ -68,7 +68,7 @@ public class IOInputPort implements IOObjectPort {
     public void setPortName(String s) {
         portName = s.replace(" ", "_");
     }
-
+    
     public void setFileLocationAt(int i, String s) {
     	
     	if (s.isEmpty()) {
@@ -95,8 +95,7 @@ public class IOInputPort implements IOObjectPort {
 
     	    }
     	}
-        
-    }
+            }
 
     public String getPortClass() {
         return className;
