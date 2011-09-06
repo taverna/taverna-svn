@@ -1,0 +1,690 @@
+@base <http://ns.taverna.org.uk/2010/scufl2#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix ro: <http://ns.mygrid.org.uk/2010/ResearchObject/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <http://ns.taverna.org.uk/2010/scufl2#> .
+
+
+<>
+    a owl:Ontology ;
+    dc:title "SCUFL2 Core ontology" ;
+    # Note: Protege does not support this as
+    # owl:imports dc:, dcterms:,rdfs: ; 
+    owl:imports <http://purl.org/dc/elements/1.1/>,
+    	<http://purl.org/dc/terms/>,<http://www.w3.org/2000/01/rdf-schema#>;
+
+    rdfs:comment """The ontology defining SCUFL2 - a model for
+        describing Taverna workflows.""" ;
+    rdfs:seeAlso
+      <http://www.mygrid.org.uk/dev/wiki/display/developer/SCUFL2>,
+      <http://www.taverna.org.uk/> .
+
+# General classes and properties
+
+:Parent
+    a owl:Class ;
+    rdfs:label "Parent" .
+
+:Child
+    a owl:Class ;
+    rdfs:label "Child" .
+
+:parent
+    a owl:InverseFunctionalProperty, owl:ObjectProperty ;
+    rdfs:range :Child ;
+    rdfs:label "parent" ;
+    rdfs:domain :Parent ;
+    owl:inverseOf :child .
+
+:child
+    a owl:FunctionalProperty, owl:ObjectProperty ;
+    owl:inverseOf :parent ;
+    rdfs:range :Parent ;
+    rdfs:label "child" ;
+    rdfs:domain :Child .
+
+:Configurable
+    a owl:Class ;
+    rdfs:label "Configurable" ;
+    rdfs:subClassOf :WorkflowElement .
+
+:hasConfigurationType a owl:FunctionalProperty,owl:AnnotationProperty ;
+    rdfs:domain :Configurable ;
+    rdfs:range owl:Class, [
+             a owl:Restriction;
+             owl:hasValue :Configuration;
+             owl:onProperty rdfs:subClassOf
+    ] .
+
+:sameBaseAs
+    #a owl:ObjectProperty, owl:TransitiveProperty ;
+    rdfs:comment """The resources are the same (like in owl:sameAs), and
+      so are the sub-resources having base URI as a parent.  For instance if 
+        <file:///tmp/example/> scufl2:sameBaseAs 
+            <http://ns.taverna.org.uk/2010/workflowBundle/28f7c554-4f35-401f-b34b-516e9a0ef731/> .
+      then also 
+        <file:///tmp/example/workflow/HelloWorld/> scufl2:sameBaseAs 
+            <http://ns.taverna.org.uk/2010/workflowBundle/28f7c554-4f35-401f-b34b-516e9a0ef731/workflow/HelloWorld/> 
+
+      Note that for URIs under
+      <http://ns.taverna.org.uk/2010/workflowBundle/> special URI template rules
+      link the URI with the scufl2:parent, rdf:type, scufl2:name of the
+      resource. 
+      
+      For instance given 
+        <http://ns.taverna.org.uk/2010/workflowBundle/28f7c554-4f35-401f-b34b-516e9a0ef731/workflow/HelloWorld/processor/Hello/out/greeting> 
+      it must be so that:
+
+        <http://ns.taverna.org.uk/2010/workflowBundle/28f7c554-4f35-401f-b34b-516e9a0ef731/workflow/HelloWorld/processor/Hello/out/greeting>
+            a scufl2:OutputProcessorPort;
+            scufl2:name "greeting";
+            scufl2:parent <http://ns.taverna.org.uk/2010/workflowBundle/28f7c554-4f35-401f-b34b-516e9a0ef731/workflow/HelloWorld/processor/Hello>.
+
+        <http://ns.taverna.org.uk/2010/workflowBundle/28f7c554-4f35-401f-b34b-516e9a0ef731/workflow/HelloWorld/processor/Hello>
+            a scufl2:Processor;
+            scufl2:name "Hello";
+            scufl2:parent <http://ns.taverna.org.uk/2010/workflowBundle/28f7c554-4f35-401f-b34b-516e9a0ef731/workflow/HelloWorld/>;
+            scufl2:outputProcessorPort <http://ns.taverna.org.uk/2010/workflowBundle/28f7c554-4f35-401f-b34b-516e9a0ef731/workflow/HelloWorld/processor/Hello/out/greeting>.
+        
+        <http://ns.taverna.org.uk/2010/workflowBundle/28f7c554-4f35-401f-b34b-516e9a0ef731/workflow/HelloWorld/>    
+            a scufl2:Workflow;
+            scufl2:name "HelloWorld";
+            scufl2:parent <http://ns.taverna.org.uk/2010/workflowBundle/28f7c554-4f35-401f-b34b-516e9a0ef731/>;
+            sculf2:processor <http://ns.taverna.org.uk/2010/workflowBundle/28f7c554-4f35-401f-b34b-516e9a0ef731/workflow/HelloWorld/processor/Hello>.
+        
+        <http://ns.taverna.org.uk/2010/workflowBundle/28f7c554-4f35-401f-b34b-516e9a0ef731/>    
+            a scufl2:WorkflowBundle;
+            scufl2:workflow <http://ns.taverna.org.uk/2010/workflowBundle/28f7c554-4f35-401f-b34b-516e9a0ef731/workflow/HelloWorld/>;
+            scufl2:workflowBundleId "28f7c554-4f35-401f-b34b-516e9a0ef731";
+
+        Where 28f7c554-4f35-401f-b34b-516e9a0ef731 must be a randomly
+        generated UUID.    
+    """ ;
+    rdfs:subPropertyOf owl:sameAs .
+
+
+
+:WorkflowElement
+    a owl:Class ;
+    rdfs:label "Workflow element" .
+
+:Named
+    a owl:Class ;
+    rdfs:label "Named" ;
+    rdfs:subClassOf :WorkflowElement .
+
+:name
+    a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:domain :Named ;
+    rdfs:label "name" ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf dc:title .
+
+# Top level entry point for a SCUFL2 archive
+
+:WorkflowBundle
+    a owl:Class ;
+    rdfs:label "Workflow bundle" ;
+#	rdfs:subClassOf ro:ResearchObject ;
+    rdfs:subClassOf :Named .
+    
+
+:workflow
+    a owl:ObjectProperty ;
+    rdfs:domain :WorkflowBundle ;
+    rdfs:label "workflow" ;
+    rdfs:range :Workflow ;
+    rdfs:subPropertyOf :child .
+
+
+:workflowBundleId
+    a owl:FunctionalProperty, owl:DatatypeProperty;    
+    dc:description """A randomly generated UUID. This is also the
+    :name of the :WorkflowBundle, and used by :sameBaseAs.
+
+    It is essential that the :workflowBundleId, and hence the 
+    :sameBaseAs statement, is updated whenever a structural change
+    has been made to the workflow bundle. A structural change
+    is classified as any changed triples within the :child structure of
+    the :WorkflowBundle, except for metadata annotations.
+
+    So for instance, if you change scufl2:portDepth of a processor port, 
+    that is a structural change requiring a new ID, but if you add a
+    dc:description to a workflow input port, that is simply an
+    annotation which does not modify the workflow structure or binding,
+    and don't require a new ID.
+
+    When reassigning the :workflowBundleId, SCUFL2 software is
+    recommended to annotate that the new bundle is based on the old
+    bundle by using :basedOnWorkflowBundle, and keep the old
+    chain of :basedOnWorkflowBundle annotations (but neccessarily
+    any other data about the previous bundles).
+
+    This enables external annotations made on older versions of
+    this bundle to be potentially relinked to this newer version,
+    in addition to tracing workflow development and attribution.
+
+    The UUIDs should be of type UUIDv4 or better, to avoid exposing
+    details such as MAC address or timestamps.
+
+    Example:
+    
+    <.> a scufl2:WorkflowBundle
+        scufl2:workflowBundleId "5175305c-2b09-4942-b00a-9ee4928ab0eb";
+        scufl2:sameBaseAs <http://ns.taverna.org.uk/2010/workflowBundle/5175305c-2b09-4942-b00a-9ee4928ab0eb/>;
+        scufl2:basedOnWorkflowBundle <http://ns.taverna.org.uk/2010/workflowBundle/28f7c554-4f35-401f-b34b-516e9a0ef731/> .
+
+    <http://ns.taverna.org.uk/2010/workflowBundle/28f7c554-4f35-401f-b34b-516e9a0ef731/> 
+      scufl2:basedOnWorkflowBundle <http://ns.taverna.org.uk/2010/workflowBundle/4e98d43b-e583-40f6-9308-ad7aa42dad9c/>.
+
+    """;
+    rdfs:subPropertyOf :name;
+    rdfs:seeAlso <http://en.wikipedia.org/wiki/Universally_unique_identifier>,
+                 <http://tools.ietf.org/html/rfc4122>.
+
+:basedOnWorkflowBundle
+    a owl:ObjectProperty, owl:TransitiveProperty;
+    rdfs:domain :WorkflowBundle;
+    rdfs:range :WorkflowBundle;
+    rdfs:subPropertyOf rdfs:seeAlso.
+
+:mainWorkflow
+    a owl:FunctionalProperty, owl:ObjectProperty ;
+    rdfs:label "main workflow" ;
+    rdfs:subPropertyOf :workflow ;
+    rdfs:domain :WorkflowBundle ;
+    rdfs:range :Workflow .
+
+:mainProfile
+    a owl:FunctionalProperty, owl:ObjectProperty ;
+    rdfs:label "main profile" ;
+    rdfs:subPropertyOf :profile ;
+    rdfs:domain :WorkflowBundle ;
+    rdfs:range :Profile .
+
+:profile
+    a owl:ObjectProperty ;
+    rdfs:domain :WorkflowBundle ;
+    rdfs:label "profile" ;
+    rdfs:range :Profile .
+
+:profilePosition
+    a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:domain :Profile ;
+    rdfs:label "profile position" ;
+    rdfs:range xsd:nonNegativeInteger .
+
+:activities
+    a owl:ObjectProperty ;
+    rdfs:domain :WorkflowBundle ;
+    rdfs:label "activities" ;
+    rdfs:range :Activity ;
+    rdfs:subPropertyOf :child .
+
+
+# Workflow structure
+
+
+:Workflow
+    a owl:Class ;
+    rdfs:label "Workflow" ;
+    rdfs:subClassOf :Named  .
+
+:workflowIdentifier    
+    a owl:ObjectProperty, owl:FunctionalProperty ;
+    rdfs:domain :Named ;
+    rdfs:label "Workflow identifier" ;
+    rdfs:subPropertyOf dcterms:identifier .
+
+:Port
+    a owl:Class ;
+    rdfs:label "Port" ;
+    rdfs:subClassOf :Named .
+
+:port
+    a owl:ObjectProperty ;
+    rdfs:domain :Parent;
+    rdfs:label "Port" ;
+    rdfs:range :Port ;
+    rdfs:subPropertyOf :child .
+
+:ReceiverPort
+    a owl:Class ;
+    rdfs:label "ReceiverPort" ;
+    rdfs:subClassOf :Port .
+
+:SenderPort
+    a owl:Class ;
+    rdfs:label "SenderPort" ;
+    rdfs:subClassOf :Port .
+
+:WorkflowPort
+    a owl:Class ;
+    rdfs:label "ReceiverPort" ;
+    rdfs:subClassOf :Port .
+
+:workflowPort
+    a owl:ObjectProperty ;
+    rdfs:domain :Workflow ;
+    rdfs:label "Workflow port" ;
+    rdfs:range :WorkflowPort ;
+    rdfs:subPropertyOf :port .
+
+:InputWorkflowPort
+    a owl:Class ;
+    rdfs:label "Input workflow port" ;
+    rdfs:subClassOf :WorkflowPort, :SenderPort .
+
+:OutputWorkflowPort
+    a owl:Class ;
+    rdfs:label "Output workflow port" ;
+    rdfs:subClassOf :WorkflowPort, :ReceiverPort .
+
+:inputWorkflowPort
+    a owl:ObjectProperty ;
+    rdfs:domain :Workflow ;
+    rdfs:label "Workflow input port" ;
+    rdfs:range :InputWorkflowPort ;
+    rdfs:subPropertyOf :workflowPort .
+
+:outputWorkflowPort
+    a owl:ObjectProperty ;
+    rdfs:domain :Workflow ;
+    rdfs:label "Workflow output port" ;
+    rdfs:range :OutputWorkflowPort ;
+    rdfs:subPropertyOf :workflowPort .
+
+:portDepth
+    a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:domain :InputWorkflowPort, :InputProcessorPort, :InputActivityPort, :OutputActivityPort;
+    rdfs:label "depth" ;
+    rdfs:range xsd:nonNegativeInteger .
+
+:granularPortDepth
+    a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:domain :InputProcessorPort, :InputActivityPort, :OutputActivityPort;
+    rdfs:label "granular depth" ;
+    rdfs:range xsd:nonNegativeInteger .
+
+
+:DataLink
+    a owl:Class ;
+    rdfs:label "DataLink" .
+
+:datalink
+    a owl:ObjectProperty ;
+    rdfs:domain :Workflow ;
+    rdfs:label "datalink" ;
+    rdfs:range :DataLink .
+
+
+:receivesFrom
+    a owl:FunctionalProperty, owl:ObjectProperty ;
+    rdfs:domain :DataLink ;
+    rdfs:label "receives from" ;
+    rdfs:range :SenderPort .
+
+:sendsTo
+    a owl:FunctionalProperty, owl:ObjectProperty ;
+    rdfs:domain :DataLink ;
+    rdfs:label "sends to" ;
+    rdfs:range :ReceiverPort .
+
+:Processor
+    a owl:Class ;
+    rdfs:label "Processor" ;
+    rdfs:subClassOf :Named, :Child, :Configurable .
+
+:processor
+    a owl:ObjectProperty ;
+    rdfs:domain :Workflow ;
+    rdfs:label "processor" ;
+    rdfs:range :Processor ;
+    rdfs:subPropertyOf :child .
+
+:processorType
+    a owl:FunctionalProperty, owl:ObjectProperty ;
+    rdfs:domain :Processor ;
+    rdfs:label "processorType" ;
+    rdfs:range :ProcessorType .
+
+:ProcessorType
+    a owl:Class ;
+    rdfs:label "ProcessorType" .
+
+# Dispatch stack    
+
+:dispatchStack
+    a owl:FunctionalProperty, owl:ObjectProperty ;
+    rdfs:domain :Processor ;
+    rdfs:label "dispatchStack" ;
+    rdfs:range :DispatchStack ;
+    rdfs:subPropertyOf :child .
+
+:DispatchStack
+    a owl:Class ;
+    rdfs:subClassOf rdf:List, [
+             a owl:Restriction;
+             owl:onProperty rdf:first;
+             owl:allValuesFrom :DispatchStackLayer
+            ]
+,[
+             a owl:Restriction;
+             owl:onProperty rdf:last;
+             owl:allValuesFrom [
+             	owl:unionOf ( :DispatchStack rdf:nil)
+               ] 
+            ] 
+.
+
+# Trick to keep Sesame Elmo happy, let's hope this does not break anything!
+rdf:nil a owl:Class .
+
+:DispatchStackLayer
+	a owl:Class ;
+	rdfs:subClassOf :Configurable .
+
+
+
+# Iteration strategy
+
+:IterationStrategyNode
+    a owl:Class ;
+    rdfs:label "IterationStrategyNode" ;
+    rdfs:subClassOf :WorkflowElement .
+
+:IterationStrategyNodeWithChildren
+    a owl:Class ;
+    rdfs:label "IterationStrategyNode" ;
+    rdfs:subClassOf :IterationStrategyNode .
+
+:iterationStrategyStack
+    a owl:FunctionalProperty, owl:ObjectProperty ;
+    rdfs:domain :Processor ;
+    rdfs:label "iterationStrategyStack" ;
+    rdfs:range :IterationStrategyStack ;
+    rdfs:subPropertyOf :child .
+
+:IterationStrategyStack
+    a owl:Class ;
+    rdfs:subClassOf rdf:List, [
+             a owl:Restriction;
+             owl:allValuesFrom :IterationStrategyNodeWithChildren;
+             owl:onProperty rdf:first 
+            ], [
+             a owl:Restriction;
+             owl:onProperty rdf:last;
+             owl:allValuesFrom [
+             	owl:unionOf ( :IterationStrategyStack rdf:nil ) 
+               ] 
+            ] .
+
+:iterationStrategyChildren
+    a owl:FunctionalProperty, owl:ObjectProperty ;
+    rdfs:domain :IterationStrategyNodeWithChildren;
+    rdfs:range :IterationStrategyChildren;
+    rdfs:subPropertyOf :child .
+
+:IterationStrategyChildren
+    a owl:Class ;
+    rdfs:subClassOf rdf:List, [
+             a owl:Restriction;
+             owl:onProperty rdf:first;
+             owl:allValuesFrom :IterationStrategyNode
+            ], [
+             a owl:Restriction;
+             owl:onProperty rdf:last;
+             owl:allValuesFrom [
+             	owl:unionOf ( :IterationStrategyChildren rdf:nil ) 
+               ] 
+            ] .
+
+:CrossProduct
+    a owl:Class ;
+    rdfs:label "CrossProduct" ;
+    rdfs:subClassOf :IterationStrategyNodeWithChildren .
+
+:DotProduct
+    a owl:Class ;
+    rdfs:label "DotProduct" ;
+    rdfs:subClassOf :IterationStrategyNodeWithChildren .
+
+:InputProcessorPort
+    rdfs:subClassOf :IterationStrategyNode .
+
+
+# conditions    
+
+:StartCondition
+    a owl:Class ;
+    rdfs:label "StartCondition" .
+
+:startConditions
+    a owl:ObjectProperty ;
+    rdfs:domain :Processor ;
+    rdfs:label "startConditions" ;
+    rdfs:range :StartCondition .
+
+:ProcessorControlledStartCondition
+    a owl:Class ;
+    rdfs:label "ProcessorControlledStartCondition" ;
+    rdfs:subClassOf :StartCondition .
+
+:controllingProcessor
+    a owl:FunctionalProperty, owl:ObjectProperty ;
+    rdfs:domain :ProcessorControlledStartCondition ;
+    rdfs:label "controllingProcessor" ;
+    rdfs:range :Processor .
+
+:RunAfterCondition
+    a owl:Class ;
+    rdfs:label "RunAfterCondition" ;
+    rdfs:subClassOf :ProcessorControlledStartCondition .
+
+
+# Processor ports
+
+:ProcessorPort
+    a owl:Class ;
+    rdfs:label "ProcessorPort" ;
+    rdfs:subClassOf :Port, :Child .
+
+:processorPort
+    a owl:ObjectProperty ;
+    rdfs:domain :Processor ;
+    rdfs:label "Processor port" ;
+    rdfs:range :ProcessorPort ;
+    rdfs:subPropertyOf :port .
+
+:InputProcessorPort
+    a owl:Class ;
+    rdfs:label "Input processor port" ;
+    rdfs:subClassOf :ProcessorPort, :ReceiverPort .
+
+:OutputProcessorPort
+    a owl:Class ;
+    rdfs:label "Output processor port" ;
+    rdfs:subClassOf :ProcessorPort, :SenderPort .
+
+:inputProcessorPort
+    a owl:ObjectProperty ;
+    rdfs:domain :Processor ;
+    rdfs:label "Processor input port" ;
+    rdfs:range :InputProcessorPort ;
+    rdfs:subPropertyOf :processorPort.
+
+:outputProcessorPort
+    a owl:ObjectProperty ;
+    rdfs:domain :Processor ;
+    rdfs:label "Processor output port" ;
+    rdfs:range :OutputProcessorPort ;
+    rdfs:subPropertyOf :processorPort.
+
+
+# Activities
+
+:Activity
+    a owl:Class ;
+    rdfs:label "Activity" ;
+    rdfs:subClassOf :Configurable .
+
+:ActivityType
+    a owl:Class ;
+    rdfs:label "Activity type" .
+
+:activityType
+    a owl:ObjectProperty, owl:FunctionalProperty ;
+    rdfs:domain :Activity ;
+    rdfs:label "Activity type" ;
+    rdfs:range :ActivityType .
+
+:ActivityPort
+    a owl:Class ;
+    rdfs:label "ActivityPort" ;
+    rdfs:subClassOf :Port, :Child .
+
+:activityPort
+    a owl:ObjectProperty ;
+    rdfs:domain :Activity ;
+    rdfs:label "Activity port" ;
+    rdfs:range :ActivityPort ;
+    rdfs:subPropertyOf :port .
+
+:InputActivityPort
+    a owl:Class ;
+    rdfs:label "Input activity port" ;
+    rdfs:subClassOf :ActivityPort .
+
+:OutputActivityPort
+    a owl:Class ;
+    rdfs:label "Output activity port" ;
+    rdfs:subClassOf :ActivityPort .
+
+:inputActivityPort
+    a owl:ObjectProperty ;
+    rdfs:domain :Activity ;
+    rdfs:label "Activity input port" ;
+    rdfs:range :InputActivityPort ;
+    rdfs:subPropertyOf :activityPort.
+
+:outputActivityPort
+    a owl:ObjectProperty ;
+    rdfs:domain :Activity ;
+    rdfs:label "Activity output port" ;
+    rdfs:range :OutputActivityPort ;
+    rdfs:subPropertyOf :activityPort.
+
+
+# Profiles and configurations
+
+:Profile
+    a owl:Class ;
+    rdfs:label "Profile" ;
+    rdfs:subClassOf :Named, :Child, :WorkflowElement .
+
+
+:activatesConfiguration
+    a owl:ObjectProperty ;
+    rdfs:domain :Profile ;
+    rdfs:label "activates configuration" ;
+    rdfs:range :Configuration .
+
+:Configuration
+    a owl:Class ;
+    rdfs:subClassOf :WorkflowElement .
+
+:configures a owl:ObjectProperty ;
+    rdfs:domain :Configuration ;
+    rdfs:label "configuration" ;
+    rdfs:range :Configurable .
+
+:requiredConfiguration a owl:FunctionalProperty, owl:DatatypeProperty ;
+    rdfs:domain rdf:Property;
+    rdfs:range xsd:boolean .
+
+
+# Processor bindings
+
+:ProcessorBinding
+    a owl:Class ;
+    rdfs:label "ProcessorBinding" ;
+    rdfs:subClassOf :WorkflowElement .
+
+:processorBinding
+    a owl:ObjectProperty ;
+    rdfs:domain :Profile ;
+    rdfs:label "processorBindings" ;
+    rdfs:range :ProcessorBinding .
+
+:boundProcessor
+    a owl:FunctionalProperty, owl:ObjectProperty ;
+    rdfs:domain :ProcessorBinding ;
+    rdfs:label "bound processor" ;
+    rdfs:range :Processor .
+
+:boundActivity
+    a owl:FunctionalProperty, owl:ObjectProperty ;
+    rdfs:domain :ProcessorBinding ;
+    rdfs:label "boundActivity" ;
+    rdfs:range :Activity .
+
+:activityPosition
+    a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:domain :ProcessorBinding ;
+    rdfs:label "activityPosition" ;
+    rdfs:range xsd:nonNegativeInteger .
+
+
+# Port bindings
+
+:InputPortBinding
+    a owl:Class ;
+    rdfs:label "Processor input port binding" .
+
+:OutputPortBinding
+    a owl:Class ;
+    rdfs:label "Processor output Port binding" .
+
+:inputPortBinding
+    a owl:ObjectProperty ;
+    rdfs:domain :ProcessorBinding ;
+    rdfs:label "inputPortBindings" ;
+    rdfs:range :InputPortBinding .
+
+:outputPortBinding
+    a owl:ObjectProperty ;
+    rdfs:domain :ProcessorBinding ;
+    rdfs:label "outputPortBindings" ;
+    rdfs:range :OutputPortBinding .
+
+
+:boundInputActivityPort
+    a owl:FunctionalProperty, owl:ObjectProperty ;
+    rdfs:domain :InputPortBinding ;
+    rdfs:label "Bound input activity port" ;
+    rdfs:range :InputActivityPort .
+
+:boundOutputActivityPort
+    a owl:FunctionalProperty, owl:ObjectProperty ;
+    rdfs:domain :OutputPortBinding ;
+    rdfs:label "Bound output activity port" ;
+    rdfs:range :OutputActivityPort .
+
+
+:boundInputProcessorPort
+    a owl:FunctionalProperty, owl:ObjectProperty ;
+    rdfs:domain :InputPortBinding ;
+    rdfs:label "bound input processor port" ;
+    rdfs:range :InputProcessorPort .
+
+:boundOutputProcessorPort
+    a owl:FunctionalProperty, owl:ObjectProperty ;
+    rdfs:domain :OutputPortBinding ;
+    rdfs:label "bound output processor port" ;
+    rdfs:range :OutputProcessorPort .
+
+
