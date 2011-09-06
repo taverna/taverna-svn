@@ -8,6 +8,8 @@
 	<properties>
 		<main.class>org.taverna.launcher.Main</main.class>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- <application.name>${project.artifactId}-${project.version}</application.name> -->
+		<application.name>taverna</application.name>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -15,32 +17,12 @@
 			<artifactId>org.apache.felix.main</artifactId>
 			<version>3.2.2</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.gogo.command</artifactId>
-			<version>0.8.0</version>
-			<type>bundle</type>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.gogo.runtime</artifactId>
-			<version>0.8.0</version>
-			<type>bundle</type>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.gogo.shell</artifactId>
-			<version>0.8.0</version>
-			<type>bundle</type>
-			<scope>provided</scope>
-		</dependency> -->
 	</dependencies>
 	<build>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
@@ -48,6 +30,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.2</version>
 				<executions>
                     <execution>
                         <id>extract-osgi-framework</id>
@@ -84,13 +67,13 @@
 						<Export-Package>org.taverna.launcher.environment</Export-Package>
 						<Embed-Dependency>org.apache.felix.main</Embed-Dependency>
                         <DynamicImport-Package>*</DynamicImport-Package>
-						<Bundle-Activator>org.taverna.launcher.Main$Activator</Bundle-Activator>
 						<Bundle-Vendor>Taverna Team/University of Manchester</Bundle-Vendor>
 					</instructions>
 				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.1</version>
 				<executions>
 					<execution>
 						<id>base-application</id>
@@ -103,7 +86,12 @@
 								<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
 							</archive>
 							<classifier>app</classifier>
+							<finalName>${application.name}</finalName>
 						</configuration>
+					</execution>
+					<execution>
+						<id>default-jar</id>
+						<phase>never</phase>
 					</execution>
 				</executions>
 			</plugin>
@@ -111,9 +99,9 @@
 				<groupId>org.apache.sling</groupId>
 				<artifactId>maven-launchpad-plugin</artifactId>
 				<version>2.0.10</version>
-				<!-- <extensions>true</extensions> -->
 				<configuration>
 					<includeDefaultBundles>false</includeDefaultBundles>
+					<jarName>${application.name}</jarName>
 				</configuration>
 				<executions>
                     <execution>
@@ -123,6 +111,27 @@
                         </goals>
                         <phase>prepare-package</phase>
                     </execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2</version>
+				<configuration>
+					<executable>java</executable>
+					<arguments>
+						<argument>-jar</argument>
+						<argument>${project.build.directory}/${application.name}-app.jar</argument>
+						<argument>-launcherWait</argument>
+					</arguments>
+				</configuration>
+				<executions>
+					<execution>
+						<id>run-app</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>

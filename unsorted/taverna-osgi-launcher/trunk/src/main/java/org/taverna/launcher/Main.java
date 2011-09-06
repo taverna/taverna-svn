@@ -1,32 +1,36 @@
 package org.taverna.launcher;
 
+import static java.lang.Boolean.getBoolean;
+import static java.lang.Runtime.getRuntime;
+import static java.lang.System.exit;
 import static java.util.Arrays.asList;
+import static java.util.Collections.sort;
 import static java.util.ServiceLoader.load;
+import static java.util.regex.Pattern.compile;
 import static org.apache.felix.framework.util.FelixConstants.SYSTEMBUNDLE_ACTIVATORS_PROP;
+import static org.apache.felix.main.AutoProcessor.process;
 import static org.osgi.framework.Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.felix.main.AutoProcessor;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 import org.taverna.launcher.environment.CommandLineArgumentProvider;
@@ -39,45 +43,17 @@ import org.taverna.launcher.environment.impl.CLA;
  * @author Donal Fellows
  */
 public class Main {
-	static final boolean DEBUG = true;
-
-	class Activator implements BundleActivator {
-		Activator(CommandLineArgumentProvider clap) {
-			this.clap = clap;
-		}
-
-		private CommandLineArgumentProvider clap;
-		private ServiceRegistration registration;
-
-		@Override
-		public void start(BundleContext context) {
-			Main.this.context = context;
-			registration = context.registerService(
-					CommandLineArgumentProvider.class.getName(), clap,
-					new Properties());
-			if (DEBUG)
-				System.out.println("DEBUG: Started main bundle");
-		}
-
-		@Override
-		public void stop(BundleContext context) {
-			if (DEBUG)
-				System.out.println("DEBUG: Stopping main bundle");
-			registration.unregister();
-			Main.this.context = null;
-		}
-	}
+	static final boolean DEBUG = false;
 
 	BundleContext context;
 	boolean started;
 	private Framework framework;
-	private Activator activator;
-	private CommandLineArgumentProvider clap;
+	private CommandLineArgumentProvider clargs;
 
 	private Main(String[] argv) {
-		clap = new CLA(this, asList(argv), "java " + Main.class + " ?args...?");
-		activator = new Activator(clap);
-		started = clap.consumeArgumentOnce("-launcherWait", 0, null) != null;
+		clargs = new CLA(this, asList(argv), "java " + Main.class
+				+ " ?args...?");
+		started = clargs.consumeArgumentOnce("-launcherWait", 0, null) != null;
 	}
 
 	public void markStarted() {
@@ -99,32 +75,40 @@ public class Main {
 		}
 	}
 
-	private static final String CLAP_API = "org.taverna.launcher.environment"
-			+ ";version=0.1";
-
-	private void runFelix(BundleActivator... activators) throws Exception {
+	/**
+	 * Runs the OSGi framework, installing the given activators as part of the
+	 * system bundle.
+	 * 
+	 * @param activators
+	 *            The activators to merge into the system bundle.
+	 * @throws Exception
+	 *             If anything goes wrong.
+	 */
+	private void runFelix(BundlePackageActivator... activators)
+			throws Exception {
 		Map<String, Object> config = new HashMap<String, Object>();
 		boolean manualStop = true;
 		try {
 			config.put(SYSTEMBUNDLE_ACTIVATORS_PROP, asList(activators));
-			config.put(FRAMEWORK_SYSTEMPACKAGES_EXTRA, CLAP_API);
+			config.put(FRAMEWORK_SYSTEMPACKAGES_EXTRA,
+					getExtraPackages(activators));
 			Map<Integer, List<String>> bundles = getBundlesFromPackaging();
 			framework = getFactory().newFramework(config);
-			if (!Boolean.getBoolean("taverna.launcher.disableShutdownHook")) {
+			if (!getBoolean("taverna.launcher.disableShutdownHook")) {
 				Runnable r = new Runnable() {
 					@Override
 					public void run() {
 						shutdownFramework();
 					}
 				};
-				Runtime.getRuntime().addShutdownHook(
-						new Thread(r, "Felix Shutdown Hook"));
+				getRuntime().addShutdownHook(
+						new Thread(r, "OSGi Shutdown Hook"));
 				manualStop = false;
 			}
 			framework.init();
-			AutoProcessor.process(null, framework.getBundleContext());
+			process(null, framework.getBundleContext());
 			List<Integer> levels = new ArrayList<Integer>(bundles.keySet());
-			Collections.sort(levels);
+			sort(levels);
 			for (int level : levels)
 				for (String bundleName : bundles.get(level)) {
 					Bundle bundle = framework.getBundleContext().installBundle(
@@ -139,24 +123,86 @@ public class Main {
 		}
 		framework.start();
 		if (!started) {
-			clap.printHelp();
+			clargs.printHelp();
 			if (manualStop)
 				shutdownFramework();
-			System.exit(1);
+			exit(1);
 		}
 	}
 
+	private static final String DEFAULT_PACKAGE_VERSION = "0.0.0.0_default";
+
+	/**
+	 * Guess the list of OSGi packages to merge into the system bundle.
+	 * 
+	 * @param activators
+	 *            The activators that we are going to install.
+	 * @return OSGi magic string.
+	 */
+	private static String getExtraPackages(BundlePackageActivator[] activators) {
+		StringBuilder sb = new StringBuilder();
+		String sep = "";
+		Set<Package> done = new HashSet<Package>();
+		for (BundlePackageActivator bpa : activators) {
+			Package p = bpa.getAPIPackage();
+			if (done.contains(p))
+				continue;
+			sb.append(sep).append(p.getName()).append(";version=");
+			if (p.getImplementationVersion() == null)
+				sb.append(DEFAULT_PACKAGE_VERSION);
+			else
+				sb.append(p.getImplementationVersion());
+			sep = ",";
+			done.add(p);
+		}
+		return sb.toString();
+	}
+
+	private static final String APPJAR_SUFFIX = "-app.jar";
+	private static final String BUNDLEJAR_SUFFIX = "-bundles.jar";
+	private static final String APPJAR_PATTERN = "^file:.*-app\\.jar$";
+
+	/**
+	 * Gets the mapping from start levels to lists of URLs of bundle JARs
+	 * associated with that level. The list of bundles is discovered by
+	 * discovering the associated super-package and inspecting what bundles are
+	 * stored within it.
+	 * 
+	 * @return Bundle level to URL list map.
+	 * @throws Exception
+	 *             If anything goes wrong
+	 */
 	private Map<Integer, List<String>> getBundlesFromPackaging()
 			throws Exception {
-		URLClassLoader classloader = (URLClassLoader) Main.class
-				.getClassLoader();
-		for (URL url : classloader.getURLs())
-			if (url.toString().matches("^file:.*-app.jar$"))
-				return getBundlesFromPackaging(url.toString().replace(
-						"-app.jar", "-bundles.jar"));
+		try {
+			URLClassLoader classloader = (URLClassLoader) getClass()
+					.getClassLoader();
+			for (URL url : classloader.getURLs())
+				if (url.toString().matches(APPJAR_PATTERN))
+					try {
+						return getBundlesFromPackaging(url.toString().replace(
+								APPJAR_SUFFIX, BUNDLEJAR_SUFFIX));
+					} catch (FileNotFoundException fnfe) {
+						// No such file...
+						continue;
+					}
+		} catch (Exception e) {
+			throw new Exception(
+					"could not compute the bundle repository JAR name", e);
+		}
 		throw new Exception("could not compute the bundle repository JAR name");
 	}
 
+	/**
+	 * Gets the mapping from start levels to lists of URLs of bundle JARs
+	 * associated with that level.
+	 * 
+	 * @param bj
+	 *            The name of the bundle super-package.
+	 * @return Bundle level to URL list map.
+	 * @throws IOException
+	 *             If the bundle super-package can't be opened and read.
+	 */
 	private Map<Integer, List<String>> getBundlesFromPackaging(String bj)
 			throws IOException {
 		if (DEBUG)
@@ -164,15 +210,18 @@ public class Main {
 		Map<Integer, List<String>> toStart = new HashMap<Integer, List<String>>();
 		if (bj == null)
 			return toStart;
+
 		File jarFile = new File(bj.replaceFirst("^file:", ""));
 		Enumeration<JarEntry> e = new JarFile(jarFile).entries();
-		Pattern p = Pattern.compile("^resources/bundles/([0-9]+)/.*\\.jar$");
+		Pattern p = compile("^resources/bundles/([0-9]+)/.*\\.jar$");
 		while (e.hasMoreElements()) {
 			JarEntry je = e.nextElement();
+
 			Matcher m = p.matcher(je.getName());
 			if (!m.matches())
 				continue;
 			Integer levelKey = new Integer(m.group(1));
+
 			List<String> current = toStart.get(levelKey);
 			if (current == null) {
 				current = new ArrayList<String>();
@@ -185,6 +234,13 @@ public class Main {
 		return toStart;
 	}
 
+	/**
+	 * Helper for getting the OSGi Framework factory.
+	 * 
+	 * @return The factory.
+	 * @throws ServiceConfigurationError
+	 *             If things have gone wrong.
+	 */
 	FrameworkFactory getFactory() {
 		Iterator<FrameworkFactory> it = load(FrameworkFactory.class).iterator();
 		assert it.hasNext();
@@ -200,10 +256,11 @@ public class Main {
 	public static void main(String[] argv) {
 		try {
 			Main main = new Main(argv);
-			main.runFelix(main.activator);
+			main.runFelix(new APIActivator<CommandLineArgumentProvider>(
+					CommandLineArgumentProvider.class, main.clargs));
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			System.exit(2);
+			exit(2);
 		}
 	}
 }
