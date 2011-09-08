@@ -1,6 +1,7 @@
 package org.taverna.launcher.environment.impl;
 
 import static java.lang.Math.max;
+import static java.util.Arrays.asList;
 import static java.util.Collections.sort;
 
 import java.util.ArrayList;
@@ -11,18 +12,22 @@ import java.util.Map;
 import org.taverna.launcher.Main;
 import org.taverna.launcher.environment.CommandLineArgumentProvider;
 
-public class CLA implements CommandLineArgumentProvider {
+public class CommandLineArgumentProviderImpl implements CommandLineArgumentProvider {
 	private final Main main;
 
-	public CLA(Main main, List<String> args, String template) {
+	public CommandLineArgumentProviderImpl(Main main) {
 		this.main = main;
-		this.arguments = new ArrayList<String>(args);
-		this.argumentHelp = new HashMap<String, String>();
+	}
+
+	public void setArguments(String[] args) {
+		arguments = new ArrayList<String>(asList(args));
+	}
+	public void setHelpTemplate(String template) {
 		this.template = template;
 	}
 
 	private List<String> arguments;
-	private Map<String, String> argumentHelp;
+	private Map<String, String> argumentHelp = new HashMap<String, String>();
 	private String template;
 
 	@Override

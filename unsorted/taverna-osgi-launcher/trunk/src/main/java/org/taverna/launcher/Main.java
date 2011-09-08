@@ -34,7 +34,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 import org.taverna.launcher.environment.CommandLineArgumentProvider;
-import org.taverna.launcher.environment.impl.CLA;
+import org.taverna.launcher.environment.impl.CommandLineArgumentProviderImpl;
 
 /**
  * Implementation of the application boot processor and command line argument
@@ -51,8 +51,11 @@ public class Main {
 	private CommandLineArgumentProvider clargs;
 
 	private Main(String[] argv) {
-		clargs = new CLA(this, asList(argv), "java " + Main.class
-				+ " ?args...?");
+		CommandLineArgumentProviderImpl clImpl = new CommandLineArgumentProviderImpl(
+				this);
+		clImpl.setArguments(argv);
+		clImpl.setHelpTemplate("java " + Main.class + " ?args...?");
+		clargs = clImpl;
 		started = clargs.consumeArgumentOnce("-launcherWait", 0, null) != null;
 	}
 
