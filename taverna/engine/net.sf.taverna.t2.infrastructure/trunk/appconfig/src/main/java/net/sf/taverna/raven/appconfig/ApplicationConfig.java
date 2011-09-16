@@ -34,6 +34,8 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
+
 /**
  * Represent the application config as it has been specified in
  * {@value #PROPERTIES}. This configuration specifies which application is to be
@@ -67,6 +69,8 @@ public class ApplicationConfig {
 			+ "show_splashscreen";
 	public static final String PROPERTIES = "raven-launcher.properties";
 	private static final boolean DEBUG = false;
+
+	private static Logger logger = Logger.getLogger(ApplicationConfig.class);
 
 	private static class Singleton {
 		public final static ApplicationConfig instance = new ApplicationConfig();
@@ -213,8 +217,7 @@ public class ApplicationConfig {
 			configs.add(startupDir.toURI().resolve(resourceName));
 
 		} catch (IOException e) {
-			System.err.println("Can't find startup directory");
-			e.printStackTrace();
+			logger.warn("Can't find startup directory", e);
 		}
 
 		ClassLoader contextClassLoader = Thread.currentThread()
