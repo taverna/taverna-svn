@@ -1,40 +1,49 @@
 package org.taverna.launcher;
 
 import static java.lang.Boolean.getBoolean;
+import static java.lang.Integer.parseInt;
 import static java.lang.Runtime.getRuntime;
 import static java.lang.System.exit;
 import static java.util.Arrays.asList;
-import static java.util.Collections.sort;
 import static java.util.ServiceLoader.load;
+import static java.util.UUID.randomUUID;
 import static java.util.regex.Pattern.compile;
-import static org.apache.felix.framework.util.FelixConstants.SYSTEMBUNDLE_ACTIVATORS_PROP;
-import static org.apache.felix.main.AutoProcessor.process;
+import static org.osgi.framework.Constants.FRAGMENT_HOST;
+import static org.osgi.framework.Constants.FRAMEWORK_STORAGE;
+import static org.osgi.framework.Constants.FRAMEWORK_STORAGE_CLEAN;
 import static org.osgi.framework.Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceConfigurationError;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.felix.framework.util.FelixConstants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
+import org.osgi.service.startlevel.StartLevel;
+import org.taverna.launcher.environment.ApplicationConfiguration;
 import org.taverna.launcher.environment.CommandLineArgumentProvider;
 import org.taverna.launcher.environment.impl.CommandLineArgumentProviderImpl;
+import org.taverna.launcher.environment.impl.ConfigProvider;
 
 /**
  * Implementation of the application boot processor and command line argument
@@ -43,12 +52,13 @@ import org.taverna.launcher.environment.impl.CommandLineArgumentProviderImpl;
  * @author Donal Fellows
  */
 public class Main {
-	static final boolean DEBUG = false;
+	static final boolean DEBUG = getBoolean("taverna.launcher.debug");
 
 	BundleContext context;
 	boolean started;
 	private Framework framework;
 	private CommandLineArgumentProvider clargs;
+	private ConfigProvider config;
 
 	private Main(String[] argv) {
 		CommandLineArgumentProviderImpl clImpl = new CommandLineArgumentProviderImpl(
@@ -57,6 +67,7 @@ public class Main {
 		clImpl.setHelpTemplate("java " + Main.class + " ?args...?");
 		clargs = clImpl;
 		started = clargs.consumeArgumentOnce("-launcherWait", 0, null) != null;
+		config = new ConfigProvider(this);
 	}
 
 	public void markStarted() {
@@ -64,7 +75,7 @@ public class Main {
 	}
 
 	/**
-	 * Try to shut Felix down cleanly. Will not throw an exception (but might
+	 * Try to shut OSGi down cleanly. Will not throw an exception (but might
 	 * print error messages to {@link System#err}).
 	 */
 	void shutdownFramework() {
@@ -78,6 +89,14 @@ public class Main {
 		}
 	}
 
+	protected Map<String, Object> getConfigForFramework(
+			BundlePackageActivator[] toAddToSystemBundle) {
+		Map<String, Object> config = new HashMap<String, Object>();
+		config.put(FelixConstants.SYSTEMBUNDLE_ACTIVATORS_PROP,
+				asList(toAddToSystemBundle));
+		return config;
+	}
+
 	/**
 	 * Runs the OSGi framework, installing the given activators as part of the
 	 * system bundle.
@@ -87,15 +106,17 @@ public class Main {
 	 * @throws Exception
 	 *             If anything goes wrong.
 	 */
-	private void runFelix(BundlePackageActivator... activators)
+	private void initOSGi(BundlePackageActivator... activators)
 			throws Exception {
-		Map<String, Object> config = new HashMap<String, Object>();
 		boolean manualStop = true;
 		try {
-			config.put(SYSTEMBUNDLE_ACTIVATORS_PROP, asList(activators));
+			Map<Integer, List<String>> bundles = getBundlesFromPackaging();
+			Map<String, Object> config = getConfigForFramework(activators);
 			config.put(FRAMEWORK_SYSTEMPACKAGES_EXTRA,
 					getExtraPackages(activators));
-			Map<Integer, List<String>> bundles = getBundlesFromPackaging();
+			config.put(FRAMEWORK_STORAGE,
+					new File(userHome, "osgi-cache").toString());
+			config.put(FRAMEWORK_STORAGE_CLEAN, "true");
 			framework = getFactory().newFramework(config);
 			if (!getBoolean("taverna.launcher.disableShutdownHook")) {
 				Runnable r = new Runnable() {
@@ -109,15 +130,26 @@ public class Main {
 				manualStop = false;
 			}
 			framework.init();
-			process(null, framework.getBundleContext());
 			List<Integer> levels = new ArrayList<Integer>(bundles.keySet());
-			sort(levels);
-			for (int level : levels)
+			StartLevel sl = getService(StartLevel.class);
+			int maxLevel = 1;
+			for (int level : levels) {
+				if (level > maxLevel)
+					maxLevel = level;
 				for (String bundleName : bundles.get(level)) {
 					Bundle bundle = framework.getBundleContext().installBundle(
 							bundleName);
-					bundle.start();
+					if (bundle != null
+							&& bundle.getHeaders().get(FRAGMENT_HOST) == null)
+						sl.setBundleStartLevel(bundle, level);
 				}
+			}
+			if (DEBUG)
+				System.err.println("DEBUG: setting start level to " + maxLevel);
+			sl.setStartLevel(maxLevel);
+			if (DEBUG)
+				System.err.println("DEBUG: services: "
+						+ Arrays.asList(framework.getRegisteredServices()));
 		} catch (Exception e) {
 			System.err.println("could not create framework: " + e);
 			if (manualStop)
@@ -131,6 +163,12 @@ public class Main {
 				shutdownFramework();
 			exit(1);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> T getService(Class<T> api) {
+		BundleContext ctxt = framework.getBundleContext();
+		return (T) ctxt.getService(ctxt.getServiceReference(api.getName()));
 	}
 
 	private static final String DEFAULT_PACKAGE_VERSION = "0.0.0.0_default";
@@ -161,6 +199,8 @@ public class Main {
 		return sb.toString();
 	}
 
+	public String applicationName;
+	public File userHome;
 	private static final String APPJAR_SUFFIX = "-app.jar";
 	private static final String BUNDLEJAR_SUFFIX = "-bundles.jar";
 	private static final String APPJAR_PATTERN = "^file:.*-app\\.jar$";
@@ -178,13 +218,15 @@ public class Main {
 	private Map<Integer, List<String>> getBundlesFromPackaging()
 			throws Exception {
 		try {
-			URLClassLoader classloader = (URLClassLoader) getClass()
-					.getClassLoader();
-			for (URL url : classloader.getURLs())
+			for (URL url : getClassPathLocations())
 				if (url.toString().matches(APPJAR_PATTERN))
 					try {
-						return getBundlesFromPackaging(url.toString().replace(
-								APPJAR_SUFFIX, BUNDLEJAR_SUFFIX));
+						String appJar = url.toURI().getSchemeSpecificPart();
+						Map<Integer, List<String>> bundles = getUserOverrides(appJar);
+						merge(bundles, getBundleOverrides(appJar));
+						merge(bundles, getBundlesFromPackaging(appJar.replace(
+								APPJAR_SUFFIX, BUNDLEJAR_SUFFIX)));
+						return bundles;
 					} catch (FileNotFoundException fnfe) {
 						// No such file...
 						continue;
@@ -194,6 +236,97 @@ public class Main {
 					"could not compute the bundle repository JAR name", e);
 		}
 		throw new Exception("could not compute the bundle repository JAR name");
+	}
+
+	private void merge(Map<Integer, List<String>> toUpdate,
+			Map<Integer, List<String>> toAdd) {
+		if (toUpdate.isEmpty()) {
+			toUpdate.putAll(toAdd);
+			return;
+		} else if (toAdd.isEmpty()) {
+			return;
+		}
+		for (Map.Entry<Integer, List<String>> entry : toAdd.entrySet()) {
+			List<String> level = toUpdate.get(entry.getKey());
+			if (level == null) {
+				level = new ArrayList<String>();
+				toUpdate.put(entry.getKey(), level);
+			}
+			level.addAll(entry.getValue());
+		}
+	}
+
+	private Map<Integer, List<String>> getUserOverrides(String appJar) {
+		String appname = new File(appJar).getName().replace(APPJAR_SUFFIX, "");
+		applicationName = appname;
+		String home = System.getProperty("user.home");
+		if (home == null) {
+			while (true) {
+				File homeDir = new File(System.getProperty("java.io.tmpdir"),
+						randomUUID().toString());
+				if (!homeDir.exists() && homeDir.mkdir()) {
+					home = homeDir.toString();
+					System.err
+							.println("WARNING: no user home directory; using "
+									+ home);
+					break;
+				}
+			}
+		}
+		userHome = new File(new File(home), "." + applicationName);
+		if (!userHome.isDirectory())
+			userHome.mkdir();
+		return getBundlesFromDir(userHome);
+	}
+
+	private Map<Integer, List<String>> getBundleOverrides(String appJar) {
+		return getBundlesFromDir(new File(new File(appJar).getParent(),
+				"updates"));
+	}
+
+	private Map<Integer, List<String>> getBundlesFromDir(File dir) {
+		Map<Integer, List<String>> toStart = new HashMap<Integer, List<String>>();
+		dir = new File(dir, "bundles");
+		if (DEBUG)
+			System.err.println("DEBUG: checking " + dir + " for bundles...");
+		if (!dir.isDirectory())
+			return toStart;
+		File[] dirs = dir.listFiles(new FileFilter() {
+			@Override
+			public boolean accept(File f) {
+				if (!f.isDirectory())
+					return false;
+				try {
+					return parseInt(f.getName()) > 0;
+				} catch (NumberFormatException nfe) {
+					return false;
+				}
+			}
+		});
+		if (dirs == null)
+			return toStart;
+		for (File d : dirs) {
+			List<String> toAdd = new ArrayList<String>();
+			for (File jar : d.listFiles())
+				if (jar.getName().endsWith(".jar"))
+					toAdd.add(jar.toURI().toString());
+			if (!toAdd.isEmpty())
+				toStart.put(Integer.valueOf(d.getName()), toAdd);
+		}
+		return toStart;
+	}
+
+	/**
+	 * Gets the array of locations that we load resources from.
+	 * 
+	 * @return Array of URLs; should <i>not</i> be retained or modified.
+	 */
+	private URL[] getClassPathLocations() {
+		// Nasty hack; not OSGi-friendly! OK _only_ because we know we are
+		// in the system class loader at this point.
+		URLClassLoader classloader = (URLClassLoader) getClass()
+				.getClassLoader();
+		return classloader.getURLs();
 	}
 
 	/**
@@ -214,7 +347,7 @@ public class Main {
 		if (bj == null)
 			return toStart;
 
-		File jarFile = new File(bj.replaceFirst("^file:", ""));
+		File jarFile = new File(bj);
 		Enumeration<JarEntry> e = new JarFile(jarFile).entries();
 		Pattern p = compile("^resources/bundles/([0-9]+)/.*\\.jar$");
 		while (e.hasMoreElements()) {
@@ -259,8 +392,10 @@ public class Main {
 	public static void main(String[] argv) {
 		try {
 			Main main = new Main(argv);
-			main.runFelix(new APIActivator<CommandLineArgumentProvider>(
-					CommandLineArgumentProvider.class, main.clargs));
+			main.initOSGi(new APIActivator<CommandLineArgumentProvider>(
+					CommandLineArgumentProvider.class, main.clargs),
+					new APIActivator<ApplicationConfiguration>(
+							ApplicationConfiguration.class, main.config));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			exit(2);
