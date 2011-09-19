@@ -377,7 +377,7 @@ public class Main {
 	 * @throws ServiceConfigurationError
 	 *             If things have gone wrong.
 	 */
-	FrameworkFactory getFactory() {
+	protected FrameworkFactory getFactory() {
 		Iterator<FrameworkFactory> it = load(FrameworkFactory.class).iterator();
 		assert it.hasNext();
 		return it.next();
