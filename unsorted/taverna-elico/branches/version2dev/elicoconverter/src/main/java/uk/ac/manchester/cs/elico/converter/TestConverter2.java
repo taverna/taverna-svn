@@ -45,7 +45,7 @@ import java.util.List;
  * The University of Manchester<br>
  * Bio-Health Informatics Group<br>
  */
-public class TestConverter {
+public class TestConverter2 {
 
     MainGoal mainGoal;
 
@@ -58,12 +58,12 @@ public class TestConverter {
 
 
 
-    public TestConverter () {
+    public TestConverter2() {
 
         IDAPreferences prefs = new IDAPreferences("/Applications/Unix/flora2",
                 "/Users/simon/tmp/elico/flora2/");
 
-        
+
 
         IDAInterface ida = IDAFactory.getIDA();
 
@@ -71,7 +71,7 @@ public class TestConverter {
 		try {
 
 			ida.startPlanner(prefs);
-            
+
 
             gFactory = ida.createEmptyGoalSpecification();
 
@@ -121,7 +121,7 @@ public class TestConverter {
                     if (dr.getRoleName().equals("trainingData")
                             && dr.getClassName().equals("Data")) {
 
-                        System.out.println("Adding last data requirment");
+                        System.out.println("Adding last data requirement");
                         gFactory.addDataRequirement(mainGoalID, dr,
                                 uri);
                     }
@@ -137,7 +137,7 @@ public class TestConverter {
                 System.err.println("Getting plans");
 //
                 //ida.getCaseIndex()
-                List<Plan> plans = ida.getPlans(task, gFactory.getFacts(), 10);
+                List<Plan> plans = ida.getPlans(task, gFactory.getFacts(), 1);
 //
                 System.err.println("Got plans");
                 int x = 0;
@@ -229,6 +229,7 @@ public class TestConverter {
             for (IOObjectDescription desc: opAp.getProducedObject()) {
 
                 System.out.println("Produces: " + desc.getIOObjectID());
+                System.out.println("Produces: " + desc.getRMRoleName());
                 System.out.println("Produces: " + desc.getIOOLocation());
                 System.out.println("Produces: " + desc.getIOObjectType());
             }
@@ -239,6 +240,7 @@ public class TestConverter {
                 System.out.println("Uses location: " + desc.getIOOLocation());
                 System.out.println("Uses type: " + desc.getIOObjectType());
                 System.out.println("Uses role: " + desc.getRoleName());
+                System.out.println("Uses RM: " + desc.getRMRoleName());
             }
 
             System.out.println("Generate dataflow:");
@@ -254,7 +256,7 @@ public class TestConverter {
 
     private URI setMetaData(String OWLxml) {
 
-        
+
 
         OntologyStreamReader reader = new OntologyStreamReader(OWLxml);
 			OWLOntologyManager ontManager = OWLManager
@@ -428,7 +430,7 @@ public class TestConverter {
 
     public void getTaskChildren (Tree<Task> tTask) {
 
-        if (tTask.getData().getTaskName().equals("DiscretizeAll")) {
+        if (tTask.getData().getTaskName().equals("DataMining")) {
             task = tTask.getData();
         }
         System.out.println(tTask.getData().getTaskName());
@@ -440,7 +442,7 @@ public class TestConverter {
 
     public static void main(String[] args) {
 
-        new TestConverter();
+        new TestConverter2();
 
     }
 

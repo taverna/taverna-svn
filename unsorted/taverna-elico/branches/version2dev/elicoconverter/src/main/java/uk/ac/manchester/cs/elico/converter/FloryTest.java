@@ -8,6 +8,8 @@ import com.rapid_i.elico.MetaDataService_ServiceLocator;
 import org.apache.axis.AxisFault;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -44,9 +46,9 @@ import java.util.List;/*
  */
 public class FloryTest {
 
-//	private static final Logger logger = LoggerFactory.getLogger(FloryTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(FloryTest.class);
 
-//	private static final String URL = "http://rapid-i.dyndns.org:8080";
+	private static final String URL = "http://rapid-i.dyndns.org:8080";
 
 	private IDAInterface ida;
 

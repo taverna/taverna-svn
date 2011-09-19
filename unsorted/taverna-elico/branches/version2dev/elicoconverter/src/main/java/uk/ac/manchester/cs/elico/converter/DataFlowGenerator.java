@@ -11,6 +11,7 @@ import net.sf.taverna.t2.workflowmodel.utils.Tools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.*;
+import uk.ac.manchester.cs.elico.utilities.configuration.RapidAnalyticsPreferences;
 
 import java.util.*;
 
@@ -120,6 +121,7 @@ import java.util.*;
 
             logger.info("processing IOObject: " + IOObjectID);
             Connection con = connectionsByIOObjectId.get(IOObjectID);
+
             String fileLocation = con.getLocation();
 
             if (fileLocation == null) {
@@ -153,21 +155,21 @@ import java.util.*;
 
                         if (dmwfPropertyName.equals("uses")) {
                             // we know it just a plain uses, so set it!
-                            ioObjectDescription.get(key).setFileLocation(fileLocation);
+                            ioObjectDescription.get(key).setFileLocationAt(0, fileLocation);
                             logger.info("Setting input location:" + fileLocation + " uses by " + activity.getConfiguration().getOperatorName() +
                             " on port " + key);
 
                         }
                         else if (dmwfPropertyName.equals("usesAW")) {
                             if (portName.contains("weights")) {
-                                ioObjectDescription.get(key).setFileLocation(fileLocation);
+                                ioObjectDescription.get(key).setFileLocationAt(0, fileLocation);
                                 logger.info("Setting input location:" + fileLocation + " usesAw " + activity.getConfiguration().getOperatorName() +
                                 " on port " + key);
                             }
                         }
                         else if (dmwfPropertyName.equals("usesModel")) {
                             if (portName.equals("model")) {
-                                ioObjectDescription.get(key).setFileLocation(fileLocation);
+                                ioObjectDescription.get(key).setFileLocationAt(0, fileLocation);
                                 logger.info("Setting input location:" + fileLocation + " usesModel " + activity.getConfiguration().getOperatorName() +
                                 " on port " + key);
                             }
@@ -175,7 +177,7 @@ import java.util.*;
                         else if (dmwfPropertyName.equals("usesFirstModel")) {
                             // if filelocation is not set on the bean, then it must be the first model
                             if (portName.contains("model") && !seenFirstModel) {
-                                ioObjectDescription.get(key).setFileLocation(fileLocation);
+                                ioObjectDescription.get(key).setFileLocationAt(0, fileLocation);
                                 logger.info("Setting input location:" + fileLocation + " usesFirstModel " + activity.getConfiguration().getOperatorName() +
                                 " on port " + key);
 
@@ -185,7 +187,7 @@ import java.util.*;
                         else if (dmwfPropertyName.equals("usesSecondModel")) {
                             // if filelocation is not set on the bean, then it must be the first model
                             if (seenFirstModel) {
-                                ioObjectDescription.get(key).setFileLocation(fileLocation);
+                                ioObjectDescription.get(key).setFileLocationAt(0, fileLocation);
                                 logger.info("Setting input location:" + fileLocation + " usesSecondModel " + activity.getConfiguration().getOperatorName() +
                                 " on port " + key);
                             }
@@ -193,7 +195,7 @@ import java.util.*;
                         else if (dmwfPropertyName.equals("usesData")) {
                             // else it is an example set
                             if (portClass.equals("ExampleSet")) {
-                                ioObjectDescription.get(key).setFileLocation(fileLocation);
+                                ioObjectDescription.get(key).setFileLocationAt(0, fileLocation);
                                 logger.info("Setting input location:" + fileLocation + " usesData " + activity.getConfiguration().getOperatorName() +
                                 " on port " + key);
                             }
@@ -228,14 +230,16 @@ import java.util.*;
                         // not all operators output the original file it seems...
                         if (dmwfProperty.getPropertyName().equals("producesData")) {
                             if (portClass.equals("ExampleSet") && dmwfProperty.getPropertyType().equals("DataTable")) {
-                                ioOutputPorts.get(key).setFileLocation(fileLocation);
+                                ioOutputPorts.get(key).getFileLocations().add(fileLocation);
+
+                                ioOutputPorts.get(key).setFileLocationAt(0, fileLocation);
                                 logger.info("Setting output location:" + fileLocation + " producesData " + activity.getConfiguration().getOperatorName() +
                                                                         " on port " + key);
                             }
                         }
                         else if (dmwfProperty.getPropertyName().equals("producesPrePropModel")) {
                             if (portName.contains("preprocessing_model")) {
-                                ioOutputPorts.get(key).setFileLocation(fileLocation);
+                                ioOutputPorts.get(key).setFileLocationAt(0, fileLocation);
                                 logger.info("Setting output location:" + fileLocation + " producesPrePropModel " + activity.getConfiguration().getOperatorName() +
                                                                         " on port " + key);
 
@@ -243,32 +247,32 @@ import java.util.*;
                         }
                         else if (dmwfProperty.getPropertyName().equals("produces")) {
                             if (portClass.equals("ExampleSet") && dmwfProperty.getPropertyType().equals("DataTable")) {
-                                ioOutputPorts.get(key).setFileLocation(fileLocation);
+                                ioOutputPorts.get(key).setFileLocationAt(0, fileLocation);
                                 logger.info("Setting output location:" + fileLocation + " produces " + activity.getConfiguration().getOperatorName() +
                                                                         " on port " + key);
                             }
                             else if (portClass.equals("Model") && dmwfProperty.getPropertyType().equals("Model")) {
-                                ioOutputPorts.get(key).setFileLocation(fileLocation);
+                                ioOutputPorts.get(key).setFileLocationAt(0, fileLocation);
                                 logger.info("Setting output location:" + fileLocation + " produces " + activity.getConfiguration().getOperatorName() +
                                                                         " on port " + key);
                             }
                             else if (portName.contains("model") && dmwfProperty.getPropertyType().equals("Model")) {
-                                ioOutputPorts.get(key).setFileLocation(fileLocation);
+                                ioOutputPorts.get(key).setFileLocationAt(0, fileLocation);
                                 logger.info("Setting output location:" + fileLocation + " produces " + activity.getConfiguration().getOperatorName() +
                                                                         " on port " + key);
                             }
                             else if (portName.contains("model") && dmwfProperty.getPropertyType().endsWith("Model")) {
-                                ioOutputPorts.get(key).setFileLocation(fileLocation);
+                                ioOutputPorts.get(key).setFileLocationAt(0, fileLocation);
                                 logger.info("Setting output location:" + fileLocation + " produces " + activity.getConfiguration().getOperatorName() +
                                                                         " on port " + key);
                             }
                             else if (portClass.contains("Performance")) {
-                                ioOutputPorts.get(key).setFileLocation(fileLocation);
+                                ioOutputPorts.get(key).setFileLocationAt(0, fileLocation);
                                 logger.info("Setting output location:" + fileLocation + " produces " + activity.getConfiguration().getOperatorName() +
                                                                         " on port " + key);
                             }
                             else if (portClass.equals("AttributeWeights") && dmwfProperty.getPropertyType().equals("AttributeWeights")) {
-                                ioOutputPorts.get(key).setFileLocation(fileLocation);
+                                ioOutputPorts.get(key).setFileLocationAt(0, fileLocation);
                                 logger.info("Setting output location:" + fileLocation + " produces " + activity.getConfiguration().getOperatorName() +
                                                                         " on port " + key);
 
@@ -530,7 +534,7 @@ import java.util.*;
                 for (String outP : activity.getConfiguration().getOutputPorts().keySet()) {
 
                     if (!outP.equals("original")) {
-                        if (activity.getConfiguration().getOutputPorts().get(outP).getFileLocation() != null) {
+                        if (activity.getConfiguration().getOutputPorts().get(outP).getFileLocationAt(0) != null) {
 
                             ActivityOutputPort out = getOutputPort(p, outP);
                             String name = Tools.uniqueProcessorName(outP + "_" + activityName + "_" + rand, df);
@@ -566,8 +570,8 @@ import java.util.*;
 
                 for (String producer_outputPort : outputPortsMap.keySet()) {
 
-                    if (outputPortsMap.get(producer_outputPort).getFileLocation() == null ||
-                            outputPortsMap.get(producer_outputPort).getFileLocation().trim().isEmpty()) {
+                    if (outputPortsMap.get(producer_outputPort).getFileLocationAt(0) == null ||
+                            outputPortsMap.get(producer_outputPort).getFileLocationAt(0).trim().isEmpty()) {
                         continue;
 
                     }
@@ -1003,16 +1007,16 @@ import java.util.*;
         bean.setParameterDescriptions(paramDescription);
 
         // todo sort this out for main taverna execution
-//        RapidAnalyticsPreferences prefs = new RapidAnalyticsPreferences();
-//        prefs.setRepositoryLocation("http://rpc295.cs.man.ac.uk:8081");
-//        prefs.setUsername("jupp");
-//        prefs.setPassword("jupppwd");
+        RapidAnalyticsPreferences prefs = new RapidAnalyticsPreferences();
+        prefs.setRepositoryLocation("http://rpc295.cs.man.ac.uk:8081");
+        prefs.setUsername("jupp");
+        prefs.setPassword("jupppwd");
 //
-//        RapidMinerExampleActivity activity = new RapidMinerExampleActivity(prefs);
-//        RapidMinerIOODescription portDescription = new RapidMinerIOODescription(prefs, opApp.getAnnOperatorName());
+        RapidMinerExampleActivity activity = new RapidMinerExampleActivity(prefs);
+        RapidMinerIOODescription portDescription = new RapidMinerIOODescription(prefs, opApp.getAnnOperatorName());
 
-        RapidMinerExampleActivity activity = new RapidMinerExampleActivity();
-        RapidMinerIOODescription portDescription = new RapidMinerIOODescription(opApp.getAnnOperatorName());
+//        RapidMinerExampleActivity activity = new RapidMinerExampleActivity();
+//        RapidMinerIOODescription portDescription = new RapidMinerIOODescription(opApp.getAnnOperatorName());
 
         bean.setInputPorts(portDescription.getInputPort());
         bean.setOutputPorts(portDescription.getOutputPort());
