@@ -8,9 +8,11 @@ import static java.util.Arrays.asList;
 import static java.util.ServiceLoader.load;
 import static java.util.UUID.randomUUID;
 import static java.util.regex.Pattern.compile;
+import static org.osgi.framework.Bundle.START_ACTIVATION_POLICY;
 import static org.osgi.framework.Constants.FRAGMENT_HOST;
 import static org.osgi.framework.Constants.FRAMEWORK_STORAGE;
 import static org.osgi.framework.Constants.FRAMEWORK_STORAGE_CLEAN;
+import static org.osgi.framework.Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT;
 import static org.osgi.framework.Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA;
 
 import java.io.File;
@@ -20,7 +22,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,7 +44,7 @@ import org.osgi.framework.launch.FrameworkFactory;
 import org.osgi.service.startlevel.StartLevel;
 import org.taverna.launcher.environment.ApplicationConfiguration;
 import org.taverna.launcher.environment.CommandLineArgumentProvider;
-import org.taverna.launcher.environment.impl.CommandLineArgumentProviderImpl;
+import org.taverna.launcher.environment.impl.CommandLineImpl;
 import org.taverna.launcher.environment.impl.ConfigProvider;
 
 /**
@@ -58,11 +60,10 @@ public class Main {
 	boolean started;
 	private Framework framework;
 	private CommandLineArgumentProvider clargs;
-	private ConfigProvider config;
+	private ApplicationConfiguration config;
 
 	private Main(String[] argv) {
-		CommandLineArgumentProviderImpl clImpl = new CommandLineArgumentProviderImpl(
-				this);
+		CommandLineImpl clImpl = new CommandLineImpl(this);
 		clImpl.setArguments(argv);
 		clImpl.setHelpTemplate("java " + Main.class + " ?args...?");
 		clargs = clImpl;
@@ -116,7 +117,8 @@ public class Main {
 					getExtraPackages(activators));
 			config.put(FRAMEWORK_STORAGE,
 					new File(userHome, "osgi-cache").toString());
-			config.put(FRAMEWORK_STORAGE_CLEAN, "true");
+			config.put(FRAMEWORK_STORAGE_CLEAN,
+					FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
 			framework = getFactory().newFramework(config);
 			if (!getBoolean("taverna.launcher.disableShutdownHook")) {
 				Runnable r = new Runnable() {
@@ -131,8 +133,10 @@ public class Main {
 			}
 			framework.init();
 			List<Integer> levels = new ArrayList<Integer>(bundles.keySet());
+			List<Bundle> toStart = new ArrayList<Bundle>();
 			StartLevel sl = getService(StartLevel.class);
-			int maxLevel = 1;
+			Collections.sort(levels);
+			int maxLevel = 0;
 			for (int level : levels) {
 				if (level > maxLevel)
 					maxLevel = level;
@@ -140,16 +144,22 @@ public class Main {
 					Bundle bundle = framework.getBundleContext().installBundle(
 							bundleName);
 					if (bundle != null
-							&& bundle.getHeaders().get(FRAGMENT_HOST) == null)
+							&& bundle.getHeaders().get(FRAGMENT_HOST) == null) {
 						sl.setBundleStartLevel(bundle, level);
+						toStart.add(bundle);
+					}
 				}
 			}
 			if (DEBUG)
 				System.err.println("DEBUG: setting start level to " + maxLevel);
+			//sl.setStartLevel(maxLevel);
+			framework.start();
 			sl.setStartLevel(maxLevel);
+			for (Bundle bundle : toStart)
+				bundle.start(START_ACTIVATION_POLICY);
 			if (DEBUG)
 				System.err.println("DEBUG: services: "
-						+ Arrays.asList(framework.getRegisteredServices()));
+						+ asList(framework.getRegisteredServices()));
 		} catch (Exception e) {
 			System.err.println("could not create framework: " + e);
 			if (manualStop)

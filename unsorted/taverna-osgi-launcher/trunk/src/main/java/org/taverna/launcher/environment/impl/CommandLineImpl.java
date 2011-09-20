@@ -12,10 +12,10 @@ import java.util.Map;
 import org.taverna.launcher.Main;
 import org.taverna.launcher.environment.CommandLineArgumentProvider;
 
-public class CommandLineArgumentProviderImpl implements CommandLineArgumentProvider {
+public class CommandLineImpl implements CommandLineArgumentProvider {
 	private final Main main;
 
-	public CommandLineArgumentProviderImpl(Main main) {
+	public CommandLineImpl(Main main) {
 		this.main = main;
 	}
 
