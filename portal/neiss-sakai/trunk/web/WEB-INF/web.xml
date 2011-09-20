@@ -45,13 +45,13 @@
     <context-param>
         <param-name>T2_SERVER_URL</param-name>
         <param-value>http://localhost:8081/taverna-server</param-value>
-        <!--<param-value>http://eric.rcs.manchester.ac.uk:8080/taverna-server</param-value>-->
+        <!--<param-value>http://clyde.dl.ac.uk:8080/taverna-server</param-value>-->
         <description>The URL of the T2 Server to be used for executing the workflows</description>
     </context-param>
     <context-param>
         <param-name>JOBS_DIRECTORY_PATH</param-name>
         <param-value>/Users/alex/Desktop/portal-results</param-value>
-        <!--<param-value>/home/sswin/T2/portal-results</param-value>-->
+        <!--<param-value>/home/sakai/T2/portal-results</param-value>-->
         <description>Absolute path to a directory on the local file system where the app can write info about submitted jobs to</description>
     </context-param>
     <context-param>
