@@ -8,8 +8,6 @@
 	<properties>
 		<main.class>org.taverna.launcher.Main</main.class>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- <application.name>${project.artifactId}-${project.version}</application.name> -->
-		<application.name>taverna</application.name>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -86,51 +84,11 @@
 								<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
 							</archive>
 							<classifier>app</classifier>
-							<finalName>${application.name}</finalName>
 						</configuration>
 					</execution>
 					<execution>
 						<id>default-jar</id>
 						<phase>never</phase>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.sling</groupId>
-				<artifactId>maven-launchpad-plugin</artifactId>
-				<version>2.0.10</version>
-				<configuration>
-					<includeDefaultBundles>false</includeDefaultBundles>
-					<jarName>${application.name}</jarName>
-				</configuration>
-				<executions>
-                    <execution>
-                    	<id>create-bundle-jar</id>
-                        <goals>
-                            <goal>create-bundle-jar</goal>
-                        </goals>
-                        <phase>prepare-package</phase>
-                    </execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.2</version>
-				<configuration>
-					<executable>java</executable>
-					<arguments>
-						<argument>-jar</argument>
-						<argument>${project.build.directory}/${application.name}-app.jar</argument>
-						<argument>-launcherWait</argument>
-					</arguments>
-				</configuration>
-				<executions>
-					<execution>
-						<id>run-app</id>
-						<goals>
-							<goal>exec</goal>
-						</goals>
 					</execution>
 				</executions>
 			</plugin>
