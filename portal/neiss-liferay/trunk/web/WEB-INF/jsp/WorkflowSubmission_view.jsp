@@ -99,7 +99,7 @@ String user = (String) renderRequest.getPortletSession().getAttribute(Constants.
 </p>--%>
 <form action="<portlet:actionURL/>" method="post">
 <fieldset>
-<legend>Enter terms to search myExperiment for workflows</legend>
+<legend>Enter terms to search <a href="http://www.myexperiment.org" target="_blank" ><img style="vertical-align: middle;" src="<%=renderRequest.getContextPath()%>/images/myexperiment_logo_16x16.png" alt="myExperiment"></a> for workflows</legend>
 <p>All fields will be searched, including workflows, users, groups, tags, etc.<br>
         Separate multiple search terms with a blank character.
 </p>
