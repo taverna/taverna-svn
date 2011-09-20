@@ -42,7 +42,8 @@ String user = (String) renderRequest.getPortletSession().getAttribute(Constants.
 <br>
 
 <table>
-<tr><td style="padding-right:25px;">
+<tr>
+<td style="padding-right:25px; padding-bottom:25px; ">
 <%-- Form for selecting pre-canned uploaded workflows to be sent for execution --%>
 <%--<p><b>Select a workflow to run:</b></p>--%>
 
@@ -89,8 +90,10 @@ String user = (String) renderRequest.getPortletSession().getAttribute(Constants.
 </form>
 <%}%>
 </td>
+</tr>
 
-<td style="padding-left:25px; border-left-style:dotted; border-left-color:gray; border-left-width:1px; ">
+<tr>
+<td style="padding-top:25px; padding-bottom:25px; border-top-style:dotted; border-top-color:gray; border-top-width:1px; ">
 <%-- Form for searhing the myExperiment workflows --%>
 <%--<p><b>Enter terms to search myExperiment for workflows.<br>
         (All fields will be searched, including workflows, users, groups, tags, etc.).<br>
@@ -99,7 +102,7 @@ String user = (String) renderRequest.getPortletSession().getAttribute(Constants.
 </p>--%>
 <form action="<portlet:actionURL/>" method="post">
 <fieldset>
-<legend>Enter terms to search myExperiment for workflows</legend>
+    <legend>Enter terms to search <a href="http://www.myexperiment.org" target="_blank" ><img style="vertical-align: middle;" src="<%=renderRequest.getContextPath()%>/images/myexperiment_logo_16x16.png" alt="myExperiment"></a> for workflows</legend>
 <p>All fields will be searched, including workflows, users, groups, tags, etc.<br>
         Separate multiple search terms with a blank character.
 </p>
