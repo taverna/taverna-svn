@@ -20,43 +20,50 @@
  ******************************************************************************/
 package uk.org.taverna.commandline.args.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import uk.org.taverna.commandline.args.CommandLineArguments;
 
 /**
- * Command line argument service implementation that uses specally named 
+ * Command line argument service implementation that uses specally named
  * system properties to pass the command line arguments into Taverna.
- * 
- * System property "taverna.commandline.args" holds the total number of 
+ *
+ * System property "taverna.commandline.args" holds the total number of
  * command line arguments to expect.
- * 
- * System property taverna.commandline.args.<n> hold the <n>th command 
- * line argument. Some of these are options names others hold option 
+ *
+ * System property taverna.commandline.arg.<n> hold the <n>th command
+ * line argument. Some of these are options names others hold option
  * parameters.
- * 
+ *
  * @author Alex Nenadic
  *
  */
 public class CommandLineArgumentsViaSystemProperties implements CommandLineArguments{
-	
+
 	// System property holding the number of command line arguments to expect
-	public static String TAVERNA_COMMANDLINE_ARGS_NUMBER_SYSTEM_PROPERTY = "taverna.commandline.args";
+	public static final String TAVERNA_COMMANDLINE_ARGS_NUMBER_SYSTEM_PROPERTY = "taverna.commandline.args";
 
 	// System property prefix indicating the command line argument.
-	// Properties are in format taverna.commandline.args.<n> where <n> indicates the index 
+	// Properties are in format taverna.commandline.arg.<n> where <n> indicates the index
 	// of the property holding the <n>th command line parameter.
-	public static String TAVERNA_COMMANDLINE_ARGS_SYSTEM_PROPERTY = "taverna.commandline.args";
-	
-	public static char SPACE_REPLACEMENT_CHARACTER = '\013';
+	public static final String TAVERNA_COMMANDLINE_ARG_SYSTEM_PROPERTY = "taverna.commandline.arg";
+
+	public static final char SPACE_REPLACEMENT_CHARACTER = '\013';
 
 	@Override
 	public String[] getCommandLineArguments() {
-		int argCount = Integer.getInteger(TAVERNA_COMMANDLINE_ARGS_NUMBER_SYSTEM_PROPERTY);
-		String[] args = new String[argCount];
-		for (int i = 0; i < argCount; i++) {
-			args[i] = System.getProperty(TAVERNA_COMMANDLINE_ARGS_SYSTEM_PROPERTY + "." + i);
-			args[i] = args[i].replace(SPACE_REPLACEMENT_CHARACTER, ' ');
+		List<String> arguments = new ArrayList<String>();
+		Integer argumentCount = Integer.getInteger(TAVERNA_COMMANDLINE_ARGS_NUMBER_SYSTEM_PROPERTY);
+		if (argumentCount != null) {
+			for (int i = 0; i < argumentCount; i++) {
+				String arg = System.getProperty(TAVERNA_COMMANDLINE_ARG_SYSTEM_PROPERTY + "." + i);
+				if (arg != null) {
+					arguments.add(arg.replace(SPACE_REPLACEMENT_CHARACTER, ' '));
+				}
+			}
 		}
-		return args;
+		return arguments.toArray(new String[arguments.size()]);
 	}
 
 }
