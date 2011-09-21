@@ -23,8 +23,8 @@ package uk.org.taverna.commandline.args.impl;
 import uk.org.taverna.commandline.args.CommandLineArguments;
 
 /**
- * Command line argument service implementation that uses system properties 
- * to pass the command line arguments.
+ * Command line argument service implementation that uses specally named 
+ * system properties to pass the command line arguments into Taverna.
  * 
  * System property "taverna.commandline.args" holds the total number of 
  * command line arguments to expect.
