@@ -61,9 +61,8 @@
 					<instructions>
 						<_donotcopy>(.svn|config.properties)</_donotcopy>
 						<Main-Class>${main.class}</Main-Class>
-						<Import-Package>!android.*,!dalvik.*,org.osgi.framework,org.apache.felix.main,*</Import-Package>
+						<Import-Package>!android.*,!dalvik.*,org.osgi.framework,*</Import-Package>
 						<Export-Package>org.taverna.launcher.environment</Export-Package>
-						<Embed-Dependency>org.apache.felix.main</Embed-Dependency>
                         <DynamicImport-Package>*</DynamicImport-Package>
 						<Bundle-Vendor>Taverna Team/University of Manchester</Bundle-Vendor>
 					</instructions>

@@ -5,6 +5,7 @@ import static java.lang.Integer.parseInt;
 import static java.lang.Runtime.getRuntime;
 import static java.lang.System.exit;
 import static java.util.Arrays.asList;
+import static java.util.Collections.sort;
 import static java.util.ServiceLoader.load;
 import static java.util.UUID.randomUUID;
 import static java.util.regex.Pattern.compile;
@@ -22,7 +23,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
 import org.apache.felix.framework.util.FelixConstants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 import org.osgi.service.startlevel.StartLevel;
@@ -132,31 +133,7 @@ public class Main {
 				manualStop = false;
 			}
 			framework.init();
-			List<Integer> levels = new ArrayList<Integer>(bundles.keySet());
-			List<Bundle> toStart = new ArrayList<Bundle>();
-			StartLevel sl = getService(StartLevel.class);
-			Collections.sort(levels);
-			int maxLevel = 0;
-			for (int level : levels) {
-				if (level > maxLevel)
-					maxLevel = level;
-				for (String bundleName : bundles.get(level)) {
-					Bundle bundle = framework.getBundleContext().installBundle(
-							bundleName);
-					if (bundle != null
-							&& bundle.getHeaders().get(FRAGMENT_HOST) == null) {
-						sl.setBundleStartLevel(bundle, level);
-						toStart.add(bundle);
-					}
-				}
-			}
-			if (DEBUG)
-				System.err.println("DEBUG: setting start level to " + maxLevel);
-			//sl.setStartLevel(maxLevel);
-			framework.start();
-			sl.setStartLevel(maxLevel);
-			for (Bundle bundle : toStart)
-				bundle.start(START_ACTIVATION_POLICY);
+			start(bundles);
 			if (DEBUG)
 				System.err.println("DEBUG: services: "
 						+ asList(framework.getRegisteredServices()));
@@ -173,6 +150,54 @@ public class Main {
 				shutdownFramework();
 			exit(1);
 		}
+	}
+
+	/**
+	 * Start the framework and the given bundles.
+	 * 
+	 * @param bundleCollection
+	 *            Description of the bundles that are to be provided and
+	 *            started, as a mapping from start levels to the list of URLs to
+	 *            bundle files to install/start at that level.
+	 * @throws BundleException
+	 *             If any bundle fails to install or be properly started.
+	 */
+	private void start(Map<Integer, List<String>> bundleCollection)
+			throws BundleException {
+		List<Bundle> toStart = new ArrayList<Bundle>();
+		StartLevel sl = getService(StartLevel.class);
+
+		List<Integer> levels = new ArrayList<Integer>(bundleCollection.keySet());
+		sort(levels);
+
+		int maxLevel = 0;
+		for (int level : levels) {
+			if (level > maxLevel)
+				maxLevel = level;
+			for (String bundleName : bundleCollection.get(level)) {
+				Bundle bundle = framework.getBundleContext().installBundle(
+						bundleName);
+				if (bundle.getHeaders().get(FRAGMENT_HOST) == null) {
+					sl.setBundleStartLevel(bundle, level);
+					toStart.add(bundle);
+					if (DEBUG)
+						System.err.println("DEBUG: installed bundle "
+								+ bundle.getSymbolicName() + " v"
+								+ bundle.getVersion());
+				} else {
+					if (DEBUG)
+						System.err.println("DEBUG: installed fragment "
+								+ bundle.getSymbolicName() + " v"
+								+ bundle.getVersion());
+				}
+			}
+		}
+		if (DEBUG)
+			System.err.println("DEBUG: setting start level to " + maxLevel);
+		framework.start();
+		sl.setStartLevel(maxLevel);
+		for (Bundle bundle : toStart)
+			bundle.start(START_ACTIVATION_POLICY);
 	}
 
 	@SuppressWarnings("unchecked")
