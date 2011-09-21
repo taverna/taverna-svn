@@ -7,7 +7,7 @@
 		<version>3.0-SNAPSHOT</version>
 	</parent>
 	<groupId>uk.org.taverna.commandline</groupId>
-	<artifactId>commandline-args-system-properties</artifactId>
+	<artifactId>arguments-system-properties</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 	<name>Command Line Argument Service Implementation</name>
@@ -16,7 +16,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>uk.org.taverna.commandline</groupId>
-			<artifactId>commandline-args</artifactId>
+			<artifactId>arguments</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
