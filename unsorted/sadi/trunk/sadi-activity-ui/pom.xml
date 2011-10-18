@@ -10,7 +10,7 @@
 
 	<groupId>net.sf.taverna.t2.ui-activities</groupId>
 	<artifactId>sadi-activity-ui</artifactId>
-	<version>0.5.0</version>
+	<version>0.5.1-SNAPSHOT</version>
 	<name>Taverna 2 SADI Activity UI</name>
 
 	<repositories>
@@ -58,7 +58,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>sadi-activity</artifactId>
-			<version>0.5.0</version>
+			<version>0.5.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.wilkinsonlab.sadi</groupId>

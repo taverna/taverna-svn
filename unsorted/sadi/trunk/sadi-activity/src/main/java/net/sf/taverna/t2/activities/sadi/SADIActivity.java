@@ -340,7 +340,7 @@ public class SADIActivity extends AbstractAsynchronousActivity<SADIActivityConfi
 						logger.warn(String.format("ignoring data received on unknown port %s", portName));
 						continue;
 					}
-					RDFPath path = inputPort.getRDFPath(); // FIXME might be null on loaded workflow?
+					RDFPath path = inputPort.getRDFPath();
 					
 					if (path.isEmpty()) {
 						/* if the path is empty, that means that each input node is an
