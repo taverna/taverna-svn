@@ -20,12 +20,8 @@
  ******************************************************************************/
 package net.sf.taverna.t2.activities.sadi;
 
-import java.util.List;
-
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPort;
-
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntProperty;
+import ca.wilkinsonlab.sadi.rdfpath.RDFPath;
 
 /**
  * A {@link SADIActivity} port.
@@ -42,42 +38,20 @@ public interface SADIActivityPort extends ActivityPort {
 	public SADIActivity getSADIActivity();
 
 	/**
-	 * Returns the {@link OntClass} for the port.
-	 * 
-	 * @return the {@link OntClass} for the port
+	 * Returns the {@link RDFPath) for the port.
+	 * @return the {@link RDFPath) for the port
 	 */
-	public OntClass getOntClass();
+	public RDFPath getRDFPath();
 
 	/**
-	 * Returns the {@link OntProperty} for the port. Returns <code>null</code> is no property
-	 * is associated with the port.
-	 * 
-	 * @return the {@link OntProperty} for the port
+	 * Returns the URI of the OWL class of which this port's values will be instances.
+	 * @return the URI of the OWL class of which this port's values will be instances
 	 */
-	public OntProperty getOntProperty();
+	public String getValuesFromURI();
 
 	/**
-	 * Returns the list of values for the id.
-	 * 
-	 * @param id
-	 * @return the list of values for the id
+	 * Returns the label of the OWL class of which this port's values will be instances.
+	 * @return the label of the OWL class of which this port's values will be instances
 	 */
-	public List<?> getValues(String id);
-
-	/**
-	 * Sets the values for the id.
-	 * 
-	 * @param id
-	 * @param values
-	 *            the new values for the id
-	 */
-	public void setValues(String id, List<?> values);
-
-	/**
-	 * Clears the values for the id.
-	 * 
-	 * @param id
-	 */
-	public void clearValues(String id);
-
+	public String getValuesFromLabel();
 }

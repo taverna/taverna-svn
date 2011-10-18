@@ -47,25 +47,26 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.sf.taverna.t2.activities.sadi.RestrictionNode;
 import net.sf.taverna.t2.activities.sadi.SADIActivityOutputPort;
 import net.sf.taverna.t2.activities.sadi.SADIActivityPort;
 import net.sf.taverna.t2.activities.sadi.SADIRegistries;
-import net.sf.taverna.t2.activities.sadi.SADIUtils;
 import net.sf.taverna.t2.activities.sadi.SADIRegistries.RegistryDetails;
 import net.sf.taverna.t2.activities.sadi.servicedescriptions.SADIActivityIcon;
 import net.sf.taverna.t2.activities.sadi.servicedescriptions.SADIServiceDescription;
-import net.sf.taverna.t2.activities.sadi.utils.LabelUtils;
 import net.sf.taverna.t2.lang.ui.DialogTextArea;
 import net.sf.taverna.t2.lang.ui.icons.Icons;
+import ca.wilkinsonlab.sadi.SADIException;
+import ca.wilkinsonlab.sadi.beans.RestrictionBean;
 import ca.wilkinsonlab.sadi.client.Registry;
 import ca.wilkinsonlab.sadi.client.Service;
-import ca.wilkinsonlab.sadi.common.SADIException;
+
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
 /**
  * Dialog for users to select services found by the SADI service discovery.
@@ -79,8 +80,8 @@ public class SADIServiceDiscoveryDialog extends JDialog {
 	private static final String searchMessage = "Searching the SADI repository to find services...";
 	private static final String errorMessage = "Error while accessing the SADI registry.";
 	private static final String noServicesMessage = "No services were found.";
-	private static final Icon listIcon = new ImageIcon(SADIServiceDiscoveryDialog.class
-			.getResource("/sadi-logo32x32.png"));
+//	private static final Icon listIcon = new ImageIcon(SADIServiceDiscoveryDialog.class
+//			.getResource("/sadi-logo32x32.png"));
 
 	private SADIActivityPort sadiActivityPort;
 	private JPanel titlePanel, buttonPanel;
@@ -120,10 +121,10 @@ public class SADIServiceDiscoveryDialog extends JDialog {
 
 		if (sadiActivityPort instanceof SADIActivityOutputPort) {
 			titleLabel = new JLabel("SADI services that consume "
-					+ LabelUtils.getLabel(sadiActivityPort.getOntClass()));
+					+ sadiActivityPort.getValuesFromLabel());
 		} else {
 			titleLabel = new JLabel("SADI services that produce "
-					+ LabelUtils.getLabel(sadiActivityPort.getOntClass()));
+					+ sadiActivityPort.getValuesFromLabel());
 		}
 		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 13.5f));
 		titleIcon = new JLabel("");
@@ -142,7 +143,8 @@ public class SADIServiceDiscoveryDialog extends JDialog {
 		});
 		serviceList.setCellRenderer(new ServiceListCellRenderer());
 
-		serviceListPane = new JScrollPane(serviceList);
+		// TODO if *_SCROLLBAR_AS_NEEDED doesn't work, use CSS width in the HTML...
+		serviceListPane = new JScrollPane(serviceList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		serviceListPane.setBorder(null);
 
 		Icon icon = new ImageIcon(SADIActivityIcon.class.getResource("/SADI_spinner.gif"));
@@ -228,31 +230,45 @@ public class SADIServiceDiscoveryDialog extends JDialog {
 	}
 
 	protected void findServices() {
+		// still in GUI thread...
+		setSearching(true);
 		new Thread("SADI service discovery") {
 			public void run() {
 				try {
-					setSearching(true);
 					Collection<SADIServiceDescription> services = findServices(sadiActivityPort);
-					setSearching(false);
-					if (services.size() > 0) {
-						for (SADIServiceDescription service : services) {
-							listModel.addElement(service);
-						}
-					} else {
-						titleMessage.setText(noServicesMessage);
-						titleIcon.setIcon(Icons.warningIcon);
-					}
+					updateGUI(services);
 				} catch (IOException e) {
-					setSearching(false);
-					titleMessage.setText(errorMessage);
-					titleIcon.setIcon(Icons.severeIcon);
+					updateGUI(e);
 				} catch (SADIException e) {
-					setSearching(false);
-					titleMessage.setText(errorMessage);
-					titleIcon.setIcon(Icons.severeIcon);
+					updateGUI(e);
 				}
 			}
-
+			private void updateGUI(final Collection<SADIServiceDescription> services) {
+				// back to GUI thread...
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						setSearching(false);
+						if (services.size() > 0) {
+							for (SADIServiceDescription service : services) {
+								listModel.addElement(service);
+							}
+						} else {
+							titleMessage.setText(noServicesMessage);
+							titleIcon.setIcon(Icons.warningIcon);
+						}
+					}
+				});
+			}
+			private void updateGUI(final Exception error) {
+				// back to GUI thread...
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						setSearching(false);
+						titleMessage.setText(errorMessage);
+						titleIcon.setIcon(Icons.severeIcon);
+					}
+				});
+			}
 		}.start();
 	}
 
@@ -264,9 +280,9 @@ public class SADIServiceDiscoveryDialog extends JDialog {
 			Registry registry = entry.getValue();
 			Collection<? extends Service> services;
 			if (sadiActivityPort instanceof SADIActivityOutputPort) {
-				services = registry.findServicesByInputClass(sadiActivityPort.getOntClass());
+				services = registry.findServicesByInputClass(ResourceFactory.createResource(sadiActivityPort.getValuesFromURI()));
 			} else {
-				services = registry.findServicesByConnectedClass(sadiActivityPort.getOntClass());
+				services = registry.findServicesByConnectedClass(ResourceFactory.createResource(sadiActivityPort.getValuesFromURI()));
 			}
 			for (Service service : services) {
 				serviceDescriptions.add(createServiceDescription(registryDetails, service));
@@ -288,21 +304,8 @@ public class SADIServiceDiscoveryDialog extends JDialog {
 		SADIServiceDescription ssd = new SADIServiceDescription();
 		ssd.setSparqlEndpoint(registryDetails.getSparqlEndpoint());
 		ssd.setGraphName(registryDetails.getGraphName());
-		ssd.setServiceURI(service.getURI());
-		ssd.setName(service.getName());
+		ssd.setServiceInfo(service);
 		ssd.setDescription(service.getDescription());
-		try {
-			List<String> properties = new ArrayList<String>();
-			RestrictionNode outputRestrictionTree = SADIUtils.buildOutputRestrictionTree(service.getInputClass(), service.getOutputClass());
-			for (List<String> path : SADIUtils.getDefaultRestrictionPaths(outputRestrictionTree)) {
-				RestrictionNode restriction = SADIUtils.getRestriction(outputRestrictionTree, path);
-				if (restriction.getOntProperty() != null) {
-					properties.add(LabelUtils.getLabel(restriction.getOntProperty()));
-				}
-			}
-			ssd.setProperties(properties);
-		} catch (SADIException e) {
-		}
 		return ssd;
 	}
 
@@ -332,6 +335,7 @@ public class SADIServiceDiscoveryDialog extends JDialog {
 				renderer = super.getListCellRendererComponent(list,
 						serviceToHtml((SADIServiceDescription) value), index, isSelected,
 						cellHasFocus);
+				renderer.setMaximumSize(new Dimension(400,0));
 			} else {
 				renderer = super.getListCellRendererComponent(list, value, index, isSelected,
 						cellHasFocus);
@@ -339,7 +343,7 @@ public class SADIServiceDiscoveryDialog extends JDialog {
 			if (renderer instanceof JLabel) {
 				JLabel rendererLabel = (JLabel) renderer;
 				SADIViewUtils.addDivider(rendererLabel, SwingConstants.BOTTOM, true);
-				rendererLabel.setIcon(listIcon);
+//				rendererLabel.setIcon(listIcon);
 			}
 			return renderer;
 		}
@@ -351,22 +355,38 @@ public class SADIServiceDiscoveryDialog extends JDialog {
 		 */
 		private String serviceToHtml(SADIServiceDescription service) {
 			StringBuilder sb = new StringBuilder();
-			sb.append("<html><dl>");
-			sb.append("<dt><b>");
+			sb.append("<html><table width=400><tr><th valign=top align=right>Name</th><td>");
 			sb.append(service.getName());
-			sb.append("</b></dt><dd>");
+			sb.append("</td></tr><tr><th valign=top align=right>Description</th><td>");
 			sb.append(service.getDescription());
-			sb.append("</dd>");
-			sb.append("<dt><b>Properties attached:</b></dt><dd>");
-			boolean first = true;
-			for (String property : service.getProperties()) {
-				if (!first) {
-					sb.append(", ");
+			sb.append("</td></tr><tr><th valign=top align=right>Properties</th><td><dl style='margin-top: 0px'>");
+			for (RestrictionBean restriction: service.getServiceInfo().getRestrictionBeans()) {
+				sb.append("<dt><nobr>");
+				if (restriction.getOnPropertyLabel() != null) {
+					sb.append(restriction.getOnPropertyLabel());
+					if (restriction.getOnPropertyURI() != null) {
+						sb.append(" (");
+						sb.append(restriction.getOnPropertyURI());
+						sb.append(")");
+					}
+				} else {
+					sb.append(restriction.getOnPropertyURI());
 				}
-				sb.append(property);
-				first = false;
+				sb.append("</nobr></dt><dd stlye='margin-left: 4px; padding-left: 4px;'><nobr>");
+				if (restriction.getValuesFromURI() != null) {
+					sb.append("with values from ");
+					if (restriction.getValuesFromLabel() != null) {
+						sb.append(restriction.getValuesFromLabel());
+						sb.append(" (");
+						sb.append(restriction.getValuesFromURI());
+						sb.append(")");
+					} else {
+						sb.append(restriction.getValuesFromURI());
+					}
+				}
+				sb.append("</nobr></dd>");
 			}
-			sb.append("</dd></dl>");
+			sb.append("</dl></td></tr></table></html>");
 			return sb.toString();
 		}
 

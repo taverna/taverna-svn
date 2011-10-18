@@ -30,6 +30,11 @@ import net.sf.taverna.t2.lang.beans.PropertyAnnotation;
  */
 public class SADIServiceProviderConfig extends PropertyAnnotated {
 
+	/* TODO it would be nice if this had used the RegistryFactory/Configuration
+	 * setup in ca.wilkinsonlab.sadi.client; I assume that updating it will
+	 * break returning clients because of serialization issues...
+	 */
+	
 	private String sparqlEndpoint, graphName;
 	
 	public SADIServiceProviderConfig() {
@@ -52,7 +57,7 @@ public class SADIServiceProviderConfig extends PropertyAnnotated {
 	 *
 	 * @return the sparqlEndpoint
 	 */
-	@PropertyAnnotation(displayName = "SADI sparql endpoint", preferred = true)
+	@PropertyAnnotation(displayName = "Registry SPARQL endpoint", preferred = true)
 	public String getSparqlEndpoint() {
 		return sparqlEndpoint;
 	}
@@ -71,7 +76,7 @@ public class SADIServiceProviderConfig extends PropertyAnnotated {
 	 *
 	 * @return the graphName
 	 */
-	@PropertyAnnotation(displayName = "SADI graph name")
+	@PropertyAnnotation(displayName = "Registry graph name")
 	public String getGraphName() {
 		return graphName;
 	}

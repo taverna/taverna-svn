@@ -1,0 +1,148 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:sadi="http://sadiframework.org/ontologies/sadi.owl#"
+    xmlns:mygrid="http://www.mygrid.org.uk/mygrid-moby-service#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://sadiframework.org/examples/keggPathway2Gene">
+    <mygrid:hasServiceDescriptionText rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Retrieves the KEGG genes that participate in the given KEGG pathway(s)</mygrid:hasServiceDescriptionText>
+    <mygrid:providedBy rdf:nodeID="A0"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">KEGG-Pathway-to-Gene</rdfs:label>
+    <rdf:type rdf:resource="http://sadiframework.org/ontologies/sadi.owl#Service"/>
+    <sadi:registration rdf:nodeID="A1"/>
+    <mygrid:hasOperation rdf:nodeID="A2"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/mygrid-moby-service#serviceDescription"/>
+    <mygrid:hasServiceNameText rdf:datatype="http://www.w3.org/2001/XMLSchema#string">KEGG-Pathway-to-Gene</mygrid:hasServiceNameText>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Retrieves the KEGG genes that participate in the given KEGG pathway(s)</rdfs:comment>
+    <sadi:decoratesWith rdf:nodeID="A3"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <owl:onProperty rdf:resource="http://sadiframework.org/examples/bmi.owl#BMI"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.oclc.org/SADI/LSRN/KEGG_Record">
+    <rdfs:label>KEGG_Record</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <mygrid:inputParameter rdf:nodeID="A6"/>
+    <mygrid:outputParameter rdf:nodeID="A7"/>
+    <mygrid:hasUnitTest rdf:nodeID="A8"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/mygrid-moby-service#operation"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A9">
+    <dc:date>Mon Oct 17 15:04:05 PDT 2011</dc:date>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A0">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/mygrid-moby-service#organisation"/>
+    <mygrid:authoritative rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</mygrid:authoritative>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A10">
+    <mygrid:inputParameter rdf:nodeID="A11"/>
+    <mygrid:outputParameter rdf:nodeID="A12"/>
+    <mygrid:hasUnitTest rdf:nodeID="A13"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/mygrid-moby-service#operation"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <mygrid:objectType rdf:resource="http://sadiframework.org/examples/bmi.owl#InputClass"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/mygrid-moby-service#parameter"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://semanticscience.org/resource/SIO_000132">
+    <rdfs:label>has participant</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A11">
+    <mygrid:objectType rdf:resource="http://sadiframework.org/examples/hello.owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/mygrid-moby-service#parameter"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A14">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/mygrid-moby-service#parameter"/>
+    <mygrid:objectType rdf:resource="http://sadiframework.org/examples/keggPathway2Gene.owl#OutputClass"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <dc:date>Mon Oct 17 13:53:55 PDT 2011</dc:date>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://sadiframework.org/examples/calculateBMI">
+    <sadi:registration rdf:nodeID="A9"/>
+    <sadi:decoratesWith rdf:nodeID="A4"/>
+    <mygrid:hasServiceDescriptionText rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Calculates Body mass Index.</mygrid:hasServiceDescriptionText>
+    <mygrid:hasServiceNameText rdf:datatype="http://www.w3.org/2001/XMLSchema#string">calculateBMI</mygrid:hasServiceNameText>
+    <rdf:type rdf:resource="http://sadiframework.org/ontologies/sadi.owl#Service"/>
+    <mygrid:hasOperation rdf:nodeID="A5"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">calculateBMI</rdfs:label>
+    <mygrid:providedBy rdf:nodeID="A15"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Calculates Body mass Index.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/mygrid-moby-service#serviceDescription"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A16">
+    <mygrid:authoritative rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</mygrid:authoritative>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/mygrid-moby-service#organisation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://sadiframework.org/examples/hello.owl#greeting">
+    <rdfs:label>greeting</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#string">
+    <rdfs:label>string</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A17">
+    <owl:onProperty rdf:resource="http://sadiframework.org/examples/hello.owl#greeting"/>
+    <owl:someValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A15">
+    <mygrid:authoritative rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</mygrid:authoritative>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/mygrid-moby-service#organisation"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A8">
+    <mygrid:exampleInput rdf:resource="http://sadiframework.org/examples/t/bmi-input.rdf"/>
+    <mygrid:exampleOutput rdf:resource="http://sadiframework.org/examples/t/bmi-output.rdf"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/mygrid-moby-service#unitTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://sadiframework.org/examples/hello">
+    <sadi:registration rdf:nodeID="A18"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hello, world</rdfs:label>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/mygrid-moby-service#serviceDescription"/>
+    <mygrid:providedBy rdf:nodeID="A16"/>
+    <rdf:type rdf:resource="http://sadiframework.org/ontologies/sadi.owl#Service"/>
+    <mygrid:hasOperation rdf:nodeID="A10"/>
+    <mygrid:hasServiceDescriptionText rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A simple "Hello, World" service that reads a name and attaches a greeting.</mygrid:hasServiceDescriptionText>
+    <sadi:decoratesWith rdf:nodeID="A17"/>
+    <mygrid:hasServiceNameText rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hello, world</mygrid:hasServiceNameText>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A simple "Hello, World" service that reads a name and attaches a greeting.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A12">
+    <mygrid:objectType rdf:resource="http://sadiframework.org/examples/hello.owl#GreetedIndividual"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/mygrid-moby-service#parameter"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A13">
+    <mygrid:exampleInput rdf:resource="http://sadiframework.org/examples/t/hello-input.rdf"/>
+    <mygrid:exampleOutput rdf:resource="http://sadiframework.org/examples/t/hello-output.rdf"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/mygrid-moby-service#unitTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A18">
+    <dc:date>Mon Oct 17 13:51:26 PDT 2011</dc:date>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A19">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/mygrid-moby-service#parameter"/>
+    <mygrid:objectType rdf:resource="http://purl.oclc.org/SADI/LSRN/KEGG_PATHWAY_Record"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A20">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/mygrid-moby-service#unitTest"/>
+    <mygrid:exampleOutput rdf:resource="http://sadiframework.org/examples/t/keggPathway2Gene-output.rdf"/>
+    <mygrid:exampleInput rdf:resource="http://sadiframework.org/examples/t/keggPathway2Gene-input.rdf"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://sadiframework.org/examples/bmi.owl#BMI">
+    <rdfs:label>BMI</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <owl:someValuesFrom rdf:resource="http://purl.oclc.org/SADI/LSRN/KEGG_Record"/>
+    <owl:onProperty rdf:resource="http://semanticscience.org/resource/SIO_000132"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A7">
+    <mygrid:objectType rdf:resource="http://sadiframework.org/examples/bmi.owl#OutputClass"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/mygrid-moby-service#parameter"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/mygrid-moby-service#operation"/>
+    <mygrid:hasUnitTest rdf:nodeID="A20"/>
+    <mygrid:outputParameter rdf:nodeID="A14"/>
+    <mygrid:inputParameter rdf:nodeID="A19"/>
+  </rdf:Description>
+</rdf:RDF>

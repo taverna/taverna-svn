@@ -28,9 +28,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.reference.ReferenceService;
@@ -39,19 +38,23 @@ import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
-import net.sf.taverna.t2.workflowmodel.utils.Tools;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import ca.wilkinsonlab.sadi.SADIException;
 import ca.wilkinsonlab.sadi.client.Registry;
 import ca.wilkinsonlab.sadi.client.Service;
-import ca.wilkinsonlab.sadi.common.SADIException;
+import ca.wilkinsonlab.sadi.rdfpath.RDFPath;
+import ca.wilkinsonlab.sadi.utils.LSRNUtils;
+import ca.wilkinsonlab.sadi.utils.RdfUtils;
 
-import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntDocumentManager;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.util.ResourceUtils;
 
 /**
  * A SADI Activity.
@@ -59,14 +62,19 @@ import com.hp.hpl.jena.rdf.model.Resource;
  * @author David Withers
  */
 public class SADIActivity extends AbstractAsynchronousActivity<SADIActivityConfigurationBean> {
-
 	private static final Logger logger = Logger.getLogger(SADIActivity.class);
 
+	static final int INPUT_DEPTH = 1;
+	static final int OUTPUT_DEPTH = 2;
+	
 	private SADIActivityConfigurationBean configurationBean;
 
 	/**
-	 * The SADI registry that the service was found in. Required for checking
-	 * the service status.
+	 * The SADI registry that the service was found in. 
+	 * TODO this should no longer be required; in an ideal world, Taverna
+	 * would be using the SADI configuration scheme to manage registries,
+	 * in which case you'd just have to call Config.getMasterRegistry().getService()
+	 * to find the originating registry if you needed it for some reason.
 	 */
 	private Registry registry;
 
@@ -75,32 +83,42 @@ public class SADIActivity extends AbstractAsynchronousActivity<SADIActivityConfi
 	 */
 	private Service service;
 
-	/**
-	 * Tree representations of the service input/output OWL classes.
-	 */
-	private RestrictionNode inputRestrictionTree, outputRestrictionTree;
-
-	private Map<OntClass, Set<SADIActivityOutputPort>> outputPortClassMapping;
-	private Map<OntClass, Set<SADIActivityInputPort>> inputPortClassMapping;
-
-	private Map<String, SADIActivityOutputPort> outputPortMapping;
-	private Map<String, SADIActivityInputPort> inputPortMapping;
+	private Map<String, SADIActivityOutputPort> outputPortMap;
+	private Map<String, SADIActivityInputPort> inputPortMap;
 
 	/**
 	 * Constructs a new SADIActivity.
 	 */
 	public SADIActivity() {
-		OntDocumentManager.getInstance().setCacheModels(false);
-		inputPortMapping = new HashMap<String, SADIActivityInputPort>();
-		outputPortMapping = new HashMap<String, SADIActivityOutputPort>();
-		inputPortClassMapping = new HashMap<OntClass, Set<SADIActivityInputPort>>();
-		outputPortClassMapping = new HashMap<OntClass, Set<SADIActivityOutputPort>>();
+//		OntDocumentManager.getInstance().setCacheModels(false);
+		inputPortMap = new HashMap<String, SADIActivityInputPort>();
+		outputPortMap = new HashMap<String, SADIActivityOutputPort>();
 	}
 
 	@Override
 	public void configure(SADIActivityConfigurationBean configurationBean)
 			throws ActivityConfigurationException {
 		this.configurationBean = configurationBean;
+		
+		try {
+			service = getRegistry().getService(configurationBean.getServiceURI());
+		} catch (IOException e) {
+			throw new ActivityConfigurationException(String.format("invalid registry URL: %s", e.getMessage()));
+		} catch (SADIException e) {
+			logger.error("error loading service definition", e);
+			throw new ActivityConfigurationException(String.format("error loading service definition: %s", e.getMessage()));
+		}
+		
+		/* TODO this only needs to happen when the new configurationBean
+		 * has been loaded from a saved workflow; given that, is there a
+		 * better place to put this?
+		 */
+		try {
+			SADIActivityConfigurationMigration.updateConfiguration(this, service);
+		} catch (SADIException e) {
+			throw new ActivityConfigurationException("error updating configuration", e);
+		}
+		
 		try {
 			configurePorts();
 		} catch (IOException e) {
@@ -118,137 +136,46 @@ public class SADIActivity extends AbstractAsynchronousActivity<SADIActivityConfi
 	@Override
 	public void executeAsynch(final Map<String, T2Reference> inputData,
 			final AsynchronousActivityCallback callback) {
-		callback.requestRun(new Runnable() {
-
-			@SuppressWarnings("unchecked")
-			public void run() {
-				String inputUri = configurationBean.getServiceURI() + UUID.randomUUID();
-				InvocationContext context = callback.getContext();
-				ReferenceService referenceService = context.getReferenceService();
-
-				try {
-					// resolve inputs
-					for (Entry<String, T2Reference> entry : inputData.entrySet()) {
-						String portName = entry.getKey();
-						T2Reference inputReference = entry.getValue();
-						try {
-							// try to render as RDF first
-							List<?> inputNodes = (List<RDFNode>) referenceService.renderIdentifier(
-									inputReference, RDFNode.class, context);
-							inputPortMapping.get(portName).setValues(inputUri, inputNodes);
-						} catch (ReferenceServiceException e) {
-							// not RDF, fall back to string
-							List<?> inputValues = (List<String>) referenceService.renderIdentifier(
-									inputReference, String.class, context);
-							inputPortMapping.get(portName).setValues(inputUri, inputValues);
-						}
-					}
-
-					if (logger.isDebugEnabled()) {
-						logger.debug(SADIUtils.printTree(getInputRestrictionTree()));
-					}
-					
-					List<Resource> inputResources = SADIUtils.getInputResources(
-							getInputRestrictionTree(), inputUri);
-					
-					if (logger.isDebugEnabled()) {
-						logger.debug("Input resources:");
-						for (Resource resource : inputResources) {
-							logger.debug(resource);
-						}
-					}
-					
-					// run the activity
-					Collection<Triple> outputTriples = service.invokeService(inputResources);
-
-					if (logger.isDebugEnabled()) {
-						logger.debug("Output triples:");
-						for (Triple triple : outputTriples) {
-							logger.debug(triple);
-						}
-					}
-
-					if (logger.isDebugEnabled()) {
-						logger.debug(SADIUtils.printTree(getOutputRestrictionTree()));
-					}
-
-					SADIUtils.putOutputResources(getOutputRestrictionTree(), outputTriples,
-							inputResources, inputUri);
-
-					// register outputs
-					Map<String, T2Reference> outputData = new HashMap<String, T2Reference>();
-
-					Collection<SADIActivityOutputPort> outputPorts = outputPortMapping.values();
-					for (SADIActivityOutputPort outputPort : outputPorts) {
-						if (outputPort.getValues(inputUri) != null) {
-                            outputData.put(outputPort.getName(), referenceService.register(outputPort
-                                    .getValues(inputUri), outputPort.getDepth(), true, context));
-                        } else {
-                            // FIXME populate with an empty list?
-                            System.out.println(String.format("Empty output detected for '%s'!", outputPort.getName()));
-                            outputData.put(outputPort.getName(), referenceService.register(new ArrayList(),
-                                    outputPort.getDepth(), true, context));
-                        }
-						outputPort.clearValues(inputUri);
-					}
-
-					// send result to the callback
-					callback.receiveResult(outputData, new int[0]);
-				} catch (ReferenceServiceException e) {
-					logger.warn("ReferenceService error while executing activity", e);
-					callback.fail("ReferenceService error while executing activity", e);
-				} catch (IOException e) {
-					logger.warn("IO error while executing activity", e);
-					callback.fail("IO error while executing activity", e);
-				} catch (SADIException e) {
-					logger.warn("Error while executing activity", e);
-					callback.fail("Error while executing activity", e);
-				}
-			}
-
-		});
+		callback.requestRun(new ServiceCall(inputData, callback));
 	}
 
-	private void configurePorts() throws SADIException, IOException {
+	private void configurePorts() throws SADIException, IOException
+	{
 		removeInputs();
-		RestrictionNode inputRestrictionTree = getInputRestrictionTree();
-		inputRestrictionTree.clearSelected();
-		List<List<String>> inputRestrictionPaths = configurationBean.getInputRestrictionPaths();
-		if (inputRestrictionPaths.size() == 0) {
-			inputRestrictionPaths = SADIUtils.getDefaultRestrictionPaths(inputRestrictionTree);
-			configurationBean.setInputRestrictionPaths(inputRestrictionPaths);
+		Map<String, RDFPath> inputPortMap;
+		if (configurationBean.getInputPortMap().isEmpty()) {
+			inputPortMap = SADIUtils.getDefaultInputPorts(getService());
+			// also update the configuration bean...
+			SADIUtils.addPaths(configurationBean.getInputPortMap(), inputPortMap);
+		} else {
+			inputPortMap = SADIUtils.convertPathMap(configurationBean.getInputPortMap(), getService().getInputClass().getOntModel());
 		}
-		int inputDepth = SADIUtils.getMinimumDepth(inputRestrictionPaths);
-		for (List<String> path : inputRestrictionPaths) {
-			RestrictionNode restriction = SADIUtils.getRestriction(inputRestrictionTree, path);
-			restriction.setSelected();
-			addInput(restriction, inputDepth > 0 ? inputDepth : 1);
-		}
+		for (Map.Entry<String, RDFPath> entry: inputPortMap.entrySet())
+			addInputPort(entry.getKey(), entry.getValue());
 
 		removeOutputs();
-		RestrictionNode outputRestrictionTree = getOutputRestrictionTree();
-		outputRestrictionTree.clearSelected();
-		List<List<String>> outputRestrictionPaths = configurationBean.getOutputRestrictionPaths();
-		if (outputRestrictionPaths.size() == 0) {
-			outputRestrictionPaths = SADIUtils.getDefaultRestrictionPaths(outputRestrictionTree);
-			configurationBean.setOutputRestrictionPaths(outputRestrictionPaths);
+		Map<String, RDFPath> outputPortMap;
+		if (configurationBean.getOutputPortMap().isEmpty()) {
+			outputPortMap = SADIUtils.getDefaultOutputPorts(getService());
+			// also update the configuration bean...
+			SADIUtils.addPaths(configurationBean.getOutputPortMap(), outputPortMap);
+		} else {
+			outputPortMap = SADIUtils.convertPathMap(configurationBean.getOutputPortMap(), getService().getOutputClass().getOntModel());
 		}
-		int outputDepth = SADIUtils.getMinimumDepth(outputRestrictionPaths) + 1;
-		for (List<String> path : outputRestrictionPaths) {
-			RestrictionNode restriction = SADIUtils.getRestriction(outputRestrictionTree, path);
-			restriction.setSelected();
-			addOutput(restriction, outputDepth > 0 ? outputDepth : 1);
-		}
+		for (Map.Entry<String, RDFPath> entry: outputPortMap.entrySet())
+			addOutputPort(entry.getKey(), entry.getValue());
 	}
 
 	/**
 	 * Returns the SADI registry that the activity is configured to use.
 	 * 
 	 * @return the SADI registry that the activity is configured to use
-	 * @throws IOException
-	 *             if the SADI registry cannot be accessed
+	 * @throws IOException if the URL of the registry is invalid
 	 */
 	public Registry getRegistry() throws IOException {
+		/* we can't just instantiate in configure() because this is also
+		 * used by the HealthChecker...
+		 */
 		if (registry == null) {
 			registry = SADIRegistries.getRegistry(configurationBean.getSparqlEndpoint(),
 					configurationBean.getGraphName());
@@ -258,66 +185,41 @@ public class SADIActivity extends AbstractAsynchronousActivity<SADIActivityConfi
 
 	/**
 	 * Returns the SADI service that this activity invokes.
-	 * 
+	 * This will return null if the activity has not been configured.
 	 * @return the SADI service that this activity invokes
 	 * @throws IOException
 	 * @throws SADIException
 	 */
-	public Service getService() throws IOException, SADIException {
-		if (service == null) {
-			service = getRegistry().getService(configurationBean.getServiceURI());
-		}
+	public Service getService() {
 		return service;
 	}
-
-	protected void addInput(RestrictionNode restrictedProperty, int portDepth) {
-		String portName = Tools.uniquePortName(restrictedProperty.toString(), inputPorts);
-		SADIActivityInputPort inputPort = new SADIActivityInputPort(this, restrictedProperty,
-				portName, portDepth);
-		addInputPortClassMapping(restrictedProperty.getOntClass(), inputPort);
-		inputPortMapping.put(portName, inputPort);
+	
+	protected void addInputPort(String name, RDFPath path) {
+		SADIActivityInputPort inputPort = new SADIActivityInputPort(this, 
+				path, name, INPUT_DEPTH);
+//		addInputPortClassMapping(path.getLastPathElement().getType(), inputPort);
+		inputPortMap.put(name, inputPort);
 		inputPorts.add(inputPort);
 	}
-
-	protected void addOutput(RestrictionNode restrictedProperty, int portDepth) {
-		String portName = Tools.uniquePortName(restrictedProperty.toString(), outputPorts);
-		SADIActivityOutputPort outputPort = new SADIActivityOutputPort(this, restrictedProperty,
-				portName, portDepth);
-		addOutputPortClassMapping(restrictedProperty.getOntClass(), outputPort);
-		outputPortMapping.put(portName, outputPort);
+	
+	protected void addOutputPort(String name, RDFPath path) {
+		SADIActivityOutputPort outputPort = new SADIActivityOutputPort(this, 
+				path, name, OUTPUT_DEPTH);
+//		addOutputPortClassMapping(path.getLastPathElement().getType(), outputPort);
+		outputPortMap.put(name, outputPort);
 		outputPorts.add(outputPort);
-	}
-
-	protected void addInputPortClassMapping(OntClass ontClass, SADIActivityInputPort inputPort) {
-		Set<SADIActivityInputPort> inputs = inputPortClassMapping.get(ontClass);
-		if (inputs == null) {
-			inputs = new HashSet<SADIActivityInputPort>();
-			inputPortClassMapping.put(ontClass, inputs);
-		}
-		inputs.add(inputPort);
-	}
-
-	protected void addOutputPortClassMapping(OntClass ontClass, SADIActivityOutputPort outputPort) {
-		Set<SADIActivityOutputPort> outputs = outputPortClassMapping.get(ontClass);
-		if (outputs == null) {
-			outputs = new HashSet<SADIActivityOutputPort>();
-			outputPortClassMapping.put(ontClass, outputs);
-		}
-		outputs.add(outputPort);
 	}
 
 	@Override
 	public void removeInputs() {
 		super.removeInputs();
-		inputPortClassMapping.clear();
-		inputPortMapping.clear();
+		inputPortMap.clear();
 	}
 
 	@Override
 	public void removeOutputs() {
 		super.removeOutputs();
-		outputPortClassMapping.clear();
-		outputPortMapping.clear();
+		outputPortMap.clear();
 	}
 
 	/**
@@ -326,10 +228,11 @@ public class SADIActivity extends AbstractAsynchronousActivity<SADIActivityConfi
 	 * @param ontClass the OWL class
 	 * @return the import ports that consume instances of the specified OWL class
 	 */
-	public Set<SADIActivityInputPort> getInputPortsForClass(OntClass ontClass) {
-		Set<SADIActivityInputPort> inputs = inputPortClassMapping.get(ontClass);
-		if (inputs == null) {
-			return Collections.emptySet();
+	public Set<SADIActivityInputPort> getInputPortsForClass(String classURI) {
+		Set<SADIActivityInputPort> inputs = new HashSet<SADIActivityInputPort>();
+		for (SADIActivityInputPort input: inputPortMap.values()) {
+			if (input.getValuesFromURI().equals(classURI))
+				inputs.add(input);
 		}
 		return Collections.unmodifiableSet(inputs);
 	}
@@ -340,44 +243,190 @@ public class SADIActivity extends AbstractAsynchronousActivity<SADIActivityConfi
 	 * @param ontClass the OWL class
 	 * @return the output ports that produce instances of the specified OWL class
 	 */
-	public Set<SADIActivityOutputPort> getOutputPortsForClass(OntClass ontClass) {
-		Set<SADIActivityOutputPort> outputs = outputPortClassMapping.get(ontClass);
-		if (outputs == null) {
-			return Collections.emptySet();
+	public Set<SADIActivityOutputPort> getOutputPortsForClass(String classURI) {
+		// TODO should match subclasses too
+		Set<SADIActivityOutputPort> outputs = new HashSet<SADIActivityOutputPort>();
+		for (SADIActivityOutputPort output: outputPortMap.values()) {
+			if (output.getValuesFromURI().equals(classURI))
+				outputs.add(output);
 		}
 		return Collections.unmodifiableSet(outputs);
 	}
-
-	/**
-	 * Returns a tree representations of the service input class.
-	 * 
-	 * @return a tree representations of the service input class
-	 * @throws IOException
-	 * @throws SADIException
-	 */
-	public RestrictionNode getInputRestrictionTree() throws SADIException, IOException {
-		if (inputRestrictionTree == null) {
-			inputRestrictionTree = SADIUtils.buildRestrictionTree(
-				getService().getInputClass(), null, configurationBean.getInputRestrictionPaths()
-			);
+	
+	private class ServiceCall implements Runnable
+	{
+		private final Map<String, T2Reference> inputData;
+		private final AsynchronousActivityCallback callback;
+		private final InvocationContext context;
+		private final ReferenceService referenceService;
+		private Model model;
+		private List<Resource> inputs;
+		
+		public ServiceCall(Map<String, T2Reference> inputData, 
+				 AsynchronousActivityCallback callback)
+		{
+			this.inputData = inputData;
+			this.callback = callback;
+			context = callback.getContext();
+			referenceService = context.getReferenceService();
+			model = ModelFactory.createDefaultModel();
+			inputs = new ArrayList<Resource>();
 		}
-		return inputRestrictionTree;
-	}
+		
+		private Resource getInputResource(int index)
+		{
+			while (inputs.size() <= index)
+				inputs.add(model.createResource(RdfUtils.createUniqueURI()));
 
-	/**
-	 * Returns a tree representations of the service output class.
-	 * 
-	 * @return a tree representations of the service output class
-	 * @throws IOException
-	 * @throws SADIException
-	 */
-	public RestrictionNode getOutputRestrictionTree() throws SADIException, IOException {
-		if (outputRestrictionTree == null) {
-			outputRestrictionTree = SADIUtils.buildRestrictionTree(
-				getService().getOutputClass(), getService().getInputClass(), configurationBean.getOutputRestrictionPaths()
-			);
+			return inputs.get(index);
 		}
-		return outputRestrictionTree;
-	}
+		
+		private List<?> getInputValues(T2Reference inputReference)
+		{
+			try {
+				// try to render as RDF first
+				return (List<?>) referenceService.renderIdentifier(
+						inputReference, RDFNode.class, context);
+			} catch (ReferenceServiceException e) {
+				// not RDF, fall back to string
+				return (List<?>) referenceService.renderIdentifier(
+						inputReference, String.class, context);
+			}
+		}
+		
+		private List<RDFNode> getInputNodes(List<?> inputValues)
+		{
+			Model model = ModelFactory.createDefaultModel();
+			List<RDFNode> inputNodes = new ArrayList<RDFNode>();
+			for (Object inputValue: inputValues) {
+				if (inputValue instanceof RDFNode) {
+					inputNodes.add((RDFNode)inputValue);
+				} else if (inputValue instanceof String) {
+					String inputString = (String)inputValue;
+					if (inputString.startsWith("<") &&
+						inputString.endsWith(">")) {
+						Resource resource = model.createResource(StringUtils.substring(inputString, 1, -1));
+						// TODO try to resolve resource?
+//						try {
+//							model.read(resource.getURI());
+//						} catch (Exception e) {
+//							logger.error(e.getMessage(), e);
+//						}
+						inputNodes.add(resource);
+					} else {
+						inputNodes.add(RdfUtils.createTypedLiteral((String)inputValue));
+					}
+				} else {
+					throw new RuntimeException(String.format("input was an unexpected instance of %s", inputValue.getClass()));
+				}
+			}
+			return inputNodes;
+		}
+		
+		public void run()
+		{
+			try {
+				Service service = getService();
+				
+				// accumulate inputs...
+				for (Entry<String, T2Reference> entry : inputData.entrySet()) {
+					T2Reference inputReference = entry.getValue();
+					List<?> inputValues = getInputValues(inputReference);
+					List<RDFNode> inputNodes = getInputNodes(inputValues);
+					
+					String portName = entry.getKey();
+					SADIActivityInputPort inputPort = inputPortMap.get(portName);
+					if (inputPort == null) {
+						logger.warn(String.format("ignoring data received on unknown port %s", portName));
+						continue;
+					}
+					RDFPath path = inputPort.getRDFPath(); // FIXME might be null on loaded workflow?
+					
+					if (path.isEmpty()) {
+						/* if the path is empty, that means that each input node is an
+						 * instance of the input class, so we can use them directly, 
+						 * preserving their URIs, if any...
+						 */
+						for (RDFNode inputNode: inputNodes) {
+							if (inputNode.isResource()) {
+								Resource inputResource = inputNode.as(Resource.class);
+								if (inputResource.isURIResource()) {
+									inputs.add(inputResource);
+									// TODO might have to copy contents to our model?
+								} else {
+									/* inputs to SADI service must have URIs, so
+									 * create a named clone of the anonymous resource
+									 * and use that instead...
+									 */
+									Resource anonResource = inputNode.as(Resource.class);
+									Resource namedResource = ResourceUtils.renameResource(anonResource, RdfUtils.createUniqueURI());
+									inputs.add(namedResource);
+									// TODO might have to copy contents to our model?
+								}
+							} else {
+								/* hope the literal is an ID and try to do something with it...
+								 */
+								if (LSRNUtils.isLSRNType(service.getInputClass())) {
+									inputs.add(LSRNUtils.createInstance(model, service.getInputClass(), RdfUtils.getPlainString(inputNode)));
+								} else {
+									logger.warn(String.format("ignoring literal value '%s' where a resource was expected", inputNode));
+								}
+							}
+						}
+					} else {
+						/* if the path is not empty, add these values to the model we're
+						 * accumulating... 
+						 */
+						for (int i=0; i<inputNodes.size(); ++i) {
+							RDFNode node = (RDFNode)inputNodes.get(i);
+							path.addValueRootedAt(getInputResource(i), node);
+							if (node.isResource())
+								model.add(ResourceUtils.reachableClosure(node.asResource()));
+						}
+					}
+				}
+				
+				// call the service...
+				Model outputTriples = service.invokeService(inputs);
+				model.add(outputTriples);
+				outputTriples.close();
+				
+				// TODO do this earlier so we benefit when assembling input data?
+				OntModel ontModel = service.getOutputClass().getOntModel();
+				ontModel.addSubModel(model);
+				ontModel.rebind(); // may not be necessary...
 
+				// register outputs...
+				Map<String, T2Reference> outputData = new HashMap<String, T2Reference>();
+				Collection<SADIActivityOutputPort> outputPorts = outputPortMap.values();
+				for (SADIActivityOutputPort outputPort : outputPorts) {
+					RDFPath path = outputPort.getRDFPath();
+					List<List<RDFNode>> outputLists = new ArrayList<List<RDFNode>>();
+					for (Resource input: inputs) {
+						List<RDFNode> outputs = new ArrayList<RDFNode>();
+						Resource root = input.inModel(ontModel);
+						Collection<RDFNode> values = path.getValuesRootedAt(root);
+						for (RDFNode value: values) {
+							outputs.add(value.inModel(model));
+						}
+						outputLists.add(outputs);
+					}
+					outputData.put(outputPort.getName(), referenceService.register(outputLists,
+							OUTPUT_DEPTH, true, context));
+				}
+				
+				ontModel.removeSubModel(model);
+				ontModel.rebind(); // may not be necessary...
+
+				// send result to the callback
+				callback.receiveResult(outputData, new int[0]);
+			} catch (ReferenceServiceException e) {
+				logger.warn("ReferenceService error while executing activity", e);
+				callback.fail("ReferenceService error while executing activity", e);
+			} catch (Exception e) {
+				logger.warn("Error while executing activity", e);
+				callback.fail("Error while executing activity", e);
+			}
+		}	
+	}
 }

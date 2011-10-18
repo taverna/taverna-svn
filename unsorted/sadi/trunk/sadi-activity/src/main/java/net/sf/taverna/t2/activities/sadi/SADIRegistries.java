@@ -52,7 +52,7 @@ public class SADIRegistries {
 	 *            the URL of the registry graph name
 	 * @return the SADI Registry that has the specified sparql endpoint and graph name
 	 * @throws IOException
-	 *             it the registry cannot be created
+	 *             if the SPARQL endpoint URL is invalid
 	 */
 	public static Registry getRegistry(String sparqlEndpoint, String graphName) throws IOException {
 		RegistryDetails rd = new RegistryDetails(sparqlEndpoint, graphName);

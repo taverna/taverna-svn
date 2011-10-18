@@ -23,6 +23,7 @@ package net.sf.taverna.t2.activities.sadi.servicedescriptions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import javax.swing.Icon;
@@ -31,8 +32,9 @@ import net.sf.taverna.t2.activities.sadi.SADIActivityConfigurationBean;
 import net.sf.taverna.t2.activities.sadi.SADIRegistries;
 import net.sf.taverna.t2.servicedescriptions.AbstractConfigurableServiceProvider;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescription;
+import ca.wilkinsonlab.sadi.SADIException;
+import ca.wilkinsonlab.sadi.client.RegistryImpl;
 import ca.wilkinsonlab.sadi.client.Service;
-import ca.wilkinsonlab.sadi.common.SADIException;
 
 /**
  * 
@@ -43,35 +45,33 @@ public class SADIServiceProvider extends AbstractConfigurableServiceProvider<SAD
 
 	private static final String SERVICE_NAME = "SADI";
 	
-	private static final int partialResultSize = 10;
+	private static final int partialResultSize = 50;
 
 	public SADIServiceProvider() {
 		super(new SADIServiceProviderConfig("http://somehost/sparql", "http://somehost/registry"));
 	}
 
-	public void findServiceDescriptionsAsync(
-			FindServiceDescriptionsCallBack callBack) {
+	public void findServiceDescriptionsAsync(FindServiceDescriptionsCallBack callBack) {
 		List<ServiceDescription<SADIActivityConfigurationBean>> descriptions = new ArrayList<ServiceDescription<SADIActivityConfigurationBean>>();
 		String sparqlEndpoint = serviceProviderConfig.getSparqlEndpoint();
 		String graphName = serviceProviderConfig.getGraphName();
 		callBack.status("About to find services for " + SERVICE_NAME + " at " + sparqlEndpoint);		
 		try {
-			for (Service service : SADIRegistries.getRegistry(sparqlEndpoint, graphName).getAllServices()) {
-				SADIServiceDescription item = new SADIServiceDescription();
-				item.setSparqlEndpoint(sparqlEndpoint);
-				item.setGraphName(graphName);
-				item.setServiceURI(service.getURI());
-				item.setName(service.getName());
-				item.setDescription(service.getDescription());
-				descriptions.add(item);
-				if (descriptions.size() == partialResultSize) {
-					callBack.partialResults(descriptions);
-					descriptions.clear();
+			int offset=0, servicesReturned=0;
+			do {
+				/* FIXME stop using the implementation directly when this method
+				 * is moved to the interface...
+				 */
+				Collection<Service> services = ((RegistryImpl)SADIRegistries.getRegistry(sparqlEndpoint, graphName)).getAllServices(partialResultSize, offset);
+				servicesReturned = services.size();
+				offset += servicesReturned;
+				for (Service service : services) {
+					ServiceDescription<SADIActivityConfigurationBean> serviceDescription = getServiceDescription(service);
+					descriptions.add(serviceDescription);
 				}
-			}
-			if (descriptions.size() > 0) {
 				callBack.partialResults(descriptions);
-			}
+				descriptions.clear();
+			} while (servicesReturned == partialResultSize);
 			callBack.finished();
 		}
 		catch (IOException e) {
@@ -91,11 +91,17 @@ public class SADIServiceProvider extends AbstractConfigurableServiceProvider<SAD
 
 	@Override
 	public List<SADIServiceProviderConfig> getDefaultConfigurations() {
+		/* TODO 
+		 * it would be nice if this used ca.wilkinsonlab.sadi.client.Config.getRegistries();
+		 * can we update it so it does? is this method only called the first time the plugin
+		 * is used or will returning clients get the updated defaults?
+		 */
 		List<SADIServiceProviderConfig> defaults = new ArrayList<SADIServiceProviderConfig>();
 		defaults.add(new SADIServiceProviderConfig("http://biordf.net/sparql", "http://sadiframework.org/registry/"));
 		return defaults;
 	}
 
+	@Override
 	protected List<? extends Object> getIdentifyingData() {
 		List<String> result;
 		result = Arrays.asList(getConfiguration().getSparqlEndpoint());
@@ -105,6 +111,15 @@ public class SADIServiceProvider extends AbstractConfigurableServiceProvider<SAD
 	public String getId() {
 		return "http://sadiframework.org/registry/serviceprovider";
 	}
-
+	
+	private SADIServiceDescription getServiceDescription(ca.wilkinsonlab.sadi.ServiceDescription service)
+	{
+		SADIServiceDescription item = new SADIServiceDescription();
+		item.setSparqlEndpoint(serviceProviderConfig.getSparqlEndpoint());
+		item.setGraphName(serviceProviderConfig.getGraphName());
+		item.setServiceInfo(service);
+		return item;
+	}
+	
 }
 

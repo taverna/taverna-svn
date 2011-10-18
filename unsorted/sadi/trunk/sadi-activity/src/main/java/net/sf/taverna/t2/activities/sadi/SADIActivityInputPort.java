@@ -25,9 +25,17 @@ import java.util.List;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.workflowmodel.AbstractPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
+import ca.wilkinsonlab.sadi.beans.RestrictionBean;
+import ca.wilkinsonlab.sadi.client.Service;
+import ca.wilkinsonlab.sadi.rdfpath.RDFPath;
+import ca.wilkinsonlab.sadi.rdfpath.RDFPathElement;
+import ca.wilkinsonlab.sadi.utils.LabelUtils;
+import ca.wilkinsonlab.sadi.utils.OwlUtils;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
  * A {@link SADIActivity} input port.
@@ -38,64 +46,100 @@ public class SADIActivityInputPort extends AbstractPort implements ActivityInput
 		SADIActivityPort {
 
 	private final SADIActivity sadiActivity;
-	private final RestrictionNode restriction;
+	private final RDFPath rdfPath;
+	private final String valuesFromURI;
+	private final String valuesFromLabel;
 
 	/**
 	 * Constructs a new SADIActivityInputPort.
 	 * 
 	 * @param sadiActivity
-	 * @param restriction
+	 * @param rdfPath
 	 * @param name
 	 * @param depth
 	 */
-	public SADIActivityInputPort(SADIActivity sadiActivity, RestrictionNode restriction, String name,
+	public SADIActivityInputPort(SADIActivity sadiActivity, RDFPath rdfPath, String name,
 			int depth) {
 		super(name, depth);
 		this.sadiActivity = sadiActivity;
-		this.restriction = restriction;
+		this.rdfPath = rdfPath;
+		if (rdfPath.isEmpty()) {
+			/* if the RDFPath is empty this port consumes instances of the 
+			 * service's input class...
+			 */
+			Service service = sadiActivity.getService();
+			if (service != null) {
+				valuesFromURI = service.getInputClassURI();
+				valuesFromLabel = SADIUtils.getInputClassLabel(service);
+			} else {
+				// this shouldn't happen...
+				valuesFromURI = null;
+				valuesFromLabel = null;
+			}
+		} else {
+			/* if the RDFPath isn't empty, this port consumes instances of
+			 * the last path element's valuesFrom...
+			 */
+			RDFPathElement element = rdfPath.getLastPathElement();
+			if (element.getClass() != null) {
+				RestrictionBean bean = element.toRestrictionBean();
+				valuesFromURI = bean.getValuesFromURI();
+				valuesFromLabel = bean.getValuesFromLabel();
+			} else {
+				/* use the range of the property...
+				 */
+				Property p = element.getProperty();
+				if (p.canAs(OntProperty.class)) {
+					OntClass range = OwlUtils.getUsefulRange(p.as(OntProperty.class));
+					valuesFromURI = range.getURI();
+					valuesFromLabel = LabelUtils.getLabel(range);
+				} else {
+					valuesFromURI = RDFS.Resource.getURI();
+					valuesFromLabel = "Resource";
+				}
+			}
+		}
 	}
 
 	public SADIActivity getSADIActivity() {
 		return sadiActivity;
 	}
 
-	public OntClass getOntClass() {
-		return restriction.getOntClass();
-	}
-
-	public OntProperty getOntProperty() {
-		return restriction.getOntProperty();
-	}
-
-	public List<?> getValues(String id) {
-		return restriction.getValues(id);
-	}
-
-	public void setValues(String id, List<?> values) {
-		restriction.setValues(id, values);
-	}
-
-	public void clearValues(String id) {
-		restriction.clearValues(id);
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.activities.sadi.SADIActivityPort#getRDFPath()
+	 */
+	public RDFPath getRDFPath()
+	{
+		return rdfPath;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort#
-	 * allowsLiteralValues()
+	 * @see net.sf.taverna.t2.activities.sadi.SADIActivityPort#getValuesFromURI()
+	 */
+	public String getValuesFromURI()
+	{
+		// TODO Auto-generated method stub
+		return valuesFromURI;
+	}
+
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.activities.sadi.SADIActivityPort#getValuesFromLabel()
+	 */
+	public String getValuesFromLabel() {
+		// TODO Auto-generated method stub
+		return valuesFromLabel;
+	}
+
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort#allowsLiteralValues()
 	 */
 	public boolean allowsLiteralValues() {
 		return false;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort#
-	 * getHandledReferenceSchemes()
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort#getHandledReferenceSchemes()
 	 */
 	public List<Class<? extends ExternalReferenceSPI>> getHandledReferenceSchemes() {
 		return null;

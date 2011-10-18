@@ -20,13 +20,19 @@
  ******************************************************************************/
 package net.sf.taverna.t2.activities.sadi;
 
-import java.util.List;
-
 import net.sf.taverna.t2.workflowmodel.AbstractOutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityOutputPort;
+import ca.wilkinsonlab.sadi.beans.RestrictionBean;
+import ca.wilkinsonlab.sadi.client.Service;
+import ca.wilkinsonlab.sadi.rdfpath.RDFPath;
+import ca.wilkinsonlab.sadi.rdfpath.RDFPathElement;
+import ca.wilkinsonlab.sadi.utils.LabelUtils;
+import ca.wilkinsonlab.sadi.utils.OwlUtils;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
  * A {@link SADIActivity} output port.
@@ -37,59 +43,101 @@ public class SADIActivityOutputPort extends AbstractOutputPort implements Activi
 		SADIActivityPort {
 
 	private final SADIActivity sadiActivity;
-	private final RestrictionNode restriction;
+	private final RDFPath rdfPath;
+	private final String valuesFromURI;
+	private final String valuesFromLabel;
 
 	/**
 	 * Constructs a new SADIActivityOutputPort.
 	 * 
 	 * @param sadiActivity
-	 * @param restriction
+	 * @param rdfPath
 	 * @param name
 	 * @param portDepth
 	 */
-	public SADIActivityOutputPort(SADIActivity sadiActivity, RestrictionNode restriction, String name,
+	public SADIActivityOutputPort(SADIActivity sadiActivity, RDFPath rdfPath, String name,
 			int portDepth) {
-		this(sadiActivity, restriction, name, portDepth, portDepth);
+		this(sadiActivity, rdfPath, name, portDepth, portDepth);
 	}
 
 	/**
 	 * Constructs a new SADIActivityOutputPort.
 	 * 
 	 * @param sadiActivity
-	 * @param restriction
+	 * @param rdfPath
 	 * @param name
 	 * @param portDepth
 	 * @param granularDepth
 	 */
-	public SADIActivityOutputPort(SADIActivity sadiActivity, RestrictionNode restriction, String name,
+	public SADIActivityOutputPort(SADIActivity sadiActivity, RDFPath rdfPath, String name,
 			int portDepth, int granularDepth) {
 		super(name, portDepth, granularDepth);
 		this.sadiActivity = sadiActivity;
-		this.restriction = restriction;
+		this.rdfPath = rdfPath;
+		if (rdfPath.isEmpty()) {
+			/* if the RDFPath is empty this port produces instances of the 
+			 * service's output class...
+			 */
+			Service service = sadiActivity.getService();
+			if (service != null) {
+				valuesFromURI = service.getOutputClassURI();
+				valuesFromLabel = SADIUtils.getOutputClassLabel(service);
+			} else {
+				// this shouldn't happen...
+				valuesFromURI = null;
+				valuesFromLabel = null;
+			}
+		} else {
+			/* if the RDFPath isn't empty, this port consumes instances of
+			 * the last path element's valuesFrom...
+			 */
+			RDFPathElement element = rdfPath.getLastPathElement();
+			if (element.getClass() != null) {
+				RestrictionBean bean = element.toRestrictionBean();
+				valuesFromURI = bean.getValuesFromURI();
+				valuesFromLabel = bean.getValuesFromLabel();
+			} else {
+				/* use the range of the property...
+				 */
+				Property p = element.getProperty();
+				if (p.canAs(OntProperty.class)) {
+					OntClass range = OwlUtils.getUsefulRange(p.as(OntProperty.class));
+					valuesFromURI = range.getURI();
+					valuesFromLabel = LabelUtils.getLabel(range);
+				} else {
+					valuesFromURI = RDFS.Resource.getURI();
+					valuesFromLabel = "Resource";
+				}
+			}
+		}
 	}
 
 	public SADIActivity getSADIActivity() {
 		return sadiActivity;
 	}
 
-	public OntClass getOntClass() {
-		return restriction.getOntClass();
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.activities.sadi.SADIActivityPort#getRDFPath()
+	 */
+	public RDFPath getRDFPath()
+	{
+		return rdfPath;
 	}
 
-	public OntProperty getOntProperty() {
-		return restriction.getOntProperty();
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.activities.sadi.SADIActivityPort#getValuesFromURI()
+	 */
+	public String getValuesFromURI()
+	{
+		// TODO Auto-generated method stub
+		return valuesFromURI;
 	}
 
-	public List<?> getValues(String id) {
-		return restriction.getValues(id);
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.activities.sadi.SADIActivityPort#getValuesFromLabel()
+	 */
+	public String getValuesFromLabel() {
+		// TODO Auto-generated method stub
+		return valuesFromLabel;
 	}
-
-	public void setValues(String id, List<?> values) {
-		restriction.setValues(id, values);
-	}
-
-	public void clearValues(String id) {
-		restriction.clearValues(id);
-	}
-
 }

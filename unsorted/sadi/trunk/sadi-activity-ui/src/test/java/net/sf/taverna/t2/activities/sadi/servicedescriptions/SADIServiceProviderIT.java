@@ -29,6 +29,7 @@ import net.sf.taverna.t2.servicedescriptions.ServiceDescription;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescriptionProvider.FindServiceDescriptionsCallBack;
 import net.sf.taverna.t2.workflowmodel.ConfigurationException;
 
+import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,6 +39,8 @@ import org.junit.Test;
  * @author David Withers
  */
 public class SADIServiceProviderIT {
+	
+	private static final Logger logger = Logger.getLogger(SADIServiceProviderIT.class);
 
 	private final class FindServiceDescriptionsCallBackImplementation implements
 			FindServiceDescriptionsCallBack {
@@ -52,9 +55,10 @@ public class SADIServiceProviderIT {
 			statusCalled = true;
 		}
 
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings("rawtypes")
 		public void partialResults(Collection<? extends ServiceDescription> serviceDescriptions) {
-			partialResultsCalled = true;
+			for (ServiceDescription service: serviceDescriptions)
+				logger.debug(String.format("found service %s", service.getName()));
 		}
 
 		public void finished() {

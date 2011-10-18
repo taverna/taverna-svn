@@ -23,7 +23,6 @@ package net.sf.taverna.t2.activities.sadi.menu;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import net.sf.taverna.t2.activities.sadi.RestrictionNode;
 import net.sf.taverna.t2.activities.sadi.SADIActivityInputPort;
 import net.sf.taverna.t2.ui.menu.ContextualSelection;
 import net.sf.taverna.t2.workflowmodel.EditsRegistry;
@@ -31,8 +30,9 @@ import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.sparql.vocabulary.FOAF;
+
+import ca.wilkinsonlab.sadi.rdfpath.RDFPath;
 
 /**
  * Unit tests for {@link SADIFindServicesMenuAction}
@@ -42,10 +42,6 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 public class SADIFindServicesMenuActionTest {
 	
 	private SADIFindServicesMenuAction findServicesMenuAction;
-
-	private RestrictionNode restrictionNode;
-	
-	private OntClass ontClass;
 	
 	private SADIActivityInputPort inputPort;
 
@@ -55,9 +51,7 @@ public class SADIFindServicesMenuActionTest {
 	@Before
 	public void setUp() throws Exception {
 		findServicesMenuAction = new SADIFindServicesMenuAction();
-		ontClass = ModelFactory.createOntologyModel().createClass();
-		restrictionNode = new RestrictionNode(ontClass);
-		inputPort = new SADIActivityInputPort(null, restrictionNode, null, 0);
+		inputPort = new SADIActivityInputPort(null, new RDFPath(FOAF.name, null), "name", 0);
 	}
 
 	/**

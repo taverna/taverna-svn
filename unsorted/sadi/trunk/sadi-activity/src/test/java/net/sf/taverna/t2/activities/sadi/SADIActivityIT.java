@@ -45,6 +45,12 @@ import org.junit.Test;
  * 
  * @author David Withers
  * 
+ * FIXME it's impratical to run integration tests against live services;
+ * they are not static (in that their definitions and their output change)
+ * and they are not reliable.  In the future, we should run a couple of
+ * local services with the Jetty plugin and test against those.
+ * (see http://code.google.com/p/sadi/source/browse/trunk/sadi.service.examples/pom.xml
+ *  for an example of binding the Jetty plugin to a particular Maven phase)
  */
 public class SADIActivityIT {
 
@@ -62,6 +68,7 @@ public class SADIActivityIT {
 	}
 
 	@Test
+	@Ignore(value="service definitions change all the time")
 	public void testConfigure() throws Exception {
 		Set<String> expectedInputs = new HashSet<String>();
 		expectedInputs.add("UniProt_Record");
@@ -92,7 +99,7 @@ public class SADIActivityIT {
 	}
 
 	@Test
-	@Ignore(value="service fails")
+	@Ignore(value="service definitions change all the time")
 	public void testConfigureMI() throws Exception {
 		Set<String> expectedInputs = new HashSet<String>();
 		expectedInputs.add("UniProt_Record");
@@ -123,6 +130,7 @@ public class SADIActivityIT {
 	}
 
 	@Test
+	@Ignore(value="service definitions change all the time")
 	public void testConfigureErmineJ() throws Exception {
 		Set<String> expectedInputs = new HashSet<String>();
 		expectedInputs.add("hasGOTerm (GO_Record)");
@@ -154,6 +162,7 @@ public class SADIActivityIT {
 	}
 
 	@Test
+	@Ignore(value="service output changes all the time")
 	public void testExecuteAsynch() throws Exception {
 		Map<String, Object> inputs = new HashMap<String, Object>();
 		inputs.put("UniProt_Record", Arrays.asList("P68871", "Q7Z591"));
@@ -192,6 +201,7 @@ public class SADIActivityIT {
 	}
 	
 	@Test
+	@Ignore(value="service output changes all the time")
 	public void testExecuteAsynchGO() throws Exception {
 		configurationBean.setServiceURI("http://sadiframework.org/services/getGOTerm");
 		Map<String, Object> inputs = new HashMap<String, Object>();
@@ -218,6 +228,7 @@ public class SADIActivityIT {
 	}
 	
 	@Test
+	@Ignore(value="service output changes all the time")
 	public void testExecuteAsynchGO2() throws Exception {
 		configurationBean.setServiceURI("http://sadiframework.org/services/getGOTerm");
 		Map<String, Object> inputs1 = new HashMap<String, Object>();
@@ -254,6 +265,7 @@ public class SADIActivityIT {
 }
 	
 	@Test
+	@Ignore(value="service output changes all the time")
 	public void testExecuteAsynchErmineJ() throws Exception {
 		configurationBean.setServiceURI("http://sadiframework.org/examples/ermineJgo");
 		List<List<String>> hasGoTerm = new ArrayList<List<String>>();

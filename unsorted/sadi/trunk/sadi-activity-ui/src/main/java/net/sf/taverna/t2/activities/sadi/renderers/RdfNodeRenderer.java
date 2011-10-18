@@ -26,7 +26,6 @@ import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import net.sf.taverna.t2.activities.sadi.SADIUtils;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.reference.Identified;
 import net.sf.taverna.t2.reference.ReferenceService;
@@ -57,12 +56,11 @@ public class RdfNodeRenderer implements Renderer {
 	public JComponent getComponent(ReferenceService referenceService, T2Reference reference)
 			throws RendererException {
 		RDFReference rdfReference = getReference(referenceService, reference, RDFReference.class);
-		RDFNode node = rdfReference.getValue();
-		return new JScrollPane(new JTextArea(SADIUtils.toString(node)));
+		return new JScrollPane(new JTextArea(rdfReference.getContents()));
 	}
 
 	public String getType() {
-		return "RDF Node";
+		return "RDF";
 	}
 
 	@SuppressWarnings("unchecked")

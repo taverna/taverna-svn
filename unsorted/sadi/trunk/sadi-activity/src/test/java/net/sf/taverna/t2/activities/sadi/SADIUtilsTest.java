@@ -22,9 +22,16 @@ package net.sf.taverna.t2.activities.sadi;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
 
-import com.hp.hpl.jena.graph.Node;
+import ca.wilkinsonlab.sadi.rdfpath.RDFPath;
+
+import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 
 /**
  * Unit tests for SADIUtils
@@ -43,12 +50,20 @@ public class SADIUtilsTest {
 	}
 
 	@Test
-	public void test() {
-//		Literal literal = Model.createPlainLiteral("0.33333333333333326^^http://www.w3.org/2001/XMLSchema#double");
-		Node literal = Node.createLiteral("0.33333333333333326^^http://www.w3.org/2001/XMLSchema#double", null, false);
-		System.out.println(literal.getLiteral());
-//		System.out.println(literal.getLexicalForm());
-//		System.out.println(literal.getDatatypeURI());
+	public void testReplacePortMap() throws Exception {
+		RDFPath name = new RDFPath(FOAF.name, null);
+		RDFPath knowsName = new RDFPath(FOAF.knows, FOAF.Person, FOAF.name, null);
+		RDFPath fundedByName = new RDFPath(FOAF.fundedBy, FOAF.Person, FOAF.name, null);
+		Collection<RDFPath> paths = new ArrayList<RDFPath>();
+		paths.add(name);
+		paths.add(knowsName);
+		paths.add(fundedByName);
+		Map<String, String> expected = new HashMap<String, String>();
+		expected.put("name", name.toString());
+		expected.put("knows some Person name", knowsName.toString());
+		expected.put("fundedBy some Person name", fundedByName.toString());
+		Map<String, String> uniquePortMap = SADIUtils.buildPortMap(paths, "port");
+		assertEquals(expected, uniquePortMap);
 	}
 	
 }

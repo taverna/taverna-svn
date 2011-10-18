@@ -21,7 +21,6 @@
 package net.sf.taverna.t2.activities.sadi.views;
 
 import java.awt.Frame;
-import java.io.IOException;
 import java.util.Iterator;
 
 import javax.swing.Action;
@@ -32,14 +31,16 @@ import net.sf.taverna.t2.activities.sadi.SADIActivity;
 import net.sf.taverna.t2.activities.sadi.SADIActivityConfigurationBean;
 import net.sf.taverna.t2.activities.sadi.SADIActivityPort;
 import net.sf.taverna.t2.activities.sadi.actions.SADIActivityConfigurationAction;
-import net.sf.taverna.t2.activities.sadi.utils.LabelUtils;
 import net.sf.taverna.t2.activities.sadi.views.SADIHtmlPanel.Table;
 import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityContextualView;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import ca.wilkinsonlab.sadi.client.Service;
-import ca.wilkinsonlab.sadi.common.SADIException;
+import ca.wilkinsonlab.sadi.rdfpath.RDFPath;
+import ca.wilkinsonlab.sadi.utils.LabelUtils;
+
+import com.hp.hpl.jena.rdf.model.Property;
 
 public class SADIActivityContextualView extends ActivityContextualView<SADIActivityConfigurationBean> {
 
@@ -58,15 +59,11 @@ public class SADIActivityContextualView extends ActivityContextualView<SADIActiv
 	private void buildHtmlTables() {
 		Table table = mainFrame.createTable();
 		String type = "details";
-		try {
-			Service service = getActivity().getService();
-			table.addProperty("Name", service.getName(), type);
-			String description = service.getDescription();
-			if (!"".equals(description)) {
-				table.addProperty("Description", description, type);
-			}
-		} catch (IOException e) {
-		} catch (SADIException e) {
+		Service service = getActivity().getService();
+		table.addProperty("Name", service.getName(), type);
+		String description = service.getDescription();
+		if (!"".equals(description)) {
+			table.addProperty("Description", description, type);
 		}
 		table.addProperty("Location", getConfigBean().getServiceURI(), type);
 		table.addProperty("Registry", getConfigBean().getGraphName(), type);
@@ -75,13 +72,7 @@ public class SADIActivityContextualView extends ActivityContextualView<SADIActiv
 		Iterator<ActivityInputPort> iterator = getActivity().getInputPorts().iterator();
 		for (int i = 0; iterator.hasNext(); i++) {
 			SADIActivityPort sadiPort = (SADIActivityPort) iterator.next();
-			type = i % 2 == 0 ? "even" : "odd";
-			table.addProperty("Name", sadiPort.getName(), type);
-			if (sadiPort.getOntProperty() != null) {
-				table.addProperty("Property", LabelUtils.getLabel(sadiPort.getOntProperty()), sadiPort.getOntProperty().getURI(), type);
-			}
-			table.addProperty("Type", LabelUtils.getLabel(sadiPort.getOntClass()), sadiPort.getOntClass().getURI(), type);
-			table.addProperty("Depth", String.valueOf(sadiPort.getDepth()), type);
+			addPortInfo(table, sadiPort, i % 2 == 0 ? "even" : "odd");
 		}
 
 		table.addSection("Service Outputs");
@@ -89,13 +80,19 @@ public class SADIActivityContextualView extends ActivityContextualView<SADIActiv
 		for (int i = 0; iterator2.hasNext(); i++) {
 			SADIActivityPort sadiPort = (SADIActivityPort) iterator2.next();
 			type = i % 2 == 0 ? "even" : "odd";
-			table.addProperty("Name", sadiPort.getName(), type);
-			if (sadiPort.getOntProperty() != null) {
-				table.addProperty("Property", LabelUtils.getLabel(sadiPort.getOntProperty()), sadiPort.getOntProperty().getURI(), type);
-			}
-			table.addProperty("Type", LabelUtils.getLabel(sadiPort.getOntClass()), sadiPort.getOntClass().getURI(), type);
-			table.addProperty("Depth", String.valueOf(sadiPort.getDepth()), type);
+			addPortInfo(table, sadiPort, type);
 		}
+	}
+
+	protected static void addPortInfo(Table table, SADIActivityPort sadiPort, String type) {
+		table.addProperty("Name", sadiPort.getName(), type);
+		RDFPath path = sadiPort.getRDFPath();
+		if (!path.isEmpty()) {
+			Property p = path.getLastPathElement().getProperty();
+			table.addProperty("Property", LabelUtils.getLabel(p), p.getURI(), type);
+		}
+		table.addProperty("Type", sadiPort.getValuesFromLabel(), sadiPort.getValuesFromURI(), type);
+		table.addProperty("Depth", String.valueOf(sadiPort.getDepth()), type);
 	}
 
 	@Override

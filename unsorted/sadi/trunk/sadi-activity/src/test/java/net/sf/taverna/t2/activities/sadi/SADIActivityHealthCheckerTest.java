@@ -37,12 +37,12 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationE
 
 import org.apache.commons.configuration.BaseConfiguration;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
+import ca.wilkinsonlab.sadi.SADIException;
+import ca.wilkinsonlab.sadi.client.Registry;
 import ca.wilkinsonlab.sadi.client.RegistryImpl;
-import ca.wilkinsonlab.sadi.client.Service.ServiceStatus;
-import ca.wilkinsonlab.sadi.common.SADIException;
+import ca.wilkinsonlab.sadi.client.ServiceStatus;
 
 /**
  * Unit tests for {@link SADIActivityHealthChecker}.
@@ -61,7 +61,7 @@ public class SADIActivityHealthCheckerTest {
 	public void setUp() throws Exception {
 		activity = new SADIActivity() {
 			@Override
-			public RegistryImpl getRegistry() throws IOException {
+			public Registry getRegistry() throws IOException {
 				return new RegistryImpl(new BaseConfiguration() {}) {
 					@Override
 					public ServiceStatus getServiceStatus(String serviceURI) throws SADIException {
@@ -97,18 +97,17 @@ public class SADIActivityHealthCheckerTest {
 	}
 
 	@Test
-	@Ignore
 	public void testVisit() {
 		serviceStatus = ServiceStatus.OK;
 		VisitReport healthReport = activityHealthChecker.visit(activity, new ArrayList<Object>());
 		assertNotNull(healthReport);
 		assertEquals(HealthCheck.NO_PROBLEM, healthReport.getResultId());
-		assertEquals(Status.WARNING, healthReport.getStatus());		
+		assertEquals(Status.OK, healthReport.getStatus());		
 		assertEquals(2, healthReport.getSubReports().size());
 		Iterator<VisitReport> iterator = healthReport.getSubReports().iterator();
-		iterator.next();
 		VisitReport subReport = iterator.next();
-		System.out.println(subReport.getMessage());
+		assertEquals(Status.OK, subReport.getStatus());
+		subReport = iterator.next();
 		assertEquals(Status.OK, subReport.getStatus());
 
 		serviceStatus = ServiceStatus.SLOW;
@@ -118,9 +117,9 @@ public class SADIActivityHealthCheckerTest {
 		assertEquals(Status.WARNING, healthReport.getStatus());		
 		assertEquals(2, healthReport.getSubReports().size());
 		iterator = healthReport.getSubReports().iterator();
-		iterator.next();
 		subReport = iterator.next();
-		subReport = healthReport.getSubReports().iterator().next();
+		assertEquals(Status.OK, subReport.getStatus());
+		subReport = iterator.next();
 		assertEquals(Status.WARNING, subReport.getStatus());
 
 		serviceStatus = ServiceStatus.DEAD;
@@ -129,9 +128,9 @@ public class SADIActivityHealthCheckerTest {
 		assertEquals(HealthCheck.NO_PROBLEM, healthReport.getResultId());
 		assertEquals(Status.SEVERE, healthReport.getStatus());		
 		assertEquals(2, healthReport.getSubReports().size());
-		healthReport.getSubReports().iterator().next();
 		iterator = healthReport.getSubReports().iterator();
-		iterator.next();
+		subReport = iterator.next();
+		assertEquals(Status.OK, subReport.getStatus());
 		subReport = iterator.next();
 		assertEquals(Status.SEVERE, subReport.getStatus());
 

@@ -21,11 +21,11 @@
 package net.sf.taverna.t2.activities.sadi;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
@@ -33,9 +33,9 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-
-import ca.wilkinsonlab.sadi.common.SADIException;
+import ca.wilkinsonlab.sadi.client.Registry;
+import ca.wilkinsonlab.sadi.client.RegistryImpl;
+import ca.wilkinsonlab.sadi.utils.QueryExecutorFactory;
 
 /**
  * Unit tests for {@link SADIActivity}.
@@ -45,36 +45,22 @@ import ca.wilkinsonlab.sadi.common.SADIException;
  */
 public class SADIActivityTest {
 
+	private static final String TEST_REGISTRY_PATH = "src/test/resources/registry.rdf";
+	
 	private SADIActivity activity;
 
 	private SADIActivityConfigurationBean configurationBean;
-	
 
 	@Before
 	public void setUp() throws Exception {
 		activity = new SADIActivity() {
 			@Override
-			public RestrictionNode getInputRestrictionTree() throws SADIException, IOException {
-				return new RestrictionNode(ModelFactory.createOntologyModel().createClass()) {
-					private static final long serialVersionUID = 1L;
-					@Override
-					public String toString() {
-						return "input";
-					}
-				};
-			}
-			@Override
-			public RestrictionNode getOutputRestrictionTree() throws SADIException,  IOException {
-				return new RestrictionNode(ModelFactory.createOntologyModel().createClass()) {
-					private static final long serialVersionUID = 1L;
-					@Override
-					public String toString() {
-						return "output";
-					}
-				};
+			public Registry getRegistry() throws IOException {
+				return new RegistryImpl(QueryExecutorFactory.createFileModelQueryExecutor(TEST_REGISTRY_PATH));
 			}
 		};
 		configurationBean = new SADIActivityConfigurationBean();
+		configurationBean.setServiceURI("http://sadiframework.org/examples/hello");
 	}
 
 	@Test
@@ -84,30 +70,33 @@ public class SADIActivityTest {
 
 	@Test
 	public void testConfigure() throws Exception {
-		Set<String> expectedInputs = new HashSet<String>();
-		expectedInputs.add("input");
-		Set<String> expectedOutputs = new HashSet<String>();
-		expectedOutputs.add("output");
-
+		Map<String, String> expectedInputPorts = new HashMap<String, String>();
+		expectedInputPorts.put("name", "http://xmlns.com/foaf/0.1/name some *");
+		Map<String, String> expectedOutputPorts = new HashMap<String, String>();
+		expectedOutputPorts.put("greeting", "http://sadiframework.org/examples/hello.owl#greeting some http://www.w3.org/2001/XMLSchema#string");
+		
 		activity.configure(configurationBean);
 
-		Set<ActivityInputPort> inputPorts = activity.getInputPorts();
-		assertEquals(expectedInputs.size(), inputPorts.size());
-		for (ActivityInputPort inputPort : inputPorts) {
-			assertTrue("Wrong output : " + inputPort.getName(), expectedInputs.remove(inputPort
-					.getName()));
-			assertEquals(1, inputPort.getDepth());
+		for (ActivityInputPort inputPort : activity.getInputPorts()) {
+			SADIActivityPort port = (SADIActivityPort)inputPort;
+			String expectedPathSpec = expectedInputPorts.get(port.getName());
+			assertNotNull(String.format("unexpected input port %s", port.getName()),
+					expectedPathSpec);
+			assertEquals(String.format("unexpected path for input port %s", port.getName()),
+					expectedPathSpec, port.getRDFPath().toString());
+			assertEquals(String.format("wrong depth for input port %s", port.getName()),
+					SADIActivity.INPUT_DEPTH, port.getDepth());
 		}
-		assertTrue(expectedInputs.size() == 0);
-
-		Set<OutputPort> outputPorts = activity.getOutputPorts();
-		assertEquals(expectedOutputs.size(), outputPorts.size());
-		for (OutputPort outputPort : outputPorts) {
-			assertTrue("Wrong output : " + outputPort.getName(), expectedOutputs.remove(outputPort
-					.getName()));
-			assertEquals(1, outputPort.getDepth());
+		for (OutputPort outputPort : activity.getOutputPorts()) {
+			SADIActivityPort port = (SADIActivityPort)outputPort;
+			String expectedPathSpec = expectedOutputPorts.get(port.getName());
+			assertNotNull(String.format("unexpected output port %s", port.getName()),
+					expectedPathSpec);
+			assertEquals(String.format("unexpected path for output port %s", port.getName()),
+					expectedPathSpec, port.getRDFPath().toString());
+			assertEquals(String.format("wrong depth for output port %s", port.getName()),
+					SADIActivity.OUTPUT_DEPTH, port.getDepth());
 		}
-		assertTrue(expectedOutputs.size() == 0);
 	}
 
 	@Test

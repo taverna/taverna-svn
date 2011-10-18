@@ -29,11 +29,8 @@ import net.sf.taverna.t2.visit.VisitReport.Status;
 import net.sf.taverna.t2.workflowmodel.health.HealthCheck;
 import net.sf.taverna.t2.workflowmodel.health.HealthChecker;
 import net.sf.taverna.t2.workflowmodel.health.RemoteHealthChecker;
-
-import org.apache.log4j.Logger;
-
-import ca.wilkinsonlab.sadi.client.Service.ServiceStatus;
-import ca.wilkinsonlab.sadi.common.SADIException;
+import ca.wilkinsonlab.sadi.SADIException;
+import ca.wilkinsonlab.sadi.client.ServiceStatus;
 
 /**
  * A {@link HealthChecker} for a {@link SADIActivity}.
@@ -42,14 +39,16 @@ import ca.wilkinsonlab.sadi.common.SADIException;
  */
 public class SADIActivityHealthChecker implements HealthChecker<SADIActivity> {
 
-	private static Logger logger = Logger.getLogger(SADIActivityHealthChecker.class);
+//	private static Logger logger = Logger.getLogger(SADIActivityHealthChecker.class);
 
 	private static final String OK_MESSAGE = "The service is OK";
-	private static final String WARNING_MESSAGE = "The service is running slowly";
-	private static final String SEVERE_MESSAGE = "The service is dead";
+	private static final String SLOW_MESSAGE = "The service is running slowly";
+	private static final String INCORRECT_MESSAGE = "The service is failing test cases";
+	private static final String DEAD_MESSAGE = "The service is not responding";
 
 	public static final int SADI_SERVICE_SLOW = 101;
 	public static final int SADI_SERVICE_DEAD = 102;
+	public static final int SADI_SERVICE_INCORRECT = 103;
 
 	public static final String SADI_REGISTRY_URI_PROPERTY = "sadiRegistryUri";
 	public static final String SADI_SERVICE_URI_PROPERTY = "sadiServiceUri";
@@ -63,8 +62,8 @@ public class SADIActivityHealthChecker implements HealthChecker<SADIActivity> {
 		String registryURI = activity.getConfiguration().getSparqlEndpoint();
 		String serviceURI = activity.getConfiguration().getServiceURI();
 		reports.add(RemoteHealthChecker.contactEndpoint(activity, serviceURI));
-//		reports.add(checkSADIRegistry(activity, registryURI, serviceURI));
-		
+		reports.add(checkSADIRegistry(activity, registryURI, serviceURI));
+	
 		Status status = VisitReport.getWorstStatus(reports);
 		VisitReport report = new VisitReport(HealthCheck.getInstance(), activity, "SADI Activity Report", HealthCheck.NO_PROBLEM,
 				status, reports);
@@ -72,31 +71,60 @@ public class SADIActivityHealthChecker implements HealthChecker<SADIActivity> {
 		return report;
 	}
 	
-	/**
-	 * @param serviceURI
-	 * @return
-	 */
+//	/**
+//	 * Invoke the service on it's described test cases and check the actual
+//	 * output against the expected output.
+//	 * This can be extremely slow and it's probably better to just read the
+//	 * most recent test results from the registry.
+//	 * @param activity the SADI activity
+//	 * @param serviceURI the service URI
+//	 * @return a VisitReport
+//	 */
+//	protected VisitReport testSADIService(SADIActivity activity, String serviceURI) {
+//		VisitReport visitReport = null;
+//		try {
+//			ServiceTester.testService(new ServiceImpl(serviceURI), false);
+//			visitReport = new VisitReport(HealthCheck.getInstance(), activity, OK_MESSAGE, HealthCheck.NO_PROBLEM, Status.OK);
+//		} catch (ServiceInvocationException e) {
+//			visitReport = new VisitReport(HealthCheck.getInstance(), activity, DEAD_MESSAGE, SADI_SERVICE_DEAD, Status.SEVERE);
+//		} catch (SADIException e) {
+//			visitReport = new VisitReport(HealthCheck.getInstance(), activity, INCORRECT_MESSAGE, SADI_SERVICE_INCORRECT, Status.WARNING);
+//		}
+//		return visitReport;
+//	}
+	
 	private VisitReport checkSADIRegistry(SADIActivity activity, String registryURI, String serviceURI) {
 		VisitReport visitReport = null;
 		try {
-			// Registry.getServiceStatus is throwing an OperationNotSupportedException
 			ServiceStatus serviceStatus = activity.getRegistry().getServiceStatus(serviceURI);
-			if (serviceStatus.equals(ServiceStatus.OK)) {
-				visitReport = new VisitReport(HealthCheck.getInstance(), activity, OK_MESSAGE, HealthCheck.NO_PROBLEM, Status.OK);
-			}
-			else if (serviceStatus.equals(ServiceStatus.SLOW)) {
-				visitReport = new VisitReport(HealthCheck.getInstance(), activity, WARNING_MESSAGE, SADI_SERVICE_SLOW, Status.WARNING);
-				visitReport.setProperty(SADI_REGISTRY_URI_PROPERTY, registryURI);
-				visitReport.setProperty(SADI_SERVICE_URI_PROPERTY, serviceURI);
-			} else {
-				visitReport = new VisitReport(HealthCheck.getInstance(), activity, SEVERE_MESSAGE, SADI_SERVICE_DEAD, Status.SEVERE);
-				visitReport.setProperty(SADI_REGISTRY_URI_PROPERTY, registryURI);
-				visitReport.setProperty(SADI_SERVICE_URI_PROPERTY, serviceURI);
+			switch (serviceStatus) {
+				case OK: 
+					visitReport = new VisitReport(HealthCheck.getInstance(), activity, OK_MESSAGE, HealthCheck.NO_PROBLEM, Status.OK);
+					break;
+				case SLOW:
+					visitReport = new VisitReport(HealthCheck.getInstance(), activity, SLOW_MESSAGE, SADI_SERVICE_SLOW, Status.WARNING);
+					visitReport.setProperty(SADI_REGISTRY_URI_PROPERTY, registryURI);
+					visitReport.setProperty(SADI_SERVICE_URI_PROPERTY, serviceURI);
+					break;
+				case DEAD:
+					visitReport = new VisitReport(HealthCheck.getInstance(), activity, DEAD_MESSAGE, SADI_SERVICE_DEAD, Status.SEVERE);
+					visitReport.setProperty(SADI_REGISTRY_URI_PROPERTY, registryURI);
+					visitReport.setProperty(SADI_SERVICE_URI_PROPERTY, serviceURI);
+					break;
+				case INCORRECT:
+					visitReport = new VisitReport(HealthCheck.getInstance(), activity, INCORRECT_MESSAGE, SADI_SERVICE_INCORRECT, Status.WARNING);
+					visitReport.setProperty(SADI_REGISTRY_URI_PROPERTY, registryURI);
+					visitReport.setProperty(SADI_SERVICE_URI_PROPERTY, serviceURI);
+					break;
+				default:
+					break;
 			}
 		} catch (IOException e) {
-			visitReport = new VisitReport(HealthCheck.getInstance(), activity, e.getMessage(), HealthCheck.CONNECTION_PROBLEM, Status.WARNING);
+			// invalid SPARQL endpoint URL (i.e.: new URL(...) throws IOException)
+			visitReport = new VisitReport(HealthCheck.getInstance(), activity, String.format("invalid registry URL %s", registryURI), HealthCheck.INVALID_URL, Status.WARNING);
 			visitReport.setProperty("exception", e);
 		} catch (SADIException e) {
+			// problem contacting the registry...
 			visitReport = new VisitReport(HealthCheck.getInstance(), activity, e.getMessage(), HealthCheck.CONNECTION_PROBLEM, Status.WARNING);
 			visitReport.setProperty("exception", e);
 		}
@@ -106,5 +134,4 @@ public class SADIActivityHealthChecker implements HealthChecker<SADIActivity> {
 	public boolean isTimeConsuming() {
 		return true;
 	}
-
 }

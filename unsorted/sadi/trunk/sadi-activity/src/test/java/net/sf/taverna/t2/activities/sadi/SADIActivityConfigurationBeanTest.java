@@ -39,6 +39,7 @@ import org.junit.Test;
  *
  * @author David Withers
  */
+@SuppressWarnings("deprecation")
 public class SADIActivityConfigurationBeanTest {
 
 	private SADIActivityConfigurationBean configurationBean, configurationBean2;

@@ -32,8 +32,8 @@ import net.sf.taverna.t2.activities.sadi.SADIActivityConfigurationBean;
 import net.sf.taverna.t2.activities.sadi.SADIActivityInputPort;
 import net.sf.taverna.t2.activities.sadi.SADIActivityOutputPort;
 import net.sf.taverna.t2.activities.sadi.SADIActivityPort;
+import net.sf.taverna.t2.activities.sadi.SADIUtils;
 import net.sf.taverna.t2.activities.sadi.servicedescriptions.SADIServiceDescription;
-import net.sf.taverna.t2.activities.sadi.utils.LabelUtils;
 import net.sf.taverna.t2.activities.sadi.views.SADIServiceDiscoveryDialog;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workflowmodel.CompoundEdit;
@@ -76,10 +76,10 @@ public class SADIFindServicesAction extends AbstractAction {
 		this.dataflow = dataflow;
 		this.activityPort = activityPort;
 		if (activityPort instanceof SADIActivityOutputPort) {
-			putValue(NAME, FIND_SADI_CONSUMER_SERVICES + LabelUtils.getLabel(activityPort.getOntClass())
+			putValue(NAME, FIND_SADI_CONSUMER_SERVICES + activityPort.getValuesFromLabel()
 					+ "...");
 		} else {
-			putValue(NAME, FIND_SADI_PRODUCER_SERVICES + LabelUtils.getLabel(activityPort.getOntClass())
+			putValue(NAME, FIND_SADI_PRODUCER_SERVICES + activityPort.getValuesFromLabel()
 					+ "...");
 		}
 	}
@@ -91,10 +91,11 @@ public class SADIFindServicesAction extends AbstractAction {
 				List<Edit<?>> editList = new ArrayList<Edit<?>>();
 				// create the activity
 				SADIActivity activity = new SADIActivity();
-				SADIActivityConfigurationBean configuration = new SADIActivityConfigurationBean();
-				configuration.setSparqlEndpoint(service.getSparqlEndpoint());
-				configuration.setGraphName(service.getGraphName());
-				configuration.setServiceURI(service.getServiceURI());
+				SADIActivityConfigurationBean configuration = service.getActivityConfiguration();
+				if (activityPort instanceof SADIActivityOutputPort) {
+					// we found this service by its input class, so that will be the only input port...
+					configuration.getInputPortMap().put(SADIUtils.getInputClassLabel(service.getServiceInfo()), "");
+				}
 
 				try {
 					// configure the activity
@@ -111,14 +112,13 @@ public class SADIFindServicesAction extends AbstractAction {
 
 					if (activityPort instanceof SADIActivityOutputPort) {
 						SADIActivityOutputPort activityOutputPort = (SADIActivityOutputPort) activityPort;
-						// find the inputs that match the input class
-						// TODO should match subclasses of the input class too
-						Set<SADIActivityInputPort> inputPorts = activity
-						.getInputPortsForClass(activityPort.getOntClass());
+						// find the inputs that match the output class
+						// TODO should match subclasses of the output class too
+						Set<SADIActivityInputPort> inputPorts = activity.getInputPortsForClass(activityPort.getValuesFromURI());
 						// connect the output port to the input with a matching class
 						if (inputPorts.size() > 0) {
-							// if there's more than one input port connect to one at random
-							ActivityInputPort activityInputPort = inputPorts.iterator().next();
+							// if there's more than one matching input port connect to one at random
+							ActivityInputPort activityInputPort = activity.getInputPorts().iterator().next();
 							ProcessorInputPort processorInputPort = edits.createProcessorInputPort(
 									processor, activityInputPort.getName(), activityInputPort
 									.getDepth());
@@ -126,19 +126,17 @@ public class SADIFindServicesAction extends AbstractAction {
 									processorInputPort));
 							editList.add(edits.getAddActivityInputPortMappingEdit(activity,
 									processorInputPort.getName(), activityInputPort.getName()));
-
 							editList.add(Tools.getCreateAndConnectDatalinkEdit(dataflow,
 									activityOutputPort, processorInputPort));
 						}
 					} else {
 						SADIActivityInputPort activityInputPort = (SADIActivityInputPort) activityPort;
-						// find the outputs that match the output class
-						// TODO should math subclasses of the output class too
-						Set<SADIActivityOutputPort> outputPorts = activity
-						.getOutputPortsForClass(activityPort.getOntClass());
+						// find the outputs that match the input class
+						// TODO should match subclasses of the input class too
+						Set<SADIActivityOutputPort> outputPorts = activity.getOutputPortsForClass(activityPort.getValuesFromURI());
 						// connect the input port to the output with a matching class
 						if (outputPorts.size() > 0) {
-							// if there's more than one output port connect to one at random
+							// if there's more than one matching output port connect to one at random
 							ActivityOutputPort activityOutputPort = outputPorts.iterator().next();
 							ProcessorOutputPort processorOutputPort = edits.createProcessorOutputPort(
 									processor, activityOutputPort.getName(), activityOutputPort

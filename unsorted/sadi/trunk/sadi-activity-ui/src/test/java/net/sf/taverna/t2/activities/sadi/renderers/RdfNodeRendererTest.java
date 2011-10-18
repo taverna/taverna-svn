@@ -103,7 +103,7 @@ public class RdfNodeRendererTest {
 	 */
 	@Test
 	public void testGetType() {
-		assertEquals("RDF Node", rdfNodeRenderer.getType());
+		assertEquals("RDF", rdfNodeRenderer.getType());
 	}
 
 }

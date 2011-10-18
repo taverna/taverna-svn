@@ -22,12 +22,11 @@ package net.sf.taverna.t2.activities.sadi;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
-import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import ca.wilkinsonlab.sadi.rdfpath.RDFPath;
 
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.ontology.OntClass;
@@ -48,11 +47,11 @@ public class SADIActivityOutputPortTest {
 	
 	private SADIActivity sadiActivity;
 	
-	private RestrictionNode restrictionNode;
-	
 	private OntClass ontClass;
 		
 	private OntProperty ontProperty;
+	
+	private RDFPath rdfPath;
 
 	/**
 	 * @throws java.lang.Exception
@@ -63,8 +62,8 @@ public class SADIActivityOutputPortTest {
 		OntModelImpl model = new OntModelImpl(OntModelSpec.OWL_MEM);
 		ontProperty = new OntPropertyImpl(Node.createURI("/x"), model);
 		ontClass = new OntClassImpl(Node.createURI("/y"), model);
-		restrictionNode = new RestrictionNode(ontProperty, ontClass);
-		sadiActivityOutputPort = new SADIActivityOutputPort(sadiActivity, restrictionNode, "port-name", 2);
+		rdfPath = new RDFPath(ontProperty, ontClass);
+		sadiActivityOutputPort = new SADIActivityOutputPort(sadiActivity, rdfPath, "port-name", SADIActivity.OUTPUT_DEPTH);
 	}
 
 	/**
@@ -72,7 +71,12 @@ public class SADIActivityOutputPortTest {
 	 */
 	@Test
 	public void testSADIActivityOutputPortSADIActivityRestrictionNodeStringInt() {
-		new SADIActivityOutputPort(sadiActivity, restrictionNode, null, 0);
+		/* this is dumb; if this method fails, we'll never reach this point
+		 * because setUp() will have already failed...
+		 * I assume this is for some sort of automated test coverage tool,
+		 * though, so I'm leaving it in...
+		 */
+		new SADIActivityOutputPort(sadiActivity, rdfPath, null, 0);
 	}
 
 	/**
@@ -80,7 +84,7 @@ public class SADIActivityOutputPortTest {
 	 */
 	@Test
 	public void testSADIActivityOutputPortSADIActivityRestrictionNodeStringIntInt() {
-		assertNotNull(new SADIActivityOutputPort(sadiActivity, restrictionNode, null, 0, 0));
+		assertNotNull(new SADIActivityOutputPort(sadiActivity, rdfPath, null, 0, 0));
 	}
 
 	/**
@@ -92,48 +96,27 @@ public class SADIActivityOutputPortTest {
 	}
 
 	/**
-	 * Test method for {@link net.sf.taverna.t2.activities.sadi.SADIActivityOutputPort#getOntClass()}.
+	 * Test method for {@link net.sf.taverna.t2.activities.sadi.SADIActivityInputPort#getRDFPath()}.
 	 */
 	@Test
-	public void testGetOntClass() {
-		assertEquals(ontClass, sadiActivityOutputPort.getOntClass());
+	public void testGetRDFPath() {
+		assertEquals(rdfPath, sadiActivityOutputPort.getRDFPath());
 	}
 
 	/**
-	 * Test method for {@link net.sf.taverna.t2.activities.sadi.SADIActivityOutputPort#getOntProperty()}.
+	 * Test method for {@link net.sf.taverna.t2.activities.sadi.SADIActivityInputPort#getValuesFromURI()}.
 	 */
 	@Test
-	public void testGetOntProperty() {
-		assertEquals(ontProperty, sadiActivityOutputPort.getOntProperty());
-	}
-
-	/**
-	 * Test method for {@link net.sf.taverna.t2.activities.sadi.SADIActivityOutputPort#getValues()}.
-	 */
-	@Test
-	public void testGetValues() {
-		assertNull(sadiActivityOutputPort.getValues("a"));
-	}
-
-	/**
-	 * Test method for {@link net.sf.taverna.t2.activities.sadi.SADIActivityOutputPort#clearValues(java.lang.String)}.
-	 */
-	@Test
-	public void testClearValues() {
-		sadiActivityOutputPort.setValues("a", Collections.singletonList("value"));
-		sadiActivityOutputPort.clearValues("a");
-		assertNull(sadiActivityOutputPort.getValues("a"));
+	public void testGetValuesFromURI() {
+		assertEquals("/y", sadiActivityOutputPort.getValuesFromURI());
 	}
 	
 	/**
-	 * Test method for {@link net.sf.taverna.t2.activities.sadi.SADIActivityOutputPort#setValues(java.util.List)}.
+	 * Test method for {@link net.sf.taverna.t2.activities.sadi.SADIActivityInputPort#getValuesFromLabel()}.
 	 */
 	@Test
-	public void testSetValues() {
-		sadiActivityOutputPort.setValues("a", Collections.singletonList("value"));
-		assertEquals(Collections.singletonList("value"), sadiActivityOutputPort.getValues("a"));
-		sadiActivityOutputPort.setValues("a", null);
-		assertNull(sadiActivityOutputPort.getValues("a"));
+	public void testGetValuesFromLabel() {
+		assertEquals("y", sadiActivityOutputPort.getValuesFromLabel());
 	}
 
 }

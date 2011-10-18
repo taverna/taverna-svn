@@ -22,60 +22,48 @@ package net.sf.taverna.t2.activities.sadi.views;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import javax.help.CSH;
-import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTree;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.tree.TreeCellRenderer;
-import javax.swing.tree.TreeNode;
 
-import org.apache.log4j.Logger;
-
-import net.sf.taverna.t2.activities.sadi.RestrictionNode;
 import net.sf.taverna.t2.activities.sadi.SADIActivity;
 import net.sf.taverna.t2.activities.sadi.SADIActivityConfigurationBean;
+import net.sf.taverna.t2.activities.sadi.SADIUtils;
 import net.sf.taverna.t2.activities.sadi.actions.SADIActivityConfigurationAction;
-import net.sf.taverna.t2.activities.sadi.views.RestrictionTree.RestrictionNodeSelectionListener;
 import net.sf.taverna.t2.lang.ui.DialogTextArea;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationPanel;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
-import ca.wilkinsonlab.sadi.common.SADIException;
+
+import org.apache.log4j.Logger;
+
+import ca.wilkinsonlab.sadi.SADIException;
+import ca.wilkinsonlab.sadi.client.Service;
+import ca.wilkinsonlab.sadi.restrictiontree.RestrictionTree;
+import ca.wilkinsonlab.sadi.restrictiontree.RestrictionTreeModel;
 
 /**
  * 
  * 
  * @author David Withers
+ * @author Luke McCarthy
  */
 public class SADIConfigurationPanel extends
 		ActivityConfigurationPanel<SADIActivity, SADIActivityConfigurationBean> {
@@ -85,7 +73,7 @@ public class SADIConfigurationPanel extends
 	
 	private SADIActivity activity;
 
-	private SADIActivityConfigurationBean oldConfiguration, newConfiguration;
+	private SADIActivityConfigurationBean oldConfiguration;
 
 	private JLabel titleLabel, titleIcon;
 
@@ -95,7 +83,10 @@ public class SADIConfigurationPanel extends
 
 	private JButton actionOkButton, actionCancelButton;
 
-	private SADITreeNode sadiInputTree, sadiOutputTree;
+	private JComponent sadiInputTree, sadiOutputTree;
+
+	// package visibility for unit test...
+	RestrictionTreeModel sadiInputTreeModel, sadiOutputTreeModel;
 
 	private JTabbedPane tabbedPane;
 
@@ -111,7 +102,6 @@ public class SADIConfigurationPanel extends
 
 	private void initialise() {
 		oldConfiguration = activity.getConfiguration();
-		newConfiguration = new SADIActivityConfigurationBean(oldConfiguration);
 
 		// title
 		titlePanel = new JPanel(new BorderLayout());
@@ -128,33 +118,25 @@ public class SADIConfigurationPanel extends
 		titleMessage.setFocusable(false);
 		
 		// input tree
-//		try {
-//			RestrictionNode restrictionTree = activity.getInputRestrictionTree();
-//			sadiInputTree = new SADITreeNode();
-//			convertTree(restrictionTree, true, sadiInputTree);
-//			selectComponents(sadiInputTree, newConfiguration.getInputRestrictionPaths());
-//			addActions(sadiInputTree, true);
-//		} catch (SADIException e) {
-//			sadiInputTree = null;
-//		} catch (IOException e) {
-//			sadiInputTree = null;
-//		}
+		try {
+			sadiInputTreeModel = new RestrictionTreeModel(activity.getService().getInputClass());
+			sadiInputTreeModel.selectPaths(SADIUtils.convertPaths(oldConfiguration.getInputPortMap().values()));
+			sadiInputTree = new RestrictionTree(sadiInputTreeModel);
+		} catch (Exception e) {
+			log.error("error loading input OWL class", e);
+		}
 
 		// output tree
-//		try {
-//			RestrictionNode restrictionTree = activity.getOutputRestrictionTree();
-//			sadiOutputTree = new SADITreeNode();
-//			convertTree(restrictionTree, true, sadiOutputTree);
-//			selectComponents(sadiOutputTree, newConfiguration.getOutputRestrictionPaths());
-//			addActions(sadiOutputTree, false);
-//		} catch (SADIException e) {
-//			sadiOutputTree = null;
-//		} catch (IOException e) {
-//			sadiOutputTree = null;
-//		}
+		try {
+			sadiOutputTreeModel = new RestrictionTreeModel(activity.getService().getOutputClass(), activity.getService().getInputClass());
+			sadiOutputTreeModel.selectPaths(SADIUtils.convertPaths(oldConfiguration.getOutputPortMap().values()));
+			sadiOutputTree = new RestrictionTree(sadiOutputTreeModel);
+		} catch (Exception e) {
+			log.error("error loading input OWL class", e);
+		}
 
-		inputPanel = new JPanel(new GridBagLayout());
-		outputPanel = new JPanel(new GridBagLayout());
+		inputPanel = new JPanel(new BorderLayout());
+		outputPanel = new JPanel(new BorderLayout());
 
 		// tabs
 		tabbedPane = new JTabbedPane();
@@ -179,120 +161,30 @@ public class SADIConfigurationPanel extends
 
 		layoutPanel();
 	}
-
-//	private static class SADITreeExpansionListener implements TreeExpansionListener
-//	{
-//		public void treeExpanded(TreeExpansionEvent event)
-//		{
-//			Object lastPathComponent = event.getPath().getLastPathComponent();
-//			if (lastPathComponent instanceof RestrictionNode) {
-//				RestrictionNode node = (RestrictionNode)lastPathComponent;
-//				if (log.isTraceEnabled())
-//					log.trace(String.format("about to expand %s", node));
-//				if (!node.isExpanded()) {
-//					SADIUtils.buildChildren(node);
-//				}
-//			} else {
-//				log.warn(String.format("ignoring tree node of unexpected type %s", lastPathComponent.getClass()));
-//			}
-//		}
-//		
-//		public void treeCollapsed(TreeExpansionEvent event)
-//		{
-//			// don't care at all...
-//		}	
-//	}
 	
-	/**
-	 * 
-	 */
 	private void layoutPanel() {
 		setPreferredSize(new Dimension(450, 400));
 		setLayout(new BorderLayout());
 
 		// title
-		titlePanel.setBorder(new CompoundBorder(titlePanel.getBorder(), new EmptyBorder(10, 10, 0,
-				10)));
+		titlePanel.setBorder(new CompoundBorder(titlePanel.getBorder(), new EmptyBorder(10, 10, 0, 10)));
 		add(titlePanel, BorderLayout.NORTH);
 		titlePanel.add(titleLabel, BorderLayout.NORTH);
 		titlePanel.add(titleIcon, BorderLayout.WEST);
 		titlePanel.add(titleMessage, BorderLayout.CENTER);
-		
-		// input/output trees
-		GridBagConstraints c = new GridBagConstraints();
-		c.anchor = GridBagConstraints.NORTHWEST;
-		c.gridx = 1;
-		c.weightx = 1;
 
-//		if (sadiInputTree != null) {
-//			JPanel treePanel = new JPanel(new GridBagLayout());
-//			layoutComponents(treePanel, c, sadiInputTree, 0);
-//			c.insets = new Insets(5, 5, 5, 5);
-//			c.weighty = 1;
-//			inputPanel.add(treePanel, c);
-//		} else {
-//			inputPanel.add(new JLabel("Error fetching activity input class"), c);
-//		}
-		try {
-//			JTree inputTree = new JTree(activity.getInputRestrictionTree());
-//			inputTree.addTreeExpansionListener(new SADITreeExpansionListener());
-//			inputTree.setCellRenderer(new SADITreeCellRenderer(true));
-			RestrictionTree inputTree = new RestrictionTree(activity.getInputRestrictionTree());
-			if (log.isDebugEnabled()) {
-				log.debug(String.format("initial input restriction paths are %s", newConfiguration.getInputRestrictionPaths()));
-			}
-			inputTree.addNodeSelectionListener(new RestrictionNodeSelectionListener() {
-				public void nodeSelected(RestrictionNode node, boolean selected) {
-					if (selected) {
-						newConfiguration.addInputRestrictionPath(getRestrictionPath(node));
-					} else {
-						newConfiguration.removeInputRestrictionPath(getRestrictionPath(node));
-					}
-					if (log.isDebugEnabled()) {
-						log.debug(String.format("new input restriction paths are %s", newConfiguration.getInputRestrictionPaths()));
-					}
-				}
-			});
-			JScrollPane inputTreePane = new JScrollPane(inputTree);
-			inputPanel.add(inputTreePane);
-		} catch (Exception e) {
-			log.error("error building input tree", e);
+		if (sadiInputTree != null) {
+			JScrollPane treePanel = new JScrollPane(sadiInputTree);
+			inputPanel.add(treePanel, BorderLayout.CENTER);
+		} else {
 			inputPanel.add(new JLabel("Error fetching activity input class"));
 		}
 		
-		c.weighty = 0;
-		
-//		if (sadiOutputTree != null) {
-//			JPanel treePanel = new JPanel(new GridBagLayout());
-//			layoutComponents(treePanel, c, sadiOutputTree, 0);
-//			c.insets = new Insets(5, 5, 5, 5);
-//			c.weighty = 1.0;
-//			outputPanel.add(treePanel, c);
-//		} else {
-//			outputPanel.add(new JLabel("Error fetching activity output class"), c);
-//		}
-		try {
-//			JTree outputTree = new JTree(activity.getOutputRestrictionTree());
-//			outputTree.setCellRenderer(new SADITreeCellRenderer(false));
-//			outputTree.addTreeExpansionListener(new SADITreeExpansionListener());
-			RestrictionTree outputTree = new RestrictionTree(activity.getOutputRestrictionTree());
-			outputTree.addNodeSelectionListener(new RestrictionNodeSelectionListener() {
-				public void nodeSelected(RestrictionNode node, boolean selected) {
-					if (selected) {
-						newConfiguration.addOutputRestrictionPath(getRestrictionPath(node));
-					} else {
-						newConfiguration.removeOutputRestrictionPath(getRestrictionPath(node));
-					}
-					if (log.isDebugEnabled()) {
-						log.debug(String.format("new output restriction paths are %s", newConfiguration.getOutputRestrictionPaths()));
-					}
-				}
-			});
-			JScrollPane outputTreePane = new JScrollPane(outputTree);
-			outputPanel.add(outputTreePane);
-		} catch (Exception e) {
-			log.error("error building input tree", e);
-			outputPanel.add(new JLabel("Error fetching activity input class"));
+		if (sadiOutputTree != null) {
+			JScrollPane treePanel = new JScrollPane(sadiOutputTree);
+			outputPanel.add(treePanel, BorderLayout.CENTER);
+		} else {
+			outputPanel.add(new JLabel("Error fetching activity output class"));
 		}
 		
 		add(tabbedPane, BorderLayout.CENTER);
@@ -306,242 +198,18 @@ public class SADIConfigurationPanel extends
 		add(buttonPanel, BorderLayout.SOUTH);
 	}
 
-	private void selectComponents(SADITreeNode sadiTree, List<List<String>> inputRestrictionPaths) {
-		for (List<String> path : inputRestrictionPaths) {
-			selectComponent(sadiTree, path);
-		}		
-	}
-	
-	private boolean selectComponent(SADITreeNode sadiTree, List<String> path) {
-		if (path.size() == 1) {
-			sadiTree.getButton().setSelected(true);
-			return true;
-		} else {
-			for (SADITreeNode child : sadiTree.getChildren()) {
-				RestrictionNode restrictedProperty = (RestrictionNode) child.getRestrictedProperty();
-				if (restrictedProperty.toString().equals(path.get(1))) {
-					if (selectComponent(child, path.subList(1, path.size()))) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	private void convertTree(RestrictionNode node, boolean checkBox, SADITreeNode sadiNode) {
-		AbstractButton button = createButton(!node.isExclusive(), node.toString());
-		SADITreeNode newNode = new SADITreeNode();
-		if (node.isRoot()) {
-			sadiNode.setButton(button);
-			sadiNode.setRestrictedProperty(node);
-			newNode = sadiNode;
-		} else {
-			newNode = new SADITreeNode(node, button);
-			sadiNode.add(newNode);				
-		}
-		for (RestrictionNode child : node.getChildren()) {
-			convertTree(child, true, newNode);
-		}
-	}
-	
-	private void addActions(final SADITreeNode node, final boolean inputs) {
-		final AbstractButton button = node.getButton();
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (button.isSelected()) {
-					for (AbstractButton abstractButton : getParentButtons(node)) {
-						abstractButton.setSelected(false);
-					}
-					for (AbstractButton abstractButton : getChildButtons(node)) {
-						abstractButton.setSelected(false);
-					}
-					if (button instanceof JRadioButton) {
-						for (AbstractButton abstractButton : getSiblingButtons(node)) {
-							if (abstractButton instanceof JRadioButton) {
-								abstractButton.setSelected(false);
-							}
-						}
-					} else {
-						for (AbstractButton abstractButton : getUnselectedSiblingButtons(node)) {
-							if (!(abstractButton instanceof JRadioButton)) {
-								abstractButton.setSelected(true);
-							}
-						}
-					}
-					for (AbstractButton abstractButton : getInvalidButtons(node)) {
-						abstractButton.setSelected(false);
-					}
-				}
-			}
-		});
-		button.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				if (button.isSelected()) {
-					if (inputs) {
-						newConfiguration.addInputRestrictionPath(getRestrictionPath(node));
-					} else {
-						newConfiguration.addOutputRestrictionPath(getRestrictionPath(node));
-					}
-				} else {
-					if (inputs) {
-						newConfiguration.removeInputRestrictionPath(getRestrictionPath(node));
-					} else {
-						newConfiguration.removeOutputRestrictionPath(getRestrictionPath(node));
-					}
-				}
-			}
-		});
-		
-		for (SADITreeNode child : node.getChildren()) {
-			addActions(child, inputs);
-		}
-	}
-	
-	/**
-	 * @param node
-	 * @return
-	 */
-	protected List<String> getRestrictionPath(SADITreeNode node) {
-		List<String> restrictionPath = new ArrayList<String>();
-		for (SADITreeNode pathNode : node.getPath()) {
-			RestrictionNode restrictedProperty = pathNode.getRestrictedProperty();
-			if (restrictedProperty != null) {
-				restrictionPath.add(restrictedProperty.toString());
-			}
-		}
-		return restrictionPath;
-	}
-	
-	protected List<String> getRestrictionPath(RestrictionNode node) {
-		List<String> restrictionPath = new ArrayList<String>();
-		for (TreeNode treeNode : node.getPath()) {
-			RestrictionNode restrictedProperty = (RestrictionNode)treeNode;
-			if (restrictedProperty != null) {
-				restrictionPath.add(restrictedProperty.toString());
-			}
-		}
-		return restrictionPath;
-	}
-
-	private Set<AbstractButton> getInvalidButtons(SADITreeNode node) {
-		Set<AbstractButton> buttons = new HashSet<AbstractButton>();
-		for (TreeNode parentNode : node.getPath()) {
-			SADITreeNode parent = ((SADITreeNode) parentNode);
-			if (parent.getButton() instanceof JRadioButton) {
-				buttons.addAll(getSiblingTreeButtons(parent));
-			}
-		}
-		
-		return buttons;
-	}
-	
-	private Set<AbstractButton> getChildButtons(SADITreeNode node) {
-		Set<AbstractButton> buttons = new HashSet<AbstractButton>();
-		for (SADITreeNode child : node.getChildren()) {
-			buttons.add(child.getButton());
-			buttons.addAll(getChildButtons(child));
-		}
-		return buttons;
-	}
-	
-	private Set<AbstractButton> getParentButtons(SADITreeNode node) {
-		Set<AbstractButton> buttons = new HashSet<AbstractButton>();
-		SADITreeNode parent = (SADITreeNode) node.getParent();
-		if (parent != null) {
-			buttons.add(parent.getButton());
-			buttons.addAll(getParentButtons(parent));
-		}
-		return buttons;
-	}
-	
-	private Set<AbstractButton> getSiblingButtons(SADITreeNode node) {
-		Set<AbstractButton> buttons = new HashSet<AbstractButton>();
-		SADITreeNode parent = (SADITreeNode) node.getParent();
-		if (parent != null) {
-			for (SADITreeNode child : parent.getChildren()) {
-				if (child != node) {
-					buttons.add(child.getButton());
-				}
-			}
-		}
-		return buttons;
-	}
-	
-	private Set<AbstractButton> getUnselectedSiblingButtons(SADITreeNode node) {
-		Set<AbstractButton> buttons = new HashSet<AbstractButton>();
-		SADITreeNode parent = (SADITreeNode) node.getParent();
-		if (parent != null) {
-			for (SADITreeNode child : parent.getChildren()) {
-				if (child != node) {
-					if (!isNodeSelected(child)) {
-						buttons.add(child.getButton());
-					}
-				}
-			}
-		}
-		return buttons;
-	}
-	
-	private Set<AbstractButton> getSiblingTreeButtons(SADITreeNode node) {
-		Set<AbstractButton> buttons = new HashSet<AbstractButton>();
-		SADITreeNode parent = (SADITreeNode) node.getParent();
-		if (parent != null) {
-			for (SADITreeNode child : parent.getChildren()) {
-				if (child != node) {
-					if (child.getButton() instanceof JRadioButton) {
-						buttons.add(child.getButton());
-						buttons.addAll(getChildButtons(child));
-					}
-				}
-			}
-		}
-		return buttons;
-	}
-	
-	private boolean isNodeSelected(SADITreeNode node) {
-		boolean selected = false;
-		if (node.getButton().isSelected()) {
-			selected = true;
-		} else {
-			for (SADITreeNode child : node.getChildren()) {
-				if (isNodeSelected(child)) {
-					selected = true;
-					break;
-				}
-			}
-		}
-		return selected;
-	}
-	
-	private void layoutComponents(Container container, GridBagConstraints c, SADITreeNode node, int level) {
-		AbstractButton button = node.getButton();
-		c.insets = new Insets(0, level * 20, 0, 0);
-		container.add(button, c);
-		level++;
-		for (SADITreeNode child : node.getChildren()) {
-			layoutComponents(container, c, child, level);
-		}
-	}
-	
-	private AbstractButton createButton(boolean checkBox, String name) {
-		AbstractButton button;
-		if (checkBox) {
-			button = new JCheckBox(name);
-		} else {
-			button = new JRadioButton(name);
-		}
-		return button;
-	}
-
 	@Override
 	public SADIActivityConfigurationBean getConfiguration() {
+		SADIActivityConfigurationBean newConfiguration = new SADIActivityConfigurationBean(oldConfiguration);
+		Service service = activity.getService();
+		newConfiguration.setInputPortMap(SADIUtils.buildPortMap(sadiInputTreeModel.getSelectedPaths(), SADIUtils.getInputClassLabel(service)));
+		newConfiguration.setOutputPortMap(SADIUtils.buildPortMap(sadiOutputTreeModel.getSelectedPaths(), SADIUtils.getOutputClassLabel(service)));
 		return newConfiguration;
 	}
 
 	@Override
 	public boolean isConfigurationChanged() {
-		return !newConfiguration.equals(oldConfiguration);
+		return !getConfiguration().equals(oldConfiguration);
 	}
 
 	public void setOkAction(Action okAction) {
@@ -584,18 +252,22 @@ public class SADIConfigurationPanel extends
 //		frame.pack();
 //		frame.setVisible(true);
 
-		final JFrame frame2 = new JFrame();
-		SADIActivity activity2 = new SADIActivity();
+		final SADIActivity activity2 = new SADIActivity();
 		SADIActivityConfigurationBean configurationBean2 = new SADIActivityConfigurationBean();
 		configurationBean2.setSparqlEndpoint("http://biordf.net/sparql");
 		configurationBean2.setGraphName("http://sadiframework.org/registry/");
 		configurationBean2.setServiceURI("http://sadiframework.org/examples/linear");
 		activity2.configure(configurationBean2);
 
-		final SADIConfigurationPanel config2 = new SADIConfigurationPanel(activity2);
-		frame2.add(config2);
-		frame2.pack();
-		frame2.setVisible(true);
-
+		SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+        		JFrame frame2 = new JFrame();
+        		SADIConfigurationPanel config2 = new SADIConfigurationPanel(activity2);
+                frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        		frame2.getContentPane().add(config2);
+        		frame2.pack();
+        		frame2.setVisible(true);
+            }
+        });
 	}
 }

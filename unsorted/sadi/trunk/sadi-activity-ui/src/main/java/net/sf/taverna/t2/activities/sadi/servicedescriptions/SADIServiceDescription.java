@@ -36,16 +36,16 @@ import net.sf.taverna.t2.servicedescriptions.ServiceDescription;
  */
 public class SADIServiceDescription extends ServiceDescription<SADIActivityConfigurationBean>{
 
-	private String sparqlEndpoint, graphName, serviceURI, name;
+	private String sparqlEndpoint, graphName;
 	
-	private List<String> properties;
+	private ca.wilkinsonlab.sadi.ServiceDescription serviceInfo;
 			
 	private static final String SERVICE = "SADI @ ";
 	
 	/**
-	 * Returns the sparqlEndpoint.
+	 * Returns the source registry's SPARQL endpoint.
 	 *
-	 * @return the sparqlEndpoint
+	 * @return the source registry's SPARQL endpoint
 	 */
 	public String getSparqlEndpoint() {
 		return sparqlEndpoint;
@@ -61,9 +61,9 @@ public class SADIServiceDescription extends ServiceDescription<SADIActivityConfi
 	}
 
 	/**
-	 * Returns the graphName.
+	 * Returns the source registry's SPARQL graph name.
 	 *
-	 * @return the graphName
+	 * @return the source registry's SPARQL graph name
 	 */
 	public String getGraphName() {
 		return graphName;
@@ -79,21 +79,21 @@ public class SADIServiceDescription extends ServiceDescription<SADIActivityConfi
 	}
 
 	/**
-	 * Returns the serviceURI.
+	 * Returns the SADI service description.
 	 *
-	 * @return the serviceURI
+	 * @return the SADI service description
 	 */
-	public String getServiceURI() {
-		return serviceURI;
+	public ca.wilkinsonlab.sadi.ServiceDescription getServiceInfo() {
+		return serviceInfo;
 	}
 
 	/**
-	 * Sets the value of serviceURI.
-	 *
-	 * @param serviceURI the new value for serviceURI
+	 * Set the SADI service description.
+	 * 
+	 * @param serviceInfo the SADI service description
 	 */
-	public void setServiceURI(String serviceURI) {
-		this.serviceURI = serviceURI;
+	public void setServiceInfo(ca.wilkinsonlab.sadi.ServiceDescription serviceInfo) {
+		this.serviceInfo = serviceInfo;
 	}
 
 	@Override
@@ -106,7 +106,10 @@ public class SADIServiceDescription extends ServiceDescription<SADIActivityConfi
 		SADIActivityConfigurationBean configuration = new SADIActivityConfigurationBean();
 		configuration.setSparqlEndpoint(sparqlEndpoint);
 		configuration.setGraphName(graphName);
-		configuration.setServiceURI(serviceURI);
+		configuration.setServiceURI(serviceInfo == null ? null : serviceInfo.getURI());
+		/* TODO add default ports here? we have the ServiceDescription, 
+		 * which should have all of the information we need...
+		 */
 		return configuration;
 	}
 
@@ -117,34 +120,12 @@ public class SADIServiceDescription extends ServiceDescription<SADIActivityConfi
 
 	@Override
 	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Sets the name of the service.
-	 *
-	 * @param name the name of the service
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	/**
-	 * Sets the properties attached by the service.
-	 * 
-	 * @param properties the properties attached by the service
-	 */
-	public void setProperties(List<String> properties) {
-		this.properties = properties;
+		return serviceInfo == null ? null : serviceInfo.getName();
 	}
 	
-	/**
-	 * Returns the properties attached by the service.
-	 * 
-	 * @return the properties attached by the service
-	 */
-	public List<String> getProperties() {
-		return properties;
+	@Override
+	public String getDescription() {
+		return serviceInfo == null ? null : serviceInfo.getDescription();
 	}
 	
 	@Override
@@ -154,7 +135,10 @@ public class SADIServiceDescription extends ServiceDescription<SADIActivityConfi
 
 	@Override
 	protected List<Object> getIdentifyingData() {
-		return Arrays.<Object>asList(getSparqlEndpoint(), getServiceURI());
+		return Arrays.<Object>asList(
+				sparqlEndpoint, 
+				graphName, 
+				serviceInfo == null ? null : serviceInfo.getURI());
 	}
 	
 	@Override

@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import net.sf.taverna.t2.activities.sadi.SADIActivity;
+import net.sf.taverna.t2.activities.sadi.SADIActivityConfigurationBean;
 import net.sf.taverna.t2.activities.sadi.actions.SADIActivityConfigurationAction;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactory;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactoryRegistry;
@@ -40,18 +41,18 @@ public class TestSADIActivityContextualView {
 
 	@Before
 	public void setup() throws Exception {
-//		activity = new SADIActivity();		
-//		activity.configure(new SADIActivityConfigurationBean());
+		activity = new SADIActivity();		
+		activity.configure(new SADIActivityConfigurationBean());
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Test
 	@Ignore
 	public void testDisovery() throws Exception {
+		@SuppressWarnings("rawtypes")
 		List<ContextualViewFactory> viewFactoriesForBeanType = ContextualViewFactoryRegistry.getInstance().getViewFactoriesForObject(activity);
 		assertTrue("The view factory should not be empty", !viewFactoriesForBeanType.isEmpty());
 		SADIActivityContextualViewFactory factory = null;
-		for (ContextualViewFactory cvf : viewFactoriesForBeanType) {
+		for (ContextualViewFactory<?> cvf : viewFactoriesForBeanType) {
 			if (cvf instanceof SADIActivityContextualViewFactory) {
 				factory = (SADIActivityContextualViewFactory) cvf;
 			}

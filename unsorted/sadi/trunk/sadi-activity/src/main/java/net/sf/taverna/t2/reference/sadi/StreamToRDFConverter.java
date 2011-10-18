@@ -23,6 +23,7 @@ package net.sf.taverna.t2.reference.sadi;
 import java.io.InputStream;
 import java.util.Set;
 
+import net.sf.taverna.t2.reference.ReferencedDataNature;
 import net.sf.taverna.t2.reference.StreamToValueConverterSPI;
 
 import com.hp.hpl.jena.rdf.model.Model;
@@ -51,6 +52,13 @@ public class StreamToRDFConverter implements StreamToValueConverterSPI<RDFNode> 
 
 	public RDFNode renderFrom(InputStream stream) {
 		return convert(stream);
+	}
+
+	public RDFNode renderFrom(InputStream arg0, ReferencedDataNature arg1,
+			String arg2) {
+		// TODO Auto-generated method stub
+		// what are these arguments in reality?
+		return renderFrom(arg0);
 	}
 
 }

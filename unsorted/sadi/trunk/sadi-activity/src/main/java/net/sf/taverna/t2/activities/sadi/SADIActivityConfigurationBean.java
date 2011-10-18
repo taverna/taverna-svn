@@ -34,13 +34,19 @@ public class SADIActivityConfigurationBean {
 
 	private String sparqlEndpoint, graphName, serviceURI;
 
+	/** @deprecated use {@link inputPortMap} or {@link outputPortMap} instead */
 	private List<List<String>> inputRestrictionPaths, outputRestrictionPaths;
 	
+	/* TODO is this actually used anywhere? */
 	private Map<String, String> attributes;
+	
+	private Map<String, String> inputPortMap, outputPortMap;
 
 	public SADIActivityConfigurationBean() {
 		inputRestrictionPaths = new ArrayList<List<String>>();
 		outputRestrictionPaths = new ArrayList<List<String>>();
+		inputPortMap = new HashMap<String, String>();
+		outputPortMap = new HashMap<String, String>();
 		attributes = new HashMap<String, String>();
 	}
 
@@ -50,15 +56,19 @@ public class SADIActivityConfigurationBean {
 		serviceURI = configuration.getServiceURI();
 		inputRestrictionPaths = configuration.getInputRestrictionPaths();
 		outputRestrictionPaths = configuration.getOutputRestrictionPaths();
+		inputPortMap = new HashMap<String, String>(configuration.getInputPortMap());
+		outputPortMap = new HashMap<String, String>(configuration.getOutputPortMap());
 		attributes = configuration.getAttributes();
 	}
 
 	private List<List<String>> copyPaths(List<List<String>> paths) {
 		List<List<String>> copy = new ArrayList<List<String>>();
-		for (List<String> path : paths) {
-			List<String> newPath = new ArrayList<String>();
-			newPath.addAll(path);
-			copy.add(newPath);
+		if (paths != null) {
+			for (List<String> path : paths) {
+				List<String> newPath = new ArrayList<String>();
+				newPath.addAll(path);
+				copy.add(newPath);
+			}
 		}
 		return copy;
 	}
@@ -126,6 +136,7 @@ public class SADIActivityConfigurationBean {
 	 * 
 	 * @return the paths that specify the property restrictions that will be
 	 *         inputs to the {@link SADIActivity}
+	 * @deprecated use {@link getInputPathMap()} instead
 	 */
 	public List<List<String>> getInputRestrictionPaths() {
 		return copyPaths(inputRestrictionPaths);
@@ -138,6 +149,7 @@ public class SADIActivityConfigurationBean {
 	 * @param inputRestrictionPaths
 	 *            the paths that specify the property restrictions that will be
 	 *            inputs to the {@link SADIActivity}.
+	 * @deprecated use {@link setInputPathMap()} instead
 	 */
 	public void setInputRestrictionPaths(List<List<String>> inputRestrictionPaths) {
 		if (inputRestrictionPaths == null) {
@@ -153,6 +165,7 @@ public class SADIActivityConfigurationBean {
 	 * 
 	 * @return the paths that specify the property restrictions that will be
 	 *         outputs from the {@link SADIActivity}
+	 * @deprecated use {@link getOutputPathMap()} instead
 	 */
 	public List<List<String>> getOutputRestrictionPaths() {
 		return copyPaths(outputRestrictionPaths);
@@ -165,6 +178,7 @@ public class SADIActivityConfigurationBean {
 	 * @param outputRestrictionPaths
 	 *            the paths that specify the property restrictions that will be
 	 *            outputs from the {@link SADIActivity}
+	 * @deprecated use {@link setOutputPathMap()} instead
 	 */
 	public void setOutputRestrictionPaths(List<List<String>> outputRestrictionPaths) {
 		if (outputRestrictionPaths == null) {
@@ -174,20 +188,64 @@ public class SADIActivityConfigurationBean {
 		}
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public void addInputRestrictionPath(List<String> restrictionPath) {
 		inputRestrictionPaths.add(restrictionPath);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public void removeInputRestrictionPath(List<String> restrictionPath) {
 		inputRestrictionPaths.remove(restrictionPath);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public void addOutputRestrictionPath(List<String> restrictionPath) {
 		outputRestrictionPaths.add(restrictionPath);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public void removeOutputRestrictionPath(List<String> restrictionPath) {
 		outputRestrictionPaths.remove(restrictionPath);
+	}
+
+	/**
+	 * Returns a map of input port name to input port RDF path specification.
+	 * @return a map of input port name to input port RDF path specification.
+	 */
+	public Map<String, String> getInputPortMap() {
+		return inputPortMap;
+	}
+	
+	/**
+	 * Sets the input port map.
+	 * @param inputPortMap
+	 */
+	public void setInputPortMap(Map<String, String> inputPortMap) {
+		this.inputPortMap = inputPortMap;
+	}
+
+	/**
+	 * Returns a map of output port name to output port RDF path specification.
+	 * @return a map of output port name to output port RDF path specification.
+	 */
+	public Map<String, String> getOutputPortMap() {
+		return outputPortMap;
+	}
+
+	/**
+	 * Sets the output port map.
+	 * @param outputPortMap
+	 */
+	public void setOutputPortMap(Map<String, String> outputPortMap) {
+		this.outputPortMap = outputPortMap;
 	}
 
 	public String getAttribute(String name) {
@@ -219,6 +277,10 @@ public class SADIActivityConfigurationBean {
 				+ ((inputRestrictionPaths == null) ? 0 : inputRestrictionPaths.hashCode());
 		result = prime * result
 				+ ((outputRestrictionPaths == null) ? 0 : outputRestrictionPaths.hashCode());
+		result = prime * result
+				+ ((inputPortMap == null) ? 0 : inputPortMap.hashCode());
+		result = prime * result
+				+ ((outputPortMap == null) ? 0 : outputPortMap.hashCode());
 		result = prime * result + ((serviceURI == null) ? 0 : serviceURI.hashCode());
 		result = prime * result + ((sparqlEndpoint == null) ? 0 : sparqlEndpoint.hashCode());
 		return result;
@@ -265,6 +327,20 @@ public class SADIActivityConfigurationBean {
 				return false;
 			}
 		} else if (!outputRestrictionPaths.equals(other.outputRestrictionPaths)) {
+			return false;
+		}
+		if (inputPortMap == null) {
+			if (other.inputPortMap != null) {
+				return false;
+			}
+		} else if (!inputPortMap.equals(other.inputPortMap)) {
+			return false;
+		}
+		if (outputPortMap == null) {
+			if (other.outputPortMap != null) {
+				return false;
+			}
+		} else if (!outputPortMap.equals(other.outputPortMap)) {
 			return false;
 		}
 		if (serviceURI == null) {

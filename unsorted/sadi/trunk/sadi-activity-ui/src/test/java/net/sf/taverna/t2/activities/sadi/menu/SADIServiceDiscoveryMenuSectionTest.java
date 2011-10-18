@@ -31,6 +31,10 @@ import net.sf.taverna.t2.ui.menu.ContextualSelection;
 import org.junit.Before;
 import org.junit.Test;
 
+import ca.wilkinsonlab.sadi.rdfpath.RDFPath;
+
+import com.hp.hpl.jena.sparql.vocabulary.FOAF;
+
 /**
  * Unit tests for {@link SADIServiceDiscoveryMenuSection}.
  *
@@ -48,7 +52,7 @@ public class SADIServiceDiscoveryMenuSectionTest {
 	@Before
 	public void setUp() throws Exception {
 		serviceDiscoveryMenuSection = new SADIServiceDiscoveryMenuSection();
-		contextualSelection = new ContextualSelection(null, new SADIActivityInputPort(null, null, null, 0), null);
+		contextualSelection = new ContextualSelection(null, new SADIActivityInputPort(null, new RDFPath(FOAF.name, null), "name", 0), null);
 	}
 
 	/**

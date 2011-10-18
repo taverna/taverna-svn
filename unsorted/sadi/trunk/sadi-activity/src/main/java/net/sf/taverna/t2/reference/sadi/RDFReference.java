@@ -20,25 +20,29 @@
  ******************************************************************************/
 package net.sf.taverna.t2.reference.sadi;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.Set;
 
 import net.sf.taverna.t2.reference.AbstractExternalReference;
 import net.sf.taverna.t2.reference.DereferenceException;
 import net.sf.taverna.t2.reference.ReferenceContext;
 import net.sf.taverna.t2.reference.ReferencedDataNature;
 import net.sf.taverna.t2.reference.ValueCarryingExternalReference;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
 import ca.wilkinsonlab.sadi.utils.RdfUtils;
 
-import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.util.ResourceUtils;
 
 /**
@@ -49,6 +53,7 @@ import com.hp.hpl.jena.util.ResourceUtils;
 public class RDFReference extends AbstractExternalReference implements
 		ValueCarryingExternalReference<RDFNode> {
 
+	private static final Logger log = Logger.getLogger(RDFReference.class);
 	private RDFNode node;
 
 	/**
@@ -57,21 +62,22 @@ public class RDFReference extends AbstractExternalReference implements
 	public InputStream openStream(ReferenceContext context) {
 		try {
 			String result = "";
-			if (node == null) {
-				result = "";
-			} else if (node.isLiteral()) {
-				result = ((Literal) node).getLexicalForm();
-			} else if (node.isResource()) {
-				Resource resource = (Resource) node;
-				if (resource.isURIResource()) {
-					result = resource.getURI();
-				} else {
-					Model model = ResourceUtils.reachableClosure(resource);
-					StringWriter stringWriter = new StringWriter();
-					model.write(stringWriter, "RDF/XML-ABBREV");
-					result = stringWriter.toString();
-				}
-			}
+//			if (node == null) {
+//				result = "";
+//			} else if (node.isLiteral()) {
+//				result = ((Literal) node).getLexicalForm();
+//			} else if (node.isResource()) {
+//				Resource resource = (Resource) node;
+//				if (resource.isURIResource()) {
+//					result = resource.getURI();
+//				} else {
+//					Model model = ResourceUtils.reachableClosure(resource);
+//					StringWriter stringWriter = new StringWriter();
+//					model.write(stringWriter, "RDF/XML-ABBREV");
+//					result = stringWriter.toString();
+//				}
+//			}
+			result = getContents();
 			return new ByteArrayInputStream(result.getBytes(getCharset()));
 		} catch (UnsupportedEncodingException e) {
 			throw new DereferenceException(e);
@@ -115,26 +121,43 @@ public class RDFReference extends AbstractExternalReference implements
 		if (node == null) {
 			string = "";
 		} else if (node.isLiteral()) {
-			string = ((Literal) node).toString();
+			string = node.asLiteral().toString();
 		} else {
-			Model model = ResourceUtils.reachableClosure((Resource) node);
+			Resource resource = node.asResource();
+			if (resource.isAnon()) {
+				// inputs to SADI services cannot be anonymous nodes...
+				resource = ResourceUtils.renameResource(resource, RdfUtils.createUniqueURI());
+			}
 			StringWriter stringWriter = new StringWriter();
-			model.write(stringWriter, "RDF/XML-ABBREV");
+			stringWriter.append(String.format("<%s>\n", resource.getURI()));
+			Model model = ResourceUtils.reachableClosure(resource);
+			model.write(stringWriter, "N3");
+			model.close();
 			string = stringWriter.toString();
 		}
 		return string;
 	}
 
 	public void setContents(String contentsAsString) {
-		if (contentsAsString.startsWith("<rdf:RDF")) {
-			Model model = ModelFactory.createDefaultModel();
-			model.read(new StringReader(contentsAsString), null);
-			Set<Resource> subjects = model.listSubjects().toSet();
-			Set<RDFNode> objects = model.listObjects().toSet();
-			subjects.removeAll(objects);
-			node = subjects.iterator().next();
+		if (StringUtils.isEmpty(contentsAsString)) {
+			node = null;
 		} else {
-			node = RdfUtils.createTypedLiteral(contentsAsString);
+			try {
+				BufferedReader reader = new BufferedReader(new StringReader(contentsAsString));
+				String header = reader.readLine();
+				if (header.startsWith("<") && header.endsWith(">")) {
+					// this is a URI resource...
+					Model model = ModelFactory.createDefaultModel();
+					model.read(reader, null, "N3");
+					node = model.getResource(StringUtils.substring(header, 1, -1));
+				} else {
+					// this is a literal...
+					node = RdfUtils.createTypedLiteral(contentsAsString);
+				}
+			} catch (Exception e) {
+				log.error(String.format("error converting to RDF\n%s", contentsAsString), e);
+				node = ResourceFactory.createPlainLiteral(contentsAsString);
+			}
 		}
 	}
 	

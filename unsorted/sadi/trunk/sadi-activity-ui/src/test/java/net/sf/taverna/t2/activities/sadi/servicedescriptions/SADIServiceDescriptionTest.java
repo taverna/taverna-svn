@@ -34,6 +34,8 @@ import net.sf.taverna.t2.activities.sadi.SADIActivityConfigurationBean;
 import org.junit.Before;
 import org.junit.Test;
 
+import ca.wilkinsonlab.sadi.beans.ServiceBean;
+
 /**
  * Unit tests for {@link SADIServiceDescription}.
  *
@@ -98,22 +100,23 @@ public class SADIServiceDescriptionTest {
 	}
 
 	/**
-	 * Test method for {@link net.sf.taverna.t2.activities.sadi.servicedescriptions.SADIServiceDescription#getServiceURI()}.
+	 * Test method for {@link net.sf.taverna.t2.activities.sadi.servicedescriptions.SADIServiceDescription#getServiceInfo()}.
 	 */
 	@Test
-	public void testGetServiceURI() {
-		assertNull(sadiServiceDescription.getServiceURI());
+	public void testGetServiceInfo() {
+		assertNull(sadiServiceDescription.getServiceInfo());
 	}
 
 	/**
 	 * Test method for {@link net.sf.taverna.t2.activities.sadi.servicedescriptions.SADIServiceDescription#setServiceURI(java.lang.String)}.
 	 */
 	@Test
-	public void testSetServiceURI() {
-		sadiServiceDescription.setServiceURI("serviceuri");
-		assertEquals("serviceuri", sadiServiceDescription.getServiceURI());
-		sadiServiceDescription.setServiceURI(null);
-		assertNull(sadiServiceDescription.getServiceURI());
+	public void testSetServiceInfo() {
+		ca.wilkinsonlab.sadi.ServiceDescription serviceBean = new ServiceBean();
+		sadiServiceDescription.setServiceInfo(serviceBean);
+		assertEquals(serviceBean, sadiServiceDescription.getServiceInfo());
+		sadiServiceDescription.setServiceInfo(null);
+		assertNull(sadiServiceDescription.getServiceInfo());
 	}
 
 	/**
@@ -149,17 +152,6 @@ public class SADIServiceDescriptionTest {
 	}
 
 	/**
-	 * Test method for {@link net.sf.taverna.t2.activities.sadi.servicedescriptions.SADIServiceDescription#setName(java.lang.String)}.
-	 */
-	@Test
-	public void testSetName() {
-		sadiServiceDescription.setName("serviceuri");
-		assertEquals("serviceuri", sadiServiceDescription.getName());
-		sadiServiceDescription.setName(null);
-		assertNull(sadiServiceDescription.getName());
-	}
-
-	/**
 	 * Test method for {@link net.sf.taverna.t2.activities.sadi.servicedescriptions.SADIServiceDescription#getPath()}.
 	 */
 	@Test
@@ -174,12 +166,15 @@ public class SADIServiceDescriptionTest {
 	 */
 	@Test
 	public void testGetIdentifyingData() {
-		List<Object> identifyingData = Arrays.<Object>asList(null, null);
+		List<Object> identifyingData = Arrays.<Object>asList(null, null, null);
 		assertEquals(identifyingData, sadiServiceDescription.getIdentifyingData());
 		
+		ServiceBean serviceBean = new ServiceBean();
+		serviceBean.setURI("service-uri");
 		sadiServiceDescription.setSparqlEndpoint("endpoint");
-		sadiServiceDescription.setServiceURI("service-uri");
-		identifyingData = Arrays.<Object>asList("endpoint", "service-uri");
+		sadiServiceDescription.setGraphName("graph");
+		sadiServiceDescription.setServiceInfo(serviceBean);
+		identifyingData = Arrays.<Object>asList("endpoint", "graph", "service-uri");
 		assertEquals(identifyingData, sadiServiceDescription.getIdentifyingData());
 	}
 

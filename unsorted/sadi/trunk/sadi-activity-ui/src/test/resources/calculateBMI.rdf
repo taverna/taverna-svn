@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xml-stylesheet type="text/xsl" href="?xsl" ?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:mygrid="http://www.mygrid.org.uk/mygrid-moby-service#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+  <mygrid:serviceDescription rdf:about="">
+    <mygrid:hasOperation>
+      <mygrid:operation>
+        <mygrid:hasUnitTest>
+          <mygrid:unitTest>
+            <mygrid:exampleOutput rdf:resource="http://sadiframework.org/examples/t/bmi-output.rdf"/>
+            <mygrid:exampleInput rdf:resource="http://sadiframework.org/examples/t/bmi-input.rdf"/>
+          </mygrid:unitTest>
+        </mygrid:hasUnitTest>
+        <mygrid:outputParameter>
+          <mygrid:parameter>
+            <mygrid:objectType rdf:resource="http://sadiframework.org/examples/bmi.owl#OutputClass"/>
+          </mygrid:parameter>
+        </mygrid:outputParameter>
+        <mygrid:inputParameter>
+          <mygrid:parameter>
+            <mygrid:objectType rdf:resource="http://sadiframework.org/examples/bmi.owl#InputClass"/>
+          </mygrid:parameter>
+        </mygrid:inputParameter>
+      </mygrid:operation>
+    </mygrid:hasOperation>
+    <mygrid:providedBy>
+      <mygrid:organisation>
+        <mygrid:authoritative rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >false</mygrid:authoritative>
+      </mygrid:organisation>
+    </mygrid:providedBy>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Calculates Body mass Index.</rdfs:comment>
+    <mygrid:hasServiceDescriptionText rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Calculates Body mass Index.</mygrid:hasServiceDescriptionText>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >calculateBMI</rdfs:label>
+    <mygrid:hasServiceNameText rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >calculateBMI</mygrid:hasServiceNameText>
+  </mygrid:serviceDescription>
+</rdf:RDF>
