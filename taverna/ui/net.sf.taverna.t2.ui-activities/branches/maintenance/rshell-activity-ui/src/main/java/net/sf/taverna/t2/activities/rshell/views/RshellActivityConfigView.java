@@ -28,6 +28,7 @@
 package net.sf.taverna.t2.activities.rshell.views;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -106,6 +107,8 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("serial")
 public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellActivity, RshellActivityConfigurationBean> {
 	
+	private static final Color LINE_COLOR = new Color(225,225,225);
+
 	private static final String EXTENSION = ".r";
 
 	private static final String VALID_NAME_REGEX = "[\\p{L}\\p{Digit}_]+";
@@ -219,7 +222,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 
 
 		scriptTextArea = new JTextPane();
-		new LinePainter(scriptTextArea);
+		new LinePainter(scriptTextArea, LINE_COLOR);
 
 		final KeywordDocument doc = new KeywordDocument(keys);
 		// NOTE: Due to T2-1145 - always set editor kit BEFORE setDocument
