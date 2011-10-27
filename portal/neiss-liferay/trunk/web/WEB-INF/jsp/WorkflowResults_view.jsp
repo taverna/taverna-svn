@@ -47,13 +47,22 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z"
 </p>
 <table width="100%" style="margin-bottom:3px;">
     <tr>
+        <td colspan="2">
+            <div style="padding-bottom: 3px;">
+            <form action="<portlet:actionURL/>" method="post">
+            <input type="submit" name="<portlet:namespace/><%= Constants.REFRESH_WORKFLOW_JOBS %>" value="Refresh">
+            </form>
+            </div>
+        </td>
+    </tr>
+    <tr>
         <td valign="bottom">
             <b>Workflow runs:</b>
         </td>
         <td align="right">
-        <form action="<portlet:actionURL/>" method="post">
+<%--        <form action="<portlet:actionURL/>" method="post">
         <input type="submit" name="<portlet:namespace/><%= Constants.REFRESH_WORKFLOW_JOBS %>" value="Refresh">
-        </form>
+        </form>--%>
         </td>
     </tr>
 </table>
