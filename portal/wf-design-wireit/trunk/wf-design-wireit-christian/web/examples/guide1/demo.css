@@ -1,0 +1,11 @@
+/* Comment Module */
+div.WireIt-Container.WiringEditor-module-MyComment {
+	width: 100px;
+}
+div.WireIt-Container.WiringEditor-module-MyComment div.body {
+	background-color: #EEEE66; 
+
+}
+div.WireIt-Container.WiringEditor-module-MyComment div.body textarea {
+	background-color: transparent; font-weight: bold; border: 0;
+}
