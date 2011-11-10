@@ -20,6 +20,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import net.sf.taverna.portal.FileServingServlet;
 import net.sf.taverna.t2.baclava.DataThing;
 import net.sf.taverna.t2.baclava.factory.DataThingXMLFactory;
 import org.apache.commons.io.FileUtils;
@@ -32,11 +33,7 @@ import org.jdom.input.SAXBuilder;
  * @author Alex Nenadic
  */
 public class DisplayBaclavaFile extends HttpServlet {
-
-    public static final String DATA_FILE_PATH = "data_file_path"; // absolute path to the file with data
-    public static final String MIME_TYPE = "mime_type";
-    public static final String DATA_SIZE_IN_KB = "data_size_in_kb";
-    
+   
     
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -91,7 +88,7 @@ public class DisplayBaclavaFile extends HttpServlet {
             
             // Save DataThing map to a disk so we can get to individual data files in a directory
             // Save the data structure in a temp directory
-            File dataDir = new File("/tmp/blah2");
+            File dataDir = new File(System.getProperty("java.io.tmpdir"));
             if (dataThingMap != null) {
                 System.out.println("Saving data items from Baclava document " + baclavaFileURL + " to " + dataDir.getAbsolutePath());
                 if (!saveDataThingMapToDisk(dataThingMap, dataDir)){
@@ -99,8 +96,10 @@ public class DisplayBaclavaFile extends HttpServlet {
                     System.out.println("Failed to store data items from Baclava document to disk.");
                 }
                 else{
-                    // Include the JavaScript file that creates the data tree and reacts to clicks on data nodes
+                    // Include the JavaScript files (as .jsp files) that creates the data tree and reacts to clicks on data nodes
                     RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/taverna/DataTree.jsp");
+                    dispatcher.include(request, response);
+                    dispatcher = getServletContext().getRequestDispatcher("/taverna/AjaxDataPreview.jsp");
                     dispatcher.include(request, response);
                     
                     // Create an HTML table from the data in DataThing map that uses the JavaScript above
@@ -290,9 +289,9 @@ public class DisplayBaclavaFile extends HttpServlet {
                 String dataFilePath = dataFileParentPath + System.getProperty("file.separator") + "Value";
                 long dataSizeInKB = Math.round(new File(dataFilePath).length() / 1000d); // size in kilobytes (divided by 1000 not 1024!!!)
                 String dataFileURL = request.getContextPath() + "/FileServingServlet"
-                        + "?" + DATA_FILE_PATH + "=" + URLEncoder.encode(dataFilePath, "UTF-8")
-                        + "&" + MIME_TYPE + "=" + URLEncoder.encode(mimeType, "UTF-8")
-                        + "&" + DATA_SIZE_IN_KB + "=" + URLEncoder.encode(Long.toString(dataSizeInKB), "UTF-8");
+                        + "?" + FileServingServlet.DATA_FILE_PATH + "=" + URLEncoder.encode(dataFilePath, "UTF-8")
+                        + "&" + FileServingServlet.MIME_TYPE + "=" + URLEncoder.encode(mimeType, "UTF-8")
+                        + "&" + FileServingServlet.DATA_SIZE_IN_KB + "=" + URLEncoder.encode(Long.toString(dataSizeInKB), "UTF-8");
                 resultTreeHTML.append("addNode2(\"result_data\", \"result_data_preview_textarea\", \"Value\", \"" + dataFileURL + "\", \"results_data_preview\");\n");
             } catch (Exception ex) {
                 resultTreeHTML.append("addNode2(\"result_data\", \"result_data_preview_textarea\", \"Value\", \"\", \"results_data_preview\");\n");
@@ -303,9 +302,9 @@ public class DisplayBaclavaFile extends HttpServlet {
                     String dataFilePath = dataFileParentPath + System.getProperty("file.separator") + "Value" + parentIndex;
                     long dataSizeInKB = Math.round(new File(dataFilePath).length() / 1000d); // size in kilobytes (divided by 1000 not 1024!!!)
                     String dataFileURL = request.getContextPath() + "/FileServingServlet"
-                            + "?" + DATA_FILE_PATH + "=" + URLEncoder.encode(dataFilePath, "UTF-8")
-                            + "&" + MIME_TYPE + "=" + URLEncoder.encode(mimeType, "UTF-8")
-                            + "&" + DATA_SIZE_IN_KB + "=" + URLEncoder.encode(Long.toString(dataSizeInKB), "UTF-8");
+                            + "?" + FileServingServlet.DATA_FILE_PATH + "=" + URLEncoder.encode(dataFilePath, "UTF-8")
+                            + "&" + FileServingServlet.MIME_TYPE + "=" + URLEncoder.encode(mimeType, "UTF-8")
+                            + "&" + FileServingServlet.DATA_SIZE_IN_KB + "=" + URLEncoder.encode(Long.toString(dataSizeInKB), "UTF-8");
                     resultTreeHTML.append("addNode2(\"result_data\", \"result_data_preview_textarea\", \"Value" + parentIndex + "\", \"" + dataFileURL + "\", \"results_data_preview\");\n");
                 } catch (Exception ex) {
                     resultTreeHTML.append("addNode2(\"result_data\", \"result_data_preview_textarea\", \"Value" + parentIndex + "\", \"\", \"results_data_preview\");\n");
