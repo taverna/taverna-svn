@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>MixedWorkflow.t2flow</title>
+</head>
+<body>
+<h1>Description</h1>
+This is a test workflow to show lists working.
+<p>
+<ul>
+	<li>Each value of LeftList is concatenated to the single value of LeftNoList.
+	<li>Eacb value of RightList is ooncatenated to the single value of RightNoList.
+	<li>Then each value of the left results is concatenated to each value of the right results.
+</ul>
+<p>
+Note the .(list) annotation is not part of the port name but only a reminder that is is of depth 1 (list).
+<h1>Inputs</h1>
+<h2>LeftList, RightList<h2>
+<h3>Type</h3>
+List of Strings. (A single value will be automatically wrapped into a list of length 1)
+<h2>LeftNoList, RightNOList<h2>
+<h3>Type</h3>
+A String.
+<h1>Outputs</h1>
+<h2>Result</h2>
+<h3>Type</h3>
+A list of Strings. Or actually a list of lists of Strings.
+<h3>Expected Number of Values</h3>
+The product of the number for each input
+<h3>Expected Value</h3>
+A Contacentation including one value from each list and each Singelton.
+<body>
