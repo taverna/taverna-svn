@@ -59,7 +59,7 @@ function loadpage(textarea_id, page_request, containerid, url){
         if (typeof(mime_type) == "undefined"){
             document.getElementById(containerid).innerHTML="MIME type of the data value is undefined - cannot preview the value.<br>Try saving <a target=\"_blank\" href=\""+url+"\">the data value</a> and viewing it in an external application.";
         }
-        else if (mime_type.indexOf("text/") === 0 || mime_type.indexOf("application/xml") === 0){
+        else if (mime_type.indexOf("text/") === 0 || mime_type.indexOf("application/xml") === 0 || mime_type.indexOf("application/octet-stream") === 0){
             document.getElementById(containerid).innerHTML="<textarea id=\""+textarea_id+"\" readonly='true' style=\"width:100%; overflow:visible;\">"+
                 page_request.responseText+"</textarea><br><br>View <a target=\"_blank\" href=\""+url+
                 "\">the data</a> in a separate browser window or download it by right-clicking on the link and choosing 'Save Link As'.";
