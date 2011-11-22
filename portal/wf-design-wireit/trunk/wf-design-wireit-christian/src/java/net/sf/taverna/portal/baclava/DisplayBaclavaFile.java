@@ -4,12 +4,12 @@
  */
 package net.sf.taverna.portal.baclava;
 
-//import eu.medsea.mimeutil.MimeType;
-//import eu.medsea.mimeutil.MimeUtil2;
+import eu.medsea.mimeutil.MimeType;
+import eu.medsea.mimeutil.MimeUtil2;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-//import java.io.FileFilter;
+import java.io.FileFilter;
 //import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,16 +22,14 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-//import java.util.Arrays;
+import java.util.Arrays;
 import java.util.Collection;
-//import java.util.Comparator;
+import java.util.Comparator;
 import java.util.Formatter;
 import java.util.Iterator;
-//import java.util.List;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -52,8 +50,10 @@ import org.jdom.input.SAXBuilder;
  */
 public class DisplayBaclavaFile extends HttpServlet {
  
-//    private static final String APPLICATION_OCTETSTREAM = "application/octet-stream";
+    private static final String APPLICATION_OCTETSTREAM = "application/octet-stream";
 //    private static final String TEXT_PLAIN = "text/plain";
+
+    private static final String MIME_TYPE_FILE_NAME = "mime_type.txt";
 
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -125,17 +125,17 @@ public class DisplayBaclavaFile extends HttpServlet {
             // the Baclava. So we won't read the data from the data directory where data items from the 
             // Baclava file are saved.
             
-//            // If the data dir already exists that means we have already parsed and
-//            // saved the data from the Baclava file so just generate the HTML table 
-//            // from the directory structure
-//            if (dataDir.exists()){
-//                System.out.println("Baclava file already saved in directory " + dataDir.getAbsolutePath() + "; no need to parse the Baclava file.");
-//                // Create an HTML table from the data in the data folder
-//                outputsTableHTML = createHTMLTableFromDataDirectory(dataDir, request);
-//            }
-//            // If the data directory does not already exist - parse the Baclava file 
-//            // and save the data structure from Baclava into the data directory
-//            else {
+            // If the data dir already exists that means we have already parsed and
+            // saved the data from the Baclava file so just generate the HTML table 
+            // from the directory structure
+            if (dataDir.exists()){
+                System.out.println("Baclava file already saved in directory " + dataDir.getAbsolutePath() + "; no need to parse the Baclava file.");
+                // Create an HTML table from the data in the data folder
+                outputsTableHTML = createHTMLTableFromDataDirectory(dataDir, request);
+            }
+            // If the data directory does not already exist - parse the Baclava file 
+            // and save the data structure from Baclava into the data directory
+            else {
                 // Parse the Baclava file to produce the dataThingMap
                 System.out.println("Parsing the data items from Baclava document " + baclavaFileURLString);
                 Map<String, DataThing> dataThingMap = null;
@@ -173,7 +173,7 @@ public class DisplayBaclavaFile extends HttpServlet {
                 // Save DataThing map to a disk so that individual data items are saved as 
                 // files in a directory structure inside the data directory and can be served
                 // by the file serving servlet
-                if (!dataDir.exists()){
+                //if (!dataDir.exists()){
                     System.out.println("Saving data items from Baclava document " + baclavaFileURLString + " to " + dataDir.getAbsolutePath());
                     if (!saveDataThingMapToDisk(dataThingMap, dataDir)) {
                         System.out.println("Failed to store data items from Baclava document to disk.");
@@ -182,15 +182,15 @@ public class DisplayBaclavaFile extends HttpServlet {
                         out.println("</html>\n");
                         return;
                     }                    
-                }
-                else{
-                    System.out.println("Baclava file already saved in directory " + dataDir.getAbsolutePath() + "; no need to parse the Baclava file.");
-                }
+//                }
+//                else{
+//                    System.out.println("Baclava file already saved in directory " + dataDir.getAbsolutePath() + "; no need to parse the Baclava file.");
+//                }
 
                 // Create an HTML table from the data in DataThing map
                 outputsTableHTML = createHTMLTableFromBaclavaDataThingMap(dataThingMap, dataDir, request);
 
-//            }            
+            }            
           
             // Include the JavaScript files (as .jsp files) that creates the data tree 
             // that reacts to clicks on nodes in the tree
@@ -352,55 +352,55 @@ public class DisplayBaclavaFile extends HttpServlet {
         return dataTableHTML.toString();
     }
 
-//    private String createHTMLTableFromDataDirectory(File dataDir, HttpServletRequest request) {
-//
-//        System.out.println("Loading data items saved from the Baclava file in " + dataDir);
-//
-//        StringBuffer dataTableHTML = new StringBuffer();
-//
-//        dataTableHTML.append("<table width=\"100%\" style=\"margin-bottom:3px;\">\n");
-//        dataTableHTML.append("<tr>\n");
-//        dataTableHTML.append("<td valign=\"bottom\" colspan=\"2\"><div class=\"nohover_nounderline\"><b>Baclava file contents:</b></div></td>\n");
-//        dataTableHTML.append("</tr>\n");
-//        dataTableHTML.append("</table>\n");
-//
-//        dataTableHTML.append("<table width=\"100%\">\n");// table that contains the data links table and data preview table
-//        dataTableHTML.append("<tr><td style=\"vertical-align:top;\">\n");
-//        dataTableHTML.append("<table class=\"results\">\n");
-//        dataTableHTML.append("<tr>\n");
-//        dataTableHTML.append("<th width=\"20%\">Port</th>\n");
-//        dataTableHTML.append("<th width=\"15%\">Data</th>\n");
-//        dataTableHTML.append("</tr>\n");
-//        int rowCount = 1;
-//
-//        // Get all the directories in the dataDir - they represent the ports 
-//        // and contain the data associated with the port
-//        File[] portDirectories = dataDir.listFiles(directoryFileFilter);       
-//        for (File portDirectory : portDirectories) {
-//
-//            String portName = portDirectory.getName();
-//
-//            // Create the data object from the data in the port directory
-//            Object dataObject = createDataObjectFromDirectory(portDirectory);
-//            
-//            // Calculate the depth of the data for the port
-//            int dataDepth = calculateDataDepth(dataObject);
-//            if (rowCount % 2 != 0) {
-//                dataTableHTML.append("<tr>\n");
-//            } else {
-//                dataTableHTML.append("<tr style=\"background-color: #F0FFF0;\">\n");
-//            }
-//            String dataTypeBasedOnDepth;
-//            if (dataDepth == 0) {
-//                dataTypeBasedOnDepth = "single value";
-//            } else {
-//                dataTypeBasedOnDepth = "list of depth " + dataDepth;
-//            }
-//
-//            // Get data's MIME type as given by the data object in the Baclava file
-//            // If a data object is a list - all items in the list will have the same MIME type
-//            // so we just need to figure out the MIME type of the first file we can get to!
-//            String mimeType = null;
+    private String createHTMLTableFromDataDirectory(File dataDir, HttpServletRequest request) {
+
+        System.out.println("Loading data items saved from the Baclava file in " + dataDir);
+
+        StringBuffer dataTableHTML = new StringBuffer();
+
+        dataTableHTML.append("<table width=\"100%\" style=\"margin-bottom:3px;\">\n");
+        dataTableHTML.append("<tr>\n");
+        dataTableHTML.append("<td valign=\"bottom\" colspan=\"2\"><div class=\"nohover_nounderline\"><b>Baclava file contents:</b></div></td>\n");
+        dataTableHTML.append("</tr>\n");
+        dataTableHTML.append("</table>\n");
+
+        dataTableHTML.append("<table width=\"100%\">\n");// table that contains the data links table and data preview table
+        dataTableHTML.append("<tr><td style=\"vertical-align:top;\">\n");
+        dataTableHTML.append("<table class=\"results\">\n");
+        dataTableHTML.append("<tr>\n");
+        dataTableHTML.append("<th width=\"20%\">Port</th>\n");
+        dataTableHTML.append("<th width=\"15%\">Data</th>\n");
+        dataTableHTML.append("</tr>\n");
+        int rowCount = 1;
+
+        // Get all the directories in the dataDir - they represent the ports 
+        // and contain the data associated with the port
+        File[] portDirectories = dataDir.listFiles(directoryFileFilter);       
+        for (File portDirectory : portDirectories) {
+
+            String portName = portDirectory.getName();
+
+            // Create the data object from the data in the port directory
+            Object dataObject = createDataObjectFromDirectory(portDirectory);
+            
+            // Calculate the depth of the data for the port
+            int dataDepth = calculateDataDepth(dataObject);
+            if (rowCount % 2 != 0) {
+                dataTableHTML.append("<tr>\n");
+            } else {
+                dataTableHTML.append("<tr style=\"background-color: #F0FFF0;\">\n");
+            }
+            String dataTypeBasedOnDepth;
+            if (dataDepth == 0) {
+                dataTypeBasedOnDepth = "single value";
+            } else {
+                dataTypeBasedOnDepth = "list of depth " + dataDepth;
+            }
+
+            // Get data's MIME type as given by the data object in the Baclava file
+            // If a data object is a list - all items in the list will have the same MIME type.
+            // MIME type is saved in a special file clled mime_type.txt inside the port directory.
+            String mimeType = null;
 //            RecursiveFileListIterator recursiveFileListIterator = new RecursiveFileListIterator(portDirectory);
 //            if (recursiveFileListIterator.hasNext()){
 //                FileInputStream fis = null;
@@ -431,38 +431,45 @@ public class DisplayBaclavaFile extends HttpServlet {
 //                        }
 //                }
 //            }
-//            // Always use text/plain as our app does not display binary data. So even if data
-//            // really is some binary other than image, the user will see something. The main reason we are doing 
-//            // this is when data is small - text data gets recognised as binary which is a shame.
-//            mimeType = (mimeType==null || mimeType.equals(APPLICATION_OCTETSTREAM)) ? TEXT_PLAIN : mimeType;
-//            System.out.println("Using MIME type " + mimeType );
-//     
-//            dataTableHTML.append("<td width=\"20%\" style=\"vertical-align:top;\">\n");
-//            dataTableHTML.append("<div class=\"output_name\">" + portName + "<span class=\"output_depth\"> - " + dataTypeBasedOnDepth + "</span></div>\n");
-//            dataTableHTML.append("<div class=\"output_mime_type\">" + mimeType + "</div>\n");
-//            dataTableHTML.append("</td>");
-//
-//            // Create the data tree (with links to actual data vales)
-//            String dataFileParentPath = null;
-//
-//            dataFileParentPath = portDirectory.getAbsolutePath();
-//
-//            dataTableHTML.append("<td width=\"15%\" style=\"vertical-align:top;\"><script language=\"javascript\">" + createResultTree(dataObject, dataDepth, dataDepth, "", dataFileParentPath, mimeType, request) + "</script></td>\n");
-//            rowCount++;
-//            dataTableHTML.append("</tr>\n");
-//        }
-//        dataTableHTML.append("</table>\n");
-//        dataTableHTML.append("</td>\n");
-//        dataTableHTML.append("<td style=\"vertical-align:top;\">\n");
-//        dataTableHTML.append("<table class=\"results_data_preview\"><tr><th>Data preview</th></tr><tr><td><div style=\"vertical-align:top;\" id=\"results_data_preview\">When you select a data item - a preview of its value will appear here.</div></td></tr></table>\n");
-//        dataTableHTML.append("</td>\n");
-//        dataTableHTML.append("</tr>\n");
-//        dataTableHTML.append("<tr>\n");
-//        dataTableHTML.append("</table>\n");
-//        dataTableHTML.append("</br>\n");
-//
-//        return dataTableHTML.toString();
-//    }
+            
+            // We now save MIME type in a special file inside the port directory so no need to recursively
+            // get to the files and use MIME magic to guess the MIME type
+            File mimeTypeFile = new File(portDirectory, MIME_TYPE_FILE_NAME);
+            try {
+                mimeType = FileUtils.readFileToString(mimeTypeFile, "UTF-8");
+            } catch (IOException ex) {
+                System.out.println("Failed to read file " + mimeTypeFile.getAbsolutePath() + " to determine the MIME type for port " + portDirectory.getName());
+                ex.printStackTrace();
+            }            
+            mimeType = (mimeType==null) ? APPLICATION_OCTETSTREAM : mimeType;
+            System.out.println("Using MIME type " + mimeType + " for port " + portDirectory.getName());
+     
+            dataTableHTML.append("<td width=\"20%\" style=\"vertical-align:top;\">\n");
+            dataTableHTML.append("<div class=\"output_name\">" + portName + "<span class=\"output_depth\"> - " + dataTypeBasedOnDepth + "</span></div>\n");
+            dataTableHTML.append("<div class=\"output_mime_type\">" + mimeType + "</div>\n");
+            dataTableHTML.append("</td>");
+
+            // Create the data tree (with links to actual data vales)
+            String dataFileParentPath = null;
+
+            dataFileParentPath = portDirectory.getAbsolutePath();
+
+            dataTableHTML.append("<td width=\"15%\" style=\"vertical-align:top;\"><script language=\"javascript\">" + createResultTree(dataObject, dataDepth, dataDepth, "", dataFileParentPath, mimeType, request) + "</script></td>\n");
+            rowCount++;
+            dataTableHTML.append("</tr>\n");
+        }
+        dataTableHTML.append("</table>\n");
+        dataTableHTML.append("</td>\n");
+        dataTableHTML.append("<td style=\"vertical-align:top;\">\n");
+        dataTableHTML.append("<table class=\"results_data_preview\"><tr><th>Data preview</th></tr><tr><td><div style=\"vertical-align:top;\" id=\"results_data_preview\">When you select a data item - a preview of its value will appear here.</div></td></tr></table>\n");
+        dataTableHTML.append("</td>\n");
+        dataTableHTML.append("</tr>\n");
+        dataTableHTML.append("<tr>\n");
+        dataTableHTML.append("</table>\n");
+        dataTableHTML.append("</br>\n");
+
+        return dataTableHTML.toString();
+    }
     
     /*
      * Calculate depth of a data item from a Baclava file.
@@ -556,6 +563,19 @@ public class DisplayBaclavaFile extends HttpServlet {
                 System.out.println("Failed to save individual data item for port " + portName + " to " + portDir.getAbsolutePath());
                 success = false;
             }
+            else{
+                // Save the mime type of the data object in a special file in the port directory so we can pick it up later
+                String mimeType = dataThingMap.get(portName).getMostInterestingMIMETypeForObject(dataThingMap.get(portName).getDataObject());
+                File mimeTypeFile = null;
+                try {
+                    mimeTypeFile = new File(portDir, MIME_TYPE_FILE_NAME);
+                    FileUtils.writeStringToFile(mimeTypeFile, mimeType, "UTF-8");
+                } catch (IOException ex) {
+                    System.out.println("Failed to save mime type for port " + portName + " to " + mimeTypeFile.getAbsolutePath());
+                    ex.printStackTrace();
+                    success = false;
+                }
+            }
         }
         return success;
     }
@@ -634,142 +654,143 @@ public class DisplayBaclavaFile extends HttpServlet {
         return formatter.toString();
     }
 
-//    /**
-//     * Creates a data object structure from data contained a directory.
-//     */
-//    private Object createDataObjectFromDirectory(File portDirectory) {
-//    
-//        File[] singleValueFiles = portDirectory.listFiles(singleDataValueFileFilter);
-//        Object dataObject = null;
-//        
-//        if (singleValueFiles.length == 1){ // There is a single item in a file called "Value" inside the directory
-//            dataObject = singleValueFiles[0].getAbsolutePath(); // we do not care what is inside the file, we are just reconstructing the data structure 
-//            // we'll save the absolute path in the data object so we can figure out its MIME type later on
-//            return dataObject;
-//        }
-//        else if(singleValueFiles.length > 1){
-//            // Directory contains a list of files named Value1, Value2, ... 
-//            // We need them in the order so that, e.g., Value2 < Value10
-//            dataObject = new ArrayList();
-//            NumberedFileComparator numberedFileComparator = new NumberedFileComparator("Value");
-//            Arrays.sort(singleValueFiles, numberedFileComparator);
-//            for (File dataFile : singleValueFiles) {
-//                ((ArrayList) dataObject).add(dataFile.getAbsolutePath()); // we do not care what is inside the file, we are just reconstructing the data structure
-//            }
-//            return dataObject;
-//        }
-//        else{ // list of items - go recursively
-//            dataObject = new ArrayList();
-//            File[] listDirectories = portDirectory.listFiles(directoryFileFilter); 
-//            
-//            // There is just one directory inside named "List"
-//            if (listDirectories.length == 1 && listDirectories[0].getName().equals("List")){ 
-//                // This is just a container for the list so just go inside this directory
-//                return createDataObjectFromDirectory(listDirectories[0]);
-//            }
-//            else{
-//                // Directory contains a list of directories named List1, List2, ... 
-//                // or List1.1, List1.2, etc. 
-//                // We need them in the order so that, e.g., List1.2 < List1.10
-//                NumberedFileComparator numberedFileComparator = new NumberedFileComparator("List");
-//                Arrays.sort(listDirectories, numberedFileComparator);
-//                for (File directory : listDirectories) {
-//                    ((ArrayList) dataObject).add(createDataObjectFromDirectory(directory));
-//                }  
-//            }
-//            return dataObject;
-//        }
-//    }
+    /**
+     * Creates a data object structure from data contained a directory.
+     */
+    private Object createDataObjectFromDirectory(File portDirectory) {
     
-//    private FileFilter singleDataValueFileFilter = new FileFilter() {
-//
-//        public boolean accept(File file) {
-//            return file.getName().startsWith("Value");
-//        }
-//    };
-//    private FileFilter directoryFileFilter = new FileFilter() {
-//
-//        public boolean accept(File file) {
-//            return file.isDirectory();
-//        }
-//    };
+        File[] singleDataValueFiles = portDirectory.listFiles(singleDataValueFileFilter);
+        Object dataObject = null;
+        
+        if (singleDataValueFiles.length == 1 && singleDataValueFiles[0].getName().equals("Value")){ // There is a single item in a file called "Value" inside the directory
+            dataObject = singleDataValueFiles[0].getAbsolutePath(); // we do not care what is inside the file, we are just reconstructing the data structure 
+            // we'll save the absolute path in the data object so we can figure out its MIME type later on
+            return dataObject;
+        }
+        else if(singleDataValueFiles.length > 1 || 
+                (singleDataValueFiles.length == 1 && singleDataValueFiles[0].getName().equals("Value1"))){ // just one item "Value1" in the list but do not confuse it with single value result "Value"
+            // Directory contains a list of files named Value1, Value2, ... 
+            // We need them in the order so that, e.g., Value2 < Value10
+            dataObject = new ArrayList();
+            NumberedFileComparator numberedFileComparator = new NumberedFileComparator("Value");
+            Arrays.sort(singleDataValueFiles, numberedFileComparator);
+            for (File dataFile : singleDataValueFiles) {
+                ((ArrayList) dataObject).add(dataFile.getAbsolutePath()); // we do not care what is inside the file, we are just reconstructing the data structure
+            }
+            return dataObject;
+        }
+        else{ // list of items - go recursively
+            dataObject = new ArrayList();
+            File[] listDirectories = portDirectory.listFiles(directoryFileFilter); 
+            
+            // There is just one directory inside named "List"
+            if (listDirectories.length == 1 && listDirectories[0].getName().equals("List")){ 
+                // This is just a container for the list so just go inside this directory
+                return createDataObjectFromDirectory(listDirectories[0]);
+            }
+            else{
+                // Directory contains a list of directories named List1, List2, ... 
+                // or List1.1, List1.2, etc. 
+                // We need them in the order so that, e.g., List1.2 < List1.10
+                NumberedFileComparator numberedFileComparator = new NumberedFileComparator("List");
+                Arrays.sort(listDirectories, numberedFileComparator);
+                for (File directory : listDirectories) {
+                    ((ArrayList) dataObject).add(createDataObjectFromDirectory(directory));
+                }  
+            }
+            return dataObject;
+        }
+    }
+    
+    private FileFilter singleDataValueFileFilter = new FileFilter() {
 
-//    /**
-//     * Compares file/directory names like List1.2, List1.10, ... etc. so
-//     * that List1.2 comes before (i.e. "is less than") List1.10.
-//     * 
-//     * Similar for strings starting with word "Value", e.g. Value1, Value2, Value10, ...
-//     * These can also have "_thumbnail.jpg" appended at the end for thumbnail images.
-//     */
-//    private class NumberedFileComparator implements Comparator {
-//        
-//        private String prefix;
-//        private String suffix = "_thumbnail";
-//        
-//        public NumberedFileComparator(String prefix){
-//            this.prefix = prefix;
-//        }
-//
-//        public int compare(Object o1, Object o2) {
-//            
-//            String f1 = ((File) o1).getName().substring(prefix.length()); // eliminate the file name prefix from the string
-//            String f2 = ((File) o2).getName().substring(prefix.length());
-//            
-//            // Get rid of any "_thumbnail" suffixes
-//            if (f1.contains(suffix)){
-//                f1 = f1.substring(0, f1.indexOf(suffix));
-//            }
-//            if (f2.contains(suffix)){
-//                f2 = f2.substring(0, f2.indexOf(suffix));
-//            }
-//            
-//            // Next eliminate "." and collect numbers only from the rest of the string
-//            String[] num1List = f1.split("[.]");
-//            String[] num2List = f2.split("[.]");
-//            
-//            int num1 = 0;
-//            int num2 = 0;
-//            
-//            for (int i = 0; i < num1List.length; i ++){
-//                num1 = 10 * num1 + new Integer(num1List[i]).intValue();
-//            }
-//            for (int i = 0; i < num2List.length; i ++){
-//                num2 = 10 * num2 + new Integer(num2List[i]).intValue();
-//            }        
-//            
-//            return num1 - num2;
-//        }
-//        
-//    }
+        public boolean accept(File file) {
+            return file.getName().startsWith("Value") && !file.getName().contains("thumbnail");
+        }
+    };
+    private FileFilter directoryFileFilter = new FileFilter() {
+
+        public boolean accept(File file) {
+            return file.isDirectory();
+        }
+    };
+
+    /**
+     * Compares file/directory names like List1.2, List1.10, ... etc. so
+     * that List1.2 comes before (i.e. "is less than") List1.10.
+     * 
+     * Similar for strings starting with word "Value", e.g. Value1, Value2, Value10, ...
+     * These can also have "_thumbnail.jpg" appended at the end for thumbnail images.
+     */
+    private class NumberedFileComparator implements Comparator {
+        
+        private String prefix;
+        private String suffix = "_thumbnail";
+        
+        public NumberedFileComparator(String prefix){
+            this.prefix = prefix;
+        }
+
+        public int compare(Object o1, Object o2) {
+            
+            String f1 = ((File) o1).getName().substring(prefix.length()); // eliminate the file name prefix from the string
+            String f2 = ((File) o2).getName().substring(prefix.length());
+            
+            // Get rid of any "_thumbnail" suffixes
+            if (f1.contains(suffix)){
+                f1 = f1.substring(0, f1.indexOf(suffix));
+            }
+            if (f2.contains(suffix)){
+                f2 = f2.substring(0, f2.indexOf(suffix));
+            }
+            
+            // Next eliminate "." and collect numbers only from the rest of the string
+            String[] num1List = f1.split("[.]");
+            String[] num2List = f2.split("[.]");
+            
+            int num1 = 0;
+            int num2 = 0;
+            
+            for (int i = 0; i < num1List.length; i ++){
+                num1 = 10 * num1 + new Integer(num1List[i]).intValue();
+            }
+            for (int i = 0; i < num2List.length; i ++){
+                num2 = 10 * num2 + new Integer(num2List[i]).intValue();
+            }        
+            
+            return num1 - num2;
+        }
+        
+    }
     
-//    private static List<MimeType> getMimeTypes(byte[] bytes) {
-//        List<MimeType> mimeList = new ArrayList<MimeType>();
-//        MimeUtil2 mimeUtil = new MimeUtil2();
-//        mimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.ExtensionMimeDetector");
-//        mimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.MagicMimeMimeDetector");
-//        mimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.WindowsRegistryMimeDetector");
-//        mimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.ExtraMimeTypes");
-//        try {
-//            Collection<MimeType> mimeTypes2 = mimeUtil.getMimeTypes(bytes);
-//            mimeList.addAll(mimeTypes2);
-//
-//            // Hack for SVG that seems not to be recognised
-//            String bytesString = new String(bytes, "UTF-8");
-//            if (bytesString.contains("http://www.w3.org/2000/svg")) {
-//                MimeType svgMimeType = new MimeType("image/svg+xml");
-//                if (!mimeList.contains(svgMimeType)) {
-//                    mimeList.add(svgMimeType);
-//                }
-//            }
-//            if (mimeList.isEmpty()) { // if it is not recognised
-//                mimeList.add(new MimeType(APPLICATION_OCTETSTREAM));
-//            }
-//
-//        } catch (IOException ex) {
-//            mimeList.add(new MimeType(APPLICATION_OCTETSTREAM));
-//        }
-//
-//        return mimeList;
-//    }
+    public static List<MimeType> getMimeTypes(byte[] bytes) {
+        List<MimeType> mimeList = new ArrayList<MimeType>();
+        MimeUtil2 mimeUtil = new MimeUtil2();
+        mimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.ExtensionMimeDetector");
+        mimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.MagicMimeMimeDetector");
+        mimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.WindowsRegistryMimeDetector");
+        mimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.ExtraMimeTypes");
+        try {
+            Collection<MimeType> mimeTypes2 = mimeUtil.getMimeTypes(bytes);
+            mimeList.addAll(mimeTypes2);
+
+            // Hack for SVG that seems not to be recognised
+            String bytesString = new String(bytes, "UTF-8");
+            if (bytesString.contains("http://www.w3.org/2000/svg")) {
+                MimeType svgMimeType = new MimeType("image/svg+xml");
+                if (!mimeList.contains(svgMimeType)) {
+                    mimeList.add(svgMimeType);
+                }
+            }
+            if (mimeList.isEmpty()) { // if it is not recognised
+                mimeList.add(new MimeType(APPLICATION_OCTETSTREAM));
+            }
+
+        } catch (IOException ex) {
+            mimeList.add(new MimeType(APPLICATION_OCTETSTREAM));
+        }
+
+        return mimeList;
+    }
 
 }
