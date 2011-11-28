@@ -360,6 +360,7 @@ public class DisplayBaclavaFile extends HttpServlet {
             String dataFileParentPath = null;
 
             dataFileParentPath = dataDir.getAbsolutePath() + System.getProperty("file.separator") + portName;
+            dataFileParentPath = dataFileParentPath.replace('\\', '/');// Windows backslaches are causing problems when URL-encoding them so we always use linux/unix file separators which work OK on both systems
 
             dataTableHTML.append("<td width=\"15%\" style=\"vertical-align:top;\"><script language=\"javascript\">" + createResultTree(dataObject, dataDepth, dataDepth, "", dataFileParentPath, mimeType, request) + "</script></td>\n");
             rowCount++;
@@ -479,6 +480,7 @@ public class DisplayBaclavaFile extends HttpServlet {
             String dataFileParentPath = null;
 
             dataFileParentPath = portDirectory.getAbsolutePath();
+            dataFileParentPath = dataFileParentPath.replace('\\', '/');// Windows backslaches are causing problems when URL-encoding them so we always use linux/unix file separators which work OK on both systems
 
             dataTableHTML.append("<td width=\"15%\" style=\"vertical-align:top;\"><script language=\"javascript\">" + createResultTree(dataObject, dataDepth, dataDepth, "", dataFileParentPath, mimeType, request) + "</script></td>\n");
             rowCount++;
@@ -524,7 +526,7 @@ public class DisplayBaclavaFile extends HttpServlet {
 
         if (maxDepth == 0) { // Result data is a single item only
             try {
-                String dataFilePath = dataFileParentPath + System.getProperty("file.separator") + "Value";
+                String dataFilePath = dataFileParentPath + "/" + "Value"; // Windows backslaches are causing problems when URL-encoding them so we always use linux/unix file separators which work OK on both systems
                 long dataSizeInKB = Math.round(new File(dataFilePath).length() / 1000d); // size in kilobytes (divided by 1000 not 1024!!!)
                 String dataFileURL = request.getContextPath() + "/FileServingServlet"
                         + "?" + FileServingServlet.DATA_FILE_PATH + "=" + URLEncoder.encode(dataFilePath, "UTF-8")
@@ -539,7 +541,7 @@ public class DisplayBaclavaFile extends HttpServlet {
         } else {
             if (currentDepth == 0) { // A leaf in the tree
                 try {
-                    String dataFilePath = dataFileParentPath + System.getProperty("file.separator") + "Value" + parentIndex;
+                    String dataFilePath = dataFileParentPath + "/" + "Value" + parentIndex; // Windows backslaches are causing problems when URL-encoding them so we always use linux/unix file separators which work OK on both systems
                     long dataSizeInKB = Math.round(new File(dataFilePath).length() / 1000d); // size in kilobytes (divided by 1000 not 1024!!!)
                     String dataFileURL = request.getContextPath() + "/FileServingServlet"
                             + "?" + FileServingServlet.DATA_FILE_PATH + "=" + URLEncoder.encode(dataFilePath, "UTF-8")
@@ -559,9 +561,9 @@ public class DisplayBaclavaFile extends HttpServlet {
                             maxDepth,
                             currentDepth - 1,
                             newParentIndex,
-                            dataFileParentPath + System.getProperty("file.separator") + "List" + parentIndex,
+                            dataFileParentPath + "/" + "List" + parentIndex,
                             mimeType,
-                            request));
+                            request)); // Windows backslaches are causing problems when URL-encoding them so we always use linux/unix file separators which work OK on both systems
                 }
                 resultTreeHTML.append("endParentNode();\n");
             }
