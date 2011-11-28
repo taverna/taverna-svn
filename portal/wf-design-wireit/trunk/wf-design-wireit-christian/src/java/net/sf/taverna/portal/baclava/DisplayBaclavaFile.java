@@ -75,12 +75,26 @@ public class DisplayBaclavaFile extends HttpServlet {
         
         try {       
             // Get the Baclava file URL
-            String baclavaFileURLString = URLDecoder.decode(request.getParameter("baclava_document_url"), "UTF-8");;
+            String baclavaFileURLString = URLDecoder.decode(request.getParameter("baclava_document_url"), "UTF-8");
             //String baclavaFileURL = "http://localhost:8080/wf-design-wireit-christian/Inputs/BaclavaExample.xml";           
             
             // Download the Baclava file to display
-            URL baclavaFileURL = new URL(baclavaFileURLString);
-            InputStream baclavaInputStream = baclavaFileURL.openStream();
+            URL baclavaFileURL = null;
+            InputStream baclavaInputStream = null;
+            try{
+                baclavaFileURL = new URL(baclavaFileURLString);
+                baclavaInputStream = baclavaFileURL.openStream();
+            }
+            catch(Exception ex){
+                System.out.println("Failed to read the Baclava file from " + baclavaFileURLString);
+                ex.printStackTrace();
+                out.println("<p>Failed to read the Baclava file from "+baclavaFileURLString+"</p>");
+                out.println("<p>The exception thrown:</p>");
+                out.println("<p>" + ex.getMessage() + "</p>");
+                out.println("</body>\n");
+                out.println("</html>\n");
+                return;
+            }
             
             // Load the Baclava file into a byte array as we need to possibly read it twice
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -209,7 +223,19 @@ public class DisplayBaclavaFile extends HttpServlet {
             out.println("</body>\n");
             out.println("</html>\n");
             
-        } finally {            
+        } 
+        catch (Exception ex) {
+            String baclavaFileURLString = URLDecoder.decode(request.getParameter("baclava_document_url"), "UTF-8");
+            System.out.println("A problem occured with processing the Baclava file from " + baclavaFileURLString);
+            ex.printStackTrace();
+            out.println("<p>A problem occured with processing the Baclava file from " + baclavaFileURLString + "</p>");
+            out.println("<p>The exception thrown:</p>");
+            out.println("<p>" + ex.getMessage() + "</p>");
+            out.println("</body>\n");
+            out.println("</html>\n");
+            return;
+        }
+        finally {            
             out.close();
         }
     }
