@@ -80,7 +80,7 @@ YAHOO.lang.extend(WireIt.TavernaWFContainer, WireIt.Container, {
 				"allowedTypes": ["inputURL"]
 			},
 			"alwaysSrc": true,
-			"wireConfig": { drawingMethod: "arrows", color: "#EE11EE", bordercolor:"#FF00FF"} 
+			"wireConfig": { drawingMethod: "bezierArrows", color: "#EE11EE", bordercolor:"#FF00FF"} 
 		});
 		//This adds the text name to the form
 		this.bodyEl.appendChild(WireIt.cn('div', null, {lineHeight: "30px", textAlign: "center"}, baclavaName));
@@ -122,7 +122,7 @@ YAHOO.lang.extend(WireIt.TavernaWFContainer, WireIt.Container, {
 			newTerminal.name = output.name;
 			newTerminal.offsetPosition = {"right": -14, "top": offset + 30*(i+1+this.options.inputs.length) };
 			newTerminal.alwaysSrc = true;
-			newTerminal.wireConfig.drawingMethod = "arrows"
+			newTerminal.wireConfig.drawingMethod = "bezierArrows";
 			
 			if (output.depth == 1) {
 				newTerminal.ddConfig.type = "outputList";

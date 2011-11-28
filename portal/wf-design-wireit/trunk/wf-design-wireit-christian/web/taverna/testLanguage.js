@@ -95,7 +95,7 @@ var tavernaLanguage = {
 							"name": "output",
 							"offsetPosition": {"right": -14, "top": 25},
 							"alwaysSrc":true,
-							 wireConfig: { drawingMethod: "arrows"},
+							"wireConfig": { drawingMethod: "bezierArrows"},
 							"ddConfig": {
 								"type": "outputString",
 								"allowedTypes": ["inputString","inputDepthZero","inputDepthOne"]
@@ -126,7 +126,7 @@ var tavernaLanguage = {
 							"name": "output",
 							"offsetPosition": {"right": -14, "top": 25},
 							"alwaysSrc":true,
-							 wireConfig: { drawingMethod: "arrows", color: "#EE11EE", bordercolor:"#FF00FF"},
+							"wireConfig": { drawingMethod: "bezier", color: "#EE11EE", bordercolor:"#FF00FF"},
 							"ddConfig": {
 								"type": "outputURL",
 								"allowedTypes": ["inputURL","inputDepthZero","inputDepthOne"]
@@ -165,7 +165,7 @@ var tavernaLanguage = {
 							"name": "output",
 							"offsetPosition": {"right": -14, "top": 25},
 							"alwaysSrc":true,
-							 wireConfig: {width: 5, borderwidth:3, drawingMethod: "arrows", color: "#EE11EE", bordercolor:"#FF00FF"},
+							"wireConfig": {width: 5, borderwidth:3, drawingMethod: "bezierArrows", color: "#EE11EE", bordercolor:"#FF00FF"},
 							"ddConfig": {
 								"type": "outputDelimitedURL",
 								"allowedTypes": ["inputURL","inputDepthOne"]
@@ -190,7 +190,7 @@ var tavernaLanguage = {
 								"type": "outputList",
 								"allowedTypes": ["inputList", "inputDepthOne"]
 							},
-							wireConfig:{width: 5, borderwidth:3, drawingMethod: "arrows"}
+							"wireConfig":{width: 5, borderwidth:3, drawingMethod: "bezierArrows", direction: [-1,1]}
 						}
 					]
 				}
@@ -209,7 +209,7 @@ var tavernaLanguage = {
 							"name": "output",
 							"offsetPosition": {"right": -14, "top": 25},
 							"alwaysSrc":true,
-							 wireConfig: { drawingMethod: "arrows", color: "#EE11EE", bordercolor:"#FF00FF"},
+							"wireConfig": { drawingMethod: "bezier", color: "#EE11EE", bordercolor:"#FF00FF"},
 							"ddConfig": {
 								"type": "outputURL",
 								"allowedTypes": ["inputURL","inputDepthZero","inputDepthOne"]
@@ -330,7 +330,7 @@ var tavernaLanguage = {
 							"name": "output",
 							"offsetPosition": {"right": -14, "top": 33},
 							"alwaysSrc":true,
-							 wireConfig: { drawingMethod: "arrows"},
+							"wireConfig": { drawingMethod: "bezierArrows"},
 							"ddConfig": {
 								"type": "outputString",
 								"allowedTypes": ["inputString", "inputDepthZero"]
@@ -360,7 +360,7 @@ var tavernaLanguage = {
 							"name": "output",
 							"offsetPosition": {"right": -14, "top": 25},
 							"alwaysSrc":true,
-							 wireConfig: { drawingMethod: "arrows", color: "#EE11EE", bordercolor:"#FF00FF"},
+							"wireConfig": { drawingMethod: "bezierArrows", color: "#EE11EE", bordercolor:"#FF00FF"},
 							"ddConfig": {
 								"type": "outputURL",
 								"allowedTypes": ["inputURL","inputDepthZero","inputDepthOne"]
