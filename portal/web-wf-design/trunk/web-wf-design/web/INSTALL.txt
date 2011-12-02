@@ -1,0 +1,3 @@
+See guide.html in a Web browser or go to http://javascript.neyric.com/wireit/guide.html
+
+Test for submodules
