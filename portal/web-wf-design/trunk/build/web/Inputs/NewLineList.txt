@@ -1,3 +1,0 @@
-line one
-Another line
-A thrid line
