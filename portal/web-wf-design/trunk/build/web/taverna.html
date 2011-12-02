@@ -1,0 +1,227 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>Taverna Workflow Designer</title>
+	<link rel="icon" href="res/favicon.ico" type="image/png" />
+  <link rel="shortcut icon" href="res/favicon.ico" type="image/png" />
+
+<!-- YUI -->
+<link rel="stylesheet" href="lib/yui/reset-fonts-grids/reset-fonts-grids.css" type="text/css" />
+<link rel="stylesheet" href="lib/yui/assets/skins/sam/skin.css" type="text/css" />
+
+<!-- InputEx CSS -->
+<link rel='stylesheet' href='lib/inputex/css/inputEx.css' type='text/css'/>
+
+<!-- YUI-accordion CSS -->
+<link rel="stylesheet" href="lib/accordionview/assets/skins/sam/accordionview.css" type="text/css" />
+
+<!-- WireIt CSS -->
+<link rel="stylesheet" href="css/WireIt.css" type="text/css" />
+<link rel="stylesheet" href="css/WireItEditor.css" type="text/css" />
+
+<style>
+div.WireIt-Container {
+	width: 200px; /* Prevent the modules from scratching on the right */
+	/*height: 100px;*/
+}
+
+#toolbar #WiringEditor-runButton.yui-button {
+	margin-left: 30px;
+	font-size: 12px;
+}
+
+#WiringEditor-runButton button {
+	background: transparent url(images/icons/bullet_go.png) no-repeat scroll 10% 50%;
+	font-weight: bold;
+}
+
+div.WireIt-Container div.inputEx-Group div.inputEx-label {
+	width: auto;
+}
+
+div.inputEx-TypeField-PropertiesPanel {
+	z-index: 7;
+}
+
+
+
+/* Comment Module */
+div.WireIt-Container.WiringEditor-module-comment { width: 200px; }
+div.WireIt-Container.WiringEditor-module-comment div.body { background-color: #EEEE66; }
+div.WireIt-Container.WiringEditor-module-comment div.body textarea { background-color: transparent; font-weight: bold; border: 0; }
+
+
+/* Composed Module */
+div.ComposedModule { background-color: #DDDDAA; }
+
+</style>
+
+
+
+<!-- YUI -->
+<script src="lib/yui/utilities/utilities.js" type="text/javascript"></script>
+<script src="lib/yui/resize/resize-min.js" type="text/javascript"></script>
+<script src="lib/yui/layout/layout-min.js" type="text/javascript"></script>
+<script src="lib/yui/container/container-min.js" type="text/javascript"></script>
+<script src="lib/yui/json/json-min.js" type="text/javascript"></script>
+<script src="lib/yui/button/button-min.js" type="text/javascript"></script>
+
+<!-- InputEx with wirable options (WirableField-beta) -->
+<script src="lib/inputex/js/inputex.js"  type='text/javascript'></script>
+<script src="lib/inputex/js/Field.js"  type='text/javascript'></script>
+<script src="js/util/inputex/WirableField-beta.js" type="text/javascript"></script>
+<script src="lib/inputex/js/Group.js"  type='text/javascript'></script>
+<script src="lib/inputex/js/Visus.js"  type='text/javascript'></script>
+<script src="lib/inputex/js/fields/StringField.js"  type='text/javascript'></script>
+<script src="lib/inputex/js/fields/Textarea.js"  type='text/javascript'></script>
+<script src="lib/inputex/js/fields/SelectField.js"  type='text/javascript'></script>
+<script src="lib/inputex/js/fields/IntegerField.js"  type='text/javascript'></script>
+<script src="lib/inputex/js/fields/NumberField.js"  type='text/javascript'></script>
+<script src="lib/inputex/js/fields/UneditableField.js"  type='text/javascript'></script>
+<script src="lib/inputex/js/fields/EmailField.js"  type='text/javascript'></script>
+<script src="lib/inputex/js/fields/UrlField.js"  type='text/javascript'></script>
+<script src="lib/inputex/js/fields/ListField.js"  type='text/javascript'></script>
+<script src="lib/inputex/js/fields/CheckBox.js"  type='text/javascript'></script>
+<script src="lib/inputex/js/fields/InPlaceEdit.js"  type='text/javascript'></script>
+<script src="lib/inputex/js/fields/ColorField.js"  type='text/javascript'></script>
+<script src="lib/inputex/js/fields/TypeField.js"  type='text/javascript'></script>
+
+<!-- YUI-Accordion -->
+<script src="lib/accordionview/accordionview-min.js"  type='text/javascript'></script>
+
+<!-- WireIt -->
+<!--[if IE]><script type="text/javascript" src="../lib/excanvas.js" type="text/javascript"></script><![endif]-->
+<script src="js/WireIt.js" type="text/javascript"></script>
+<script src="js/CanvasElement.js" type="text/javascript"></script>
+<script src="js/Wire.js" type="text/javascript"></script>
+<script src="js/Terminal.js" type="text/javascript"></script>
+<script src="js/util/DD.js" type="text/javascript"></script>
+<script src="js/util/DDResize.js" type="text/javascript"></script>
+<script src="js/Container.js" type="text/javascript"></script>
+<script src="js/Layer.js" type="text/javascript"></script>
+<script src="js/util/inputex/FormContainer-beta.js" type="text/javascript"></script>
+<script src="js/LayerMap.js" type="text/javascript"></script>
+<script src="js/BaseEditor.js" type="text/javascript"></script>
+<script src="js/ModuleProxy.js" type="text/javascript"></script>
+<script src="js/WiringEditor.js" type="text/javascript"></script>
+<script src="js/InOutContainer.js" type="text/javascript"></script>
+<script src="js/ImageContainer.js" type="text/javascript"></script>
+
+<!-- Taverna Language Specific stuff -->
+   <!-- this is the base for all languages -->
+<script src="taverna/tavernaLanguage.js" type="text/javascript"></script>
+   <!-- This file should be replaced with the a specific one with te project specific url, and workflows -->
+<script src="taverna/testLanguage.js" type="text/javascript"></script>
+<!-- Taverna Specific stuff -->
+<script src="taverna/TavernaWFContainer.js" type="text/javascript"></script>
+<script src="taverna/ajaxAdapter.js" type="text/javascript"></script>
+<script src="taverna/extensions.js" type="text/javascript"></script>
+<script src="taverna/ExecutionFrame.js" type="text/javascript"></script>
+<script src="taverna/URILinkContainer.js" type="text/javascript"></script>
+<script src="taverna/BaclavaContainer.js" type="text/javascript"></script>
+<script src="taverna/URILinkField.js" type="text/javascript"></script>
+
+<script>
+// Init the editor
+YAHOO.util.Event.onDOMReady( tavernaLanguage.init, tavernaLanguage, true);
+</script>
+
+</head>
+
+<body class="yui-skin-sam">
+
+	<div id="top">
+		<div class="logo">Taverna Workflow Designer</div>
+		<div id="toolbar"></div>
+		<div class="topright">
+			<a href="index.html">Home page</a>
+		</div>
+	</div>
+
+
+	<div id="left">
+	</div>
+
+	<div id="right">
+		<ul id="accordionView">
+			<li>
+				<h2>Properties</h2>
+				<div>
+					<div id="propertiesForm"></div>
+				</div>
+			</li>
+			<li>
+				<h2>Run Status</h2>
+				<div>
+					<div id="runStatus"></div>
+				<div>
+			</li>
+			<li>
+				<h2>Minimap</h2>
+				<div style='position: relative;'>
+					<div id="layerMap"></div>
+				</div>
+			</li>
+			<li>
+				<h2>Infos</h2>
+				<div>
+				  <div style="padding: 10px;">
+	        		<p style="font-weight: bold;">What this example does :</p>
+					<ul style="margin-left: 20px;">
+						<li>* Define a visual language with inputs, outputs, passthroughs and a number of taverna modules.</li>
+						<li>* Allows Taverna modules to be connected to inpouts and outpus.</li>
+						<li>* Allows Taverna modules to be connected even if port names don't match.</li>
+						<li>* Provides access to Baclava output.</li>
+						<li>* Allows the wiring to be sent to the server to run.</li>
+					</ul>
+					<br />
+					<p style="font-weight: bold;">How to use it :</p>
+					<ul style="margin-left: 20px;">
+						<li>* Drag and drop modules from the Module list to the working layer.</li>
+						<li>* Create a module with inputs, outputs and Taverna modules (or load an existing one).</li>
+						<li>* Press the "Run" button to run the code on the server.</li>
+					</ul>
+					<br />
+					<p><u><b>Warning:</b></u> Composed modules are shared anonymously. <br />Someone could change/delete your modules or create evil ones !</p>
+				  </div>
+				</div>
+			</li>
+		</ul>
+	</div>
+
+	<div id="center">
+	</div>
+
+
+	<!-- This is the content of the HELP panel -->
+	<div id="helpPanel">
+	    <div class="hd">Welcome to Taverna KISS Workflow Connector</div>
+	    <div class="bd" style="text-align: left;">
+
+					<p>This is an advanced example of the Taverna Kiss built on he <a href="http://javascript.neyric.com/wireit">WireIt library</a>.</p>
+					<br />
+	        		<p style="font-weight: bold;">What this example does :</p>
+					<ul style="margin-left: 20px;">
+						<li>* Define a visual language with inputs, outputs, passthroughs and a number of taverna modules.</li>
+						<li>* Allows Taverna modules to be connected to inputs and outpus.</li>
+						<li>* Allows Taverna modules to be connected even if port names don't match.</li>
+						<li>* Provides access to Baclava output.</li>
+						<li>* Allows the wiring to be sent to the server to run.</li>
+					</ul>
+					<br />
+					<p style="font-weight: bold;">How to use it :</p>
+					<ul style="margin-left: 20px;">
+						<li>* Drag and drop modules from the Module list to the working layer.</li>
+						<li>* Create a module with inputs, outputs and Taverna modules (or load an existing one).</li>
+						<li>* Press the "Run" button to run the code on the server.</li>
+					</ul>
+					<br />
+					<p><u><b>Warning:</b></u> Composed modules are shared anonymously. <br />Someone could change/delete your modules or create evil ones !</p>
+	    </div>
+	</div>
+
+
+
+</body>
+</html>
