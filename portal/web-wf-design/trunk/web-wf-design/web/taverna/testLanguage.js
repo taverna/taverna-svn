@@ -30,12 +30,12 @@ var languageExstension = { //Do not replace this name unless you replace it in t
 					]
 				},
 				"container" : {
-					"xtype":"WireIt.TavernaWFContainer",
+					"xtype":"WireIt.TavernaWFContainer"
 				}
 			},
 			{
 				"name": 'HelloWorld',
-				"description": 'The classical no input, just output "HelloWorld" demonstration Workflow',
+				"description": 'The classical no input workflow, just outputs "Hello World" demonstration Workflow',
 				"category": "Taverna components",
 				"tavernaInfo" : {
 					"wfURI":"Workflows/HelloWorld.t2flow",

@@ -63,17 +63,17 @@ public class Wiring {
             if (json instanceof JSONObject){
                 JSONObject jsonObject = (JSONObject)json;
                 String name = jsonObject.getString("name");
-                if (name.equals("Simple Input")){
+                if (name.toLowerCase().equals("simple input")){
                    modules[i] = new InputStringModule(jsonObject); 
-                } else if (name.equals("List Input")){
+                } else if (name.toLowerCase().equals("list input")){
                    modules[i] = new InputListModule(jsonObject); 
-                } else if (name.equals("URL Input")){
+                } else if (name.toLowerCase().equals("url input")){
                    modules[i] = new InputURIModule(jsonObject); 
-                } else if (name.equals("URL To List Input")){
+                } else if (name.toLowerCase().equals("url list input")){
                    modules[i] = new InputDelimiterURIModule(jsonObject); 
-                } else if (name.equals("Simple Output") || name.equals("URL Output")){
+                } else if (name.toLowerCase().equals("simple output") || name.toLowerCase().equals("url output")){
                    modules[i] = new OutputModule(jsonObject); 
-                } else if (name.equals("List Output")){
+                } else if (name.toLowerCase().equals("list output")){
                    modules[i] = new OutputListModule(jsonObject); 
                 } else if (name.equals("PassThrough")){
                    modules[i] = new PassThroughModule(jsonObject); 
