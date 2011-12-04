@@ -319,7 +319,7 @@ var tavernaLanguage = {
 		var tavernaLink = ""
 		if (module.tavernaInfo.showWorkflow){	
 			var tavernaTitle = module.tavernaInfo.wfToolTip || "Click here to see workflow script";
-			var tavernaLink	= '<a href="' + module.container.wfURI +'" target="_blank"><IMG SRC="taverna/taverna.jpg" title="' + tavernaTitle + '"></a> '
+			var tavernaLink	= '<a href="' + module.container.wfURI +'" target="_blank"><IMG SRC="taverna/images/taverna.png" title="' + tavernaTitle + '"></a> '
 		}
 		var helpLink = "";
 		if (module.tavernaInfo.helpPage) {
@@ -340,7 +340,7 @@ var tavernaLanguage = {
 		if (module.tavernaInfo.showWorkflow){	
 			return null
 		} else {
-			return module.container.icon || "taverna/taverna.jpg";
+			return module.container.icon || "taverna/images/taverna.png";
 		}
 	},
 

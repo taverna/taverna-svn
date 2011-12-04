@@ -74,14 +74,14 @@ var languageExstension = { //Do not replace this name unless you replace it in t
 					]
 				},
 				"container": {
-					//"icon":"taverna/taverna.jpg",
+					//"icon":"taverna/images/taverna.png",
 					"xtype":"WireIt.TavernaWFContainer"
 				}
 			},
 			{
 				"name": "Mixed Concatenation",
 				"category": "Taverna components",
-				"description": "Concatenates a mixture of single Strings and Lists of Strings",
+				"description": "Concatenates a mixture of single strings and lists of strings",
 				"tavernaInfo" : {
 					"wfURI":"Workflows/MixedWorkflow.t2flow",
 					"inputs": [
