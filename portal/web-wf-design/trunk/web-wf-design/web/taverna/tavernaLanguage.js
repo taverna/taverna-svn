@@ -199,9 +199,9 @@ var tavernaLanguage = {
 				}
 			},			
 			{
-				"name": "URL link output",
+				"name": "URL output",
 				"category": "Outputs",
-				"description": "Output as a clickable link.",
+				"description": "Workflow output as a link to the actual output data",
 				"container": {
 					"width": 350,
 					"xtype": "WireIt.URILinkContainer",

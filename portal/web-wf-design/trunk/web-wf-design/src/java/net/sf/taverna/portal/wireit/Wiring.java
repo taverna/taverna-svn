@@ -63,21 +63,21 @@ public class Wiring {
             if (json instanceof JSONObject){
                 JSONObject jsonObject = (JSONObject)json;
                 String name = jsonObject.getString("name");
-                if (name.toLowerCase().equals("simple input")){
+                if (name.equalsIgnoreCase("simple input")){
                    modules[i] = new InputStringModule(jsonObject); 
-                } else if (name.toLowerCase().equals("list input")){
+                } else if (name.equalsIgnoreCase("list input")){
                    modules[i] = new InputListModule(jsonObject); 
-                } else if (name.toLowerCase().equals("url input")){
+                } else if (name.equalsIgnoreCase("url input")){
                    modules[i] = new InputURIModule(jsonObject); 
-                } else if (name.toLowerCase().equals("url list input")){
+                } else if (name.equalsIgnoreCase("url list input")){
                    modules[i] = new InputDelimiterURIModule(jsonObject); 
-                } else if (name.toLowerCase().equals("simple output") || name.toLowerCase().equals("url output")){
+                } else if (name.equalsIgnoreCase("simple output") || name.equalsIgnoreCase("url output")){
                    modules[i] = new OutputModule(jsonObject); 
-                } else if (name.toLowerCase().equals("list output")){
+                } else if (name.equalsIgnoreCase("list output")){
                    modules[i] = new OutputListModule(jsonObject); 
-                } else if (name.equals("PassThrough")){
+                } else if (name.equalsIgnoreCase("PassThrough")){
                    modules[i] = new PassThroughModule(jsonObject); 
-                } else if (name.equals("comment")){
+                } else if (name.equalsIgnoreCase("comment")){
                    modules[i] = new CommentModule(jsonObject); 
                 } else if (jsonObject.has("config")){
                     JSONObject config = jsonObject.getJSONObject("config");
