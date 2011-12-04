@@ -41,7 +41,7 @@ YAHOO.lang.extend(inputEx.URILinkField, inputEx.Field, {
 		this.value = val;
 		//console.log(this.value);
 		
-		var link = "A link to the Baclava XML file will appear here";
+		var link = "A link to the file will appear here";
 		
 		 if (this.value){
 			var text = this.value

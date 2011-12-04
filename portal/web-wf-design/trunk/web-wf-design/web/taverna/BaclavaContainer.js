@@ -1,6 +1,6 @@
 /**
  * Container holding a URI to A Baclava File.
- * The same link is displayed twice, once as a simple link and one as a link to the DsiplayBaclava servlet.
+ * The same link is displayed twice, once as a simple link and one as a link to the DisplayBaclava servlet.
  * Both share the same value "uri".
  * Either cn be removed by commenting out the definition in setOptions (including the relative push)
  * @class BaclavaContainer
@@ -35,8 +35,8 @@ YAHOO.lang.extend(WireIt.BaclavaContainer, WireIt.FormContainer, {
 			"type": "uriLink",
 			"inputParams" : {
 				"name":"uri",    //Both fields intentionally have the same name so they share the same data
-				"value":options.uri || "",
-			},
+				"value":options.uri || ""
+			}
 		};
 		this.options.fields.push(this.uriField);
 		
@@ -45,8 +45,8 @@ YAHOO.lang.extend(WireIt.BaclavaContainer, WireIt.FormContainer, {
 			"type": "baclavaShowLink",
 			"inputParams" : {
 				"name":"uri",    //Both fields intentionally have the same name so they share the same data
-				"value":options.uri || "",
-			},
+				"value":options.uri || ""
+			}
 		};
 		this.options.fields.push(this.showField);
 
@@ -75,7 +75,7 @@ YAHOO.lang.extend(WireIt.BaclavaContainer, WireIt.FormContainer, {
 			};
 		};
 		WireIt.BaclavaContainer.superclass.render.call(this);
-	},
+	}
 
 });
 
@@ -121,7 +121,6 @@ YAHOO.lang.extend(inputEx.BaclavaShowLinkField, inputEx.Field, {
 		
 		 if (this.value){
 			var text = "View Baclava XML file in Baclava Viewer";
-			//Link needs to be changed to fancy link.
 			link = '<a href="DisplayBaclavaFile?baclava_document_url=' + this.value + '" target="_blank">' + text + '</a>';
 		}
 

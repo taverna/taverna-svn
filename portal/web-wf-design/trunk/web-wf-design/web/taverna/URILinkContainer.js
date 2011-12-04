@@ -32,8 +32,8 @@ YAHOO.lang.extend(WireIt.URILinkContainer, WireIt.FormContainer, {
 			"type": "uriLink",
 			"inputParams" : {
 				"name":"uri",
-				"value":options.uri || "",
-			},
+				"value":options.uri || ""
+			}
 		};
 		this.options.fields.push(this.uriField);
 		//console.log(this.options.fields)
@@ -65,6 +65,6 @@ YAHOO.lang.extend(WireIt.URILinkContainer, WireIt.FormContainer, {
 		};
 		WireIt.URILinkContainer.superclass.render.call(this);
 		//this.uriField.setValue("hello World",true);
-	},
+	}
 
 });
