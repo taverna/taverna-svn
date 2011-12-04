@@ -91,7 +91,7 @@ var tavernaLanguage = {
 								"type": "outputList",
 								"allowedTypes": ["inputList", "inputDepthOne"]
 							},
-							"wireConfig":{width: 5, borderwidth:3, drawingMethod: "arrows"}
+							"wireConfig":{/*width: 5, borderwidth:3, */drawingMethod: "arrows"}
 						}
 					]
 				}
@@ -127,7 +127,7 @@ var tavernaLanguage = {
 							"name": "output",
 							"offsetPosition": {"right": -14, "top": 25},
 							"alwaysSrc":true,
-							 "wireConfig": {width: 5, borderwidth:3, drawingMethod: "arrows", color: "#EE11EE", bordercolor:"#FF00FF"},
+							 "wireConfig": {/*width: 5, borderwidth:3, */drawingMethod: "arrows", color: "#EE11EE", bordercolor:"#FF00FF"},
 							"ddConfig": {
 								"type": "outputDelimitedURL",
 								"allowedTypes": ["inputURL","inputDepthOne"]
