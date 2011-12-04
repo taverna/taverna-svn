@@ -117,10 +117,10 @@ YAHOO.lang.extend(inputEx.BaclavaShowLinkField, inputEx.Field, {
 		this.value = val;
 		//console.log(this.value);
 		
-		var link = "The Link will go here.";
+		var link = "A link to view the Baclava file in the Baclava Viewer will appear here";
 		
 		 if (this.value){
-			var text = "Fancy Baclava Output";
+			var text = "View Baclava XML file in Baclava Viewer";
 			//Link needs to be changed to fancy link.
 			link = '<a href="DisplayBaclavaFile?baclava_document_url=' + this.value + '" target="_blank">' + text + '</a>';
 		}

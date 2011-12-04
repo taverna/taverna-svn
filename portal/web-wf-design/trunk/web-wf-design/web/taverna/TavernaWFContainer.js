@@ -99,10 +99,10 @@ YAHOO.lang.extend(WireIt.TavernaWFContainer, WireIt.Container, {
 			"offsetPosition": {"right": -14, "top": offset }, 
 			"ddConfig": {
 				"type": "outputBaclava",
-				"allowedTypes": ["inputBaclava", "inputURL"],
+				"allowedTypes": ["inputBaclava", "inputURL"]
 			},
 			"alwaysSrc": true,
-			"wireConfig": { drawingMethod: "arrows", color: "#FF0000", bordercolor:"#FF00FF"},
+			"wireConfig": { drawingMethod: "arrows", color: "#FF0000", bordercolor:"#FF00FF"}
 		});
 		//This adds the text name to the form
 		this.bodyEl.appendChild(WireIt.cn('div', null, {lineHeight: "30px", textAlign: "center"}, baclavaName));
