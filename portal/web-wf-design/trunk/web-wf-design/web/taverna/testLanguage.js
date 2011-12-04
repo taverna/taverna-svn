@@ -16,7 +16,7 @@ var languageExstension = { //Do not replace this name unless you replace it in t
 		modules: [
 			{
 				"name": "Echo",
-				"category": "Taverna Workflow",
+				"category": "Taverna components",
 				"description": "Echoes input to output",
 				"tavernaInfo" : {
 					"wfURI":"Workflows/Echo.t2flow",
@@ -27,16 +27,16 @@ var languageExstension = { //Do not replace this name unless you replace it in t
 					"links" : [
 						{"uri": "Workflows/Echo.html","text": "Workflow Description"},
 						{"uri": "Workflows/Echo.t2flow","text": "Workflow Definition"},
-					],
+					]
 				},
 				"container" : {
 					"xtype":"WireIt.TavernaWFContainer",
-				},
+				}
 			},
 			{
 				"name": 'HelloWorld',
 				"description": 'The classical no input, just output "HelloWorld" demonstration Workflow',
-				"category": "Taverna Workflow",
+				"category": "Taverna components",
 				"tavernaInfo" : {
 					"wfURI":"Workflows/HelloWorld.t2flow",
 					"inputs": [],
@@ -49,13 +49,13 @@ var languageExstension = { //Do not replace this name unless you replace it in t
 					]
 				},
 				"container": {
-					"xtype":"WireIt.TavernaWFContainer",
-				},
+					"xtype":"WireIt.TavernaWFContainer"
+				}
 			},
 			{
 				"name": 'Triple Echo',
 				"description": "Test workflow which simply passes the three inputs to the output with the same name. No processing is carried out",
-				"category": "Taverna Workflow",
+				"category": "Taverna components",
 				"tavernaInfo" : {
 					"wfURI":"Workflows/ThreeStrings.t2flow",
 					"inputs": [
@@ -75,12 +75,12 @@ var languageExstension = { //Do not replace this name unless you replace it in t
 				},
 				"container": {
 					//"icon":"taverna/taverna.jpg",
-					"xtype":"WireIt.TavernaWFContainer",
-				},
+					"xtype":"WireIt.TavernaWFContainer"
+				}
 			},
 			{
 				"name": "Mixed Concatenation",
-				"category": "Taverna Workflow",
+				"category": "Taverna components",
 				"description": "Concatenates a mixture of single Strings and Lists of Strings",
 				"tavernaInfo" : {
 					"wfURI":"Workflows/MixedWorkflow.t2flow",
@@ -98,12 +98,12 @@ var languageExstension = { //Do not replace this name unless you replace it in t
 					]
 				},
 				"container": {
-					"xtype":"WireIt.TavernaWFContainer",
-				},
+					"xtype":"WireIt.TavernaWFContainer"
+				}
 			},
 			{
 				"name": "Triple Echo Baclava Input",
-				"category": "Input",
+				"category": "Inputs",
 				"description": "Workflow input for the Triple Echo workflow.",
 				"container": {
 					"width": 350,
@@ -115,7 +115,7 @@ var languageExstension = { //Do not replace this name unless you replace it in t
 				}
 			},			
 		]
-	},
+	}
 
 };
 
