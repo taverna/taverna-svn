@@ -86,6 +86,7 @@
 		</plugins>
 	</build>
 	<repositories>
+<!--
 		<repository>
 			<releases />
 			<snapshots>
@@ -104,6 +105,7 @@
 			<name>myGrid Snapshot Repository</name>
 			<url>http://www.mygrid.org.uk/maven/snapshot-repository</url>
 		</repository>
+-->
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
