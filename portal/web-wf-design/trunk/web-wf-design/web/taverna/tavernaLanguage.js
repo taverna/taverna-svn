@@ -42,7 +42,7 @@ var tavernaLanguage = {
 					]
 				}
 			},
-                        {
+ 			{
 				"name": "URL input",
 				"description": "A workflow input that is read from a URL",
 				"category": "Inputs",
@@ -52,9 +52,14 @@ var tavernaLanguage = {
 					"title": "input",
 					"fields": [
 						{
-							"type": 'url',
+							//the "uri" if used adds an icon taken from the actual page
+							//"type": 'url',
+							//The default StringField has no blank space.
 							"inputParams": {
-								"label": "URL", 
+								"label": "URL",
+								//To fill the Conatiner if StringField is used
+								//Comment out if "uri" is used. The default 50 leaves space for the icon.
+								"size": 60,
 								"name": "output",
 								"required": true
 							}
@@ -68,7 +73,45 @@ var tavernaLanguage = {
 							"wireConfig": { drawingMethod: "arrows", color: "#EE11EE", bordercolor:"#FF00FF"},
 							"ddConfig": {
 								"type": "outputURL",
-								"allowedTypes": ["inputURL","inputDepthZero","inputDepthOne"]
+								"allowedTypes": ["inputURL","inputDepthZero"]
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Baclava URL input",
+				"description": "Baclava Workflow input that is read from a URL",
+				"category": "Inputs",
+				"container": {
+					"xtype": "WireIt.FormContainer",
+					"width": 350,
+					"title": "input",
+					"fields": [
+						{
+							//the "uri" if used adds an icon taken from the actual page
+							//"type": 'url',
+							//The default StringField has no blank space.
+							"type": 'string',
+							"inputParams": {
+								//To fill the Conatiner if StringField is used
+								//Comment out if "uri" is used. The default 50 leaves space for the icon.
+								"size": 60,
+								"label": "URL",
+								"name": "output",
+								"required": true
+							}
+						},
+					],
+					"terminals": [
+						{
+							"name": "output",
+							"offsetPosition": {"right": -14, "top": 25},
+							"alwaysSrc":true,
+							"wireConfig": { drawingMethod: "arrows", color: "#FF0000", bordercolor:"#FF00FF"},
+							"ddConfig": {
+								"type": "outputBaclava",
+								"allowedTypes": ["inputBaclava"]
 							}
 						}
 					]
@@ -91,7 +134,7 @@ var tavernaLanguage = {
 								"type": "outputList",
 								"allowedTypes": ["inputList", "inputDepthOne"]
 							},
-							"wireConfig":{/*width: 5, borderwidth:3, */drawingMethod: "arrows"}
+							"wireConfig":{width: 5, borderwidth:3, drawingMethod: "arrows"}
 						}
 					]
 				}
@@ -127,10 +170,10 @@ var tavernaLanguage = {
 							"name": "output",
 							"offsetPosition": {"right": -14, "top": 25},
 							"alwaysSrc":true,
-							 "wireConfig": {/*width: 5, borderwidth:3, */drawingMethod: "arrows", color: "#EE11EE", bordercolor:"#FF00FF"},
+							 "wireConfig": {width: 5, borderwidth:3, drawingMethod: "arrows", color: "#EE11EE", bordercolor:"#FF00FF"},
 							"ddConfig": {
 								"type": "outputDelimitedURL",
-								"allowedTypes": ["inputURL","inputDepthOne"]
+								"allowedTypes": ["inputDepthOne"]
 							}
 						}
 					]
@@ -177,13 +220,13 @@ var tavernaLanguage = {
 							"alwaysSrc":false,
 							"ddConfig":{
 								"type": "inputList",
-								"allowedTypes": ["outputDepthOne", "outputList"]
+								"allowedTypes": ["outputList"]
 							}
 						}
 					]
 				}
 			},
-                        {
+			{
 				"name": "Baclava output",
 				"category": "Outputs",
 				"description": "All workflow outputs as a single Baclava XML file",
@@ -211,83 +254,83 @@ var tavernaLanguage = {
 					]
 				}
 			},						
-//			//Pass through modules that act as both input and output
-//			{
-//				"name": "PassThrough",
-//				"category": "Pass Through",
-//				"description": "Field that can be placed between the output of one workflow and the Input of another one. Shows the value being passed as a String",
-//				"container": {
-//					"xtype": "WireIt.FormContainer",
-//					// inputEx options :
-//					"collapsible": true,
-//					"legend": "here comes the passthrough...",
-//					"fields": [
-//						{"type": "uneditable", "inputParams": {"label": "PassThrough", "name": "both", "required": false } },
-//					],
-//					"terminals": [
-//						{
-//							"name": "input",
-//							"offsetPosition": {"left": -14, "top": 33 },
-//							"ddConfig": {
-//								"type": "inputString",
-//								"allowedTypes": ["outputString"]
-//							},
-//							"nMaxWires": 1
-//						},
-//						{
-//							"name": "output",
-//							"offsetPosition": {"right": -14, "top": 33},
-//							"alwaysSrc":true,
-//							"wireConfig": { drawingMethod: "arrows"},
-//							"ddConfig": {
-//								"type": "outputString",
-//								"allowedTypes": ["inputString", "inputDepthZero"]
-//							}
-//						}
-//					]
-//				}
-//			},
-//			{
-//				"name": "URL Pass Through",
-//				"description": "Field that can be placed between the Baclava output of one workflow and the Baclava Input of another one. Provides a clickable URI to the file being passed",
-//				"category": "Pass Through",
-//				"container": {
-//					"width": 350,
-//					"xtype": "WireIt.URILinkContainer",
-//					"terminals": [
-//						{ "name": "input"}, //rest set by URILinkContainer
-//						{ "name": "output"} //rest set by URILinkContainer
-//					]
-//				}
-//			},			
-//			{
-//				"name": "Baclava Pass Through",
-//				"description": "Field that can be placed between the Baclava output of one workflow and the Baclava Input of another one. Provides a clickable URI to the file being passed",
-//				"category": "Pass Through",
-//				"container": {
-//					"width": 350,
-//					"xtype": "WireIt.BaclavaContainer",
-//					"terminals": [
-//						{ "name": "input" }, //rest set by BaclavaContainer
-//						{ "name": "output" }, //rest set by BaclavaContainer
-//					]
-//				}
-//			},			
-//			{
-//				"name": "comment",
-//				"container": {
-//					"xtype": "WireIt.FormContainer",
-//					"title": "My Comment",
-//					"fields": [
-//						{"type": "text", "inputParams": {"label": "", "name": "comment", "wirable": false }}
-//					]
-//				},
-//				"value": {
-//					"input": {
-//						"type":"url","inputParams":{}
-//					}
-//				}
-//			},
+			//Pass through modules that act as both input and output
+			{
+				"name": "PassThrough",
+				"category": "Pass Through",
+				"description": "Field that can be placed between the output of one workflow and the Input of another one. Shows the value being passed as a String",
+				"container": {
+					"xtype": "WireIt.FormContainer",
+					// inputEx options :
+					"collapsible": true,
+					"legend": "here comes the passthrough...",
+					"fields": [
+						{"type": "uneditable", "inputParams": {"label": "PassThrough", "name": "both", "required": false } },
+					],
+					"terminals": [
+						{
+							"name": "input",
+							"offsetPosition": {"left": -14, "top": 33 },
+							"ddConfig": {
+								"type": "inputString",
+								"allowedTypes": ["outputString"]
+							},
+							"nMaxWires": 1
+						},
+						{
+							"name": "output",
+							"offsetPosition": {"right": -14, "top": 33},
+							"alwaysSrc":true,
+							"wireConfig": { drawingMethod: "arrows"},
+							"ddConfig": {
+								"type": "outputString",
+								"allowedTypes": ["inputString", "inputDepthZero", , "inputDepthOne"]
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "URL Pass Through",
+				"description": "Field that can be placed between the Baclava output of one workflow and the Baclava Input of another one. Provides a clickable URI to the file being passed",
+				"category": "Pass Through",
+				"container": {
+					"width": 350,
+					"xtype": "WireIt.URILinkContainer",
+					"terminals": [
+						{ "name": "input"}, //rest set by URILinkContainer
+						{ "name": "output"} //rest set by URILinkContainer
+					]
+				}
+			},			
+			{
+				"name": "Baclava Pass Through",
+				"description": "Field that can be placed between the Baclava output of one workflow and the Baclava Input of another one. Provides a clickable URI to the file being passed",
+				"category": "Pass Through",
+				"container": {
+					"width": 350,
+					"xtype": "WireIt.BaclavaContainer",
+					"terminals": [
+						{ "name": "input" }, //rest set by BaclavaContainer
+						{ "name": "output" }, //rest set by BaclavaContainer
+					]
+				}
+			},			
+			{
+				"name": "comment",
+				"container": {
+					"xtype": "WireIt.FormContainer",
+					"title": "My Comment",
+					"fields": [
+						{"type": "text", "inputParams": {"label": "", "name": "comment", "wirable": false }}
+					]
+				},
+				"value": {
+					"input": {
+						"type":"url","inputParams":{}
+					}
+				}
+			},
 		]
 	},
 

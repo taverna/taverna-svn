@@ -32,7 +32,11 @@ public class InputURIModule extends InputModule{
      */
     @Override
     public void run(StringBuilder outputBuilder) throws WireItRunException {
-        Object value = values.get(PORT_NAME);
+        Object value = values.get("uri");
+        //Just in case a StringField is used which used the output tag.
+        if (value == null){
+            value = values.get("output");
+        }
         try {
             URI uri = new URI(value.toString());
             output.fireOutputReady(uri, outputBuilder);

@@ -52,11 +52,11 @@ YAHOO.lang.extend(WireIt.TavernaWFContainer, WireIt.Container, {
 		this.options.icon = tavernaLanguage.iconByName(options.name);
 	},
 
-   /**
-    * Adds the links and terminals and formats them.
-    * @method render
-    */	
-    render: function() {
+	/**
+	 * Adds the links and terminals and formats them.
+	 * @method render
+	 */	
+	render: function() {
 		
 		WireIt.TavernaWFContainer.superclass.render.call(this);
 
@@ -84,7 +84,7 @@ YAHOO.lang.extend(WireIt.TavernaWFContainer, WireIt.Container, {
 				"nMaxWires": 1,
 				"ddConfig": {
 					"type": "inputBaclava",
-					"allowedTypes": ["outputURL", "outputBaclava"],
+					"allowedTypes": ["outputBaclava"]
 					}
 			});	
 			baclavaName = "Baclava format Input/Output"
@@ -99,7 +99,7 @@ YAHOO.lang.extend(WireIt.TavernaWFContainer, WireIt.Container, {
 			"offsetPosition": {"right": -14, "top": offset }, 
 			"ddConfig": {
 				"type": "outputBaclava",
-				"allowedTypes": ["inputBaclava", "inputURL"]
+				"allowedTypes": ["inputBaclava"]
 			},
 			"alwaysSrc": true,
 			"wireConfig": { drawingMethod: "arrows", color: "#FF0000", bordercolor:"#FF00FF"}
@@ -121,7 +121,7 @@ YAHOO.lang.extend(WireIt.TavernaWFContainer, WireIt.Container, {
 			
 			if (input.depth == 1) {
 				newTerminal.ddConfig.type = "inputDepthOne";
-				newTerminal.ddConfig.allowedTypes = ["outputString","outputURL","outputList","outputDelimitedURL"];			
+				newTerminal.ddConfig.allowedTypes = ["outputString","outputList","outputDelimitedURL"];			
 				showName = input.name + " (list)";
 			} else {
 				newTerminal.ddConfig.type = "inputDepthZero";
@@ -195,7 +195,7 @@ YAHOO.lang.extend(WireIt.TavernaWFContainer, WireIt.Container, {
 		obj.wfURI = this.options.wfURI;
 		
 		return obj;
-	},
+	}
 });
 
 /**
@@ -232,7 +232,8 @@ YAHOO.lang.extend(WireIt.BaclavaTerminal, WireIt.Terminal, {
 	 */
 	addIndividualTerminal: function(terminal){
 		individualTerminals.push(terminal);
-	},
+		terminal.addBaclava(this);
+	}
 	
 });
 
@@ -261,14 +262,25 @@ YAHOO.lang.extend(WireIt.IndividualTerminal, WireIt.Terminal, {
 	setOptions: function(options) {
 		WireIt.IndividualTerminal.superclass.setOptions.call(this, options);
 	},
-	
+
+	/**
+	 * Register an baclava terminal, so the wires can be removed if required.
+	 * This look strange but is required,
+	 *    because the container used to access the baclava in the constructor is not available in addWire.
+	 * Setting this.baclava in the constructor also appeared to fail.
+	 *
+	 */
+	addBaclava: function(terminal){
+		this.baclava = terminal;
+	},
+
 	/**
 	 * Extension is to remove the BaclavaInputs wire if adding one here.
 	 */
 	addWire: function(wire) {
 		WireIt.BaclavaTerminal.superclass.addWire.call(this, wire);
-		container.terminals[0].removeAllWires();
-	},
+		this.baclava.removeAllWires();
+	}
 
 });
 

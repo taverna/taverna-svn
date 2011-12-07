@@ -71,7 +71,7 @@ YAHOO.lang.extend(WireIt.BaclavaContainer, WireIt.FormContainer, {
 				terminal.offsetPosition = terminal.offsetPosition || {"left": -14, "top": 25 };
 				terminal.nMaxWires = terminal.nMaxWires || 1;
 				terminal.wireConfig = terminal.wireConfig || { "drawingMethod": "arrows", "color": "#FF0000", "bordercolor":"#FF00FF"};
-				terminal.ddConfig = terminal.ddConfig || {"type": "inputBaclava", "allowedTypes": ["outputURL", "outputBaclava"] };
+				terminal.ddConfig = terminal.ddConfig || {"type": "inputBaclava", "allowedTypes": ["outputBaclava"] };
 			};
 		};
 		WireIt.BaclavaContainer.superclass.render.call(this);

@@ -54,13 +54,13 @@ YAHOO.lang.extend(WireIt.URILinkContainer, WireIt.FormContainer, {
 				terminal.offsetPosition = terminal.offsetPosition || {"right": -14, "top": 25};
 				terminal.alwaysSrc = terminal.alwaysSrc || true;
 				terminal.wireConfig = terminal.wireConfig || { drawingMethod: "arrows", color: "#EE11EE", bordercolor:"#FF00FF"};
-				terminal.ddConfig = terminal.ddConfig || {"type": "outputBaclava", "allowedTypes": ["inputBaclava"]};				
+				terminal.ddConfig = terminal.ddConfig || {"type": "outURL", "allowedTypes": ["inputURL", ,"inputDepthZero"]};
 			};
 			if (terminal.name == "input") {
 				terminal.offsetPosition = terminal.offsetPosition || {"left": -14, "top": 25 };
 				terminal.nMaxWires = terminal.nMaxWires || 1;
-				terminal.wireConfig = terminal.wireConfig || { drawingMethod: "arrows", color: "#FF0000", bordercolor:"#FF00FF"};
-				terminal.ddConfig = terminal.ddConfig || {"type": "outputURL", "allowedTypes": ["inputURL","inputDepthZero","inputDepthOne", "InputBaclava"]};				
+				terminal.wireConfig = terminal.wireConfig || { drawingMethod: "arrows", color: "#EE11EE", bordercolor:"#FF00FF"};
+				terminal.ddConfig = terminal.ddConfig || {"type": "inputURL", "allowedTypes": ["outputURL"]};
 			};
 		};
 		WireIt.URILinkContainer.superclass.render.call(this);

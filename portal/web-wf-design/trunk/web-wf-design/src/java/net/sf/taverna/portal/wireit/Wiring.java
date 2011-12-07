@@ -54,7 +54,7 @@ public class Wiring {
      * @throws TavernaException Thrown by the TavernaModule if the information is inconsistant. 
      * @throws IOException Thrown by the TavernaModule if the workflow is unreadable.
      */
-    public Wiring(JSONObject jsonInput, Resolver resolver) 
+    public Wiring(JSONObject jsonInput, Resolver resolver)
             throws JSONException, TavernaException, IOException{
         JSONArray jsonArray = jsonInput.getJSONArray("modules");
         modules = new Module[jsonArray.length()];
@@ -67,11 +67,11 @@ public class Wiring {
                    modules[i] = new InputStringModule(jsonObject); 
                 } else if (name.equalsIgnoreCase("list input")){
                    modules[i] = new InputListModule(jsonObject); 
-                } else if (name.equalsIgnoreCase("url input")){
+                } else if (name.equalsIgnoreCase("url input") || name.equalsIgnoreCase("baclava url input")){
                    modules[i] = new InputURIModule(jsonObject); 
                 } else if (name.equalsIgnoreCase("url list input")){
                    modules[i] = new InputDelimiterURIModule(jsonObject); 
-                } else if (name.equalsIgnoreCase("simple output") || name.equalsIgnoreCase("url output")){
+                } else if (name.equalsIgnoreCase("simple output")){
                    modules[i] = new OutputModule(jsonObject); 
                 } else if (name.equalsIgnoreCase("list output")){
                    modules[i] = new OutputListModule(jsonObject); 
