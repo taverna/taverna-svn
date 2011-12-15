@@ -392,7 +392,7 @@ public class TavernaModule extends Module{
         DataThingBasedBaclava baclava;
         outputBuilder.append("Workflow ");
         outputBuilder.append(name);
-        outputBuilder.append(" succesfully.\n");
+        outputBuilder.append(" ran successfully.\n");
         try {
             baclava = new DataThingBasedBaclava(output);
         } catch (TavernaException ex) {

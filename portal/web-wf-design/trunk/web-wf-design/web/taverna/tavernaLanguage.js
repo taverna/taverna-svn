@@ -427,8 +427,8 @@ var tavernaLanguage = {
 
 			//Add an extra window to the right hand side to give information about the run
 			var runStatusFields = [
-				{"type": "uneditable", inputParams: {"name": "status", label: "Status", value: "Not yet run", rows: 4} },
-				{"type": "text", inputParams: {"name": "details", label: "Description", cols: 50, rows: 4} }
+				{"type": "uneditable", inputParams: {"name": "status", label: "Status:", value: "Not yet run", rows: 4} },
+				{"type": "text", inputParams: {"name": "details", label: "Description:", cols: 50, rows: 4} }
 			];
 			this.editor.runStatusForm = new inputEx.Group({
 				parentEl: YAHOO.util.Dom.get('runStatus'),
@@ -437,7 +437,7 @@ var tavernaLanguage = {
 			
 			var testProp = {};
 			//testProp.status = "Not yet run."
-			testProp.details = "Please setup the pipe and press run."
+			testProp.details = "Design you workflow and press the 'Run' button."
 			this.editor.runStatusForm.setValue(testProp , false); // the false tells inputEx to NOT fire the updatedEvt
 			//Open the minimap
 			this.editor.accordionView.openPanel(1);

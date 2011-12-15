@@ -119,7 +119,7 @@ public class RunWireit extends WireitSQLBase {
     }
     
     /**
-     * Logs the finsihed pipe and adds run log to the Json output.
+     * Logs the finished pipe and adds run log to the Json output.
      * @param jsonReply Pipe in Json format after the run.
      * @param outputBuilder Log from the run to be added to the json.
      * @throws JSONException 
@@ -127,7 +127,7 @@ public class RunWireit extends WireitSQLBase {
     private void addRunResult(JSONObject jsonReply, StringBuilder outputBuilder) throws JSONException {
         JSONObject properties = jsonReply.getJSONObject("properties"); 
         System.out.println(jsonReply.toString(4));
-        properties.put("status", "Pipe run");
+        properties.put("status", "Finished");
         outputBuilder.append("Run finished at ");
         outputBuilder.append(new Date());
         outputBuilder.append("\n");
@@ -226,7 +226,7 @@ public class RunWireit extends WireitSQLBase {
     private JSONObject doRun(JSONObject jsonInput, StringBuilder outputBuilder, Resolver resolver) 
             throws WireItRunException, JSONException, TavernaException, IOException{
         Wiring wiring = new Wiring(jsonInput, resolver);
-        outputBuilder.append("Pipe loaded at ");
+        outputBuilder.append("Workflow loaded at ");
         outputBuilder.append(new Date());
         outputBuilder.append("\n");
         wiring.run(outputBuilder);

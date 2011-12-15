@@ -208,7 +208,7 @@ saveModuleSuccess: function(o) {
 
 this.markSaved();
 
-this.alert("Saved !");
+this.alert("Workflow saved!");
 
 // TODO:
 /*var name = this.tempSavedWiring.name;
@@ -285,7 +285,7 @@ width: '500px',
 visible: false,
 modal: true
 });
-this.loadPanel.setHeader("Select the wiring to load");
+this.loadPanel.setHeader("Select the workflow to load");
 this.loadPanel.setBody("Filter: <input type='text' id='loadFilter' /><div id='loadPanelBody'></div>");
 this.loadPanel.render(document.body);
 

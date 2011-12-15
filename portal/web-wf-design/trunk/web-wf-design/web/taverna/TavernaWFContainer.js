@@ -87,7 +87,7 @@ YAHOO.lang.extend(WireIt.TavernaWFContainer, WireIt.Container, {
 					"allowedTypes": ["outputBaclava"]
 					}
 			});	
-			baclavaName = "Baclava format Input/Output"
+			baclavaName = "Baclava XML format Input/Output"
 		} else {
 			baclavaName = "Baclava format Output"
 		}

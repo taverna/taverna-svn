@@ -37,15 +37,15 @@ ExecutionFrame.prototype = {
 			console.log(value);
 			this.tempRunWiring = {name: value.name, working: JSON.stringify(value.working), language: this.editor.options.languageName };
 			var runStatus = {};
-			runStatus.status = "Running."
-			runStatus.details = "Please wait while the pipes runs. Any changes you make will be lost."
+			runStatus.status = "Running"
+			runStatus.details = "Please wait while the workflow runs. Any changes you make to it will be lost."
 			this.editor.runStatusForm.setValue(runStatus, false); // the false tells inputEx to NOT fire the updatedEvt
 			this.editor.adapter.runWiring(this.tempRunWiring, {
 				success: this.runModuleSuccess,
 				failure: this.runModuleFailure,
 				scope: this
 			});
-			this.editor.alert("running!");
+			this.editor.alert("Workflow is running ...");
 		}
 		catch(ex) {
 			console.log("Error while running: ", ex);
@@ -90,7 +90,7 @@ runModuleSuccess: function(encoded) {
      * @method runModuleFailure
      */
     runModuleFailure: function(errorStr) {
-       this.editor.alert("Unable to run the wiring : "+errorStr);
+       this.editor.alert("Unable to run the workflow : "+errorStr);
     },
 
    
