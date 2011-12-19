@@ -437,7 +437,7 @@ var tavernaLanguage = {
 			
 			var testProp = {};
 			//testProp.status = "Not yet run."
-			testProp.details = "Design you workflow and press the 'Run' button."
+			testProp.details = "Design your workflow and press the 'Run' button."
 			this.editor.runStatusForm.setValue(testProp , false); // the false tells inputEx to NOT fire the updatedEvt
 			//Open the minimap
 			this.editor.accordionView.openPanel(1);
