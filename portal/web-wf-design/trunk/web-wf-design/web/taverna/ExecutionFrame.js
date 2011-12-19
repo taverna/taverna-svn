@@ -91,7 +91,7 @@ runModuleSuccess: function(encoded) {
      */
     runModuleFailure: function(errorStr) {
        this.editor.alert("Unable to run the workflow : "+errorStr);
-    },
+    }
 
    
 };

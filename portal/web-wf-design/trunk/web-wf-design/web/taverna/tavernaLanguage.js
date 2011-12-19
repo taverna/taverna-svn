@@ -361,7 +361,7 @@ var tavernaLanguage = {
 		module = this.moduleByName(name);
 		var tavernaLink = ""
 		if (module.tavernaInfo.showWorkflow){	
-			var tavernaTitle = module.tavernaInfo.wfToolTip || "Click here to see workflow script";
+			var tavernaTitle = module.tavernaInfo.wfToolTip || "Click here to see the Taverna component definition file";
 			var tavernaLink	= '<a href="' + module.container.wfURI +'" target="_blank"><IMG SRC="taverna/images/taverna.png" title="' + tavernaTitle + '"></a> '
 		}
 		var helpLink = "";
