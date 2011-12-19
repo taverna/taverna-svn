@@ -254,83 +254,83 @@ var tavernaLanguage = {
 					]
 				}
 			},						
-			//Pass through modules that act as both input and output
-			{
-				"name": "PassThrough",
-				"category": "Pass Through",
-				"description": "Field that can be placed between the output of one workflow and the Input of another one. Shows the value being passed as a String",
-				"container": {
-					"xtype": "WireIt.FormContainer",
-					// inputEx options :
-					"collapsible": true,
-					"legend": "here comes the passthrough...",
-					"fields": [
-						{"type": "uneditable", "inputParams": {"label": "PassThrough", "name": "both", "required": false } },
-					],
-					"terminals": [
-						{
-							"name": "input",
-							"offsetPosition": {"left": -14, "top": 33 },
-							"ddConfig": {
-								"type": "inputString",
-								"allowedTypes": ["outputString"]
-							},
-							"nMaxWires": 1
-						},
-						{
-							"name": "output",
-							"offsetPosition": {"right": -14, "top": 33},
-							"alwaysSrc":true,
-							"wireConfig": { drawingMethod: "arrows"},
-							"ddConfig": {
-								"type": "outputString",
-								"allowedTypes": ["inputString", "inputDepthZero", , "inputDepthOne"]
-							}
-						}
-					]
-				}
-			},
-			{
-				"name": "URL Pass Through",
-				"description": "Field that can be placed between the Baclava output of one workflow and the Baclava Input of another one. Provides a clickable URI to the file being passed",
-				"category": "Pass Through",
-				"container": {
-					"width": 350,
-					"xtype": "WireIt.URILinkContainer",
-					"terminals": [
-						{ "name": "input"}, //rest set by URILinkContainer
-						{ "name": "output"} //rest set by URILinkContainer
-					]
-				}
-			},			
-			{
-				"name": "Baclava Pass Through",
-				"description": "Field that can be placed between the Baclava output of one workflow and the Baclava Input of another one. Provides a clickable URI to the file being passed",
-				"category": "Pass Through",
-				"container": {
-					"width": 350,
-					"xtype": "WireIt.BaclavaContainer",
-					"terminals": [
-						{ "name": "input" }, //rest set by BaclavaContainer
-						{ "name": "output" }, //rest set by BaclavaContainer
-					]
-				}
-			},			
-			{
-				"name": "comment",
-				"container": {
-					"xtype": "WireIt.FormContainer",
-					"title": "My Comment",
-					"fields": [
-						{"type": "text", "inputParams": {"label": "", "name": "comment", "wirable": false }}
-					]
-				},
-				"value": {
-					"input": {
-						"type":"url","inputParams":{}
-					}
-				}
-			},
+//			//Pass through modules that act as both input and output
+//			{
+//				"name": "PassThrough",
+//				"category": "Pass Through",
+//				"description": "Field that can be placed between the output of one workflow and the Input of another one. Shows the value being passed as a String",
+//				"container": {
+//					"xtype": "WireIt.FormContainer",
+//					// inputEx options :
+//					"collapsible": true,
+//					"legend": "here comes the passthrough...",
+//					"fields": [
+//						{"type": "uneditable", "inputParams": {"label": "PassThrough", "name": "both", "required": false } },
+//					],
+//					"terminals": [
+//						{
+//							"name": "input",
+//							"offsetPosition": {"left": -14, "top": 33 },
+//							"ddConfig": {
+//								"type": "inputString",
+//								"allowedTypes": ["outputString"]
+//							},
+//							"nMaxWires": 1
+//						},
+//						{
+//							"name": "output",
+//							"offsetPosition": {"right": -14, "top": 33},
+//							"alwaysSrc":true,
+//							"wireConfig": { drawingMethod: "arrows"},
+//							"ddConfig": {
+//								"type": "outputString",
+//								"allowedTypes": ["inputString", "inputDepthZero", , "inputDepthOne"]
+//							}
+//						}
+//					]
+//				}
+//			},
+//			{
+//				"name": "URL Pass Through",
+//				"description": "Field that can be placed between the Baclava output of one workflow and the Baclava Input of another one. Provides a clickable URI to the file being passed",
+//				"category": "Pass Through",
+//				"container": {
+//					"width": 350,
+//					"xtype": "WireIt.URILinkContainer",
+//					"terminals": [
+//						{ "name": "input"}, //rest set by URILinkContainer
+//						{ "name": "output"} //rest set by URILinkContainer
+//					]
+//				}
+//			},			
+//			{
+//				"name": "Baclava Pass Through",
+//				"description": "Field that can be placed between the Baclava output of one workflow and the Baclava Input of another one. Provides a clickable URI to the file being passed",
+//				"category": "Pass Through",
+//				"container": {
+//					"width": 350,
+//					"xtype": "WireIt.BaclavaContainer",
+//					"terminals": [
+//						{ "name": "input" }, //rest set by BaclavaContainer
+//						{ "name": "output" }, //rest set by BaclavaContainer
+//					]
+//				}
+//			},			
+//			{
+//				"name": "comment",
+//				"container": {
+//					"xtype": "WireIt.FormContainer",
+//					"title": "My Comment",
+//					"fields": [
+//						{"type": "text", "inputParams": {"label": "", "name": "comment", "wirable": false }}
+//					]
+//				},
+//				"value": {
+//					"input": {
+//						"type":"url","inputParams":{}
+//					}
+//				}
+//			},
 		]
 	},
 
@@ -437,7 +437,7 @@ var tavernaLanguage = {
 			
 			var testProp = {};
 			//testProp.status = "Not yet run."
-			testProp.details = "Design you workflow and press the 'Run' button."
+			testProp.details = "Design your workflow and press the 'Run' button."
 			this.editor.runStatusForm.setValue(testProp , false); // the false tells inputEx to NOT fire the updatedEvt
 			//Open the minimap
 			this.editor.accordionView.openPanel(1);
