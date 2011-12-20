@@ -78,29 +78,29 @@ var languageExstension = { //Do not replace this name unless you replace it in t
 					"xtype":"WireIt.TavernaWFContainer"
 				}
 			},
-			{
-				"name": "Mixed Concatenation",
-				"category": "Taverna components",
-				"description": "Concatenates a mixture of single strings and lists of strings",
-				"tavernaInfo" : {
-					"wfURI":"Workflows/MixedWorkflow.t2flow",
-					"inputs": [
-						{"name":"LeftList", "depth":1, "description":"Cool this works"},
-						{"name":"LeftNoList", "depth":0},
-						{"name":"RightList", "depth":1},
-						{"name":"RightNoList", "depth":0}],
-					"outputs": [{"name":"Result", "depth":1}],
-					"helpPage": "Workflows/MixedWorkflow.html",
-					"showWorkflow": false,
-					"links" : [
-						{"uri": "Workflows/MixedWorkflow.html","text": "Workflow Description"},
-						{"uri": "Workflows/MixedWorkflow.t2flow","text": "Workflow Definition"},
-					]
-				},
-				"container": {
-					"xtype":"WireIt.TavernaWFContainer"
-				}
-			},
+//			{
+//				"name": "Mixed Concatenation",
+//				"category": "Taverna components",
+//				"description": "Concatenates a mixture of single strings and lists of strings",
+//				"tavernaInfo" : {
+//					"wfURI":"Workflows/MixedWorkflow.t2flow",
+//					"inputs": [
+//						{"name":"LeftList", "depth":1, "description":"Cool this works"},
+//						{"name":"LeftNoList", "depth":0},
+//						{"name":"RightList", "depth":1},
+//						{"name":"RightNoList", "depth":0}],
+//					"outputs": [{"name":"Result", "depth":1}],
+//					"helpPage": "Workflows/MixedWorkflow.html",
+//					"showWorkflow": false,
+//					"links" : [
+//						{"uri": "Workflows/MixedWorkflow.html","text": "Workflow Description"},
+//						{"uri": "Workflows/MixedWorkflow.t2flow","text": "Workflow Definition"},
+//					]
+//				},
+//				"container": {
+//					"xtype":"WireIt.TavernaWFContainer"
+//				}
+//			},
                         {
 				"name": "PRM",
 				"category": "Taverna components",
