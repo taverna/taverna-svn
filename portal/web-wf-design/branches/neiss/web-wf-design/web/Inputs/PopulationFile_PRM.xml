@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<neiss_xml>
+  <info_messages>
+    <message>****************
+PRM WITH DATA STARTS HERE
+****************</message>
+    <message>Received parameter 'No. SAR records' which matches a model parameter. Setting value to: 10
+Received parameter 'Iterations per area' which matches a model parameter. Setting value to: 10
+Received parameter 'No. test records' which matches a model parameter. Setting value to: 20
+Received parameter 'Data URL' which matches a model parameter. Setting value to: http://dl.dropbox.com/u/299787/test_csv.csv
+ which matches a model parameter. Setting value to: http://dl.dropbox.com/u/299787/test_csv.csv</message>
+    <message>PRMWithData is looking for external data here: http://dl.dropbox.com/u/299787/test_csv.csv</message>
+    <message>BirkinPRM.lookForExternalCSV() is  attempting to read an on-line csv file: http://dl.dropbox.com/u/299787/test_csv.csv store it locally: /nobackup/geonsm/neiss_users/nick/imported_csv.csv and add it to the list of data sources</message>
+    <message>Found csv file 'http://dl.dropbox.com/u/299787/test_csv.csv' and wrote it to local file: /nobackup/geonsm/neiss_users/nick/imported_csv.csv</message>
+    <message>Created local csv file data source (FlatFile (/nobackup/geonsm/neiss_users/nick/imported_csv.csv)) and added it to data source list</message>
+    <message>PRMWithData will use these database columns to create the input data file: [OA, NHH, Npers, detached, semi, terraced, flat, zero_to_nine, Age_10_to_19, Age_20_to_29, Age_30_to_39, Age_40_to_49, Age_50_to_59, Age_60_to_69, Age_70_to_79, Age_80plus, car_none, car_one, car_two_plus, Economically_Active, Economically_Inactive, White, Asian, Black, Other, Good, Fair, Not_good, house_size_1, house_size_2, house_size_3, house_size_4, house_size_5, house_size_6, house_size_7, house_size_8_plus, house_represent_1, house_represent_0, with_LLTI, without_LLTI, SWD, Married, Prof_manag, Intermediate, Non_manual, unemployed, student, no_qualifications, Level_1_2, Level_3_plus, room_1_4, room_5_6, room_7_plus, Males, Females, Owned, Council, Private_rented]</message>
+    <message>Fortran model data directory is: /nobackup/geonsm/neiss_temp/PRMWithDataO12164/prm/</message>
+    <message>PRMWithData: No region name has been specified, finding one in the data source to use.</message>
+    <message>Using region: 00DA</message>
+    <message>PRMWithData found 2439 areas in the data file.</message>
+    <message>PRMWithData creating Control file.</message>
+    <message>Have written parameters to /nobackup/geonsm/neiss_temp/PRMWithDataO12164/prm/prm_pars.txt</message>
+    <message>PRMWithData: querying database for region '00DA' data</message>
+    <message>Creating model input file: /nobackup/geonsm/neiss_temp/PRMWithDataO12164/prm/00DADATA.csv</message>
+    <message>BirkinPRM.runFortranModel(): writing data to file: /nobackup/geonsm/neiss_temp/PRMWithDataO12164/prm/00DADATA.csv</message>
+    <message>BirkinPRM.writeToCSV(): Writing to CSV file for model: Model 'PRMWithData'(2439) lines:</message>
+    <message>0,</message>
+    <message>100,</message>
+    <message>200,</message>
+    <message>300,</message>
+    <message>400,</message>
+    <message>500,</message>
+    <message>600,</message>
+    <message>700,</message>
+    <message>800,</message>
+    <message>900,</message>
+    <message>1000,</message>
+    <message>1100,</message>
+    <message>1200,</message>
+    <message>1300,</message>
+    <message>1400,</message>
+    <message>1500,</message>
+    <message>1600,</message>
+    <message>1700,</message>
+    <message>1800,</message>
+    <message>1900,</message>
+    <message>2000,</message>
+    <message>2100,</message>
+    <message>2200,</message>
+    <message>2300,</message>
+    <message>2400,</message>
+    <message />
+    <message>Have written parameters to model input file 00DADATA.csv</message>
+    <message>Running prm</message>
+    <message />
+    <message>PRM run *success*.</message>
+    <message>Successfully moved population file to /nobackup/geonsm/neiss_users/nick/00DAXP01.TXT
+Run Complete.</message>
+    <message>PRMWithData has finished successfully.</message>
+    <message>PRMWithData will attempt to save the results file '/nobackup/geonsm/neiss_users/nick/00DAXP01.TXT' externally for user 'nick'</message>
+  </info_messages>
+  <error_messages>
+    <message>PRMWithData created http connection: Setting http proxy (host,port) to: www-cache.leeds.ac.uk,3128</message>
+  </error_messages>
+  <tabular_data>
+    <table title="Constraints goodness-of-fit" border="1">
+      <tr>
+        <th>Constraint</th>
+        <th>R-squared</th>
+        <th>Standardised Root-Mean-Square Error</th>
+        <th>Total Difference</th>
+      </tr>
+      <tr>
+        <td>Const0</td>
+        <td>0.41065453149344744</td>
+        <td>1.2761007842728744</td>
+        <td>34616.0</td>
+      </tr>
+      <tr>
+        <td>Const1</td>
+        <td>1.0</td>
+        <td>Infinity</td>
+        <td>119081.0</td>
+      </tr>
+      <tr>
+        <td>Const2</td>
+        <td>0.04264781379309208</td>
+        <td>0.8270033711113037</td>
+        <td>71349.0</td>
+      </tr>
+      <tr>
+        <td>Const3</td>
+        <td>0.6649649506244341</td>
+        <td>0.7415980262404028</td>
+        <td>106296.0</td>
+      </tr>
+      <tr>
+        <td>Const4</td>
+        <td>0.4379292293415706</td>
+        <td>0.6238201467346128</td>
+        <td>121365.0</td>
+      </tr>
+      <tr>
+        <td>Const5</td>
+        <td>1.0</td>
+        <td>Infinity</td>
+        <td>93456.0</td>
+      </tr>
+      <tr>
+        <td>Const6</td>
+        <td>1.0</td>
+        <td>Infinity</td>
+        <td>107224.0</td>
+      </tr>
+      <tr>
+        <td>Const7</td>
+        <td>0.036560614107312275</td>
+        <td>0.6872657513598047</td>
+        <td>193585.0</td>
+      </tr>
+      <tr>
+        <td>Const8</td>
+        <td>0.2513585985826894</td>
+        <td>0.3402682171649564</td>
+        <td>24805.0</td>
+      </tr>
+      <tr>
+        <td>Const9</td>
+        <td>1.0</td>
+        <td>Infinity</td>
+        <td>81765.0</td>
+      </tr>
+      <tr>
+        <td>Const10</td>
+        <td>0.3383648822882915</td>
+        <td>0.4856503542828581</td>
+        <td>27066.0</td>
+      </tr>
+      <tr>
+        <td>Const11</td>
+        <td>1.0</td>
+        <td>Infinity</td>
+        <td>49059.0</td>
+      </tr>
+      <tr>
+        <td>Const12</td>
+        <td>1.0</td>
+        <td>Infinity</td>
+        <td>26024.0</td>
+      </tr>
+      <tr>
+        <td>Const13</td>
+        <td>0.5463752638927025</td>
+        <td>0.49201759042725174</td>
+        <td>64747.0</td>
+      </tr>
+      <tr>
+        <td>Const14</td>
+        <td>1.0</td>
+        <td>Infinity</td>
+        <td>126673.0</td>
+      </tr>
+      <tr>
+        <td>Const15</td>
+        <td>0.27608937254045784</td>
+        <td>0.5963009700427094</td>
+        <td>75341.0</td>
+      </tr>
+      <tr>
+        <td>Const16</td>
+        <td>0.22174725652203373</td>
+        <td>0.272502385613363</td>
+        <td>66364.0</td>
+      </tr>
+      <tr>
+        <td>Const17</td>
+        <td>0.4949092754401172</td>
+        <td>0.23525108773492612</td>
+        <td>52759.0</td>
+      </tr>
+      <tr>
+        <td>Const18</td>
+        <td>0.6120985235408154</td>
+        <td>0.2697381835389673</td>
+        <td>122097.89999999988</td>
+      </tr>
+      <tr>
+        <td>Const19</td>
+        <td>1.0</td>
+        <td>Infinity</td>
+        <td>33419.700000000055</td>
+      </tr>
+      <tr>
+        <td>Const20</td>
+        <td>1.0</td>
+        <td>Infinity</td>
+        <td>20707.400000000016</td>
+      </tr>
+      <tr>
+        <td>Const21</td>
+        <td>0.1631916600166133</td>
+        <td>1.050167991106167</td>
+        <td>149162.60000000018</td>
+      </tr>
+      <tr>
+        <td>Const22</td>
+        <td>0.5414438344065159</td>
+        <td>0.19756754917815111</td>
+        <td>67894.39999999994</td>
+      </tr>
+      <tr>
+        <td>Const23</td>
+        <td>0.3226722781848003</td>
+        <td>0.3486923521382705</td>
+        <td>57602.09999999992</td>
+      </tr>
+      <tr>
+        <td>Const24</td>
+        <td>1.0</td>
+        <td>Infinity</td>
+        <td>69102.59999999995</td>
+      </tr>
+      <tr>
+        <td>Const25</td>
+        <td>0.9090566416206417</td>
+        <td>0.4176657663403563</td>
+        <td>61329.0</td>
+      </tr>
+      <tr>
+        <td>Const26</td>
+        <td>1.0</td>
+        <td>Infinity</td>
+        <td>100212.0</td>
+      </tr>
+      <tr>
+        <td>Const27</td>
+        <td>0.1649267606278129</td>
+        <td>0.5220978742316129</td>
+        <td>16241.0</td>
+      </tr>
+      <tr>
+        <td>Const28</td>
+        <td>0.3881995354378971</td>
+        <td>0.6642043779557187</td>
+        <td>64893.0</td>
+      </tr>
+      <tr>
+        <td>Const29</td>
+        <td>1.0</td>
+        <td>Infinity</td>
+        <td>14096.0</td>
+      </tr>
+      <tr>
+        <td>Const30</td>
+        <td>1.0</td>
+        <td>Infinity</td>
+        <td>4247.0</td>
+      </tr>
+      <tr>
+        <td>Const31</td>
+        <td>1.0</td>
+        <td>Infinity</td>
+        <td>1517.0</td>
+      </tr>
+      <tr>
+        <td>Const32</td>
+        <td>1.0</td>
+        <td>Infinity</td>
+        <td>949.0</td>
+      </tr>
+      <tr>
+        <td>Const33</td>
+        <td>1.0</td>
+        <td>0.0</td>
+        <td>0.0</td>
+      </tr>
+      <tr>
+        <td>Const34</td>
+        <td>0.8712716330445225</td>
+        <td>0.12862246330766997</td>
+        <td>29499.0</td>
+      </tr>
+      <tr>
+        <td>Const35</td>
+        <td>1.0</td>
+        <td>Infinity</td>
+        <td>126484.70000000016</td>
+      </tr>
+      <tr>
+        <td>Const36</td>
+        <td>0.7617856783433806</td>
+        <td>0.2019890239239625</td>
+        <td>121568.60000000012</td>
+      </tr>
+      <tr>
+        <td>Const37</td>
+        <td>0.5581197515928888</td>
+        <td>0.3304387457254993</td>
+        <td>80723.8</td>
+      </tr>
+      <tr>
+        <td>Const38</td>
+        <td>0.6085535086197381</td>
+        <td>0.29177843004009885</td>
+        <td>66792.99999999997</td>
+      </tr>
+      <tr>
+        <td>Const39</td>
+        <td>0.001451664245225063</td>
+        <td>0.7489546333653826</td>
+        <td>85405.0</td>
+      </tr>
+      <tr>
+        <td>Const40</td>
+        <td>1.0</td>
+        <td>Infinity</td>
+        <td>40599.0</td>
+      </tr>
+      <tr>
+        <td>Const41</td>
+        <td>0.04049830796678936</td>
+        <td>0.5844409157463797</td>
+        <td>71282.0</td>
+      </tr>
+      <tr>
+        <td>Const42</td>
+        <td>1.0</td>
+        <td>Infinity</td>
+        <td>8101.0</td>
+      </tr>
+      <tr>
+        <td>Const43</td>
+        <td>1.0</td>
+        <td>Infinity</td>
+        <td>63142.0</td>
+      </tr>
+      <tr>
+        <td>Const44</td>
+        <td>0.07761340858810076</td>
+        <td>0.4997350911946575</td>
+        <td>127250.0000000001</td>
+      </tr>
+      <tr>
+        <td>Const45</td>
+        <td>0.3621060945348434</td>
+        <td>0.3373290998935417</td>
+        <td>49393.69999999996</td>
+      </tr>
+      <tr>
+        <td>Const46</td>
+        <td>0.057405176601326525</td>
+        <td>1.1311820436342115</td>
+        <td>120638.20000000003</td>
+      </tr>
+      <tr>
+        <td>Const47</td>
+        <td>1.0</td>
+        <td>Infinity</td>
+        <td>109674.0</td>
+      </tr>
+      <tr>
+        <td>Const48</td>
+        <td>0.1033727258160722</td>
+        <td>0.5852453954518878</td>
+        <td>159286.0</td>
+      </tr>
+      <tr>
+        <td>Const49</td>
+        <td>1.0</td>
+        <td>Infinity</td>
+        <td>49438.0</td>
+      </tr>
+      <tr>
+        <td>Const50</td>
+        <td>0.5810876421498706</td>
+        <td>0.2713894108984466</td>
+        <td>108085.0</td>
+      </tr>
+      <tr>
+        <td>Const51</td>
+        <td>0.7020790519294283</td>
+        <td>0.49565899529602087</td>
+        <td>114950.0</td>
+      </tr>
+      <tr>
+        <td>Const52</td>
+        <td>0.2353534270868375</td>
+        <td>0.6264432834485258</td>
+        <td>79227.0</td>
+      </tr>
+      <tr>
+        <td>Const53</td>
+        <td>1.0</td>
+        <td>Infinity</td>
+        <td>76017.0</td>
+      </tr>
+      <tr>
+        <td>Const54</td>
+        <td>0.5170511145058299</td>
+        <td>0.8274998601552273</td>
+        <td>122101.0</td>
+      </tr>
+    </table>
+  </tabular_data>
+  <neissmodel_parameters>
+    <parameter>
+      <name>No. SAR records</name>
+      <type>Integer</type>
+      <value>10</value>
+    </parameter>
+    <parameter>
+      <name>Iterations per area</name>
+      <type>Integer</type>
+      <value>10</value>
+    </parameter>
+    <parameter>
+      <name>No. test records</name>
+      <type>Integer</type>
+      <value>20</value>
+    </parameter>
+    <parameter>
+      <name>Region name</name>
+      <type>String</type>
+      <value>29UN</value>
+    </parameter>
+    <parameter>
+      <name>Data URL</name>
+      <type>String</type>
+      <value>http://dl.dropbox.com/u/299787/test_csv.csv</value>
+    </parameter>
+    <parameter>
+      <name>Data URL</name>
+      <type>String</type>
+      <value>http://dl.dropbox.com/u/299787/test_csv.csv</value>
+    </parameter>
+  </neissmodel_parameters>
+  <results_information>
+    <data_element>
+      <result_url>Population file</result_url>
+      <result_description>00DAXP01.TXT</result_description>
+    </data_element>
+  </results_information>
+  <results_data>
+    <data_element>
+      <result_url>http://geo-s12.leeds.ac.uk:8080/WebDav/nick/00DAXP01.TXT</result_url>
+      <result_description>PRMWithData output population file: 00DAXP01.TXT</result_description>
+    </data_element>
+  </results_data>
+  <result>success</result>
+</neiss_xml>

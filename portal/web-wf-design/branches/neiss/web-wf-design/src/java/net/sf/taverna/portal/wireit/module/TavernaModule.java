@@ -478,7 +478,7 @@ public class TavernaModule extends Module{
                      throw new WireItRunException ("Unknown input type " + output.getClass() + " in " + name);
                 }
             } catch (TavernaException ex) {
-                throw new WireItRunException ("Error setting Taverna input for " + name + ex.getMessage(), ex);
+                throw new WireItRunException ("Error setting Taverna input for " + name + ": " + ex.getMessage(), ex);
             }
             runIfReady(outputBuilder);
         }

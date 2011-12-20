@@ -8,7 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Debug class used to retreive and show a single saved pipe well formatted.
+ * Debug class used to retrieve and show a single saved pipe well formatted.
  * @author Christian
  */
 public class ShowWireit extends WireitSQLBase {

@@ -70,7 +70,7 @@ var tavernaLanguage = {
 							"name": "output",
 							"offsetPosition": {"right": -14, "top": 25},
 							"alwaysSrc":true,
-							"wireConfig": { drawingMethod: "arrows", color: "#EE11EE", bordercolor:"#FF00FF"},
+							"wireConfig": { drawingMethod: "arrows" /*, color: "#EE11EE", bordercolor:"#FF00FF"*/},
 							"ddConfig": {
 								"type": "outputURL",
 								"allowedTypes": ["inputURL","inputDepthZero"]
@@ -108,7 +108,7 @@ var tavernaLanguage = {
 							"name": "output",
 							"offsetPosition": {"right": -14, "top": 25},
 							"alwaysSrc":true,
-							"wireConfig": { drawingMethod: "arrows", color: "#FF0000", bordercolor:"#FF00FF"},
+							"wireConfig": { drawingMethod: "arrows"/*, color: "#FF0000", bordercolor:"#FF00FF"*/},
 							"ddConfig": {
 								"type": "outputBaclava",
 								"allowedTypes": ["inputBaclava"]
@@ -134,7 +134,7 @@ var tavernaLanguage = {
 								"type": "outputList",
 								"allowedTypes": ["inputList", "inputDepthOne"]
 							},
-							"wireConfig":{width: 5, borderwidth:3, drawingMethod: "arrows"}
+							"wireConfig":{/*width: 5, borderwidth:3,*/ drawingMethod: "arrows"}
 						}
 					]
 				}
@@ -170,7 +170,7 @@ var tavernaLanguage = {
 							"name": "output",
 							"offsetPosition": {"right": -14, "top": 25},
 							"alwaysSrc":true,
-							 "wireConfig": {width: 5, borderwidth:3, drawingMethod: "arrows", color: "#EE11EE", bordercolor:"#FF00FF"},
+							 "wireConfig": {/*width: 5, borderwidth:3, */drawingMethod: "arrows"/*, color: "#EE11EE", bordercolor:"#FF00FF"*/},
 							"ddConfig": {
 								"type": "outputDelimitedURL",
 								"allowedTypes": ["inputDepthOne"]
@@ -241,19 +241,19 @@ var tavernaLanguage = {
 					]
 				}
 			},			
-			{
-				"name": "URL output",
-				"category": "Outputs",
-				"description": "Workflow output as a link to the actual output data",
-				"container": {
-					"width": 350,
-					"xtype": "WireIt.URILinkContainer",
-					"title": "output",
-					"terminals": [
-						{"name": "input"} //rest set by URILinkContainer
-					]
-				}
-			},						
+//			{
+//				"name": "URL output",
+//				"category": "Outputs",
+//				"description": "Workflow output as a link to the actual output data",
+//				"container": {
+//					"width": 350,
+//					"xtype": "WireIt.URILinkContainer",
+//					"title": "output",
+//					"terminals": [
+//						{"name": "input"} //rest set by URILinkContainer
+//					]
+//				}
+//			},						
 //			//Pass through modules that act as both input and output
 //			{
 //				"name": "PassThrough",
@@ -361,7 +361,7 @@ var tavernaLanguage = {
 		module = this.moduleByName(name);
 		var tavernaLink = ""
 		if (module.tavernaInfo.showWorkflow){	
-			var tavernaTitle = module.tavernaInfo.wfToolTip || "Click here to see workflow script";
+			var tavernaTitle = module.tavernaInfo.wfToolTip || "Click here to see the Taverna component definition file";
 			var tavernaLink	= '<a href="' + module.container.wfURI +'" target="_blank"><IMG SRC="taverna/images/taverna.png" title="' + tavernaTitle + '"></a> '
 		}
 		var helpLink = "";
