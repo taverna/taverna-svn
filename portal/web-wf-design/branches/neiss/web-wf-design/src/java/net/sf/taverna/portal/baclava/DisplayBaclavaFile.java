@@ -77,7 +77,7 @@ public class DisplayBaclavaFile extends HttpServlet {
         try {       
             // Get the Baclava file URL
             String baclavaFileURLString = URLDecoder.decode(request.getParameter("baclava_document_url"), "UTF-8");;
-            //String baclavaFileURL = "http://localhost:8080/wf-design-wireit-christian/Inputs/BaclavaExample.xml";           
+            //String baclavaFileURL = "http://localhost:8080/wf-design-wireit-neiss/Inputs/BaclavaExample.xml";           
             
             // Download the Baclava file to display
             URL baclavaFileURL = null;

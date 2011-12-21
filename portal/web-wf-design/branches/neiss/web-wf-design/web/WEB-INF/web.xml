@@ -11,7 +11,12 @@
     <context-param>
         <param-name>TAVERNA_CMD_HOME</param-name>
         <param-value>/Users/alex/Desktop/taverna-commandline-2.2.0</param-value>
-<!--        <description>Absolute path to a directory on the local file system where the Taverna Command Line Tool is located</description>-->
+        <description>Absolute path to a directory on the local file system where the Taverna Command Line Tool is located</description>
+    </context-param>
+    <context-param>
+        <param-name>JSON_WIRINGS_DIR</param-name>
+        <param-value>/tmp/json_wirings</param-value>
+       <description>Absolute path to a directory on the local file system where the JSON wirings will be saved</description>
     </context-param>
     <servlet>
         <servlet-name>DeleteWireit</servlet-name>

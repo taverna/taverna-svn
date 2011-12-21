@@ -1,5 +1,6 @@
 package net.sf.taverna.portal.wireit;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
@@ -19,6 +20,18 @@ import org.json.JSONException;
  */
 public class ListWireit extends WireitSQLBase {
 
+    public static final String JSON_WIRINGS_DIR_PARAMETER = "JSON_WIRINGS_DIR";
+    private File jsonWiringsDir = null; // directory where we save JSON wirings as individual files
+    
+    @Override
+    public void init(){
+        String jsonWiringsDirPath = getServletContext().getInitParameter(JSON_WIRINGS_DIR_PARAMETER);
+        jsonWiringsDir = new File(jsonWiringsDirPath);
+        if (!jsonWiringsDir.exists()){
+            jsonWiringsDir.mkdirs();
+        }
+    }
+    
     /**
      * Sets up the servlet and creates an SQL statement against which queries can be run.
      * 
@@ -61,11 +74,15 @@ public class ListWireit extends WireitSQLBase {
         PrintWriter out = response.getWriter();
  
         try {
-            out.println(getJsonString(language));
+            out.println(getJsonStringFromFiles(language));
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new ServletException(ex);
         }
+    }
+    
+    private String getJsonStringFromFiles(String language){
+        return null;
     }
        
     /**
