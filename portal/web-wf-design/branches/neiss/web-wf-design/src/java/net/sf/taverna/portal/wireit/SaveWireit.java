@@ -1,13 +1,9 @@
 package net.sf.taverna.portal.wireit;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.net.URLDecoder;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,14 +25,30 @@ import org.json.JSONObject;
 public class SaveWireit extends WireitSQLBase {
     
     public static final String JSON_WIRINGS_DIR_PARAMETER = "JSON_WIRINGS_DIR";
+    public static final String SAVE_TO_PARAMETER = "SAVE_TO";
+    public static final String SAVE_TO_FILESYSTEM = "filesystem";
+    public static final String SAVE_TO_DATABASE = "database";
     private File jsonWiringsDir = null; // directory where we save JSON wirings as individual files
+    private String SAVE_TO; // wirings will be saved to/loaded from filesystem or database based on the value of this context parameter
     
     @Override
     public void init(){
         String jsonWiringsDirPath = getServletContext().getInitParameter(JSON_WIRINGS_DIR_PARAMETER);
-        jsonWiringsDir = new File(jsonWiringsDirPath);
-        if (!jsonWiringsDir.exists()){
-            jsonWiringsDir.mkdirs();
+        SAVE_TO = getServletContext().getInitParameter(SAVE_TO_PARAMETER);
+        if (SAVE_TO == null){
+            throw new RuntimeException("Method of saving JSON wirings (filesystem or database) has not been configured in web.xml. Check context parameter " + SAVE_TO_PARAMETER +".");
+        }
+        else{
+            if (SAVE_TO.toLowerCase().equals(SAVE_TO_FILESYSTEM)) {
+                if (jsonWiringsDirPath != null) {
+                    jsonWiringsDir = new File(jsonWiringsDirPath);
+                    if (!jsonWiringsDir.exists()) {
+                        jsonWiringsDir.mkdirs();
+                    }
+                } else {
+                    throw new RuntimeException("Directory where to save to/load from JSON wirings has not been configured in web.xml. Check context parameter " + JSON_WIRINGS_DIR_PARAMETER + ".");
+                }
+            }
         }
     }
     
@@ -90,8 +102,13 @@ public class SaveWireit extends WireitSQLBase {
                 
         try {
             String json = readRequestBody(request);
-            //saveWorking(json); // saves to database
-            saveJSONWiringToFile(json); // saves to a file
+            
+            if (SAVE_TO.toLowerCase().equals(SAVE_TO_FILESYSTEM)){
+                saveJSONWiringToFile(json); // saves to a file
+            }
+            else{
+                saveWorking(json); // saves to database
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new ServletException(ex);
