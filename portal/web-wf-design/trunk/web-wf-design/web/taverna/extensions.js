@@ -16,7 +16,7 @@ YAHOO.lang.extend(tavernaLanguage.WiringEditor, WireIt.WiringEditor, {
 
 		// Add the run button to the toolbar
 		var toolbar = YAHOO.util.Dom.get('toolbar');
-		var runButton = new YAHOO.widget.Button({ label:"Run", id:"WiringEditor-runButton", container: toolbar });
+		var runButton = new YAHOO.widget.Button({label:"Run", id:"WiringEditor-runButton", container: toolbar});
 		runButton.on("click", tavernaLanguage.run, tavernaLanguage, true);
 	},
 
@@ -186,6 +186,31 @@ YAHOO.lang.extend(tavernaLanguage.WiringEditor, WireIt.WiringEditor, {
 			working: obj
 		};
 	},
+    
+    /** 
+     *Overrides method onNew method from WiringEditor.js to clear the Run Status form.
+     */
+    onNew: function() {
+
+        if(!this.isSaved()) {
+            if( !confirm("Warning: Your work is not saved yet ! Press ok to continue anyway.") ) {
+                return;
+            }
+        }
+
+        this.preventLayerChangedEvent = true;
+
+        this.layer.clear();
+
+        this.propertiesForm.clear(false); // false to tell inputEx to NOT send the updatedEvt
+
+        // Clear the Run status form
+        this.runStatusForm.clear();
+            
+        this.markSaved();
+
+        this.preventLayerChangedEvent = false;
+    }        
 
 });
 

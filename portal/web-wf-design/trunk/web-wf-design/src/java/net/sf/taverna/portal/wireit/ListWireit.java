@@ -1,5 +1,7 @@
 package net.sf.taverna.portal.wireit;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
@@ -10,6 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 //Json element are optional and can be commented out.
+import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -19,6 +22,34 @@ import org.json.JSONException;
  */
 public class ListWireit extends WireitSQLBase {
 
+    public static final String JSON_WIRINGS_DIR_PARAMETER = "JSON_WIRINGS_DIR";
+    public static final String SAVE_TO_PARAMETER = "SAVE_TO";
+    public static final String SAVE_TO_FILESYSTEM = "filesystem";
+    public static final String SAVE_TO_DATABASE = "database";
+    private File jsonWiringsDir = null; // directory where we save JSON wirings as individual files
+    private String SAVE_TO; // wirings will be saved to/loaded from filesystem or database based on the value of this context parameter
+    
+    @Override
+    public void init(){
+        String jsonWiringsDirPath = getServletContext().getInitParameter(JSON_WIRINGS_DIR_PARAMETER);
+        SAVE_TO = getServletContext().getInitParameter(SAVE_TO_PARAMETER);
+        if (SAVE_TO == null){
+            throw new RuntimeException("Method of saving JSON wirings (filesystem or database) has not been configured in web.xml. Check context parameter " + SAVE_TO_PARAMETER +".");
+        }
+        else{
+            if (SAVE_TO.toLowerCase().equals(SAVE_TO_FILESYSTEM)) {
+                if (jsonWiringsDirPath != null) {
+                    jsonWiringsDir = new File(jsonWiringsDirPath);
+                    if (!jsonWiringsDir.exists()) {
+                        jsonWiringsDir.mkdirs();
+                    }
+                } else {
+                    throw new RuntimeException("Directory where to save to/load from JSON wirings has not been configured in web.xml. Check context parameter " + JSON_WIRINGS_DIR_PARAMETER + ".");
+                }
+            }
+        }
+    }
+    
     /**
      * Sets up the servlet and creates an SQL statement against which queries can be run.
      * 
@@ -61,13 +92,72 @@ public class ListWireit extends WireitSQLBase {
         PrintWriter out = response.getWriter();
  
         try {
-            out.println(getJsonString(language));
+            if (SAVE_TO.toLowerCase().equals(SAVE_TO_FILESYSTEM)){
+                out.println(getJSONWiringsFromFiles(language));                
+            }
+            else{
+                out.println(getJSONWiringsFromDatabase(language));
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new ServletException(ex);
         }
     }
+    
+    private String getJSONWiringsFromFiles(String language) throws IOException{
+        
+        // Get all files from the JSON directory and append them 
+        // into one big JSON string
+        FileFilter jsonFileFilter = new FileFilter(){
+
+            public boolean accept(File file) {
+                return !file.isDirectory() && file.getName().endsWith(".json");
+            }
+        };
+        
+        File[] jsonFiles = jsonWiringsDir.listFiles(jsonFileFilter);
+        
+        StringBuffer strBuffer = new StringBuffer();
+        strBuffer.append("[");
+        boolean notFirst = false;
+        int i = 0;
+        for (File jsonFile : jsonFiles) {
+            System.out.println("Found JSON wiring " + jsonFile.getAbsolutePath());
+            if (notFirst){
+                strBuffer.append(",\n");
+            } else {
+                notFirst = true;
+            }
+            String jsonString = FileUtils.readFileToString(jsonFile);
+            strBuffer.append("{\"id\":\"");
+            strBuffer.append(i++);
+            strBuffer.append("\",\n");
+            String name = URLDecoder.decode(jsonFile.getName().substring(0, jsonFile.getName().indexOf(".json")));
+            strBuffer.append("\"name\":\"");
+            strBuffer.append(name);
+            strBuffer.append("\",\n");
+            //Json needs quotes " to be escpaped
+            jsonString = jsonString.replace("\"", "\\\"");
+            //Json needs carriage returns to be escpaed.
+            jsonString = jsonString.replace("\\n", "\\\\n");
+            strBuffer.append("\"working\":\"");
+            //JSONObject workingJson = new JSONObject(working);
+            //builder.append(workingJson.toString(4));
+            strBuffer.append(jsonString);
+            strBuffer.append("\",\n");
+            strBuffer.append("\"language\":\"");
+            strBuffer.append(language);
+            strBuffer.append("\"}");            
+        }
+        // Get rid of the last ",\n"
+        //strBuffer.substring(0, strBuffer.lastIndexOf(",\n")-1);
+        strBuffer.append("]");
+        System.out.println(strBuffer.toString());
        
+        return strBuffer.toString();
+    }
+ 
+    
     /**
      * Runs a select * query where language = language and returns the results as a Json String.
      * 
@@ -75,14 +165,14 @@ public class ListWireit extends WireitSQLBase {
      * @return json String without spaces or line breaks.
      * @throws SQLException Thrown if the query fails
      */
-    private String getJsonString(String language) throws SQLException{
+    private String getJSONWiringsFromDatabase(String language) throws SQLException{
         String sqlStr;
         if (language == null){
             sqlStr = "select * from wirings";
         } else {
             sqlStr = "select * from wirings where language = \"" + language + "\"";
         }
-        System.out.println("running: " + sqlStr);
+        System.out.println("Executing SQL query: " + sqlStr);
         StringBuilder builder = new StringBuilder();
         builder.append("[");
         boolean notFirst = false;
@@ -109,7 +199,7 @@ public class ListWireit extends WireitSQLBase {
      * @throws SQLException error reading the SQL result.
      */
     private void appendResult(ResultSet rset, StringBuilder builder, String language) throws SQLException{
-                   // Print a paragraph <p>...</p> for each record
+        // Print a paragraph <p>...</p> for each record
         builder.append("{\"id\":\"");
         builder.append(rset.getInt("id"));
         builder.append("\",\n");
@@ -150,7 +240,7 @@ public class ListWireit extends WireitSQLBase {
      */
     public static void main(String[] args) throws ServletException, SQLException, JSONException {
         ListWireit tester = new ListWireit();
-        String input = tester.getJsonString(null);
+        String input = tester.getJSONWiringsFromDatabase(null);
         System.out.println(input);
         JSONArray json = new JSONArray(input);
         System.out.println(json.toString(4));

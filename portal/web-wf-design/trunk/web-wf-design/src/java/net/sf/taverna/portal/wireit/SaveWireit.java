@@ -1,7 +1,9 @@
 package net.sf.taverna.portal.wireit;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 //Optional can be commented out to avoid using org.json
+import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,6 +23,34 @@ import org.json.JSONObject;
  * @author Christian
  */
 public class SaveWireit extends WireitSQLBase {
+    
+    public static final String JSON_WIRINGS_DIR_PARAMETER = "JSON_WIRINGS_DIR";
+    public static final String SAVE_TO_PARAMETER = "SAVE_TO";
+    public static final String SAVE_TO_FILESYSTEM = "filesystem";
+    public static final String SAVE_TO_DATABASE = "database";
+    private File jsonWiringsDir = null; // directory where we save JSON wirings as individual files
+    private String SAVE_TO; // wirings will be saved to/loaded from filesystem or database based on the value of this context parameter
+    
+    @Override
+    public void init(){
+        String jsonWiringsDirPath = getServletContext().getInitParameter(JSON_WIRINGS_DIR_PARAMETER);
+        SAVE_TO = getServletContext().getInitParameter(SAVE_TO_PARAMETER);
+        if (SAVE_TO == null){
+            throw new RuntimeException("Method of saving JSON wirings (filesystem or database) has not been configured in web.xml. Check context parameter " + SAVE_TO_PARAMETER +".");
+        }
+        else{
+            if (SAVE_TO.toLowerCase().equals(SAVE_TO_FILESYSTEM)) {
+                if (jsonWiringsDirPath != null) {
+                    jsonWiringsDir = new File(jsonWiringsDirPath);
+                    if (!jsonWiringsDir.exists()) {
+                        jsonWiringsDir.mkdirs();
+                    }
+                } else {
+                    throw new RuntimeException("Directory where to save to/load from JSON wirings has not been configured in web.xml. Check context parameter " + JSON_WIRINGS_DIR_PARAMETER + ".");
+                }
+            }
+        }
+    }
     
     /**
      * Sets up the servlet and creates an SQL statement against which queries can be run.
@@ -71,7 +102,13 @@ public class SaveWireit extends WireitSQLBase {
                 
         try {
             String json = readRequestBody(request);
-            saveWorking(json);
+            
+            if (SAVE_TO.toLowerCase().equals(SAVE_TO_FILESYSTEM)){
+                saveJSONWiringToFile(json); // saves to a file
+            }
+            else{
+                saveWorking(json); // saves to database
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new ServletException(ex);
@@ -179,5 +216,63 @@ public class SaveWireit extends WireitSQLBase {
         closeResultSet(rset);
         return (count >= 1);
    }
+
+    private void saveJSONWiringToFile(String jsonString) throws ServletException, JSONException, UnsupportedEncodingException, IOException {
+        String nameEncoded = null; // name is already URL-encoded it seems
+        String jsonWiringEncoded = null;
+        String language = null;
+        StringTokenizer tokens = new StringTokenizer(jsonString, "&");
+
+        while (tokens.hasMoreElements()){
+            String token = tokens.nextToken();
+            String key = token.substring(0,token.indexOf("="));
+            if (key.equalsIgnoreCase("name")){
+                nameEncoded =  token.substring(token.indexOf("=")+1,token.length());
+            } else if (key.equalsIgnoreCase("language")){
+                language =  token.substring(token.indexOf("=")+1,token.length());
+            } else if (key.equalsIgnoreCase("working")){
+                jsonWiringEncoded =  token.substring(token.indexOf("=")+1,token.length());
+            } else {
+                throw new ServletException("Unexpected key " + key + " in body");
+            }
+        }
+        //Check that the name and length exist and are not too long.
+        if (nameEncoded.length() > 255){
+            throw new ServletException("Maximum size of name is 255");
+        }
+        if (language.length() > 255){
+            throw new ServletException("Maximum size of language is 255");
+        }
+       
+        // URL encode th name to get rid of spaces even though file names can containe them
+        //nameEncoded = URLEncoder.encode(name, "UTF-8"); // Alredy seems to be encoded!
+        
+        //Create a json object as an easy check for an SQL insert attack
+        String jsonWiringDecoded = URLDecoder.decode(jsonWiringEncoded);
+        //JSONObject jsonWiring = new JSONObject(workingDecoded);
+        //String jsonWiringString = jsonWiring.toString();
+                
+        // Does the file with the same name already exist?      
+        File jsonFile = new File(jsonWiringsDir, nameEncoded + ".json");
+
+        if (jsonFile.exists()){
+            // We are overwriting it so make a backup copy of the file
+            File jsonBackupFile = new File(jsonWiringsDir, nameEncoded + ".json.bkp");
+            try{
+                System.out.println("Backing up JSON wiring to " + jsonBackupFile.getAbsolutePath());
+                FileUtils.copyFile(jsonFile, jsonBackupFile);
+                FileUtils.deleteQuietly(jsonFile);
+            }
+            catch(IOException ioex){
+                // Ignore
+                System.out.println("Failed to backup JSON wiring to " + jsonBackupFile.getAbsolutePath());
+                ioex.printStackTrace();
+            }
+        }
+        
+        FileUtils.writeStringToFile(jsonFile, jsonWiringDecoded);
+        System.out.println("Saved JSON wiring to " + jsonFile.getAbsolutePath());
+
+    }
 
 }
