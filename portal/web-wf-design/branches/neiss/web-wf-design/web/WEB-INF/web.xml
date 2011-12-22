@@ -20,7 +20,7 @@
     </context-param>
     <context-param>
         <param-name>JSON_WIRINGS_DIR</param-name>
-        <param-value>/tmp/json_wirings</param-value>
+        <param-value>/Users/alex/Desktop/json_wirings</param-value>
        <description>Absolute path to a directory on the local file system where the JSON wirings will be saved. Use when you set SAVE_TO to 'filesystem'; otherwise it si ignored.</description>
     </context-param>
     <servlet>

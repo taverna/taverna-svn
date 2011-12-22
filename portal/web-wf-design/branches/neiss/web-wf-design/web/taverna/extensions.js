@@ -30,6 +30,7 @@ YAHOO.lang.extend(tavernaLanguage.WiringEditor, WireIt.WiringEditor, {
 	 * @param {Object} Wiring (pipe)
 	 */
     loadWiring: function(wiring) {
+        
         // TODO: check if current wiring is saved...
         this.layer.clear();
 
@@ -208,75 +209,6 @@ YAHOO.lang.extend(tavernaLanguage.WiringEditor, WireIt.WiringEditor, {
             working: obj
         };
     },
-        
-//    /** Overrides loadPipe() method from WiringEditor.js to clear the Run Status form.
-//    * @param {String} name Pipe name
-//    */
-//    loadPipe2: function(name) {
-//
-//        if(!this.isSaved()) {
-//            if( !confirm("Warning: Your work is not saved yet ! Press ok to continue anyway.") ) {
-//                return;
-//            }
-//        }
-//
-//        try {
-//
-//            this.preventLayerChangedEvent = true;
-//
-//            this.loadPanel.hide();
-//
-//            var wiring = this.getPipeByName(name), i;
-//
-//            if(!wiring) {
-//                this.alert("The workflow '"+name+"' was not found.");
-//                return;
-//            }
-//    
-//            // TODO: check if current wiring is saved...
-//            this.layer.clear();
-//    
-//            this.propertiesForm.setValue(wiring.properties, false); // the false tells inputEx to NOT fire the updatedEvt
-//    
-//            if(lang.isArray(wiring.modules)) {
-//      
-//                // Containers
-//                for(i = 0 ; i < wiring.modules.length ; i++) {
-//                    var m = wiring.modules[i];
-//                    if(this.modulesByName[m.name]) {
-//                        var baseContainerConfig = this.modulesByName[m.name].container;
-//                        YAHOO.lang.augmentObject(m.config, baseContainerConfig);
-//                        m.config.title = m.name;
-//                        var container = this.layer.addContainer(m.config);
-//                        Dom.addClass(container.el, "WiringEditor-module-"+m.name);
-//                        container.setValue(m.value);
-//                    }
-//                    else {
-//                        throw new Error("WiringEditor: module '"+m.name+"' not found !");
-//                    }
-//                }
-//       
-//                // Wires
-//                if(lang.isArray(wiring.wires)) {
-//                    for(i = 0 ; i < wiring.wires.length ; i++) {
-//                        // On doit chercher dans la liste des terminaux de chacun des modules l'index des terminaux...
-//                        this.layer.addWire(wiring.wires[i]);
-//                    }
-//                }
-//            }
-//     
-//            this.markSaved();
-//
-//            this.preventLayerChangedEvent = false;
-//            
-//            // clear the Run status form
-//            this.runStatusForm.clear();
-//
-//        }
-//        catch(ex) {
-//            this.alert(ex);
-//        }
-//    },
     
     
     /** 
@@ -302,6 +234,75 @@ YAHOO.lang.extend(tavernaLanguage.WiringEditor, WireIt.WiringEditor, {
         this.markSaved();
 
         this.preventLayerChangedEvent = false;
+    },
+    
+    /**
+     * Overrides method loadPipe from WiringEditor.js to clear the Run Status form.
+    */
+    loadPipe: function(name) {
+
+        if(!this.isSaved()) {
+            if( !confirm("Warning: Your work is not saved yet ! Press ok to continue anyway.") ) {
+                return;
+            }
+        }
+
+        try {
+            
+            this.preventLayerChangedEvent = true;
+
+            this.loadPanel.hide();
+
+            var wiring = this.getPipeByName(name), i;
+
+            if(!wiring) {
+                this.alert("The wiring '"+name+"' was not found.");
+                return;
+            }
+    
+            // TODO: check if current wiring is saved...
+            this.layer.clear();
+    
+            this.propertiesForm.setValue(wiring.properties, false); // the false tells inputEx to NOT fire the updatedEvt
+
+            this.runStatusForm.clear();
+                        
+            if(YAHOO.lang.isArray(wiring.modules)) {
+      
+                // Containers
+                for(i = 0 ; i < wiring.modules.length ; i++) {
+                    var m = wiring.modules[i];
+                    if(this.modulesByName[m.name]) {
+
+                        var baseContainerConfig = this.modulesByName[m.name].container;
+                        YAHOO.lang.augmentObject(m.config, baseContainerConfig);
+                        m.config.title = m.name;
+                        var container = this.layer.addContainer(m.config);
+                        YAHOO.util.Dom.addClass(container.el, "WiringEditor-module-"+m.name);
+                        container.setValue(m.value);
+                    }
+                    else {
+                        throw new Error("WiringEditor: module '"+m.name+"' not found !");
+                    }
+                }
+       
+                // Wires
+                if(YAHOO.lang.isArray(wiring.wires)) {
+                    for(i = 0 ; i < wiring.wires.length ; i++) {
+                        // On doit chercher dans la liste des terminaux de chacun des modules l'index des terminaux...
+                        this.layer.addWire(wiring.wires[i]);
+                    }
+                }
+            }
+     
+            this.markSaved();
+
+            this.preventLayerChangedEvent = false;
+
+        }
+        catch(ex) {
+            this.alert(ex);
+        }
     }
 
 });
