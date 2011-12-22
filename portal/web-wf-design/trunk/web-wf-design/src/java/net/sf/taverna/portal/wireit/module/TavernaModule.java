@@ -454,7 +454,7 @@ public class TavernaModule extends Module{
         public void outputReady(Object output, StringBuilder outputBuilder) throws WireItRunException{
              try {
                 if (output instanceof String){
-                    System.out.println("Setting string");
+                    System.out.println("Setting string input");
                     myInput.setStringInput(output.toString());
                 } else if (output instanceof byte[]){
                     //This is a hack. 
@@ -464,10 +464,10 @@ public class TavernaModule extends Module{
                     myInput.setStringInput(asString);
                 } else if (output instanceof String[]){
                     //TavernaInputs will throw an exception is depth is not 1
-                    System.out.println("Setting string array");
+                    System.out.println("Setting string array input");
                     myInput.setStringsInput((String[])output);
                 } else if (output instanceof URI){
-                    System.out.println("setting URI");
+                    System.out.println("Setting URI input");
                     myInput.setSingleURIInput(resolver.getURIObjectToRelativeURIString(output));                    
                 } else if (output instanceof DelimiterURI){
                     //TavernaInputs will throw an exception is depth is not 1
