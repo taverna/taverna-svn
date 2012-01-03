@@ -1,92 +1,162 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-	<title>Taverna Lite Workflow Designer</title>
-</head>
-<body>
-<h1>Taverna Lite Workflow Designer</h1>
-Welcome to the Taverna Lite Workflow Designer!
-<p>
-<a href="../taverna.html">Working Example</a>
-<p>
-This is a prototype designed to show how existing workflows can be connected together and run using Taverna's Command Line tool and later a Taverna server.
-<p>
-This is NOT a replacement for the Taverna workbench and its Workflow Editor but as a support to to go on top of pre existing workflows.
-<p>
-It is intended to hide much of the complexity required to build Taverna workflows including:
-<ul>
-	<li>Hides XML Splitters and Mergers.
-	<li>Hides Cross and Dot product choices.
-	<li>Hides complex Beanshells
-	<li>Hides looping
-	<li>Avoid users having to decide which paramters are needed for a webservice.
-</ul>
-What it does do includes:
-<ul>
-	<li>Allow several workflows to be joined together.
-	<ul>
-		<li>Even when the output name in one workflow is not the same as the input name as another workflow.
-	</ul>
-	<li>Provides a simple GUI for running a workflow
-</ul>
-<h2>Current state/ Limitations</h2>
-<ul>
-	<li>Setting individual inputs is limited to workflows where all inputs are depth.0 or 1
-	<ul>
-		<li>Input can be as a String
-		<li>Input can be from a URI
-		<li>Lists of Strings can be entered.
-		<li>File input is not yet supported
-	</ul>
-	<li>Baclava inputs are supported
-	<ul>
-		<li>From URI
-		<li>File Baclava not yet supported
-	</ul>
-	<li>Baclava output is supported
-	<ul>
-		<li>As a URI
-		<li>Fancy Baclava Viewer for displaying Baclava files in a Web browser
-		<li>Baclava output from one workflow can be used as Baclava input for another workflow
-		<ul>
-			<li>If and only if the input port names are a subset (or equal to) the ouput port names.
-		</ul>
-	</ul>
-	<li>Individual output support by casting to String
-	<li>List output supported by flattening lists of lists and casting to string
-	<li>Only predefined workflows
-	<ul>
-		<li>This is mainly for security
-		<li>Additional workflows can easily be added
-	</ul>
-</ul>
-<h2>Future work outside of the ONDEX prototype</h2>
-<ul>
-	<li>Replace command line with Taverna Server
-	<ul>
-		<li>Settup issue this includes
-		<li>Passing of security stuff from client to server
-	</ul>
-	<li>Uploading files from client to server.
-	<li>Baclava key (input/ output) name - renamer
-	<li>Fancy guis based on Baclava format
-	<ul>
-		<li>Creating a Baclava input file
-		<li>Viewing a Baclava file
-	</ul>
-	<li>Automatic generation of WireIt module based on Workflow
-	<ul>
-		<li>With placeholders/ tips on how to add links and tooltips
-	</ul>
-	<li>Fancier handling of list of lists output (if required)
-	<li>Security
-	<li>User accounts
-	<li>Scuffl 2 workflows
-	<li>Taverna 1 workflows
-	<li>Renaming and marketing
-	<li>User documentation
-	<li>Partial run/ ask for input/ Continued run prototype
-</ul>
-</body>
-</html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta name="generator" content=
+              "HTML Tidy for Linux/x86 (vers 11 February 2007), see www.w3.org" />
+
+        <title>Taverna Lite Workflow Designer</title>
+    </head>
+
+    <body>
+        <h1>Taverna Lite Workflow Designer</h1>
+        
+        <p>Welcome to the <a href="../index.html">Taverna
+            Lite Workflow Designer</a>! <!--<p>
+                                        <a href="../taverna.html">Working Example</a>--></p>
+        <p>The application is based on the <a href="../wireit.html">WireIt library</a>. For the latest WireIt code and their official documentation see the <a href="http://neyric.github.com/wireit/">WireIt Web site</a>.</p>
+
+        <p>This is a prototype designed to show how existing workflows can be connected
+            together and run using the Taverna Command Line Tool and later the Taverna Server.</p>
+
+        <p>This is NOT a replacement for the Taverna Workbench and its Workflow Editor but as a
+            support to to go on top of pre existing workflows.</p>
+
+        <p>It is intended to hide much of the complexity required to build Taverna workflows
+            including:</p>
+
+        <ul>
+            <li>Hides XML Splitters and Merges</li>
+
+            <li>Hides Cross and Dot product choices</li>
+
+            <li>Hides complex Beanshells</li>
+
+            <li>Hides looping</li>
+
+            <li>Avoid users having to decide which parameters are needed for a Web service</li>
+        </ul>What it does do includes:
+
+        <ul>
+            <li>Allow several workflows to be joined together
+
+                <ul>
+                    <li>Even when the output name in one workflow is not the same as the input name
+                        as another workflow</li>
+                </ul>
+            </li>
+
+            <li>Provides a simple GUI for running a workflow</li>
+        </ul>
+
+        <h2>For administrators and developers</h2><a href="developer.html">Documentation for
+            administrators and developers</a> interested in installing the application, looking at
+        the source code or extending the existing code.
+
+        <h2>Current state/Limitations</h2>
+
+        <ul>
+            <li>Setting individual inputs is limited to workflows where all inputs are depth 0 or
+                1
+
+                <ul>
+                    <li>Input can be a string</li>
+
+                    <li>Input can be from a URL</li>
+
+                    <li>Input can be a list of strings</li>
+
+                    <li>File input is not yet supported</li>
+                </ul>
+            </li>
+
+            <li>Baclava inputs are supported
+
+                <ul>
+                    <li>From a URL</li>
+
+                    <li>File Baclava not yet supported</li>
+                </ul>
+            </li>
+
+            <li>Baclava output is supported
+
+                <ul>
+                    <li>As a URL</li>
+
+                    <li>Fancy Baclava Viewer for displaying Baclava files in a Web browser</li>
+
+                    <li>Baclava output from one workflow can be used as Baclava input for another
+                        workflow
+
+                        <ul>
+                            <li>If and only if the input port names are a subset (or equal to) the ouput
+                                port names</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+
+            <li>Individual output support by casting to String</li>
+
+            <li>List output supported by flattening lists of lists and casting to string</li>
+
+            <li>Only predefined workflows
+
+                <ul>
+                    <li>This is mainly for security</li>
+
+                    <li>Additional workflows can easily be added</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h2>Future work outside of the prototype</h2>
+
+        <ul>
+            <li>Replace command line with the Taverna Server
+
+                <ul>
+                    <li>Settup issue this includes</li>
+
+                    <li>Passing of security stuff from client to the Server</li>
+                </ul>
+            </li>
+
+            <li>Uploading files from client to server</li>
+
+            <li>Baclava key (input/output) name - renamer</li>
+
+            <li>Fancy GUI based on Baclava format
+
+                <ul>
+                    <li>Creating a Baclava input file</li>
+                </ul>
+            </li>
+
+            <li>Automatic generation of WireIt module based on Workflow
+
+                <ul>
+                    <li>With placeholders/ tips on how to add links and tooltips</li>
+                </ul>
+            </li>
+
+            <li>Fancier handling of list of lists output (if required)</li>
+
+            <li>Security</li>
+
+            <li>User accounts</li>
+
+            <li>Scufl 2 workflows</li>
+
+            <li>Taverna 1 workflows</li>
+
+            <li>Renaming and marketing</li>
+
+            <li>User documentation</li>
+
+            <li>Partial run/ask for input/continued run prototype</li>
+        </ul>
+    </body>
+</html>
