@@ -2,6 +2,7 @@ package net.sf.taverna.portal.commandline;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import net.sf.taverna.portal.baclava.DataThingBasedBaclava;
@@ -264,16 +265,16 @@ public class CommandLineWrapper extends ChangeFirer{
     /**
      * Collectively sets all inputs as coming from a single file.
      * 
-     * The input file must be in xml (barclava format) and contain at least the expected inputs (case senstivie).
-     * Extra values can be included but ignored as Taverna also allow axtra values which are ignored.
+     * The input file must be in XML Baclava format and contain at least the expected inputs (case sensitive).
+     * Extra values can be included but ignored as Taverna also allow extra values which are ignored.
      * <p>
      * Running this method with an existing file clears any previously set inputs, including file or uri.
      * 
-     * @param inputs Single barclava file containing at least the required inputs (case senstivie).
+     * @param inputs Single Baclava file containing at least the required inputs (case sensitive).
      * @throws IOException Error accessing the file.
      * @throws TavernaException Thrown if no workflow has been set or if an expected input is missing
-     * @throws ParserConfigurationException Not expected to be thrown byu this method.
-     * @throws SAXException Thrown if the file can not be parsed as xml.
+     * @throws ParserConfigurationException Not expected to be thrown by this method.
+     * @throws SAXException Thrown if the file can not be parsed as XML.
      */
     public void setInputsFile(File inputs) 
             throws TavernaException, IOException{
@@ -358,7 +359,7 @@ public class CommandLineWrapper extends ChangeFirer{
      *   <li> The workflow requires inputs but no inputs, inpit file or input uri has been set.
      * </ul>
      */
-    public CommandLineRun runWorkFlow() throws TavernaException {
+    public CommandLineRun runWorkFlow() throws TavernaException, URISyntaxException {
         if (tavernaHome == null){
             throw new TavernaException("TavernaHome has not be set.");
         }

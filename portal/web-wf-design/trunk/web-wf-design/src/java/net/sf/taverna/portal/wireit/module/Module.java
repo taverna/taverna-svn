@@ -13,7 +13,7 @@ import net.sf.taverna.portal.wireit.event.OutputListener;
  * Handles the storing of the "name", "config" and "value".
  * <p>
  * Because the base stores the three values it is typically able to recreate the json at the end 
- *    wihout help from the super classes.
+ *    without help from the super classes.
  * 
  * @author Christian
  */

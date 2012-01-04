@@ -1,5 +1,6 @@
 package net.sf.taverna.portal.wireit;
 
+import java.net.URISyntaxException;
 import net.sf.taverna.portal.wireit.exception.WireItRunException;
 import java.io.IOException;
 import org.json.JSONArray;
@@ -55,7 +56,7 @@ public class Wiring {
      * @throws IOException Thrown by the TavernaModule if the workflow is unreadable.
      */
     public Wiring(JSONObject jsonInput, Resolver resolver)
-            throws JSONException, TavernaException, IOException{
+            throws JSONException, TavernaException, IOException, URISyntaxException{
         JSONArray jsonArray = jsonInput.getJSONArray("modules");
         modules = new Module[jsonArray.length()];
         for (int i = 0; i < jsonArray.length(); i++){

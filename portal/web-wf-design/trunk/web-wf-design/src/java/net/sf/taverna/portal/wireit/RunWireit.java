@@ -2,6 +2,7 @@ package net.sf.taverna.portal.wireit;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.Date;
 import java.util.HashMap;
@@ -219,12 +220,12 @@ public class RunWireit extends WireitSQLBase {
      * @param resolver Util to convert between files, absolute uri and relative uris
      * @return The json after execution.
      * @throws JSONException Thrown it the json is not in the expected format.
-     * @throws TavernaException Thrown by the TavernaModule if the information is inconsistant. 
+     * @throws TavernaException Thrown by the TavernaModule if the information is inconsistent. 
      * @throws IOException Thrown by the TavernaModule if the workflow is unreadable.
      * @throws WireItRunException Any Exception while running will be caught and wrapped in a single Exception type.
      */
     private JSONObject doRun(JSONObject jsonInput, StringBuilder outputBuilder, Resolver resolver) 
-            throws WireItRunException, JSONException, TavernaException, IOException{
+            throws WireItRunException, JSONException, TavernaException, IOException, URISyntaxException{
         Wiring wiring = new Wiring(jsonInput, resolver);
         outputBuilder.append("Workflow loaded at ");
         outputBuilder.append(new Date());

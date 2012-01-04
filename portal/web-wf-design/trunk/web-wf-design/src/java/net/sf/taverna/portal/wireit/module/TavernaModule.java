@@ -4,6 +4,7 @@
  */
 package net.sf.taverna.portal.wireit.module;
 
+import java.net.URISyntaxException;
 import net.sf.taverna.portal.utils.DelimiterURI;
 import net.sf.taverna.portal.wireit.exception.WireItRunException;
 import java.io.File;
@@ -28,44 +29,44 @@ import net.sf.taverna.portal.workflow.XMLBasedT2Flow;
 import net.sf.taverna.portal.utils.Resolver;
 
 /**
- * This module wraps the running of a taverna workflow.
+ * This module wraps the running of a Taverna workflow.
  * <p>
- * The current implentation is written around A Taverna command line Wrapper written for Ondex.
+ * The current implementation is written around the Taverna Command Line Tool.
  * That tool does not provide the security nor all the options that Taverna Server does.
- * It is therefor recommended that this class be updated to use Taverna Server.
+ * It is therefore recommended that this class be updated to use the Taverna Server.
  * <p>
- * The main functionality (which should stay even with a server versions) is.
+ * The main functionality (which should stay even with the server versions):
  * <ul>
- *    <li> Extract the required inputs and outputs from the Workflow 
- *    <li> Allow Wiring to connect to terminals with that match does in the workflow
- *    <li>Listen for the required inputs from other modules
+ *    <li> Extract the required inputs and outputs from the workflow 
+ *    <li> Allow Wiring to connect to terminals that match those in the workflow
+ *    <li> Listen for the required inputs from other modules
  *    <ul> 
- *        <li> Could be a Baclava ULI
- *        <li> If individual inputs are used this module will them. All are required for the next steps.
+ *        <li> Could be a Baclava URL
+ *        <li> If individual inputs are used this module will use them. All are required for the next steps.
  *    </ul>
- *    <li> Pass the inputs to Taverna
+ *    <li> Pass the inputs to Taverna Command Line Tool (the Taverna Server in the future)
  *    <li> Execute the workflow
  *    <li> Obtain the resulting Baclava output file
- *    <li> Extract the indiviual results
- *    <li> Pass the idividual results to any listeners
- *    <li> Pass the Baclava outout to and Listeners on the Baclava port
+ *    <li> Extract the individual results
+ *    <li> Pass the individual results to any listeners
+ *    <li> Pass the Baclava output to and Listeners on the Baclava port
  * </ul>
  * @author Christian
  */
 public class TavernaModule extends Module{
 
-    /** Wrapper around Taverna Command Line. Original written for Ondex*/
+    /** Wrapper around Taverna Command Line.*/
     private CommandLineWrapper commandLine;
     
     /** Map of Listeners. 
-     *  One for each input port. (Exceluding the Baclava input)
+     *  One for each input port. (Excluding the Baclava input)
      *  React to any data from upstream Modules.    
      */
     private Map<String,ValueListener> inputPorts;
 
     /**
      * Map of input storage classes.
-     * One for each input port. (Exceluding the Baclava input)
+     * One for each input port. (Excluding the Baclava input)
      * Store data from upstream Modules.    
      * <p>
      * TavernaInput was written for the ONDEX project.
@@ -73,35 +74,35 @@ public class TavernaModule extends Module{
      * <ul>
      *    <li>Allowing different types of inputs to be stored.
      *    <ul>
-     *        <li>Depth 0 value (ast String)
+     *        <li>Depth 0 value (as string)
      *        <li>Depth 0 URI
      *        <li>Depth 1 arrays of Values (as Strings)
      *        <li>depth 1 URI and delimiter
      *    </ul>
-     *    <li>Single method to say if it has ai input or not
-     *    <li>Ability to add the required command line arguements for the input passed in.
+     *    <li>Single method to say if it has an input or not
+     *    <li>Ability to add the required command line arguments for the input passed in.
      *    <ul>
      *        <li>Correct parameter flag  
      *        <li>Name of the port
-     *        <li>Value / uri
-     *        <li>Where applicable Delimiter 
-     *        <li>Array fo Strings conctanated to a Single String with a suitable Delimiter
+     *        <li>Value / URL
+     *        <li>Delimiter, where applicable
+     *        <li>Array of Strings concatenated to a single string with a suitable delimiter
      * </ul>     
      * <p>
-     * Even if using Taverna Server something like this will be required to handle the inputs.
+     * Even if using the Taverna Server something like this will be required to handle the inputs.
      */
     private Map<String,TavernaInput> tavernaInputs;
     
-    /** For Baclava input the URI is saved as a String. */
+    /** For Baclava input the URL is saved as a string. */
     private String baclavaInput;
 
     /** Map of Firers. One for each output port. Passing to any data from downstream Modules */    
     private Map<String,OutputFirer> outputPorts;
     
-    /** Firer for anyone Listening ofr the Baclava */
+    /** Firer for anyone Listening for the Baclava */
     private OutputFirer baclavaOutput;
     
-    /** Flag to avoid run causing execution if inputs alread have */
+    /** Flag to avoid run causing execution if inputs already have */
     private boolean alreadyRun = false;
     
     /** Handles absolute to relative URI mapping */
@@ -124,7 +125,7 @@ public class TavernaModule extends Module{
      * @throws IOException  Thrown if Workflow can not be read
      */
     public TavernaModule(JSONObject json, Resolver resolver) 
-            throws JSONException, TavernaException, IOException{
+            throws JSONException, TavernaException, IOException, URISyntaxException{
         super(json);
         commandLine = new CommandLineWrapper();
         setTavernaHome(System.getenv("TAVERNA_HOME"));
@@ -137,7 +138,7 @@ public class TavernaModule extends Module{
     }
     
     /**
-     * Sets the location of the Taverna Commandline.
+     * Sets the location of the Taverna Command Line executable.
      * 
      * @param tavernaHome Either the path to commandLine or null.
      * @throws TavernaException If a none NULL path does not have the required file. 
@@ -161,7 +162,7 @@ public class TavernaModule extends Module{
      * @throws TavernaException Any error parsing the workflow
      * @throws IOException Any error reading the workflow
      */
-    private void setWorkflow() throws TavernaException, IOException{
+    private void setWorkflow() throws TavernaException, IOException, URISyntaxException{
         String fileSt = config.optString("wfURI");
         //Checks for security. Change as required
         if (fileSt.contains("..")){
@@ -181,20 +182,20 @@ public class TavernaModule extends Module{
      * @param workflow Interface that gives the workflow name, input ports and output ports
      * @throws TavernaException Thrown if an unexpected port name is received.
      */
-    private void setInputs(TavernaWorkflow workflow) throws TavernaException{
+    private void setInputs(TavernaWorkflow workflow) throws TavernaException, IOException, URISyntaxException{
         //removeNullandEmptyValues();
-        Map<String,Integer> inputs = workflow.getInputs();  
+        Map<String,Integer> inputs = workflow.getInputs();  // get input ports
         inputPorts = new HashMap<String,ValueListener>();
         tavernaInputs = new HashMap<String,TavernaInput>();
         for (String key:inputs.keySet()){
-            TavernaInput tavernaInput = new TavernaInput(key, inputs.get(key));
+            TavernaInput tavernaInput = new TavernaInput(key, inputs.get(key)); // name and depth of the inut port
             tavernaInputs.put(key, tavernaInput);
             ValueListener port = new ValueListener(tavernaInput);
             inputPorts.put(key, port);
         }
         baclavaInput = null;
     }
-
+    
     /**
      * Sets up the output firers including the Baclava one.
      * @param workflow Interface that gives the workflow name, input ports and output ports
@@ -219,7 +220,7 @@ public class TavernaModule extends Module{
     
     @Override
    /**
-     * Returns an listner for the requested port.
+     * Returns an listener for the requested port.
      * <p>
      * See Wiring.java for more details.
      * <p>
@@ -248,7 +249,7 @@ public class TavernaModule extends Module{
             for (String key:inputPorts.keySet()){
                 portNames = portNames + key + ", ";
             }
-            throw new JSONException("No input Port found with name " + terminal + " Ports are: " + portNames);
+            throw new JSONException("No input port found with name " + terminal + ". Ports are: " + portNames);
         }
     }
 
@@ -300,7 +301,7 @@ public class TavernaModule extends Module{
     }
      
     /**
-     * Runs the workflow based on indivudual inputs.
+     * Runs the workflow based on individual inputs.
      * <p>
      * Obtains the TavernaInputs from the map and passes these to the command line wrapper.
      * <p>
@@ -309,16 +310,16 @@ public class TavernaModule extends Module{
      * @throws TavernaException Unable to start the process
      * @throws ProcessException Error running the process
      */ 
-    private File runWorkflowWithInputs() throws TavernaException, ProcessException{
+    private File runWorkflowWithInputs() throws TavernaException, ProcessException, URISyntaxException{
         System.out.println("Workflow ready based on inputs!");
         TavernaInput[] inputArray = new TavernaInput[0];
         inputArray = tavernaInputs.values().toArray(inputArray);
         commandLine.setInputs(inputArray);
-        System.out.println("ready to run");
+        //System.out.println("ready to run");
         CommandLineRun run = commandLine.runWorkFlow();
-        System.out.println("ready started");
+        System.out.println("Workflow run started.");
         File output = run.getOutputFile();
-        System.out.println("Workflow ran");
+        System.out.println("Workflow run finished.");
         return output;
     }
 
@@ -332,8 +333,8 @@ public class TavernaModule extends Module{
      * @throws TavernaException Unable to start the process
      * @throws ProcessException Error running the process
      */ 
-    private File runWorkflowWithBaclava() throws TavernaException, ProcessException{
-        System.out.println("Workflow ready based on Baclava!" + baclavaInput);
+    private File runWorkflowWithBaclava() throws TavernaException, ProcessException, URISyntaxException{
+        System.out.println("Workflow ready based on Baclava file " + baclavaInput);
         commandLine.setInputsURI(baclavaInput);        
         CommandLineRun run = commandLine.runWorkFlow();
         File output = run.getOutputFile();
@@ -376,11 +377,11 @@ public class TavernaModule extends Module{
     /**
      * Process the Baclava file sending both Individual Values and the whole Baclava to relative Listeners.
      * <p>
-     * For Each putput port the associated value is obtained (as an Object) and passed to any registered listeners.
+     * For Each output port the associated value is obtained (as an Object) and passed to any registered listeners.
      * <p>
-     * The output file is converted to a URI and passed to any listners on the Baclava output
+     * The output file is converted to a URI and passed to any listeners on the Baclava output
      * <p>
-     * This is slighlty sub optimal as all the output values are extracted 
+     * This is slightly sub optimal as all the output values are extracted 
      *    even ones where there is never a connected Listener.
      * @param output Baclava File output by either runWorkflowWithXXX method.
      * @param outputBuilder Logging buffer.
@@ -448,7 +449,7 @@ public class TavernaModule extends Module{
          * 
          * @param output Information being passed from one module to another.
          * @param outputBuilder Logging buffer. 
-         * @throws WireItRunException Something has gone wrong. This could be caused by exectution 
+         * @throws WireItRunException Something has gone wrong. This could be caused by execution 
          *    or even one of the downstream modules.
          */
         public void outputReady(Object output, StringBuilder outputBuilder) throws WireItRunException{
