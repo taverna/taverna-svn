@@ -21,12 +21,12 @@ import net.sf.taverna.portal.commandline.XMLReader;
 public class XMLBasedT2Flow implements TavernaWorkflow{
 
     /**
-     * Name of the workflowas given in the T2Flow
+     * Name of the workflow as given in the t2flow file
      */
     private String workflowName;
     
     /**
-     * Map of expected inputs by name and the corrospondoing depth for each input.
+     * Map of expected inputs by name and the corresponding depth for each input.
      */
     private HashMap<String,Integer>inputs;
     
@@ -42,7 +42,7 @@ public class XMLBasedT2Flow implements TavernaWorkflow{
      * Only works for the expected T2Flow format.
      * 
      * @param file A T2Flow file
-     * @throws TavernaException if the file is not XML parsable or not in the hardcode format.
+     * @throws TavernaException if the file is not XML parsable or not in the hardcoded format.
      */
     public XMLBasedT2Flow(File file) throws TavernaException{
         Document workflow;

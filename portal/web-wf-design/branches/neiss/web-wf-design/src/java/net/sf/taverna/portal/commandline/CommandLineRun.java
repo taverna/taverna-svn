@@ -3,7 +3,16 @@ package net.sf.taverna.portal.commandline;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import net.sf.taverna.portal.baclava.DataThingBasedBaclava;
+import net.sf.taverna.t2.baclava.DataThing;
+import org.jdom.Document;
+import org.jdom.output.XMLOutputter;
 
 /**
  * Class to handle the running of a Taverna Workflow using the command line.
@@ -53,24 +62,67 @@ public class CommandLineRun  implements Destoryable{
      *      causes such an exception.
      */
     public CommandLineRun(File tavernaHome, File outputRoot, TavernaInput[] inputs, String inputsURI, String workflowURI) 
-        throws TavernaException, IOException{
+        throws TavernaException, IOException, URISyntaxException{
         ArrayList<String> cmd = getLaunch(tavernaHome);
         runDirectory = Utils.createCalendarBasedDirectory(outputRoot);
         baclavaFile = new File (runDirectory, "BaclavaOutput.xml");
         cmd.add("-outputdoc=" + baclavaFile.getAbsolutePath());
         File logFile = new File(runDirectory, "TavernaLog.txt");
         cmd.add("-logfile=" + logFile.getAbsolutePath());
-        if (inputs != null){
-            for (TavernaInput input:inputs){
-               cmd.addAll(input.getInputArguements()); 
+        if (inputs != null){ // the useris passing all inputs individually
+            System.out.append("Running workflow with individual inputs.");
+//            for (TavernaInput input:inputs){
+//               cmd.addAll(input.getInputArguements()); 
+//            }
+ 
+            // Create Baclava input file from all the inputs gathered and pass that as an input to
+            // the Taverna Command Line Tool/Server - this is more convenient as we use just one file
+            // for all the inputs and we can also pass more complex inputs rather than just one-line strings
+            Map<String, Object> valueMap = new HashMap<String, Object>();
+            for (TavernaInput input : inputs) {
+                    valueMap.put(input.getName(), input.getValue());                    
             }
-        } else if (inputsURI != null){
+            Map<String, DataThing> dataThingsMap = DataThingBasedBaclava.bakeDataThingMap(valueMap);
+
+            // Build the XML Baclava document containing the workflow inputs
+            Document document = DataThingBasedBaclava.getDataDocument(dataThingsMap);
+
+            Random randomGenerator = new Random();
+
+            File baclavaInputFile = new File(System.getProperty("java.io.tmpdir"), new Integer(randomGenerator.nextInt(999999)).toString() + "-baclava.xml");
+
+            java.io.FileWriter writer = null;
+            try {
+                XMLOutputter out = new XMLOutputter();
+                writer = new java.io.FileWriter(baclavaInputFile);
+                out.output(document, writer);
+                writer.flush();
+                writer.close();
+            } catch (Exception ex) {
+                System.out.println("Failed to save Baclava inputs to file " + baclavaInputFile.getAbsolutePath());
+                ex.printStackTrace();
+            } finally {
+                try {
+                    writer.close();
+                } catch (Exception ex2) {
+                    // Ignore
+                }
+            }
+
+            // Probably won't work on Windows
+            String baclavaInputURL = "file://" + new URI(baclavaInputFile.getAbsolutePath()).toASCIIString();
+
+            System.out.println("Converted all individual inputs to a local Baclava file : " + baclavaInputURL);
+            cmd.add("-inputdoc=" + baclavaInputURL);
+        } else if (inputsURI != null){ // the user is passing a Baclava file with all the inputs
+            System.out.println("Running workflow with Baclava inputs from " + inputsURI);
             cmd.add("-inputdoc=" + inputsURI);
         }
         cmd.add(workflowURI);
 
         String[] command = new String[0];
         command = cmd.toArray(command);
+        System.out.println("Executing command " + cmd.toString());
         runner = new ProcessRunner(command, tavernaHome);
         runner.start();
     }
