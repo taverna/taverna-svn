@@ -109,7 +109,7 @@ public class CommandLineRun  implements Destoryable{
                 }
             }
 
-            // Probably won't work on Windows
+            // Probably won't work on Windows - need to take care of \, spaces, etc.
             String baclavaInputURL = "file://" + new URI(baclavaInputFile.getAbsolutePath()).toASCIIString();
 
             System.out.println("Converted all individual inputs to a local Baclava file : " + baclavaInputURL);

@@ -3,16 +3,16 @@
   <info_messages>
     <message>BHPSLinker.runModel() starting</message>
     <message>Received parameter 'Aggregate field' which matches a model parameter. Setting value to: Smoking
-Received parameter 'Population file' which matches a model parameter. Setting value to: 00DAXP02.TXT</message>
-    <message>BHPSLinker has copied files to working dir: /nobackup/geonsm/neiss_temp/BHPSLinkerd21203/dynamic_model/00DAXP02.TXT and /nobackup/geonsm/neiss_temp/BHPSLinkerd21203/dynamic_model/00DAHSAR02.OUT</message>
+Received parameter 'Population file' which matches a model parameter. Setting value to: 00DAXP03.TXT</message>
+    <message>BHPSLinker has copied files to working dir: /nobackup/geonsm/neiss_temp/BHPSLinkerF16015/dynamic_model/00DAXP03.TXT and /nobackup/geonsm/neiss_temp/BHPSLinkerF16015/dynamic_model/00DAHSAR03.OUT</message>
     <message>BHPSLinker has checked that required files exist, now getting the number of areas from the population file.</message>
     <message>getNumAreasFromPopFile() is working at the Ward level. Found 33 areas.</message>
-    <message>Found 33 areas in the population file. Writing this to the parameters file ('/nobackup/geonsm/neiss_temp/BHPSLinkerd21203/dynamic_model/CONTROL.txt')</message>
+    <message>Found 33 areas in the population file. Writing this to the parameters file ('/nobackup/geonsm/neiss_temp/BHPSLinkerF16015/dynamic_model/CONTROL.txt')</message>
     <message>Running BHPS linker script (maptube2)...</message>
-    <message>00DAHSAR02.OUT
- 00DABHPS02.OUT</message>
-    <message>BHPS linking script ran successfully and the output file (/nobackup/geonsm/neiss_temp/BHPSLinkerd21203/dynamic_model/00DABHPS02.OUT) was generated.</message>
-    <message>Writing bhps/population linked file to '/nobackup/geonsm/neiss_temp/BHPSLinkerd21203/dynamic_model/00DALINKED02.OUT'.</message>
+    <message>00DAHSAR03.OUT
+ 00DABHPS03.OUT</message>
+    <message>BHPS linking script ran successfully and the output file (/nobackup/geonsm/neiss_temp/BHPSLinkerF16015/dynamic_model/00DABHPS03.OUT) was generated.</message>
+    <message>Writing bhps/population linked file to '/nobackup/geonsm/neiss_temp/BHPSLinkerF16015/dynamic_model/00DALINKED03.OUT'.</message>
     <message>Have written headers.</message>
     <message>Joining population and bhps data.</message>
     <message>Read lines:</message>
@@ -25,34 +25,33 @@ Received parameter 'Population file' which matches a model parameter. Setting va
     <message>600000,</message>
     <message>700000,</message>
     <message>800000,</message>
-    <message>900000,</message>
-    <message>Finished linking BHPS and population files: /nobackup/geonsm/neiss_temp/BHPSLinkerd21203/dynamic_model/00DALINKED02.OUT.</message>
+    <message>Finished linking BHPS and population files: /nobackup/geonsm/neiss_temp/BHPSLinkerF16015/dynamic_model/00DALINKED03.OUT.</message>
     <message>Re-reading linked file so it can be aggregated.</message>
     <message>Successfully re-read lined file. Now aggregating on Smoking</message>
     <message>Found these unique values: [2, 1, -7]</message>
-    <message>Finished aggregating data, writing it out to: /nobackup/geonsm/neiss_temp/BHPSLinkerd21203/dynamic_model/00DA02_Smoking_AGG.csv</message>
+    <message>Finished aggregating data, writing it out to: /nobackup/geonsm/neiss_temp/BHPSLinkerF16015/dynamic_model/00DA03_Smoking_AGG.csv</message>
     <message>BHPSLinker Copying results to user data directory:
-	/nobackup/geonsm/neiss_temp/BHPSLinkerd21203/dynamic_model/00DA02_Smoking_AGG.csv->/nobackup/geonsm/neiss_users/alex/00DA02_Smoking_AGG.csv
-	/nobackup/geonsm/neiss_temp/BHPSLinkerd21203/dynamic_model/00DALINKED02.OUT->/nobackup/geonsm/neiss_users/alex/00DALINKED02.OUT</message>
-    <message>BHPSLinker will attempt to save the results file '00DA02_Smoking_AGG.csv' externally for user 'alex'</message>
+	/nobackup/geonsm/neiss_temp/BHPSLinkerF16015/dynamic_model/00DA03_Smoking_AGG.csv->/nobackup/geonsm/neiss_users/alex/00DA03_Smoking_AGG.csv
+	/nobackup/geonsm/neiss_temp/BHPSLinkerF16015/dynamic_model/00DALINKED03.OUT->/nobackup/geonsm/neiss_users/alex/00DALINKED03.OUT</message>
+    <message>BHPSLinker will attempt to save the results file '00DA03_Smoking_AGG.csv' externally for user 'alex'</message>
     <message>BHPS linker completed. Removing old data files:</message>
-    <message>/nobackup/geonsm/neiss_temp/BHPSLinkerd21203/dynamic_model/00DAXP02.TXT</message>
-    <message>/nobackup/geonsm/neiss_temp/BHPSLinkerd21203/dynamic_model/00DAHSAR02.OUT</message>
-    <message>/nobackup/geonsm/neiss_temp/BHPSLinkerd21203/dynamic_model/00DABHPS02.OUT</message>
-    <message>/nobackup/geonsm/neiss_temp/BHPSLinkerd21203/dynamic_model/00DA02_Smoking_AGG.csv</message>
-    <message>/nobackup/geonsm/neiss_temp/BHPSLinkerd21203/dynamic_model/00DALINKED02.OUT</message>
+    <message>/nobackup/geonsm/neiss_temp/BHPSLinkerF16015/dynamic_model/00DAXP03.TXT</message>
+    <message>/nobackup/geonsm/neiss_temp/BHPSLinkerF16015/dynamic_model/00DAHSAR03.OUT</message>
+    <message>/nobackup/geonsm/neiss_temp/BHPSLinkerF16015/dynamic_model/00DABHPS03.OUT</message>
+    <message>/nobackup/geonsm/neiss_temp/BHPSLinkerF16015/dynamic_model/00DA03_Smoking_AGG.csv</message>
+    <message>/nobackup/geonsm/neiss_temp/BHPSLinkerF16015/dynamic_model/00DALINKED03.OUT</message>
   </info_messages>
   <results_data>
     <data_element>
-      <result_url>http://geo-s12.leeds.ac.uk:8080/WebDav/alex/00DA02_Smoking_AGG.csv</result_url>
-      <result_description>BHPSLinker aggregate file: 00DA02_Smoking_AGG.csv</result_description>
+      <result_url>http://geo-s12.leeds.ac.uk:8080/WebDav/alex/00DA03_Smoking_AGG.csv</result_url>
+      <result_description>BHPSLinker aggregate file: 00DA03_Smoking_AGG.csv</result_description>
     </data_element>
   </results_data>
   <neissmodel_parameters>
     <parameter>
       <name>Population file</name>
       <type>String</type>
-      <value>00DAXP02.TXT</value>
+      <value>00DAXP03.TXT</value>
     </parameter>
     <parameter>
       <name>Aggregate field</name>
@@ -63,11 +62,11 @@ Received parameter 'Population file' which matches a model parameter. Setting va
   <results_information>
     <data_element>
       <result_url>Aggregate file</result_url>
-      <result_description>00DA02_Smoking_AGG.csv</result_description>
+      <result_description>00DA03_Smoking_AGG.csv</result_description>
     </data_element>
     <data_element>
-      <result_url>Combined Population File 00DALINKED02.OUT</result_url>
-      <result_description>00DALINKED02.OUT</result_description>
+      <result_url>Combined Population File 00DALINKED03.OUT</result_url>
+      <result_description>00DALINKED03.OUT</result_description>
     </data_element>
   </results_information>
   <result>success</result>

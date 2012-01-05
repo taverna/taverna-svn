@@ -10,19 +10,19 @@ Received parameter 'No. test records' which matches a model parameter. Setting v
 Received parameter 'Data URL' which matches a model parameter. Setting value to: http://dl.dropbox.com/u/299787/test_csv.csv
  which matches a model parameter. Setting value to: http://dl.dropbox.com/u/299787/test_csv.csv</message>
     <message>PRMWithData is looking for external data here: http://dl.dropbox.com/u/299787/test_csv.csv</message>
-    <message>BirkinPRM.lookForExternalCSV() is  attempting to read an on-line csv file: http://dl.dropbox.com/u/299787/test_csv.csv store it locally: /nobackup/geonsm/neiss_users/nick/imported_csv.csv and add it to the list of data sources</message>
-    <message>Found csv file 'http://dl.dropbox.com/u/299787/test_csv.csv' and wrote it to local file: /nobackup/geonsm/neiss_users/nick/imported_csv.csv</message>
-    <message>Created local csv file data source (FlatFile (/nobackup/geonsm/neiss_users/nick/imported_csv.csv)) and added it to data source list</message>
+    <message>BirkinPRM.lookForExternalCSV() is  attempting to read an on-line csv file: http://dl.dropbox.com/u/299787/test_csv.csv store it locally: /nobackup/geonsm/neiss_users/alex/imported_csv.csv and add it to the list of data sources</message>
+    <message>Found csv file 'http://dl.dropbox.com/u/299787/test_csv.csv' and wrote it to local file: /nobackup/geonsm/neiss_users/alex/imported_csv.csv</message>
+    <message>Created local csv file data source (FlatFile (/nobackup/geonsm/neiss_users/alex/imported_csv.csv)) and added it to data source list</message>
     <message>PRMWithData will use these database columns to create the input data file: [OA, NHH, Npers, detached, semi, terraced, flat, zero_to_nine, Age_10_to_19, Age_20_to_29, Age_30_to_39, Age_40_to_49, Age_50_to_59, Age_60_to_69, Age_70_to_79, Age_80plus, car_none, car_one, car_two_plus, Economically_Active, Economically_Inactive, White, Asian, Black, Other, Good, Fair, Not_good, house_size_1, house_size_2, house_size_3, house_size_4, house_size_5, house_size_6, house_size_7, house_size_8_plus, house_represent_1, house_represent_0, with_LLTI, without_LLTI, SWD, Married, Prof_manag, Intermediate, Non_manual, unemployed, student, no_qualifications, Level_1_2, Level_3_plus, room_1_4, room_5_6, room_7_plus, Males, Females, Owned, Council, Private_rented]</message>
-    <message>Fortran model data directory is: /nobackup/geonsm/neiss_temp/PRMWithDataO12164/prm/</message>
+    <message>Fortran model data directory is: /nobackup/geonsm/neiss_temp/PRMWithDataL14699/prm/</message>
     <message>PRMWithData: No region name has been specified, finding one in the data source to use.</message>
     <message>Using region: 00DA</message>
     <message>PRMWithData found 2439 areas in the data file.</message>
     <message>PRMWithData creating Control file.</message>
-    <message>Have written parameters to /nobackup/geonsm/neiss_temp/PRMWithDataO12164/prm/prm_pars.txt</message>
+    <message>Have written parameters to /nobackup/geonsm/neiss_temp/PRMWithDataL14699/prm/prm_pars.txt</message>
     <message>PRMWithData: querying database for region '00DA' data</message>
-    <message>Creating model input file: /nobackup/geonsm/neiss_temp/PRMWithDataO12164/prm/00DADATA.csv</message>
-    <message>BirkinPRM.runFortranModel(): writing data to file: /nobackup/geonsm/neiss_temp/PRMWithDataO12164/prm/00DADATA.csv</message>
+    <message>Creating model input file: /nobackup/geonsm/neiss_temp/PRMWithDataL14699/prm/00DADATA.csv</message>
+    <message>BirkinPRM.runFortranModel(): writing data to file: /nobackup/geonsm/neiss_temp/PRMWithDataL14699/prm/00DADATA.csv</message>
     <message>BirkinPRM.writeToCSV(): Writing to CSV file for model: Model 'PRMWithData'(2439) lines:</message>
     <message>0,</message>
     <message>100,</message>
@@ -54,10 +54,10 @@ Received parameter 'Data URL' which matches a model parameter. Setting value to:
     <message>Running prm</message>
     <message />
     <message>PRM run *success*.</message>
-    <message>Successfully moved population file to /nobackup/geonsm/neiss_users/nick/00DAXP01.TXT
+    <message>Successfully moved population file to /nobackup/geonsm/neiss_users/alex/00DAXP01.TXT
 Run Complete.</message>
     <message>PRMWithData has finished successfully.</message>
-    <message>PRMWithData will attempt to save the results file '/nobackup/geonsm/neiss_users/nick/00DAXP01.TXT' externally for user 'nick'</message>
+    <message>PRMWithData will attempt to save the results file '/nobackup/geonsm/neiss_users/alex/00DAXP01.TXT' externally for user 'alex'</message>
   </info_messages>
   <error_messages>
     <message>PRMWithData created http connection: Setting http proxy (host,port) to: www-cache.leeds.ac.uk,3128</message>
@@ -442,7 +442,7 @@ Run Complete.</message>
   </results_information>
   <results_data>
     <data_element>
-      <result_url>http://geo-s12.leeds.ac.uk:8080/WebDav/nick/00DAXP01.TXT</result_url>
+      <result_url>http://geo-s12.leeds.ac.uk:8080/WebDav/alex/00DAXP01.TXT</result_url>
       <result_description>PRMWithData output population file: 00DAXP01.TXT</result_description>
     </data_element>
   </results_data>

@@ -3,33 +3,33 @@
   <info_messages>
     <message>BirkinDynamicModel could not find any available data files (not an error).</message>
     <message>Received parameter 'Start year' which matches a model parameter. Setting value to: 1
-Received parameter 'Num run years' which matches a model parameter. Setting value to: 1
+Received parameter 'Num run years' which matches a model parameter. Setting value to: 2
 Received parameter 'Region name' which matches a model parameter. Setting value to: 00DA
 Received parameter 'Detailed summary' which matches a model parameter. Setting value to: 0</message>
-    <message>Fortran model directory is: /nobackup/geonsm/neiss_temp/BirkinDynamicModelN17416/dynamic_model/ and data dir is: /nobackup/geonsm/neiss_users/alex/</message>
+    <message>Fortran model directory is: /nobackup/geonsm/neiss_temp/BirkinDynamicModelW23555/dynamic_model/ and data dir is: /nobackup/geonsm/neiss_users/alex/</message>
     <message>Found population file '/nobackup/geonsm/neiss_users/alex/00DAXP01.TXT'.</message>
-    <message>Copied pop file to model directory: /nobackup/geonsm/neiss_temp/BirkinDynamicModelN17416/dynamic_model/00DAXP01.TXT</message>
+    <message>Copied pop file to model directory: /nobackup/geonsm/neiss_temp/BirkinDynamicModelW23555/dynamic_model/00DAXP01.TXT</message>
     <message>Found 301781 households and 696104 individuals in 00DAXP01.TXT.</message>
     <message>Found required data source: Database 'DerbyDatabase' (neiss_model_data)</message>
     <message>Found 33 areas in region 00DA.</message>
     <message>Have written parameters to CONTROL.TXT</message>
     <message>Creating fertility and mortality files...</message>
     <message>Created fertility and mortality files: 
-	/nobackup/geonsm/neiss_temp/BirkinDynamicModelN17416/dynamic_model/FE00DA01.DAT
-	/nobackup/geonsm/neiss_temp/BirkinDynamicModelN17416/dynamic_model/FE00DA02.DAT
-	/nobackup/geonsm/neiss_temp/BirkinDynamicModelN17416/dynamic_model/MO00DA01.DAT
-	/nobackup/geonsm/neiss_temp/BirkinDynamicModelN17416/dynamic_model/MO00DA02.DAT</message>
-    <message>Creating emigration file: /nobackup/geonsm/neiss_temp/BirkinDynamicModelN17416/dynamic_model/UE00DA01.csv</message>
+	/nobackup/geonsm/neiss_temp/BirkinDynamicModelW23555/dynamic_model/FE00DA01.DAT
+	/nobackup/geonsm/neiss_temp/BirkinDynamicModelW23555/dynamic_model/FE00DA02.DAT
+	/nobackup/geonsm/neiss_temp/BirkinDynamicModelW23555/dynamic_model/MO00DA01.DAT
+	/nobackup/geonsm/neiss_temp/BirkinDynamicModelW23555/dynamic_model/MO00DA02.DAT</message>
+    <message>Creating emigration file: /nobackup/geonsm/neiss_temp/BirkinDynamicModelW23555/dynamic_model/UE00DA01.csv</message>
     <message>file created successfully</message>
-    <message>Creating imigration file: /nobackup/geonsm/neiss_temp/BirkinDynamicModelN17416/dynamic_model/UI00DA01.csv</message>
+    <message>Creating imigration file: /nobackup/geonsm/neiss_temp/BirkinDynamicModelW23555/dynamic_model/UI00DA01.csv</message>
     <message>file created successfully</message>
-    <message>Creating national migration file: /nobackup/geonsm/neiss_temp/BirkinDynamicModelN17416/dynamic_model/00DAMP00.csv</message>
+    <message>Creating national migration file: /nobackup/geonsm/neiss_temp/BirkinDynamicModelW23555/dynamic_model/00DAMP00.csv</message>
     <message>file created successfully</message>
-    <message>Creating file for dynamod9: /nobackup/geonsm/neiss_temp/BirkinDynamicModelN17416/dynamic_model/00DAMD01.csv</message>
+    <message>Creating file for dynamod9: /nobackup/geonsm/neiss_temp/BirkinDynamicModelW23555/dynamic_model/00DAMD01.csv</message>
     <message>file created successfully</message>
     <message>Running Fortran scripts</message>
-    <message>Running year 1, end at 2</message>
-    <message>Will use the following population files: /nobackup/geonsm/neiss_temp/BirkinDynamicModelN17416/dynamic_model/00DAXP01.TXT : /nobackup/geonsm/neiss_temp/BirkinDynamicModelN17416/dynamic_model/00DAXP02.TXT and generate sar file: /nobackup/geonsm/neiss_temp/BirkinDynamicModelN17416/dynamic_model/00DAHSAR02.OUT</message>
+    <message>Running year 1, end at 3</message>
+    <message>Will use the following population files: /nobackup/geonsm/neiss_temp/BirkinDynamicModelW23555/dynamic_model/00DAXP01.TXT : /nobackup/geonsm/neiss_temp/BirkinDynamicModelW23555/dynamic_model/00DAXP02.TXT and generate sar file: /nobackup/geonsm/neiss_temp/BirkinDynamicModelW23555/dynamic_model/00DAHSAR02.OUT</message>
     <message>Creating backup of popfile1: 00DAXP01.TXT -> 00DAXP01.TXT.bak</message>
     <message>Starting dynamod1...</message>
     <message>finished Dynamod1</message>
@@ -70,13 +70,57 @@ Received parameter 'Detailed summary' which matches a model parameter. Setting v
     <message>No tables of type DYNAMOD6_SPECIFIC</message>
     <message>No tables of type DYNAMOD7_SPECIFIC</message>
     <message>No tables of type DYNAMOD9_SPECIFIC</message>
+    <message>Running year 2, end at 3</message>
+    <message>Will use the following population files: /nobackup/geonsm/neiss_temp/BirkinDynamicModelW23555/dynamic_model/00DAXP02.TXT : /nobackup/geonsm/neiss_temp/BirkinDynamicModelW23555/dynamic_model/00DAXP03.TXT and generate sar file: /nobackup/geonsm/neiss_temp/BirkinDynamicModelW23555/dynamic_model/00DAHSAR03.OUT</message>
+    <message>Creating backup of popfile1: 00DAXP02.TXT -> 00DAXP02.TXT.bak</message>
+    <message>Starting dynamod1...</message>
+    <message>finished Dynamod1</message>
+    <message>Starting dynamod2...</message>
+    <message>finished Dynamod2</message>
+    <message>Starting dynamod3...</message>
+    <message>finished Dynamod3</message>
+    <message>Starting dynamod4...</message>
+    <message>finished Dynamod4</message>
+    <message>Starting dynamod5...</message>
+    <message>finished Dynamod5</message>
+    <message>Starting dynamod6...</message>
+    <message>finished Dynamod6</message>
+    <message>Starting dynamod7...</message>
+    <message>finished Dynamod7</message>
+    <message>Starting dynamod8...</message>
+    <message>finished Dynamod8</message>
+    <message>Starting dynamod9...</message>
+    <message>finished Dynamod9</message>
+    <message>Reducing size of households to 11.</message>
+    <message>0 houses were reduced in size.</message>
+    <message>Starting dynamod 10 (creates SAR file)</message>
+    <message>finished Dynamod10</message>
+    <message>Reverting to backup of population file 1: 00DAXP02.TXT.bak -> 00DAXP02.TXT</message>
+    <message>At the end of year 2 there were 656174 individuals and 234134 households.</message>
+    <message>Not creating population pryamids</message>
+    <message>DymamicModel is creating summary tables</message>
+    <message>Create tables of type GENERAL_SUMMARY</message>
+    <message>Create tables of type GENERAL_DETAILED</message>
+    <message>Create tables of type PEOPLE_IN_OUT</message>
+    <message>No tables of type DYNAMOD1_SPECIFIC</message>
+    <message>No tables of type DYNAMOD2_SPECIFIC</message>
+    <message>No tables of type DYNAMOD3_SPECIFIC</message>
+    <message>No tables of type DYNAMOD4_SPECIFIC</message>
+    <message>No tables of type DYNAMOD5_SPECIFIC</message>
+    <message>No tables of type DYNAMOD6_SPECIFIC</message>
+    <message>No tables of type DYNAMOD7_SPECIFIC</message>
+    <message>No tables of type DYNAMOD9_SPECIFIC</message>
     <message>Dynamic model run completed.</message>
     <message>Copying population and SAR files to data dir:</message>
-    <message>/nobackup/geonsm/neiss_temp/BirkinDynamicModelN17416/dynamic_model/00DAXP02.TXT -> /nobackup/geonsm/neiss_users/alex/00DAXP02.TXT</message>
-    <message>/nobackup/geonsm/neiss_temp/BirkinDynamicModelN17416/dynamic_model/00DAHSAR02.OUT -> /nobackup/geonsm/neiss_users/alex/00DAHSAR02.OUT</message>
+    <message>/nobackup/geonsm/neiss_temp/BirkinDynamicModelW23555/dynamic_model/00DAXP02.TXT -> /nobackup/geonsm/neiss_users/alex/00DAXP02.TXT</message>
+    <message>/nobackup/geonsm/neiss_temp/BirkinDynamicModelW23555/dynamic_model/00DAXP03.TXT -> /nobackup/geonsm/neiss_users/alex/00DAXP03.TXT</message>
+    <message>/nobackup/geonsm/neiss_temp/BirkinDynamicModelW23555/dynamic_model/00DAHSAR02.OUT -> /nobackup/geonsm/neiss_users/alex/00DAHSAR02.OUT</message>
+    <message>/nobackup/geonsm/neiss_temp/BirkinDynamicModelW23555/dynamic_model/00DAHSAR03.OUT -> /nobackup/geonsm/neiss_users/alex/00DAHSAR03.OUT</message>
     <message>DynamicModel will attempt to save the results files externally for user 'alex'</message>
     <message>Copying file 00DAXP02.TXT</message>
+    <message>Copying file 00DAXP03.TXT</message>
     <message>Copying file 00DAHSAR02.OUT</message>
+    <message>Copying file 00DAHSAR03.OUT</message>
   </info_messages>
   <tabular_data>
     <table>
@@ -167,6 +211,156 @@ Received parameter 'Detailed summary' which matches a model parameter. Setting v
         <td>12553</td>
       </tr>
     </table>
+    <table>
+      <tr>
+        <th>Year</th>
+        <th>NumHouseholds</th>
+        <th>NumIndividuals</th>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>248211</td>
+        <td>670915</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>234134</td>
+        <td>656174</td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <th>ModelName</th>
+        <th>Year</th>
+        <th>NumHouseholds</th>
+        <th>NumIndividuals</th>
+      </tr>
+      <tr>
+        <td>Dynamod1</td>
+        <td>1</td>
+        <td>301781</td>
+        <td>696471</td>
+      </tr>
+      <tr>
+        <td>Dynamod2</td>
+        <td>1</td>
+        <td>301555</td>
+        <td>694654</td>
+      </tr>
+      <tr>
+        <td>Dynamod3</td>
+        <td>1</td>
+        <td>276728</td>
+        <td>659944</td>
+      </tr>
+      <tr>
+        <td>Dynamod4</td>
+        <td>1</td>
+        <td>282206</td>
+        <td>670915</td>
+      </tr>
+      <tr>
+        <td>Dynamod5</td>
+        <td>1</td>
+        <td>248211</td>
+        <td>670915</td>
+      </tr>
+      <tr>
+        <td>Dynamod6</td>
+        <td>1</td>
+        <td>248211</td>
+        <td>670915</td>
+      </tr>
+      <tr>
+        <td>Dynamod7</td>
+        <td>1</td>
+        <td>248211</td>
+        <td>670915</td>
+      </tr>
+      <tr>
+        <td>Dynamod9</td>
+        <td>1</td>
+        <td>248211</td>
+        <td>670915</td>
+      </tr>
+      <tr>
+        <td>Dynamod1</td>
+        <td>2</td>
+        <td>248211</td>
+        <td>671190</td>
+      </tr>
+      <tr>
+        <td>Dynamod2</td>
+        <td>2</td>
+        <td>248123</td>
+        <td>669373</td>
+      </tr>
+      <tr>
+        <td>Dynamod3</td>
+        <td>2</td>
+        <td>239239</td>
+        <td>648111</td>
+      </tr>
+      <tr>
+        <td>Dynamod4</td>
+        <td>2</td>
+        <td>242387</td>
+        <td>656174</td>
+      </tr>
+      <tr>
+        <td>Dynamod5</td>
+        <td>2</td>
+        <td>234134</td>
+        <td>656174</td>
+      </tr>
+      <tr>
+        <td>Dynamod6</td>
+        <td>2</td>
+        <td>234134</td>
+        <td>656174</td>
+      </tr>
+      <tr>
+        <td>Dynamod7</td>
+        <td>2</td>
+        <td>234134</td>
+        <td>656174</td>
+      </tr>
+      <tr>
+        <td>Dynamod9</td>
+        <td>2</td>
+        <td>234134</td>
+        <td>656174</td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <th>Year</th>
+        <th>Births</th>
+        <th>Deaths</th>
+        <th>ImigrationFromUK</th>
+        <th>ImigrationFromAbroad</th>
+        <th>EmigrationToUK</th>
+        <th>EmigrationToAbroad</th>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>367</td>
+        <td>2471</td>
+        <td>9149</td>
+        <td>1822</td>
+        <td>22157</td>
+        <td>12553</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>275</td>
+        <td>2019</td>
+        <td>6540</td>
+        <td>1523</td>
+        <td>14415</td>
+        <td>6847</td>
+      </tr>
+    </table>
   </tabular_data>
   <neissmodel_parameters>
     <parameter>
@@ -182,7 +376,7 @@ Received parameter 'Detailed summary' which matches a model parameter. Setting v
     <parameter>
       <name>Num run years</name>
       <type>Integer</type>
-      <value>1</value>
+      <value>2</value>
     </parameter>
     <parameter>
       <name>Detailed summary</name>
@@ -207,7 +401,7 @@ Received parameter 'Detailed summary' which matches a model parameter. Setting v
     <parameter>
       <name>Num run years</name>
       <type>Integer</type>
-      <value>1</value>
+      <value>2</value>
     </parameter>
     <parameter>
       <name>Detailed summary</name>
@@ -223,7 +417,7 @@ Received parameter 'Detailed summary' which matches a model parameter. Setting v
   <results_information>
     <data_element>
       <result_url>Population file</result_url>
-      <result_description>00DAXP02.TXT</result_description>
+      <result_description>00DAXP03.TXT</result_description>
     </data_element>
   </results_information>
   <results_data>
@@ -232,8 +426,16 @@ Received parameter 'Detailed summary' which matches a model parameter. Setting v
       <result_description>DynamidModel output population file: 00DAXP02.TXT</result_description>
     </data_element>
     <data_element>
+      <result_url>http://geo-s12.leeds.ac.uk:8080/WebDav/alex/00DAXP03.TXT</result_url>
+      <result_description>DynamidModel output population file: 00DAXP03.TXT</result_description>
+    </data_element>
+    <data_element>
       <result_url>http://geo-s12.leeds.ac.uk:8080/WebDav/alex/00DAHSAR02.OUT</result_url>
       <result_description>DynamidModel output population file: 00DAHSAR02.OUT</result_description>
+    </data_element>
+    <data_element>
+      <result_url>http://geo-s12.leeds.ac.uk:8080/WebDav/alex/00DAHSAR03.OUT</result_url>
+      <result_description>DynamidModel output population file: 00DAHSAR03.OUT</result_description>
     </data_element>
   </results_data>
   <result>success</result>
