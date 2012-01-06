@@ -87,6 +87,7 @@ public class WSDLSOAPInvokerTest {
 	}
 
 	@SuppressWarnings("unchecked")
+	@Ignore("The eUtils have changed")
 	@Test    
 	public void testComplexDocStyle() throws Exception {
 
