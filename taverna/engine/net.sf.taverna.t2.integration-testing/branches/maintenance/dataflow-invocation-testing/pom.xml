@@ -36,6 +36,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>reference-impl</artifactId>
+			<version>${t2.core.version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>net.sf.taverna.t2.translators</groupId>
 			<artifactId>all-activity-translators</artifactId>
 			<version>${t2.translators.version}</version>
