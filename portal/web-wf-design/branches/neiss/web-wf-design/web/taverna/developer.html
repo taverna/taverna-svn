@@ -19,12 +19,12 @@
                 create their own "wirings" language</li>
         </ul>
 
-        <h1>Installation</h1>
 
         <h2>Code</h2>
+        The Taverna Lite Workflow Designer is a Web application implemented using Java servlets and a bunch of JavaScript libraries. 
 
         <h3>WireIt</h3>
-        This tool depends on <a href="../wireit.html">WireIt library</a> version 0.5.0. 
+        The application depends on the <a href="../wireit.html">WireIt library</a> version 0.5.0. 
                                                
         For the latest WireIt code and their official documentation see the <a href="http://neyric.github.com/wireit/">WireIt Web site</a>.
 
@@ -36,7 +36,7 @@
         
         <p>Source code (as a NetBeans project) can be found at <a target="_blank" href="http://code.google.com/p/taverna/source/browse/#svn%2Fportal%2Fweb-wf-design%2Ftrunk%2Fweb-wf-design">Google Code</a>. Branch for the NeISS project is under <a target="_blank" href="http://code.google.com/p/taverna/source/browse/#svn%2Fportal%2Fweb-wf-design%2Fbranches%2Fneiss">branches/neiss</a>.</p>
         
-        <p>Taverna-specific code (for details see each specific file):</p>
+        <p>Taverna-specific code (for details see each file):</p>
 
         <ul>
             <li>Application Web root
@@ -48,7 +48,7 @@
                     <li><a href="../wireit.html">wireit.html</a>: edited WireIt home page with a link to
                         the Taverna Web-based workflow designer application and other WireIt examples.</li>
 
-                    <li>Taverna folder
+                    <li>taverna folder
 
                         <ul>
                             <li><a href="ajaxAdapter.js">ajaxAdapter.js</a>: adapter code using Ajax to
@@ -98,13 +98,12 @@
                         </ul>
                     </li>
 
-                    <li>Workflow folder
+                    <li>Workflows folder
 
                         <ul>
-                            <li>Drop in any workflows you want the Taverna Web-based workflow designer
-                                application to run</li>
+                            <li>Drop in any workflows you want the application to use for the creation for wirings</li>
 
-                            <li>HTML pages describing workflows</li>
+                            <li>Drop in HTML pages describing workflows</li>
                         </ul>
                     </li>
                 </ul>
@@ -189,7 +188,7 @@
             <li>lib folder
 
                 <ul>
-                    <li>jars needed to build the code</li>
+                    <li>dependencies/jars needed to build the code</li>
                 </ul>
             </li>
 
@@ -197,6 +196,7 @@
 
                 <ul>
                     <li>Contains settings for the path to the Taverna Command Line Tool</li>
+                    <li>Contains settings as how and where to save the created "wirings" (database or filesystem)</li>
                 </ul>
             </li>
         </ul>
@@ -205,15 +205,16 @@
         Command Line Tool home directory, either by
 
         <ul>
-            <li>setting the context parameter "TAVERNA_CMD_HOME" in web/WEB-INF/web.xml, or by</li>
+            <li>setting the context parameter "TAVERNA_CMD_HOME" in WEB-INF/web.xml, or by</li>
 
             <li>setting the system property "TAVERNA_HOME", or by</li>
         </ul>
+        The Taverna Command Line Tool wrapper can/should be replaced with the Taverna Server. See the TavernaModule.java class for details of how things are done at the moment.
         
         <h2>Saving the wirings</h2>
         The wirings designed using the tool can either be saved to the local filesystem or to a MySQL database.
         
-        Setting the context parameter "SAVE_TO" in web/WEB-INF/web.xml to values "filesystem" or "database" determines how the wirings will be saved:
+        Setting the context parameter "SAVE_TO" in WEB-INF/web.xml to values "filesystem" or "database" determines how the wirings will be saved:
         <pre>
         &lt;context-param>
         &lt;param-name>SAVE_TO&lt;/param-name>
@@ -226,6 +227,9 @@
 
         <p>If you use the "database" option for the "SAVE_TO" parameter, you do not the "JSON_WIRINGS_DIR" parameter. 
             MySQL database settings are hard coded as explained below.</p>
+        
+        Note that you also need to put the MySQL connector jar (mysql-connector-java-5.1.18.jar) in Tomcat's lib folder whether or not you are using MySQL database to persist JSON "wirings" 
+        as it is a dependency for the application.
 
         <h2>MySQL</h2>
         
@@ -240,14 +244,11 @@
 
             <li>password: see the code</li>
         </ul>
+        You will also need to create database called "wireit" and a table to contain the "wirings". The script to create the table 
+        can be found in backend/php/WiringEditor.sql. The name of the database is hardcoded inside net.sf.taverna.portal.wireit.WireitSQLBase.java 
+        but can be changed.
         
-        <h2>Tomcat</h2>
-        
-        You need to put the <a href="http://dev.mysql.com/downloads/connector/j/" target="_blank">MySQL connector jar</a>
-        in Tomcat's lib folder in the case you are using MySQL database to persist JSON
-        "wirings".
-        
-        <h1>Changing the code</h1>
+        <h1>Modifying the code</h1>
 
         <h2>Cleaning out WireIt extras</h2>
 
@@ -262,18 +263,18 @@
 
         <h4>Using the roll-up minimised build files</h4>Currently this file loads in all of the
         individual JavaScript files in their full format. The build folder contains much
-        smaller build files for the WireIt modules. I am currently unsure which files these
+        smaller build files (*-min.js) for the WireIt modules. We are currently unsure which files these
         build versions replace.
 
         <h4>Remove files not required</h4>Currently all WireIt files are in the repository. You
         could consider removing:
 
         <ul>
-            <li>Examples folder - will need WireIt/index.html to be updated too</li>
+            <li>examples folder - will need WireIt/index.html to be updated too</li>
 
             <li>doc folder</li>
 
-            <li>Much of the web/lib/yui stuff which has the big, normal and min versions</li>
+            <li>Much of the lib/yui stuff which has the big, normal and min versions</li>
 
             <li>Code not required</li>
         </ul>However other than using up a bit of the server space these files do no effect the
@@ -291,19 +292,24 @@
         change the styling of the input, ouput and passthrough containers.
 
         <h3>testLanguage.js</h3>
+        Contains Taverna workflows as modules/components that can be added to a "wiring" and defined the "language" 
+        for your "wirings". If you want to extend or modify it:
 
         <ul>
             <li>Copy the file with a new name</li>
 
             <li>Change the languageName</li>
 
-            <li>Replace the modules</li>
+            <li>Replace/change the (Taverna) modules</li>
 
-            <li>Change taverna.html to point to your new file and NOT testLanguage.js</li>
+            <li>Change index.html to point to your new file and not testLanguage.js</li>
         </ul>
 
         <h4>Taverna workflow modules</h4>
+        To add a new workflow, drop it in Workflows folder and modify testLanguage.js (or your equivalent of it) 
+        to define the new "module" that will be used to compose "wirings".
 
+        The properties that you can define include:
         <ul>
             <li>"name": name for the container with this workflow
 
@@ -499,7 +505,7 @@
         branch of WireIt.
 
         <p>I noticed that the edge branch includes a major restructuring. This will require at
-            the very least fixing the links in taverna.html</p>
+            the very least fixing the links in index.html</p>
 
         <p>Each extension in extensions.js will have to be very carefully checked. Has the code
             being extended changed? If so the extension will be to reflect this change.</p>
@@ -576,15 +582,15 @@
 
         <h3>Adding container types</h3>
 
-        <h4>Containers made up of just standard web/lib/inputex stuff</h4>On the WireIt side
+        <h4>Containers made up of just standard lib/inputex stuff</h4>On the WireIt side
         this can be done by just adding the new container definitions to tavernaLanguage.js for
         all projects or by replacing testLanguage.js for project specific containers.
 
-        <p>WARNING: You may have to add any new web/lib/inputex things used in taverna.html,
+        <p>WARNING: You may have to add any new lib/inputex things used in taverna.html,
             otherwise WireIt will not find the new item and default back to the backup. This could
             result in your code working but without the expected new feature.</p>
 
-        <h4>Containers with more than just standard web/lib/inputex stuff</h4>This may require
+        <h4>Containers with more than just standard lib/inputex stuff</h4>This may require
         a new container class such as I did for URILinkContainer.js, BaclavaContainer.js and
         TavernaWFContainer.js
 
