@@ -83,7 +83,7 @@ public class DisplayBaclavaFile extends HttpServlet {
             URL baclavaFileURL = null;
             InputStream baclavaInputStream = null;
             try{
-                //Using URI code to check if it is absoulte
+                //Using URI code to check if it is absolute
                 URI theURI = new URI(baclavaFileURLString);
                 if (theURI.isAbsolute()){
                    baclavaFileURL = theURI.toURL();

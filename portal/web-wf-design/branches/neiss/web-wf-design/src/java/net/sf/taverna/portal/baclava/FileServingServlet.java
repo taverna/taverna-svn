@@ -144,7 +144,9 @@ public class FileServingServlet extends HttpServlet {
             }
 
             File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+            System.out.println("File Serving Servlet: User asked for the file with canonical path: " + fileToSend.getCanonicalPath());
 
+            // Soft links will be causing problems here with this check!!!
             if (fileToSend.getCanonicalPath().startsWith(tmpDir.getAbsolutePath())) {
                 if (fileToSend.exists()) {
                     OutputStream os = response.getOutputStream();
