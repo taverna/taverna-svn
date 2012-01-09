@@ -20,29 +20,29 @@
         <p>This is a prototype designed to show how existing workflows can be connected
             together and run using the Taverna Command Line Tool and later the Taverna Server.</p>
 
-        <p>This is NOT a replacement for the Taverna Workbench and its Workflow Editor but as a
-            support to to go on top of pre existing workflows.</p>
+        <p>This is not a replacement for the Taverna Workbench and its workflow editor.</p>
 
-        <p>It is intended to hide much of the complexity required to build Taverna workflows
+        <p>Its intention is to hide much of the complexity required to build Taverna workflows
             including:</p>
 
         <ul>
-            <li>Hides XML Splitters and Merges</li>
+            <li>Hiding XML splitters and merges</li>
 
-            <li>Hides Cross and Dot product choices</li>
+            <li>Hiding cross and dot product choices</li>
 
-            <li>Hides complex Beanshells</li>
+            <li>Hiding complex Beanshells</li>
 
-            <li>Hides looping</li>
+            <li>Hiding looping</li>
 
-            <li>Avoid users having to decide which parameters are needed for a Web service</li>
-        </ul>What it does do includes:
+            <li>Avoiding users having to decide which parameters are needed for a Web service</li>
+        
+        </ul>What it does include:
 
         <ul>
-            <li>Allow several workflows to be joined together
+            <li>Allows several workflows to be joined together
 
                 <ul>
-                    <li>Even when the output name in one workflow is not the same as the input name
+                    <li>Even when the output port in one workflow is not the same as the input port
                         as another workflow</li>
                 </ul>
             </li>
@@ -54,7 +54,7 @@
             administrators and developers</a> interested in installing the application, looking at
         the source code or extending the existing code.
 
-        <h2>Current state/Limitations</h2>
+        <h2>Current state and limitations</h2>
 
         <ul>
             <li>Setting individual inputs is limited to workflows where all inputs are depth 0 or
@@ -63,100 +63,76 @@
                 <ul>
                     <li>Input can be a string</li>
 
-                    <li>Input can be from a URL</li>
+                    <li>Input can be content downloaded from a URL</li>
 
                     <li>Input can be a list of strings</li>
 
-                    <li>File input is not yet supported</li>
                 </ul>
             </li>
 
-            <li>Baclava inputs are supported
-
-                <ul>
-                    <li>From a URL</li>
-
-                    <li>File Baclava not yet supported</li>
-                </ul>
+            <li>Baclava input is supported (where Baclava file is available from a URL) for cases where all workflow inputs are specified in one Baclava file
             </li>
 
             <li>Baclava output is supported
 
                 <ul>
-                    <li>As a URL</li>
+                    <li>As a URL pointing to the raw Baclava document</li>
 
-                    <li>Fancy Baclava Viewer for displaying Baclava files in a Web browser</li>
+                    <li>Baclava Viewer is available for displaying Baclava content in a Web browser</li>
 
-                    <li>Baclava output from one workflow can be used as Baclava input for another
-                        workflow
-
-                        <ul>
-                            <li>If and only if the input port names are a subset (or equal to) the ouput
-                                port names</li>
-                        </ul>
+                    <li>Baclava output from one workflow can be used as Baclava input for another workflow, if and only if the input port names are a subset (or equal to) the output port names
                     </li>
                 </ul>
             </li>
 
-            <li>Individual output support by casting to String</li>
+            <li>Individual output support by casting to a string</li>
 
-            <li>List output supported by flattening lists of lists and casting to string</li>
+            <li>List output supported by flattening lists of lists and casting to a string</li>
 
-            <li>Only predefined workflows
+            <li>Only predefined workflows can be used as components to compose "wirings" 
 
                 <ul>
-                    <li>This is mainly for security</li>
+                    <li>This is mainly for security and not to allow arbitrary workflows to be run</li>
 
-                    <li>Additional workflows can easily be added</li>
+                    <li>Additional workflows can easily be added by application administrators</li>
                 </ul>
             </li>
         </ul>
 
-        <h2>Future work outside of the prototype</h2>
+        <h2>Possible future work</h2>
 
         <ul>
-            <li>Replace command line with the Taverna Server
+            <li>Replace Taverna Command Line Tool with the Taverna Server
+            </li>
+            <li>Components should be proper Taverna components/nested workflows rather than the top level workflows 
+                and we should combine one big workflow (currently the workflow is saved as WireIt "wiring" in JSON format) 
+                that gets executed once rather than a number of small workflows that get executed separately</li>
 
-                <ul>
-                    <li>Settup issue this includes</li>
+            <li>Uploading input files for workflows from client to server</li>
 
-                    <li>Passing of security stuff from client to the Server</li>
-                </ul>
+            <li>When Baclava output is used as an input downstream - the port names have to match. Would be nice to be able to rename the ones not matching or to link them somehow</li>
+
+            <li>Creating a Baclava input file from the UI
             </li>
 
-            <li>Uploading files from client to server</li>
-
-            <li>Baclava key (input/output) name - renamer</li>
-
-            <li>Fancy GUI based on Baclava format
-
-                <ul>
-                    <li>Creating a Baclava input file</li>
-                </ul>
-            </li>
-
-            <li>Automatic generation of WireIt module based on Workflow
+            <li>Automatic generation of WireIt 'wirings' based on Taverna workflows
 
                 <ul>
                     <li>With placeholders/ tips on how to add links and tooltips</li>
                 </ul>
             </li>
 
-            <li>Fancier handling of list of lists output (if required)</li>
+            <li>Better handling of list of lists (if required)</li>
 
             <li>Security</li>
 
             <li>User accounts</li>
 
-            <li>Scufl 2 workflows</li>
+            <li>Support for  Scufl 2 workflows</li>
 
-            <li>Taverna 1 workflows</li>
+            <li>Support for Taverna 1 workflows</li>
 
-            <li>Renaming and marketing</li>
-
-            <li>User documentation</li>
-
-            <li>Partial run/ask for input/continued run prototype</li>
+            <li>Partial run/ask for input/continued run</li>
         </ul>
     </body>
 </html>
