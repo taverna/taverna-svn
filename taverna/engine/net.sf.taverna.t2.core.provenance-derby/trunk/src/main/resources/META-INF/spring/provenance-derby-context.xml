@@ -3,6 +3,6 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
                       http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="DerbyProvenanceConnectorFactory" class="net.sf.taverna.t2.provenance.connector.DerbyProvenanceConnectorFactory" />
+	<bean id="DerbyProvenanceConnectorFactory" class="net.sf.taverna.t2.provenance.connector.derby.DerbyProvenanceConnectorFactory" />
 
 </beans>

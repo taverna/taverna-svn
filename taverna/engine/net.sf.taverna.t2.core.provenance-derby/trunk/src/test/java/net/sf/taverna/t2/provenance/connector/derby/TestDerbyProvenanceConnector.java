@@ -1,9 +1,11 @@
-package net.sf.taverna.t2.provenance.connector;
+package net.sf.taverna.t2.provenance.connector.derby;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import static org.junit.Assert.*;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,7 +16,7 @@ public class TestDerbyProvenanceConnector {
 	public void setupDataSource() throws Exception {
 		DatabaseHelper.setUpDataSource();
 	}
-	
+
 	@Test
 	public void testCreateDataBase() throws Exception {
 		DerbyProvenanceConnector connector = new DerbyProvenanceConnector();
@@ -29,13 +31,13 @@ public class TestDerbyProvenanceConnector {
 		finally{
 			con.close();
 		}
-		
-		
+
+
 		connector.createDatabase();
-		
+
 		con = DatabaseHelper.getConnection();
 		try {
-			assertTrue(con.prepareStatement("select * from Datalink").execute());			
+			assertTrue(con.prepareStatement("select * from Datalink").execute());
 		}
 		catch(Exception e) {
 			fail("Query should have succeeded since table exists");
@@ -43,12 +45,12 @@ public class TestDerbyProvenanceConnector {
 		finally{
 			con.close();
 		}
-		
+
 		connector.createDatabase();
-		
+
 		con = DatabaseHelper.getConnection();
 		try {
-			assertTrue(con.prepareStatement("select * from Datalink").execute());			
+			assertTrue(con.prepareStatement("select * from Datalink").execute());
 		}
 		catch(Exception e) {
 			fail("Query should have succeeded since table exists");
@@ -56,6 +58,6 @@ public class TestDerbyProvenanceConnector {
 		finally{
 			con.close();
 		}
-		
+
 	}
 }

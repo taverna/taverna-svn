@@ -1,9 +1,10 @@
-package net.sf.taverna.t2.provenance.connector;
+package net.sf.taverna.t2.provenance.connector.derby;
 
 import java.io.File;
 import java.sql.Connection;
 
 import net.sf.taverna.t2.provenance.api.ProvenanceAccess;
+import net.sf.taverna.t2.provenance.connector.JDBCConnector;
 
 public class DatabaseHelper {
 

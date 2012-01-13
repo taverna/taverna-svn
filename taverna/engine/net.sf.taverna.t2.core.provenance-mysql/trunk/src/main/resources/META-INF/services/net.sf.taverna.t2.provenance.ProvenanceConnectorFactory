@@ -1,1 +1,1 @@
-net.sf.taverna.t2.provenance.connector.MySQLProvenanceConnectorFactory
+net.sf.taverna.t2.provenance.connector.mysql.MySQLProvenanceConnectorFactory

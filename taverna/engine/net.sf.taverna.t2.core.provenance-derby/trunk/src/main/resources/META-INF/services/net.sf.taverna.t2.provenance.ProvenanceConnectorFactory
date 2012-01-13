@@ -1,1 +1,1 @@
-net.sf.taverna.t2.provenance.connector.DerbyProvenanceConnectorFactory
+net.sf.taverna.t2.provenance.connector.derby.DerbyProvenanceConnectorFactory

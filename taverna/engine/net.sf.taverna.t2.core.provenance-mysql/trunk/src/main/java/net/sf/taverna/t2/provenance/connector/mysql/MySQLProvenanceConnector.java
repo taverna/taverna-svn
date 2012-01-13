@@ -18,7 +18,7 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
-package net.sf.taverna.t2.provenance.connector;
+package net.sf.taverna.t2.provenance.connector.mysql;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -27,6 +27,7 @@ import java.sql.Statement;
 import java.util.List;
 
 import net.sf.taverna.t2.provenance.api.ProvenanceConnectorType;
+import net.sf.taverna.t2.provenance.connector.ProvenanceConnector;
 import net.sf.taverna.t2.provenance.item.ProvenanceItem;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceWriter;

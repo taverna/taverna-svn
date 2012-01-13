@@ -13,7 +13,20 @@
 	<version>2.0-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 	<name>mySQL provenance</name>
-
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Private-Package>net.sf.taverna.t2.provenance.connector.mysql,net.sf.taverna.t2.provenance.lineageservice.mysql</Private-Package>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
     <dependencies>
         <dependency>
             <groupId>net.sf.taverna.t2.core</groupId>
