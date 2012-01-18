@@ -73,33 +73,35 @@ public class IDAConfigureAction
 		ActivityConfigurationAction.setDialog(getActivity(), dialog);
 		*/
 		
-		//RapidMinerPluginConfiguration config = RapidMinerPluginConfiguration.getInstance();
-        //String floraLocation = config.getProperty(RapidMinerPluginConfiguration.FL_LOCATION);
-        //String floraTempLocation = config.getProperty(RapidMinerPluginConfiguration.FL_TEMPDIR);
-        //String repos = config.getProperty(RapidMinerPluginConfiguration.RA_REPOSITORY_LOCATION);
+		RapidMinerPluginConfiguration config = RapidMinerPluginConfiguration.getInstance();
+        String floraLocation = config.getProperty(RapidMinerPluginConfiguration.FL_LOCATION);
+        String floraTempLocation = config.getProperty(RapidMinerPluginConfiguration.FL_TEMPDIR);
+        String repos = config.getProperty(RapidMinerPluginConfiguration.RA_REPOSITORY_LOCATION);
 
-       // RapidAnalyticsPreferences pref = new RapidAnalyticsPreferences();
-        //pref.setRepositoryLocation(repos);
+        RapidAnalyticsPreferences preferences = new RapidAnalyticsPreferences();
         
-		RapidAnalyticsPreferences prefs = new RapidAnalyticsPreferences();
-		prefs.setRepositoryLocation("http://rpc295.cs.man.ac.uk:8081");
-        prefs.setUsername("rishi");
-        prefs.setPassword("rishipwd");
-        prefs.setPathToTmpDir("/Users/Rishi/Desktop/e-LICO_Development/IDA_stuff/tmp/");
-        prefs.setPathToFlora("/Users/Rishi/Desktop/e-LICO_Development/IDA_stuff/flora2/");
+        preferences.setRepositoryLocation(repos);
+        preferences.setPathToFlora(floraLocation);
+		preferences.setPathToTmpDir(floraTempLocation);
+		
+		//prefs.setRepositoryLocation("http://rpc295.cs.man.ac.uk:8081");
+        //prefs.setUsername("rishi");
+        //prefs.setPassword("rishipwd");
+       // prefs.setPathToTmpDir("/Users/Rishi/Desktop/e-LICO_Development/IDA_stuff/tmp/");
+        //prefs.setPathToFlora("/Users/Rishi/Desktop/e-LICO_Development/IDA_stuff/flora2/");
         
         IDAWizard wizard;
 		if (activity.getConfiguration().isTemplate()) {
 			
 	         String task = activity.getConfiguration().getSelectedTask();
 			
-			 wizard = new IDAWizard(new IDAWorkflowConfiguration(), prefs, new JFrame(), true);
+			 wizard = new IDAWizard(new IDAWorkflowConfiguration(), preferences, new JFrame(), true);
 			 wizard.setPredefinedTaskName(task);
 	         wizard.showModalDialog();
 
 		} else {
 			
-			 wizard = new IDAWizard(new IDAWorkflowConfiguration(), prefs, new JFrame());
+			 wizard = new IDAWizard(new IDAWorkflowConfiguration(), preferences, new JFrame());
 	         wizard.showModalDialog();
 		}
   

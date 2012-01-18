@@ -66,6 +66,8 @@ public class IDAWizard extends Wizard {
     
     private String predefinedTaskName;
     
+    private String username, password;
+    
     private RapidAnalyticsPreferences idaConnectionPrefs;
     
     public EditManager getEditsManager() {
@@ -209,5 +211,21 @@ public class IDAWizard extends Wizard {
 
 	public void setPredefinedTaskName(String predefinedTaskName) {
 		this.predefinedTaskName = predefinedTaskName;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getPassword() {
+		return password;
 	}
 }

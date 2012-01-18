@@ -2,6 +2,7 @@ package idaservicetype.idaservicetype.ui.converter;
 
 import idaservicetype.idaservicetype.ui.converter.PortMapper;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,6 +11,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,12 +26,16 @@ import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerExampleActivity
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerIOODescription;
 import uk.ac.manchester.cs.elico.rmservicetype.taverna.RapidMinerParameterDescription;
 import uk.ac.manchester.cs.elico.utilities.configuration.RapidAnalyticsPreferences;
+import uk.ac.manchester.cs.elico.utilities.configuration.RapidMinerPluginConfiguration;
 
 import ch.uzh.ifi.ddis.ida.api.IOObjectDescription;
 import ch.uzh.ifi.ddis.ida.api.OperatorApplication;
 import ch.uzh.ifi.ddis.ida.api.Parameter;
 import ch.uzh.ifi.ddis.ida.api.Plan;
 import ch.uzh.ifi.ddis.ida.api.SimpleParameter;
+import net.sf.taverna.t2.security.credentialmanager.CMException;
+import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
+import net.sf.taverna.t2.security.credentialmanager.UsernamePassword;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.Edit;
@@ -61,6 +70,10 @@ public class MyDataFlowGenerator {
     private Map<String, Set<PortMapper>> portMapping = new HashMap<String, Set<PortMapper>>();
     
     private Map<String, Processor> processors = new HashMap<String, Processor>();
+
+	private RapidAnalyticsPreferences preferences;
+
+	private UsernamePassword username_password;
     
     private static final Logger logger = LoggerFactory.getLogger(DataFlowGenerator.class);
     
@@ -403,10 +416,13 @@ public class MyDataFlowGenerator {
 
         // todo sort this out for main taverna execution	- get from prefs in plugin
         RapidAnalyticsPreferences prefs = new RapidAnalyticsPreferences();
-        prefs.setRepositoryLocation("http://rpc295.cs.man.ac.uk:8081");
-        prefs.setUsername("jupp");
-        prefs.setPassword("jupppwd");
-        
+        //prefs.setRepositoryLocation("http://rpc295.cs.man.ac.uk:8081");
+        //prefs.setUsername("");
+        //prefs.setPassword("");
+        sortPreferences();
+		prefs = preferences;
+		
+		
         // Corresponding activity
         RapidMinerExampleActivity activity = new RapidMinerExampleActivity(prefs);
         
@@ -626,6 +642,46 @@ public class MyDataFlowGenerator {
             }
         }
     }
+    
+    public void sortPreferences() {
+        
+		preferences = getPreferences();
+        if (preferences != null) {
+            CredentialManager credManager;
+            try {
+                credManager = CredentialManager.getInstance();
+                username_password = credManager.getUsernameAndPasswordForService(URI.create(preferences.getBrowserServiceLocation()), true, null);
+
+                preferences.setUsername(username_password.getUsername());
+                preferences.setPassword(username_password.getPasswordAsString());
+            } catch (CMException e) {
+                e.printStackTrace();
+
+            }
+        }
+        else {
+            JOptionPane.showMessageDialog(new JFrame(),
+                    new JLabel("<html>Please set the Rapid Analytics repository location <br> " +
+                            " and flora location in the preferences panel</html>"));
+        }
+		
+	}
+	
+    private RapidAnalyticsPreferences getPreferences() {
+
+        RapidMinerPluginConfiguration config = RapidMinerPluginConfiguration.getInstance();
+        String repos = config.getProperty(RapidMinerPluginConfiguration.RA_REPOSITORY_LOCATION);
+        System.err.println("Got repository location: " + repos);
+        if (repos.equals("")) {
+            return null;
+        }
+
+        RapidAnalyticsPreferences pref = new RapidAnalyticsPreferences();
+        pref.setRepositoryLocation(repos);
+        return pref;
+
+    }
+
 
 	public void setPlan(Plan plan) {
 		this.plan = plan;

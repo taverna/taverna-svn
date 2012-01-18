@@ -7,6 +7,9 @@ import com.rapid_i.elico.DataTableResponse;
 import com.rapid_i.elico.MetaDataServicePortBindingStub;
 import com.rapid_i.elico.MetaDataService_ServiceLocator;
 import net.sf.taverna.t2.activities.dataflow.DataflowActivity;
+import net.sf.taverna.t2.security.credentialmanager.CMException;
+import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
+import net.sf.taverna.t2.security.credentialmanager.UsernamePassword;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.edits.impl.EditManagerImpl;
 import net.sf.taverna.t2.workbench.file.FileManager;
@@ -18,6 +21,7 @@ import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.manchester.cs.elico.utilities.configuration.RapidAnalyticsPreferences;
+import uk.ac.manchester.cs.elico.utilities.configuration.RapidMinerPluginConfiguration;
 
 import idaservicetype.idaservicetype.ui.converter.IDAWorkflowConfiguration;
 import idaservicetype.idaservicetype.ui.converter.InputIOObject;
@@ -270,12 +274,59 @@ public class IDAWizardFetchPlans extends AbstractWizardPanel{
 
         private IDAWorkflowConfiguration workflowConfig;
 
+		private RapidAnalyticsPreferences preferences;
+
+		private UsernamePassword username_password;
+		
+		private IDAWizard wizard;
+
         public FetchMetaDataThread (IDAWizard w, ProgressThreadListener listener) {
             connectionPrefs = w.getIdaConnectionPrefs();
+            wizard = w;
+            sortPreferences();
             workflowConfig = w.getWorkflowConfiguration();
             this.listener = listener;
         }
 
+        public void sortPreferences() {
+            
+    		preferences = getPreferences();
+            if (preferences != null) {
+                CredentialManager credManager;
+                try {
+                    credManager = CredentialManager.getInstance();
+                    username_password = credManager.getUsernameAndPasswordForService(URI.create(preferences.getBrowserServiceLocation()), true, null);
+
+                    wizard.setUsername(username_password.getUsername());
+                    wizard.setPassword(username_password.getPasswordAsString());
+                } catch (CMException e) {
+                    e.printStackTrace();
+
+                }
+            }
+            else {
+                JOptionPane.showMessageDialog(new JFrame(),
+                        new JLabel("<html>Please set the Rapid Analytics repository location <br> " +
+                                " and flora location in the preferences panel</html>"));
+            }
+    		
+    	}
+    	
+        private RapidAnalyticsPreferences getPreferences() {
+
+            RapidMinerPluginConfiguration config = RapidMinerPluginConfiguration.getInstance();
+            String repos = config.getProperty(RapidMinerPluginConfiguration.RA_REPOSITORY_LOCATION);
+            System.err.println("Got repository location: " + repos);
+            if (repos.equals("")) {
+                return null;
+            }
+
+            RapidAnalyticsPreferences pref = new RapidAnalyticsPreferences();
+            pref.setRepositoryLocation(repos);
+            return pref;
+
+        }
+        
         public void run() {
 
             listener.updateProgress(5);
@@ -286,8 +337,8 @@ public class IDAWizardFetchPlans extends AbstractWizardPanel{
 
             try {
                 MetaDataServicePortBindingStub stub = new MetaDataServicePortBindingStub(new URL(connectionPrefs.getMetaDataServiceLocation()), service);
-                stub.setUsername(connectionPrefs.getUsername());
-                stub.setPassword(String.valueOf(connectionPrefs.getPassword()));
+                stub.setUsername(wizard.getUsername());
+                stub.setPassword(wizard.getPassword());
 
                 GoalFactory goalFactory = workflowConfig.getGFactory();
                 // add data requirements
