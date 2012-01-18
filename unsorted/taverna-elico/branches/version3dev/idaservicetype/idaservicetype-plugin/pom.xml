@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>idaservicetype</groupId>
+		<artifactId>idaservicetype</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>idaservicetype-plugin</artifactId>
+	<packaging>taverna-plugin</packaging>
+	<name>IDAservicetype</name>
+
+	<!-- The repository that your jars are deployed to -->
+	  <repositories>
+	    <repository>
+	      <id>my-repository</id>
+	      <name>My Local Repository</name>
+	      <url>http://rishisbigmac.cs.man.ac.uk/~Rishi/Repository</url>
+	    </repository>
+	  </repositories>
+	  
+	<!-- The repository for the Maven plugin -->
+	 <pluginRepositories>
+	   <pluginRepository>
+	     <id>mygrid-repository</id>
+	     <name>myGrid Repository</name>
+	     <url>http://www.mygrid.org.uk/maven/repository</url>
+	   </pluginRepository>
+	 </pluginRepositories>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>net.sf.taverna.t2.maven.plugins</groupId>
+				<artifactId>maven-taverna-plugin</artifactId>
+				<version>0.1.1</version>
+				<extensions>true</extensions>
+				<configuration>
+					<provider>idaservicetype</provider>
+					<tavernaVersion>2.3.0</tavernaVersion>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
+  <!-- The location of your plugin site -->
+  <distributionManagement>
+    <repository>
+      <id>rishi-plugin-site</id>
+      <name>Rishis Plugin Site</name>
+      <url>file:///Users/Rishi/Sites/</url>
+    </repository>
+    <snapshotRepository>
+      <id>my-test-plugin-site</id>
+      <name>My Test Plugin Site</name>
+      <url>file:///Users/Rishi/Sites/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>idaservicetype-activity</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>idaservicetype-activity-ui</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+</project>
