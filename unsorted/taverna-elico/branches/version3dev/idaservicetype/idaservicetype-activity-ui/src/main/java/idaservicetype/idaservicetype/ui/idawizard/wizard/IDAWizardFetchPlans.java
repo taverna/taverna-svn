@@ -7,6 +7,7 @@ import com.rapid_i.elico.DataTableResponse;
 import com.rapid_i.elico.MetaDataServicePortBindingStub;
 import com.rapid_i.elico.MetaDataService_ServiceLocator;
 import net.sf.taverna.t2.activities.dataflow.DataflowActivity;
+import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
 import net.sf.taverna.t2.security.credentialmanager.CMException;
 import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
 import net.sf.taverna.t2.security.credentialmanager.UsernamePassword;
@@ -16,10 +17,21 @@ import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workflowmodel.*;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.utils.Tools;
+import net.sf.taverna.wsdl.parser.WSDLParser;
+import net.sf.taverna.wsdl.soap.WSDLSOAPInvoker;
+
 import org.apache.axis.AxisFault;
+import org.apache.axis.MessageContext;
+import org.apache.axis.client.Call;
+import org.apache.axis.client.Service;
+import org.apache.axis.client.Stub;
+import org.apache.xml.security.utils.Base64;
+import org.bouncycastle.util.encoders.Base64Encoder;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
+
 import uk.ac.manchester.cs.elico.utilities.configuration.RapidAnalyticsPreferences;
 import uk.ac.manchester.cs.elico.utilities.configuration.RapidMinerPluginConfiguration;
 
@@ -31,6 +43,9 @@ import idaservicetype.idaservicetype.ui.idawizard.components.AbstractWizardPanel
 import idaservicetype.idaservicetype.ui.idawizard.components.WizardPanel;
 
 import javax.swing.*;
+import javax.wsdl.WSDLException;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.rpc.ServiceException;
 
 
 import java.awt.*;
@@ -49,6 +64,8 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.rmi.RemoteException;
@@ -74,6 +91,9 @@ import java.util.ArrayList;/*
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Author: Simon Jupp<br>
@@ -485,6 +505,10 @@ public class IDAWizardFetchPlans extends AbstractWizardPanel{
         private IDAWorkflowConfiguration workflowConfig;
         private java.util.List<Plan> plans;
 
+		private UsernamePassword username_password;
+
+		private RapidAnalyticsPreferences preferences;
+
         public ConvertPlansThread (IDAWizard w, java.util.List<Plan> p, ProgressThreadListener listener) {
             this.wizard = w;
             this.workflowConfig = w.getWorkflowConfiguration();
@@ -512,11 +536,36 @@ public class IDAWizardFetchPlans extends AbstractWizardPanel{
                 IDAWorkflowConfiguration idawfconfig = this.wizard.getWorkflowConfiguration();
               
                 Buffer buf = this.wizard.getIDAManager().getIDAInterface().writePlan(dfg.getPlan());
-                
+              
                 this.wizard.setWorkflowConfiguration(idawfconfig);
                 
-				//ByteBuffer bufa = (ByteBuffer) this.wizard.getIDAManager().getIDAInterface().writePlan(dfg.getPlan());
-				//System.out.println(" bufa " + bufa.toString());
+				ByteBuffer bufa = (ByteBuffer) this.wizard.getIDAManager().getIDAInterface().writePlan(dfg.getPlan());
+				System.out.println(" bufa " + bufa);
+
+				System.out.println(" bufa " + bufa.toString());
+				
+				dodgy(bufa, p);
+				
+				ByteBuffer bytebuff = bufa;
+				byte[] bytearr = new byte[bytebuff.remaining()];
+				bytebuff.get(bytearr);
+				String s = new String(bytearr);
+				
+				Charset charset = Charset.forName("ISO-8859-1");
+				CharsetDecoder decoder = charset.newDecoder();
+				CharBuffer cbuf = null;
+				try {
+					cbuf = decoder.decode(bufa);
+				} catch (CharacterCodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			    String sa = cbuf.toString();
+			    
+				System.out.println(" plan to  " + s);
+				System.out.println(" plan to  " + sa);
+
+				
 				//Object obj = bufa.array();
 				//System.out.println(" plan toString " + p.toString() + " " + obj.toString());
 				
@@ -567,7 +616,200 @@ public class IDAWizardFetchPlans extends AbstractWizardPanel{
 
 
         }
+        
+        public void startIDA() {
+        	
+      	  Map<Object, String> inputMap = new HashMap<Object, String>();
+      	
+      	  WSDLActivityConfigurationBean myBean = new WSDLActivityConfigurationBean();
+        
+      	  myBean.setWsdl(preferences.getRepositoryLocation() + "/e-LICO/IDAService?wsdl");
+          myBean.setOperation("startIDA");
+        	
+          // Output and Parser for WSDLSOAPInvoker
+          List<String> outputNames = new ArrayList<String>();
+          outputNames.add("startIDAResponse");
+    	
+          WSDLParser parser = null;
+          System.out.println(" HERE IDA 1");   
+          try {
 
+              parser = new WSDLParser(myBean.getWsdl());
+
+          } catch (ParserConfigurationException e1) {
+              e1.printStackTrace();
+          } catch (WSDLException e1) {
+              e1.printStackTrace();
+          } catch (IOException e1) {
+              e1.printStackTrace();
+          } catch (SAXException e1) {
+              e1.printStackTrace();
+          }
+         
+
+          WSDLSOAPInvoker myInvoker = new WSDLSOAPInvoker(parser, "startIDA", outputNames);
+
+          Service service = new Service();
+          Call call = null;
+
+          try {
+              call = (Call)service.createCall();
+          } catch (ServiceException e3) {
+              e3.printStackTrace();
+          }
+          System.out.println(" HERE IDA 2");   
+
+          MessageContext context = call.getMessageContext();
+			  context.setUsername(username_password.getUsername());
+  		  context.setPassword(username_password.getPasswordAsString());
+  		  username_password.resetPassword();
+
+  		  call.setTargetEndpointAddress(preferences.getRepositoryLocation() + "/e-LICO/IDAService?wsdl");
+		  call.setOperationName("startIDA");
+
+		// Invoke
+		Map<String, Object> myOutputs = new HashMap<String, Object>();
+		
+		try {
+			myOutputs = myInvoker.invoke(inputMap,call);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(" HERE IDA3");   
+		
+		String myOutput = myOutputs.toString();
+		System.out.println(" START IDA " + myOutput);
+		
+		
+          
+        }
+                
+        public void dodgy(ByteBuffer bytebuff, Plan p) { 
+        	
+        	  setUpUserNamePassword();
+        	  startIDA();
+
+        	  byte[] bb = bytebuff.array();
+        	  String plan = new String(bb);
+        	  System.out.println(" HERE 1");
+        	 
+        	  String encodedPlan = Base64.encode(bb);
+        
+        	  System.out.println(" base 64 encoded plan "  + encodedPlan);
+        	          	  
+        	  Map<Object, String> inputMap = new HashMap<Object, String>();
+              
+        	  String inputString = "<executeSerializedDominatingOperator xmlns=\"http://elico.rapid_i.com/\"><serializedSubprocess xmlns=\"\">" + encodedPlan + "</serializedSubprocess><inputLocations xmlns=\"\"></inputLocations></executeSerializedDominatingOperator>";
+                     	  
+              inputMap.put("executeSerializedDominatingOperator", inputString);
+              
+        	  System.out.println(" HERE 2");
+
+              WSDLActivityConfigurationBean myBean = new WSDLActivityConfigurationBean();
+              myBean.setWsdl(preferences.getExecutorServiceWSDL());
+              myBean.setOperation("executeSerializedDominatingOperator");
+              
+           // Output and Parser for WSDLSOAPInvoker
+              List<String> outputNames = new ArrayList<String>();
+              outputNames.add("executeSerializedDominatingOperatorResponse");
+        	
+              WSDLParser parser = null;
+        	  System.out.println(" HERE 3");
+
+              try {
+
+                  parser = new WSDLParser(myBean.getWsdl());
+
+              } catch (ParserConfigurationException e1) {
+                  e1.printStackTrace();
+              } catch (WSDLException e1) {
+                  e1.printStackTrace();
+              } catch (IOException e1) {
+                  e1.printStackTrace();
+              } catch (SAXException e1) {
+                  e1.printStackTrace();
+              }
+        	  System.out.println(" HERE 4");
+
+              WSDLSOAPInvoker myInvoker = new WSDLSOAPInvoker(parser, "executeSerializedDominatingOperator", outputNames);
+
+              Service service = new Service();
+              Call call = null;
+
+              try {
+                  call = (Call)service.createCall();
+              } catch (ServiceException e3) {
+                  e3.printStackTrace();
+              }
+        	  System.out.println(" HERE 5");
+
+              
+              
+              MessageContext context = call.getMessageContext();
+  			  context.setUsername(username_password.getUsername());
+      		  context.setPassword(username_password.getPasswordAsString());
+      		  username_password.resetPassword();
+
+      		call.setTargetEndpointAddress(preferences.getExecutorServiceWSDL());
+    		call.setOperationName("executeSerializedDominatingOperator");
+      	  System.out.println(" HERE 6");
+
+    		// Invoke
+    		Map<String, Object> myOutputs = new HashMap<String, Object>();
+
+    		try {
+    			myOutputs = myInvoker.invoke(inputMap,call);
+    		} catch (Exception e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
+      	  System.out.println(" HERE 7");
+
+    		String myOutput = myOutputs.toString();
+    		System.out.println(" MY DOM OP OUTPUT " + myOutput);
+        }
+
+        public void setUpUserNamePassword () {
+
+
+            preferences = getPreferences();
+            if (preferences != null) {
+                CredentialManager credManager = null;
+                try {
+                    credManager = CredentialManager.getInstance();
+                    username_password = credManager.getUsernameAndPasswordForService(URI.create(preferences.getExecutorServiceWSDL()), true, null);
+
+                    preferences.setUsername(username_password.getUsername());
+                    preferences.setPassword(username_password.getPasswordAsString());
+                } catch (CMException e) {
+                    e.printStackTrace();
+
+                }
+            }
+            else {
+                JOptionPane.showMessageDialog(new JFrame(),
+                        new JLabel("<html>Please set the Rapid Analytics repository location <br> " +
+                                "in the preferences panel</html>"));
+            }
+        }
+
+        private RapidAnalyticsPreferences getPreferences() {
+
+            RapidMinerPluginConfiguration config = RapidMinerPluginConfiguration.getInstance();
+            String repos = config.getProperty(RapidMinerPluginConfiguration.RA_REPOSITORY_LOCATION);
+            System.err.println("Got repository location: " + repos);
+            if (repos.equals("")) {
+                return null;
+            }
+
+            RapidAnalyticsPreferences pref = new RapidAnalyticsPreferences();
+            pref.setRepositoryLocation(repos);
+            return pref;
+
+        }
+
+        
         private void fireStartPlannerError (final IDAException e) {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
