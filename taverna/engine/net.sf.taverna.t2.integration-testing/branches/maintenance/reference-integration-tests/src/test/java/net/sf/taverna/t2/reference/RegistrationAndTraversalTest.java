@@ -58,7 +58,7 @@ public class RegistrationAndTraversalTest {
 		}
 		// Add a single URL object to register
 		objectsToRegister.add(new URL(
-				"http://www.ebi.ac.uk/~tmo/defaultMartRegistry.xml"));
+				"http://www.mygrid.org.uk"));
 		// Add a byte array to register
 		objectsToRegister.add("Hello world".getBytes());
 
