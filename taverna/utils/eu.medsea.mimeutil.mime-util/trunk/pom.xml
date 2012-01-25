@@ -10,7 +10,7 @@
 		<url>http://www.medsea.eu</url>
 	</organization>
 
-	<version>2.1.2-SNAPSHOT</version>
+	<version>2.1.3-SNAPSHOT</version>
 	<description>mime-util is a simple to use, small, light weight and fast open source java utility library that can detect
 		MIME types from files, input streams, URL's and byte arrays.
 		Due to the use of regular expressions and the java.nio packages it requires at least Java 1.4.
@@ -183,7 +183,7 @@
 		<url>http://mime-util.svn.sourceforge.net/viewvc/mime-util/</url>
 	</scm>
 
-	<!-- 
+	<!--
 	<distributionManagement>
 		<repository>
 			<id>sourceforge</id>
@@ -203,7 +203,7 @@
 				To create and login to a shell use : ssh -t
 				USER,PROJECT@shell.sourceforge.net create
 			-->
-			<!-- 
+			<!--
 		</site>
 	</distributionManagement>
 			 -->
