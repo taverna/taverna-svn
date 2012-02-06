@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package net.sf.taverna.t2.provenance.lineageservice.mysql;
 
@@ -14,6 +14,8 @@ import net.sf.taverna.t2.provenance.lineageservice.utils.WorkflowRun;
 
 import org.apache.log4j.Logger;
 
+import uk.org.taverna.platform.database.DatabaseManager;
+
 /**
  * @author paolo
  *
@@ -25,15 +27,15 @@ public class NaiveProvenanceQuery {
 
 	private ProvenanceQuery pq = null;
 
-	public NaiveProvenanceQuery(String location) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public NaiveProvenanceQuery(String location, DatabaseManager databaseManager) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
-		pq = new MySQLProvenanceQuery();  // manages connections
+		pq = new MySQLProvenanceQuery(databaseManager);  // manages connections
 	}
 
 
-	
+
 	/**
-	 * facade - calls underlying recursiveNaiveQuery method with allInstances = false. This causes the method to operate on the latest 
+	 * facade - calls underlying recursiveNaiveQuery method with allInstances = false. This causes the method to operate on the latest
 	 * wf instance only
 	 * @param targetVar
 	 * @param targetProc
@@ -43,20 +45,20 @@ public class NaiveProvenanceQuery {
 	 * @throws SQLException
 	 */
 	public List<DDRecord> recursiveNaiveQuery(String targetVar, String targetProc, String targetIteration, List<String> path) throws SQLException  {
-		
+
 		return recursiveNaiveQuery(targetVar, targetProc, targetIteration, path, false);
 	}
 
-		
+
 	/**
-	 * answers a lineage quey by performing a traversal of the nodes in path. This involves executing one query for each 
-	 * DD record to be retrieved 
+	 * answers a lineage quey by performing a traversal of the nodes in path. This involves executing one query for each
+	 * DD record to be retrieved
 	 * @param targetVar
 	 * @param targetProc
 	 * @param targetIteration
 	 * @param path
 	 * @param allInstances set to true to have the query be repeated on all instances in the DB. Used for performance testing
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	public List<DDRecord> recursiveNaiveQuery(String targetVar, String targetProc, String targetIteration, List<String> path,
 			boolean allInstances) throws SQLException  {
@@ -67,9 +69,9 @@ public class NaiveProvenanceQuery {
 
 		// fetch latest WorkflowRun ID, to use as part of the key
 		List<WorkflowRun> IDs = pq.getRuns(null, null);
-		
+
 		WorkflowRun workflowRun = IDs.get(0);
-		
+
 		List<DDRecord> recordsQueue = new ArrayList<DDRecord>();
 
 		// execute initial xform step
@@ -94,7 +96,7 @@ public class NaiveProvenanceQuery {
 			}  else {  // we did an xfer
 
 				if (path.contains(r.getPFrom())) {
-					
+
 					newRecords = DDrecords;
 
 					DDrecords.clear();
@@ -111,7 +113,7 @@ public class NaiveProvenanceQuery {
 	/**
 	 * computeLineage using the naive approach -- based on table DD +Datalinks
 	 * DD is populated from the events log using DataDependenciesBuilder
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	public void computeLineageNaive(
 			String workflowRunId,   // context
@@ -119,7 +121,7 @@ public class NaiveProvenanceQuery {
 			String var,   // target var
 			String value, // which value -- paths are not used in the naive approach
 			boolean isInput  // true if this is an input value to a processor
-	) throws SQLException  
+	) throws SQLException
 	{
 
 		List<DDRecord> stack = new ArrayList<DDRecord>();
@@ -145,10 +147,10 @@ public class NaiveProvenanceQuery {
 				Set<DDRecord> xferResults = pq.queryDataLinksForDD(
 						current.getPTo(), current.getVFrom(), current.getValFrom(), workflowRunId);
 
-				if (xferResults != null) {			
+				if (xferResults != null) {
 
-					for (DDRecord r1:xferResults) {					
-						logger.info("xfer result: "+r1.toString());						
+					for (DDRecord r1:xferResults) {
+						logger.info("xfer result: "+r1.toString());
 						r1.setInput(false);
 					}
 					stack.addAll(xferResults);
@@ -170,9 +172,9 @@ public class NaiveProvenanceQuery {
 	}
 
 
-	
+
 	/**
-	 * gnerates a multi-join query that encodes an entire path traversal over DD 
+	 * gnerates a multi-join query that encodes an entire path traversal over DD
 	 * @param path
 	 * @return an SQL query that computes provenance along a path as a single multi-join query
 	 */
@@ -184,7 +186,7 @@ public class NaiveProvenanceQuery {
 		StringBuffer joinClause = new StringBuffer();
 
 		String straughtJoinClause = " STRAIGHT_JOIN ";
-		
+
 		int tableCounter = 1;
 
 		String currentTableVar = "D"+tableCounter;
@@ -201,7 +203,7 @@ public class NaiveProvenanceQuery {
 
 		path.remove(0);  // path excludes the initial processor node  CHECK
 
-		for (String node:path) { 
+		for (String node:path) {
 
 			tableCounter++;
 			nextTableVar = "D"+tableCounter;
@@ -239,7 +241,7 @@ public class NaiveProvenanceQuery {
 
 
 	/**
-	 * gnerates a multi-join query that encodes an entire path traversal over DD 
+	 * gnerates a multi-join query that encodes an entire path traversal over DD
 	 * @param path
 	 * @return an SQL query that computes provenance along a path as a single multi-join query
 	 */
@@ -268,7 +270,7 @@ public class NaiveProvenanceQuery {
 
 		path.remove(0);  // path excludes the initial processor node  CHECK
 
-		for (String node:path) { 
+		for (String node:path) {
 
 			tableCounter++;
 			nextTableVar = "D"+tableCounter;

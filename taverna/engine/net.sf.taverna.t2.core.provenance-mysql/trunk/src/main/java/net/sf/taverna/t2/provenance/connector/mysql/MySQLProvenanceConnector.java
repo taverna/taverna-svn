@@ -34,6 +34,8 @@ import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceWriter;
 
 import org.apache.log4j.Logger;
 
+import uk.org.taverna.platform.database.DatabaseManager;
+
 public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 	private static Logger logger = Logger
@@ -43,10 +45,10 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 	private static final String createDB = "CREATE DATABASE IF NOT EXISTS T2Provenance";
 
-    public MySQLProvenanceConnector() {
-    	super();
-		setWriter(new MySQLProvenanceWriter());
-		setQuery(new MySQLProvenanceQuery());
+    public MySQLProvenanceConnector(DatabaseManager databaseManager) {
+    	super(databaseManager);
+		setWriter(new MySQLProvenanceWriter(databaseManager));
+		setQuery(new MySQLProvenanceQuery(databaseManager));
     }
 
 
@@ -91,7 +93,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 		runnable.run();
 // 	getExecutor().submit(runnable);
 	}
-	
+
 	/**
 	 * MySQL overriden tables, to avoid
 	 * "Specified key was too long; max key length is 1000 bytes" on massive
@@ -101,16 +103,16 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 	// processors/ports/iterations
 	public static enum ActivityTable {
 		Activity, activityId, activityDefinition, workflowId;
-		
+
 		public static String getCreateTable() {
 			return "CREATE TABLE " + Activity + "(\n"
-			+ activityId + " varchar(36) NOT NULL,\n" 
-			+ activityDefinition + " blob NOT NULL,\n"	
+			+ activityId + " varchar(36) NOT NULL,\n"
+			+ activityDefinition + " blob NOT NULL,\n"
 			+ workflowId + " varchar(100) NOT NULL, \n"
 			+ "PRIMARY KEY (" + activityId + ")\n" + ")";
-		}		
+		}
 	}
-	
+
 	public static enum CollectionTable {
 		Collection, collID, parentCollIDRef, workflowRunId, processorNameRef, portName, iteration;
 		public static String getCreateTable() {
@@ -129,28 +131,28 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 	public static enum DataBindingTable {
 		DataBinding, dataBindingId, portId, t2Reference, workflowRunId;
-		
+
 		public static String getCreateTable() {
 			return "CREATE TABLE " + DataBinding + "(\n"
-			+ dataBindingId + " varchar(36) NOT NULL,\n" 
-			+ portId + " varchar(36) NOT NULL,\n"		
-			+ t2Reference + " varchar(100) NOT NULL,\n"		
+			+ dataBindingId + " varchar(36) NOT NULL,\n"
+			+ portId + " varchar(36) NOT NULL,\n"
+			+ t2Reference + " varchar(100) NOT NULL,\n"
 			+ workflowRunId + " varchar(100) NOT NULL, \n"
 			+ "PRIMARY KEY (" + dataBindingId + "," + portId + ")\n" + ")";
-		}		
+		}
 	}
-	
+
 	public static enum DataflowInvocationTable {
-		DataflowInvocation, dataflowInvocationId, 
+		DataflowInvocation, dataflowInvocationId,
 		workflowId,
-		invocationStarted, invocationEnded, 
+		invocationStarted, invocationEnded,
 		inputsDataBinding, outputsDataBinding,
 		parentProcessorEnactmentId, workflowRunId, completed;
-		
+
 		public static String getCreateTable() {
 			return "CREATE TABLE " + DataflowInvocation + "(\n"
 			+ dataflowInvocationId + " varchar(36) NOT NULL,\n"
-			+ workflowId + " varchar(100) NOT NULL, \n"			
+			+ workflowId + " varchar(100) NOT NULL, \n"
 			+ invocationStarted + " timestamp, \n"
 			+ invocationEnded + " timestamp, \n"
 			+ inputsDataBinding + " varchar(36),\n"
@@ -159,11 +161,11 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 			+ workflowRunId + " varchar(100) NOT NULL, \n"
 			+ completed + " smallint NOT NULL,\n"
 			+ "PRIMARY KEY (" + dataflowInvocationId+ ")\n" + ")";
-		}		
+		}
 	}
-	
-	public static enum DataLinkTable { 
-		Datalink, sourcePortName, sourcePortId, destinationPortId, 
+
+	public static enum DataLinkTable {
+		Datalink, sourcePortName, sourcePortId, destinationPortId,
 		destinationPortName, sourceProcessorName, destinationProcessorName, workflowId;
 		public static String getCreateTable() {
 			return "CREATE TABLE " + Datalink + " (\n"
@@ -173,7 +175,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 					+ destinationPortName + " varchar(70) NOT NULL,\n"
 					+ sourceProcessorName + " varchar(70) NOT NULL,\n"
 					+ destinationProcessorName + " varchar(70) NOT NULL,\n"
-					+ workflowId + " varchar(36) NOT NULL," 
+					+ workflowId + " varchar(36) NOT NULL,"
 					+ " PRIMARY KEY  ("
 					+ sourcePortId + "," + destinationPortId + "," + workflowId
 					+ "))";
@@ -202,19 +204,19 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 
 	public static enum PortTable {
-		Port, portId, processorId, portName, isInputPort, processorName, 
+		Port, portId, processorId, portName, isInputPort, processorName,
 		workflowId, depth, resolvedDepth, iterationStrategyOrder;
 		public static String getCreateTable() {
 			return  "CREATE TABLE " + Port + " (\n"
 			+ portId + " varchar(36) NOT NULL,\n"
 			+ processorId + " varchar(36),\n"
-			+ portName + " varchar(70) NOT NULL,\n"			
+			+ portName + " varchar(70) NOT NULL,\n"
 			+ isInputPort + " smallint NOT NULL ,\n"
 			+ processorName + " varchar(70) NOT NULL,\n"
-			+ workflowId + " varchar(36) NOT NULL,\n" 
+			+ workflowId + " varchar(36) NOT NULL,\n"
 			+ depth + " int,\n"
-			+ resolvedDepth + " int,\n" 
-			+ iterationStrategyOrder + " smallint, \n" 
+			+ resolvedDepth + " int,\n"
+			+ iterationStrategyOrder + " smallint, \n"
 			+ "PRIMARY KEY (" + "portId" + "),\n"
 			+ "CONSTRAINT port_constraint UNIQUE (\n"
 			+ portName + "," + isInputPort + "," + processorName + "," + workflowId + "\n"
@@ -223,11 +225,11 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 	}
 
 	public static enum ProcessorEnactmentTable {
-		ProcessorEnactment, processEnactmentId, workflowRunId, processorId, 
-		processIdentifier, iteration, parentProcessorEnactmentId, 
-		enactmentStarted, enactmentEnded, initialInputsDataBindingId, 
+		ProcessorEnactment, processEnactmentId, workflowRunId, processorId,
+		processIdentifier, iteration, parentProcessorEnactmentId,
+		enactmentStarted, enactmentEnded, initialInputsDataBindingId,
 		finalOutputsDataBindingId;
-	
+
 		public static String getCreateTable() {
 			return "CREATE TABLE " + ProcessorEnactment + " (\n"
 			+ processEnactmentId + " varchar(36) NOT NULL, \n"
@@ -243,7 +245,7 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 			+ " PRIMARY KEY (" + processEnactmentId + ")" + ")";
 		}
 	}
-	
+
 	public static enum ProcessorTable {
 		Processor,processorId, processorName,workflowId,firstActivityClass,isTopLevel ;
 		public static String getCreateTable() {
@@ -260,14 +262,14 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 	}
 
 	public static enum ServiceInvocationTable {
-		ServiceInvocation, processorEnactmentId, workflowRunId, 
-		invocationNumber, invocationStarted, invocationEnded, 
-		inputsDataBinding, outputsDataBinding, failureT2Reference, 
+		ServiceInvocation, processorEnactmentId, workflowRunId,
+		invocationNumber, invocationStarted, invocationEnded,
+		inputsDataBinding, outputsDataBinding, failureT2Reference,
 		activityId, initiatingDispatchLayer, finalDispatchLayer;
-		
+
 		public static String getCreateTable() {
 			return "CREATE TABLE " + ServiceInvocation + "(\n"
-			+ processorEnactmentId + " varchar(36) NOT NULL,\n" 
+			+ processorEnactmentId + " varchar(36) NOT NULL,\n"
 			+ workflowRunId + " varchar(100) NOT NULL, \n"
 			+ invocationNumber + " bigint NOT NULL,\n"
 			+ invocationStarted + " timestamp, \n"
@@ -278,9 +280,9 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 			+ activityId + " varchar(36),\n"
 			+ initiatingDispatchLayer + " varchar(250) NOT NULL,\n"
 			+ finalDispatchLayer + " varchar(250) NOT NULL,\n"
-			+ "PRIMARY KEY (" + processorEnactmentId + ", " 
+			+ "PRIMARY KEY (" + processorEnactmentId + ", "
 			+ invocationNumber + "))";
-		}			
+		}
 	}
 
 	public static enum WorkflowRunTable {
@@ -293,19 +295,19 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 			+ " PRIMARY KEY (" + workflowRunId + ", " + workflowId + "))";
 		}
 	}
-	
+
 	public static enum WorkflowTable {
 		WorkflowTable, workflowId, parentWorkflowId, externalName, dataflow;
 		public static String getCreateTable() {
 			return "CREATE TABLE " + "Workflow (\n" +
-					workflowId	+ " varchar(36) NOT NULL,\n" 
-					+ parentWorkflowId + " varchar(100),\n" 
+					workflowId	+ " varchar(36) NOT NULL,\n"
+					+ parentWorkflowId + " varchar(100),\n"
 					+ externalName + " varchar(100),\n"
-					+ dataflow + " longblob, \n" 
+					+ dataflow + " longblob, \n"
 					+ "PRIMARY KEY  (" + workflowId	+ "))";
 		}
 	}
-	
+
 
 	@Override
 	public void createDatabase() {
@@ -344,12 +346,6 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 		} catch (SQLException e) {
 			logger.error("There was a problem creating the Provenance database database: ",e);
-		} catch (InstantiationException e) {
-			logger.error("Error creating MySQL database tables",e);
-		} catch (IllegalAccessException e) {
-			logger.error("Error creating MySQL database tables",e);
-		} catch (ClassNotFoundException e) {
-			logger.error("Error creating MySQL database tables",e);
 		} finally {
             if (connection != null) {
                 try {
@@ -372,12 +368,6 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 			logger
 			.warn("There was a problem deleting the Provenance database: "
 					+ e.toString());
-		} catch (InstantiationException e) {
-			logger.error("Could not delete database", e);
-		} catch (IllegalAccessException e) {
-			logger.error("Could not delete database", e);
-		} catch (ClassNotFoundException e) {
-			logger.error("Could not delete database", e);
 		}
 
 	}

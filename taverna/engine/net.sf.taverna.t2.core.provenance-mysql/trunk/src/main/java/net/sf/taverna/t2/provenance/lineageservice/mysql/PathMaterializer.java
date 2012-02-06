@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package net.sf.taverna.t2.provenance.lineageservice.mysql;
 
@@ -14,7 +14,7 @@ import java.util.Set;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProvenanceProcessor;
-import net.sf.taverna.t2.provenance.lineageservice.utils.Port;
+import uk.org.taverna.platform.database.DatabaseManager;
 
 /**
  * given a graph structure in the DB, generates all pairs (p1,p2) such that there is a path from processor p1 to processor p2
@@ -28,17 +28,17 @@ public class PathMaterializer {
 	private ProvenanceQuery      pq = null;
 	private String location;
 
-	public PathMaterializer(String location) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public PathMaterializer(String location, DatabaseManager databaseManager) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
-		pq = new MySQLProvenanceQuery();
-		pw = new MySQLProvenanceWriter();
-		
+		pq = new MySQLProvenanceQuery(databaseManager);
+		pw = new MySQLProvenanceWriter(databaseManager);
+
 		setLocation(location);
 	}
 
 
 	/**
-	 * 
+	 *
 	 * @throws SQLException
 	 */
 	public Map<String, Set<String>> materializePathPairs(String dataflowRef) throws SQLException {
@@ -50,27 +50,27 @@ public class PathMaterializer {
 		// now fetch all children workflows and recurse
 		List<String> children = pq.getChildrenOfWorkflow(dataflowRef);
 
-		for (String childWorkflowId: children) {			
+		for (String childWorkflowId: children) {
 			Map<String, Set<String>> canBeReachedFrom1 = materializePathPairs(childWorkflowId);
-			
+
 			// merge maps: assumes unique processor IDs??
 			canBeReachedFrom.entrySet().addAll(canBeReachedFrom1.entrySet());
 		}
-		
+
 		return canBeReachedFrom;
 	}
 
 
 	/**
-	 * @param dataflowRef the static workflowId of the dataflow whose processors we need to sort 
+	 * @param dataflowRef the static workflowId of the dataflow whose processors we need to sort
 	 * @throws SQLException
-	 * @return a list of processors that are immediately contained within workflowRunId. This is used by caller to recurse on 
+	 * @return a list of processors that are immediately contained within workflowRunId. This is used by caller to recurse on
 	 * sub-workflows
 	 */
 	public Map<String, Set<String>> materializePathPairsWithinSubflow(String dataflowRef) throws SQLException {
 
-		 
-		// (p,p') in canBeReachedFrom iff p' can be reached from p 
+
+		// (p,p') in canBeReachedFrom iff p' can be reached from p
 		Map<String, Set<String>> canBeReachedFrom = new HashMap<String, Set<String>>();
 
 		List<String> Q = new ArrayList<String>();
@@ -79,12 +79,12 @@ public class PathMaterializer {
 		Map<String, Integer> processorsLinks = pq.getProcessorsIncomingLinks(dataflowRef);
 
 		// fetch processors that are dataflows -- these will be excluded from the loop
-		List<ProvenanceProcessor> dataflows = 
+		List<ProvenanceProcessor> dataflows =
 			pq.getProcessorsShallow(ProvenanceProcessor.DATAFLOW_ACTIVITY, dataflowRef);
 		List<String> dataflowNames = new ArrayList<String>();
-		
-		for (ProvenanceProcessor proc:dataflows) { dataflowNames.add(proc.getProcessorName()); } 
-			
+
+		for (ProvenanceProcessor proc:dataflows) { dataflowNames.add(proc.getProcessorName()); }
+
 		// initialize queue with roots of graph
 		for (Map.Entry<String,Integer> entry: processorsLinks.entrySet()) {
 			if (entry.getValue().intValue()==0)  Q.add(entry.getKey());
@@ -95,7 +95,7 @@ public class PathMaterializer {
 		}
 
 		Set<String> visited = new HashSet<String>();
-		
+
 		while (!Q.isEmpty()) {
 
 			String p = Q.remove(0);
@@ -105,7 +105,7 @@ public class PathMaterializer {
 
 			// skip dataflowName -- this is not a valid successor
 			if (dataflowNames.contains(p))  continue;
-			
+
 			List<String> successors = pq.getSuccProcessors(p, dataflowRef, null);  // null workflowRunId: CHECK
 
 			for (String p1: successors) {
@@ -122,10 +122,10 @@ public class PathMaterializer {
 		}
 		return canBeReachedFrom;
 	}
-	
-	
-	
-	
+
+
+
+
 
 	public void setPw(ProvenanceWriter pw) {
 		this.pw = pw;
@@ -144,6 +144,6 @@ public class PathMaterializer {
 	}
 
 	public void setLocation(String location) {
-		this.location = location;		
+		this.location = location;
 	}
 }

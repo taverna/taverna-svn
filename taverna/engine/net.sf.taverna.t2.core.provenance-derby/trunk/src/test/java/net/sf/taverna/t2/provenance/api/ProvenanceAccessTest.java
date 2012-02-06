@@ -30,6 +30,7 @@ public class ProvenanceAccessTest {
      * Test of initDataSource method, of class ProvenanceAccess.
      */
     @Test
+    @Ignore
     public void testInitDataSource() throws Exception {
         String driver = "org.apache.derby.jdbc.EmbeddedDriver";
         File tempDir = File.createTempFile("install", "dir");
@@ -46,6 +47,7 @@ public class ProvenanceAccessTest {
     }
 
     @Test
+    @Ignore
     public void testInitDataSource2() throws Exception {
         String driver = "org.apache.derby.jdbc.EmbeddedDriver";
         File tempDir = File.createTempFile("install", "dir");

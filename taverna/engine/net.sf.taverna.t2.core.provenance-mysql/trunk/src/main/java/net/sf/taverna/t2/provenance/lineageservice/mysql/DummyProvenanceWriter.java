@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package net.sf.taverna.t2.provenance.lineageservice.mysql;
 
@@ -8,9 +8,10 @@ import java.util.List;
 import java.util.Set;
 
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
-import net.sf.taverna.t2.provenance.lineageservice.utils.ProcessorBinding;
 import net.sf.taverna.t2.provenance.lineageservice.utils.Port;
 import net.sf.taverna.t2.provenance.lineageservice.utils.PortBinding;
+import net.sf.taverna.t2.provenance.lineageservice.utils.ProcessorBinding;
+import uk.org.taverna.platform.database.DatabaseManager;
 
 /**
  * used to cut out mySQL writes altogether -- for testing purposes only
@@ -18,6 +19,10 @@ import net.sf.taverna.t2.provenance.lineageservice.utils.PortBinding;
  *
  */
 public class DummyProvenanceWriter extends ProvenanceWriter {
+
+	public DummyProvenanceWriter(DatabaseManager databaseManager) {
+		super(databaseManager);
+	}
 
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter#addDataLink(net.sf.taverna.t2.provenance.lineageservice.utils.Port, net.sf.taverna.t2.provenance.lineageservice.utils.Port, java.lang.String)

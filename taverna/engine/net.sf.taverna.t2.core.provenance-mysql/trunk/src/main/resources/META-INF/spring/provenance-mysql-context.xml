@@ -3,6 +3,9 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
                       http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="MySQLProvenanceConnectorFactory" class="net.sf.taverna.t2.provenance.connector.mysql.MySQLProvenanceConnectorFactory" />
+	<bean id="MySQLProvenanceConnectorFactory" class="net.sf.taverna.t2.provenance.connector.mysql.MySQLProvenanceConnectorFactory" >
+			<property name="databaseManager" ref="databaseManager" />
+	</bean>
+
 
 </beans>

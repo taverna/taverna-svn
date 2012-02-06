@@ -33,16 +33,19 @@ import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceWriter;
 
 import org.apache.log4j.Logger;
 
+import uk.org.taverna.platform.database.DatabaseManager;
+
 public class DerbyProvenanceConnector extends ProvenanceConnector {
 
 	private static Logger logger = Logger
 			.getLogger(DerbyProvenanceConnector.class);
-	
+
 	private final String TABLE_EXISTS_STATE = "X0Y32";
 
-	public DerbyProvenanceConnector() {
-		setWriter(new DerbyProvenanceWriter());
-		setQuery(new DerbyProvenanceQuery());
+	public DerbyProvenanceConnector(DatabaseManager databaseManager) {
+		super(databaseManager);
+		setWriter(new DerbyProvenanceWriter(databaseManager));
+		setQuery(new DerbyProvenanceQuery(databaseManager));
 	}
 
 	// FIXME is this needed?
@@ -61,12 +64,6 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 				stmt = connection.createStatement();
 			} catch (SQLException e1) {
 				logger.warn(e1);
-			} catch (InstantiationException e) {
-				logger.warn("Could not create database: ", e);
-			} catch (IllegalAccessException e) {
-				logger.warn("Could not create database: ", e);
-			} catch (ClassNotFoundException e) {
-				logger.warn("Could not create database: ", e);
 			}
 			try {
 				stmt.executeUpdate(DataLinkTable.getCreateTable());
@@ -79,7 +76,7 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 			} catch (SQLException e) {
 				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
 					logger.warn("Could not create table Collection : ", e);
-			}			
+			}
 			try {
 				stmt.executeUpdate(ProcessorTable.getCreateTable());
 			} catch (SQLException e) {
@@ -110,7 +107,7 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 				if (!e.getSQLState().equals(TABLE_EXISTS_STATE))
 					logger.warn("Could not create table Workflow : ", e);
 			}
-			
+
 			try {
 				stmt.executeUpdate(ProcessorEnactmentTable.getCreateTable());
 			} catch (SQLException e) {
@@ -133,7 +130,7 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 					logger.warn("Could not create table DataflowInvocation : ", e);
 			}
 
-			
+
 			try {
 				stmt.executeUpdate(ActivityTable.getCreateTable());
 			} catch (SQLException e) {
@@ -148,8 +145,8 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 					logger.warn("Could not create table "
 							+ DataBindingTable.DataBinding, e);
 			}
-			
-			
+
+
 		} finally {
 			if (connection != null) {
 				try {

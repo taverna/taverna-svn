@@ -8,4 +8,6 @@
 
 	<service ref="MySQLProvenanceConnectorFactory" interface="net.sf.taverna.t2.provenance.ProvenanceConnectorFactory" />
 
+	<reference id="databaseManager" interface="uk.org.taverna.platform.database.DatabaseManager" />
+
 </beans:beans>
