@@ -18,32 +18,32 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
-package uk.org.taverna.platform.configuration.impl;
-
+package uk.org.taverna.configuration.impl;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JPanel;
 
-import uk.org.taverna.platform.configuration.Configurable;
-import uk.org.taverna.platform.configuration.ConfigurationUIFactory;
+import uk.org.taverna.configuration.Configurable;
+import uk.org.taverna.configuration.ConfigurationUIFactory;
 
-public class DummyUIFactory1 implements ConfigurationUIFactory {
+public class DummyUIFactory2 implements ConfigurationUIFactory {
 
 	public boolean canHandle(String uuid) {
 		return getConfigurable().getUUID().equals(uuid);
 	}
 
 	public Configurable getConfigurable() {
-		return new DummyConfigurable1();
+		return new DummyConfigurable2();
 	}
 
 	public JPanel getConfigurationPanel() {
-		return new JPanel();
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	static class DummyConfigurable1 implements Configurable {
+	static class DummyConfigurable2 implements Configurable {
 
 		public void deleteProperty(String key) {
 			// TODO Auto-generated method stub
@@ -76,7 +76,7 @@ public class DummyUIFactory1 implements ConfigurationUIFactory {
 		}
 
 		public String getUUID() {
-			return "123";
+			return "456";
 		}
 
 		public void restoreDefaults() {

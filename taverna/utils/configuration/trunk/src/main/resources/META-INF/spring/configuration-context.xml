@@ -4,13 +4,13 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="applicationConfiguration" class="uk.org.taverna.platform.configuration.app.impl.ApplicationConfigurationImpl" />
-	<bean id="configurationManager" class="uk.org.taverna.platform.configuration.impl.ConfigurationManagerImpl" >
+	<bean id="applicationConfiguration" class="uk.org.taverna.configuration.app.impl.ApplicationConfigurationImpl" />
+	<bean id="configurationManager" class="uk.org.taverna.configuration.impl.ConfigurationManagerImpl" >
 		<constructor-arg name="applicationConfiguration">
 			<ref local="applicationConfiguration" />
 		</constructor-arg>
 	</bean>
-	<!-- <bean id="log4JConfiguration" class="uk.org.taverna.platform.configuration.app.impl.Log4JConfiguration">
+	<!-- <bean id="log4JConfiguration" class="uk.org.taverna.configuration.app.impl.Log4JConfiguration">
 		<property name="applicationConfiguration">
 			<ref local="applicationConfiguration" />
 		</property>

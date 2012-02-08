@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2007 The University of Manchester
+ * Copyright (C) 2011 The University of Manchester
  *
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
@@ -18,47 +18,34 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
+package uk.org.taverna.configuration;
+
 /**
+ * Handles the configuration for a {@link Configurable} object
  *
+ * @author David Withers
  */
-package uk.org.taverna.platform.configuration;
+public interface ConfigurationManager {
 
-import java.util.HashMap;
-import java.util.Map;
+	/**
+	 * Write out the properties configuration to disk based on the UUID of the
+	 * {@link Configurable}
+	 * <br>
+	 * Default values are not stored within the file, but only those that have been changed or deleted.
+	 *
+	 * @param configurable
+	 * @throws Exception
+	 */
+	public void store(Configurable configurable) throws Exception;
 
-import uk.org.taverna.platform.configuration.AbstractConfigurable;
-
-public class DummyConfigurable extends AbstractConfigurable {
-
-	public DummyConfigurable(ConfigurationManager configurationManager) {
-		super(configurationManager);
-	}
-
-	Map<String,String> defaults = null;
-
-	public String getCategory() {
-		return "test";
-	}
-
-	public Map<String, String> getDefaultPropertyMap() {
-		if (defaults==null) {
-			defaults = new HashMap<String, String>();
-			defaults.put("name","john");
-			defaults.put("colour","blue");
-		}
-		return defaults;
-	}
-
-	public String getUUID() {
-		return "cheese";
-	}
-
-	public String getDisplayName() {
-		return "dummyName";
-	}
-
-	public String getFilePrefix() {
-		return "dummyPrefix";
-	}
+	/**
+	 * Loads the configuration details from disk or from memory and populates the provided Configurable
+	 *
+	 * @param configurable
+	 * @return
+	 * @throws Exception
+	 *             if there are no configuration details available
+	 */
+	public void populate(Configurable configurable) throws Exception;
 
 }

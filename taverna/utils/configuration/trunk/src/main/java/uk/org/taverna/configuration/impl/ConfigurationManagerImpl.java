@@ -18,7 +18,7 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
-package uk.org.taverna.platform.configuration.impl;
+package uk.org.taverna.configuration.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,9 +28,9 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
-import uk.org.taverna.platform.configuration.Configurable;
-import uk.org.taverna.platform.configuration.ConfigurationManager;
-import uk.org.taverna.platform.configuration.app.ApplicationConfiguration;
+import uk.org.taverna.configuration.Configurable;
+import uk.org.taverna.configuration.ConfigurationManager;
+import uk.org.taverna.configuration.app.ApplicationConfiguration;
 
 /**
  * Handles the configuration for a {@link Configurable} object

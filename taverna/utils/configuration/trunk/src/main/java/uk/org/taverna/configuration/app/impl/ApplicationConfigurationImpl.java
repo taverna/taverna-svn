@@ -18,7 +18,7 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
-package uk.org.taverna.platform.configuration.app.impl;
+package uk.org.taverna.configuration.app.impl;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +36,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import uk.org.taverna.platform.configuration.app.ApplicationConfiguration;
+import uk.org.taverna.configuration.app.ApplicationConfiguration;
 
 /**
  * Represent the application config as it has been specified in {@value #PROPERTIES}. This

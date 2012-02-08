@@ -18,7 +18,7 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
-package uk.org.taverna.platform.configuration.app.impl;
+package uk.org.taverna.configuration.app.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,7 +33,7 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
 
-import uk.org.taverna.platform.configuration.app.ApplicationConfiguration;
+import uk.org.taverna.configuration.app.ApplicationConfiguration;
 
 public class Log4JConfiguration {
 	public final static String LOG4J_PROPERTIES = "log4j.properties";

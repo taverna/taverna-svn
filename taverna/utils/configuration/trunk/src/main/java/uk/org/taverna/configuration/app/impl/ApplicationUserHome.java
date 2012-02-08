@@ -1,24 +1,24 @@
 /*******************************************************************************
- * Copyright (C) 2007 The University of Manchester   
- * 
+ * Copyright (C) 2007 The University of Manchester
+ *
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
- * 
+ *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public License
  *  as published by the Free Software Foundation; either version 2.1 of
  *  the License, or (at your option) any later version.
- *    
+ *
  *  This program is distributed in the hope that it will be useful, but
  *  WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
- *    
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
-package uk.org.taverna.platform.configuration.app.impl;
+package uk.org.taverna.configuration.app.impl;
 
 import java.io.File;
 
@@ -32,10 +32,10 @@ import org.apache.log4j.Logger;
  * <code>$HOME/.myapp</code> on Linux or
  * <code>C:\Document and settings\MyUsername\Application Data\MyApplication</code>
  * on Windows XP.
- * 
+ *
  * @author Stian Soiland-Reyes
  * @author Stuart Owen
- * 
+ *
  */
 public class ApplicationUserHome {
 
@@ -49,7 +49,7 @@ public class ApplicationUserHome {
 
 	/**
 	 * Initialise with the name of the application.
-	 * 
+	 *
 	 * @param applicationName
 	 *            This name will be used as a template for creating the
 	 *            application home directory (but might be transcribed, for
@@ -64,7 +64,7 @@ public class ApplicationUserHome {
 	/**
 	 * Initialise with the name of the application and a default application
 	 * home.
-	 * 
+	 *
 	 * @param applicationName
 	 *            This name will be used as a template for creating the
 	 *            application home directory (but might be transcribed, for
@@ -101,36 +101,36 @@ public class ApplicationUserHome {
 	 * <p>
 	 * If any exception occurs (such as out of diskspace), <code>null</code>
 	 * will be returned.
-	 * 
+	 *
 	 * <p>
 	 * On Windows XP, this will typically be something like:
-	 * 
+	 *
 	 * <pre>
 	 *      	C:\Document and settings\MyUsername\Application Data\MyApplication
 	 * </pre>
-	 * 
+	 *
 	 * and on Windows Vista it would be something like:
-	 * 
+	 *
 	 * <pre>
 	 *          C:\Users\MyUsername\Application Data\MyApplication
 	 * </pre>
-	 * 
+	 *
 	 * while on Mac OS X it will be something like:
-	 * 
+	 *
 	 * <pre>
 	 *      	/Users/MyUsername/Library/Application Support/MyApplication
 	 * </pre>
-	 * 
+	 *
 	 * All other OS'es are assumed to be UNIX-alike, returning something like:
-	 * 
+	 *
 	 * <pre>
 	 *      	/user/myusername/.myapplication
 	 * </pre>
-	 * 
+	 *
 	 * <p>
 	 * If the directory does not already exist, it will be created.
 	 * </p>
-	 * 
+	 *
 	 * @return An {@link File} referring to an existing directory for
 	 *         user-specific configuration etc. for the given application.
 	 */
@@ -198,9 +198,9 @@ public class ApplicationUserHome {
 	 * lowercase). It is generally recommended, but not required - that this
 	 * name does not contain spaces or any special international/Unicode
 	 * characters.
-	 * 
+	 *
 	 * @return The application's name.
-	 * 
+	 *
 	 */
 	public String getApplicationName() {
 		return applicationName;
@@ -212,7 +212,7 @@ public class ApplicationUserHome {
 	 * always be returned by {@link #getDefaultApplicationHome()} - otherwise
 	 * the normal operating system logic is used to determine the application's
 	 * home directory.
-	 * 
+	 *
 	 * @return The full path to the application's home directory, or
 	 *         <code>null</code> if the operation system specific logic is to
 	 *         be used.

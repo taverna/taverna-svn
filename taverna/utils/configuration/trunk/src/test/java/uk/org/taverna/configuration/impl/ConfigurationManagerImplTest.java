@@ -18,7 +18,7 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
-package uk.org.taverna.platform.configuration.impl;
+package uk.org.taverna.configuration.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -33,10 +33,11 @@ import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.org.taverna.platform.configuration.AbstractConfigurable;
-import uk.org.taverna.platform.configuration.Configurable;
-import uk.org.taverna.platform.configuration.DummyConfigurable;
-import uk.org.taverna.platform.configuration.app.impl.ApplicationConfigurationImpl;
+import uk.org.taverna.configuration.AbstractConfigurable;
+import uk.org.taverna.configuration.Configurable;
+import uk.org.taverna.configuration.DummyConfigurable;
+import uk.org.taverna.configuration.app.impl.ApplicationConfigurationImpl;
+import uk.org.taverna.configuration.impl.ConfigurationManagerImpl;
 
 public class ConfigurationManagerImplTest {
 
