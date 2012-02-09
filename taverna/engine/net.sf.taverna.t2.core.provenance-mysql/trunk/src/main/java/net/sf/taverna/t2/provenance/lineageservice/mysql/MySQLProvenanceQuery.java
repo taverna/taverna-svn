@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceQuery;
-import uk.org.taverna.platform.database.DatabaseManager;
+import uk.org.taverna.configuration.database.DatabaseManager;
 
 
 

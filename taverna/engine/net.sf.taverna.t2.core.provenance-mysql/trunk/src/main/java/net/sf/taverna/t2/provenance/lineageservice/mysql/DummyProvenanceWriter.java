@@ -11,7 +11,7 @@ import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.utils.Port;
 import net.sf.taverna.t2.provenance.lineageservice.utils.PortBinding;
 import net.sf.taverna.t2.provenance.lineageservice.utils.ProcessorBinding;
-import uk.org.taverna.platform.database.DatabaseManager;
+import uk.org.taverna.configuration.database.DatabaseManager;
 
 /**
  * used to cut out mySQL writes altogether -- for testing purposes only

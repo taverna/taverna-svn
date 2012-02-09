@@ -2,7 +2,7 @@ package net.sf.taverna.t2.provenance.connector.derby;
 
 import java.io.File;
 
-import uk.org.taverna.platform.database.DatabaseConfiguration;
+import uk.org.taverna.configuration.database.DatabaseConfiguration;
 
 public class DatabaseHelper {
 

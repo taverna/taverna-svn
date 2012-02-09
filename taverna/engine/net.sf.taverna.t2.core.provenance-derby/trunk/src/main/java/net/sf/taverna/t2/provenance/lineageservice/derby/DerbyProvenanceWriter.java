@@ -21,7 +21,7 @@
 package net.sf.taverna.t2.provenance.lineageservice.derby;
 
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
-import uk.org.taverna.platform.database.DatabaseManager;
+import uk.org.taverna.configuration.database.DatabaseManager;
 
 /**
  * Uses Apache Derby database to write workflow provenance

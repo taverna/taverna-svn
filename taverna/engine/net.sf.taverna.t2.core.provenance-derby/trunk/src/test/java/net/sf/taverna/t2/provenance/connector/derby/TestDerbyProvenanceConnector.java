@@ -10,10 +10,10 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import uk.org.taverna.platform.configuration.app.impl.ApplicationConfigurationImpl;
-import uk.org.taverna.platform.database.DatabaseConfiguration;
-import uk.org.taverna.platform.database.impl.DatabaseConfigurationImpl;
-import uk.org.taverna.platform.database.impl.DatabaseManagerImpl;
+import uk.org.taverna.configuration.database.DatabaseConfiguration;
+import uk.org.taverna.configuration.database.impl.DatabaseConfigurationImpl;
+import uk.org.taverna.configuration.database.impl.DatabaseManagerImpl;
+import uk.org.taverna.configuration.app.impl.ApplicationConfigurationImpl;
 
 
 public class TestDerbyProvenanceConnector {

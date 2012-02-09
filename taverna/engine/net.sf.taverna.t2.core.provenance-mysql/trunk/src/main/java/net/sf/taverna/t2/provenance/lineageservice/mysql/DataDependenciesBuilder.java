@@ -21,9 +21,8 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-import org.osgi.service.jndi.JNDIContextManager;
 
-import uk.org.taverna.platform.database.DatabaseManager;
+import uk.org.taverna.configuration.database.DatabaseManager;
 
 /**
  * this code populates the DD table in the T2Provenance DB. The table is used to

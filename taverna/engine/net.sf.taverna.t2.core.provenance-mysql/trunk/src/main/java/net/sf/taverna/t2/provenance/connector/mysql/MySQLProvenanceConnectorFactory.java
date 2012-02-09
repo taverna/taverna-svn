@@ -1,8 +1,6 @@
 package net.sf.taverna.t2.provenance.connector.mysql;
 
-import org.osgi.service.jndi.JNDIContextManager;
-
-import uk.org.taverna.platform.database.DatabaseManager;
+import uk.org.taverna.configuration.database.DatabaseManager;
 
 import net.sf.taverna.t2.provenance.ProvenanceConnectorFactory;
 import net.sf.taverna.t2.provenance.api.ProvenanceConnectorType;

@@ -3,7 +3,7 @@ package net.sf.taverna.t2.provenance.connector.derby;
 import net.sf.taverna.t2.provenance.ProvenanceConnectorFactory;
 import net.sf.taverna.t2.provenance.api.ProvenanceConnectorType;
 import net.sf.taverna.t2.provenance.connector.ProvenanceConnector;
-import uk.org.taverna.platform.database.DatabaseManager;
+import uk.org.taverna.configuration.database.DatabaseManager;
 
 public class DerbyProvenanceConnectorFactory implements ProvenanceConnectorFactory{
 

@@ -34,7 +34,7 @@ import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceWriter;
 
 import org.apache.log4j.Logger;
 
-import uk.org.taverna.platform.database.DatabaseManager;
+import uk.org.taverna.configuration.database.DatabaseManager;
 
 public class MySQLProvenanceConnector extends ProvenanceConnector {
 

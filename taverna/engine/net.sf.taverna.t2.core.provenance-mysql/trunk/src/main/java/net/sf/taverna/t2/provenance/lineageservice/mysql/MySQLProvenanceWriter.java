@@ -24,12 +24,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.osgi.service.jndi.JNDIContextManager;
-
-import uk.org.taverna.platform.database.DatabaseManager;
-
 import net.sf.taverna.t2.provenance.lineageservice.ProvenanceWriter;
 import net.sf.taverna.t2.provenance.lineageservice.utils.Port;
+import uk.org.taverna.configuration.database.DatabaseManager;
 
 /**
  * @author paolo
