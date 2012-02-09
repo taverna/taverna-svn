@@ -2,12 +2,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<artifactId>platform</artifactId>
-		<groupId>uk.org.taverna</groupId>
-		<version>0.1.1-SNAPSHOT</version>
+		<groupId>net.sf.taverna</groupId>
+		<artifactId>taverna-parent</artifactId>
+		<version>3.0-SNAPSHOT</version>
 	</parent>
-	<groupId>uk.org.taverna.platform</groupId>
-	<artifactId>database</artifactId>
+	<groupId>uk.org.taverna</groupId>
+	<artifactId>taverna-database-configuration</artifactId>
+	<version>0.1-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 	<build>
 		<plugins>
@@ -25,9 +26,9 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>uk.org.taverna.platform</groupId>
-			<artifactId>configuration</artifactId>
-			<version>0.1.1-SNAPSHOT</version>
+			<groupId>uk.org.taverna</groupId>
+			<artifactId>taverna-configuration</artifactId>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
@@ -53,11 +54,13 @@
 		<dependency>
 			<groupId>org.apache.log4j</groupId>
 			<artifactId>com.springsource.org.apache.log4j</artifactId>
+			<version>${log4j.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

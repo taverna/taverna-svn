@@ -1,4 +1,4 @@
-package uk.org.taverna.platform.database.impl;
+package uk.org.taverna.configuration.database.impl;
 
 import java.io.File;
 import java.sql.Connection;
@@ -10,9 +10,9 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.derby.drda.NetworkServerControl;
 import org.apache.log4j.Logger;
 
-import uk.org.taverna.platform.configuration.app.ApplicationConfiguration;
-import uk.org.taverna.platform.database.DatabaseConfiguration;
-import uk.org.taverna.platform.database.DatabaseManager;
+import uk.org.taverna.configuration.database.DatabaseConfiguration;
+import uk.org.taverna.configuration.database.DatabaseManager;
+import uk.org.taverna.configuration.app.ApplicationConfiguration;
 
 /**
  * A set of utility methods related to basic data management.

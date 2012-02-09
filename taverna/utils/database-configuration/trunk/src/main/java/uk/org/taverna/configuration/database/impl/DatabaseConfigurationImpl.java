@@ -18,14 +18,14 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
-package uk.org.taverna.platform.database.impl;
+package uk.org.taverna.configuration.database.impl;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import uk.org.taverna.platform.configuration.AbstractConfigurable;
-import uk.org.taverna.platform.configuration.ConfigurationManager;
-import uk.org.taverna.platform.database.DatabaseConfiguration;
+import uk.org.taverna.configuration.database.DatabaseConfiguration;
+import uk.org.taverna.configuration.AbstractConfigurable;
+import uk.org.taverna.configuration.ConfigurationManager;
 
 /**
  * Configuration for the reference service and provenance.

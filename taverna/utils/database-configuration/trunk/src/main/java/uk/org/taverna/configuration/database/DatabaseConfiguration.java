@@ -18,11 +18,11 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
-package uk.org.taverna.platform.database;
+package uk.org.taverna.configuration.database;
 
 import java.util.Map;
 
-import uk.org.taverna.platform.configuration.Configurable;
+import uk.org.taverna.configuration.Configurable;
 
 /**
  *

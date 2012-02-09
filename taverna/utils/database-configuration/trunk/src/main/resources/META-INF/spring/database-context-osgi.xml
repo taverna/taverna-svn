@@ -6,12 +6,12 @@
                                  http://www.springframework.org/schema/osgi
                                  http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
-	<service ref="databaseConfiguration" interface="uk.org.taverna.platform.database.DatabaseConfiguration" />
+	<service ref="databaseConfiguration" interface="uk.org.taverna.configuration.database.DatabaseConfiguration" />
 
-	<service ref="databaseManager" interface="uk.org.taverna.platform.database.DatabaseManager" />
+	<service ref="databaseManager" interface="uk.org.taverna.configuration.database.DatabaseManager" />
 
-	<reference id="configurationManager" interface="uk.org.taverna.platform.configuration.ConfigurationManager" />
-	<reference id="applicationConfiguration" interface="uk.org.taverna.platform.configuration.app.ApplicationConfiguration" />
+	<reference id="configurationManager" interface="uk.org.taverna.configuration.ConfigurationManager" />
+	<reference id="applicationConfiguration" interface="uk.org.taverna.configuration.app.ApplicationConfiguration" />
 
 	<!-- <reference id="dataSourceFactory" interface="org.osgi.service.jdbc.DataSourceFactory"
 		filter="(osgi.jdbc.driver.class=org.apache.derby.jdbc.EmbeddedDriver)" /> -->
