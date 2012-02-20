@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.activities.interaction.serviceprovider;
+package net.sf.taverna.t2.activities.interaction.serviceprovider.velocity;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -8,11 +8,14 @@ import javax.swing.Icon;
 
 import net.sf.taverna.t2.activities.interaction.InteractionActivity;
 import net.sf.taverna.t2.activities.interaction.InteractionActivityConfigurationBean;
+import net.sf.taverna.t2.activities.interaction.InteractionActivityType;
+import net.sf.taverna.t2.activities.interaction.serviceprovider.InteractionServiceIcon;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescription;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 
 public class InteractionServiceDesc extends ServiceDescription<InteractionActivityConfigurationBean> {
+	
 
 	/**
 	 * The subclass of Activity which should be instantiated when adding a service
@@ -32,7 +35,8 @@ public class InteractionServiceDesc extends ServiceDescription<InteractionActivi
 	@Override
 	public InteractionActivityConfigurationBean getActivityConfiguration() {
 		InteractionActivityConfigurationBean bean = new InteractionActivityConfigurationBean();
-		bean.setTemplateName(templateName);
+		bean.setPresentationOrigin(templateName);
+		bean.setInteractionActivityType(InteractionActivityType.VelocityTemplate);
 		return bean;
 	}
 

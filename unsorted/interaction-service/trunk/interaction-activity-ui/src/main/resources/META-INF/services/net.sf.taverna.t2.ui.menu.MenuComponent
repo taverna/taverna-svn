@@ -1,1 +1,4 @@
-#net.sf.taverna.t2.activities.interaction.menu.InteractionActivityConfigureMenuAction
+net.sf.taverna.t2.activities.interaction.menu.InteractionActivityConfigureMenuAction
+net.sf.taverna.t2.activities.interaction.menu.AddInteractionTemplateMenuAction
+net.sf.taverna.t2.activities.interaction.menu.AddInteractionTemplateContextualMenuAction
+

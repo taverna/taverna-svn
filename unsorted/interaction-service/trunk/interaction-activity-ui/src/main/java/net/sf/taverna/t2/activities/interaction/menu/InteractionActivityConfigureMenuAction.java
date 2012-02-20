@@ -19,7 +19,7 @@ public class InteractionActivityConfigureMenuAction extends
 		Action result = null;
 		result = new InteractionActivityConfigureAction(findActivity(),
 				getParentFrame());
-		result.putValue(Action.NAME, "Configure example service");
+		result.putValue(Action.NAME, "Configure interaction service");
 		addMenuDots(result);
 		return result;
 	}

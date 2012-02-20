@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.activities.interaction.serviceprovider;
+package net.sf.taverna.t2.activities.interaction.serviceprovider.velocity;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,6 +12,7 @@ import javax.swing.Icon;
 
 
 import net.sf.taverna.t2.activities.interaction.InteractionActivity;
+import net.sf.taverna.t2.activities.interaction.serviceprovider.InteractionServiceIcon;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescription;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescriptionProvider;
 

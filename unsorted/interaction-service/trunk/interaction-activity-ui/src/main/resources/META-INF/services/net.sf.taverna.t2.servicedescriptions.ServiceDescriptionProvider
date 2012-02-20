@@ -1,1 +1,2 @@
-net.sf.taverna.t2.activities.interaction.serviceprovider.InteractionServiceProvider
+net.sf.taverna.t2.activities.interaction.serviceprovider.velocity.InteractionServiceProvider
+net.sf.taverna.t2.activities.interaction.serviceprovider.html.InteractionServiceHtmlTemplateService
