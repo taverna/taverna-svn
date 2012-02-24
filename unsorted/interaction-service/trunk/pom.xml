@@ -4,7 +4,7 @@
 
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>interaction-service</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Example Taverna project</name>
 
@@ -124,12 +124,12 @@
 		<repository>
 			<id>my-plugin-site</id>
 			<name>My Plugin Site</name>
-			<url>scpexe://repository.example.com/www/taverna/plugins/</url>
+			<url>scpexe://www.mygrid.org.uk/taverna/internal/biovel/repository/</url>
 		</repository>
 		<snapshotRepository>
 			<id>my-test-plugin-site</id>
 			<name>My Test Plugin Site</name>
-			<url>file:///tmp/test-plugins/</url>
+			<url>scpexe://rosalind.cs.man.ac.uk/var/www/mygrid/taverna/internal/biovel/snapshot-repository</url>
 		</snapshotRepository>
 	</distributionManagement>
 

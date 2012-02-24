@@ -22,6 +22,7 @@ import org.apache.abdera.parser.ParseException;
 import org.apache.abdera.parser.Parser;
 import org.apache.log4j.Logger;
 
+import net.sf.taverna.t2.activities.interaction.jetty.InteractionJetty;
 import net.sf.taverna.t2.activities.interaction.preference.InteractionPreference;
 import net.sf.taverna.t2.workbench.StartupSPI;
 
@@ -50,6 +51,7 @@ public class FeedClientStartupHook implements StartupSPI {
 
 			@Override
 			public void run() {
+				InteractionJetty.checkJetty();
 				Parser parser = Abdera.getNewParser();
 				Date lastCheckedDate = new Date();
 					while (true) {
@@ -66,9 +68,7 @@ public class FeedClientStartupHook implements StartupSPI {
 						Document<Feed> doc = parser.parse(openStream, url.toString());
 						Feed feed = doc.getRoot().sortEntriesByEdited(true);
 
-						System.err.println("=========");
 						for (Entry entry : feed.getEntries()) {
-							System.err.println(entry.getId());
 							if (entry.getEdited().before(lastCheckedDate)) {
 								break;
 							}

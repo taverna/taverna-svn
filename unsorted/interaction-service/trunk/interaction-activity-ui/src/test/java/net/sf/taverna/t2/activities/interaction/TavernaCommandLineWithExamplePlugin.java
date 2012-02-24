@@ -16,10 +16,10 @@ import net.sf.taverna.raven.launcher.Launcher;
  * in a Taverna run normally.
  * 
  */
-public class TavernaWorkbenchWithExamplePlugin {
+public class TavernaCommandLineWithExamplePlugin {
 	public static void main(String[] args) throws Exception {
-		URL dir = TavernaWorkbenchWithExamplePlugin.class.getResource("/conf/current-profile.xml");
-		System.setProperty("raven.launcher.app.main", "net.sf.taverna.t2.workbench.ui.impl.WorkbenchLauncher");
+		URL dir = TavernaCommandLineWithExamplePlugin.class.getResource("/conf/current-profile.xml");
+		System.setProperty("raven.launcher.app.main", "net.sf.taverna.t2.commandline.CommandLineLauncher");
 		System.setProperty("taverna.startup", dir.toURI().resolve("../").getPath());
 		Launcher.main(args);
 	}

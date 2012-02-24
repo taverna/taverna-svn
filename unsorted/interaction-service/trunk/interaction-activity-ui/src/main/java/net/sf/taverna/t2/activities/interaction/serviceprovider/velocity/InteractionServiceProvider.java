@@ -13,6 +13,7 @@ import javax.swing.Icon;
 
 import net.sf.taverna.t2.activities.interaction.InteractionActivity;
 import net.sf.taverna.t2.activities.interaction.serviceprovider.InteractionServiceIcon;
+import net.sf.taverna.t2.activities.interaction.velocity.InteractionVelocity;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescription;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescriptionProvider;
 
@@ -32,31 +33,13 @@ public class InteractionServiceProvider implements ServiceDescriptionProvider {
 
 		List<ServiceDescription> results = new ArrayList<ServiceDescription>();
 		
-		InputStream is = InteractionActivity.class.getResourceAsStream("/index");
-		if (is == null) {
-			callBack.finished();
-			return;
+		InteractionVelocity.checkVelocity();
+		for (String templateName : InteractionVelocity.getTemplateNames()) {
+			InteractionServiceDesc service = new InteractionServiceDesc();
+			// Populate the service description bean
+			service.setTemplateName(templateName);
+			results.add(service);
 		}
-		BufferedReader br = new BufferedReader(new InputStreamReader(is));
-		try {
-			for (String line = br.readLine(); line != null; line = br.readLine()) {
-				InteractionServiceDesc service = new InteractionServiceDesc();
-				// Populate the service description bean
-				service.setTemplateName(line);
-				results.add(service);
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			is.close();
-			br.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 
 		// partialResults() can also be called several times from inside
 		// for-loop if the full search takes a long time

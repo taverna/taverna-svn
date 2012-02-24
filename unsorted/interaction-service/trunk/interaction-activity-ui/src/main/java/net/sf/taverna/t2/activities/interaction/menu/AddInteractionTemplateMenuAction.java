@@ -57,7 +57,7 @@ public class AddInteractionTemplateMenuAction extends AbstractMenuAction {
 			.getLogger(AddInteractionTemplateMenuAction.class);
 
 	public AddInteractionTemplateMenuAction() {
-		super(InsertMenu.INSERT, 350, ADD_INTERACTION_URI);
+		super(URI.create("http://taverna.sf.net/2008/t2workbench/menu#insert"), 350, ADD_INTERACTION_URI);
 	}
 
 	@Override
