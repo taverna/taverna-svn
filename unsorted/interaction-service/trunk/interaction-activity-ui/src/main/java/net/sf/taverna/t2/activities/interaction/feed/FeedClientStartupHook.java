@@ -39,7 +39,7 @@ public class FeedClientStartupHook implements StartupSPI {
 	 */
 	@Override
 	public int positionHint() {
-		return 10;
+		return 1000;
 	}
 
 	/* (non-Javadoc)

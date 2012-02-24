@@ -3,16 +3,11 @@ package net.sf.taverna.t2.activities.interaction.view;
 import java.awt.Frame;
 
 import javax.swing.Action;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 import net.sf.taverna.t2.activities.interaction.InteractionActivity;
 import net.sf.taverna.t2.activities.interaction.InteractionActivityConfigurationBean;
 import net.sf.taverna.t2.activities.interaction.actions.InteractionActivityConfigurationAction;
-import net.sf.taverna.t2.activities.interaction.config.InteractionActivityConfigureAction;
 import net.sf.taverna.t2.workbench.ui.actions.activity.HTMLBasedActivityContextualView;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
