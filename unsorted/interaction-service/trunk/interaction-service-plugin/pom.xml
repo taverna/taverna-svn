@@ -5,11 +5,11 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>interaction-service</artifactId>
-		<version>0.1-SNAPSHOT</version>
+		<version>0.1</version>
 	</parent>
 	<artifactId>interaction-service-plugin</artifactId>
 	<packaging>taverna-plugin</packaging>
-	<name>Example Taverna plugin</name>
+	<name>Interaction Service Taverna plugin</name>
 
 	<build>
 		<plugins>
@@ -30,12 +30,12 @@
 		<dependency>
 			<groupId>${project.groupId}.activities</groupId>
 			<artifactId>interaction-activity</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}.ui-activities</groupId>
 			<artifactId>interaction-activity-ui</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.1</version>
 		</dependency>
 	</dependencies>
 </project>

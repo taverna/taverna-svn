@@ -31,7 +31,7 @@ public class InteractionPreferencePanel extends JPanel {
 	private static InteractionPreference pref = InteractionPreference.getInstance();
 	
 	private JTextField portField;
-	private JTextField presentationDirectoryField;
+/*	private JTextField presentationDirectoryField;*/
 	private JTextField hostnameField;
 	
 	/**
@@ -78,7 +78,7 @@ public class InteractionPreferencePanel extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         this.add(portField, gbc);
 
-		presentationDirectoryField = new JTextField(TEXTFIELD_SIZE);
+/*		presentationDirectoryField = new JTextField(TEXTFIELD_SIZE);
         gbc.gridx = 0;
         gbc.gridy++;
         gbc.gridwidth = 1;
@@ -88,7 +88,7 @@ public class InteractionPreferencePanel extends JPanel {
         gbc.gridx = 1;
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        this.add(presentationDirectoryField, gbc);
+        this.add(presentationDirectoryField, gbc);*/
 
 		hostnameField = new JTextField(TEXTFIELD_SIZE);
         gbc.gridx = 0;
@@ -161,14 +161,14 @@ public class InteractionPreferencePanel extends JPanel {
 
 	protected void applySettings() {
 		pref.setPort(portField.getText());
-		pref.setPresentationDirectory(presentationDirectoryField.getText());
+/*		pref.setPresentationDirectory(presentationDirectoryField.getText());*/
 		pref.setHostname(hostnameField.getText());
 		pref.store();
 	}
 
 	protected void setFields() {
 		portField.setText(pref.getPort());
-		presentationDirectoryField.setText(pref.getPresentationDirectory());
+/*		presentationDirectoryField.setText(pref.getPresentationDirectory());*/
 		hostnameField.setText(pref.getHostname());
 	}
 	

@@ -2,7 +2,7 @@ package net.sf.taverna.t2.activities.interaction;
 
 import java.net.URL;
 
-// import net.sf.taverna.raven.launcher.Launcher;
+import net.sf.taverna.raven.launcher.Launcher;
 
 /**
  * Run with parameters:
@@ -18,9 +18,9 @@ import java.net.URL;
  */
 public class TavernaWorkbenchWithExamplePlugin {
 	public static void main(String[] args) throws Exception {
-		URL dir = TavernaWorkbenchWithExamplePlugin.class.getResource("/conf/current-profile.xml");
+/*		URL dir = TavernaWorkbenchWithExamplePlugin.class.getResource("/conf/current-profile.xml");
 		System.setProperty("raven.launcher.app.main", "net.sf.taverna.t2.workbench.ui.impl.WorkbenchLauncher");
-		System.setProperty("taverna.startup", dir.toURI().resolve("../").getPath());
-//		Launcher.main(args);
+		System.setProperty("taverna.startup", dir.toURI().resolve("../").getPath());*/
+		Launcher.main(args);
 	}
 }
