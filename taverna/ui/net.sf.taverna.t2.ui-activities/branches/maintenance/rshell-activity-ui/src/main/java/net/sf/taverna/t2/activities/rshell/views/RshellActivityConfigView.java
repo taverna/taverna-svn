@@ -279,6 +279,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 			    String newScript = FileTools.readStringFromFile(RshellActivityConfigView.this, "Load R script", ".r");
 				if (newScript != null) {
 					scriptTextArea.setText(newScript);
+					scriptTextArea.setCaretPosition(0);
 				}
 			}
 		});
