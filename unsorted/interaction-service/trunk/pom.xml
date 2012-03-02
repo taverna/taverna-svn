@@ -125,7 +125,7 @@
 		<repository>
 			<id>my-plugin-site</id>
 			<name>My Plugin Site</name>
-			<url>scpexe://www.mygrid.org.uk/taverna/internal/biovel/repository/</url>
+			<url>scpexe://rosalind.cs.man.ac.uk/var/www/mygrid/taverna/internal/biovel/repository/</url>
 		</repository>
 		<snapshotRepository>
 			<id>my-test-plugin-site</id>
@@ -138,5 +138,6 @@
     <module>interaction-activity</module>
     <module>interaction-activity-ui</module>
     <module>interaction-service-plugin</module>
+    <module>myfancytool-taverna</module>
   </modules>
 </project>
