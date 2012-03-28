@@ -41,8 +41,8 @@
 
 		<dependency>
 			<groupId>org.apache.derby</groupId>
-			<artifactId>derbyclient</artifactId>
-			<version>${derbyclient.version}</version>
+			<artifactId>com.springsource.org.apache.derby.client</artifactId>
+			<version>10.5.1000001.764942</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.derby</groupId>

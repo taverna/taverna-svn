@@ -37,7 +37,7 @@ import java.util.Properties;
  */
 public interface ApplicationConfiguration {
 
-	public static final String CONF_DIR = "config/";
+	public static final String CONF_DIR = "conf/";
 	public static final String PLUGINS_DIR = "plugins";
 
 	public String getName();

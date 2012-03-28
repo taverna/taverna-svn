@@ -44,8 +44,8 @@ public class Log4JConfiguration {
 
 	private Properties properties ;
 
-	protected Log4JConfiguration() {
-		prepareLog4J();
+	public Log4JConfiguration() {
+//		prepareLog4J();
 	}
 
 	public void prepareLog4J() {
