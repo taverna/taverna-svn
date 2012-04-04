@@ -6,7 +6,7 @@
 	<parent>
 		<artifactId>integration-testing</artifactId>
 		<groupId>net.sf.taverna.t2</groupId>
-		<version>1.4-SNAPSHOT</version>
+		<version>1.4</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.integration-testing</groupId>
 	<artifactId>provenance-unit-tests</artifactId>
@@ -32,7 +32,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>provenance-client</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.1</version>
 		</dependency>
 
 		<dependency>
