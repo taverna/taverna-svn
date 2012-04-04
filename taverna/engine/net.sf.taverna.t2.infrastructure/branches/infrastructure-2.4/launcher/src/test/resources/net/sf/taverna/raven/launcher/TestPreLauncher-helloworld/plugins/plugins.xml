@@ -3,7 +3,7 @@
 		<name>helloworld</name>
 		<description>Hello world</description>
 		<identifier>net.sf.taverna.raven.helloworld</identifier>
-		<version>1.7-SNAPSHOT</version>
+		<version>1.7</version>
 		<provider>taverna.sf.net</provider>
 		<enabled>true</enabled>
 		<repositories>
@@ -16,10 +16,10 @@
 		</repositories>
 		<profile>
 			<artifact groupId="uk.org.mygrid.taverna.raven"
-				artifactId="helloworld" version="1.7-SNAPSHOT" />
+				artifactId="helloworld" version="1.7" />
 		</profile>
 		<application>
-			<version>1.7-SNAPSHOT</version>
+			<version>1.7</version>
 		</application>
 	</plugin>
 </plugins>
