@@ -1,0 +1,1 @@
+outputlist = inputlist.subList(Integer.parseInt(fromindex), Integer.parseInt(toindex));
