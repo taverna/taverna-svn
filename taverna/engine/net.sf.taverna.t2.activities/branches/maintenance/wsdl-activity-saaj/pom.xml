@@ -8,6 +8,7 @@
 	</parent>
 	<groupId>net.sf.taverna.t2.activities</groupId>
 	<artifactId>wsdl-activity</artifactId>
+        <version>wsdl-activity-saaj</version>
 	<name>Taverna 2 WSDL Activity</name>
 	<dependencies>
 		<dependency>
@@ -23,7 +24,7 @@
 		<dependency>
 			<groupId>net.sf.taverna</groupId>
 			<artifactId>wsdl-generic</artifactId>
-			<version>${wsdl.generic.version}</version>
+			<version>wsdl-generic-wsdl4j</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.security</groupId>
@@ -38,7 +39,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>activity-test-utils</artifactId>
-			<version>${project.version}</version>
+			<version>${t2.activities.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
