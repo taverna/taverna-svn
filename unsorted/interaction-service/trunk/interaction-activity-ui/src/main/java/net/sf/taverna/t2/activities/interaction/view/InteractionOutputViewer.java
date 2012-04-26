@@ -49,16 +49,9 @@ public class InteractionOutputViewer extends JPanel {
 	private JTextField nameField;
 	/** The depth of the port */
 	private JSpinner depthSpinner;
-	/** The granular depth of the port */
-	private JSpinner granularDepthSpinner;
+
 	/** Whether the values in the bean can be edited */
 	private boolean editable;
-	// private final JList mimeDropList = new JList();
-	
-	private JPanel mimeTypePanel;
-	
-	private JButton addMimeButton;
-	private JFrame mimeFrame;
 
 	/**
 	 * Sets the look and feel of the view through {@link #initView()} and sets
@@ -102,15 +95,6 @@ public class InteractionOutputViewer extends JPanel {
 		depthSpinner.setToolTipText("A depth of 0 means a simple value, like a string. Depth 1 is a list of simple values, while depth 2 is a list of a list of simple values");
 		// depthSpinner.setValue(bean.getDepth());
 		add(depthSpinner, outerConstraint);
-
-		outerConstraint.gridx = 2;
-		SpinnerNumberModel granularModel = new SpinnerNumberModel(new Integer(
-				bean.getDepth()), new Integer(0), new Integer(100),
-				new Integer(1));
-		granularDepthSpinner = new JSpinner(granularModel);
-		// granularDepthSpinner.setValue(bean.getGranularDepth());
-		add(granularDepthSpinner, outerConstraint);
-
 	}
 
 	/**
@@ -131,16 +115,6 @@ public class InteractionOutputViewer extends JPanel {
 	 */
 	public JSpinner getDepthSpinner() {
 		return depthSpinner;
-	}
-
-	/**
-	 * The component which allows the granular depth of the
-	 * {@link ActivityOutputPortDefinitionBean} to be changed
-	 * 
-	 * @return
-	 */
-	public JSpinner getGranularDepthSpinner() {
-		return granularDepthSpinner;
 	}
 
 	/**
@@ -179,26 +153,8 @@ public class InteractionOutputViewer extends JPanel {
 		// this.addMimeTypeButton.setVisible(editable);
 		// this.mimeDropList.setVisible(editable);
 		this.depthSpinner.setEnabled(editable);
-		this.granularDepthSpinner.setEnabled(editable);
 		this.nameField.setEditable(editable);
 
-	}
-
-	/**
-	 * The panel which has all the mime type components in it
-	 * 
-	 * @return
-	 */
-	public JPanel getMimeTypePanel() {
-		return mimeTypePanel;
-	}
-
-	public JButton getAddMimeButton() {
-		return addMimeButton;
-	}
-
-	public JFrame getMimeFrame() {
-		return mimeFrame;
 	}
 
 }

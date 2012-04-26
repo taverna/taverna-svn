@@ -24,6 +24,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.Vector;
 
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -49,7 +50,7 @@ public class InteractionInputViewer extends JPanel {
 
 	private JSpinner depthSpinner;
 
-	private JComboBox literalSelector;
+	private JCheckBox publishField;
 
 	private boolean editable;
 
@@ -90,15 +91,9 @@ public class InteractionInputViewer extends JPanel {
 		nameField = new JTextField(bean.getName());
 		add(nameField, outerConstraint);
 
-		Vector<Boolean> literalSelectorList = new Vector<Boolean>();
-		literalSelectorList.add(true);
-		literalSelectorList.add(false);
-		literalSelector = new JComboBox(literalSelectorList);
-		if (!bean.getAllowsLiteralValues()) {
-			literalSelector.setSelectedIndex(1);
-		}
+		publishField = new JCheckBox("Publish data");
 		outerConstraint.gridx = 1;
-		add(literalSelector, outerConstraint);
+		add(publishField, outerConstraint);
 
 		outerConstraint.gridx = 2;
 		SpinnerNumberModel model = new SpinnerNumberModel(new Integer(bean
@@ -106,7 +101,7 @@ public class InteractionInputViewer extends JPanel {
 		depthSpinner = new JSpinner(model);
 		depthSpinner.setEnabled(false);
 		depthSpinner.setToolTipText("A depth of 0 means a simple value, like a string. Depth 1 is a list of simple values, while depth 2 is a list of a list of simple values");
-		// depthSpinner.setValue(bean.getDepth());
+		depthSpinner.setValue(bean.getDepth());
 
 		add(depthSpinner, outerConstraint);
 
@@ -122,16 +117,6 @@ public class InteractionInputViewer extends JPanel {
 		return nameField;
 	}
 
-	/**
-	 * Set the
-	 * {@link ActivityInputPortDefinitionBean#setAllowsLiteralValues(boolean)}
-	 * to be true or false using this component
-	 * 
-	 * @return
-	 */
-	public JComboBox getLiteralSelector() {
-		return literalSelector;
-	}
 
 	/**
 	 * Change the depth of the {@link ActivityInputPortDefinitionBean}
@@ -177,9 +162,16 @@ public class InteractionInputViewer extends JPanel {
 	 */
 	public void setEditMode() {
 		this.nameField.setEditable(editable);
-		this.literalSelector.setEnabled(editable);
+		this.publishField.setEnabled(editable);
 		this.depthSpinner.setEnabled(editable);
 
+	}
+
+	/**
+	 * @return the publishField
+	 */
+	public JCheckBox getPublishField() {
+		return publishField;
 	}
 
 }

@@ -580,9 +580,6 @@ this.validate();
                                 .setTranslatedElementType(inputView.getBean()
                                                 .getTranslatedElementType());
                 activityInputPortDefinitionBean
-                                .setAllowsLiteralValues((Boolean) inputView
-                                                .getLiteralSelector().getSelectedItem());
-                activityInputPortDefinitionBean
                                 .setDepth((Integer) inputView.getDepthSpinner()
                                                 .getValue());
                 activityInputPortDefinitionBean.setName(inputView

@@ -51,7 +51,9 @@ public class FeedClientStartupHook implements StartupSPI {
 
 			@Override
 			public void run() {
-				InteractionJetty.checkJetty();
+				if (InteractionPreference.getInstance().getUseJetty()) {
+					InteractionJetty.checkJetty();
+				}
 				Parser parser = Abdera.getNewParser();
 				Date lastCheckedDate = new Date();
 					while (true) {
@@ -69,7 +71,14 @@ public class FeedClientStartupHook implements StartupSPI {
 						Feed feed = doc.getRoot().sortEntriesByEdited(true);
 
 						for (Entry entry : feed.getEntries()) {
-							if (entry.getEdited().before(lastCheckedDate)) {
+							Date d = entry.getEdited();
+							if (d == null) {
+								d = entry.getUpdated();
+							}
+							if (d == null) {
+								d = entry.getPublished();
+							}
+							if (d.before(lastCheckedDate)) {
 								break;
 							}
 							Link presentationLink = entry.getLink("presentation");
