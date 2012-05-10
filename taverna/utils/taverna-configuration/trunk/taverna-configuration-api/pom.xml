@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>taverna-configuration</artifactId>
 		<groupId>uk.org.taverna.configuration</groupId>
-		<version>0.1.0</version>
+		<version>0.1.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>taverna-configuration-api</artifactId>
 	<packaging>bundle</packaging>
