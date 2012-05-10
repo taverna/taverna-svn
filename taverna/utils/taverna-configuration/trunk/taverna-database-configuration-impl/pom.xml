@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>taverna-configuration</artifactId>
 		<groupId>uk.org.taverna.configuration</groupId>
-		<version>0.1.0-SNAPSHOT</version>
+		<version>0.1.0</version>
 	</parent>
 	<artifactId>taverna-database-configuration-impl</artifactId>
 	<packaging>bundle</packaging>
@@ -41,22 +41,22 @@
 
 		<dependency>
 			<groupId>org.apache.derby</groupId>
-			<artifactId>com.springsource.org.apache.derby.client</artifactId>
-			<version>10.5.1000001.764942</version>
+			<artifactId>com.springsource.org.apache.derby</artifactId>
+			<version>${derby.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.derby</groupId>
-			<artifactId>com.springsource.org.apache.derby</artifactId>
-			<version>10.5.1000001.764942</version>
+			<artifactId>com.springsource.org.apache.derby.client</artifactId>
+			<version>${derbyclient.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.derby</groupId>
 			<artifactId>com.springsource.org.apache.derby.drda</artifactId>
-			<version>10.5.1000001.764942</version>
+			<version>${derbynet.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-dbcp</groupId>
-			<artifactId>commons-dbcp</artifactId>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>com.springsource.org.apache.commons.dbcp</artifactId>
 			<version>${commons.dbcp.version}</version>
 		</dependency>
 		<dependency>
