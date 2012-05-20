@@ -70,9 +70,6 @@ public abstract class AbstractConfigurable implements Configurable {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.workbench.configuration.Configurable#getProperty(java.lang.String)
-	 */
 	public synchronized String getProperty(String key) {
 		String val = getInternalPropertyMap().get(key);
 		if (val==null) val=getDefaultProperty(key);
@@ -96,9 +93,6 @@ public abstract class AbstractConfigurable implements Configurable {
 		getInternalPropertyMap().clear();
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.workbench.configuration.Configurable#setProperty(java.lang.String, java.lang.Object)
-	 */
 	public synchronized void setProperty(String key, String value) {
 		Object oldValue = getInternalPropertyMap().get(key);
 		if (value==null) {
@@ -124,18 +118,12 @@ public abstract class AbstractConfigurable implements Configurable {
 	}
 
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.workbench.configuration.Configurable#restoreDefaults()
-	 */
 	public void restoreDefaults() {
 		propertyMap.clear();
 		propertyMap.putAll(getDefaultPropertyMap());
 		store();
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.workbench.configuration.Configurable#deleteProperty(java.lang.String)
-	 */
 	public void deleteProperty(String key) {
 		if (getDefaultPropertyMap().containsKey(key)) {
 			propertyMap.put(key, DELETED_VALUE_CODE);
