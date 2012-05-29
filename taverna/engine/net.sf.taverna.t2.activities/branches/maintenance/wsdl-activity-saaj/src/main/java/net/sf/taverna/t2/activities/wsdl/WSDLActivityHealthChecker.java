@@ -126,7 +126,7 @@ public class WSDLActivityHealthChecker extends RemoteHealthChecker {
 	private VisitReport testStyleAndUse(String endpoint, WSDLParser parser, String operationName) throws
                 UnknownOperationException {
 		VisitReport report;
-		String style = parser.getStyle().toLowerCase();
+		String style = parser.getStyle(operationName).toLowerCase();
 		String use = "?";
 		use = parser.getUse(operationName).toLowerCase();
 		if (!checkStyleAndUse(style, use)) {
@@ -143,7 +143,8 @@ public class WSDLActivityHealthChecker extends RemoteHealthChecker {
 		return report;
 	}
 
-	private VisitReport testEndpoint(WSDLParser parser, String operationName) {
+	private VisitReport testEndpoint(WSDLParser parser, String operationName) throws
+                UnknownOperationException {
 		List<VisitReport> reports = new ArrayList<VisitReport>();
 		List<String> endpoints = parser
 				.getOperationEndpointLocations(operationName);

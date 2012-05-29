@@ -21,18 +21,12 @@
 
 package net.sf.taverna.t2.activities.wsdl;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.soap.SOAPElement;
@@ -49,6 +43,7 @@ import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
 import net.sf.taverna.t2.security.credentialmanager.UsernamePassword;
 import net.sf.taverna.wsdl.parser.WSDLParser;
 import net.sf.taverna.wsdl.soap.WSDLSOAPInvoker;
+import net.sf.taverna.wsdl.soap.WSSTokenProfile;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -74,9 +69,7 @@ public class T2WSDLSOAPInvoker extends WSDLSOAPInvoker {
 	private static final String ENDPOINT_REFERENCE = "EndpointReference";
 	private static Logger logger = Logger.getLogger(T2WSDLSOAPInvoker.class);
         
-	private static final String WSA200303NS = "http://schemas.xmlsoap.org/ws/2003/03/addressing";
         private static final String WSA200403NS = "http://schemas.xmlsoap.org/ws/2004/03/addressing";
-        private static final String WSA200408NS = "http://schemas.xmlsoap.org/ws/2004/08/addressing";
 
 	private String wsrfEndpointReference = null;
 
@@ -88,9 +81,17 @@ public class T2WSDLSOAPInvoker extends WSDLSOAPInvoker {
 	public T2WSDLSOAPInvoker(WSDLParser parser, String operationName,
 			List<String> outputNames, String wsrfEndpointReference) {
 		this(parser, operationName, outputNames);
-		this.wsrfEndpointReference = wsrfEndpointReference;
+                
+                this.wsrfEndpointReference = wsrfEndpointReference;
+                
+                if (wsrfEndpointReference != null && 
+                    parser.isWsrfService()) {
+                    logger.warn("not a WSRF operation: " + operationName);
+                } else {
+                    this.wsrfEndpointReference = wsrfEndpointReference;
+                }
 	}
-
+        
 //	protected void configureSecurity(Call call,
 //			WSDLActivityConfigurationBean bean) throws Exception {
 //
@@ -147,7 +148,7 @@ public class T2WSDLSOAPInvoker extends WSDLSOAPInvoker {
     @Override
         protected void addSoapHeader(SOAPEnvelope envelope) throws SOAPException
         {
-            if (wsrfEndpointReference != null && getParser().isWsrfService()) {
+            if (wsrfEndpointReference != null) {
                 
 		// Extract elements
 		// Add WSA-stuff
@@ -247,8 +248,21 @@ public class T2WSDLSOAPInvoker extends WSDLSOAPInvoker {
         
 	public Map<String, Object> invoke(Map<String, Object> inputMap,
 			WSDLActivityConfigurationBean bean) throws Exception {
-//
-//		String securityProfile = bean.getSecurityProfile();
+
+		String securityProfile = bean.getSecurityProfile();
+                
+                if (securityProfile != null) {
+
+                    UsernamePassword up = getUsernameAndPasswordForService(bean, true);
+                    setCredentials(up.getUsername(), up.getPasswordAsString());
+                    up.resetPassword(); // ???
+
+                    if (SecurityProfiles.WSSECURITY_USERNAMETOKEN_PLAINTEXTPASSWORD.equals(securityProfile)) {
+                        setWSSSecurity(WSSTokenProfile.PasswordText);
+                    } else if (SecurityProfiles.WSSECURITY_USERNAMETOKEN_DIGESTPASSWORD.equals(securityProfile)) {
+                        setWSSSecurity(WSSTokenProfile.PasswordDigest);
+                    }
+                }
 //		EngineConfiguration wssEngineConfiguration = null;
 //		if (securityProfile != null) {
 //			// If security settings require WS-Security and not just e.g. Basic HTTP
