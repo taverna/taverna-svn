@@ -10,16 +10,17 @@
 	<groupId>net.sf.taverna.t2.taverna-workbench</groupId>
 	<artifactId>workbench-dev</artifactId>
 	<name>Taverna workbench development distribution</name>
+	<version>2.4.1</version>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2.taverna-workbench</groupId>
 			<artifactId>workbench-common</artifactId>
-			<version>${project.version}</version>
+			<version>2.4.1</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
 			<artifactId>activities-plugin</artifactId>
-			<version>${project.version}</version>
+			<version>2.4.1</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>axis-wss4j</artifactId>
@@ -61,22 +62,22 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
 			<artifactId>externaltool-plugin</artifactId>
-			<version>${project.version}</version>
+			<version>2.4.1</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
 			<artifactId>components-plugin</artifactId>
-			<version>${project.version}</version>
+			<version>2.4.1</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
 			<artifactId>provenanceconnectors-plugin</artifactId>
-			<version>${project.version}</version>
+			<version>2.4.0</version>
 		</dependency>
 				<dependency>
 			<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
 			<artifactId>servicecatalogue-plugin</artifactId>
-			<version>${project.version}</version>
+			<version>2.4.1</version>
 		</dependency>
 	</dependencies>
 </project>

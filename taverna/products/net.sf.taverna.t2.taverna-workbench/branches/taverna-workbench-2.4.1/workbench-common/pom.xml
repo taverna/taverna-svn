@@ -10,6 +10,7 @@
 	<groupId>net.sf.taverna.t2.taverna-workbench</groupId>
 	<artifactId>workbench-common</artifactId>
 	<name>Taverna workbench common runtime</name>
+	<version>2.4.1</version>
 	<dependencies>
 		<dependency>
 			<groupId>commons-httpclient</groupId>

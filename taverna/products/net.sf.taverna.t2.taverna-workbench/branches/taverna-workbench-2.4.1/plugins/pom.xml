@@ -10,6 +10,7 @@
 	<artifactId>plugins</artifactId>
 	<packaging>pom</packaging>
 	<name>Taverna workbench plugins</name>
+	<version>2.4.1</version>
 	<modules>
 		<module>activities-plugin</module>
 		<module>components-plugin</module>
