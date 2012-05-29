@@ -4,11 +4,12 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>ui-exts</artifactId>
-		<version>1.4</version>
+		<version>1.4.1</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.ui-exts</groupId>
 	<artifactId>report-explainer</artifactId>
 	<name>Report explainer</name>
+	<version>1.4.1</version>
 	<description>
 		Explanations of reports
 	</description>
@@ -21,12 +22,12 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-exts</groupId>
 			<artifactId>retry-ui</artifactId>
-			<version>${project.version}</version>
+			<version>${t2.ui.exts.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-activities</groupId>
 			<artifactId>dataflow-activity-ui</artifactId>
-			<version>${t2.ui.activities.version}</version>
+			<version>1.4.1</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-activities</groupId>

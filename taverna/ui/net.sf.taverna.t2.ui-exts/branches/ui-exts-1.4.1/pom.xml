@@ -11,7 +11,7 @@
 
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>ui-exts</artifactId>
-	<version>1.4</version>
+	<version>1.4.1</version>
 	<packaging>pom</packaging>
 
 	<name>Taverna 2 UI extensions</name>
@@ -19,15 +19,15 @@
 
 	<modules>
 		<module>constant-value</module>
-		<module>file-translator</module>
+<!-- 		<module>file-translator</module> -->
 		<module>loop-ui</module>
-		<module>parallelize-ui</module>
+<!-- 		<module>parallelize-ui</module> -->
 		<module>report-explainer</module>
-		<module>retry-ui</module>
+<!-- 		<module>retry-ui</module> -->
 		<module>menu-items</module>
 		<module>perspective-biocatalogue</module>
 		<module>perspective-myexperiment</module>
-		<module>renderers-exts</module>
+<!--		<module>renderers-exts</module> -->
 	</modules>
 	<repositories>
 		<repository>

@@ -4,11 +4,12 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>ui-exts</artifactId>
-		<version>1.4</version>
+		<version>1.4.1</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.ui-exts</groupId>
 	<artifactId>constant-value</artifactId>
 	<name>Setting constant values for input ports</name>
+	<version>1.4.1</version>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
@@ -18,7 +19,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-activities</groupId>
 			<artifactId>stringconstant-activity-ui</artifactId>
-			<version>${t2.ui.activities.version}</version>
+			<version>1.4.1</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-api</groupId>
