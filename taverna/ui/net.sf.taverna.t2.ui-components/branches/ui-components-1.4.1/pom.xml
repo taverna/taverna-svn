@@ -11,30 +11,30 @@
 
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>ui-components</artifactId>
-	<version>1.4</version>
+	<version>1.4.1</version>
 	<packaging>pom</packaging>
 
 	<name>Taverna 2 UI components</name>
 	<description>Components for the Taverna 2 workbench libraries</description>
 
 	<modules>
-		<module>activity-palette-ui</module>
+<!-- 		<module>activity-palette-ui</module>
 		<module>contextual-views</module>
 		<module>credential-manager-ui</module>
 		<module>data-management-config-ui</module>
-		<module>design-ui</module>
+		<module>design-ui</module>  -->
 		<module>graph-model</module>
 		<module>graph-view</module>
-		<module>iteration-strategy-ui</module>
+<!-- 		<module>iteration-strategy-ui</module>  -->
 		<module>monitor-view</module>
 		<module>perspective-design</module>
 		<module>perspective-results</module>
 		<module>reference-ui</module>
-		<module>report-view</module>
+<!-- 		<module>report-view</module> -->
 		<module>results-view</module>
 		<module>run-ui</module>
-		<module>workflow-explorer</module>
-		<module>workflow-view</module>
+<!--		<module>workflow-explorer</module>
+		<module>workflow-view</module>  -->
 	</modules>
 	<repositories>
 		<repository>

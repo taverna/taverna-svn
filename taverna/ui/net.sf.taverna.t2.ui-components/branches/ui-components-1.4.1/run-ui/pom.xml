@@ -4,11 +4,12 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>ui-components</artifactId>
-		<version>1.4</version>
+		<version>1.4.1</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.ui-components</groupId>
 	<artifactId>run-ui</artifactId>
 	<name>Results UI</name>
+	<version>1.4.1</version>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2.lang</groupId>
@@ -73,17 +74,17 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-components</groupId>
 			<artifactId>report-view</artifactId>
-			<version>${project.version}</version>
+			<version>${t2.ui.components.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-components</groupId>
 			<artifactId>monitor-view</artifactId>
-			<version>${project.version}</version>
+			<version>1.4.1</version>
 		</dependency>	
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-components</groupId>
 			<artifactId>reference-ui</artifactId>
-			<version>${project.version}</version>
+			<version>1.4.1</version>
 		</dependency>
 	</dependencies>
 </project>
