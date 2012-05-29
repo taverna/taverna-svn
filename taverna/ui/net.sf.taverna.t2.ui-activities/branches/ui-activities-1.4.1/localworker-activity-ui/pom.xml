@@ -4,11 +4,12 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>ui-activities</artifactId>
-		<version>1.4</version>
+		<version>1.4.1</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.ui-activities</groupId>
 	<artifactId>localworker-activity-ui</artifactId>
 	<name>Taverna 2 Localworker Activity UI</name>
+	<version>1.4.1</version>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-api</groupId>
@@ -56,7 +57,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-activities</groupId>
 			<artifactId>beanshell-activity-ui</artifactId>
-			<version>${project.version}</version>
+			<version>1.4.1</version>
 		</dependency>
 	</dependencies>
 </project>
