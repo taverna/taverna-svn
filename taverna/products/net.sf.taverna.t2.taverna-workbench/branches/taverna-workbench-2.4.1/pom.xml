@@ -54,6 +54,6 @@
 		<module>workbench-common</module>
 		<module>workbench-dev</module>
 		<module>workbench-distro</module>
-    	<module>taverna-javadocs</module>
+<!--    	<module>taverna-javadocs</module> -->
   </modules>
 </project>
