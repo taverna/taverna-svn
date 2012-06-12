@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright (C) 2007 The University of Manchester   
- * 
+ * Copyright (C) 2007 The University of Manchester
+ *
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
- * 
+ *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public License
  *  as published by the Free Software Foundation; either version 2.1 of
  *  the License, or (at your option) any later version.
- *    
+ *
  *  This program is distributed in the hope that it will be useful, but
  *  WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
- *    
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
@@ -36,7 +36,7 @@ import net.sf.taverna.t2.visit.VisitReport.Status;
 
 /**
  * Health checker for the ApiConsumerActivity.
- * 
+ *
  * @author Alex Nenadic
  */
 public class ApiConsumerActivityHealthChecker implements HealthChecker<ApiConsumerActivity>{
@@ -51,10 +51,10 @@ public class ApiConsumerActivityHealthChecker implements HealthChecker<ApiConsum
 		if (p == null) {
 			return null;
 		}
-		
+
 		List<VisitReport> reports = new ArrayList<VisitReport>();
 		ApiConsumerActivityConfigurationBean configuration = subject.getConfiguration();
-		
+
 /*		String className = configuration.getClassName();
 		try {
 			// Try to load the API consumer's class
@@ -73,9 +73,9 @@ public class ApiConsumerActivityHealthChecker implements HealthChecker<ApiConsum
 		localDependencies.addAll(configuration.getLocalDependencies());
 
 		if (!localDependencies.isEmpty()) {
-		String[] jarArray = ApiConsumerActivity.libDir.list(new FileExtFilter(".jar"));
+		String[] jarArray = subject.libDir.list(new FileExtFilter(".jar"));
 		if (jarArray != null) {
-		List<String> jarFiles = Arrays.asList(jarArray); // URLs of all jars found in the lib directory 
+		List<String> jarFiles = Arrays.asList(jarArray); // URLs of all jars found in the lib directory
 		for (String jar : localDependencies) {
 			if (jarFiles.contains(jar)){
 				localDependencies.remove(jar);
@@ -87,7 +87,7 @@ public class ApiConsumerActivityHealthChecker implements HealthChecker<ApiConsum
 		else{
 			VisitReport vr = new VisitReport(HealthCheck.getInstance(), p, "Dependencies missing", HealthCheck.MISSING_DEPENDENCY, Status.SEVERE);
 			vr.setProperty("dependencies", localDependencies);
-			vr.setProperty("directory", ApiConsumerActivity.libDir);
+			vr.setProperty("directory", subject.libDir);
 			reports.add(vr);
 		}
 		}
