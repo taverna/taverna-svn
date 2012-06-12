@@ -7,6 +7,7 @@ import javax.swing.Action;
 
 import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivity;
 import net.sf.taverna.t2.activities.apiconsumer.actions.ApiConsumerActivityConfigurationAction;
+import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
 import net.sf.taverna.t2.workbench.activitytools.AbstractConfigureActivityMenuAction;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.FileManager;
@@ -20,6 +21,7 @@ public class ConfigureApiConsumerActivityMenuAction extends
 
 	private EditManager editManager;
 	private FileManager fileManager;
+	private ActivityIconManager activityIconManager;
 
 	public ConfigureApiConsumerActivityMenuAction() {
 		super(ApiConsumerActivity.class);
@@ -28,7 +30,7 @@ public class ConfigureApiConsumerActivityMenuAction extends
 	@Override
 	protected Action createAction() {
 		ApiConsumerActivityConfigurationAction configAction = new ApiConsumerActivityConfigurationAction(
-				findActivity(), getParentFrame(), editManager, fileManager);
+				findActivity(), getParentFrame(), editManager, fileManager, activityIconManager);
 		configAction.putValue(Action.NAME, ApiConsumerActivityConfigurationAction.CONFIGURE_APICONSUMER_ACTIVITY);
 		addMenuDots(configAction);
 		return configAction;
@@ -40,6 +42,10 @@ public class ConfigureApiConsumerActivityMenuAction extends
 
 	public void setFileManager(FileManager fileManager) {
 		this.fileManager = fileManager;
+	}
+
+	public void setActivityIconManager(ActivityIconManager activityIconManager) {
+		this.activityIconManager = activityIconManager;
 	}
 
 }

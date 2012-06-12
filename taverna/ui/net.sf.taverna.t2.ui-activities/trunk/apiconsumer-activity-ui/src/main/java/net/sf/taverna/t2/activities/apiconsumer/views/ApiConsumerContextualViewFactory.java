@@ -24,6 +24,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivity;
+import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
+import net.sf.taverna.t2.workbench.configuration.colour.ColourManager;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
@@ -39,6 +41,8 @@ public class ApiConsumerContextualViewFactory implements ContextualViewFactory<A
 
 	private EditManager editManager;
 	private FileManager fileManager;
+	private ActivityIconManager activityIconManager;
+	private ColourManager colourManager;
 
 	public boolean canHandle(Object object) {
 		return object instanceof ApiConsumerActivity;
@@ -46,7 +50,7 @@ public class ApiConsumerContextualViewFactory implements ContextualViewFactory<A
 	}
 
 	public List<ContextualView> getViews(ApiConsumerActivity activity) {
-		return Arrays.asList(new ContextualView[] {new ApiConsumerContextualView(activity, editManager, fileManager)});
+		return Arrays.asList(new ContextualView[] {new ApiConsumerContextualView(activity, editManager, fileManager, activityIconManager, colourManager)});
 	}
 
 	public void setEditManager(EditManager editManager) {
@@ -55,6 +59,14 @@ public class ApiConsumerContextualViewFactory implements ContextualViewFactory<A
 
 	public void setFileManager(FileManager fileManager) {
 		this.fileManager = fileManager;
+	}
+
+	public void setActivityIconManager(ActivityIconManager activityIconManager) {
+		this.activityIconManager = activityIconManager;
+	}
+
+	public void setColourManager(ColourManager colourManager) {
+		this.colourManager = colourManager;
 	}
 
 }

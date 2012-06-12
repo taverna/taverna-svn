@@ -28,6 +28,8 @@ import javax.swing.Action;
 import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivity;
 import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivityConfigurationBean;
 import net.sf.taverna.t2.activities.apiconsumer.actions.ApiConsumerActivityConfigurationAction;
+import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
+import net.sf.taverna.t2.workbench.configuration.colour.ColourManager;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.ui.actions.activity.HTMLBasedActivityContextualView;
@@ -47,9 +49,12 @@ public class ApiConsumerContextualView extends
 
 	private EditManager editManager;
 	private FileManager fileManager;
+	private final ActivityIconManager activityIconManager;
 
-	public ApiConsumerContextualView(Activity<?> activity, EditManager editManager, FileManager fileManager) {
-		super(activity);
+	public ApiConsumerContextualView(Activity<?> activity, EditManager editManager, FileManager fileManager,
+			ActivityIconManager activityIconManager, ColourManager colourManager) {
+		super(activity, colourManager);
+		this.activityIconManager = activityIconManager;
 		init();
 	}
 
@@ -109,7 +114,7 @@ public class ApiConsumerContextualView extends
 	@Override
 	public Action getConfigureAction(Frame owner) {
 		return new ApiConsumerActivityConfigurationAction(
-				(ApiConsumerActivity) getActivity(), owner, editManager, fileManager);
+				(ApiConsumerActivity) getActivity(), owner, editManager, fileManager, activityIconManager);
 	}
 
 	@Override

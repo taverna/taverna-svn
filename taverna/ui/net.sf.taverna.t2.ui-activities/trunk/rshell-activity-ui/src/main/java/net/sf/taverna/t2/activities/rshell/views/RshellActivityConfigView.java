@@ -1,20 +1,20 @@
 /*******************************************************************************
  * Copyright (C) 2009 Ingo Wassink of University of Twente, Netherlands and
- * The University of Manchester   
- * 
+ * The University of Manchester
+ *
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
- * 
+ *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public License
  *  as published by the Free Software Foundation; either version 2.1 of
  *  the License, or (at your option) any later version.
- *    
+ *
  *  This program is distributed in the hope that it will be useful, but
  *  WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
- *    
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
@@ -95,17 +95,17 @@ import org.apache.log4j.Logger;
  * Connection Settings. The {@link #inputViewList} contains the
  * {@link RshellInputViewer}s describing the input ports and
  * {@link #outputViewList} has the {@link RhellOutputViewer}s
- * 
+ *
  * Loosely based on the original Taverna 1.x RShell Config although mainly
  * copies the Taverna 2 Beanshell code
- * 
+ *
  * @author Ian Dunlop
  * @author Ingo Wassink
- * 
+ *
  */
 @SuppressWarnings("serial")
 public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellActivity, RshellActivityConfigurationBean> {
-	
+
 	private static final String EXTENSION = ".r";
 
 	private static final String VALID_NAME_REGEX = "[\\p{L}\\p{Digit}_]+";
@@ -124,7 +124,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	private RshellActivity activity;
 	/** the configuration bean used to configure the activity */
 	private RshellActivityConfigurationBean configuration;
-	
+
 	/**
 	 * Holds the state of the OK button in case a parent view wants to know
 	 * whether the configuration is finished
@@ -152,10 +152,10 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	private JTextField portField;
 	//private JTextField usernameField;
 	//private JTextField passwordField;
-	
+
 	//REPLACED USERNAME PASSWORD WITH CREDENTIAL MANAGER
 	private JButton setHttpUsernamePasswordButton;
-	
+
 	private JCheckBox keepSessionAliveCheckBox;
 	private JPanel settingsPanel;
 	private JTabbedPane tabbedPane;
@@ -168,7 +168,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	 * Stores the {@link RshellActivity}, gets its
 	 * {@link RshellActivityConfigurationBean}, sets the layout and calls
 	 * {@link #initialise()} to get the view going
-	 * 
+	 *
 	 * @param activity
 	 *            the {@link RshellActivity} that the view is over
 	 */
@@ -180,7 +180,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	public RshellActivityConfigurationBean getConfiguration() {
 		return configuration;
 	}
-	
+
 	public boolean isConfigurationChanged() {
 		String configurationString = convertBeanToString(activity.getConfiguration());
 		return (!convertBeanToString(calculateConfiguration()).equals(configurationString));
@@ -199,7 +199,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	 * {@link #setPortPanel()}
 	 */
 	private void initialise() {
-		//this.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);		
+		//this.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
 		configuration = activity.getConfiguration();
 		setLayout(new GridBagLayout());
 		inputViewList = new ArrayList<RshellInputViewer>();
@@ -239,7 +239,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 			String name = op.getName();
 			doc.addPort(name);
 		}
-		
+
 		scriptEditPanel.add(new LineEnabledTextPanel(scriptTextArea), BorderLayout.CENTER);
 
 		final JButton checkScriptButton = new JButton("Check script");
@@ -248,14 +248,14 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 
 			public void actionPerformed(ActionEvent ex) {
 				RshellActivityHealthChecker healthChecker = new RshellActivityHealthChecker();
-				RshellActivity fakeActivity = new RshellActivity();
+				RshellActivity fakeActivity = new RshellActivity(null);
 				try {
 					fakeActivity.configure(calculateConfiguration());
 				} catch (ActivityConfigurationException e) {
 					JOptionPane.showMessageDialog(RshellActivityConfigView.this, e.getMessage(), "Invalid Rshell configuration", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-				
+
 				VisitReport visit = healthChecker.visit(fakeActivity, Collections.emptyList());
 				int messageType;
 				if (visit.getStatus().equals(Status.OK)) {
@@ -267,7 +267,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 				}
 				JOptionPane.showMessageDialog(RshellActivityConfigView.this, visit.toString(), "Rshell script check", messageType);
 			}
-			
+
 		});
 		JButton loadRScriptButton = new JButton("Load script");
 		loadRScriptButton.setToolTipText("Load an R script from a file");
@@ -318,7 +318,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		buttonPanel.add(loadRScriptButton);
 		buttonPanel.add(saveRScriptButton);
 		buttonPanel.add(clearScriptButton);
-		
+
 //		outerConstraint.gridx = 0;
 //		outerConstraint.gridy = 1;
 //		outerConstraint.fill = GridBagConstraints.NONE;
@@ -326,8 +326,8 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 //		outerConstraint.gridy = 2;
 //		outerConstraint.weighty = 0;
 		scriptEditPanel.add(buttonPanel, BorderLayout.SOUTH);
-		
-		
+
+
 		tabbedPane = new JTabbedPane();
 		tabbedPane.addTab("Script", scriptEditPanel);
 		tabbedPane.addTab("Input ports", new JScrollPane(setInputPanel()));
@@ -350,7 +350,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	}
 
 	private void createSettingsPanel() {
-		
+
 		settingsPanel = new JPanel(new GridBagLayout());
 
 		GridBagConstraints labelConstraints = new GridBagConstraints();
@@ -365,7 +365,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		fieldConstraints.gridx = 1;
 		fieldConstraints.gridy = 0;
 		fieldConstraints.fill = GridBagConstraints.HORIZONTAL;
-		
+
 		GridBagConstraints buttonConstraints = new GridBagConstraints();
 		buttonConstraints.weightx = 1.0;
 		buttonConstraints.gridx = 1;
@@ -384,7 +384,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 				.getConnectionSettings();
 
 		hostnameField.setText(connectionSettings.getHost());
-		
+
 		portField = new JTextField();
 		JLabel portLabel = new JLabel("Port");
 		portField.setSize(dimension);
@@ -405,7 +405,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 //		passwordLabel.setSize(dimension);
 //		passwordLabel.setLabelFor(passwordField);
 //		passwordField.setText(connectionSettings.getPassword());
-		
+
 		// "Set username and password" button
 		ActionListener usernamePasswordListener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -418,7 +418,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		setHttpUsernamePasswordButton = new JButton("Set username and password");
 		setHttpUsernamePasswordButton.setSize(dimension);
 		setHttpUsernamePasswordButton.addActionListener(usernamePasswordListener);
-		
+
 
 		keepSessionAliveCheckBox = new JCheckBox("Keep Session Alive");
 		keepSessionAliveCheckBox.setSelected(connectionSettings
@@ -428,35 +428,35 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		labelConstraints.gridy++;
 		settingsPanel.add(hostnameField, fieldConstraints);
 		fieldConstraints.gridy++;
-		
+
 		settingsPanel.add(portLabel, labelConstraints);
 		labelConstraints.gridy++;
 		settingsPanel.add(portField, fieldConstraints);
 		fieldConstraints.gridy++;
-		
+
 //		settingsPanel.add(usernameLabel, labelConstraints);
 //		labelConstraints.gridy++;
 //		settingsPanel.add(usernameField, fieldConstraints);
 //		fieldConstraints.gridy++;
-//		
+//
 //		settingsPanel.add(passwordLabel, labelConstraints);
 //		labelConstraints.gridy++;
 //		settingsPanel.add(passwordField, fieldConstraints);
 //		fieldConstraints.gridy++;
-		
+
 
 		settingsPanel.add(setHttpUsernamePasswordButton, buttonConstraints);
 		buttonConstraints.gridy++;
-	
+
 		fieldConstraints.gridy++;
 		settingsPanel.add(keepSessionAliveCheckBox, fieldConstraints);
 		fieldConstraints.gridy++;
-		
+
 	}
 
 	/**
 	 * Creates a {@link JTabbedPane} with the Output and Input ports
-	 * 
+	 *
 	 * @return a {@link JTabbedPane} with the ports
 	 */
 	private JTabbedPane setPortPanel() {
@@ -492,7 +492,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	 * to remove it. Currently the individual components from a
 	 * {@link RshellInputViewer} are added rather than the
 	 * {@link RshellInputViewer} itself
-	 * 
+	 *
 	 * @return panel containing the view over the input ports
 	 */
 	private JPanel setInputPanel() {
@@ -661,7 +661,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	 * a {@link JButton} to remove it. Currently the individual components from
 	 * a {@link RshellOutputViewer} are added rather than the
 	 * {@link RshellOutputViewer} itself
-	 * 
+	 *
 	 * @return the panel containing the view of the output ports
 	 */
 	private JPanel setOutputPanel() {
@@ -837,14 +837,14 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	 * {@link #buttonClicked} {@link ActionListener} to tell any listeners that
 	 * the new values have been set (primarily used to tell any parent
 	 * components to remove the frames containing this panel)
-	 * 
+	 *
 	 * @return the action which occurs when the OK button is clicked
 	 */
 	private AbstractAction getOKAction() {
 		return new AbstractAction() {
 
 			public void actionPerformed(ActionEvent e) {
-				
+
 				buttonClicked.actionPerformed(e);
 			}
 
@@ -854,7 +854,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	/**
 	 * Check the proposed port name against the set of input ports that the
 	 * activity has
-	 * 
+	 *
 	 * @param name
 	 * @param set
 	 * @return
@@ -871,7 +871,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	/**
 	 * Check the proposed port name against the set of output ports that the
 	 * activity has
-	 * 
+	 *
 	 * @param name
 	 * @param set
 	 * @return
@@ -894,7 +894,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 
 		fileChooser.resetChoosableFileFilters();
 		fileChooser.setAcceptAllFileFilterUsed(false);
-		
+
 		fileChooser.setFileFilter(new ExtensionFileFilter(new String[] { EXTENSION }));
 
 		fileChooser.setCurrentDirectory(new File(curDir));
@@ -923,7 +923,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 								this, msg, "File already exists",
 								JOptionPane.YES_NO_CANCEL_OPTION);
 						if (ret == JOptionPane.YES_OPTION) {
-							
+
 						} else if (ret == JOptionPane.NO_OPTION) {
 							tryAgain = true;
 							continue;
@@ -949,10 +949,10 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Method for clearing the script
-	 * 
+	 *
 	 */
 	private void clearScript() {
 		if (JOptionPane.showConfirmDialog(this,
@@ -962,7 +962,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		}
 
 	}
-	
+
 	public RshellActivityConfigurationBean calculateConfiguration() {
 		List<ActivityInputPortDefinitionBean> inputBeanList = new ArrayList<ActivityInputPortDefinitionBean>();
 		RshellActivityConfigurationBean rshellActivityConfigurationBean = new RshellActivityConfigurationBean();
@@ -1075,7 +1075,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		}
 		return result;
 	}
-	
+
 	private JPanel createInfoPanel() {
 		/** **************************************************************** */
 		/*

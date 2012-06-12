@@ -29,6 +29,7 @@ import javax.swing.JDialog;
 import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivity;
 import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivityConfigurationBean;
 import net.sf.taverna.t2.activities.apiconsumer.views.ApiConsumerConfigView;
+import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationAction;
@@ -36,15 +37,17 @@ import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityCon
 
 /**
  * Provides a configurable view for {@link ApiConsumerActivity} through its
- * {@link ApiConsumerActivityConfigurationBean}, where users can set local dependencies for
- * the API consumer activity and its classloader sharing policy.
+ * {@link ApiConsumerActivityConfigurationBean}, where users can set local
+ * dependencies for the API consumer activity and its classloader sharing
+ * policy.
  *
  * @author Alex Nenadic
  * @author Alan R Williams
  *
  */
 @SuppressWarnings("serial")
-public class ApiConsumerActivityConfigurationAction extends ActivityConfigurationAction<ApiConsumerActivity, ApiConsumerActivityConfigurationBean>{
+public class ApiConsumerActivityConfigurationAction extends
+		ActivityConfigurationAction<ApiConsumerActivity, ApiConsumerActivityConfigurationBean> {
 
 	// Configuration before any changes have been done in this dialog
 	private ApiConsumerActivityConfigurationBean configuration;
@@ -55,13 +58,14 @@ public class ApiConsumerActivityConfigurationAction extends ActivityConfiguratio
 
 	private final FileManager fileManager;
 
-	public ApiConsumerActivityConfigurationAction(ApiConsumerActivity activity, Frame owner, EditManager editManager, FileManager fileManager) {
-		super(activity);
+	public ApiConsumerActivityConfigurationAction(ApiConsumerActivity activity, Frame owner,
+			EditManager editManager, FileManager fileManager,
+			ActivityIconManager activityIconManager) {
+		super(activity, activityIconManager);
 		this.editManager = editManager;
 		this.fileManager = fileManager;
 		putValue(Action.NAME, CONFIGURE_APICONSUMER_ACTIVITY);
 		this.configuration = activity.getConfiguration();
-
 
 	}
 
@@ -71,9 +75,10 @@ public class ApiConsumerActivityConfigurationAction extends ActivityConfiguratio
 			currentDialog.toFront();
 			return;
 		}
-		final ApiConsumerConfigView apiConfigView = new ApiConsumerConfigView((ApiConsumerActivity)getActivity());
-		final ActivityConfigurationDialog<ApiConsumerActivity, ApiConsumerActivityConfigurationBean> dialog =
-			new ActivityConfigurationDialog<ApiConsumerActivity, ApiConsumerActivityConfigurationBean> (getActivity(), apiConfigView, editManager, fileManager);
+		final ApiConsumerConfigView apiConfigView = new ApiConsumerConfigView(
+				(ApiConsumerActivity) getActivity());
+		final ActivityConfigurationDialog<ApiConsumerActivity, ApiConsumerActivityConfigurationBean> dialog = new ActivityConfigurationDialog<ApiConsumerActivity, ApiConsumerActivityConfigurationBean>(
+				getActivity(), apiConfigView, editManager, fileManager);
 
 		ActivityConfigurationAction.setDialog(getActivity(), dialog, fileManager);
 

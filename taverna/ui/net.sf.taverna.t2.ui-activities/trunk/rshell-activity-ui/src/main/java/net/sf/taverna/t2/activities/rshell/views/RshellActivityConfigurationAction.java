@@ -35,6 +35,7 @@ import javax.swing.JDialog;
 
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
 import net.sf.taverna.t2.activities.rshell.RshellActivityConfigurationBean;
+import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationAction;
@@ -58,8 +59,8 @@ public class RshellActivityConfigurationAction
 	private final FileManager fileManager;
 
 	public RshellActivityConfigurationAction(RshellActivity activity,
-			Frame owner, EditManager editManager, FileManager fileManager) {
-		super(activity);
+			Frame owner, EditManager editManager, FileManager fileManager, ActivityIconManager activityIconManager) {
+		super(activity, activityIconManager);
 		this.editManager = editManager;
 		this.fileManager = fileManager;
 		putValue(Action.NAME, EDIT_RSHELL_SCRIPT);

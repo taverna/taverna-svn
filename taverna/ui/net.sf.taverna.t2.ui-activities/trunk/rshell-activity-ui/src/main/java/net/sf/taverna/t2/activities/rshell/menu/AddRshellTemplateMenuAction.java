@@ -25,25 +25,19 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.net.URI;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
 import net.sf.taverna.t2.activities.rshell.servicedescriptions.RshellTemplateService;
-import net.sf.taverna.t2.ui.menu.AbstractContextualMenuAction;
 import net.sf.taverna.t2.ui.menu.AbstractMenuAction;
 import net.sf.taverna.t2.ui.menu.MenuManager;
 import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
 import net.sf.taverna.t2.workbench.edits.EditManager;
-import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.ui.DataflowSelectionManager;
 import net.sf.taverna.t2.workbench.ui.workflowview.WorkflowView;
 import net.sf.taverna.t2.workbench.views.graph.actions.DesignOnlyAction;
-import net.sf.taverna.t2.workbench.views.graph.menu.GraphEditMenuSection;
 import net.sf.taverna.t2.workbench.views.graph.menu.InsertMenu;
-import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.apache.log4j.Logger;
 
@@ -60,7 +54,7 @@ public class AddRshellTemplateMenuAction extends AbstractMenuAction {
 	private static final String ADD_RSHELL = "RShell";
 
 	private static final URI ADD_RSHELL_URI = URI
-	.create("http://taverna.sf.net/2008/t2workbench/menu#graphMenuAddRShell");
+			.create("http://taverna.sf.net/2008/t2workbench/menu#graphMenuAddRShell");
 
 	private static Logger logger = Logger.getLogger(AddRshellTemplateMenuAction.class);
 
@@ -69,6 +63,8 @@ public class AddRshellTemplateMenuAction extends AbstractMenuAction {
 	private MenuManager menuManager;
 
 	private DataflowSelectionManager dataflowSelectionManager;
+
+	private ActivityIconManager activityIconManager;
 
 	public AddRshellTemplateMenuAction() {
 		super(InsertMenu.INSERT, 600, ADD_RSHELL_URI);
@@ -80,14 +76,15 @@ public class AddRshellTemplateMenuAction extends AbstractMenuAction {
 	}
 
 	protected class AddRShellMenuAction extends DesignOnlyAction {
-		AddRShellMenuAction () {
+		AddRShellMenuAction() {
 			super();
-			putValue(SMALL_ICON, ActivityIconManager.getInstance()
-					.iconForActivity(new RshellActivity()));
+			putValue(SMALL_ICON, activityIconManager.iconForActivity(new RshellActivity(null)));
 			putValue(NAME, ADD_RSHELL);
 			putValue(SHORT_DESCRIPTION, "RShell");
-			putValue(Action.ACCELERATOR_KEY,
-					KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.SHIFT_DOWN_MASK | InputEvent.ALT_DOWN_MASK));
+			putValue(
+					Action.ACCELERATOR_KEY,
+					KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.SHIFT_DOWN_MASK
+							| InputEvent.ALT_DOWN_MASK));
 
 		}
 
@@ -109,5 +106,8 @@ public class AddRshellTemplateMenuAction extends AbstractMenuAction {
 		this.dataflowSelectionManager = dataflowSelectionManager;
 	}
 
-}
+	public void setActivityIconManager(ActivityIconManager activityIconManager) {
+		this.activityIconManager = activityIconManager;
+	}
 
+}

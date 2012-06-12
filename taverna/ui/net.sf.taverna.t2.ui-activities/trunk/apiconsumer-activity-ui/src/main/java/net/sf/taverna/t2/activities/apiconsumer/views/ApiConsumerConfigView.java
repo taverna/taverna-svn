@@ -224,9 +224,9 @@ public class ApiConsumerConfigView extends ActivityConfigurationPanel<ApiConsume
 			JPanel labelPanel = new JPanel();
 			labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.PAGE_AXIS));
 			JLabel label = new JLabel("Local JAR files");
-			if (!ApiConsumerActivity.libDir.exists())
-				ApiConsumerActivity.libDir.mkdir();
-			JLabel libLabel = new JLabel("<html><small>" + ApiConsumerActivity.libDir.getAbsolutePath()
+			if (!activity.libDir.exists())
+				activity.libDir.mkdir();
+			JLabel libLabel = new JLabel("<html><small>" + activity.libDir.getAbsolutePath()
 					+ "</small></html>");
 			labelPanel.add(label);
 			labelPanel.add(libLabel);
@@ -254,7 +254,7 @@ public class ApiConsumerConfigView extends ActivityConfigurationPanel<ApiConsume
 			// Make so it's there so the user can add stuff to it
 			// List of all jar files in the lib directory
 			List<String> jarFiles =
-				Arrays.asList(ApiConsumerActivity.libDir.list(new ApiConsumerActivity.FileExtFilter(".jar")));
+				Arrays.asList(activity.libDir.list(new ApiConsumerActivity.FileExtFilter(".jar")));
 			// We also add the list of jars that may have been configured sometime before
 			// but are now not present in the lib directory for some reason
 			Set<String> missingLocalDeps =
@@ -290,7 +290,7 @@ public class ApiConsumerConfigView extends ActivityConfigurationPanel<ApiConsume
 				});
 				panel.add(checkBox);
 				// The jar may not be in the lib directory, so warn the user
-				if (!new File(ApiConsumerActivity.libDir, jarFile).exists()) {
+				if (!new File(activity.libDir, jarFile).exists()) {
 					checkBox.setForeground(Color.RED);
 					checkBox.setText(checkBox.getText() + " (missing file!)");
 				}

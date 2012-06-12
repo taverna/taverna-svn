@@ -32,7 +32,6 @@ import java.net.URI;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JComponent;
 
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
 import net.sf.taverna.t2.activities.rshell.servicedescriptions.RshellTemplateService;
@@ -40,7 +39,6 @@ import net.sf.taverna.t2.ui.menu.AbstractContextualMenuAction;
 import net.sf.taverna.t2.ui.menu.MenuManager;
 import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
 import net.sf.taverna.t2.workbench.edits.EditManager;
-import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.ui.DataflowSelectionManager;
 import net.sf.taverna.t2.workbench.ui.workflowview.WorkflowView;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -57,13 +55,14 @@ import org.apache.log4j.Logger;
 public class AddRshellTemplateAction extends AbstractContextualMenuAction {
 
 	private static final URI insertSection = URI
-	.create("http://taverna.sf.net/2009/contextMenu/insert");
+			.create("http://taverna.sf.net/2009/contextMenu/insert");
 
 	private static Logger logger = Logger.getLogger(AddRshellTemplateAction.class);
 
 	private EditManager editManager;
 	private MenuManager menuManager;
 	private DataflowSelectionManager dataflowSelectionManager;
+	private ActivityIconManager activityIconManager;
 
 	public AddRshellTemplateAction() {
 		super(insertSection, 600);
@@ -71,19 +70,19 @@ public class AddRshellTemplateAction extends AbstractContextualMenuAction {
 
 	@Override
 	public boolean isEnabled() {
-		return super.isEnabled()
-				&& getContextualSelection().getSelection() instanceof Dataflow;
+		return super.isEnabled() && getContextualSelection().getSelection() instanceof Dataflow;
 	}
 
 	@Override
 	protected Action createAction() {
 
-		AbstractAction action = new AbstractAction("Rshell", ActivityIconManager.getInstance()
-				.iconForActivity(new RshellActivity())){
+		AbstractAction action = new AbstractAction("Rshell",
+				activityIconManager.iconForActivity(new RshellActivity(null))) {
 
 			public void actionPerformed(ActionEvent e) {
-				WorkflowView.importServiceDescription(RshellTemplateService.getServiceDescription(),
-						false, editManager, menuManager, dataflowSelectionManager);
+				WorkflowView.importServiceDescription(
+						RshellTemplateService.getServiceDescription(), false, editManager,
+						menuManager, dataflowSelectionManager);
 			}
 
 		};
@@ -103,5 +102,8 @@ public class AddRshellTemplateAction extends AbstractContextualMenuAction {
 		this.dataflowSelectionManager = dataflowSelectionManager;
 	}
 
-}
+	public void setActivityIconManager(ActivityIconManager activityIconManager) {
+		this.activityIconManager = activityIconManager;
+	}
 
+}

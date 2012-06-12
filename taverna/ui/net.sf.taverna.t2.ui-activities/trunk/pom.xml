@@ -5,8 +5,7 @@
 	<parent>
 		<artifactId>taverna-parent</artifactId>
 		<groupId>net.sf.taverna</groupId>
-		<version>3.0-SNAPSHOT</version>
-        <relativePath>../../taverna-parent/pom.xml</relativePath>
+		<version>3.0.1-SNAPSHOT</version>
 	</parent>
 
 	<groupId>net.sf.taverna.t2</groupId>
@@ -18,10 +17,10 @@
 	<description>UI for Taverna 2 activities</description>
 
 	<modules>
-		<module>all-activity-uis</module>
-		<module>apiconsumer-activity-ui</module>
+		<!-- <module>all-activity-uis</module>
+		<module>apiconsumer-activity-ui</module> -->
 		<module>beanshell-activity-ui</module>
-		<module>biomart-activity-ui</module>
+		<!-- <module>biomart-activity-ui</module>
 		<module>biomoby-activity-ui</module>
 		<module>dataflow-activity-ui</module>
 		<module>disabled-activity-ui</module>
@@ -34,7 +33,7 @@
 		<module>stringconstant-activity-ui</module>
 		<module>unrecognized-activity-ui</module>
 		<module>wsdl-activity-ui</module>
-		<module>xpath-activity-ui</module>
+		<module>xpath-activity-ui</module> -->
 	</modules>
 	<repositories>
 		<repository>
@@ -85,7 +84,7 @@
 				<artifactId>log4j</artifactId>
 				<version>${log4j.version}</version>
 			</dependency>
-			<dependency>
+<!-- 			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
 				<version>${commons.io.version}</version>
@@ -115,6 +114,6 @@
 				<artifactId>jdom</artifactId>
 				<version>${jdom.version}</version>
 			</dependency>
-		</dependencies>
+ -->		</dependencies>
 	</dependencyManagement>
 </project>

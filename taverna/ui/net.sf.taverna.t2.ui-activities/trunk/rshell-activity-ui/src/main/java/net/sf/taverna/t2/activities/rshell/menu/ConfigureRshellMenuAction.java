@@ -24,15 +24,16 @@ import javax.swing.Action;
 
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
 import net.sf.taverna.t2.activities.rshell.views.RshellActivityConfigurationAction;
+import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
 import net.sf.taverna.t2.workbench.activitytools.AbstractConfigureActivityMenuAction;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.FileManager;
 
-public class ConfigureRshellMenuAction extends
-		AbstractConfigureActivityMenuAction<RshellActivity> {
+public class ConfigureRshellMenuAction extends AbstractConfigureActivityMenuAction<RshellActivity> {
 
 	private EditManager editManager;
 	private FileManager fileManager;
+	private ActivityIconManager activityIconManager;
 
 	public ConfigureRshellMenuAction() {
 		super(RshellActivity.class);
@@ -41,7 +42,7 @@ public class ConfigureRshellMenuAction extends
 	@Override
 	protected Action createAction() {
 		RshellActivityConfigurationAction configAction = new RshellActivityConfigurationAction(
-				findActivity(), getParentFrame(), editManager, fileManager);
+				findActivity(), getParentFrame(), editManager, fileManager, activityIconManager);
 		addMenuDots(configAction);
 		return configAction;
 	}
@@ -52,6 +53,10 @@ public class ConfigureRshellMenuAction extends
 
 	public void setFileManager(FileManager fileManager) {
 		this.fileManager = fileManager;
+	}
+
+	public void setActivityIconManager(ActivityIconManager activityIconManager) {
+		this.activityIconManager = activityIconManager;
 	}
 
 }
