@@ -20,6 +20,7 @@ import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Link;
 import org.apache.abdera.parser.ParseException;
 import org.apache.abdera.parser.Parser;
+import org.apache.abdera.parser.stax.FOMParser;
 import org.apache.log4j.Logger;
 
 import net.sf.taverna.t2.activities.interaction.jetty.InteractionJetty;
@@ -51,10 +52,12 @@ public class FeedClientStartupHook implements StartupSPI {
 
 			@Override
 			public void run() {
+				Thread.currentThread().setContextClassLoader(FeedClientStartupHook.class.getClassLoader());
 				if (InteractionPreference.getInstance().getUseJetty()) {
 					InteractionJetty.checkJetty();
 				}
-				Parser parser = Abdera.getNewParser();
+
+				Parser parser = new FOMParser(Abdera.getInstance());
 				Date lastCheckedDate = new Date();
 					while (true) {
 						try {
@@ -106,7 +109,7 @@ public class FeedClientStartupHook implements StartupSPI {
 						}
 					}
 			}};
-		feedClientThread.start();
+		    feedClientThread.start();
 		return true;
 	}
 
