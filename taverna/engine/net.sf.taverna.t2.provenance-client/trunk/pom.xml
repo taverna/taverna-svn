@@ -4,10 +4,8 @@
 	<parent>
 		<groupId>net.sf.taverna</groupId>
 		<artifactId>taverna-parent</artifactId>
-		<version>3.0-SNAPSHOT</version>
-        <relativePath>../../taverna-parent/pom.xml</relativePath>
+		<version>3.0.1-SNAPSHOT</version>
 	</parent>
-
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>provenance-client</artifactId>
 	<version>1.0-SNAPSHOT</version>
@@ -38,28 +36,23 @@
 			<version>${t2.core.version}</version>
 		</dependency>
 
-		<!-- <dependency>
-			<groupId>net.sf.taverna.t2.core</groupId>
-			<artifactId>provenance-mysql</artifactId>
-			<version>${t2.core.version}</version>
-		</dependency> -->
-
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>reference-core-extensions</artifactId>
 			<version>${t2.core.version}</version>
 		</dependency>
 
-		<!-- <dependency>
-			<groupId>net.sf.taverna.t2.core</groupId>
-			<artifactId>provenance-derby</artifactId>
-			<version>${t2.core.version}</version>
-		</dependency> -->
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>com.springsource.org.apache.derby</artifactId>
+			<version>${derby.version}</version>
+			<scope>test</scope>
+		</dependency>
 
 		<dependency>
-			<groupId>net.sf.taverna.t2.ui-impl</groupId>
-			<artifactId>data-management-config</artifactId>
-			<version>${t2.core.version}</version>
+			<groupId>uk.org.taverna.configuration</groupId>
+			<artifactId>taverna-database-configuration-api</artifactId>
+			<version>${taverna.configuration.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.hp.hpl.jena</groupId>
@@ -72,9 +65,9 @@
 			<version>${jena.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-net</groupId>
-			<artifactId>commons-net</artifactId>
- 			<version>${commons.net.version}</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>com.springsource.org.apache.commons.net</artifactId>
+			<version>${commons.net.version}</version>
 		</dependency>
 
 	</dependencies>
