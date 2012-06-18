@@ -29,7 +29,7 @@
 	</scm>
 
 	<modules>
-		<module>parent</module>
+<!--  		<module>parent</module> -->
 		<module>taverna-parent</module>
 		<module>utils</module>
 		<module>engine</module>
