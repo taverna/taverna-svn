@@ -10,7 +10,7 @@
 
 	<service ref="ApiConsumerServiceProvider" interface="net.sf.taverna.t2.servicedescriptions.ServiceDescriptionProvider" />
 
-	<service ref="ConfigureApiConsumerActivityMenuAction" interface="net.sf.taverna.t2.ui.menu.MenuComponent" />
+	<service ref="ConfigureApiConsumerActivityMenuAction" auto-export="interfaces" />
 
 	<service ref="ApiConsumerContextualViewFactory" interface="net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactory" />
 

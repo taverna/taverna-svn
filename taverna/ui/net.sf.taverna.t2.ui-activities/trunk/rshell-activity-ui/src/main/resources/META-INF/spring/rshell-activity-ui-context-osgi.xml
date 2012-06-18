@@ -10,9 +10,9 @@
 
 	<service ref="RshellTemplateService" interface="net.sf.taverna.t2.servicedescriptions.ServiceDescriptionProvider" />
 
-	<service ref="AddRshellTemplateAction" interface="net.sf.taverna.t2.ui.menu.MenuComponent" />
-	<service ref="AddRshellTemplateMenuAction" interface="net.sf.taverna.t2.ui.menu.MenuComponent" />
-	<service ref="ConfigureRshellMenuAction" interface="net.sf.taverna.t2.ui.menu.MenuComponent" />
+	<service ref="AddRshellTemplateAction" auto-export="interfaces" />
+	<service ref="AddRshellTemplateMenuAction" auto-export="interfaces" />
+	<service ref="ConfigureRshellMenuAction" auto-export="interfaces" />
 
 	<service ref="RshellActivityContextualViewFactory" interface="net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactory" />
 
