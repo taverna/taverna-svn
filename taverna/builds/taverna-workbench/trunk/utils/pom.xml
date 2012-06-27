@@ -19,5 +19,8 @@
 		<module>net.sf.taverna.wsdl-generic</module>
 		<module>org.biomart.martservice</module>
 		<module>org.fife.ui.hexeditor</module>
+		<module>net.sf.taverna.t2.baclava</module>
+		<module>net.sf.taverna.t2.results</module>
+		<module>net.sf.taverna.t2.taverna-configuration</module>
 	</modules>
 </project>
