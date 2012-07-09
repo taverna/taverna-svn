@@ -1,0 +1,367 @@
+/*******************************************************************************
+ * Copyright (c) 2009-2012, University of Manchester
+ * 
+ * Licensed under the New BSD License. 
+ * Please see LICENSE file that is distributed with the source code
+ ******************************************************************************/
+package uk.ac.manchester.cs.owl.semspreadsheets.model;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+
+/*import uk.ac.manchester.cs.owl.semspreadsheets.change.SetCellValue;
+import uk.ac.manchester.cs.owl.semspreadsheets.change.WorkbookChange;
+import uk.ac.manchester.cs.owl.semspreadsheets.change.WorkbookChangeListener;
+import uk.ac.manchester.cs.owl.semspreadsheets.ui.CellSelectionListener;
+import uk.ac.manchester.cs.owl.semspreadsheets.ui.CellSelectionModel;
+import uk.ac.manchester.cs.owl.semspreadsheets.ui.EntitySelectionModel;
+import uk.ac.manchester.cs.owl.semspreadsheets.ui.ErrorHandler;*/
+import uk.ac.manchester.cs.owl.semspreadsheets.ui.WorkbookManagerEvent;
+import uk.ac.manchester.cs.owl.semspreadsheets.ui.WorkbookManagerListener;
+/*import uk.ac.manchester.cs.owl.semspreadsheets.ui.WorkbookState;*/
+
+/** 
+ * @author Stuart Owen
+ * @author Matthew Horridge
+ */
+public class WorkbookManager {
+
+	private static final Logger logger = Logger.getLogger(WorkbookManager.class);
+/*    private Workbook workbook;*/      
+
+    private URI workbookURI;
+    
+    private OWLOntologyManager owlManager;
+    
+    private OntologyManager ontologyManager;   
+    
+/*    private WorkbookState workbookState = new WorkbookState();
+
+    private CellSelectionModel selectionModel;
+
+    private EntitySelectionModel entitySelectionModel;*/
+
+    private Set<WorkbookManagerListener> workbookManagerListeners = new HashSet<WorkbookManagerListener>();
+
+    public WorkbookManager() {    	
+        this.owlManager = OWLManager.createOWLOntologyManager();
+        ontologyManager = new OntologyManager(owlManager,this);
+                                
+ /*       entitySelectionModel = new EntitySelectionModel(owlManager.getOWLDataFactory().getOWLThing());        
+        workbook = WorkbookFactory.createWorkbook();
+        selectionModel = new CellSelectionModel();
+        selectionModel.setSelectedRange(new Range(workbook.getSheet(0)));
+        selectionModel.addCellSelectionListener(new CellSelectionListener() {
+            public void selectionChanged(Range range) {
+                handleCellSelectionChanged(range);
+            }
+        });*/
+    }     
+
+ /*   public void applyChanges(List<? extends WorkbookChange> changes) {
+        for(WorkbookChange change : changes) {
+            ((MutableWorkbook) workbook).applyChange(change);
+        }
+    }
+
+    public void applyChange(WorkbookChange change) {
+        ((MutableWorkbook) workbook).applyChange(change);         
+    }*/
+
+    public void addListener(WorkbookManagerListener listener) {
+        workbookManagerListeners.add(listener);
+        getOntologyManager().addListener(listener);
+    }
+
+    public void removeListener(WorkbookManagerListener listener) {
+        workbookManagerListeners.remove(listener);
+        getOntologyManager().removeListener(listener);
+    }
+    
+/*    public EntitySelectionModel getEntitySelectionModel() {
+        return entitySelectionModel;
+    }    
+*/
+    private List<WorkbookManagerListener> getCopyOfListeners() {
+        return new ArrayList<WorkbookManagerListener>(workbookManagerListeners);
+    }
+
+ /*   private void handleCellSelectionChanged(Range range) {        
+        OWLEntity selEnt = getEntitySelectionModel().getSelection();
+        if (range.isCellSelection()) {
+            for (OntologyTermValidation validation : getOntologyManager().getContainingOntologyTermValidations(range)) {
+                OWLClass cls = getOntologyManager().getDataFactory().getOWLClass(validation.getValidationDescriptor().getEntityIRI());
+                selEnt = cls;
+                break;
+            }
+        }
+        getEntitySelectionModel().setSelection(selEnt);
+    }*/
+
+/*    private void fireWorkbookCreated() {
+        WorkbookManagerEvent event = new WorkbookManagerEvent();
+        for (WorkbookManagerListener listener : getCopyOfListeners()) {
+            try {
+                listener.workbookCreated(event);
+            }
+            catch (Throwable e) {
+                ErrorHandler.getErrorHandler().handleError(e);
+            }
+        }
+    }*/
+    
+/*    private void fireWorkbookSaved() {
+    	WorkbookManagerEvent event = new WorkbookManagerEvent();
+        for (WorkbookManagerListener listener : getCopyOfListeners()) {
+            try {
+                listener.workbookSaved(event);
+            }
+            catch (Throwable e) {
+                ErrorHandler.getErrorHandler().handleError(e);
+            }
+        }
+    }*/
+    
+    private void fireValidationAppliedOrCancelled() {
+    	for (WorkbookManagerListener listener : getCopyOfListeners()) {            
+                listener.validationAppliedOrCancelled();            
+        }
+    }
+
+/*    private void fireWorkbookLoaded() {
+        WorkbookManagerEvent event = new WorkbookManagerEvent();
+        for (WorkbookManagerListener listener : getCopyOfListeners()) {
+            try {
+                listener.workbookLoaded(event);
+            }
+            catch (Throwable e) {
+                ErrorHandler.getErrorHandler().handleError(e);
+            }
+        }
+    }*/
+
+    /**
+     * Gets the primary workbook that this manager manager.
+     * @return The primary workbook as managed by this manager
+     */
+/*    public Workbook getWorkbook() {
+        return workbook;
+    }*/
+
+/*    public Workbook createNewWorkbook() {
+    	List<WorkbookChangeListener> existingListeners = workbook.getAllChangeListeners();
+    	workbook.clearChangeListeners();
+    	getOntologyManager().clearOntologyTermValidations();
+        workbook = WorkbookFactory.createWorkbook();  
+        for (WorkbookChangeListener l : existingListeners) {
+        	workbook.addChangeListener(l);
+        }
+        workbookURI=null;
+        
+        fireWorkbookCreated();
+        getWorkbookState().changesSaved();
+        return workbook;
+    }*/
+
+/*    public Workbook loadWorkbook(URI uri) throws IOException {
+        try {
+        	//need to preserve the listeners on the workbook
+        	List<WorkbookChangeListener> existingListeners = workbook.getAllChangeListeners();
+        	workbook.clearChangeListeners(); //to free it and allow it to be garbage collected
+            workbook = WorkbookFactory.createWorkbook(uri);
+            for (WorkbookChangeListener l : existingListeners) {
+            	workbook.addChangeListener(l);
+            }
+            
+            workbookURI = uri;
+            
+            // Extract validation
+            getOntologyManager().getOntologyTermValidationManager().readValidationFromWorkbook();
+            fireWorkbookLoaded();
+            getWorkbookState().changesSaved();
+            return workbook;
+        }
+        catch (IOException e) {
+            throw new IOException("Could not open spreadsheet: " + e.getMessage());
+        }
+    }    
+*/
+ /*   public void loadWorkbook(File file) throws IOException {
+        loadWorkbook(file.toURI());
+    }
+*/
+    public URI getWorkbookURI() {
+        return workbookURI;
+    }
+
+ /*   public void saveWorkbook(URI uri) throws IOException {
+        // Insert validation
+    	getOntologyManager().getOntologyTermValidationManager().writeValidationToWorkbook();
+        workbook.saveAs(uri);        
+        OntologyTermValidationWorkbookParser workbookParser = new OntologyTermValidationWorkbookParser(this);
+        workbookParser.clearOntologyTermValidations();
+        if (workbookURI == null || !uri.equals(workbookURI)) {            
+            workbookURI = uri;
+        }
+        fireWorkbookSaved();
+        getWorkbookState().changesSaved();
+    }*/
+
+/*    public void previewValidation() {
+    	IRI iri = entitySelectionModel.getSelection().getIRI();
+    	ValidationType type = entitySelectionModel.getValidationType();
+    	OWLPropertyItem owlPropertyItem = entitySelectionModel.getOWLPropertyItem();
+    	Range range = new Range(workbook.getSheet(0));
+    	getOntologyManager().getOntologyTermValidationManager().previewValidation(range,type, iri,owlPropertyItem);
+	}	*/
+    
+/*    public void applyValidationChange() {
+    	ValidationType type = entitySelectionModel.getValidationType();
+    	IRI iri = entitySelectionModel.getSelection().getIRI();
+    	OWLPropertyItem propertyItem = entitySelectionModel.getOWLPropertyItem();
+    	logger.debug("Setting validation for IRI "+iri.toString()+", type "+type.toString()+", property "+propertyItem);    			        
+        
+        Range selectedRange = getSelectionModel().getSelectedRange();
+        if(!selectedRange.isCellSelection()) {
+            return;
+        }
+        setValidationAt(selectedRange, type, iri,propertyItem);
+        fireValidationAppliedOrCancelled();
+    }     */ 
+    
+/*    public void cancelValidationChange() {
+    	Range selectedRange = getSelectionModel().getSelectedRange();
+    	getSelectionModel().setSelectedRange(selectedRange);
+    	fireValidationAppliedOrCancelled();
+    }*/
+
+/*    public void setValidationAt(Range range,ValidationType type, IRI entityIRI, OWLPropertyItem property) {
+    	Range rangeToApply;
+        Collection<OntologyTermValidation> validations = getOntologyManager().getContainingOntologyTermValidations(range);
+        
+        if(validations.isEmpty()) {
+            rangeToApply=range;
+        }
+        else {
+            OntologyTermValidation validation = validations.iterator().next();
+            rangeToApply=validation.getRange();            
+        }
+        String cellText=getOntologyManager().getRendering(owlManager.getOWLDataFactory().getOWLAnnotationProperty(entityIRI));
+        if (type == ValidationType.FREETEXT) {
+        	cellText = "";
+        }
+        
+        getOntologyManager().setOntologyTermValidation(rangeToApply, type, entityIRI, property);        
+        
+        for(int col = rangeToApply.getFromColumn(); col < rangeToApply.getToColumn() + 1; col++) {
+            for(int row = rangeToApply.getFromRow(); row < rangeToApply.getToRow() + 1; row++) {
+                Cell cell = rangeToApply.getSheet().getCellAt(col, row);
+                if (cell == null) {                	
+                	SetCellValue scv=new SetCellValue(rangeToApply.getSheet(),col,row,null,cellText);
+                	applyChange(scv);
+                	cell = rangeToApply.getSheet().getCellAt(col, row);
+                }
+                else {
+                	SetCellValue scv=new SetCellValue(rangeToApply.getSheet(),col,row,"",cellText);
+                	applyChange(scv);
+                	cell = rangeToApply.getSheet().getCellAt(col, row);
+                }                              
+            }
+        }
+    }*/
+        
+    
+    /**
+     * Determines whether the apply button should be enabled or not depending on if the validation setting differ from the cell.
+     * @return the enabled state of the apply button
+     */
+/*    public boolean determineApplyButtonState() {
+    	ValidationType type = entitySelectionModel.getValidationType();
+    	IRI iri = entitySelectionModel.getSelection().getIRI();
+    	OWLPropertyItem property = entitySelectionModel.getOWLPropertyItem();
+    	Range selectedRange = getSelectionModel().getSelectedRange();
+    	Collection<OntologyTermValidation> validations = getOntologyManager().getContainingOntologyTermValidations(selectedRange);
+    	boolean result = false;
+    	for (OntologyTermValidation validation : validations) {
+    		OntologyTermValidationDescriptor validationDescriptor = validation.getValidationDescriptor();
+    		boolean propertyChanged=false;
+    		
+    		//FIXME: shouldn't rely on OWLProperty being NULL - should have a NullPropertyItem type
+    		if (validationDescriptor.getOWLPropertyItem()==null) {
+    			propertyChanged = property!=null;
+    		}
+    		else {
+    			propertyChanged = !validationDescriptor.getOWLPropertyItem().equals(property);
+    		}
+    		if (!validationDescriptor.getEntityIRI().equals(iri) || 
+    				!validationDescriptor.getType().equals(type) ||
+    				propertyChanged) {
+    			result=true;
+    			break;
+    		}
+    	}
+    	if (validations.isEmpty()) {
+    		result = (type!=ValidationType.FREETEXT || property!=null);
+    	}
+    	logger.debug("Apply button state deterimned as "+result+" for type "+type.toString()+" and IRI "+iri.toString()+" and Property "+property);
+    	return result;
+    }*/
+    
+    
+/*    public void removeValidations(Range range) {
+    	if (getOntologyManager().getContainingOntologyTermValidations(range).size()>0)
+    	{
+    		getOntologyManager().remoteOntologyTermValidations(range);	    	
+    	}
+    }*/
+    
+    public OntologyManager getOntologyManager() {
+    	return ontologyManager;
+    }
+
+/*    public CellSelectionModel getSelectionModel() {
+        return selectionModel;
+    } */       
+
+/*	public WorkbookState getWorkbookState() {
+		return workbookState;
+	}*/
+
+/*	public Sheet addSheet() {
+		Sheet sheet = getWorkbook().addSheet();		
+		return sheet;
+	}*/
+
+/*	public void deleteSheet(String name) {
+		//cleanup validations linked to this sheet
+		Sheet sheet = getWorkbook().getSheet(name);
+		if (sheet!=null) {
+			getOntologyManager().remoteOntologyTermValidations(sheet);
+		}
+		else {
+			logger.warn("Attempt to delete sheet with unrecognised name:"+name);
+		}		
+		getWorkbook().deleteSheet(name);				
+	}*/
+
+/*	public void renameSheet(String oldName, String newName) {
+		Sheet sheet = getWorkbook().getSheet(oldName);
+		if (sheet!=null) {
+			sheet.setName(newName);
+		}
+	}*/	
+
+}
