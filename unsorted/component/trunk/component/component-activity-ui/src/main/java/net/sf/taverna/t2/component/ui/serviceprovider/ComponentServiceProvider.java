@@ -43,16 +43,6 @@ public class ComponentServiceProvider implements ServiceDescriptionProvider {
 		
 		myExperimentClient.setBaseURL("http://www.myexperiment.org");
 		
-		InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("simple_sum.t2flow");
-		String content = "";
-		try {
-			content = IOUtils.toString(stream, "UTF-8");
-		} catch (IOException e) {
-			callBack.fail("Unable to read component", e);
-		}
-
-
-		
 		if (!myExperimentClient.isLoggedIn()) {
 			myExperimentClient.doLogin();
 		}
