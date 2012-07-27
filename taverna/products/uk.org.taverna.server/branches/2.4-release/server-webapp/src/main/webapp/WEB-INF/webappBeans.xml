@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2010-2012 The University of Manchester See the file "LICENSE.txt" 
+	for license terms. -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+	xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xmlns:cxf="http://cxf.apache.org/core"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+		http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd
+		http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+		http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+		http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<description>
+		The Taverna Server bean, plus supporting configuration.
+	</description>
+
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="providers.xml" />
+
+	<context:annotation-config />
+	<context:component-scan base-package="org.taverna.server" />
+	<bean id="servletContextPropertyConfigurer"
+		class="org.springframework.web.context.support.ServletContextPropertyPlaceholderConfigurer">
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="contextOverride" value="true" />
+		<property name="order" value="0" />
+		<property name="location" value="/WEB-INF/tavernaserver.properties" />
+	</bean>
+
+	<jaxws:server id="master_SOAP"
+		serviceClass="org.taverna.server.master.TavernaServerImpl" address="/soap">
+		<jaxws:serviceBean>
+			<ref bean="webapp" />
+		</jaxws:serviceBean>
+		<jaxws:properties>
+			<entry key="mtom-enabled" value="true" />
+		</jaxws:properties>
+		<!-- <jaxws:dataBinding><ref bean="addStylesheet"/></jaxws:dataBinding> -->
+	</jaxws:server>
+
+	<jaxrs:server id="root_REST" address="/">
+		<jaxrs:serviceBeans>
+			<ref bean="root_facade" />
+		</jaxrs:serviceBeans>
+		<jaxrs:properties>
+			<entry key="org.apache.cxf.endpoint.private" value="true" />
+		</jaxrs:properties>
+	</jaxrs:server>
+
+	<jaxrs:server id="master_REST" address="/rest"
+		staticSubresourceResolution="true">
+		<jaxrs:serviceBeans>
+			<ref bean="webapp" />
+		</jaxrs:serviceBeans>
+		<jaxrs:features>
+			<!-- <cxf:logging /> --><!-- NOISY! -->
+		</jaxrs:features>
+		<!-- We register these because of a CXF (or Spring?) bug. Yuck! -->
+		<jaxrs:providers>
+			<ref bean="ExceptionProvider.AccessDenied" />
+			<ref bean="ExceptionProvider.BadInputPortName" />
+			<ref bean="ExceptionProvider.BadPropertyValue" />
+			<ref bean="ExceptionProvider.BadStateChange" />
+			<ref bean="ExceptionProvider.FilesystemAccess" />
+			<ref bean="ExceptionProvider.GeneralFailure" />
+			<ref bean="ExceptionProvider.IllegalArgument" />
+			<ref bean="ExceptionProvider.ImplementationProblem" />
+			<ref bean="ExceptionProvider.InvalidCredential" />
+			<ref bean="ExceptionProvider.JAXBException" />
+			<ref bean="ExceptionProvider.NoCreate" />
+			<ref bean="ExceptionProvider.NoCredential" />
+			<ref bean="ExceptionProvider.NoDestroy" />
+			<ref bean="ExceptionProvider.NoDirectoryEntry" />
+			<ref bean="ExceptionProvider.NoListener" />
+			<ref bean="ExceptionProvider.NoUpdate" />
+			<ref bean="ExceptionProvider.NotOwner" />
+			<ref bean="ExceptionProvider.UnknownRun" />
+			<ref bean="MessagingProvider.File" />
+			<ref bean="MessagingProvider.FileSegment" />
+			<ref bean="MessagingProvider.InputStream" />
+			<ref bean="MessagingProvider.T2flow" />
+			<ref bean="MessagingProvider.Permission" />
+			<ref bean="jsonProvider" />
+			<ref bean="jaxbProvider" />
+		</jaxrs:providers>
+ 	</jaxrs:server>
+
+	<jaxrs:server id="AtomFeed" address="/feed">
+		<jaxrs:serviceBeans>
+			<ref bean="feed" />
+		</jaxrs:serviceBeans>
+		<jaxrs:properties>
+			<entry key="org.apache.cxf.endpoint.private" value="true" />
+		</jaxrs:properties>
+		<jaxrs:providers>
+			<ref bean="MessagingProvider.Atom" />
+		</jaxrs:providers>
+	</jaxrs:server>
+
+	<jaxrs:server id="AdministrationInterface" address="/admin"
+		staticSubresourceResolution="true">
+		<jaxrs:serviceBeans>
+			<ref bean="admin" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jsonProvider" />
+			<ref bean="jaxbProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+
+	<bean id="jsonProvider" class="org.apache.cxf.jaxrs.provider.JSONProvider">
+		<property name="ignoreNamespaces" value="true" />
+		<property name="namespaceMap" ref="jsonNamespaceMap" />
+	</bean>
+	<util:map id="jsonNamespaceMap" key-type="java.lang.String"
+		value-type="java.lang.String">
+		<entry key="http://www.w3.org/1999/xlink" value="" />
+		<entry key="http://www.w3.org/2000/09/xmldsig#" value="" />
+		<entry key="http://schema.ogf.org/urf/2003/09/urf" value="" />
+		<entry key="http://ns.taverna.org.uk/2010/xml/server/" value="" />
+		<entry key="http://ns.taverna.org.uk/2010/xml/server/rest/" value="" />
+		<entry key="http://ns.taverna.org.uk/2010/xml/server/soap/" value="" />
+		<entry key="http://ns.taverna.org.uk/2010/xml/server/feed/" value="" />
+		<entry key="http://ns.taverna.org.uk/2010/xml/server/admin/" value="" />
+		<entry key="http://ns.taverna.org.uk/2010/port/" value="" />
+		<entry key="http://ns.taverna.org.uk/2010/run/" value="" />
+	</util:map>
+
+	<!-- How to supply a stylesheet with the results so that browsers can
+	     show things properly; requires selecting a stylesheet to use. -->
+	<bean id="jaxbProvider" class="org.apache.cxf.jaxrs.provider.JAXBElementProvider">
+		<property name="marshallerProperties" ref="jaxbProps" />
+	</bean>
+	<util:map id="jaxbProps" key-type="java.lang.String"
+		value-type="java.lang.String">
+		<entry key="com.sun.xml.bind.xmlHeaders">
+			<!-- Newlines matter in literal value; be careful! -->
+			<value type="java.lang.String"><![CDATA[
+<?xml-stylesheet type="text/xml" href="${xml.stylesheet.url}"?>
+]]></value>
+		</entry>
+	</util:map>
+
+	<bean id="root_facade" class="org.taverna.server.master.facade.Facade">
+		<property name="file" value="welcome.html" />
+		<property name="pattern" value="SERVICE_URI/" />
+	</bean>
+
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+	<security:global-method-security
+		jsr250-annotations="enabled" />
+</beans>

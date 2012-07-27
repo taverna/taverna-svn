@@ -1,0 +1,54 @@
+Taverna 2.4 Server Release Notes
+================================
+
+This is the first release of the new Taverna 2.4 Server. We welcome feedback
+on both the things that are there and the things that are not.
+
+Key Features
+------------
+ * Runs arbitrary Taverna 2 workflows
+   * Based on Taverna 2.4
+ * REST and SOAP interfaces
+   * All functionality available through both interfaces
+ * Manages files for workflows
+   * Make files, read files, delete files
+   * Create subdirectories, list directory contents
+   * Can download a whole directory structure as a ZIP
+ * Tidies up when workflow runs expire
+   * Expiry time fully configurable
+   * Can force immediate deletion of a workflow run
+ * Security
+   * Encrypted communication supported
+   * Multiple users
+     * Users isolated from each other (via sudo)
+     * Workflows isolated from server
+     * Users may grant access to other users
+   * Specify credentials for workflows to access back-end services
+ * Notification framework
+   * Inform users when workflows terminate
+     * Many protocols: Atom feed, email, SMS, Twitter, Jabber
+ * Management interface
+   * Administrative access to all server's tunable parameters
+     * Authenticated web interface, JMX
+   * Usage monitoring/accounting
+ * General quality improvements
+   * Improved robustness
+     * State can persist over (limited) server restarts
+   * Improved installation
+     * Self-contained server package
+   * Support for transfer of large data files
+ 
+Planned Future Features
+-----------------------
+ * Support for Cluster Deployment
+ * Access to Provenance
+
+Specific Issues Addressed in This Release
+-----------------------------------------
+See http://www.mygrid.org.uk/dev/issues/browse/TAVSERV
+
+TAVSERV-224	Ability to pass configuration parameters to the command line
+		executor
+TAVSERV-226	Odd webapp authentication behaviour!
+TAVSERV-228	Wrong title and missing documentation link on index page
+TAVSERV-229	Update to Taverna 2.4 core
