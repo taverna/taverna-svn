@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2010-2012 The University of Manchester See the file "LICENSE.txt" 
+	for license terms. -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.3.xsd">
+
+	<description>
+		The Taverna Server bean, plus supporting configuration.
+		THIS IS THE CONFIGURATION FOR SECURE OPERATION.
+	</description>
+
+	<import resource="webappBeans.xml" />
+
+	<bean id="MBeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">
+		<property name="locateExistingServerIfPossible" value="true" />
+	</bean>
+	<context:mbean-export server="MBeanServer"
+		default-domain="${my.domain}" registration="ignoreExisting" />
+
+	<security:http realm="${http.realmName}" create-session="never"
+		use-expressions="true">
+		<security:http-basic />
+		<security:intercept-url pattern="/"
+			requires-channel="any" access="permitAll" />
+		<security:intercept-url pattern="/rest"
+			requires-channel="https" access="permitAll" />
+		<security:intercept-url pattern="/rest/"
+			requires-channel="https" access="permitAll" />
+		<security:intercept-url pattern="/rest/policy"
+			requires-channel="https" access="permitAll" />
+		<security:intercept-url pattern="/rest/policy/"
+			requires-channel="https" access="permitAll" />
+		<security:intercept-url pattern="/services/**"
+			requires-channel="https" access="permitAll" />
+		<security:intercept-url pattern="/soap/**"
+			requires-channel="https" method="GET" access="permitAll" />
+		<security:intercept-url pattern="/soap/**"
+			requires-channel="https" method="POST" access="hasRole('ROLE_tavernauser')" />
+		<security:intercept-url pattern="/admin"
+			requires-channel="https" access="hasRole('ROLE_tavernasuperuser')" />
+		<security:intercept-url pattern="/admin/**"
+			requires-channel="https" access="hasRole('ROLE_tavernasuperuser')" />
+		<security:intercept-url pattern="/rest/**"
+			requires-channel="https" access="hasRole('ROLE_tavernauser')" />
+		<security:intercept-url pattern="/feed"
+			requires-channel="https" access="hasRole('ROLE_tavernauser')" />
+		<security:intercept-url pattern="/feed/**"
+			requires-channel="https" access="hasRole('ROLE_tavernauser')" />
+	</security:http>
+	<bean class="org.taverna.server.master.common.Uri.Rewriter"
+		autowire="byType" id="URI-Rewriter-Thunk" />
+	<bean id="authProvider" class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
+		<property name="passwordEncoder" ref="passwordEncoder" />
+		<property name="saltSource">
+			<bean id="saltSource"
+				class="org.springframework.security.authentication.dao.ReflectionSaltSource">
+				<property name="userPropertyToUse" value="username" />
+			</bean>
+		</property>
+		<property name="userDetailsService" ref="userStore" />
+	</bean>
+	<security:authentication-manager>
+		<security:authentication-provider ref="authProvider" />
+<!-- 			<security:user-service id="users"
+				properties="/WEB-INF/security/users.properties">
+				FIXME
+			</security:user-service>
+		</security:authentication-provider> -->
+	</security:authentication-manager>
+</beans>
