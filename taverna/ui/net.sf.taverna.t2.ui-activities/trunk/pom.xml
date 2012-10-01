@@ -17,7 +17,7 @@
 	<description>UI for Taverna 2 activities</description>
 
 	<modules>
-		<module>all-activity-uis</module>
+		<!-- <module>all-activity-uis</module> -->
 		<!-- <module>apiconsumer-activity-ui</module> -->
 		<module>beanshell-activity-ui</module>
 		<module>biomart-activity-ui</module>
