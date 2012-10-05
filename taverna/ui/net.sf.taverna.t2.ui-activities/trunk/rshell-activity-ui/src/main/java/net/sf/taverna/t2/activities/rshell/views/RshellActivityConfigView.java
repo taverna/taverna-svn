@@ -28,6 +28,7 @@
 package net.sf.taverna.t2.activities.rshell.views;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -40,6 +41,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -106,6 +108,8 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("serial")
 public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellActivity, RshellActivityConfigurationBean> {
 
+	private static final Color LINE_COLOR = new Color(225,225,225);
+
 	private static final String EXTENSION = ".r";
 
 	private static final String VALID_NAME_REGEX = "[\\p{L}\\p{Digit}_]+";
@@ -150,6 +154,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	private JPanel outerInputPanel;
 	private JTextField hostnameField;
 	private JTextField portField;
+
 	//private JTextField usernameField;
 	//private JTextField passwordField;
 
@@ -162,6 +167,9 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	private JTabbedPane ports;
 
 	private static Set<String> keys = EditorKeySetUtil.loadKeySet(RshellActivityConfigView.class.getResourceAsStream("keys.txt"));
+	
+	private CredentialManagerUI credManagerUI;
+
 
 
 	/**
@@ -200,6 +208,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	 */
 	private void initialise() {
 		//this.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
+
 		configuration = activity.getConfiguration();
 		setLayout(new GridBagLayout());
 		inputViewList = new ArrayList<RshellInputViewer>();
@@ -219,7 +228,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 
 
 		scriptTextArea = new JTextPane();
-		new LinePainter(scriptTextArea);
+		new LinePainter(scriptTextArea, LINE_COLOR);
 
 		final KeywordDocument doc = new KeywordDocument(keys);
 		// NOTE: Due to T2-1145 - always set editor kit BEFORE setDocument
@@ -276,6 +285,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 			    String newScript = FileTools.readStringFromFile(RshellActivityConfigView.this, "Load R script", ".r");
 				if (newScript != null) {
 					scriptTextArea.setText(newScript);
+					scriptTextArea.setCaretPosition(0);
 				}
 			}
 		});
@@ -365,7 +375,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		fieldConstraints.gridx = 1;
 		fieldConstraints.gridy = 0;
 		fieldConstraints.fill = GridBagConstraints.HORIZONTAL;
-
+		
 		GridBagConstraints buttonConstraints = new GridBagConstraints();
 		buttonConstraints.weightx = 1.0;
 		buttonConstraints.gridx = 1;
@@ -408,17 +418,16 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 
 		// "Set username and password" button
 		ActionListener usernamePasswordListener = new ActionListener() {
+
 			public void actionPerformed(ActionEvent e) {
-				// Get Credential Manager to pop up a dialog to ask for the username and password for the service
-				CredentialManagerUI credManagerUI = CredentialManagerUI.getInstance();
+
 				if (credManagerUI != null)
-					credManagerUI.newPasswordForService("rserve://"+hostnameField.getText()+":"+portField.getText()); // this is used as a key for the service in Credential Manager
+					credManagerUI.newPasswordForService(URI.create("rserve://"+hostnameField.getText()+":"+portField.getText())); // this is used as a key for the service in Credential Manager
 			}
 		};
 		setHttpUsernamePasswordButton = new JButton("Set username and password");
 		setHttpUsernamePasswordButton.setSize(dimension);
 		setHttpUsernamePasswordButton.addActionListener(usernamePasswordListener);
-
 
 		keepSessionAliveCheckBox = new JCheckBox("Keep Session Alive");
 		keepSessionAliveCheckBox.setSelected(connectionSettings
@@ -1121,6 +1130,20 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		infoContentPanel.add(new JLabel("University of Manchester, UK"),
 				infoConstraints);
 		return infoPanel;
+	}
+
+	/**
+	 * @return the credManagerUI
+	 */
+	public CredentialManagerUI getCredManagerUI() {
+		return credManagerUI;
+	}
+
+	/**
+	 * @param credManagerUI the credManagerUI to set
+	 */
+	public void setCredManagerUI(CredentialManagerUI credManagerUI) {
+		this.credManagerUI = credManagerUI;
 	}
 
 }
