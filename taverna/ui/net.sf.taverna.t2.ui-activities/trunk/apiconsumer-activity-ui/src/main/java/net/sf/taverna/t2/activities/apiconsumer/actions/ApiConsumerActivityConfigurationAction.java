@@ -46,8 +46,7 @@ import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityCon
  *
  */
 @SuppressWarnings("serial")
-public class ApiConsumerActivityConfigurationAction extends
-		ActivityConfigurationAction<ApiConsumerActivity, ApiConsumerActivityConfigurationBean> {
+public class ApiConsumerActivityConfigurationAction extends ActivityConfigurationAction {
 
 	// Configuration before any changes have been done in this dialog
 	private ApiConsumerActivityConfigurationBean configuration;

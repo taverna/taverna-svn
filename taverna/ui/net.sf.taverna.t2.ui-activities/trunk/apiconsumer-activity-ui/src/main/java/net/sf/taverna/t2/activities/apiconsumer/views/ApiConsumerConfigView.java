@@ -44,7 +44,7 @@ import org.apache.log4j.Logger;
  * @author alanrw
  *
  */
-public class ApiConsumerConfigView extends ActivityConfigurationPanel<ApiConsumerActivity, ApiConsumerActivityConfigurationBean> {
+public class ApiConsumerConfigView extends ActivityConfigurationPanel<ApiConsumerActivityConfigurationBean> {
 
 	private ApiConsumerActivity activity;
 	private ApiConsumerActivityConfigurationBean configuration;
