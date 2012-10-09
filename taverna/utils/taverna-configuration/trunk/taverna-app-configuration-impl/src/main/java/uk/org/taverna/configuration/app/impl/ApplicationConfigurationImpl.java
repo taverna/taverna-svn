@@ -118,7 +118,7 @@ public class ApplicationConfigurationImpl implements ApplicationConfiguration {
 				logger.warn("Could not determine application's user home,"
 						+ " using temporary dir " + homeDir);
 			} else {
-				homeDir = new ApplicationUserHome(getName()).getAppUserHome();
+				homeDir = new ApplicationUserHome(getName(), System.getProperty(APP_HOME)).getAppUserHome();
 			}
 			if (homeDir == null || !homeDir.isDirectory()) {
 				throw new IllegalStateException("Could not create application home directory "
