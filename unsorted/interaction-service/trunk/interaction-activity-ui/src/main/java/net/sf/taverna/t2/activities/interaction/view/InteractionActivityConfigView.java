@@ -318,6 +318,8 @@ public class InteractionActivityConfigView
 		inputEditPanel.add(new JLabel("Name"), inputConstraint);
 		inputConstraint.gridx = 1;
 		inputEditPanel.add(new JLabel("Depth"), inputConstraint);
+		inputConstraint.gridx = 2;
+		inputEditPanel.add(new JLabel("Publish"), inputConstraint);
 
 		inputGridy = 1;
 		inputConstraint.gridx = 0;
@@ -358,6 +360,14 @@ public class InteractionActivityConfigView
 			});
 			inputEditPanel.add(depthSpinner, inputConstraint);
 			inputConstraint.gridx = 2;
+			final JCheckBox publishBox = beanshellInputViewer.getPublishField();
+			publishBox.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent e) {
+					inputsChanged = true;
+				}				
+			});
+			inputEditPanel.add(publishBox, inputConstraint);
+			inputConstraint.gridx = 3;
 			final JButton removeButton = new JButton("Remove");
 			removeButton.addActionListener(new AbstractAction() {
 
@@ -368,6 +378,7 @@ public class InteractionActivityConfigView
 					inputViewList.remove(beanshellInputViewer);
 					inputEditPanel.remove(nameField);
 					inputEditPanel.remove(depthSpinner);
+					inputEditPanel.remove(publishBox);
 					inputEditPanel.remove(removeButton);
 					inputEditPanel.revalidate();
 					inputEditPanel.repaint();
@@ -435,6 +446,9 @@ public class InteractionActivityConfigView
 						.getDepthSpinner();
 				inputEditPanel.add(depthSpinner, inputConstraint);
 				inputConstraint.gridx = 2;
+				final JCheckBox publishBox = beanshellInputViewer.getPublishField();
+				inputEditPanel.add(publishBox, inputConstraint);
+				inputConstraint.gridx = 3;
 				final JButton removeButton = new JButton("Remove");
 				removeButton.addActionListener(new AbstractAction() {
 
@@ -442,6 +456,7 @@ public class InteractionActivityConfigView
 						inputViewList.remove(beanshellInputViewer);
 						inputEditPanel.remove(nameField);
 						inputEditPanel.remove(depthSpinner);
+						inputEditPanel.remove(publishBox);
 						inputEditPanel.remove(removeButton);
 						inputEditPanel.revalidate();
 						inputEditPanel.repaint();
@@ -594,13 +609,17 @@ public class InteractionActivityConfigView
 		List<ActivityInputPortDefinitionBean> inputBeanList = new ArrayList<ActivityInputPortDefinitionBean>();
 		for (InteractionInputViewer inputView : inputViewList) {
 			ActivityInputPortDefinitionBean activityInputPortDefinitionBean = new ActivityInputPortDefinitionBean();
+			ActivityInputPortDefinitionBean inputViewBean = inputView.getBean();
 			activityInputPortDefinitionBean
-					.setHandledReferenceSchemes(inputView.getBean()
+					.setHandledReferenceSchemes(inputViewBean
 							.getHandledReferenceSchemes());
-			activityInputPortDefinitionBean.setMimeTypes(inputView.getBean()
+			activityInputPortDefinitionBean.setMimeTypes(inputViewBean
 					.getMimeTypes());
-			activityInputPortDefinitionBean.setTranslatedElementType(inputView
-					.getBean().getTranslatedElementType());
+			if (inputView.getPublishField().isSelected()) {
+				activityInputPortDefinitionBean.setTranslatedElementType(byte[].class);
+			} else {
+				activityInputPortDefinitionBean.setTranslatedElementType(String.class);
+			}
 			activityInputPortDefinitionBean.setDepth((Integer) inputView
 					.getDepthSpinner().getValue());
 			activityInputPortDefinitionBean.setName(inputView.getNameField()

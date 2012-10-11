@@ -70,6 +70,7 @@ public class InteractionInputViewer extends JPanel {
 		this.editable = editable;
 		setBorder(javax.swing.BorderFactory.createEtchedBorder());
 		initView();
+		publishField.setSelected(!bean.getTranslatedElementType().equals(String.class));
 		setEditMode();
 	}
 
@@ -91,7 +92,7 @@ public class InteractionInputViewer extends JPanel {
 		nameField = new JTextField(bean.getName());
 		add(nameField, outerConstraint);
 
-		publishField = new JCheckBox("Publish data");
+		publishField = new JCheckBox();
 		outerConstraint.gridx = 1;
 		add(publishField, outerConstraint);
 
