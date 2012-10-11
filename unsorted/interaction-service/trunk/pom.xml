@@ -4,7 +4,7 @@
 
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>interaction-service</artifactId>
-	<version>0.1.14</version>
+	<version>0.1.15</version>
 	<packaging>pom</packaging>
 	<name>Example Taverna project</name>
 

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>interaction-service</artifactId>
-		<version>0.1.14</version>
+		<version>0.1.15</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.ui-activities</groupId>
 	<artifactId>interaction-activity-ui</artifactId>
@@ -73,13 +73,6 @@
 			<artifactId>graph-view</artifactId>
 			<version>1.4.1</version>
 		</dependency>
-		
-				<dependency>
-			<groupId>net.sf.taverna.t2.ui-components</groupId>
-			<artifactId>results-view</artifactId>
-			<version>1.4.1</version>
-		</dependency>
-		
 		
 		<dependency>
 			<groupId>org.apache.abdera</groupId>
@@ -160,7 +153,7 @@
 			<groupId>net.sf.taverna.t2.taverna-workbench</groupId>
 			<artifactId>workbench-dev</artifactId>
 			<version>${t2.workbench.version}</version>
-
+			<scope>test</scope>
 			<exclusions>
 
 				<!--
