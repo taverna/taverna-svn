@@ -1,0 +1,374 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sf.taverna</groupId>
+		<artifactId>taverna-parent</artifactId>
+		<version>3.0.1-SNAPSHOT</version>
+	</parent>
+	<groupId>uk.org.taverna.osgi</groupId>
+	<artifactId>taverna-starter</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>Taverna OSGi Framework Starter</name>
+	<description>Starts and OSGi framework and loads Taverna bundles</description>
+
+	<properties>
+		<scufl2.version>0.9.3-SNAPSHOT</scufl2.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>uk.org.taverna.osgi</groupId>
+			<artifactId>osgi-launcher</artifactId>
+			<version>${osgi.launcher.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.taverna.platform</groupId>
+			<artifactId>taverna-data-api</artifactId>
+			<version>${platform.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.taverna.platform</groupId>
+			<artifactId>taverna-run-api</artifactId>
+			<version>${platform.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.taverna.platform</groupId>
+			<artifactId>taverna-execution-api</artifactId>
+			<version>${platform.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.org.taverna.platform</groupId>
+					<artifactId>taverna-capability-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.taverna.scufl2</groupId>
+			<artifactId>scufl2-api</artifactId>
+			<version>${scufl2.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.security</groupId>
+			<artifactId>credential-manager</artifactId>
+			<version>${t2.security.version}</version>
+		</dependency>
+
+		<!-- Spring DM -->
+		<dependency>
+			<groupId>net.sourceforge.cglib</groupId>
+			<artifactId>com.springsource.net.sf.cglib</artifactId>
+			<version>2.1.3</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.osgi</groupId>
+			<artifactId>spring-osgi-annotation</artifactId>
+			<version>${spring.dm.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.osgi</groupId>
+			<artifactId>spring-osgi-extender</artifactId>
+			<version>${spring.dm.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- Spring -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>org.springframework.context</artifactId>
+			<version>${spring.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Java Extension Implementations -->
+		<!-- <dependency> <groupId>com.sun.xml</groupId> <artifactId>com.springsource.com.sun.xml.bind</artifactId>
+			<version>2.2.0</version> </dependency> -->
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>com.springsource.javax.xml.bind</artifactId>
+			<version>2.2.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.activation</groupId>
+			<artifactId>com.springsource.javax.activation</artifactId>
+			<version>1.1.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency> <!-- required by bsh -->
+			<groupId>javax.servlet</groupId>
+			<artifactId>com.springsource.javax.servlet</artifactId>
+			<version>2.5.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.jms</groupId>
+			<artifactId>com.springsource.javax.jms</artifactId>
+			<version>1.1.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.xml.soap</groupId>
+			<artifactId>com.springsource.javax.xml.soap</artifactId>
+			<version>1.3.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.xml.stream</groupId>
+			<artifactId>com.springsource.javax.xml.stream</artifactId>
+			<version>1.0.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>com.springsource.javax.mail</artifactId>
+			<version>${mail.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>com.springsource.org.apache.commons.codec</artifactId>
+			<version>${commons.codec.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- OSGi Enterprise Services -->
+		<dependency>
+			<groupId>uk.org.taverna.osgi.services</groupId>
+			<artifactId>xml-parser-service</artifactId>
+			<version>${osgi.services.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.taverna.osgi.services</groupId>
+			<artifactId>xml-transformer-service</artifactId>
+			<version>${osgi.services.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Taverna Activities -->
+		<dependency>
+			<groupId>net.sf.taverna.t2.activities</groupId>
+			<artifactId>all-activities</artifactId>
+			<version>${t2.activities.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>net.sf.taverna.t2.activities</groupId>
+					<artifactId>biomoby-activity</artifactId>
+				</exclusion>
+			</exclusions>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Taverna Platform -->
+		<dependency>
+			<groupId>uk.org.taverna.platform</groupId>
+			<artifactId>taverna-capability-impl</artifactId>
+			<version>${platform.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.taverna.platform</groupId>
+			<artifactId>taverna-data-impl</artifactId>
+			<version>${platform.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.taverna.platform</groupId>
+			<artifactId>taverna-run-impl</artifactId>
+			<version>${platform.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.taverna.platform</groupId>
+			<artifactId>taverna-execution-impl</artifactId>
+			<version>${platform.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.taverna.platform</groupId>
+			<artifactId>taverna-execution-local</artifactId>
+			<version>${platform.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Taverna Configuration -->
+		<dependency>
+			<groupId>uk.org.taverna.configuration</groupId>
+			<artifactId>taverna-configuration-impl</artifactId>
+			<version>${taverna.configuration.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.taverna.configuration</groupId>
+			<artifactId>taverna-app-configuration-impl</artifactId>
+			<version>${taverna.configuration.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.taverna.configuration</groupId>
+			<artifactId>taverna-database-configuration-impl</artifactId>
+			<version>${taverna.configuration.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Scufl2 -->
+		<dependency>
+			<groupId>uk.org.taverna.scufl2</groupId>
+			<artifactId>scufl2-rdfxml</artifactId>
+			<version>${scufl2.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.taverna.scufl2</groupId>
+			<artifactId>scufl2-t2flow</artifactId>
+			<version>${scufl2.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.taverna.scufl2</groupId>
+			<artifactId>scufl2-validation-structural</artifactId>
+			<version>${scufl2.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.taverna.scufl2</groupId>
+			<artifactId>scufl2-validation-correctness</artifactId>
+			<version>${scufl2.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Taverna Security -->
+		<dependency>
+			<groupId>net.sf.taverna.t2.security</groupId>
+			<artifactId>credential-manager-impl</artifactId>
+			<version>${t2.security.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Taverna Workflow Engine -->
+		<dependency>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>workflowmodel-impl</artifactId>
+			<version>${t2.core.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>workflowmodel-core-extensions</artifactId>
+			<version>${t2.core.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>reference-impl</artifactId>
+			<version>${t2.core.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>reference-core-extensions</artifactId>
+			<version>${t2.core.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Taverna Provenance -->
+		<dependency>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>provenance-derby</artifactId>
+			<version>${t2.core.provenance.derby.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>provenance-mysql</artifactId>
+			<version>${t2.core.provenance.mysql.version}</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.4</version><!--$NO-MVN-MAN-VER$ -->
+				<executions>
+					<execution>
+						<id>list-dependencies</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>build-classpath</goal>
+						</goals>
+						<configuration>
+							<pathSeparator>,</pathSeparator>
+							<prefix>lib</prefix>
+							<outputFile>${project.build.outputDirectory}/config/taverna.osgi.bundles</outputFile>
+							<excludeArtifactIds>all-activities</excludeArtifactIds>
+							<excludeGroupIds>org.osgi,org.eclipse.osgi</excludeGroupIds>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.outputDirectory}/lib</outputDirectory>
+							<excludeArtifactIds>all-activities</excludeArtifactIds>
+							<excludeGroupIds>org.osgi,org.eclipse.osgi</excludeGroupIds>
+						</configuration>
+					</execution>
+					<!-- <execution>
+						<id>copy</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.outputDirectory}/lib</outputDirectory>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.apache.log4j</groupId>
+									<artifactId>com.springsource.org.apache.log4j</artifactId>
+									<version>1.2.16</version>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution> -->
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	<repositories>
+		<repository>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+		</repository>
+		<repository>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots />
+			<id>mygrid-snapshot-repository</id>
+			<name>myGrid Snapshot Repository</name>
+			<url>http://www.mygrid.org.uk/maven/snapshot-repository</url>
+		</repository>
+		<repository>
+			<id>spring-maven-milestone</id>
+			<name>Springframework Maven Repository</name>
+			<url>http://maven.springframework.org/milestone</url>
+		</repository>
+		<repository>
+			<id>com.springsource.repository.bundles.milestone</id>
+			<name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Milestones</name>
+			<url>http://repository.springsource.com/maven/bundles/milestone</url>
+		</repository>
+	</repositories>
+</project>
