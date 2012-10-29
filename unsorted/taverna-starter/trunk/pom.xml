@@ -12,9 +12,6 @@
 	<name>Taverna OSGi Framework Starter</name>
 	<description>Starts and OSGi framework and loads Taverna bundles</description>
 
-	<properties>
-		<scufl2.version>0.9.3-SNAPSHOT</scufl2.version>
-	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>uk.org.taverna.osgi</groupId>
