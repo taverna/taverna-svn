@@ -71,6 +71,7 @@ public class TavernaStarter {
 			"uk.org.taverna.scufl2.api.port;version="+scufl2Version+"," +
 			"uk.org.taverna.scufl2.api.profiles;version="+scufl2Version+"," +
 			"uk.org.taverna.scufl2.api.property;version="+scufl2Version+"," +
+			"uk.org.taverna.scufl2.ucfpackage;version="+scufl2Version+"," +
 			"net.sf.taverna.t2.security.credentialmanager;version=2.0.1," +
 			"net.sf.taverna.t2.lang.observer;version=2.0.1," +
 			"uk.org.taverna.platform.report;version=0.1.3," +
