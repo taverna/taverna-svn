@@ -24,7 +24,6 @@ import org.apache.abdera.parser.stax.FOMParser;
 import org.apache.log4j.Logger;
 
 import net.sf.taverna.t2.activities.interaction.jetty.InteractionJetty;
-import net.sf.taverna.t2.activities.interaction.jetty.JettyStartupHook;
 import net.sf.taverna.t2.activities.interaction.preference.InteractionPreference;
 import net.sf.taverna.t2.workbench.StartupSPI;
 
@@ -32,12 +31,23 @@ import net.sf.taverna.t2.workbench.StartupSPI;
  * @author alanrw
  *
  */
-public class FeedClientStartupHook implements JettyStartupHook {
+public class FeedClientStartupHook implements StartupSPI {
 	
 	private static Logger logger = Logger.getLogger(FeedClientStartupHook.class);
 
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workbench.StartupSPI#positionHint()
+	 */
 	@Override
-	public boolean jettyStarted() {
+	public int positionHint() {
+		return 1000;
+	}
+
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workbench.StartupSPI#startup()
+	 */
+	@Override
+	public boolean startup() {
 		Thread feedClientThread = new Thread(){
 
 			@Override
@@ -90,11 +100,11 @@ public class FeedClientStartupHook implements JettyStartupHook {
 							logger.error(e);
 						}
 						finally {
-							/*try {
+							try {
 								openStream.close();
 							} catch (IOException e) {
 								logger.error(e);
-							}*/
+							}
 
 						}
 					}
