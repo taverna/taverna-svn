@@ -64,6 +64,11 @@
 
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-components</groupId>
+			<artifactId>credential-manager-ui</artifactId>
+			<version>${t2.ui.components.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-components</groupId>
 			<artifactId>workflow-view</artifactId>
 			<version>1.4</version>
 		</dependency>
