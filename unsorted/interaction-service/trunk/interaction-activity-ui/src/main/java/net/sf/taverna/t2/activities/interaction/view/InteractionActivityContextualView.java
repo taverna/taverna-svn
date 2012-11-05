@@ -6,6 +6,7 @@ import javax.swing.Action;
 
 import net.sf.taverna.t2.activities.interaction.InteractionActivity;
 import net.sf.taverna.t2.activities.interaction.InteractionActivityConfigurationBean;
+import net.sf.taverna.t2.activities.interaction.InteractionActivityType;
 import net.sf.taverna.t2.activities.interaction.actions.InteractionActivityConfigurationAction;
 import net.sf.taverna.t2.workbench.ui.actions.activity.HTMLBasedActivityContextualView;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
@@ -25,12 +26,20 @@ private void init() {
 
 @Override
 protected String getRawTableRowsHtml() {
-        String html = "";
+    	InteractionActivityConfigurationBean configBean = getConfigBean();
+        String html = "<tr><td colspan=\"2\" align=\"center\"><strong>";
+        html += "Interaction defined by ";
+        if (configBean.getInteractionActivityType().equals(InteractionActivityType.VelocityTemplate)) {
+        	html += "Velocity template : ";
+        } else {
+        	html += "HTML page : ";
+        }
+        html += configBean.getPresentationOrigin() + "</strong></td></tr>";
         html = html
         + "<tr><th>Input Port Name</th>" 
                 +       "<th>Depth</th>" 
         +"</tr>";
-        for (ActivityInputPortDefinitionBean bean : getConfigBean()
+		for (ActivityInputPortDefinitionBean bean : configBean
                         .getInputPortDefinitions()) {
                 html = html + "<tr><td>" + bean.getName() + "</td><td>"
                                 + bean.getDepth() + "</td></tr>";
@@ -39,7 +48,7 @@ protected String getRawTableRowsHtml() {
                         + "<tr><th>Output Port Name</th>" 
                                 +       "<th>Depth</th>" 
                         +"</tr>";
-        for (ActivityOutputPortDefinitionBean bean : getConfigBean()
+        for (ActivityOutputPortDefinitionBean bean : configBean
                         .getOutputPortDefinitions()) {
                 html = html + "<tr><td>" + bean.getName() + "</td><td>"
                                 + bean.getDepth() + "</td>" 
@@ -57,8 +66,13 @@ public String getViewTitle() {
 
 @Override
 public Action getConfigureAction(Frame owner) {
-        return new InteractionActivityConfigurationAction(
-                        (InteractionActivity) getActivity(), owner);
+		InteractionActivity interactionActivity = (InteractionActivity) getActivity();
+		if (interactionActivity.getConfiguration().getInteractionActivityType()
+				.equals(InteractionActivityType.LocallyPresentedHtml)) {
+			return new InteractionActivityConfigurationAction(
+					interactionActivity, owner);
+		}
+		return null;
 }
 
 @Override

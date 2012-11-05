@@ -9,6 +9,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -654,7 +656,11 @@ public class InteractionActivityConfigView
 		InteractionActivityConfigurationBean newConfiguration = (InteractionActivityConfigurationBean) cloneBean(configuration);
 		newConfiguration.setInputPortDefinitions(inputBeanList);
 		newConfiguration.setOutputPortDefinitions(outputBeanList);
-		newConfiguration.setPresentationOrigin(sourceTextField.getText());
+		String urlText = sourceTextField.getText();
+		if (!urlText.toLowerCase().matches("^\\w+://.*")) {
+		    urlText = "http://" + urlText;
+		}
+		newConfiguration.setPresentationOrigin(urlText);
 		newConfiguration.setProgressNotification(progressField.isSelected());
 		return newConfiguration;
 

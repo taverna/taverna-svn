@@ -9,17 +9,24 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import net.sf.taverna.t2.activities.interaction.jetty.InteractionJetty;
+import net.sf.taverna.t2.security.credentialmanager.CMException;
+import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
 import net.sf.taverna.t2.workbench.helper.Helper;
+import net.sf.taverna.t2.workbench.ui.credentialmanager.password.GetPasswordDialog;
 
 import org.apache.log4j.Logger;
 
@@ -42,6 +49,8 @@ public class InteractionPreferencePanel extends JPanel {
 	private JTextField hostField;
 	private JTextField feedPathField;
 	private JTextField webDavPathField;
+	private JCheckBox useUsernameField;
+//	private JCheckBox useHttpsField;
 	
 	/**
 	 * The size of the field for the JTextFields.
@@ -90,7 +99,23 @@ public class InteractionPreferencePanel extends JPanel {
 				updateSelectability();
 			}});
         
-		hostField = new JTextField(TEXTFIELD_SIZE);
+        useUsernameField = new JCheckBox("Secure with usename and password");
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(10,0,0,0);
+        everything.add(useUsernameField, gbc);
+       
+/*        useHttpsField = new JCheckBox("Secure communication with HTTPS");
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(10,0,0,0);
+        everything.add(useHttpsField, gbc);
+*/       
+        hostField = new JTextField(TEXTFIELD_SIZE);
         gbc.gridx = 0;
         gbc.gridy++;
         gbc.gridwidth = 1;
@@ -200,14 +225,41 @@ public class InteractionPreferencePanel extends JPanel {
 
 	protected void applySettings() {
 		pref.setUseJetty(useJettyField.isSelected());
-		pref.setPort(portField.getText());
 		pref.setHost(hostField.getText());
 		hostCache = hostField.getText();
 		pref.setFeedPath(feedPathField.getText());
 		feedPathCache = feedPathField.getText();
 		pref.setWebDavPath(webDavPathField.getText());
 		webDavPathCache = webDavPathField.getText();
+		if (pref.getUseJetty()) {
+			if (useUsernameField.isSelected() && (!pref.getUseUsername() || !pref.getPort().equals(portField.getText()))) {
+				try {
+					URI serviceURI = InteractionJetty.createServiceURI(portField.getText());
+					
+					CredentialManager credMan = CredentialManager.getInstance();
+					if (!credMan.hasUsernamePasswordForService(serviceURI)) {
+						GetPasswordDialog getPasswordDialog = new GetPasswordDialog("Please enter the username and password\nto secure the interaction",
+								true);
+						getPasswordDialog.setLocationRelativeTo(null);
+						getPasswordDialog.setVisible(true);
+						
+						String username = getPasswordDialog.getUsername();
+						String password = getPasswordDialog.getPassword();
+						credMan.saveUsernameAndPasswordForService(username, password, serviceURI.toString());
+					}
+				} catch (URISyntaxException e) {
+					logger.error(e);
+				} catch (CMException e) {
+					logger.error(e);
+				}
+			}
+		}
+		pref.setPort(portField.getText());
+		pref.setUseUsername(useUsernameField.isSelected());
+//		pref.setUseHttps(useHttpsField.isSelected());
 		pref.store();
+		JOptionPane.showMessageDialog(null, "The changes will not take effect until Taverna is restarted",
+				"Interaction Preference", JOptionPane.WARNING_MESSAGE);
 	}
 
 	protected void setFields() {
@@ -216,6 +268,8 @@ public class InteractionPreferencePanel extends JPanel {
 		hostField.setText(pref.getHost());
 		feedPathField.setText(pref.getFeedPath());
 		webDavPathField.setText(pref.getWebDavPath());
+		useUsernameField.setSelected(pref.getUseUsername());
+//		useHttpsField.setSelected(pref.getUseHttps());
 		updateSelectability();
 	}
 
@@ -232,6 +286,11 @@ public class InteractionPreferencePanel extends JPanel {
 			webDavPathCache = webDavPathField.getText();
 			webDavPathField.setText(pref.getDefaultWebDavPath());
 			webDavPathField.setEnabled(false);
+			
+			useUsernameField.setEnabled(true);
+			
+//			useHttpsField.setEnabled(true);
+						
 		} else {
 			hostField.setText(hostCache);
 			hostField.setEnabled(true);
@@ -241,6 +300,9 @@ public class InteractionPreferencePanel extends JPanel {
 			
 			webDavPathField.setText(webDavPathCache);
 			webDavPathField.setEnabled(true);
+			
+			useUsernameField.setEnabled(false);
+//			useHttpsField.setEnabled(false);
 		}
 	}
 	
