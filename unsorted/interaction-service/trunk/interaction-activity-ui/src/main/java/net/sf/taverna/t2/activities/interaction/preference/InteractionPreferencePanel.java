@@ -102,7 +102,7 @@ public class InteractionPreferencePanel extends JPanel {
         useUsernameField = new JCheckBox("Secure with usename and password");
         gbc.gridx = 0;
         gbc.gridy++;
-        gbc.gridwidth = 1;
+        gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.NONE;
         gbc.insets = new Insets(10,0,0,0);
         everything.add(useUsernameField, gbc);
@@ -240,7 +240,7 @@ public class InteractionPreferencePanel extends JPanel {
 					if (!credMan.hasUsernamePasswordForService(serviceURI)) {
 						GetPasswordDialog getPasswordDialog = new GetPasswordDialog("Please enter the username and password\nto secure the interaction",
 								true);
-						getPasswordDialog.setLocationRelativeTo(null);
+						getPasswordDialog.setLocationRelativeTo(this);
 						getPasswordDialog.setVisible(true);
 						
 						String username = getPasswordDialog.getUsername();
@@ -258,7 +258,7 @@ public class InteractionPreferencePanel extends JPanel {
 		pref.setUseUsername(useUsernameField.isSelected());
 //		pref.setUseHttps(useHttpsField.isSelected());
 		pref.store();
-		JOptionPane.showMessageDialog(null, "The changes will not take effect until Taverna is restarted",
+		JOptionPane.showMessageDialog(this, "The changes will not take effect until Taverna is restarted",
 				"Interaction Preference", JOptionPane.WARNING_MESSAGE);
 	}
 
