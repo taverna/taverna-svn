@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package net.sf.taverna.t2.activities.interaction.actions;
 
@@ -18,27 +18,31 @@ import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityCon
  */
 public class InteractionActivityConfigurationAction extends
 		ActivityConfigurationAction<InteractionActivity, InteractionActivityConfigurationBean> {
-	
-    public static final String EDIT_INTERACTION = "Edit interaction";
 
-    public InteractionActivityConfigurationAction(InteractionActivity activity, Frame owner) {
+    /**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	public static final String EDIT_INTERACTION = "Edit interaction";
+
+    public InteractionActivityConfigurationAction(final InteractionActivity activity, final Frame owner) {
             super(activity);
             putValue(NAME, EDIT_INTERACTION );
     }
 
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		ActivityConfigurationDialog currentDialog = ActivityConfigurationAction.getDialog(getActivity());
+	public void actionPerformed(final ActionEvent e) {
+		final ActivityConfigurationDialog currentDialog = ActivityConfigurationAction.getDialog(getActivity());
         if (currentDialog != null) {
                 currentDialog.toFront();
                 return;
         }
-        final InteractionActivityConfigView interactionConfigView = new InteractionActivityConfigView((InteractionActivity)getActivity());
+        final InteractionActivityConfigView interactionConfigView = new InteractionActivityConfigView(getActivity());
         final ActivityConfigurationDialog<InteractionActivity, InteractionActivityConfigurationBean> dialog =
                 new ActivityConfigurationDialog<InteractionActivity, InteractionActivityConfigurationBean>(getActivity(), interactionConfigView);
 
-        ActivityConfigurationAction.setDialog(getActivity(), dialog);   
+        ActivityConfigurationAction.setDialog(getActivity(), dialog);
 	}
 
 }

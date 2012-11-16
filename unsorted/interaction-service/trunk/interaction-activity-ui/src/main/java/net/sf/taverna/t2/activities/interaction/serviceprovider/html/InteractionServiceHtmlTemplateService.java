@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package net.sf.taverna.t2.activities.interaction.serviceprovider.html;
 
@@ -21,7 +21,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
  */
 public class InteractionServiceHtmlTemplateService extends
 		AbstractTemplateService<InteractionActivityConfigurationBean> {
-	
+
 	private static final URI providerId = URI
     .create("http://taverna.sf.net/2012/service-provider/interaction");
 
@@ -34,7 +34,7 @@ public class InteractionServiceHtmlTemplateService extends
 
 	@Override
 	public InteractionActivityConfigurationBean getActivityConfiguration() {
-		InteractionActivityConfigurationBean configBean = new InteractionActivityConfigurationBean();
+		final InteractionActivityConfigurationBean configBean = new InteractionActivityConfigurationBean();
 		configBean.setInteractionActivityType(InteractionActivityType.LocallyPresentedHtml);
 		return configBean;
 	}
@@ -56,7 +56,7 @@ public class InteractionServiceHtmlTemplateService extends
 
 	@SuppressWarnings("unchecked")
     public static ServiceDescription getServiceDescription() {
-            InteractionServiceHtmlTemplateService bts = new InteractionServiceHtmlTemplateService();
+            final InteractionServiceHtmlTemplateService bts = new InteractionServiceHtmlTemplateService();
             return bts.templateService;
     }
 

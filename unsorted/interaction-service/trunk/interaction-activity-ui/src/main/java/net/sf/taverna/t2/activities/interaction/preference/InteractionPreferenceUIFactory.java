@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package net.sf.taverna.t2.activities.interaction.preference;
 
@@ -17,19 +17,19 @@ import net.sf.taverna.t2.workbench.configuration.ConfigurationUIFactory;
  */
 public class InteractionPreferenceUIFactory extends AbstractConfigurable implements ConfigurationUIFactory  {
 
-	private JPanel configPanel;
+	private final JPanel configPanel;
 	private static InteractionPreference pref = InteractionPreference.getInstance();
-	
+
 	public InteractionPreferenceUIFactory() {
 		super();
-		configPanel = new InteractionPreferencePanel();
+		this.configPanel = new InteractionPreferencePanel();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.workbench.configuration.ConfigurationUIFactory#canHandle(java.lang.String)
 	 */
 	@Override
-	public boolean canHandle(String uuid) {
+	public boolean canHandle(final String uuid) {
 		return uuid.equals(pref.getUUID());
 	}
 
@@ -46,7 +46,7 @@ public class InteractionPreferenceUIFactory extends AbstractConfigurable impleme
 	 */
 	@Override
 	public JPanel getConfigurationPanel() {
-		return configPanel;
+		return this.configPanel;
 	}
 
 	@Override

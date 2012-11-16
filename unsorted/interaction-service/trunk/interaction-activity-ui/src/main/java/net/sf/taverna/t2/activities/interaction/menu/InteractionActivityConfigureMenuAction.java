@@ -16,7 +16,7 @@ public class InteractionActivityConfigureMenuAction extends
 
 	@Override
 	protected Action createAction() {
-		InteractionActivity a = findActivity();
+		final InteractionActivity a = findActivity();
 		Action result = null;
 		if (a.getConfiguration().getInteractionActivityType().equals(InteractionActivityType.LocallyPresentedHtml)) {
 			result = new InteractionActivityConfigureAction(findActivity(),

@@ -11,12 +11,12 @@ import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualV
 public class InteractionActivityContextViewFactory implements
 		ContextualViewFactory<InteractionActivity> {
 
-	public boolean canHandle(Object selection) {
+	public boolean canHandle(final Object selection) {
 		return selection instanceof InteractionActivity;
 	}
 
-	public List<ContextualView> getViews(InteractionActivity selection) {
+	public List<ContextualView> getViews(final InteractionActivity selection) {
 		return Arrays.<ContextualView>asList(new InteractionActivityContextualView(selection));
 	}
-	
+
 }

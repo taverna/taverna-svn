@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.activities.interaction.serviceprovider.velocity;
 
-import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,11 +14,11 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 
 public class InteractionServiceDesc extends ServiceDescription<InteractionActivityConfigurationBean> {
-	
+
 
 	/**
 	 * The subclass of Activity which should be instantiated when adding a service
-	 * for this description 
+	 * for this description
 	 */
 	@Override
 	public Class<? extends Activity<InteractionActivityConfigurationBean>> getActivityClass() {
@@ -29,13 +28,13 @@ public class InteractionServiceDesc extends ServiceDescription<InteractionActivi
 	/**
 	 * The configuration bean which is to be used for configuring the instantiated activity.
 	 * Making this bean will typically require some of the fields set on this service
-	 * description, like an endpoint URL or method name. 
-	 * 
+	 * description, like an endpoint URL or method name.
+	 *
 	 */
 	@Override
 	public InteractionActivityConfigurationBean getActivityConfiguration() {
-		InteractionActivityConfigurationBean bean = new InteractionActivityConfigurationBean();
-		bean.setPresentationOrigin(templateName);
+		final InteractionActivityConfigurationBean bean = new InteractionActivityConfigurationBean();
+		bean.setPresentationOrigin(this.templateName);
 		bean.setInteractionActivityType(InteractionActivityType.VelocityTemplate);
 		return bean;
 	}
@@ -54,7 +53,7 @@ public class InteractionServiceDesc extends ServiceDescription<InteractionActivi
 	 */
 	@Override
 	public String getName() {
-		return templateName;
+		return this.templateName;
 	}
 
 	/**
@@ -75,18 +74,18 @@ public class InteractionServiceDesc extends ServiceDescription<InteractionActivi
 	@Override
 	protected List<? extends Object> getIdentifyingData() {
 		// FIXME: Use your fields instead of example fields
-		return Arrays.<Object>asList(templateName);
+		return Arrays.<Object>asList(this.templateName);
 	}
 
-	
+
 	private String templateName;
 
 
 	public String getTemplateName() {
-		return templateName;
+		return this.templateName;
 	}
 
-	public void setTemplateName(String templateName) {
+	public void setTemplateName(final String templateName) {
 		this.templateName = templateName;
 	}
 

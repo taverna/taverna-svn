@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package net.sf.taverna.t2.activities.interaction.preference;
 
@@ -35,15 +35,20 @@ import org.apache.log4j.Logger;
  *
  */
 public class InteractionPreferencePanel extends JPanel {
-	
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 8570351700324719204L;
+
 	private static Logger logger = Logger.getLogger(InteractionPreferencePanel.class);
-	
+
 	private static InteractionPreference pref = InteractionPreference.getInstance();
-	
+
 	private String hostCache = pref.getHost();
 	private String feedPathCache = pref.getFeedPath();
 	private String webDavPathCache = pref.getWebDavPath();
-	
+
 	private JCheckBox useJettyField;
 	private JTextField portField;
 	private JTextField hostField;
@@ -51,7 +56,7 @@ public class InteractionPreferencePanel extends JPanel {
 	private JTextField webDavPathField;
 	private JCheckBox useUsernameField;
 //	private JCheckBox useHttpsField;
-	
+
 	/**
 	 * The size of the field for the JTextFields.
 	 */
@@ -62,15 +67,15 @@ public class InteractionPreferencePanel extends JPanel {
 		initComponents();
 		setFields();
 	}
-	
+
 	private void initComponents() {
-		JPanel everything = new JPanel();
+		final JPanel everything = new JPanel();
 		everything.setLayout(new GridBagLayout());
 
-		GridBagConstraints gbc = new GridBagConstraints();
-		
+		final GridBagConstraints gbc = new GridBagConstraints();
+
 		// Title describing what kind of settings we are configuring here
-        JTextArea descriptionText = new JTextArea("Interaction preference");
+        final JTextArea descriptionText = new JTextArea("Interaction preference");
         descriptionText.setLineWrap(true);
         descriptionText.setWrapStyleWord(true);
         descriptionText.setEditable(false);
@@ -84,29 +89,29 @@ public class InteractionPreferencePanel extends JPanel {
         gbc.weighty = 0.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         everything.add(descriptionText, gbc);
-        
-		useJettyField = new JCheckBox("Use internal Jetty");
+
+		this.useJettyField = new JCheckBox("Use internal Jetty");
         gbc.gridx = 0;
         gbc.gridy++;
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.NONE;
         gbc.insets = new Insets(10,0,0,0);
-        everything.add(useJettyField, gbc);
-        useJettyField.addActionListener(new ActionListener() {
+        everything.add(this.useJettyField, gbc);
+        this.useJettyField.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				updateSelectability();
 			}});
-        
-        useUsernameField = new JCheckBox("Secure with usename and password");
+
+        this.useUsernameField = new JCheckBox("Secure with usename and password");
         gbc.gridx = 0;
         gbc.gridy++;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.NONE;
         gbc.insets = new Insets(10,0,0,0);
-        everything.add(useUsernameField, gbc);
-       
+        everything.add(this.useUsernameField, gbc);
+
 /*        useHttpsField = new JCheckBox("Secure communication with HTTPS");
         gbc.gridx = 0;
         gbc.gridy++;
@@ -114,8 +119,8 @@ public class InteractionPreferencePanel extends JPanel {
         gbc.fill = GridBagConstraints.NONE;
         gbc.insets = new Insets(10,0,0,0);
         everything.add(useHttpsField, gbc);
-*/       
-        hostField = new JTextField(TEXTFIELD_SIZE);
+*/
+        this.hostField = new JTextField(TEXTFIELD_SIZE);
         gbc.gridx = 0;
         gbc.gridy++;
         gbc.gridwidth = 1;
@@ -125,9 +130,9 @@ public class InteractionPreferencePanel extends JPanel {
         gbc.gridx = 1;
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        everything.add(hostField, gbc);
-        
-		portField = new JTextField(TEXTFIELD_SIZE);
+        everything.add(this.hostField, gbc);
+
+		this.portField = new JTextField(TEXTFIELD_SIZE);
         gbc.gridx = 0;
         gbc.gridy++;
         gbc.gridwidth = 1;
@@ -137,9 +142,9 @@ public class InteractionPreferencePanel extends JPanel {
         gbc.gridx = 1;
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        everything.add(portField, gbc);
-        
-		feedPathField = new JTextField(TEXTFIELD_SIZE);
+        everything.add(this.portField, gbc);
+
+		this.feedPathField = new JTextField(TEXTFIELD_SIZE);
         gbc.gridx = 0;
         gbc.gridy++;
         gbc.gridwidth = 1;
@@ -149,9 +154,9 @@ public class InteractionPreferencePanel extends JPanel {
         gbc.gridx = 1;
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        everything.add(feedPathField, gbc); 
-        
-		webDavPathField = new JTextField(TEXTFIELD_SIZE);
+        everything.add(this.feedPathField, gbc);
+
+		this.webDavPathField = new JTextField(TEXTFIELD_SIZE);
         gbc.gridx = 0;
         gbc.gridy++;
         gbc.gridwidth = 1;
@@ -161,8 +166,8 @@ public class InteractionPreferencePanel extends JPanel {
         gbc.gridx = 1;
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        everything.add(webDavPathField, gbc);
-        
+        everything.add(this.webDavPathField, gbc);
+
         // Add buttons panel
         gbc.gridx = 0;
         gbc.gridy++;
@@ -173,14 +178,14 @@ public class InteractionPreferencePanel extends JPanel {
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.insets = new Insets(10, 0, 0, 0);
         everything.add(createButtonPanel(), gbc);
-        
+
         this.setLayout(new BorderLayout());
         this.add(everything, BorderLayout.NORTH);
 	}
-	
+
 	/**
 	 * Create the panel to contain the buttons
-	 * 
+	 *
 	 * @return
 	 */
 	@SuppressWarnings("serial")
@@ -190,8 +195,8 @@ public class InteractionPreferencePanel extends JPanel {
 		/**
 		 * The helpButton shows help about the current component
 		 */
-		JButton helpButton = new JButton(new AbstractAction("Help") {
-			public void actionPerformed(ActionEvent arg0) {
+		final JButton helpButton = new JButton(new AbstractAction("Help") {
+			public void actionPerformed(final ActionEvent arg0) {
 				Helper.showHelp(panel);
 			}
 		});
@@ -201,8 +206,8 @@ public class InteractionPreferencePanel extends JPanel {
 		 * The resetButton changes the property values shown to those
 		 * corresponding to the configuration currently applied.
 		 */
-		JButton resetButton = new JButton(new AbstractAction("Reset") {
-			public void actionPerformed(ActionEvent arg0) {
+		final JButton resetButton = new JButton(new AbstractAction("Reset") {
+			public void actionPerformed(final ActionEvent arg0) {
 				setFields();
 			}
 		});
@@ -212,8 +217,8 @@ public class InteractionPreferencePanel extends JPanel {
 		 * The applyButton applies the shown field values to the
 		 * {@link HttpProxyConfiguration} and saves them for future.
 		 */
-		JButton applyButton = new JButton(new AbstractAction("Apply") {
-			public void actionPerformed(ActionEvent arg0) {
+		final JButton applyButton = new JButton(new AbstractAction("Apply") {
+			public void actionPerformed(final ActionEvent arg0) {
 				applySettings();
 				setFields();
 			}
@@ -224,38 +229,38 @@ public class InteractionPreferencePanel extends JPanel {
 	}
 
 	protected void applySettings() {
-		pref.setUseJetty(useJettyField.isSelected());
-		pref.setHost(hostField.getText());
-		hostCache = hostField.getText();
-		pref.setFeedPath(feedPathField.getText());
-		feedPathCache = feedPathField.getText();
-		pref.setWebDavPath(webDavPathField.getText());
-		webDavPathCache = webDavPathField.getText();
+		pref.setUseJetty(this.useJettyField.isSelected());
+		pref.setHost(this.hostField.getText());
+		this.hostCache = this.hostField.getText();
+		pref.setFeedPath(this.feedPathField.getText());
+		this.feedPathCache = this.feedPathField.getText();
+		pref.setWebDavPath(this.webDavPathField.getText());
+		this.webDavPathCache = this.webDavPathField.getText();
 		if (pref.getUseJetty()) {
-			if (useUsernameField.isSelected() && (!pref.getUseUsername() || !pref.getPort().equals(portField.getText()))) {
+			if (this.useUsernameField.isSelected() && (!pref.getUseUsername() || !pref.getPort().equals(this.portField.getText()))) {
 				try {
-					URI serviceURI = InteractionJetty.createServiceURI(portField.getText());
-					
-					CredentialManager credMan = CredentialManager.getInstance();
+					final URI serviceURI = InteractionJetty.createServiceURI(this.portField.getText());
+
+					final CredentialManager credMan = CredentialManager.getInstance();
 					if (!credMan.hasUsernamePasswordForService(serviceURI)) {
-						GetPasswordDialog getPasswordDialog = new GetPasswordDialog("Please enter the username and password\nto secure the interaction",
+						final GetPasswordDialog getPasswordDialog = new GetPasswordDialog("Please enter the username and password\nto secure the interaction",
 								true);
 						getPasswordDialog.setLocationRelativeTo(this);
 						getPasswordDialog.setVisible(true);
-						
-						String username = getPasswordDialog.getUsername();
-						String password = getPasswordDialog.getPassword();
+
+						final String username = getPasswordDialog.getUsername();
+						final String password = getPasswordDialog.getPassword();
 						credMan.saveUsernameAndPasswordForService(username, password, serviceURI.toString());
 					}
-				} catch (URISyntaxException e) {
+				} catch (final URISyntaxException e) {
 					logger.error(e);
-				} catch (CMException e) {
+				} catch (final CMException e) {
 					logger.error(e);
 				}
 			}
 		}
-		pref.setPort(portField.getText());
-		pref.setUseUsername(useUsernameField.isSelected());
+		pref.setPort(this.portField.getText());
+		pref.setUseUsername(this.useUsernameField.isSelected());
 //		pref.setUseHttps(useHttpsField.isSelected());
 		pref.store();
 		JOptionPane.showMessageDialog(this, "The changes will not take effect until Taverna is restarted",
@@ -263,48 +268,48 @@ public class InteractionPreferencePanel extends JPanel {
 	}
 
 	protected void setFields() {
-		useJettyField.setSelected(pref.getUseJetty());
-		portField.setText(pref.getPort());
-		hostField.setText(pref.getHost());
-		feedPathField.setText(pref.getFeedPath());
-		webDavPathField.setText(pref.getWebDavPath());
-		useUsernameField.setSelected(pref.getUseUsername());
+		this.useJettyField.setSelected(pref.getUseJetty());
+		this.portField.setText(pref.getPort());
+		this.hostField.setText(pref.getHost());
+		this.feedPathField.setText(pref.getFeedPath());
+		this.webDavPathField.setText(pref.getWebDavPath());
+		this.useUsernameField.setSelected(pref.getUseUsername());
 //		useHttpsField.setSelected(pref.getUseHttps());
 		updateSelectability();
 	}
 
 	private void updateSelectability() {
-		if (useJettyField.isSelected()) {
-			hostCache = hostField.getText();
-			hostField.setText(pref.getDefaultHost());
-			hostField.setEnabled(false);
-			
-			feedPathCache = feedPathField.getText();
-			feedPathField.setText(pref.getDefaultFeedPath());
-			feedPathField.setEnabled(false);
-			
-			webDavPathCache = webDavPathField.getText();
-			webDavPathField.setText(pref.getDefaultWebDavPath());
-			webDavPathField.setEnabled(false);
-			
-			useUsernameField.setEnabled(true);
-			
+		if (this.useJettyField.isSelected()) {
+			this.hostCache = this.hostField.getText();
+			this.hostField.setText(pref.getDefaultHost());
+			this.hostField.setEnabled(false);
+
+			this.feedPathCache = this.feedPathField.getText();
+			this.feedPathField.setText(pref.getDefaultFeedPath());
+			this.feedPathField.setEnabled(false);
+
+			this.webDavPathCache = this.webDavPathField.getText();
+			this.webDavPathField.setText(pref.getDefaultWebDavPath());
+			this.webDavPathField.setEnabled(false);
+
+			this.useUsernameField.setEnabled(true);
+
 //			useHttpsField.setEnabled(true);
-						
+
 		} else {
-			hostField.setText(hostCache);
-			hostField.setEnabled(true);
-			
-			feedPathField.setText(feedPathCache);
-			feedPathField.setEnabled(true);
-			
-			webDavPathField.setText(webDavPathCache);
-			webDavPathField.setEnabled(true);
-			
-			useUsernameField.setEnabled(false);
+			this.hostField.setText(this.hostCache);
+			this.hostField.setEnabled(true);
+
+			this.feedPathField.setText(this.feedPathCache);
+			this.feedPathField.setEnabled(true);
+
+			this.webDavPathField.setText(this.webDavPathCache);
+			this.webDavPathField.setEnabled(true);
+
+			this.useUsernameField.setEnabled(false);
 //			useHttpsField.setEnabled(false);
 		}
 	}
-	
-	
+
+
 }

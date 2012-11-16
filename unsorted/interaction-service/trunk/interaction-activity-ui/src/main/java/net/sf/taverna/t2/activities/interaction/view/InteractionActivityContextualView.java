@@ -16,7 +16,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputP
 
 @SuppressWarnings("serial")
 public class InteractionActivityContextualView extends HTMLBasedActivityContextualView<InteractionActivityConfigurationBean> {
-	public InteractionActivityContextualView(Activity<?> activity) {
+	public InteractionActivityContextualView(final Activity<?> activity) {
         super(activity);
         init();
 }
@@ -26,7 +26,7 @@ private void init() {
 
 @Override
 protected String getRawTableRowsHtml() {
-    	InteractionActivityConfigurationBean configBean = getConfigBean();
+    	final InteractionActivityConfigurationBean configBean = getConfigBean();
         String html = "<tr><td colspan=\"2\" align=\"center\"><strong>";
         html += "Interaction defined by ";
         if (configBean.getInteractionActivityType().equals(InteractionActivityType.VelocityTemplate)) {
@@ -36,22 +36,22 @@ protected String getRawTableRowsHtml() {
         }
         html += configBean.getPresentationOrigin() + "</strong></td></tr>";
         html = html
-        + "<tr><th>Input Port Name</th>" 
-                +       "<th>Depth</th>" 
+        + "<tr><th>Input Port Name</th>"
+                +       "<th>Depth</th>"
         +"</tr>";
-		for (ActivityInputPortDefinitionBean bean : configBean
+		for (final ActivityInputPortDefinitionBean bean : configBean
                         .getInputPortDefinitions()) {
                 html = html + "<tr><td>" + bean.getName() + "</td><td>"
                                 + bean.getDepth() + "</td></tr>";
         }
         html = html
-                        + "<tr><th>Output Port Name</th>" 
-                                +       "<th>Depth</th>" 
+                        + "<tr><th>Output Port Name</th>"
+                                +       "<th>Depth</th>"
                         +"</tr>";
-        for (ActivityOutputPortDefinitionBean bean : configBean
+        for (final ActivityOutputPortDefinitionBean bean : configBean
                         .getOutputPortDefinitions()) {
                 html = html + "<tr><td>" + bean.getName() + "</td><td>"
-                                + bean.getDepth() + "</td>" 
+                                + bean.getDepth() + "</td>"
 //                                              + "<td>" + bean.getGranularDepth()
 //                              + "</td>"
                                 + "</tr>";
@@ -65,8 +65,8 @@ public String getViewTitle() {
 }
 
 @Override
-public Action getConfigureAction(Frame owner) {
-		InteractionActivity interactionActivity = (InteractionActivity) getActivity();
+public Action getConfigureAction(final Frame owner) {
+		final InteractionActivity interactionActivity = (InteractionActivity) getActivity();
 		if (interactionActivity.getConfiguration().getInteractionActivityType()
 				.equals(InteractionActivityType.LocallyPresentedHtml)) {
 			return new InteractionActivityConfigurationAction(

@@ -1,16 +1,12 @@
 /**
- * 
+ *
  */
 package net.sf.taverna.t2.activities.interaction.view;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -20,7 +16,6 @@ import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -45,13 +40,17 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputP
 
 /**
  * @author alanrw
- * 
+ *
  */
 public class InteractionActivityConfigView
 		extends
 		ActivityConfigurationPanel<InteractionActivity, InteractionActivityConfigurationBean> {
 
-	private InteractionActivity activity;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -915222444955259613L;
+	private final InteractionActivity activity;
 	private InteractionActivityConfigurationBean configuration;
 	private ArrayList<InteractionInputViewer> inputViewList;
 	private ArrayList<InteractionOutputViewer> outputViewList;
@@ -69,9 +68,9 @@ public class InteractionActivityConfigView
 	JTextField sourceTextField = new JTextField(40);
 	JCheckBox progressField = new JCheckBox();
 
-	public InteractionActivityConfigView(InteractionActivity activity) {
+	public InteractionActivityConfigView(final InteractionActivity activity) {
 		this.activity = activity;
-		configuration = (InteractionActivityConfigurationBean) cloneBean(activity
+		this.configuration = (InteractionActivityConfigurationBean) cloneBean(activity
 				.getConfiguration());
 		setLayout(new GridBagLayout());
 		initialise();
@@ -82,22 +81,22 @@ public class InteractionActivityConfigView
 				.setHelpIDString(
 						this,
 						"net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.InteractionConfigView");
-		configuration = activity.getConfiguration();
-		inputViewList = new ArrayList<InteractionInputViewer>();
-		outputViewList = new ArrayList<InteractionOutputViewer>();
+		this.configuration = this.activity.getConfiguration();
+		this.inputViewList = new ArrayList<InteractionInputViewer>();
+		this.outputViewList = new ArrayList<InteractionOutputViewer>();
 		setBorder(javax.swing.BorderFactory.createTitledBorder(null, null,
 				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
 				javax.swing.border.TitledBorder.DEFAULT_POSITION,
 				new java.awt.Font("Lucida Grande", 1, 12)));
-		final InteractionActivityConfigurationBean configBean = activity
+		this.activity
 				.getConfiguration();
 
-		tabbedPane = new JTabbedPane();
-		tabbedPane.addTab("Interaction source", getSourcePanel());
-		tabbedPane.addTab("Input ports", new JScrollPane(getInputPanel()));
-		tabbedPane.addTab("Output ports", new JScrollPane(getOutputPanel()));
+		this.tabbedPane = new JTabbedPane();
+		this.tabbedPane.addTab("Interaction source", getSourcePanel());
+		this.tabbedPane.addTab("Input ports", new JScrollPane(getInputPanel()));
+		this.tabbedPane.addTab("Output ports", new JScrollPane(getOutputPanel()));
 
-		GridBagConstraints outerConstraint = new GridBagConstraints();
+		final GridBagConstraints outerConstraint = new GridBagConstraints();
 		outerConstraint.anchor = GridBagConstraints.FIRST_LINE_START;
 		outerConstraint.gridx = 0;
 		outerConstraint.gridy = 0;
@@ -105,7 +104,7 @@ public class InteractionActivityConfigView
 		outerConstraint.fill = GridBagConstraints.BOTH;
 		outerConstraint.weighty = 0.1;
 		outerConstraint.weightx = 0.1;
-		add(tabbedPane, outerConstraint);
+		add(this.tabbedPane, outerConstraint);
 
 		setPreferredSize(new Dimension(600, 500));
 
@@ -132,29 +131,29 @@ public class InteractionActivityConfigView
 		// outputConstraint.gridx = 2;
 		// outputEditPanel.add(new JLabel("GranularDepth"), outputConstraint);
 
-		outputGridy = 1;
+		this.outputGridy = 1;
 		outputConstraint.gridx = 0;
-		for (ActivityOutputPortDefinitionBean outputBean : configuration
+		for (final ActivityOutputPortDefinitionBean outputBean : this.configuration
 				.getOutputPortDefinitions()) {
 			// FIXME refactor this into a method
-			outputConstraint.gridy = outputGridy;
+			outputConstraint.gridy = this.outputGridy;
 			final InteractionOutputViewer beanshellOutputViewer = new InteractionOutputViewer(
 					outputBean, true);
-			outputViewList.add(beanshellOutputViewer);
+			this.outputViewList.add(beanshellOutputViewer);
 			outputConstraint.gridx = 0;
 			outputConstraint.weightx = 0.1;
 			final JTextField nameField = beanshellOutputViewer.getNameField();
 			nameField.getDocument().addDocumentListener(new DocumentListener() {
-				public void changedUpdate(DocumentEvent e) {
+				public void changedUpdate(final DocumentEvent e) {
 					// Plain text components don't fire these events.
 				}
 
-				public void insertUpdate(DocumentEvent e) {
-					outputsChanged = true;
+				public void insertUpdate(final DocumentEvent e) {
+					InteractionActivityConfigView.this.outputsChanged = true;
 				}
 
-				public void removeUpdate(DocumentEvent e) {
-					outputsChanged = true;
+				public void removeUpdate(final DocumentEvent e) {
+					InteractionActivityConfigView.this.outputsChanged = true;
 				}
 			});
 			outputEditPanel.add(nameField, outputConstraint);
@@ -164,8 +163,8 @@ public class InteractionActivityConfigView
 					.getDepthSpinner();
 			depthSpinner.addChangeListener(new ChangeListener() {
 
-				public void stateChanged(ChangeEvent e) {
-					outputsChanged = true;
+				public void stateChanged(final ChangeEvent e) {
+					InteractionActivityConfigView.this.outputsChanged = true;
 				}
 			});
 			outputEditPanel.add(depthSpinner, outputConstraint);
@@ -174,11 +173,11 @@ public class InteractionActivityConfigView
 			final JButton removeButton = new JButton("Remove");
 			removeButton.addActionListener(new AbstractAction() {
 
-				public void actionPerformed(ActionEvent e) {
+				public void actionPerformed(final ActionEvent e) {
 
-					outputsChanged = true;
+					InteractionActivityConfigView.this.outputsChanged = true;
 
-					outputViewList.remove(beanshellOutputViewer);
+					InteractionActivityConfigView.this.outputViewList.remove(beanshellOutputViewer);
 					outputEditPanel.remove(nameField);
 					outputEditPanel.remove(depthSpinner);
 					// outputEditPanel.remove(granularDepthSpinner);
@@ -186,54 +185,54 @@ public class InteractionActivityConfigView
 					outputEditPanel.remove(removeButton);
 					outputEditPanel.revalidate();
 					outputEditPanel.repaint();
-					outerOutputPanel.revalidate();
-					outerOutputPanel.repaint();
+					InteractionActivityConfigView.this.outerOutputPanel.revalidate();
+					InteractionActivityConfigView.this.outerOutputPanel.repaint();
 				}
 
 			});
 			outputEditPanel.add(removeButton, outputConstraint);
-			outputGridy++;
+			this.outputGridy++;
 		}
-		outerOutputPanel = new JPanel();
-		outerOutputPanel.setLayout(new GridBagLayout());
-		GridBagConstraints outerPanelConstraint = new GridBagConstraints();
+		this.outerOutputPanel = new JPanel();
+		this.outerOutputPanel.setLayout(new GridBagLayout());
+		final GridBagConstraints outerPanelConstraint = new GridBagConstraints();
 		// outerPanelConstraint.anchor = GridBagConstraints.FIRST_LINE_START;
 		outerPanelConstraint.fill = GridBagConstraints.BOTH;
 		outerPanelConstraint.gridx = 0;
 		outerPanelConstraint.gridy = 0;
 		outerPanelConstraint.weightx = 0.1;
 		outerPanelConstraint.weighty = 0.1;
-		outerOutputPanel.add(new JScrollPane(outputEditPanel),
+		this.outerOutputPanel.add(new JScrollPane(outputEditPanel),
 				outerPanelConstraint);
 		outerPanelConstraint.weighty = 0;
-		JButton addOutputPortButton = new JButton(new AbstractAction() {
+		final JButton addOutputPortButton = new JButton(new AbstractAction() {
 			// FIXME refactor this into a method
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				try {
 
-					outputsChanged = true;
+					InteractionActivityConfigView.this.outputsChanged = true;
 
-					ActivityOutputPortDefinitionBean bean = new ActivityOutputPortDefinitionBean();
+					final ActivityOutputPortDefinitionBean bean = new ActivityOutputPortDefinitionBean();
 					bean.setDepth(0);
 					bean.setGranularDepth(0);
-					List<String> mimeTypes = new ArrayList<String>();
+					final List<String> mimeTypes = new ArrayList<String>();
 					mimeTypes.add("text/plain");
 					bean.setMimeTypes(mimeTypes);
-					String name2 = "out" + newOutputPortNumber;
+					String name2 = "out" + InteractionActivityConfigView.this.newOutputPortNumber;
 					boolean nameExists = true;
 					while (nameExists == true) {
-						nameExists = outputPortNameExists(name2, activity
+						nameExists = outputPortNameExists(name2, InteractionActivityConfigView.this.activity
 								.getOutputPorts());
 						if (nameExists) {
-							newOutputPortNumber++;
-							name2 = "out" + newOutputPortNumber;
+							InteractionActivityConfigView.this.newOutputPortNumber++;
+							name2 = "out" + InteractionActivityConfigView.this.newOutputPortNumber;
 						}
 					}
 					bean.setName(name2);
 					final InteractionOutputViewer beanshellOutputViewer = new InteractionOutputViewer(
 							bean, true);
-					outputViewList.add(beanshellOutputViewer);
-					outputConstraint.gridy = outputGridy;
+					InteractionActivityConfigView.this.outputViewList.add(beanshellOutputViewer);
+					outputConstraint.gridy = InteractionActivityConfigView.this.outputGridy;
 					outputConstraint.gridx = 0;
 					final JTextField nameField = beanshellOutputViewer
 							.getNameField();
@@ -249,8 +248,8 @@ public class InteractionActivityConfigView
 					final JButton removeButton = new JButton("Remove");
 					removeButton.addActionListener(new AbstractAction() {
 
-						public void actionPerformed(ActionEvent e) {
-							outputViewList.remove(beanshellOutputViewer);
+						public void actionPerformed(final ActionEvent e) {
+							InteractionActivityConfigView.this.outputViewList.remove(beanshellOutputViewer);
 							outputEditPanel.remove(nameField);
 							outputEditPanel.remove(depthSpinner);
 							// outputEditPanel.remove(granularDepthSpinner);
@@ -258,27 +257,27 @@ public class InteractionActivityConfigView
 							// outputEditPanel.remove(addMimeButton);
 							outputEditPanel.revalidate();
 							outputEditPanel.repaint();
-							outerOutputPanel.revalidate();
-							outerOutputPanel.repaint();
+							InteractionActivityConfigView.this.outerOutputPanel.revalidate();
+							InteractionActivityConfigView.this.outerOutputPanel.repaint();
 						}
 
 					});
 					outputEditPanel.add(removeButton, outputConstraint);
 					outputEditPanel.revalidate();
-					newOutputPortNumber++;
+					InteractionActivityConfigView.this.newOutputPortNumber++;
 
-					outputGridy++;
-				} catch (Exception e1) {
+					InteractionActivityConfigView.this.outputGridy++;
+				} catch (final Exception e1) {
 					// throw it, log it??
 				}
 			}
 
 		});
 		addOutputPortButton.setText("Add Port");
-		JPanel buttonPanel = new JPanel();
+		final JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new GridBagLayout());
 
-		JPanel filler = new JPanel();
+		final JPanel filler = new JPanel();
 		outerPanelConstraint.weightx = 0.1;
 		outerPanelConstraint.weighty = 0;
 		outerPanelConstraint.gridx = 0;
@@ -298,11 +297,11 @@ public class InteractionActivityConfigView
 		outerPanelConstraint.gridx = 0;
 		outerPanelConstraint.gridy = 1;
 		outerPanelConstraint.fill = GridBagConstraints.BOTH;
-		outerOutputPanel.add(buttonPanel, outerPanelConstraint);
+		this.outerOutputPanel.add(buttonPanel, outerPanelConstraint);
 		outerPanelConstraint.gridx = 1;
 		outerPanelConstraint.gridy = 0;
 
-		return outerOutputPanel;
+		return this.outerOutputPanel;
 	}
 
 	private JPanel getInputPanel() {
@@ -323,29 +322,29 @@ public class InteractionActivityConfigView
 		inputConstraint.gridx = 2;
 		inputEditPanel.add(new JLabel("Publish"), inputConstraint);
 
-		inputGridy = 1;
+		this.inputGridy = 1;
 		inputConstraint.gridx = 0;
-		for (ActivityInputPortDefinitionBean inputBean : configuration
+		for (final ActivityInputPortDefinitionBean inputBean : this.configuration
 				.getInputPortDefinitions()) {
 			// FIXME refactor this into a method
-			inputConstraint.gridy = inputGridy;
+			inputConstraint.gridy = this.inputGridy;
 			final InteractionInputViewer beanshellInputViewer = new InteractionInputViewer(
 					inputBean, true);
-			inputViewList.add(beanshellInputViewer);
+			this.inputViewList.add(beanshellInputViewer);
 			inputConstraint.gridx = 0;
 			final JTextField nameField = beanshellInputViewer.getNameField();
 			nameField.getDocument().addDocumentListener(new DocumentListener() {
 
-				public void changedUpdate(DocumentEvent e) {
+				public void changedUpdate(final DocumentEvent e) {
 					// Plain text components don't fire these events.
 				}
 
-				public void insertUpdate(DocumentEvent e) {
-					inputsChanged = true;
+				public void insertUpdate(final DocumentEvent e) {
+					InteractionActivityConfigView.this.inputsChanged = true;
 				}
 
-				public void removeUpdate(DocumentEvent e) {
-					inputsChanged = true;
+				public void removeUpdate(final DocumentEvent e) {
+					InteractionActivityConfigView.this.inputsChanged = true;
 				}
 			});
 			inputConstraint.weightx = 0.1;
@@ -356,87 +355,87 @@ public class InteractionActivityConfigView
 					.getDepthSpinner();
 			depthSpinner.addChangeListener(new ChangeListener() {
 
-				public void stateChanged(ChangeEvent e) {
-					inputsChanged = true;
+				public void stateChanged(final ChangeEvent e) {
+					InteractionActivityConfigView.this.inputsChanged = true;
 				}
 			});
 			inputEditPanel.add(depthSpinner, inputConstraint);
 			inputConstraint.gridx = 2;
 			final JCheckBox publishBox = beanshellInputViewer.getPublishField();
 			publishBox.addChangeListener(new ChangeListener() {
-				public void stateChanged(ChangeEvent e) {
-					inputsChanged = true;
-				}				
+				public void stateChanged(final ChangeEvent e) {
+					InteractionActivityConfigView.this.inputsChanged = true;
+				}
 			});
 			inputEditPanel.add(publishBox, inputConstraint);
 			inputConstraint.gridx = 3;
 			final JButton removeButton = new JButton("Remove");
 			removeButton.addActionListener(new AbstractAction() {
 
-				public void actionPerformed(ActionEvent e) {
+				public void actionPerformed(final ActionEvent e) {
 
-					inputsChanged = true;
+					InteractionActivityConfigView.this.inputsChanged = true;
 
-					inputViewList.remove(beanshellInputViewer);
+					InteractionActivityConfigView.this.inputViewList.remove(beanshellInputViewer);
 					inputEditPanel.remove(nameField);
 					inputEditPanel.remove(depthSpinner);
 					inputEditPanel.remove(publishBox);
 					inputEditPanel.remove(removeButton);
 					inputEditPanel.revalidate();
 					inputEditPanel.repaint();
-					outerInputPanel.revalidate();
-					outerInputPanel.repaint();
+					InteractionActivityConfigView.this.outerInputPanel.revalidate();
+					InteractionActivityConfigView.this.outerInputPanel.repaint();
 				}
 
 			});
 			inputEditPanel.add(removeButton, inputConstraint);
-			inputGridy++;
+			this.inputGridy++;
 		}
-		outerInputPanel = new JPanel();
-		outerInputPanel.setLayout(new GridBagLayout());
-		GridBagConstraints outerPanelConstraint = new GridBagConstraints();
+		this.outerInputPanel = new JPanel();
+		this.outerInputPanel.setLayout(new GridBagLayout());
+		final GridBagConstraints outerPanelConstraint = new GridBagConstraints();
 		outerPanelConstraint.gridx = 0;
 		outerPanelConstraint.gridy = 0;
 		outerPanelConstraint.weightx = 0.1;
 		outerPanelConstraint.weighty = 0.1;
 		outerPanelConstraint.fill = GridBagConstraints.BOTH;
-		outerInputPanel.add(new JScrollPane(inputEditPanel),
+		this.outerInputPanel.add(new JScrollPane(inputEditPanel),
 				outerPanelConstraint);
 		outerPanelConstraint.weighty = 0;
-		JButton addInputPortButton = new JButton(new AbstractAction() {
+		final JButton addInputPortButton = new JButton(new AbstractAction() {
 			// FIXME refactor this into a method
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 
-				inputsChanged = true;
+				InteractionActivityConfigView.this.inputsChanged = true;
 
-				ActivityInputPortDefinitionBean bean = new ActivityInputPortDefinitionBean();
+				final ActivityInputPortDefinitionBean bean = new ActivityInputPortDefinitionBean();
 				bean.setAllowsLiteralValues(true);
 				bean.setDepth(0);
-				List<Class<? extends ExternalReferenceSPI>> handledReferenceSchemes = new ArrayList<Class<? extends ExternalReferenceSPI>>();
+				final List<Class<? extends ExternalReferenceSPI>> handledReferenceSchemes = new ArrayList<Class<? extends ExternalReferenceSPI>>();
 				// handledReferenceSchemes.add(FileReference.class);
 				bean.setHandledReferenceSchemes(handledReferenceSchemes);
-				List<String> mimeTypes = new ArrayList<String>();
+				final List<String> mimeTypes = new ArrayList<String>();
 				mimeTypes.add("text/plain");
 				bean.setMimeTypes(mimeTypes);
 
-				String name2 = "in" + newInputPortNumber;
+				String name2 = "in" + InteractionActivityConfigView.this.newInputPortNumber;
 				boolean nameExists = true;
 				while (nameExists == true) {
-					nameExists = inputPortNameExists(name2, activity
+					nameExists = inputPortNameExists(name2, InteractionActivityConfigView.this.activity
 							.getInputPorts());
 					if (nameExists) {
-						newInputPortNumber++;
-						name2 = "in" + newInputPortNumber;
+						InteractionActivityConfigView.this.newInputPortNumber++;
+						name2 = "in" + InteractionActivityConfigView.this.newInputPortNumber;
 					}
 				}
 
 				bean.setName(name2);
-				newInputPortNumber++;
+				InteractionActivityConfigView.this.newInputPortNumber++;
 				bean.setTranslatedElementType(String.class);
-				inputConstraint.gridy = inputGridy;
+				inputConstraint.gridy = InteractionActivityConfigView.this.inputGridy;
 				final InteractionInputViewer beanshellInputViewer = new InteractionInputViewer(
 						bean, true);
-				inputViewList.add(beanshellInputViewer);
+				InteractionActivityConfigView.this.inputViewList.add(beanshellInputViewer);
 				inputConstraint.weightx = 0.1;
 				inputConstraint.gridx = 0;
 				final JTextField nameField = beanshellInputViewer
@@ -454,16 +453,16 @@ public class InteractionActivityConfigView
 				final JButton removeButton = new JButton("Remove");
 				removeButton.addActionListener(new AbstractAction() {
 
-					public void actionPerformed(ActionEvent e) {
-						inputViewList.remove(beanshellInputViewer);
+					public void actionPerformed(final ActionEvent e) {
+						InteractionActivityConfigView.this.inputViewList.remove(beanshellInputViewer);
 						inputEditPanel.remove(nameField);
 						inputEditPanel.remove(depthSpinner);
 						inputEditPanel.remove(publishBox);
 						inputEditPanel.remove(removeButton);
 						inputEditPanel.revalidate();
 						inputEditPanel.repaint();
-						outerInputPanel.revalidate();
-						outerInputPanel.repaint();
+						InteractionActivityConfigView.this.outerInputPanel.revalidate();
+						InteractionActivityConfigView.this.outerInputPanel.repaint();
 					}
 
 				});
@@ -471,15 +470,15 @@ public class InteractionActivityConfigView
 				inputEditPanel.revalidate();
 				inputEditPanel.repaint();
 
-				inputGridy++;
+				InteractionActivityConfigView.this.inputGridy++;
 			}
 
 		});
 		addInputPortButton.setText("Add Port");
-		JPanel buttonPanel = new JPanel();
+		final JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new GridBagLayout());
 
-		JPanel filler = new JPanel();
+		final JPanel filler = new JPanel();
 		outerPanelConstraint.weightx = 0.1;
 		outerPanelConstraint.weighty = 0;
 		outerPanelConstraint.gridx = 0;
@@ -499,22 +498,22 @@ public class InteractionActivityConfigView
 		outerPanelConstraint.gridx = 0;
 		outerPanelConstraint.gridy = 1;
 		outerPanelConstraint.fill = GridBagConstraints.BOTH;
-		outerInputPanel.add(buttonPanel, outerPanelConstraint);
+		this.outerInputPanel.add(buttonPanel, outerPanelConstraint);
 
-		return outerInputPanel;
+		return this.outerInputPanel;
 
 	}
 
 	/**
 	 * Check the proposed port name against the set of input ports that the
 	 * activity has
-	 * 
+	 *
 	 * @param name
 	 * @param set
 	 * @return
 	 */
-	private boolean inputPortNameExists(String name, Set<ActivityInputPort> set) {
-		for (Port port : set) {
+	private boolean inputPortNameExists(final String name, final Set<ActivityInputPort> set) {
+		for (final Port port : set) {
 			if (name.equals(port.getName())) {
 				return true;
 			}
@@ -525,13 +524,13 @@ public class InteractionActivityConfigView
 	/**
 	 * Check the proposed port name against the set of output ports that the
 	 * activity has
-	 * 
+	 *
 	 * @param name
 	 * @param set
 	 * @return
 	 */
-	private boolean outputPortNameExists(String name, Set<OutputPort> set) {
-		for (Port port : set) {
+	private boolean outputPortNameExists(final String name, final Set<OutputPort> set) {
+		for (final Port port : set) {
 			if (name.equals(port.getName())) {
 				return true;
 			}
@@ -540,36 +539,36 @@ public class InteractionActivityConfigView
 	}
 
 	private JPanel getSourcePanel() {
-		JPanel sourcePanel = new JPanel();
+		final JPanel sourcePanel = new JPanel();
 		sourcePanel.setLayout(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();
+		final GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.anchor = GridBagConstraints.WEST;
-		JLabel sourceHtmlLabel = new JLabel("HTML:");
+		final JLabel sourceHtmlLabel = new JLabel("HTML:");
 		sourcePanel.add(sourceHtmlLabel, gbc);
 		gbc.gridx = 1;
 		gbc.weightx = 1;
-		sourceTextField.setText(configuration.getPresentationOrigin());
-		sourceTextField.setColumns(40);
-		sourcePanel.add(sourceTextField, gbc);
-		
+		this.sourceTextField.setText(this.configuration.getPresentationOrigin());
+		this.sourceTextField.setColumns(40);
+		sourcePanel.add(this.sourceTextField, gbc);
+
 		gbc.gridx=0;
 		gbc.gridy++;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		gbc.fill = GridBagConstraints.BOTH;
-		JLabel progressLabel = new JLabel("Progress notification:");
+		final JLabel progressLabel = new JLabel("Progress notification:");
 		sourcePanel.add(progressLabel, gbc);
 		gbc.gridx = 1;
 		gbc.weightx = 1;
-		progressField.setSelected(configuration.isProgressNotification());
-		sourcePanel.add(progressField, gbc);
+		this.progressField.setSelected(this.configuration.isProgressNotification());
+		sourcePanel.add(this.progressField, gbc);
 
-		JPanel filler = new JPanel();
+		final JPanel filler = new JPanel();
 		gbc.weightx = 1;
 		gbc.weighty = 1;
 		gbc.gridx = 0;
@@ -581,7 +580,7 @@ public class InteractionActivityConfigView
 
 	@Override
 	public boolean checkValues() {
-		if (progressField.isSelected() && !outputViewList.isEmpty()) {
+		if (this.progressField.isSelected() && !this.outputViewList.isEmpty()) {
 			JOptionPane.showMessageDialog(this, "A progress notification cannot have output ports");
 			return false;
 		}
@@ -590,28 +589,28 @@ public class InteractionActivityConfigView
 
 	@Override
 	public InteractionActivityConfigurationBean getConfiguration() {
-		return configuration;
+		return this.configuration;
 	}
 
 	@Override
 	public boolean isConfigurationChanged() {
-		return (inputsChanged || outputsChanged || !sourceTextField.getText()
-				.equals(configuration.getPresentationOrigin()));
+		return (this.inputsChanged || this.outputsChanged || !this.sourceTextField.getText()
+				.equals(this.configuration.getPresentationOrigin()));
 	}
 
 	@Override
 	public void noteConfiguration() {
-		configuration = makeConfiguration();
-		inputsChanged = false;
-		outputsChanged = false;
+		this.configuration = makeConfiguration();
+		this.inputsChanged = false;
+		this.outputsChanged = false;
 	}
 
 	private InteractionActivityConfigurationBean makeConfiguration() {
 		// Set the new configuration
-		List<ActivityInputPortDefinitionBean> inputBeanList = new ArrayList<ActivityInputPortDefinitionBean>();
-		for (InteractionInputViewer inputView : inputViewList) {
-			ActivityInputPortDefinitionBean activityInputPortDefinitionBean = new ActivityInputPortDefinitionBean();
-			ActivityInputPortDefinitionBean inputViewBean = inputView.getBean();
+		final List<ActivityInputPortDefinitionBean> inputBeanList = new ArrayList<ActivityInputPortDefinitionBean>();
+		for (final InteractionInputViewer inputView : this.inputViewList) {
+			final ActivityInputPortDefinitionBean activityInputPortDefinitionBean = new ActivityInputPortDefinitionBean();
+			final ActivityInputPortDefinitionBean inputViewBean = inputView.getBean();
 			activityInputPortDefinitionBean
 					.setHandledReferenceSchemes(inputViewBean
 							.getHandledReferenceSchemes());
@@ -629,9 +628,9 @@ public class InteractionActivityConfigView
 			inputBeanList.add(activityInputPortDefinitionBean);
 		}
 
-		List<ActivityOutputPortDefinitionBean> outputBeanList = new ArrayList<ActivityOutputPortDefinitionBean>();
-		for (InteractionOutputViewer outputView : outputViewList) {
-			ActivityOutputPortDefinitionBean activityOutputPortDefinitionBean = new ActivityOutputPortDefinitionBean();
+		final List<ActivityOutputPortDefinitionBean> outputBeanList = new ArrayList<ActivityOutputPortDefinitionBean>();
+		for (final InteractionOutputViewer outputView : this.outputViewList) {
+			final ActivityOutputPortDefinitionBean activityOutputPortDefinitionBean = new ActivityOutputPortDefinitionBean();
 			activityOutputPortDefinitionBean.setDepth((Integer) outputView
 					.getDepthSpinner().getValue());
 
@@ -653,15 +652,15 @@ public class InteractionActivityConfigView
 			outputBeanList.add(activityOutputPortDefinitionBean);
 		}
 
-		InteractionActivityConfigurationBean newConfiguration = (InteractionActivityConfigurationBean) cloneBean(configuration);
+		final InteractionActivityConfigurationBean newConfiguration = (InteractionActivityConfigurationBean) cloneBean(this.configuration);
 		newConfiguration.setInputPortDefinitions(inputBeanList);
 		newConfiguration.setOutputPortDefinitions(outputBeanList);
-		String urlText = sourceTextField.getText();
+		String urlText = this.sourceTextField.getText();
 		if (!urlText.toLowerCase().matches("^\\w+://.*")) {
 		    urlText = "http://" + urlText;
 		}
 		newConfiguration.setPresentationOrigin(urlText);
-		newConfiguration.setProgressNotification(progressField.isSelected());
+		newConfiguration.setProgressNotification(this.progressField.isSelected());
 		return newConfiguration;
 
 	}
@@ -669,13 +668,13 @@ public class InteractionActivityConfigView
 	@Override
 	public void refreshConfiguration() {
 		int visibleTab = -1;
-		if (tabbedPane != null) {
-			visibleTab = tabbedPane.getSelectedIndex();
+		if (this.tabbedPane != null) {
+			visibleTab = this.tabbedPane.getSelectedIndex();
 		}
 		this.removeAll();
 		initialise();
 		if (visibleTab != -1) {
-			tabbedPane.setSelectedIndex(visibleTab);
+			this.tabbedPane.setSelectedIndex(visibleTab);
 		}
 	}
 

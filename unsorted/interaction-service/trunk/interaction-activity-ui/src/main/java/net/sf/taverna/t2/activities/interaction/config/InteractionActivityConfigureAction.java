@@ -16,21 +16,21 @@ public class InteractionActivityConfigureAction
 		ActivityConfigurationAction<InteractionActivity,
         InteractionActivityConfigurationBean> {
 
-	public InteractionActivityConfigureAction(InteractionActivity activity, Frame owner) {
+	public InteractionActivityConfigureAction(final InteractionActivity activity, final Frame owner) {
 		super(activity);
 	}
 
 	@SuppressWarnings("unchecked")
-	public void actionPerformed(ActionEvent e) {
-		ActivityConfigurationDialog<InteractionActivity, InteractionActivityConfigurationBean> currentDialog = ActivityConfigurationAction
+	public void actionPerformed(final ActionEvent e) {
+		final ActivityConfigurationDialog<InteractionActivity, InteractionActivityConfigurationBean> currentDialog = ActivityConfigurationAction
 				.getDialog(getActivity());
 		if (currentDialog != null) {
 			currentDialog.toFront();
 			return;
 		}
-		InteractionActivityConfigView panel = new InteractionActivityConfigView(
+		final InteractionActivityConfigView panel = new InteractionActivityConfigView(
 				getActivity());
-		ActivityConfigurationDialog<InteractionActivity,
+		final ActivityConfigurationDialog<InteractionActivity,
         InteractionActivityConfigurationBean> dialog = new ActivityConfigurationDialog<InteractionActivity, InteractionActivityConfigurationBean>(
 				getActivity(), panel);
 
