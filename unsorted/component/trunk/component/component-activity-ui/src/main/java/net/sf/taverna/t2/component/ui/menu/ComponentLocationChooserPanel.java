@@ -1,12 +1,14 @@
 /**
- * 
+ *
  */
 package net.sf.taverna.t2.component.ui.menu;
 
 import java.awt.GridBagConstraints;
+import java.awt.Insets;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
@@ -30,32 +32,44 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
  *
  */
 public class ComponentLocationChooserPanel extends ComponentFamilyChooserPanel {
-	
+
 	private static final String T2FLOW = ".t2flow";
-	
+
 	private JTextField componentNameField = new JTextField(20);
 
 	public ComponentLocationChooserPanel(boolean editableFamily) {
 		super(editableFamily);
 		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridx = 0;
+		gbc.insets = new Insets(0, 5, 0, 5);
+		gbc.gridy = 0;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridy = 2;
 		this.add(new JLabel("Component name"), gbc);
 		gbc.gridx = 1;
+		gbc.weightx = 1;
 		this.add(componentNameField, gbc);
 	}
-	
+
+	public static void main(String[] args) {
+		System.out.println("starting");
+		JFrame frame = new JFrame();
+		frame.add(new ComponentLocationChooserPanel(true));
+		frame.setVisible(true);
+		System.out.println("done");
+	}
+
 	public String getComponentName() {
 		return componentNameField.getText();
 	}
-	
+
 	public void setComponentName(String name) {
 		componentNameField.setText(name);
 	}
-	
+
 	public String saveComponent(Dataflow d) {
 		String componentName = StringUtils.remove(getComponentName(), T2FLOW);
-		
+
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		final T2DataflowSaver saver = new T2DataflowSaver();
 		String componentWorkflowString = null;
@@ -79,7 +93,7 @@ public class ComponentLocationChooserPanel extends ComponentFamilyChooserPanel {
 				 "</pack>";
 				ServerResponse packResponse = myExperimentClient.doMyExperimentPOST(getSourceChoice() + "/pack.xml", packToSend);
 				packElement = packResponse.getResponseBody().getRootElement();
-				
+
 				String taggingToSend = "<tagging><subject resource=\"" + packElement.getAttributeValue("resource") + "\"/><label>component family</label></tagging>";
 				ServerResponse taggingResponse = myExperimentClient.doMyExperimentPOST(getSourceChoice() + "/tagging.xml", taggingToSend);
 			}
@@ -91,9 +105,9 @@ public class ComponentLocationChooserPanel extends ComponentFamilyChooserPanel {
 			Element root = body.getRootElement();
 			String workflowResource = root.getAttributeValue("resource");
 			String packResource = packElement.getAttributeValue("resource");
-			
+
 			String toPost = "<internal-pack-item><pack resource=\"" + packResource + "\"/><item resource=\"" + workflowResource + "\"/></internal-pack-item>";
-			
+
 			myExperimentClient.doMyExperimentPOST(getSourceChoice() + "/internal-pack-item.xml", toPost);
 		}
 		} catch (Exception e) {

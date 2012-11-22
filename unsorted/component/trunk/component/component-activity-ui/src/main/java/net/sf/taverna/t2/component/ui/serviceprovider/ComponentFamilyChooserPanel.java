@@ -1,11 +1,12 @@
 /**
- * 
+ *
  */
 package net.sf.taverna.t2.component.ui.serviceprovider;
 
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -17,6 +18,7 @@ import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -35,40 +37,41 @@ import org.jdom.Element;
  *
  */
 public class ComponentFamilyChooserPanel extends JPanel {
-	
-	private static Logger logger = Logger.getLogger(ComponentFamilyChooserPanel.class);
-	
 
-	
+	private static Logger logger = Logger.getLogger(ComponentFamilyChooserPanel.class);
+
+
+
 	public static final String LOCAL = "Local machine";
 	public static final String MYEXPERIMENT = "http://www.myexperiment.org";
-	
+
 	private static List<String> knownSources = Arrays.asList (new String[] {LOCAL, MYEXPERIMENT});
-	
+
 	private String currentSourceChoice;
-	
+
 	private DefaultComboBoxModel familyModel = new DefaultComboBoxModel();
-	
+
 	private static DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
-	
+
 	protected MyExperimentClient myExperimentClient = new MyExperimentClient(logger);
 
-	
+
 	public ComponentFamilyChooserPanel(boolean editableFamily) {
 		super();
 		this.setLayout(new GridBagLayout());
-		
+
 		GridBagConstraints gbc = new GridBagConstraints();
-		
+
 		final JComboBox sourceChoice = new JComboBox(knownSources.toArray());
 //		sourceChoice.setEditable(true);
-		
+
 		final JComboBox familyChoice = new JComboBox();
 		familyChoice.setEditable(editableFamily);
 		familyChoice.setEditor(new BasicComboBoxEditor());
-		
+
 		sourceChoice.setSelectedItem(MYEXPERIMENT);
-		currentSourceChoice = MYEXPERIMENT;
+//		currentSourceChoice = MYEXPERIMENT;
+		currentSourceChoice = LOCAL;
 		familyChoice.setModel(familyModel);
 		familyChoice.setRenderer(new ListCellRenderer() {
 
@@ -90,38 +93,40 @@ public class ComponentFamilyChooserPanel extends JPanel {
 					currentSourceChoice = v;
 				}
 			}});
-		
-		gbc.gridx = 0;
+
+		gbc.insets = new Insets(0, 5, 0, 5);
 		gbc.gridy = 0;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		this.add(new JLabel("Component family site"), gbc);
-		gbc.gridx++;
+		gbc.weightx = 1;
 		this.add(sourceChoice, gbc);
-		gbc.gridx = 0;
 		gbc.gridy = 1;
+		gbc.weightx = 0;
 		this.add(new JLabel("Component family"), gbc);
-		gbc.gridx++;
+		gbc.weightx = 1;
 		this.add(familyChoice, gbc);
 
 	}
-	
+
 	public static String convertValueToString(Object value) {
 		if (value instanceof Element) {
 			return ((Element) value).getChildText("title");
 		}
 		if (value instanceof File) {
-			return ((File) value).getName();					
+			return ((File) value).getName();
 		}
 		if (value instanceof String) {
 			return (String) value;
 		}
 		return null;
 	}
-	
+
 	private void updateFamilyModel (String source) {
-		
+
 		if (!source.equals(LOCAL)) {
 			myExperimentClient.setBaseURL(source);
-		
+
 			if (!myExperimentClient.isLoggedIn()) {
 				myExperimentClient.doLogin();
 			}
