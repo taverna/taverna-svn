@@ -20,8 +20,12 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.myexperiment;
 
+import org.jdom.Element;
+
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
+import net.sf.taverna.t2.component.registry.ComponentRegistry;
+import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 
 /**
  *
@@ -30,21 +34,25 @@ import net.sf.taverna.t2.component.registry.ComponentFamily;
  */
 public class MyExperimentComponent implements Component {
 
-	private final MyExperimentComponentFamily componentFamily;
+	private final MyExperimentComponentRegistry componentRegistry;
+	private final String uri;
 
-	public MyExperimentComponent(MyExperimentComponentFamily componentFamily) {
-		this.componentFamily = componentFamily;
-	}
-
-	@Override
-	public ComponentFamily getComponentFamily() {
-		return componentFamily;
+	public MyExperimentComponent(MyExperimentComponentRegistry componentRegistry, String uri) {
+		this.componentRegistry = componentRegistry;
+		this.uri = uri;
 	}
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			Element titleElement = componentRegistry.getResourceElement(uri, "title");
+			if (titleElement == null) {
+				return "";
+			}
+			return titleElement.getTextTrim();
+		} catch (Exception e) {
+			return "";
+		}
 	}
 
 	@Override

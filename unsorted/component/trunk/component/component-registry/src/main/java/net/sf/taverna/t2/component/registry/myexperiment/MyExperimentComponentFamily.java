@@ -26,6 +26,7 @@ import java.util.List;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
+import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 
 import org.jdom.Element;
@@ -43,6 +44,11 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	public MyExperimentComponentFamily(MyExperimentComponentRegistry componentRegistry, String uri) {
 		this.componentRegistry = componentRegistry;
 		this.uri = uri;
+	}
+
+	@Override
+	public ComponentRegistry getComponentRegistry() {
+		return componentRegistry;
 	}
 
 	public String getName() throws ComponentRegistryException {
@@ -85,7 +91,7 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 				for (Element tag : componentRegistry.getResourceElements(itemUri, "tags")) {
 					String tagText = tag.getTextTrim();
 					if (tagText == "component") {
-						components.add(new MyExperimentComponent(this));
+						components.add(new MyExperimentComponent(componentRegistry, itemUri));
 						break;
 					}
 				}

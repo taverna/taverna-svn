@@ -29,8 +29,6 @@ package net.sf.taverna.t2.component.registry;
  */
 public interface Component {
 
-	public ComponentFamily getComponentFamily();
-
 	public String getName();
 
 	public String getDescription();

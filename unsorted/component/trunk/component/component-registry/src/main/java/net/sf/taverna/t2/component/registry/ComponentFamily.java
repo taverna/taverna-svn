@@ -32,6 +32,8 @@ import net.sf.taverna.t2.component.profile.ComponentProfile;
  */
 public interface ComponentFamily {
 
+	public ComponentRegistry getComponentRegistry();
+
 	public String getName() throws ComponentRegistryException;
 
 	public ComponentProfile getComponentProfile() throws ComponentRegistryException;
