@@ -35,14 +35,12 @@ public interface ComponentFamily {
 
 	public ComponentRegistry getComponentRegistry();
 
-	public String getName() throws ComponentRegistryException;
+	public String getName();
 
 	public ComponentProfile getComponentProfile() throws ComponentRegistryException;
 
 	public List<Component> getComponents() throws ComponentRegistryException;
 
-	public Component createComponent() throws ComponentRegistryException;
-	
 	public ComponentVersion createComponentBasedOn(String componentName, Dataflow dataflow);
 
 }

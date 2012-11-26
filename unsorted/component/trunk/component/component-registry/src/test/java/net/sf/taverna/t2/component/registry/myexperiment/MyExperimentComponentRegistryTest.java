@@ -40,11 +40,6 @@ public class MyExperimentComponentRegistryTest {
 	}
 
 	@Test
-	public void testAddComponentFamily() {
-		fail("Not yet implemented");
-	}
-
-	@Test
 	public void testRemoveComponentFamily() {
 		fail("Not yet implemented");
 	}

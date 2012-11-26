@@ -20,15 +20,8 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.myexperiment;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
-import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.jdom.Element;
 
@@ -37,54 +30,63 @@ import org.jdom.Element;
  *
  * @author David Withers
  */
-public class MyExperimentComponent implements Component {
+public class MyExperimentComponentVersion implements ComponentVersion {
 
 	private final MyExperimentComponentRegistry componentRegistry;
+	private final MyExperimentComponent component;
 	private final String uri;
 
-	private String name;
-	private SortedMap<Integer, ComponentVersion> componentVersions;
+	private Integer versionNumber;
+	private String description;
+	private String dataflow;
 
-	public MyExperimentComponent(MyExperimentComponentRegistry componentRegistry, String uri) {
+	public MyExperimentComponentVersion(MyExperimentComponentRegistry componentRegistry,
+			MyExperimentComponent component, String uri) {
 		this.componentRegistry = componentRegistry;
+		this.component = component;
 		this.uri = uri;
 	}
 
 	@Override
-	public String getName() {
-		if (name == null) {
-			Element titleElement = componentRegistry.getResourceElement(uri, "title");
-			if (titleElement == null) {
-				name = "";
-			}
-			name = titleElement.getTextTrim();
-		}
-		return name;
-	}
-
-	@Override
-	public SortedMap<Integer, ComponentVersion> getComponentVersionMap() {
-		if (componentVersions == null) {
-			componentVersions = new TreeMap<Integer, ComponentVersion>();
-			for (Element version : componentRegistry.getResourceElements(uri, "versions")) {
-				String versionUri = version.getAttributeValue("uri");
-				ComponentVersion componentVersion = new MyExperimentComponentVersion(componentRegistry, this, versionUri);
-				componentVersions.put(componentVersion.getVersionNumber(), componentVersion);
+	public Integer getVersionNumber() {
+		if (versionNumber == null) {
+			Element resource = componentRegistry.getResource(uri);
+			if (resource != null) {
+				versionNumber = Integer.getInteger(resource.getAttributeValue("version"));
 			}
 		}
-		return componentVersions;
+		return versionNumber;
 	}
 
 	@Override
-	public ComponentVersion getComponentVersion(Integer versionNumber) {
-		return getComponentVersionMap().get(versionNumber);
+	public String getDescription() {
+		if (description == null) {
+			Element descriptionElement = componentRegistry.getResourceElement(uri, "description");
+			if (descriptionElement == null) {
+				description = "";
+			}
+			description = descriptionElement.getTextTrim();
+		}
+		return description;
 	}
 
 	@Override
-	public ComponentVersion addVersionBasedOn(Dataflow dataflow) {
-		// TODO Auto-generated method stub
-		return null;
+	public String getDataflowString() {
+		if (dataflow == null)
+			for (Element internalPackItem : componentRegistry.getResourceElements(uri,
+					"internal-pack-items")) {
+				if ("workflow".equals(internalPackItem.getName())) {
+					String workflowResource = internalPackItem.getAttributeValue("resource");
+					Element workflowElement = componentRegistry.getResource(workflowResource);
+					dataflow = workflowElement.getChild("content-uri").getTextTrim();
+				}
+			}
+		return dataflow;
 	}
 
+	@Override
+	public Component getComponent() {
+		return component;
+	}
 
 }

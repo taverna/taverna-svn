@@ -51,10 +51,15 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 	private static Map<URL, ComponentRegistry> componentRegistries = new HashMap<URL, ComponentRegistry>();
 
 	private final MyExperimentClient myExperimentClient;
+	private final URL registryURL;
 	private String registryLocation;
 	private String packsUri;
 
+	private List<ComponentFamily> componentFamilies;
+	private List<ComponentProfile> componentProfiles;
+
 	private MyExperimentComponentRegistry(URL registryURL) {
+		this.registryURL = registryURL;
 		registryLocation = registryURL.toString();
 		if (!registryLocation.endsWith("/")) {
 			registryLocation = registryLocation + "/";
@@ -72,8 +77,8 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 
 	@Override
 	public List<ComponentFamily> getComponentFamilies() throws ComponentRegistryException {
-		List<ComponentFamily> componentFamilies = new ArrayList<ComponentFamily>();
-		try {
+		if (componentFamilies == null) {
+			componentFamilies = new ArrayList<ComponentFamily>();
 			Element packsElement = getResource(packsUri, "tag=component%20family");
 			for (Object child : packsElement.getChildren("pack")) {
 				if (child instanceof Element) {
@@ -84,21 +89,15 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 					}
 				}
 			}
-		} catch (Exception e) {
-			throw new ComponentRegistryException(e);
 		}
 		return componentFamilies;
 	}
 
 	@Override
 	public ComponentFamily createComponentFamily(String name, ComponentProfile componentProfile) throws ComponentRegistryException {
-		try {
-			Element packElement = createPack(name);
-			tagResource("component family", packElement.getAttributeValue("resource"));
-			return new MyExperimentComponentFamily(this, packElement.getAttributeValue("uri"));
-		} catch (Exception e) {
-			throw new ComponentRegistryException(e);
-		}
+		Element packElement = createPack(name);
+		tagResource("component family", packElement.getAttributeValue("resource"));
+		return new MyExperimentComponentFamily(this, packElement.getAttributeValue("uri"));
 	}
 
 	@Override
@@ -111,18 +110,26 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		throw new UnsupportedOperationException();
 	}
 
-	private Element createPack(String title) throws Exception {
+	private Element createPack(String title) throws ComponentRegistryException {
 		String packTitle = "<pack><title>" + title + "</title></pack>";
-		ServerResponse packResponse = myExperimentClient.doMyExperimentPOST(registryLocation + "pack.xml", packTitle);
-		return packResponse.getResponseBody().getRootElement();
+		try {
+			ServerResponse packResponse = myExperimentClient.doMyExperimentPOST(registryLocation + "pack.xml", packTitle);
+			return packResponse.getResponseBody().getRootElement();
+		} catch (Exception e) {
+			throw new ComponentRegistryException(e);
+		}
 	}
 
-	private void tagResource(String tag, String resource) throws Exception {
+	private void tagResource(String tag, String resource) throws ComponentRegistryException {
 		String taggingToSend = "<tagging><subject resource=\"" + resource + "\"/><label>"+tag+"</label></tagging>";
-		ServerResponse taggingResponse = myExperimentClient.doMyExperimentPOST(registryLocation + "tagging.xml", taggingToSend);
+		try {
+			myExperimentClient.doMyExperimentPOST(registryLocation + "tagging.xml", taggingToSend);
+		} catch (Exception e) {
+			throw new ComponentRegistryException(e);
+		}
 	}
 
-	Element getResource(String uri, String... query) throws Exception {
+	Element getResource(String uri, String... query) {
 		for (String queryElement : query) {
 			if (uri.contains("?")) {
 				uri +=	"&" + queryElement;
@@ -131,15 +138,19 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 				uri +=	"?" + queryElement;
 			}
 		}
-		ServerResponse response = myExperimentClient.doMyExperimentGET(uri);
-		if (response.getResponseCode() != HttpURLConnection.HTTP_OK) {
+		try {
+			ServerResponse response = myExperimentClient.doMyExperimentGET(uri);
+			if (response.getResponseCode() != HttpURLConnection.HTTP_OK) {
+				return null;
+			} else {
+				return response.getResponseBody().getRootElement();
+			}
+		} catch (Exception e) {
 			return null;
-		} else {
-			return response.getResponseBody().getRootElement();
 		}
 	}
 
-	List<Element> getResourceElements(String uri, String elementName) throws Exception {
+	List<Element> getResourceElements(String uri, String elementName) {
 		List<Element> elements = new ArrayList<Element>();
 		Element element = getResource(uri, "elements=" + elementName);
 		if (element != null) {
@@ -153,13 +164,36 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		return elements;
 	}
 
-	Element getResourceElement(String uri, String elementName) throws Exception {
+	Element getResourceElement(String uri, String elementName) {
 		Element element = getResource(uri, "elements=" + elementName);
 		if (element == null) {
 			return null;
 		} else {
 			return element.getChild(elementName);
 		}
+	}
+
+	@Override
+	public URL getRegistryBase() {
+		return registryURL;
+	}
+
+	@Override
+	public List<ComponentProfile> getComponentProfiles() {
+		if (componentProfiles == null) {
+			componentProfiles = new ArrayList<ComponentProfile>();
+			Element packsElement = getResource(packsUri, "tag=component%20profile");
+			for (Object child : packsElement.getChildren("file")) {
+				if (child instanceof Element) {
+					Element fileElement = (Element) child;
+					String fileUri = fileElement.getAttributeValue("uri");
+					if (getResource(fileUri) != null) {
+						componentProfiles.add(new ComponentProfile(fileUri));
+					}
+				}
+			}
+		}
+		return componentProfiles;
 	}
 
 }

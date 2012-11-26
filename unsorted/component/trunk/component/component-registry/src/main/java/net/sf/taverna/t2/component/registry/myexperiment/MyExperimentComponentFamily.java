@@ -28,18 +28,24 @@ import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.registry.ComponentVersion;
+import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.jdom.Element;
 
 /**
- *
- *
+ * 
+ * 
  * @author David Withers
  */
 public class MyExperimentComponentFamily implements ComponentFamily {
 
 	private final MyExperimentComponentRegistry componentRegistry;
 	private final String uri;
+
+	private String name;
+	private ComponentProfile componentProfile;
+	private List<Component> components;
 
 	public MyExperimentComponentFamily(MyExperimentComponentRegistry componentRegistry, String uri) {
 		this.componentRegistry = componentRegistry;
@@ -51,42 +57,40 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 		return componentRegistry;
 	}
 
-	public String getName() throws ComponentRegistryException {
-		try {
+	public String getName() {
+		if (name == null) {
 			Element titleElement = componentRegistry.getResourceElement(uri, "title");
 			if (titleElement == null) {
-				throw new ComponentRegistryException("Couldn't fetch title for " + uri);
+				name = "";
 			}
-			return titleElement.getTextTrim();
-		} catch (Exception e) {
-			throw new ComponentRegistryException(e);
+			name = titleElement.getTextTrim();
 		}
+		return name;
 	}
 
 	@Override
 	public ComponentProfile getComponentProfile() throws ComponentRegistryException {
-		try {
+		if (componentProfile == null) {
 			for (Element internalPackItem : componentRegistry.getResourceElements(uri,
 					"internal-pack-items")) {
 				String itemUri = internalPackItem.getAttributeValue("uri");
 				for (Element tag : componentRegistry.getResourceElements(itemUri, "tags")) {
 					String tagText = tag.getTextTrim();
 					if (tagText == "component profile") {
-						return new ComponentProfile(itemUri);
+						componentProfile = new ComponentProfile(itemUri);
 					}
 				}
 			}
-		} catch (Exception e) {
-			throw new ComponentRegistryException(e);
 		}
-		return null;
+		return componentProfile;
 	}
 
 	@Override
 	public List<Component> getComponents() throws ComponentRegistryException {
-		List<Component> components = new ArrayList<Component>();
-		try {
-			for (Element internalPackItem : componentRegistry.getResourceElements(uri, "internal-pack-items")) {
+		if (components == null) {
+			components = new ArrayList<Component>();
+			for (Element internalPackItem : componentRegistry.getResourceElements(uri,
+					"internal-pack-items")) {
 				String itemUri = internalPackItem.getAttributeValue("uri");
 				for (Element tag : componentRegistry.getResourceElements(itemUri, "tags")) {
 					String tagText = tag.getTextTrim();
@@ -96,14 +100,12 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 					}
 				}
 			}
-		} catch (Exception e) {
-			throw new ComponentRegistryException(e);
 		}
 		return components;
 	}
 
 	@Override
-	public Component createComponent() {
+	public ComponentVersion createComponentBasedOn(String componentName, Dataflow dataflow) {
 		// TODO Auto-generated method stub
 		return null;
 	}

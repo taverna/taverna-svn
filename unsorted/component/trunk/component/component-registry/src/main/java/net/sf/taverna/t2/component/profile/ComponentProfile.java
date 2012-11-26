@@ -22,6 +22,7 @@ import org.xml.sax.SAXException;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.reasoner.IllegalParameterException;
 
 public class ComponentProfile {
 
@@ -34,8 +35,12 @@ public class ComponentProfile {
 
 	private Node profile;
 
-	public ComponentProfile(String profileURL) throws MalformedURLException {
-		this.profileURL = new URL(profileURL);
+	public ComponentProfile(String profileURL) {
+		try {
+			this.profileURL = new URL(profileURL);
+		} catch (MalformedURLException e) {
+			throw new IllegalParameterException("Invalid URL : " + profileURL);
+		}
 	}
 
 	public ComponentProfile(URL profileURL) {
