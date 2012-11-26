@@ -35,7 +35,7 @@ import org.jdom.Element;
  * @author David Withers
  *
  */
-public class MyExperimentComponentFamily extends ComponentFamily {
+public class MyExperimentComponentFamily implements ComponentFamily {
 
 	private final MyexperimentComponentRegistry componentRegistry;
 	private final String uri;

@@ -30,12 +30,12 @@ import net.sf.taverna.t2.component.profile.ComponentProfile;
  * @author David Withers
  *
  */
-public abstract class ComponentFamily {
+public interface ComponentFamily {
 
-	public abstract ComponentProfile getComponentProfile();
+	public ComponentProfile getComponentProfile();
 
-	public abstract List<Component> getComponents();
+	public List<Component> getComponents();
 
-	public abstract Component createComponent();
+	public Component createComponent();
 
 }

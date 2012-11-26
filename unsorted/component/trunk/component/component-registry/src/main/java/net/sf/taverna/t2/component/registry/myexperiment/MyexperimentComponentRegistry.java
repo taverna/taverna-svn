@@ -41,7 +41,7 @@ import org.jdom.Element;
  * @author David Withers
  *
  */
-public class MyexperimentComponentRegistry extends ComponentRegistry {
+public class MyexperimentComponentRegistry implements ComponentRegistry {
 
 	private static Logger logger = Logger.getLogger(MyexperimentComponentRegistry.class);
 

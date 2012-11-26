@@ -30,14 +30,14 @@ import net.sf.taverna.t2.component.profile.ComponentProfile;
  * @author David Withers
  *
  */
-public abstract class ComponentRegistry {
+public interface ComponentRegistry {
 
-	public abstract List<ComponentFamily> getComponentFamilies() throws ComponentRegistryException;
+	public List<ComponentFamily> getComponentFamilies() throws ComponentRegistryException;
 
-	public abstract ComponentFamily createComponentFamily(String name, ComponentProfile componentProfile) throws ComponentRegistryException;
+	public ComponentFamily createComponentFamily(String name, ComponentProfile componentProfile) throws ComponentRegistryException;
 
-	public abstract void addComponentFamily(ComponentFamily componentFamily);
+	public void addComponentFamily(ComponentFamily componentFamily);
 
-	public abstract void removeComponentFamily(ComponentFamily componentFamily);
+	public void removeComponentFamily(ComponentFamily componentFamily);
 
 }
