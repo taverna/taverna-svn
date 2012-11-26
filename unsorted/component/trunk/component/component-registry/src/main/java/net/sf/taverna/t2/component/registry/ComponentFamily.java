@@ -32,10 +32,12 @@ import net.sf.taverna.t2.component.profile.ComponentProfile;
  */
 public interface ComponentFamily {
 
-	public ComponentProfile getComponentProfile();
+	public String getName() throws ComponentRegistryException;
 
-	public List<Component> getComponents();
+	public ComponentProfile getComponentProfile() throws ComponentRegistryException;
 
-	public Component createComponent();
+	public List<Component> getComponents() throws ComponentRegistryException;
+
+	public Component createComponent() throws ComponentRegistryException;
 
 }

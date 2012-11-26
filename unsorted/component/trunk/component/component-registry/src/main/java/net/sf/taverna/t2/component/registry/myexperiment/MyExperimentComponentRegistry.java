@@ -20,8 +20,12 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.myexperiment;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.help.UnsupportedOperationException;
 
@@ -44,14 +48,26 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 
 	private static Logger logger = Logger.getLogger(MyExperimentComponentRegistry.class);
 
-	private final MyExperimentClient myExperimentClient;
-	private final String registryLocation;
-	private final String packsUri;
+	private static Map<URL, ComponentRegistry> componentRegistries = new HashMap<URL, ComponentRegistry>();
 
-	public MyExperimentComponentRegistry(String registryLocation) {
-		this.registryLocation = registryLocation;
-		packsUri = registryLocation + "/packs.xml";
+	private final MyExperimentClient myExperimentClient;
+	private String registryLocation;
+	private String packsUri;
+
+	private MyExperimentComponentRegistry(URL registryURL) {
+		registryLocation = registryURL.toString();
+		if (!registryLocation.endsWith("/")) {
+			registryLocation = registryLocation + "/";
+		}
+		packsUri = registryLocation + "packs.xml";
 		myExperimentClient = new MyExperimentClient(logger);
+	}
+
+	public static ComponentRegistry getComponentRegistry(URL registryURL) {
+		if (!componentRegistries.containsKey(registryURL)) {
+			componentRegistries.put(registryURL, new MyExperimentComponentRegistry(registryURL));
+		}
+		return componentRegistries.get(registryURL);
 	}
 
 	@Override
@@ -62,7 +78,10 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 			for (Object child : packsElement.getChildren("pack")) {
 				if (child instanceof Element) {
 					Element packElement = (Element) child;
-					componentFamilies.add(new MyExperimentComponentFamily(this, packElement.getAttributeValue("uri")));
+					String packUri = packElement.getAttributeValue("uri");
+					if (getResource(packUri) != null) {
+						componentFamilies.add(new MyExperimentComponentFamily(this, packUri));
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -78,7 +97,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 			tagResource("component family", packElement.getAttributeValue("resource"));
 			return new MyExperimentComponentFamily(this, packElement.getAttributeValue("uri"));
 		} catch (Exception e) {
-			throw new ComponentRegistryException();
+			throw new ComponentRegistryException(e);
 		}
 	}
 
@@ -94,13 +113,13 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 
 	private Element createPack(String title) throws Exception {
 		String packTitle = "<pack><title>" + title + "</title></pack>";
-		ServerResponse packResponse = myExperimentClient.doMyExperimentPOST(registryLocation + "/pack.xml", packTitle);
+		ServerResponse packResponse = myExperimentClient.doMyExperimentPOST(registryLocation + "pack.xml", packTitle);
 		return packResponse.getResponseBody().getRootElement();
 	}
 
 	private void tagResource(String tag, String resource) throws Exception {
 		String taggingToSend = "<tagging><subject resource=\"" + resource + "\"/><label>"+tag+"</label></tagging>";
-		ServerResponse taggingResponse = myExperimentClient.doMyExperimentPOST(registryLocation + "/tagging.xml", taggingToSend);
+		ServerResponse taggingResponse = myExperimentClient.doMyExperimentPOST(registryLocation + "tagging.xml", taggingToSend);
 	}
 
 	Element getResource(String uri, String... query) throws Exception {
@@ -113,19 +132,34 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 			}
 		}
 		ServerResponse response = myExperimentClient.doMyExperimentGET(uri);
-		return response.getResponseBody().getRootElement();
+		if (response.getResponseCode() != HttpURLConnection.HTTP_OK) {
+			return null;
+		} else {
+			return response.getResponseBody().getRootElement();
+		}
 	}
 
 	List<Element> getResourceElements(String uri, String elementName) throws Exception {
 		List<Element> elements = new ArrayList<Element>();
 		Element element = getResource(uri, "elements=" + elementName);
-		Element packItems = element.getChild(elementName);
-		for (Object child : packItems.getChildren()) {
-			if (child instanceof Element) {
-				elements.add((Element) child);
+		if (element != null) {
+			Element items = element.getChild(elementName);
+			for (Object child : items.getChildren()) {
+				if (child instanceof Element) {
+					elements.add((Element) child);
+				}
 			}
 		}
 		return elements;
+	}
+
+	Element getResourceElement(String uri, String elementName) throws Exception {
+		Element element = getResource(uri, "elements=" + elementName);
+		if (element == null) {
+			return null;
+		} else {
+			return element.getChild(elementName);
+		}
 	}
 
 }

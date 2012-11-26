@@ -26,6 +26,7 @@ import java.util.List;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
+import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 
 import org.jdom.Element;
 
@@ -44,34 +45,53 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 		this.uri = uri;
 	}
 
+	public String getName() throws ComponentRegistryException {
+		try {
+			Element titleElement = componentRegistry.getResourceElement(uri, "title");
+			if (titleElement == null) {
+				throw new ComponentRegistryException("Couldn't fetch title for " + uri);
+			}
+			return titleElement.getTextTrim();
+		} catch (Exception e) {
+			throw new ComponentRegistryException(e);
+		}
+	}
+
 	@Override
-	public ComponentProfile getComponentProfile() {
-		for (Element internalPackItem : componentRegistry.getResourceElements(uri, "internal-pack-items")) {
-			String itemUri = internalPackItem.getAttributeValue("uri");
-			Element tagsElement = internalPackItem.getChild("tags");
-			for (Element tag : componentRegistry.getResourceElements(itemUri, "tags")) {
-				String tagText = tag.getTextTrim();
-				if (tagText == "component profile") {
-					return new ComponentProfile(itemUri);
+	public ComponentProfile getComponentProfile() throws ComponentRegistryException {
+		try {
+			for (Element internalPackItem : componentRegistry.getResourceElements(uri,
+					"internal-pack-items")) {
+				String itemUri = internalPackItem.getAttributeValue("uri");
+				for (Element tag : componentRegistry.getResourceElements(itemUri, "tags")) {
+					String tagText = tag.getTextTrim();
+					if (tagText == "component profile") {
+						return new ComponentProfile(itemUri);
+					}
 				}
 			}
+		} catch (Exception e) {
+			throw new ComponentRegistryException(e);
 		}
 		return null;
 	}
 
 	@Override
-	public List<Component> getComponents() {
+	public List<Component> getComponents() throws ComponentRegistryException {
 		List<Component> components = new ArrayList<Component>();
-		for (Element internalPackItem : componentRegistry.getResourceElements(uri, "internal-pack-items")) {
-			String itemUri = internalPackItem.getAttributeValue("uri");
-			Element tagsElement = internalPackItem.getChild("tags");
-			for (Element tag : componentRegistry.getResourceElements(itemUri, "tags")) {
-				String tagText = tag.getTextTrim();
-				if (tagText == "component") {
-					components.add(new MyExperimentComponent(this));
-					break;
+		try {
+			for (Element internalPackItem : componentRegistry.getResourceElements(uri, "internal-pack-items")) {
+				String itemUri = internalPackItem.getAttributeValue("uri");
+				for (Element tag : componentRegistry.getResourceElements(itemUri, "tags")) {
+					String tagText = tag.getTextTrim();
+					if (tagText == "component") {
+						components.add(new MyExperimentComponent(this));
+						break;
+					}
 				}
 			}
+		} catch (Exception e) {
+			throw new ComponentRegistryException(e);
 		}
 		return components;
 	}
