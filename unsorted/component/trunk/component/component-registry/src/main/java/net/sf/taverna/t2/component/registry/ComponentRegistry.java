@@ -20,6 +20,7 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry;
 
+import java.net.URL;
 import java.util.List;
 
 import net.sf.taverna.t2.component.profile.ComponentProfile;
@@ -39,5 +40,9 @@ public interface ComponentRegistry {
 	public void addComponentFamily(ComponentFamily componentFamily);
 
 	public void removeComponentFamily(ComponentFamily componentFamily);
+	
+	public URL getRegistryBase();
+	
+	public List<ComponentProfile> getComponentProfiles();
 
 }

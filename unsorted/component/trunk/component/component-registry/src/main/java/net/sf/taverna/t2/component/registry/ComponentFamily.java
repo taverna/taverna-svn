@@ -23,6 +23,7 @@ package net.sf.taverna.t2.component.registry;
 import java.util.List;
 
 import net.sf.taverna.t2.component.profile.ComponentProfile;
+import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 /**
  *
@@ -41,5 +42,7 @@ public interface ComponentFamily {
 	public List<Component> getComponents() throws ComponentRegistryException;
 
 	public Component createComponent() throws ComponentRegistryException;
+	
+	public ComponentVersion addComponentBasedOn(Dataflow dataflow);
 
 }

@@ -20,6 +20,10 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry;
 
+import java.util.List;
+
+import net.sf.taverna.t2.workflowmodel.Dataflow;
+
 
 /**
  *
@@ -30,9 +34,12 @@ package net.sf.taverna.t2.component.registry;
 public interface Component {
 
 	public String getName();
-
-	public String getDescription();
-
-	public String getDataflow();
+	
+	// The list is returned in increasing numeric order
+	public List<ComponentVersion> getComponentVersions();
+	
+	public ComponentVersion getComponentVersion(Integer version);
+	
+	public ComponentVersion addVersionBasedOn(Dataflow dataflow);
 
 }
