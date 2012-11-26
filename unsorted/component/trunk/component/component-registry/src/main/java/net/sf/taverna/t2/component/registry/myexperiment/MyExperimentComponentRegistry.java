@@ -40,15 +40,15 @@ import org.jdom.Element;
  *
  * @author David Withers
  */
-public class MyexperimentComponentRegistry implements ComponentRegistry {
+public class MyExperimentComponentRegistry implements ComponentRegistry {
 
-	private static Logger logger = Logger.getLogger(MyexperimentComponentRegistry.class);
+	private static Logger logger = Logger.getLogger(MyExperimentComponentRegistry.class);
 
 	private final MyExperimentClient myExperimentClient;
 	private final String registryLocation;
 	private final String packsUri;
 
-	public MyexperimentComponentRegistry(String registryLocation) {
+	public MyExperimentComponentRegistry(String registryLocation) {
 		this.registryLocation = registryLocation;
 		packsUri = registryLocation + "/packs.xml";
 		myExperimentClient = new MyExperimentClient(logger);
@@ -62,7 +62,7 @@ public class MyexperimentComponentRegistry implements ComponentRegistry {
 			for (Object child : packsElement.getChildren("pack")) {
 				if (child instanceof Element) {
 					Element packElement = (Element) child;
-					componentFamilies.add(new MyexperimentComponentFamily(this, packElement.getAttributeValue("uri")));
+					componentFamilies.add(new MyExperimentComponentFamily(this, packElement.getAttributeValue("uri")));
 				}
 			}
 		} catch (Exception e) {
@@ -76,7 +76,7 @@ public class MyexperimentComponentRegistry implements ComponentRegistry {
 		try {
 			Element packElement = createPack(name);
 			tagResource("component family", packElement.getAttributeValue("resource"));
-			return new MyexperimentComponentFamily(this, packElement.getAttributeValue("uri"));
+			return new MyExperimentComponentFamily(this, packElement.getAttributeValue("uri"));
 		} catch (Exception e) {
 			throw new ComponentRegistryException();
 		}

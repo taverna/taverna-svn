@@ -36,10 +36,10 @@ import org.jdom.Element;
  */
 public class MyExperimentComponentFamily implements ComponentFamily {
 
-	private final MyexperimentComponentRegistry componentRegistry;
+	private final MyExperimentComponentRegistry componentRegistry;
 	private final String uri;
 
-	public MyExperimentComponentFamily(MyexperimentComponentRegistry componentRegistry, String uri) {
+	public MyExperimentComponentFamily(MyExperimentComponentRegistry componentRegistry, String uri) {
 		this.componentRegistry = componentRegistry;
 		this.uri = uri;
 	}
