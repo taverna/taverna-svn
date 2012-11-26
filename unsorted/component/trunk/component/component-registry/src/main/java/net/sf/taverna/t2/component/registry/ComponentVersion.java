@@ -13,7 +13,7 @@ public interface ComponentVersion {
 	
 	public String getDescription();
 
-	public String getDataflow();
+	public String getDataflowString();
 	
 	public Component getComponent();
 
