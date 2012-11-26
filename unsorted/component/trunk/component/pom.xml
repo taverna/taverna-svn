@@ -137,5 +137,6 @@
     <module>component-activity</module>
     <module>component-activity-ui</module>
     <module>component-plugin</module>
+    <module>component-registry</module>
   </modules>
 </project>
