@@ -33,7 +33,6 @@ import org.jdom.Element;
  *
  *
  * @author David Withers
- *
  */
 public class MyExperimentComponentFamily implements ComponentFamily {
 
@@ -69,7 +68,7 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 			for (Element tag : componentRegistry.getResourceElements(itemUri, "tags")) {
 				String tagText = tag.getTextTrim();
 				if (tagText == "component") {
-					components.add(new Component(this));
+					components.add(new MyExperimentComponent(this));
 					break;
 				}
 			}

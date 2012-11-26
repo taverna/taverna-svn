@@ -18,23 +18,45 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
-package net.sf.taverna.t2.component.registry;
+package net.sf.taverna.t2.component.registry.myexperiment;
 
+import net.sf.taverna.t2.component.registry.Component;
+import net.sf.taverna.t2.component.registry.ComponentFamily;
 
 /**
  *
  *
  * @author David Withers
- *
  */
-public interface Component {
+public class MyExperimentComponent implements Component {
 
-	public ComponentFamily getComponentFamily();
+	private final MyExperimentComponentFamily componentFamily;
 
-	public String getName();
+	public MyExperimentComponent(MyExperimentComponentFamily componentFamily) {
+		this.componentFamily = componentFamily;
+	}
 
-	public String getDescription();
+	@Override
+	public ComponentFamily getComponentFamily() {
+		return componentFamily;
+	}
 
-	public String getDataflow();
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getDataflow() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
