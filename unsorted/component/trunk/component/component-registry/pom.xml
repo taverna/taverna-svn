@@ -6,6 +6,7 @@
     <version>0.1.2</version>
   </parent>
   <artifactId>component-registry</artifactId>
+  <name>Component Registry</name>
   <dependencies>
   		<dependency>
 			<groupId>net.sf.taverna.t2.ui-exts</groupId>
