@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.component.ui.serviceprovider;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.log4j.Logger;
@@ -9,35 +8,42 @@ public class ComponentServiceProviderConfig {
 	
 	private static Logger logger = Logger
 	.getLogger(ComponentServiceProviderConfig.class);
-
-	private URL source;
 	
-	private URL familySource;
-
+	private URL registryBase;
+	
+	private String familyName;
+	
 	public ComponentServiceProviderConfig() {
 		super();
-		try {
-			source = new URL("http://www.myexperiment.org");
-		} catch (MalformedURLException e) {
-			logger.error(e);
-		}
-		familySource = null;
-	}
-	
-	public URL getSource() {
-		return source;
+
 	}
 
-	public void setSource(URL source) {
-		this.source = source;
+	/**
+	 * @return the registryBase
+	 */
+	public URL getRegistryBase() {
+		return registryBase;
 	}
 
-	public URL getFamilySource() {
-		return familySource;
+	/**
+	 * @param registryBase the registryBase to set
+	 */
+	public void setRegistryBase(URL registryBase) {
+		this.registryBase = registryBase;
 	}
 
-	public void setFamilySource(URL familySource) {
-		this.familySource = familySource;
+	/**
+	 * @return the familyName
+	 */
+	public String getFamilyName() {
+		return familyName;
+	}
+
+	/**
+	 * @param familyName the familyName to set
+	 */
+	public void setFamilyName(String familyName) {
+		this.familyName = familyName;
 	}
 
 }

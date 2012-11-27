@@ -97,7 +97,7 @@ public class ComponentConfigurationPanel
 	 */
 	@Override
 	public void noteConfiguration() {
-		configBean = new ComponentActivityConfigurationBean();
+//		configBean = new ComponentActivityConfigurationBean();
 		
 		// TODO: Update bean fields from your UI elements
 /*		configBean.setExampleString(fieldString.getText());

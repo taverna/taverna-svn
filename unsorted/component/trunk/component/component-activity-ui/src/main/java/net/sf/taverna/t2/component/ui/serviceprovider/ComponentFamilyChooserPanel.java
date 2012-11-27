@@ -11,26 +11,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
+import java.net.URI;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
-import javax.swing.plaf.basic.BasicComboBoxEditor;
 
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
-import net.sf.taverna.t2.ui.perspectives.myexperiment.model.MyExperimentClient;
+import net.sf.taverna.t2.component.registry.ComponentFamily;
+import net.sf.taverna.t2.component.registry.ComponentRegistry;
+import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.registry.local.LocalComponentRegistry;
+import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
 
 import org.apache.log4j.Logger;
-import org.jdom.Document;
-import org.jdom.Element;
 
 /**
  * @author alanrw
@@ -40,38 +38,50 @@ public class ComponentFamilyChooserPanel extends JPanel {
 
 	private static Logger logger = Logger.getLogger(ComponentFamilyChooserPanel.class);
 
+	
 
-
-	public static final String LOCAL = "Local machine";
-	public static final String MYEXPERIMENT = "http://www.myexperiment.org";
-
-	private static List<String> knownSources = Arrays.asList (new String[] {LOCAL, MYEXPERIMENT});
-
-	private String currentSourceChoice;
-
+//	public static final String LOCAL = "Local machine";
+	
+	public static ComponentRegistry MY_EXPERIMENT_REGISTRY = null;
+	
+	public static ComponentRegistry LOCAL_REGISTRY = null;
+	
 	private DefaultComboBoxModel familyModel = new DefaultComboBoxModel();
 
 	private static DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 
-	protected MyExperimentClient myExperimentClient = new MyExperimentClient(logger);
-
+	private ComponentRegistry currentChoice = MY_EXPERIMENT_REGISTRY;
 
 	public ComponentFamilyChooserPanel(boolean editableFamily) {
 		super();
+		
+		if (MY_EXPERIMENT_REGISTRY == null) {
+			try {
+				MY_EXPERIMENT_REGISTRY = MyExperimentComponentRegistry.getComponentRegistry(URI.create("http://www.myexperiment.org").toURL());
+			} catch (MalformedURLException e) {
+				logger.error(e);
+			}			
+		}
+		
+		if (LOCAL_REGISTRY == null) {
+			LOCAL_REGISTRY = LocalComponentRegistry.getComponentRegistry(new File(ApplicationRuntime.getInstance().getApplicationHomeDir(), "components"));
+		}
+		
+		
 		this.setLayout(new GridBagLayout());
 
 		GridBagConstraints gbc = new GridBagConstraints();
 
-		final JComboBox sourceChoice = new JComboBox(knownSources.toArray());
+		final JComboBox sourceChoice = new JComboBox(new ComponentRegistry[] {LOCAL_REGISTRY, MY_EXPERIMENT_REGISTRY});
 //		sourceChoice.setEditable(true);
 
 		final JComboBox familyChoice = new JComboBox();
 		familyChoice.setEditable(editableFamily);
-		familyChoice.setEditor(new BasicComboBoxEditor());
 
-		sourceChoice.setSelectedItem(MYEXPERIMENT);
-//		currentSourceChoice = MYEXPERIMENT;
-		currentSourceChoice = LOCAL;
+		final FamilyChoiceEditor familyChoiceEditor = new FamilyChoiceEditor();
+		currentChoice = MY_EXPERIMENT_REGISTRY;
+		sourceChoice.setSelectedItem(MY_EXPERIMENT_REGISTRY);
+
 		familyChoice.setModel(familyModel);
 		familyChoice.setRenderer(new ListCellRenderer() {
 
@@ -81,16 +91,21 @@ public class ComponentFamilyChooserPanel extends JPanel {
 					boolean cellHasFocus) {
 				return defaultRenderer.getListCellRendererComponent(list, convertValueToString(value), index, isSelected, cellHasFocus);
 			}});
-		familyChoice.setEditor(new FamilyChoiceEditor());
-		updateFamilyModel(currentSourceChoice);
+		if (editableFamily) {
+			familyChoiceEditor.setRegistry(MY_EXPERIMENT_REGISTRY);
+			familyChoice.setEditor(familyChoiceEditor);
+			familyChoiceEditor.setRegistry((ComponentRegistry) sourceChoice.getSelectedItem());
+		}
+		updateFamilyModel((ComponentRegistry) sourceChoice.getSelectedItem());
 		sourceChoice.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String v = (String) sourceChoice.getSelectedItem();
-				if (!v.equals(currentSourceChoice)) {
+				ComponentRegistry v = (ComponentRegistry) sourceChoice.getSelectedItem();
+				if (!v.equals(currentChoice)) {
 					updateFamilyModel(v);
-					currentSourceChoice = v;
+					familyChoiceEditor.setRegistry(v);
+					currentChoice = v;
 				}
 			}});
 
@@ -110,86 +125,46 @@ public class ComponentFamilyChooserPanel extends JPanel {
 	}
 
 	public static String convertValueToString(Object value) {
-		if (value instanceof Element) {
-			return ((Element) value).getChildText("title");
-		}
-		if (value instanceof File) {
-			return ((File) value).getName();
+		if (value instanceof ComponentFamily) {
+				return ((ComponentFamily) value).getName();
 		}
 		if (value instanceof String) {
 			return (String) value;
 		}
-		return null;
+		if (value == null) {
+			return ("null");
+		}
+		return "Spaceholder for " + value.getClass().getName();
 	}
 
-	private void updateFamilyModel (String source) {
+	private void updateFamilyModel (ComponentRegistry source) {
 
-		if (!source.equals(LOCAL)) {
-			myExperimentClient.setBaseURL(source);
-
-			if (!myExperimentClient.isLoggedIn()) {
-				myExperimentClient.doLogin();
+		familyModel.removeAllElements();
+		try {
+			for (ComponentFamily family : source.getComponentFamilies()) {
+				familyModel.addElement(family);
 			}
-
-			Document families = null;
-				try {
-					families = myExperimentClient.doMyExperimentGET(source + "/packs.xml?tag=component%20family&elements=description,title").getResponseBody();
-				} catch (Exception e) {
-					logger.error(e);
-					familyModel.removeAllElements();
-				}
-				Element root = families.getRootElement();
-				for (Object packObject : root.getChildren()) {
-					Element packElement = (Element) packObject;
-					familyModel.addElement(packElement);
-				}
-		} else {
-			File homeDir = ApplicationRuntime.getInstance().getApplicationHomeDir();
-			File components = new File(homeDir, "components");
-			familyModel.removeAllElements();
-			if (!components.exists()) {
-				components.mkdir();
-			}
-			if (!components.isDirectory()) {
-				return;
-			}
-			for (File family : components.listFiles()) {
-				if (family.isDirectory()) {
-					familyModel.addElement(family);
-				}
-			}
+		} catch (ComponentRegistryException e) {
+			logger.error("Unable to read component families", e);
 		}
 	}
 
 	public boolean sourceChoiceIsLocal() {
-		return currentSourceChoice.equals(LOCAL);
+		return currentChoice instanceof LocalComponentRegistry;
 	}
 
-	public Object getFamilyChoice() {
-		return familyModel.getSelectedItem();
+	public ComponentFamily getFamilyChoice() {
+		return (ComponentFamily) familyModel.getSelectedItem();
 	}
 
-	public String getSourceChoice() {
-		return currentSourceChoice;
+	public ComponentRegistry getSourceChoice() {
+		return currentChoice;
 	}
 
 	public ComponentServiceProviderConfig getConfig() {
 		ComponentServiceProviderConfig newConfig = new ComponentServiceProviderConfig();
-		try {
-			if (sourceChoiceIsLocal()) {
-				newConfig.setSource(null);
-				File choice = (File) getFamilyChoice();
-				newConfig.setFamilySource(choice.toURI().toURL());
-			} else {
-				Element choice = (Element) getFamilyChoice();
-				newConfig.setSource(new URL(getSourceChoice()));
-				newConfig.setFamilySource(new URL(choice
-						.getAttributeValue("uri")));
-			}
-		} catch (MalformedURLException e) {
-			logger.error(e);
-			return null;
-		}
+			newConfig.setRegistryBase(getSourceChoice().getRegistryBase());
+			newConfig.setFamilyName(getFamilyChoice().getName());
 		return newConfig;
 	}
 }

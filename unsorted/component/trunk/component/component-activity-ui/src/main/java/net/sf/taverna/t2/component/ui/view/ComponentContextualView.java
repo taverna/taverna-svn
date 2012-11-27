@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 
 import org.apache.commons.lang.StringUtils;
 
+import net.sf.taverna.t2.workbench.ui.actions.activity.HTMLBasedActivityContextualView;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 
 import net.sf.taverna.t2.component.ComponentActivity;
@@ -16,39 +17,19 @@ import net.sf.taverna.t2.component.ComponentActivityConfigurationBean;
 import net.sf.taverna.t2.component.ui.config.ComponentConfigureAction;
 
 @SuppressWarnings("serial")
-public class ComponentContextualView extends ContextualView {
-	private final ComponentActivity activity;
-	private JLabel description = new JLabel("ads");
+public class ComponentContextualView extends HTMLBasedActivityContextualView<ComponentActivityConfigurationBean> {
 
 	public ComponentContextualView(ComponentActivity activity) {
-		this.activity = activity;
-		initView();
+		super(activity);
+		init();
 	}
 
-	@Override
-	public JComponent getMainFrame() {
-		JPanel jPanel = new JPanel();
-		jPanel.add(description);
-		refreshView();
-		return jPanel;
+	private void init() {
 	}
 
 	@Override
 	public String getViewTitle() {
-		ComponentActivityConfigurationBean configuration = activity
-				.getConfiguration();
-		return "Component service " + StringUtils.abbreviate(configuration.getDataflowString(), 40);
-	}
-
-	/**
-	 * Typically called when the activity configuration has changed.
-	 */
-	@Override
-	public void refreshView() {
-		ComponentActivityConfigurationBean configuration = activity
-				.getConfiguration();
-		description.setText("Component service " +
-				StringUtils.abbreviate(configuration.getDataflowString(), 40));
+		return "Component service";
 	}
 
 	/**
@@ -62,7 +43,19 @@ public class ComponentContextualView extends ContextualView {
 	
 	@Override
 	public Action getConfigureAction(final Frame owner) {
-		return new ComponentConfigureAction(activity, owner);
+		return new ComponentConfigureAction((ComponentActivity) getActivity(), owner);
+	}
+
+	@Override
+	protected String getRawTableRowsHtml() {
+		String html = "";
+		
+		html += "<tr><td>Component registry base</td><td>" + getConfigBean().getRegistryBase().toString() + "</td></tr>";
+		html += "<tr><td>Component family</td><td>" + getConfigBean().getFamilyName() + "</td></tr>";
+		html += "<tr><td>Component name</td><td>" + getConfigBean().getComponentName() + "</td></tr>";
+		html += "<tr><td>Component version</td><td>" + getConfigBean().getComponentVersion() + "</td></tr>";
+		
+		return html;
 	}
 
 }

@@ -9,14 +9,23 @@ import java.awt.event.ActionListener;
 import javax.swing.ComboBoxEditor;
 import javax.swing.JTextField;
 
+import org.apache.log4j.Logger;
+
+import net.sf.taverna.t2.component.registry.ComponentRegistry;
+import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+
 /**
  * @author alanrw
  *
  */
 public class FamilyChoiceEditor implements ComboBoxEditor {
 	
+	private static Logger logger = Logger.getLogger(FamilyChoiceEditor.class);
+
+	
 	JTextField textField = new JTextField(30);
 	Object originalItem;
+	private ComponentRegistry registry;
 
 	/* (non-Javadoc)
 	 * @see javax.swing.ComboBoxEditor#addActionListener(java.awt.event.ActionListener)
@@ -40,7 +49,12 @@ public class FamilyChoiceEditor implements ComboBoxEditor {
 	@Override
 	public Object getItem() {
 		if ((originalItem == null) || !ComponentFamilyChooserPanel.convertValueToString(originalItem).equals(textField.getText())) {
-			return textField.getText();
+			try {
+				return registry.createComponentFamily(textField.getText(), null);
+			} catch (ComponentRegistryException e) {
+				logger.error(e);
+				return null;
+			}
 		} else {
 			return originalItem;
 		}
@@ -70,6 +84,10 @@ public class FamilyChoiceEditor implements ComboBoxEditor {
 	public void setItem(Object anObject) {
 		originalItem = anObject;
 		textField.setText(ComponentFamilyChooserPanel.convertValueToString(originalItem));
+	}
+
+	public void setRegistry(ComponentRegistry registry) {
+		this.registry = registry;
 	}
 
 }
