@@ -20,6 +20,7 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry;
 
+import java.net.URL;
 import java.util.SortedMap;
 
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -38,8 +39,10 @@ public interface Component {
 	// The list is returned in increasing numeric order
 	public SortedMap<Integer, ComponentVersion> getComponentVersionMap();
 	
-	public ComponentVersion getComponentVersion(Integer version);
+	public ComponentVersion getComponentVersion(Integer version) throws ComponentRegistryException;
 	
-	public ComponentVersion addVersionBasedOn(Dataflow dataflow);
+	public ComponentVersion addVersionBasedOn(Dataflow dataflow) throws ComponentRegistryException;
+	
+	public URL getComponentURL();
 
 }

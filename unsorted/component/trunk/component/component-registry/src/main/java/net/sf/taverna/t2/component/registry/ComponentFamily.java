@@ -41,6 +41,9 @@ public interface ComponentFamily {
 
 	public List<Component> getComponents() throws ComponentRegistryException;
 
-	public ComponentVersion createComponentBasedOn(String componentName, Dataflow dataflow);
+	public ComponentVersion createComponentBasedOn(String componentName, Dataflow dataflow) throws ComponentRegistryException;
+
+	public Component getComponent(String componentName);
+
 
 }

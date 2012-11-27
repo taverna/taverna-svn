@@ -37,12 +37,12 @@ public interface ComponentRegistry {
 
 	public ComponentFamily createComponentFamily(String name, ComponentProfile componentProfile) throws ComponentRegistryException;
 
-	public void addComponentFamily(ComponentFamily componentFamily);
-
-	public void removeComponentFamily(ComponentFamily componentFamily);
+	public void removeComponentFamily(ComponentFamily componentFamily) throws ComponentRegistryException;
 	
 	public URL getRegistryBase();
 	
 	public List<ComponentProfile> getComponentProfiles();
+
+	public ComponentFamily getComponentFamily(String familyName);
 
 }

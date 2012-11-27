@@ -3,6 +3,8 @@
  */
 package net.sf.taverna.t2.component.registry;
 
+import net.sf.taverna.t2.workflowmodel.Dataflow;
+
 /**
  * @author alanrw
  *
@@ -13,7 +15,7 @@ public interface ComponentVersion {
 	
 	public String getDescription();
 
-	public String getDataflowString();
+	public Dataflow getDataflow() throws ComponentRegistryException;
 	
 	public Component getComponent();
 
