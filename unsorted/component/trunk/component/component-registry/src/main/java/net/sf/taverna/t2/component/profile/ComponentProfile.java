@@ -1,7 +1,5 @@
 package net.sf.taverna.t2.component.profile;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,87 +8,61 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import uk.org.taverna.ns._2012.component.profile.Activity;
+import uk.org.taverna.ns._2012.component.profile.Ontology;
+import uk.org.taverna.ns._2012.component.profile.Port;
+import uk.org.taverna.ns._2012.component.profile.Profile;
+import uk.org.taverna.ns._2012.component.profile.SemanticAnnotation;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.reasoner.IllegalParameterException;
 
 public class ComponentProfile {
 
-	private static DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
-			.newInstance();
 	private static Map<String, OntModel> ontologyModels = new HashMap<String, OntModel>();
 
-	private Map<String, String> ontologyURIs = new HashMap<String, String>();
-	private final URL profileURL;
-
-	private Node profile;
-
-	public ComponentProfile(String profileURL) {
-		try {
-			this.profileURL = new URL(profileURL);
-		} catch (MalformedURLException e) {
-			throw new IllegalParameterException("Invalid URL : " + profileURL);
-		}
-	}
+	private Profile profile;
 
 	public ComponentProfile(URL profileURL) {
-		this.profileURL = profileURL;
+		try {
+			JAXBContext jaxbContext = JAXBContext.newInstance(Profile.class);
+			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+			profile = (Profile) unmarshaller.unmarshal(profileURL);
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public Node getProfile() {
-		if (profile == null) {
-			try {
-				DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-				Document document = documentBuilder.parse(profileURL.openStream());
-				profile = getFirstNode(document, "profile");
-			} catch (ParserConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SAXException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+	public Profile getProfile() {
 		return profile;
 	}
 
 	public String getName() {
-		return getNodeText(getFirstNode(getProfile(), "name"));
+		return profile.getName();
 	}
 
 	public String getDescription() {
-		return getNodeText(getFirstNode(getProfile(), "description"));
+		return profile.getDescription();
 	}
 
 	public String getOntologyLocation(String ontologyId) {
-		List<Node> nodes = getNodes(getProfile(), "ontology");
-		for (Node node : nodes) {
-			Node ontology = node.getAttributes().getNamedItem("id");
-			if (ontologyId.equals(ontology.getNodeValue())) {
-				return getNodeText(node);
+		String ontologyURI = null;
+		List<Ontology> ontologies = profile.getOntology();
+		for (Ontology ontology : ontologies) {
+			if (ontology.getId().equals(ontologyId)) {
+				ontologyURI = ontology.getValue();
 			}
 		}
-		return null;
+		return ontologyURI;
 	}
 
 	public OntModel getOntology(String ontologyId) {
-		if (!ontologyURIs.containsKey(ontologyId)) {
-			ontologyURIs.put(ontologyId, getOntologyLocation(ontologyId));
-		}
-		String ontologyURI = ontologyURIs.get(ontologyId);
+		String ontologyURI = getOntologyLocation(ontologyId);
 		if (!ontologyModels.containsKey(ontologyURI)) {
 			OntModel ontologyModel = ModelFactory.createOntologyModel();
 			ontologyModel.read(ontologyURI);
@@ -99,115 +71,78 @@ public class ComponentProfile {
 		return ontologyModels.get(ontologyURI);
 	}
 
-	public List<String> getOntologyIds() {
-		List<String> ontologyIds = new ArrayList<String>();
-		List<Node> nodes = getNodes(getProfile(), "ontology");
-		for (Node node : nodes) {
-			Node ontology = node.getAttributes().getNamedItem("id");
-			ontologyIds.add(ontology.getNodeValue().trim());
-		}
-		return ontologyIds;
-	}
-
 	public List<PortProfile> getInputPortProfiles() {
-		return getPortProfiles("inputPort");
+		List<PortProfile> portProfiles = new ArrayList<PortProfile>();
+		List<Port> ports = profile.getComponent().getInputPort();
+		for (Port port : ports) {
+			portProfiles.add(new PortProfile(this, port));
+		}
+		return portProfiles;
 	}
 
 	public List<SemanticAnnotationProfile> getInputSemanticAnnotationProfiles() {
-		List<Node> nodes = getNodes(getFirstNode(profile, "component"), "inputPort");
-		return getSemanticAnnotationProfiles(nodes);
+		List<SemanticAnnotationProfile> semanticAnnotationsProfiles = new ArrayList<SemanticAnnotationProfile>();
+		List<PortProfile> portProfiles = getInputPortProfiles();
+		for (PortProfile portProfile : portProfiles) {
+			semanticAnnotationsProfiles.addAll(portProfile.getSemanticAnnotations());
+		}
+		return getUniqueSemanticAnnotationProfiles(semanticAnnotationsProfiles);
 	}
 
 	public List<PortProfile> getOutputPortProfiles() {
-		return getPortProfiles("outputPort");
+		List<PortProfile> portProfiles = new ArrayList<PortProfile>();
+		List<Port> ports = profile.getComponent().getOutputPort();
+		for (Port port : ports) {
+			portProfiles.add(new PortProfile(this, port));
+		}
+		return portProfiles;
 	}
 
 	public List<SemanticAnnotationProfile> getOutputSemanticAnnotationProfiles() {
-		List<Node> nodes = getNodes(getFirstNode(profile, "component"), "outputPort");
-		return getSemanticAnnotationProfiles(nodes);
+		List<SemanticAnnotationProfile> semanticAnnotationsProfiles = new ArrayList<SemanticAnnotationProfile>();
+		List<PortProfile> portProfiles = getOutputPortProfiles();
+		for (PortProfile portProfile : portProfiles) {
+			semanticAnnotationsProfiles.addAll(portProfile.getSemanticAnnotations());
+		}
+		return getUniqueSemanticAnnotationProfiles(semanticAnnotationsProfiles);
 	}
 
-	public Set<ActivityProfile> getActivityProfiles() {
-		Set<ActivityProfile> activityProfiles = new HashSet<ActivityProfile>();
-		NodeList ports = getProfile().getOwnerDocument().getElementsByTagName("activity");
-		for (int i = 0; i < ports.getLength(); i++) {
-			activityProfiles.add(new ActivityProfile(ports.item(i)));
+	public List<ActivityProfile> getActivityProfiles() {
+		List<ActivityProfile> activityProfiles = new ArrayList<ActivityProfile>();
+		List<Activity> activities = profile.getComponent().getActivity();
+		for (Activity activity : activities) {
+			activityProfiles.add(new ActivityProfile(this, activity));
 		}
 		return activityProfiles;
 	}
 
 	public List<SemanticAnnotationProfile> getActivitySemanticAnnotationProfiles() {
-		List<Node> nodes = getNodes(getFirstNode(profile, "component"), "activity");
-		return getSemanticAnnotationProfiles(nodes);
+		List<SemanticAnnotationProfile> semanticAnnotationsProfiles = new ArrayList<SemanticAnnotationProfile>();
+		List<ActivityProfile> activityProfiles = getActivityProfiles();
+		for (ActivityProfile activityProfile : activityProfiles) {
+			semanticAnnotationsProfiles.addAll(activityProfile.getSemanticAnnotations());
+		}
+		return getUniqueSemanticAnnotationProfiles(semanticAnnotationsProfiles);
 	}
 
 	public List<SemanticAnnotationProfile> getSemanticAnnotationProfiles() {
-		return getSemanticAnnotationProfiles(getFirstNode(profile, "component"));
-	}
-
-	private String getNodeText(Node node) {
-		if (node == null) {
-			return null;
-		} else {
-			return node.getTextContent().trim();
+		List<SemanticAnnotationProfile> semanticAnnotationsProfiles = new ArrayList<SemanticAnnotationProfile>();
+		for (SemanticAnnotation semanticAnnotation : profile.getComponent().getSemanticAnnotation()) {
+			semanticAnnotationsProfiles.add(new SemanticAnnotationProfile(this, semanticAnnotation));
 		}
+		return semanticAnnotationsProfiles;
 	}
 
-	public List<SemanticAnnotationProfile> getSemanticAnnotationProfiles(Node node) {
-		List<SemanticAnnotationProfile> semanticAnnotations = new ArrayList<SemanticAnnotationProfile>();
-		List<Node> nodes = getNodes(node, "semanticAnnotation");
-		for (Node child : nodes) {
-			semanticAnnotations.add(new SemanticAnnotationProfile(this, child));
-		}
-		return semanticAnnotations;
-	}
-
-	private List<SemanticAnnotationProfile> getSemanticAnnotationProfiles(List<Node> nodes) {
-		List<SemanticAnnotationProfile> semanticAnnotations = new ArrayList<SemanticAnnotationProfile>();
+	private List<SemanticAnnotationProfile> getUniqueSemanticAnnotationProfiles(List<SemanticAnnotationProfile> semanticAnnotationProfiles) {
+		List<SemanticAnnotationProfile> uniqueSemanticAnnotations = new ArrayList<SemanticAnnotationProfile>();
 		Set<OntProperty> predicates = new HashSet<OntProperty>();
-		for (Node node : nodes) {
-			for (SemanticAnnotationProfile semanticAnnotationProfile : getSemanticAnnotationProfiles(node)) {
-				if (!predicates.contains(semanticAnnotationProfile.getPredicate())) {
-					predicates.add(semanticAnnotationProfile.getPredicate());
-					semanticAnnotations.add(semanticAnnotationProfile);
-				}
+		for (SemanticAnnotationProfile semanticAnnotationProfile : semanticAnnotationProfiles) {
+			if (!predicates.contains(semanticAnnotationProfile.getPredicate())) {
+				predicates.add(semanticAnnotationProfile.getPredicate());
+				uniqueSemanticAnnotations.add(semanticAnnotationProfile);
 			}
 		}
-		return semanticAnnotations;
-	}
-
-	public static Node getFirstNode(Node node, String nodeName) {
-		if (node != null) {
-			NodeList childNodes = node.getChildNodes();
-			for (int i = 0; i < childNodes.getLength(); i++) {
-				if (nodeName.equals(childNodes.item(i).getNodeName())) {
-					return childNodes.item(i);
-				}
-			}
-		}
-		return null;
-	}
-
-	public static List<Node> getNodes(Node node, String nodeName) {
-		List<Node> nodes = new ArrayList<Node>();
-		if (node != null) {
-			NodeList childNodes = node.getChildNodes();
-			for (int i = 0; i < childNodes.getLength(); i++) {
-				if (nodeName.equals(childNodes.item(i).getNodeName())) {
-					nodes.add(childNodes.item(i));
-				}
-			}
-		}
-		return nodes;
-	}
-
-	private List<PortProfile> getPortProfiles(String portType) {
-		List<PortProfile> portProfiles = new ArrayList<PortProfile>();
-		NodeList ports = getProfile().getOwnerDocument().getElementsByTagName(portType);
-		for (int i = 0; i < ports.getLength(); i++) {
-			portProfiles.add(new PortProfile(this, ports.item(i)));
-		}
-		return portProfiles;
+		return uniqueSemanticAnnotations;
 	}
 
 	@Override

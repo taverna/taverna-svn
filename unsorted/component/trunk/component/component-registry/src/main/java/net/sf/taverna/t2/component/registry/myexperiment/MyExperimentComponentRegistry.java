@@ -21,6 +21,7 @@
 package net.sf.taverna.t2.component.registry.myexperiment;
 
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -97,7 +98,11 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 	public ComponentFamily createComponentFamily(String name, ComponentProfile componentProfile) throws ComponentRegistryException {
 		Element packElement = createPack(name);
 		tagResource("component family", packElement.getAttributeValue("resource"));
-		return new MyExperimentComponentFamily(this, packElement.getAttributeValue("uri"));
+		ComponentFamily componentFamily = new MyExperimentComponentFamily(this, packElement.getAttributeValue("uri"));
+		if (componentFamilies != null) {
+			componentFamilies.add(componentFamily);
+		}
+		return componentFamily;
 	}
 
 	@Override
@@ -188,7 +193,11 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 					Element fileElement = (Element) child;
 					String fileUri = fileElement.getAttributeValue("uri");
 					if (getResource(fileUri) != null) {
-						componentProfiles.add(new ComponentProfile(fileUri));
+						try {
+							componentProfiles.add(new ComponentProfile(new URL(fileUri)));
+						} catch (MalformedURLException e) {
+							logger.warn("URL for component profile is invalid : " + fileUri, e);
+						}
 					}
 				}
 			}

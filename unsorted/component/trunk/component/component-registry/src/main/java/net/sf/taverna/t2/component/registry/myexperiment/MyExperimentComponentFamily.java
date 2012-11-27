@@ -20,6 +20,8 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.myexperiment;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,14 +33,17 @@ import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
+import org.apache.log4j.Logger;
 import org.jdom.Element;
 
 /**
- * 
- * 
+ *
+ *
  * @author David Withers
  */
 public class MyExperimentComponentFamily implements ComponentFamily {
+
+	private static Logger logger = Logger.getLogger(MyExperimentComponentFamily.class);
 
 	private final MyExperimentComponentRegistry componentRegistry;
 	private final String uri;
@@ -77,7 +82,11 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 				for (Element tag : componentRegistry.getResourceElements(itemUri, "tags")) {
 					String tagText = tag.getTextTrim();
 					if (tagText == "component profile") {
-						componentProfile = new ComponentProfile(itemUri);
+						try {
+							componentProfile = new ComponentProfile(new URL(itemUri));
+						} catch (MalformedURLException e) {
+							logger.warn("URL for component profile is invalid : " + itemUri, e);
+						}
 					}
 				}
 			}
