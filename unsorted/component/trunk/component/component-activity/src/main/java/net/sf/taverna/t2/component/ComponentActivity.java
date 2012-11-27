@@ -13,6 +13,7 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
 import net.sf.taverna.t2.activities.dataflow.DataflowActivity;
+import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.T2Reference;
@@ -44,7 +45,12 @@ public class ComponentActivity extends
 		// getConfiguration() return a new bean from other sources
 		this.configBean = configBean;
 
-		Dataflow d = openDataflowString(configBean.getDataflowString());
+		Dataflow d;
+		try {
+			d = configBean.getDataflow();
+		} catch (ComponentRegistryException e) {
+			throw new ActivityConfigurationException("Unable to read dataflow", e);
+		}
 		componentRealization.configure(d);
 		d.checkValidity();
 		// TODO What to do if not valid?
