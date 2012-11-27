@@ -138,5 +138,6 @@
     <module>component-activity-ui</module>
     <module>component-plugin</module>
     <module>component-registry</module>
+    <module>component-annotation</module>
   </modules>
 </project>
