@@ -1,8 +1,12 @@
 package net.sf.taverna.t2.component.ui.config;
 
+import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.net.URI;
 
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -11,6 +15,9 @@ import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityCon
 
 import net.sf.taverna.t2.component.ComponentActivity;
 import net.sf.taverna.t2.component.ComponentActivityConfigurationBean;
+import net.sf.taverna.t2.component.registry.Component;
+import net.sf.taverna.t2.component.registry.ComponentVersion;
+import net.sf.taverna.t2.component.ui.view.ComponentListCellRenderer;
 
 
 @SuppressWarnings("serial")
@@ -22,11 +29,13 @@ public class ComponentConfigurationPanel
 	private ComponentActivity activity;
 	private ComponentActivityConfigurationBean configBean;
 	
-	private JTextField fieldString;
-	private JTextField fieldURI;
+	private final JComboBox componentVersionChoice = new JComboBox();
+	
+	private DefaultComboBoxModel componentVersionModel = new DefaultComboBoxModel();
 
 	public ComponentConfigurationPanel(ComponentActivity activity) {
 		this.activity = activity;
+		configBean = activity.getConfiguration();
 		initGui();
 	}
 
@@ -34,18 +43,20 @@ public class ComponentConfigurationPanel
 		removeAll();
 		setLayout(new GridLayout(0, 2));
 
-		// FIXME: Create GUI depending on activity configuration bean
-		JLabel labelString = new JLabel("Example string:");
-		add(labelString);
-		fieldString = new JTextField(20);
-		add(fieldString);
-		labelString.setLabelFor(fieldString);
+		componentVersionChoice.setModel(componentVersionModel);
+		componentVersionChoice.setRenderer(new ComponentListCellRenderer());
+		updateComponentVersionChoice();
 
-		JLabel labelURI = new JLabel("Example URI:");
-		add(labelURI);
-		fieldURI = new JTextField(25);
-		add(fieldURI);
-		labelURI.setLabelFor(fieldURI);
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(0, 5, 0, 5);
+		gbc.gridx = 0;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridy = 2;
+		this.add(new JLabel("Component version"), gbc);
+		gbc.gridx = 1;
+		gbc.weightx = 1;
+		this.add(componentVersionChoice, gbc);
 
 		// Populate fields from activity configuration bean
 		refreshConfiguration();
@@ -56,15 +67,6 @@ public class ComponentConfigurationPanel
 	 */
 	@Override
 	public boolean checkValues() {
-		try {
-			URI.create(fieldURI.getText());
-		} catch (IllegalArgumentException ex) {
-			JOptionPane.showMessageDialog(this, ex.getCause().getMessage(),
-					"Invalid URI", JOptionPane.ERROR_MESSAGE);
-			// Not valid, return false
-			return false;
-		}
-		// All valid, return true
 		return true;
 	}
 
@@ -83,12 +85,8 @@ public class ComponentConfigurationPanel
 	 */
 	@Override
 	public boolean isConfigurationChanged() {
-		return false;
-/*		String originalString = configBean.getExampleString();
-		String originalUri = configBean.getExampleUri().toASCIIString();
-		// true (changed) unless all fields match the originals
-		return ! (originalString.equals(fieldString.getText())
-				&& originalUri.equals(fieldURI.getText()));*/
+		Integer version = (Integer) componentVersionChoice.getSelectedItem();
+		return (!version.equals(configBean.getComponentVersion()));
 	}
 
 	/**
@@ -97,11 +95,8 @@ public class ComponentConfigurationPanel
 	 */
 	@Override
 	public void noteConfiguration() {
-//		configBean = new ComponentActivityConfigurationBean();
-		
-		// TODO: Update bean fields from your UI elements
-/*		configBean.setExampleString(fieldString.getText());
-		configBean.setExampleUri(URI.create(fieldURI.getText()));*/
+		ComponentActivityConfigurationBean newConfig = new ComponentActivityConfigurationBean(configBean.getRegistryBase(), configBean.getFamilyName(), configBean.getComponentName(), (Integer) componentVersionChoice.getSelectedItem());
+		configBean = newConfig;
 	}
 
 	/**
@@ -112,8 +107,17 @@ public class ComponentConfigurationPanel
 	public void refreshConfiguration() {
 		configBean = activity.getConfiguration();
 		
-		// FIXME: TODO UI elements from your bean fields
-/*		fieldString.setText(configBean.getExampleString());
-		fieldURI.setText(configBean.getExampleUri().toASCIIString());*/
+		updateComponentVersionChoice();
 	}
+
+	private void updateComponentVersionChoice() {
+		componentVersionModel.removeAllElements();
+		Component component = configBean.calculateComponent();
+		for (Integer i : component.getComponentVersionMap().keySet()) {
+			componentVersionModel.addElement(i);
+		}
+		componentVersionChoice.setSelectedItem(configBean.getComponentVersion());
+	}
+	
+	
 }
