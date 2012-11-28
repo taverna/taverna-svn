@@ -40,19 +40,44 @@ public class ComponentActivityConfigurationBean implements Serializable {
 
 	public Dataflow getDataflow() throws ComponentRegistryException {
 		if (dataflow == null) {
-			ComponentRegistry registry;
-			if (registryBase.getProtocol().startsWith("http")) {
-				registry = MyExperimentComponentRegistry.getComponentRegistry(registryBase);
-			}
-			else {
-				registry = LocalComponentRegistry.getComponentRegistry(registryBase);
-			}
-			ComponentFamily family = registry.getComponentFamily(familyName);
-			Component component = family.getComponent(componentName);
-			ComponentVersion version = component.getComponentVersion(componentVersion);
+			ComponentVersion version = calculateComponentVersion();
 			dataflow = version.getDataflow();
 		}
 		return dataflow;
+	}
+
+
+	public ComponentVersion calculateComponentVersion() throws ComponentRegistryException {
+		Component component = calculateComponent();
+		ComponentVersion version = component.getComponentVersion(componentVersion);
+		return version;
+	}
+
+
+	public Component calculateComponent() {
+		ComponentFamily family = calculateFamily();
+		Component component = family.getComponent(componentName);
+		return component;
+	}
+
+
+	public ComponentFamily calculateFamily() {
+		ComponentRegistry registry;
+		registry = calculateRegistry();
+		ComponentFamily family = registry.getComponentFamily(familyName);
+		return family;
+	}
+
+
+	public ComponentRegistry calculateRegistry() {
+		ComponentRegistry registry;
+		if (registryBase.getProtocol().startsWith("http")) {
+			registry = MyExperimentComponentRegistry.getComponentRegistry(registryBase);
+		}
+		else {
+			registry = LocalComponentRegistry.getComponentRegistry(registryBase);
+		}
+		return registry;
 	}
 
 
