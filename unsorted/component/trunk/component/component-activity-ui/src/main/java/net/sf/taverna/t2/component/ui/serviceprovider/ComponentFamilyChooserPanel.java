@@ -3,7 +3,6 @@
  */
 package net.sf.taverna.t2.component.ui.serviceprovider;
 
-import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -14,12 +13,9 @@ import java.net.MalformedURLException;
 import java.net.URI;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.ListCellRenderer;
 
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
@@ -27,6 +23,7 @@ import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.local.LocalComponentRegistry;
 import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
+import net.sf.taverna.t2.component.ui.view.ComponentListCellRenderer;
 
 import org.apache.log4j.Logger;
 
@@ -48,9 +45,11 @@ public class ComponentFamilyChooserPanel extends JPanel {
 	
 	private DefaultComboBoxModel familyModel = new DefaultComboBoxModel();
 
-	private static DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
-
 	private ComponentRegistry currentChoice = MY_EXPERIMENT_REGISTRY;
+
+
+
+	private final JComboBox familyChoice = new JComboBox();
 
 	public ComponentFamilyChooserPanel(boolean editableFamily) {
 		super();
@@ -73,9 +72,10 @@ public class ComponentFamilyChooserPanel extends JPanel {
 		GridBagConstraints gbc = new GridBagConstraints();
 
 		final JComboBox sourceChoice = new JComboBox(new ComponentRegistry[] {LOCAL_REGISTRY, MY_EXPERIMENT_REGISTRY});
+		sourceChoice.setRenderer(new ComponentListCellRenderer());
+		
 //		sourceChoice.setEditable(true);
 
-		final JComboBox familyChoice = new JComboBox();
 		familyChoice.setEditable(editableFamily);
 
 		final FamilyChoiceEditor familyChoiceEditor = new FamilyChoiceEditor();
@@ -83,14 +83,7 @@ public class ComponentFamilyChooserPanel extends JPanel {
 		sourceChoice.setSelectedItem(MY_EXPERIMENT_REGISTRY);
 
 		familyChoice.setModel(familyModel);
-		familyChoice.setRenderer(new ListCellRenderer() {
-
-			@Override
-			public Component getListCellRendererComponent(JList list,
-					Object value, int index, boolean isSelected,
-					boolean cellHasFocus) {
-				return defaultRenderer.getListCellRendererComponent(list, convertValueToString(value), index, isSelected, cellHasFocus);
-			}});
+		familyChoice.setRenderer(new ComponentListCellRenderer());
 		if (editableFamily) {
 			familyChoiceEditor.setRegistry(MY_EXPERIMENT_REGISTRY);
 			familyChoice.setEditor(familyChoiceEditor);
@@ -124,18 +117,6 @@ public class ComponentFamilyChooserPanel extends JPanel {
 
 	}
 
-	public static String convertValueToString(Object value) {
-		if (value instanceof ComponentFamily) {
-				return ((ComponentFamily) value).getName();
-		}
-		if (value instanceof String) {
-			return (String) value;
-		}
-		if (value == null) {
-			return ("null");
-		}
-		return "Spaceholder for " + value.getClass().getName();
-	}
 
 	private void updateFamilyModel (ComponentRegistry source) {
 
@@ -166,5 +147,9 @@ public class ComponentFamilyChooserPanel extends JPanel {
 			newConfig.setRegistryBase(getSourceChoice().getRegistryBase());
 			newConfig.setFamilyName(getFamilyChoice().getName());
 		return newConfig;
+	}
+	
+	protected void addFamilyChoiceListener(ActionListener listener) {
+		familyChoice.addActionListener(listener);
 	}
 }

@@ -140,6 +140,9 @@ public class ComponentServiceDesc extends ServiceDescription<ComponentActivityCo
 		this.componentVersion = componentVersion;
 	}
 
+	public String toString() {
+		return "Component " + getName();
+	}
 
 
 }

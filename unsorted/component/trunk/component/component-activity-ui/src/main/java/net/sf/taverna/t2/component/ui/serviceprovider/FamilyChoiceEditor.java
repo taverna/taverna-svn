@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.ui.view.ComponentListCellRenderer;
 
 /**
  * @author alanrw
@@ -48,7 +49,7 @@ public class FamilyChoiceEditor implements ComboBoxEditor {
 	 */
 	@Override
 	public Object getItem() {
-		if ((originalItem == null) || !ComponentFamilyChooserPanel.convertValueToString(originalItem).equals(textField.getText())) {
+		if ((originalItem == null) || !ComponentListCellRenderer.convertValueToString(originalItem).equals(textField.getText())) {
 			try {
 				return registry.createComponentFamily(textField.getText(), null);
 			} catch (ComponentRegistryException e) {
@@ -83,7 +84,7 @@ public class FamilyChoiceEditor implements ComboBoxEditor {
 	@Override
 	public void setItem(Object anObject) {
 		originalItem = anObject;
-		textField.setText(ComponentFamilyChooserPanel.convertValueToString(originalItem));
+		textField.setText(ComponentListCellRenderer.convertValueToString(originalItem));
 	}
 
 	public void setRegistry(ComponentRegistry registry) {
