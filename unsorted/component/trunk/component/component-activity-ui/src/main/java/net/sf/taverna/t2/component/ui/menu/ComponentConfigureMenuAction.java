@@ -19,7 +19,7 @@ public class ComponentConfigureMenuAction extends
 		Action result = null;
 		result = new ComponentConfigureAction(findActivity(),
 				getParentFrame());
-		result.putValue(Action.NAME, "Configure example service");
+		result.putValue(Action.NAME, "Configure component");
 		addMenuDots(result);
 		return result;
 	}
