@@ -16,9 +16,7 @@ import net.sf.taverna.t2.component.ComponentActivity;
 import net.sf.taverna.t2.component.ComponentActivityConfigurationBean;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceIcon;
-import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceProvider;
-import net.sf.taverna.t2.servicedescriptions.ServiceDescriptionRegistry;
-import net.sf.taverna.t2.servicedescriptions.impl.ServiceDescriptionRegistryImpl;
+import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
@@ -165,14 +163,10 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 		
 		ComponentActivityConfigurationBean componentBean = panel.saveComponent(d);
 		
-		ServiceDescriptionRegistry registry = ServiceDescriptionRegistryImpl.getInstance();
-		ComponentServiceProvider provider = new ComponentServiceProvider();
-		provider.configure(panel.getConfig());
-		registry.removeServiceDescriptionProvider(provider);
-		registry.addServiceDescriptionProvider(provider);
+		Utils.refreshComponentServiceProvider(panel.getConfig());
 		return componentBean;
 	}
-	
+
 	private static HashMap<String, Element> requiredSubworkflows = new HashMap<String, Element>();
 	
 	public static Element copyProcessor(final Processor p) throws IOException, JDOMException, SerializationException {
