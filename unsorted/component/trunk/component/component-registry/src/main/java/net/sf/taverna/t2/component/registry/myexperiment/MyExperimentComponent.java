@@ -20,6 +20,7 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.myexperiment;
 
+import java.net.URL;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -63,6 +64,7 @@ public class MyExperimentComponent implements Component {
 	public SortedMap<Integer, ComponentVersion> getComponentVersionMap() {
 		if (componentVersions == null) {
 			componentVersions = new TreeMap<Integer, ComponentVersion>();
+			System.out.println(uri);
 			for (Element version : componentRegistry.getResourceElements(uri, "versions")) {
 				String versionUri = version.getAttributeValue("uri");
 				ComponentVersion componentVersion = new MyExperimentComponentVersion(componentRegistry, this, versionUri);
@@ -83,5 +85,10 @@ public class MyExperimentComponent implements Component {
 		return null;
 	}
 
+	@Override
+	public URL getComponentURL() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

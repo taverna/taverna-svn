@@ -20,8 +20,17 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.myexperiment;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import net.sf.taverna.t2.component.registry.Component;
+import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
+import net.sf.taverna.t2.workbench.file.DataflowInfo;
+import net.sf.taverna.t2.workbench.file.exceptions.OpenException;
+import net.sf.taverna.t2.workbench.file.impl.T2DataflowOpener;
+import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
+import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.jdom.Element;
 
@@ -32,13 +41,15 @@ import org.jdom.Element;
  */
 public class MyExperimentComponentVersion implements ComponentVersion {
 
+	private static final T2FlowFileType T2_FLOW_FILE_TYPE = new T2FlowFileType();
+
 	private final MyExperimentComponentRegistry componentRegistry;
 	private final MyExperimentComponent component;
 	private final String uri;
 
 	private Integer versionNumber;
 	private String description;
-	private String dataflow;
+	private Dataflow dataflow;
 
 	public MyExperimentComponentVersion(MyExperimentComponentRegistry componentRegistry,
 			MyExperimentComponent component, String uri) {
@@ -71,14 +82,23 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 	}
 
 	@Override
-	public String getDataflowString() {
+	public Dataflow getDataflow() throws ComponentRegistryException {
 		if (dataflow == null)
 			for (Element internalPackItem : componentRegistry.getResourceElements(uri,
 					"internal-pack-items")) {
 				if ("workflow".equals(internalPackItem.getName())) {
 					String workflowResource = internalPackItem.getAttributeValue("resource");
 					Element workflowElement = componentRegistry.getResource(workflowResource);
-					dataflow = workflowElement.getChild("content-uri").getTextTrim();
+					String dataflowURI = workflowElement.getChild("content-uri").getTextTrim();
+					T2DataflowOpener opener = new T2DataflowOpener();
+					try {
+						DataflowInfo info = opener.openDataflow(T2_FLOW_FILE_TYPE, new URL(dataflowURI));
+						dataflow = info.getDataflow();
+					} catch (OpenException e) {
+						throw new ComponentRegistryException("Unable to open dataflow from " + dataflowURI, e);
+					} catch (MalformedURLException e) {
+						throw new ComponentRegistryException("Unable to open dataflow from " + dataflowURI, e);
+					}
 				}
 			}
 		return dataflow;

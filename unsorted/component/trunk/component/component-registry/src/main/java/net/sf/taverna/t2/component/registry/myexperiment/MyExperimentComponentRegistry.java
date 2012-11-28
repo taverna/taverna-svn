@@ -54,7 +54,6 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 	private final MyExperimentClient myExperimentClient;
 	private final URL registryURL;
 	private String registryLocation;
-	private String packsUri;
 
 	private List<ComponentFamily> componentFamilies;
 	private List<ComponentProfile> componentProfiles;
@@ -65,7 +64,6 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		if (!registryLocation.endsWith("/")) {
 			registryLocation = registryLocation + "/";
 		}
-		packsUri = registryLocation + "packs.xml";
 		myExperimentClient = new MyExperimentClient(logger);
 	}
 
@@ -80,7 +78,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 	public List<ComponentFamily> getComponentFamilies() throws ComponentRegistryException {
 		if (componentFamilies == null) {
 			componentFamilies = new ArrayList<ComponentFamily>();
-			Element packsElement = getResource(packsUri, "tag=component%20family");
+			Element packsElement = getResource(registryLocation + "packs.xml", "tag=component%20family");
 			for (Object child : packsElement.getChildren("pack")) {
 				if (child instanceof Element) {
 					Element packElement = (Element) child;
@@ -103,11 +101,6 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 			componentFamilies.add(componentFamily);
 		}
 		return componentFamily;
-	}
-
-	@Override
-	public void addComponentFamily(ComponentFamily componentFamily) {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -135,16 +128,13 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 	}
 
 	Element getResource(String uri, String... query) {
+		StringBuilder uriBuilder = new StringBuilder(uri);
 		for (String queryElement : query) {
-			if (uri.contains("?")) {
-				uri +=	"&" + queryElement;
-			} else {
-
-				uri +=	"?" + queryElement;
-			}
+			uriBuilder.append(uriBuilder.indexOf("?") < 0 ? "?" : "&");
+			uriBuilder.append(queryElement);
 		}
 		try {
-			ServerResponse response = myExperimentClient.doMyExperimentGET(uri);
+			ServerResponse response = myExperimentClient.doMyExperimentGET(uriBuilder.toString());
 			if (response.getResponseCode() != HttpURLConnection.HTTP_OK) {
 				return null;
 			} else {
@@ -160,9 +150,11 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		Element element = getResource(uri, "elements=" + elementName);
 		if (element != null) {
 			Element items = element.getChild(elementName);
-			for (Object child : items.getChildren()) {
-				if (child instanceof Element) {
-					elements.add((Element) child);
+			if (items != null) {
+				for (Object child : items.getChildren()) {
+					if (child instanceof Element) {
+						elements.add((Element) child);
+					}
 				}
 			}
 		}
@@ -187,7 +179,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 	public List<ComponentProfile> getComponentProfiles() {
 		if (componentProfiles == null) {
 			componentProfiles = new ArrayList<ComponentProfile>();
-			Element packsElement = getResource(packsUri, "tag=component%20profile");
+			Element packsElement = getResource(registryLocation + "packs.xml", "tag=component%20profile");
 			for (Object child : packsElement.getChildren("file")) {
 				if (child instanceof Element) {
 					Element fileElement = (Element) child;
@@ -203,6 +195,16 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 			}
 		}
 		return componentProfiles;
+	}
+
+	@Override
+	public ComponentFamily getComponentFamily(String familyName) throws ComponentRegistryException {
+		for (ComponentFamily componentFamily : getComponentFamilies()) {
+			if (familyName.equals(componentFamily.getName())) {
+				return componentFamily;
+			}
+		}
+		return null;
 	}
 
 }

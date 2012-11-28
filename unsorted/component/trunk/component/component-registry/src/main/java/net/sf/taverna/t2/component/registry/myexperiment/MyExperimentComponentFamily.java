@@ -78,14 +78,20 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 		if (componentProfile == null) {
 			for (Element internalPackItem : componentRegistry.getResourceElements(uri,
 					"internal-pack-items")) {
-				String itemUri = internalPackItem.getAttributeValue("uri");
-				for (Element tag : componentRegistry.getResourceElements(itemUri, "tags")) {
-					String tagText = tag.getTextTrim();
-					if (tagText == "component profile") {
-						try {
-							componentProfile = new ComponentProfile(new URL(itemUri));
-						} catch (MalformedURLException e) {
-							logger.warn("URL for component profile is invalid : " + itemUri, e);
+				if (internalPackItem.getName().equals("file")) {
+					String resourceUri = internalPackItem.getAttributeValue("resource");
+					Element resource = componentRegistry.getResource(resourceUri + ".xml");
+					String fileUri = resource.getAttributeValue("uri");
+					for (Element tag : componentRegistry.getResourceElements(fileUri, "tags")) {
+						String tagText = tag.getTextTrim();
+						if ("component profile".equals(tagText)) {
+							try {
+								//TODO find the download url
+								componentProfile = new ComponentProfile(new URL(fileUri));
+								break;
+							} catch (MalformedURLException e) {
+								logger.warn("URL for component profile is invalid : " + fileUri, e);
+							}
 						}
 					}
 				}
@@ -100,12 +106,16 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 			components = new ArrayList<Component>();
 			for (Element internalPackItem : componentRegistry.getResourceElements(uri,
 					"internal-pack-items")) {
-				String itemUri = internalPackItem.getAttributeValue("uri");
-				for (Element tag : componentRegistry.getResourceElements(itemUri, "tags")) {
-					String tagText = tag.getTextTrim();
-					if (tagText == "component") {
-						components.add(new MyExperimentComponent(componentRegistry, itemUri));
-						break;
+				if (internalPackItem.getName().equals("pack")) {
+					String resourceUri = internalPackItem.getAttributeValue("resource");
+					Element resource = componentRegistry.getResource(resourceUri + ".xml");
+					String packUri = resource.getAttributeValue("uri");
+					for (Element tag : componentRegistry.getResourceElements(packUri, "tags")) {
+						String tagText = tag.getTextTrim();
+						if ("component".equals(tagText)) {
+							components.add(new MyExperimentComponent(componentRegistry, packUri));
+							break;
+						}
 					}
 				}
 			}
@@ -116,6 +126,16 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	@Override
 	public ComponentVersion createComponentBasedOn(String componentName, Dataflow dataflow) {
 		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Component getComponent(String componentName) throws ComponentRegistryException {
+		for (Component component : getComponents()) {
+			if (componentName.equals(component.getName())) {
+				return component;
+			}
+		}
 		return null;
 	}
 

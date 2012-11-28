@@ -43,7 +43,7 @@ public interface ComponentFamily {
 
 	public ComponentVersion createComponentBasedOn(String componentName, Dataflow dataflow) throws ComponentRegistryException;
 
-	public Component getComponent(String componentName);
+	public Component getComponent(String componentName) throws ComponentRegistryException;
 
 
 }
