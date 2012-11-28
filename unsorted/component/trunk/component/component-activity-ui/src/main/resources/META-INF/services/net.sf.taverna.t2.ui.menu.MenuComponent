@@ -2,3 +2,6 @@ net.sf.taverna.t2.component.ui.menu.ComponentConfigureMenuAction
 net.sf.taverna.t2.component.ui.menu.ComponentServiceCreatorMenuAction
 net.sf.taverna.t2.component.ui.menu.ComponentWorkflowCreatorMenuAction
 net.sf.taverna.t2.component.ui.menu.NestedWorkflowCreatorMenuAction
+
+net.sf.taverna.t2.component.ui.file.FileOpenFromComponentMenuAction
+
