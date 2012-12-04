@@ -3,12 +3,8 @@
  */
 package net.sf.taverna.t2.component.ui.file;
 
-import java.io.File;
-import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
-
-import org.apache.log4j.Logger;
 
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
@@ -27,6 +23,8 @@ import net.sf.taverna.t2.workbench.file.FileType;
 import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
 import net.sf.taverna.t2.workflowmodel.ConfigurationException;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
+
+import org.apache.log4j.Logger;
 
 /**
  * @author alanrw
@@ -59,8 +57,14 @@ public class ComponentSaver extends AbstractDataflowPersistenceHandler
 		else {
 			registry = LocalComponentRegistry.getComponentRegistry(desc.getRegistryBase());
 		}
-		ComponentFamily family = registry.getComponentFamily(desc.getFamilyName());
-		Component component = family.getComponent(desc.getComponentName());
+		ComponentFamily family;
+		Component component;
+		try {
+			family = registry.getComponentFamily(desc.getFamilyName());
+			component = family.getComponent(desc.getComponentName());
+		} catch (ComponentRegistryException e1) {
+			throw new SaveException("Unable to read component", e1);
+		}
 		
 		ComponentVersion newVersion = null;
 		try {
