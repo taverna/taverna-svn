@@ -5,15 +5,21 @@ package net.sf.taverna.t2.component;
 
 import java.util.List;
 
+import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.visit.VisitReport;
 import net.sf.taverna.t2.visit.VisitReport.Status;
 import net.sf.taverna.t2.workflowmodel.health.HealthChecker;
+
+import org.apache.log4j.Logger;
 
 /**
  * @author alanrw
  *
  */
 public class ComponentActivityUpgradeChecker implements HealthChecker<ComponentActivity> {
+	
+	private static Logger logger = Logger.getLogger(ComponentActivityUpgradeChecker.class);
+
 
 	@Override
 	public boolean canVisit(Object o) {
@@ -31,7 +37,12 @@ public class ComponentActivityUpgradeChecker implements HealthChecker<ComponentA
 		
 		Integer versionNumber = config.getComponentVersion();
 		
-		Integer latestVersion = config.calculateComponent().getComponentVersionMap().lastKey();
+		Integer latestVersion = 0;
+		try {
+			latestVersion = config.calculateComponent().getComponentVersionMap().lastKey();
+		} catch (ComponentRegistryException e) {
+			logger.error(e);
+		}
 		
 		if (latestVersion > versionNumber) {
 			return new VisitReport(ComponentHealthCheck.getInstance(), activity, 
