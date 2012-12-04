@@ -54,14 +54,14 @@ public class ComponentActivityConfigurationBean implements Serializable {
 	}
 
 
-	public Component calculateComponent() {
+	public Component calculateComponent() throws ComponentRegistryException {
 		ComponentFamily family = calculateFamily();
 		Component component = family.getComponent(componentName);
 		return component;
 	}
 
 
-	public ComponentFamily calculateFamily() {
+	public ComponentFamily calculateFamily() throws ComponentRegistryException {
 		ComponentRegistry registry;
 		registry = calculateRegistry();
 		ComponentFamily family = registry.getComponentFamily(familyName);
