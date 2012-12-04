@@ -27,7 +27,7 @@ public class ComponentServiceProvider extends
 	private static final String T2FLOW = ".t2flow";
 
 	private static final URI providerId = URI
-		.create("http://example.com/2011/service-provider/component");
+		.create("http://taverna.sf.net/2012/service-provider/component");
 	
 	private static Logger logger = Logger.getLogger(ComponentServiceProvider.class);
 	
