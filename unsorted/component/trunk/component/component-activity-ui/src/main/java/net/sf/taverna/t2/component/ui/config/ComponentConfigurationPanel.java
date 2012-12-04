@@ -3,21 +3,19 @@ package net.sf.taverna.t2.component.ui.config;
 import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.net.URI;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationPanel;
 
 import net.sf.taverna.t2.component.ComponentActivity;
 import net.sf.taverna.t2.component.ComponentActivityConfigurationBean;
 import net.sf.taverna.t2.component.registry.Component;
-import net.sf.taverna.t2.component.registry.ComponentVersion;
+import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.ui.view.ComponentListCellRenderer;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationPanel;
+
+import org.apache.log4j.Logger;
 
 
 @SuppressWarnings("serial")
@@ -25,6 +23,8 @@ public class ComponentConfigurationPanel
 		extends
 		ActivityConfigurationPanel<ComponentActivity, 
         ComponentActivityConfigurationBean> {
+	
+	private static Logger logger = Logger.getLogger(ComponentConfigurationPanel.class);
 
 	private ComponentActivity activity;
 	private ComponentActivityConfigurationBean configBean;
@@ -112,7 +112,13 @@ public class ComponentConfigurationPanel
 
 	private void updateComponentVersionChoice() {
 		componentVersionModel.removeAllElements();
-		Component component = configBean.calculateComponent();
+		Component component;
+		try {
+			component = configBean.calculateComponent();
+		} catch (ComponentRegistryException e) {
+			logger.error(e);
+			return;
+		}
 		for (Integer i : component.getComponentVersionMap().keySet()) {
 			componentVersionModel.addElement(i);
 		}
