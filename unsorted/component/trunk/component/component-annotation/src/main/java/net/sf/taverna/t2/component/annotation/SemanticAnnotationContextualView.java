@@ -43,11 +43,21 @@ import net.sf.taverna.t2.annotation.AnnotationChain;
 import net.sf.taverna.t2.annotation.annotationbeans.SemanticAnnotation;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
+import net.sf.taverna.t2.component.registry.ComponentFamily;
+import net.sf.taverna.t2.component.registry.ComponentRegistry;
+import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.registry.local.LocalComponentRegistry;
+import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
+import net.sf.taverna.t2.component.ui.file.ComponentFileType;
+import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceDesc;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.edits.EditManager.EditManagerEvent;
+import net.sf.taverna.t2.workbench.file.DataflowInfo;
 import net.sf.taverna.t2.workbench.file.FileManager;
+import net.sf.taverna.t2.workbench.file.exceptions.OpenException;
+import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
@@ -74,8 +84,7 @@ public class SemanticAnnotationContextualView extends ContextualView {
 
 	public static final String VIEW_TITLE = "Semantic Annotations";
 
-	private static Logger logger = Logger
-			.getLogger(SemanticAnnotationContextualView.class);
+	private static Logger logger = Logger.getLogger(SemanticAnnotationContextualView.class);
 
 	private static AnnotationTools annotationTools = new AnnotationTools();
 	private static EditManager editManager = EditManager.getInstance();
@@ -91,34 +100,61 @@ public class SemanticAnnotationContextualView extends ContextualView {
 	private Model model;
 
 	public SemanticAnnotationContextualView(Annotated<?> selection) {
-		try {
-			componentProfile = new ComponentProfile(new URL("http://www.myexperiment.org/files/863/versions/2/download/MigrationComponent.xml"));
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		this.annotated = selection;
-		if (selection instanceof Dataflow) {
-			semanticAnnotationProfiles = componentProfile.getSemanticAnnotationProfiles();
-		} else if (selection instanceof DataflowInputPort) {
-			semanticAnnotationProfiles = componentProfile.getInputSemanticAnnotationProfiles();
-		} else if (selection instanceof DataflowOutputPort) {
-			semanticAnnotationProfiles = componentProfile.getOutputSemanticAnnotationProfiles();
-		} else if (selection instanceof Processor) {
-			semanticAnnotationProfiles = componentProfile.getActivitySemanticAnnotationProfiles();
+		componentProfile = getComponentProfile();
+		if (componentProfile != null) {
+			if (selection instanceof Dataflow) {
+				semanticAnnotationProfiles = componentProfile.getSemanticAnnotationProfiles();
+			} else if (selection instanceof DataflowInputPort) {
+				semanticAnnotationProfiles = componentProfile.getInputSemanticAnnotationProfiles();
+			} else if (selection instanceof DataflowOutputPort) {
+				semanticAnnotationProfiles = componentProfile.getOutputSemanticAnnotationProfiles();
+			} else if (selection instanceof Processor) {
+				semanticAnnotationProfiles = componentProfile
+						.getActivitySemanticAnnotationProfiles();
+			} else {
+				semanticAnnotationProfiles = new ArrayList<SemanticAnnotationProfile>();
+			}
 		} else {
 			semanticAnnotationProfiles = new ArrayList<SemanticAnnotationProfile>();
 		}
 
 		model = ModelFactory.createDefaultModel();
 		SemanticAnnotation annotation = findSemanticAnnotation(annotated);
-		if (annotation!= null && !annotation.getContent().isEmpty()) {
+		if (annotation != null && !annotation.getContent().isEmpty()) {
 			StringReader stringReader = new StringReader(annotation.getContent());
 			model.read(stringReader, null, "N3");
 		}
 
 		initialise();
 		initView();
+	}
+
+	private ComponentRegistry getComponentRegistry(URL registryBase) {
+		if (registryBase.getProtocol().equals("file")) {
+			return LocalComponentRegistry.getComponentRegistry(registryBase);
+		} else {
+			return MyExperimentComponentRegistry.getComponentRegistry(registryBase);
+		}
+	}
+
+	private ComponentProfile getComponentProfile() {
+		Object dataflowSource = fileManager.getDataflowSource(fileManager.getCurrentDataflow());
+		if (dataflowSource instanceof ComponentServiceDesc) {
+			ComponentServiceDesc componentServiceDesc = (ComponentServiceDesc) dataflowSource;
+			ComponentRegistry componentRegistry = getComponentRegistry(componentServiceDesc
+					.getRegistryBase());
+			try {
+				ComponentFamily componentFamily = componentRegistry
+						.getComponentFamily(componentServiceDesc.getFamilyName());
+				return componentFamily.getComponentProfile();
+			} catch (ComponentRegistryException e) {
+				logger.warn("No component profile found for component family "
+						+ componentServiceDesc.getFamilyName() + " at component registry "
+						+ componentServiceDesc.getRegistryBase(), e);
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -168,7 +204,8 @@ public class SemanticAnnotationContextualView extends ContextualView {
 					statementsWithPredicate.add(statement);
 				}
 			}
-			panel.add(new SemanticAnnotationPanel(this, semanticAnnotationProfile, statementsWithPredicate), gbc);
+			panel.add(new SemanticAnnotationPanel(this, semanticAnnotationProfile,
+					statementsWithPredicate), gbc);
 			statements.removeAll(statementsWithPredicate);
 		}
 		// TODO handle any remaining statements
@@ -211,8 +248,7 @@ public class SemanticAnnotationContextualView extends ContextualView {
 				AnnotationBeanSPI detail = assertion.getDetail();
 				if (detail instanceof SemanticAnnotation) {
 					Date assertionDate = assertion.getCreationDate();
-					if ((latestDate == null)
-							|| latestDate.before(assertionDate)) {
+					if ((latestDate == null) || latestDate.before(assertionDate)) {
 						annotation = (SemanticAnnotation) detail;
 						latestDate = assertionDate;
 					}
@@ -225,24 +261,31 @@ public class SemanticAnnotationContextualView extends ContextualView {
 	public void updateSemanticAnnotation() {
 		Dataflow currentDataflow = fileManager.getCurrentDataflow();
 		try {
-			editManager.doDataflowEdit(currentDataflow, edits.getAddAnnotationChainEdit(annotated, createSemanticAnnotation()));
+			editManager.doDataflowEdit(currentDataflow,
+					edits.getAddAnnotationChainEdit(annotated, createSemanticAnnotation()));
 		} catch (EditException e) {
 			logger.warn("Can't set semantic annotation", e);
 		}
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		JFrame frame = new JFrame();
 		frame.setSize(400, 200);
-		Dataflow dataflow = fileManager.newDataflow();
+		ComponentServiceDesc componentServiceDesc = new ComponentServiceDesc();
+		componentServiceDesc.setRegistryBase(new URL("http://sandbox.myexperiment.org"));
+		componentServiceDesc.setFamilyName("SCAPE Migration Action Components");
+		componentServiceDesc.setComponentName("Image To Tiff");
+		componentServiceDesc.setComponentVersion(2);
+		Dataflow dataflow = fileManager.openDataflow(new ComponentFileType(), componentServiceDesc);
+
 		Processor processor = edits.createProcessor("processor");
-		final SemanticAnnotationContextualView view = new SemanticAnnotationContextualView(
-				processor);
 		try {
 			editManager.doDataflowEdit(dataflow, edits.getAddProcessorEdit(dataflow, processor));
 		} catch (EditException e) {
 			e.printStackTrace();
 		}
+		final SemanticAnnotationContextualView view = new SemanticAnnotationContextualView(
+				processor);
 		editManager.addObserver(new Observer<EditManager.EditManagerEvent>() {
 			@Override
 			public void notify(Observable<EditManagerEvent> arg0, EditManagerEvent arg1)

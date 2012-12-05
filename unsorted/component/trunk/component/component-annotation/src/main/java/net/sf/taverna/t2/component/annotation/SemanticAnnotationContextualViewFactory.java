@@ -24,6 +24,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import net.sf.taverna.t2.annotation.Annotated;
+import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceDesc;
+import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactory;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
@@ -37,8 +39,14 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPort;
  */
 public class SemanticAnnotationContextualViewFactory implements ContextualViewFactory<Annotated<?>> {
 
+	private static final FileManager fileManager = FileManager.getInstance();
+
 	public boolean canHandle(Object selection) {
-		return ((selection instanceof Annotated) && !(selection instanceof Activity || selection instanceof ActivityPort));
+		Object dataflowSource = fileManager.getDataflowSource(fileManager.getCurrentDataflow());
+		if (dataflowSource instanceof ComponentServiceDesc) {
+			return ((selection instanceof Annotated) && !(selection instanceof Activity || selection instanceof ActivityPort));
+		}
+		return false;
 	}
 
 	public List<ContextualView> getViews(Annotated<?> selection) {
