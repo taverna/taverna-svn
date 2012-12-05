@@ -92,7 +92,6 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 			String downloadUri = resourceUri + "/download?version=" + version;
 			try {
 				componentProfile = new ComponentProfile(new URL(downloadUri));
-				System.out.println(componentProfile.getName());
 			} catch (MalformedURLException e) {
 				throw new ComponentRegistryException("Unable to open profile from " + downloadUri, e);
 			}
