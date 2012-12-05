@@ -90,7 +90,6 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 			String resourceUri = fileElement.getAttributeValue("resource");
 			String version = fileElement.getAttributeValue("version");
 			String downloadUri = resourceUri + "/download?version=" + version;
-			System.out.println(downloadUri);
 			try {
 				componentProfile = new ComponentProfile(new URL(downloadUri));
 				System.out.println(componentProfile.getName());

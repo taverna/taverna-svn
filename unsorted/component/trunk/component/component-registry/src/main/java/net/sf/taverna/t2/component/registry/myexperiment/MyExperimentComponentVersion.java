@@ -90,7 +90,6 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 			String resourceUri = workflowElement.getAttributeValue("resource");
 			String version = workflowElement.getAttributeValue("version");
 			String downloadUri = resourceUri + "/download?version=" + version;
-			System.out.println(downloadUri);
 			try {
 				DataflowInfo info = FileManager.getInstance().openDataflowSilently(T2_FLOW_FILE_TYPE, new URL(downloadUri));
 				dataflow = info.getDataflow();
