@@ -87,17 +87,17 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 	public Dataflow getDataflow() throws ComponentRegistryException {
 		if (dataflow == null) {
 			Element workflowElement = MyExperimentUtils.getInternalPackItem(uri, "workflow");
-			String workflowUri = workflowElement.getAttributeValue("uri");
+			String resourceUri = workflowElement.getAttributeValue("resource");
 			String version = workflowElement.getAttributeValue("version");
-			Element contentUriElement = MyExperimentUtils.getResourceElement(workflowUri+"&version="+version, "content-uri");
-			String dataflowUri = contentUriElement.getTextTrim();
+			String downloadUri = resourceUri + "/download?version=" + version;
+			System.out.println(downloadUri);
 			try {
-				DataflowInfo info = FileManager.getInstance().openDataflowSilently(T2_FLOW_FILE_TYPE, new URL(dataflowUri));
+				DataflowInfo info = FileManager.getInstance().openDataflowSilently(T2_FLOW_FILE_TYPE, new URL(downloadUri));
 				dataflow = info.getDataflow();
 			} catch (OpenException e) {
-				throw new ComponentRegistryException("Unable to open dataflow from " + dataflowUri, e);
+				throw new ComponentRegistryException("Unable to open dataflow from " + downloadUri, e);
 			} catch (MalformedURLException e) {
-				throw new ComponentRegistryException("Unable to open dataflow from " + dataflowUri, e);
+				throw new ComponentRegistryException("Unable to open dataflow from " + downloadUri, e);
 			}
 		}
 		return dataflow;

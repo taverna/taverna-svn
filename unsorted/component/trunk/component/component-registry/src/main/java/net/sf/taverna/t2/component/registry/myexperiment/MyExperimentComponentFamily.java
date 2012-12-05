@@ -87,14 +87,15 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	public ComponentProfile getComponentProfile() throws ComponentRegistryException {
 		if (componentProfile == null) {
 			Element fileElement = MyExperimentUtils.getInternalPackItem(uri, "file", "component profile");
-			String fileUri = fileElement.getAttributeValue("uri");
+			String resourceUri = fileElement.getAttributeValue("resource");
 			String version = fileElement.getAttributeValue("version");
-			Element contentUriElement = MyExperimentUtils.getResourceElement(fileUri+"&version="+version, "content-uri");
-			String profileUri = contentUriElement.getTextTrim();
+			String downloadUri = resourceUri + "/download?version=" + version;
+			System.out.println(downloadUri);
 			try {
-				componentProfile = new ComponentProfile(new URL(profileUri));
+				componentProfile = new ComponentProfile(new URL(downloadUri));
+				System.out.println(componentProfile.getName());
 			} catch (MalformedURLException e) {
-				throw new ComponentRegistryException("Unable to open profile from " + profileUri, e);
+				throw new ComponentRegistryException("Unable to open profile from " + downloadUri, e);
 			}
 		}
 		return componentProfile;
