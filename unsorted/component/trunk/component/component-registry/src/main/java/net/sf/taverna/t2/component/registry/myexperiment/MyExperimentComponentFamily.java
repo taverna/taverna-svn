@@ -20,18 +20,26 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.myexperiment;
 
+import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.taverna.t2.annotation.annotationbeans.DescriptiveTitle;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
+import net.sf.taverna.t2.workbench.file.FileManager;
+import net.sf.taverna.t2.workbench.file.exceptions.OverwriteException;
+import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
+import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
+import net.sf.taverna.t2.workflowmodel.utils.AnnotationTools;
 
 import org.apache.log4j.Logger;
 import org.jdom.Element;
@@ -44,6 +52,8 @@ import org.jdom.Element;
 public class MyExperimentComponentFamily implements ComponentFamily {
 
 	private static Logger logger = Logger.getLogger(MyExperimentComponentFamily.class);
+
+	private static AnnotationTools annotationTools = new AnnotationTools();
 
 	private final MyExperimentComponentRegistry componentRegistry;
 	private final String uri;
@@ -64,7 +74,7 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 
 	public String getName() {
 		if (name == null) {
-			Element titleElement = componentRegistry.getResourceElement(uri, "title");
+			Element titleElement = MyExperimentUtils.getResourceElement(uri, "title");
 			if (titleElement == null) {
 				name = "";
 			}
@@ -76,25 +86,15 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	@Override
 	public ComponentProfile getComponentProfile() throws ComponentRegistryException {
 		if (componentProfile == null) {
-			for (Element internalPackItem : componentRegistry.getResourceElements(uri,
-					"internal-pack-items")) {
-				if (internalPackItem.getName().equals("file")) {
-					String resourceUri = internalPackItem.getAttributeValue("resource");
-					Element resource = componentRegistry.getResource(resourceUri + ".xml");
-					String fileUri = resource.getAttributeValue("uri");
-					for (Element tag : componentRegistry.getResourceElements(fileUri, "tags")) {
-						String tagText = tag.getTextTrim();
-						if ("component profile".equals(tagText)) {
-							try {
-								//TODO find the download url
-								componentProfile = new ComponentProfile(new URL(fileUri));
-								break;
-							} catch (MalformedURLException e) {
-								logger.warn("URL for component profile is invalid : " + fileUri, e);
-							}
-						}
-					}
-				}
+			Element fileElement = MyExperimentUtils.getInternalPackItem(uri, "file", "component profile");
+			String fileUri = fileElement.getAttributeValue("uri");
+			String version = fileElement.getAttributeValue("version");
+			Element contentUriElement = MyExperimentUtils.getResourceElement(fileUri+"&version="+version, "content-uri");
+			String profileUri = contentUriElement.getTextTrim();
+			try {
+				componentProfile = new ComponentProfile(new URL(profileUri));
+			} catch (MalformedURLException e) {
+				throw new ComponentRegistryException("Unable to open profile from " + profileUri, e);
 			}
 		}
 		return componentProfile;
@@ -104,13 +104,13 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	public List<Component> getComponents() throws ComponentRegistryException {
 		if (components == null) {
 			components = new ArrayList<Component>();
-			for (Element internalPackItem : componentRegistry.getResourceElements(uri,
+			for (Element internalPackItem : MyExperimentUtils.getResourceElements(uri,
 					"internal-pack-items")) {
 				if (internalPackItem.getName().equals("pack")) {
 					String resourceUri = internalPackItem.getAttributeValue("resource");
-					Element resource = componentRegistry.getResource(resourceUri + ".xml");
+					Element resource = MyExperimentUtils.getResource(resourceUri + ".xml");
 					String packUri = resource.getAttributeValue("uri");
-					for (Element tag : componentRegistry.getResourceElements(packUri, "tags")) {
+					for (Element tag : MyExperimentUtils.getResourceElements(packUri, "tags")) {
 						String tagText = tag.getTextTrim();
 						if ("component".equals(tagText)) {
 							components.add(new MyExperimentComponent(componentRegistry, packUri));
@@ -124,8 +124,39 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	}
 
 	@Override
-	public ComponentVersion createComponentBasedOn(String componentName, Dataflow dataflow) {
-		// TODO Auto-generated method stub
+	public ComponentVersion createComponentBasedOn(String componentName, Dataflow dataflow)
+			throws ComponentRegistryException {
+		Component component = getComponent(componentName);
+		if (component == null) {
+			// Are title and description pulled out anyway?
+			// String title = annotationTools.getAnnotationString(dataflow, DescriptiveTitle.class, "");
+			// String description = annotationTools.getAnnotationString(dataflow, FreeTextDescription.class, "");
+			String sharing = "private"; // or download
+			String dataflowString;
+			try {
+				ByteArrayOutputStream dataflowStream = new ByteArrayOutputStream();
+				FileManager.getInstance().saveDataflowSilently(dataflow, new T2FlowFileType(),
+						dataflowStream, false);
+				dataflowString = dataflowStream.toString("UTF-8");
+			} catch (OverwriteException e) {
+				throw new ComponentRegistryException(e);
+			} catch (SaveException e) {
+				throw new ComponentRegistryException(e);
+			} catch (IllegalStateException e) {
+				throw new ComponentRegistryException(e);
+			} catch (UnsupportedEncodingException e) {
+				throw new ComponentRegistryException(e);
+			}
+			Element componentWorkflow = MyExperimentUtils.uploadWorkflow(
+					componentRegistry.getRegistryBase(), dataflowString, sharing);
+			Element componentPack = MyExperimentUtils.createPack(
+					componentRegistry.getRegistryBase(), componentName);
+			MyExperimentUtils.addPackItem(componentRegistry.getRegistryBase(),
+					componentPack.getAttributeValue("resource"),
+					componentWorkflow.getAttributeValue("resource"));
+		} else {
+
+		}
 		return null;
 	}
 

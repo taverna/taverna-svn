@@ -51,7 +51,7 @@ public class MyExperimentComponent implements Component {
 	@Override
 	public String getName() {
 		if (name == null) {
-			Element titleElement = componentRegistry.getResourceElement(uri, "title");
+			Element titleElement = MyExperimentUtils.getResourceElement(uri, "title");
 			if (titleElement == null) {
 				name = "";
 			}
@@ -64,8 +64,7 @@ public class MyExperimentComponent implements Component {
 	public SortedMap<Integer, ComponentVersion> getComponentVersionMap() {
 		if (componentVersions == null) {
 			componentVersions = new TreeMap<Integer, ComponentVersion>();
-			System.out.println(uri);
-			for (Element version : componentRegistry.getResourceElements(uri, "versions")) {
+			for (Element version : MyExperimentUtils.getResourceElements(uri, "versions")) {
 				String versionUri = version.getAttributeValue("uri");
 				ComponentVersion componentVersion = new MyExperimentComponentVersion(componentRegistry, this, versionUri);
 				componentVersions.put(componentVersion.getVersionNumber(), componentVersion);

@@ -27,11 +27,13 @@ import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
 import net.sf.taverna.t2.workbench.file.DataflowInfo;
+import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.file.exceptions.OpenException;
 import net.sf.taverna.t2.workbench.file.impl.T2DataflowOpener;
 import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
+import org.jdom.Attribute;
 import org.jdom.Element;
 
 /**
@@ -61,9 +63,9 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 	@Override
 	public Integer getVersionNumber() {
 		if (versionNumber == null) {
-			Element resource = componentRegistry.getResource(uri);
+			Element resource = MyExperimentUtils.getResource(uri);
 			if (resource != null) {
-				versionNumber = Integer.getInteger(resource.getAttributeValue("version"));
+				versionNumber = new Integer(resource.getAttributeValue("version"));
 			}
 		}
 		return versionNumber;
@@ -72,7 +74,7 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 	@Override
 	public String getDescription() {
 		if (description == null) {
-			Element descriptionElement = componentRegistry.getResourceElement(uri, "description");
+			Element descriptionElement = MyExperimentUtils.getResourceElement(uri, "description");
 			if (descriptionElement == null) {
 				description = "";
 			}
@@ -83,24 +85,21 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 
 	@Override
 	public Dataflow getDataflow() throws ComponentRegistryException {
-		if (dataflow == null)
-			for (Element internalPackItem : componentRegistry.getResourceElements(uri,
-					"internal-pack-items")) {
-				if ("workflow".equals(internalPackItem.getName())) {
-					String workflowResource = internalPackItem.getAttributeValue("resource");
-					Element workflowElement = componentRegistry.getResource(workflowResource);
-					String dataflowURI = workflowElement.getChild("content-uri").getTextTrim();
-					T2DataflowOpener opener = new T2DataflowOpener();
-					try {
-						DataflowInfo info = opener.openDataflow(T2_FLOW_FILE_TYPE, new URL(dataflowURI));
-						dataflow = info.getDataflow();
-					} catch (OpenException e) {
-						throw new ComponentRegistryException("Unable to open dataflow from " + dataflowURI, e);
-					} catch (MalformedURLException e) {
-						throw new ComponentRegistryException("Unable to open dataflow from " + dataflowURI, e);
-					}
-				}
+		if (dataflow == null) {
+			Element workflowElement = MyExperimentUtils.getInternalPackItem(uri, "workflow");
+			String workflowUri = workflowElement.getAttributeValue("uri");
+			String version = workflowElement.getAttributeValue("version");
+			Element contentUriElement = MyExperimentUtils.getResourceElement(workflowUri+"&version="+version, "content-uri");
+			String dataflowUri = contentUriElement.getTextTrim();
+			try {
+				DataflowInfo info = FileManager.getInstance().openDataflowSilently(T2_FLOW_FILE_TYPE, new URL(dataflowUri));
+				dataflow = info.getDataflow();
+			} catch (OpenException e) {
+				throw new ComponentRegistryException("Unable to open dataflow from " + dataflowUri, e);
+			} catch (MalformedURLException e) {
+				throw new ComponentRegistryException("Unable to open dataflow from " + dataflowUri, e);
 			}
+		}
 		return dataflow;
 	}
 
