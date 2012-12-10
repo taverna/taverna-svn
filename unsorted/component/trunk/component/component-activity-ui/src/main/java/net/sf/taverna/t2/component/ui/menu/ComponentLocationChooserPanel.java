@@ -16,6 +16,7 @@ import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
+import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.component.ui.serviceprovider.ComponentFamilyChooserPanel;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
@@ -69,6 +70,8 @@ public class ComponentLocationChooserPanel extends ComponentFamilyChooserPanel {
 			
 			ComponentRegistry registry = familyChoice.getComponentRegistry();
 			
-		return new ComponentActivityConfigurationBean(registry.getRegistryBase(), familyChoice.getName(), version.getComponent().getName(), version.getVersionNumber());
+			ComponentVersionIdentification ident = new ComponentVersionIdentification(registry.getRegistryBase(), familyChoice.getName(), version.getComponent().getName(), version.getVersionNumber());
+			
+		return new ComponentActivityConfigurationBean(ident);
 	}
 }
