@@ -35,14 +35,16 @@ public interface ComponentRegistry {
 
 	public List<ComponentFamily> getComponentFamilies() throws ComponentRegistryException;
 
-	public ComponentFamily createComponentFamily(String name, ComponentProfile componentProfile) throws ComponentRegistryException;
+	public ComponentFamily getComponentFamily(String familyName) throws ComponentRegistryException;
+
+	public ComponentFamily createComponentFamily(String familyName, ComponentProfile componentProfile) throws ComponentRegistryException;
 
 	public void removeComponentFamily(ComponentFamily componentFamily) throws ComponentRegistryException;
 
 	public URL getRegistryBase();
 
-	public List<ComponentProfile> getComponentProfiles();
+	public List<ComponentProfile> getComponentProfiles() throws ComponentRegistryException;
 
-	public ComponentFamily getComponentFamily(String familyName) throws ComponentRegistryException;
+	public ComponentProfile addComponentProfile(URL componentProfile) throws ComponentRegistryException;
 
 }
