@@ -12,6 +12,7 @@ import net.sf.taverna.t2.component.ComponentActivity;
 import net.sf.taverna.t2.component.ComponentActivityConfigurationBean;
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.registry.ComponentUtil;
 import net.sf.taverna.t2.component.ui.view.ComponentListCellRenderer;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationPanel;
 
@@ -95,7 +96,8 @@ public class ComponentConfigurationPanel
 	 */
 	@Override
 	public void noteConfiguration() {
-		ComponentActivityConfigurationBean newConfig = new ComponentActivityConfigurationBean(configBean.getRegistryBase(), configBean.getFamilyName(), configBean.getComponentName(), (Integer) componentVersionChoice.getSelectedItem());
+		ComponentActivityConfigurationBean newConfig = new ComponentActivityConfigurationBean(configBean);
+		newConfig.setComponentVersion((Integer) componentVersionChoice.getSelectedItem());
 		configBean = newConfig;
 	}
 
@@ -114,7 +116,7 @@ public class ComponentConfigurationPanel
 		componentVersionModel.removeAllElements();
 		Component component;
 		try {
-			component = configBean.calculateComponent();
+			component = ComponentUtil.calculateComponent(configBean);
 		} catch (ComponentRegistryException e) {
 			logger.error(e);
 			return;
