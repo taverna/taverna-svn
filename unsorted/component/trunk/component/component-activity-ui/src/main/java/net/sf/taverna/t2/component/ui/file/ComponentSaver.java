@@ -11,6 +11,7 @@ import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
+import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.component.registry.local.LocalComponentRegistry;
 import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
 import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceDesc;
@@ -49,19 +50,20 @@ public class ComponentSaver extends AbstractDataflowPersistenceHandler
 		}
 		
 		ComponentServiceDesc desc = (ComponentServiceDesc) destination;
+		ComponentVersionIdentification ident = desc.getIdentification();
 		
 		ComponentRegistry registry;
-		if (desc.getRegistryBase().getProtocol().startsWith("http")) {
-			registry = MyExperimentComponentRegistry.getComponentRegistry(desc.getRegistryBase());
+		if (ident.getRegistryBase().getProtocol().startsWith("http")) {
+			registry = MyExperimentComponentRegistry.getComponentRegistry(ident.getRegistryBase());
 		}
 		else {
-			registry = LocalComponentRegistry.getComponentRegistry(desc.getRegistryBase());
+			registry = LocalComponentRegistry.getComponentRegistry(ident.getRegistryBase());
 		}
 		ComponentFamily family;
 		Component component;
 		try {
-			family = registry.getComponentFamily(desc.getFamilyName());
-			component = family.getComponent(desc.getComponentName());
+			family = registry.getComponentFamily(ident.getFamilyName());
+			component = family.getComponent(ident.getComponentName());
 		} catch (ComponentRegistryException e1) {
 			throw new SaveException("Unable to read component", e1);
 		}
@@ -74,15 +76,13 @@ public class ComponentSaver extends AbstractDataflowPersistenceHandler
 			throw new SaveException("Unable to save new version of component", e);
 		}
 		
-		ComponentServiceDesc newDesc = new ComponentServiceDesc();
-		newDesc.setRegistryBase(desc.getRegistryBase());
-		newDesc.setFamilyName(desc.getFamilyName());
-		newDesc.setComponentName(desc.getComponentName());
-		newDesc.setComponentVersion(newVersion.getVersionNumber());
+		ComponentVersionIdentification newIdent = new ComponentVersionIdentification(ident);
+		newIdent.setComponentVersion(newVersion.getVersionNumber());
+		ComponentServiceDesc newDesc = new ComponentServiceDesc(newIdent);
 		
 		ComponentServiceProviderConfig config = new ComponentServiceProviderConfig();
-		config.setRegistryBase(desc.getRegistryBase());
-		config.setFamilyName(desc.getFamilyName());
+		config.setRegistryBase(ident.getRegistryBase());
+		config.setFamilyName(ident.getFamilyName());
 		try {
 			Utils.refreshComponentServiceProvider(config);
 		} catch (ConfigurationException e) {
