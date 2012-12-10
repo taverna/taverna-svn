@@ -164,6 +164,7 @@
 	<xs:element name="profile">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element name="id" type="xs:string" />
 				<xs:element name="name" type="xs:string" />
 				<xs:element name="description" type="xs:string" />
 				<xs:element name="ontology" type="ontology" minOccurs="0" maxOccurs="unbounded" />

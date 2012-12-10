@@ -63,7 +63,7 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 	@Override
 	public Integer getVersionNumber() {
 		if (versionNumber == null) {
-			Element resource = MyExperimentUtils.getResource(uri);
+			Element resource = componentRegistry.getResource(uri);
 			if (resource != null) {
 				versionNumber = new Integer(resource.getAttributeValue("version"));
 			}
@@ -74,7 +74,7 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 	@Override
 	public String getDescription() {
 		if (description == null) {
-			Element descriptionElement = MyExperimentUtils.getResourceElement(uri, "description");
+			Element descriptionElement = componentRegistry.getResourceElement(uri, "description");
 			if (descriptionElement == null) {
 				description = "";
 			}
@@ -86,7 +86,7 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 	@Override
 	public Dataflow getDataflow() throws ComponentRegistryException {
 		if (dataflow == null) {
-			Element workflowElement = MyExperimentUtils.getInternalPackItem(uri, "workflow");
+			Element workflowElement = componentRegistry.getInternalPackItem(uri, "workflow");
 			String resourceUri = workflowElement.getAttributeValue("resource");
 			String version = workflowElement.getAttributeValue("version");
 			String downloadUri = resourceUri + "/download?version=" + version;

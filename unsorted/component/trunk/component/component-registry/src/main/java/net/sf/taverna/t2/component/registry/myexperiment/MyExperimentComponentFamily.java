@@ -27,7 +27,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.taverna.t2.annotation.annotationbeans.DescriptiveTitle;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
@@ -39,9 +38,7 @@ import net.sf.taverna.t2.workbench.file.exceptions.OverwriteException;
 import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
 import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
-import net.sf.taverna.t2.workflowmodel.utils.AnnotationTools;
 
-import org.apache.log4j.Logger;
 import org.jdom.Element;
 
 /**
@@ -50,10 +47,6 @@ import org.jdom.Element;
  * @author David Withers
  */
 public class MyExperimentComponentFamily implements ComponentFamily {
-
-	private static Logger logger = Logger.getLogger(MyExperimentComponentFamily.class);
-
-	private static AnnotationTools annotationTools = new AnnotationTools();
 
 	private final MyExperimentComponentRegistry componentRegistry;
 	private final String uri;
@@ -74,7 +67,7 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 
 	public String getName() {
 		if (name == null) {
-			Element titleElement = MyExperimentUtils.getResourceElement(uri, "title");
+			Element titleElement = componentRegistry.getResourceElement(uri, "title");
 			if (titleElement == null) {
 				name = "";
 			}
@@ -86,7 +79,7 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	@Override
 	public ComponentProfile getComponentProfile() throws ComponentRegistryException {
 		if (componentProfile == null) {
-			Element fileElement = MyExperimentUtils.getInternalPackItem(uri, "file", "component profile");
+			Element fileElement = componentRegistry.getInternalPackItem(uri, "file", "component profile");
 			String resourceUri = fileElement.getAttributeValue("resource");
 			String version = fileElement.getAttributeValue("version");
 			String downloadUri = resourceUri + "/download?version=" + version;
@@ -103,13 +96,13 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	public List<Component> getComponents() throws ComponentRegistryException {
 		if (components == null) {
 			components = new ArrayList<Component>();
-			for (Element internalPackItem : MyExperimentUtils.getResourceElements(uri,
+			for (Element internalPackItem : componentRegistry.getResourceElements(uri,
 					"internal-pack-items")) {
 				if (internalPackItem.getName().equals("pack")) {
 					String resourceUri = internalPackItem.getAttributeValue("resource");
-					Element resource = MyExperimentUtils.getResource(resourceUri + ".xml");
+					Element resource = componentRegistry.getResource(resourceUri + ".xml");
 					String packUri = resource.getAttributeValue("uri");
-					for (Element tag : MyExperimentUtils.getResourceElements(packUri, "tags")) {
+					for (Element tag : componentRegistry.getResourceElements(packUri, "tags")) {
 						String tagText = tag.getTextTrim();
 						if ("component".equals(tagText)) {
 							components.add(new MyExperimentComponent(componentRegistry, packUri));
@@ -146,13 +139,9 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 			} catch (UnsupportedEncodingException e) {
 				throw new ComponentRegistryException(e);
 			}
-			Element componentWorkflow = MyExperimentUtils.uploadWorkflow(
-					componentRegistry.getRegistryBase(), dataflowString, sharing);
-			Element componentPack = MyExperimentUtils.createPack(
-					componentRegistry.getRegistryBase(), componentName);
-			MyExperimentUtils.addPackItem(componentRegistry.getRegistryBase(),
-					componentPack.getAttributeValue("resource"),
-					componentWorkflow.getAttributeValue("resource"));
+			Element componentWorkflow = componentRegistry.uploadWorkflow(dataflowString, sharing);
+			Element componentPack = componentRegistry.createPack(componentName);
+			componentRegistry.addPackItem(componentPack, componentWorkflow);
 		} else {
 
 		}
@@ -167,6 +156,10 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 			}
 		}
 		return null;
+	}
+
+	public String getUri() {
+		return uri;
 	}
 
 }
