@@ -18,6 +18,7 @@ import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
+import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.component.ui.serviceprovider.ComponentFamilyChooserPanel;
 import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceDesc;
 import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceProviderConfig;
@@ -62,11 +63,8 @@ public class OpenWorkflowFromComponentAction extends AbstractAction {
 			Component component = panel.getComponentChoice();
 			ComponentVersion version = panel.getComponentVersionChoice();
 			
-			ComponentServiceDesc desc = new ComponentServiceDesc();
-			desc.setRegistryBase(registry.getRegistryBase());
-			desc.setFamilyName(family.getName());
-			desc.setComponentName(component.getName());
-			desc.setComponentVersion(version.getVersionNumber());
+			ComponentVersionIdentification ident = new ComponentVersionIdentification(registry.getRegistryBase(),family.getName(), component.getName(), version.getVersionNumber() );
+			ComponentServiceDesc desc = new ComponentServiceDesc(ident);
 			
 			try {
 				fm.openDataflow(fileType, desc);
