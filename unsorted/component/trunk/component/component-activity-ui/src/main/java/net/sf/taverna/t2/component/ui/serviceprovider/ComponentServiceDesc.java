@@ -8,6 +8,7 @@ import javax.swing.Icon;
 
 import net.sf.taverna.t2.component.ComponentActivity;
 import net.sf.taverna.t2.component.ComponentActivityConfigurationBean;
+import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescription;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
@@ -17,13 +18,13 @@ public class ComponentServiceDesc extends ServiceDescription<ComponentActivityCo
 	
 	private static Logger logger = Logger.getLogger(ComponentServiceDesc.class);
 	
-	private URL registryBase;
+	private ComponentVersionIdentification identification;
+
 	
-	private String familyName;
-	
-	private String componentName;
-	
-	private Integer componentVersion;
+	public ComponentServiceDesc(ComponentVersionIdentification identification) {
+		super();
+		this.identification = identification;
+	}
 
 	/**
 	 * The subclass of Activity which should be instantiated when adding a service
@@ -42,7 +43,7 @@ public class ComponentServiceDesc extends ServiceDescription<ComponentActivityCo
 	 */
 	@Override
 	public ComponentActivityConfigurationBean getActivityConfiguration() {
-		ComponentActivityConfigurationBean bean = new ComponentActivityConfigurationBean(registryBase, familyName, componentName, componentVersion);
+		ComponentActivityConfigurationBean bean = new ComponentActivityConfigurationBean(getIdentification());
 		return bean;
 	}
 
@@ -60,7 +61,7 @@ public class ComponentServiceDesc extends ServiceDescription<ComponentActivityCo
 	 */
 	@Override
 	public String getName() {
-		return componentName;
+		return getIdentification().getComponentName();
 	}
 
 	/**
@@ -70,7 +71,7 @@ public class ComponentServiceDesc extends ServiceDescription<ComponentActivityCo
 	@Override
 	public List<String> getPath() {
 		// For deeper paths you may return several strings
-		return Arrays.asList(registryBase.toString(), familyName);
+		return Arrays.asList(identification.getRegistryBase().toString(), identification.getFamilyName());
 	}
 
 	/**
@@ -81,67 +82,25 @@ public class ComponentServiceDesc extends ServiceDescription<ComponentActivityCo
 	@Override
 	protected List<? extends Object> getIdentifyingData() {
 		// FIXME: Use your fields instead of example fields
-		return Arrays.<Object>asList(registryBase, familyName, componentName);
-	}
-
-	/**
-	 * @return the registryBase
-	 */
-	public URL getRegistryBase() {
-		return registryBase;
-	}
-
-	/**
-	 * @param registryBase the registryBase to set
-	 */
-	public void setRegistryBase(URL registryBase) {
-		this.registryBase = registryBase;
-	}
-
-	/**
-	 * @return the familyName
-	 */
-	public String getFamilyName() {
-		return familyName;
-	}
-
-	/**
-	 * @param familyName the familyName to set
-	 */
-	public void setFamilyName(String familyName) {
-		this.familyName = familyName;
-	}
-
-	/**
-	 * @return the componentName
-	 */
-	public String getComponentName() {
-		return componentName;
-	}
-
-	/**
-	 * @param componentName the componentName to set
-	 */
-	public void setComponentName(String componentName) {
-		this.componentName = componentName;
-	}
-
-	/**
-	 * @return the componentVersion
-	 */
-	public Integer getComponentVersion() {
-		return componentVersion;
-	}
-
-	/**
-	 * @param componentVersion the componentVersion to set
-	 */
-	public void setComponentVersion(Integer componentVersion) {
-		this.componentVersion = componentVersion;
+		return Arrays.<Object>asList(identification.getRegistryBase(), identification.getFamilyName(), identification.getComponentName());
 	}
 
 	public String toString() {
 		return "Component " + getName();
+	}
+
+	/**
+	 * @return the identification
+	 */
+	public ComponentVersionIdentification getIdentification() {
+		return identification;
+	}
+
+	/**
+	 * @param identification the identification to set
+	 */
+	public void setIdentification(ComponentVersionIdentification identification) {
+		this.identification = identification;
 	}
 
 

@@ -12,6 +12,7 @@ import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.component.registry.local.LocalComponentRegistry;
 import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
 import net.sf.taverna.t2.servicedescriptions.AbstractConfigurableServiceProvider;
@@ -63,11 +64,8 @@ public class ComponentServiceProvider extends
 				// TODO get check on family name in there
 			if (family.getName().equals(config.getFamilyName())) {
 					for (Component component : family.getComponents()) {
-						ComponentServiceDesc newDesc = new ComponentServiceDesc();
-						newDesc.setComponentName(component.getName());
-						newDesc.setComponentVersion(component.getComponentVersionMap().lastKey());
-						newDesc.setFamilyName(family.getName());
-						newDesc.setRegistryBase(config.getRegistryBase());
+						ComponentVersionIdentification ident = new ComponentVersionIdentification(config.getRegistryBase(), family.getName(), component.getName(), component.getComponentVersionMap().lastKey());
+						ComponentServiceDesc newDesc = new ComponentServiceDesc(ident);
 						results.add(newDesc);
 					}
 			}
