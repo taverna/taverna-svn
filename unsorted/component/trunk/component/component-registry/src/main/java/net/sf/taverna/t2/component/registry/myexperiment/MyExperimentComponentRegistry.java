@@ -186,8 +186,6 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		}
 		if (profileElement == null) {
 			profileElement = uploadFile(componentProfile.getName(), componentProfile.getDescription(), "XML", componentProfile.getXML());
-			System.out.println(profileElement.getAttributeValue("message"));
-			System.out.println(profileElement.getValue());
 			tagResource("component profile", profileElement.getAttributeValue("resource"));
 		}
 		return profileElement;
