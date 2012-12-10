@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.component.profile;
 
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import uk.org.taverna.ns._2012.component.profile.Activity;
@@ -26,11 +28,12 @@ public class ComponentProfile {
 
 	private static Map<String, OntModel> ontologyModels = new HashMap<String, OntModel>();
 
+	private JAXBContext jaxbContext;
 	private Profile profile;
 
 	public ComponentProfile(URL profileURL) {
 		try {
-			JAXBContext jaxbContext = JAXBContext.newInstance(Profile.class);
+			jaxbContext = JAXBContext.newInstance(Profile.class);
 			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 			profile = (Profile) unmarshaller.unmarshal(profileURL);
 		} catch (JAXBException e) {
@@ -38,8 +41,23 @@ public class ComponentProfile {
 		}
 	}
 
+	public String getXML() {
+		StringWriter stringWriter = new StringWriter();
+		try {
+			Marshaller marshaller = jaxbContext.createMarshaller();
+			marshaller.marshal(profile, stringWriter);
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+		return stringWriter.toString();
+	}
+
 	public Profile getProfile() {
 		return profile;
+	}
+
+	public String getId() {
+		return profile.getId();
 	}
 
 	public String getName() {
@@ -150,6 +168,31 @@ public class ComponentProfile {
 		return "ComponentProfile" + "\n  Name : " + getName() + "\n  Description : "
 				+ getDescription() + "\n  InputPortProfiles : " + getInputPortProfiles()
 				+ "\n  OutputPortProfiles : " + getOutputPortProfiles();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ComponentProfile other = (ComponentProfile) obj;
+		if (getId() == null) {
+			if (other.getId() != null)
+				return false;
+		} else if (!getId().equals(other.getId()))
+			return false;
+		return true;
 	}
 
 }
