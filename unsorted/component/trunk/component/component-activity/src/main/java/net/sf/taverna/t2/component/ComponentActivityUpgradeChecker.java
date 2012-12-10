@@ -6,6 +6,7 @@ package net.sf.taverna.t2.component;
 import java.util.List;
 
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.registry.ComponentUtil;
 import net.sf.taverna.t2.visit.VisitReport;
 import net.sf.taverna.t2.visit.VisitReport.Status;
 import net.sf.taverna.t2.workflowmodel.health.HealthChecker;
@@ -39,7 +40,7 @@ public class ComponentActivityUpgradeChecker implements HealthChecker<ComponentA
 		
 		Integer latestVersion = 0;
 		try {
-			latestVersion = config.calculateComponent().getComponentVersionMap().lastKey();
+			latestVersion = ComponentUtil.calculateComponent(config.getRegistryBase(), config.getFamilyName(), config.getComponentName()).getComponentVersionMap().lastKey();
 		} catch (ComponentRegistryException e) {
 			logger.error(e);
 		}
