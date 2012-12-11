@@ -45,6 +45,6 @@ public interface ComponentRegistry {
 
 	public List<ComponentProfile> getComponentProfiles() throws ComponentRegistryException;
 
-	public ComponentProfile addComponentProfile(URL componentProfile) throws ComponentRegistryException;
+	public ComponentProfile addComponentProfile(ComponentProfile componentProfile) throws ComponentRegistryException;
 
 }
