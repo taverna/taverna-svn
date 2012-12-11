@@ -110,7 +110,7 @@ public abstract class ComponentRegistryTest {
 	@Test
 	public void testAddComponentProfile() throws Exception {
 		int componentProfileCount = componentRegistry.getComponentProfiles().size();
-		componentRegistry.addComponentProfile(componentProfileUrl);
+		componentRegistry.addComponentProfile(componentProfile);
 		assertEquals(componentProfileCount + 1, componentRegistry.getComponentProfiles().size());
 	}
 

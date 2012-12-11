@@ -108,7 +108,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		Element packElement = createPack(name);
 		tagResource("component family", packElement.getAttributeValue("resource"));
 		ComponentFamily componentFamily = new MyExperimentComponentFamily(this, packElement.getAttributeValue("uri"));
-		Element profileElement = addComponentProfile(componentProfile);
+		Element profileElement = addComponentProfileInternal(componentProfile);
 		addPackItem(packElement, profileElement);
 		if (componentFamilies != null) {
 			componentFamilies.add(componentFamily);
@@ -158,9 +158,8 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 	}
 
 	@Override
-	public ComponentProfile addComponentProfile(URL componentProfileUrl) throws ComponentRegistryException {
-		ComponentProfile componentProfile = new ComponentProfile(componentProfileUrl);
-		Element element = addComponentProfile(componentProfile);
+	public ComponentProfile addComponentProfile(ComponentProfile componentProfile) throws ComponentRegistryException {
+		Element element = addComponentProfileInternal(componentProfile);
 		String fileUri = element.getAttributeValue("uri");
 		String resourceUri = element.getAttributeValue("resource");
 		String version = element.getAttributeValue("version");
@@ -176,7 +175,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		return componentProfile;
 	}
 
-	public Element addComponentProfile(ComponentProfile componentProfile) throws ComponentRegistryException {
+	private Element addComponentProfileInternal(ComponentProfile componentProfile) throws ComponentRegistryException {
 		Element profileElement = null;
 		if (componentProfile instanceof MyExperimentComponentProfile) {
 			MyExperimentComponentProfile myExperimentComponentProfile = (MyExperimentComponentProfile) componentProfile;
