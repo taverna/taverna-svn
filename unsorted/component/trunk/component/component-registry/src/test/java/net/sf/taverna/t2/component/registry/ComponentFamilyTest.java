@@ -18,40 +18,59 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
-package net.sf.taverna.t2.component.registry.myexperiment;
+package net.sf.taverna.t2.component.registry;
 
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-import java.net.Authenticator;
 import java.net.URL;
 
-import net.sf.taverna.t2.component.registry.ComponentRegistryTest;
-import net.sf.taverna.t2.security.credentialmanager.CredentialManagerAuthenticator;
+import net.sf.taverna.t2.component.profile.ComponentProfile;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class MyExperimentComponentRegistryTest extends ComponentRegistryTest {
+/**
+ *
+ *
+ * @author David Withers
+ */
+public class ComponentFamilyTest {
 
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		registryTarget = new URL("http://aeon.cs.man.ac.uk:3006");
-		Authenticator.setDefault(new CredentialManagerAuthenticator());
-		componentRegistry = MyExperimentComponentRegistry.getComponentRegistry(registryTarget);
+	protected static URL registryTarget;
+	protected static ComponentRegistry componentRegistry;
+    protected ComponentFamily componentFamily;
+	protected ComponentProfile componentProfile;
+	protected URL componentProfileUrl;
+
+	@Before
+	public void setup() throws Exception {
+		componentProfileUrl = getClass().getClassLoader().getResource("ValidationComponent.xml");
+		assertNotNull(componentProfileUrl);
+		componentProfile = new ComponentProfile(componentProfileUrl);
 	}
-
-//	@Before
-//	public void setup() throws Exception {
-//		super.setup();
-//		assertTrue(componentRegistry.getComponentProfiles().size() > 0);
-//		componentProfile = componentRegistry.getComponentProfiles().get(0);
-//	}
 
 	@Test
-	public void testGetComponentRegistry() throws Exception {
-		assertSame(componentRegistry, MyExperimentComponentRegistry.getComponentRegistry(registryTarget));
-	}
+    public void testGetComponentRegistry() {
+    }
+
+    @Test
+    public void testGetName() {
+    }
+
+    @Test
+    public void testGetComponentProfile() {
+    }
+
+    @Test
+    public void testGetComponents() {
+    }
+
+    @Test
+    public void testCreateComponentBasedOn() {
+    }
+
+    @Test
+    public void testGetComponent() {
+    }
 
 }

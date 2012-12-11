@@ -46,7 +46,7 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 	private static final T2FlowFileType T2_FLOW_FILE_TYPE = new T2FlowFileType();
 
 	private final MyExperimentComponentRegistry componentRegistry;
-	private final MyExperimentComponent component;
+	private final Component component;
 	private final String uri;
 
 	private Integer versionNumber;
@@ -54,7 +54,7 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 	private Dataflow dataflow;
 
 	public MyExperimentComponentVersion(MyExperimentComponentRegistry componentRegistry,
-			MyExperimentComponent component, String uri) {
+			Component component, String uri) {
 		this.componentRegistry = componentRegistry;
 		this.component = component;
 		this.uri = uri;
@@ -86,7 +86,7 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 	@Override
 	public Dataflow getDataflow() throws ComponentRegistryException {
 		if (dataflow == null) {
-			Element workflowElement = componentRegistry.getInternalPackItem(uri, "workflow");
+			Element workflowElement = componentRegistry.getPackItem(uri, "workflow");
 			String resourceUri = workflowElement.getAttributeValue("resource");
 			String version = workflowElement.getAttributeValue("version");
 			String downloadUri = resourceUri + "/download?version=" + version;

@@ -20,12 +20,20 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.myexperiment;
 
+import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 import net.sf.taverna.t2.component.registry.Component;
+import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
+import net.sf.taverna.t2.workbench.file.FileManager;
+import net.sf.taverna.t2.workbench.file.exceptions.OverwriteException;
+import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
+import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.jdom.Element;
@@ -41,7 +49,6 @@ public class MyExperimentComponent implements Component {
 	private final String uri;
 
 	private String name;
-	private SortedMap<Integer, ComponentVersion> componentVersions;
 
 	public MyExperimentComponent(MyExperimentComponentRegistry componentRegistry, String uri) {
 		this.componentRegistry = componentRegistry;
@@ -62,13 +69,11 @@ public class MyExperimentComponent implements Component {
 
 	@Override
 	public SortedMap<Integer, ComponentVersion> getComponentVersionMap() {
-		if (componentVersions == null) {
-			componentVersions = new TreeMap<Integer, ComponentVersion>();
-			for (Element version : componentRegistry.getResourceElements(uri, "versions")) {
-				String versionUri = version.getAttributeValue("uri");
-				ComponentVersion componentVersion = new MyExperimentComponentVersion(componentRegistry, this, versionUri);
-				componentVersions.put(componentVersion.getVersionNumber(), componentVersion);
-			}
+		SortedMap<Integer, ComponentVersion> componentVersions = new TreeMap<Integer, ComponentVersion>();
+		for (Element version : componentRegistry.getResourceElements(uri, "versions")) {
+			String versionUri = version.getAttributeValue("uri");
+			ComponentVersion componentVersion = new MyExperimentComponentVersion(componentRegistry, this, versionUri);
+			componentVersions.put(componentVersion.getVersionNumber(), componentVersion);
 		}
 		return componentVersions;
 	}
@@ -79,15 +84,43 @@ public class MyExperimentComponent implements Component {
 	}
 
 	@Override
-	public ComponentVersion addVersionBasedOn(Dataflow dataflow) {
-		// TODO Auto-generated method stub
-		return null;
+	public MyExperimentComponentVersion addVersionBasedOn(Dataflow dataflow) throws ComponentRegistryException {
+		String dataflowString;
+		try {
+			ByteArrayOutputStream dataflowStream = new ByteArrayOutputStream();
+			FileManager.getInstance().saveDataflowSilently(dataflow, new T2FlowFileType(),
+					dataflowStream, false);
+			dataflowString = dataflowStream.toString("UTF-8");
+		} catch (OverwriteException e) {
+			throw new ComponentRegistryException(e);
+		} catch (SaveException e) {
+			throw new ComponentRegistryException(e);
+		} catch (IllegalStateException e) {
+			throw new ComponentRegistryException(e);
+		} catch (UnsupportedEncodingException e) {
+			throw new ComponentRegistryException(e);
+		}
+
+		Element workflowElement = componentRegistry.getPackItem(uri, "workflow");
+		Element componentWorkflow = componentRegistry.updateWorkflow(workflowElement.getAttributeValue("uri"), dataflowString);
+
+		Element componentElement = componentRegistry.getResource(uri);
+		componentRegistry.deletePackItem(componentElement, "workflow");
+		componentRegistry.addPackItem(componentElement, componentWorkflow);
+
+		Element componentPack = componentRegistry.snapshotPack(uri);
+		String uri = componentPack.getAttributeValue("uri");
+		String version = componentPack.getAttributeValue("uri");
+		return new MyExperimentComponentVersion(componentRegistry, this, uri+"&version="+version);
 	}
 
 	@Override
 	public URL getComponentURL() {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			return new URL(uri);
+		} catch (MalformedURLException e) {
+			return null;
+		}
 	}
 
 }

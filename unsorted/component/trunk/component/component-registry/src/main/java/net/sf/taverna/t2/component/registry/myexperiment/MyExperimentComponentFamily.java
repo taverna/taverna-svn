@@ -79,12 +79,13 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	@Override
 	public ComponentProfile getComponentProfile() throws ComponentRegistryException {
 		if (componentProfile == null) {
-			Element fileElement = componentRegistry.getInternalPackItem(uri, "file", "component profile");
-			String resourceUri = fileElement.getAttributeValue("resource");
+			Element fileElement = componentRegistry.getPackItem(uri, "file", "component profile");
+			String uri = fileElement.getAttributeValue("uri");
+			String resource = fileElement.getAttributeValue("resource");
 			String version = fileElement.getAttributeValue("version");
-			String downloadUri = resourceUri + "/download?version=" + version;
+			String downloadUri = resource + "/download?version=" + version;
 			try {
-				componentProfile = new ComponentProfile(new URL(downloadUri));
+				componentProfile = new MyExperimentComponentProfile(componentRegistry, uri, new URL(downloadUri));
 			} catch (MalformedURLException e) {
 				throw new ComponentRegistryException("Unable to open profile from " + downloadUri, e);
 			}
@@ -116,36 +117,40 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	}
 
 	@Override
-	public ComponentVersion createComponentBasedOn(String componentName, Dataflow dataflow)
-			throws ComponentRegistryException {
+	public ComponentVersion createComponentBasedOn(String componentName, Dataflow dataflow) throws ComponentRegistryException {
 		Component component = getComponent(componentName);
-		if (component == null) {
-			// Are title and description pulled out anyway?
-			// String title = annotationTools.getAnnotationString(dataflow, DescriptiveTitle.class, "");
-			// String description = annotationTools.getAnnotationString(dataflow, FreeTextDescription.class, "");
-			String sharing = "private"; // or download
-			String dataflowString;
-			try {
-				ByteArrayOutputStream dataflowStream = new ByteArrayOutputStream();
-				FileManager.getInstance().saveDataflowSilently(dataflow, new T2FlowFileType(),
-						dataflowStream, false);
-				dataflowString = dataflowStream.toString("UTF-8");
-			} catch (OverwriteException e) {
-				throw new ComponentRegistryException(e);
-			} catch (SaveException e) {
-				throw new ComponentRegistryException(e);
-			} catch (IllegalStateException e) {
-				throw new ComponentRegistryException(e);
-			} catch (UnsupportedEncodingException e) {
-				throw new ComponentRegistryException(e);
-			}
-			Element componentWorkflow = componentRegistry.uploadWorkflow(dataflowString, sharing);
-			Element componentPack = componentRegistry.createPack(componentName);
-			componentRegistry.addPackItem(componentPack, componentWorkflow);
-		} else {
-
+		if (component != null) {
+			throw new ComponentRegistryException("Component " + componentName + " already exists");
 		}
-		return null;
+		// Are title and description pulled out anyway?
+		// String title = annotationTools.getAnnotationString(dataflow, DescriptiveTitle.class, "");
+		// String description = annotationTools.getAnnotationString(dataflow, FreeTextDescription.class, "");
+		String sharing = "private"; // or download
+		String dataflowString;
+		try {
+			ByteArrayOutputStream dataflowStream = new ByteArrayOutputStream();
+			FileManager.getInstance().saveDataflowSilently(dataflow, new T2FlowFileType(),
+					dataflowStream, false);
+			dataflowString = dataflowStream.toString("UTF-8");
+		} catch (OverwriteException e) {
+			throw new ComponentRegistryException(e);
+		} catch (SaveException e) {
+			throw new ComponentRegistryException(e);
+		} catch (IllegalStateException e) {
+			throw new ComponentRegistryException(e);
+		} catch (UnsupportedEncodingException e) {
+			throw new ComponentRegistryException(e);
+		}
+		Element componentWorkflow = componentRegistry.uploadWorkflow(dataflowString, sharing);
+		Element componentPack = componentRegistry.createPack(componentName);
+		componentRegistry.addPackItem(componentPack, componentWorkflow);
+		component = new MyExperimentComponent(componentRegistry, componentPack.getAttributeValue("uri"));
+		components.add(component);
+
+		componentPack = componentRegistry.snapshotPack(componentPack.getAttributeValue("uri"));
+		String uri = componentPack.getAttributeValue("uri");
+		String version = componentPack.getAttributeValue("uri");
+		return new MyExperimentComponentVersion(componentRegistry, component, uri+"&version="+version);
 	}
 
 	@Override

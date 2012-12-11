@@ -38,6 +38,7 @@ import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Base64;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.MyExperimentClient;
+import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Resource;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.ServerResponse;
 
 import org.apache.log4j.Logger;
@@ -52,7 +53,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 
 	private static Logger logger = Logger.getLogger(MyExperimentComponentRegistry.class);
 
-	private static Map<URL, ComponentRegistry> componentRegistries = new HashMap<URL, ComponentRegistry>();
+	private static Map<URL, MyExperimentComponentRegistry> componentRegistries = new HashMap<URL, MyExperimentComponentRegistry>();
 
 	private final MyExperimentClient myExperimentClient;
 	private final URL registryURL;
@@ -67,7 +68,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		myExperimentClient.doLogin();
 	}
 
-	public static ComponentRegistry getComponentRegistry(URL registryURL) {
+	public static MyExperimentComponentRegistry getComponentRegistry(URL registryURL) {
 		if (!componentRegistries.containsKey(registryURL)) {
 			componentRegistries.put(registryURL, new MyExperimentComponentRegistry(registryURL));
 		}
@@ -170,7 +171,6 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 				componentProfiles.add(componentProfile);
 			}
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
 			logger.warn("URL for component profile is invalid : " + fileUri, e);
 		}
 		return componentProfile;
@@ -197,6 +197,15 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 			ServerResponse packResponse = myExperimentClient.doMyExperimentPOST(urlToString(registryURL) + "/pack.xml", content);
 			return packResponse.getResponseBody().getRootElement();
 		} catch (Exception e) {
+			throw new ComponentRegistryException("Error while creating a pack with title : " + title, e);
+		}
+	}
+
+	public Element snapshotPack(String packUri) throws ComponentRegistryException {
+		try {
+			ServerResponse packResponse = myExperimentClient.doMyExperimentPOST(packUri, "");
+			return packResponse.getResponseBody().getRootElement();
+		} catch (Exception e) {
 			throw new ComponentRegistryException(e);
 		}
 	}
@@ -215,7 +224,16 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		}
 	}
 
-	public Element getInternalPackItem(String packUri, String item, String... tags) throws ComponentRegistryException {
+	public void deletePackItem(Element packElement, String item) throws ComponentRegistryException {
+		for (Element internalPackItem : getResourceElements(packElement.getAttributeValue("uri"), "internal-pack-items")) {
+			if (item.equals(internalPackItem.getName())) {
+				deleteResource(internalPackItem.getAttributeValue("uri"));
+				break;
+			}
+		}
+	}
+
+	public Element getPackItem(String packUri, String item, String... tags) throws ComponentRegistryException {
 		for (Element internalPackItem : getResourceElements(packUri, "internal-pack-items")) {
 			if (item.equals(internalPackItem.getName())) {
 				String internalPackItemUri = internalPackItem.getAttributeValue("uri");
@@ -251,8 +269,13 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 	}
 
 	public Element uploadWorkflow(String dataflow, String sharing) throws ComponentRegistryException {
-		myExperimentClient.setBaseURL(urlToString(registryURL));
 		ServerResponse postWorkflowResponse = myExperimentClient.postWorkflow(dataflow, "", "", "", sharing);
+		return postWorkflowResponse.getResponseBody().getRootElement();
+	}
+
+	public Element updateWorkflow(String uri, String dataflow) throws ComponentRegistryException {
+		Resource resource = Resource.buildFromXML(getResource(uri),myExperimentClient, logger);
+		ServerResponse postWorkflowResponse = myExperimentClient.updateWorkflowVersionOrMetadata(resource, dataflow, "", "", "", "");
 		return postWorkflowResponse.getResponseBody().getRootElement();
 	}
 
