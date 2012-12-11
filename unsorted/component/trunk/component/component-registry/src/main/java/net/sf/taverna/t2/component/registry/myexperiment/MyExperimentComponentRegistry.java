@@ -118,12 +118,12 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 
 	@Override
 	public void removeComponentFamily(ComponentFamily componentFamily) throws ComponentRegistryException {
-		if (componentFamilies.contains(componentFamily)) {
-			if (componentFamily instanceof MyExperimentComponentFamily) {
-				MyExperimentComponentFamily myExperimentComponentFamily = (MyExperimentComponentFamily) componentFamily;
-				deleteResource(myExperimentComponentFamily.getUri());
-				componentFamilies.remove(componentFamily);
-			}
+		if (componentFamily instanceof MyExperimentComponentFamily) {
+			MyExperimentComponentFamily myExperimentComponentFamily = (MyExperimentComponentFamily) componentFamily;
+			deleteResource(myExperimentComponentFamily.getUri());
+		}
+		if (componentFamilies != null) {
+			componentFamilies.remove(componentFamily);
 		}
 	}
 
@@ -202,7 +202,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 
 	public Element snapshotPack(String packUri) throws ComponentRegistryException {
 		try {
-			ServerResponse packResponse = myExperimentClient.doMyExperimentPOST(packUri, "");
+			ServerResponse packResponse = myExperimentClient.doMyExperimentPOST(packUri, "<snapshot/>");
 			return packResponse.getResponseBody().getRootElement();
 		} catch (Exception e) {
 			throw new ComponentRegistryException(e);
@@ -214,7 +214,12 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		item.append("<internal-pack-item>");
 		item.append("<pack resource=\"").append(packElement.getAttributeValue("resource")).append("\"/>");
 		item.append("<item resource=\"").append(itemElement.getAttributeValue("resource")).append("\"");
-		item.append(" version=\"").append(itemElement.getAttributeValue("version")).append("\"/>");
+		String version = itemElement.getAttributeValue("version");
+		if (version.isEmpty()) {
+			item.append("/>");
+		} else {
+			item.append(" version=\"").append(version).append("\"/>");
+		}
 		item.append("</internal-pack-item>");
 		try {
 			myExperimentClient.doMyExperimentPOST(urlToString(registryURL) + "/internal-pack-item.xml", item.toString());
@@ -267,8 +272,8 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		return true;
 	}
 
-	public Element uploadWorkflow(String dataflow, String sharing) throws ComponentRegistryException {
-		ServerResponse postWorkflowResponse = myExperimentClient.postWorkflow(dataflow, "", "", "", sharing);
+	public Element uploadWorkflow(String dataflow, String title, String description, String sharing) throws ComponentRegistryException {
+		ServerResponse postWorkflowResponse = myExperimentClient.postWorkflow(dataflow, title, description, "by-nd", sharing);
 		return postWorkflowResponse.getResponseBody().getRootElement();
 	}
 

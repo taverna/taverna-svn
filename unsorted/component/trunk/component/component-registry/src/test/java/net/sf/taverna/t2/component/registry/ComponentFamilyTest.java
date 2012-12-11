@@ -25,7 +25,13 @@ import static org.junit.Assert.*;
 import java.net.URL;
 
 import net.sf.taverna.t2.component.profile.ComponentProfile;
+import net.sf.taverna.t2.workbench.file.DataflowInfo;
+import net.sf.taverna.t2.workbench.file.FileManager;
+import net.sf.taverna.t2.workbench.file.exceptions.OpenException;
+import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
+import net.sf.taverna.t2.workflowmodel.Dataflow;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,36 +47,63 @@ public class ComponentFamilyTest {
     protected ComponentFamily componentFamily;
 	protected ComponentProfile componentProfile;
 	protected URL componentProfileUrl;
+	protected Dataflow dataflow;
 
 	@Before
 	public void setup() throws Exception {
 		componentProfileUrl = getClass().getClassLoader().getResource("ValidationComponent.xml");
 		assertNotNull(componentProfileUrl);
 		componentProfile = new ComponentProfile(componentProfileUrl);
+		componentFamily = componentRegistry.createComponentFamily("Test Component Family", componentProfile);
+		URL dataflowUrl = getClass().getClassLoader().getResource("beanshell_test.t2flow");
+		assertNotNull(dataflowUrl);
+		dataflow = FileManager.getInstance().openDataflowSilently(new T2FlowFileType(), dataflowUrl).getDataflow();
+	}
+
+	@After
+	public void cleanup() throws Exception {
+		componentRegistry.removeComponentFamily(componentFamily);
 	}
 
 	@Test
-    public void testGetComponentRegistry() {
+    public void testGetComponentRegistry() throws Exception {
+		assertEquals(componentRegistry, componentFamily.getComponentRegistry());
     }
 
     @Test
-    public void testGetName() {
+    public void testGetName() throws Exception {
+		assertEquals("Test Component Family", componentFamily.getName());
+		assertEquals("Test Component Family", componentFamily.getName());
     }
 
     @Test
-    public void testGetComponentProfile() {
+    public void testGetComponentProfile() throws Exception {
+		assertEquals(componentProfile.getId(), componentFamily.getComponentProfile().getId());
     }
 
     @Test
-    public void testGetComponents() {
+    public void testGetComponents() throws Exception {
+		assertEquals(0, componentFamily.getComponents().size());
+		assertEquals(0, componentFamily.getComponents().size());
+		ComponentVersion componentVersion = componentFamily.createComponentBasedOn("Test Component", dataflow);
+		assertEquals(1, componentFamily.getComponents().size());
+		assertTrue(componentFamily.getComponents().contains(componentVersion.getComponent()));
+//		componentFamily.removeComponent(componentVersion.getComponent());
+//		assertEquals(0, componentFamily.getComponents().size());
+   }
+
+    @Test
+    public void testCreateComponentBasedOn() throws Exception {
+		ComponentVersion componentVersion = componentFamily.createComponentBasedOn("Test Component", dataflow);
+		assertEquals("Test Component", componentVersion.getComponent().getName());
     }
 
     @Test
-    public void testCreateComponentBasedOn() {
-    }
-
-    @Test
-    public void testGetComponent() {
+    public void testGetComponent() throws Exception {
+    	assertNull(componentFamily.getComponent("Test Component"));
+		ComponentVersion componentVersion = componentFamily.createComponentBasedOn("Test Component", dataflow);
+    	assertNotNull(componentFamily.getComponent("Test Component"));
+		assertEquals(componentVersion.getComponent(), componentFamily.getComponent("Test Component"));
     }
 
 }

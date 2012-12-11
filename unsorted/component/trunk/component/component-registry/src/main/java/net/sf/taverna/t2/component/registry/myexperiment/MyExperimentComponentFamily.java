@@ -27,6 +27,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.taverna.t2.annotation.annotationbeans.DescriptiveTitle;
+import net.sf.taverna.t2.annotation.annotationbeans.FreeTextDescription;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
@@ -38,6 +40,7 @@ import net.sf.taverna.t2.workbench.file.exceptions.OverwriteException;
 import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
 import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
+import net.sf.taverna.t2.workflowmodel.utils.AnnotationTools;
 
 import org.jdom.Element;
 
@@ -54,10 +57,12 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	private String name;
 	private ComponentProfile componentProfile;
 	private List<Component> components;
+	private AnnotationTools annotationTools;
 
 	public MyExperimentComponentFamily(MyExperimentComponentRegistry componentRegistry, String uri) {
 		this.componentRegistry = componentRegistry;
 		this.uri = uri;
+		annotationTools = new AnnotationTools();
 	}
 
 	@Override
@@ -122,10 +127,10 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 		if (component != null) {
 			throw new ComponentRegistryException("Component " + componentName + " already exists");
 		}
-		// Are title and description pulled out anyway?
-		// String title = annotationTools.getAnnotationString(dataflow, DescriptiveTitle.class, "");
-		// String description = annotationTools.getAnnotationString(dataflow, FreeTextDescription.class, "");
-		String sharing = "private"; // or download
+		// upload the workflow
+		String title = annotationTools.getAnnotationString(dataflow, DescriptiveTitle.class, "Untitled");
+		String description = annotationTools.getAnnotationString(dataflow, FreeTextDescription.class, "No description");
+		String sharing = "download"; // or private
 		String dataflowString;
 		try {
 			ByteArrayOutputStream dataflowStream = new ByteArrayOutputStream();
@@ -141,11 +146,23 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 		} catch (UnsupportedEncodingException e) {
 			throw new ComponentRegistryException(e);
 		}
-		Element componentWorkflow = componentRegistry.uploadWorkflow(dataflowString, sharing);
+		Element componentWorkflow = componentRegistry.uploadWorkflow(dataflowString, title, description, sharing);
+
+		// create the component
 		Element componentPack = componentRegistry.createPack(componentName);
-		componentRegistry.addPackItem(componentPack, componentWorkflow);
+		componentRegistry.tagResource("component", componentPack.getAttributeValue("resource"));
 		component = new MyExperimentComponent(componentRegistry, componentPack.getAttributeValue("uri"));
+
+		// add the component to the family
+		Element resource = componentRegistry.getResource(uri);
+		String attributeValue = resource.getAttributeValue("resource");
+		componentRegistry.addPackItem(componentRegistry.getResource(uri), componentPack);
 		components.add(component);
+
+
+		// add the workflow to the pack
+		componentRegistry.addPackItem(componentPack, componentWorkflow);
+
 
 		componentPack = componentRegistry.snapshotPack(componentPack.getAttributeValue("uri"));
 		String uri = componentPack.getAttributeValue("uri");

@@ -20,16 +20,22 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.myexperiment;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayOutputStream;
 import java.net.Authenticator;
 import java.net.URL;
+import java.util.List;
 
 import net.sf.taverna.t2.component.registry.ComponentRegistryTest;
 import net.sf.taverna.t2.security.credentialmanager.CredentialManagerAuthenticator;
+import net.sf.taverna.t2.workbench.file.FileManager;
+import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
+import net.sf.taverna.t2.workflowmodel.Dataflow;
 
-import org.junit.Before;
+import org.jdom.Element;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -42,16 +48,48 @@ public class MyExperimentComponentRegistryTest extends ComponentRegistryTest {
 		componentRegistry = MyExperimentComponentRegistry.getComponentRegistry(registryTarget);
 	}
 
-//	@Before
-//	public void setup() throws Exception {
-//		super.setup();
-//		assertTrue(componentRegistry.getComponentProfiles().size() > 0);
-//		componentProfile = componentRegistry.getComponentProfiles().get(0);
-//	}
+	@AfterClass
+	public static void cleanUpBeforeClass() throws Exception {
+		MyExperimentComponentRegistry registry = MyExperimentComponentRegistry.getComponentRegistry(registryTarget);
+		Element element = registry.getResource(registryTarget + "/files.xml", "tag=component%20profile");
+		for (Element child : (List<Element>) element.getChildren()) {
+			registry.deleteResource(child.getAttributeValue("uri"));
+		}
+		element = registry.getResource(registryTarget + "/packs.xml", "tag=component%20family");
+		for (Element child : (List<Element>) element.getChildren()) {
+			registry.deleteResource(child.getAttributeValue("uri"));
+		}
+		element = registry.getResource(registryTarget + "/packs.xml", "tag=component");
+		for (Element child : (List<Element>) element.getChildren()) {
+			registry.deleteResource(child.getAttributeValue("uri"));
+		}
+	}
 
 	@Test
 	public void testGetComponentRegistry() throws Exception {
-		assertSame(componentRegistry, MyExperimentComponentRegistry.getComponentRegistry(registryTarget));
+		assertSame(componentRegistry,
+				MyExperimentComponentRegistry.getComponentRegistry(registryTarget));
+	}
+
+	@Test
+	public void testUploadWorkflow() throws Exception {
+		MyExperimentComponentRegistry registry = MyExperimentComponentRegistry.getComponentRegistry(registryTarget);
+		URL dataflowUrl = getClass().getClassLoader().getResource("beanshell_test.t2flow");
+		Dataflow dataflow = FileManager.getInstance()
+				.openDataflowSilently(new T2FlowFileType(), dataflowUrl).getDataflow();
+		ByteArrayOutputStream dataflowStream = new ByteArrayOutputStream();
+		FileManager.getInstance().saveDataflowSilently(dataflow, new T2FlowFileType(),
+				dataflowStream, false);
+		String dataflowString = dataflowStream.toString("UTF-8");
+		Element element = registry.uploadWorkflow(dataflowString, "Test Workflow", "Test description", "download");
+		assertEquals("Test Workflow", element.getChild("title").getValue());
+		registry.deleteResource(element.getAttributeValue("uri"));
+	}
+
+	@Test
+	public void testSnapshot() throws Exception {
+		MyExperimentComponentRegistry registry = MyExperimentComponentRegistry.getComponentRegistry(registryTarget);
+		registry.snapshotPack("http://aeon.cs.man.ac.uk:3006/pack.xml?id=300");
 	}
 
 }
