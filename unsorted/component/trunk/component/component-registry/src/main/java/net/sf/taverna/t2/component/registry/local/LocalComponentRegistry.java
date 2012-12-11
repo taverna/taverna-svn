@@ -4,7 +4,10 @@
 package net.sf.taverna.t2.component.registry.local;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -20,6 +23,7 @@ import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -93,7 +97,7 @@ public class LocalComponentRegistry implements ComponentRegistry {
 		List<ComponentProfile> result = new ArrayList<ComponentProfile>();
 		File profilesDir = getComponentProfilesDir();
 		for (File subFile : profilesDir.listFiles()) {
-			if (subFile.isFile()) {
+			if (subFile.isFile() && (!subFile.isHidden()) && subFile.getName().endsWith(".xml")) {
 					try {
 						ComponentProfile newProfile = new ComponentProfile(subFile.toURI().toURL());
 						result.add(newProfile);
@@ -124,7 +128,11 @@ public class LocalComponentRegistry implements ComponentRegistry {
 	@Override
 	public void removeComponentFamily(ComponentFamily componentFamily) throws ComponentRegistryException {
 		File componentFamilyDir = new File(getComponentFamiliesDir(), componentFamily.getName());
-		componentFamilyDir.delete();
+		try {
+			FileUtils.deleteDirectory(componentFamilyDir);
+		} catch (IOException e) {
+			throw new ComponentRegistryException("Unable to delete component family", e);
+		}
 	}
 	
 	private File getBaseDir() {
@@ -161,5 +169,32 @@ public class LocalComponentRegistry implements ComponentRegistry {
 			return new LocalComponentFamily(this, componentFamilyDir);
 		}
 		return null;
+	}
+
+	@Override
+	public ComponentProfile addComponentProfile(ComponentProfile componentProfile)
+			throws ComponentRegistryException {
+		String name = componentProfile.getName().replaceAll("\\W+", "") + ".xml";
+		String inputString = componentProfile.getXML();
+		File outputFile = new File(getComponentProfilesDir(), name);
+		OutputStream output = null;
+		try {
+			output = new FileOutputStream(outputFile);
+			IOUtils.write(inputString, output);
+		} catch (IOException e) {
+				try {
+					output.close();
+				} catch (IOException e1) {
+					logger.error("Unable to close output");
+				}
+		}
+
+			try {
+				return new ComponentProfile(outputFile.toURI().toURL());
+			} catch (MalformedURLException e) {
+				logger.error(e);
+				return null;
+			}
+
 	}
 }
