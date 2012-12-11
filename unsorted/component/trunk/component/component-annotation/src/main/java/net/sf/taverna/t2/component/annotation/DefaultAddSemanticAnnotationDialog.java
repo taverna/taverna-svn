@@ -22,6 +22,7 @@ package net.sf.taverna.t2.component.annotation;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -54,7 +55,7 @@ public class DefaultAddSemanticAnnotationDialog extends JDialog {
 			final SemanticAnnotationContextualView semanticAnnotationContextualView,
 			final SemanticAnnotationProfile semanticAnnotationProfile) {
 		setTitle("Add Semantic Annotation");
-		setLocationRelativeTo(this);
+		setLocationRelativeTo(semanticAnnotationContextualView);
 		setSize(new Dimension(400, 250));
 		setLayout(new BorderLayout());
 
@@ -69,7 +70,7 @@ public class DefaultAddSemanticAnnotationDialog extends JDialog {
 		inputLabel.setFont(baseFont.deriveFont(Font.BOLD));
 		messagePanel.add(inputLabel, BorderLayout.NORTH);
 
-		JTextArea inputText = new JTextArea("Select a value for the predicate '"
+		JTextArea inputText = new JTextArea("Select a value for the annotation '"
 				+ SemanticAnnotationUtils.getDisplayName(semanticAnnotationProfile.getPredicate())
 				+ "'");
 		inputText.setMargin(new Insets(5, 10, 10, 10));

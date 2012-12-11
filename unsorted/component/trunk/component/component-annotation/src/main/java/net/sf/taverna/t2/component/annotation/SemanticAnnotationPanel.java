@@ -22,9 +22,6 @@ import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
 import net.sf.taverna.t2.spi.SPIRegistry;
 
 import com.hp.hpl.jena.ontology.OntProperty;
-import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 
 public class SemanticAnnotationPanel extends JPanel {
@@ -63,7 +60,7 @@ public class SemanticAnnotationPanel extends JPanel {
 
 		OntProperty predicate = semanticAnnotationProfile.getPredicate();
 		c.gridwidth = 2;
-		JLabel label = new JLabel("Predicate : " + SemanticAnnotationUtils.getDisplayName(predicate));
+		JLabel label = new JLabel("Annotation type : " + SemanticAnnotationUtils.getDisplayName(predicate));
 		label.setBorder(new EmptyBorder(5, 5, 5, 5));
 		label.setBackground(Color.WHITE);
 		label.setOpaque(true);

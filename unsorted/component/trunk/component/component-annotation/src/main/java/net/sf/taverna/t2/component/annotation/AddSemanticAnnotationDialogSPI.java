@@ -33,7 +33,8 @@ public interface AddSemanticAnnotationDialogSPI {
 
 	public boolean canHandleSemanticAnnotation(SemanticAnnotationProfile semanticAnnotationProfile);
 
-	public JDialog getSemanticAnnotationDialog(SemanticAnnotationContextualView semanticAnnotationContextualView,
+	public JDialog getSemanticAnnotationDialog(
+			SemanticAnnotationContextualView semanticAnnotationContextualView,
 			SemanticAnnotationProfile semanticAnnotationProfile);
 
 }

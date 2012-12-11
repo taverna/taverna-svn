@@ -232,11 +232,18 @@ public class SemanticAnnotationContextualView extends ContextualView {
 		updateSemanticAnnotation();
 	}
 
+	public void addModel(Model model) {
+		this.model.add(model);
+		initialise();
+		updateSemanticAnnotation();
+	}
+
 	private SemanticAnnotation createSemanticAnnotation() {
 		SemanticAnnotation semanticAnnotation = new SemanticAnnotation();
 		StringWriter stringWriter = new StringWriter();
 		model.write(stringWriter, "N3");
 		semanticAnnotation.setContent(stringWriter.toString());
+		System.out.println(semanticAnnotation.getContent());
 		return semanticAnnotation;
 	}
 
