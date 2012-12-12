@@ -1,1 +1,2 @@
  net.sf.taverna.t2.component.ui.view.ComponentActivityContextViewFactory
+ net.sf.taverna.t2.component.ui.view.ComponentContextViewFactory
