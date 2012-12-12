@@ -43,9 +43,7 @@ public class ComponentContextualView extends ContextualView {
 
 	public String getBackgroundColour() {
 		Color colour = ColourManager.getInstance().getPreferredColour("net.sf.taverna.t2.component.registry.Component");
-		return "#" + Integer.toHexString(colour.getRed()) +
-				Integer.toHexString(colour.getGreen()) +
-				Integer.toHexString(colour.getBlue());
+		return String.format("#%1$2x%2$2x%3$2x", colour.getRed(),colour.getGreen(),colour.getBlue());
 	}
 
 	@Override
