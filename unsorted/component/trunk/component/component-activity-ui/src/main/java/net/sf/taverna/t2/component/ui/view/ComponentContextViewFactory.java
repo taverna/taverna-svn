@@ -3,13 +3,11 @@ package net.sf.taverna.t2.component.ui.view;
 import java.util.Arrays;
 import java.util.List;
 
+import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactory;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
-
-import net.sf.taverna.t2.component.ComponentActivity;
-import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 
 public class ComponentContextViewFactory implements ContextualViewFactory<Dataflow> {
 

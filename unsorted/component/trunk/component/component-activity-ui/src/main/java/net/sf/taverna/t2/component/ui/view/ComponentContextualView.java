@@ -21,9 +21,6 @@ public class ComponentContextualView extends ContextualView {
 		initView();
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView#getMainFrame()
-	 */
 	@Override
 	public JComponent getMainFrame() {
 		editorPane = HtmlUtils.createEditorPane(buildHtml());
@@ -51,12 +48,9 @@ public class ComponentContextualView extends ContextualView {
 				Integer.toHexString(colour.getBlue());
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView#getPreferredPosition()
-	 */
 	@Override
 	public int getPreferredPosition() {
-		return 100;
+		return 50;
 	}
 
 	private static int MAX_LENGTH = 50;
@@ -68,17 +62,11 @@ public class ComponentContextualView extends ContextualView {
 		return fullName;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView#getViewTitle()
-	 */
 	@Override
 	public String getViewTitle() {
 		return "Component " + limitName(component.getComponentName());
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView#refreshView()
-	 */
 	@Override
 	public void refreshView() {
 		editorPane.setText(buildHtml());
