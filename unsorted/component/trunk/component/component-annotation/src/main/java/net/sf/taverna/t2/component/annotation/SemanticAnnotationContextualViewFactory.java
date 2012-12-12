@@ -23,7 +23,10 @@ package net.sf.taverna.t2.component.annotation;
 import java.util.Arrays;
 import java.util.List;
 
+import org.omg.IOP.ComponentIdHelper;
+
 import net.sf.taverna.t2.annotation.Annotated;
+import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceDesc;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
@@ -43,7 +46,7 @@ public class SemanticAnnotationContextualViewFactory implements ContextualViewFa
 
 	public boolean canHandle(Object selection) {
 		Object dataflowSource = fileManager.getDataflowSource(fileManager.getCurrentDataflow());
-		if (dataflowSource instanceof ComponentServiceDesc) {
+		if (dataflowSource instanceof ComponentVersionIdentification) {
 			return ((selection instanceof Annotated) && !(selection instanceof Activity || selection instanceof ActivityPort));
 		}
 		return false;
