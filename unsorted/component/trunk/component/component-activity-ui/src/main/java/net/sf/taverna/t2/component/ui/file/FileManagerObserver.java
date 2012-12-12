@@ -30,12 +30,16 @@ public class FileManagerObserver implements StartupSPI {
 			public void notify(Observable<FileManagerEvent> observable, FileManagerEvent event) throws Exception {
 				Dataflow currentDataflow = fileManager.getCurrentDataflow();
 				if (currentDataflow != null) {
-					Object dataflowSource = fileManager.getDataflowSource(currentDataflow);
-					if (dataflowSource instanceof ComponentServiceDesc) {
-						SVGGraphController graphController = GraphViewComponent.graphControllerMap.get(currentDataflow);
-						if (graphController != null) {
-							JSVGCanvas svgCanvas = graphController.getSVGCanvas();
+					SVGGraphController graphController = GraphViewComponent.graphControllerMap.get(currentDataflow);
+					if (graphController != null) {
+						JSVGCanvas svgCanvas = graphController.getSVGCanvas();
+						Object dataflowSource = fileManager.getDataflowSource(currentDataflow);
+						if (dataflowSource instanceof ComponentServiceDesc) {
 							svgCanvas.setBorder(new ComponentBorder((ComponentServiceDesc) dataflowSource));
+							svgCanvas.repaint();
+						} else {
+							svgCanvas.setBorder(null);
+							svgCanvas.repaint();
 						}
 					}
 				}
