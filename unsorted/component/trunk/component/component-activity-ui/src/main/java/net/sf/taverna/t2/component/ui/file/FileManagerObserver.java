@@ -55,11 +55,12 @@ public class FileManagerObserver implements StartupSPI {
 
 	class ComponentBorder implements Border {
 
+		private final Color COLOR = new Color(163, 66, 51);
 		private final Insets insets = new Insets(25, 0, 0, 0);
-		private final ComponentServiceDesc componentServiceDesc;
+		private final String text;
 
 		public ComponentBorder(ComponentServiceDesc componentServiceDesc) {
-			this.componentServiceDesc = componentServiceDesc;
+			text = "Component : " + componentServiceDesc.getName();
 		}
 
 		@Override
@@ -74,11 +75,11 @@ public class FileManagerObserver implements StartupSPI {
 
 		@Override
 		public void paintBorder(java.awt.Component c, Graphics g, int x, int y, int width, int height) {
-			g.setColor(new Color(163, 66, 51));
+			g.setColor(COLOR);
 			g.fillRect(x, y, width, 20);
 			g.setFont(g.getFont().deriveFont(Font.BOLD));
 			g.setColor(Color.WHITE);
-			g.drawString("Component : " + componentServiceDesc.getName(), x + 5, y + 15);
+			g.drawString(text, x + 5, y + 15);
 		}
 	}
 
