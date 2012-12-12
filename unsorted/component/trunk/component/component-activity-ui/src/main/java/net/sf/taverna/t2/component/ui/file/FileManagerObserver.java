@@ -5,9 +5,10 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
 
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
-import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceDesc;
+import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 import net.sf.taverna.t2.workbench.StartupSPI;
@@ -28,20 +29,11 @@ public class FileManagerObserver implements StartupSPI {
 		fileManager.addObserver(new Observer<FileManagerEvent>() {
 			@Override
 			public void notify(Observable<FileManagerEvent> observable, FileManagerEvent event) throws Exception {
-				Dataflow currentDataflow = fileManager.getCurrentDataflow();
-				if (currentDataflow != null) {
-					SVGGraphController graphController = GraphViewComponent.graphControllerMap.get(currentDataflow);
-					if (graphController != null) {
-						JSVGCanvas svgCanvas = graphController.getSVGCanvas();
-						Object dataflowSource = fileManager.getDataflowSource(currentDataflow);
-						if (dataflowSource instanceof ComponentServiceDesc) {
-							svgCanvas.setBorder(new ComponentBorder((ComponentServiceDesc) dataflowSource));
-							svgCanvas.repaint();
-						} else {
-							svgCanvas.setBorder(null);
-							svgCanvas.repaint();
-						}
-					}
+			    FileManagerObserverRunnable runnable = new FileManagerObserverRunnable(event);
+				if (SwingUtilities.isEventDispatchThread()) {
+					runnable.run();
+				} else {
+					SwingUtilities.invokeLater(runnable);
 				}
 			}
 		});
@@ -53,14 +45,40 @@ public class FileManagerObserver implements StartupSPI {
 		return 200;
 	}
 
+	public class FileManagerObserverRunnable implements Runnable {
+		private final FileManagerEvent message;
+
+	    public FileManagerObserverRunnable(FileManagerEvent message) {
+			this.message = message;
+		}
+
+		public void run() {
+			Dataflow currentDataflow = fileManager.getCurrentDataflow();
+			if (currentDataflow != null) {
+				SVGGraphController graphController = GraphViewComponent.graphControllerMap.get(currentDataflow);
+				if (graphController != null) {
+					JSVGCanvas svgCanvas = graphController.getSVGCanvas();
+					Object dataflowSource = fileManager.getDataflowSource(currentDataflow);
+					if (dataflowSource instanceof ComponentVersionIdentification) {
+						svgCanvas.setBorder(new ComponentBorder((ComponentVersionIdentification) dataflowSource));
+						svgCanvas.repaint();
+					} else {
+						svgCanvas.setBorder(null);
+						svgCanvas.repaint();
+					}
+				}
+			}
+		}
+	}
+
 	class ComponentBorder implements Border {
 
 		private final Color COLOR = new Color(163, 66, 51);
 		private final Insets insets = new Insets(25, 0, 0, 0);
 		private final String text;
 
-		public ComponentBorder(ComponentServiceDesc componentServiceDesc) {
-			text = "Component : " + componentServiceDesc.getName();
+		public ComponentBorder(ComponentVersionIdentification identification) {
+			text = "Component : " + identification.getComponentName();
 		}
 
 		@Override
