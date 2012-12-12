@@ -30,7 +30,7 @@ public class FileManagerObserver implements StartupSPI {
 	@Override
 	public boolean startup() {
 		ColourManager.getInstance().setPreferredColour("net.sf.taverna.t2.component.registry.Component", COLOR);
-		ColourManager.getInstance().setPreferredColour("net.sf.taverna.t2.component.ComponentActivity", COLOR);
+//		ColourManager.getInstance().setPreferredColour("net.sf.taverna.t2.component.ComponentActivity", COLOR);
 		fileManager.addObserver(new Observer<FileManagerEvent>() {
 			@Override
 			public void notify(Observable<FileManagerEvent> observable, FileManagerEvent event) throws Exception {
