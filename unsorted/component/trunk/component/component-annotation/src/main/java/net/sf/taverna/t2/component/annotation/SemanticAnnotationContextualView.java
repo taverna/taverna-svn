@@ -46,6 +46,7 @@ import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.component.registry.local.LocalComponentRegistry;
 import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
 import net.sf.taverna.t2.component.ui.file.ComponentFileType;
@@ -142,16 +143,17 @@ public class SemanticAnnotationContextualView extends ContextualView {
 		Object dataflowSource = fileManager.getDataflowSource(fileManager.getCurrentDataflow());
 		if (dataflowSource instanceof ComponentServiceDesc) {
 			ComponentServiceDesc componentServiceDesc = (ComponentServiceDesc) dataflowSource;
-			ComponentRegistry componentRegistry = getComponentRegistry(componentServiceDesc
+			ComponentVersionIdentification identification = componentServiceDesc.getIdentification();
+			ComponentRegistry componentRegistry = getComponentRegistry(identification
 					.getRegistryBase());
 			try {
 				ComponentFamily componentFamily = componentRegistry
-						.getComponentFamily(componentServiceDesc.getFamilyName());
+						.getComponentFamily(identification.getFamilyName());
 				return componentFamily.getComponentProfile();
 			} catch (ComponentRegistryException e) {
 				logger.warn("No component profile found for component family "
-						+ componentServiceDesc.getFamilyName() + " at component registry "
-						+ componentServiceDesc.getRegistryBase(), e);
+						+ identification.getFamilyName() + " at component registry "
+						+ identification.getRegistryBase(), e);
 			}
 		}
 		return null;
@@ -278,11 +280,10 @@ public class SemanticAnnotationContextualView extends ContextualView {
 	public static void main(String[] args) throws Exception {
 		JFrame frame = new JFrame();
 		frame.setSize(400, 200);
-		ComponentServiceDesc componentServiceDesc = new ComponentServiceDesc();
-		componentServiceDesc.setRegistryBase(new URL("http://sandbox.myexperiment.org"));
-		componentServiceDesc.setFamilyName("SCAPE Migration Action Components");
-		componentServiceDesc.setComponentName("Image To Tiff");
-		componentServiceDesc.setComponentVersion(2);
+		ComponentVersionIdentification identification = new ComponentVersionIdentification(
+				new URL("http://sandbox.myexperiment.org"),
+				"SCAPE Migration Action Components", "Image To Tiff", 2);
+		ComponentServiceDesc componentServiceDesc = new ComponentServiceDesc(identification);
 		Dataflow dataflow = fileManager.openDataflow(new ComponentFileType(), componentServiceDesc);
 
 		Processor processor = edits.createProcessor("processor");
