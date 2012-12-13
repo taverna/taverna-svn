@@ -15,6 +15,7 @@ import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.component.registry.local.LocalComponentRegistry;
 import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
+import net.sf.taverna.t2.component.ui.panel.RegistryAndFamilyChooserPanel;
 import net.sf.taverna.t2.servicedescriptions.AbstractConfigurableServiceProvider;
 import net.sf.taverna.t2.servicedescriptions.CustomizedConfigurePanelProvider;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.MyExperimentClient;
@@ -25,8 +26,6 @@ public class ComponentServiceProvider extends
 	AbstractConfigurableServiceProvider<ComponentServiceProviderConfig> implements
 	CustomizedConfigurePanelProvider<ComponentServiceProviderConfig> {
 	
-	private static final String T2FLOW = ".t2flow";
-
 	private static final URI providerId = URI
 		.create("http://taverna.sf.net/2012/service-provider/component");
 	
@@ -41,7 +40,6 @@ public class ComponentServiceProvider extends
 	/**
 	 * Do the actual search for services. Return using the callBack parameter.
 	 */
-	@SuppressWarnings("unchecked")
 	public void findServiceDescriptionsAsync(
 			FindServiceDescriptionsCallBack callBack) {
 		ComponentServiceProviderConfig config = getConfiguration();
@@ -111,12 +109,20 @@ public class ComponentServiceProvider extends
 	public void createCustomizedConfigurePanel(
 			CustomizedConfigureCallBack<ComponentServiceProviderConfig> callBack) {
 		
-		ComponentFamilyChooserPanel panel = new ComponentFamilyChooserPanel(false);
+		RegistryAndFamilyChooserPanel panel = new RegistryAndFamilyChooserPanel();
 				
 		int result = JOptionPane.showConfirmDialog(null, panel, "Component family import", JOptionPane.OK_CANCEL_OPTION);
 		if (result == JOptionPane.OK_OPTION) {
 			
-			ComponentServiceProviderConfig newConfig = panel.getConfig();
+			ComponentServiceProviderConfig newConfig = new ComponentServiceProviderConfig();
+			ComponentRegistry chosenRegistry = panel.getChosenRegistry();
+			ComponentFamily chosenFamily = panel.getChosenFamily();
+			if ((chosenRegistry == null) || (chosenFamily == null)){
+				newConfig = null;
+			} else {
+				newConfig.setRegistryBase(chosenRegistry.getRegistryBase());
+				newConfig.setFamilyName(chosenFamily.getName());
+			}
 			if (newConfig != null) {
 				callBack.newProviderConfiguration(newConfig);
 			}
