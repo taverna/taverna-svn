@@ -8,13 +8,13 @@ import java.util.List;
 
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
+import net.sf.taverna.t2.component.registry.ComponentFileType;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.component.registry.local.LocalComponentRegistry;
 import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
-import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceDesc;
 import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceProviderConfig;
 import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.workbench.file.AbstractDataflowPersistenceHandler;
@@ -45,12 +45,17 @@ public class ComponentSaver extends AbstractDataflowPersistenceHandler
 			throw new IllegalArgumentException("Unsupported file type "
 					+ fileType);
 		}
-		if (!(destination instanceof ComponentServiceDesc)) {
+		if (!(destination instanceof ComponentVersionIdentification)) {
 			throw new IllegalArgumentException("Unsupported destination type " + destination.getClass().getName());
 		}
 		
-		ComponentServiceDesc desc = (ComponentServiceDesc) destination;
-		ComponentVersionIdentification ident = desc.getIdentification();
+		ComponentVersionIdentification ident = (ComponentVersionIdentification) destination;
+		
+		if (ident.getComponentVersion() == -1) {
+			ComponentVersionIdentification newIdent = new ComponentVersionIdentification(ident);
+			newIdent.setComponentVersion(0);
+			return new DataflowInfo(COMPONENT_FILE_TYPE, newIdent, dataflow);
+		}
 		
 		ComponentRegistry registry;
 		if (ident.getRegistryBase().getProtocol().startsWith("http")) {
@@ -60,17 +65,20 @@ public class ComponentSaver extends AbstractDataflowPersistenceHandler
 			registry = LocalComponentRegistry.getComponentRegistry(ident.getRegistryBase());
 		}
 		ComponentFamily family;
-		Component component;
 		try {
 			family = registry.getComponentFamily(ident.getFamilyName());
-			component = family.getComponent(ident.getComponentName());
 		} catch (ComponentRegistryException e1) {
 			throw new SaveException("Unable to read component", e1);
 		}
-		
+	
 		ComponentVersion newVersion = null;
 		try {
-			newVersion = component.addVersionBasedOn(dataflow);
+			if (ident.getComponentVersion() == 0) {
+				newVersion = family.createComponentBasedOn(ident.getComponentName(), dataflow);
+			} else {
+				Component component = family.getComponent(ident.getComponentName());
+				newVersion = component.addVersionBasedOn(dataflow);
+			}
 		} catch (ComponentRegistryException e) {
 			logger.error("Unable to save new version of component", e);
 			throw new SaveException("Unable to save new version of component", e);
@@ -78,7 +86,6 @@ public class ComponentSaver extends AbstractDataflowPersistenceHandler
 		
 		ComponentVersionIdentification newIdent = new ComponentVersionIdentification(ident);
 		newIdent.setComponentVersion(newVersion.getVersionNumber());
-		ComponentServiceDesc newDesc = new ComponentServiceDesc(newIdent);
 		
 		ComponentServiceProviderConfig config = new ComponentServiceProviderConfig();
 		config.setRegistryBase(ident.getRegistryBase());
@@ -89,7 +96,7 @@ public class ComponentSaver extends AbstractDataflowPersistenceHandler
 			logger.error("Unable to refresh service panel");
 		}
 		
-		return new DataflowInfo(COMPONENT_FILE_TYPE, destination, dataflow);
+		return new DataflowInfo(COMPONENT_FILE_TYPE, newIdent, dataflow);
 	}
 	
 	@Override
@@ -99,7 +106,7 @@ public class ComponentSaver extends AbstractDataflowPersistenceHandler
 
 	@Override
 	public List<Class<?>> getSaveDestinationTypes() {
-		return Arrays.<Class<?>> asList(ComponentServiceDesc.class);
+		return Arrays.<Class<?>> asList(ComponentVersionIdentification.class);
 	}
 
 	@Override
