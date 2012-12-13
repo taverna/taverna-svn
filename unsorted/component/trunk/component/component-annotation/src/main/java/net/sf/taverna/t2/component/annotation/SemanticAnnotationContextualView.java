@@ -44,13 +44,12 @@ import net.sf.taverna.t2.annotation.annotationbeans.SemanticAnnotation;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
+import net.sf.taverna.t2.component.registry.ComponentFileType;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.component.registry.local.LocalComponentRegistry;
 import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
-import net.sf.taverna.t2.component.ui.file.ComponentFileType;
-import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceDesc;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 import net.sf.taverna.t2.workbench.edits.EditManager;
@@ -141,9 +140,8 @@ public class SemanticAnnotationContextualView extends ContextualView {
 
 	private ComponentProfile getComponentProfile() {
 		Object dataflowSource = fileManager.getDataflowSource(fileManager.getCurrentDataflow());
-		if (dataflowSource instanceof ComponentServiceDesc) {
-			ComponentServiceDesc componentServiceDesc = (ComponentServiceDesc) dataflowSource;
-			ComponentVersionIdentification identification = componentServiceDesc.getIdentification();
+		if (dataflowSource instanceof ComponentVersionIdentification) {
+			ComponentVersionIdentification identification = (ComponentVersionIdentification) dataflowSource;
 			ComponentRegistry componentRegistry = getComponentRegistry(identification
 					.getRegistryBase());
 			try {
@@ -283,8 +281,7 @@ public class SemanticAnnotationContextualView extends ContextualView {
 		ComponentVersionIdentification identification = new ComponentVersionIdentification(
 				new URL("http://sandbox.myexperiment.org"),
 				"SCAPE Migration Action Components", "Image To Tiff", 2);
-		ComponentServiceDesc componentServiceDesc = new ComponentServiceDesc(identification);
-		Dataflow dataflow = fileManager.openDataflow(new ComponentFileType(), componentServiceDesc);
+		Dataflow dataflow = fileManager.openDataflow(new ComponentFileType(), identification);
 
 		Processor processor = edits.createProcessor("processor");
 		try {

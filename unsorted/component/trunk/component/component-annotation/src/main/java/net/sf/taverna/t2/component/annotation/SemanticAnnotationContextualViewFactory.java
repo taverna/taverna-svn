@@ -23,11 +23,8 @@ package net.sf.taverna.t2.component.annotation;
 import java.util.Arrays;
 import java.util.List;
 
-import org.omg.IOP.ComponentIdHelper;
-
 import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
-import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceDesc;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewFactory;
