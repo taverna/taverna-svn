@@ -11,7 +11,9 @@ import java.util.Date;
 import java.util.List;
 
 import net.sf.taverna.t2.component.ComponentActivityConfigurationBean;
+import net.sf.taverna.t2.component.registry.ComponentFileType;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceDesc;
 import net.sf.taverna.t2.workbench.file.AbstractDataflowPersistenceHandler;
 import net.sf.taverna.t2.workbench.file.DataflowInfo;
@@ -39,13 +41,11 @@ public class ComponentOpener extends AbstractDataflowPersistenceHandler
 			throw new IllegalArgumentException("Unsupported file type "
 					+ fileType);
 		}
-		if (!(source instanceof ComponentServiceDesc)) {
+		if (!(source instanceof ComponentVersionIdentification)) {
 			throw new IllegalArgumentException("Unsupported source type " + source.getClass().getName());
 		}
 		
-		ComponentServiceDesc desc = (ComponentServiceDesc) source;
-		ComponentActivityConfigurationBean dummyBean =
-			desc.getActivityConfiguration();
+		ComponentActivityConfigurationBean dummyBean = new ComponentActivityConfigurationBean((ComponentVersionIdentification) source);
 		Dataflow d;
 		try {
 			d = dummyBean.getDataflow();
@@ -63,6 +63,6 @@ public class ComponentOpener extends AbstractDataflowPersistenceHandler
 
 	@Override
 	public List<Class<?>> getOpenSourceTypes() {
-		return Arrays.<Class<?>> asList(ComponentServiceDesc.class);
+		return Arrays.<Class<?>> asList(ComponentVersionIdentification.class);
 	}
 }
