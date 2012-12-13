@@ -13,7 +13,7 @@ import net.sf.taverna.t2.component.ComponentActivityConfigurationBean;
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentUtil;
-import net.sf.taverna.t2.component.ui.view.ComponentListCellRenderer;
+import net.sf.taverna.t2.component.ui.panel.ComponentListCellRenderer;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationPanel;
 
 import org.apache.log4j.Logger;
