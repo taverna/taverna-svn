@@ -17,6 +17,11 @@
 			<version>0.1.2</version>
 		</dependency>
 		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>component-annotation</artifactId>
+			<version>0.1.2</version>
+		</dependency>
+		<dependency>
 			<groupId>net.sf.taverna.t2.ui-api</groupId>
 			<artifactId>activity-palette-api</artifactId>
 			<version>${t2.ui.api.version}</version>
@@ -46,6 +51,12 @@
         	<artifactId>perspective-myexperiment</artifactId>
         	<version>1.4.1</version>
 		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.lang</groupId>
+	<artifactId>ui</artifactId>
+	<version>1.4</version>
+		</dependency>
+		
 		<!-- Workbench runtime for testing from IDE, remove if not using TavernaWorkbenchWithExamplePlugin.main() -->
 		<dependency>
 			<groupId>net.sf.taverna.t2.taverna-workbench</groupId>
