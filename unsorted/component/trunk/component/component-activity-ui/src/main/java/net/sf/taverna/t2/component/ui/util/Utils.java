@@ -3,7 +3,6 @@
  */
 package net.sf.taverna.t2.component.ui.util;
 
-import net.sf.taverna.t2.component.ui.menu.ComponentLocationChooserPanel;
 import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceProvider;
 import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceProviderConfig;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescriptionRegistry;
@@ -15,6 +14,9 @@ import net.sf.taverna.t2.workflowmodel.ConfigurationException;
  *
  */
 public class Utils {
+	
+	// From http://stackoverflow.com/questions/163360/regular-expresion-to-match-urls-in-java
+	public static String URL_PATTERN = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
 
 	public static void refreshComponentServiceProvider(ComponentServiceProviderConfig config)
 			throws ConfigurationException {
