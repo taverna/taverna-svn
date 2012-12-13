@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.local.LocalComponentRegistry;
 import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
+import net.sf.taverna.t2.component.ui.util.Utils;
 
 import net.sf.taverna.t2.lang.ui.DeselectingButton;
 import net.sf.taverna.t2.lang.ui.ValidatingUserInputDialog;
@@ -148,6 +149,7 @@ public class ComponentPreferencePanel extends JPanel {
 				
 				ValidatingUserInputDialog vuid = new ValidatingUserInputDialog("Add Remote Component Registry", inputPanel);
 				vuid.addTextComponentValidation(inputPanel.getRegistryNameField(), "Set the registry name", tableModel.getRegistryMap().keySet(), "Duplicate registry name", "[\\p{L}\\p{Digit}_.]+", "Invalid registry name");
+				vuid.addTextComponentValidation(inputPanel.getLocationField(), "Set the URL of the profile", null, "", Utils.URL_PATTERN, "Invalid URL");
 				vuid.setSize(new Dimension(400, 250));
 				if (vuid.show(ComponentPreferencePanel.this)) {
 					ComponentRegistry newRegistry;
