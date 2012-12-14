@@ -4,7 +4,7 @@ import java.net.Authenticator;
 import java.net.URL;
 import java.util.List;
 
-import net.sf.taverna.t2.component.registry.ComponentFamilyTest;
+import net.sf.taverna.t2.component.registry.ComponentTest;
 import net.sf.taverna.t2.security.credentialmanager.CredentialManagerAuthenticator;
 
 import org.jdom.Element;
@@ -16,7 +16,7 @@ import org.junit.BeforeClass;
  *
  * @author David Withers
  */
-public class MyExperimentComponentFamilyTest extends ComponentFamilyTest {
+public class MyExperimentComponentTest extends ComponentTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {

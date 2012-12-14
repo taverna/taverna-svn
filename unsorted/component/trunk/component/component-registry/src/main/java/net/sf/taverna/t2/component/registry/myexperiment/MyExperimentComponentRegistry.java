@@ -108,8 +108,10 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		Element packElement = createPack(name);
 		tagResource("component family", packElement.getAttributeValue("resource"));
 		ComponentFamily componentFamily = new MyExperimentComponentFamily(this, packElement.getAttributeValue("uri"));
-		Element profileElement = addComponentProfileInternal(componentProfile);
-		addPackItem(packElement, profileElement);
+		if (componentProfile != null) {
+			Element profileElement = addComponentProfileInternal(componentProfile);
+			addPackItem(packElement, profileElement);
+		}
 		if (componentFamilies != null) {
 			componentFamilies.add(componentFamily);
 		}
@@ -273,14 +275,68 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 	}
 
 	public Element uploadWorkflow(String dataflow, String title, String description, String sharing) throws ComponentRegistryException {
-		ServerResponse postWorkflowResponse = myExperimentClient.postWorkflow(dataflow, title, description, "by-nd", sharing);
-		return postWorkflowResponse.getResponseBody().getRootElement();
+		String workflowElement = prepareWorkflowPostContent(dataflow, title, description, "by-nd", sharing);
+		try {
+			ServerResponse response = myExperimentClient.doMyExperimentPOST(urlToString(registryURL) + "/workflow.xml", workflowElement);
+			return response.getResponseBody().getRootElement();
+		} catch (Exception e) {
+			throw new ComponentRegistryException("Unable to upload workflow", e);
+		}
 	}
 
-	public Element updateWorkflow(String uri, String dataflow) throws ComponentRegistryException {
-		Resource resource = Resource.buildFromXML(getResource(uri),myExperimentClient, logger);
-		ServerResponse postWorkflowResponse = myExperimentClient.updateWorkflowVersionOrMetadata(resource, dataflow, "", "", "", "");
-		return postWorkflowResponse.getResponseBody().getRootElement();
+	public Element updateWorkflow(String uri, String dataflow, String title, String description, String sharing) throws ComponentRegistryException {
+		String workflowElement = prepareWorkflowPostContent(dataflow, title, description, "by-nd", sharing);
+		try {
+			ServerResponse response = myExperimentClient.doMyExperimentPOST(uri, workflowElement);
+			return response.getResponseBody().getRootElement();
+		} catch (Exception e) {
+			throw new ComponentRegistryException("Unable to update workflow at " + uri, e);
+		}
+	}
+
+	private String prepareWorkflowPostContent(String dataflow, String title, String description, String license, String sharing) {
+		StringBuilder contentXml = new StringBuilder("<workflow>");
+		if (title.length() > 0) contentXml.append("<title>").append(title).append("</title>");
+		if (description.length() > 0) {
+			contentXml.append("<description>").append(description).append("</description>");
+		}
+		if (license.length() > 0) {
+			contentXml.append("<license-type>").append(license).append("</license-type>");
+		}
+		if (sharing.length() > 0) {
+			if (sharing.contains("private")) {
+				contentXml.append("<permissions />");
+			}
+			else {
+				contentXml.append("<permissions><permission><category>public</category>");
+				if (sharing.contains("view") || sharing.contains("download")) {
+					contentXml.append( "<privilege type=\"view\" />");
+				}
+				if (sharing.contains("download")) {
+					contentXml.append("<privilege type=\"download\" />");
+				}
+				contentXml.append("</permission></permissions>");
+			}
+		}
+
+		// check the format of the workflow
+		String scuflSchemaDef = "xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"";
+		String t2flowSchemaDef = "xmlns=\"http://taverna.sf.net/2008/xml/t2flow\"";
+
+		if (dataflow.length() > 0) {
+			String contentType;
+			if (dataflow.contains(scuflSchemaDef)) contentType = "application/vnd.taverna.scufl+xml";
+			else if (dataflow.contains(t2flowSchemaDef)) contentType = "application/vnd.taverna.t2flow+xml";
+			else contentType = "";
+
+			contentXml.append("<content-type>").append(contentType).append("</content-type>");
+			contentXml.append("<content encoding=\"base64\" type=\"binary\">");
+			contentXml.append(Base64.encodeBytes(dataflow.getBytes())).append("</content>");
+		}
+
+		contentXml.append("</workflow>");
+
+		return contentXml.toString();
 	}
 
 	public Element uploadFile(String title, String description, String type, String content) throws ComponentRegistryException {

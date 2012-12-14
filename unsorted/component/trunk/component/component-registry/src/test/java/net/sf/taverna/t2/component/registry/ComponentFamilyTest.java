@@ -43,7 +43,7 @@ import org.junit.Test;
  */
 public class ComponentFamilyTest {
 
-	protected static URL registryTarget;
+	protected static URL componentRegistryUrl;
 	protected static ComponentRegistry componentRegistry;
     protected ComponentFamily componentFamily;
 	protected ComponentProfile componentProfile;
@@ -52,17 +52,21 @@ public class ComponentFamilyTest {
 
 	@Before
 	public void setup() throws Exception {
-		componentProfileUrl = getClass().getClassLoader().getResource("ValidationComponent.xml");
-		assertNotNull(componentProfileUrl);
-		componentProfile = new ComponentProfile(componentProfileUrl);
+		if (componentProfile == null) {
+			componentProfileUrl = getClass().getClassLoader().getResource("ValidationComponent.xml");
+			assertNotNull(componentProfileUrl);
+			componentProfile = new ComponentProfile(componentProfileUrl);
+		}
+		if (dataflow == null) {
+			URL dataflowUrl = getClass().getClassLoader().getResource("beanshell_test.t2flow");
+			assertNotNull(dataflowUrl);
+			dataflow = FileManager.getInstance().openDataflowSilently(new T2FlowFileType(), dataflowUrl).getDataflow();
+		}
 		componentFamily = componentRegistry.createComponentFamily("Test Component Family", componentProfile);
-		URL dataflowUrl = getClass().getClassLoader().getResource("beanshell_test.t2flow");
-		assertNotNull(dataflowUrl);
-		dataflow = FileManager.getInstance().openDataflowSilently(new T2FlowFileType(), dataflowUrl).getDataflow();
 	}
 
 	@After
-	public void cleanup() throws Exception {
+	public void tearDown() throws Exception {
 		componentRegistry.removeComponentFamily(componentFamily);
 	}
 
@@ -79,6 +83,7 @@ public class ComponentFamilyTest {
 
     @Test
     public void testGetComponentProfile() throws Exception {
+    	assertNotNull(componentFamily.getComponentProfile());
 		assertEquals(componentProfile.getId(), componentFamily.getComponentProfile().getId());
     }
 

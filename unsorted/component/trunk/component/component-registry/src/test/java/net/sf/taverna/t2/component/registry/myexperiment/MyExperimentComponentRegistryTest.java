@@ -39,27 +39,32 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+/**
+ *
+ *
+ * @author David Withers
+ */
 public class MyExperimentComponentRegistryTest extends ComponentRegistryTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		registryTarget = new URL("http://aeon.cs.man.ac.uk:3006");
+		componentRegistryUrl = new URL("http://aeon.cs.man.ac.uk:3006");
 		Authenticator.setDefault(new CredentialManagerAuthenticator());
-		componentRegistry = MyExperimentComponentRegistry.getComponentRegistry(registryTarget);
+		componentRegistry = MyExperimentComponentRegistry.getComponentRegistry(componentRegistryUrl);
 	}
 
 	@AfterClass
-	public static void cleanUpBeforeClass() throws Exception {
-		MyExperimentComponentRegistry registry = MyExperimentComponentRegistry.getComponentRegistry(registryTarget);
-		Element element = registry.getResource(registryTarget + "/files.xml", "tag=component%20profile");
+	public static void tearDownAfterClass() throws Exception {
+		MyExperimentComponentRegistry registry = MyExperimentComponentRegistry.getComponentRegistry(componentRegistryUrl);
+		Element element = registry.getResource(componentRegistryUrl + "/files.xml", "tag=component%20profile");
 		for (Element child : (List<Element>) element.getChildren()) {
 			registry.deleteResource(child.getAttributeValue("uri"));
 		}
-		element = registry.getResource(registryTarget + "/packs.xml", "tag=component%20family");
+		element = registry.getResource(componentRegistryUrl + "/packs.xml", "tag=component%20family");
 		for (Element child : (List<Element>) element.getChildren()) {
 			registry.deleteResource(child.getAttributeValue("uri"));
 		}
-		element = registry.getResource(registryTarget + "/packs.xml", "tag=component");
+		element = registry.getResource(componentRegistryUrl + "/packs.xml", "tag=component");
 		for (Element child : (List<Element>) element.getChildren()) {
 			registry.deleteResource(child.getAttributeValue("uri"));
 		}
@@ -68,12 +73,12 @@ public class MyExperimentComponentRegistryTest extends ComponentRegistryTest {
 	@Test
 	public void testGetComponentRegistry() throws Exception {
 		assertSame(componentRegistry,
-				MyExperimentComponentRegistry.getComponentRegistry(registryTarget));
+				MyExperimentComponentRegistry.getComponentRegistry(componentRegistryUrl));
 	}
 
 	@Test
 	public void testUploadWorkflow() throws Exception {
-		MyExperimentComponentRegistry registry = MyExperimentComponentRegistry.getComponentRegistry(registryTarget);
+		MyExperimentComponentRegistry registry = MyExperimentComponentRegistry.getComponentRegistry(componentRegistryUrl);
 		URL dataflowUrl = getClass().getClassLoader().getResource("beanshell_test.t2flow");
 		Dataflow dataflow = FileManager.getInstance()
 				.openDataflowSilently(new T2FlowFileType(), dataflowUrl).getDataflow();
@@ -84,12 +89,6 @@ public class MyExperimentComponentRegistryTest extends ComponentRegistryTest {
 		Element element = registry.uploadWorkflow(dataflowString, "Test Workflow", "Test description", "download");
 		assertEquals("Test Workflow", element.getChild("title").getValue());
 		registry.deleteResource(element.getAttributeValue("uri"));
-	}
-
-	@Test
-	public void testSnapshot() throws Exception {
-		MyExperimentComponentRegistry registry = MyExperimentComponentRegistry.getComponentRegistry(registryTarget);
-		registry.snapshotPack("http://aeon.cs.man.ac.uk:3006/pack.xml?id=300");
 	}
 
 }

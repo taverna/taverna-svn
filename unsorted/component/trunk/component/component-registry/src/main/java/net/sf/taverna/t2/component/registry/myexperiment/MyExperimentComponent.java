@@ -27,6 +27,8 @@ import java.net.URL;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import net.sf.taverna.t2.annotation.annotationbeans.DescriptiveTitle;
+import net.sf.taverna.t2.annotation.annotationbeans.FreeTextDescription;
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
@@ -35,6 +37,7 @@ import net.sf.taverna.t2.workbench.file.exceptions.OverwriteException;
 import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
 import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
+import net.sf.taverna.t2.workflowmodel.utils.AnnotationTools;
 
 import org.jdom.Element;
 
@@ -47,12 +50,14 @@ public class MyExperimentComponent implements Component {
 
 	private final MyExperimentComponentRegistry componentRegistry;
 	private final String uri;
+	private final AnnotationTools annotationTools;
 
 	private String name;
 
 	public MyExperimentComponent(MyExperimentComponentRegistry componentRegistry, String uri) {
 		this.componentRegistry = componentRegistry;
 		this.uri = uri;
+		annotationTools = new AnnotationTools();
 	}
 
 	@Override
@@ -85,6 +90,9 @@ public class MyExperimentComponent implements Component {
 
 	@Override
 	public MyExperimentComponentVersion addVersionBasedOn(Dataflow dataflow) throws ComponentRegistryException {
+		String title = annotationTools.getAnnotationString(dataflow, DescriptiveTitle.class, "Untitled");
+		String description = annotationTools.getAnnotationString(dataflow, FreeTextDescription.class, "No description");
+		String sharing = "download"; // or private
 		String dataflowString;
 		try {
 			ByteArrayOutputStream dataflowStream = new ByteArrayOutputStream();
@@ -102,15 +110,15 @@ public class MyExperimentComponent implements Component {
 		}
 
 		Element workflowElement = componentRegistry.getPackItem(uri, "workflow");
-		Element componentWorkflow = componentRegistry.updateWorkflow(workflowElement.getAttributeValue("uri"), dataflowString);
+		Element componentWorkflow = componentRegistry.updateWorkflow(workflowElement.getAttributeValue("uri"), dataflowString,
+				title, description, sharing);
 
 		Element componentElement = componentRegistry.getResource(uri);
 		componentRegistry.deletePackItem(componentElement, "workflow");
 		componentRegistry.addPackItem(componentElement, componentWorkflow);
 
 		Element componentPack = componentRegistry.snapshotPack(uri);
-		String uri = componentPack.getAttributeValue("uri");
-		String version = componentPack.getAttributeValue("uri");
+		String version = componentPack.getAttributeValue("version");
 		return new MyExperimentComponentVersion(componentRegistry, this, uri+"&version="+version);
 	}
 

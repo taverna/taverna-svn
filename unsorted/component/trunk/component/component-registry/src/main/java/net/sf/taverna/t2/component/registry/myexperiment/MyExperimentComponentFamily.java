@@ -53,11 +53,11 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 
 	private final MyExperimentComponentRegistry componentRegistry;
 	private final String uri;
+	private final AnnotationTools annotationTools;
 
 	private String name;
 	private ComponentProfile componentProfile;
 	private List<Component> components;
-	private AnnotationTools annotationTools;
 
 	public MyExperimentComponentFamily(MyExperimentComponentRegistry componentRegistry, String uri) {
 		this.componentRegistry = componentRegistry;

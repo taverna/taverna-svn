@@ -30,19 +30,28 @@ import java.net.URL;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+/**
+ *
+ *
+ * @author David Withers
+ */
 public abstract class ComponentRegistryTest {
 
-	protected static URL registryTarget;
+	protected static URL componentRegistryUrl;
 	protected static ComponentRegistry componentRegistry;
-	protected ComponentProfile componentProfile;
-	protected URL componentProfileUrl;
+	protected static URL componentProfileUrl;
+	protected static ComponentProfile componentProfile;
 
 	@Before
 	public void setup() throws Exception {
-		componentProfileUrl = getClass().getClassLoader().getResource("ValidationComponent.xml");
-		assertNotNull(componentProfileUrl);
+		if (componentProfile == null) {
+			componentProfileUrl = getClass().getClassLoader().getResource("ValidationComponent.xml");
+			assertNotNull(componentProfileUrl);
+			componentProfile = new ComponentProfile(componentProfileUrl);
+		}
 		componentProfile = new ComponentProfile(componentProfileUrl);
 	}
 
@@ -99,7 +108,7 @@ public abstract class ComponentRegistryTest {
 
 	@Test
 	public void testGetResistryBase() throws Exception {
-		assertEquals(registryTarget, componentRegistry.getRegistryBase());
+		assertEquals(componentRegistryUrl, componentRegistry.getRegistryBase());
 	}
 
 	@Test
