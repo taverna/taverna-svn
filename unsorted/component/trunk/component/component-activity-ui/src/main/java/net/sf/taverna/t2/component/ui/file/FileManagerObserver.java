@@ -9,6 +9,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
+import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 import net.sf.taverna.t2.workbench.StartupSPI;
@@ -64,7 +65,7 @@ public class FileManagerObserver implements StartupSPI {
 				if (graphController != null) {
 					JSVGCanvas svgCanvas = graphController.getSVGCanvas();
 					Object dataflowSource = fileManager.getDataflowSource(currentDataflow);
-					if (dataflowSource instanceof ComponentVersionIdentification) {
+					if (Utils.currentDataflowIsComponent()) {
 						svgCanvas.setBorder(new ComponentBorder((ComponentVersionIdentification) dataflowSource));
 						svgCanvas.repaint();
 					} else {
