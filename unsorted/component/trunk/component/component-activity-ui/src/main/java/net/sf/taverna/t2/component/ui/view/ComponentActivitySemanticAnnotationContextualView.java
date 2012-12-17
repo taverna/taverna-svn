@@ -85,7 +85,7 @@ import com.hp.hpl.jena.rdf.model.Statement;
  */
 public class ComponentActivitySemanticAnnotationContextualView extends ContextualView {
 
-	public static final String VIEW_TITLE = "Semantic Annotations";
+	public static final String VIEW_TITLE = "Inherited Semantic Annotations";
 
 	private static Logger logger = Logger.getLogger(ComponentActivitySemanticAnnotationContextualView.class);
 
