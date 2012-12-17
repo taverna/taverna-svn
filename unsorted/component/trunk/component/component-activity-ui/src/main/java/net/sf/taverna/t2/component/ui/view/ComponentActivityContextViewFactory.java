@@ -16,7 +16,7 @@ public class ComponentActivityContextViewFactory implements
 	}
 
 	public List<ContextualView> getViews(ComponentActivity selection) {
-		return Arrays.<ContextualView>asList(new ComponentActivityContextualView(selection));
+		return Arrays.<ContextualView>asList(new ComponentActivityContextualView(selection), new ComponentActivitySemanticAnnotationContextualView(selection));
 	}
 
 }
