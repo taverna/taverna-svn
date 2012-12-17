@@ -27,6 +27,10 @@ import org.apache.log4j.Logger;
  */
 public class ComponentPreference {
 	
+	private static final String MYEXPERIMENT_NAME = "sandbox";
+
+	private static final String MYEXPERIMENT_SITE = "http://sandbox.myexperiment.org";
+
 	private final Logger logger = Logger.getLogger(ComponentPreference.class);
 
 	private static ComponentPreference instance = null;
@@ -76,7 +80,7 @@ public class ComponentPreference {
 
 	private void fillDefaultProperties() {
 			properties.setProperty("local registry", (new File(ApplicationRuntime.getInstance().getApplicationHomeDir(), "components")).toURI().toASCIIString());
-		properties.setProperty("myExperiment", "http://www.myexperiment.org");
+		properties.setProperty(MYEXPERIMENT_NAME, MYEXPERIMENT_SITE);
 	}
 
 	private File getConfigFile() {
