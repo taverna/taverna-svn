@@ -1,6 +1,7 @@
 net.sf.taverna.t2.component.ui.menu.ComponentConfigureMenuAction
 #net.sf.taverna.t2.component.ui.menu.component.ComponentServiceCreatorMenuAction
 net.sf.taverna.t2.component.ui.menu.NestedWorkflowCreatorMenuAction
+net.sf.taverna.t2.component.ui.menu.ReplaceByComponentMenuAction
 
 net.sf.taverna.t2.component.ui.menu.ComponentMenu
 
