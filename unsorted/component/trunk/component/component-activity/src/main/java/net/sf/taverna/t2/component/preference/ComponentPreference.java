@@ -118,7 +118,7 @@ public class ComponentPreference {
 		return "Component";
 	}
 
-	String getUUID() {
+	public String getUUID() {
 		return "2317A297-2AE0-42B5-86DC-99C9B7C0524A";
 	}
 
