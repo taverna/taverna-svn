@@ -22,7 +22,6 @@ import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.component.annotation.SemanticAnnotationContextualView;
 import net.sf.taverna.t2.ui.menu.AbstractContextualMenuAction;
-import net.sf.taverna.t2.ui.menu.items.contextualviews.ConfigureSection;
 
 /**
  * @author alanrw
