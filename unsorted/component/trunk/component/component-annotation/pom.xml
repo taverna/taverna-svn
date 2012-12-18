@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>net.sf.taverna.t2.component</groupId>
 		<artifactId>component</artifactId>
-		<version>0.1.2</version>
+		<version>0.2.0</version>
 	</parent>
 	<artifactId>component-annotation</artifactId>
 	<name>Component Annotation</name>
@@ -24,7 +24,7 @@
 			<artifactId>workflowmodel-api</artifactId>
 			<version>${t2.core.version}</version>
 		</dependency>
-		
+
 				<!-- Workbench runtime for testing from IDE, remove if not using TavernaWorkbenchWithExamplePlugin.main() -->
 		<dependency>
 			<groupId>net.sf.taverna.t2.taverna-workbench</groupId>
@@ -34,9 +34,9 @@
 
 			<exclusions>
 
-				<!-- Disable various activities that are not relevant to testing our 
-					example activity. If you want to re-enable for instance WSDL activity, remember 
-					to comment out the exclusion for both wsdl-activity-ui and wsdl-activity 
+				<!-- Disable various activities that are not relevant to testing our
+					example activity. If you want to re-enable for instance WSDL activity, remember
+					to comment out the exclusion for both wsdl-activity-ui and wsdl-activity
 					further down. -->
 				<exclusion>
 					<groupId>net.sf.taverna.t2.ui-activities</groupId>
@@ -117,6 +117,6 @@
 				</exclusion>
 			--></exclusions>
 		</dependency>
-		
+
 	</dependencies>
 </project>

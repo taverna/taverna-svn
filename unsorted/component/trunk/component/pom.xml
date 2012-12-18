@@ -4,12 +4,12 @@
 
 	<groupId>net.sf.taverna.t2.component</groupId>
 	<artifactId>component</artifactId>
-	<version>0.1.2</version>
+	<version>0.2.0</version>
 	<packaging>pom</packaging>
 	<name>Component Taverna project</name>
 
 	<properties>
-		<!--  Update according to latest Taverna version in 
+		<!--  Update according to latest Taverna version in
 		www.mygrid.org.uk/dev/wiki/display/developer/Maven+module+version+numbers
 		 -->
 		<t2.core.version>1.4</t2.core.version>

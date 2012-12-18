@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>net.sf.taverna.t2.component</groupId>
 		<artifactId>component</artifactId>
-		<version>0.1.2</version>
+		<version>0.2.0</version>
 	</parent>
 	<artifactId>component-activity-ui</artifactId>
 	<name>Component Taverna activity UI bindings</name>
@@ -19,6 +19,11 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>component-annotation</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>component-registry</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -48,15 +53,15 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-exts</groupId>
-        	<artifactId>perspective-myexperiment</artifactId>
-        	<version>1.4.1</version>
+			<artifactId>perspective-myexperiment</artifactId>
+			<version>1.4.1</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.lang</groupId>
-	<artifactId>ui</artifactId>
-	<version>1.4</version>
+			<artifactId>ui</artifactId>
+			<version>1.4</version>
 		</dependency>
-		
+
 		<!-- Workbench runtime for testing from IDE, remove if not using TavernaWorkbenchWithExamplePlugin.main() -->
 		<dependency>
 			<groupId>net.sf.taverna.t2.taverna-workbench</groupId>
@@ -66,9 +71,9 @@
 
 			<exclusions>
 
-				<!-- Disable various activities that are not relevant to testing our 
-					example activity. If you want to re-enable for instance WSDL activity, remember 
-					to comment out the exclusion for both wsdl-activity-ui and wsdl-activity 
+				<!-- Disable various activities that are not relevant to testing our
+					example activity. If you want to re-enable for instance WSDL activity, remember
+					to comment out the exclusion for both wsdl-activity-ui and wsdl-activity
 					further down. -->
 				<exclusion>
 					<groupId>net.sf.taverna.t2.ui-activities</groupId>
@@ -93,7 +98,15 @@
 				</exclusion>
 				<exclusion>
 					<groupId>net.sf.taverna.t2.ui-activities</groupId>
+					<artifactId>rshell-activity-ui</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.sf.taverna.t2.ui-activities</groupId>
 					<artifactId>spreadsheet-import-activity-ui</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.sf.taverna.t2.ui-activities</groupId>
+					<artifactId>wsdl-activity-ui</artifactId>
 				</exclusion>
 
 				<!-- .. and the t2.activities counterparts -->
@@ -119,19 +132,24 @@
 				</exclusion>
 				<exclusion>
 					<groupId>net.sf.taverna.t2.activities</groupId>
+					<artifactId>rshell-activity</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.sf.taverna.t2.activities</groupId>
 					<artifactId>spreadsheet-import-activity</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.sf.taverna.t2.activities</groupId>
+					<artifactId>wsdl-activity</artifactId>
 				</exclusion>
 				<!-- Perspectives pulling in too many dependencies -->
 				<exclusion>
-				 	<!--  fails due to direct dependency to WSDL -->
-				 	<groupId>net.sf.taverna.t2.ui-exts</groupId>
-				 	<artifactId>perspective-biocatalogue</artifactId>
-				</exclusion><!--
-				<exclusion>
-				 	<groupId>net.sf.taverna.t2.ui-exts</groupId>
-				 	<artifactId>perspective-myexperiment</artifactId>
-				</exclusion>
-			--></exclusions>
+					<!-- fails due to direct dependency to WSDL -->
+					<groupId>net.sf.taverna.t2.ui-exts</groupId>
+					<artifactId>perspective-biocatalogue</artifactId>
+				</exclusion><!-- <exclusion> <groupId>net.sf.taverna.t2.ui-exts</groupId>
+					<artifactId>perspective-myexperiment</artifactId> </exclusion> -->
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.component</groupId>

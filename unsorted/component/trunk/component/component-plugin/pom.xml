@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>net.sf.taverna.t2.component</groupId>
 		<artifactId>component</artifactId>
-		<version>0.1.2</version>
+		<version>0.2.0</version>
 	</parent>
 	<artifactId>component-plugin</artifactId>
 	<packaging>taverna-plugin</packaging>
@@ -35,6 +35,16 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>component-activity-ui</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>component-annotation</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>component-registry</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
