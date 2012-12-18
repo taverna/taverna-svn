@@ -56,6 +56,7 @@ public class ComponentFamilyTest {
 			componentProfileUrl = getClass().getClassLoader().getResource("ValidationComponent.xml");
 			assertNotNull(componentProfileUrl);
 			componentProfile = new ComponentProfile(componentProfileUrl);
+			componentRegistry.addComponentProfile(componentProfile);
 		}
 		if (dataflow == null) {
 			URL dataflowUrl = getClass().getClassLoader().getResource("beanshell_test.t2flow");
@@ -83,8 +84,11 @@ public class ComponentFamilyTest {
 
     @Test
     public void testGetComponentProfile() throws Exception {
-    	assertNotNull(componentFamily.getComponentProfile());
-		assertEquals(componentProfile.getId(), componentFamily.getComponentProfile().getId());
+    	ComponentProfile componentProfile2 = componentFamily.getComponentProfile();
+		assertNotNull(componentProfile2);
+		String id = componentProfile.getId();
+		String id2 = componentProfile2.getId();
+		assertEquals(id, id2);
     }
 
     @Test
