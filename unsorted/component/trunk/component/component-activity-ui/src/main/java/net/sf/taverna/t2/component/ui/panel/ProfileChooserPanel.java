@@ -113,7 +113,8 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 
 	public ComponentProfile getChosenProfile() {
 		if (profileBox.getSelectedIndex() >= 0) {
-			return profileMap.get(profileBox.getSelectedItem());
+			Object selectedItem = profileBox.getSelectedItem();
+			return profileMap.get(selectedItem);
 		} else {
 			return null;
 		}
