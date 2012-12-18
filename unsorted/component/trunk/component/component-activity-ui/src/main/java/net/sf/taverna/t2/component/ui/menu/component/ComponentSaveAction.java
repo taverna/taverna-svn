@@ -68,7 +68,7 @@ public class ComponentSaveAction extends AbstractAction implements Observer<File
 	@Override
 	public void notify(Observable<FileManagerEvent> sender,
 			FileManagerEvent message) throws Exception {
-		this.setEnabled(saveWorkflowAction.isEnabled() && Utils.currentDataflowIsComponent());
+		this.setEnabled(/* saveWorkflowAction.isEnabled() && */ Utils.currentDataflowIsComponent());
 	}
 
 }
