@@ -9,6 +9,7 @@ import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URI;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -30,11 +31,15 @@ import net.sf.taverna.t2.ui.menu.items.contextualviews.ConfigureSection;
 public class AnnotateSemanticsMenuAction extends AbstractContextualMenuAction {
 
 	private static final String ANNOTATE_SEMANTICS = "Annotate semantics...";
+	
+	private static final URI configureSection = URI
+	.create("http://taverna.sf.net/2009/contextMenu/configure");
+
 
 	private static Log logger = Log.getLogger(AnnotateSemanticsMenuAction.class);
 
 	public AnnotateSemanticsMenuAction() {
-		super(ConfigureSection.configureSection, 45);
+		super(configureSection, 45);
 	}
 
 	@Override
