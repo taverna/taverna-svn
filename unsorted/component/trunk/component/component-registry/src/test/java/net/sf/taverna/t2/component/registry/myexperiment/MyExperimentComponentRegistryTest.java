@@ -37,6 +37,7 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 import org.jdom.Element;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -44,6 +45,7 @@ import org.junit.Test;
  *
  * @author David Withers
  */
+@Ignore
 public class MyExperimentComponentRegistryTest extends ComponentRegistryTest {
 
 	@BeforeClass

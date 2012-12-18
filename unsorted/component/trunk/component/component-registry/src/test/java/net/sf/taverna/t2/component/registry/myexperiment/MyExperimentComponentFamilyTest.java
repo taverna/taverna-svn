@@ -10,12 +10,14 @@ import net.sf.taverna.t2.security.credentialmanager.CredentialManagerAuthenticat
 import org.jdom.Element;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 
 /**
  *
  *
  * @author David Withers
  */
+@Ignore
 public class MyExperimentComponentFamilyTest extends ComponentFamilyTest {
 
 	@BeforeClass
