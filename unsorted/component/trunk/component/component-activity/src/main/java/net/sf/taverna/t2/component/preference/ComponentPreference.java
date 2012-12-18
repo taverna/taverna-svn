@@ -114,7 +114,7 @@ public class ComponentPreference {
 	}
 
 
-	String getFilePrefix() {
+	public String getFilePrefix() {
 		return "Component";
 	}
 
