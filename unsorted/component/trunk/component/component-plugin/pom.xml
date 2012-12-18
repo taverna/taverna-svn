@@ -30,12 +30,12 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>component-activity</artifactId>
-			<version>0.1.2</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>component-activity-ui</artifactId>
-			<version>0.1.2</version>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 </project>
