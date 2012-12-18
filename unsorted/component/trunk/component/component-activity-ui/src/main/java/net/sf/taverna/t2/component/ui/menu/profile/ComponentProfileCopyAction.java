@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.border.TitledBorder;
 
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
@@ -48,6 +49,7 @@ public class ComponentProfileCopyAction extends AbstractAction {
 		GridBagConstraints gbc = new GridBagConstraints();
 		
 		RegistryChooserPanel sourceRegistryPanel = new RegistryChooserPanel();
+		sourceRegistryPanel.setBorder(new TitledBorder("Source registry"));
 		
 		gbc.insets = new Insets(0, 5, 0, 5);
 		gbc.gridx = 0;
@@ -59,6 +61,8 @@ public class ComponentProfileCopyAction extends AbstractAction {
 		overallPanel.add(sourceRegistryPanel, gbc);
 		
 		ProfileChooserPanel profilePanel = new ProfileChooserPanel();
+		profilePanel.setBorder(new TitledBorder("Source profile"));
+
 		sourceRegistryPanel.addObserver(profilePanel);
 		gbc.gridx = 0;
 		gbc.gridy = 1;
@@ -66,6 +70,7 @@ public class ComponentProfileCopyAction extends AbstractAction {
 		overallPanel.add(profilePanel, gbc);
 		
 		RegistryChooserPanel targetRegistryPanel = new RegistryChooserPanel();
+		targetRegistryPanel.setBorder(new TitledBorder("Target registry"));
 		gbc.gridy = 2;
 		overallPanel.add(targetRegistryPanel, gbc);
 		
@@ -96,8 +101,14 @@ public class ComponentProfileCopyAction extends AbstractAction {
 							JOptionPane.showMessageDialog(null, "Target registry already contains a profile named " + sourceProfile.getName(), "Copy Problem", JOptionPane.ERROR_MESSAGE);
 							return;
 						}
-						if (p.getId().equals(sourceProfile.getId())) {
-							JOptionPane.showMessageDialog(null, "Target registry already contains a profile with id " + sourceProfile.getId(), "Copy Problem", JOptionPane.ERROR_MESSAGE);
+						String sourceId = sourceProfile.getId();
+						if (sourceId == null) {
+							JOptionPane.showMessageDialog(null, "Source profile \"" + sourceProfile.getName() + "\" has no id ", "Copy Problem", JOptionPane.ERROR_MESSAGE);
+							return;
+						}
+						String id = p.getId();
+						if (sourceId.equals(id)) {
+							JOptionPane.showMessageDialog(null, "Target registry already contains a profile with id " + sourceId, "Copy Problem", JOptionPane.ERROR_MESSAGE);
 							return;							
 						}
 					}
