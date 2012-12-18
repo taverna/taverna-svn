@@ -13,7 +13,7 @@ public class ComponentServiceIcon implements ActivityIconSPI {
 
 	public int canProvideIconScore(Activity<?> activity) {
 		if (activity instanceof ComponentActivity) {
-			return DEFAULT_ICON;
+			return DEFAULT_ICON + 1;
 		}
 		return NO_ICON;
 	}
