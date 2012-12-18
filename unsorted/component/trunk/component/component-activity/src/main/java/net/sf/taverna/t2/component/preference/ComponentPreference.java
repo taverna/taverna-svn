@@ -27,9 +27,9 @@ import org.apache.log4j.Logger;
  */
 public class ComponentPreference {
 	
-	private static final String MYEXPERIMENT_NAME = "sandbox";
+	private static final String MYEXPERIMENT_NAME = "myExperiment";
 
-	private static final String MYEXPERIMENT_SITE = "http://sandbox.myexperiment.org";
+	private static final String MYEXPERIMENT_SITE = "http://www.myexperiment.org";
 
 	private final Logger logger = Logger.getLogger(ComponentPreference.class);
 
