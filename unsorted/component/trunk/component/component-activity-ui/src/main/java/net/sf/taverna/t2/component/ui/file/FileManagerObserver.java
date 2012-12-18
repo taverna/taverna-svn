@@ -24,14 +24,14 @@ import org.apache.batik.swing.JSVGCanvas;
 
 public class FileManagerObserver implements StartupSPI {
 
-	private static final Color COLOR = new Color(163, 66, 51);
+	private static final Color COLOR = new Color(230, 147, 210);
 
 	private static FileManager fileManager = FileManager.getInstance();
 
 	@Override
 	public boolean startup() {
 		ColourManager.getInstance().setPreferredColour("net.sf.taverna.t2.component.registry.Component", COLOR);
-//		ColourManager.getInstance().setPreferredColour("net.sf.taverna.t2.component.ComponentActivity", COLOR);
+		ColourManager.getInstance().setPreferredColour("net.sf.taverna.t2.component.ComponentActivity", COLOR);
 		fileManager.addObserver(new Observer<FileManagerEvent>() {
 			@Override
 			public void notify(Observable<FileManagerEvent> observable, FileManagerEvent event) throws Exception {
