@@ -108,4 +108,38 @@ public class LocalComponentFamily implements ComponentFamily {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime
+				* result
+				+ ((componentFamilyDir == null) ? 0 : componentFamilyDir
+						.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		LocalComponentFamily other = (LocalComponentFamily) obj;
+		if (componentFamilyDir == null) {
+			if (other.componentFamilyDir != null)
+				return false;
+		} else if (!componentFamilyDir.equals(other.componentFamilyDir))
+			return false;
+		return true;
+	}
+
 }

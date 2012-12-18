@@ -71,7 +71,7 @@ public class LocalComponent implements Component {
 		if (componentVersionFile.isDirectory()) {
 			return new LocalComponentVersion(this, componentVersionFile);
 		}
-		throw new ComponentRegistryException("Unable to read component version");
+		return null;
 	}
 
 
@@ -108,6 +108,38 @@ public class LocalComponent implements Component {
 			logger.error(e);
 			return null;
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((componentDir == null) ? 0 : componentDir.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		LocalComponent other = (LocalComponent) obj;
+		if (componentDir == null) {
+			if (other.componentDir != null)
+				return false;
+		} else if (!componentDir.equals(other.componentDir))
+			return false;
+		return true;
 	}
 
 }
