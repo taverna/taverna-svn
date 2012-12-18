@@ -217,6 +217,7 @@ public class SemanticAnnotationContextualView extends ContextualView {
 	public void removeStatement(Statement statement) {
 		model.remove(statement);
 		initialise();
+		repaint();
 		updateSemanticAnnotation();
 	}
 
