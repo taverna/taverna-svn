@@ -244,7 +244,6 @@ public class SemanticAnnotationContextualView extends ContextualView {
 		StringWriter stringWriter = new StringWriter();
 		model.write(stringWriter, "N3");
 		semanticAnnotation.setContent(stringWriter.toString());
-		System.out.println(semanticAnnotation.getContent());
 		return semanticAnnotation;
 	}
 
