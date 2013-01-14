@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>net.sf.taverna.t2.component</groupId>
 		<artifactId>component</artifactId>
-		<version>0.2.0</version>
+		<version>0.3.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>component-registry</artifactId>
 	<name>Component Registry</name>
