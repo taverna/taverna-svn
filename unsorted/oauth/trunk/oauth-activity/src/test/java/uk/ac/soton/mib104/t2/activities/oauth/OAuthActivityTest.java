@@ -36,6 +36,7 @@ public class OAuthActivityTest {
 		
 		final Set<String> expectedOutputs = new HashSet<String>();
 		expectedOutputs.add("access_token");
+		expectedOutputs.add("access_token_secret");
 
 		activity.configure(configBean);
 
@@ -54,7 +55,7 @@ public class OAuthActivityTest {
 		}
 	}
 
-	@Test
+	@Test(expected = RuntimeException.class)
 	public void executeAsynch() throws Exception {
 		activity.configure(configBean);
 
@@ -66,24 +67,26 @@ public class OAuthActivityTest {
 
 		Map<String, Class<?>> expectedOutputTypes = new HashMap<String, Class<?>>();
 		expectedOutputTypes.put("access_token", String.class);
+		expectedOutputTypes.put("access_token_secret", String.class);
 
 		Map<String, Object> outputs = ActivityInvoker.invokeAsyncActivity(activity, inputs, expectedOutputTypes);
 
-		assertEquals("Unexpected outputs", 1, outputs.size());
+		assertEquals("Unexpected outputs", 2, outputs.size());
 		assertNotNull(outputs.get("access_token"));
 		assertNull(outputs.get("access_token_secret"));
 	}
 
 	@Test(expected = ActivityConfigurationException.class)
 	public void invalidConfiguration() throws ActivityConfigurationException {
+	    /*
 		final OAuthActivityConfigurationBean invalidBean = new OAuthActivityConfigurationBean(ApiDescImpl.OAuth20_draft10);
 		
 		invalidBean.setAccessTokenEndpoint(null);
 		invalidBean.setAccessTokenVerb(null);
 		
 		invalidBean.setAuthorizationEndpoint(null);
-		
-		activity.configure(invalidBean);
+	    */
+		activity.configure(null);
 	}
 
 	@Before
@@ -98,12 +101,12 @@ public class OAuthActivityTest {
 
 		activity.configure(configBean);
 		assertEquals("Unexpected inputs", 4, activity.getInputPorts().size());
-		assertEquals("Unexpected outputs", 1, activity.getOutputPorts().size());
+		assertEquals("Unexpected outputs", 2, activity.getOutputPorts().size());
 
 		activity.configure(configBean);
 		// Should not change on reconfigure
 		assertEquals("Unexpected inputs", 4, activity.getInputPorts().size());
-		assertEquals("Unexpected outputs", 1, activity.getOutputPorts().size());
+		assertEquals("Unexpected outputs", 2, activity.getOutputPorts().size());
 	}
 
 //	@Test
