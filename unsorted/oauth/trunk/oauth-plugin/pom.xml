@@ -29,22 +29,22 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>oauth-activity</artifactId>
-			<version>0.0.1</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>oauth-activity-ui</artifactId>
-			<version>0.0.1</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>oauth-rest-activity</artifactId>
-			<version>1.4</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 	<groupId>net.sf.taverna.t2.ui-activities</groupId>
 	<artifactId>oauth-rest-activity-ui</artifactId>
-			<version>1.4.1</version>
+			<version>${project.version}</version>
 		</dependency>
 
 	</dependencies>
