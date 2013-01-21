@@ -52,11 +52,6 @@
 			<artifactId>report-view</artifactId>
 			<version>${t2.ui.components.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
 		
 	</dependencies>
 	
