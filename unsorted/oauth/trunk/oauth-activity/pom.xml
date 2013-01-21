@@ -24,8 +24,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>oauth-rest-activity</artifactId>
-			<version>1.4</version>
-			<scope>compile</scope>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 	<modules>
