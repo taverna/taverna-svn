@@ -26,6 +26,12 @@
 			<artifactId>oauth-rest-activity</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+		  <groupId>org.scribe</groupId>
+		  <artifactId>scribe</artifactId>
+		  <version>${scribe.version}</version>
+		  </dependency>
+
 	</dependencies>
 	<modules>
 	</modules>
