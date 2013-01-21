@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.activities.rest.ui.view;
+package net.sf.taverna.t2.activities.authrest.ui.view;
 
 import java.util.Arrays;
 import java.util.List;

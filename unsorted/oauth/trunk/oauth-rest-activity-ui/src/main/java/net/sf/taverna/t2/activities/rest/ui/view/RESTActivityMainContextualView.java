@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.activities.rest.ui.view;
+package net.sf.taverna.t2.activities.authrest.ui.view;
 
 import java.awt.Font;
 import java.awt.Frame;
@@ -20,7 +20,7 @@ import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 
 import net.sf.taverna.t2.activities.authrest.RESTActivity;
 import net.sf.taverna.t2.activities.authrest.RESTActivityConfigurationBean;
-import net.sf.taverna.t2.activities.rest.ui.config.RESTActivityConfigureAction;
+import net.sf.taverna.t2.activities.authrest.ui.config.RESTActivityConfigureAction;
 
 @SuppressWarnings("serial")
 public class RESTActivityMainContextualView extends ContextualView {

@@ -1,9 +1,9 @@
-package net.sf.taverna.t2.activities.rest.ui.view;
+package net.sf.taverna.t2.activities.authrest.ui.view;
 
 import javax.swing.Action;
 
 import net.sf.taverna.t2.activities.authrest.RESTActivity;
-import net.sf.taverna.t2.activities.rest.ui.config.RESTActivityConfigureAction;
+import net.sf.taverna.t2.activities.authrest.ui.config.RESTActivityConfigureAction;
 import net.sf.taverna.t2.workbench.activitytools.AbstractConfigureActivityMenuAction;
 
 /**

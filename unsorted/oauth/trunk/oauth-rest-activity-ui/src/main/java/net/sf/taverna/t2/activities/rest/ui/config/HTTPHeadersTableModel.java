@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.activities.rest.ui.config;
+package net.sf.taverna.t2.activities.authrest.ui.config;
 
 import java.util.ArrayList;
 import java.util.Arrays;
