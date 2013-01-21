@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>uk.ac.soton.mib104.t2.activities</groupId>
+		<artifactId>oauth</artifactId>
+		<version>0.0.1</version>
+	</parent>
+	<artifactId>oauth-plugin</artifactId>
+	<packaging>taverna-plugin</packaging>
+	<name>OAuth Taverna plugin</name>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>net.sf.taverna.t2.maven.plugins</groupId>
+				<artifactId>maven-taverna-plugin</artifactId>
+				<version>0.1.1</version>
+				<extensions>true</extensions>
+				<configuration>
+					<provider>uk.ac.soton.mib104.t2.activities</provider>
+					<tavernaVersion>${t2.workbench.version}</tavernaVersion>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>oauth-activity</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>oauth-activity-ui</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.activities</groupId>
+			<artifactId>oauth-rest-activity</artifactId>
+			<version>1.4</version>
+		</dependency>
+		<dependency>
+	<groupId>net.sf.taverna.t2.ui-activities</groupId>
+	<artifactId>oauth-rest-activity-ui</artifactId>
+			<version>1.4.1</version>
+		</dependency>
+
+	</dependencies>
+</project>
