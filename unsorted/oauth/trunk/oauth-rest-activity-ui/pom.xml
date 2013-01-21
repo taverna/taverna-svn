@@ -10,12 +10,11 @@
 	<artifactId>oauth-rest-activity-ui</artifactId>
 	<name>OAuth REST Activity - UI bindings</name>
 
-	<version>1.4.1</version>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>oauth-rest-activity</artifactId>
-			<version>1.4</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-api</groupId>
