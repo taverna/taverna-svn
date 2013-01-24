@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 import net.sf.taverna.t2.component.ComponentActivityConfigurationBean;
+import net.sf.taverna.t2.component.registry.ComponentDataflowCache;
 import net.sf.taverna.t2.component.registry.ComponentFileType;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
@@ -45,10 +46,9 @@ public class ComponentOpener extends AbstractDataflowPersistenceHandler
 			throw new IllegalArgumentException("Unsupported source type " + source.getClass().getName());
 		}
 		
-		ComponentActivityConfigurationBean dummyBean = new ComponentActivityConfigurationBean((ComponentVersionIdentification) source);
 		Dataflow d;
 		try {
-			d = dummyBean.getDataflow();
+			d = ComponentDataflowCache.getDataflow((ComponentVersionIdentification) source);
 		} catch (ComponentRegistryException e) {
 			logger.error("Unable to read dataflow", e);
 			throw new OpenException("Unable to read dataflow", e);
