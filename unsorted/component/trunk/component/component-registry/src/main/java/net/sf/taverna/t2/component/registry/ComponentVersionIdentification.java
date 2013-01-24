@@ -108,4 +108,62 @@ public class ComponentVersionIdentification {
 	}
 
 
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((componentName == null) ? 0 : componentName.hashCode());
+		result = prime
+				* result
+				+ ((componentVersion == null) ? 0 : componentVersion.hashCode());
+		result = prime * result
+				+ ((familyName == null) ? 0 : familyName.hashCode());
+		result = prime * result
+				+ ((registryBase == null) ? 0 : registryBase.hashCode());
+		return result;
+	}
+
+
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ComponentVersionIdentification other = (ComponentVersionIdentification) obj;
+		if (componentName == null) {
+			if (other.componentName != null)
+				return false;
+		} else if (!componentName.equals(other.componentName))
+			return false;
+		if (componentVersion == null) {
+			if (other.componentVersion != null)
+				return false;
+		} else if (!componentVersion.equals(other.componentVersion))
+			return false;
+		if (familyName == null) {
+			if (other.familyName != null)
+				return false;
+		} else if (!familyName.equals(other.familyName))
+			return false;
+		if (registryBase == null) {
+			if (other.registryBase != null)
+				return false;
+		} else if (!registryBase.equals(other.registryBase))
+			return false;
+		return true;
+	}
+
+
 }

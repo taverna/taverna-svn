@@ -33,10 +33,11 @@ public class ComponentActivityHealthChecker implements
 	}
 
 	public VisitReport visit(ComponentActivity activity, List<Object> ancestry) {
-		ComponentActivityConfigurationBean config = activity.getConfiguration();
-		
-		DataflowActivityHealthChecker dahc = new DataflowActivityHealthChecker();
-		return dahc.visit(activity.getComponentRealization(), ancestry);
+//		ComponentActivityConfigurationBean config = activity.getConfiguration();
+//		
+//		DataflowActivityHealthChecker dahc = new DataflowActivityHealthChecker();
+//		return dahc.visit(activity.getComponentRealization(), ancestry);
+		return null;
 	}
 
 }
