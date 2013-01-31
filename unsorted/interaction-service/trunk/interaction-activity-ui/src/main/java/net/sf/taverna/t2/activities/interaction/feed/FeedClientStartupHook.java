@@ -66,7 +66,7 @@ public class FeedClientStartupHook implements StartupSPI {
 						final Date newLastCheckedDate = new Date();
 						InputStream openStream = null;
 						try {
-						final URL url = new URL(InteractionPreference.getInstance().getFeedUrl());
+						final URL url = new URL(InteractionPreference.getInstance().getFeedUrlString());
 						openStream = url.openStream();
 						final Document<Feed> doc = parser.parse(openStream, url.toString());
 						final Feed feed = doc.getRoot().sortEntriesByEdited(true);
