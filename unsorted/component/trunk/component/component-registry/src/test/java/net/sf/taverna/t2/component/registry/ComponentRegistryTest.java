@@ -93,6 +93,22 @@ public abstract class ComponentRegistryTest {
 		componentRegistry.removeComponentFamily(componentFamily);
 	}
 
+	@Test(expected=ComponentRegistryException.class)
+	public void testCreateComponentFamilyDuplicate() throws Exception {
+		componentRegistry.createComponentFamily("TestComponentFamily", componentProfile);
+		componentRegistry.createComponentFamily("TestComponentFamily", componentProfile);
+	}
+
+	@Test(expected=ComponentRegistryException.class)
+	public void testCreateComponentFamilyNullProfile() throws Exception {
+		componentRegistry.createComponentFamily("TestComponentFamily", null);
+	}
+
+	@Test(expected=ComponentRegistryException.class)
+	public void testCreateComponentFamilyNullName() throws Exception {
+		componentRegistry.createComponentFamily(null, componentProfile);
+	}
+
 	@Test
 	public void testRemoveComponentFamily() throws Exception {
 		assertEquals(0, componentRegistry.getComponentFamilies().size());
@@ -121,6 +137,11 @@ public abstract class ComponentRegistryTest {
 		int componentProfileCount = componentRegistry.getComponentProfiles().size();
 		componentRegistry.addComponentProfile(componentProfile);
 		assertEquals(componentProfileCount + 1, componentRegistry.getComponentProfiles().size());
+	}
+
+	@Test(expected=ComponentRegistryException.class)
+	public void testAddComponentProfileNullProfile() throws Exception {
+		componentRegistry.addComponentProfile(null);
 	}
 
 }
