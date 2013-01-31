@@ -21,12 +21,13 @@
 package net.sf.taverna.t2.component.registry;
 
 /**
- *
+ * Thrown when there is a problem interacting with a ComponentRegistry.
  *
  * @author David Withers
- *
  */
 public class ComponentRegistryException extends Exception {
+
+	private static final long serialVersionUID = 1L;
 
 	public ComponentRegistryException() {
 		super();
