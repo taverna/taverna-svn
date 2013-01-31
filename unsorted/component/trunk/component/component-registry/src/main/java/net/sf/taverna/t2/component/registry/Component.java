@@ -25,24 +25,64 @@ import java.util.SortedMap;
 
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
-
 /**
- *
+ * A Component is a building block for creating Taverna workflows. Components
+ * and must comply with the ComponentProfile of their ComponentFamily.
  *
  * @author David Withers
- *
  */
 public interface Component {
 
+	/**
+	 * Returns the name of the Component.
+	 *
+	 * @return the name of the Component.
+	 */
 	public String getName();
-	
-	// The list is returned in increasing numeric order
+
+	/**
+	 * Returns the description of the Component.
+	 *
+	 * @return the description of the Component.
+	 */
+	public String getDescription();
+
+	/**
+	 * Returns a SortedMap of version number to ComponentVersion.
+	 * <p>
+	 * The returned map is sorted increasing numeric order.
+	 *
+	 * @return a SortedMap of version number to ComponentVersion.
+	 */
 	public SortedMap<Integer, ComponentVersion> getComponentVersionMap();
-	
+
+	/**
+	 * Returns the ComponentVersion that has the specified version number.
+	 *
+	 * @param version
+	 *            the version number of the ComponentVersion to return.
+	 * @return the ComponentVersion that has the specified version number.
+	 * @throws ComponentRegistryException
+	 *             if there is a problem accessing the ComponentRegistry.
+	 */
 	public ComponentVersion getComponentVersion(Integer version) throws ComponentRegistryException;
-	
+
+	/**
+	 * Creates a new version of this Component.
+	 *
+	 * @param dataflow
+	 *            the Dataflow that the new ComponentVersion will use.
+	 * @return a new version of this Component.
+	 * @throws ComponentRegistryException
+	 *             if there is a problem accessing the ComponentRegistry.
+	 */
 	public ComponentVersion addVersionBasedOn(Dataflow dataflow) throws ComponentRegistryException;
-	
+
+	/**
+	 * Returns the URL for the Component.
+	 *
+	 * @return the URL for the Component.
+	 */
 	public URL getComponentURL();
 
 }
