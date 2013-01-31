@@ -56,6 +56,7 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	private final AnnotationTools annotationTools;
 
 	private String name;
+	private String description;
 	private ComponentProfile componentProfile;
 	private List<Component> components;
 
@@ -79,6 +80,18 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 			name = titleElement.getTextTrim();
 		}
 		return name;
+	}
+
+	@Override
+	public String getDescription() {
+		if (description == null) {
+			Element descriptionElement = componentRegistry.getResourceElement(uri, "description");
+			if (descriptionElement == null) {
+				description = "";
+			}
+			description = descriptionElement.getTextTrim();
+		}
+		return description;
 	}
 
 	@Override
@@ -123,6 +136,12 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 
 	@Override
 	public ComponentVersion createComponentBasedOn(String componentName, Dataflow dataflow) throws ComponentRegistryException {
+		if (componentName == null) {
+			throw new ComponentRegistryException(("Component name must not be null"));
+		}
+		if (dataflow == null) {
+			throw new ComponentRegistryException(("Dataflow must not be null"));
+		}
 		Component component = getComponent(componentName);
 		if (component != null) {
 			throw new ComponentRegistryException("Component " + componentName + " already exists");

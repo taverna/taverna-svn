@@ -30,22 +30,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.help.UnsupportedOperationException;
-
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Base64;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.MyExperimentClient;
-import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Resource;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.ServerResponse;
 
 import org.apache.log4j.Logger;
 import org.jdom.Element;
 
 /**
- *
+ * Implementation of a ComponentRegistry that uses myExperiment.
  *
  * @author David Withers
  */
@@ -105,13 +102,22 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 
 	@Override
 	public ComponentFamily createComponentFamily(String name, ComponentProfile componentProfile) throws ComponentRegistryException {
+		if (name == null) {
+			throw new ComponentRegistryException(("Component name must not be null"));
+		}
+		if (componentProfile == null) {
+			throw new ComponentRegistryException(("Component profile must not be null"));
+		}
+		if (getComponentFamily(name) != null) {
+			throw new ComponentRegistryException(("Component family already exists"));
+		}
 		Element packElement = createPack(name);
 		tagResource("component family", packElement.getAttributeValue("resource"));
 		ComponentFamily componentFamily = new MyExperimentComponentFamily(this, packElement.getAttributeValue("uri"));
-		if (componentProfile != null) {
-			Element profileElement = addComponentProfileInternal(componentProfile);
-			addPackItem(packElement, profileElement);
-		}
+
+		Element profileElement = addComponentProfileInternal(componentProfile);
+		addPackItem(packElement, profileElement);
+
 		if (componentFamilies != null) {
 			componentFamilies.add(componentFamily);
 		}
@@ -124,7 +130,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 			MyExperimentComponentFamily myExperimentComponentFamily = (MyExperimentComponentFamily) componentFamily;
 			deleteResource(myExperimentComponentFamily.getUri());
 		}
-		if (componentFamilies != null) {
+		if (componentFamilies != null && componentFamily != null) {
 			componentFamilies.remove(componentFamily);
 		}
 	}
@@ -178,6 +184,9 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 	}
 
 	private Element addComponentProfileInternal(ComponentProfile componentProfile) throws ComponentRegistryException {
+		if (componentProfile == null) {
+			throw new ComponentRegistryException(("Component profile must not be null"));
+		}
 		Element profileElement = null;
 		if (componentProfile instanceof MyExperimentComponentProfile) {
 			MyExperimentComponentProfile myExperimentComponentProfile = (MyExperimentComponentProfile) componentProfile;

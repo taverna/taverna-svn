@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package net.sf.taverna.t2.component.registry.local;
 
@@ -31,13 +31,13 @@ import org.apache.log4j.Logger;
  *
  */
 public class LocalComponentRegistry implements ComponentRegistry {
-	
+
 	private static Logger logger = Logger.getLogger(LocalComponentRegistry.class);
-	
+
 	private static Map<File, ComponentRegistry> componentRegistries = new HashMap<File, ComponentRegistry>();
-	
+
 	private File baseDir;
-	
+
 	public LocalComponentRegistry(File registryDir) {
 		baseDir = registryDir;
 	}
@@ -49,13 +49,22 @@ public class LocalComponentRegistry implements ComponentRegistry {
 		return componentRegistries.get(registryDir);
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.component.registry.ComponentRegistry#createComponentFamily(java.lang.String, net.sf.taverna.t2.component.profile.ComponentProfile)
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * net.sf.taverna.t2.component.registry.ComponentRegistry#createComponentFamily
+	 * (java.lang.String, net.sf.taverna.t2.component.profile.ComponentProfile)
 	 */
 	@Override
-	public ComponentFamily createComponentFamily(String name,
-			ComponentProfile componentProfile)
+	public ComponentFamily createComponentFamily(String name, ComponentProfile componentProfile)
 			throws ComponentRegistryException {
+		if (name == null) {
+			throw new ComponentRegistryException(("Component name must not be null"));
+		}
+		if (componentProfile == null) {
+			throw new ComponentRegistryException(("Component profile must not be null"));
+		}
 		File newFamilyDir = new File(getComponentFamiliesDir(), name);
 		if (newFamilyDir.exists()) {
 			throw new ComponentRegistryException(("Component family already exists"));
@@ -63,34 +72,39 @@ public class LocalComponentRegistry implements ComponentRegistry {
 		newFamilyDir.mkdirs();
 		File profileFile = new File(newFamilyDir, "profile");
 		try {
-			if (componentProfile != null) {
-				FileUtils.writeStringToFile(profileFile, componentProfile.getName(), "utf-8");
-			}
+			FileUtils.writeStringToFile(profileFile, componentProfile.getName(), "utf-8");
 		} catch (IOException e) {
 			throw new ComponentRegistryException("Could not write out profile", e);
 		}
 		return new LocalComponentFamily(this, newFamilyDir);
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.component.registry.ComponentRegistry#getComponentFamilies()
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * net.sf.taverna.t2.component.registry.ComponentRegistry#getComponentFamilies
+	 * ()
 	 */
 	@Override
-	public List<ComponentFamily> getComponentFamilies()
-			throws ComponentRegistryException {
+	public List<ComponentFamily> getComponentFamilies() throws ComponentRegistryException {
 		List<ComponentFamily> result = new ArrayList<ComponentFamily>();
 		File familiesDir = getComponentFamiliesDir();
 		for (File subFile : familiesDir.listFiles()) {
 			if (subFile.isDirectory()) {
-					result.add(new LocalComponentFamily(this, subFile));
+				result.add(new LocalComponentFamily(this, subFile));
 			}
 		}
 		return result;
-		
+
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.component.registry.ComponentRegistry#getComponentProfiles()
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * net.sf.taverna.t2.component.registry.ComponentRegistry#getComponentProfiles
+	 * ()
 	 */
 	@Override
 	public List<ComponentProfile> getComponentProfiles() {
@@ -98,19 +112,22 @@ public class LocalComponentRegistry implements ComponentRegistry {
 		File profilesDir = getComponentProfilesDir();
 		for (File subFile : profilesDir.listFiles()) {
 			if (subFile.isFile() && (!subFile.isHidden()) && subFile.getName().endsWith(".xml")) {
-					try {
-						ComponentProfile newProfile = new ComponentProfile(subFile.toURI().toURL());
-						result.add(newProfile);
-					} catch (MalformedURLException e) {
-						logger.error("Unable to read profile", e);
-					}
+				try {
+					ComponentProfile newProfile = new ComponentProfile(subFile.toURI().toURL());
+					result.add(newProfile);
+				} catch (MalformedURLException e) {
+					logger.error("Unable to read profile", e);
+				}
 			}
 		}
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.component.registry.ComponentRegistry#getRegistryBase()
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * net.sf.taverna.t2.component.registry.ComponentRegistry#getRegistryBase()
 	 */
 	@Override
 	public URL getRegistryBase() {
@@ -122,11 +139,16 @@ public class LocalComponentRegistry implements ComponentRegistry {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.component.registry.ComponentRegistry#removeComponentFamily(net.sf.taverna.t2.component.registry.ComponentFamily)
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * net.sf.taverna.t2.component.registry.ComponentRegistry#removeComponentFamily
+	 * (net.sf.taverna.t2.component.registry.ComponentFamily)
 	 */
 	@Override
-	public void removeComponentFamily(ComponentFamily componentFamily) throws ComponentRegistryException {
+	public void removeComponentFamily(ComponentFamily componentFamily)
+			throws ComponentRegistryException {
 		File componentFamilyDir = new File(getComponentFamiliesDir(), componentFamily.getName());
 		try {
 			FileUtils.deleteDirectory(componentFamilyDir);
@@ -134,12 +156,12 @@ public class LocalComponentRegistry implements ComponentRegistry {
 			throw new ComponentRegistryException("Unable to delete component family", e);
 		}
 	}
-	
+
 	private File getBaseDir() {
 		baseDir.mkdirs();
 		return baseDir;
 	}
-	
+
 	private File getComponentFamiliesDir() {
 		File componentFamiliesDir = new File(getBaseDir(), "componentFamilies");
 		componentFamiliesDir.mkdirs();
@@ -152,8 +174,7 @@ public class LocalComponentRegistry implements ComponentRegistry {
 		return componentProfilesDir;
 	}
 
-	public static ComponentRegistry getComponentRegistry(
-			URL componentRegistryBase) {
+	public static ComponentRegistry getComponentRegistry(URL componentRegistryBase) {
 		try {
 			return getComponentRegistry(new File(componentRegistryBase.toURI()));
 		} catch (URISyntaxException e) {
@@ -174,6 +195,9 @@ public class LocalComponentRegistry implements ComponentRegistry {
 	@Override
 	public ComponentProfile addComponentProfile(ComponentProfile componentProfile)
 			throws ComponentRegistryException {
+		if (componentProfile == null) {
+			throw new ComponentRegistryException(("Component profile must not be null"));
+		}
 		String name = componentProfile.getName().replaceAll("\\W+", "") + ".xml";
 		String inputString = componentProfile.getXML();
 		File outputFile = new File(getComponentProfilesDir(), name);
@@ -182,23 +206,25 @@ public class LocalComponentRegistry implements ComponentRegistry {
 			output = new FileOutputStream(outputFile);
 			IOUtils.write(inputString, output);
 		} catch (IOException e) {
-				try {
-					output.close();
-				} catch (IOException e1) {
-					logger.error("Unable to close output");
-				}
+			try {
+				output.close();
+			} catch (IOException e1) {
+				logger.error("Unable to close output");
+			}
 		}
 
-			try {
-				return new ComponentProfile(outputFile.toURI().toURL());
-			} catch (MalformedURLException e) {
-				logger.error(e);
-				return null;
-			}
+		try {
+			return new ComponentProfile(outputFile.toURI().toURL());
+		} catch (MalformedURLException e) {
+			logger.error(e);
+			return null;
+		}
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 *
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -209,7 +235,9 @@ public class LocalComponentRegistry implements ComponentRegistry {
 		return result;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 *
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override

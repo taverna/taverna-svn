@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package net.sf.taverna.t2.component.registry.local;
 
@@ -68,7 +68,7 @@ public class LocalComponentFamily implements ComponentFamily {
 	public List<Component> getComponents() throws ComponentRegistryException {
 		// Assume all directories are components
 		List<Component> result = new ArrayList<Component>();
-		
+
 		for (File subFile : componentFamilyDir.listFiles()) {
 			if (subFile.isDirectory()) {
 				LocalComponent newComponent = new LocalComponent(subFile);
@@ -90,6 +90,12 @@ public class LocalComponentFamily implements ComponentFamily {
 	@Override
 	public ComponentVersion createComponentBasedOn(String componentName,
 			Dataflow dataflow) throws ComponentRegistryException {
+		if (componentName == null) {
+			throw new ComponentRegistryException(("Component name must not be null"));
+		}
+		if (dataflow == null) {
+			throw new ComponentRegistryException(("Dataflow must not be null"));
+		}
 		File newSubFile = new File(componentFamilyDir, componentName);
 		if (newSubFile.exists()) {
 			throw new ComponentRegistryException("Component already exists");

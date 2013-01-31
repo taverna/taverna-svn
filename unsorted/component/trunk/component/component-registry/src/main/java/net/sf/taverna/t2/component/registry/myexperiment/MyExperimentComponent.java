@@ -53,6 +53,7 @@ public class MyExperimentComponent implements Component {
 	private final AnnotationTools annotationTools;
 
 	private String name;
+	private String description;
 
 	public MyExperimentComponent(MyExperimentComponentRegistry componentRegistry, String uri) {
 		this.componentRegistry = componentRegistry;
@@ -70,6 +71,18 @@ public class MyExperimentComponent implements Component {
 			name = titleElement.getTextTrim();
 		}
 		return name;
+	}
+
+	@Override
+	public String getDescription() {
+		if (description == null) {
+			Element descriptionElement = componentRegistry.getResourceElement(uri, "description");
+			if (descriptionElement == null) {
+				description = "";
+			}
+			description = descriptionElement.getTextTrim();
+		}
+		return description;
 	}
 
 	@Override
