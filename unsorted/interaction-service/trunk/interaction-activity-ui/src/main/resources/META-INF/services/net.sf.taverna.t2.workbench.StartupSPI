@@ -1,2 +1,2 @@
 net.sf.taverna.t2.activities.interaction.feed.FeedClientStartupHook
-net.sf.taverna.t2.activities.interaction.hook.InteractionPersistenceHook
+net.sf.taverna.t2.activities.interaction.hook.InteractionStartupHook

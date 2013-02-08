@@ -12,7 +12,7 @@ import net.sf.taverna.t2.workbench.StartupSPI;
  * @author alanrw
  *
  */
-public class InteractionPersistenceHook implements StartupSPI, ShutdownSPI {
+public class InteractionShutdownHook implements ShutdownSPI {
 
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.workbench.ShutdownSPI#positionHint()
@@ -28,12 +28,6 @@ public class InteractionPersistenceHook implements StartupSPI, ShutdownSPI {
 	@Override
 	public boolean shutdown() {
 		InteractionRecorder.persist();
-		return true;
-	}
-
-	@Override
-	public boolean startup() {
-		InteractionRecorder.load();
 		return true;
 	}
 
