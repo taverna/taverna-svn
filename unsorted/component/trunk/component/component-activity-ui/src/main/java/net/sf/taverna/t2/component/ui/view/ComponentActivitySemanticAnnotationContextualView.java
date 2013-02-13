@@ -45,6 +45,7 @@ import net.sf.taverna.t2.component.ComponentActivity;
 import net.sf.taverna.t2.component.ComponentActivityConfigurationBean;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
+import net.sf.taverna.t2.component.registry.ComponentDataflowCache;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentFileType;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
@@ -106,7 +107,7 @@ public class ComponentActivitySemanticAnnotationContextualView extends Contextua
 		ComponentActivityConfigurationBean configuration = ((ComponentActivity) selection).getConfiguration();
 		Dataflow underlyingDataflow;
 		try {
-			underlyingDataflow = configuration.getDataflow();
+			underlyingDataflow = ComponentDataflowCache.getDataflow(configuration);
 		this.annotated = underlyingDataflow;
 		componentProfile = ComponentUtil.calculateFamily(configuration.getRegistryBase(), configuration.getFamilyName()).getComponentProfile();
 		if (componentProfile != null) {
