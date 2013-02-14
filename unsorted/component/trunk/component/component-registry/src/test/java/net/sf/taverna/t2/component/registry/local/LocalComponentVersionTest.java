@@ -22,7 +22,7 @@ package net.sf.taverna.t2.component.registry.local;
 
 import java.io.File;
 
-import net.sf.taverna.t2.component.registry.ComponentTest;
+import net.sf.taverna.t2.component.registry.ComponentVersionTest;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
@@ -33,7 +33,7 @@ import org.junit.BeforeClass;
  *
  * @author David Withers
  */
-public class LocalComponentVersionTest extends ComponentTest {
+public class LocalComponentVersionTest extends ComponentVersionTest {
 
 	private static File testRegistry;
 

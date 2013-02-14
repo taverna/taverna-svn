@@ -26,11 +26,13 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
+import java.util.List;
 
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 
+import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -38,21 +40,25 @@ import org.junit.Test;
  *
  * @author David Withers
  */
+@Ignore
 public abstract class ComponentRegistryTest {
 
 	protected static URL componentRegistryUrl;
 	protected static ComponentRegistry componentRegistry;
-	protected static URL componentProfileUrl;
-	protected static ComponentProfile componentProfile;
+	private ComponentProfile componentProfile;
 
 	@Before
 	public void setup() throws Exception {
-		if (componentProfile == null) {
-			componentProfileUrl = getClass().getClassLoader().getResource("ValidationComponent.xml");
-			assertNotNull(componentProfileUrl);
-			componentProfile = new ComponentProfile(componentProfileUrl);
-		}
+		URL componentProfileUrl = getClass().getClassLoader().getResource("ValidationComponent.xml");
+		assertNotNull(componentProfileUrl);
 		componentProfile = new ComponentProfile(componentProfileUrl);
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		for (ComponentFamily componentFamily : componentRegistry.getComponentFamilies()) {
+			componentRegistry.removeComponentFamily(componentFamily);
+		}
 	}
 
 	@Test
@@ -90,7 +96,6 @@ public abstract class ComponentRegistryTest {
 		assertEquals(1, componentRegistry.getComponentFamilies().size());
 		assertNotNull(componentRegistry.getComponentFamily("TestComponentFamily"));
 		assertEquals(componentFamily, componentRegistry.getComponentFamily("TestComponentFamily"));
-		componentRegistry.removeComponentFamily(componentFamily);
 	}
 
 	@Test(expected=ComponentRegistryException.class)

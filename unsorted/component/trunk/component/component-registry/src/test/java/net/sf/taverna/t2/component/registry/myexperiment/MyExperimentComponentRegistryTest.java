@@ -88,7 +88,7 @@ public class MyExperimentComponentRegistryTest extends ComponentRegistryTest {
 		FileManager.getInstance().saveDataflowSilently(dataflow, new T2FlowFileType(),
 				dataflowStream, false);
 		String dataflowString = dataflowStream.toString("UTF-8");
-		Element element = registry.uploadWorkflow(dataflowString, "Test Workflow", "Test description", "download");
+		Element element = registry.uploadWorkflow(dataflowString, "Test Workflow", "Test description", MyExperimentPermissions.PUBLIC);
 		assertEquals("Test Workflow", element.getChild("title").getValue());
 		registry.deleteResource(element.getAttributeValue("uri"));
 	}

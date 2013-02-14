@@ -34,6 +34,7 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -41,28 +42,24 @@ import org.junit.Test;
  *
  * @author David Withers
  */
+@Ignore
 public class ComponentFamilyTest {
 
 	protected static URL componentRegistryUrl;
 	protected static ComponentRegistry componentRegistry;
-    protected ComponentFamily componentFamily;
-	protected ComponentProfile componentProfile;
-	protected URL componentProfileUrl;
-	protected Dataflow dataflow;
+    private ComponentFamily componentFamily;
+    private ComponentProfile componentProfile;
+    private Dataflow dataflow;
 
 	@Before
 	public void setup() throws Exception {
-		if (componentProfile == null) {
-			componentProfileUrl = getClass().getClassLoader().getResource("ValidationComponent.xml");
-			assertNotNull(componentProfileUrl);
-			componentProfile = new ComponentProfile(componentProfileUrl);
-			componentRegistry.addComponentProfile(componentProfile);
-		}
-		if (dataflow == null) {
-			URL dataflowUrl = getClass().getClassLoader().getResource("beanshell_test.t2flow");
-			assertNotNull(dataflowUrl);
-			dataflow = FileManager.getInstance().openDataflowSilently(new T2FlowFileType(), dataflowUrl).getDataflow();
-		}
+		URL componentProfileUrl = getClass().getClassLoader().getResource("ValidationComponent.xml");
+		assertNotNull(componentProfileUrl);
+		componentProfile = new ComponentProfile(componentProfileUrl);
+		componentRegistry.addComponentProfile(componentProfile);
+		URL dataflowUrl = getClass().getClassLoader().getResource("beanshell_test.t2flow");
+		assertNotNull(dataflowUrl);
+		dataflow = FileManager.getInstance().openDataflowSilently(new T2FlowFileType(), dataflowUrl).getDataflow();
 		componentFamily = componentRegistry.createComponentFamily("Test Component Family", componentProfile);
 	}
 

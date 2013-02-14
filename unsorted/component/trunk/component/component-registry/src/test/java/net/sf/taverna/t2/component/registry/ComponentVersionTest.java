@@ -25,12 +25,14 @@ import static org.junit.Assert.assertNotNull;
 
 import java.net.URL;
 
+import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -38,6 +40,7 @@ import org.junit.Test;
  *
  * @author David Withers
  */
+@Ignore
 public class ComponentVersionTest {
 
 	protected static URL componentRegistryUrl;
@@ -48,12 +51,13 @@ public class ComponentVersionTest {
 
 	@Before
 	public void setUp() throws Exception {
-		if (dataflow == null) {
-			URL dataflowUrl = getClass().getClassLoader().getResource("beanshell_test.t2flow");
-			assertNotNull(dataflowUrl);
-			dataflow = FileManager.getInstance().openDataflowSilently(new T2FlowFileType(), dataflowUrl).getDataflow();
-		}
-		componentFamily = componentRegistry.createComponentFamily("Test Component Family", null);
+		URL dataflowUrl = getClass().getClassLoader().getResource("beanshell_test.t2flow");
+		assertNotNull(dataflowUrl);
+		dataflow = FileManager.getInstance().openDataflowSilently(new T2FlowFileType(), dataflowUrl).getDataflow();
+		URL componentProfileUrl = getClass().getClassLoader().getResource("ValidationComponent.xml");
+		assertNotNull(componentProfileUrl);
+		ComponentProfile componentProfile = new ComponentProfile(componentProfileUrl);
+		componentFamily = componentRegistry.createComponentFamily("Test Component Family", componentProfile);
 		componentVersion = componentFamily.createComponentBasedOn("Test Component", dataflow);
 	}
 
