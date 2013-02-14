@@ -59,9 +59,11 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	private String description;
 	private ComponentProfile componentProfile;
 	private List<Component> components;
+	private final MyExperimentPermissions permissions;
 
-	public MyExperimentComponentFamily(MyExperimentComponentRegistry componentRegistry, String uri) {
+	public MyExperimentComponentFamily(MyExperimentComponentRegistry componentRegistry, MyExperimentPermissions permissions, String uri) {
 		this.componentRegistry = componentRegistry;
+		this.permissions = permissions;
 		this.uri = uri;
 		annotationTools = new AnnotationTools();
 	}
@@ -71,6 +73,7 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 		return componentRegistry;
 	}
 
+	@Override
 	public String getName() {
 		if (name == null) {
 			Element titleElement = componentRegistry.getResourceElement(uri, "title");
@@ -149,7 +152,6 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 		// upload the workflow
 		String title = annotationTools.getAnnotationString(dataflow, DescriptiveTitle.class, "Untitled");
 		String description = annotationTools.getAnnotationString(dataflow, FreeTextDescription.class, "No description");
-		String sharing = "download"; // or private
 		String dataflowString;
 		try {
 			ByteArrayOutputStream dataflowStream = new ByteArrayOutputStream();
@@ -165,10 +167,10 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 		} catch (UnsupportedEncodingException e) {
 			throw new ComponentRegistryException(e);
 		}
-		Element componentWorkflow = componentRegistry.uploadWorkflow(dataflowString, title, description, sharing);
+		Element componentWorkflow = componentRegistry.uploadWorkflow(dataflowString, title, description, permissions);
 
 		// create the component
-		Element componentPack = componentRegistry.createPack(componentName);
+		Element componentPack = componentRegistry.createPack(componentName, permissions);
 		componentRegistry.tagResource("component", componentPack.getAttributeValue("resource"));
 		component = new MyExperimentComponent(componentRegistry, componentPack.getAttributeValue("uri"));
 

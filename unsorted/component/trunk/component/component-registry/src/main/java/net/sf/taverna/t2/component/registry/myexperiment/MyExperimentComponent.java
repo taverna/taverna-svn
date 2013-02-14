@@ -103,9 +103,12 @@ public class MyExperimentComponent implements Component {
 
 	@Override
 	public MyExperimentComponentVersion addVersionBasedOn(Dataflow dataflow) throws ComponentRegistryException {
+		return addVersionBasedOn(dataflow, MyExperimentPermissions.PRIVATE);
+	}
+
+	public MyExperimentComponentVersion addVersionBasedOn(Dataflow dataflow, MyExperimentPermissions permissions) throws ComponentRegistryException {
 		String title = annotationTools.getAnnotationString(dataflow, DescriptiveTitle.class, "Untitled");
 		String description = annotationTools.getAnnotationString(dataflow, FreeTextDescription.class, "No description");
-		String sharing = "download"; // or private
 		String dataflowString;
 		try {
 			ByteArrayOutputStream dataflowStream = new ByteArrayOutputStream();
@@ -124,7 +127,7 @@ public class MyExperimentComponent implements Component {
 
 		Element workflowElement = componentRegistry.getPackItem(uri, "workflow");
 		Element componentWorkflow = componentRegistry.updateWorkflow(workflowElement.getAttributeValue("uri"), dataflowString,
-				title, description, sharing);
+				title, description, permissions);
 
 		Element componentElement = componentRegistry.getResource(uri);
 		componentRegistry.deletePackItem(componentElement, "workflow");

@@ -24,6 +24,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +36,7 @@ import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentPermissions.Sharing;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Base64;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.MyExperimentClient;
 import net.sf.taverna.t2.ui.perspectives.myexperiment.model.ServerResponse;
@@ -82,7 +85,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 					Element packElement = (Element) child;
 					String packUri = packElement.getAttributeValue("uri");
 					if (getResource(packUri) != null) {
-						componentFamilies.add(new MyExperimentComponentFamily(this, packUri));
+						componentFamilies.add(new MyExperimentComponentFamily(this, MyExperimentPermissions.PRIVATE, packUri));
 					}
 				}
 			}
@@ -102,6 +105,10 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 
 	@Override
 	public ComponentFamily createComponentFamily(String name, ComponentProfile componentProfile) throws ComponentRegistryException {
+		return createComponentFamily(name, componentProfile, MyExperimentPermissions.PRIVATE);
+	}
+
+	public ComponentFamily createComponentFamily(String name, ComponentProfile componentProfile, MyExperimentPermissions permissions) throws ComponentRegistryException {
 		if (name == null) {
 			throw new ComponentRegistryException(("Component name must not be null"));
 		}
@@ -111,9 +118,9 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		if (getComponentFamily(name) != null) {
 			throw new ComponentRegistryException(("Component family already exists"));
 		}
-		Element packElement = createPack(name);
+		Element packElement = createPack(name, permissions);
 		tagResource("component family", packElement.getAttributeValue("resource"));
-		ComponentFamily componentFamily = new MyExperimentComponentFamily(this, packElement.getAttributeValue("uri"));
+		ComponentFamily componentFamily = new MyExperimentComponentFamily(this, permissions, packElement.getAttributeValue("uri"));
 
 		Element profileElement = addComponentProfileInternal(componentProfile);
 		addPackItem(packElement, profileElement);
@@ -201,10 +208,13 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		return profileElement;
 	}
 
-	public Element createPack(String title) throws ComponentRegistryException {
-		String content = "<pack><title>" + title + "</title></pack>";
+	public Element createPack(String title, MyExperimentPermissions permissions) throws ComponentRegistryException {
+		StringBuilder contentXml = new StringBuilder("<pack>");
+		contentXml.append("<title>" + title + "</title>");
+		contentXml.append(createPermissions(permissions));
+		contentXml.append("</pack>");
 		try {
-			ServerResponse packResponse = myExperimentClient.doMyExperimentPOST(urlToString(registryURL) + "/pack.xml", content);
+			ServerResponse packResponse = myExperimentClient.doMyExperimentPOST(urlToString(registryURL) + "/pack.xml", contentXml.toString());
 			return packResponse.getResponseBody().getRootElement();
 		} catch (Exception e) {
 			throw new ComponentRegistryException("Error while creating a pack with title : " + title, e);
@@ -283,8 +293,8 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		return true;
 	}
 
-	public Element uploadWorkflow(String dataflow, String title, String description, String sharing) throws ComponentRegistryException {
-		String workflowElement = prepareWorkflowPostContent(dataflow, title, description, "by-nd", sharing);
+	public Element uploadWorkflow(String dataflow, String title, String description, MyExperimentPermissions permissions) throws ComponentRegistryException {
+		String workflowElement = prepareWorkflowPostContent(dataflow, title, description, "by-nd", permissions);
 		try {
 			ServerResponse response = myExperimentClient.doMyExperimentPOST(urlToString(registryURL) + "/workflow.xml", workflowElement);
 			return response.getResponseBody().getRootElement();
@@ -293,8 +303,8 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		}
 	}
 
-	public Element updateWorkflow(String uri, String dataflow, String title, String description, String sharing) throws ComponentRegistryException {
-		String workflowElement = prepareWorkflowPostContent(dataflow, title, description, "by-nd", sharing);
+	public Element updateWorkflow(String uri, String dataflow, String title, String description, MyExperimentPermissions permissions) throws ComponentRegistryException {
+		String workflowElement = prepareWorkflowPostContent(dataflow, title, description, "by-nd", permissions);
 		try {
 			ServerResponse response = myExperimentClient.doMyExperimentPOST(uri, workflowElement);
 			return response.getResponseBody().getRootElement();
@@ -303,7 +313,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		}
 	}
 
-	private String prepareWorkflowPostContent(String dataflow, String title, String description, String license, String sharing) {
+	private String prepareWorkflowPostContent(String dataflow, String title, String description, String license, MyExperimentPermissions permissions) {
 		StringBuilder contentXml = new StringBuilder("<workflow>");
 		if (title.length() > 0) contentXml.append("<title>").append(title).append("</title>");
 		if (description.length() > 0) {
@@ -312,21 +322,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		if (license.length() > 0) {
 			contentXml.append("<license-type>").append(license).append("</license-type>");
 		}
-		if (sharing.length() > 0) {
-			if (sharing.contains("private")) {
-				contentXml.append("<permissions />");
-			}
-			else {
-				contentXml.append("<permissions><permission><category>public</category>");
-				if (sharing.contains("view") || sharing.contains("download")) {
-					contentXml.append( "<privilege type=\"view\" />");
-				}
-				if (sharing.contains("download")) {
-					contentXml.append("<privilege type=\"download\" />");
-				}
-				contentXml.append("</permission></permissions>");
-			}
-		}
+		contentXml.append(createPermissions(permissions));
 
 		// check the format of the workflow
 		String scuflSchemaDef = "xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"";
@@ -348,6 +344,31 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		return contentXml.toString();
 	}
 
+	private String createPermissions(MyExperimentPermissions permissions) {
+		StringBuilder contentXml = new StringBuilder();
+		contentXml.append("<permissions>");
+		if (permissions.getSharing().equals(Sharing.PUBLIC)) {
+			contentXml.append("<permission>");
+			contentXml.append("<category>public</category>");
+			contentXml.append("<privilege type=\"view\" />");
+			contentXml.append("<privilege type=\"download\" />");
+			contentXml.append("</permission>");
+		}
+		for (MyExperimentGroup group : permissions.getGroups()) {
+			contentXml.append("<permission>");
+			contentXml.append("<category>group</category>");
+			contentXml.append("<id>" + group.getId() + "</id>");
+			contentXml.append("<privilege type=\"view\" />");
+			contentXml.append("<privilege type=\"download\" />");
+			if (group.hasEditPermission()) {
+				contentXml.append("<privilege type=\"edit\" />");
+			}
+			contentXml.append("</permission>");
+		}
+		contentXml.append("</permissions>");
+		return contentXml.toString();
+	}
+
 	public Element uploadFile(String title, String description, String type, String content) throws ComponentRegistryException {
 		StringBuilder contentXml = new StringBuilder();
 		contentXml.append("<file>");
@@ -366,6 +387,26 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		} catch (Exception e) {
 			throw new ComponentRegistryException(e);
 		}
+	}
+
+	public List<MyExperimentGroup> getGroups() {
+		List<MyExperimentGroup> groups = new ArrayList<MyExperimentGroup>();
+		String user = getUser();
+		if (user != null) {
+			List<Element> resourceElements = getResourceElements(user, "groups");
+			for (Element element : resourceElements) {
+				groups.add(new MyExperimentGroup(getResource(element.getAttributeValue("uri"))));
+			}
+		}
+		return groups;
+	}
+
+	public String getUser() {
+		Element userElement = getResource(urlToString(registryURL) + "/whoami.xml");
+		if (userElement == null) {
+			return null;
+		}
+		return userElement.getAttributeValue("uri");
 	}
 
 	public void tagResource(String tag, String resource) throws ComponentRegistryException {
