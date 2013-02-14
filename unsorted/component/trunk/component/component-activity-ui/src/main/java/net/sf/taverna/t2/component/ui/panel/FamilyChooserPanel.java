@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package net.sf.taverna.t2.component.ui.panel;
 
@@ -31,37 +31,37 @@ import org.apache.log4j.Logger;
  */
 @SuppressWarnings("unchecked")
 public class FamilyChooserPanel extends JPanel implements Observer, Observable<FamilyChoiceMessage> {
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -2608831126562927778L;
 
 	private static Logger logger = Logger.getLogger(FamilyChooserPanel.class);
-	
-	private List<Observer<FamilyChoiceMessage>> observers = new ArrayList<Observer<FamilyChoiceMessage>>();
-	
 
-	
+	private List<Observer<FamilyChoiceMessage>> observers = new ArrayList<Observer<FamilyChoiceMessage>>();
+
+
+
 	private JComboBox familyBox = new JComboBox();
-	
+
 	private SortedMap<String, ComponentFamily> familyMap = new TreeMap<String, ComponentFamily>();
 
 	private ComponentRegistry chosenRegistry = null;
-	
+
 	private ComponentProfile profileFilter = null;
-	
+
 	public FamilyChooserPanel() {
 		super();
 		this.setLayout(new GridBagLayout());
-		
+
 		GridBagConstraints gbc = new GridBagConstraints();
-		
+
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.NONE;
-		this.add(new JLabel("Component family name:"), gbc);
+		this.add(new JLabel("Component family:"), gbc);
 		gbc.gridx = 1;
 		gbc.weightx = 1;
 		gbc.fill = GridBagConstraints.BOTH;
@@ -74,7 +74,7 @@ public class FamilyChooserPanel extends JPanel implements Observer, Observable<F
 					notifyObservers();
 				}
 			}});
-		
+
 		familyBox.setEditable(false);
 	}
 

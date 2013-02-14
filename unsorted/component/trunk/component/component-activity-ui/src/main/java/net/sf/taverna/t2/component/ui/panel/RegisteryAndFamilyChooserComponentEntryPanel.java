@@ -35,29 +35,28 @@ import org.apache.commons.lang.StringUtils;
 public class RegisteryAndFamilyChooserComponentEntryPanel extends JPanel {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -6675545311458594678L;
 
 	private static final String T2FLOW = ".t2flow";
-	
+
 	private static FileType COMPONENT_TYPE = new ComponentFileType();
 
 	private JTextField componentNameField = new JTextField(20);
-	
+
 	private RegistryAndFamilyChooserPanel registryAndFamilyChooserPanel = new RegistryAndFamilyChooserPanel();
 
 	private static FileManager fileManager = FileManager.getInstance();
-	
+
 	private static EditManager editManager = EditManager.getInstance();
 	private static Edits edits = editManager.getEdits();
 
 	public RegisteryAndFamilyChooserComponentEntryPanel() {
-		
+
 		this.setLayout(new GridBagLayout());
-		
+
 		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.insets = new Insets(0, 5, 0, 5);
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.anchor = GridBagConstraints.WEST;
@@ -66,7 +65,7 @@ public class RegisteryAndFamilyChooserComponentEntryPanel extends JPanel {
 		gbc.weightx = 1;
 		this.add(registryAndFamilyChooserPanel, gbc);
 		gbc.gridy = 1;
-		
+
 		gbc.gridwidth = 1;
 		gbc.gridx = 0;
 		gbc.weightx = 0;
@@ -92,14 +91,14 @@ public class RegisteryAndFamilyChooserComponentEntryPanel extends JPanel {
 		String componentName = StringUtils.remove(getComponentName(), T2FLOW);
 
 			ComponentFamily familyChoice = registryAndFamilyChooserPanel.getChosenFamily();
-			
+
 			ComponentRegistry registry = registryAndFamilyChooserPanel.getChosenRegistry();
-			
+
 			ComponentVersionIdentification ident = new ComponentVersionIdentification(registry.getRegistryBase(), familyChoice.getName(), componentName, -1);
-			
+
 			try {
 				fileManager.saveDataflow(d, COMPONENT_TYPE, ident, false);
-								
+
 				Edit<?> dummyEdit = edits.getUpdateDataflowNameEdit(d, d.getLocalName());
 				editManager.doDataflowEdit(d, dummyEdit);
 			} catch (OverwriteException e) {

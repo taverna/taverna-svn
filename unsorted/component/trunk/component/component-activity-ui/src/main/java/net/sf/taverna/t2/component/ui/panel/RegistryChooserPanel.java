@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package net.sf.taverna.t2.component.ui.panel;
 
@@ -27,87 +27,63 @@ import org.apache.log4j.Logger;
  * @author alanrw
  *
  */
-public class RegistryChooserPanel extends JPanel implements Observable<RegistryChoiceMessage>{
-	
+public class RegistryChooserPanel extends JPanel implements Observable<RegistryChoiceMessage> {
+
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 8390860727800654604L;
 
 	private static Logger logger = Logger.getLogger(RegistryChooserPanel.class);
-	
+
 	private List<Observer<RegistryChoiceMessage>> observers = new ArrayList<Observer<RegistryChoiceMessage>>();
-	
+
 	private JComboBox registryBox = new JComboBox();
-	
-	private JLabel registryBase = new JLabel();
-	
+
 	private ComponentPreference pref = ComponentPreference.getInstance();
-	
+
 	public RegistryChooserPanel() {
 		super();
 		this.setLayout(new GridBagLayout());
-		
+
 		GridBagConstraints gbc = new GridBagConstraints();
-		
+
 		String longestKey = "";
-		int longestValueSize = 40;
 		final SortedMap<String, ComponentRegistry> registryMap = pref.getRegistryMap();
 		for (String registryName : registryMap.keySet()) {
 			registryBox.addItem(registryName);
 			if (registryName.length() > longestKey.length()) {
 				longestKey = registryName;
 			}
-			URL registryBase = registryMap.get(registryName).getRegistryBase();
-			if (registryBase.toExternalForm().length() > longestValueSize) {
-				longestValueSize = registryBase.toExternalForm().length();
-			}
 		}
 		registryBox.setPrototypeDisplayValue(longestKey);
 
 		registryBox.setEditable(false);
-		
+
 		gbc.gridx = 0;
-		gbc.gridy = 0;
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.NONE;
 		this.add(new JLabel("Component registry:"), gbc);
 		gbc.gridx = 1;
 		gbc.weightx = 1;
 		gbc.fill = GridBagConstraints.BOTH;
 		this.add(registryBox, gbc);
-	
-		gbc.gridx = 0;
-		gbc.gridy++;
-		gbc.weightx = 0;
-		gbc.fill = GridBagConstraints.NONE;
-		this.add(new JLabel("Registry base:"), gbc);
-		
-		gbc.gridx = 1;
-		gbc.weightx = 1;
-		gbc.fill = GridBagConstraints.BOTH;
-		this.add(registryBase, gbc);
-		
-		registryBox.addItemListener(new ItemListener() {
 
+		registryBox.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent arg0) {
 				if (arg0.getStateChange() == ItemEvent.SELECTED) {
 					dealWithSelection();
 				}
-			}});
-		
+			}
+		});
+
 		registryBox.setSelectedItem(registryMap.firstKey());
 		dealWithSelection();
 	}
-	
+
 	private void dealWithSelection() {
 		ComponentRegistry chosenRegistry = getChosenRegistry();
-		if (chosenRegistry == null) {
-			registryBase.setText("");
-		} else {
-		registryBase.setText(chosenRegistry.getRegistryBase().toExternalForm());
-		
+
 		RegistryChoiceMessage message = new RegistryChoiceMessage(chosenRegistry);
 		for (Observer<RegistryChoiceMessage> o : getObservers()) {
 			try {
@@ -116,7 +92,6 @@ public class RegistryChooserPanel extends JPanel implements Observable<RegistryC
 				logger.error(e);
 			}
 		}
-		}
 	}
 
 	@Override
@@ -124,12 +99,12 @@ public class RegistryChooserPanel extends JPanel implements Observable<RegistryC
 		observers.add(observer);
 		ComponentRegistry chosenRegistry = getChosenRegistry();
 		if (chosenRegistry != null) {
-		RegistryChoiceMessage message = new RegistryChoiceMessage(chosenRegistry);
-		try {
-			observer.notify(this, message);
-		} catch (Exception e) {
-			logger.error(e);
-		}
+			RegistryChoiceMessage message = new RegistryChoiceMessage(chosenRegistry);
+			try {
+				observer.notify(this, message);
+			} catch (Exception e) {
+				logger.error(e);
+			}
 		}
 	}
 

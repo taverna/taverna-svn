@@ -28,27 +28,26 @@ import org.apache.log4j.Logger;
 public class ComponentVersionChooserPanel extends JPanel implements Observer<ComponentChoiceMessage>{
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 5125907010496468219L;
 
 	private static Logger logger = Logger.getLogger(ComponentVersionChooserPanel.class);
 
 	private final JComboBox componentVersionChoice = new JComboBox();
-	
+
 	private DefaultComboBoxModel componentVersionModel = new DefaultComboBoxModel();
-	
+
 	private ComponentChooserPanel componentChooserPanel = new ComponentChooserPanel();
 
 	public ComponentVersionChooserPanel() {
 		super();
 		this.setLayout(new GridBagLayout());
-		
+
 		componentVersionChoice.setModel(componentVersionModel);
 		componentVersionChoice.setRenderer(new ComponentListCellRenderer());
-		
+
 		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.insets = new Insets(0, 5, 0, 5);
 		gbc.gridx = 0;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -56,10 +55,11 @@ public class ComponentVersionChooserPanel extends JPanel implements Observer<Com
 		gbc.weightx = 1;
 		this.add(componentChooserPanel, gbc);
 		componentChooserPanel.addObserver(this);
-		
+
 		gbc.gridy = 1;
 		gbc.gridwidth = 1;
 		gbc.weightx = 0;
+		gbc.fill = GridBagConstraints.NONE;
 		this.add(new JLabel("Component version:"), gbc);
 		gbc.gridx = 1;
 		gbc.weightx = 1;

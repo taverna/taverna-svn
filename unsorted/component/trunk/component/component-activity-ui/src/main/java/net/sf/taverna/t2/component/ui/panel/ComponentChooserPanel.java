@@ -33,39 +33,38 @@ import org.apache.log4j.Logger;
 public class ComponentChooserPanel extends JPanel implements Observable<ComponentChoiceMessage>, Observer{
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -4459660016225074302L;
 
 	private static Logger logger = Logger.getLogger(ComponentChooserPanel.class);
-	
+
 	private List<Observer<ComponentChoiceMessage>> observers = new ArrayList<Observer<ComponentChoiceMessage>>();
-	
+
 
 
 	private final JComboBox componentChoice = new JComboBox();
-	
+
 	private DefaultComboBoxModel componentModel = new DefaultComboBoxModel();
-	
+
 	private RegistryAndFamilyChooserPanel registryAndFamilyChooserPanel = new RegistryAndFamilyChooserPanel();
 
 	public ComponentChooserPanel() {
 		super();
 		this.setLayout(new GridBagLayout());
-		
+
 		componentChoice.setModel(componentModel);
 		componentChoice.setRenderer(new ComponentListCellRenderer());
-				
+
 		updateComponentModel();
 		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.insets = new Insets(0, 5, 0, 5);
 		gbc.gridx = 0;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridwidth = 2;
 		gbc.weightx = 1;
 		this.add(registryAndFamilyChooserPanel, gbc);
-		
+
 		gbc.gridy = 1;
 		gbc.gridwidth = 1;
 		gbc.weightx = 0;
@@ -74,7 +73,7 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 		gbc.weightx = 1;
 		this.add(componentChoice, gbc);
 		registryAndFamilyChooserPanel.addObserver(this);
-		
+
 		componentChoice.addItemListener(new ItemListener() {
 
 			@Override
@@ -85,7 +84,7 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 
 			}});
 	}
-	
+
 	private void notifyObservers() {
 		ComponentChoiceMessage message = new ComponentChoiceMessage(registryAndFamilyChooserPanel.getChosenFamily(), getChosenComponent());
 		for (Observer<ComponentChoiceMessage> o : getObservers()) {
@@ -95,7 +94,7 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 				logger.error(e);
 			}
 		}
-		
+
 	}
 
 	private void updateComponentModel() {
@@ -148,7 +147,7 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 			} catch (Exception e) {
 				logger.error(e);
 			}
-			}		
+			}
 	}
 
 	@Override

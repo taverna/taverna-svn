@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package net.sf.taverna.t2.component.ui.panel;
 
@@ -29,26 +29,26 @@ import org.apache.log4j.Logger;
  *
  */
 public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoiceMessage> {
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 2175274929391537032L;
 
 	private static Logger logger = Logger.getLogger(ProfileChooserPanel.class);
-	
+
 	private JComboBox profileBox = new JComboBox();
-	
-	private JTextArea profileDescription = new JTextArea(10, 80);
-	
+
+	private JTextArea profileDescription = new JTextArea(10, 60);
+
 	private SortedMap<String, ComponentProfile> profileMap = new TreeMap<String, ComponentProfile>();
-	
+
 	public ProfileChooserPanel() {
 		super();
 		this.setLayout(new GridBagLayout());
-		
+
 		GridBagConstraints gbc = new GridBagConstraints();
-		
+
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.anchor = GridBagConstraints.WEST;
@@ -67,7 +67,7 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 					setProfile(profileMap.get(profileBox.getSelectedItem()));
 				}
 			}});
-		
+
 		profileBox.setEditable(false);
 		profileDescription.setBorder(new TitledBorder("Profile description"));
 		gbc.gridx = 0;
