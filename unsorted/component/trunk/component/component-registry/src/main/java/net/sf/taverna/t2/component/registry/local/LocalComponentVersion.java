@@ -49,9 +49,16 @@ public class LocalComponentVersion implements ComponentVersion {
 	 * @see net.sf.taverna.t2.component.registry.ComponentVersion#getDescription()
 	 */
 	@Override
-	public String getDescription() {
-		// TODO
-		return "";
+		public String getDescription() {
+			File descriptionFile = new File(componentVersionDir, "description");
+			if (descriptionFile.isFile()) {
+				try {
+					return FileUtils.readFileToString(descriptionFile);
+				} catch (IOException e) {
+					logger.error(e);
+				}
+			}
+			return null;
 	}
 
 	/* (non-Javadoc)

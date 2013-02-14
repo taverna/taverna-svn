@@ -4,6 +4,7 @@
 package net.sf.taverna.t2.component.registry.local;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.NoSuchElementException;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import net.sf.taverna.t2.component.registry.Component;
@@ -144,8 +146,15 @@ public class LocalComponent implements Component {
 
 	@Override
 	public String getDescription() {
-		// TODO Auto-generated method stub
-		return null;
+			File descriptionFile = new File(componentDir, "description");
+			if (descriptionFile.isFile()) {
+				try {
+					return FileUtils.readFileToString(descriptionFile);
+				} catch (IOException e) {
+					logger.error(e);
+				}
+			}
+			return null;
 	}
 
 }

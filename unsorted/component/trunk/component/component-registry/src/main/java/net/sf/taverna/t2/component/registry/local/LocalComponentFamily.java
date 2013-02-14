@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
@@ -18,12 +16,19 @@ import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
+
 /**
  * @author alanrw
  *
  */
 public class LocalComponentFamily implements ComponentFamily {
+	
+	private static Logger logger = Logger.getLogger(LocalComponentFamily.class);
 
+	private static final String UTF_8 = "utf-8";
+	private static final String PROFILE = "profile";
 	private final File componentFamilyDir;
 	private final ComponentRegistry parentRegistry;
 
@@ -38,10 +43,10 @@ public class LocalComponentFamily implements ComponentFamily {
 	@Override
 	public ComponentProfile getComponentProfile()
 			throws ComponentRegistryException {
-		File profileFile = new File(componentFamilyDir, "profile");
+		File profileFile = new File(componentFamilyDir, PROFILE);
 		String profileName;
 		try {
-			profileName = FileUtils.readFileToString(profileFile, "utf-8");
+			profileName = FileUtils.readFileToString(profileFile, UTF_8);
 		} catch (IOException e) {
 			throw new ComponentRegistryException("Unable to read profile name", e);
 		}
@@ -150,7 +155,14 @@ public class LocalComponentFamily implements ComponentFamily {
 
 	@Override
 	public String getDescription() {
-		// TODO Auto-generated method stub
+		File descriptionFile = new File(componentFamilyDir, "description");
+		if (descriptionFile.isFile()) {
+			try {
+				return FileUtils.readFileToString(descriptionFile);
+			} catch (IOException e) {
+				logger.error(e);
+			}
+		}
 		return null;
 	}
 
