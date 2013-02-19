@@ -29,9 +29,10 @@ import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.ontology.OntResource;
 
 /**
- *
+ * Definition of a semantic annotation for a component element.
  *
  * @author David Withers
  */
@@ -46,6 +47,11 @@ public class SemanticAnnotationProfile {
 		this.semanticAnnotation = semanticAnnotation;
 	}
 
+	/**
+	 * Returns the ontology that defines semantic annotation.
+	 *
+	 * @return the ontology that defines semantic annotation
+	 */
 	public OntModel getOntology() {
 		String ontology = semanticAnnotation.getOntology();
 		if (ontology != null) {
@@ -55,6 +61,11 @@ public class SemanticAnnotationProfile {
 		}
 	}
 
+	/**
+	 * Returns the predicate for the semantic annotation.
+	 *
+	 * @return the predicate for the semantic annotation
+	 */
 	public OntProperty getPredicate() {
 		OntModel ontology = getOntology();
 		String predicate = semanticAnnotation.getPredicate();
@@ -65,6 +76,9 @@ public class SemanticAnnotationProfile {
 		}
 	}
 
+	/**
+	 * @deprecated use getPredicate().getRange() instead.
+	 */
 	public OntClass getOntClass() {
 		OntModel ontology = getOntology();
 		String ontClass = semanticAnnotation.getClazz();
@@ -75,6 +89,13 @@ public class SemanticAnnotationProfile {
 		}
 	}
 
+	/**
+	 * Returns the individual that the semantic annotation must use.
+	 *
+	 * May be null if no explicit individual is required.
+	 *
+	 * @return the individual that the semantic annotation must use
+	 */
 	public Individual getIndividual() {
 		String individual = semanticAnnotation.getValue();
 		if (individual.isEmpty()) {
@@ -84,11 +105,16 @@ public class SemanticAnnotationProfile {
 		}
 	}
 
+	/**
+	 * Returns the individuals in the range of the predicate defined in the ontology.
+	 *
+	 * @return the individuals in the range of the predicate defined in the ontology
+	 */
 	public List<Individual> getIndividuals() {
 		OntModel ontology = getOntology();
-		OntClass ontClass = getOntClass();
-		if (ontology != null && ontClass != null) {
-			return ontology.listIndividuals(ontClass).toList();
+		OntResource range = getPredicate().getRange();
+		if (ontology != null && range != null) {
+			return ontology.listIndividuals(range).toList();
 		} else {
 			return new ArrayList<Individual>();
 		}
