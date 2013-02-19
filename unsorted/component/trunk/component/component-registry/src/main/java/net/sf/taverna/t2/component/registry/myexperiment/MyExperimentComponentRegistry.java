@@ -53,7 +53,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 
 	private static Logger logger = Logger.getLogger(MyExperimentComponentRegistry.class);
 
-	private static Map<URL, MyExperimentComponentRegistry> componentRegistries = new HashMap<URL, MyExperimentComponentRegistry>();
+	private static Map<String, MyExperimentComponentRegistry> componentRegistries = new HashMap<String, MyExperimentComponentRegistry>();
 
 	private final MyExperimentClient myExperimentClient;
 	private final URL registryURL;
@@ -69,10 +69,10 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 	}
 
 	public static MyExperimentComponentRegistry getComponentRegistry(URL registryURL) {
-		if (!componentRegistries.containsKey(registryURL)) {
-			componentRegistries.put(registryURL, new MyExperimentComponentRegistry(registryURL));
+		if (!componentRegistries.containsKey(registryURL.toExternalForm())) {
+			componentRegistries.put(registryURL.toExternalForm(), new MyExperimentComponentRegistry(registryURL));
 		}
-		return componentRegistries.get(registryURL);
+		return componentRegistries.get(registryURL.toExternalForm());
 	}
 
 	@Override
@@ -276,6 +276,16 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 			}
 		}
 		throw new ComponentRegistryException("Item " + item + " not found in internal-pack-items at " + packUri);
+	}
+
+	public String getExternalPackItem(String packUri, String title) throws ComponentRegistryException {
+		for (Element externalPackItem : getResourceElements(packUri, "external-pack-items")) {
+			String itemTitle = externalPackItem.getTextTrim();
+			if (title.equals(itemTitle)) {
+				return externalPackItem.getAttributeValue("resource");
+			}
+		}
+		throw new ComponentRegistryException("Item " + title + " not found in external-pack-items at " + packUri);
 	}
 
 	public boolean hasTags(String uri, String... tags) {
