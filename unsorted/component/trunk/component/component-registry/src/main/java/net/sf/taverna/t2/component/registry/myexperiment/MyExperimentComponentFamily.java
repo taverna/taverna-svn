@@ -100,15 +100,28 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	@Override
 	public ComponentProfile getComponentProfile() throws ComponentRegistryException {
 		if (componentProfile == null) {
-			Element fileElement = componentRegistry.getPackItem(uri, "file", "component profile");
-			String uri = fileElement.getAttributeValue("uri");
-			String resource = fileElement.getAttributeValue("resource");
-			String version = fileElement.getAttributeValue("version");
-			String downloadUri = resource + "/download?version=" + version;
 			try {
-				componentProfile = new MyExperimentComponentProfile(componentRegistry, uri, new URL(downloadUri));
-			} catch (MalformedURLException e) {
-				throw new ComponentRegistryException("Unable to open profile from " + downloadUri, e);
+				Element fileElement = componentRegistry.getPackItem(uri, "file", "component profile");
+				String uri = fileElement.getAttributeValue("uri");
+				String resource = fileElement.getAttributeValue("resource");
+				String version = fileElement.getAttributeValue("version");
+				String downloadUri = resource + "/download?version=" + version;
+				try {
+					componentProfile = new MyExperimentComponentProfile(componentRegistry, uri, new URL(downloadUri));
+				} catch (MalformedURLException e) {
+					throw new ComponentRegistryException("Unable to open profile from " + downloadUri, e);
+				}
+			} catch (ComponentRegistryException e) {
+				try {
+					String downloadUri = componentRegistry.getExternalPackItem(uri, "component profile");
+					try {
+						componentProfile = new ComponentProfile(new URL(downloadUri));
+					} catch (MalformedURLException ex) {
+						throw new ComponentRegistryException("Unable to open profile from " + downloadUri, ex);
+					}
+				} catch (ComponentRegistryException cre) {
+					// no component profile present
+				}
 			}
 		}
 		return componentProfile;
