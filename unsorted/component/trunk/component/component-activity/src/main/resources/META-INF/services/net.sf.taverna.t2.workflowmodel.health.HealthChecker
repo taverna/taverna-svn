@@ -1,2 +1,2 @@
-net.sf.taverna.t2.component.ComponentActivityHealthChecker
+net.sf.taverna.t2.component.ComponentActivityLocalChecker
 net.sf.taverna.t2.component.ComponentActivityUpgradeChecker

@@ -13,7 +13,7 @@ import net.sf.taverna.t2.workflowmodel.health.HealthChecker;
  * Component health checker
  * 
  */
-public class ComponentActivityHealthChecker implements
+public class ComponentActivityLocalChecker implements
 		HealthChecker<ComponentActivity> {
 
 	public boolean canVisit(Object o) {
@@ -33,10 +33,12 @@ public class ComponentActivityHealthChecker implements
 	}
 
 	public VisitReport visit(ComponentActivity activity, List<Object> ancestry) {
-//		ComponentActivityConfigurationBean config = activity.getConfiguration();
-//		
-//		DataflowActivityHealthChecker dahc = new DataflowActivityHealthChecker();
-//		return dahc.visit(activity.getComponentRealization(), ancestry);
+		if (!activity.getConfiguration().getRegistryBase().getProtocol().startsWith("http")) {
+			return new VisitReport(ComponentHealthCheck.getInstance(),
+					activity,
+					"Local component makes workflow non-shareable",
+					ComponentHealthCheck.NON_SHAREABLE, Status.WARNING);
+		}
 		return null;
 	}
 
