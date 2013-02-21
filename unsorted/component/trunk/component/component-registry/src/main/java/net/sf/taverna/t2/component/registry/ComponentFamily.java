@@ -106,5 +106,20 @@ public interface ComponentFamily {
 	 */
 	public ComponentVersion createComponentBasedOn(String componentName, Dataflow dataflow)
 			throws ComponentRegistryException;
+	
+	/**
+	 * Removes the specified Component from this
+	 * ComponentFamily.
+	 * <p>
+	 * If this ComponentFamily does not contain the Component this method has no effect.
+	 *
+	 * @param component
+	 *            the Component to remove.
+	 * @throws ComponentRegistryException
+	 *             if there is a problem accessing the ComponentRegistry.
+	 */
+	public void removeComponent(Component component)
+			throws ComponentRegistryException;
+
 
 }
