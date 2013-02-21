@@ -12,6 +12,7 @@ import javax.swing.Action;
 
 import org.apache.log4j.Logger;
 
+import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceIcon;
 import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.observer.Observable;
@@ -46,7 +47,12 @@ public class ComponentWorkflowCreatorAction extends AbstractAction  implements O
 	public void actionPerformed(ActionEvent e) {
 		Dataflow d = FileManager.getInstance().getCurrentDataflow();
 		try {
-			ComponentServiceCreatorAction.saveWorkflowAsComponent(d, d.getLocalName());
+			ComponentVersionIdentification ident = ComponentServiceCreatorAction.getNewComponentIdentification(d.getLocalName());
+			if (ident == null) {
+				return;
+			}
+			
+			ComponentServiceCreatorAction.saveWorkflowAsComponent(d, ident);
 		} catch (Exception e1) {
 			logger.error(e1);
 		}

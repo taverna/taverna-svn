@@ -14,7 +14,10 @@ import javax.swing.JOptionPane;
 
 import net.sf.taverna.t2.component.ComponentActivity;
 import net.sf.taverna.t2.component.ComponentActivityConfigurationBean;
+import net.sf.taverna.t2.component.registry.Component;
+import net.sf.taverna.t2.component.registry.ComponentFileType;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.registry.ComponentUtil;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.component.ui.panel.RegisteryAndFamilyChooserComponentEntryPanel;
 import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceIcon;
@@ -22,6 +25,8 @@ import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceProviderCo
 import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.FileManager;
+import net.sf.taverna.t2.workbench.file.FileType;
+import net.sf.taverna.t2.workbench.file.exceptions.OverwriteException;
 import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
 import net.sf.taverna.t2.workflowmodel.CompoundEdit;
 import net.sf.taverna.t2.workflowmodel.ConfigurationException;
@@ -64,6 +69,8 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 	private static EditManager em = EditManager.getInstance();
 	private static Edits edits = em.getEdits();
 	
+	private static FileType COMPONENT_TYPE = new ComponentFileType();
+	
 	public ComponentServiceCreatorAction(final Processor p) {
 		super("Create component...", ComponentServiceIcon.getIcon());
 		this.p = p;		
@@ -74,6 +81,12 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 	 */
 	@Override
 	public void actionPerformed(final ActionEvent e) {
+		
+		ComponentVersionIdentification ident = getNewComponentIdentification(p.getLocalName());
+		
+		if (ident == null) {
+			return;
+		}
 		final Activity<?> a = p.getActivityList().get(0);
 		
 		final Dataflow current = fm.getCurrentDataflow();
@@ -128,7 +141,7 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 			}
 		
 			
-		cacb = saveWorkflowAsComponent(d, p.getLocalName());
+		cacb = saveWorkflowAsComponent(d, ident);
 		
 		
 		ca.configure(cacb);
@@ -153,8 +166,23 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 
 	}
 
-	public static ComponentActivityConfigurationBean saveWorkflowAsComponent(Dataflow d, String defaultName) throws SaveException,
+	public static ComponentActivityConfigurationBean saveWorkflowAsComponent(Dataflow d, ComponentVersionIdentification ident) throws SaveException,
 			IOException, ConfigurationException, ComponentRegistryException {
+		if (ident == null) {
+			return null;
+		}
+		
+		createInitialComponent(d, ident);
+
+		ComponentServiceProviderConfig config = new ComponentServiceProviderConfig();
+		config.setFamilyName(ident.getFamilyName());
+		config.setRegistryBase(ident.getRegistryBase());
+		Utils.refreshComponentServiceProvider(config);
+		return new ComponentActivityConfigurationBean(ident);
+	}
+
+	static ComponentVersionIdentification getNewComponentIdentification(
+			String defaultName) {
 		RegisteryAndFamilyChooserComponentEntryPanel panel = new RegisteryAndFamilyChooserComponentEntryPanel();
 		panel.setComponentName(defaultName);
 		int result = JOptionPane.showConfirmDialog(null, panel, "Component location", JOptionPane.OK_CANCEL_OPTION);
@@ -163,14 +191,21 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 		}
 				
 		JOptionPane.showMessageDialog(null, "Here will be the assurance that the component meets the profile\nThis may just be checking that it is the same URI");
+
+		ComponentVersionIdentification ident = panel.getComponentVersionIdentification();
 		
-		ComponentVersionIdentification ident = panel.createInitialComponent(d);
-		
-		ComponentServiceProviderConfig config = new ComponentServiceProviderConfig();
-		config.setFamilyName(ident.getFamilyName());
-		config.setRegistryBase(ident.getRegistryBase());
-		Utils.refreshComponentServiceProvider(config);
-		return new ComponentActivityConfigurationBean(ident);
+		try {
+			Component existingComponent = ComponentUtil.calculateComponent(ident);
+			if (existingComponent != null) {
+				JOptionPane.showMessageDialog(null, "Component with this name already exists");
+				return null;				
+			}
+		} catch (ComponentRegistryException e) {
+			JOptionPane.showMessageDialog(null, "Problem searching registry");			
+			logger.error(e);
+			return null;
+		}
+		return ident;
 	}
 
 	private static HashMap<String, Element> requiredSubworkflows = new HashMap<String, Element>();
@@ -222,6 +257,25 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 		
 		return result;
 	}
+
+	public static ComponentVersionIdentification createInitialComponent(Dataflow d, ComponentVersionIdentification ident)
+	throws ComponentRegistryException {
+	try {
+		fm.saveDataflow(d, COMPONENT_TYPE, ident, false);
+
+		Edit<?> dummyEdit = edits.getUpdateDataflowNameEdit(d, d.getLocalName());
+		em.doDataflowEdit(d, dummyEdit);
+	} catch (OverwriteException e) {
+		throw new ComponentRegistryException(e);
+	} catch (SaveException e) {
+		throw new ComponentRegistryException(e);
+	} catch (IllegalStateException e) {
+		throw new ComponentRegistryException(e);
+	} catch (EditException e) {
+		throw new ComponentRegistryException(e);
+	}
+return ident;
+}
 
 
 }
