@@ -218,4 +218,10 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 		return uri;
 	}
 
+	@Override
+	public void removeComponent(Component component)
+			throws ComponentRegistryException {
+		throw new ComponentRegistryException("Not yet implemented");
+	}
+
 }
