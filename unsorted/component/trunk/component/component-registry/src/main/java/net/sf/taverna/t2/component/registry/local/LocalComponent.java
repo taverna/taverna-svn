@@ -154,7 +154,7 @@ public class LocalComponent implements Component {
 					logger.error(e);
 				}
 			}
-			return null;
+			return "";
 	}
 
 }

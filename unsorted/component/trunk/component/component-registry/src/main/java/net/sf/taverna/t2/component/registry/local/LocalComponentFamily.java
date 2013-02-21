@@ -163,7 +163,19 @@ public class LocalComponentFamily implements ComponentFamily {
 				logger.error(e);
 			}
 		}
-		return null;
+		return "";
+	}
+
+	@Override
+	public void removeComponent(Component component)
+			throws ComponentRegistryException {
+		File componentDir = new File(componentFamilyDir, component.getName());
+		try {
+			FileUtils.deleteDirectory(componentDir);
+		} catch (IOException e) {
+			throw new ComponentRegistryException("Unable to delete component", e);
+		}
+		
 	}
 
 }

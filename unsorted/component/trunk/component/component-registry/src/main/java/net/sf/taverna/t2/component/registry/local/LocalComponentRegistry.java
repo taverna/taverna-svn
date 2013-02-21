@@ -201,23 +201,16 @@ public class LocalComponentRegistry implements ComponentRegistry {
 		String name = componentProfile.getName().replaceAll("\\W+", "") + ".xml";
 		String inputString = componentProfile.getXML();
 		File outputFile = new File(getComponentProfilesDir(), name);
-		OutputStream output = null;
 		try {
-			output = new FileOutputStream(outputFile);
-			IOUtils.write(inputString, output);
+			FileUtils.writeStringToFile(outputFile, inputString);
 		} catch (IOException e) {
-			try {
-				output.close();
-			} catch (IOException e1) {
-				logger.error("Unable to close output");
-			}
+				throw new ComponentRegistryException("Unable to save profile", e);
 		}
 
 		try {
 			return new ComponentProfile(outputFile.toURI().toURL());
 		} catch (MalformedURLException e) {
-			logger.error(e);
-			return null;
+			throw new ComponentRegistryException("Unable to create profile", e);
 		}
 
 	}

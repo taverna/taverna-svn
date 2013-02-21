@@ -58,7 +58,7 @@ public class LocalComponentVersion implements ComponentVersion {
 					logger.error(e);
 				}
 			}
-			return null;
+			return "";
 	}
 
 	/* (non-Javadoc)
