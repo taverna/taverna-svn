@@ -47,11 +47,6 @@ public class RegisteryAndFamilyChooserComponentEntryPanel extends JPanel {
 
 	private RegistryAndFamilyChooserPanel registryAndFamilyChooserPanel = new RegistryAndFamilyChooserPanel();
 
-	private static FileManager fileManager = FileManager.getInstance();
-
-	private static EditManager editManager = EditManager.getInstance();
-	private static Edits edits = editManager.getEdits();
-
 	public RegisteryAndFamilyChooserComponentEntryPanel() {
 
 		this.setLayout(new GridBagLayout());
@@ -86,8 +81,7 @@ public class RegisteryAndFamilyChooserComponentEntryPanel extends JPanel {
 	}
 
 
-	public ComponentVersionIdentification createInitialComponent(Dataflow d)
-			throws ComponentRegistryException {
+	public ComponentVersionIdentification getComponentVersionIdentification() {
 		String componentName = StringUtils.remove(getComponentName(), T2FLOW);
 
 			ComponentFamily familyChoice = registryAndFamilyChooserPanel.getChosenFamily();
@@ -95,21 +89,6 @@ public class RegisteryAndFamilyChooserComponentEntryPanel extends JPanel {
 			ComponentRegistry registry = registryAndFamilyChooserPanel.getChosenRegistry();
 
 			ComponentVersionIdentification ident = new ComponentVersionIdentification(registry.getRegistryBase(), familyChoice.getName(), componentName, -1);
-
-			try {
-				fileManager.saveDataflow(d, COMPONENT_TYPE, ident, false);
-
-				Edit<?> dummyEdit = edits.getUpdateDataflowNameEdit(d, d.getLocalName());
-				editManager.doDataflowEdit(d, dummyEdit);
-			} catch (OverwriteException e) {
-				throw new ComponentRegistryException(e);
-			} catch (SaveException e) {
-				throw new ComponentRegistryException(e);
-			} catch (IllegalStateException e) {
-				throw new ComponentRegistryException(e);
-			} catch (EditException e) {
-				throw new ComponentRegistryException(e);
-			}
 		return ident;
 	}
 }
