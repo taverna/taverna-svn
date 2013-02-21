@@ -7,6 +7,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -88,9 +89,25 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 		profileMap.clear();
 		profileBox.removeAllItems();
 		profileDescription.setText("");
+		List<ComponentProfile> componentProfiles;
 		try {
-			for (ComponentProfile p : chosenRegistry.getComponentProfiles()) {
-				profileMap.put(p.getName(), p);
+			componentProfiles = chosenRegistry.getComponentProfiles();
+		} catch (ComponentRegistryException e) {
+			logger.error(e);
+			return;
+		} catch (NullPointerException e) {
+			logger.error(e);
+			return;
+		}
+			for (ComponentProfile p : componentProfiles) {
+				try {
+					String name = p.getName();
+					profileMap.put(name, p);
+				}
+			  catch (NullPointerException e) {
+				logger.error(e);
+
+			}
 			}
 			for (String name : profileMap.keySet()) {
 				profileBox.addItem(name);
@@ -100,11 +117,6 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 				profileBox.setSelectedItem(firstKey);
 				setProfile(profileMap.get(firstKey));
 			}
-		} catch (ComponentRegistryException e) {
-			logger.error(e);
-		} catch (NullPointerException e) {
-			logger.error(e);
-		}
 	}
 
 	private void setProfile(ComponentProfile componentProfile) {

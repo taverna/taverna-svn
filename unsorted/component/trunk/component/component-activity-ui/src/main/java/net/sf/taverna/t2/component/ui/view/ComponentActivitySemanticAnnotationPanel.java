@@ -72,6 +72,17 @@ public class ComponentActivitySemanticAnnotationPanel extends JPanel {
 			// c.weightx = 1;
 			// c.gridy++;
 			add(new JLabel("No semantic annotations"), c);
+		} else {
+			c.gridwidth = 1;
+			for (Statement statement : statements) {
+				c.gridx = 0;
+				c.weightx = 1;
+				JLabel predicateLabel = new JLabel(SemanticAnnotationUtils.getDisplayName(statement.getObject()));
+				predicateLabel.setBackground(Color.WHITE);
+				predicateLabel.setOpaque(true);
+				predicateLabel.setBorder(new EmptyBorder(2,4,2,4));
+				add(predicateLabel, c);
+			}
 		}
 
 	}

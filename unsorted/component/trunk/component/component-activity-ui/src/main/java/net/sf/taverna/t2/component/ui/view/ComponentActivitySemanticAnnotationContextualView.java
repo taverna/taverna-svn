@@ -69,6 +69,10 @@ import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.ProcessorPort;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityOutputPort;
 import net.sf.taverna.t2.workflowmodel.utils.AnnotationTools;
 
 import org.apache.log4j.Logger;
@@ -76,6 +80,7 @@ import org.apache.log4j.Logger;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 
@@ -90,32 +95,53 @@ public class ComponentActivitySemanticAnnotationContextualView extends Contextua
 
 	private static Logger logger = Logger.getLogger(ComponentActivitySemanticAnnotationContextualView.class);
 
-	private static AnnotationTools annotationTools = new AnnotationTools();
 	private static EditManager editManager = EditManager.getInstance();
-	private static FileManager fileManager = FileManager.getInstance();
-	private static Edits edits = editManager.getEdits();
-
 	private JPanel panel;
 
-	private Annotated<?> annotated;
+	private Annotated<?> correspondingAnnotated;
 
 	private ComponentProfile componentProfile;
 	private List<SemanticAnnotationProfile> semanticAnnotationProfiles;
 	private Model model;
 
-	public ComponentActivitySemanticAnnotationContextualView(Annotated<?> selection) {
-		ComponentActivityConfigurationBean configuration = ((ComponentActivity) selection).getConfiguration();
+	public ComponentActivitySemanticAnnotationContextualView(Object selection) {
+		ComponentActivity componentActivity = ComponentActivitySemanticAnnotationContextViewFactory.getContainingComponentActivity(selection);
+		ComponentActivityConfigurationBean configuration = componentActivity.getConfiguration();
 		Dataflow underlyingDataflow;
 		try {
 			underlyingDataflow = ComponentDataflowCache.getDataflow(configuration);
-		this.annotated = underlyingDataflow;
+			if (selection instanceof ComponentActivity) {
+				this.correspondingAnnotated = underlyingDataflow;
+			} else if (selection instanceof ActivityInputPort) {
+				String name = ((ActivityInputPort) selection).getName();
+				for (DataflowInputPort dip : underlyingDataflow.getInputPorts()) {
+					if (dip.getName().equals(name)) {
+						this.correspondingAnnotated = dip;
+						break;
+					}
+				}
+			} else if (selection instanceof ActivityOutputPort) {
+				String name = ((ActivityOutputPort) selection).getName();
+				for (DataflowOutputPort dop : underlyingDataflow.getOutputPorts()) {
+					if (dop.getName().equals(name)) {
+						this.correspondingAnnotated = dop;
+						break;
+					}
+				}
+			}
 		componentProfile = ComponentUtil.calculateFamily(configuration.getRegistryBase(), configuration.getFamilyName()).getComponentProfile();
 		if (componentProfile != null) {
+			if (selection instanceof ComponentActivity) {
 				semanticAnnotationProfiles = componentProfile.getSemanticAnnotationProfiles();
-		}
-
+			}
+			else if (selection instanceof ActivityInputPort) {
+				semanticAnnotationProfiles = componentProfile.getInputSemanticAnnotationProfiles();
+			} else if (selection instanceof ActivityOutputPort) {
+				semanticAnnotationProfiles = componentProfile.getOutputSemanticAnnotationProfiles();
+			}
+		} 
 		model = ModelFactory.createDefaultModel();
-		SemanticAnnotation annotation = findSemanticAnnotation(annotated);
+		SemanticAnnotation annotation = findSemanticAnnotation(correspondingAnnotated);
 		if (annotation != null && !annotation.getContent().isEmpty()) {
 			StringReader stringReader = new StringReader(annotation.getContent());
 			model.read(stringReader, null, "N3");
@@ -179,7 +205,8 @@ public class ComponentActivitySemanticAnnotationContextualView extends Contextua
 			OntProperty predicate = semanticAnnotationProfile.getPredicate();
 			Set<Statement> statementsWithPredicate = new HashSet<Statement>();
 			for (Statement statement : statements) {
-				if (statement.getPredicate().equals(predicate)) {
+				Property statementPredicate = statement.getPredicate();
+				if (statementPredicate.equals(predicate)) {
 					statementsWithPredicate.add(statement);
 				}
 			}
@@ -191,39 +218,6 @@ public class ComponentActivitySemanticAnnotationContextualView extends Contextua
 
 		gbc.weighty = 1;
 		panel.add(new JPanel(), gbc);
-	}
-
-	public void removeStatement(Statement statement) {
-		model.remove(statement);
-		initialise();
-		updateSemanticAnnotation();
-	}
-
-	public void addStatement(Statement statement) {
-		model.add(statement);
-		initialise();
-		updateSemanticAnnotation();
-	}
-
-	public void addStatement(OntProperty predicate, RDFNode node) {
-		model.add(model.createResource(), predicate, node);
-		initialise();
-		updateSemanticAnnotation();
-	}
-
-	public void addModel(Model model) {
-		this.model.add(model);
-		initialise();
-		updateSemanticAnnotation();
-	}
-
-	private SemanticAnnotation createSemanticAnnotation() {
-		SemanticAnnotation semanticAnnotation = new SemanticAnnotation();
-		StringWriter stringWriter = new StringWriter();
-		model.write(stringWriter, "N3");
-		semanticAnnotation.setContent(stringWriter.toString());
-		System.out.println(semanticAnnotation.getContent());
-		return semanticAnnotation;
 	}
 
 	private SemanticAnnotation findSemanticAnnotation(Annotated<?> annotated) {
@@ -242,44 +236,6 @@ public class ComponentActivitySemanticAnnotationContextualView extends Contextua
 			}
 		}
 		return annotation;
-	}
-
-	public void updateSemanticAnnotation() {
-		Dataflow currentDataflow = fileManager.getCurrentDataflow();
-		try {
-			editManager.doDataflowEdit(currentDataflow,
-					edits.getAddAnnotationChainEdit(annotated, createSemanticAnnotation()));
-		} catch (EditException e) {
-			logger.warn("Can't set semantic annotation", e);
-		}
-	}
-
-	public static void main(String[] args) throws Exception {
-		JFrame frame = new JFrame();
-		frame.setSize(400, 200);
-		ComponentVersionIdentification identification = new ComponentVersionIdentification(
-				new URL("http://sandbox.myexperiment.org"),
-				"SCAPE Migration Action Components", "Image To Tiff", 2);
-		Dataflow dataflow = fileManager.openDataflow(new ComponentFileType(), identification);
-
-		Processor processor = edits.createProcessor("processor");
-		try {
-			editManager.doDataflowEdit(dataflow, edits.getAddProcessorEdit(dataflow, processor));
-		} catch (EditException e) {
-			e.printStackTrace();
-		}
-		final ComponentActivitySemanticAnnotationContextualView view = new ComponentActivitySemanticAnnotationContextualView(
-				processor);
-		editManager.addObserver(new Observer<EditManager.EditManagerEvent>() {
-			@Override
-			public void notify(Observable<EditManagerEvent> arg0, EditManagerEvent arg1)
-					throws Exception {
-				view.refreshView();
-				view.repaint();
-			}
-		});
-		frame.add(view);
-		frame.setVisible(true);
 	}
 
 }

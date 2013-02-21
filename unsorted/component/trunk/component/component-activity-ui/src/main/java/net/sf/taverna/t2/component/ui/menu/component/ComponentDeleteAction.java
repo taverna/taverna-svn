@@ -79,7 +79,7 @@ public class ComponentDeleteAction extends AbstractAction {
 					config.setRegistryBase(chosenRegistry.getRegistryBase());
 					Utils.refreshComponentServiceProvider(config);
 				} catch (ComponentRegistryException e) {
-					JOptionPane.showMessageDialog(null, "Unable to delete " + chosenFamily.getName(), "Component Deletion Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Unable to delete " + chosenComponent.getName() + "\n" + e.getMessage(), "Component Deletion Error", JOptionPane.ERROR_MESSAGE);
 					logger.error(e);
 				} catch (ConfigurationException e) {
 					logger.error(e);
