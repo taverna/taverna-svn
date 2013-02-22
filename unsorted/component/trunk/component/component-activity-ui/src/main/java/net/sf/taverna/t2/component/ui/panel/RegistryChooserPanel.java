@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 
 import net.sf.taverna.t2.component.preference.ComponentPreference;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
+import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 
@@ -44,6 +45,7 @@ public class RegistryChooserPanel extends JPanel implements Observable<RegistryC
 
 	public RegistryChooserPanel() {
 		super();
+		registryBox.setPrototypeDisplayValue(Utils.LONG_STRING);
 		this.setLayout(new GridBagLayout());
 
 		GridBagConstraints gbc = new GridBagConstraints();

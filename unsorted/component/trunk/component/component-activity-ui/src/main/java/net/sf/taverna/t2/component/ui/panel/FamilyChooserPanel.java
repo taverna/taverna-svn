@@ -20,6 +20,7 @@ import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 
@@ -53,6 +54,7 @@ public class FamilyChooserPanel extends JPanel implements Observer, Observable<F
 
 	public FamilyChooserPanel() {
 		super();
+		familyBox.setPrototypeDisplayValue(Utils.LONG_STRING);
 		this.setLayout(new GridBagLayout());
 
 		GridBagConstraints gbc = new GridBagConstraints();

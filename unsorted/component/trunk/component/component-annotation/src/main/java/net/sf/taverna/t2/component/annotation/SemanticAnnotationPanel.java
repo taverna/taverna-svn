@@ -14,6 +14,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.EmptyBorder;
@@ -112,7 +113,12 @@ public class SemanticAnnotationPanel extends JPanel {
 		return new JButton(new AbstractAction("Add Annotation") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				getAddAnnotationDialog(predicate).setVisible(true);
+				JDialog annotationDialog = getAddAnnotationDialog(predicate);
+				if (annotationDialog != null) {
+					annotationDialog.setVisible(true);
+				} else {
+					JOptionPane.showMessageDialog(null, "Unable to handle annotation", "Annotation problem", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		});
 	}
@@ -124,7 +130,9 @@ public class SemanticAnnotationPanel extends JPanel {
 				return addSemanticAnnotationDialogSPI.getSemanticAnnotationDialog(semanticAnnotationContextualView, semanticAnnotationProfile);
 			}
 		}
-		return new DefaultAddSemanticAnnotationDialog(semanticAnnotationContextualView, semanticAnnotationProfile);
+		String fred = predicate.getRange().toString();
+		String bob = fred;
+		return null;
 	}
 
 }

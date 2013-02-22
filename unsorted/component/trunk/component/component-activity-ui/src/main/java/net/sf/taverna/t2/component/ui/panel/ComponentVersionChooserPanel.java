@@ -16,6 +16,7 @@ import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
+import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 
@@ -46,6 +47,7 @@ public class ComponentVersionChooserPanel extends JPanel implements Observer<Com
 
 		componentVersionChoice.setModel(componentVersionModel);
 		componentVersionChoice.setRenderer(new ComponentListCellRenderer());
+		componentVersionChoice.setPrototypeDisplayValue(Utils.LONG_STRING);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;

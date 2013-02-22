@@ -42,6 +42,7 @@ import javax.swing.border.EmptyBorder;
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
 
 import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 
 /**
@@ -49,9 +50,13 @@ import com.hp.hpl.jena.ontology.OntResource;
  *
  * @author David Withers
  */
-public class DefaultAddSemanticAnnotationDialog extends JDialog {
+public class IndividualsAddSemanticAnnotationDialog extends JDialog implements AddSemanticAnnotationDialogSPI{
 
-	public DefaultAddSemanticAnnotationDialog(
+	public IndividualsAddSemanticAnnotationDialog() {
+		super();
+	}
+
+	public IndividualsAddSemanticAnnotationDialog(
 			final SemanticAnnotationContextualView semanticAnnotationContextualView,
 			final SemanticAnnotationProfile semanticAnnotationProfile) {
 		setTitle("Add Semantic Annotation");
@@ -163,6 +168,23 @@ public class DefaultAddSemanticAnnotationDialog extends JDialog {
 			return true;
 		}
 
+	}
+
+	@Override
+	public boolean canHandleSemanticAnnotation(
+			SemanticAnnotationProfile semanticAnnotationProfile) {
+		OntProperty property = semanticAnnotationProfile.getPredicate();
+		if (property.isObjectProperty()) {
+			return (!semanticAnnotationProfile.getIndividuals().isEmpty());
+		}
+		return false;
+	}
+
+	@Override
+	public JDialog getSemanticAnnotationDialog(
+			SemanticAnnotationContextualView semanticAnnotationContextualView,
+			SemanticAnnotationProfile semanticAnnotationProfile) {
+		return new IndividualsAddSemanticAnnotationDialog(semanticAnnotationContextualView, semanticAnnotationProfile);
 	}
 
 }

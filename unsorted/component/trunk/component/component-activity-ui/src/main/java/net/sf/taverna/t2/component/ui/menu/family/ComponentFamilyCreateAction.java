@@ -124,10 +124,10 @@ public class ComponentFamilyCreateAction extends AbstractAction implements Obser
 	@Override
 	public void notify(Observable<RegistryChoiceMessage> sender, RegistryChoiceMessage message) throws Exception {
 		ComponentRegistry chosenRegistry = message.getChosenRegistry();
-		removePermissionChooserPanel();
+/*		removePermissionChooserPanel();
 		if (chosenRegistry instanceof MyExperimentComponentRegistry) {
 			addPermissionChooserPanel((MyExperimentComponentRegistry) chosenRegistry);
-		}
+		}*/
 	}
 
 	private void addPermissionChooserPanel(MyExperimentComponentRegistry registry) {

@@ -87,7 +87,7 @@ public class ComponentMergeAction extends AbstractAction {
 				target.notify(null, profileMessage);
 			}});
 		
-		int answer = JOptionPane.showConfirmDialog(null, overallPanel, "Copy Component", JOptionPane.OK_CANCEL_OPTION);
+		int answer = JOptionPane.showConfirmDialog(null, overallPanel, "Merge Component", JOptionPane.OK_CANCEL_OPTION);
 		if (answer == JOptionPane.OK_OPTION) {
 				Component sourceComponent = source.getChosenComponent();
 				if (sourceComponent == null) {

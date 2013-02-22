@@ -20,6 +20,7 @@ import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 
@@ -55,6 +56,7 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 
 		componentChoice.setModel(componentModel);
 		componentChoice.setRenderer(new ComponentListCellRenderer());
+		componentChoice.setPrototypeDisplayValue(Utils.LONG_STRING);
 
 		updateComponentModel();
 		GridBagConstraints gbc = new GridBagConstraints();

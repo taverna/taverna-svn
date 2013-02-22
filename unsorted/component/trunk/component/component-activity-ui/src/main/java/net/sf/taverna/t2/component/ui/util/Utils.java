@@ -25,6 +25,8 @@ public class Utils {
 
 	private static ServiceDescriptionRegistry registry = ServiceDescriptionRegistryImpl.getInstance();
 
+	public static final String LONG_STRING = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+
 	public static void refreshComponentServiceProvider(ComponentServiceProviderConfig config)
 			throws ConfigurationException {
 		ComponentServiceProvider provider = new ComponentServiceProvider();
