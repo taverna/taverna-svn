@@ -20,21 +20,55 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.annotation;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
 
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
+
+import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 
 /**
  *
  *
  * @author David Withers
  */
-public interface AddSemanticAnnotationDialogSPI {
+public class ObjectPropertyWithIndividualsPanelFactory implements PropertyPanelFactorySPI {
 
-	public boolean canHandleSemanticAnnotation(SemanticAnnotationProfile semanticAnnotationProfile);
+	@Override
+	public boolean canHandleSemanticAnnotation(
+			SemanticAnnotationProfile semanticAnnotationProfile) {
+		OntProperty property = semanticAnnotationProfile.getPredicate();
+		if (property.isObjectProperty()) {
+			return (!semanticAnnotationProfile.getIndividuals().isEmpty());
+		}
+		return false;
+	}
 
-	public JDialog getSemanticAnnotationDialog(
+
+	@Override
+	public PropertyAnnotationPanel getSemanticAnnotationPanel(
 			SemanticAnnotationContextualView semanticAnnotationContextualView,
-			SemanticAnnotationProfile semanticAnnotationProfile);
+			SemanticAnnotationProfile semanticAnnotationProfile) {
+		return new ObjectPropertyWithIndividualsPanel(semanticAnnotationContextualView, semanticAnnotationProfile);
+	}
 
 }

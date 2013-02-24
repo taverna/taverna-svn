@@ -16,6 +16,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.EmptyBorder;
 
@@ -23,16 +24,18 @@ import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
 import net.sf.taverna.t2.spi.SPIRegistry;
 
 import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 
 public class SemanticAnnotationPanel extends JPanel {
 
 	private final SemanticAnnotationContextualView semanticAnnotationContextualView;
-	private SemanticAnnotationProfile semanticAnnotationProfile;
+	private final SemanticAnnotationProfile semanticAnnotationProfile;
 	private final Set<Statement> statements;
 
-	protected SPIRegistry<AddSemanticAnnotationDialogSPI> addAnnotationDialogRegistry = new SPIRegistry<AddSemanticAnnotationDialogSPI>(
-			AddSemanticAnnotationDialogSPI.class);
+	protected SPIRegistry<PropertyPanelFactorySPI> addAnnotationDialogRegistry = new SPIRegistry<PropertyPanelFactorySPI>(
+			PropertyPanelFactorySPI.class);
 
 	public SemanticAnnotationPanel(
 			SemanticAnnotationContextualView semanticAnnotationContextualView,
@@ -80,11 +83,11 @@ public class SemanticAnnotationPanel extends JPanel {
 			for (Statement statement : statements) {
 				c.gridx = 0;
 				c.weightx = 1;
-				JLabel predicateLabel = new JLabel(SemanticAnnotationUtils.getDisplayName(statement.getObject()));
-				predicateLabel.setBackground(Color.WHITE);
-				predicateLabel.setOpaque(true);
-				predicateLabel.setBorder(new EmptyBorder(2,4,2,4));
-				add(predicateLabel, c);
+				JTextArea value = new JTextArea(SemanticAnnotationUtils.getDisplayName(statement.getObject()));
+				value.setBackground(Color.WHITE);
+				value.setOpaque(true);
+				value.setBorder(new EmptyBorder(2,4,2,4));
+				add(value, c);
 
 				c.gridx = 1;
 				c.weightx = 0;
@@ -113,9 +116,16 @@ public class SemanticAnnotationPanel extends JPanel {
 		return new JButton(new AbstractAction("Add Annotation") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JDialog annotationDialog = getAddAnnotationDialog(predicate);
-				if (annotationDialog != null) {
-					annotationDialog.setVisible(true);
+				PropertyAnnotationPanel annotationPanel = getAddAnnotationPanel(predicate);
+				if (annotationPanel != null) {
+					int answer = JOptionPane.showConfirmDialog(null, annotationPanel, "Add annotation", JOptionPane.OK_CANCEL_OPTION);
+					if (answer == JOptionPane.OK_OPTION) {
+						RDFNode response = annotationPanel.getNewTargetNode();
+						if (response != null) {
+							semanticAnnotationContextualView.addStatement(semanticAnnotationProfile.getPredicate(),
+									response);
+						}
+					}
 				} else {
 					JOptionPane.showMessageDialog(null, "Unable to handle annotation", "Annotation problem", JOptionPane.ERROR_MESSAGE);
 				}
@@ -123,15 +133,13 @@ public class SemanticAnnotationPanel extends JPanel {
 		});
 	}
 
-	private JDialog getAddAnnotationDialog(OntProperty predicate) {
-		List<AddSemanticAnnotationDialogSPI> instances = addAnnotationDialogRegistry.getInstances();
-		for (AddSemanticAnnotationDialogSPI addSemanticAnnotationDialogSPI : instances) {
-			if (addSemanticAnnotationDialogSPI.canHandleSemanticAnnotation(semanticAnnotationProfile)) {
-				return addSemanticAnnotationDialogSPI.getSemanticAnnotationDialog(semanticAnnotationContextualView, semanticAnnotationProfile);
+	private PropertyAnnotationPanel getAddAnnotationPanel(OntProperty predicate) {
+		List<PropertyPanelFactorySPI> instances = addAnnotationDialogRegistry.getInstances();
+		for (PropertyPanelFactorySPI factory : instances) {
+			if (factory.canHandleSemanticAnnotation(semanticAnnotationProfile)) {
+				return factory.getSemanticAnnotationPanel(semanticAnnotationContextualView, semanticAnnotationProfile);
 			}
 		}
-		String fred = predicate.getRange().toString();
-		String bob = fred;
 		return null;
 	}
 

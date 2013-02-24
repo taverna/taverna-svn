@@ -34,6 +34,7 @@ import java.util.Set;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import net.sf.taverna.t2.annotation.Annotated;
@@ -47,6 +48,7 @@ import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentFileType;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.registry.ComponentUtil;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.component.registry.local.LocalComponentRegistry;
 import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
@@ -130,21 +132,13 @@ public class SemanticAnnotationContextualView extends ContextualView {
 		initView();
 	}
 
-	private ComponentRegistry getComponentRegistry(URL registryBase) {
-		if (registryBase.getProtocol().equals("file")) {
-			return LocalComponentRegistry.getComponentRegistry(registryBase);
-		} else {
-			return MyExperimentComponentRegistry.getComponentRegistry(registryBase);
-		}
-	}
-
 	private ComponentProfile getComponentProfile() {
 		Object dataflowSource = fileManager.getDataflowSource(fileManager.getCurrentDataflow());
 		if (dataflowSource instanceof ComponentVersionIdentification) {
 			ComponentVersionIdentification identification = (ComponentVersionIdentification) dataflowSource;
-			ComponentRegistry componentRegistry = getComponentRegistry(identification
-					.getRegistryBase());
 			try {
+				ComponentRegistry componentRegistry = ComponentUtil.calculateRegistry(identification
+						.getRegistryBase());
 				ComponentFamily componentFamily = componentRegistry
 						.getComponentFamily(identification.getFamilyName());
 				return componentFamily.getComponentProfile();
@@ -207,6 +201,10 @@ public class SemanticAnnotationContextualView extends ContextualView {
 			panel.add(new SemanticAnnotationPanel(this, semanticAnnotationProfile,
 					statementsWithPredicate), gbc);
 			statements.removeAll(statementsWithPredicate);
+		}
+		
+		if (semanticAnnotationProfiles.isEmpty()) {
+			panel.add(new JLabel("No annotations possible"));
 		}
 		// TODO handle any remaining statements
 

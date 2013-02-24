@@ -44,24 +44,24 @@ import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 
 /**
  *
  *
  * @author David Withers
  */
-public class IndividualsAddSemanticAnnotationDialog extends JDialog implements AddSemanticAnnotationDialogSPI{
+public class ObjectPropertyWithIndividualsPanel extends PropertyAnnotationPanel {
 
-	public IndividualsAddSemanticAnnotationDialog() {
+	public ObjectPropertyWithIndividualsPanel() {
 		super();
 	}
+	
+	JComboBox<NamedResource> resources;
 
-	public IndividualsAddSemanticAnnotationDialog(
+	public ObjectPropertyWithIndividualsPanel(
 			final SemanticAnnotationContextualView semanticAnnotationContextualView,
 			final SemanticAnnotationProfile semanticAnnotationProfile) {
-		setTitle("Add Semantic Annotation");
-		setLocationRelativeTo(semanticAnnotationContextualView);
-		setSize(new Dimension(400, 250));
 		setLayout(new BorderLayout());
 
 		JPanel messagePanel = new JPanel(new BorderLayout());
@@ -90,36 +90,12 @@ public class IndividualsAddSemanticAnnotationDialog extends JDialog implements A
 		for (int i = 0; i < namedResources.length; i++) {
 			namedResources[i] = new NamedResource(individuals.get(i));
 		}
-		final JComboBox resources = new JComboBox(namedResources);
+		resources = new JComboBox<NamedResource>(namedResources);
 		resources.setEditable(false);
 		JPanel resourcePanel = new JPanel(new BorderLayout());
 		resourcePanel.add(resources, BorderLayout.NORTH);
 		resourcePanel.setBorder(new EmptyBorder(15, 5, 5, 5));
 		add(resourcePanel, BorderLayout.CENTER);
-
-		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.TRAILING));
-		add(buttonPanel, BorderLayout.SOUTH);
-
-		JButton okButton = new JButton("OK");
-		okButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setVisible(false);
-				NamedResource selectedItem = (NamedResource) resources.getSelectedItem();
-				semanticAnnotationContextualView.addStatement(semanticAnnotationProfile.getPredicate(),
-						selectedItem.getResource());
-				dispose();
-			}
-		});
-		buttonPanel.add(okButton);
-
-		JButton cancelButton = new JButton("Cancel");
-		cancelButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setVisible(false);
-				dispose();
-			}
-		});
-		buttonPanel.add(cancelButton);
 	}
 
 	private class NamedResource {
@@ -138,9 +114,12 @@ public class IndividualsAddSemanticAnnotationDialog extends JDialog implements A
 			String label = resource.getLabel(null);
 			if (label != null) {
 				return label;
-			} else {
-				return resource.getLocalName();
 			}
+				String localName = resource.getLocalName();
+				if ((localName != null) && !localName.isEmpty()) {
+					return localName;
+				}
+			return resource.toString();
 		}
 
 		@Override
@@ -171,20 +150,8 @@ public class IndividualsAddSemanticAnnotationDialog extends JDialog implements A
 	}
 
 	@Override
-	public boolean canHandleSemanticAnnotation(
-			SemanticAnnotationProfile semanticAnnotationProfile) {
-		OntProperty property = semanticAnnotationProfile.getPredicate();
-		if (property.isObjectProperty()) {
-			return (!semanticAnnotationProfile.getIndividuals().isEmpty());
-		}
-		return false;
-	}
-
-	@Override
-	public JDialog getSemanticAnnotationDialog(
-			SemanticAnnotationContextualView semanticAnnotationContextualView,
-			SemanticAnnotationProfile semanticAnnotationProfile) {
-		return new IndividualsAddSemanticAnnotationDialog(semanticAnnotationContextualView, semanticAnnotationProfile);
+	RDFNode getNewTargetNode() {
+		return ((NamedResource) resources.getSelectedItem()).getResource();
 	}
 
 }
