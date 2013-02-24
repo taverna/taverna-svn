@@ -25,7 +25,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.taverna.t2.annotation.annotationbeans.DescriptiveTitle;
 import net.sf.taverna.t2.annotation.annotationbeans.FreeTextDescription;
@@ -58,7 +60,7 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	private String name;
 	private String description;
 	private ComponentProfile componentProfile;
-	private List<Component> components;
+	private Map<String, Component> componentsCache;
 	private final MyExperimentPermissions permissions;
 
 	public MyExperimentComponentFamily(MyExperimentComponentRegistry componentRegistry, MyExperimentPermissions permissions, String uri) {
@@ -129,8 +131,9 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 
 	@Override
 	public List<Component> getComponents() throws ComponentRegistryException {
-		if (components == null) {
-			components = new ArrayList<Component>();
+		List<Component> result = new ArrayList<Component>();
+		if (componentsCache == null) {
+			componentsCache = new HashMap<String, Component>();
 			for (Element internalPackItem : componentRegistry.getResourceElements(uri,
 					"internal-pack-items")) {
 				if (internalPackItem.getName().equals("pack")) {
@@ -140,14 +143,16 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 					for (Element tag : componentRegistry.getResourceElements(packUri, "tags")) {
 						String tagText = tag.getTextTrim();
 						if ("component".equals(tagText)) {
-							components.add(new MyExperimentComponent(componentRegistry, packUri));
+							MyExperimentComponent newComponent = new MyExperimentComponent(componentRegistry, packUri);
+							componentsCache.put(newComponent.getName(), newComponent);
 							break;
 						}
 					}
 				}
 			}
 		}
-		return components;
+		result.addAll(componentsCache.values());
+		return result;
 	}
 
 	@Override
@@ -191,7 +196,10 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 		Element resource = componentRegistry.getResource(uri);
 		String attributeValue = resource.getAttributeValue("resource");
 		componentRegistry.addPackItem(componentRegistry.getResource(uri), componentPack);
-		components.add(component);
+		if (componentsCache == null) {
+			getComponents();
+		}
+		componentsCache.put(componentName, component);
 
 
 		// add the workflow to the pack
@@ -206,12 +214,10 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 
 	@Override
 	public Component getComponent(String componentName) throws ComponentRegistryException {
-		for (Component component : getComponents()) {
-			if (componentName.equals(component.getName())) {
-				return component;
-			}
+		if (componentsCache == null) {
+			getComponents();
 		}
-		return null;
+		return (componentsCache.get(componentName));
 	}
 
 	public String getUri() {

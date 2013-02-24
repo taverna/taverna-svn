@@ -21,6 +21,7 @@
 package net.sf.taverna.t2.component.registry;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -139,9 +140,18 @@ public abstract class ComponentRegistryTest {
 
 	@Test
 	public void testAddComponentProfile() throws Exception {
-		int componentProfileCount = componentRegistry.getComponentProfiles().size();
+		List<ComponentProfile> componentProfiles = componentRegistry.getComponentProfiles();
+		boolean contained = false;
+		for (ComponentProfile p : componentProfiles) {
+			if (p.getId().equals(componentProfile.getId())) {
+				contained = true;
+			}
+		}
+		assertFalse(contained);
+		int componentProfileCount = componentProfiles.size();
 		componentRegistry.addComponentProfile(componentProfile);
-		assertEquals(componentProfileCount + 1, componentRegistry.getComponentProfiles().size());
+		int newSize = componentRegistry.getComponentProfiles().size();
+		assertEquals(componentProfileCount + 1, newSize);
 	}
 
 	@Test(expected=ComponentRegistryException.class)

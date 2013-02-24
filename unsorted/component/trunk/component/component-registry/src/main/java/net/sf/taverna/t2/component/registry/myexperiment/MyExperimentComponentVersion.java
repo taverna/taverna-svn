@@ -51,7 +51,6 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 
 	private Integer versionNumber;
 	private String description;
-	private Dataflow dataflow;
 
 	public MyExperimentComponentVersion(MyExperimentComponentRegistry componentRegistry,
 			Component component, String uri) {
@@ -85,7 +84,7 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 
 	@Override
 	public Dataflow getDataflow() throws ComponentRegistryException {
-		if (dataflow == null) {
+		Dataflow dataflow;
 			Element workflowElement = componentRegistry.getPackItem(uri, "workflow");
 			String resourceUri = workflowElement.getAttributeValue("resource");
 			String version = workflowElement.getAttributeValue("version");
@@ -98,7 +97,6 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 			} catch (MalformedURLException e) {
 				throw new ComponentRegistryException("Unable to open dataflow from " + downloadUri, e);
 			}
-		}
 		return dataflow;
 	}
 

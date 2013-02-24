@@ -23,7 +23,10 @@ package net.sf.taverna.t2.component.registry.local;
 import static org.junit.Assert.assertSame;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
 
+import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryTest;
 
 import org.apache.commons.io.FileUtils;
@@ -42,21 +45,22 @@ public class LocalComponentRegistryTest extends ComponentRegistryTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		testRegistry = new File(System.getProperty("java.io.tmpdir"), "TestRegistry");
+		testRegistry = new File(System.getProperty("java.io.tmpdir"), "TestRegistry" + UUID.randomUUID());
 		testRegistry.mkdir();
 		componentRegistryUrl = testRegistry.toURI().toURL();
 		componentRegistry = LocalComponentRegistry.getComponentRegistry(componentRegistryUrl);
 	}
 
 	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
+	public static void tearDownAfterClass() throws IOException {
 		FileUtils.deleteDirectory(testRegistry);
 	}
 
 	@Test
 	public void testGetComponentRegistry() throws Exception {
+		ComponentRegistry getAgain = LocalComponentRegistry.getComponentRegistry(componentRegistryUrl);
 		assertSame(componentRegistry,
-				LocalComponentRegistry.getComponentRegistry(componentRegistryUrl));
+				getAgain);
 	}
 
 }

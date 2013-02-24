@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.SortedMap;
@@ -35,6 +36,8 @@ public class LocalComponent implements Component {
 
 	private static Logger logger = Logger.getLogger(LocalComponent.class);
 
+	private SortedMap<Integer, ComponentVersion> versionCache;
+
 	public LocalComponent(File componentDir) {
 		this.componentDir = componentDir;	
 	}
@@ -61,6 +64,10 @@ public class LocalComponent implements Component {
 			logger.error("Unable to save component version", e);
 			throw new ComponentRegistryException("Unable to save component version", e);
 		}
+		if (versionCache == null) {
+			getComponentVersionMap();
+		}
+		versionCache.put(nextVersionNumber, newComponentVersion);
 		return newComponentVersion;
 	}
 
@@ -69,11 +76,7 @@ public class LocalComponent implements Component {
 	 */
 	@Override
 	public ComponentVersion getComponentVersion(Integer version) throws ComponentRegistryException {
-		File componentVersionFile = new File(componentDir, version.toString());
-		if (componentVersionFile.isDirectory()) {
-			return new LocalComponentVersion(this, componentVersionFile);
-		}
-		return null;
+		return getComponentVersionMap().get(version);
 	}
 
 
@@ -87,19 +90,21 @@ public class LocalComponent implements Component {
 
 	@Override
 	public SortedMap<Integer, ComponentVersion> getComponentVersionMap() {
-		TreeMap<Integer, ComponentVersion> result = new TreeMap<Integer, ComponentVersion>();
+		if (versionCache == null) {
+		versionCache = new TreeMap<Integer, ComponentVersion>();
 		for (File subFile : componentDir.listFiles()) {
 			if (subFile.isDirectory()) {
 				try {
 					Integer i = Integer.valueOf(subFile.getName());
-					result.put(i, new LocalComponentVersion(this, subFile));
+					versionCache.put(i, new LocalComponentVersion(this, subFile));
 				}
 				catch (NumberFormatException e) {
 					// Ignore
 				}
 			}
 		}
-		return result;
+		}
+		return Collections.unmodifiableSortedMap(versionCache);
 	}
 
 	@Override

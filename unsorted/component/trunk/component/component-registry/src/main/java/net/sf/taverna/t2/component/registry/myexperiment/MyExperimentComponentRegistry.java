@@ -58,8 +58,8 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 	private final MyExperimentClient myExperimentClient;
 	private final URL registryURL;
 
-	private List<ComponentFamily> componentFamilies;
-	private List<ComponentProfile> componentProfiles;
+	private Map<String, ComponentFamily> familyCache;
+	private List<ComponentProfile> profileCache;
 
 	private MyExperimentComponentRegistry(URL registryURL) {
 		this.registryURL = registryURL;
@@ -77,30 +77,31 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 
 	@Override
 	public List<ComponentFamily> getComponentFamilies() throws ComponentRegistryException {
-		if (componentFamilies == null) {
-			componentFamilies = new ArrayList<ComponentFamily>();
+		List<ComponentFamily> result = new ArrayList<ComponentFamily>();
+		if (familyCache == null) {
+			familyCache = new HashMap<String, ComponentFamily>();
 			Element packsElement = getResource(urlToString(registryURL) + "/packs.xml", "tag=component%20family");
 			for (Object child : packsElement.getChildren("pack")) {
 				if (child instanceof Element) {
 					Element packElement = (Element) child;
 					String packUri = packElement.getAttributeValue("uri");
 					if (getResource(packUri) != null) {
-						componentFamilies.add(new MyExperimentComponentFamily(this, MyExperimentPermissions.PRIVATE, packUri));
+						MyExperimentComponentFamily newFamily = new MyExperimentComponentFamily(this, MyExperimentPermissions.PRIVATE, packUri);
+						familyCache.put(newFamily.getName(), newFamily);
 					}
 				}
 			}
 		}
-		return componentFamilies;
+		result.addAll(familyCache.values());
+		return result;
 	}
 
 	@Override
 	public ComponentFamily getComponentFamily(String familyName) throws ComponentRegistryException {
-		for (ComponentFamily componentFamily : getComponentFamilies()) {
-			if (familyName.equals(componentFamily.getName())) {
-				return componentFamily;
-			}
+		if (familyCache == null) {
+			getComponentFamilies();
 		}
-		return null;
+		return familyCache.get(familyName);
 	}
 
 	@Override
@@ -125,21 +126,25 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		Element profileElement = addComponentProfileInternal(componentProfile);
 		addPackItem(packElement, profileElement);
 
-		if (componentFamilies != null) {
-			componentFamilies.add(componentFamily);
+		if (familyCache == null) {
+			getComponentFamilies();
 		}
+		familyCache.put(name, componentFamily);
 		return componentFamily;
 	}
 
 	@Override
 	public void removeComponentFamily(ComponentFamily componentFamily) throws ComponentRegistryException {
+		if (componentFamily != null) {
+			if (familyCache == null) {
+				getComponentFamilies();
+			}
+			familyCache.remove(componentFamily.getName());
+		}
 		if (componentFamily instanceof MyExperimentComponentFamily) {
 			MyExperimentComponentFamily myExperimentComponentFamily = (MyExperimentComponentFamily) componentFamily;
 			deleteResource(myExperimentComponentFamily.getUri());
-		}
-		if (componentFamilies != null && componentFamily != null) {
-			componentFamilies.remove(componentFamily);
-		}
+		}		
 	}
 
 	@Override
@@ -149,8 +154,9 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 
 	@Override
 	public List<ComponentProfile> getComponentProfiles() {
-		if (componentProfiles == null) {
-			componentProfiles = new ArrayList<ComponentProfile>();
+		List<ComponentProfile> result = new ArrayList<ComponentProfile>();
+		if (profileCache == null) {
+			profileCache = new ArrayList<ComponentProfile>();
 			Element filesElement = getResource(urlToString(registryURL) + "/files.xml", "tag=component%20profile");
 			for (Object child : filesElement.getChildren("file")) {
 				if (child instanceof Element) {
@@ -161,7 +167,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 					String downloadUri = resourceUri + "/download?version=" + version;
 					if (getResource(fileUri) != null) {
 						try {
-							componentProfiles.add(new MyExperimentComponentProfile(this, fileUri, new URL(downloadUri)));
+							profileCache.add(new MyExperimentComponentProfile(this, fileUri, new URL(downloadUri)));
 						} catch (MalformedURLException e) {
 							logger.warn("URL for component profile is invalid : " + fileUri, e);
 						}
@@ -169,11 +175,15 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 				}
 			}
 		}
-		return componentProfiles;
+		result.addAll(profileCache);
+		return result;
 	}
 
 	@Override
 	public ComponentProfile addComponentProfile(ComponentProfile componentProfile) throws ComponentRegistryException {
+		if (profileCache == null) {
+			getComponentProfiles();
+		}
 		Element element = addComponentProfileInternal(componentProfile);
 		String fileUri = element.getAttributeValue("uri");
 		String resourceUri = element.getAttributeValue("resource");
@@ -181,9 +191,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		String downloadUri = resourceUri + "/download?version=" + version;
 		try {
 			componentProfile = new MyExperimentComponentProfile(this, fileUri, new URL(downloadUri));
-			if (componentProfiles != null) {
-				componentProfiles.add(componentProfile);
-			}
+				profileCache.add(componentProfile);
 		} catch (MalformedURLException e) {
 			logger.warn("URL for component profile is invalid : " + fileUri, e);
 		}

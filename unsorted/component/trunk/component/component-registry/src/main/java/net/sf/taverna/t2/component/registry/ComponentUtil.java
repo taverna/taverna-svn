@@ -14,7 +14,7 @@ import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRe
  */
 public class ComponentUtil {
 	
-	public static ComponentRegistry calculateRegistry(URL registryBase) {
+	public static ComponentRegistry calculateRegistry(URL registryBase) throws ComponentRegistryException {
 		ComponentRegistry registry;
 		if (registryBase.getProtocol().startsWith("http")) {
 			registry = MyExperimentComponentRegistry.getComponentRegistry(registryBase);

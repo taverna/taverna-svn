@@ -37,12 +37,31 @@ public class LocalComponentRegistry implements ComponentRegistry {
 	private static Map<File, ComponentRegistry> componentRegistries = new HashMap<File, ComponentRegistry>();
 
 	private File baseDir;
+	
+	private HashMap<String, ComponentFamily> familyCache;
+	private HashMap<String, ComponentProfile> profileCache;
+	
+	private static String EMPTY_PROFILE_ID = "net.sf.taverna.t2.component.profile.empty";
+	private static String EMPTY_PROFILE_FILENAME = "EmptyProfile.xml";
+	
+	private static String DC_PROFILE_ID = "net.sf.taverna.t2.component.profile.dublincore";
+	private static String DC_PROFILE_FILENAME = "DublinCoreProfile.xml";
 
-	public LocalComponentRegistry(File registryDir) {
+	public LocalComponentRegistry(File registryDir) throws ComponentRegistryException {
 		baseDir = registryDir;
+		getComponentProfiles();
+		if (!profileCache.containsKey(EMPTY_PROFILE_ID)) {
+			addComponentProfile( new ComponentProfile(
+					getClass().getClassLoader().getResource(EMPTY_PROFILE_FILENAME)));			
+		}
+		if (!profileCache.containsKey(DC_PROFILE_ID)) {
+			addComponentProfile( new ComponentProfile(
+					getClass().getClassLoader().getResource(DC_PROFILE_FILENAME)));			
+		}
+
 	}
 
-	public static ComponentRegistry getComponentRegistry(File registryDir) {
+	public static ComponentRegistry getComponentRegistry(File registryDir) throws ComponentRegistryException {
 		if (!componentRegistries.containsKey(registryDir)) {
 			componentRegistries.put(registryDir, new LocalComponentRegistry(registryDir));
 		}
@@ -65,10 +84,14 @@ public class LocalComponentRegistry implements ComponentRegistry {
 		if (componentProfile == null) {
 			throw new ComponentRegistryException(("Component profile must not be null"));
 		}
-		File newFamilyDir = new File(getComponentFamiliesDir(), name);
-		if (newFamilyDir.exists()) {
+		if (familyCache == null) 
+		{
+			getComponentFamilies();
+		}
+		if (familyCache.containsKey(name)) {
 			throw new ComponentRegistryException(("Component family already exists"));
 		}
+		File newFamilyDir = new File(getComponentFamiliesDir(), name);
 		newFamilyDir.mkdirs();
 		File profileFile = new File(newFamilyDir, "profile");
 		try {
@@ -76,7 +99,9 @@ public class LocalComponentRegistry implements ComponentRegistry {
 		} catch (IOException e) {
 			throw new ComponentRegistryException("Could not write out profile", e);
 		}
-		return new LocalComponentFamily(this, newFamilyDir);
+		ComponentFamily result = new LocalComponentFamily(this, newFamilyDir);
+		familyCache.put(name, result);
+		return result;
 	}
 
 	/*
@@ -89,12 +114,17 @@ public class LocalComponentRegistry implements ComponentRegistry {
 	@Override
 	public List<ComponentFamily> getComponentFamilies() throws ComponentRegistryException {
 		List<ComponentFamily> result = new ArrayList<ComponentFamily>();
-		File familiesDir = getComponentFamiliesDir();
-		for (File subFile : familiesDir.listFiles()) {
-			if (subFile.isDirectory()) {
-				result.add(new LocalComponentFamily(this, subFile));
+		if (familyCache == null) {
+			familyCache = new HashMap<String, ComponentFamily>();
+			File familiesDir = getComponentFamiliesDir();
+			for (File subFile : familiesDir.listFiles()) {
+				if (subFile.isDirectory()) {
+					LocalComponentFamily newFamily = new LocalComponentFamily(this, subFile);
+					familyCache.put(newFamily.getName(), newFamily);
+				}
 			}
 		}
+		result.addAll(familyCache.values());
 		return result;
 
 	}
@@ -107,19 +137,25 @@ public class LocalComponentRegistry implements ComponentRegistry {
 	 * ()
 	 */
 	@Override
-	public List<ComponentProfile> getComponentProfiles() {
+	public List<ComponentProfile> getComponentProfiles() throws ComponentRegistryException {
 		List<ComponentProfile> result = new ArrayList<ComponentProfile>();
-		File profilesDir = getComponentProfilesDir();
-		for (File subFile : profilesDir.listFiles()) {
-			if (subFile.isFile() && (!subFile.isHidden()) && subFile.getName().endsWith(".xml")) {
-				try {
-					ComponentProfile newProfile = new ComponentProfile(subFile.toURI().toURL());
-					result.add(newProfile);
-				} catch (MalformedURLException e) {
-					logger.error("Unable to read profile", e);
+		if (profileCache == null) {
+			profileCache = new HashMap<String,ComponentProfile>();
+			File profilesDir = getComponentProfilesDir();
+			for (File subFile : profilesDir.listFiles()) {
+				if (subFile.isFile() && (!subFile.isHidden())
+						&& subFile.getName().endsWith(".xml")) {
+					try {
+						ComponentProfile newProfile = new ComponentProfile(
+								subFile.toURI().toURL());
+						profileCache.put(newProfile.getId(), newProfile);
+					} catch (MalformedURLException e) {
+						logger.error("Unable to read profile", e);
+					}
 				}
 			}
 		}
+		result.addAll(profileCache.values());
 		return result;
 	}
 
@@ -149,6 +185,12 @@ public class LocalComponentRegistry implements ComponentRegistry {
 	@Override
 	public void removeComponentFamily(ComponentFamily componentFamily)
 			throws ComponentRegistryException {
+		if (componentFamily != null) {
+			if (familyCache == null) {
+				getComponentFamilies();
+			}
+			familyCache.remove(componentFamily.getName());
+		}
 		File componentFamilyDir = new File(getComponentFamiliesDir(), componentFamily.getName());
 		try {
 			FileUtils.deleteDirectory(componentFamilyDir);
@@ -174,7 +216,7 @@ public class LocalComponentRegistry implements ComponentRegistry {
 		return componentProfilesDir;
 	}
 
-	public static ComponentRegistry getComponentRegistry(URL componentRegistryBase) {
+	public static ComponentRegistry getComponentRegistry(URL componentRegistryBase) throws ComponentRegistryException {
 		try {
 			return getComponentRegistry(new File(componentRegistryBase.toURI()));
 		} catch (URISyntaxException e) {
@@ -184,12 +226,11 @@ public class LocalComponentRegistry implements ComponentRegistry {
 	}
 
 	@Override
-	public ComponentFamily getComponentFamily(String familyName) {
-		File componentFamilyDir = new File(getComponentFamiliesDir(), familyName);
-		if (componentFamilyDir.exists()) {
-			return new LocalComponentFamily(this, componentFamilyDir);
+	public ComponentFamily getComponentFamily(String familyName) throws ComponentRegistryException {
+		if (familyCache == null) {
+			getComponentFamilies();
 		}
-		return null;
+		return familyCache.get(familyName);
 	}
 
 	@Override
@@ -197,6 +238,12 @@ public class LocalComponentRegistry implements ComponentRegistry {
 			throws ComponentRegistryException {
 		if (componentProfile == null) {
 			throw new ComponentRegistryException(("Component profile must not be null"));
+		}
+		if (profileCache == null) {
+			getComponentProfiles();
+		}
+		if (profileCache.containsKey(componentProfile.getId())) {
+			return profileCache.get(componentProfile.getId());
 		}
 		String name = componentProfile.getName().replaceAll("\\W+", "") + ".xml";
 		String inputString = componentProfile.getXML();
@@ -208,7 +255,9 @@ public class LocalComponentRegistry implements ComponentRegistry {
 		}
 
 		try {
-			return new ComponentProfile(outputFile.toURI().toURL());
+			ComponentProfile newProfile = new ComponentProfile(outputFile.toURI().toURL());
+			profileCache.put(newProfile.getId(), newProfile);
+			return newProfile;
 		} catch (MalformedURLException e) {
 			throw new ComponentRegistryException("Unable to create profile", e);
 		}

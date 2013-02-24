@@ -24,6 +24,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -54,6 +56,8 @@ public class MyExperimentComponent implements Component {
 
 	private String name;
 	private String description;
+	
+	private SortedMap<Integer, ComponentVersion> versionCache;
 
 	public MyExperimentComponent(MyExperimentComponentRegistry componentRegistry, String uri) {
 		this.componentRegistry = componentRegistry;
@@ -87,13 +91,15 @@ public class MyExperimentComponent implements Component {
 
 	@Override
 	public SortedMap<Integer, ComponentVersion> getComponentVersionMap() {
-		SortedMap<Integer, ComponentVersion> componentVersions = new TreeMap<Integer, ComponentVersion>();
+		if (versionCache == null) {
+		versionCache = new TreeMap<Integer, ComponentVersion>();
 		for (Element version : componentRegistry.getResourceElements(uri, "versions")) {
 			String versionUri = version.getAttributeValue("uri");
 			ComponentVersion componentVersion = new MyExperimentComponentVersion(componentRegistry, this, versionUri);
-			componentVersions.put(componentVersion.getVersionNumber(), componentVersion);
+			versionCache.put(componentVersion.getVersionNumber(), componentVersion);
 		}
-		return componentVersions;
+		}
+		return Collections.unmodifiableSortedMap(versionCache);
 	}
 
 	@Override
@@ -135,7 +141,12 @@ public class MyExperimentComponent implements Component {
 
 		Element componentPack = componentRegistry.snapshotPack(uri);
 		String version = componentPack.getAttributeValue("version");
-		return new MyExperimentComponentVersion(componentRegistry, this, uri+"&version="+version);
+		MyExperimentComponentVersion myExperimentComponentVersion = new MyExperimentComponentVersion(componentRegistry, this, uri+"&version="+version);
+		if (versionCache == null) {
+			getComponentVersionMap();
+		}
+		versionCache.put(Integer.valueOf(version), myExperimentComponentVersion);
+		return myExperimentComponentVersion;
 	}
 
 	@Override

@@ -6,7 +6,9 @@ package net.sf.taverna.t2.component.registry.local;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.Component;
@@ -31,6 +33,9 @@ public class LocalComponentFamily implements ComponentFamily {
 	private static final String PROFILE = "profile";
 	private final File componentFamilyDir;
 	private final ComponentRegistry parentRegistry;
+	
+	private ComponentProfile componentProfile;
+	private Map<String, Component> componentsCache;
 
 	public LocalComponentFamily(ComponentRegistry parentRegistry, File componentFamilyDir) {
 		this.parentRegistry = parentRegistry;
@@ -43,6 +48,7 @@ public class LocalComponentFamily implements ComponentFamily {
 	@Override
 	public ComponentProfile getComponentProfile()
 			throws ComponentRegistryException {
+		if (componentProfile == null) {
 		File profileFile = new File(componentFamilyDir, PROFILE);
 		String profileName;
 		try {
@@ -52,10 +58,12 @@ public class LocalComponentFamily implements ComponentFamily {
 		}
 		for (ComponentProfile p : parentRegistry.getComponentProfiles()) {
 			if (p.getName().equals(profileName)) {
-				return p;
+				componentProfile = p;
+				break;
 			}
 		}
-		return null;
+		}
+		return componentProfile;
 	}
 
 	/* (non-Javadoc)
@@ -74,12 +82,16 @@ public class LocalComponentFamily implements ComponentFamily {
 		// Assume all directories are components
 		List<Component> result = new ArrayList<Component>();
 
+		if (componentsCache == null) {
+			componentsCache = new HashMap<String, Component>();
 		for (File subFile : componentFamilyDir.listFiles()) {
 			if (subFile.isDirectory()) {
 				LocalComponent newComponent = new LocalComponent(subFile);
-				result.add(newComponent);
+				componentsCache.put(newComponent.getName(), newComponent);
 			}
 		}
+		}
+		result.addAll(componentsCache.values());
 		return result;
 	}
 
@@ -107,16 +119,19 @@ public class LocalComponentFamily implements ComponentFamily {
 		}
 		newSubFile.mkdirs();
 		LocalComponent newComponent = new LocalComponent(newSubFile);
+		if (componentsCache == null) {
+			getComponents();
+		}
+		componentsCache.put(componentName, newComponent);
 		return newComponent.addVersionBasedOn(dataflow);
 	}
 
 	@Override
-	public Component getComponent(String componentName) {
-		File componentDir = new File(componentFamilyDir, componentName);
-		if (componentDir.exists()) {
-			return new LocalComponent(componentDir);
+	public Component getComponent(String componentName) throws ComponentRegistryException {
+		if (componentsCache == null) {
+			getComponents();
 		}
-		return null;
+		return (componentsCache.get(componentName));
 	}
 
 	/* (non-Javadoc)
@@ -169,9 +184,11 @@ public class LocalComponentFamily implements ComponentFamily {
 	@Override
 	public void removeComponent(Component component)
 			throws ComponentRegistryException {
+		componentsCache.remove(component.getName());
 		File componentDir = new File(componentFamilyDir, component.getName());
 		try {
 			FileUtils.deleteDirectory(componentDir);
+			
 		} catch (IOException e) {
 			throw new ComponentRegistryException("Unable to delete component", e);
 		}
