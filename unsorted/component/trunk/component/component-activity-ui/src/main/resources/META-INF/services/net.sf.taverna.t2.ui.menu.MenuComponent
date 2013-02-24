@@ -25,5 +25,3 @@ net.sf.taverna.t2.component.ui.menu.component.ComponentDeleteMenuAction
 net.sf.taverna.t2.component.ui.menu.component.ComponentMergeMenuAction
 net.sf.taverna.t2.component.ui.menu.component.ComponentCloseMenuAction
 net.sf.taverna.t2.component.ui.menu.component.ComponentSaveMenuAction
-
-net.sf.taverna.t2.component.ui.menu.AnnotateSemanticsMenuAction
