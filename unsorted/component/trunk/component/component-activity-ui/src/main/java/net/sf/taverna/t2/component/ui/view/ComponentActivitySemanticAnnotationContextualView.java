@@ -34,6 +34,7 @@ import java.util.Set;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import net.sf.taverna.t2.annotation.Annotated;
@@ -154,14 +155,6 @@ public class ComponentActivitySemanticAnnotationContextualView extends Contextua
 		}
 	}
 
-	private ComponentRegistry getComponentRegistry(URL registryBase) {
-		if (registryBase.getProtocol().equals("file")) {
-			return LocalComponentRegistry.getComponentRegistry(registryBase);
-		} else {
-			return MyExperimentComponentRegistry.getComponentRegistry(registryBase);
-		}
-	}
-
 	@Override
 	public JComponent getMainFrame() {
 		return panel;
@@ -213,6 +206,9 @@ public class ComponentActivitySemanticAnnotationContextualView extends Contextua
 			panel.add(new ComponentActivitySemanticAnnotationPanel(this, semanticAnnotationProfile,
 					statementsWithPredicate), gbc);
 			statements.removeAll(statementsWithPredicate);
+		}
+		if (semanticAnnotationProfiles.isEmpty()) {
+			panel.add(new JLabel("No annotations were possible"));
 		}
 		// TODO handle any remaining statements
 
