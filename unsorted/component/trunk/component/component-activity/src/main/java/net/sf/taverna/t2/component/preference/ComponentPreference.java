@@ -17,6 +17,7 @@ import java.util.TreeMap;
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
+import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentUtil;
 
 import org.apache.log4j.Logger;
@@ -73,6 +74,8 @@ public class ComponentPreference {
 			try {
 				registryMap.put(name, ComponentUtil.calculateRegistry(new URL((String) properties.get(name))));
 			} catch (MalformedURLException e) {
+				logger.error(e);
+			} catch (ComponentRegistryException e) {
 				logger.error(e);
 			}
 		}
