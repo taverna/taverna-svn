@@ -15,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.EmptyBorder;
 
@@ -77,11 +78,11 @@ public class ComponentActivitySemanticAnnotationPanel extends JPanel {
 			for (Statement statement : statements) {
 				c.gridx = 0;
 				c.weightx = 1;
-				JLabel predicateLabel = new JLabel(SemanticAnnotationUtils.getDisplayName(statement.getObject()));
-				predicateLabel.setBackground(Color.WHITE);
-				predicateLabel.setOpaque(true);
-				predicateLabel.setBorder(new EmptyBorder(2,4,2,4));
-				add(predicateLabel, c);
+				JTextArea value = new JTextArea(SemanticAnnotationUtils.getDisplayName(statement.getObject()));
+				value.setBackground(Color.WHITE);
+				value.setOpaque(true);
+				value.setBorder(new EmptyBorder(2,4,2,4));
+				add(value, c);
 			}
 		}
 
