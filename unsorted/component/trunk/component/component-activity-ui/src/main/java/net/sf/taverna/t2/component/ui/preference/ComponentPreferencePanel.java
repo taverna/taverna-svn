@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 
 import net.sf.taverna.t2.component.preference.ComponentPreference;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
+import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.local.LocalComponentRegistry;
 import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
 import net.sf.taverna.t2.component.ui.util.Utils;
@@ -133,8 +134,13 @@ public class ComponentPreferencePanel extends JPanel {
 				vuid.setSize(new Dimension(400, 250));
 				if (vuid.show(ComponentPreferencePanel.this)) {
 					File newDir = new File(inputPanel.getLocationField().getText());
-					ComponentRegistry newRegistry = LocalComponentRegistry.getComponentRegistry(newDir);
-					tableModel.insertRegistry(inputPanel.getRegistryNameField().getText(), newRegistry);
+					ComponentRegistry newRegistry;
+					try {
+						newRegistry = LocalComponentRegistry.getComponentRegistry(newDir);
+						tableModel.insertRegistry(inputPanel.getRegistryNameField().getText(), newRegistry);
+					} catch (ComponentRegistryException e) {
+						logger.error(e);
+					}
 				}
 			}
 		});
