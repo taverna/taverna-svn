@@ -12,6 +12,7 @@ import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.registry.ComponentUtil;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.component.registry.local.LocalComponentRegistry;
 import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
@@ -44,16 +45,15 @@ public class ComponentServiceProvider extends
 			FindServiceDescriptionsCallBack callBack) {
 		ComponentServiceProviderConfig config = getConfiguration();
 		
-		ComponentRegistry registry = null;
+		ComponentRegistry registry;
+		try {
+			registry = ComponentUtil.calculateRegistry(config.getRegistryBase());
+		} catch (ComponentRegistryException e) {
+			logger.error(e);
+			callBack.fail("Unable to read components", e);
+			return;
+		}
 		
-		if (config.getRegistryBase().getProtocol().startsWith("http")) {
-			// TODO This needs improving
-			registry = MyExperimentComponentRegistry.getComponentRegistry(config.getRegistryBase());
-		}
-		else {
-			registry = LocalComponentRegistry.getComponentRegistry(config.getRegistryBase());
-		}
-
 		List<ComponentServiceDesc> results = new ArrayList<ComponentServiceDesc>();
 		
 		try {
