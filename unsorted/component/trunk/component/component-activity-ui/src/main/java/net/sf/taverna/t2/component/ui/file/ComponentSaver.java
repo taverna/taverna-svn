@@ -11,6 +11,7 @@ import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentFileType;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.registry.ComponentUtil;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.component.registry.local.LocalComponentRegistry;
@@ -57,15 +58,9 @@ public class ComponentSaver extends AbstractDataflowPersistenceHandler
 			return new DataflowInfo(COMPONENT_FILE_TYPE, newIdent, dataflow);
 		}
 		
-		ComponentRegistry registry;
-		if (ident.getRegistryBase().getProtocol().startsWith("http")) {
-			registry = MyExperimentComponentRegistry.getComponentRegistry(ident.getRegistryBase());
-		}
-		else {
-			registry = LocalComponentRegistry.getComponentRegistry(ident.getRegistryBase());
-		}
 		ComponentFamily family;
 		try {
+			ComponentRegistry registry = ComponentUtil.calculateRegistry(ident.getRegistryBase());
 			family = registry.getComponentFamily(ident.getFamilyName());
 		} catch (ComponentRegistryException e1) {
 			throw new SaveException("Unable to read component", e1);
