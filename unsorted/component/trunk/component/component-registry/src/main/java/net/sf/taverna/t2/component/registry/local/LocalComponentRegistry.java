@@ -50,14 +50,14 @@ public class LocalComponentRegistry implements ComponentRegistry {
 	public LocalComponentRegistry(File registryDir) throws ComponentRegistryException {
 		baseDir = registryDir;
 		getComponentProfiles();
-		if (!profileCache.containsKey(EMPTY_PROFILE_ID)) {
+/*		if (!profileCache.containsKey(EMPTY_PROFILE_ID)) {
 			addComponentProfile( new ComponentProfile(
 					getClass().getClassLoader().getResource(EMPTY_PROFILE_FILENAME)));			
 		}
 		if (!profileCache.containsKey(DC_PROFILE_ID)) {
 			addComponentProfile( new ComponentProfile(
 					getClass().getClassLoader().getResource(DC_PROFILE_FILENAME)));			
-		}
+		}*/
 
 	}
 
