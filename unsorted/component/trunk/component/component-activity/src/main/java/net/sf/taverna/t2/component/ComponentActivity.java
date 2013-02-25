@@ -109,7 +109,8 @@ public class ComponentActivity extends
 	public void executeAsynch(final Map<String, T2Reference> inputs,
 			final AsynchronousActivityCallback callback) {
 		try {
-			getComponentRealization().executeAsynch (inputs, callback);
+			AsynchronousActivityCallback proxyCallback = new ProxyCallback(callback);
+			getComponentRealization().executeAsynch (inputs, proxyCallback);
 		} catch (ActivityConfigurationException e) {
 			callback.fail("Unable to execute component", e);
 		}
