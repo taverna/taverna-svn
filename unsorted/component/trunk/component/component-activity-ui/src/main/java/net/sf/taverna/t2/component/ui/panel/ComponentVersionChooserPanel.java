@@ -6,6 +6,8 @@ package net.sf.taverna.t2.component.ui.panel;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -37,7 +39,8 @@ public class ComponentVersionChooserPanel extends JPanel implements Observer<Com
 
 	private final JComboBox componentVersionChoice = new JComboBox();
 
-	private DefaultComboBoxModel componentVersionModel = new DefaultComboBoxModel();
+	private SortedMap<Integer, ComponentVersion> componentVersionMap =
+		new TreeMap<Integer, ComponentVersion>();
 
 	private ComponentChooserPanel componentChooserPanel = new ComponentChooserPanel();
 
@@ -45,7 +48,6 @@ public class ComponentVersionChooserPanel extends JPanel implements Observer<Com
 		super();
 		this.setLayout(new GridBagLayout());
 
-		componentVersionChoice.setModel(componentVersionModel);
 		componentVersionChoice.setRenderer(new ComponentListCellRenderer());
 		componentVersionChoice.setPrototypeDisplayValue(Utils.LONG_STRING);
 
@@ -70,16 +72,21 @@ public class ComponentVersionChooserPanel extends JPanel implements Observer<Com
 
 	private void updateComponentVersionModel() {
 		Component chosenComponent = componentChooserPanel.getChosenComponent();
-		componentVersionModel.removeAllElements();
+		componentVersionMap.clear();
+		componentVersionChoice.removeAllItems();
 		ComponentVersion lastVersion = null;
 		try {
 			if (chosenComponent != null) {
 			for (ComponentVersion version : chosenComponent.getComponentVersionMap().values()) {
-				componentVersionModel.addElement(version);
+				componentVersionMap.put(version.getVersionNumber(), version);
+				componentVersionChoice.addItem(version);
 				lastVersion = version;
 			}
 			}
-			componentVersionChoice.setEnabled(componentVersionModel.getSize() > 0);
+			componentVersionChoice.setEnabled(!componentVersionMap.isEmpty());
+			if (componentVersionMap.isEmpty()) {
+				componentVersionChoice.addItem("No versions available");
+			}
 		} catch (NullPointerException e) {
 			logger.error("Unable to read component versions", e);
 		}
@@ -89,7 +96,7 @@ public class ComponentVersionChooserPanel extends JPanel implements Observer<Com
 	}
 
 	public ComponentVersion getChosenComponentVersion() {
-		if (componentVersionChoice.getSelectedIndex() >= 0) {
+		if (!componentVersionMap.isEmpty()) {
 			return (ComponentVersion) componentVersionChoice.getSelectedItem();
 		}
 		return null;
@@ -98,7 +105,12 @@ public class ComponentVersionChooserPanel extends JPanel implements Observer<Com
 	@Override
 	public void notify(Observable<ComponentChoiceMessage> sender,
 			ComponentChoiceMessage message) throws Exception {
+		try {
 		updateComponentVersionModel();
+		}
+		catch (Exception e) {
+			logger.error(e);
+		}
 	}
 
 	public ComponentRegistry getChosenRegistry() {

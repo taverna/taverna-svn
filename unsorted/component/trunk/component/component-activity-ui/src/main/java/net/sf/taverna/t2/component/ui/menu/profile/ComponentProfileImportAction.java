@@ -11,11 +11,17 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.apache.log4j.Logger;
+
+import net.sf.taverna.t2.component.ComponentActivity;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
@@ -33,6 +39,8 @@ public class ComponentProfileImportAction extends AbstractAction {
 	 */
 	private static final long serialVersionUID = -3796754761286943970L;
 	private static final String IMPORT_PROFILE = "Import profile...";
+	
+	private static Logger logger = Logger.getLogger(ComponentProfileImportAction.class);
 	
 	public ComponentProfileImportAction() {
 		super (IMPORT_PROFILE, ComponentServiceIcon.getIcon());
@@ -67,8 +75,29 @@ public class ComponentProfileImportAction extends AbstractAction {
 		overallPanel.add(new JLabel("Profile Location:"), gbc);
 		gbc.gridx = 1;
 		gbc.weightx = 1;
-		JTextField profileLocation = new JTextField(40);
+		final JTextField profileLocation = new JTextField(40);
 		overallPanel.add(profileLocation, gbc);
+		gbc.gridx = 0;
+		gbc.weightx = 0;
+		gbc.gridy++;
+		JButton browseButton = new JButton(new AbstractAction("Browse"){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JFileChooser chooser = new JFileChooser();
+			    FileNameExtensionFilter filter = new FileNameExtensionFilter(
+			        "XML files", "xml");
+			    chooser.setFileFilter(filter);
+			    int returnVal = chooser.showOpenDialog(null);
+			    if(returnVal == JFileChooser.APPROVE_OPTION) {
+			       try {
+					profileLocation.setText(chooser.getSelectedFile().toURI().toURL().toString());
+				} catch (MalformedURLException e) {
+					logger.error(e);
+				}
+			    }
+			}});
+		overallPanel.add(browseButton, gbc);
 		
 		int answer = JOptionPane.showConfirmDialog(null, overallPanel, "Import Component Profile", JOptionPane.OK_CANCEL_OPTION);
 		if (answer == JOptionPane.OK_OPTION) {

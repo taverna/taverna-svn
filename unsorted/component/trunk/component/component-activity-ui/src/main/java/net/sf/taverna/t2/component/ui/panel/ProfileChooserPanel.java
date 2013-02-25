@@ -84,7 +84,12 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 	@Override
 	public void notify(Observable<RegistryChoiceMessage> sender,
 			RegistryChoiceMessage message) throws Exception {
-		this.setRegistry(message.getChosenRegistry());
+		try {
+			this.setRegistry(message.getChosenRegistry());
+		}
+		catch (Exception e) {
+			logger.error(e);
+		}
 	}
 
 	private void setRegistry(ComponentRegistry chosenRegistry) {
@@ -92,6 +97,7 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 		profileBox.removeAllItems();
 		profileDescription.setText("");
 		List<ComponentProfile> componentProfiles;
+		if (chosenRegistry != null) {
 		try {
 			componentProfiles = chosenRegistry.getComponentProfiles();
 		} catch (ComponentRegistryException e) {
@@ -101,24 +107,28 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 			logger.error(e);
 			return;
 		}
-			for (ComponentProfile p : componentProfiles) {
-				try {
-					String name = p.getName();
-					profileMap.put(name, p);
-				}
-			  catch (NullPointerException e) {
+		for (ComponentProfile p : componentProfiles) {
+			try {
+				String name = p.getName();
+				profileMap.put(name, p);
+			} catch (NullPointerException e) {
 				logger.error(e);
 
 			}
-			}
-			for (String name : profileMap.keySet()) {
-				profileBox.addItem(name);
-			}
-			if (!profileMap.isEmpty()) {
-				String firstKey = profileMap.firstKey();
-				profileBox.setSelectedItem(firstKey);
-				setProfile(profileMap.get(firstKey));
-			}
+		}
+		}
+		for (String name : profileMap.keySet()) {
+			profileBox.addItem(name);
+		}
+		if (!profileMap.isEmpty()) {
+			String firstKey = profileMap.firstKey();
+			profileBox.setSelectedItem(firstKey);
+			setProfile(profileMap.get(firstKey));
+			profileBox.setEnabled(true);
+		} else {
+			profileBox.addItem("No profiles available");
+			profileBox.setEnabled(false);
+		}
 	}
 
 	private void setProfile(ComponentProfile componentProfile) {

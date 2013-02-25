@@ -83,22 +83,38 @@ public class FamilyChooserPanel extends JPanel implements Observer, Observable<F
 	@Override
 	public void notify(Observable sender,
 			Object message) throws Exception {
-		if (message instanceof RegistryChoiceMessage) {
-			this.chosenRegistry = ((RegistryChoiceMessage) message).getChosenRegistry();
-		} else if (message instanceof ProfileChoiceMessage) {
-			this.profileFilter = ((ProfileChoiceMessage) message).getChosenProfile();
+		try {
+			if (message instanceof RegistryChoiceMessage) {
+				this.chosenRegistry = ((RegistryChoiceMessage) message)
+						.getChosenRegistry();
+			} else if (message instanceof ProfileChoiceMessage) {
+				this.profileFilter = ((ProfileChoiceMessage) message)
+						.getChosenProfile();
+			}
+		} catch (Exception e) {
+			logger.error(e);
 		}
-		this.updateList();
+		try {
+			this.updateList();
+		} catch (Exception e) {
+			logger.error(e);
+		}
 	}
 
 	private void updateList() {
+		try {
+			String fred = "no";
 		familyMap.clear();
 		familyBox.removeAllItems();
 		try {
 			if (chosenRegistry != null ) {
 				for (ComponentFamily f : chosenRegistry.getComponentFamilies()) {
-					if ((profileFilter == null) || f.getComponentProfile().getId().equals(profileFilter.getId())) {
+					ComponentProfile componentProfile = f.getComponentProfile();
+					if (componentProfile != null) {
+					String id = componentProfile.getId();
+					if ((profileFilter == null) || id.equals(profileFilter.getId())) {
 						familyMap.put(f.getName(), f);
+					}
 					}
 				}
 			}
@@ -109,10 +125,15 @@ public class FamilyChooserPanel extends JPanel implements Observer, Observable<F
 				String firstKey = familyMap.firstKey();
 				familyBox.setSelectedItem(firstKey);
 			} else {
-				notifyObservers();
+				familyBox.addItem("No families available");
 			}
+			notifyObservers();
 			familyBox.setEnabled(!familyMap.isEmpty());
 		} catch (ComponentRegistryException e) {
+			logger.error(e);
+		}
+		}
+		catch (Exception e) {
 			logger.error(e);
 		}
 	}
@@ -141,13 +162,11 @@ public class FamilyChooserPanel extends JPanel implements Observer, Observable<F
 	public void addObserver(Observer<FamilyChoiceMessage> observer) {
 		observers.add(observer);
 		ComponentFamily chosenFamily = getChosenFamily();
-		if (chosenFamily != null) {
 		FamilyChoiceMessage message = new FamilyChoiceMessage(chosenFamily);
 		try {
 			observer.notify(this, message);
 		} catch (Exception e) {
 			logger.error(e);
-		}
 		}
 	}
 

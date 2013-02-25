@@ -84,7 +84,12 @@ public class ComponentCopyAction extends AbstractAction {
 			@Override
 			public void notify(Observable<ComponentChoiceMessage> sender,
 					ComponentChoiceMessage message) throws Exception {
-				ProfileChoiceMessage profileMessage = new ProfileChoiceMessage(message.getComponentFamily().getComponentProfile());
+				ComponentProfile componentProfile = null;
+				ComponentFamily componentFamily = message.getComponentFamily();
+				if (componentFamily != null) {
+					componentProfile = componentFamily.getComponentProfile();
+				}
+				ProfileChoiceMessage profileMessage = new ProfileChoiceMessage(componentProfile);
 				target.notify(null, profileMessage);
 			}});
 		

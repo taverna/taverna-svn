@@ -10,6 +10,8 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
+import org.apache.log4j.Logger;
+
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.lang.observer.Observable;
@@ -20,6 +22,8 @@ import net.sf.taverna.t2.lang.observer.Observer;
  *
  */
 public class RegistryAndFamilyChooserPanel extends JPanel implements Observer<ProfileChoiceMessage>, Observable<FamilyChoiceMessage> {
+
+	private static Logger logger = Logger.getLogger(RegistryAndFamilyChooserPanel.class);
 
 	/**
 	 *
@@ -76,7 +80,12 @@ public class RegistryAndFamilyChooserPanel extends JPanel implements Observer<Pr
 	@Override
 	public void notify(Observable<ProfileChoiceMessage> sender,
 			ProfileChoiceMessage message) throws Exception {
-		familyPanel.notify(sender, message);
+		try {
+			familyPanel.notify(sender, message);
+		}
+		catch (Exception e) {
+			logger.error(e);
+		}
 	}
 
 }

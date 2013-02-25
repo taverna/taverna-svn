@@ -10,12 +10,15 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
@@ -45,8 +48,8 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 
 
 	private final JComboBox componentChoice = new JComboBox();
-
-	private DefaultComboBoxModel componentModel = new DefaultComboBoxModel();
+	
+	private SortedMap<String, Component> componentMap = new TreeMap<String, Component>();
 
 	private RegistryAndFamilyChooserPanel registryAndFamilyChooserPanel = new RegistryAndFamilyChooserPanel();
 
@@ -54,7 +57,6 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 		super();
 		this.setLayout(new GridBagLayout());
 
-		componentChoice.setModel(componentModel);
 		componentChoice.setRenderer(new ComponentListCellRenderer());
 		componentChoice.setPrototypeDisplayValue(Utils.LONG_STRING);
 
@@ -101,19 +103,23 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 
 	private void updateComponentModel() {
 		ComponentFamily chosenFamily = registryAndFamilyChooserPanel.getChosenFamily();
-		componentModel.removeAllElements();
+		componentMap.clear();
+		componentChoice.removeAllItems();
 		try {
 			if (chosenFamily != null) {
 				for (Component component : chosenFamily.getComponents()) {
-					componentModel.addElement(component);
+					componentChoice.addItem(component);
+					componentMap.put(component.getName(), component);
 				}
 			}
-			if (componentModel.getSize() > 0) {
+			if (!componentMap.isEmpty()) {
 				componentChoice.setSelectedIndex(0);
 			} else {
-				notifyObservers();
+				componentChoice.addItem("No components available");
+
 			}
-			componentChoice.setEnabled(componentModel.getSize() != 0);
+			notifyObservers();
+			componentChoice.setEnabled(!componentMap.isEmpty());
 		} catch (ComponentRegistryException e) {
 			logger.error("Unable to read components", e);
 		} catch (NullPointerException e) {
@@ -122,7 +128,7 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 	}
 
 	public Component getChosenComponent() {
-		if (componentChoice.getSelectedIndex() >= 0) {
+		if (!componentMap.isEmpty()) {
 			return (Component) componentChoice.getSelectedItem();
 		}
 		return null;
@@ -131,10 +137,15 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 	@Override
 	public void notify(Observable sender,
 			Object message) throws Exception {
+		try {
 		if (message instanceof FamilyChoiceMessage) {
 			updateComponentModel();
 		} else if (message instanceof ProfileChoiceMessage) {
 			registryAndFamilyChooserPanel.notify(null, (ProfileChoiceMessage) message);
+		}
+		}
+		catch (Exception e) {
+			logger.error(e);
 		}
 	}
 
@@ -142,13 +153,11 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 	public void addObserver(Observer<ComponentChoiceMessage> observer) {
 		observers.add(observer);
 		Component chosenComponent = getChosenComponent();
-		if (chosenComponent != null) {
 			ComponentChoiceMessage message = new ComponentChoiceMessage(registryAndFamilyChooserPanel.getChosenFamily(), chosenComponent);
 			try {
 				observer.notify(this, message);
 			} catch (Exception e) {
 				logger.error(e);
-			}
 			}
 	}
 

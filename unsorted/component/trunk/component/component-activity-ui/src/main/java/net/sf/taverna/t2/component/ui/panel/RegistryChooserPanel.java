@@ -100,14 +100,12 @@ public class RegistryChooserPanel extends JPanel implements Observable<RegistryC
 	public void addObserver(Observer<RegistryChoiceMessage> observer) {
 		observers.add(observer);
 		ComponentRegistry chosenRegistry = getChosenRegistry();
-		if (chosenRegistry != null) {
 			RegistryChoiceMessage message = new RegistryChoiceMessage(chosenRegistry);
 			try {
 				observer.notify(this, message);
 			} catch (Exception e) {
 				logger.error(e);
 			}
-		}
 	}
 
 	@Override

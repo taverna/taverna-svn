@@ -106,11 +106,17 @@ public class ComponentFamilyCreateAction extends AbstractAction implements Obser
 				return;
 			}
 			String newName = familyNameField.getText();
+			
+			if ((newName == null) || newName.isEmpty()) {
+				JOptionPane.showMessageDialog(null, "Name must be specified", "Missing component family name", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
 
 			try {
 				boolean alreadyUsed = (chosenRegistry.getComponentFamily(newName) != null);
 				if (alreadyUsed) {
 					JOptionPane.showMessageDialog(null, newName + " is already used", "Duplicate component family name", JOptionPane.ERROR_MESSAGE);
+					return;
 				} else {
 					chosenRegistry.createComponentFamily(newName, chosenProfile);
 				}

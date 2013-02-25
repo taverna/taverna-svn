@@ -193,15 +193,19 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 		JOptionPane.showMessageDialog(null, "Here will be the assurance that the component meets the profile\nThis may just be checking that it is the same URI");
 
 		ComponentVersionIdentification ident = panel.getComponentVersionIdentification();
+		if (ident == null) {
+			JOptionPane.showMessageDialog(null, "Not enough information to create component", "Component creation problem", JOptionPane.ERROR_MESSAGE);
+			return null;
+		}
 		
 		try {
 			Component existingComponent = ComponentUtil.calculateComponent(ident);
 			if (existingComponent != null) {
-				JOptionPane.showMessageDialog(null, "Component with this name already exists");
+				JOptionPane.showMessageDialog(null, "Component with this name already exists", "Component creation problem", JOptionPane.ERROR_MESSAGE);
 				return null;				
 			}
 		} catch (ComponentRegistryException e) {
-			JOptionPane.showMessageDialog(null, "Problem searching registry");			
+			JOptionPane.showMessageDialog(null, "Problem searching registry", "Component creation problem", JOptionPane.ERROR_MESSAGE);			
 			logger.error(e);
 			return null;
 		}
