@@ -57,7 +57,7 @@ public class ObjectPropertyWithIndividualsPanel extends PropertyAnnotationPanel 
 		super();
 	}
 	
-	JComboBox<NamedResource> resources;
+	JComboBox resources;
 
 	public ObjectPropertyWithIndividualsPanel(
 			final SemanticAnnotationContextualView semanticAnnotationContextualView,
@@ -90,7 +90,7 @@ public class ObjectPropertyWithIndividualsPanel extends PropertyAnnotationPanel 
 		for (int i = 0; i < namedResources.length; i++) {
 			namedResources[i] = new NamedResource(individuals.get(i));
 		}
-		resources = new JComboBox<NamedResource>(namedResources);
+		resources = new JComboBox(namedResources);
 		resources.setEditable(false);
 		JPanel resourcePanel = new JPanel(new BorderLayout());
 		resourcePanel.add(resources, BorderLayout.NORTH);
