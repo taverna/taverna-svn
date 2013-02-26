@@ -35,6 +35,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import uk.org.taverna.ns._2012.component.profile.Activity;
+import uk.org.taverna.ns._2012.component.profile.ExceptionHandling;
 import uk.org.taverna.ns._2012.component.profile.Ontology;
 import uk.org.taverna.ns._2012.component.profile.Port;
 import uk.org.taverna.ns._2012.component.profile.Profile;
@@ -189,6 +190,10 @@ public class ComponentProfile {
 			}
 		}
 		return uniqueSemanticAnnotations;
+	}
+	
+	public ExceptionHandling getExceptionHandling() {
+		return profile.getComponent().getExceptionHandling();
 	}
 
 	@Override
