@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import uk.org.taverna.ns._2012.component.profile.ExceptionHandling;
+
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentDataflowCache;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
@@ -36,11 +38,17 @@ public class ComponentActivityConfigurationBean extends ComponentVersionIdentifi
 	private static Logger logger = Logger.getLogger(ComponentActivity.class);
 	
 	private transient ActivityPortsDefinitionBean ports = null;
+	
+	ExceptionHandling eh = null;
 
 	public ComponentActivityConfigurationBean(
 			ComponentVersionIdentification toBeCopied) {
 		super(toBeCopied);
-		
+		try {
+			eh = ComponentUtil.calculateFamily(this.getRegistryBase(), this.getFamilyName()).getComponentProfile().getExceptionHandling();
+		} catch (ComponentRegistryException e) {
+			logger.error(e);
+		}
 		getPorts();
 		
 	}
@@ -63,21 +71,6 @@ public class ComponentActivityConfigurationBean extends ComponentVersionIdentifi
 						.setDepth(dip.getDepth());
 				activityInputPortDefinitionBean.setName(dip.getName());
 				inputs.add(activityInputPortDefinitionBean);
-				
-//				ActivityInputPort aip = Tools.getActivityInputPort(this, dip.getName());
-//				
-//				// Copy the annotations
-//				
-//				for (Class c : aTools.getAnnotatingClasses(aip)) {
-//					String annotationValue = aTools.getAnnotationString(dip, c, null);
-//					if (annotationValue != null) {
-//						try {
-//							aTools.setAnnotationString(aip, c, annotationValue).doEdit();
-//						} catch (EditException e) {
-//							logger.error(e);
-//						}
-//					}
-//				}
 			}
 			
 			for (DataflowOutputPort dop : d.getOutputPorts()) {
@@ -89,19 +82,16 @@ public class ComponentActivityConfigurationBean extends ComponentVersionIdentifi
 				activityOutputPortDefinitionBean.setGranularDepth(dop.getDepth());
 				activityOutputPortDefinitionBean.setName(dop.getName());
 				outputs.add(activityOutputPortDefinitionBean);
-
-//				OutputPort aop = Tools.getActivityOutputPort(this, dop.getName());
-//				
-//				for (Class c : aTools.getAnnotatingClasses(aop)) {
-//					String annotationValue = aTools.getAnnotationString(dop, c, null);
-//					if (annotationValue != null) {
-//						try {
-//							aTools.setAnnotationString(aop, c, annotationValue).doEdit();
-//						} catch (EditException e) {
-//							logger.error(e);
-//						}
-//					}
-//				}
+				
+			}
+			if (eh != null) {
+				ActivityOutputPortDefinitionBean activityOutputPortDefinitionBean = new ActivityOutputPortDefinitionBean();
+				activityOutputPortDefinitionBean.setMimeTypes(new ArrayList<String>());
+				activityOutputPortDefinitionBean
+						.setDepth(1);
+				activityOutputPortDefinitionBean.setGranularDepth(1);
+				activityOutputPortDefinitionBean.setName("error_channel");
+				outputs.add(activityOutputPortDefinitionBean);
 				
 			}
 			return result;
@@ -119,6 +109,10 @@ public class ComponentActivityConfigurationBean extends ComponentVersionIdentifi
 			}			
 		}
 		return ports;
+	}
+
+	public ExceptionHandling getExceptionHandling() {
+		return eh;
 	}
 
 }

@@ -3,13 +3,22 @@
  */
 package net.sf.taverna.t2.component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import uk.org.taverna.ns._2012.component.profile.ExceptionHandling;
+
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.reference.ErrorDocument;
+import net.sf.taverna.t2.reference.ErrorDocumentService;
+import net.sf.taverna.t2.reference.IdentifiedList;
+import net.sf.taverna.t2.reference.ListService;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.T2Reference;
+import net.sf.taverna.t2.reference.T2ReferenceType;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorType;
 
@@ -22,15 +31,22 @@ public class ProxyCallback implements AsynchronousActivityCallback {
 	private AsynchronousActivityCallback originalCallback;
 	private final ReferenceService referenceService;
 	private final InvocationContext context;
+	private final ExceptionHandling exceptionHandling;
+	private ListService listService;
+	private ErrorDocumentService errorService;
 
 	/**
 	 * @param originalCallback
+	 * @param exceptionHandling 
 	 */
-	public ProxyCallback(AsynchronousActivityCallback originalCallback) {
+	public ProxyCallback(AsynchronousActivityCallback originalCallback, ExceptionHandling exceptionHandling) {
 		super();
 		this.originalCallback = originalCallback;
+		this.exceptionHandling = exceptionHandling;
 		context = originalCallback.getContext();
 		referenceService = context.getReferenceService();
+		listService = referenceService.getListService();
+		errorService = referenceService.getErrorDocumentService();
 	}
 
 	/* (non-Javadoc)
@@ -59,23 +75,69 @@ public class ProxyCallback implements AsynchronousActivityCallback {
 	}
 
 	private Map<String, T2Reference> replaceErrors(Map<String, T2Reference> data) {
+		List<T2Reference> exceptions = new ArrayList<T2Reference>();
 		Map<String, T2Reference> replacement = new HashMap<String, T2Reference>();
 		for (Entry<String, T2Reference> entry : data.entrySet()) {
 			String key = entry.getKey();
 			T2Reference value = entry.getValue();
-			if (value.containsErrors()) {
-				T2Reference replacementValue = replaceErrors(value);
-				replacement.put(key, replacementValue);
-			} else {
-				replacement.put(key, value);
-			}
+				T2Reference replacementReference = considerReference(value, exceptions);
+				replacement.put(key, replacementReference);
 		}
+		T2Reference exceptionsReference = referenceService.register(exceptions, 1, true, context);
+		replacement.put("error_channel", exceptionsReference);
 		return replacement;
+	}
+	
+
+
+	private T2Reference considerReference(T2Reference value,
+			List<T2Reference> exceptions) {
+		if (!value.containsErrors()) {
+			return value;
+		}
+		ErrorDocument failure;
+		if (value.getReferenceType().equals(T2ReferenceType.IdentifiedList)) {
+			// At the moment we will always fail lists
+//			if (exceptionHandling.isFailLists()) {
+				failure = findFirstFailure(value);
+		} else {
+			failure = errorService.getError(value);
+		}
+			if (exceptionHandling.getHandleExceptions() == null) {
+				ComponentException newException =
+					ComponentExceptionFactory.createUnexpectedComponentException(failure.getExceptionMessage());
+				ErrorDocument doc = errorService.registerError(newException.getId(), newException, value.getDepth(), context);
+				T2Reference replacement =
+					referenceService.register(doc, value.getDepth(), true, context);
+				exceptions.add(replacement);
+				return replacement;
+			}
+		return value;
+	}
+
+	private ErrorDocument findFirstFailure(T2Reference value) {
+		IdentifiedList<T2Reference> originalList = listService.getList(value);
+		for (T2Reference subValue : originalList) {
+			if (subValue.getReferenceType().equals(
+					T2ReferenceType.ErrorDocument)) {
+				return errorService.getError(subValue);
+			}
+			if (subValue.getReferenceType().equals(
+					T2ReferenceType.IdentifiedList)) {
+				if (subValue.containsErrors()) {
+					return findFirstFailure(subValue);
+				}
+			}
+			// No need to consider value
+		}
+		return null;
 	}
 
 	private T2Reference replaceErrors(T2Reference value) {
+		ComponentException newException =
+			ComponentExceptionFactory.createUnexpectedComponentException("fred");
 		T2Reference replacement =
-			referenceService.register(new UnexpectedComponentException("fred"), value.getDepth(), true, context);
+			referenceService.register(newException, value.getDepth(), true, context);
 		return replacement;
 	}
 

@@ -30,6 +30,8 @@ import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
+import uk.org.taverna.ns._2012.component.profile.ExceptionHandling;
+
 public class ComponentActivity extends
 		AbstractAsynchronousActivity<ComponentActivityConfigurationBean>
 		implements AsynchronousActivity<ComponentActivityConfigurationBean> {
@@ -46,71 +48,24 @@ public class ComponentActivity extends
 	public void configure(ComponentActivityConfigurationBean configBean)
 			throws ActivityConfigurationException {
 		
-		// Store for getConfiguration(), but you could also make
-		// getConfiguration() return a new bean from other sources
 		this.configBean = configBean;
 
-//		d.checkValidity();
-		// Assume validity
-		
-		// REQUIRED: (Re)create input/output ports depending on configuration
 		configurePorts(configBean.getPorts());
 		
 
 	}
 
-/*	private void configurePorts(Dataflow d) {
-		// In case we are being reconfigured - remove existing ports first
-		// to avoid duplicates
-		removeInputs();
-		removeOutputs();
-
-		for (DataflowInputPort dip : d.getInputPorts()) {
-			// TODO what if it is not a String?
-			addInput(dip.getName(), dip.getDepth(), true, null, String.class);
-			
-			ActivityInputPort aip = Tools.getActivityInputPort(this, dip.getName());
-			
-			// Copy the annotations
-			
-			for (Class c : aTools.getAnnotatingClasses(aip)) {
-				String annotationValue = aTools.getAnnotationString(dip, c, null);
-				if (annotationValue != null) {
-					try {
-						aTools.setAnnotationString(aip, c, annotationValue).doEdit();
-					} catch (EditException e) {
-						logger.error(e);
-					}
-				}
-			}
-		}
-		
-		for (DataflowOutputPort dop : d.getOutputPorts()) {
-			addOutput(dop.getName(), dop.getDepth());
-			
-			OutputPort aop = Tools.getActivityOutputPort(this, dop.getName());
-			
-			for (Class c : aTools.getAnnotatingClasses(aop)) {
-				String annotationValue = aTools.getAnnotationString(dop, c, null);
-				if (annotationValue != null) {
-					try {
-						aTools.setAnnotationString(aop, c, annotationValue).doEdit();
-					} catch (EditException e) {
-						logger.error(e);
-					}
-				}
-			}
-			
-		}
-	}
-*/	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void executeAsynch(final Map<String, T2Reference> inputs,
 			final AsynchronousActivityCallback callback) {
 		try {
-			AsynchronousActivityCallback proxyCallback = new ProxyCallback(callback);
-			getComponentRealization().executeAsynch (inputs, proxyCallback);
+			ExceptionHandling exceptionHandling = configBean.getExceptionHandling();
+			AsynchronousActivityCallback useCallback = callback;
+			if (exceptionHandling != null) {
+				useCallback = new ProxyCallback(callback, exceptionHandling);
+			}
+			getComponentRealization().executeAsynch (inputs, useCallback);
 		} catch (ActivityConfigurationException e) {
 			callback.fail("Unable to execute component", e);
 		}
