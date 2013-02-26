@@ -42,9 +42,9 @@ public class DispatchStackPatcher implements
 		}
 		try {
 		if (oldLayer != null) {
-			ds.removeLayer(oldLayer);
+			int oldIndex = ds.removeLayer(oldLayer);
 
-			ds.addLayer(new PatchedInvoke());
+			ds.addLayer(new PatchedInvoke(), oldIndex);
 		}
 		}
 		catch (Exception e) {
