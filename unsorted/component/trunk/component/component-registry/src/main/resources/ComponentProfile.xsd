@@ -112,7 +112,7 @@
 			<xs:extension base="xs:anyURI">
 				<xs:attribute name="ontology" type="xs:string" use="required" />
 				<xs:attribute name="predicate" type="xs:string" use="required" />
-				<xs:attribute name="class" type="xs:string" use="required" />
+				<xs:attribute name="class" type="xs:string" use="optional" />
 				<xs:attributeGroup ref="xs:occurs" />
 			</xs:extension>
 		</xs:simpleContent>
@@ -150,6 +150,43 @@
 		<xs:attribute name="type" type="xs:string" />
 		<xs:attributeGroup ref="xs:occurs" />
 	</xs:complexType>
+	
+	<xs:complexType name="passThrough">
+	  <xs:complexContent>
+		  <xs:restriction base="xs:anyType"/>
+	  </xs:complexContent>
+	</xs:complexType>
+	
+	<xs:complexType name="replaceException">
+	  <xs:complexContent>
+		  <xs:restriction base="xs:anyType">
+	    	<xs:attribute name="replacementId" type="xs:string" use="required"/>
+	    	<xs:attribute name="replacementMessage" type="xs:string" use="required"/>
+	    </xs:restriction>
+	  </xs:complexContent>
+	</xs:complexType>
+	
+	<xs:complexType name="handleException">
+	  <xs:choice>
+	    <xs:element name="passThrough" type="passThrough"/>
+	    <xs:element name="replace" type="replaceException"/>
+	  </xs:choice>
+	  <xs:attribute name="class" type="xs:string" use="required"/>
+	  <xs:attribute name="pruneStack" type="xs:boolean" default="true"/>
+	</xs:complexType>
+	
+	<xs:complexType name="handleExceptions">
+	  <xs:sequence>
+	  	<xs:element name="handleException" type="handleException" minOccurs="0" maxOccurs="unbounded"/>
+	  </xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="exceptionHandling">
+	  <xs:sequence>
+	  	<xs:element name="handleExceptions" type="handleExceptions" minOccurs="0" maxOccurs="1"/>
+	  </xs:sequence>
+	  <xs:attribute name="failLists" type="xs:boolean" default="true"/>
+	</xs:complexType>
 
 	<xs:complexType name="component">
 		<xs:sequence>
@@ -158,6 +195,7 @@
 			<xs:element name="activity" type="activity" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="annotation" type="componentAnnotation" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="semanticAnnotation" type="semanticAnnotation" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="exceptionHandling" type="exceptionHandling" minOccurs="0" maxOccurs="1"/>
 		</xs:sequence>
 	</xs:complexType>
 
