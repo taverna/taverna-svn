@@ -106,7 +106,7 @@ public class ProxyCallback implements AsynchronousActivityCallback {
 			if (exceptionHandling.getHandleExceptions() == null) {
 				ComponentException newException =
 					ComponentExceptionFactory.createUnexpectedComponentException(failure.getExceptionMessage());
-				ErrorDocument doc = errorService.registerError(newException.getId(), newException, value.getDepth(), context);
+				ErrorDocument doc = errorService.registerError(newException.getExceptionId(), newException, value.getDepth(), context);
 				T2Reference replacement =
 					referenceService.register(doc, value.getDepth(), true, context);
 				exceptions.add(replacement);

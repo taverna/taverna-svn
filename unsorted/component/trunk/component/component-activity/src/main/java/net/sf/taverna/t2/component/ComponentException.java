@@ -20,8 +20,12 @@ public class ComponentException extends Exception {
 	private static final long serialVersionUID = -3844030382222698090L;
 	private String exceptionId;
 
-	public void setId(String exceptionId) {
+	public void setExceptionId(String exceptionId) {
 		this.exceptionId = exceptionId;
+	}
+
+	public String getExceptionId() {
+		return exceptionId;
 	}
 
 }
