@@ -196,6 +196,7 @@ public class ComponentActivitySemanticAnnotationContextualView extends Contextua
 		Set<Statement> statements = model.listStatements().toSet();
 		for (SemanticAnnotationProfile semanticAnnotationProfile : semanticAnnotationProfiles) {
 			OntProperty predicate = semanticAnnotationProfile.getPredicate();
+			if (predicate != null) {
 			Set<Statement> statementsWithPredicate = new HashSet<Statement>();
 			for (Statement statement : statements) {
 				Property statementPredicate = statement.getPredicate();
@@ -206,6 +207,7 @@ public class ComponentActivitySemanticAnnotationContextualView extends Contextua
 			panel.add(new ComponentActivitySemanticAnnotationPanel(this, semanticAnnotationProfile,
 					statementsWithPredicate), gbc);
 			statements.removeAll(statementsWithPredicate);
+			}
 		}
 		if (semanticAnnotationProfiles.isEmpty()) {
 			panel.add(new JLabel("No annotations were possible"));

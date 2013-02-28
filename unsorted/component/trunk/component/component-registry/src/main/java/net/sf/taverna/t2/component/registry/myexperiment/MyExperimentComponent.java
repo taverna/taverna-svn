@@ -34,6 +34,7 @@ import net.sf.taverna.t2.annotation.annotationbeans.FreeTextDescription;
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
+import net.sf.taverna.t2.component.registry.SharingPolicy;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.file.exceptions.OverwriteException;
 import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
@@ -58,10 +59,12 @@ public class MyExperimentComponent implements Component {
 	private String description;
 	
 	private SortedMap<Integer, ComponentVersion> versionCache;
+	private final String permissionsString;
 
-	public MyExperimentComponent(MyExperimentComponentRegistry componentRegistry, String uri) {
+	public MyExperimentComponent(MyExperimentComponentRegistry componentRegistry, String permissionsString, String uri) {
 		this.componentRegistry = componentRegistry;
 		this.uri = uri;
+		this.permissionsString = permissionsString;
 		annotationTools = new AnnotationTools();
 	}
 
@@ -109,10 +112,11 @@ public class MyExperimentComponent implements Component {
 
 	@Override
 	public MyExperimentComponentVersion addVersionBasedOn(Dataflow dataflow) throws ComponentRegistryException {
-		return addVersionBasedOn(dataflow, MyExperimentPermissions.PRIVATE);
+// TODO Fix this
+		return addVersionBasedOn(dataflow, this.permissionsString);
 	}
 
-	public MyExperimentComponentVersion addVersionBasedOn(Dataflow dataflow, MyExperimentPermissions permissions) throws ComponentRegistryException {
+	public MyExperimentComponentVersion addVersionBasedOn(Dataflow dataflow, String permissionsString) throws ComponentRegistryException {
 		String title = annotationTools.getAnnotationString(dataflow, DescriptiveTitle.class, "Untitled");
 		String description = annotationTools.getAnnotationString(dataflow, FreeTextDescription.class, "No description");
 		String dataflowString;
@@ -133,7 +137,7 @@ public class MyExperimentComponent implements Component {
 
 		Element workflowElement = componentRegistry.getPackItem(uri, "workflow");
 		Element componentWorkflow = componentRegistry.updateWorkflow(workflowElement.getAttributeValue("uri"), dataflowString,
-				title, description, permissions);
+				title, description, permissionsString);
 
 		Element componentElement = componentRegistry.getResource(uri);
 		componentRegistry.deletePackItem(componentElement, "workflow");

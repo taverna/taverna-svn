@@ -66,7 +66,7 @@ public abstract class ComponentRegistryTest {
 	public void testGetComponentFamilies() throws Exception {
 		assertEquals(0, componentRegistry.getComponentFamilies().size());
 		assertEquals(0, componentRegistry.getComponentFamilies().size());
-		ComponentFamily componentFamily = componentRegistry.createComponentFamily("TestComponentFamily", componentProfile);
+		ComponentFamily componentFamily = componentRegistry.createComponentFamily("TestComponentFamily", componentProfile, null);
 		assertEquals(1, componentRegistry.getComponentFamilies().size());
 		assertTrue(componentRegistry.getComponentFamilies().contains(componentFamily));
 		componentRegistry.removeComponentFamily(componentFamily);
@@ -77,7 +77,7 @@ public abstract class ComponentRegistryTest {
 	public void testGetComponentFamily() throws Exception {
 		assertNull(componentRegistry.getComponentFamily("TestComponentFamily"));
 		assertNull(componentRegistry.getComponentFamily("TestComponentFamily"));
-		ComponentFamily componentFamily = componentRegistry.createComponentFamily("TestComponentFamily", componentProfile);
+		ComponentFamily componentFamily = componentRegistry.createComponentFamily("TestComponentFamily", componentProfile, null);
 		assertNotNull(componentRegistry.getComponentFamily("TestComponentFamily"));
 		assertNotNull(componentRegistry.getComponentFamily("TestComponentFamily"));
 		assertEquals(componentFamily, componentRegistry.getComponentFamily("TestComponentFamily"));
@@ -89,7 +89,7 @@ public abstract class ComponentRegistryTest {
 	public void testCreateComponentFamily() throws Exception {
 		assertEquals(0, componentRegistry.getComponentFamilies().size());
 		assertNull(componentRegistry.getComponentFamily("TestComponentFamily"));
-		ComponentFamily componentFamily = componentRegistry.createComponentFamily("TestComponentFamily", componentProfile);
+		ComponentFamily componentFamily = componentRegistry.createComponentFamily("TestComponentFamily", componentProfile, null);
 		assertEquals("TestComponentFamily", componentFamily.getName());
 		assertEquals(componentRegistry, componentFamily.getComponentRegistry());
 		assertEquals(0, componentFamily.getComponents().size());
@@ -101,25 +101,25 @@ public abstract class ComponentRegistryTest {
 
 	@Test(expected=ComponentRegistryException.class)
 	public void testCreateComponentFamilyDuplicate() throws Exception {
-		componentRegistry.createComponentFamily("TestComponentFamily", componentProfile);
-		componentRegistry.createComponentFamily("TestComponentFamily", componentProfile);
+		componentRegistry.createComponentFamily("TestComponentFamily", componentProfile, null);
+		componentRegistry.createComponentFamily("TestComponentFamily", componentProfile, null);
 	}
 
 	@Test(expected=ComponentRegistryException.class)
 	public void testCreateComponentFamilyNullProfile() throws Exception {
-		componentRegistry.createComponentFamily("TestComponentFamily", null);
+		componentRegistry.createComponentFamily("TestComponentFamily", null, null);
 	}
 
 	@Test(expected=ComponentRegistryException.class)
 	public void testCreateComponentFamilyNullName() throws Exception {
-		componentRegistry.createComponentFamily(null, componentProfile);
+		componentRegistry.createComponentFamily(null, componentProfile, null);
 	}
 
 	@Test
 	public void testRemoveComponentFamily() throws Exception {
 		assertEquals(0, componentRegistry.getComponentFamilies().size());
 		assertNull(componentRegistry.getComponentFamily("TestComponentFamily"));
-		ComponentFamily componentFamily = componentRegistry.createComponentFamily("TestComponentFamily", componentProfile);
+		ComponentFamily componentFamily = componentRegistry.createComponentFamily("TestComponentFamily", componentProfile, null);
 		assertEquals(1, componentRegistry.getComponentFamilies().size());
 		assertNotNull(componentRegistry.getComponentFamily("TestComponentFamily"));
 		assertEquals(componentFamily, componentRegistry.getComponentFamily("TestComponentFamily"));

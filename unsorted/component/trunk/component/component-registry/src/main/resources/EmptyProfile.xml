@@ -8,5 +8,7 @@
 	<name>Empty profile</name>
 	<description>A basic empty profile that does not allow semantic annotation</description>
 	<component>
+	<exceptionHandling>
+	</exceptionHandling>
 	</component>
 </profile>

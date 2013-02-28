@@ -24,6 +24,7 @@ import java.net.URL;
 
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
+import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 
 /**
  *
@@ -35,8 +36,14 @@ public class MyExperimentComponentProfile extends ComponentProfile {
 	private final ComponentRegistry componentRegistry;
 	private final String uri;
 
-	public MyExperimentComponentProfile(MyExperimentComponentRegistry componentRegistry, String uri, URL profileURL) {
+	public MyExperimentComponentProfile(MyExperimentComponentRegistry componentRegistry, String uri, URL profileURL) throws ComponentRegistryException {
 		super(profileURL);
+		this.componentRegistry = componentRegistry;
+		this.uri = uri;
+	}
+
+	public MyExperimentComponentProfile(MyExperimentComponentRegistry componentRegistry, String uri, String profileString) throws ComponentRegistryException {
+		super(profileString);
 		this.componentRegistry = componentRegistry;
 		this.uri = uri;
 	}
@@ -47,6 +54,10 @@ public class MyExperimentComponentProfile extends ComponentProfile {
 
 	public ComponentRegistry getComponentRegistry() {
 		return componentRegistry;
+	}
+	
+	public String toString() {
+		return ("MyExperimentComponentProfile at " + uri);
 	}
 
 }

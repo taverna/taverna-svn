@@ -21,11 +21,11 @@ public class ComponentDataflowCache {
 	}
 	
 	public static Dataflow getDataflow(ComponentVersionIdentification id) throws ComponentRegistryException {
-		if (!cache.containsKey(id)) {
+//		if (!cache.containsKey(id)) {
 			Dataflow dataflow = ComponentUtil.calculateComponentVersion(id).getDataflow();
 			dataflow.checkValidity();
 			cache.put(id, dataflow);
-		}
+//		}
 		return cache.get(id);
 	}
 

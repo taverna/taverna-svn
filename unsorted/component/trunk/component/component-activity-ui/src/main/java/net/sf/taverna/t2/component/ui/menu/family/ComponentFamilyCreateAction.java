@@ -17,7 +17,7 @@ import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
-import net.sf.taverna.t2.component.ui.panel.PermissionChooserPanel;
+import net.sf.taverna.t2.component.ui.panel.SharingPolicyChooserPanel;
 import net.sf.taverna.t2.component.ui.panel.ProfileChooserPanel;
 import net.sf.taverna.t2.component.ui.panel.RegistryChoiceMessage;
 import net.sf.taverna.t2.component.ui.panel.RegistryChooserPanel;
@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
  * @author alanrw
  *
  */
-public class ComponentFamilyCreateAction extends AbstractAction implements Observer<RegistryChoiceMessage> {
+public class ComponentFamilyCreateAction extends AbstractAction {
 
 	private static final long serialVersionUID = -7780471499146286881L;
 
@@ -40,7 +40,7 @@ public class ComponentFamilyCreateAction extends AbstractAction implements Obser
 	private static final String CREATE_FAMILY = "Create family...";
 
 	private JPanel overallPanel;
-	private PermissionChooserPanel permissionChooserPanel;
+	private SharingPolicyChooserPanel sharingPolicyChooserPanel;
 
 	private GridBagConstraints gbc;
 
@@ -91,7 +91,10 @@ public class ComponentFamilyCreateAction extends AbstractAction implements Obser
 		gbc.gridx = 0;
 		gbc.gridwidth = 2;
 		gbc.weightx = 1;
-		registryPanel.addObserver(this);
+		gbc.weighty = 1;
+		SharingPolicyChooserPanel permissionPanel = new SharingPolicyChooserPanel();
+		registryPanel.addObserver(permissionPanel);
+		overallPanel.add(permissionPanel, gbc);
 
 		int answer = JOptionPane.showConfirmDialog(null, overallPanel, "Create Component Family", JOptionPane.OK_CANCEL_OPTION);
 		if (answer == JOptionPane.OK_OPTION) {
@@ -118,36 +121,13 @@ public class ComponentFamilyCreateAction extends AbstractAction implements Obser
 					JOptionPane.showMessageDialog(null, newName + " is already used", "Duplicate component family name", JOptionPane.ERROR_MESSAGE);
 					return;
 				} else {
-					chosenRegistry.createComponentFamily(newName, chosenProfile);
+					chosenRegistry.createComponentFamily(newName, chosenProfile, permissionPanel.getChosenPermission());
 				}
 			} catch (ComponentRegistryException e) {
 				logger.error(e);
 			}
 		}
 
-	}
-
-	@Override
-	public void notify(Observable<RegistryChoiceMessage> sender, RegistryChoiceMessage message) throws Exception {
-		ComponentRegistry chosenRegistry = message.getChosenRegistry();
-/*		removePermissionChooserPanel();
-		if (chosenRegistry instanceof MyExperimentComponentRegistry) {
-			addPermissionChooserPanel((MyExperimentComponentRegistry) chosenRegistry);
-		}*/
-	}
-
-	private void addPermissionChooserPanel(MyExperimentComponentRegistry registry) {
-		permissionChooserPanel = new PermissionChooserPanel(registry);
-		overallPanel.add(permissionChooserPanel, gbc);
-		overallPanel.validate();
-	}
-
-	private void removePermissionChooserPanel() {
-		if (permissionChooserPanel != null) {
-			overallPanel.remove(permissionChooserPanel);
-			permissionChooserPanel = null;
-			overallPanel.validate();
-		}
 	}
 
 }

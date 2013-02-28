@@ -49,7 +49,7 @@ public class ComponentVersionChooserPanel extends JPanel implements Observer<Com
 		this.setLayout(new GridBagLayout());
 
 		componentVersionChoice.setRenderer(new ComponentListCellRenderer());
-		componentVersionChoice.setPrototypeDisplayValue(Utils.LONG_STRING);
+		componentVersionChoice.setPrototypeDisplayValue(Utils.SHORT_STRING);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;

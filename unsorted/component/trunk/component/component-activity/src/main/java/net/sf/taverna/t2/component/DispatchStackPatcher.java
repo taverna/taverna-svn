@@ -17,21 +17,22 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DispatchStackImpl
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke;
 
 public class DispatchStackPatcher implements
-		HealthChecker<Processor> {
+		HealthChecker<ComponentActivity> {
 	
 	private static Logger logger = Logger.getLogger(DispatchStackPatcher.class);
 	
 
 
 	public boolean canVisit(Object o) {
-		return o instanceof Processor;
+		return o instanceof ComponentActivity;
 	}
 
 	public boolean isTimeConsuming() {
 	return false;
 	}
 
-	public VisitReport visit(Processor p, List<Object> ancestry) {
+	public VisitReport visit(ComponentActivity a, List<Object> ancestry) {
+		Processor p = (Processor) VisitReport.findAncestor(ancestry, Processor.class);
 		DispatchStackImpl ds = (DispatchStackImpl) p.getDispatchStack();
 		List<DispatchLayer<?>> layers = ds.getLayers();
 		DispatchLayer oldLayer = null;

@@ -37,7 +37,7 @@ public class ComponentConfigurationPanel
 
 	public ComponentConfigurationPanel(ComponentActivity activity) {
 		this.activity = activity;
-		componentVersionChoice.setPrototypeDisplayValue(Utils.LONG_STRING);
+		componentVersionChoice.setPrototypeDisplayValue(Utils.SHORT_STRING);
 		configBean = activity.getConfiguration();
 		initGui();
 	}
@@ -56,7 +56,7 @@ public class ComponentConfigurationPanel
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridy = 2;
-		this.add(new JLabel("Component version"), gbc);
+		this.add(new JLabel("Component version:"), gbc);
 		gbc.gridx = 1;
 		gbc.weightx = 1;
 		this.add(componentVersionChoice, gbc);

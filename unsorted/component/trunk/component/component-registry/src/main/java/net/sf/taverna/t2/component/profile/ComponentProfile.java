@@ -20,7 +20,12 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.profile;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +38,16 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
+
+import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.registry.local.LocalComponent;
+import net.sf.taverna.t2.visit.VisitReport;
+import net.sf.taverna.t2.workflowmodel.health.HealthCheck;
+import net.sf.taverna.t2.workflowmodel.health.RemoteHealthChecker;
 
 import uk.org.taverna.ns._2012.component.profile.Activity;
 import uk.org.taverna.ns._2012.component.profile.ExceptionHandling;
@@ -53,28 +68,40 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
  */
 public class ComponentProfile {
 
+	private static Logger logger = Logger.getLogger(ComponentProfile.class);
+
 	private static Map<String, OntModel> ontologyModels = new HashMap<String, OntModel>();
 
 	private JAXBContext jaxbContext;
 	private Profile profile;
 
-	public ComponentProfile(URL profileURL) {
+	public ComponentProfile(URL profileURL) throws ComponentRegistryException {
 		try {
 			jaxbContext = JAXBContext.newInstance(Profile.class);
 			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 			profile = (Profile) unmarshaller.unmarshal(profileURL);
 		} catch (JAXBException e) {
-			e.printStackTrace();
+			throw new ComponentRegistryException("Unable to read profile", e);
 		}
 	}
 
-	public String getXML() {
+	public ComponentProfile(String profileString) throws ComponentRegistryException {
+		try {
+			jaxbContext = JAXBContext.newInstance(Profile.class);
+			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+			profile = (Profile) unmarshaller.unmarshal(new StreamSource( new StringReader(profileString)));
+		} catch (JAXBException e) {
+			throw new ComponentRegistryException("Unable to read profile", e);
+		}
+	}
+
+	public String getXML() throws ComponentRegistryException {
 		StringWriter stringWriter = new StringWriter();
 		try {
 			Marshaller marshaller = jaxbContext.createMarshaller();
 			marshaller.marshal(profile, stringWriter);
 		} catch (JAXBException e) {
-			e.printStackTrace();
+			throw new ComponentRegistryException("Unable to read profile", e);
 		}
 		return stringWriter.toString();
 	}
@@ -110,7 +137,27 @@ public class ComponentProfile {
 		String ontologyURI = getOntologyLocation(ontologyId);
 		if (!ontologyModels.containsKey(ontologyURI)) {
 			OntModel ontologyModel = ModelFactory.createOntologyModel();
-			ontologyModel.read(ontologyURI);
+			VisitReport report = RemoteHealthChecker.contactEndpoint(null, ontologyURI);
+			if (report.getResultId() != HealthCheck.NO_PROBLEM) {
+				return null;
+			}
+			InputStream in;
+			String ontologyAsString;
+			try {
+				in = new URL(ontologyURI).openStream();
+			ontologyAsString = IOUtils.toString(in);
+			IOUtils.closeQuietly(in);
+			} catch (MalformedURLException e) {
+				logger.error(e);
+				return null;
+			} catch (IOException e) {
+				logger.error(e);
+				return null;
+			}
+			if (!ontologyAsString.startsWith("<?")) {
+				return null;
+			}
+			ontologyModel.read(new StringReader(ontologyAsString), null);
 			ontologyModels.put(ontologyURI, ontologyModel);
 		}
 		return ontologyModels.get(ontologyURI);

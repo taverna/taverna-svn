@@ -27,6 +27,8 @@ public class Utils {
 
 	public static final String LONG_STRING = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 
+	public static final String SHORT_STRING = "XXX";
+
 	public static void refreshComponentServiceProvider(ComponentServiceProviderConfig config)
 			throws ConfigurationException {
 		ComponentServiceProvider provider = new ComponentServiceProvider();

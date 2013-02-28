@@ -13,6 +13,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.registry.SharingPolicy;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -76,7 +78,9 @@ public class LocalComponentRegistry implements ComponentRegistry {
 	 * (java.lang.String, net.sf.taverna.t2.component.profile.ComponentProfile)
 	 */
 	@Override
-	public ComponentFamily createComponentFamily(String name, ComponentProfile componentProfile)
+	public ComponentFamily createComponentFamily(String name,
+			ComponentProfile componentProfile,
+			SharingPolicy sharingPolicy)
 			throws ComponentRegistryException {
 		if (name == null) {
 			throw new ComponentRegistryException(("Component name must not be null"));
@@ -297,5 +301,10 @@ public class LocalComponentRegistry implements ComponentRegistry {
 		} else if (!baseDir.equals(other.baseDir))
 			return false;
 		return true;
+	}
+
+	@Override
+	public List<SharingPolicy> getPermissions() throws ComponentRegistryException {
+		return Collections.emptyList();
 	}
 }

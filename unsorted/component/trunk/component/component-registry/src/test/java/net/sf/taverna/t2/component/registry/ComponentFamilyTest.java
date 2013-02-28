@@ -60,7 +60,7 @@ public class ComponentFamilyTest {
 		URL dataflowUrl = getClass().getClassLoader().getResource("beanshell_test.t2flow");
 		assertNotNull(dataflowUrl);
 		dataflow = FileManager.getInstance().openDataflowSilently(new T2FlowFileType(), dataflowUrl).getDataflow();
-		componentFamily = componentRegistry.createComponentFamily("Test Component Family", componentProfile);
+		componentFamily = componentRegistry.createComponentFamily("Test Component Family", componentProfile, null);
 	}
 
 	@After

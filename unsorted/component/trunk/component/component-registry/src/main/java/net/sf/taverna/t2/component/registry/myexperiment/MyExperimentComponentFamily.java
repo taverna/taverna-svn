@@ -61,13 +61,33 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	private String description;
 	private ComponentProfile componentProfile;
 	private Map<String, Component> componentsCache;
-	private final MyExperimentPermissions permissions;
+	private String permissionsString;
 
-	public MyExperimentComponentFamily(MyExperimentComponentRegistry componentRegistry, MyExperimentPermissions permissions, String uri) {
+	public MyExperimentComponentFamily(MyExperimentComponentRegistry componentRegistry, MyExperimentSharingPolicy permissions, String uri) {
 		this.componentRegistry = componentRegistry;
-		this.permissions = permissions;
 		this.uri = uri;
 		annotationTools = new AnnotationTools();
+		if (permissions == null) {
+			this.permissionsString = this.getPermissionsString();
+		} else {
+			this.permissionsString = permissions.getPolicyString();
+		}
+	}
+
+	private String getPermissionsString() {
+		Element permissionsElement = componentRegistry.getResourceElement(uri, "permissions");
+		if (permissionsElement == null) {
+			return "";
+		}
+		String permissionsUri = permissionsElement.getAttributeValue("uri");
+		String type = permissionsElement.getAttributeValue("policy-type");
+		if (type.equals("group")) {
+			Element policyElement = componentRegistry.getResource(permissionsUri);	
+			String name = policyElement.getChildTextTrim("name");
+			String id = policyElement.getChildTextTrim("id");
+			return new MyExperimentGroupPolicy(name, id).getPolicyString();
+		}
+		return permissionsElement.toString();
 	}
 
 	@Override
@@ -108,11 +128,8 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 				String resource = fileElement.getAttributeValue("resource");
 				String version = fileElement.getAttributeValue("version");
 				String downloadUri = resource + "/download?version=" + version;
-				try {
-					componentProfile = new MyExperimentComponentProfile(componentRegistry, uri, new URL(downloadUri));
-				} catch (MalformedURLException e) {
-					throw new ComponentRegistryException("Unable to open profile from " + downloadUri, e);
-				}
+					String profileString = componentRegistry.getFileAsString(downloadUri);
+					componentProfile = new MyExperimentComponentProfile(componentRegistry, uri, profileString);
 			} catch (ComponentRegistryException e) {
 				try {
 					String downloadUri = componentRegistry.getExternalPackItem(uri, "component profile");
@@ -143,7 +160,7 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 					for (Element tag : componentRegistry.getResourceElements(packUri, "tags")) {
 						String tagText = tag.getTextTrim();
 						if ("component".equals(tagText)) {
-							MyExperimentComponent newComponent = new MyExperimentComponent(componentRegistry, packUri);
+							MyExperimentComponent newComponent = new MyExperimentComponent(componentRegistry, permissionsString, packUri);
 							componentsCache.put(newComponent.getName(), newComponent);
 							break;
 						}
@@ -185,12 +202,12 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 		} catch (UnsupportedEncodingException e) {
 			throw new ComponentRegistryException(e);
 		}
-		Element componentWorkflow = componentRegistry.uploadWorkflow(dataflowString, title, description, permissions);
+		Element componentWorkflow = componentRegistry.uploadWorkflow(dataflowString, title, description, this.permissionsString);
 
 		// create the component
-		Element componentPack = componentRegistry.createPack(componentName, permissions);
+		Element componentPack = componentRegistry.createPack(componentName, this.permissionsString);
 		componentRegistry.tagResource("component", componentPack.getAttributeValue("resource"));
-		component = new MyExperimentComponent(componentRegistry, componentPack.getAttributeValue("uri"));
+		component = new MyExperimentComponent(componentRegistry, this.permissionsString, componentPack.getAttributeValue("uri"));
 
 		// add the component to the family
 		Element resource = componentRegistry.getResource(uri);
@@ -208,7 +225,7 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 
 		componentPack = componentRegistry.snapshotPack(componentPack.getAttributeValue("uri"));
 		String uri = componentPack.getAttributeValue("uri");
-		String version = componentPack.getAttributeValue("uri");
+		String version = componentPack.getAttributeValue("version");
 		return new MyExperimentComponentVersion(componentRegistry, component, uri+"&version="+version);
 	}
 

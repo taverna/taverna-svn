@@ -138,7 +138,7 @@ public class SemanticAnnotationContextualView extends ContextualView {
 			ComponentVersionIdentification identification = (ComponentVersionIdentification) dataflowSource;
 			try {
 				ComponentRegistry componentRegistry = ComponentUtil.calculateRegistry(identification
-						.getRegistryBase());
+						.getRegistryBase()); 
 				ComponentFamily componentFamily = componentRegistry
 						.getComponentFamily(identification.getFamilyName());
 				return componentFamily.getComponentProfile();
@@ -192,15 +192,18 @@ public class SemanticAnnotationContextualView extends ContextualView {
 		Set<Statement> statements = model.listStatements().toSet();
 		for (SemanticAnnotationProfile semanticAnnotationProfile : semanticAnnotationProfiles) {
 			OntProperty predicate = semanticAnnotationProfile.getPredicate();
-			Set<Statement> statementsWithPredicate = new HashSet<Statement>();
-			for (Statement statement : statements) {
-				if (statement.getPredicate().equals(predicate)) {
-					statementsWithPredicate.add(statement);
+			if (predicate != null) {
+				Set<Statement> statementsWithPredicate = new HashSet<Statement>();
+				for (Statement statement : statements) {
+					if (statement.getPredicate().equals(predicate)) {
+						statementsWithPredicate.add(statement);
+					}
 				}
+				panel.add(new SemanticAnnotationPanel(this, semanticAnnotationProfile,
+						statementsWithPredicate), gbc);
+				statements.removeAll(statementsWithPredicate);
 			}
-			panel.add(new SemanticAnnotationPanel(this, semanticAnnotationProfile,
-					statementsWithPredicate), gbc);
-			statements.removeAll(statementsWithPredicate);
+			
 		}
 		
 		if (semanticAnnotationProfiles.isEmpty()) {

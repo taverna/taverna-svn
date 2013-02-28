@@ -67,6 +67,8 @@ public interface ComponentRegistry {
 	 * @param componentProfile
 	 *            the ComponentProfile for the new ComponentFamily. Must not be
 	 *            null.
+	 * @param sharingPolicy 
+	 * 			  the SharingPolicy to use for the new ComponentFamily.
 	 * @return the new ComponentFamily
 	 * @throws ComponentRegistryException
 	 *             <ul>
@@ -77,7 +79,7 @@ public interface ComponentRegistry {
 	 *             </ul>
 	 */
 	public ComponentFamily createComponentFamily(String familyName,
-			ComponentProfile componentProfile) throws ComponentRegistryException;
+			ComponentProfile componentProfile, SharingPolicy sharingPolicy) throws ComponentRegistryException;
 
 	/**
 	 * Removes a the ComponentFamily with the specified name from this
@@ -128,4 +130,10 @@ public interface ComponentRegistry {
 	public ComponentProfile addComponentProfile(ComponentProfile componentProfile)
 			throws ComponentRegistryException;
 
+	/**
+	 * @return The list of permissions available to the registry
+	 * 
+	 * @throws ComponentRegistryException
+	 */
+	public List<SharingPolicy> getPermissions() throws ComponentRegistryException;
 }
