@@ -46,7 +46,7 @@ public class LocalComponent implements Component {
 	 * @see net.sf.taverna.t2.component.registry.Component#addVersionBasedOn(net.sf.taverna.t2.workflowmodel.Dataflow)
 	 */
 	@Override
-	public ComponentVersion addVersionBasedOn(Dataflow dataflow) throws ComponentRegistryException {
+	public ComponentVersion addVersionBasedOn(Dataflow dataflow, String revisionComment) throws ComponentRegistryException {
 		Integer nextVersionNumber = Integer.valueOf(1);
 		try {
 			nextVersionNumber = getComponentVersionMap().lastKey() + 1;
@@ -64,9 +64,16 @@ public class LocalComponent implements Component {
 			logger.error("Unable to save component version", e);
 			throw new ComponentRegistryException("Unable to save component version", e);
 		}
+		File revisionCommentFile = new File(newVersionDir, "description");
+		try {
+			FileUtils.writeStringToFile(revisionCommentFile, revisionComment, "utf-8");
+		} catch (IOException e) {
+			throw new ComponentRegistryException("Could not write out description", e);
+		}
 		if (versionCache == null) {
 			getComponentVersionMap();
 		}
+		
 		versionCache.put(nextVersionNumber, newComponentVersion);
 		return newComponentVersion;
 	}

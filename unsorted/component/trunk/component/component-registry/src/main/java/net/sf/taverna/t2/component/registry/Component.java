@@ -76,7 +76,7 @@ public interface Component {
 	 * @throws ComponentRegistryException
 	 *             if there is a problem accessing the ComponentRegistry.
 	 */
-	public ComponentVersion addVersionBasedOn(Dataflow dataflow) throws ComponentRegistryException;
+	public ComponentVersion addVersionBasedOn(Dataflow dataflow, String revisionComment) throws ComponentRegistryException;
 
 	/**
 	 * Returns the URL for the Component.

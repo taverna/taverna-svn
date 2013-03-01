@@ -60,7 +60,7 @@ public class ComponentFamilyTest {
 		URL dataflowUrl = getClass().getClassLoader().getResource("beanshell_test.t2flow");
 		assertNotNull(dataflowUrl);
 		dataflow = FileManager.getInstance().openDataflowSilently(new T2FlowFileType(), dataflowUrl).getDataflow();
-		componentFamily = componentRegistry.createComponentFamily("Test Component Family", componentProfile, null);
+		componentFamily = componentRegistry.createComponentFamily("Test Component Family", componentProfile, "Some description", null);
 	}
 
 	@After
@@ -92,7 +92,7 @@ public class ComponentFamilyTest {
     public void testGetComponents() throws Exception {
 		assertEquals(0, componentFamily.getComponents().size());
 		assertEquals(0, componentFamily.getComponents().size());
-		ComponentVersion componentVersion = componentFamily.createComponentBasedOn("Test Component", dataflow);
+		ComponentVersion componentVersion = componentFamily.createComponentBasedOn("Test Component", "Some description", dataflow);
 		assertEquals(1, componentFamily.getComponents().size());
 		assertTrue(componentFamily.getComponents().contains(componentVersion.getComponent()));
 //		componentFamily.removeComponent(componentVersion.getComponent());
@@ -101,14 +101,14 @@ public class ComponentFamilyTest {
 
     @Test
     public void testCreateComponentBasedOn() throws Exception {
-		ComponentVersion componentVersion = componentFamily.createComponentBasedOn("Test Component", dataflow);
+		ComponentVersion componentVersion = componentFamily.createComponentBasedOn("Test Component", "Some description", dataflow);
 		assertEquals("Test Component", componentVersion.getComponent().getName());
     }
 
     @Test
     public void testGetComponent() throws Exception {
     	assertNull(componentFamily.getComponent("Test Component"));
-		ComponentVersion componentVersion = componentFamily.createComponentBasedOn("Test Component", dataflow);
+		ComponentVersion componentVersion = componentFamily.createComponentBasedOn("Test Component", "Some description", dataflow);
     	assertNotNull(componentFamily.getComponent("Test Component"));
 		assertEquals(componentVersion.getComponent(), componentFamily.getComponent("Test Component"));
     }

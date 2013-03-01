@@ -132,7 +132,11 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 	}
 
 	private void setProfile(ComponentProfile componentProfile) {
-		profileDescription.setText(componentProfile.getDescription());
+		if (componentProfile != null) {
+			profileDescription.setText(componentProfile.getDescription());
+		} else {
+			profileDescription.setText("");
+		}
 	}
 
 	public ComponentProfile getChosenProfile() {

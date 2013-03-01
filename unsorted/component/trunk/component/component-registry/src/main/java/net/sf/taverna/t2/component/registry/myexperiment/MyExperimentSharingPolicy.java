@@ -23,36 +23,15 @@ package net.sf.taverna.t2.component.registry.myexperiment;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.taverna.t2.component.registry.SharingPolicy;
+
 /**
  *
  *
- * @author David Withers
+ * @author Alan Williams
  */
-public class MyExperimentPermissions {
+public abstract class MyExperimentSharingPolicy extends SharingPolicy {
 
-	public static final MyExperimentPermissions PRIVATE = new MyExperimentPermissions(Sharing.PUBLIC);
-	public static final MyExperimentPermissions PUBLIC = new MyExperimentPermissions(Sharing.PRIVATE);
-
-	public enum Sharing {PUBLIC, PRIVATE}
-
-	private final Sharing sharing;
-	private final List<MyExperimentGroup> groups;
-
-	public MyExperimentPermissions(Sharing sharing) {
-		this(sharing, new ArrayList<MyExperimentGroup>());
-	}
-
-	public MyExperimentPermissions(Sharing sharing, List<MyExperimentGroup> groups) {
-		this.sharing = sharing;
-		this.groups = groups;
-	}
-
-	public Sharing getSharing() {
-		return sharing;
-	}
-
-	public List<MyExperimentGroup> getGroups() {
-		return groups;
-	}
+	public abstract String getPolicyString();
 
 }

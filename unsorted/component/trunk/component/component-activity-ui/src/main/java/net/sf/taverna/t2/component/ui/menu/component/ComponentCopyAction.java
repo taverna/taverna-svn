@@ -113,7 +113,7 @@ public class ComponentCopyAction extends AbstractAction {
 						JOptionPane.showMessageDialog(null, componentName + " is already used", "Duplicate component name", JOptionPane.ERROR_MESSAGE);
 					} else {
 						ComponentVersion sourceVersion = sourceComponent.getComponentVersionMap().get(sourceComponent.getComponentVersionMap().lastKey());
-						targetFamily.createComponentBasedOn(componentName, sourceVersion.getDataflow());
+						targetFamily.createComponentBasedOn(componentName, "Some description", sourceVersion.getDataflow());
 					}
 				} catch (ComponentRegistryException e) {
 					logger.error(e);

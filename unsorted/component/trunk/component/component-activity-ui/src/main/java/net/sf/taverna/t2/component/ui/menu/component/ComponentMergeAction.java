@@ -107,7 +107,7 @@ public class ComponentMergeAction extends AbstractAction {
 				
 				try {
 					ComponentVersion sourceVersion = sourceComponent.getComponentVersionMap().get(sourceComponent.getComponentVersionMap().lastKey());
-					targetComponent.addVersionBasedOn(sourceVersion.getDataflow());
+					targetComponent.addVersionBasedOn(sourceVersion.getDataflow(), "Some description");
 				} catch (ComponentRegistryException e) {
 					logger.error(e);
 				}

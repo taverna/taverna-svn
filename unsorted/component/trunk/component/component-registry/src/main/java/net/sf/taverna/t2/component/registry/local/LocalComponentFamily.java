@@ -106,6 +106,7 @@ public class LocalComponentFamily implements ComponentFamily {
 
 	@Override
 	public ComponentVersion createComponentBasedOn(String componentName,
+			String description,
 			Dataflow dataflow) throws ComponentRegistryException {
 		if (componentName == null) {
 			throw new ComponentRegistryException(("Component name must not be null"));
@@ -118,12 +119,19 @@ public class LocalComponentFamily implements ComponentFamily {
 			throw new ComponentRegistryException("Component already exists");
 		}
 		newSubFile.mkdirs();
+		File descriptionFile = new File(newSubFile, "description");
+		try {
+			FileUtils.writeStringToFile(descriptionFile, description, "utf-8");
+		} catch (IOException e) {
+			throw new ComponentRegistryException("Could not write out description", e);
+		}
 		LocalComponent newComponent = new LocalComponent(newSubFile);
+		
 		if (componentsCache == null) {
 			getComponents();
 		}
 		componentsCache.put(componentName, newComponent);
-		return newComponent.addVersionBasedOn(dataflow);
+		return newComponent.addVersionBasedOn(dataflow, "Initial version");
 	}
 
 	@Override

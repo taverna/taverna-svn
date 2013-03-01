@@ -173,7 +173,7 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	}
 
 	@Override
-	public ComponentVersion createComponentBasedOn(String componentName, Dataflow dataflow) throws ComponentRegistryException {
+	public ComponentVersion createComponentBasedOn(String componentName, String description, Dataflow dataflow) throws ComponentRegistryException {
 		if (componentName == null) {
 			throw new ComponentRegistryException(("Component name must not be null"));
 		}
@@ -186,7 +186,7 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 		}
 		// upload the workflow
 		String title = annotationTools.getAnnotationString(dataflow, DescriptiveTitle.class, "Untitled");
-		String description = annotationTools.getAnnotationString(dataflow, FreeTextDescription.class, "No description");
+//		String description = annotationTools.getAnnotationString(dataflow, FreeTextDescription.class, "No description");
 		String dataflowString;
 		try {
 			ByteArrayOutputStream dataflowStream = new ByteArrayOutputStream();
@@ -202,10 +202,10 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 		} catch (UnsupportedEncodingException e) {
 			throw new ComponentRegistryException(e);
 		}
-		Element componentWorkflow = componentRegistry.uploadWorkflow(dataflowString, title, description, this.permissionsString);
+		Element componentWorkflow = componentRegistry.uploadWorkflow(dataflowString, title, "Initial version", this.permissionsString);
 
 		// create the component
-		Element componentPack = componentRegistry.createPack(componentName, this.permissionsString);
+		Element componentPack = componentRegistry.createPack(componentName, description, this.permissionsString);
 		componentRegistry.tagResource("component", componentPack.getAttributeValue("resource"));
 		component = new MyExperimentComponent(componentRegistry, this.permissionsString, componentPack.getAttributeValue("uri"));
 

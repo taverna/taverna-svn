@@ -79,7 +79,7 @@ public interface ComponentRegistry {
 	 *             </ul>
 	 */
 	public ComponentFamily createComponentFamily(String familyName,
-			ComponentProfile componentProfile, SharingPolicy sharingPolicy) throws ComponentRegistryException;
+			ComponentProfile componentProfile, String description, SharingPolicy sharingPolicy) throws ComponentRegistryException;
 
 	/**
 	 * Removes a the ComponentFamily with the specified name from this

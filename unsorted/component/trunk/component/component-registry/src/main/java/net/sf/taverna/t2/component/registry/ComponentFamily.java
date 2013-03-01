@@ -104,7 +104,7 @@ public interface ComponentFamily {
 	 *             <li>if there is a problem accessing the ComponentRegistry.
 	 *             </ul>
 	 */
-	public ComponentVersion createComponentBasedOn(String componentName, Dataflow dataflow)
+	public ComponentVersion createComponentBasedOn(String componentName, String description, Dataflow dataflow)
 			throws ComponentRegistryException;
 	
 	/**

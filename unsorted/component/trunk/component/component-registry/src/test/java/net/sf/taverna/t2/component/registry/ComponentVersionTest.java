@@ -57,8 +57,8 @@ public class ComponentVersionTest {
 		URL componentProfileUrl = getClass().getClassLoader().getResource("ValidationComponent.xml");
 		assertNotNull(componentProfileUrl);
 		ComponentProfile componentProfile = new ComponentProfile(componentProfileUrl);
-		componentFamily = componentRegistry.createComponentFamily("Test Component Family", componentProfile, null);
-		componentVersion = componentFamily.createComponentBasedOn("Test Component", dataflow);
+		componentFamily = componentRegistry.createComponentFamily("Test Component Family", componentProfile, "Some description", null);
+		componentVersion = componentFamily.createComponentBasedOn("Test Component", "Some description", dataflow);
 	}
 
 	@After

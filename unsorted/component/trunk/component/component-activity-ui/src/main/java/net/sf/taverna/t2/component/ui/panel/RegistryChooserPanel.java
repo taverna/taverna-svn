@@ -9,7 +9,9 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedMap;
 
 import javax.swing.JComboBox;
@@ -49,16 +51,20 @@ public class RegistryChooserPanel extends JPanel implements Observable<RegistryC
 		this.setLayout(new GridBagLayout());
 
 		GridBagConstraints gbc = new GridBagConstraints();
+		
+		Map<Object, String> toolTipMap = new HashMap<Object, String>();
 
 		String longestKey = "";
 		final SortedMap<String, ComponentRegistry> registryMap = pref.getRegistryMap();
+		registryBox.setPrototypeDisplayValue(longestKey);
+		registryBox.setRenderer(new ComboBoxToolTipRenderer(registryBox, toolTipMap));
 		for (String registryName : registryMap.keySet()) {
 			registryBox.addItem(registryName);
 			if (registryName.length() > longestKey.length()) {
 				longestKey = registryName;
 			}
+			toolTipMap.put(registryName, registryMap.get(registryName).getRegistryBase().toString());
 		}
-		registryBox.setPrototypeDisplayValue(longestKey);
 
 		registryBox.setEditable(false);
 
@@ -79,7 +85,9 @@ public class RegistryChooserPanel extends JPanel implements Observable<RegistryC
 			}
 		});
 
-		registryBox.setSelectedItem(registryMap.firstKey());
+		String firstKey = registryMap.firstKey();
+		registryBox.setSelectedItem(firstKey);
+		registryBox.setToolTipText(toolTipMap.get(firstKey));
 		dealWithSelection();
 	}
 

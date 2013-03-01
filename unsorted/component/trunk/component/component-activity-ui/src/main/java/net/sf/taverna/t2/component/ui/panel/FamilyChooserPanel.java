@@ -15,6 +15,9 @@ import java.util.TreeMap;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.border.TitledBorder;
 
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
@@ -46,6 +49,8 @@ public class FamilyChooserPanel extends JPanel implements Observer, Observable<F
 
 	private JComboBox familyBox = new JComboBox();
 
+	private JTextArea familyDescription = new JTextArea(10,60);
+
 	private SortedMap<String, ComponentFamily> familyMap = new TreeMap<String, ComponentFamily>();
 
 	private ComponentRegistry chosenRegistry = null;
@@ -73,11 +78,32 @@ public class FamilyChooserPanel extends JPanel implements Observer, Observable<F
 			@Override
 			public void itemStateChanged(ItemEvent arg0) {
 				if (arg0.getStateChange() == ItemEvent.SELECTED) {
+					updateDescription();
 					notifyObservers();
 				}
 			}});
 
 		familyBox.setEditable(false);
+		gbc.gridx = 0;
+		gbc.gridy++;
+		gbc.gridwidth = 2;
+		gbc.weightx = 0;
+		gbc.weighty = 0;
+		familyDescription = new JTextArea(10,60);
+		JScrollPane familyDescriptionPane = new JScrollPane(familyDescription);
+		familyDescriptionPane.setBorder(new TitledBorder("Family description"));
+		familyDescription.setEditable(false);
+		this.add(familyDescriptionPane, gbc);
+
+	}
+
+	protected void updateDescription() {
+		ComponentFamily chosenFamily = getChosenFamily();
+		if (chosenFamily != null) {
+			familyDescription.setText(chosenFamily.getDescription());
+		} else {
+			familyDescription.setText("");
+		}
 	}
 
 	@Override
@@ -106,6 +132,7 @@ public class FamilyChooserPanel extends JPanel implements Observer, Observable<F
 			String fred = "no";
 		familyMap.clear();
 		familyBox.removeAllItems();
+		familyDescription.setText("");
 		try {
 			if (chosenRegistry != null ) {
 				for (ComponentFamily f : chosenRegistry.getComponentFamilies()) {
@@ -124,6 +151,7 @@ public class FamilyChooserPanel extends JPanel implements Observer, Observable<F
 			if (!familyMap.isEmpty()) {
 				String firstKey = familyMap.firstKey();
 				familyBox.setSelectedItem(firstKey);
+				updateDescription();
 			} else {
 				familyBox.addItem("No families available");
 			}

@@ -111,7 +111,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		return familyCache.get(familyName);
 	}
 
-	public ComponentFamily createComponentFamily(String name, ComponentProfile componentProfile, SharingPolicy sharingPolicy) throws ComponentRegistryException {
+	public ComponentFamily createComponentFamily(String name, ComponentProfile componentProfile, String description, SharingPolicy sharingPolicy) throws ComponentRegistryException {
 		if (name == null) {
 			throw new ComponentRegistryException(("Component name must not be null"));
 		}
@@ -125,7 +125,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		if (permissions == null) {
 			permissions = MyExperimentComponentRegistry.PRIVATE;
 		}
-		Element packElement = createPack(name, permissions.getPolicyString());
+		Element packElement = createPack(name, description, permissions.getPolicyString());
 		tagResource("component family", packElement.getAttributeValue("resource"));
 		ComponentFamily componentFamily = new MyExperimentComponentFamily(this, permissions, packElement.getAttributeValue("uri"));
 
@@ -213,8 +213,9 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		return profileElement;
 	}
 
-	public Element createPack(String title, String permissionsString) throws ComponentRegistryException {
+	public Element createPack(String title, String description, String permissionsString) throws ComponentRegistryException {
 		StringBuilder contentXml = new StringBuilder("<pack>");
+		contentXml.append("<description>" + description + "</description>");
 		contentXml.append("<title>" + title + "</title>");
 		contentXml.append(permissionsString);
 		contentXml.append("</pack>");
@@ -309,7 +310,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 	}
 
 	public Element uploadWorkflow(String dataflow, String title, String description, String permissionsString) throws ComponentRegistryException {
-		String workflowElement = prepareWorkflowPostContent(dataflow, title, description, "by-nd", permissionsString);
+		String workflowElement = prepareWorkflowPostContent(dataflow, title, "Initial version", "by-nd", permissionsString);
 		try {
 			ServerResponse response = myExperimentClient.doMyExperimentPOST(urlToString(registryURL) + "/workflow.xml", workflowElement);
 			return response.getResponseBody().getRootElement();
@@ -318,8 +319,8 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		}
 	}
 
-	public Element updateWorkflow(String uri, String dataflow, String title, String description, String permissionsString) throws ComponentRegistryException {
-		String workflowElement = prepareWorkflowPostContent(dataflow, title, description, "by-nd", permissionsString);
+	public Element updateWorkflow(String uri, String dataflow, String title, String revisionComment, String permissionsString) throws ComponentRegistryException {
+		String workflowElement = prepareWorkflowPostContent(dataflow, title, revisionComment, "by-nd", permissionsString);
 		try {
 			ServerResponse response = myExperimentClient.doMyExperimentPOST(uri, workflowElement);
 			return response.getResponseBody().getRootElement();
@@ -328,7 +329,8 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		}
 	}
 
-	private String prepareWorkflowPostContent(String dataflow, String title, String description, String license, String permissionsString) {
+	private String prepareWorkflowPostContent(String dataflow, String title, String description,
+			String license, String permissionsString) {
 		StringBuilder contentXml = new StringBuilder("<workflow>");
 		if (title.length() > 0) contentXml.append("<title>").append(title).append("</title>");
 		if (description.length() > 0) {

@@ -80,6 +80,7 @@ public class LocalComponentRegistry implements ComponentRegistry {
 	@Override
 	public ComponentFamily createComponentFamily(String name,
 			ComponentProfile componentProfile,
+			String description,
 			SharingPolicy sharingPolicy)
 			throws ComponentRegistryException {
 		if (name == null) {
@@ -102,6 +103,12 @@ public class LocalComponentRegistry implements ComponentRegistry {
 			FileUtils.writeStringToFile(profileFile, componentProfile.getName(), "utf-8");
 		} catch (IOException e) {
 			throw new ComponentRegistryException("Could not write out profile", e);
+		}
+		File descriptionFile = new File(newFamilyDir, "description");
+		try {
+			FileUtils.writeStringToFile(descriptionFile, description, "utf-8");
+		} catch (IOException e) {
+			throw new ComponentRegistryException("Could not write out description", e);
 		}
 		ComponentFamily result = new LocalComponentFamily(this, newFamilyDir);
 		familyCache.put(name, result);

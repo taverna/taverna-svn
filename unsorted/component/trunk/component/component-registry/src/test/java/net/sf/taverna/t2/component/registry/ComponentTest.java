@@ -58,8 +58,8 @@ public class ComponentTest {
 		URL componentProfileUrl = getClass().getClassLoader().getResource("ValidationComponent.xml");
 		assertNotNull(componentProfileUrl);
 		ComponentProfile componentProfile = new ComponentProfile(componentProfileUrl);
-		componentFamily = componentRegistry.createComponentFamily("Test Component Family", componentProfile, null);
-		component = componentFamily.createComponentBasedOn("Test Component", dataflow).getComponent();
+		componentFamily = componentRegistry.createComponentFamily("Test Component Family", componentProfile, "Some description", null);
+		component = componentFamily.createComponentBasedOn("Test Component", "Some description", dataflow).getComponent();
 	}
 
 	@After
@@ -90,7 +90,7 @@ public class ComponentTest {
 	public void testAddVersionBasedOn() throws Exception {
 		assertNotNull(component.getComponentVersion(1));
 		assertNull(component.getComponentVersion(2));
-		ComponentVersion componentVersion = component.addVersionBasedOn(dataflow);
+		ComponentVersion componentVersion = component.addVersionBasedOn(dataflow, "Some description");
 		assertNotNull(componentVersion);
 		assertEquals(component, componentVersion.getComponent());
 		assertEquals(2, componentVersion.getVersionNumber().intValue());

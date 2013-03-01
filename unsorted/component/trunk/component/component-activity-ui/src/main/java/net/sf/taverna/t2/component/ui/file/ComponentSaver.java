@@ -69,10 +69,10 @@ public class ComponentSaver extends AbstractDataflowPersistenceHandler
 		ComponentVersion newVersion = null;
 		try {
 			if (ident.getComponentVersion() == 0) {
-				newVersion = family.createComponentBasedOn(ident.getComponentName(), dataflow);
+				newVersion = family.createComponentBasedOn(ident.getComponentName(), "Some description", dataflow);
 			} else {
 				Component component = family.getComponent(ident.getComponentName());
-				newVersion = component.addVersionBasedOn(dataflow);
+				newVersion = component.addVersionBasedOn(dataflow, "Some revision stuff");
 			}
 		} catch (ComponentRegistryException e) {
 			logger.error("Unable to save new version of component", e);

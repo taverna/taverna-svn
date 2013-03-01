@@ -11,7 +11,10 @@ import javax.swing.AbstractAction;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
 
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
@@ -40,10 +43,8 @@ public class ComponentFamilyCreateAction extends AbstractAction {
 	private static final String CREATE_FAMILY = "Create family...";
 
 	private JPanel overallPanel;
-	private SharingPolicyChooserPanel sharingPolicyChooserPanel;
-
 	private GridBagConstraints gbc;
-
+	
 	public ComponentFamilyCreateAction() {
 		super (CREATE_FAMILY, ComponentServiceIcon.getIcon());
 	}
@@ -87,6 +88,15 @@ public class ComponentFamilyCreateAction extends AbstractAction {
 		gbc.weightx = 1;
 		JTextField familyNameField = new JTextField(60);
 		overallPanel.add(familyNameField, gbc);
+		
+		gbc.gridx = 0;
+		gbc.gridwidth = 2;
+		gbc.weightx = 0;
+		gbc.weighty = 0;
+		JTextArea familyDescription = new JTextArea(10,60);
+		JScrollPane familyDescriptionPane = new JScrollPane(familyDescription);
+		familyDescriptionPane.setBorder(new TitledBorder("Family description"));
+		overallPanel.add(familyDescriptionPane, gbc);
 
 		gbc.gridx = 0;
 		gbc.gridwidth = 2;
@@ -121,7 +131,7 @@ public class ComponentFamilyCreateAction extends AbstractAction {
 					JOptionPane.showMessageDialog(null, newName + " is already used", "Duplicate component family name", JOptionPane.ERROR_MESSAGE);
 					return;
 				} else {
-					chosenRegistry.createComponentFamily(newName, chosenProfile, permissionPanel.getChosenPermission());
+					chosenRegistry.createComponentFamily(newName, chosenProfile, familyDescription.getText(), permissionPanel.getChosenPermission());
 				}
 			} catch (ComponentRegistryException e) {
 				logger.error(e);
