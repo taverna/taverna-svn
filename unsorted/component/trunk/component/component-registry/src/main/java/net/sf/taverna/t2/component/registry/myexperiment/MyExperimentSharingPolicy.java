@@ -30,7 +30,7 @@ import net.sf.taverna.t2.component.registry.SharingPolicy;
  *
  * @author Alan Williams
  */
-public abstract class MyExperimentSharingPolicy extends SharingPolicy {
+public abstract class MyExperimentSharingPolicy implements SharingPolicy {
 
 	public abstract String getPolicyString();
 

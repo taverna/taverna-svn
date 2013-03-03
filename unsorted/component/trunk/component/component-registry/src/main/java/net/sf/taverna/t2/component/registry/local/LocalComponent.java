@@ -70,9 +70,7 @@ public class LocalComponent implements Component {
 		} catch (IOException e) {
 			throw new ComponentRegistryException("Could not write out description", e);
 		}
-		if (versionCache == null) {
 			getComponentVersionMap();
-		}
 		
 		versionCache.put(nextVersionNumber, newComponentVersion);
 		return newComponentVersion;
@@ -97,6 +95,10 @@ public class LocalComponent implements Component {
 
 	@Override
 	public SortedMap<Integer, ComponentVersion> getComponentVersionMap() {
+		return getComponentVersionMapIfNecessary();
+	}
+
+	private synchronized SortedMap<Integer, ComponentVersion> getComponentVersionMapIfNecessary() {
 		if (versionCache == null) {
 		versionCache = new TreeMap<Integer, ComponentVersion>();
 		for (File subFile : componentDir.listFiles()) {

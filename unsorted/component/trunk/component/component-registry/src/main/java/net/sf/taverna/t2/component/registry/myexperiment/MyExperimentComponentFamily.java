@@ -37,6 +37,7 @@ import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
+import net.sf.taverna.t2.component.registry.License;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.file.exceptions.OverwriteException;
 import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
@@ -62,15 +63,22 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	private ComponentProfile componentProfile;
 	private Map<String, Component> componentsCache;
 	private String permissionsString;
+	private License license;
 
-	public MyExperimentComponentFamily(MyExperimentComponentRegistry componentRegistry, MyExperimentSharingPolicy permissions, String uri) {
+	public MyExperimentComponentFamily(MyExperimentComponentRegistry componentRegistry, License license,
+			MyExperimentSharingPolicy permissions, String uri) throws ComponentRegistryException {
 		this.componentRegistry = componentRegistry;
+		this.license = license;
 		this.uri = uri;
 		annotationTools = new AnnotationTools();
 		if (permissions == null) {
 			this.permissionsString = this.getPermissionsString();
 		} else {
 			this.permissionsString = permissions.getPolicyString();
+		}
+		
+		if (license == null) {
+			this.license = componentRegistry.getLicenseOnObject(uri);
 		}
 	}
 
@@ -148,6 +156,10 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 
 	@Override
 	public List<Component> getComponents() throws ComponentRegistryException {
+		return getComponentsIfNecessary();
+	}
+
+	private synchronized List<Component> getComponentsIfNecessary() throws ComponentRegistryException {
 		List<Component> result = new ArrayList<Component>();
 		if (componentsCache == null) {
 			componentsCache = new HashMap<String, Component>();
@@ -160,7 +172,7 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 					for (Element tag : componentRegistry.getResourceElements(packUri, "tags")) {
 						String tagText = tag.getTextTrim();
 						if ("component".equals(tagText)) {
-							MyExperimentComponent newComponent = new MyExperimentComponent(componentRegistry, permissionsString, packUri);
+							MyExperimentComponent newComponent = new MyExperimentComponent(componentRegistry, license, permissionsString, packUri);
 							componentsCache.put(newComponent.getName(), newComponent);
 							break;
 						}
@@ -202,12 +214,13 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 		} catch (UnsupportedEncodingException e) {
 			throw new ComponentRegistryException(e);
 		}
-		Element componentWorkflow = componentRegistry.uploadWorkflow(dataflowString, title, "Initial version", this.permissionsString);
+		Element componentWorkflow = componentRegistry.uploadWorkflow(dataflowString, title,
+				"Initial version", license, this.permissionsString);
 
 		// create the component
-		Element componentPack = componentRegistry.createPack(componentName, description, this.permissionsString);
+		Element componentPack = componentRegistry.createPack(componentName, description, this.license, this.permissionsString);
 		componentRegistry.tagResource("component", componentPack.getAttributeValue("resource"));
-		component = new MyExperimentComponent(componentRegistry, this.permissionsString, componentPack.getAttributeValue("uri"));
+		component = new MyExperimentComponent(componentRegistry, this.license, this.permissionsString, componentPack.getAttributeValue("uri"));
 
 		// add the component to the family
 		Element resource = componentRegistry.getResource(uri);

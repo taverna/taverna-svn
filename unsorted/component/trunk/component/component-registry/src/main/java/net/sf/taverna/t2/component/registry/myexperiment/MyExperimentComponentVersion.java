@@ -33,6 +33,7 @@ import net.sf.taverna.t2.workbench.file.impl.T2DataflowOpener;
 import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
+import org.apache.log4j.Logger;
 import org.jdom.Attribute;
 import org.jdom.Element;
 
@@ -42,6 +43,10 @@ import org.jdom.Element;
  * @author David Withers
  */
 public class MyExperimentComponentVersion implements ComponentVersion {
+	
+	private static Logger logger = Logger.getLogger(MyExperimentComponentVersion.class);
+
+
 
 	private static final T2FlowFileType T2_FLOW_FILE_TYPE = new T2FlowFileType();
 
@@ -73,11 +78,15 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 	@Override
 	public String getDescription() {
 		if (description == null) {
-			Element descriptionElement = componentRegistry.getResourceElement(uri, "description");
-			if (descriptionElement == null) {
-				description = "";
+			try {
+				Element workflowElement = componentRegistry.getPackItem(uri, "workflow");
+				String resourceUri = workflowElement.getAttributeValue("uri");
+				Element descriptionElement = componentRegistry.getResourceElement(resourceUri, "description");
+				description = descriptionElement.getTextTrim();
+			} catch (ComponentRegistryException e) {
+				logger.error(e);
+				return ("");
 			}
-			description = descriptionElement.getTextTrim();
 		}
 		return description;
 	}

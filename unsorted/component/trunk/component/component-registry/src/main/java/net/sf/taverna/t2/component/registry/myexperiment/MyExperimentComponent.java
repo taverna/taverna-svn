@@ -34,6 +34,7 @@ import net.sf.taverna.t2.annotation.annotationbeans.FreeTextDescription;
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
+import net.sf.taverna.t2.component.registry.License;
 import net.sf.taverna.t2.component.registry.SharingPolicy;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.file.exceptions.OverwriteException;
@@ -60,11 +61,14 @@ public class MyExperimentComponent implements Component {
 	
 	private SortedMap<Integer, ComponentVersion> versionCache;
 	private final String permissionsString;
+	private License license;
 
-	public MyExperimentComponent(MyExperimentComponentRegistry componentRegistry, String permissionsString, String uri) {
+	public MyExperimentComponent(MyExperimentComponentRegistry componentRegistry,
+			License license, String permissionsString, String uri) {
 		this.componentRegistry = componentRegistry;
 		this.uri = uri;
 		this.permissionsString = permissionsString;
+		this.license = license;
 		annotationTools = new AnnotationTools();
 	}
 
@@ -136,7 +140,7 @@ public class MyExperimentComponent implements Component {
 
 		Element workflowElement = componentRegistry.getPackItem(uri, "workflow");
 		Element componentWorkflow = componentRegistry.updateWorkflow(workflowElement.getAttributeValue("uri"), dataflowString,
-				title, revisionComment, permissionsString);
+				title, revisionComment, license, permissionsString);
 
 		Element componentElement = componentRegistry.getResource(uri);
 		componentRegistry.deletePackItem(componentElement, "workflow");

@@ -22,6 +22,7 @@ import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.registry.License;
 import net.sf.taverna.t2.component.registry.SharingPolicy;
 
 import org.apache.commons.io.FileUtils;
@@ -51,7 +52,7 @@ public class LocalComponentRegistry implements ComponentRegistry {
 
 	public LocalComponentRegistry(File registryDir) throws ComponentRegistryException {
 		baseDir = registryDir;
-		getComponentProfiles();
+		getComponentProfilesIfNecessary();
 /*		if (!profileCache.containsKey(EMPTY_PROFILE_ID)) {
 			addComponentProfile( new ComponentProfile(
 					getClass().getClassLoader().getResource(EMPTY_PROFILE_FILENAME)));			
@@ -81,6 +82,7 @@ public class LocalComponentRegistry implements ComponentRegistry {
 	public ComponentFamily createComponentFamily(String name,
 			ComponentProfile componentProfile,
 			String description,
+			License license,
 			SharingPolicy sharingPolicy)
 			throws ComponentRegistryException {
 		if (name == null) {
@@ -124,6 +126,11 @@ public class LocalComponentRegistry implements ComponentRegistry {
 	 */
 	@Override
 	public List<ComponentFamily> getComponentFamilies() throws ComponentRegistryException {
+		return getComponentFamiliesIfNecessary();
+
+	}
+
+	private synchronized List<ComponentFamily> getComponentFamiliesIfNecessary() throws ComponentRegistryException {
 		List<ComponentFamily> result = new ArrayList<ComponentFamily>();
 		if (familyCache == null) {
 			familyCache = new HashMap<String, ComponentFamily>();
@@ -149,6 +156,10 @@ public class LocalComponentRegistry implements ComponentRegistry {
 	 */
 	@Override
 	public List<ComponentProfile> getComponentProfiles() throws ComponentRegistryException {
+		return getComponentProfilesIfNecessary();
+	}
+	
+	private synchronized List<ComponentProfile> getComponentProfilesIfNecessary() throws ComponentRegistryException {
 		List<ComponentProfile> result = new ArrayList<ComponentProfile>();
 		if (profileCache == null) {
 			profileCache = new HashMap<String,ComponentProfile>();
@@ -251,7 +262,7 @@ public class LocalComponentRegistry implements ComponentRegistry {
 			throw new ComponentRegistryException(("Component profile must not be null"));
 		}
 		if (profileCache == null) {
-			getComponentProfiles();
+			getComponentProfilesIfNecessary();
 		}
 		if (profileCache.containsKey(componentProfile.getId())) {
 			return profileCache.get(componentProfile.getId());
@@ -313,5 +324,15 @@ public class LocalComponentRegistry implements ComponentRegistry {
 	@Override
 	public List<SharingPolicy> getPermissions() throws ComponentRegistryException {
 		return Collections.emptyList();
+	}
+
+	@Override
+	public List<License> getLicenses() throws ComponentRegistryException {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public License getPreferredLicense() {
+		return null;
 	}
 }

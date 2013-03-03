@@ -79,6 +79,10 @@ public class LocalComponentFamily implements ComponentFamily {
 	 */
 	@Override
 	public List<Component> getComponents() throws ComponentRegistryException {
+		return getComponentsIfNecessary();
+	}
+
+	private synchronized List<Component> getComponentsIfNecessary() throws ComponentRegistryException {
 		// Assume all directories are components
 		List<Component> result = new ArrayList<Component>();
 

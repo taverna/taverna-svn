@@ -79,7 +79,8 @@ public interface ComponentRegistry {
 	 *             </ul>
 	 */
 	public ComponentFamily createComponentFamily(String familyName,
-			ComponentProfile componentProfile, String description, SharingPolicy sharingPolicy) throws ComponentRegistryException;
+			ComponentProfile componentProfile, String description,
+			License license, SharingPolicy sharingPolicy) throws ComponentRegistryException;
 
 	/**
 	 * Removes a the ComponentFamily with the specified name from this
@@ -136,4 +137,8 @@ public interface ComponentRegistry {
 	 * @throws ComponentRegistryException
 	 */
 	public List<SharingPolicy> getPermissions() throws ComponentRegistryException;
+	
+	public List<License> getLicenses() throws ComponentRegistryException;
+
+	public License getPreferredLicense() throws ComponentRegistryException;
 }
