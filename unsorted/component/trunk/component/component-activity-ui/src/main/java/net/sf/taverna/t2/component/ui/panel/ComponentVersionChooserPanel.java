@@ -6,6 +6,8 @@ package net.sf.taverna.t2.component.ui.panel;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -48,7 +50,6 @@ public class ComponentVersionChooserPanel extends JPanel implements Observer<Com
 		super();
 		this.setLayout(new GridBagLayout());
 
-		componentVersionChoice.setRenderer(new ComponentListCellRenderer());
 		componentVersionChoice.setPrototypeDisplayValue(Utils.SHORT_STRING);
 
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -68,36 +69,55 @@ public class ComponentVersionChooserPanel extends JPanel implements Observer<Com
 		gbc.gridx = 1;
 		gbc.weightx = 1;
 		this.add(componentVersionChoice, gbc);
+		componentVersionChoice.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent arg0) {
+				if (arg0.getStateChange() == ItemEvent.SELECTED) {
+					updateToolTipText();
+				}
+
+			}});
+	}
+
+	protected void updateToolTipText() {
+		ComponentVersion chosenComponentVersion = getChosenComponentVersion();
+		if (chosenComponentVersion != null) {
+			componentVersionChoice.setToolTipText(chosenComponentVersion.getDescription());
+		}
+		else {
+			componentVersionChoice.setToolTipText(null);
+		}
 	}
 
 	private void updateComponentVersionModel() {
 		Component chosenComponent = componentChooserPanel.getChosenComponent();
 		componentVersionMap.clear();
 		componentVersionChoice.removeAllItems();
-		ComponentVersion lastVersion = null;
+		componentVersionChoice.setToolTipText(null);
 		try {
 			if (chosenComponent != null) {
 			for (ComponentVersion version : chosenComponent.getComponentVersionMap().values()) {
-				componentVersionMap.put(version.getVersionNumber(), version);
-				componentVersionChoice.addItem(version);
-				lastVersion = version;
+				Integer versionNumber = version.getVersionNumber();
+				componentVersionMap.put(versionNumber, version);
+				componentVersionChoice.addItem(versionNumber);
 			}
 			}
 			componentVersionChoice.setEnabled(!componentVersionMap.isEmpty());
-			if (componentVersionMap.isEmpty()) {
+			if (!componentVersionMap.isEmpty()) {
+				componentVersionChoice.setSelectedItem(componentVersionMap.lastKey());
+				updateToolTipText();
+			} else {
 				componentVersionChoice.addItem("No versions available");
 			}
 		} catch (NullPointerException e) {
 			logger.error("Unable to read component versions", e);
 		}
-		if (lastVersion != null) {
-			componentVersionChoice.setSelectedItem(lastVersion);
-		}
 	}
 
 	public ComponentVersion getChosenComponentVersion() {
 		if (!componentVersionMap.isEmpty()) {
-			return (ComponentVersion) componentVersionChoice.getSelectedItem();
+			return componentVersionMap.get(componentVersionChoice.getSelectedItem());
 		}
 		return null;
 	}

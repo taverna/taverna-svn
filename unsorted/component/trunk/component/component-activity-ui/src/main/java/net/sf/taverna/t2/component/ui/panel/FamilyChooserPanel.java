@@ -49,7 +49,7 @@ public class FamilyChooserPanel extends JPanel implements Observer, Observable<F
 
 	private JComboBox familyBox = new JComboBox();
 
-	private JTextArea familyDescription = new JTextArea(10,60);
+//	private JTextArea familyDescription = new JTextArea(10,60);
 
 	private SortedMap<String, ComponentFamily> familyMap = new TreeMap<String, ComponentFamily>();
 
@@ -84,25 +84,15 @@ public class FamilyChooserPanel extends JPanel implements Observer, Observable<F
 			}});
 
 		familyBox.setEditable(false);
-		gbc.gridx = 0;
-		gbc.gridy++;
-		gbc.gridwidth = 2;
-		gbc.weightx = 0;
-		gbc.weighty = 0;
-		familyDescription = new JTextArea(10,60);
-		JScrollPane familyDescriptionPane = new JScrollPane(familyDescription);
-		familyDescriptionPane.setBorder(new TitledBorder("Family description"));
-		familyDescription.setEditable(false);
-		this.add(familyDescriptionPane, gbc);
 
 	}
 
 	protected void updateDescription() {
 		ComponentFamily chosenFamily = getChosenFamily();
 		if (chosenFamily != null) {
-			familyDescription.setText(chosenFamily.getDescription());
+			familyBox.setToolTipText(chosenFamily.getDescription());
 		} else {
-			familyDescription.setText("");
+			familyBox.setToolTipText(null);
 		}
 	}
 
@@ -132,7 +122,7 @@ public class FamilyChooserPanel extends JPanel implements Observer, Observable<F
 			String fred = "no";
 		familyMap.clear();
 		familyBox.removeAllItems();
-		familyDescription.setText("");
+		familyBox.setToolTipText(null);
 		try {
 			if (chosenRegistry != null ) {
 				for (ComponentFamily f : chosenRegistry.getComponentFamilies()) {

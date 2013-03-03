@@ -7,7 +7,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,31 +40,24 @@ public class RegistryChooserPanel extends JPanel implements Observable<RegistryC
 
 	private List<Observer<RegistryChoiceMessage>> observers = new ArrayList<Observer<RegistryChoiceMessage>>();
 
-	private JComboBox registryBox = new JComboBox();
+	private final JComboBox<String> registryBox;
+
+	Map<String, String> toolTipMap = new HashMap<String, String>();
 
 	private ComponentPreference pref = ComponentPreference.getInstance();
 
+	final SortedMap<String, ComponentRegistry> registryMap;
+
 	public RegistryChooserPanel() {
 		super();
-		registryBox.setPrototypeDisplayValue(Utils.LONG_STRING);
 		this.setLayout(new GridBagLayout());
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		
-		Map<Object, String> toolTipMap = new HashMap<Object, String>();
-
-		String longestKey = "";
-		final SortedMap<String, ComponentRegistry> registryMap = pref.getRegistryMap();
-		registryBox.setPrototypeDisplayValue(longestKey);
-		registryBox.setRenderer(new ComboBoxToolTipRenderer(registryBox, toolTipMap));
-		for (String registryName : registryMap.keySet()) {
-			registryBox.addItem(registryName);
-			if (registryName.length() > longestKey.length()) {
-				longestKey = registryName;
-			}
-			toolTipMap.put(registryName, registryMap.get(registryName).getRegistryBase().toString());
-		}
-
+		registryMap = pref.getRegistryMap();
+		registryBox = new JComboBox(registryMap.keySet().toArray());
+		registryBox.setPrototypeDisplayValue(Utils.LONG_STRING);
+		
 		registryBox.setEditable(false);
 
 		gbc.gridx = 0;
@@ -87,13 +79,18 @@ public class RegistryChooserPanel extends JPanel implements Observable<RegistryC
 
 		String firstKey = registryMap.firstKey();
 		registryBox.setSelectedItem(firstKey);
-		registryBox.setToolTipText(toolTipMap.get(firstKey));
 		dealWithSelection();
+	}
+	
+	private void updateToolTipText() {
+		String key = (String) registryBox.getSelectedItem();
+		ComponentRegistry registry = registryMap.get(key);
+		registryBox.setToolTipText(registry.getRegistryBase().toString());
 	}
 
 	private void dealWithSelection() {
+		updateToolTipText();
 		ComponentRegistry chosenRegistry = getChosenRegistry();
-
 		RegistryChoiceMessage message = new RegistryChoiceMessage(chosenRegistry);
 		for (Observer<RegistryChoiceMessage> o : getObservers()) {
 			try {
@@ -129,7 +126,7 @@ public class RegistryChooserPanel extends JPanel implements Observable<RegistryC
 	public ComponentRegistry getChosenRegistry() {
 		if (registryBox.getSelectedIndex() >= 0) {
 			String name = (String) registryBox.getSelectedItem();
-			ComponentRegistry chosenRegistry = pref.getRegistryMap().get(name);
+			ComponentRegistry chosenRegistry = registryMap.get(name);
 			return chosenRegistry;
 		}
 		return null;

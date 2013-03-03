@@ -62,9 +62,14 @@ public class ComponentServiceProvider extends
 				// TODO get check on family name in there
 			if (family.getName().equals(config.getFamilyName())) {
 					for (Component component : family.getComponents()) {
+						try {
 						ComponentVersionIdentification ident = new ComponentVersionIdentification(config.getRegistryBase(), family.getName(), component.getName(), component.getComponentVersionMap().lastKey());
 						ComponentServiceDesc newDesc = new ComponentServiceDesc(ident);
 						results.add(newDesc);
+						}
+						catch (Exception e) {
+							logger.error(e);
+						}
 					}
 			}
 					callBack.partialResults(results);

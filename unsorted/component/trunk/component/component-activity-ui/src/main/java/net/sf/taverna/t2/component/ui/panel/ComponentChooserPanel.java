@@ -57,7 +57,6 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 		super();
 		this.setLayout(new GridBagLayout());
 
-		componentChoice.setRenderer(new ComponentListCellRenderer());
 		componentChoice.setPrototypeDisplayValue(Utils.LONG_STRING);
 
 		updateComponentModel();
@@ -83,10 +82,21 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 			@Override
 			public void itemStateChanged(ItemEvent arg0) {
 				if (arg0.getStateChange() == ItemEvent.SELECTED) {
+					updateToolTipText();
 					notifyObservers();
 				}
 
 			}});
+	}
+
+	protected void updateToolTipText() {
+		Component chosenComponent = componentMap.get(componentChoice.getSelectedItem());
+		if (chosenComponent == null) {
+			componentChoice.setToolTipText(null);
+		}
+		else {
+			componentChoice.setToolTipText(chosenComponent.getDescription());
+		}
 	}
 
 	private void notifyObservers() {
@@ -105,15 +115,17 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 		ComponentFamily chosenFamily = registryAndFamilyChooserPanel.getChosenFamily();
 		componentMap.clear();
 		componentChoice.removeAllItems();
+		componentChoice.setToolTipText(null);
 		try {
 			if (chosenFamily != null) {
 				for (Component component : chosenFamily.getComponents()) {
-					componentChoice.addItem(component);
+					componentChoice.addItem(component.getName());
 					componentMap.put(component.getName(), component);
 				}
 			}
 			if (!componentMap.isEmpty()) {
-				componentChoice.setSelectedIndex(0);
+				componentChoice.setSelectedItem(componentMap.firstKey());
+				updateToolTipText();
 			} else {
 				componentChoice.addItem("No components available");
 
@@ -129,7 +141,7 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 
 	public Component getChosenComponent() {
 		if (!componentMap.isEmpty()) {
-			return (Component) componentChoice.getSelectedItem();
+			return componentMap.get(componentChoice.getSelectedItem());
 		}
 		return null;
 	}

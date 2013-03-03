@@ -41,8 +41,6 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 
 	private JComboBox profileBox = new JComboBox();
 
-	private JTextArea profileDescription = new JTextArea(10, 60);
-
 	private SortedMap<String, ComponentProfile> profileMap = new TreeMap<String, ComponentProfile>();
 
 	public ProfileChooserPanel() {
@@ -72,13 +70,6 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 			}});
 
 		profileBox.setEditable(false);
-		profileDescription.setBorder(new TitledBorder("Profile description"));
-		gbc.gridx = 0;
-		gbc.gridy = 1;
-		gbc.gridwidth = 2;
-		gbc.weighty = 1;
-		this.add(profileDescription, gbc);
-		profileDescription.setEditable(false);
 	}
 
 	@Override
@@ -95,7 +86,7 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 	private void setRegistry(ComponentRegistry chosenRegistry) {
 		profileMap.clear();
 		profileBox.removeAllItems();
-		profileDescription.setText("");
+		profileBox.setToolTipText(null);
 		List<ComponentProfile> componentProfiles;
 		if (chosenRegistry != null) {
 		try {
@@ -133,9 +124,9 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 
 	private void setProfile(ComponentProfile componentProfile) {
 		if (componentProfile != null) {
-			profileDescription.setText(componentProfile.getDescription());
+			profileBox.setToolTipText(componentProfile.getDescription());
 		} else {
-			profileDescription.setText("");
+			profileBox.setToolTipText(null);
 		}
 	}
 

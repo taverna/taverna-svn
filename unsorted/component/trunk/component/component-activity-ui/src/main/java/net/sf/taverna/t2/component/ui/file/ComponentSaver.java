@@ -6,6 +6,10 @@ package net.sf.taverna.t2.component.ui.file;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentFileType;
@@ -69,10 +73,18 @@ public class ComponentSaver extends AbstractDataflowPersistenceHandler
 		ComponentVersion newVersion = null;
 		try {
 			if (ident.getComponentVersion() == 0) {
-				newVersion = family.createComponentBasedOn(ident.getComponentName(), "Some description", dataflow);
+				JTextArea descriptionArea = new JTextArea(10,60);
+				int answer = JOptionPane.showConfirmDialog(null, new JScrollPane(descriptionArea), "Component description", JOptionPane.OK_CANCEL_OPTION);
+				if (answer == JOptionPane.OK_OPTION) {
+					newVersion = family.createComponentBasedOn(ident.getComponentName(), descriptionArea.getText(), dataflow);
+				}
 			} else {
 				Component component = family.getComponent(ident.getComponentName());
-				newVersion = component.addVersionBasedOn(dataflow, "Some revision stuff");
+				JTextArea descriptionArea = new JTextArea(10,60);
+				int answer = JOptionPane.showConfirmDialog(null, new JScrollPane(descriptionArea), "Version description", JOptionPane.OK_CANCEL_OPTION);
+				if (answer == JOptionPane.OK_OPTION) {
+					newVersion = component.addVersionBasedOn(dataflow, descriptionArea.getText());
+				}
 			}
 		} catch (ComponentRegistryException e) {
 			logger.error("Unable to save new version of component", e);

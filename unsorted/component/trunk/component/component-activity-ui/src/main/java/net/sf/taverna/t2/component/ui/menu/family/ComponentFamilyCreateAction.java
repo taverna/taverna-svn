@@ -20,6 +20,7 @@ import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
+import net.sf.taverna.t2.component.ui.panel.LicenseChooserPanel;
 import net.sf.taverna.t2.component.ui.panel.SharingPolicyChooserPanel;
 import net.sf.taverna.t2.component.ui.panel.ProfileChooserPanel;
 import net.sf.taverna.t2.component.ui.panel.RegistryChoiceMessage;
@@ -106,6 +107,9 @@ public class ComponentFamilyCreateAction extends AbstractAction {
 		registryPanel.addObserver(permissionPanel);
 		overallPanel.add(permissionPanel, gbc);
 
+		LicenseChooserPanel licensePanel = new LicenseChooserPanel();
+		registryPanel.addObserver(licensePanel);
+		overallPanel.add(licensePanel, gbc);
 		int answer = JOptionPane.showConfirmDialog(null, overallPanel, "Create Component Family", JOptionPane.OK_CANCEL_OPTION);
 		if (answer == JOptionPane.OK_OPTION) {
 			ComponentRegistry chosenRegistry = registryPanel.getChosenRegistry();
@@ -131,7 +135,8 @@ public class ComponentFamilyCreateAction extends AbstractAction {
 					JOptionPane.showMessageDialog(null, newName + " is already used", "Duplicate component family name", JOptionPane.ERROR_MESSAGE);
 					return;
 				} else {
-					chosenRegistry.createComponentFamily(newName, chosenProfile, familyDescription.getText(), permissionPanel.getChosenPermission());
+					chosenRegistry.createComponentFamily(newName, chosenProfile, familyDescription.getText(),
+							licensePanel.getChosenLicense(), permissionPanel.getChosenPermission());
 				}
 			} catch (ComponentRegistryException e) {
 				logger.error(e);

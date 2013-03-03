@@ -47,6 +47,7 @@ import org.apache.log4j.Logger;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.registry.License;
 import net.sf.taverna.t2.component.registry.SharingPolicy;
 import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
 import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentGroup;
@@ -58,22 +59,22 @@ import net.sf.taverna.t2.lang.observer.Observer;
  * @author alanrw
  *
  */
-public class SharingPolicyChooserPanel extends JPanel implements Observer<RegistryChoiceMessage> {
+public class LicenseChooserPanel extends JPanel implements Observer<RegistryChoiceMessage> {
 
 	/**
 	 *
 	 */
 	private static final long serialVersionUID = 2175274929391537032L;
 
-	private static Logger logger = Logger.getLogger(SharingPolicyChooserPanel.class);
+	private static Logger logger = Logger.getLogger(LicenseChooserPanel.class);
 
-	private JComboBox permissionBox = new JComboBox();
+	private JComboBox licenseBox = new JComboBox();
 
-	private SortedMap<String, SharingPolicy> permissionMap = new TreeMap<String, SharingPolicy>();
+	private SortedMap<String, License> licenseMap = new TreeMap<String, License>();
 
-	public SharingPolicyChooserPanel() {
+	public LicenseChooserPanel() {
 		super();
-		permissionBox.setPrototypeDisplayValue(Utils.LONG_STRING);
+		licenseBox.setPrototypeDisplayValue(Utils.LONG_STRING);
 		this.setLayout(new GridBagLayout());
 
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -82,13 +83,30 @@ public class SharingPolicyChooserPanel extends JPanel implements Observer<Regist
 		gbc.gridy = 0;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.NONE;
-		this.add(new JLabel("Sharing policy:"), gbc);
+		this.add(new JLabel("License:"), gbc);
 		gbc.gridx = 1;
 		gbc.weightx = 1;
 		gbc.fill = GridBagConstraints.BOTH;
-		this.add(permissionBox, gbc);
+		this.add(licenseBox, gbc);
 
-		permissionBox.setEditable(false);
+		licenseBox.setEditable(false);
+		licenseBox.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent arg0) {
+				if (arg0.getStateChange() == ItemEvent.SELECTED) {
+
+					setLicense(licenseMap.get(licenseBox.getSelectedItem()));
+				}
+			}});
+	}
+
+	protected void setLicense(License license) {
+		if (license != null) {
+			licenseBox.setToolTipText("<html>" + license.getDescription() + "</html>");
+		} else {
+			licenseBox.setToolTipText(null);
+		}
 	}
 
 	@Override
@@ -103,12 +121,13 @@ public class SharingPolicyChooserPanel extends JPanel implements Observer<Regist
 	}
 
 	private void setRegistry(ComponentRegistry chosenRegistry) {
-		permissionMap.clear();
-		permissionBox.removeAllItems();
-		List<SharingPolicy> sharingPolicies;
+		licenseMap.clear();
+		licenseBox.removeAllItems();
+		licenseBox.setToolTipText(null);
+		List<License> licenses;
 		if (chosenRegistry != null) {
 		try {
-			sharingPolicies = chosenRegistry.getPermissions();
+			licenses = chosenRegistry.getLicenses();
 		} catch (ComponentRegistryException e) {
 			logger.error(e);
 			return;
@@ -116,11 +135,11 @@ public class SharingPolicyChooserPanel extends JPanel implements Observer<Regist
 			logger.error(e);
 			return;
 		}
-		if (sharingPolicies != null) {
-		for (SharingPolicy p : sharingPolicies) {
+		if (licenses != null) {
+		for (License p : licenses) {
 			try {
 				String name = p.getName();
-				permissionMap.put(name, p);
+				licenseMap.put(name, p);
 			} catch (NullPointerException e) {
 				logger.error(e);
 
@@ -128,23 +147,35 @@ public class SharingPolicyChooserPanel extends JPanel implements Observer<Regist
 		}
 		}
 		}
-		for (String name : permissionMap.keySet()) {
-			permissionBox.addItem(name);
+		for (String name : licenseMap.keySet()) {
+			licenseBox.addItem(name);
 		}
-		if (!permissionMap.isEmpty()) {
-			String firstKey = permissionMap.firstKey();
-			permissionBox.setSelectedItem(firstKey);
-			permissionBox.setEnabled(true);
+		if (!licenseMap.isEmpty()) {
+			String firstKey = licenseMap.firstKey();
+			License preferredLicense = null;
+			try {
+				preferredLicense = chosenRegistry.getPreferredLicense();
+			} catch (ComponentRegistryException e) {
+				logger.error(e);
+			}
+			if (preferredLicense != null) {
+				licenseBox.setSelectedItem(preferredLicense.getName());
+				setLicense(preferredLicense);
+			} else {
+				licenseBox.setSelectedItem(firstKey);
+				setLicense(licenseMap.get(firstKey));
+			}
+			licenseBox.setEnabled(true);
 		} else {
-			permissionBox.addItem("No permissions available");
-			permissionBox.setEnabled(false);
+			licenseBox.addItem("No licenses available");
+			licenseBox.setEnabled(false);
 		}
 	}
 
-	public SharingPolicy getChosenPermission() {
-		if (permissionBox.getSelectedIndex() >= 0) {
-			Object selectedItem = permissionBox.getSelectedItem();
-			return permissionMap.get(selectedItem);
+	public License getChosenLicense() {
+		if (licenseBox.getSelectedIndex() >= 0) {
+			Object selectedItem = licenseBox.getSelectedItem();
+			return licenseMap.get(selectedItem);
 		} else {
 			return null;
 		}
