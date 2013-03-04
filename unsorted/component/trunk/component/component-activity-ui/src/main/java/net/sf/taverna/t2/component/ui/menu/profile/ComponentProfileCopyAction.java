@@ -16,8 +16,10 @@ import javax.swing.border.TitledBorder;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.ui.panel.LicenseChooserPanel;
 import net.sf.taverna.t2.component.ui.panel.ProfileChooserPanel;
 import net.sf.taverna.t2.component.ui.panel.RegistryChooserPanel;
+import net.sf.taverna.t2.component.ui.panel.SharingPolicyChooserPanel;
 import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceIcon;
 
 /**
@@ -74,6 +76,20 @@ public class ComponentProfileCopyAction extends AbstractAction {
 		gbc.gridy = 2;
 		overallPanel.add(targetRegistryPanel, gbc);
 		
+		gbc.gridx = 0;
+		gbc.gridwidth = 2;
+		gbc.weightx = 1;
+		gbc.weighty = 1;
+		gbc.gridy++;
+		SharingPolicyChooserPanel permissionPanel = new SharingPolicyChooserPanel();
+		targetRegistryPanel.addObserver(permissionPanel);
+		overallPanel.add(permissionPanel, gbc);
+
+		gbc.gridy++;
+		LicenseChooserPanel licensePanel = new LicenseChooserPanel();
+		targetRegistryPanel.addObserver(licensePanel);
+		overallPanel.add(licensePanel, gbc);
+
 		int answer = JOptionPane.showConfirmDialog(null, overallPanel, "Copy Component Profile", JOptionPane.OK_CANCEL_OPTION);
 		if (answer == JOptionPane.OK_OPTION) {
 				try {
@@ -112,7 +128,8 @@ public class ComponentProfileCopyAction extends AbstractAction {
 							return;							
 						}
 					}
-					targetRegistry.addComponentProfile(sourceProfile);
+					targetRegistry.addComponentProfile(sourceProfile,
+							licensePanel.getChosenLicense(), permissionPanel.getChosenPermission());
 				} catch (ComponentRegistryException e) {
 					JOptionPane.showMessageDialog(null, "Unable to save profile", "Registry Exception", JOptionPane.ERROR_MESSAGE);
 				}

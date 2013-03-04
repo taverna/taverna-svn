@@ -71,18 +71,21 @@ public class ComponentFamilyCreateAction extends AbstractAction {
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.gridwidth = 2;
 		gbc.weightx = 1;
+		gbc.gridy++;
 		overallPanel.add(registryPanel, gbc);
 
 		ProfileChooserPanel profilePanel = new ProfileChooserPanel();
 		registryPanel.addObserver(profilePanel);
 		gbc.gridx = 0;
 		gbc.weighty = 1;
+		gbc.gridy++;
 		overallPanel.add(profilePanel, gbc);
 
 		gbc.gridx = 0;
 		gbc.gridwidth = 1;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
+		gbc.gridy++;
 		overallPanel.add(new JLabel("Component family name:"), gbc);
 
 		gbc.gridx = 1;
@@ -94,6 +97,7 @@ public class ComponentFamilyCreateAction extends AbstractAction {
 		gbc.gridwidth = 2;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
+		gbc.gridy++;
 		JTextArea familyDescription = new JTextArea(10,60);
 		JScrollPane familyDescriptionPane = new JScrollPane(familyDescription);
 		familyDescriptionPane.setBorder(new TitledBorder("Family description"));
@@ -103,13 +107,16 @@ public class ComponentFamilyCreateAction extends AbstractAction {
 		gbc.gridwidth = 2;
 		gbc.weightx = 1;
 		gbc.weighty = 1;
+		gbc.gridy++;
 		SharingPolicyChooserPanel permissionPanel = new SharingPolicyChooserPanel();
 		registryPanel.addObserver(permissionPanel);
 		overallPanel.add(permissionPanel, gbc);
 
+		gbc.gridy++;
 		LicenseChooserPanel licensePanel = new LicenseChooserPanel();
 		registryPanel.addObserver(licensePanel);
 		overallPanel.add(licensePanel, gbc);
+		
 		int answer = JOptionPane.showConfirmDialog(null, overallPanel, "Create Component Family", JOptionPane.OK_CANCEL_OPTION);
 		if (answer == JOptionPane.OK_OPTION) {
 			ComponentRegistry chosenRegistry = registryPanel.getChosenRegistry();

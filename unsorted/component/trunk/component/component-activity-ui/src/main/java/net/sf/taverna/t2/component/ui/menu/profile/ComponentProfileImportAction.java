@@ -25,7 +25,9 @@ import net.sf.taverna.t2.component.ComponentActivity;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.ui.panel.LicenseChooserPanel;
 import net.sf.taverna.t2.component.ui.panel.RegistryChooserPanel;
+import net.sf.taverna.t2.component.ui.panel.SharingPolicyChooserPanel;
 import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceIcon;
 
 /**
@@ -41,6 +43,8 @@ public class ComponentProfileImportAction extends AbstractAction {
 	private static final String IMPORT_PROFILE = "Import profile...";
 	
 	private static Logger logger = Logger.getLogger(ComponentProfileImportAction.class);
+	
+	private static JFileChooser chooser = new JFileChooser();
 	
 	public ComponentProfileImportAction() {
 		super (IMPORT_PROFILE, ComponentServiceIcon.getIcon());
@@ -84,20 +88,35 @@ public class ComponentProfileImportAction extends AbstractAction {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				JFileChooser chooser = new JFileChooser();
+
 			    FileNameExtensionFilter filter = new FileNameExtensionFilter(
 			        "XML files", "xml");
 			    chooser.setFileFilter(filter);
 			    int returnVal = chooser.showOpenDialog(null);
 			    if(returnVal == JFileChooser.APPROVE_OPTION) {
 			       try {
-					profileLocation.setText(chooser.getSelectedFile().toURI().toURL().toString());
+					profileLocation.setText(chooser.getSelectedFile().toURL().toString());
 				} catch (MalformedURLException e) {
 					logger.error(e);
 				}
 			    }
 			}});
 		overallPanel.add(browseButton, gbc);
+		
+		gbc.gridx = 0;
+		gbc.gridwidth = 2;
+		gbc.weightx = 1;
+		gbc.weighty = 1;
+		gbc.gridy++;
+		SharingPolicyChooserPanel permissionPanel = new SharingPolicyChooserPanel();
+		registryPanel.addObserver(permissionPanel);
+		overallPanel.add(permissionPanel, gbc);
+
+		gbc.gridy++;
+		LicenseChooserPanel licensePanel = new LicenseChooserPanel();
+		registryPanel.addObserver(licensePanel);
+		overallPanel.add(licensePanel, gbc);
+
 		
 		int answer = JOptionPane.showConfirmDialog(null, overallPanel, "Import Component Profile", JOptionPane.OK_CANCEL_OPTION);
 		if (answer == JOptionPane.OK_OPTION) {
@@ -120,7 +139,8 @@ public class ComponentProfileImportAction extends AbstractAction {
 					if (alreadyUsed) {
 						JOptionPane.showMessageDialog(null, newName + " is already used", "Duplicate profile name", JOptionPane.ERROR_MESSAGE);
 					} else {
-						chosenRegistry.addComponentProfile(newProfile);
+						chosenRegistry.addComponentProfile(newProfile, licensePanel.getChosenLicense(),
+								permissionPanel.getChosenPermission());
 					}
 				} catch (MalformedURLException e) {
 					JOptionPane.showMessageDialog(null, profileLocation.getText() + " is not a valid URL", "Invalid URL", JOptionPane.ERROR_MESSAGE);

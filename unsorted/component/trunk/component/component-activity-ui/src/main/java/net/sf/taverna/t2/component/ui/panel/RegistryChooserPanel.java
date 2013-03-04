@@ -40,7 +40,7 @@ public class RegistryChooserPanel extends JPanel implements Observable<RegistryC
 
 	private List<Observer<RegistryChoiceMessage>> observers = new ArrayList<Observer<RegistryChoiceMessage>>();
 
-	private final JComboBox<String> registryBox;
+	private final JComboBox registryBox;
 
 	Map<String, String> toolTipMap = new HashMap<String, String>();
 
