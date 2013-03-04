@@ -72,7 +72,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		myExperimentClient.doLogin();
 	}
 
-	public static MyExperimentComponentRegistry getComponentRegistry(URL registryURL) {
+	public static synchronized MyExperimentComponentRegistry getComponentRegistry(URL registryURL) {
 		if (!componentRegistries.containsKey(registryURL.toExternalForm())) {
 			componentRegistries.put(registryURL.toExternalForm(), new MyExperimentComponentRegistry(registryURL));
 		}
@@ -131,7 +131,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		tagResource("component family", packElement.getAttributeValue("resource"));
 		ComponentFamily componentFamily = new MyExperimentComponentFamily(this, license, permissions, packElement.getAttributeValue("uri"));
 
-		Element profileElement = addComponentProfileInternal(componentProfile);
+		Element profileElement = addComponentProfileInternal(componentProfile, license, permissions);
 		addPackItem(packElement, profileElement);
 
 		if (familyCache == null) {
@@ -176,6 +176,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 					String fileUri = fileElement.getAttributeValue("uri");
 					String resourceUri = fileElement.getAttributeValue("resource");
 					String version = fileElement.getAttributeValue("version");
+					resourceUri = StringUtils.substringBeforeLast(resourceUri, "?");
 					String downloadUri = resourceUri + "/download?version=" + version;
 					if (getResource(fileUri) != null) {
 							String profileString = getFileAsString(downloadUri);
@@ -189,11 +190,11 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 	}
 
 	@Override
-	public ComponentProfile addComponentProfile(ComponentProfile componentProfile) throws ComponentRegistryException {
+	public ComponentProfile addComponentProfile(ComponentProfile componentProfile, License license, SharingPolicy sharingPolicy) throws ComponentRegistryException {
 		if (profileCache == null) {
 			getComponentProfilesIfNecessary();
 		}
-		Element element = addComponentProfileInternal(componentProfile);
+		Element element = addComponentProfileInternal(componentProfile, license, sharingPolicy);
 		String fileUri = element.getAttributeValue("uri");
 		ComponentProfile result = new MyExperimentComponentProfile(this, fileUri, componentProfile.getXML());
 				profileCache.add(result);
@@ -201,7 +202,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		return result;
 	}
 
-	private Element addComponentProfileInternal(ComponentProfile componentProfile) throws ComponentRegistryException {
+	private Element addComponentProfileInternal(ComponentProfile componentProfile, License license, SharingPolicy sharingPolicy) throws ComponentRegistryException {
 		if (componentProfile == null) {
 			throw new ComponentRegistryException(("Component profile must not be null"));
 		}
@@ -212,8 +213,12 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 				profileElement = getResource(myExperimentComponentProfile.getUri());
 			}
 		}
+		MyExperimentSharingPolicy permissions = (MyExperimentSharingPolicy) sharingPolicy;
+		if (permissions == null) {
+			permissions = MyExperimentComponentRegistry.PRIVATE;
+		}
 		if (profileElement == null) {
-			profileElement = uploadFile(componentProfile.getName(), componentProfile.getDescription(), "XML", componentProfile.getXML());
+			profileElement = uploadFile(componentProfile.getName(), componentProfile.getDescription(), "XML", componentProfile.getXML(), license, permissions.getPolicyString());
 			tagResource("component profile", profileElement.getAttributeValue("resource"));
 		}
 		return profileElement;
@@ -392,7 +397,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		}
 	}
 
-	public Element uploadFile(String title, String description, String type, String content) throws ComponentRegistryException {
+	public Element uploadFile(String title, String description, String type, String content, License license, String permissionsString) throws ComponentRegistryException {
 		StringBuilder contentXml = new StringBuilder();
 		contentXml.append("<file>");
 		contentXml.append("<filename>").append(title).append(".xml</filename>");
@@ -402,7 +407,10 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		contentXml.append("<content encoding=\"base64\" type=\"binary\">");
 		contentXml.append(Base64.encodeBytes(content.getBytes()));
 		contentXml.append("</content>");
-		contentXml.append("<license-type>by-nd</license-type>");
+		if (license != null) {
+			contentXml.append("<license-type>").append(license.getAbbreviation()).append("</license-type>");
+		}
+		contentXml.append(permissionsString);
 		contentXml.append("</file>");
 		try {
 			ServerResponse packResponse = myExperimentClient.doMyExperimentPOST(urlToString(registryURL) + "/file.xml", contentXml.toString());
@@ -535,9 +543,8 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 	}
 	
 	public License getLicenseOnObject(String uri) throws ComponentRegistryException {
-		String licenseString = getResource(uri).getChildTextTrim("license");
-		getLicenseByAbbreviation(licenseString);
-		return null;
+		String licenseString = getResource(uri).getChildTextTrim("license-type");
+		return getLicenseByAbbreviation(licenseString);
 	}
 
 	private License getLicenseByAbbreviation(String licenseString)

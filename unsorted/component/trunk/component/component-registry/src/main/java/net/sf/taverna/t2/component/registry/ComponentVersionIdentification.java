@@ -165,5 +165,8 @@ public class ComponentVersionIdentification {
 		return true;
 	}
 
-
+	public String toString() {
+		return "Version " + getComponentVersion() + " of " +
+		getComponentName() + " in family " + getFamilyName() + " on " + getRegistryBase().toExternalForm();
+	}
 }

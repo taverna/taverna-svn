@@ -56,7 +56,7 @@ public class ComponentFamilyTest {
 		URL componentProfileUrl = getClass().getClassLoader().getResource("ValidationComponent.xml");
 		assertNotNull(componentProfileUrl);
 		componentProfile = new ComponentProfile(componentProfileUrl);
-		componentRegistry.addComponentProfile(componentProfile);
+		componentRegistry.addComponentProfile(componentProfile, null, null);
 		URL dataflowUrl = getClass().getClassLoader().getResource("beanshell_test.t2flow");
 		assertNotNull(dataflowUrl);
 		dataflow = FileManager.getInstance().openDataflowSilently(new T2FlowFileType(), dataflowUrl).getDataflow();

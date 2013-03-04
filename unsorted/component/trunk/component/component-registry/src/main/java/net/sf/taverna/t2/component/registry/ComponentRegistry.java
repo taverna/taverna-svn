@@ -121,6 +121,8 @@ public interface ComponentRegistry {
 	 *
 	 * @param componentProfile
 	 *            the ComponentProfile to add. Must not be null.
+	 * @param sharingPolicy 
+	 * @param license 
 	 * @return the ComponentProfile added to this ComponentRegistry.
 	 * @throws ComponentRegistryException
 	 *             <ul>
@@ -128,7 +130,7 @@ public interface ComponentRegistry {
 	 *             <li>if there is a problem accessing the ComponentRegistry.
 	 *             </ul>
 	 */
-	public ComponentProfile addComponentProfile(ComponentProfile componentProfile)
+	public ComponentProfile addComponentProfile(ComponentProfile componentProfile, License license, SharingPolicy sharingPolicy)
 			throws ComponentRegistryException;
 
 	/**

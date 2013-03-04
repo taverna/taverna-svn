@@ -149,14 +149,14 @@ public abstract class ComponentRegistryTest {
 		}
 		assertFalse(contained);
 		int componentProfileCount = componentProfiles.size();
-		componentRegistry.addComponentProfile(componentProfile);
+		componentRegistry.addComponentProfile(componentProfile, null, null);
 		int newSize = componentRegistry.getComponentProfiles().size();
 		assertEquals(componentProfileCount + 1, newSize);
 	}
 
 	@Test(expected=ComponentRegistryException.class)
 	public void testAddComponentProfileNullProfile() throws Exception {
-		componentRegistry.addComponentProfile(null);
+		componentRegistry.addComponentProfile(null, null, null);
 	}
 
 }

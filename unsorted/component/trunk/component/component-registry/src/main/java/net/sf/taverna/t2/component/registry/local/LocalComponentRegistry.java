@@ -256,7 +256,8 @@ public class LocalComponentRegistry implements ComponentRegistry {
 	}
 
 	@Override
-	public ComponentProfile addComponentProfile(ComponentProfile componentProfile)
+	public ComponentProfile addComponentProfile(ComponentProfile componentProfile, License license,
+			SharingPolicy sharingPolicy)
 			throws ComponentRegistryException {
 		if (componentProfile == null) {
 			throw new ComponentRegistryException(("Component profile must not be null"));

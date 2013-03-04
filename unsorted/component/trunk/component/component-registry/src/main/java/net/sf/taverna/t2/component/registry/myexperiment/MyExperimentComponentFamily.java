@@ -45,6 +45,7 @@ import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.utils.AnnotationTools;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
 
 /**
@@ -131,13 +132,23 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	public ComponentProfile getComponentProfile() throws ComponentRegistryException {
 		if (componentProfile == null) {
 			try {
+				String fred="nop";
 				Element fileElement = componentRegistry.getPackItem(uri, "file", "component profile");
 				String uri = fileElement.getAttributeValue("uri");
-				String resource = fileElement.getAttributeValue("resource");
-				String version = fileElement.getAttributeValue("version");
-				String downloadUri = resource + "/download?version=" + version;
-					String profileString = componentRegistry.getFileAsString(downloadUri);
-					componentProfile = new MyExperimentComponentProfile(componentRegistry, uri, profileString);
+				String withoutVersion = StringUtils.substringBeforeLast(uri, "&");
+				for (ComponentProfile p : componentRegistry.getComponentProfiles()) {
+					String uri2 = ((MyExperimentComponentProfile) p).getUri();
+					if (uri2.equals(withoutVersion)) {
+						componentProfile = p;
+						break;
+					}
+				}
+//				String resource = fileElement.getAttributeValue("resource");
+//				String version = fileElement.getAttributeValue("version");
+//				resource = StringUtils.substringBeforeLast(resource, "?");
+//				String downloadUri = resource + "/download?version=" + version;
+//					String profileString = componentRegistry.getFileAsString(downloadUri);
+//					componentProfile = new MyExperimentComponentProfile(componentRegistry, uri, profileString);
 			} catch (ComponentRegistryException e) {
 				try {
 					String downloadUri = componentRegistry.getExternalPackItem(uri, "component profile");
