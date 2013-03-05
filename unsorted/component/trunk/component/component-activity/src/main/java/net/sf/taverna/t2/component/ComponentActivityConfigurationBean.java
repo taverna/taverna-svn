@@ -1,34 +1,22 @@
 package net.sf.taverna.t2.component;
 
 import java.io.Serializable;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
-import uk.org.taverna.ns._2012.component.profile.ExceptionHandling;
-
-import net.sf.taverna.t2.component.registry.Component;
+import net.sf.taverna.t2.component.profile.ExceptionHandling;
 import net.sf.taverna.t2.component.registry.ComponentDataflowCache;
-import net.sf.taverna.t2.component.registry.ComponentFamily;
-import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentUtil;
-import net.sf.taverna.t2.component.registry.ComponentVersion;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
-import net.sf.taverna.t2.component.registry.local.LocalComponentRegistry;
-import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
-import net.sf.taverna.t2.workflowmodel.EditException;
-import net.sf.taverna.t2.workflowmodel.OutputPort;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortsDefinitionBean;
-import net.sf.taverna.t2.workflowmodel.utils.Tools;
+
+import org.apache.log4j.Logger;
 
 /**
  * Component activity configuration bean.
@@ -39,16 +27,11 @@ public class ComponentActivityConfigurationBean extends ComponentVersionIdentifi
 	
 	private transient ActivityPortsDefinitionBean ports = null;
 	
-	ExceptionHandling eh = null;
+	private transient ExceptionHandling eh;
 
 	public ComponentActivityConfigurationBean(
 			ComponentVersionIdentification toBeCopied) {
 		super(toBeCopied);
-		try {
-			eh = ComponentUtil.calculateFamily(this.getRegistryBase(), this.getFamilyName()).getComponentProfile().getExceptionHandling();
-		} catch (ComponentRegistryException e) {
-			logger.error(e);
-		}
 		getPorts();
 		
 	}
@@ -84,15 +67,20 @@ public class ComponentActivityConfigurationBean extends ComponentVersionIdentifi
 				outputs.add(activityOutputPortDefinitionBean);
 				
 			}
-			if (eh != null) {
-				ActivityOutputPortDefinitionBean activityOutputPortDefinitionBean = new ActivityOutputPortDefinitionBean();
-				activityOutputPortDefinitionBean.setMimeTypes(new ArrayList<String>());
-				activityOutputPortDefinitionBean
-						.setDepth(1);
-				activityOutputPortDefinitionBean.setGranularDepth(1);
-				activityOutputPortDefinitionBean.setName("error_channel");
-				outputs.add(activityOutputPortDefinitionBean);
-				
+			try {
+				eh = ComponentUtil.calculateFamily(this.getRegistryBase(), this.getFamilyName()).getComponentProfile().getExceptionHandling();
+				if (eh != null) {
+					ActivityOutputPortDefinitionBean activityOutputPortDefinitionBean = new ActivityOutputPortDefinitionBean();
+					activityOutputPortDefinitionBean.setMimeTypes(new ArrayList<String>());
+					activityOutputPortDefinitionBean
+							.setDepth(1);
+					activityOutputPortDefinitionBean.setGranularDepth(1);
+					activityOutputPortDefinitionBean.setName("error_channel");
+					outputs.add(activityOutputPortDefinitionBean);
+					
+				}
+			} catch (ComponentRegistryException e) {
+				logger.error(e);
 			}
 			return result;
 		}
@@ -106,7 +94,7 @@ public class ComponentActivityConfigurationBean extends ComponentVersionIdentifi
 				ports = getPortsDefinition(ComponentDataflowCache.getDataflow(this));
 			} catch (ComponentRegistryException e) {
 				logger.error(e);
-			}			
+			}
 		}
 		return ports;
 	}

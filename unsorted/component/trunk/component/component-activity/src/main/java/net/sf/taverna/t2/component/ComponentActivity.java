@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.util.Map;
 
 import net.sf.taverna.t2.activities.dataflow.DataflowActivity;
+import net.sf.taverna.t2.component.profile.ExceptionHandling;
 import net.sf.taverna.t2.component.registry.ComponentDataflowCache;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.reference.T2Reference;
@@ -29,8 +30,6 @@ import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-
-import uk.org.taverna.ns._2012.component.profile.ExceptionHandling;
 
 public class ComponentActivity extends
 		AbstractAsynchronousActivity<ComponentActivityConfigurationBean>

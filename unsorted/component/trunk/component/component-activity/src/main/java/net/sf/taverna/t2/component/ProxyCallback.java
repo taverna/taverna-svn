@@ -8,9 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import uk.org.taverna.ns._2012.component.profile.ExceptionHandling;
-
+import net.sf.taverna.t2.component.profile.ExceptionHandling;
+import net.sf.taverna.t2.component.profile.HandleException;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.reference.ErrorDocument;
 import net.sf.taverna.t2.reference.ErrorDocumentService;
@@ -37,12 +39,12 @@ public class ProxyCallback implements AsynchronousActivityCallback {
 
 	/**
 	 * @param originalCallback
-	 * @param exceptionHandling 
+	 * @param exceptionHandling2 
 	 */
-	public ProxyCallback(AsynchronousActivityCallback originalCallback, ExceptionHandling exceptionHandling) {
+	public ProxyCallback(AsynchronousActivityCallback originalCallback, ExceptionHandling exceptionHandling2) {
 		super();
 		this.originalCallback = originalCallback;
-		this.exceptionHandling = exceptionHandling;
+		this.exceptionHandling = exceptionHandling2;
 		context = originalCallback.getContext();
 		referenceService = context.getReferenceService();
 		listService = referenceService.getListService();
@@ -95,32 +97,31 @@ public class ProxyCallback implements AsynchronousActivityCallback {
 		if (!value.containsErrors()) {
 			return value;
 		}
-		ErrorDocument failure;
+
 		if (value.getReferenceType().equals(T2ReferenceType.IdentifiedList)) {
-			// At the moment we will always fail lists
-//			if (exceptionHandling.isFailLists()) {
-				failure = findFirstFailure(value);
-		} else {
-			failure = errorService.getError(value);
-		}
-			if (exceptionHandling.getHandleExceptions() == null) {
-				ComponentException newException =
-					ComponentExceptionFactory.createUnexpectedComponentException(failure.getExceptionMessage());
-				ErrorDocument doc = errorService.registerError(newException.getExceptionId(), newException, value.getDepth(), context);
-				T2Reference replacement =
-					referenceService.register(doc, value.getDepth(), true, context);
-				exceptions.add(replacement);
+			if (exceptionHandling.failLists()) {
+				T2Reference failure = findFirstFailure(value);
+				T2Reference replacement = replaceErrors(failure, value.getDepth(), exceptions);
 				return replacement;
+			} else {
+				IdentifiedList<T2Reference> originalList = listService.getList(value);
+				List<T2Reference> replacementList = new ArrayList<T2Reference>();
+				for (T2Reference subValue : originalList) {
+					replacementList.add(considerReference(subValue, exceptions));
+				}
+				return referenceService.register(replacementList, value.getDepth(), true, context);
 			}
-		return value;
+		} else {
+			return replaceErrors(value, exceptions);
+		}
 	}
 
-	private ErrorDocument findFirstFailure(T2Reference value) {
+	private T2Reference findFirstFailure(T2Reference value) {
 		IdentifiedList<T2Reference> originalList = listService.getList(value);
 		for (T2Reference subValue : originalList) {
 			if (subValue.getReferenceType().equals(
 					T2ReferenceType.ErrorDocument)) {
-				return errorService.getError(subValue);
+				return subValue;
 			}
 			if (subValue.getReferenceType().equals(
 					T2ReferenceType.IdentifiedList)) {
@@ -133,11 +134,26 @@ public class ProxyCallback implements AsynchronousActivityCallback {
 		return null;
 	}
 
-	private T2Reference replaceErrors(T2Reference value) {
-		ComponentException newException =
-			ComponentExceptionFactory.createUnexpectedComponentException("fred");
+	private T2Reference replaceErrors(T2Reference value, List<T2Reference> exceptions) {
+		return replaceErrors(value, value.getDepth(), exceptions);
+	}
+
+	private T2Reference replaceErrors(T2Reference value, int depth, List<T2Reference> exceptions) {
+		ErrorDocument doc = errorService.getError(value);
+		ComponentException newException = null;
+		boolean found = false;
+		  String exceptionMessage = doc.getExceptionMessage();
+		for (HandleException he : exceptionHandling.getHandleExceptions()) {
+			if (he.matches(exceptionMessage)) {
+				String fred="no";
+			}
+		}
+		if (!found && (newException == null)) {
+		newException = ComponentExceptionFactory.createUnexpectedComponentException(exceptionMessage);
+		}
 		T2Reference replacement =
-			referenceService.register(newException, value.getDepth(), true, context);
+			referenceService.register(newException, depth, true, context);
+		exceptions.add(referenceService.register(newException, 0, true, context));
 		return replacement;
 	}
 
