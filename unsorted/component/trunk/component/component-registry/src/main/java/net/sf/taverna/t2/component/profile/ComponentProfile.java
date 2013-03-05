@@ -50,7 +50,6 @@ import net.sf.taverna.t2.workflowmodel.health.HealthCheck;
 import net.sf.taverna.t2.workflowmodel.health.RemoteHealthChecker;
 
 import uk.org.taverna.ns._2012.component.profile.Activity;
-import uk.org.taverna.ns._2012.component.profile.ExceptionHandling;
 import uk.org.taverna.ns._2012.component.profile.Ontology;
 import uk.org.taverna.ns._2012.component.profile.Port;
 import uk.org.taverna.ns._2012.component.profile.Profile;
@@ -74,6 +73,7 @@ public class ComponentProfile {
 
 	private JAXBContext jaxbContext;
 	private Profile profile;
+	private ExceptionHandling exceptionHandling;
 
 	public ComponentProfile(URL profileURL) throws ComponentRegistryException {
 		try {
@@ -240,7 +240,13 @@ public class ComponentProfile {
 	}
 	
 	public ExceptionHandling getExceptionHandling() {
-		return profile.getComponent().getExceptionHandling();
+		if (exceptionHandling == null) {
+			uk.org.taverna.ns._2012.component.profile.ExceptionHandling proxied = profile.getComponent().getExceptionHandling();
+			if (proxied != null) {
+				exceptionHandling = new ExceptionHandling(proxied);
+			}
+		}
+		return exceptionHandling;
 	}
 
 	@Override

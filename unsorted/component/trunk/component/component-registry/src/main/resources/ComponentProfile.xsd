@@ -151,13 +151,7 @@
 		<xs:attributeGroup ref="xs:occurs" />
 	</xs:complexType>
 	
-	<xs:complexType name="passThrough">
-	  <xs:complexContent>
-		  <xs:restriction base="xs:anyType"/>
-	  </xs:complexContent>
-	</xs:complexType>
-	
-	<xs:complexType name="replaceException">
+	<xs:complexType name="replacement">
 	  <xs:complexContent>
 		  <xs:restriction base="xs:anyType">
 	    	<xs:attribute name="replacementId" type="xs:string" use="required"/>
@@ -166,26 +160,36 @@
 	  </xs:complexContent>
 	</xs:complexType>
 	
-	<xs:complexType name="handleException">
-	  <xs:choice>
-	    <xs:element name="passThrough" type="passThrough"/>
-	    <xs:element name="replace" type="replaceException"/>
-	  </xs:choice>
-	  <xs:attribute name="class" type="xs:string" use="required"/>
-	  <xs:attribute name="pruneStack" type="xs:boolean" default="true"/>
+	<xs:simpleType name="pattern">
+		<xs:restriction base="xs:string">
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="pruneStack">
+	  <xs:complexContent>
+		  <xs:restriction base="xs:anyType"/>
+	  </xs:complexContent>
 	</xs:complexType>
 	
-	<xs:complexType name="handleExceptions">
+	<xs:complexType name="handleException">
 	  <xs:sequence>
-	  	<xs:element name="handleException" type="handleException" minOccurs="0" maxOccurs="unbounded"/>
+	    <xs:element name="pattern" type="pattern" minOccurs="1" maxOccurs="1"/>
+	    <xs:element name="pruneStack" type="pruneStack" minOccurs="0" maxOccurs="1"/>
+	    <xs:element name="replacement" type="replacement" minOccurs="0" maxOccurs="1"/>
 	  </xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="failLists">
+	  <xs:complexContent>
+		  <xs:restriction base="xs:anyType"/>
+	  </xs:complexContent>
 	</xs:complexType>
 	
 	<xs:complexType name="exceptionHandling">
 	  <xs:sequence>
-	  	<xs:element name="handleExceptions" type="handleExceptions" minOccurs="0" maxOccurs="1"/>
+	      <xs:element name="failLists" type="failLists" minOccurs="0" maxOccurs="1"/>
+	  	<xs:element name="handleException" type="handleException" minOccurs="1" maxOccurs="unbounded"/>
 	  </xs:sequence>
-	  <xs:attribute name="failLists" type="xs:boolean" default="true"/>
 	</xs:complexType>
 
 	<xs:complexType name="component">
