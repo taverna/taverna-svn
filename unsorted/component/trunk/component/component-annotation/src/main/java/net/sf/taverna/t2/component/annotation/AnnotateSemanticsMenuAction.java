@@ -21,6 +21,7 @@ import javax.swing.JScrollPane;
 import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
+import net.sf.taverna.t2.lang.ui.DeselectingButton;
 import net.sf.taverna.t2.ui.menu.AbstractContextualMenuAction;
 import net.sf.taverna.t2.ui.menu.ContextualSelection;
 import net.sf.taverna.t2.workbench.file.FileManager;
@@ -73,12 +74,12 @@ public class AnnotateSemanticsMenuAction extends AbstractContextualMenuAction {
 				
 				JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.TRAILING));
 
-				JButton okButton = new JButton("OK");
-				okButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						dialog.setVisible(false);
-					}
-				});
+				JButton okButton = new DeselectingButton("OK",
+						new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								dialog.setVisible(false);
+							}
+						});
 				buttonPanel.add(okButton);
 
 				dialog.add(buttonPanel, BorderLayout.SOUTH);

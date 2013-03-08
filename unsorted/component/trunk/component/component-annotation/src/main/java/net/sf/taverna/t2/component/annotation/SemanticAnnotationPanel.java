@@ -7,6 +7,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Set;
 
@@ -21,6 +22,7 @@ import javax.swing.border.AbstractBorder;
 import javax.swing.border.EmptyBorder;
 
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
+import net.sf.taverna.t2.lang.ui.DeselectingButton;
 import net.sf.taverna.t2.spi.SPIRegistry;
 
 import com.hp.hpl.jena.ontology.OntProperty;
@@ -104,7 +106,7 @@ public class SemanticAnnotationPanel extends JPanel {
 	}
 
 	private JButton createDeleteButton(final Statement statement) {
-		return new JButton(new AbstractAction("Delete") {
+		return new DeselectingButton("Delete", new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				semanticAnnotationContextualView.removeStatement(statement);
@@ -113,8 +115,8 @@ public class SemanticAnnotationPanel extends JPanel {
 	}
 
 	private JButton createAddButton(final OntProperty predicate) {
-		return new JButton(new AbstractAction("Add Annotation") {
-			@Override
+		return new DeselectingButton("Add Annotation", new ActionListener() {
+
 			public void actionPerformed(ActionEvent e) {
 				PropertyAnnotationPanel annotationPanel = getAddAnnotationPanel(predicate);
 				if (annotationPanel != null) {
