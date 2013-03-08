@@ -3,6 +3,10 @@ package net.sf.taverna.t2.component.ui.config;
 import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -13,6 +17,7 @@ import net.sf.taverna.t2.component.ComponentActivityConfigurationBean;
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentUtil;
+import net.sf.taverna.t2.component.registry.ComponentVersion;
 import net.sf.taverna.t2.component.ui.panel.ComponentListCellRenderer;
 import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationPanel;
@@ -32,8 +37,6 @@ public class ComponentConfigurationPanel
 	private ComponentActivityConfigurationBean configBean;
 	
 	private final JComboBox componentVersionChoice = new JComboBox();
-	
-	private DefaultComboBoxModel componentVersionModel = new DefaultComboBoxModel();
 
 	public ComponentConfigurationPanel(ComponentActivity activity) {
 		this.activity = activity;
@@ -46,8 +49,16 @@ public class ComponentConfigurationPanel
 		removeAll();
 		setLayout(new GridLayout(0, 2));
 
-		componentVersionChoice.setModel(componentVersionModel);
 		componentVersionChoice.setRenderer(new ComponentListCellRenderer());
+		componentVersionChoice.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent arg0) {
+				if (arg0.getStateChange() == ItemEvent.SELECTED) {
+					updateToolTipText();
+				}
+
+			}});
 		updateComponentVersionChoice();
 
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -88,7 +99,7 @@ public class ComponentConfigurationPanel
 	 */
 	@Override
 	public boolean isConfigurationChanged() {
-		Integer version = (Integer) componentVersionChoice.getSelectedItem();
+		Integer version = ((ComponentVersion) componentVersionChoice.getSelectedItem()).getVersionNumber();
 		return (!version.equals(configBean.getComponentVersion()));
 	}
 
@@ -99,7 +110,7 @@ public class ComponentConfigurationPanel
 	@Override
 	public void noteConfiguration() {
 		ComponentActivityConfigurationBean newConfig = new ComponentActivityConfigurationBean(configBean);
-		newConfig.setComponentVersion((Integer) componentVersionChoice.getSelectedItem());
+		newConfig.setComponentVersion(((ComponentVersion) componentVersionChoice.getSelectedItem()).getVersionNumber());
 		configBean = newConfig;
 	}
 
@@ -115,18 +126,26 @@ public class ComponentConfigurationPanel
 	}
 
 	private void updateComponentVersionChoice() {
-		componentVersionModel.removeAllElements();
 		Component component;
+		componentVersionChoice.removeAllItems();
+		componentVersionChoice.setToolTipText(null);
 		try {
 			component = ComponentUtil.calculateComponent(configBean);
 		} catch (ComponentRegistryException e) {
 			logger.error(e);
 			return;
 		}
-		for (Integer i : component.getComponentVersionMap().keySet()) {
-			componentVersionModel.addElement(i);
+		SortedMap<Integer, ComponentVersion> componentVersionMap = component.getComponentVersionMap();
+		for (Integer i : componentVersionMap.keySet()) {
+			componentVersionChoice.addItem(componentVersionMap.get(i));
 		}
-		componentVersionChoice.setSelectedItem(configBean.getComponentVersion());
+		componentVersionChoice.setSelectedItem(componentVersionMap.get(configBean.getComponentVersion()));
+		updateToolTipText();
+	}
+
+	private void updateToolTipText() {
+		ComponentVersion selectedVersion = (ComponentVersion) componentVersionChoice.getSelectedItem();
+		componentVersionChoice.setToolTipText(selectedVersion.getDescription());
 	}
 	
 	

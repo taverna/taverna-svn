@@ -29,6 +29,7 @@ import net.sf.taverna.t2.component.ui.panel.LicenseChooserPanel;
 import net.sf.taverna.t2.component.ui.panel.RegistryChooserPanel;
 import net.sf.taverna.t2.component.ui.panel.SharingPolicyChooserPanel;
 import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceIcon;
+import net.sf.taverna.t2.lang.ui.DeselectingButton;
 
 /**
  * @author alanrw
@@ -84,7 +85,7 @@ public class ComponentProfileImportAction extends AbstractAction {
 		gbc.gridx = 0;
 		gbc.weightx = 0;
 		gbc.gridy++;
-		JButton browseButton = new JButton(new AbstractAction("Browse"){
+		JButton browseButton = new DeselectingButton(new AbstractAction("Browse"){
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {

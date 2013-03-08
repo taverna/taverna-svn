@@ -10,6 +10,7 @@ import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -33,6 +34,7 @@ import net.sf.taverna.t2.activities.dataflow.DataflowActivity;
 import net.sf.taverna.t2.annotation.AnnotationBeanSPI;
 import net.sf.taverna.t2.annotation.annotationbeans.AbstractTextualValueAssertion;
 import net.sf.taverna.t2.component.ui.menu.component.ComponentServiceCreatorAction;
+import net.sf.taverna.t2.lang.ui.DeselectingButton;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.helper.HelpEnabledDialog;
@@ -121,13 +123,13 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 		JPanel processorChoice = createProcessorChoicePanel(o, dataflow);
 		this.add(processorChoice, BorderLayout.CENTER);
 
-		JButton okButton = new JButton(new OKAction(this));
+		JButton okButton = new DeselectingButton(new OKAction(this));
 		buttonPanel.add(okButton);
 
-		JButton resetButton = new JButton(new ResetAction(this));
+		JButton resetButton = new DeselectingButton(new ResetAction(this));
 		buttonPanel.add(resetButton);
 
-		JButton cancelButton = new JButton(new CancelAction(this));
+		JButton cancelButton = new DeselectingButton(new CancelAction(this));
 		buttonPanel.add(cancelButton);
 
 		this.add(buttonPanel, BorderLayout.SOUTH);
@@ -155,7 +157,7 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 		includableList.setCellRenderer(processorRenderer);
 		result.add(new JScrollPane(includableList), BorderLayout.CENTER);
 		
-		JButton includeButton = new JButton(new AbstractAction("Include"){
+		JButton includeButton = new DeselectingButton("Include", new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -188,7 +190,7 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 		includedList.setCellRenderer(processorRenderer);
 		result.add(new JScrollPane(includedList), BorderLayout.CENTER);
 		
-		JButton excludeButton = new JButton(new AbstractAction("Exclude"){
+		JButton excludeButton = new DeselectingButton("Exclude", new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {

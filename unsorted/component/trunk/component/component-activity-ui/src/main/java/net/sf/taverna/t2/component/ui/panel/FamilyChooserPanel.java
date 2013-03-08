@@ -119,7 +119,6 @@ public class FamilyChooserPanel extends JPanel implements Observer, Observable<F
 
 	private void updateList() {
 		try {
-			String fred = "no";
 		familyMap.clear();
 		familyBox.removeAllItems();
 		familyBox.setToolTipText(null);

@@ -76,6 +76,8 @@ public class ComponentSaver extends AbstractDataflowPersistenceHandler
 				JTextArea descriptionArea = new JTextArea(10,60);
 				int answer = JOptionPane.showConfirmDialog(null, new JScrollPane(descriptionArea), "Component description", JOptionPane.OK_CANCEL_OPTION);
 				if (answer == JOptionPane.OK_OPTION) {
+					JOptionPane.showMessageDialog(null, "Here will be the assurance that the component conforms to the profile\n");
+
 					newVersion = family.createComponentBasedOn(ident.getComponentName(), descriptionArea.getText(), dataflow);
 				}
 			} else {
@@ -83,6 +85,8 @@ public class ComponentSaver extends AbstractDataflowPersistenceHandler
 				JTextArea descriptionArea = new JTextArea(10,60);
 				int answer = JOptionPane.showConfirmDialog(null, new JScrollPane(descriptionArea), "Version description", JOptionPane.OK_CANCEL_OPTION);
 				if (answer == JOptionPane.OK_OPTION) {
+					JOptionPane.showMessageDialog(null, "Here will be the assurance that the component version conforms to the profile\nThis may just be checking that it is the same URI");
+
 					newVersion = component.addVersionBasedOn(dataflow, descriptionArea.getText());
 				}
 			}

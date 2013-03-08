@@ -190,8 +190,6 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 			return null;
 		}
 				
-		JOptionPane.showMessageDialog(null, "Here will be the assurance that the component meets the profile\nThis may just be checking that it is the same URI");
-
 		ComponentVersionIdentification ident = panel.getComponentVersionIdentification();
 		if (ident == null) {
 			JOptionPane.showMessageDialog(null, "Not enough information to create component", "Component creation problem", JOptionPane.ERROR_MESSAGE);
