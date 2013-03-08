@@ -132,7 +132,6 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	public ComponentProfile getComponentProfile() throws ComponentRegistryException {
 		if (componentProfile == null) {
 			try {
-				String fred="nop";
 				Element fileElement = componentRegistry.getPackItem(uri, "file", "component profile");
 				String uri = fileElement.getAttributeValue("uri");
 				String withoutVersion = StringUtils.substringBeforeLast(uri, "&");
@@ -143,12 +142,15 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 						break;
 					}
 				}
-//				String resource = fileElement.getAttributeValue("resource");
-//				String version = fileElement.getAttributeValue("version");
-//				resource = StringUtils.substringBeforeLast(resource, "?");
-//				String downloadUri = resource + "/download?version=" + version;
-//					String profileString = componentRegistry.getFileAsString(downloadUri);
-//					componentProfile = new MyExperimentComponentProfile(componentRegistry, uri, profileString);
+				if (componentProfile == null) {
+					// Assume it is external
+					String resource = fileElement.getAttributeValue("resource");
+					String version = fileElement.getAttributeValue("version");
+					resource = StringUtils.substringBeforeLast(resource, "?");
+					String downloadUri = resource + "/download?version=" + version;
+						String profileString = componentRegistry.getFileAsString(downloadUri);
+						componentProfile = new MyExperimentComponentProfile(componentRegistry, uri, profileString);
+				}
 			} catch (ComponentRegistryException e) {
 				try {
 					String downloadUri = componentRegistry.getExternalPackItem(uri, "component profile");
