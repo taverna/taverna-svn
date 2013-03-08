@@ -6,9 +6,13 @@ import java.io.InputStream;
 import java.util.Map;
 
 import net.sf.taverna.t2.activities.dataflow.DataflowActivity;
+import net.sf.taverna.t2.component.PatchedInvoke.PatchedInvokeCallBack;
 import net.sf.taverna.t2.component.profile.ExceptionHandling;
 import net.sf.taverna.t2.component.registry.ComponentDataflowCache;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.invocation.impl.InvocationContextImpl;
+import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
@@ -60,6 +64,12 @@ public class ComponentActivity extends
 			final AsynchronousActivityCallback callback) {
 		try {
 			ExceptionHandling exceptionHandling = configBean.getExceptionHandling();
+			if (callback instanceof PatchedInvokeCallBack) {
+				InvocationContext originalContext = callback.getContext();
+				ReferenceService rs = originalContext.getReferenceService();
+				InvocationContextImpl newContext = new InvocationContextImpl(rs, null);
+				((PatchedInvokeCallBack) callback).overrideContext(newContext);
+			}
 			AsynchronousActivityCallback useCallback = callback;
 			if (exceptionHandling != null) {
 				useCallback = new ProxyCallback(callback, exceptionHandling);

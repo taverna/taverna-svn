@@ -4,14 +4,23 @@
 package net.sf.taverna.t2.component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
+import net.sf.taverna.t2.activities.dataflow.DataflowActivity;
 import net.sf.taverna.t2.component.profile.ExceptionHandling;
+import net.sf.taverna.t2.component.profile.ExceptionReplacement;
 import net.sf.taverna.t2.component.profile.HandleException;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.reference.ErrorDocument;
@@ -21,6 +30,7 @@ import net.sf.taverna.t2.reference.ListService;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.reference.T2ReferenceType;
+import net.sf.taverna.t2.reference.impl.ErrorDocumentImpl;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorType;
 
@@ -29,6 +39,10 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorTy
  *
  */
 public class ProxyCallback implements AsynchronousActivityCallback {
+	
+	private static final Logger logger = Logger
+	.getLogger(ProxyCallback.class);
+
 	
 	private AsynchronousActivityCallback originalCallback;
 	private final ReferenceService referenceService;
@@ -140,21 +154,93 @@ public class ProxyCallback implements AsynchronousActivityCallback {
 
 	private T2Reference replaceErrors(T2Reference value, int depth, List<T2Reference> exceptions) {
 		ErrorDocument doc = errorService.getError(value);
-		ComponentException newException = null;
-		boolean found = false;
-		  String exceptionMessage = doc.getExceptionMessage();
-		for (HandleException he : exceptionHandling.getHandleExceptions()) {
-			if (he.matches(exceptionMessage)) {
-				String fred="no";
+			HandleException matchingHandleException = null;
+			
+			ErrorDocument matchingDoc = doc;
+
+			Set<ErrorDocument> toConsider = new HashSet<ErrorDocument>();
+			Set<ErrorDocument> considered = new HashSet<ErrorDocument>();
+			toConsider.add(doc);
+			
+			boolean found = false;
+			while (!toConsider.isEmpty() && !found) {
+try {
+	ErrorDocument errorDoc = toConsider.iterator().next();
+
+				considered.add(errorDoc);
+				toConsider.remove(errorDoc);
+				  String exceptionMessage = errorDoc.getExceptionMessage();
+					for (HandleException he : exceptionHandling.getHandleExceptions()) {
+						if (he.matches(exceptionMessage)) {
+							found = true;
+							matchingHandleException = he;
+							matchingDoc = errorDoc;
+						}
+					}
+					if (!errorDoc.getErrorReferences().isEmpty()) {
+						for (T2Reference subRef : errorDoc.getErrorReferences()) {
+							Set<T2Reference> newErrors = getErrors(subRef);
+							for (T2Reference newErrorRef : newErrors) {
+								ErrorDocument subDoc = errorService.getError(newErrorRef);
+								if (subDoc == null) {
+									logger.error("Error document contains references to non-existent sub-errors");
+								} else {
+									if (!considered.contains(subDoc)) {
+										toConsider.add(subDoc);
+									}
+								}
+							}
+						}
+					}
+}
+					catch (Exception e) {
+						logger.error(e);
+					}
+
 			}
+			
+			String exceptionMessage = matchingDoc.getExceptionMessage();
+		// An exception that is not mentioned
+		if (matchingHandleException == null) {
+			ComponentException newException = ComponentExceptionFactory.createUnexpectedComponentException(exceptionMessage);
+			T2Reference replacement = errorService.registerError(exceptionMessage , newException, depth, context).getId();
+			exceptions.add(errorService.registerError(exceptionMessage , newException, 0, context).getId());
+			return replacement;
 		}
-		if (!found && (newException == null)) {
-		newException = ComponentExceptionFactory.createUnexpectedComponentException(exceptionMessage);
+		
+		if (matchingHandleException.pruneStack()) {
+			matchingDoc.getStackTraceStrings().clear();
 		}
-		T2Reference replacement =
-			referenceService.register(newException, depth, true, context);
-		exceptions.add(referenceService.register(newException, 0, true, context));
-		return replacement;
+		ExceptionReplacement exceptionReplacement = matchingHandleException.getReplacement();
+		if (exceptionReplacement == null) {
+			T2Reference replacement = referenceService.register(matchingDoc, depth, true, context);
+			exceptions.add(referenceService.register(matchingDoc, 0, true, context));
+			return replacement;
+		} else {
+			ComponentException newException = ComponentExceptionFactory.createComponentException(exceptionReplacement.getReplacementId(), exceptionReplacement.getReplacementMessage());
+			T2Reference replacement = errorService.registerError(exceptionReplacement.getReplacementMessage() , newException, depth, context).getId();
+		exceptions.add(errorService.registerError(exceptionReplacement.getReplacementMessage() , newException, 0, context).getId());
+			return replacement;
+		}
+	}
+
+	private Set<T2Reference> getErrors(T2Reference ref) {
+		Set<T2Reference> result = new HashSet<T2Reference> ();
+		if (ref.getReferenceType().equals(T2ReferenceType.ReferenceSet)) {
+			// nothing
+		}
+		else if (ref.getReferenceType().equals(T2ReferenceType.IdentifiedList)) {
+			IdentifiedList<T2Reference> originalList = listService.getList(ref);
+			for (T2Reference subValue : originalList) {
+				if (subValue.containsErrors()) {
+					result.addAll(getErrors(subValue));
+				}
+			}
+			
+		} else {
+			result.add(ref);
+		}
+		return result;
 	}
 
 	/* (non-Javadoc)

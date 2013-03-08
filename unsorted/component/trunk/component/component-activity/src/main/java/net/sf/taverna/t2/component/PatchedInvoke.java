@@ -176,12 +176,14 @@ public class PatchedInvoke extends AbstractDispatchLayer<Object> {
 		protected final DispatchJobEvent jobEvent;
 		protected final ReferenceService refService;
 		protected boolean sentJob = false;
+		private InvocationContext context;
 
 		protected PatchedInvokeCallBack(DispatchJobEvent jobEvent,
 				ReferenceService refService,
 				String invocationProcessIdentifier,
 				AsynchronousActivity<?> asyncActivity) {
 			this.jobEvent = jobEvent;
+			this.context = this.jobEvent.getContext();
 			this.refService = refService;
 			this.invocationProcessIdentifier = invocationProcessIdentifier;
 			this.asyncActivity = asyncActivity;
@@ -208,7 +210,7 @@ public class PatchedInvoke extends AbstractDispatchLayer<Object> {
 		}
 
 		public InvocationContext getContext() {
-			return jobEvent.getContext();
+			return context;
 		}
 
 		public String getParentProcessIdentifier() {
@@ -336,6 +338,10 @@ public class PatchedInvoke extends AbstractDispatchLayer<Object> {
 					fail("Uncaught exception while invoking " + asyncActivity, e);
 				}});
 			thread.start();
+		}
+		
+		public void overrideContext(InvocationContext newContext) {
+			this.context = newContext;
 		}
 	}
 
