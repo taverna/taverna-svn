@@ -33,6 +33,7 @@ import net.sf.taverna.t2.workbench.file.impl.T2DataflowOpener;
 import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jdom.Attribute;
 import org.jdom.Element;
@@ -96,6 +97,7 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 		Dataflow dataflow;
 			Element workflowElement = componentRegistry.getPackItem(uri, "workflow");
 			String resourceUri = workflowElement.getAttributeValue("resource");
+			resourceUri = StringUtils.substringBeforeLast(resourceUri, "?");
 			String version = workflowElement.getAttributeValue("version");
 			String downloadUri = resourceUri + "/download?version=" + version;
 			try {

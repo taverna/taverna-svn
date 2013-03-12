@@ -20,22 +20,24 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.annotation;
 
-import javax.swing.JDialog;
-import javax.swing.JPanel;
+import javax.swing.JComponent;
 
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
+
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
  *
  *
  * @author David Withers
  */
-public interface PropertyPanelFactorySPI {
+public abstract class PropertyPanelFactorySPI {
 
-	public boolean canHandleSemanticAnnotation(SemanticAnnotationProfile semanticAnnotationProfile);
+	public abstract boolean canHandleSemanticAnnotation(SemanticAnnotationProfile semanticAnnotationProfile);
 
-	public PropertyAnnotationPanel getSemanticAnnotationPanel(
-			SemanticAnnotationContextualView semanticAnnotationContextualView,
-			SemanticAnnotationProfile semanticAnnotationProfile);
+	public abstract JComponent getInputComponent(SemanticAnnotationProfile semanticAnnotationProfile, Statement statement);
+	
+	public abstract RDFNode getNewTargetNode(JComponent component);
 
 }

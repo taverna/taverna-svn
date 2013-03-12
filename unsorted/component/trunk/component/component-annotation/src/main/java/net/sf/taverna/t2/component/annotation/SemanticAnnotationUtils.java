@@ -40,16 +40,18 @@ public class SemanticAnnotationUtils {
 			return node.asLiteral().getLexicalForm();
 		} else if (node.isResource()) {
 			Resource resource = node.asResource();
-			String label = null;
 			if (resource instanceof OntResource) {
-				OntResource ontResource = (OntResource) resource;
-				label = ontResource.getLabel(null);
+				String label = ((OntResource) resource).getLabel(null);
+				if (label != null) {
+					return label;
+				}
 			}
-			if (label != null) {
-				return label;
-			} else {
-				return resource.getLocalName();
+			String localName = resource.getLocalName();
+			if ((localName != null) && !localName.isEmpty()) {
+				return localName;
 			}
+			return resource.toString();
+
 		} else {
 			return "unknown";
 		}

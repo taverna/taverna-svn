@@ -21,22 +21,11 @@
 package net.sf.taverna.t2.component.annotation;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
-import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
@@ -45,13 +34,67 @@ import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
  *
  *
  * @author David Withers
  */
-public class ObjectPropertyWithIndividualsPanelFactory implements PropertyPanelFactorySPI {
+public class ObjectPropertyWithIndividualsPanelFactory extends PropertyPanelFactorySPI {
+
+	private class NamedResource {
+	
+		private final OntResource resource;
+	
+		public NamedResource(OntResource resource) {
+			this.resource = resource;
+		}
+	
+		public OntResource getResource() {
+			return resource;
+		}
+	
+		public String toString() {
+			String label = resource.getLabel(null);
+			if (label != null) {
+				return label;
+			}
+				String localName = resource.getLocalName();
+				if ((localName != null) && !localName.isEmpty()) {
+					return localName;
+				}
+			return resource.toString();
+		}
+	
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((resource == null) ? 0 : resource.hashCode());
+			return result;
+		}
+	
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			NamedResource other = (NamedResource) obj;
+			if (resource == null) {
+				if (other.resource != null)
+					return false;
+			} else if (!resource.equals(other.resource))
+				return false;
+			return true;
+		}
+	
+	}
+
 
 	@Override
 	public boolean canHandleSemanticAnnotation(
@@ -65,10 +108,38 @@ public class ObjectPropertyWithIndividualsPanelFactory implements PropertyPanelF
 
 
 	@Override
-	public PropertyAnnotationPanel getSemanticAnnotationPanel(
-			SemanticAnnotationContextualView semanticAnnotationContextualView,
-			SemanticAnnotationProfile semanticAnnotationProfile) {
-		return new ObjectPropertyWithIndividualsPanel(semanticAnnotationContextualView, semanticAnnotationProfile);
+	public JComponent getInputComponent(SemanticAnnotationProfile semanticAnnotationProfile, Statement statement) {
+		JComboBox resources;
+		List<Individual> individuals = semanticAnnotationProfile.getIndividuals();
+		NamedResource[] namedResources = new NamedResource[individuals.size()];
+		
+		Resource origResource = null;
+		NamedResource origNamedResource = null;
+		if (statement != null) {
+			origResource = (Resource) statement.getObject();
+		}
+		for (int i = 0; i < namedResources.length; i++) {
+			Individual resource = individuals.get(i);
+			namedResources[i] = new NamedResource(resource);
+			if (resource.equals(origResource)) {
+				origNamedResource = namedResources[i];
+			}
+			
+		}
+		resources = new JComboBox(namedResources);
+		resources.setEditable(false);
+		if (origNamedResource != null) {
+			resources.setSelectedItem(origNamedResource);
+		}
+		
+		return resources;
+	}
+
+
+	@Override
+	public RDFNode getNewTargetNode(JComponent component) {
+		JComboBox resources = (JComboBox) component;
+		return ((NamedResource) resources.getSelectedItem()).getResource();
 	}
 
 }

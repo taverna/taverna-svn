@@ -20,41 +20,25 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.annotation;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
-
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
-import javax.swing.border.EmptyBorder;
 
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
 
-import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntProperty;
-import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
  *
  *
  * @author Alan Williams
  */
-public class AnnotationPropertyPanelFactory implements PropertyPanelFactorySPI{
+public class AnnotationPropertyPanelFactory extends PropertyPanelFactorySPI{
 
 	public AnnotationPropertyPanelFactory() {
 		super();
@@ -68,10 +52,25 @@ public class AnnotationPropertyPanelFactory implements PropertyPanelFactorySPI{
 	}
 
 	@Override
-	public PropertyAnnotationPanel getSemanticAnnotationPanel(
-			SemanticAnnotationContextualView semanticAnnotationContextualView,
-			SemanticAnnotationProfile semanticAnnotationProfile) {
-		return new AnnotationPropertyPanel(semanticAnnotationContextualView, semanticAnnotationProfile);
+	public JComponent getInputComponent(SemanticAnnotationProfile semanticAnnotationProfile, Statement statement) {
+			JTextArea inputText = new JTextArea(20, 80);
+		if (statement != null) {
+			inputText.setText(SemanticAnnotationUtils.getDisplayName(statement.getObject()));
+		}
+		inputText.setLineWrap(true);
+		inputText.setWrapStyleWord(true);
+		return inputText;
+	}
+
+	@Override
+	public RDFNode getNewTargetNode(JComponent component) {
+		JTextArea inputText = (JTextArea) component;
+		Model model = ModelFactory.createDefaultModel();
+		model.read("[]");
+		for (RDFNode node : model.listObjects().toSet()) {
+			JOptionPane.showMessageDialog(null, node.toString());
+		}
+		return ResourceFactory.createTypedLiteral(inputText.getText());
 	}
 
 }

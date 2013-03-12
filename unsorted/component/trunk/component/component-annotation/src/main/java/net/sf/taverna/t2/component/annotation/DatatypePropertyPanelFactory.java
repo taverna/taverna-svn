@@ -33,6 +33,7 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -46,15 +47,17 @@ import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
  *
  *
  * @author Alan Williams
  */
-public class DatatypePropertyPanelFactory implements PropertyPanelFactorySPI{
+public class DatatypePropertyPanelFactory extends PropertyPanelFactorySPI{
 
 	public DatatypePropertyPanelFactory() {
 		super();
@@ -68,10 +71,22 @@ public class DatatypePropertyPanelFactory implements PropertyPanelFactorySPI{
 	}
 
 	@Override
-	public PropertyAnnotationPanel getSemanticAnnotationPanel(
-			SemanticAnnotationContextualView semanticAnnotationContextualView,
-			SemanticAnnotationProfile semanticAnnotationProfile) {
-		return new DatatypePropertyPanel(semanticAnnotationContextualView, semanticAnnotationProfile);
+	public JComponent getInputComponent(SemanticAnnotationProfile semanticAnnotationProfile, Statement statement) {
+		JTextArea inputText = new JTextArea(20, 80);
+		if (statement != null) {
+			inputText.setText(SemanticAnnotationUtils.getDisplayName(statement.getObject()));
+		}
+		inputText.setLineWrap(true);
+		inputText.setWrapStyleWord(true);
+		return new JScrollPane(inputText);
 	}
+
+
+		@Override
+		public RDFNode getNewTargetNode(JComponent component) {
+			JTextArea inputText = (JTextArea) component;
+			return ResourceFactory.createTypedLiteral(inputText.getText());
+		}
+
 
 }

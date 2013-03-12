@@ -227,6 +227,13 @@ public class SemanticAnnotationContextualView extends ContextualView {
 		initialise();
 		updateSemanticAnnotation();
 	}
+	
+	public void changeStatement(Statement origStatement, OntProperty predicate, RDFNode node) {
+		model.remove(origStatement);
+		model.add(model.createResource(), predicate, node);
+		initialise();
+		updateSemanticAnnotation();
+	}
 
 	public void addStatement(OntProperty predicate, RDFNode node) {
 		model.add(model.createResource(), predicate, node);
