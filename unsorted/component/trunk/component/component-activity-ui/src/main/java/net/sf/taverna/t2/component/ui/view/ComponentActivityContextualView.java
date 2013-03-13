@@ -2,6 +2,7 @@ package net.sf.taverna.t2.component.ui.view;
 
 import java.awt.Frame;
 import java.net.URL;
+import java.util.List;
 
 import javax.swing.Action;
 
@@ -16,6 +17,8 @@ import net.sf.taverna.t2.component.registry.ComponentUtil;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
 import net.sf.taverna.t2.component.ui.config.ComponentConfigureAction;
 import net.sf.taverna.t2.workbench.ui.actions.activity.HTMLBasedActivityContextualView;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 
 @SuppressWarnings("serial")
 public class ComponentActivityContextualView extends HTMLBasedActivityContextualView<ComponentActivityConfigurationBean> {
@@ -87,8 +90,34 @@ public class ComponentActivityContextualView extends HTMLBasedActivityContextual
 		} catch (ComponentRegistryException e) {
 			logger.error(e);
 		}
-
+		
+		List<ActivityInputPortDefinitionBean> inputPortDefinitions = getConfigBean().getPorts()
+		.getInputPortDefinitions();
+		if (!inputPortDefinitions.isEmpty()) {
+		html = html
+		+ "<tr><th>Input Port Name</th>" 
+			+	"<th>Depth</th>" 
+		+"</tr>";
+		for (ActivityInputPortDefinitionBean bean : inputPortDefinitions) {
+			html = html + "<tr><td>" + bean.getName() + "</td><td>"
+					+ bean.getDepth() + "</td></tr>";
+		}
+		}
+		List<ActivityOutputPortDefinitionBean> outputPortDefinitions = getConfigBean().getPorts()
+		.getOutputPortDefinitions();
+		if (!outputPortDefinitions.isEmpty()) {
+		html = html
+				+ "<tr><th>Output Port Name</th>" 
+					+	"<th>Depth</th>" 
+				+"</tr>";
+		for (ActivityOutputPortDefinitionBean bean : outputPortDefinitions) {
+			html = html + "<tr><td>" + bean.getName() + "</td><td>"
+					+ bean.getDepth() + "</td>" 
+					+ "</tr>";
+		}
+		}
 		return html;
+
 	}
 	
 	private String getDescriptionHtml(String header, String description) {

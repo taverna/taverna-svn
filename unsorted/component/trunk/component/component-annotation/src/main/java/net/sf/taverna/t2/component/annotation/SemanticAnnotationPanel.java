@@ -37,31 +37,36 @@ import com.hp.hpl.jena.rdf.model.Statement;
 
 public class SemanticAnnotationPanel extends JPanel {
 
-	private final SemanticAnnotationContextualView semanticAnnotationContextualView;
+	private final AbstractSemanticAnnotationContextualView semanticAnnotationContextualView;
 	private final SemanticAnnotationProfile semanticAnnotationProfile;
 	private final Set<Statement> statements;
+	
+	private static PropertyPanelFactorySPI FALLBACK_FACTORY = new FallbackPropertyPanelFactory();
 
 	protected SPIRegistry<PropertyPanelFactorySPI> propertyPanelFactoryRegistry = new SPIRegistry<PropertyPanelFactorySPI>(
 			PropertyPanelFactorySPI.class);
+	private final boolean allowChange;
 
 	public SemanticAnnotationPanel(
-			SemanticAnnotationContextualView semanticAnnotationContextualView,
-			SemanticAnnotationProfile semanticAnnotationProfile, Set<Statement> statements) {
+			AbstractSemanticAnnotationContextualView semanticAnnotationContextualView,
+			SemanticAnnotationProfile semanticAnnotationProfile,
+			Set<Statement> statements, boolean allowChange) {
 		this.semanticAnnotationContextualView = semanticAnnotationContextualView;
 		this.semanticAnnotationProfile = semanticAnnotationProfile;
 		this.statements = statements;
+		this.allowChange = allowChange;
 		initialize();
 	}
 
 	private void initialize() {
 		setLayout(new GridBagLayout());
-		setBorder(new AbstractBorder() {
-			@Override
-			public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-				g.setColor(Color.GRAY);
-				g.drawLine(x, y+height-1, x+width-1, y+height-1);
-			}
-		});
+//		setBorder(new AbstractBorder() {
+//			@Override
+//			public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+//				g.setColor(Color.GRAY);
+//				g.drawLine(x, y+height-1, x+width-1, y+height-1);
+//			}
+//		});
 
 		GridBagConstraints c = new GridBagConstraints();
 		c.anchor = GridBagConstraints.SOUTHEAST;
@@ -77,7 +82,7 @@ public class SemanticAnnotationPanel extends JPanel {
 		label.setOpaque(true);
 		add(label, c);
 
-		c.insets = new Insets(5, 7, 0, 0);
+		c.insets = new Insets(7, 0, 0, 0);
 		c.anchor = GridBagConstraints.EAST;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		if (statements.isEmpty()) {
@@ -99,20 +104,24 @@ public class SemanticAnnotationPanel extends JPanel {
 				value.setBorder(new EmptyBorder(2,4,2,4));
 				add(value, c);
 
+				if (allowChange) {
 				c.gridx = 1;
 				c.weightx = 0;
 				add(createChangeButton(predicate, statement), c);
 				
 				c.gridx = 2;
 				add(createDeleteButton(statement), c);
+				}
 			}
 		}
 
+		if (allowChange) {
 		c.gridx = 0;
 		c.gridwidth = 3;
 		c.anchor = GridBagConstraints.SOUTHEAST;
 		c.fill = GridBagConstraints.NONE;
 		add(createAddButton(predicate), c);
+		}
 
 	}
 
@@ -151,12 +160,19 @@ public class SemanticAnnotationPanel extends JPanel {
 		for (PropertyPanelFactorySPI factory : instances) {
 			if (factory.canHandleSemanticAnnotation(semanticAnnotationProfile)) {
 				chosenFactory = factory;
-				inputComponent = factory.getInputComponent(semanticAnnotationProfile, statement);
-				annotationPanel = getPropertyPanel(SemanticAnnotationUtils.getDisplayName(semanticAnnotationProfile.getPredicate()), inputComponent);
 				break;
 			}
 		}
+		
+//		if (chosenFactory == null) {
+//			chosenFactory = FALLBACK_FACTORY;
+//		}
 
+		if (chosenFactory != null) {
+			inputComponent = chosenFactory.getInputComponent(semanticAnnotationProfile, statement);
+			annotationPanel = getPropertyPanel(SemanticAnnotationUtils.getDisplayName(semanticAnnotationProfile.getPredicate()), inputComponent);
+		}
+		
 		if (annotationPanel != null) {
 			int answer = JOptionPane.showConfirmDialog(null, annotationPanel, "Add/change annotation", JOptionPane.OK_CANCEL_OPTION);
 			if (answer == JOptionPane.OK_OPTION) {
@@ -172,7 +188,7 @@ public class SemanticAnnotationPanel extends JPanel {
 				}
 			}
 		} else {
-			JOptionPane.showMessageDialog(null, "Unable to handle annotation", "Annotation problem", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Unable to handle " + semanticAnnotationProfile.getPredicateString(), "Annotation problem", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	

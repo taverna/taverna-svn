@@ -20,6 +20,8 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.annotation;
 
+import java.io.StringReader;
+
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
@@ -65,11 +67,6 @@ public class AnnotationPropertyPanelFactory extends PropertyPanelFactorySPI{
 	@Override
 	public RDFNode getNewTargetNode(JComponent component) {
 		JTextArea inputText = (JTextArea) component;
-		Model model = ModelFactory.createDefaultModel();
-		model.read("[]");
-		for (RDFNode node : model.listObjects().toSet()) {
-			JOptionPane.showMessageDialog(null, node.toString());
-		}
 		return ResourceFactory.createTypedLiteral(inputText.getText());
 	}
 

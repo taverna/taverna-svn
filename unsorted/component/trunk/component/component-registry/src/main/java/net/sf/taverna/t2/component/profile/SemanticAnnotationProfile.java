@@ -75,6 +75,10 @@ public class SemanticAnnotationProfile {
 			return null;
 		}
 	}
+	
+	public String getPredicateString() {
+		return semanticAnnotation.getPredicate();
+	}
 
 	/**
 	 * @deprecated use getPredicate().getRange() instead.

@@ -78,7 +78,7 @@ public class DatatypePropertyPanelFactory extends PropertyPanelFactorySPI{
 		}
 		inputText.setLineWrap(true);
 		inputText.setWrapStyleWord(true);
-		return new JScrollPane(inputText);
+		return inputText;
 	}
 
 

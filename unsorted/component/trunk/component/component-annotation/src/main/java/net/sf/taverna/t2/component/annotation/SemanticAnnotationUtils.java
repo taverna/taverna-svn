@@ -20,6 +20,14 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.annotation;
 
+import java.util.Date;
+
+import net.sf.taverna.t2.annotation.Annotated;
+import net.sf.taverna.t2.annotation.AnnotationAssertion;
+import net.sf.taverna.t2.annotation.AnnotationBeanSPI;
+import net.sf.taverna.t2.annotation.AnnotationChain;
+import net.sf.taverna.t2.annotation.annotationbeans.SemanticAnnotation;
+
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -56,5 +64,25 @@ public class SemanticAnnotationUtils {
 			return "unknown";
 		}
 	}
+	
+	public static SemanticAnnotation findSemanticAnnotation(Annotated<?> annotated) {
+		Date latestDate = null;
+		SemanticAnnotation annotation = null;
+		for (AnnotationChain chain : annotated.getAnnotations()) {
+			for (AnnotationAssertion<?> assertion : chain.getAssertions()) {
+				AnnotationBeanSPI detail = assertion.getDetail();
+				if (detail instanceof SemanticAnnotation) {
+					Date assertionDate = assertion.getCreationDate();
+					if ((latestDate == null) || latestDate.before(assertionDate)) {
+						annotation = (SemanticAnnotation) detail;
+						latestDate = assertionDate;
+					}
+				}
+			}
+		}
+		return annotation;
+	}
+
+
 
 }

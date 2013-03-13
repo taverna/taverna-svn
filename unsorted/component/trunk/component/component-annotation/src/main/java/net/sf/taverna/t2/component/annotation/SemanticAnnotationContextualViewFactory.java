@@ -50,7 +50,7 @@ public class SemanticAnnotationContextualViewFactory implements ContextualViewFa
 	}
 
 	public List<ContextualView> getViews(Annotated<?> selection) {
-		return Arrays.asList(new ContextualView[] {new SemanticAnnotationContextualView(selection)});
+		return Arrays.asList(new ContextualView[] {new SemanticAnnotationContextualView(selection), new TurtleContextualView(selection)});
 	}
 
 }

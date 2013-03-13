@@ -166,7 +166,6 @@ public class ComponentVersionIdentification {
 	}
 
 	public String toString() {
-		return "Version " + getComponentVersion() + " of " +
-		getComponentName() + " in family " + getFamilyName() + " on " + getRegistryBase().toExternalForm();
+		return getComponentName() + " V. " + getComponentVersion() + " in family " + getFamilyName() + " on " + getRegistryBase().toExternalForm();
 	}
 }

@@ -82,54 +82,40 @@ import com.hp.hpl.jena.rdf.model.Statement;
  *
  * @author David Withers
  */
-public class SemanticAnnotationContextualView extends ContextualView {
+public class SemanticAnnotationContextualView extends AbstractSemanticAnnotationContextualView {
 
 	public static final String VIEW_TITLE = "Semantic Annotations";
 
+	private static FileManager fileManager = FileManager.getInstance();
+
 	private static Logger logger = Logger.getLogger(SemanticAnnotationContextualView.class);
 
-	private static AnnotationTools annotationTools = new AnnotationTools();
-	private static EditManager editManager = EditManager.getInstance();
-	private static FileManager fileManager = FileManager.getInstance();
-	private static Edits edits = editManager.getEdits();
-
-	private JPanel panel;
-
-	private Annotated<?> annotated;
-
 	private ComponentProfile componentProfile;
-	private List<SemanticAnnotationProfile> semanticAnnotationProfiles;
-	private Model model;
-
 	public SemanticAnnotationContextualView(Annotated<?> selection) {
-		this.annotated = selection;
+		super(true);
+		super.setAnnotated(selection);
 		componentProfile = getComponentProfile();
 		if (componentProfile != null) {
 			if (selection instanceof Dataflow) {
-				semanticAnnotationProfiles = componentProfile.getSemanticAnnotationProfiles();
+				super.setSemanticAnnotationProfiles(componentProfile.getSemanticAnnotationProfiles());
 			} else if (selection instanceof DataflowInputPort) {
-				semanticAnnotationProfiles = componentProfile.getInputSemanticAnnotationProfiles();
+				super.setSemanticAnnotationProfiles(componentProfile.getInputSemanticAnnotationProfiles());
 			} else if (selection instanceof DataflowOutputPort) {
-				semanticAnnotationProfiles = componentProfile.getOutputSemanticAnnotationProfiles();
+				super.setSemanticAnnotationProfiles(componentProfile.getOutputSemanticAnnotationProfiles());
 			} else if (selection instanceof Processor) {
-				semanticAnnotationProfiles = componentProfile
-						.getActivitySemanticAnnotationProfiles();
+				super.setSemanticAnnotationProfiles(componentProfile
+						.getActivitySemanticAnnotationProfiles());
 			} else {
-				semanticAnnotationProfiles = new ArrayList<SemanticAnnotationProfile>();
+				super.setSemanticAnnotationProfiles(new ArrayList<SemanticAnnotationProfile>());
 			}
 		} else {
-			semanticAnnotationProfiles = new ArrayList<SemanticAnnotationProfile>();
+			super.setSemanticAnnotationProfiles(new ArrayList<SemanticAnnotationProfile>());
 		}
 
-		model = ModelFactory.createDefaultModel();
-		SemanticAnnotation annotation = findSemanticAnnotation(annotated);
-		if (annotation != null && !annotation.getContent().isEmpty()) {
-			StringReader stringReader = new StringReader(annotation.getContent());
-			model.read(stringReader, null, "N3");
-		}
+		super.populateModel();
 
-		initialise();
-		initView();
+		super.initialise();
+		super.initView();
 	}
 
 	private ComponentProfile getComponentProfile() {
@@ -152,138 +138,11 @@ public class SemanticAnnotationContextualView extends ContextualView {
 	}
 
 	@Override
-	public JComponent getMainFrame() {
-		return panel;
-	}
-
-	@Override
 	public String getViewTitle() {
 		return VIEW_TITLE;
 	}
 
-	@Override
-	public void refreshView() {
-		initialise();
-	}
-
-	@Override
-	public int getPreferredPosition() {
-		return 510;
-	}
-
-	private void initialise() {
-		if (panel == null) {
-			panel = new JPanel(new GridBagLayout());
-		} else {
-			panel.removeAll();
-		}
-		populatePanel(panel);
-		revalidate();
-	}
-
-	private void populatePanel(JPanel panel) {
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.anchor = GridBagConstraints.NORTHWEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridx = 0;
-		gbc.weightx = 1;
-		gbc.weighty = 0;
-
-		Set<Statement> statements = model.listStatements().toSet();
-		for (SemanticAnnotationProfile semanticAnnotationProfile : semanticAnnotationProfiles) {
-			OntProperty predicate = semanticAnnotationProfile.getPredicate();
-			if (predicate != null) {
-				Set<Statement> statementsWithPredicate = new HashSet<Statement>();
-				for (Statement statement : statements) {
-					if (statement.getPredicate().equals(predicate)) {
-						statementsWithPredicate.add(statement);
-					}
-				}
-				panel.add(new SemanticAnnotationPanel(this, semanticAnnotationProfile,
-						statementsWithPredicate), gbc);
-				statements.removeAll(statementsWithPredicate);
-			}
-			
-		}
-		
-		if (semanticAnnotationProfiles.isEmpty()) {
-			panel.add(new JLabel("No annotations possible"));
-		}
-		// TODO handle any remaining statements
-
-		gbc.weighty = 1;
-		panel.add(new JPanel(), gbc);
-	}
-
-	public void removeStatement(Statement statement) {
-		model.remove(statement);
-		initialise();
-		repaint();
-		updateSemanticAnnotation();
-	}
-
-	public void addStatement(Statement statement) {
-		model.add(statement);
-		initialise();
-		updateSemanticAnnotation();
-	}
-	
-	public void changeStatement(Statement origStatement, OntProperty predicate, RDFNode node) {
-		model.remove(origStatement);
-		model.add(model.createResource(), predicate, node);
-		initialise();
-		updateSemanticAnnotation();
-	}
-
-	public void addStatement(OntProperty predicate, RDFNode node) {
-		model.add(model.createResource(), predicate, node);
-		initialise();
-		updateSemanticAnnotation();
-	}
-
-	public void addModel(Model model) {
-		this.model.add(model);
-		initialise();
-		updateSemanticAnnotation();
-	}
-
-	private SemanticAnnotation createSemanticAnnotation() {
-		SemanticAnnotation semanticAnnotation = new SemanticAnnotation();
-		StringWriter stringWriter = new StringWriter();
-		model.write(stringWriter, "N3");
-		semanticAnnotation.setContent(stringWriter.toString());
-		return semanticAnnotation;
-	}
-
-	private SemanticAnnotation findSemanticAnnotation(Annotated<?> annotated) {
-		Date latestDate = null;
-		SemanticAnnotation annotation = null;
-		for (AnnotationChain chain : annotated.getAnnotations()) {
-			for (AnnotationAssertion<?> assertion : chain.getAssertions()) {
-				AnnotationBeanSPI detail = assertion.getDetail();
-				if (detail instanceof SemanticAnnotation) {
-					Date assertionDate = assertion.getCreationDate();
-					if ((latestDate == null) || latestDate.before(assertionDate)) {
-						annotation = (SemanticAnnotation) detail;
-						latestDate = assertionDate;
-					}
-				}
-			}
-		}
-		return annotation;
-	}
-
-	public void updateSemanticAnnotation() {
-		Dataflow currentDataflow = fileManager.getCurrentDataflow();
-		try {
-			editManager.doDataflowEdit(currentDataflow,
-					edits.getAddAnnotationChainEdit(annotated, createSemanticAnnotation()));
-		} catch (EditException e) {
-			logger.warn("Can't set semantic annotation", e);
-		}
-	}
-
-	public static void main(String[] args) throws Exception {
+/*	public static void main(String[] args) throws Exception {
 		JFrame frame = new JFrame();
 		frame.setSize(400, 200);
 		ComponentVersionIdentification identification = new ComponentVersionIdentification(
@@ -310,5 +169,5 @@ public class SemanticAnnotationContextualView extends ContextualView {
 		frame.add(view);
 		frame.setVisible(true);
 	}
-
+*/
 }
