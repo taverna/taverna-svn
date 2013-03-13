@@ -4,21 +4,13 @@
 package net.sf.taverna.t2.component;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
-
-import net.sf.taverna.t2.activities.dataflow.DataflowActivity;
 import net.sf.taverna.t2.component.profile.ExceptionHandling;
 import net.sf.taverna.t2.component.profile.ExceptionReplacement;
 import net.sf.taverna.t2.component.profile.HandleException;
@@ -30,9 +22,10 @@ import net.sf.taverna.t2.reference.ListService;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.reference.T2ReferenceType;
-import net.sf.taverna.t2.reference.impl.ErrorDocumentImpl;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorType;
+
+import org.apache.log4j.Logger;
 
 /**
  * @author alanrw
