@@ -65,7 +65,9 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 	public static MyExperimentSharingPolicy PRIVATE = new MyExperimentPrivatePolicy();
 	public static MyExperimentSharingPolicy PUBLIC = new MyExperimentPublicPolicy();
 
-	private MyExperimentComponentRegistry(URL registryURL) {
+	private final String DO_PUT = "_DO_UPDATE_SIGNAL_";
+
+	 	private MyExperimentComponentRegistry(URL registryURL) {
 		this.registryURL = registryURL;
 		myExperimentClient = new MyExperimentClient(logger);
 		myExperimentClient.setBaseURL(registryURL.toExternalForm());
@@ -234,8 +236,9 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		contentXml.append(permissionsString);
 		contentXml.append("</pack>");
 		try {
-			ServerResponse packResponse = myExperimentClient.doMyExperimentPOST(urlToString(registryURL) + "/pack.xml", contentXml.toString());
-			return packResponse.getResponseBody().getRootElement();
+			ServerResponse response = myExperimentClient.doMyExperimentPOST(urlToString(registryURL) + "/pack.xml", contentXml.toString());
+			checkResponseCode(response);
+			return response.getResponseBody().getRootElement();
 		} catch (Exception e) {
 			throw new ComponentRegistryException("Error while creating a pack with title : " + title, e);
 		}
@@ -243,8 +246,9 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 
 	public Element snapshotPack(String packUri) throws ComponentRegistryException {
 		try {
-			ServerResponse packResponse = myExperimentClient.doMyExperimentPOST(packUri, "<snapshot/>");
-			return packResponse.getResponseBody().getRootElement();
+			ServerResponse response = myExperimentClient.doMyExperimentPOST(packUri, "<snapshot/>");
+			checkResponseCode(response);
+			return response.getResponseBody().getRootElement();
 		} catch (Exception e) {
 			throw new ComponentRegistryException(e);
 		}
@@ -263,9 +267,16 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		}
 		item.append("</internal-pack-item>");
 		try {
-			myExperimentClient.doMyExperimentPOST(urlToString(registryURL) + "/internal-pack-item.xml", item.toString());
+			ServerResponse response = myExperimentClient.doMyExperimentPOST(urlToString(registryURL) + "/internal-pack-item.xml", item.toString());
+			checkResponseCode(response);
 		} catch (Exception e) {
 			throw new ComponentRegistryException(e);
+		}
+	}
+	
+	public void checkResponseCode(ServerResponse response) throws ComponentRegistryException {
+		if (response.getResponseCode() >= 400) {
+			throw new ComponentRegistryException("Unable to perform request " + response.getResponseCode());
 		}
 	}
 
@@ -328,7 +339,9 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 			String permissionsString) throws ComponentRegistryException {
 		String workflowElement = prepareWorkflowPostContent(dataflow, title, "Initial version", license, permissionsString);
 		try {
+			logger.info("Uploading " + workflowElement);
 			ServerResponse response = myExperimentClient.doMyExperimentPOST(urlToString(registryURL) + "/workflow.xml", workflowElement);
+			checkResponseCode(response);
 			return response.getResponseBody().getRootElement();
 		} catch (Exception e) {
 			throw new ComponentRegistryException("Unable to upload workflow", e);
@@ -340,7 +353,9 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 			String permissionsString) throws ComponentRegistryException {
 		String workflowElement = prepareWorkflowPostContent(dataflow, title, revisionComment, license, permissionsString);
 		try {
-			ServerResponse response = myExperimentClient.doMyExperimentPOST(uri, workflowElement);
+			logger.info("Uploading " + workflowElement);
+			ServerResponse response = myExperimentClient.doMyExperimentPOST(uri + DO_PUT, workflowElement);
+			checkResponseCode(response);
 			return response.getResponseBody().getRootElement();
 		} catch (Exception e) {
 			throw new ComponentRegistryException("Unable to update workflow at " + uri, e);
@@ -382,11 +397,7 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 	public String getFileAsString(String url) {
 		try {
 			ServerResponse response = myExperimentClient.doMyExperimentGET(url);
-			int responseCode = response.getResponseCode();
-			if (responseCode >= 400) {
-				logger.error("Received response code " + responseCode + " when reading from " + url);
-				return null;
-			}
+			checkResponseCode(response);
 			Document responseBody = response.getResponseBody();
 			Element root = responseBody.getRootElement();
 			String content = new XMLOutputter().outputString(responseBody);
@@ -413,8 +424,9 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 		contentXml.append(permissionsString);
 		contentXml.append("</file>");
 		try {
-			ServerResponse packResponse = myExperimentClient.doMyExperimentPOST(urlToString(registryURL) + "/file.xml", contentXml.toString());
-			return packResponse.getResponseBody().getRootElement();
+			ServerResponse response = myExperimentClient.doMyExperimentPOST(urlToString(registryURL) + "/file.xml", contentXml.toString());
+			checkResponseCode(response);
+			return response.getResponseBody().getRootElement();
 		} catch (Exception e) {
 			throw new ComponentRegistryException(e);
 		}
@@ -443,7 +455,8 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 	public void tagResource(String tag, String resource) throws ComponentRegistryException {
 		String taggingToSend = "<tagging><subject resource=\"" + resource + "\"/><label>"+tag+"</label></tagging>";
 		try {
-			myExperimentClient.doMyExperimentPOST(urlToString(registryURL) + "/tagging.xml", taggingToSend);
+			ServerResponse response = myExperimentClient.doMyExperimentPOST(urlToString(registryURL) + "/tagging.xml", taggingToSend);
+			checkResponseCode(response);
 		} catch (Exception e) {
 			throw new ComponentRegistryException(e);
 		}
@@ -469,7 +482,8 @@ public class MyExperimentComponentRegistry implements ComponentRegistry {
 
 	public void deleteResource(String uri) throws ComponentRegistryException {
 		try {
-			myExperimentClient.doMyExperimentDELETE(uri);
+			ServerResponse response = myExperimentClient.doMyExperimentDELETE(uri);
+			checkResponseCode(response);
 		} catch (Exception e) {
 			throw new ComponentRegistryException("Failed to delete " + uri, e);
 		}

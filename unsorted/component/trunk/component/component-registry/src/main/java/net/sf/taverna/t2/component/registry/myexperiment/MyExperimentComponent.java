@@ -43,6 +43,7 @@ import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.utils.AnnotationTools;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
 
 /**
@@ -139,7 +140,9 @@ public class MyExperimentComponent implements Component {
 		}
 
 		Element workflowElement = componentRegistry.getPackItem(uri, "workflow");
-		Element componentWorkflow = componentRegistry.updateWorkflow(workflowElement.getAttributeValue("uri"), dataflowString,
+		String versionUri = workflowElement.getAttributeValue("uri");
+		String workflowUri = StringUtils.substringBeforeLast(versionUri, "&");
+		Element componentWorkflow = componentRegistry.updateWorkflow(workflowUri, dataflowString,
 				title, revisionComment, license, permissionsString);
 
 		Element componentElement = componentRegistry.getResource(uri);

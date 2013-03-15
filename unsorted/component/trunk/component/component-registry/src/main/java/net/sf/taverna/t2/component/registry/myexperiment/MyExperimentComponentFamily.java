@@ -47,6 +47,7 @@ import net.sf.taverna.t2.workflowmodel.utils.AnnotationTools;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
+import org.jdom.output.XMLOutputter;
 
 /**
  *
@@ -65,6 +66,8 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	private Map<String, Component> componentsCache;
 	private String permissionsString;
 	private License license;
+	
+	private static XMLOutputter outputter = new XMLOutputter();
 
 	public MyExperimentComponentFamily(MyExperimentComponentRegistry componentRegistry, License license,
 			MyExperimentSharingPolicy permissions, String uri) throws ComponentRegistryException {
@@ -96,7 +99,7 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 			String id = policyElement.getChildTextTrim("id");
 			return new MyExperimentGroupPolicy(name, id).getPolicyString();
 		}
-		return permissionsElement.toString();
+		return outputter.outputString(permissionsElement);
 	}
 
 	@Override
