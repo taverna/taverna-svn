@@ -4,7 +4,7 @@
 
 	<groupId>net.sf.taverna.t2.component</groupId>
 	<artifactId>component</artifactId>
-	<version>0.8.0</version>
+	<version>0.8.1</version>
 	<packaging>pom</packaging>
 	<name>Component Taverna project</name>
 
@@ -15,6 +15,7 @@
 		<t2.core.version>1.4</t2.core.version>
 		<t2.activities.version>1.4</t2.activities.version>
 		<t2.ui.api.version>1.4</t2.ui.api.version>
+		<t2.ui.activities.version>1.4.1</t2.ui.activities.version>
 		<t2.ui.impl.version>1.4</t2.ui.impl.version>
 		<t2.workbench.version>2.4.0</t2.workbench.version>
 	</properties>
