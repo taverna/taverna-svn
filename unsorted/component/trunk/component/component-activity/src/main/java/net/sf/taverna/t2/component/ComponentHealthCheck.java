@@ -8,6 +8,7 @@ public class ComponentHealthCheck extends VisitKind {
 	  public static final int NO_PROBLEM= 0;
 	  public static final int OUT_OF_DATE = 10;
 	public static final int NON_SHAREABLE = 20;
+	public static final int FAILS_PROFILE = 30;
 	  
 	  
 	  @Override

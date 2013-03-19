@@ -42,9 +42,6 @@ import net.sf.taverna.t2.workflowmodel.Edits;
  */
 public abstract class AbstractSemanticAnnotationContextualView extends ContextualView {
 	
-	protected static final String ENCODING = "TURTLE";
-	/* Pretend-base for making relative URIs */
-	private static String BASE = "widget://4aa8c93c-3212-487c-a505-3e337adf54a3/";
 	private final boolean allowChange;
 
 	public AbstractSemanticAnnotationContextualView(boolean allowChange) {
@@ -178,21 +175,11 @@ public abstract class AbstractSemanticAnnotationContextualView extends Contextua
 //		updateSemanticAnnotation();
 //	}
 
-	private SemanticAnnotation createSemanticAnnotation() {
-		SemanticAnnotation semanticAnnotation = new SemanticAnnotation();
-		StringWriter stringWriter = new StringWriter();
-		model.write(stringWriter, ENCODING, BASE);
-		// Workaround for https://issues.apache.org/jira/browse/JENA-132
-		String turtle = stringWriter.toString().replace("widget://4aa8c93c-3212-487c-a505-3e337adf54a3/", "");
-		semanticAnnotation.setContent(turtle);
-		return semanticAnnotation;
-	}
-
 	public void updateSemanticAnnotation() {
 		Dataflow currentDataflow = fileManager.getCurrentDataflow();
 		try {
 			editManager.doDataflowEdit(currentDataflow,
-					edits.getAddAnnotationChainEdit(annotated, createSemanticAnnotation()));
+					edits.getAddAnnotationChainEdit(annotated, SemanticAnnotationUtils.createSemanticAnnotation(getModel())));
 		} catch (EditException e) {
 			logger.warn("Can't set semantic annotation", e);
 		}
@@ -216,14 +203,8 @@ public abstract class AbstractSemanticAnnotationContextualView extends Contextua
 
 
 	public void populateModel() {
-		this.model = ModelFactory.createDefaultModel();
-		this.subject = model.createResource(BASE);
-		SemanticAnnotation annotation = SemanticAnnotationUtils.findSemanticAnnotation(getAnnotated());
-		if (annotation != null && !annotation.getContent().isEmpty()) {
-			StringReader stringReader = new StringReader(annotation.getContent());
-			getModel().read(stringReader, BASE, ENCODING);
-		}
-
+		this.model = SemanticAnnotationUtils.populateModel(getAnnotated());
+		this.subject = SemanticAnnotationUtils.createBaseResource(this.model);
 	}
 
 

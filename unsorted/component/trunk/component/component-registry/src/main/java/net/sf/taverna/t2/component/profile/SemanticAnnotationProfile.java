@@ -20,6 +20,7 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.profile;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -121,6 +122,19 @@ public class SemanticAnnotationProfile {
 			return ontology.listIndividuals(range).toList();
 		} else {
 			return new ArrayList<Individual>();
+		}
+	}
+	
+	public Integer getMinOccurs() {
+		return semanticAnnotation.getMinOccurs().intValue();
+	}
+	
+	public Integer getMaxOccurs() {
+		try {
+			return Integer.valueOf(semanticAnnotation.getMaxOccurs());
+		}
+		catch (NumberFormatException e) {
+			return null;
 		}
 	}
 

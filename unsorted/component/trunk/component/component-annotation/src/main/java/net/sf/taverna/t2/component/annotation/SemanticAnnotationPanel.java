@@ -115,7 +115,7 @@ public class SemanticAnnotationPanel extends JPanel {
 			}
 		}
 
-		if (allowChange) {
+		if (allowChange && !enoughAlready(statements, semanticAnnotationProfile.getMaxOccurs())) {
 		c.gridx = 0;
 		c.gridwidth = 3;
 		c.anchor = GridBagConstraints.SOUTHEAST;
@@ -123,6 +123,14 @@ public class SemanticAnnotationPanel extends JPanel {
 		add(createAddButton(predicate), c);
 		}
 
+	}
+
+	private boolean enoughAlready(Set<Statement> statements,
+			Integer maxOccurs) {
+		if (maxOccurs == null) {
+			return false;
+		}
+		return (statements.size() >= maxOccurs);
 	}
 
 	private JButton createChangeButton(final OntProperty predicate, final Statement statement) {
