@@ -153,6 +153,7 @@ public abstract class AbstractSemanticAnnotationContextualView extends Contextua
 	public void addStatement(Statement statement) {
 		model.add(statement);
 		initialise();
+		repaint();
 		updateSemanticAnnotation();
 	}
 	
@@ -160,12 +161,14 @@ public abstract class AbstractSemanticAnnotationContextualView extends Contextua
 		model.remove(origStatement);
 		model.add(subject, predicate, node);
 		initialise();
+		repaint();
 		updateSemanticAnnotation();
 	}
 
 	public void addStatement(OntProperty predicate, RDFNode node) {
 		model.add(subject, predicate, node);
 		initialise();
+		repaint();
 		updateSemanticAnnotation();
 	}
 
