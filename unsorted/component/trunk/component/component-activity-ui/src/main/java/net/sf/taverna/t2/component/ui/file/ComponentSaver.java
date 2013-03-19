@@ -3,13 +3,21 @@
  */
 package net.sf.taverna.t2.component.ui.file;
 
+import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils;
+import net.sf.taverna.t2.component.profile.ComponentProfile;
+import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentFileType;
@@ -31,6 +39,10 @@ import net.sf.taverna.t2.workflowmodel.ConfigurationException;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.apache.log4j.Logger;
+
+import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
  * @author alanrw
@@ -72,22 +84,31 @@ public class ComponentSaver extends AbstractDataflowPersistenceHandler
 	
 		ComponentVersion newVersion = null;
 		try {
+			List<SemanticAnnotationProfile> problemProfiles = new ArrayList<SemanticAnnotationProfile>(SemanticAnnotationUtils.checkComponent(dataflow, family.getComponentProfile()));
+			
+			if (!problemProfiles.isEmpty()) {
+				int answer = JOptionPane.showConfirmDialog(null, "The component does not satisfy the profile.\nSee validation report.\nDo you still want to save?", "Profile problem", JOptionPane.OK_CANCEL_OPTION);
+				if (answer != JOptionPane.OK_OPTION) {
+					throw new SaveException("Saving cancelled");
+				}
+			}
+			
 			if (ident.getComponentVersion() == 0) {
 				JTextArea descriptionArea = new JTextArea(10,60);
 				int answer = JOptionPane.showConfirmDialog(null, new JScrollPane(descriptionArea), "Component description", JOptionPane.OK_CANCEL_OPTION);
 				if (answer == JOptionPane.OK_OPTION) {
-					JOptionPane.showMessageDialog(null, "Here will be the assurance that the component conforms to the profile\n");
-
 					newVersion = family.createComponentBasedOn(ident.getComponentName(), descriptionArea.getText(), dataflow);
+				} else {
+					throw new SaveException("Saving cancelled");
 				}
 			} else {
 				Component component = family.getComponent(ident.getComponentName());
 				JTextArea descriptionArea = new JTextArea(10,60);
 				int answer = JOptionPane.showConfirmDialog(null, new JScrollPane(descriptionArea), "Version description", JOptionPane.OK_CANCEL_OPTION);
 				if (answer == JOptionPane.OK_OPTION) {
-					JOptionPane.showMessageDialog(null, "Here will be the assurance that the component version conforms to the profile\nThis may just be checking that it is the same URI");
-
 					newVersion = component.addVersionBasedOn(dataflow, descriptionArea.getText());
+				} else {
+					throw new SaveException("Saving cancelled");
 				}
 			}
 		} catch (ComponentRegistryException e) {
