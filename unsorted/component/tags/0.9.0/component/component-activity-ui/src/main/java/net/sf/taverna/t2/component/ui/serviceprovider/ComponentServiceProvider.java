@@ -1,0 +1,139 @@
+package net.sf.taverna.t2.component.ui.serviceprovider;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.swing.Icon;
+import javax.swing.JOptionPane;
+
+import net.sf.taverna.t2.component.registry.Component;
+import net.sf.taverna.t2.component.registry.ComponentFamily;
+import net.sf.taverna.t2.component.registry.ComponentRegistry;
+import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.registry.ComponentUtil;
+import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
+import net.sf.taverna.t2.component.registry.local.LocalComponentRegistry;
+import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
+import net.sf.taverna.t2.component.ui.panel.RegistryAndFamilyChooserPanel;
+import net.sf.taverna.t2.servicedescriptions.AbstractConfigurableServiceProvider;
+import net.sf.taverna.t2.servicedescriptions.CustomizedConfigurePanelProvider;
+import net.sf.taverna.t2.ui.perspectives.myexperiment.model.MyExperimentClient;
+
+import org.apache.log4j.Logger;
+
+public class ComponentServiceProvider extends
+	AbstractConfigurableServiceProvider<ComponentServiceProviderConfig> implements
+	CustomizedConfigurePanelProvider<ComponentServiceProviderConfig> {
+	
+	private static final URI providerId = URI
+		.create("http://taverna.sf.net/2012/service-provider/component");
+	
+	private static Logger logger = Logger.getLogger(ComponentServiceProvider.class);
+	
+	MyExperimentClient myExperimentClient = new MyExperimentClient(logger);
+	
+	public ComponentServiceProvider() {
+		super(new ComponentServiceProviderConfig());
+	}
+
+	/**
+	 * Do the actual search for services. Return using the callBack parameter.
+	 */
+	public void findServiceDescriptionsAsync(
+			FindServiceDescriptionsCallBack callBack) {
+		ComponentServiceProviderConfig config = getConfiguration();
+		
+		ComponentRegistry registry;
+		try {
+			registry = ComponentUtil.calculateRegistry(config.getRegistryBase());
+		} catch (ComponentRegistryException e) {
+			logger.error(e);
+			callBack.fail("Unable to read components", e);
+			return;
+		}
+		
+		List<ComponentServiceDesc> results = new ArrayList<ComponentServiceDesc>();
+		
+		try {
+			for (ComponentFamily family : registry.getComponentFamilies()) {
+				
+				// TODO get check on family name in there
+			if (family.getName().equals(config.getFamilyName())) {
+					for (Component component : family.getComponents()) {
+						try {
+						ComponentVersionIdentification ident = new ComponentVersionIdentification(config.getRegistryBase(), family.getName(), component.getName(), component.getComponentVersionMap().lastKey());
+						ComponentServiceDesc newDesc = new ComponentServiceDesc(ident);
+						results.add(newDesc);
+						}
+						catch (Exception e) {
+							logger.error(e);
+						}
+					}
+			}
+					callBack.partialResults(results);
+					callBack.finished();
+			}
+		} catch (ComponentRegistryException e) {
+			logger.error(e);
+			callBack.fail("Unable to read components", e);
+		}
+	}
+
+	/**
+	 * Icon for service provider
+	 */
+	public Icon getIcon() {
+		return ComponentServiceIcon.getIcon();
+	}
+
+	/**
+	 * Name of service provider, appears in right click for 'Remove service
+	 * provider'
+	 */
+	public String getName() {
+		return "Component service";
+	}
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
+	
+	public String getId() {
+		return providerId.toASCIIString();
+	}
+
+	@Override
+	protected List<? extends Object> getIdentifyingData() {
+		return Arrays.asList(new Object[] {getConfiguration().getRegistryBase().toString(), getConfiguration().getFamilyName()});
+	}
+
+	@Override
+	public void createCustomizedConfigurePanel(
+			CustomizedConfigureCallBack<ComponentServiceProviderConfig> callBack) {
+		
+		RegistryAndFamilyChooserPanel panel = new RegistryAndFamilyChooserPanel();
+				
+		int result = JOptionPane.showConfirmDialog(null, panel, "Component family import", JOptionPane.OK_CANCEL_OPTION);
+		if (result == JOptionPane.OK_OPTION) {
+			
+			ComponentServiceProviderConfig newConfig = new ComponentServiceProviderConfig();
+			ComponentRegistry chosenRegistry = panel.getChosenRegistry();
+			ComponentFamily chosenFamily = panel.getChosenFamily();
+			if ((chosenRegistry == null) || (chosenFamily == null)){
+				newConfig = null;
+			} else {
+				newConfig.setRegistryBase(chosenRegistry.getRegistryBase());
+				newConfig.setFamilyName(chosenFamily.getName());
+			}
+			if (newConfig != null) {
+				callBack.newProviderConfiguration(newConfig);
+			}
+		}
+		return;
+
+	}
+
+}

@@ -1,0 +1,3 @@
+#net.sf.taverna.t2.component.ComponentActivityLocalChecker
+net.sf.taverna.t2.component.ComponentActivityUpgradeChecker
+net.sf.taverna.t2.component.DispatchStackPatcher
