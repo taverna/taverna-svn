@@ -19,7 +19,7 @@
 	<modules>
 		<!-- <module>all-activity-uis</module> -->
 		<!-- <module>apiconsumer-activity-ui</module> -->
-		<!-- <module>beanshell-activity-ui</module> -->
+		<module>beanshell-activity-ui</module>
 		<!-- <module>biomart-activity-ui</module> -->
 		<!-- <module>biomoby-activity-ui</module> -->
 		<!-- <module>dataflow-activity-ui</module> -->
