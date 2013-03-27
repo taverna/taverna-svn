@@ -24,10 +24,14 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.List;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.wiring.BundleCapability;
+import org.osgi.framework.wiring.BundleWiring;
 
 import uk.org.taverna.configuration.app.ApplicationConfiguration;
 import uk.org.taverna.configuration.app.impl.ApplicationConfigurationImpl;
@@ -63,15 +67,26 @@ public class TavernaWorkbench {
 			log4jConfiguration.prepareLog4J();
 			setDerbyPaths();
 			OsgiLauncher osgiStarter = new OsgiLauncher(getAppDirectory(), getBundleURIs());
-			osgiStarter.addBootDelegationPackages("org.xml.*,org.w3c.*");
+			osgiStarter.addBootDelegationPackages("org.xml.*,org.w3c.*,apple.*,com.apple.*");
 			osgiStarter.setCleanStorageDirectory(true);
 			osgiStarter.addSystemPackages(extraSystemPackages);
 			System.out.println("Starting OSGi framework");
 			osgiStarter.start();
 			System.out.println("Starting OSGi services");
 			osgiStarter.startServices(true);
-//			System.out.println("Starting workbench");
-//			osgiStarter.startBundle(osgiStarter.installBundle(workbenchImpl.toURI()));
+			System.out.println("Starting workbench");
+			osgiStarter.startBundle(osgiStarter.installBundle(workbenchImpl.toURI()));
+
+//			BundleContext context = osgiStarter.getContext();
+//			Bundle[] bundles = context.getBundles();
+//			for (Bundle bundle : bundles) {
+//				System.out.println(bundle.getSymbolicName());
+//				BundleWiring bundleWiring = bundle.adapt(BundleWiring.class);
+//				List<BundleCapability> capabilities = bundleWiring.getCapabilities("osgi.wiring.package");
+//				for (BundleCapability capability : capabilities) {
+//					System.out.println(capability.getAttributes());
+//				}
+//			}
 		} catch (BundleException e) {
 			System.out.println(e.getMessage());
 		}
@@ -85,16 +100,17 @@ public class TavernaWorkbench {
 			}
 		});
 		for (File file : files) {
-//			if (file.getName().startsWith("workbench-impl")) {
-//				workbenchImpl = file;
-//			} else {
+			if (file.getName().startsWith("workbench-impl")) {
+				workbenchImpl = file;
+			} else {
 				bundleURIs.add(file.toURI());
-//			}
+			}
 		}
 		return bundleURIs;
 	}
 
 	private static File getBundleDirectory() {
+		System.out.println(System.getProperty("taverna.app.startup"));
 		return new File(System.getProperty("taverna.app.startup"), BUNDLE_DIRECTORY);
 	}
 
