@@ -65,9 +65,7 @@ public class ComponentActivity extends
 		try {
 			ExceptionHandling exceptionHandling = configBean.getExceptionHandling();
 			if (callback instanceof PatchedInvokeCallBack) {
-				InvocationContext originalContext = callback.getContext();
-				ReferenceService rs = originalContext.getReferenceService();
-				InvocationContextImpl newContext = new InvocationContextImpl(rs, null);
+				InvocationContextImpl newContext = copyInvocationContext(callback);
 				((PatchedInvokeCallBack) callback).overrideContext(newContext);
 			}
 			AsynchronousActivityCallback useCallback = callback;
@@ -78,6 +76,17 @@ public class ComponentActivity extends
 		} catch (ActivityConfigurationException e) {
 			callback.fail("Unable to execute component", e);
 		}
+	}
+
+	private InvocationContextImpl copyInvocationContext(
+			final AsynchronousActivityCallback callback) {
+		InvocationContext originalContext = callback.getContext();
+		ReferenceService rs = originalContext.getReferenceService();
+		InvocationContextImpl newContext = new InvocationContextImpl(rs, null);
+		for (Object o : originalContext.getEntities(Object.class)) {
+			newContext.addEntity(o);
+		}
+		return newContext;
 	}
 
 	@Override

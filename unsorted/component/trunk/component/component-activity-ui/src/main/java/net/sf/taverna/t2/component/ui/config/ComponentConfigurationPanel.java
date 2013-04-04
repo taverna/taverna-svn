@@ -18,6 +18,7 @@ import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentUtil;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
+import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.component.ui.panel.ComponentListCellRenderer;
 import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationPanel;
@@ -109,9 +110,9 @@ public class ComponentConfigurationPanel
 	 */
 	@Override
 	public void noteConfiguration() {
-		ComponentActivityConfigurationBean newConfig = new ComponentActivityConfigurationBean(configBean);
-		newConfig.setComponentVersion(((ComponentVersion) componentVersionChoice.getSelectedItem()).getVersionNumber());
-		configBean = newConfig;
+		ComponentVersionIdentification newIdent = new ComponentVersionIdentification(configBean);
+		newIdent.setComponentVersion(((ComponentVersion) componentVersionChoice.getSelectedItem()).getVersionNumber());
+		configBean = new ComponentActivityConfigurationBean(newIdent);
 	}
 
 	/**
