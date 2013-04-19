@@ -173,7 +173,7 @@ public class ApplicationUserHome {
 			} else {
 				// We'll assume UNIX style is OK
 				appHome = new File(home, "."
-						+ getApplicationName().toLowerCase());
+						+ getApplicationName().toLowerCase().replace(' ', '-'));
 			}
 		}
 		if (!appHome.exists()) {
