@@ -35,9 +35,10 @@ import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.License;
 import net.sf.taverna.t2.component.registry.SharingPolicy;
-import net.sf.taverna.t2.ui.perspectives.myexperiment.model.Base64;
-import net.sf.taverna.t2.ui.perspectives.myexperiment.model.MyExperimentClient;
-import net.sf.taverna.t2.ui.perspectives.myexperiment.model.ServerResponse;
+import net.sf.taverna.t2.component.registry.myexperiment.client.Base64;
+import net.sf.taverna.t2.component.registry.myexperiment.client.MyExperimentClient;
+import net.sf.taverna.t2.component.registry.myexperiment.client.ServerResponse;
+
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;

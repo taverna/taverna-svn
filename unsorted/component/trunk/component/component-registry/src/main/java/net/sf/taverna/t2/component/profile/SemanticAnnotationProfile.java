@@ -80,18 +80,9 @@ public class SemanticAnnotationProfile {
 	public String getPredicateString() {
 		return semanticAnnotation.getPredicate();
 	}
-
-	/**
-	 * @deprecated use getPredicate().getRange() instead.
-	 */
-	public OntClass getOntClass() {
-		OntModel ontology = getOntology();
-		String ontClass = semanticAnnotation.getClazz();
-		if (ontology != null && ontClass != null) {
-			return getOntology().getOntClass(ontClass);
-		} else {
-			return null;
-		}
+	
+	public String getClassString() {
+		return semanticAnnotation.getClazz();
 	}
 
 	/**

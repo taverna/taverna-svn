@@ -109,16 +109,27 @@ public abstract class AbstractSemanticAnnotationContextualView extends Contextua
 		gbc.weighty = 0;
 		gbc.insets = new Insets(5,5,5,5);
 
-		Set<Statement> statements = model.listStatements().toSet();
+		Set<Statement> statements = model.listStatements(subject, null, (RDFNode) null).toSet();
+//		Set<Statement> statements = new HashSet<Statement>();
+//		for (Statement s : allStatements) {
+//			if (s.getSubject().equals(subject)) {
+//				statements.add(s);
+//			}
+//		}
 		for (SemanticAnnotationProfile semanticAnnotationProfile : semanticAnnotationProfiles) {
 			OntProperty predicate = semanticAnnotationProfile.getPredicate();
 			if (predicate != null) {
-				Set<Statement> statementsWithPredicate = new HashSet<Statement>();
-				for (Statement statement : statements) {
-					if (statement.getPredicate().equals(predicate)) {
-						statementsWithPredicate.add(statement);
-					}
-				}
+				Set<Statement> statementsWithPredicate = model.listStatements(subject, predicate, (RDFNode) null).toSet();
+//				for (Statement statement : statements) {
+//					Resource r = statement.getSubject();
+//					String s = r.getLocalName();
+//					if (r.isAnon()) {
+//						String t = "anon";
+//					}
+//					if (statement.getPredicate().equals(predicate)) {
+//						statementsWithPredicate.add(statement);
+//					}
+//				}
 				if (!statementsWithPredicate.isEmpty() || allowChange) {
 				panel.add(new SemanticAnnotationPanel(this, semanticAnnotationProfile,
 						statementsWithPredicate, allowChange), gbc);
@@ -136,7 +147,7 @@ public abstract class AbstractSemanticAnnotationContextualView extends Contextua
 			panel.add(new JLabel("No annotations possible"), gbc);
 		}
 		for (Statement s : statements) {
-			panel.add(new UnrecognizedStatmentPanel(s), gbc);
+			panel.add(new UnrecognizedStatementPanel(s), gbc);
 		}
 
 		gbc.weighty = 1;

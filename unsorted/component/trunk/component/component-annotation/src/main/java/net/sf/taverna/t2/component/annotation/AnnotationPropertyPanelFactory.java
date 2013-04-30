@@ -47,13 +47,6 @@ public class AnnotationPropertyPanelFactory extends PropertyPanelFactorySPI{
 	}
 
 	@Override
-	public boolean canHandleSemanticAnnotation(
-			SemanticAnnotationProfile semanticAnnotationProfile) {
-		OntProperty property = semanticAnnotationProfile.getPredicate();
-		return property.isAnnotationProperty();
-	}
-
-	@Override
 	public JComponent getInputComponent(SemanticAnnotationProfile semanticAnnotationProfile, Statement statement) {
 			JTextArea inputText = new JTextArea(20, 80);
 		if (statement != null) {
@@ -68,6 +61,16 @@ public class AnnotationPropertyPanelFactory extends PropertyPanelFactorySPI{
 	public RDFNode getNewTargetNode(JComponent component) {
 		JTextArea inputText = (JTextArea) component;
 		return ResourceFactory.createTypedLiteral(inputText.getText());
+	}
+
+	@Override
+	public int getRatingForSemanticAnnotation(
+			SemanticAnnotationProfile semanticAnnotationProfile) {
+		OntProperty property = semanticAnnotationProfile.getPredicate();
+		if (property.isAnnotationProperty()) {
+			return 100;
+		}
+		return Integer.MIN_VALUE;
 	}
 
 }

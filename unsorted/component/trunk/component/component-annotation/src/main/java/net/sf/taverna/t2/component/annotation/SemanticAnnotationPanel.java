@@ -165,10 +165,12 @@ public class SemanticAnnotationPanel extends JPanel {
 		PropertyPanelFactorySPI chosenFactory = null;
 		JComponent inputComponent = null;
 		List<PropertyPanelFactorySPI> instances = propertyPanelFactoryRegistry.getInstances();
+		int currentRating = Integer.MIN_VALUE;
 		for (PropertyPanelFactorySPI factory : instances) {
-			if (factory.canHandleSemanticAnnotation(semanticAnnotationProfile)) {
+			int ratingForSemanticAnnotation = factory.getRatingForSemanticAnnotation(semanticAnnotationProfile);
+			if (ratingForSemanticAnnotation > currentRating) {
+				currentRating = ratingForSemanticAnnotation;
 				chosenFactory = factory;
-				break;
 			}
 		}
 		

@@ -29,6 +29,7 @@ import java.net.URL;
 
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.workbench.file.FileManager;
+import net.sf.taverna.t2.workbench.file.impl.FileManagerImpl;
 import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
@@ -59,7 +60,7 @@ public class ComponentFamilyTest {
 		componentRegistry.addComponentProfile(componentProfile, null, null);
 		URL dataflowUrl = getClass().getClassLoader().getResource("beanshell_test.t2flow");
 		assertNotNull(dataflowUrl);
-		dataflow = FileManager.getInstance().openDataflowSilently(new T2FlowFileType(), dataflowUrl).getDataflow();
+		dataflow = new FileManagerImpl().openDataflowSilently(new T2FlowFileType(), dataflowUrl).getDataflow();
 		componentFamily = componentRegistry.createComponentFamily("Test Component Family", componentProfile, "Some description", null, null);
 	}
 

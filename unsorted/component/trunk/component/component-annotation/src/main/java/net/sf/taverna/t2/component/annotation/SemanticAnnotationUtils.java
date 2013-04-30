@@ -54,7 +54,6 @@ public class SemanticAnnotationUtils {
 	/* Pretend-base for making relative URIs */
 	private static String BASE = "widget://4aa8c93c-3212-487c-a505-3e337adf54a3/";
 
-
 	public static String getDisplayName(RDFNode node) {
 		if (node == null) {
 			return "unknown";

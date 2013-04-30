@@ -46,6 +46,7 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.utils.AnnotationTools;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 
@@ -55,6 +56,8 @@ import org.jdom.output.XMLOutputter;
  * @author David Withers
  */
 public class MyExperimentComponentFamily implements ComponentFamily {
+	
+	private static Logger logger = Logger.getLogger(MyExperimentComponentFamily.class);
 
 	private final MyExperimentComponentRegistry componentRegistry;
 	private final String uri;
@@ -184,6 +187,7 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 				if (internalPackItem.getName().equals("pack")) {
 					String resourceUri = internalPackItem.getAttributeValue("resource");
 					Element resource = componentRegistry.getResource(resourceUri + ".xml");
+					logger.info("Getting resource " + resourceUri + ".xml");
 					String packUri = resource.getAttributeValue("uri");
 					for (Element tag : componentRegistry.getResourceElements(packUri, "tags")) {
 						String tagText = tag.getTextTrim();

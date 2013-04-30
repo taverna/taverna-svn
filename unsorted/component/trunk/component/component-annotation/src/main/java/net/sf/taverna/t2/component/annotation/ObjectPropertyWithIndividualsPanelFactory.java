@@ -97,13 +97,15 @@ public class ObjectPropertyWithIndividualsPanelFactory extends PropertyPanelFact
 
 
 	@Override
-	public boolean canHandleSemanticAnnotation(
+	public int getRatingForSemanticAnnotation(
 			SemanticAnnotationProfile semanticAnnotationProfile) {
 		OntProperty property = semanticAnnotationProfile.getPredicate();
 		if (property.isObjectProperty()) {
-			return (!semanticAnnotationProfile.getIndividuals().isEmpty());
+			if (!semanticAnnotationProfile.getIndividuals().isEmpty()) {
+				return 100;
+			}
 		}
-		return false;
+		return Integer.MIN_VALUE;
 	}
 
 

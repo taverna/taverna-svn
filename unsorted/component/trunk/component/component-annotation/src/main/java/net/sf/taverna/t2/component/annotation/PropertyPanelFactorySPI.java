@@ -34,10 +34,11 @@ import com.hp.hpl.jena.rdf.model.Statement;
  */
 public abstract class PropertyPanelFactorySPI {
 
-	public abstract boolean canHandleSemanticAnnotation(SemanticAnnotationProfile semanticAnnotationProfile);
-
 	public abstract JComponent getInputComponent(SemanticAnnotationProfile semanticAnnotationProfile, Statement statement);
 	
 	public abstract RDFNode getNewTargetNode(JComponent component);
+
+	public abstract int getRatingForSemanticAnnotation(
+			SemanticAnnotationProfile semanticAnnotationProfile);
 
 }

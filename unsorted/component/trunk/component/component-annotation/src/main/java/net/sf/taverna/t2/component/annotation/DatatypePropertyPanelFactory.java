@@ -20,35 +20,17 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.annotation;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
+import java.util.Calendar;
+import java.util.Date;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.border.EmptyBorder;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerDateModel;
 
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
 
-import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntProperty;
-import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 
@@ -64,28 +46,44 @@ public class DatatypePropertyPanelFactory extends PropertyPanelFactorySPI{
 	}
 
 	@Override
-	public boolean canHandleSemanticAnnotation(
-			SemanticAnnotationProfile semanticAnnotationProfile) {
-		OntProperty property = semanticAnnotationProfile.getPredicate();
-		return property.isDatatypeProperty();
-	}
-
-	@Override
 	public JComponent getInputComponent(SemanticAnnotationProfile semanticAnnotationProfile, Statement statement) {
-		JTextArea inputText = new JTextArea(20, 80);
-		if (statement != null) {
-			inputText.setText(SemanticAnnotationUtils.getDisplayName(statement.getObject()));
-		}
-		inputText.setLineWrap(true);
-		inputText.setWrapStyleWord(true);
-		return inputText;
+		String classString = semanticAnnotationProfile.getClassString();
+		JSpinner s = new JSpinner(new SpinnerDateModel(new Date(), null, null,
+		        Calendar.MONTH));
+		    JSpinner.DateEditor de = new JSpinner.DateEditor(s, "MM/yy");
+		    s.setEditor(de);
+		return s;
+//		String uri = XSDDatatype.XSDdateTime.getURI();
+//		if (uri.equals(classString)) {
+//			String fred = "hello";
+//		}
+//		JTextArea inputText = new JTextArea(20, 80);
+//		if (statement != null) {
+//			inputText.setText(SemanticAnnotationUtils.getDisplayName(statement.getObject()));
+//		}
+//		inputText.setLineWrap(true);
+//		inputText.setWrapStyleWord(true);
+//		return inputText;
 	}
 
 
 		@Override
 		public RDFNode getNewTargetNode(JComponent component) {
-			JTextArea inputText = (JTextArea) component;
-			return ResourceFactory.createTypedLiteral(inputText.getText());
+//			JTextArea inputText = (JTextArea) component;
+//			return ResourceFactory.createTypedLiteral(inputText.getText());
+			JSpinner spinner = (JSpinner) component;
+			Date d = (Date) spinner.getValue();
+			return ResourceFactory.createTypedLiteral(d);
+		}
+
+		@Override
+		public int getRatingForSemanticAnnotation(
+				SemanticAnnotationProfile semanticAnnotationProfile) {
+			OntProperty property = semanticAnnotationProfile.getPredicate();
+			if (property.isDatatypeProperty()) {
+				return 100;
+			}
+			return Integer.MIN_VALUE;
 		}
 
 

@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
 
+import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 
@@ -16,15 +17,6 @@ import com.hp.hpl.jena.rdf.model.Statement;
  *
  */
 public class FallbackPropertyPanelFactory extends PropertyPanelFactorySPI {
-
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.component.annotation.PropertyPanelFactorySPI#canHandleSemanticAnnotation(net.sf.taverna.t2.component.profile.SemanticAnnotationProfile)
-	 */
-	@Override
-	public boolean canHandleSemanticAnnotation(
-			SemanticAnnotationProfile semanticAnnotationProfile) {
-		return true;
-	}
 
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.component.annotation.PropertyPanelFactorySPI#getInputComponent(net.sf.taverna.t2.component.profile.SemanticAnnotationProfile, com.hp.hpl.jena.rdf.model.Statement)
@@ -43,5 +35,12 @@ public class FallbackPropertyPanelFactory extends PropertyPanelFactorySPI {
 	public RDFNode getNewTargetNode(JComponent component) {
 		return null;
 	}
+
+	@Override
+	public int getRatingForSemanticAnnotation(
+			SemanticAnnotationProfile semanticAnnotationProfile) {
+		return 0;
+	}
+
 
 }

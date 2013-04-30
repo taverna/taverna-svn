@@ -20,6 +20,7 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.myexperiment;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -78,6 +79,7 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 
 	@Override
 	public String getDescription() {
+		logger.error("Getting workflow from myExperiment");
 		if (description == null) {
 			try {
 				Element workflowElement = componentRegistry.getPackItem(uri, "workflow");
@@ -100,15 +102,34 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 			resourceUri = StringUtils.substringBeforeLast(resourceUri, "?");
 			String version = workflowElement.getAttributeValue("version");
 			String downloadUri = resourceUri + "/download?version=" + version;
+			T2DataflowOpener opener = new T2DataflowOpener();
+			
+			DataflowInfo info;
 			try {
-				DataflowInfo info = FileManager.getInstance().openDataflowSilently(T2_FLOW_FILE_TYPE, new URL(downloadUri));
-				dataflow = info.getDataflow();
+				info = opener.openDataflow(T2_FLOW_FILE_TYPE, new URL(downloadUri));
 			} catch (OpenException e) {
-				throw new ComponentRegistryException("Unable to open dataflow from " + downloadUri, e);
+				logger.error(e);
+				throw new ComponentRegistryException("Unable to open dataflow", e);
 			} catch (MalformedURLException e) {
-				throw new ComponentRegistryException("Unable to open dataflow from " + downloadUri, e);
+				logger.error(e);
+				throw new ComponentRegistryException("Unable to open dataflow", e);
 			}
-		return dataflow;
+
+//			try {
+//				DataflowInfo info = FileManager.getInstance().openDataflowSilently(T2_FLOW_FILE_TYPE, new URL(downloadUri));
+//				dataflow = info.getDataflow();
+//			} catch (OpenException e) {
+//				System.err.println("Unable to open dataflow from " + downloadUri);
+//				throw new ComponentRegistryException("Unable to open dataflow from " + downloadUri, e);
+//			} catch (MalformedURLException e) {
+//				System.err.println("Unable to open dataflow from " + downloadUri);
+//				throw new ComponentRegistryException("Unable to open dataflow from " + downloadUri, e);
+//			}
+//			catch (Exception e) {
+//				System.err.println("Unable to open dataflow from " + downloadUri);
+//				throw new ComponentRegistryException("Unable to open dataflow from " + downloadUri, e);
+//			}
+		return info.getDataflow();
 	}
 
 	@Override
