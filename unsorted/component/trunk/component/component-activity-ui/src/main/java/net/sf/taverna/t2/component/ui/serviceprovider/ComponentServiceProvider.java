@@ -14,12 +14,9 @@ import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentUtil;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
-import net.sf.taverna.t2.component.registry.local.LocalComponentRegistry;
-import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
 import net.sf.taverna.t2.component.ui.panel.RegistryAndFamilyChooserPanel;
 import net.sf.taverna.t2.servicedescriptions.AbstractConfigurableServiceProvider;
 import net.sf.taverna.t2.servicedescriptions.CustomizedConfigurePanelProvider;
-import net.sf.taverna.t2.ui.perspectives.myexperiment.model.MyExperimentClient;
 
 import org.apache.log4j.Logger;
 
@@ -31,8 +28,6 @@ public class ComponentServiceProvider extends
 		.create("http://taverna.sf.net/2012/service-provider/component");
 	
 	private static Logger logger = Logger.getLogger(ComponentServiceProvider.class);
-	
-	MyExperimentClient myExperimentClient = new MyExperimentClient(logger);
 	
 	public ComponentServiceProvider() {
 		super(new ComponentServiceProviderConfig());
