@@ -25,6 +25,7 @@ import java.util.Date;
 
 import javax.swing.JComponent;
 import javax.swing.JSpinner;
+import javax.swing.JTextArea;
 import javax.swing.SpinnerDateModel;
 
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
@@ -47,33 +48,33 @@ public class DatatypePropertyPanelFactory extends PropertyPanelFactorySPI{
 
 	@Override
 	public JComponent getInputComponent(SemanticAnnotationProfile semanticAnnotationProfile, Statement statement) {
-		String classString = semanticAnnotationProfile.getClassString();
-		JSpinner s = new JSpinner(new SpinnerDateModel(new Date(), null, null,
-		        Calendar.MONTH));
-		    JSpinner.DateEditor de = new JSpinner.DateEditor(s, "MM/yy");
-		    s.setEditor(de);
-		return s;
+//		String classString = semanticAnnotationProfile.getClassString();
+//		JSpinner s = new JSpinner(new SpinnerDateModel(new Date(), null, null,
+//		        Calendar.MONTH));
+//		    JSpinner.DateEditor de = new JSpinner.DateEditor(s, "MM/yy");
+//		    s.setEditor(de);
+//		return s;
 //		String uri = XSDDatatype.XSDdateTime.getURI();
 //		if (uri.equals(classString)) {
 //			String fred = "hello";
 //		}
-//		JTextArea inputText = new JTextArea(20, 80);
-//		if (statement != null) {
-//			inputText.setText(SemanticAnnotationUtils.getDisplayName(statement.getObject()));
-//		}
-//		inputText.setLineWrap(true);
-//		inputText.setWrapStyleWord(true);
-//		return inputText;
+		JTextArea inputText = new JTextArea(20, 80);
+		if (statement != null) {
+			inputText.setText(SemanticAnnotationUtils.getDisplayName(statement.getObject()));
+		}
+		inputText.setLineWrap(true);
+		inputText.setWrapStyleWord(true);
+		return inputText;
 	}
 
 
 		@Override
 		public RDFNode getNewTargetNode(JComponent component) {
-//			JTextArea inputText = (JTextArea) component;
-//			return ResourceFactory.createTypedLiteral(inputText.getText());
-			JSpinner spinner = (JSpinner) component;
-			Date d = (Date) spinner.getValue();
-			return ResourceFactory.createTypedLiteral(d);
+			JTextArea inputText = (JTextArea) component;
+			return ResourceFactory.createTypedLiteral(inputText.getText());
+//			JSpinner spinner = (JSpinner) component;
+//			Date d = (Date) spinner.getValue();
+//			return ResourceFactory.createTypedLiteral(d);
 		}
 
 		@Override
