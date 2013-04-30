@@ -57,11 +57,6 @@
 			<version>${t2.ui.impl.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.ui-exts</groupId>
-			<artifactId>perspective-myexperiment</artifactId>
-			<version>1.4.1</version>
-		</dependency>
-		<dependency>
 			<groupId>net.sf.taverna.t2.lang</groupId>
 			<artifactId>ui</artifactId>
 			<version>1.4</version>
