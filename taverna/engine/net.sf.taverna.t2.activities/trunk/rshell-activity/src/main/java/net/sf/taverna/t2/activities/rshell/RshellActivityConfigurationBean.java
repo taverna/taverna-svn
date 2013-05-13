@@ -42,9 +42,6 @@ import net.sf.taverna.t2.workflowmodel.processor.config.ConfigurationProperty;
 public class RshellActivityConfigurationBean extends
 		ActivityPortsDefinitionBean {
 
-	/** false for old r versions, true for newer (1.6+) */
-	private boolean rVersion;
-
 	private String script;
 
 	private RshellConnectionSettings connectionSettings;
@@ -109,7 +106,7 @@ public class RshellActivityConfigurationBean extends
 	 * @param connectionSettings
 	 *            the new connectionSettings
 	 */
-	@ConfigurationProperty(name = "connectionSettings", label = "Connection Settings", description = "Settings for connecting to the R server", required = false)
+	@ConfigurationProperty(name = "connection", label = "Connection Settings", description = "Settings for connecting to the R server", required = false)
 	public void setConnectionSettings(
 			RshellConnectionSettings connectionSettings) {
 		this.connectionSettings = connectionSettings;

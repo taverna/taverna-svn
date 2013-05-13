@@ -1,20 +1,20 @@
 /*******************************************************************************
  * Copyright (C) 2009 Ingo Wassink of University of Twente, Netherlands and
- * The University of Manchester   
- * 
+ * The University of Manchester
+ *
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
- * 
+ *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public License
  *  as published by the Free Software Foundation; either version 2.1 of
  *  the License, or (at your option) any later version.
- *    
+ *
  *  This program is distributed in the hope that it will be useful, but
  *  WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
- *    
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
@@ -35,9 +35,9 @@ import net.sf.taverna.t2.workflowmodel.processor.config.ConfigurationProperty;
 
 /**
  * Class containing the connection settings
- * 
+ *
  */
-@ConfigurationBean(uri = RshellActivity.URI + "/connection/configuration")
+@ConfigurationBean(uri = RshellActivity.URI + "#Connection")
 public class RshellConnectionSettings implements Serializable {
 	public static final String DEFAULT_HOST = "localhost";
 
@@ -72,7 +72,7 @@ public class RshellConnectionSettings implements Serializable {
 
 	/**
 	 * Constructor of the rshell connection settings
-	 * 
+	 *
 	 * @param host
 	 *            the host name
 	 * @param port
@@ -95,7 +95,7 @@ public class RshellConnectionSettings implements Serializable {
 
 	/**
 	 * Method for getting the host
-	 * 
+	 *
 	 * @return the host
 	 */
 	public String getHost() {
@@ -104,18 +104,18 @@ public class RshellConnectionSettings implements Serializable {
 
 	/**
 	 * Method for setting the host
-	 * 
+	 *
 	 * @param host
 	 *            the new host value
 	 */
-	@ConfigurationProperty(name = "host", label = "Host", description = "The host name for the R server", required = false)
+	@ConfigurationProperty(name = "hostname", label = "Host", description = "The host name for the R server", required = false)
 	public void setHost(String host) {
 		this.host = (host == null) ? DEFAULT_HOST : host;
 	}
 
 	/**
 	 * Method for getting the port number
-	 * 
+	 *
 	 * @return the port number
 	 */
 	public int getPort() {
@@ -124,20 +124,20 @@ public class RshellConnectionSettings implements Serializable {
 
 	/**
 	 * Method for setting the port value
-	 * 
+	 *
 	 * @param port
 	 *            the new port value
 	 */
 	@ConfigurationProperty(name = "port", label = "Port", description = "The port number for the R server", required = false)
 	public void setPort(int port) {
-		
+
 			this.port = (port < 0 || port > 65535) ? DEFAULT_PORT : port;
-		
+
 	}
 
 	/**
 	 * Method for setting the port value
-	 * 
+	 *
 	 * @param port
 	 *            the new port value
 	 */
@@ -147,7 +147,7 @@ public class RshellConnectionSettings implements Serializable {
 
 	/**
 	 * Method for getting the username
-	 * 
+	 *
 	 * @return the username
 	 */
 	public String getUsername() {
@@ -156,7 +156,7 @@ public class RshellConnectionSettings implements Serializable {
 
 	/**
 	 * Method for setting the username
-	 * 
+	 *
 	 * @param username
 	 *            the new username
 	 */
@@ -167,7 +167,7 @@ public class RshellConnectionSettings implements Serializable {
 
 	/**
 	 * Method for getting the password
-	 * 
+	 *
 	 * @return the password
 	 */
 	public String getPassword() {
@@ -176,7 +176,7 @@ public class RshellConnectionSettings implements Serializable {
 
 	/**
 	 * Method for setting the password
-	 * 
+	 *
 	 * @param password
 	 *            the new password
 	 */
@@ -187,7 +187,7 @@ public class RshellConnectionSettings implements Serializable {
 
 	/**
 	 * Method for getting the keep session alive setting
-	 * 
+	 *
 	 * @return the value for keep session alive
 	 */
 	public boolean isKeepSessionAlive() {
@@ -196,7 +196,7 @@ public class RshellConnectionSettings implements Serializable {
 
 	/**
 	 * Method for setting the keep session alive
-	 * 
+	 *
 	 * @param keepSessionAlive
 	 *            the new value
 	 */
@@ -207,7 +207,7 @@ public class RshellConnectionSettings implements Serializable {
 
 	/**
 	 * Method for setting the keep session alive
-	 * 
+	 *
 	 * @param keepSessionAlive
 	 *            the new value
 	 */
@@ -220,7 +220,7 @@ public class RshellConnectionSettings implements Serializable {
 	 * Method for overriding the equals method Two connections settings are
 	 * equal, if all their settings are equal (host, port, username, password
 	 * and keep session alive)
-	 * 
+	 *
 	 * @param anObject
 	 *            the object to compare to
 	 * @return true if the connections are equal
@@ -239,7 +239,7 @@ public class RshellConnectionSettings implements Serializable {
 
 	/**
 	 * Method overriding the hashcode function
-	 * 
+	 *
 	 * @return the hash code
 	 */
 	public int hashCode() {
