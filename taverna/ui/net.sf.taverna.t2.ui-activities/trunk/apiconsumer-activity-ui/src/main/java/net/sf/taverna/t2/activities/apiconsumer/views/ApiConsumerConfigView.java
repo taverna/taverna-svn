@@ -40,14 +40,17 @@ import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityCon
 
 import org.apache.log4j.Logger;
 
+import uk.org.taverna.scufl2.api.activity.Activity;
+import uk.org.taverna.scufl2.api.configurations.Configuration;
+
 /**
  * @author alanrw
  *
  */
-public class ApiConsumerConfigView extends ActivityConfigurationPanel<ApiConsumerActivityConfigurationBean> {
+public class ApiConsumerConfigView extends ActivityConfigurationPanel {
 
-	private ApiConsumerActivity activity;
-	private ApiConsumerActivityConfigurationBean configuration;
+	private Activity activity;
+	private Configuration configuration;
 
 	// New configuration for classloader sharing
 	private ClassLoaderSharing newClassLoaderSharing;
@@ -62,7 +65,7 @@ public class ApiConsumerConfigView extends ActivityConfigurationPanel<ApiConsume
 	 * @see net.sf.taverna.t2.workbench.ui.views.contextualviews.ActivityConfigurationPanel#getConfiguration()
 	 */
 	@Override
-	public ApiConsumerActivityConfigurationBean getConfiguration() {
+	public Configuration getConfiguration() {
 		return configuration;
 	}
 
@@ -85,6 +88,7 @@ public class ApiConsumerConfigView extends ActivityConfigurationPanel<ApiConsume
 	 */
 	@Override
 	public void noteConfiguration() {
+		get
 		ApiConsumerActivityConfigurationBean newConfiguration = (ApiConsumerActivityConfigurationBean) cloneBean(configuration);
 		newConfiguration.setClassLoaderSharing(newClassLoaderSharing);
 		newConfiguration.setLocalDependencies((LinkedHashSet<String>) newLocalDependencies.clone());
@@ -92,10 +96,8 @@ public class ApiConsumerConfigView extends ActivityConfigurationPanel<ApiConsume
 		configuration = newConfiguration;
 	}
 
-	public ApiConsumerConfigView(ApiConsumerActivity activity) {
+	public ApiConsumerConfigView(Activity activity) {
 		this.activity = activity;
-
-
 		initialise();
 	}
 

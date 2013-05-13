@@ -11,6 +11,7 @@
 			<property name="editManager" ref="editManager" />
 			<property name="fileManager" ref="fileManager" />
 			<property name="activityIconManager" ref="activityIconManager" />
+			<property name="serviceDescriptionRegistry" ref="serviceDescriptionRegistry" />
 	</bean>
 
 	<bean id="ApiConsumerContextualViewFactory" class="net.sf.taverna.t2.activities.apiconsumer.views.ApiConsumerContextualViewFactory">

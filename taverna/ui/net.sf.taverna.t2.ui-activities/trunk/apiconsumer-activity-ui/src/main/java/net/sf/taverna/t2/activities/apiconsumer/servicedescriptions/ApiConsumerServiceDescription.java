@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright (C) 2007 The University of Manchester   
- * 
+ * Copyright (C) 2007 The University of Manchester
+ *
  *  Modifications to the initial code base are copyright of their
  *  respective authors, or their employers as appropriate.
- * 
+ *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public License
  *  as published by the Free Software Foundation; either version 2.1 of
  *  the License, or (at your option) any later version.
- *    
+ *
  *  This program is distributed in the hope that it will be useful, but
  *  WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
- *    
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
@@ -34,45 +34,45 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
  * @author alanrw
  *
  */
-public class ApiConsumerServiceDescription extends ServiceDescription<ApiConsumerActivityConfigurationBean>{
+public class ApiConsumerServiceDescription extends ServiceDescription {
 
 	static final String API_CONSUMER_SERVICE = "ApiConsumer service";
 
 	/**
-	 * Enclosing API consumer this method belong's to 
+	 * Enclosing API consumer this method belong's to
 	 * (from the XML API consumer definition file).
-	 */ 
+	 */
 	private String apiConsumerName;
 
 	/**
-	 * Enclosing API consumer's description 
+	 * Enclosing API consumer's description
 	 * (from the XML API consumer definition file).
 	 */
 	private String apiConsumerDescription;
-	
+
 	/**
 	 * Method description.
-	 */ 
+	 */
 	private String description;
-	
+
 	/**
 	 * The name of the class the method will be invoked on.
-	 */ 
+	 */
 	private String className;
 
 	/**
 	 * The name of the method to invoke.
-	 */ 
+	 */
 	private String methodName;
 
 	/**
 	 * List of parameter names.
-	 */ 
+	 */
 	private String[] parameterNames;
 
 	/**
 	 * List of parameter dimensions (0 for single object, 1 for a list of objects, etc.)
-	 */ 
+	 */
 	private int[] parameterDimensions;
 
 	/**
@@ -82,7 +82,7 @@ public class ApiConsumerServiceDescription extends ServiceDescription<ApiConsume
 
 	/**
 	 * Method's return parameter type.
-	 */ 
+	 */
 	private String returnType;
 
 	/**
@@ -99,8 +99,8 @@ public class ApiConsumerServiceDescription extends ServiceDescription<ApiConsume
 	 * 	Is the method  to be invoked a contructor?
 	 */
 	private boolean isConstructor;
-	
-	
+
+
 	@Override
 	public Class<? extends Activity<ApiConsumerActivityConfigurationBean>> getActivityClass() {
 		return ApiConsumerActivity.class;

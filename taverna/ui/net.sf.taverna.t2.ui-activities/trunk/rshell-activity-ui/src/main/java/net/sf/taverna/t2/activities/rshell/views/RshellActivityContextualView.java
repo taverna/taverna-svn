@@ -28,21 +28,21 @@
 package net.sf.taverna.t2.activities.rshell.views;
 
 import java.awt.Frame;
+import java.net.URI;
 
 import javax.swing.Action;
 
-import net.sf.taverna.t2.activities.rshell.RShellPortSymanticTypeBean;
-import net.sf.taverna.t2.activities.rshell.RshellActivity;
-import net.sf.taverna.t2.activities.rshell.RshellActivityConfigurationBean;
-import net.sf.taverna.t2.activities.rshell.RshellConnectionSettings;
+import uk.org.taverna.scufl2.api.activity.Activity;
+import uk.org.taverna.scufl2.api.port.InputActivityPort;
+import uk.org.taverna.scufl2.api.port.OutputActivityPort;
+import uk.org.taverna.scufl2.api.property.PropertyResource;
+
+import net.sf.taverna.t2.servicedescriptions.ServiceDescriptionRegistry;
 import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
 import net.sf.taverna.t2.workbench.configuration.colour.ColourManager;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.ui.actions.activity.HTMLBasedActivityContextualView;
-import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
-import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
-import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 
 /**
  * A simple non-editable HTML table view over a {@link RshellActivity}.
@@ -51,20 +51,22 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputP
  * @author Ian Dunlop
  *
  */
-public class RshellActivityContextualView extends
-		HTMLBasedActivityContextualView<RshellActivityConfigurationBean> {
+public class RshellActivityContextualView extends HTMLBasedActivityContextualView {
 
+	private static final URI ACTIVITY_TYPE = URI.create("http://ns.taverna.org.uk/2010/activity/rshell");
 	private static final long serialVersionUID = -2423232268033935502L;
 	private final EditManager editManager;
 	private final FileManager fileManager;
 	private final ActivityIconManager activityIconManager;
+	private final ServiceDescriptionRegistry serviceDescriptionRegistry;
 
-	public RshellActivityContextualView(Activity<?> activity, EditManager editManager,
-			FileManager fileManager, ActivityIconManager activityIconManager, ColourManager colourManager) {
+	public RshellActivityContextualView(Activity activity, EditManager editManager,
+			FileManager fileManager, ActivityIconManager activityIconManager, ColourManager colourManager, ServiceDescriptionRegistry serviceDescriptionRegistry) {
 		super(activity, colourManager);
 		this.editManager = editManager;
 		this.fileManager = fileManager;
 		this.activityIconManager = activityIconManager;
+		this.serviceDescriptionRegistry = serviceDescriptionRegistry;
 		init();
 	}
 
@@ -74,55 +76,41 @@ public class RshellActivityContextualView extends
 
 	@Override
 	protected String getRawTableRowsHtml() {
-		RshellConnectionSettings connectionSettings = getConfigBean().getConnectionSettings();
-
-		String html = "";
-		html = html + "<tr><th>Input Port Name</th>" + "<th>Semantic Type</th>" + "</tr>";
-		for (ActivityInputPortDefinitionBean bean : getConfigBean().getInputPortDefinitions()) {
-			html = html + "<tr><td>" + bean.getName() + "</td><td>";
-
+		StringBuilder html = new StringBuilder();
+		html.append("<tr><th>Input Port Name</th><th>Semantic Type</th></tr>");
+		for (InputActivityPort inputActivityPort : getActivity().getInputPorts()) {
+			html.append("<tr><td>" + inputActivityPort.getName() + "</td><td>");
 			for (RShellPortSymanticTypeBean inputType : getConfigBean().getInputSymanticTypes()) {
-				if (bean.getName().equalsIgnoreCase(inputType.getName())) {
-					html = html + inputType.getSymanticType().description + "</td></tr>";
+				if (inputActivityPort.getName().equalsIgnoreCase(inputType.getName())) {
+					html.append(inputType.getSymanticType().description + "</td></tr>");
 					break;
 				}
 			}
 		}
-		html = html + "<tr><th>Output Port Name</th>" + "<th>Semantic Type</th>" + "</tr>";
-		for (ActivityOutputPortDefinitionBean bean : getConfigBean().getOutputPortDefinitions()) {
-			html = html + "<tr><td>" + bean.getName() + "</td><td>";
+		html.append("<tr><th>Output Port Name</th><th>Depth</th></tr>");
+		for (OutputActivityPort outputActivityPort : getActivity().getOutputPorts()) {
+			html.append("<tr><td>" + outputActivityPort.getName() + "</td><td>");
 			for (RShellPortSymanticTypeBean outputType : getConfigBean().getOutputSymanticTypes()) {
-				if (bean.getName().equalsIgnoreCase(outputType.getName())) {
-					html = html + outputType.getSymanticType().description + "</td></tr>";
+				if (outputActivityPort.getName().equalsIgnoreCase(outputType.getName())) {
+					html.append(outputType.getSymanticType().description + "</td></tr>");
 					break;
 				}
 			}
 		}
-		if (connectionSettings != null) {
-			String username = connectionSettings.getUsername();
-			if (username != null) {
-				html = html + "<tr><th colspan=\"2\">Connection Settings</th></tr>"
-						+ "<tr><td>User</td><td>" + username + "</td></tr>";
-			}
-			String password = connectionSettings.getPassword();
-			if (password != null) {
 
-				html = html + "<tr><td>Password</td><td>" + password + "</td></tr>";
-			}
-			String host = connectionSettings.getHost();
+		PropertyResource connection = getConfigBean().getPropertyResource().getPropertyAsResource(ACTIVITY_TYPE.resolve("#connection"));
+		if (connection != null) {
+			String host = connection.getPropertyAsString(ACTIVITY_TYPE.resolve("#hostname"));
 			if (host != null) {
-
-				html = html + "<tr><td>Host</td><td>" + host + "</td></tr>";
-				int port = connectionSettings.getPort();
-
-				html = html + "<tr><td>Port</td><td>" + port + "</td></tr>";
-				boolean keepSessionAlive = connectionSettings.isKeepSessionAlive();
-				html = html + "<tr><td>Keep Session Alive</td><td>" + keepSessionAlive
-						+ "</td></tr>";
+				String port = connection.getPropertyAsString(ACTIVITY_TYPE.resolve("#port"));
+				String keepSessionAlive = connection.getPropertyAsString(ACTIVITY_TYPE.resolve("#keepSessionAlive"));
+				html.append("<tr><td>Host</td><td>" + host + "</td></tr>");
+				html.append("<tr><td>Port</td><td>" + port + "</td></tr>");
+				html.append("<tr><td>Keep Session Alive</td><td>" + keepSessionAlive + "</td></tr>");
 
 			}
 		}
-		return html;
+		return html.toString();
 	}
 
 	@Override
@@ -132,9 +120,8 @@ public class RshellActivityContextualView extends
 
 	@Override
 	public Action getConfigureAction(Frame owner) {
-		return new RshellActivityConfigurationAction((RshellActivity) getActivity(), owner,
-				editManager, fileManager, activityIconManager);
-		// return null;
+		return new RshellActivityConfigurationAction(getActivity(), owner,
+				editManager, fileManager, activityIconManager, serviceDescriptionRegistry);
 	}
 
 	@Override

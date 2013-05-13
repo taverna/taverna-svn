@@ -26,9 +26,11 @@ import java.awt.event.ActionEvent;
 import javax.swing.Action;
 import javax.swing.JDialog;
 
-import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivity;
-import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivityConfigurationBean;
+import uk.org.taverna.scufl2.api.activity.Activity;
+import uk.org.taverna.scufl2.api.configurations.Configuration;
+
 import net.sf.taverna.t2.activities.apiconsumer.views.ApiConsumerConfigView;
+import net.sf.taverna.t2.servicedescriptions.ServiceDescriptionRegistry;
 import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.FileManager;
@@ -49,7 +51,7 @@ import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityCon
 public class ApiConsumerActivityConfigurationAction extends ActivityConfigurationAction {
 
 	// Configuration before any changes have been done in this dialog
-	private ApiConsumerActivityConfigurationBean configuration;
+	private Configuration configuration;
 
 	public static final String CONFIGURE_APICONSUMER_ACTIVITY = "Configure Api Consumer";
 
@@ -57,15 +59,13 @@ public class ApiConsumerActivityConfigurationAction extends ActivityConfiguratio
 
 	private final FileManager fileManager;
 
-	public ApiConsumerActivityConfigurationAction(ApiConsumerActivity activity, Frame owner,
+	public ApiConsumerActivityConfigurationAction(Activity activity, Frame owner,
 			EditManager editManager, FileManager fileManager,
-			ActivityIconManager activityIconManager) {
-		super(activity, activityIconManager);
+			ActivityIconManager activityIconManager, ServiceDescriptionRegistry serviceDescriptionRegistry) {
+		super(activity, activityIconManager, serviceDescriptionRegistry);
 		this.editManager = editManager;
 		this.fileManager = fileManager;
 		putValue(Action.NAME, CONFIGURE_APICONSUMER_ACTIVITY);
-		this.configuration = activity.getConfiguration();
-
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -74,10 +74,10 @@ public class ApiConsumerActivityConfigurationAction extends ActivityConfiguratio
 			currentDialog.toFront();
 			return;
 		}
-		final ApiConsumerConfigView apiConfigView = new ApiConsumerConfigView(
-				(ApiConsumerActivity) getActivity());
-		final ActivityConfigurationDialog<ApiConsumerActivity, ApiConsumerActivityConfigurationBean> dialog = new ActivityConfigurationDialog<ApiConsumerActivity, ApiConsumerActivityConfigurationBean>(
-				getActivity(), apiConfigView, editManager, fileManager);
+//		Configuration currentConfiguration = scufl2Tools.configurationFor(activity, activity.getParent());
+		final ApiConsumerConfigView apiConfigView = new ApiConsumerConfigView(getActivity());
+		final ActivityConfigurationDialog dialog = new ActivityConfigurationDialog(
+				getActivity(), apiConfigView, editManager);
 
 		ActivityConfigurationAction.setDialog(getActivity(), dialog, fileManager);
 

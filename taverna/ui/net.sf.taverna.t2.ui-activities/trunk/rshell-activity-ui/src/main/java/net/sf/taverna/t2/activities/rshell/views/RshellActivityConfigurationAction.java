@@ -34,43 +34,40 @@ import javax.swing.Action;
 import javax.swing.JDialog;
 
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
-import net.sf.taverna.t2.activities.rshell.RshellActivityConfigurationBean;
+import net.sf.taverna.t2.servicedescriptions.ServiceDescriptionRegistry;
 import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationAction;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationDialog;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationPanel;
+import uk.org.taverna.scufl2.api.activity.Activity;
 
 /**
- * Pops up a config view for an {@link RshellActivity} and then re-configs the
- * activity with new settings when the user clicks OK on the view
+ * Pops up a config view for an {@link RshellActivity} and then re-configs the activity with new
+ * settings when the user clicks OK on the view
  *
  * @author Ian Dunlop
  *
  */
-public class RshellActivityConfigurationAction
-		extends
-		ActivityConfigurationAction<RshellActivity, RshellActivityConfigurationBean> {
+public class RshellActivityConfigurationAction extends ActivityConfigurationAction {
 
-	private Frame owner;
 	public static final String EDIT_RSHELL_SCRIPT = "Edit Rshell script";
 	private final EditManager editManager;
 	private final FileManager fileManager;
 
-	public RshellActivityConfigurationAction(RshellActivity activity,
-			Frame owner, EditManager editManager, FileManager fileManager, ActivityIconManager activityIconManager) {
-		super(activity, activityIconManager);
+	public RshellActivityConfigurationAction(Activity activity, Frame owner,
+			EditManager editManager, FileManager fileManager,
+			ActivityIconManager activityIconManager, ServiceDescriptionRegistry serviceDescriptionRegistry) {
+		super(activity, activityIconManager, serviceDescriptionRegistry);
 		this.editManager = editManager;
 		this.fileManager = fileManager;
 		putValue(Action.NAME, EDIT_RSHELL_SCRIPT);
-		this.owner = owner;
 	}
 
 	/**
-	 * Pops up a {@link JDialog} with the {@link RshellActivityConfigView} and
-	 * provides a way to re-config the {@link RshellActivity} when the user
-	 * clicks OK
+	 * Pops up a {@link JDialog} with the {@link RshellActivityConfigView} and provides a way to
+	 * re-config the {@link RshellActivity} when the user clicks OK
 	 */
 	public void actionPerformed(ActionEvent e) {
 		JDialog currentDialog = ActivityConfigurationAction.getDialog(getActivity());
@@ -78,10 +75,8 @@ public class RshellActivityConfigurationAction
 			currentDialog.toFront();
 			return;
 		}
-		final ActivityConfigurationPanel<RshellActivity, RshellActivityConfigurationBean> rshellConfigView = new RshellActivityConfigView(
-				(RshellActivity) getActivity());
-		final ActivityConfigurationDialog<RshellActivity, RshellActivityConfigurationBean> dialog =
-			new ActivityConfigurationDialog<RshellActivity, RshellActivityConfigurationBean> (getActivity(), rshellConfigView, editManager, fileManager);
+		final ActivityConfigurationPanel rshellConfigView = new RshellConfigurationPanel(getActivity(), getServiceDescription());
+		final ActivityConfigurationDialog dialog = new ActivityConfigurationDialog(getActivity(), rshellConfigView, editManager, fileManager);
 
 		ActivityConfigurationAction.setDialog(getActivity(), dialog, fileManager);
 

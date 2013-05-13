@@ -28,14 +28,13 @@ import java.net.URI;
 import javax.swing.Action;
 import javax.swing.KeyStroke;
 
-import net.sf.taverna.t2.activities.rshell.RshellActivity;
 import net.sf.taverna.t2.activities.rshell.servicedescriptions.RshellTemplateService;
 import net.sf.taverna.t2.ui.menu.AbstractMenuAction;
 import net.sf.taverna.t2.ui.menu.DesignOnlyAction;
 import net.sf.taverna.t2.ui.menu.MenuManager;
 import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
 import net.sf.taverna.t2.workbench.edits.EditManager;
-import net.sf.taverna.t2.workbench.ui.DataflowSelectionManager;
+import net.sf.taverna.t2.workbench.selection.SelectionManager;
 import net.sf.taverna.t2.workbench.ui.workflowview.WorkflowView;
 import net.sf.taverna.t2.workbench.views.graph.menu.InsertMenu;
 
@@ -51,6 +50,8 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("serial")
 public class AddRshellTemplateMenuAction extends AbstractMenuAction {
 
+	private static final URI ACTIVITY_TYPE = URI.create("http://ns.taverna.org.uk/2010/activity/rshell");
+
 	private static final String ADD_RSHELL = "RShell";
 
 	private static final URI ADD_RSHELL_URI = URI
@@ -62,7 +63,7 @@ public class AddRshellTemplateMenuAction extends AbstractMenuAction {
 
 	private MenuManager menuManager;
 
-	private DataflowSelectionManager dataflowSelectionManager;
+	private SelectionManager selectionManager;
 
 	private ActivityIconManager activityIconManager;
 
@@ -78,7 +79,7 @@ public class AddRshellTemplateMenuAction extends AbstractMenuAction {
 	protected class AddRShellMenuAction extends DesignOnlyAction {
 		AddRShellMenuAction() {
 			super();
-			putValue(SMALL_ICON, activityIconManager.iconForActivity(new RshellActivity(null)));
+			putValue(SMALL_ICON, activityIconManager.iconForActivity(ACTIVITY_TYPE));
 			putValue(NAME, ADD_RSHELL);
 			putValue(SHORT_DESCRIPTION, "RShell");
 			putValue(
@@ -90,7 +91,7 @@ public class AddRshellTemplateMenuAction extends AbstractMenuAction {
 
 		public void actionPerformed(ActionEvent e) {
 			WorkflowView.importServiceDescription(RshellTemplateService.getServiceDescription(),
-					false, editManager, menuManager, dataflowSelectionManager);
+					false, editManager, menuManager, selectionManager);
 		}
 	}
 
@@ -102,8 +103,8 @@ public class AddRshellTemplateMenuAction extends AbstractMenuAction {
 		this.menuManager = menuManager;
 	}
 
-	public void setDataflowSelectionManager(DataflowSelectionManager dataflowSelectionManager) {
-		this.dataflowSelectionManager = dataflowSelectionManager;
+	public void setSelectionManager(SelectionManager selectionManager) {
+		this.selectionManager = selectionManager;
 	}
 
 	public void setActivityIconManager(ActivityIconManager activityIconManager) {
