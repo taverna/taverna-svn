@@ -21,63 +21,53 @@
 package uk.org.taverna.workbench;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.wiring.BundleCapability;
-import org.osgi.framework.wiring.BundleWiring;
 
+import uk.org.taverna.commons.profile.xml.jaxb.ApplicationProfile;
+import uk.org.taverna.commons.profile.xml.jaxb.BundleInfo;
+import uk.org.taverna.commons.profile.xml.jaxb.FrameworkConfiguration;
 import uk.org.taverna.configuration.app.ApplicationConfiguration;
 import uk.org.taverna.configuration.app.impl.ApplicationConfigurationImpl;
 import uk.org.taverna.configuration.app.impl.Log4JConfiguration;
 import uk.org.taverna.osgi.OsgiLauncher;
 
 /**
- * Main entry point for starting the Taverna Workbench.
+ * Launcher for the Taverna Workbench.
  *
  * @author David Withers
  */
-public class TavernaWorkbench {
+public class TavernaWorkbenchLauncher {
 
-	private static final String BUNDLE_DIRECTORY = "bundles";
+	private static final String WORKBENCH_BUNDLE_NAME = "net.sf.taverna.t2.ui-impl.workbench-impl";
 
-	private static File workbenchImpl;
+	private static File workbenchBundle;
 
 	private static ApplicationConfiguration applicationConfiguration = new ApplicationConfigurationImpl();
 
 	private static Log4JConfiguration log4jConfiguration = new Log4JConfiguration();
 
-	private static final String extraSystemPackages = "org.apache.log4j;version=1.2.16";
-
-	/**
-	 * Starts the Taverna Workbench.
-	 *
-	 * @param args
-	 *            Taverna Command Line arguments
-	 */
-	public static void main(final String[] args) {
+	private void launch() {
 		try {
 			log4jConfiguration.setApplicationConfiguration(applicationConfiguration);
 			log4jConfiguration.prepareLog4J();
 			setDerbyPaths();
-			OsgiLauncher osgiStarter = new OsgiLauncher(getAppDirectory(), getBundleURIs());
-			osgiStarter.addBootDelegationPackages("org.xml.*,org.w3c.*,apple.*,com.apple.*");
-			osgiStarter.setCleanStorageDirectory(true);
-			osgiStarter.addSystemPackages(extraSystemPackages);
+			OsgiLauncher osgilauncher = new OsgiLauncher(getAppDirectory(), getBundleURIs());
+			setFrameworkConfiguration(osgilauncher);
 			System.out.println("Starting OSGi framework");
-			osgiStarter.start();
+			osgilauncher.start();
 			System.out.println("Starting OSGi services");
-			osgiStarter.startServices(true);
+			osgilauncher.startServices(true);
 			System.out.println("Starting workbench");
-			osgiStarter.startBundle(osgiStarter.installBundle(workbenchImpl.toURI()));
+			osgilauncher.startBundle(osgilauncher.installBundle(workbenchBundle.toURI()));
 
-//			BundleContext context = osgiStarter.getContext();
+//			BundleContext context = osgilauncher.getContext();
 //			Bundle[] bundles = context.getBundles();
 //			for (Bundle bundle : bundles) {
 //				System.out.println(bundle.getSymbolicName());
@@ -92,35 +82,58 @@ public class TavernaWorkbench {
 		}
 	}
 
-	private static List<URI> getBundleURIs() {
-		List<URI> bundleURIs = new ArrayList<URI>();
-		File[] files = getBundleDirectory().listFiles(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				return name.endsWith(".jar");
+	/**
+	 * Sets the OSGi Framework configuration.
+	 *
+	 * @param osgilauncher
+	 */
+	private void setFrameworkConfiguration(OsgiLauncher osgilauncher) {
+		ApplicationProfile applicationProfile = applicationConfiguration.getApplicationProfile();
+		List<FrameworkConfiguration> frameworkConfigurations = applicationProfile.getFrameworkConfiguration();
+		if (!frameworkConfigurations.isEmpty()) {
+			Map<String, String> configurationMap = new HashMap<String, String>();
+			for (FrameworkConfiguration frameworkConfiguration : frameworkConfigurations) {
+				configurationMap.put(frameworkConfiguration.getName(), frameworkConfiguration.getValue());
 			}
-		});
-		for (File file : files) {
-			if (file.getName().startsWith("workbench-impl")) {
-				workbenchImpl = file;
-			} else {
-				bundleURIs.add(file.toURI());
+			osgilauncher.setFrameworkConfiguration(configurationMap);
+		}
+	}
+
+	private List<URI> getBundleURIs() {
+		List<URI> bundleURIs = new ArrayList<URI>();
+		ApplicationProfile applicationProfile = applicationConfiguration.getApplicationProfile();
+		File libDir = new File(applicationConfiguration.getStartupDir(), "lib");
+		if (applicationProfile != null) {
+			for (BundleInfo bundle : applicationProfile.getBundle()) {
+				File bundleFile = new File (libDir, bundle.getFileName());
+				if (bundle.getSymbolicName().equals(WORKBENCH_BUNDLE_NAME)) {
+					workbenchBundle = bundleFile;
+				} else {
+					bundleURIs.add(bundleFile.toURI());
+				}
 			}
 		}
 		return bundleURIs;
 	}
 
-	private static File getBundleDirectory() {
-		System.out.println(System.getProperty("taverna.app.startup"));
-		return new File(System.getProperty("taverna.app.startup"), BUNDLE_DIRECTORY);
+	private File getAppDirectory() {
+		return applicationConfiguration.getApplicationHomeDir();
 	}
 
-	private static File getAppDirectory() {
-		return new File(applicationConfiguration.getApplicationHomeDir().getAbsolutePath());
-	}
-
-	private static void setDerbyPaths() {
+	private void setDerbyPaths() {
 		System.setProperty("derby.system.home", getAppDirectory().getAbsolutePath());
 		File logFile = new File(applicationConfiguration.getLogDir(), "derby.log");
 		System.setProperty("derby.stream.error.file", logFile.getAbsolutePath());
 	}
+
+	/**
+	 * Starts the Taverna Workbench.
+	 *
+	 * @param args
+	 *            Taverna Command Line arguments
+	 */
+	public static void main(final String[] args) {
+		new TavernaWorkbenchLauncher().launch();
+	}
+
 }
