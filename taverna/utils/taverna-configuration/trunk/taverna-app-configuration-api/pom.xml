@@ -8,21 +8,13 @@
 	</parent>
 	<artifactId>taverna-app-configuration-api</artifactId>
 	<packaging>bundle</packaging>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.jvnet.jaxb2.maven2</groupId>
-				<artifactId>maven-jaxb2-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+	<dependencies>
+		<dependency>
+			<groupId>uk.org.taverna.commons</groupId>
+			<artifactId>taverna-xml-schemas</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
 	<repositories>
 		<repository>
 			<releases />

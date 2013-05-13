@@ -33,11 +33,11 @@ import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.org.taverna.commons.profile.xml.jaxb.ApplicationProfile;
 import uk.org.taverna.configuration.AbstractConfigurable;
 import uk.org.taverna.configuration.Configurable;
 import uk.org.taverna.configuration.DummyConfigurable;
 import uk.org.taverna.configuration.app.ApplicationConfiguration;
-import uk.org.taverna.configuration.impl.ConfigurationManagerImpl;
 
 public class ConfigurationManagerImplTest {
 
@@ -73,11 +73,11 @@ public class ConfigurationManagerImplTest {
 				return null;
 			}
 
-			public File getPluginsDir() {
+			public File getUserPluginDir() {
 				return null;
 			}
 
-			public File getDefaultPluginsDir() {
+			public File getSystemPluginDir() {
 				return null;
 			}
 
@@ -90,6 +90,12 @@ public class ConfigurationManagerImplTest {
 			}
 
 			public Properties getProperties() {
+				return null;
+			}
+
+			@Override
+			public ApplicationProfile getApplicationProfile() {
+				// TODO Auto-generated method stub
 				return null;
 			}
 		});

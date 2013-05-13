@@ -30,12 +30,16 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.UUID;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
 import org.apache.log4j.Logger;
 
+import uk.org.taverna.commons.profile.xml.jaxb.ApplicationProfile;
 import uk.org.taverna.configuration.app.ApplicationConfiguration;
 
 /**
@@ -56,25 +60,26 @@ public class ApplicationConfigurationImpl implements ApplicationConfiguration {
 	private static final String UNKNOWN_APPLICATION = "unknownApplication-"
 			+ UUID.randomUUID().toString();
 
-	public static final String PREFIX = "taverna.app.";
-	public static final String APP_NAME = PREFIX + "name";
-	public static final String APP_TITLE = PREFIX + "title";
-	public static final String APP_HOME = PREFIX + "home";
-	public static final String APP_STARTUP = PREFIX + "startup";
-
-	public static final String PROPERTIES = PREFIX + "properties";
-
-	private Properties properties;
+	public static final String APP_HOME = "taverna.app.home";
+	public static final String APP_STARTUP = "taverna.app.startup";
+	public static final String APPLICATION_PROFILE = "ApplicationProfile.xml";
 
 	private File startupDir;
 	private File homeDir;
+
+	private ApplicationProfile applicationProfile;
+	private ApplicationProfile defaultApplicationProfile;
 
 	public ApplicationConfigurationImpl() {
 	}
 
 	@Override
 	public String getName() {
-		String name = (String) getProperties().get(APP_NAME);
+		String name = null;
+		ApplicationProfile profile = getDefaultApplicationProfile();
+		if (profile != null) {
+			name = profile.getName();
+		}
 		if (name == null) {
 			logger.error("ApplicationConfig could not determine application name, using "
 					+ UNKNOWN_APPLICATION);
@@ -85,11 +90,7 @@ public class ApplicationConfigurationImpl implements ApplicationConfiguration {
 
 	@Override
 	public String getTitle() {
-		String title = (String) getProperties().get(APP_TITLE);
-		if (title == null) {
-			return getName();
-		}
-		return title;
+		return getName();
 	}
 
 	@Override
@@ -129,23 +130,25 @@ public class ApplicationConfigurationImpl implements ApplicationConfiguration {
 	}
 
 	@Override
-	public File getPluginsDir() {
-		File pluginsDir = new File(getApplicationHomeDir(), PLUGINS_DIR);
-		pluginsDir.mkdirs();
-		if (!pluginsDir.isDirectory()) {
-			throw new IllegalStateException("Could not create plugins directory " + pluginsDir);
+	public File getUserPluginDir() {
+		File userPluginsDir = new File(getApplicationHomeDir(), PLUGINS_DIR);
+		try {
+			userPluginsDir.mkdirs();
+		} catch (SecurityException e) {
+			logger.warn("Error creating user plugin directory at " + userPluginsDir, e);
 		}
-		return pluginsDir;
+		return userPluginsDir;
 	}
 
 	@Override
-	public File getDefaultPluginsDir() {
-		File defaultPluginsDir = new File(getStartupDir(), PLUGINS_DIR);
-		if (!defaultPluginsDir.isDirectory()) {
-			throw new IllegalStateException("Could not find default plugins directory "
-					+ defaultPluginsDir);
+	public File getSystemPluginDir() {
+		File systemPluginsDir = new File(getStartupDir(), PLUGINS_DIR);
+		try {
+			systemPluginsDir.mkdirs();
+		} catch (SecurityException e) {
+			logger.debug("Error creating system plugin directory at " + systemPluginsDir, e);
 		}
-		return defaultPluginsDir;
+		return systemPluginsDir;
 	}
 
 	@Override
@@ -161,21 +164,6 @@ public class ApplicationConfigurationImpl implements ApplicationConfiguration {
 			throw new IllegalStateException("Could not create log directory " + logDir);
 		}
 		return logDir;
-	}
-
-	@Override
-	public synchronized Properties getProperties() {
-		if (properties == null) {
-			properties = loadProperties(PROPERTIES);
-			// Fill in overrides from system properties
-			for (Entry<Object, Object> property : System.getProperties().entrySet()) {
-				String key = (String) property.getKey();
-				if (key.startsWith(PREFIX)) {
-					properties.put(key, property.getValue());
-				}
-			}
-		}
-		return properties;
 	}
 
 	private void findInClassLoader(List<URI> configs, ClassLoader classLoader, String resourcePath) {
@@ -261,6 +249,45 @@ public class ApplicationConfigurationImpl implements ApplicationConfiguration {
 		}
 		logger.debug("Could not find application properties file " + resourceName);
 		return loadedProps;
+	}
+
+	@Override
+	public ApplicationProfile getApplicationProfile() {
+		if (applicationProfile == null) {
+			File applicationProfileFile = new File(getApplicationHomeDir(), APPLICATION_PROFILE);
+			if (!applicationProfileFile.exists()) {
+				logger.debug("Application profile not found at " + applicationProfileFile);
+				return getDefaultApplicationProfile();
+			}
+			try {
+				JAXBContext jaxbContext = JAXBContext.newInstance(ApplicationProfile.class);
+				Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+				applicationProfile = (ApplicationProfile) unmarshaller.unmarshal(applicationProfileFile);
+			} catch (JAXBException e) {
+				logger.error("Could not read application profile from " + applicationProfileFile, e);
+			}
+			if (applicationProfile == null) {
+				logger.debug("Application profile not found at " + applicationProfileFile);
+				return getDefaultApplicationProfile();
+			}
+		}
+		return applicationProfile;
+	}
+
+	public ApplicationProfile getDefaultApplicationProfile() {
+		if (defaultApplicationProfile == null) {
+			File applicationProfileFile = new File(getStartupDir(), APPLICATION_PROFILE);
+			if (applicationProfileFile.exists()) {
+				try {
+					JAXBContext jaxbContext = JAXBContext.newInstance(ApplicationProfile.class);
+					Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+					defaultApplicationProfile = (ApplicationProfile) unmarshaller.unmarshal(applicationProfileFile);
+				} catch (JAXBException e) {
+					throw new IllegalStateException("Could not read application profile from " + applicationProfileFile);
+				}
+			}
+		}
+		return defaultApplicationProfile;
 	}
 
 }

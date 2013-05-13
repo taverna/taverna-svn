@@ -19,6 +19,11 @@
 			<artifactId>taverna-app-configuration-api</artifactId>
 			<version>${taverna.configuration.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>uk.org.taverna.commons</groupId>
+			<artifactId>taverna-xml-schemas</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.apache.log4j</groupId>

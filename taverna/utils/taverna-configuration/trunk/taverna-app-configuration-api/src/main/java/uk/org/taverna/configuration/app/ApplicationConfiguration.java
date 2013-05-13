@@ -21,7 +21,8 @@
 package uk.org.taverna.configuration.app;
 
 import java.io.File;
-import java.util.Properties;
+
+import uk.org.taverna.commons.profile.xml.jaxb.ApplicationProfile;
 
 /**
  * Represent the application config as it has been specified in
@@ -48,14 +49,14 @@ public interface ApplicationConfiguration {
 
 	public File getApplicationHomeDir();
 
-	public File getPluginsDir();
+	public File getUserPluginDir();
 
-	public File getDefaultPluginsDir();
+	public File getSystemPluginDir();
 
 	public File getLogFile();
 
 	public File getLogDir();
 
-	public Properties getProperties();
+	public ApplicationProfile getApplicationProfile();
 
 }
