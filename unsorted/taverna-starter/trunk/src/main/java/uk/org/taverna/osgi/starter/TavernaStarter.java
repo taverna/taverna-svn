@@ -28,6 +28,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
@@ -131,12 +132,12 @@ public class TavernaStarter {
 	 */
 	public DataService getDataService() {
 		if (dataService == null && context != null) {
-			ServiceReference serviceReference = context
-					.getServiceReference("uk.org.taverna.platform.data.api.DataService");
+			ServiceReference<DataService> serviceReference = context
+					.getServiceReference(DataService.class);
 			if (serviceReference == null) {
 				System.out.println("Can't find DataService");
 			} else {
-				dataService = (DataService) context.getService(serviceReference);
+				dataService = context.getService(serviceReference);
 			}
 		}
 		return dataService;
@@ -149,12 +150,12 @@ public class TavernaStarter {
 	 */
 	public RunService getRunService() {
 		if (runService == null && context != null) {
-			ServiceReference serviceReference = context
-					.getServiceReference("uk.org.taverna.platform.run.api.RunService");
+			ServiceReference<RunService> serviceReference = context
+					.getServiceReference(RunService.class);
 			if (serviceReference == null) {
 				System.out.println("Can't find RunService");
 			} else {
-				runService = (RunService) context.getService(serviceReference);
+				runService = context.getService(serviceReference);
 			}
 		}
 		return runService;
@@ -167,12 +168,12 @@ public class TavernaStarter {
 	 */
 	public CredentialManager getCredentialManager() {
 		if (credentialManager == null && context != null) {
-			ServiceReference serviceReference = context
-					.getServiceReference("net.sf.taverna.t2.security.credentialmanager.CredentialManager");
+			ServiceReference<CredentialManager> serviceReference = context
+					.getServiceReference(CredentialManager.class);
 			if (serviceReference == null) {
 				System.out.println("Can't find CredentialManager");
 			} else {
-				credentialManager = (CredentialManager) context.getService(serviceReference);
+				credentialManager = context.getService(serviceReference);
 			}
 		}
 		return credentialManager;
@@ -181,35 +182,34 @@ public class TavernaStarter {
 	public WorkflowBundleIO getWorkflowBundleIO() {
 		if (workflowBundleIO == null && context != null) {
 			List<WorkflowBundleReader> workflowBundleReaders = new ArrayList<WorkflowBundleReader>();
-			List<WorkflowBundleWriter> workflowBundleWriteers = new ArrayList<WorkflowBundleWriter>();
-			ServiceReference[] serviceReferences = null;
+			List<WorkflowBundleWriter> workflowBundleWriters = new ArrayList<WorkflowBundleWriter>();
+			Collection<ServiceReference<WorkflowBundleReader>> readerServiceReferences = null;
 			try {
-				serviceReferences = context.getServiceReferences(
-						"uk.org.taverna.scufl2.api.io.WorkflowBundleReader", null);
+				readerServiceReferences = context.getServiceReferences(WorkflowBundleReader.class, null);
 			} catch (InvalidSyntaxException e) {
 			}
-			if (serviceReferences == null) {
+			if (readerServiceReferences == null) {
 				System.out.println("Can't find WorkflowBundleReaders");
 			} else {
-				for (ServiceReference serviceReference : serviceReferences) {
-					workflowBundleReaders.add((WorkflowBundleReader) context.getService(serviceReference));
+				for (ServiceReference<WorkflowBundleReader> serviceReference : readerServiceReferences) {
+					workflowBundleReaders.add(context.getService(serviceReference));
 				}
 			}
+			Collection<ServiceReference<WorkflowBundleWriter>> writerServiceReferences = null;
 			try {
-				serviceReferences = context.getServiceReferences(
-						"uk.org.taverna.scufl2.api.io.WorkflowBundleReader", null);
+				writerServiceReferences = context.getServiceReferences(WorkflowBundleWriter.class, null);
 			} catch (InvalidSyntaxException e) {
 			}
-			if (serviceReferences == null) {
+			if (writerServiceReferences == null) {
 				System.out.println("Can't find WorkflowBundleReaders");
 			} else {
-				for (ServiceReference serviceReference : serviceReferences) {
-					workflowBundleReaders.add((WorkflowBundleReader) context.getService(serviceReference));
+				for (ServiceReference<WorkflowBundleWriter> serviceReference : writerServiceReferences) {
+					workflowBundleWriters.add(context.getService(serviceReference));
 				}
 			}
 			workflowBundleIO = new WorkflowBundleIO();
 			workflowBundleIO.setReaders(workflowBundleReaders);
-			workflowBundleIO.setWriters(workflowBundleWriteers);
+			workflowBundleIO.setWriters(workflowBundleWriters);
 		}
 		return workflowBundleIO;
 	}
