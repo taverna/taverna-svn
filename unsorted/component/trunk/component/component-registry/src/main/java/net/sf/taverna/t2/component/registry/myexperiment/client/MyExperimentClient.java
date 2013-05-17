@@ -904,54 +904,6 @@ public class MyExperimentClient {
     }
   }
 
-  private String prepareWorkflowPostContent(String workflowContent,
-      String title, String description, String license, String sharing) {
-    String strWorkflowData = "<workflow>";
-
-    if (title.length() > 0) strWorkflowData += "<title>" + title + "</title>";
-
-    if (description.length() > 0)
-      strWorkflowData += "<description>" + description + "</description>";
-
-    if (license.length() > 0)
-      strWorkflowData += "<license-type>" + license + "</license-type>";
-
-    if (sharing.length() > 0) {
-      if (sharing.contains("private")) strWorkflowData += "<permissions />";
-      else {
-        strWorkflowData += "<permissions><permission>"
-            + "<category>public</category>";
-        if (sharing.contains("view") || sharing.contains("download"))
-          strWorkflowData += "<privilege type=\"view\" />";
-        if (sharing.contains("download"))
-          strWorkflowData += "<privilege type=\"download\" />";
-        strWorkflowData += "</permission></permissions>";
-      }
-    }
-
-    String encodedWorkflow = "";
-
-    // check the format of the workflow
-    String scuflSchemaDef = "xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"";
-    String t2flowSchemaDef = "xmlns=\"http://taverna.sf.net/2008/xml/t2flow\"";
-
-    if (workflowContent.length() > 0) {
-      String contentType;
-      if (workflowContent.contains(scuflSchemaDef)) contentType = "application/vnd.taverna.scufl+xml";
-      else if (workflowContent.contains(t2flowSchemaDef)) contentType = "application/vnd.taverna.t2flow+xml";
-      else contentType = "";
-
-      encodedWorkflow += "<content-type>" + contentType + "</content-type>"
-          + "<content encoding=\"base64\" type=\"binary\">"
-          + Base64.encodeBytes(workflowContent.getBytes()) + "</content>";
-      strWorkflowData += encodedWorkflow;
-    }
-
-    strWorkflowData += "</workflow>";
-
-    return (strWorkflowData);
-  }
-
   private void afterMyExperimentPost(ServerResponse response) {
     // if (response.getResponseCode() == HttpURLConnection.HTTP_OK) {
     // // XML response should contain the new workflow that was posted
@@ -961,52 +913,6 @@ public class MyExperimentClient {
     // System.out.println("* *** *** *** *" + response.getResponseBody()
     // + "* *** *** *** *");
     // }
-  }
-
-  public ServerResponse postWorkflow(String workflowContent, String title,
-      String description, String license, String sharing) {
-    try {
-      String strWorkflowData = prepareWorkflowPostContent(workflowContent,
-          title, description, license, sharing);
-
-      ServerResponse response = this.doMyExperimentPOST(BASE_URL
-          + "/workflow.xml", strWorkflowData);
-
-      afterMyExperimentPost(response);
-      // will return the whole response object so that the application could
-      // decide on the next steps
-      return (response);
-    } catch (Exception e) {
-      logger.error("Failed while trying to upload the workflow");
-      return (new ServerResponse(ServerResponse.LOCAL_FAILURE, null));
-    }
-  }
-
-  public ServerResponse updateWorkflowVersionOrMetadata(Resource resource,
-      String workflowContent, String title, String description, String license,
-      String sharing) {
-    try {
-      String strWorkflowData = prepareWorkflowPostContent(workflowContent,
-          title, description, license, sharing);
-
-      // if strWorkflowFileContent is empty; include version info for PUT (since
-      // workflow is being updated)
-      // a POST would require data, hence strWorkflowFileContent would not be
-      // empty
-      String doUpdateStatus = (workflowContent.length() == 0 ? DO_PUT : "");
-
-      ServerResponse response = this.doMyExperimentPOST(BASE_URL
-          + "/workflow.xml?id=" + resource.getID() + doUpdateStatus,
-          strWorkflowData);
-
-      afterMyExperimentPost(response);
-      // will return the whole response object so that the application could
-      // decide on the next steps
-      return (response);
-    } catch (Exception e) {
-      logger.error("Failed while trying to upload the workflow");
-      return (new ServerResponse(ServerResponse.LOCAL_FAILURE, null));
-    }
   }
 
   public ServerResponse addFavourite(Resource resource) {

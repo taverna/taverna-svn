@@ -3,9 +3,12 @@ package net.sf.taverna.t2.component;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.Map;
 
 import net.sf.taverna.t2.activities.dataflow.DataflowActivity;
+import net.sf.taverna.t2.annotation.annotationbeans.DescriptiveTitle;
+import net.sf.taverna.t2.annotation.annotationbeans.FreeTextDescription;
 import net.sf.taverna.t2.component.PatchedInvoke.PatchedInvokeCallBack;
 import net.sf.taverna.t2.component.profile.ExceptionHandling;
 import net.sf.taverna.t2.component.registry.ComponentDataflowCache;
@@ -19,11 +22,13 @@ import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
+import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.serialization.DeserializationException;
 import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLDeserializer;
 import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLDeserializerImpl;
@@ -62,6 +67,18 @@ public class ComponentActivity extends
 	@Override
 	public void executeAsynch(final Map<String, T2Reference> inputs,
 			final AsynchronousActivityCallback callback) {
+//		try {
+//
+//		Field field = callback.getClass().getDeclaredField("this$0");
+//		field.setAccessible(true);
+//		AbstractDispatchLayer container = (AbstractDispatchLayer) field.get(callback);
+//
+//		Processor containingProcessor = container.getProcessor();
+//
+//		String description = aTools.getAnnotationString(containingProcessor, FreeTextDescription.class, null);
+//		} catch (Exception e) {
+//			logger.error(e);
+//		}
 		try {
 			ExceptionHandling exceptionHandling = configBean.getExceptionHandling();
 			if (callback instanceof PatchedInvokeCallBack) {

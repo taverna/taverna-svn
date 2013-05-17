@@ -100,12 +100,21 @@ public class SemanticAnnotationUtils {
 
 	public static SemanticAnnotation createSemanticAnnotation(Model model) {
 		SemanticAnnotation semanticAnnotation = new SemanticAnnotation();
+		String turtle = createTurtle(model);
+		semanticAnnotation.setContent(turtle);
+		return semanticAnnotation;
+	}
+
+	/**
+	 * @param model
+	 * @return
+	 */
+	public static String createTurtle(Model model) {
 		StringWriter stringWriter = new StringWriter();
 		model.write(stringWriter, ENCODING, BASE);
 		// Workaround for https://issues.apache.org/jira/browse/JENA-132
 		String turtle = stringWriter.toString().replace("widget://4aa8c93c-3212-487c-a505-3e337adf54a3/", "");
-		semanticAnnotation.setContent(turtle);
-		return semanticAnnotation;
+		return turtle;
 	}
 
 	public static Model populateModel(Annotated annotated) {

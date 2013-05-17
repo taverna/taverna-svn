@@ -24,7 +24,8 @@ public class DispatchStackPatcher implements
 
 
 	public boolean canVisit(Object o) {
-		return o instanceof ComponentActivity;
+		return false;
+//		return o instanceof ComponentActivity;
 	}
 
 	public boolean isTimeConsuming() {

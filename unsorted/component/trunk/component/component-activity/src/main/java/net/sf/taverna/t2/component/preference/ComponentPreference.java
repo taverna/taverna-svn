@@ -22,6 +22,8 @@ import net.sf.taverna.t2.component.registry.ComponentUtil;
 
 import org.apache.log4j.Logger;
 
+import com.hp.hpl.jena.ontology.OntModel;
+
 /**
  * @author alanrw
  *
@@ -39,6 +41,8 @@ public class ComponentPreference {
 	private final Properties properties;
 	
 	private SortedMap<String, ComponentRegistry> registryMap = new TreeMap<String, ComponentRegistry> ();
+	
+	private OntModel cacheModel;
 
 	public static ComponentPreference getInstance() {
 		if (instance == null) {
@@ -82,8 +86,12 @@ public class ComponentPreference {
 	}
 
 	private void fillDefaultProperties() {
-			properties.setProperty("local registry", (new File(ApplicationRuntime.getInstance().getApplicationHomeDir(), "components")).toURI().toASCIIString());
+			properties.setProperty("local registry", calculateComponentsDirectoryPath());
 		properties.setProperty(MYEXPERIMENT_NAME, MYEXPERIMENT_SITE);
+	}
+
+	public String calculateComponentsDirectoryPath() {
+		return (new File(ApplicationRuntime.getInstance().getApplicationHomeDir(), "components")).toURI().toASCIIString();
 	}
 
 	private File getConfigFile() {
@@ -132,6 +140,17 @@ public class ComponentPreference {
 		return registryMap;
 	}
 
+	public String getRegistryName(URL registryBase) {
+		String result = registryBase.toString();
+		for (String name : registryMap.keySet()) {
+			if (registryMap.get(name).getRegistryBase().equals(registryBase)) {
+				result = name;
+				break;
+			}
+		}
+		return result;
+	}
+	
 	public void setRegistryMap(SortedMap<String, ComponentRegistry> registries) {
 		registryMap.clear();
 		for (String s : registries.keySet()) {

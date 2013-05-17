@@ -20,7 +20,6 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.myexperiment.client;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 

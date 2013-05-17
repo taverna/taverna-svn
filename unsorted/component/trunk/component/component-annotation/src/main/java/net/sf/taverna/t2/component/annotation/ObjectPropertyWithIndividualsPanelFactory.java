@@ -20,90 +20,51 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.annotation;
 
-import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 
+import net.sf.taverna.t2.component.localworld.LocalWorld;
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
+import net.sf.taverna.t2.lang.ui.DeselectingButton;
 
 import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 /**
  *
  *
- * @author David Withers
+ * @author David Withers, Alan Williams
  */
 public class ObjectPropertyWithIndividualsPanelFactory extends PropertyPanelFactorySPI {
-
-	private class NamedResource {
 	
-		private final OntResource resource;
-	
-		public NamedResource(OntResource resource) {
-			this.resource = resource;
-		}
-	
-		public OntResource getResource() {
-			return resource;
-		}
-	
-		public String toString() {
-			String label = resource.getLabel(null);
-			if (label != null) {
-				return label;
-			}
-				String localName = resource.getLocalName();
-				if ((localName != null) && !localName.isEmpty()) {
-					return localName;
-				}
-			return resource.toString();
-		}
-	
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((resource == null) ? 0 : resource.hashCode());
-			return result;
-		}
-	
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			NamedResource other = (NamedResource) obj;
-			if (resource == null) {
-				if (other.resource != null)
-					return false;
-			} else if (!resource.equals(other.resource))
-				return false;
-			return true;
-		}
-	
-	}
-
+	private static LocalWorld localWorld = LocalWorld.getInstance();
 
 	@Override
 	public int getRatingForSemanticAnnotation(
 			SemanticAnnotationProfile semanticAnnotationProfile) {
 		OntProperty property = semanticAnnotationProfile.getPredicate();
 		if (property.isObjectProperty()) {
-			if (!semanticAnnotationProfile.getIndividuals().isEmpty()) {
+//			if (!semanticAnnotationProfile.getIndividuals().isEmpty()) {
 				return 100;
-			}
+//			}
 		}
 		return Integer.MIN_VALUE;
 	}
@@ -111,37 +72,72 @@ public class ObjectPropertyWithIndividualsPanelFactory extends PropertyPanelFact
 
 	@Override
 	public JComponent getInputComponent(SemanticAnnotationProfile semanticAnnotationProfile, Statement statement) {
-		JComboBox resources;
-		List<Individual> individuals = semanticAnnotationProfile.getIndividuals();
-		NamedResource[] namedResources = new NamedResource[individuals.size()];
-		
-		Resource origResource = null;
-		NamedResource origNamedResource = null;
-		if (statement != null) {
-			origResource = (Resource) statement.getObject();
-		}
-		for (int i = 0; i < namedResources.length; i++) {
-			Individual resource = individuals.get(i);
-			namedResources[i] = new NamedResource(resource);
-			if (resource.equals(origResource)) {
-				origNamedResource = namedResources[i];
-			}
-			
-		}
-		resources = new JComboBox(namedResources);
-		resources.setEditable(false);
-		if (origNamedResource != null) {
-			resources.setSelectedItem(origNamedResource);
-		}
-		
-		return resources;
+		return new ComboBoxWithAdd(semanticAnnotationProfile, statement);
 	}
 
 
 	@Override
 	public RDFNode getNewTargetNode(JComponent component) {
-		JComboBox resources = (JComboBox) component;
-		return ((NamedResource) resources.getSelectedItem()).getResource();
+		ComboBoxWithAdd panel = (ComboBoxWithAdd) component;
+		return (RDFNode) panel.getSelectedItem();
+	}
+	
+	private static class ComboBoxWithAdd extends JPanel {
+		
+		OntClass rangeClass = null;
+		JComboBox resources;
+		public ComboBoxWithAdd(final SemanticAnnotationProfile semanticAnnotationProfile, Statement statement) {
+			super(new GridBagLayout());
+			
+			OntResource range = semanticAnnotationProfile.getPredicate().getRange();
+			if (range.isClass()) {
+				rangeClass = range.asClass();
+			}
+			
+			GridBagConstraints gbc = new GridBagConstraints();
+			gbc.gridx = 0;
+			gbc.gridy = 0;
+			gbc.anchor = GridBagConstraints.NORTHWEST;
+			List<Individual> individuals = semanticAnnotationProfile.getIndividuals();
+			if (rangeClass != null) {
+				individuals.addAll(localWorld.getIndividualsOfClass(rangeClass));
+			}
+			
+			Resource origResource = null;
+
+			if (statement != null) {
+				origResource = (Resource) statement.getObject();
+			}
+			resources = new JComboBox(individuals.toArray());
+			resources.setRenderer(new NodeListCellRenderer());
+			resources.setEditable(false);
+			if (origResource != null) {
+				resources.setSelectedItem(origResource);
+			}
+			this.add(resources, gbc);
+			
+			gbc.gridy++;
+
+			JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+			buttonPanel.add(new DeselectingButton("Add existing", new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					String answer = JOptionPane.showInputDialog("Please enter the URL for the resource");
+					resources.addItem(localWorld.createIndividual(answer, rangeClass));
+				}}));
+			buttonPanel.add(new DeselectingButton("Add new", new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+				}}));
+			gbc.anchor = GridBagConstraints.EAST;
+			this.add(buttonPanel, gbc);
+		}
+		
+		public RDFNode getSelectedItem() {
+			return (RDFNode) resources.getSelectedItem();
+		}
 	}
 
 }

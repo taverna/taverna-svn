@@ -165,6 +165,8 @@ public class ComponentPreferencePanel extends JPanel {
 						tableModel.insertRegistry(inputPanel.getRegistryNameField().getText(), newRegistry);
 					} catch (MalformedURLException e) {
 						logger.error(e);
+					} catch (ComponentRegistryException e) {
+						logger.error(e);
 					}
 				}
 			}

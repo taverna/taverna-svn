@@ -33,16 +33,13 @@ import org.apache.log4j.Logger;
  * @author alanrw
  *
  */
-public class LocalComponentRegistry implements ComponentRegistry {
+public class LocalComponentRegistry extends ComponentRegistry {
 
 	private static Logger logger = Logger.getLogger(LocalComponentRegistry.class);
 
 	private static Map<File, ComponentRegistry> componentRegistries = new HashMap<File, ComponentRegistry>();
 
 	private File baseDir;
-	
-	private HashMap<String, ComponentFamily> familyCache;
-	private HashMap<String, ComponentProfile> profileCache;
 	
 	private static String EMPTY_PROFILE_ID = "net.sf.taverna.t2.component.profile.empty";
 	private static String EMPTY_PROFILE_FILENAME = "EmptyProfile.xml";
@@ -51,8 +48,8 @@ public class LocalComponentRegistry implements ComponentRegistry {
 	private static String DC_PROFILE_FILENAME = "DublinCoreProfile.xml";
 
 	public LocalComponentRegistry(File registryDir) throws ComponentRegistryException {
+		super (registryDir);
 		baseDir = registryDir;
-		getComponentProfilesIfNecessary();
 /*		if (!profileCache.containsKey(EMPTY_PROFILE_ID)) {
 			addComponentProfile( new ComponentProfile(
 					getClass().getClassLoader().getResource(EMPTY_PROFILE_FILENAME)));			
@@ -79,25 +76,12 @@ public class LocalComponentRegistry implements ComponentRegistry {
 	 * (java.lang.String, net.sf.taverna.t2.component.profile.ComponentProfile)
 	 */
 	@Override
-	public ComponentFamily createComponentFamily(String name,
+	public ComponentFamily internalCreateComponentFamily(String name,
 			ComponentProfile componentProfile,
 			String description,
 			License license,
 			SharingPolicy sharingPolicy)
 			throws ComponentRegistryException {
-		if (name == null) {
-			throw new ComponentRegistryException(("Component name must not be null"));
-		}
-		if (componentProfile == null) {
-			throw new ComponentRegistryException(("Component profile must not be null"));
-		}
-		if (familyCache == null) 
-		{
-			getComponentFamilies();
-		}
-		if (familyCache.containsKey(name)) {
-			throw new ComponentRegistryException(("Component family already exists"));
-		}
 		File newFamilyDir = new File(getComponentFamiliesDir(), name);
 		newFamilyDir.mkdirs();
 		File profileFile = new File(newFamilyDir, "profile");
@@ -113,27 +97,10 @@ public class LocalComponentRegistry implements ComponentRegistry {
 			throw new ComponentRegistryException("Could not write out description", e);
 		}
 		ComponentFamily result = new LocalComponentFamily(this, newFamilyDir);
-		familyCache.put(name, result);
 		return result;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * net.sf.taverna.t2.component.registry.ComponentRegistry#getComponentFamilies
-	 * ()
-	 */
-	@Override
-	public List<ComponentFamily> getComponentFamilies() throws ComponentRegistryException {
-		return getComponentFamiliesIfNecessary();
-
-	}
-
-	private synchronized List<ComponentFamily> getComponentFamiliesIfNecessary() throws ComponentRegistryException {
-		List<ComponentFamily> result = new ArrayList<ComponentFamily>();
-		if (familyCache == null) {
-			familyCache = new HashMap<String, ComponentFamily>();
+	protected void populateFamilyCache() throws ComponentRegistryException {
 			File familiesDir = getComponentFamiliesDir();
 			for (File subFile : familiesDir.listFiles()) {
 				if (subFile.isDirectory()) {
@@ -142,27 +109,8 @@ public class LocalComponentRegistry implements ComponentRegistry {
 				}
 			}
 		}
-		result.addAll(familyCache.values());
-		return result;
 
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * net.sf.taverna.t2.component.registry.ComponentRegistry#getComponentProfiles
-	 * ()
-	 */
-	@Override
-	public List<ComponentProfile> getComponentProfiles() throws ComponentRegistryException {
-		return getComponentProfilesIfNecessary();
-	}
-	
-	private synchronized List<ComponentProfile> getComponentProfilesIfNecessary() throws ComponentRegistryException {
-		List<ComponentProfile> result = new ArrayList<ComponentProfile>();
-		if (profileCache == null) {
-			profileCache = new HashMap<String,ComponentProfile>();
+	protected void populateProfileCache() throws ComponentRegistryException {
 			File profilesDir = getComponentProfilesDir();
 			for (File subFile : profilesDir.listFiles()) {
 				if (subFile.isFile() && (!subFile.isHidden())
@@ -170,31 +118,12 @@ public class LocalComponentRegistry implements ComponentRegistry {
 					try {
 						ComponentProfile newProfile = new ComponentProfile(
 								subFile.toURI().toURL());
-						profileCache.put(newProfile.getId(), newProfile);
+						profileCache.add(newProfile);
 					} catch (MalformedURLException e) {
 						logger.error("Unable to read profile", e);
 					}
 				}
 			}
-		}
-		result.addAll(profileCache.values());
-		return result;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * net.sf.taverna.t2.component.registry.ComponentRegistry#getRegistryBase()
-	 */
-	@Override
-	public URL getRegistryBase() {
-		try {
-			return getBaseDir().toURI().toURL();
-		} catch (MalformedURLException e) {
-			logger.error(e);
-			return null;
-		}
 	}
 
 	/*
@@ -205,14 +134,8 @@ public class LocalComponentRegistry implements ComponentRegistry {
 	 * (net.sf.taverna.t2.component.registry.ComponentFamily)
 	 */
 	@Override
-	public void removeComponentFamily(ComponentFamily componentFamily)
+	protected void internalRemoveComponentFamily(ComponentFamily componentFamily)
 			throws ComponentRegistryException {
-		if (componentFamily != null) {
-			if (familyCache == null) {
-				getComponentFamilies();
-			}
-			familyCache.remove(componentFamily.getName());
-		}
 		File componentFamilyDir = new File(getComponentFamiliesDir(), componentFamily.getName());
 		try {
 			FileUtils.deleteDirectory(componentFamilyDir);
@@ -239,35 +162,13 @@ public class LocalComponentRegistry implements ComponentRegistry {
 	}
 
 	public static ComponentRegistry getComponentRegistry(URL componentRegistryBase) throws ComponentRegistryException {
-		try {
-			return getComponentRegistry(new File(componentRegistryBase.toURI()));
-		} catch (URISyntaxException e) {
-			logger.error(e);
-			return null;
-		}
+			return getComponentRegistry(new File(componentRegistryBase.getFile()));
 	}
 
 	@Override
-	public ComponentFamily getComponentFamily(String familyName) throws ComponentRegistryException {
-		if (familyCache == null) {
-			getComponentFamilies();
-		}
-		return familyCache.get(familyName);
-	}
-
-	@Override
-	public ComponentProfile addComponentProfile(ComponentProfile componentProfile, License license,
+	public ComponentProfile internalAddComponentProfile(ComponentProfile componentProfile, License license,
 			SharingPolicy sharingPolicy)
 			throws ComponentRegistryException {
-		if (componentProfile == null) {
-			throw new ComponentRegistryException(("Component profile must not be null"));
-		}
-		if (profileCache == null) {
-			getComponentProfilesIfNecessary();
-		}
-		if (profileCache.containsKey(componentProfile.getId())) {
-			return profileCache.get(componentProfile.getId());
-		}
 		String name = componentProfile.getName().replaceAll("\\W+", "") + ".xml";
 		String inputString = componentProfile.getXML();
 		File outputFile = new File(getComponentProfilesDir(), name);
@@ -279,7 +180,6 @@ public class LocalComponentRegistry implements ComponentRegistry {
 
 		try {
 			ComponentProfile newProfile = new ComponentProfile(outputFile.toURI().toURL());
-			profileCache.put(newProfile.getId(), newProfile);
 			return newProfile;
 		} catch (MalformedURLException e) {
 			throw new ComponentRegistryException("Unable to create profile", e);
@@ -323,17 +223,27 @@ public class LocalComponentRegistry implements ComponentRegistry {
 	}
 
 	@Override
-	public List<SharingPolicy> getPermissions() throws ComponentRegistryException {
-		return Collections.emptyList();
+	public void populatePermissionCache() {
+		return;
 	}
 
 	@Override
-	public List<License> getLicenses() throws ComponentRegistryException {
-		return Collections.emptyList();
+	public void populateLicenseCache() {
+		return;
 	}
 
 	@Override
 	public License getPreferredLicense() {
 		return null;
+	}
+	
+	private static String calculatePath(File dir) {
+		String result = "";
+		try {
+			result = dir.getCanonicalPath();
+		} catch (IOException e) {
+			logger.error(e);
+		}
+		return result;
 	}
 }

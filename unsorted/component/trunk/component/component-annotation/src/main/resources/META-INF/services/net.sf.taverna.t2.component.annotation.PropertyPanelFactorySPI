@@ -1,3 +1,4 @@
 net.sf.taverna.t2.component.annotation.AnnotationPropertyPanelFactory
 net.sf.taverna.t2.component.annotation.DatatypePropertyPanelFactory
 net.sf.taverna.t2.component.annotation.ObjectPropertyWithIndividualsPanelFactory
+net.sf.taverna.t2.component.annotation.DateTimePropertyPanelFactory

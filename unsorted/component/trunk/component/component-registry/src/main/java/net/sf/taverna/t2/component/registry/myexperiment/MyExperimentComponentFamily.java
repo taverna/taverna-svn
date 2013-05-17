@@ -89,7 +89,7 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 		}
 	}
 
-	private String getPermissionsString() {
+	private synchronized String getPermissionsString() {
 		Element permissionsElement = componentRegistry.getResourceElement(uri, "permissions");
 		if (permissionsElement == null) {
 			return "";
@@ -111,7 +111,7 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	}
 
 	@Override
-	public String getName() {
+	public synchronized String getName() {
 		if (name == null) {
 			Element titleElement = componentRegistry.getResourceElement(uri, "title");
 			if (titleElement == null) {
@@ -123,7 +123,7 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	}
 
 	@Override
-	public String getDescription() {
+	public synchronized String getDescription() {
 		if (description == null) {
 			Element descriptionElement = componentRegistry.getResourceElement(uri, "description");
 			if (descriptionElement == null) {
@@ -135,7 +135,7 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	}
 
 	@Override
-	public ComponentProfile getComponentProfile() throws ComponentRegistryException {
+	public synchronized ComponentProfile getComponentProfile() throws ComponentRegistryException {
 		if (componentProfile == null) {
 			try {
 				Element fileElement = componentRegistry.getPackItem(uri, "file", "component profile");

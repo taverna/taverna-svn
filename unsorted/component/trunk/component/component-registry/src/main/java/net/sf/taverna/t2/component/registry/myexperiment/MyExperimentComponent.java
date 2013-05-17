@@ -74,7 +74,7 @@ public class MyExperimentComponent implements Component {
 	}
 
 	@Override
-	public String getName() {
+	public synchronized String getName() {
 		if (name == null) {
 			Element titleElement = componentRegistry.getResourceElement(uri, "title");
 			if (titleElement == null) {
@@ -86,7 +86,7 @@ public class MyExperimentComponent implements Component {
 	}
 
 	@Override
-	public String getDescription() {
+	public synchronized String getDescription() {
 		if (description == null) {
 			Element descriptionElement = componentRegistry.getResourceElement(uri, "description");
 			if (descriptionElement == null) {
@@ -98,7 +98,7 @@ public class MyExperimentComponent implements Component {
 	}
 
 	@Override
-	public SortedMap<Integer, ComponentVersion> getComponentVersionMap() {
+	public synchronized SortedMap<Integer, ComponentVersion> getComponentVersionMap() {
 		if (versionCache == null) {
 		versionCache = new TreeMap<Integer, ComponentVersion>();
 		for (Element version : componentRegistry.getResourceElements(uri, "versions")) {
@@ -117,7 +117,6 @@ public class MyExperimentComponent implements Component {
 
 	@Override
 	public MyExperimentComponentVersion addVersionBasedOn(Dataflow dataflow, String revisionComment) throws ComponentRegistryException {
-// TODO Fix this
 		return addVersionBasedOn(dataflow, revisionComment, this.permissionsString);
 	}
 
