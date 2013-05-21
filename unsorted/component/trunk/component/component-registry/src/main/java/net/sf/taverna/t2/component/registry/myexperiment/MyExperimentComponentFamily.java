@@ -24,13 +24,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import net.sf.taverna.t2.annotation.annotationbeans.DescriptiveTitle;
-import net.sf.taverna.t2.annotation.annotationbeans.FreeTextDescription;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
@@ -55,18 +50,13 @@ import org.jdom.output.XMLOutputter;
  *
  * @author David Withers
  */
-public class MyExperimentComponentFamily implements ComponentFamily {
+public final class MyExperimentComponentFamily extends ComponentFamily {
 	
 	private static Logger logger = Logger.getLogger(MyExperimentComponentFamily.class);
 
-	private final MyExperimentComponentRegistry componentRegistry;
 	private final String uri;
 	private final AnnotationTools annotationTools;
 
-	private String name;
-	private String description;
-	private ComponentProfile componentProfile;
-	private Map<String, Component> componentsCache;
 	private String permissionsString;
 	private License license;
 	
@@ -74,7 +64,7 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 
 	public MyExperimentComponentFamily(MyExperimentComponentRegistry componentRegistry, License license,
 			MyExperimentSharingPolicy permissions, String uri) throws ComponentRegistryException {
-		this.componentRegistry = componentRegistry;
+		super(componentRegistry);
 		this.license = license;
 		this.uri = uri;
 		annotationTools = new AnnotationTools();
@@ -90,6 +80,7 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	}
 
 	private synchronized String getPermissionsString() {
+		MyExperimentComponentRegistry componentRegistry = (MyExperimentComponentRegistry) this.getComponentRegistry();
 		Element permissionsElement = componentRegistry.getResourceElement(uri, "permissions");
 		if (permissionsElement == null) {
 			return "";
@@ -106,37 +97,32 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 	}
 
 	@Override
-	public ComponentRegistry getComponentRegistry() {
-		return componentRegistry;
-	}
-
-	@Override
-	public synchronized String getName() {
-		if (name == null) {
+	public synchronized String internalGetName() {
+		MyExperimentComponentRegistry componentRegistry = (MyExperimentComponentRegistry) this.getComponentRegistry();
+		String result = "";
 			Element titleElement = componentRegistry.getResourceElement(uri, "title");
-			if (titleElement == null) {
-				name = "";
+			if (titleElement != null) {
+				result = titleElement.getTextTrim();
 			}
-			name = titleElement.getTextTrim();
-		}
-		return name;
+		return result;
 	}
 
 	@Override
-	public synchronized String getDescription() {
-		if (description == null) {
+	public synchronized String internalGetDescription() {
+		MyExperimentComponentRegistry componentRegistry = (MyExperimentComponentRegistry) this.getComponentRegistry();
+		String result = "";
 			Element descriptionElement = componentRegistry.getResourceElement(uri, "description");
-			if (descriptionElement == null) {
-				description = "";
+			if (descriptionElement != null) {
+				result = descriptionElement.getTextTrim();
 			}
-			description = descriptionElement.getTextTrim();
-		}
-		return description;
+
+		return result;
 	}
 
 	@Override
-	public synchronized ComponentProfile getComponentProfile() throws ComponentRegistryException {
-		if (componentProfile == null) {
+	public synchronized ComponentProfile internalGetComponentProfile() throws ComponentRegistryException {
+		MyExperimentComponentRegistry componentRegistry = (MyExperimentComponentRegistry) this.getComponentRegistry();
+		ComponentProfile result = null;
 			try {
 				Element fileElement = componentRegistry.getPackItem(uri, "file", "component profile");
 				String uri = fileElement.getAttributeValue("uri");
@@ -144,24 +130,24 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 				for (ComponentProfile p : componentRegistry.getComponentProfiles()) {
 					String uri2 = ((MyExperimentComponentProfile) p).getUri();
 					if (uri2.equals(withoutVersion)) {
-						componentProfile = p;
+						result = p;
 						break;
 					}
 				}
-				if (componentProfile == null) {
+				if (result == null) {
 					// Assume it is external
 					String resource = fileElement.getAttributeValue("resource");
 					String version = fileElement.getAttributeValue("version");
 					resource = StringUtils.substringBeforeLast(resource, "?");
 					String downloadUri = resource + "/download?version=" + version;
 						String profileString = componentRegistry.getFileAsString(downloadUri);
-						componentProfile = new MyExperimentComponentProfile(componentRegistry, uri, profileString);
+						result = new MyExperimentComponentProfile(componentRegistry, uri, profileString);
 				}
 			} catch (ComponentRegistryException e) {
 				try {
 					String downloadUri = componentRegistry.getExternalPackItem(uri, "component profile");
 					try {
-						componentProfile = new ComponentProfile(new URL(downloadUri));
+						result = new ComponentProfile(new URL(downloadUri));
 					} catch (MalformedURLException ex) {
 						throw new ComponentRegistryException("Unable to open profile from " + downloadUri, ex);
 					}
@@ -169,19 +155,12 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 					// no component profile present
 				}
 			}
-		}
-		return componentProfile;
+		return result;
 	}
 
-	@Override
-	public List<Component> getComponents() throws ComponentRegistryException {
-		return getComponentsIfNecessary();
-	}
+	protected synchronized void populateComponentCache() throws ComponentRegistryException {
 
-	private synchronized List<Component> getComponentsIfNecessary() throws ComponentRegistryException {
-		List<Component> result = new ArrayList<Component>();
-		if (componentsCache == null) {
-			componentsCache = new HashMap<String, Component>();
+		MyExperimentComponentRegistry componentRegistry = (MyExperimentComponentRegistry) this.getComponentRegistry();
 			for (Element internalPackItem : componentRegistry.getResourceElements(uri,
 					"internal-pack-items")) {
 				if (internalPackItem.getName().equals("pack")) {
@@ -193,29 +172,19 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 						String tagText = tag.getTextTrim();
 						if ("component".equals(tagText)) {
 							MyExperimentComponent newComponent = new MyExperimentComponent(componentRegistry, license, permissionsString, packUri);
-							componentsCache.put(newComponent.getName(), newComponent);
+							componentCache.put(newComponent.getName(), newComponent);
 							break;
 						}
 					}
 				}
 			}
-		}
-		result.addAll(componentsCache.values());
-		return result;
 	}
 
 	@Override
-	public ComponentVersion createComponentBasedOn(String componentName, String description, Dataflow dataflow) throws ComponentRegistryException {
-		if (componentName == null) {
-			throw new ComponentRegistryException(("Component name must not be null"));
-		}
-		if (dataflow == null) {
-			throw new ComponentRegistryException(("Dataflow must not be null"));
-		}
-		Component component = getComponent(componentName);
-		if (component != null) {
-			throw new ComponentRegistryException("Component " + componentName + " already exists");
-		}
+	public ComponentVersion internalCreateComponentBasedOn(String componentName, String description, Dataflow dataflow) throws ComponentRegistryException {
+		Component component;
+		
+		MyExperimentComponentRegistry componentRegistry = (MyExperimentComponentRegistry) this.getComponentRegistry();
 		// upload the workflow
 		String title = annotationTools.getAnnotationString(dataflow, DescriptiveTitle.class, "Untitled");
 //		String description = annotationTools.getAnnotationString(dataflow, FreeTextDescription.class, "No description");
@@ -246,11 +215,6 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 		Element resource = componentRegistry.getResource(uri);
 		String attributeValue = resource.getAttributeValue("resource");
 		componentRegistry.addPackItem(componentRegistry.getResource(uri), componentPack);
-		if (componentsCache == null) {
-			getComponents();
-		}
-		componentsCache.put(componentName, component);
-
 
 		// add the workflow to the pack
 		componentRegistry.addPackItem(componentPack, componentWorkflow);
@@ -262,20 +226,11 @@ public class MyExperimentComponentFamily implements ComponentFamily {
 		return new MyExperimentComponentVersion(componentRegistry, component, uri+"&version="+version);
 	}
 
-	@Override
-	public Component getComponent(String componentName) throws ComponentRegistryException {
-		if (componentsCache == null) {
-			getComponents();
-		}
-		return (componentsCache.get(componentName));
-	}
-
-	public String getUri() {
+	String getUri() {
 		return uri;
 	}
 
-	@Override
-	public void removeComponent(Component component)
+	public void internalRemoveComponent(Component component)
 			throws ComponentRegistryException {
 		throw new ComponentRegistryException("Not yet implemented");
 	}

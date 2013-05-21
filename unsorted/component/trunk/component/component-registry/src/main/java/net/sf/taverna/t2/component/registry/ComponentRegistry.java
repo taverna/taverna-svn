@@ -69,7 +69,7 @@ public abstract class ComponentRegistry {
 	 * @throws ComponentRegistryException
 	 *             if there is a problem accessing the ComponentRegistry.
 	 */
-	public List<ComponentFamily> getComponentFamilies() throws ComponentRegistryException {
+	public final List<ComponentFamily> getComponentFamilies() throws ComponentRegistryException {
 		checkFamilyCache();
 		return new ArrayList(familyCache.values());
 	}
@@ -97,7 +97,7 @@ public abstract class ComponentRegistry {
 	 * @throws ComponentRegistryException
 	 *             if there is a problem accessing the ComponentRegistry.
 	 */
-	public ComponentFamily getComponentFamily(String familyName) throws ComponentRegistryException {
+	public final ComponentFamily getComponentFamily(String familyName) throws ComponentRegistryException {
 		checkFamilyCache();
 		return familyCache.get(familyName);
 	}
@@ -121,11 +121,11 @@ public abstract class ComponentRegistry {
 	 *             <li>if there is a problem accessing the ComponentRegistry.
 	 *             </ul>
 	 */
-	public ComponentFamily createComponentFamily(String familyName,
+	public final ComponentFamily createComponentFamily(String familyName,
 			ComponentProfile componentProfile, String description,
 			License license, SharingPolicy sharingPolicy) throws ComponentRegistryException {
 		if (familyName == null) {
-			throw new ComponentRegistryException(("Component name must not be null"));
+			throw new ComponentRegistryException(("Component family name must not be null"));
 		}
 		if (componentProfile == null) {
 			throw new ComponentRegistryException(("Component profile must not be null"));
@@ -157,7 +157,7 @@ public abstract class ComponentRegistry {
 	 * @throws ComponentRegistryException
 	 *             if there is a problem accessing the ComponentRegistry.
 	 */
-	public void removeComponentFamily(ComponentFamily componentFamily)
+	public final void removeComponentFamily(ComponentFamily componentFamily)
 			throws ComponentRegistryException {
 		if (componentFamily != null) {
 			checkFamilyCache();
@@ -176,11 +176,11 @@ public abstract class ComponentRegistry {
 	 *
 	 * @return the location of this ComponentRepository
 	 */
-	public URL getRegistryBase() {
+	public final URL getRegistryBase() {
 		return registryBase;
 	}
 	
-	public String getRegistryBaseString() {
+	public final String getRegistryBaseString() {
             String urlString = getRegistryBase().toString();
             if (urlString.endsWith("/")) {
                     urlString = urlString.substring(0, urlString.length() - 1);
@@ -208,7 +208,7 @@ public abstract class ComponentRegistry {
 	 * @throws ComponentRegistryException
 	 *             if there is a problem accessing the ComponentRegistry.
 	 */
-	public List<ComponentProfile> getComponentProfiles() throws ComponentRegistryException {
+	public final List<ComponentProfile> getComponentProfiles() throws ComponentRegistryException {
 		checkProfileCache();
 		return profileCache;
 	}
@@ -227,15 +227,24 @@ public abstract class ComponentRegistry {
 	 *             <li>if there is a problem accessing the ComponentRegistry.
 	 *             </ul>
 	 */
-	public ComponentProfile addComponentProfile(ComponentProfile componentProfile, License license, SharingPolicy sharingPolicy)
+	public final ComponentProfile addComponentProfile(ComponentProfile componentProfile, License license, SharingPolicy sharingPolicy)
 			throws ComponentRegistryException {
 		if (componentProfile == null) {
 			throw new ComponentRegistryException("componentProfile is null");
 		}
-		ComponentProfile result = internalAddComponentProfile(componentProfile, license, sharingPolicy);
+		ComponentProfile result = null;
 		checkProfileCache();
-		synchronized(profileCache) {
-			profileCache.add(result);
+		for (ComponentProfile p : this.getComponentProfiles()) {
+			if (p.getId().equals(componentProfile.getId())) {
+				result = p;
+				break;
+			}
+		}
+		if (result == null) {
+			result = internalAddComponentProfile(componentProfile, license, sharingPolicy);
+			synchronized(profileCache) {
+				profileCache.add(result);
+			}
 		}
 		return result;
 	}
@@ -252,7 +261,7 @@ public abstract class ComponentRegistry {
 	
 	protected abstract void populatePermissionCache();
 	
-	public List<SharingPolicy> getPermissions() throws ComponentRegistryException {
+	public final List<SharingPolicy> getPermissions() throws ComponentRegistryException {
 		checkPermissionCache();
 		return permissionCache;
 	}
@@ -267,7 +276,7 @@ public abstract class ComponentRegistry {
 	
 	protected abstract void populateLicenseCache();
 	
-	public List<License> getLicenses() throws ComponentRegistryException {
+	public final List<License> getLicenses() throws ComponentRegistryException {
 		checkLicenseCache();
 		return licenseCache;
 	}

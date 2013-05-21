@@ -20,8 +20,11 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.SortedMap;
+import java.util.TreeMap;
 
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
@@ -31,21 +34,59 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
  *
  * @author David Withers
  */
-public interface Component {
+public abstract class Component {
+	
+	private String name;
+	
+	private String description;
+	
+	private URL url;
+	
+	protected SortedMap<Integer, ComponentVersion> versionMap = new TreeMap<Integer, ComponentVersion>();
+	
+	protected Component(String url) {
+		try {
+			this.url = new URL(url);
+		} catch (MalformedURLException e) {
+			// nothing
+		}
+	}
+	
+	protected Component(File fileDir) {
+		try {
+			this.url = fileDir.toURI().toURL();
+		} catch (MalformedURLException e) {
+			// nothing
+		}
+	}
 
 	/**
 	 * Returns the name of the Component.
 	 *
 	 * @return the name of the Component.
 	 */
-	public String getName();
+	public final synchronized String getName() {
+		if (name == null) {
+			name = internalGetName();
+		}
+		return name;
+	}
+	
+	protected abstract String internalGetName();
 
 	/**
 	 * Returns the description of the Component.
 	 *
 	 * @return the description of the Component.
 	 */
-	public String getDescription();
+	public final synchronized String getDescription() {
+		if (description == null) {
+			description = internalGetDescription();
+		}
+		return description;
+	}
+	
+	protected abstract String internalGetDescription();
 
 	/**
 	 * Returns a SortedMap of version number to ComponentVersion.
@@ -54,7 +95,20 @@ public interface Component {
 	 *
 	 * @return a SortedMap of version number to ComponentVersion.
 	 */
-	public SortedMap<Integer, ComponentVersion> getComponentVersionMap();
+	public final SortedMap<Integer, ComponentVersion> getComponentVersionMap() {
+		checkComponentVersionMap();
+		return versionMap;
+	}
+	
+	private void checkComponentVersionMap() {
+		synchronized (versionMap) {
+			if (versionMap.isEmpty()) {
+				populateComponentVersionMap();
+			}
+		}
+	}
+	
+	protected abstract void populateComponentVersionMap();
 
 	/**
 	 * Returns the ComponentVersion that has the specified version number.
@@ -65,7 +119,10 @@ public interface Component {
 	 * @throws ComponentRegistryException
 	 *             if there is a problem accessing the ComponentRegistry.
 	 */
-	public ComponentVersion getComponentVersion(Integer version) throws ComponentRegistryException;
+	public final ComponentVersion getComponentVersion(Integer version) throws ComponentRegistryException {
+		checkComponentVersionMap();
+		return versionMap.get(version);
+	}
 
 	/**
 	 * Creates a new version of this Component.
@@ -76,13 +133,24 @@ public interface Component {
 	 * @throws ComponentRegistryException
 	 *             if there is a problem accessing the ComponentRegistry.
 	 */
-	public ComponentVersion addVersionBasedOn(Dataflow dataflow, String revisionComment) throws ComponentRegistryException;
+	public final ComponentVersion addVersionBasedOn(Dataflow dataflow, String revisionComment) throws ComponentRegistryException {
+		ComponentVersion result = internalAddVersionBasedOn(dataflow, revisionComment);
+		checkComponentVersionMap();
+		synchronized(versionMap) {
+			versionMap.put(result.getVersionNumber(), result);
+		}
+		return result;
+	}
 
+	protected abstract ComponentVersion internalAddVersionBasedOn(Dataflow dataflow, String revisionComment) throws ComponentRegistryException;
+	
 	/**
 	 * Returns the URL for the Component.
 	 *
 	 * @return the URL for the Component.
 	 */
-	public URL getComponentURL();
+	public final synchronized URL getComponentURL() {
+		return url;
+	}
 
 }

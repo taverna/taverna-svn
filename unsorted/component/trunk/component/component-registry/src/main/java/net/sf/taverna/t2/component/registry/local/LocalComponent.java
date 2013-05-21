@@ -28,7 +28,7 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
  * @author alanrw
  *
  */
-public class LocalComponent implements Component {
+public class LocalComponent extends Component {
 	
 	private final File componentDir;
 	
@@ -36,9 +36,8 @@ public class LocalComponent implements Component {
 
 	private static Logger logger = Logger.getLogger(LocalComponent.class);
 
-	private SortedMap<Integer, ComponentVersion> versionCache;
-
 	public LocalComponent(File componentDir) {
+		super(componentDir);
 		this.componentDir = componentDir;	
 	}
 
@@ -46,7 +45,7 @@ public class LocalComponent implements Component {
 	 * @see net.sf.taverna.t2.component.registry.Component#addVersionBasedOn(net.sf.taverna.t2.workflowmodel.Dataflow)
 	 */
 	@Override
-	public ComponentVersion addVersionBasedOn(Dataflow dataflow, String revisionComment) throws ComponentRegistryException {
+	protected final ComponentVersion internalAddVersionBasedOn(Dataflow dataflow, String revisionComment) throws ComponentRegistryException {
 		Integer nextVersionNumber = Integer.valueOf(1);
 		try {
 			nextVersionNumber = getComponentVersionMap().lastKey() + 1;
@@ -70,59 +69,30 @@ public class LocalComponent implements Component {
 		} catch (IOException e) {
 			throw new ComponentRegistryException("Could not write out description", e);
 		}
-			getComponentVersionMap();
-		
-		versionCache.put(nextVersionNumber, newComponentVersion);
+
 		return newComponentVersion;
 	}
-
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.component.registry.Component#getComponentVersion(java.lang.Integer)
-	 */
-	@Override
-	public ComponentVersion getComponentVersion(Integer version) throws ComponentRegistryException {
-		return getComponentVersionMap().get(version);
-	}
-
 
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.component.registry.Component#getName()
 	 */
 	@Override
-	public String getName() {
+	protected final String internalGetName() {
 		return componentDir.getName();
 	}
 
-	@Override
-	public SortedMap<Integer, ComponentVersion> getComponentVersionMap() {
-		return getComponentVersionMapIfNecessary();
-	}
+	protected final void populateComponentVersionMap() {
 
-	private synchronized SortedMap<Integer, ComponentVersion> getComponentVersionMapIfNecessary() {
-		if (versionCache == null) {
-		versionCache = new TreeMap<Integer, ComponentVersion>();
 		for (File subFile : componentDir.listFiles()) {
 			if (subFile.isDirectory()) {
 				try {
 					Integer i = Integer.valueOf(subFile.getName());
-					versionCache.put(i, new LocalComponentVersion(this, subFile));
+					versionMap.put(i, new LocalComponentVersion(this, subFile));
 				}
 				catch (NumberFormatException e) {
 					// Ignore
 				}
 			}
-		}
-		}
-		return Collections.unmodifiableSortedMap(versionCache);
-	}
-
-	@Override
-	public URL getComponentURL() {
-		try {
-			return componentDir.toURI().toURL();
-		} catch (MalformedURLException e) {
-			logger.error(e);
-			return null;
 		}
 	}
 
@@ -159,7 +129,7 @@ public class LocalComponent implements Component {
 	}
 
 	@Override
-	public String getDescription() {
+	protected final String internalGetDescription() {
 			File descriptionFile = new File(componentDir, "description");
 			if (descriptionFile.isFile()) {
 				try {

@@ -51,76 +51,61 @@ import org.jdom.Element;
  *
  * @author David Withers
  */
-public class MyExperimentComponent implements Component {
+public class MyExperimentComponent extends Component {
 
 	private final MyExperimentComponentRegistry componentRegistry;
-	private final String uri;
 	private final AnnotationTools annotationTools;
-
-	private String name;
-	private String description;
 	
-	private SortedMap<Integer, ComponentVersion> versionCache;
 	private final String permissionsString;
 	private License license;
+	private String urlString;
 
 	public MyExperimentComponent(MyExperimentComponentRegistry componentRegistry,
 			License license, String permissionsString, String uri) {
+		super(uri);
+		this.urlString = uri;
 		this.componentRegistry = componentRegistry;
-		this.uri = uri;
 		this.permissionsString = permissionsString;
 		this.license = license;
 		annotationTools = new AnnotationTools();
 	}
 
 	@Override
-	public synchronized String getName() {
-		if (name == null) {
-			Element titleElement = componentRegistry.getResourceElement(uri, "title");
-			if (titleElement == null) {
-				name = "";
+	protected final String internalGetName() {
+		String result = "";
+			Element titleElement = componentRegistry.getResourceElement(urlString, "title");
+			if (titleElement != null) {
+				result = titleElement.getTextTrim();
 			}
-			name = titleElement.getTextTrim();
-		}
-		return name;
+			
+		return result;
 	}
 
 	@Override
-	public synchronized String getDescription() {
-		if (description == null) {
-			Element descriptionElement = componentRegistry.getResourceElement(uri, "description");
-			if (descriptionElement == null) {
-				description = "";
+	protected final String internalGetDescription() {
+		String result = "";
+			Element descriptionElement = componentRegistry.getResourceElement(urlString, "description");
+			if (descriptionElement != null) {
+				result = descriptionElement.getTextTrim();
 			}
-			description = descriptionElement.getTextTrim();
-		}
-		return description;
+		return result;
 	}
 
 	@Override
-	public synchronized SortedMap<Integer, ComponentVersion> getComponentVersionMap() {
-		if (versionCache == null) {
-		versionCache = new TreeMap<Integer, ComponentVersion>();
-		for (Element version : componentRegistry.getResourceElements(uri, "versions")) {
+	protected final void populateComponentVersionMap() {
+		for (Element version : componentRegistry.getResourceElements(urlString, "versions")) {
 			String versionUri = version.getAttributeValue("uri");
 			ComponentVersion componentVersion = new MyExperimentComponentVersion(componentRegistry, this, versionUri);
-			versionCache.put(componentVersion.getVersionNumber(), componentVersion);
+			versionMap.put(componentVersion.getVersionNumber(), componentVersion);
 		}
-		}
-		return Collections.unmodifiableSortedMap(versionCache);
 	}
 
 	@Override
-	public ComponentVersion getComponentVersion(Integer versionNumber) {
-		return getComponentVersionMap().get(versionNumber);
+	protected final MyExperimentComponentVersion internalAddVersionBasedOn(Dataflow dataflow, String revisionComment) throws ComponentRegistryException {
+		return internalAddVersionBasedOn(dataflow, revisionComment, this.permissionsString);
 	}
 
-	@Override
-	public MyExperimentComponentVersion addVersionBasedOn(Dataflow dataflow, String revisionComment) throws ComponentRegistryException {
-		return addVersionBasedOn(dataflow, revisionComment, this.permissionsString);
-	}
-
-	public MyExperimentComponentVersion addVersionBasedOn(Dataflow dataflow, String revisionComment, String permissionsString) throws ComponentRegistryException {
+	private MyExperimentComponentVersion internalAddVersionBasedOn(Dataflow dataflow, String revisionComment, String permissionsString) throws ComponentRegistryException {
 		String title = annotationTools.getAnnotationString(dataflow, DescriptiveTitle.class, "Untitled");
 		String dataflowString;
 		try {
@@ -138,33 +123,20 @@ public class MyExperimentComponent implements Component {
 			throw new ComponentRegistryException(e);
 		}
 
-		Element workflowElement = componentRegistry.getPackItem(uri, "workflow");
+		Element workflowElement = componentRegistry.getPackItem(urlString, "workflow");
 		String versionUri = workflowElement.getAttributeValue("uri");
 		String workflowUri = StringUtils.substringBeforeLast(versionUri, "&");
 		Element componentWorkflow = componentRegistry.updateWorkflow(workflowUri, dataflowString,
 				title, revisionComment, license, permissionsString);
 
-		Element componentElement = componentRegistry.getResource(uri);
+		Element componentElement = componentRegistry.getResource(urlString);
 		componentRegistry.deletePackItem(componentElement, "workflow");
 		componentRegistry.addPackItem(componentElement, componentWorkflow);
 
-		Element componentPack = componentRegistry.snapshotPack(uri);
+		Element componentPack = componentRegistry.snapshotPack(urlString);
 		String version = componentPack.getAttributeValue("version");
-		MyExperimentComponentVersion myExperimentComponentVersion = new MyExperimentComponentVersion(componentRegistry, this, uri+"&version="+version);
-		if (versionCache == null) {
-			getComponentVersionMap();
-		}
-		versionCache.put(Integer.valueOf(version), myExperimentComponentVersion);
+		MyExperimentComponentVersion myExperimentComponentVersion = new MyExperimentComponentVersion(componentRegistry, this, urlString+"&version="+version);
 		return myExperimentComponentVersion;
-	}
-
-	@Override
-	public URL getComponentURL() {
-		try {
-			return new URL(uri);
-		} catch (MalformedURLException e) {
-			return null;
-		}
 	}
 
 }

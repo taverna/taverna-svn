@@ -20,9 +20,13 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.taverna.t2.component.profile.ComponentProfile;
+import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 /**
@@ -31,28 +35,58 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
  *
  * @author David Withers
  */
-public interface ComponentFamily {
+public abstract class ComponentFamily {
+	
+	private ComponentRegistry parentRegistry;
+	
+	private String name;
+	
+	private String description;
+	
+	private ComponentProfile componentProfile;
+	
+	protected Map<String, Component> componentCache = new HashMap<String, Component>();
+
+	public ComponentFamily(ComponentRegistry componentRegistry) {
+		this.parentRegistry = componentRegistry;
+	}
 
 	/**
 	 * Returns the ComponentRegistry that contains this ComponentFamily.
 	 *
 	 * @return the ComponentRegistry that contains this ComponentFamily.
 	 */
-	public ComponentRegistry getComponentRegistry();
+	public ComponentRegistry getComponentRegistry() {
+		return parentRegistry;
+	}
 
 	/**
 	 * Returns the name of the ComponentFamily.
 	 *
 	 * @return the name of the ComponentFamily.
 	 */
-	public String getName();
+	public final synchronized String getName() {
+		if (name == null) {
+			name = internalGetName();
+		}
+		return name;
+	}
+
+	protected abstract String internalGetName();
 
 	/**
 	 * Returns the description of the ComponentFamily.
 	 *
 	 * @return the description of the ComponentFamily.
 	 */
-	public String getDescription();
+	public final synchronized String getDescription() {
+		if (description == null) {
+			description = internalGetDescription();
+		}
+		return description;
+	}
+	
+	protected abstract String internalGetDescription();
 
 	/**
 	 * Returns the ComponentProfile for this ComponentFamily.
@@ -60,7 +94,14 @@ public interface ComponentFamily {
 	 * @return the ComponentProfile for this ComponentFamily.
 	 * @throws ComponentRegistryException
 	 */
-	public ComponentProfile getComponentProfile() throws ComponentRegistryException;
+	public final synchronized ComponentProfile getComponentProfile() throws ComponentRegistryException {
+		if (componentProfile == null) {
+			componentProfile = internalGetComponentProfile();
+		}
+		return componentProfile;
+	}
+
+	protected abstract ComponentProfile internalGetComponentProfile() throws ComponentRegistryException;
 
 	/**
 	 * Returns all the Components in this ComponentFamily.
@@ -72,7 +113,20 @@ public interface ComponentFamily {
 	 * @throws ComponentRegistryException
 	 *             if there is a problem accessing the ComponentRegistry.
 	 */
-	public List<Component> getComponents() throws ComponentRegistryException;
+	public final List<Component> getComponents() throws ComponentRegistryException {
+		checkComponentCache();
+		return new ArrayList(componentCache.values());
+	}
+	
+	private void checkComponentCache() throws ComponentRegistryException {
+		synchronized(componentCache) {
+			if (componentCache.isEmpty()) {
+				populateComponentCache();
+			}
+		}
+	}
+
+	protected abstract void populateComponentCache() throws ComponentRegistryException;
 
 	/**
 	 * Returns the Component with the specified name.
@@ -86,7 +140,10 @@ public interface ComponentFamily {
 	 * @throws ComponentRegistryException
 	 *             if there is a problem accessing the ComponentRegistry.
 	 */
-	public Component getComponent(String componentName) throws ComponentRegistryException;
+	public final Component getComponent(String componentName) throws ComponentRegistryException {
+		checkComponentCache();
+		return componentCache.get(componentName);
+	}
 
 	/**
 	 * Creates a new Component and adds it to this ComponentFamily.
@@ -104,8 +161,28 @@ public interface ComponentFamily {
 	 *             <li>if there is a problem accessing the ComponentRegistry.
 	 *             </ul>
 	 */
-	public ComponentVersion createComponentBasedOn(String componentName, String description, Dataflow dataflow)
-			throws ComponentRegistryException;
+	public final ComponentVersion createComponentBasedOn(String componentName, String description, Dataflow dataflow)
+			throws ComponentRegistryException {
+		if (componentName == null) {
+			throw new ComponentRegistryException("Component name must not be null");
+		}
+		if (dataflow == null) {
+			throw new ComponentRegistryException("Dataflow must not be null");
+		}
+		checkComponentCache();
+		if (componentCache.containsKey(componentName)) {
+			throw new ComponentRegistryException("Component name already used");
+		}
+		ComponentVersion version = internalCreateComponentBasedOn(componentName, description, dataflow);
+		synchronized(componentCache) {
+			Component c = version.getComponent();
+			componentCache.put(componentName, c);
+		}
+		return version;
+	}
+
+	protected abstract ComponentVersion internalCreateComponentBasedOn(String componentName, String description, Dataflow dataflow)
+	throws ComponentRegistryException;
 	
 	/**
 	 * Removes the specified Component from this
@@ -118,8 +195,17 @@ public interface ComponentFamily {
 	 * @throws ComponentRegistryException
 	 *             if there is a problem accessing the ComponentRegistry.
 	 */
-	public void removeComponent(Component component)
-			throws ComponentRegistryException;
+	public final void removeComponent(Component component)
+			throws ComponentRegistryException {
+		if (component != null) {
+			checkComponentCache();
+			synchronized(componentCache) {
+				componentCache.remove(component.getName());
+			}
+			internalRemoveComponent(component);
+		}
+	}
 
-
+	protected abstract void internalRemoveComponent (Component component)
+	throws ComponentRegistryException;
 }

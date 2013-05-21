@@ -12,6 +12,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -61,7 +62,7 @@ public class LocalComponentRegistry extends ComponentRegistry {
 
 	}
 
-	public static ComponentRegistry getComponentRegistry(File registryDir) throws ComponentRegistryException {
+	public static synchronized ComponentRegistry getComponentRegistry(File registryDir) throws ComponentRegistryException {
 		if (!componentRegistries.containsKey(registryDir)) {
 			componentRegistries.put(registryDir, new LocalComponentRegistry(registryDir));
 		}
@@ -162,7 +163,9 @@ public class LocalComponentRegistry extends ComponentRegistry {
 	}
 
 	public static ComponentRegistry getComponentRegistry(URL componentRegistryBase) throws ComponentRegistryException {
-			return getComponentRegistry(new File(componentRegistryBase.getFile()));
+		String path = componentRegistryBase.getPath();
+		String hackedPath = URLDecoder.decode(path);
+			return getComponentRegistry(new File(hackedPath));
 	}
 
 	@Override

@@ -9,14 +9,45 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
  * @author alanrw
  *
  */
-public interface ComponentVersion {
+public abstract class ComponentVersion {
 	
-	public Integer getVersionNumber();
+	private Integer versionNumber;
 	
-	public String getDescription();
+	private String description;
+	
+	private Component component;
+	
+	protected ComponentVersion(Component component) {
+		this.component = component;
+	}
+	
+	public final synchronized Integer getVersionNumber() {
+		if (versionNumber == null) {
+			versionNumber = internalGetVersionNumber();
+		}
+		return versionNumber;
+	}
+	
+	protected abstract Integer internalGetVersionNumber();
+	
+	public final synchronized String getDescription() {
+		if (description == null) {
+			description = internalGetDescription();
+		}
+		return description;
+	}
+	
+	protected abstract String internalGetDescription();
 
-	public Dataflow getDataflow() throws ComponentRegistryException;
+	public final synchronized Dataflow getDataflow() throws ComponentRegistryException {
+		// Cached in dataflow cache
+		return internalGetDataflow();
+	}
 	
-	public Component getComponent();
+	protected abstract Dataflow internalGetDataflow() throws ComponentRegistryException;
+	
+	public final Component getComponent() {
+		return component;
+	}
 
 }

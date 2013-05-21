@@ -44,7 +44,7 @@ import org.jdom.Element;
  *
  * @author David Withers
  */
-public class MyExperimentComponentVersion implements ComponentVersion {
+public class MyExperimentComponentVersion extends ComponentVersion {
 	
 	private static Logger logger = Logger.getLogger(MyExperimentComponentVersion.class);
 
@@ -53,7 +53,6 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 	private static final T2FlowFileType T2_FLOW_FILE_TYPE = new T2FlowFileType();
 
 	private final MyExperimentComponentRegistry componentRegistry;
-	private final Component component;
 	private final String uri;
 
 	private Integer versionNumber;
@@ -61,13 +60,13 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 
 	public MyExperimentComponentVersion(MyExperimentComponentRegistry componentRegistry,
 			Component component, String uri) {
+		super(component);
 		this.componentRegistry = componentRegistry;
-		this.component = component;
 		this.uri = uri;
 	}
 
 	@Override
-	public Integer getVersionNumber() {
+	protected final Integer internalGetVersionNumber() {
 		if (versionNumber == null) {
 			Element resource = componentRegistry.getResource(uri);
 			if (resource != null) {
@@ -78,8 +77,8 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 	}
 
 	@Override
-	public String getDescription() {
-		logger.error("Getting workflow from myExperiment");
+	protected final String internalGetDescription() {
+		logger.info("Getting workflow from myExperiment");
 		if (description == null) {
 			try {
 				Element workflowElement = componentRegistry.getPackItem(uri, "workflow");
@@ -95,7 +94,7 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 	}
 
 	@Override
-	public Dataflow getDataflow() throws ComponentRegistryException {
+	protected final Dataflow internalGetDataflow() throws ComponentRegistryException {
 		Dataflow dataflow;
 			Element workflowElement = componentRegistry.getPackItem(uri, "workflow");
 			String resourceUri = workflowElement.getAttributeValue("resource");
@@ -130,11 +129,6 @@ public class MyExperimentComponentVersion implements ComponentVersion {
 //				throw new ComponentRegistryException("Unable to open dataflow from " + downloadUri, e);
 //			}
 		return info.getDataflow();
-	}
-
-	@Override
-	public Component getComponent() {
-		return component;
 	}
 
 }

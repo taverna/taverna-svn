@@ -25,20 +25,16 @@ import org.apache.log4j.Logger;
  * @author alanrw
  *
  */
-public class LocalComponentFamily implements ComponentFamily {
+public class LocalComponentFamily extends ComponentFamily {
 	
 	private static Logger logger = Logger.getLogger(LocalComponentFamily.class);
 
 	private static final String UTF_8 = "utf-8";
 	private static final String PROFILE = "profile";
 	private final File componentFamilyDir;
-	private final ComponentRegistry parentRegistry;
-	
-	private ComponentProfile componentProfile;
-	private Map<String, Component> componentsCache;
 
 	public LocalComponentFamily(ComponentRegistry parentRegistry, File componentFamilyDir) {
-		this.parentRegistry = parentRegistry;
+		super(parentRegistry);
 		this.componentFamilyDir = componentFamilyDir;
 	}
 
@@ -46,9 +42,10 @@ public class LocalComponentFamily implements ComponentFamily {
 	 * @see net.sf.taverna.t2.component.registry.ComponentFamily#getComponentProfile()
 	 */
 	@Override
-	public ComponentProfile getComponentProfile()
+	public final ComponentProfile internalGetComponentProfile()
 			throws ComponentRegistryException {
-		if (componentProfile == null) {
+		ComponentProfile result = null;
+		LocalComponentRegistry parentRegistry = (LocalComponentRegistry) this.getComponentRegistry();
 		File profileFile = new File(componentFamilyDir, PROFILE);
 		String profileName;
 		try {
@@ -58,66 +55,37 @@ public class LocalComponentFamily implements ComponentFamily {
 		}
 		for (ComponentProfile p : parentRegistry.getComponentProfiles()) {
 			if (p.getName().equals(profileName)) {
-				componentProfile = p;
+				result = p;
 				break;
 			}
 		}
-		}
-		return componentProfile;
+		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.component.registry.ComponentFamily#getComponentRegistry()
-	 */
-	@Override
-	public ComponentRegistry getComponentRegistry() {
-		return parentRegistry;
-	}
+	protected void populateComponentCache() throws ComponentRegistryException {
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.component.registry.ComponentFamily#getComponents()
-	 */
-	@Override
-	public List<Component> getComponents() throws ComponentRegistryException {
-		return getComponentsIfNecessary();
-	}
-
-	private synchronized List<Component> getComponentsIfNecessary() throws ComponentRegistryException {
-		// Assume all directories are components
-		List<Component> result = new ArrayList<Component>();
-
-		if (componentsCache == null) {
-			componentsCache = new HashMap<String, Component>();
 		for (File subFile : componentFamilyDir.listFiles()) {
 			if (subFile.isDirectory()) {
 				LocalComponent newComponent = new LocalComponent(subFile);
-				componentsCache.put(newComponent.getName(), newComponent);
+				componentCache.put(newComponent.getName(), newComponent);
 			}
 		}
-		}
-		result.addAll(componentsCache.values());
-		return result;
 	}
 
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.component.registry.ComponentFamily#getName()
 	 */
 	@Override
-	public String getName() {
+	protected final String internalGetName() {
 		return componentFamilyDir.getName();
 	}
 
 
 	@Override
-	public ComponentVersion createComponentBasedOn(String componentName,
+	protected final ComponentVersion internalCreateComponentBasedOn(String componentName,
 			String description,
 			Dataflow dataflow) throws ComponentRegistryException {
-		if (componentName == null) {
-			throw new ComponentRegistryException(("Component name must not be null"));
-		}
-		if (dataflow == null) {
-			throw new ComponentRegistryException(("Dataflow must not be null"));
-		}
+
 		File newSubFile = new File(componentFamilyDir, componentName);
 		if (newSubFile.exists()) {
 			throw new ComponentRegistryException("Component already exists");
@@ -130,20 +98,8 @@ public class LocalComponentFamily implements ComponentFamily {
 			throw new ComponentRegistryException("Could not write out description", e);
 		}
 		LocalComponent newComponent = new LocalComponent(newSubFile);
-		
-		if (componentsCache == null) {
-			getComponents();
-		}
-		componentsCache.put(componentName, newComponent);
-		return newComponent.addVersionBasedOn(dataflow, "Initial version");
-	}
 
-	@Override
-	public Component getComponent(String componentName) throws ComponentRegistryException {
-		if (componentsCache == null) {
-			getComponents();
-		}
-		return (componentsCache.get(componentName));
+		return newComponent.addVersionBasedOn(dataflow, "Initial version");
 	}
 
 	/* (non-Javadoc)
@@ -181,7 +137,7 @@ public class LocalComponentFamily implements ComponentFamily {
 	}
 
 	@Override
-	public String getDescription() {
+	protected final String internalGetDescription() {
 		File descriptionFile = new File(componentFamilyDir, "description");
 		if (descriptionFile.isFile()) {
 			try {
@@ -194,9 +150,8 @@ public class LocalComponentFamily implements ComponentFamily {
 	}
 
 	@Override
-	public void removeComponent(Component component)
+	protected final void internalRemoveComponent(Component component)
 			throws ComponentRegistryException {
-		componentsCache.remove(component.getName());
 		File componentDir = new File(componentFamilyDir, component.getName());
 		try {
 			FileUtils.deleteDirectory(componentDir);

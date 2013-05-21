@@ -22,7 +22,7 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
  * @author alanrw
  *
  */
-public class LocalComponentVersion implements ComponentVersion {
+public class LocalComponentVersion extends ComponentVersion {
 	
 	private static Logger logger = Logger.getLogger(LocalComponentVersion.class);
 	
@@ -30,26 +30,17 @@ public class LocalComponentVersion implements ComponentVersion {
 	private static final T2FlowFileType T2_FLOW_FILE_TYPE = new T2FlowFileType();
 
 	private final File componentVersionDir;
-	private final LocalComponent component;
 
-	public LocalComponentVersion(LocalComponent component, File componentVersionDir) {
-		this.component = component;
+	protected LocalComponentVersion(LocalComponent component, File componentVersionDir) {
+		super(component);
 		this.componentVersionDir = componentVersionDir;
-	}
-
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.component.registry.ComponentVersion#getComponent()
-	 */
-	@Override
-	public Component getComponent() {
-		return component;
 	}
 
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.component.registry.ComponentVersion#getDescription()
 	 */
 	@Override
-		public String getDescription() {
+		protected final String internalGetDescription() {
 			File descriptionFile = new File(componentVersionDir, "description");
 			if (descriptionFile.isFile()) {
 				try {
@@ -65,12 +56,12 @@ public class LocalComponentVersion implements ComponentVersion {
 	 * @see net.sf.taverna.t2.component.registry.ComponentVersion#getVersionNumber()
 	 */
 	@Override
-	public Integer getVersionNumber() {
+	protected final Integer internalGetVersionNumber() {
 		return Integer.parseInt(componentVersionDir.getName());
 	}
 
 	@Override
-	public Dataflow getDataflow() throws ComponentRegistryException {
+	protected final Dataflow internalGetDataflow() throws ComponentRegistryException {
 		T2DataflowOpener opener = new T2DataflowOpener();
 		
 		DataflowInfo info;
