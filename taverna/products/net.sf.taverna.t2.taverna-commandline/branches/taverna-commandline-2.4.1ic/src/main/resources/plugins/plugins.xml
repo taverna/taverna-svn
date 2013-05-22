@@ -96,7 +96,7 @@
     <plugin>
         <provider>biovel.eu</provider>
         <identifier>eu.biovel.taverna.interactionplugin</identifier>
-        <version>1.0.2</version>
+        <version>${t2.taverna.interaction.version}</version>
         <name>Interaction Service plugin</name>
         <description/>
         <enabled>false</enabled>
@@ -113,11 +113,6 @@
         </repositories>
         <profile>
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.8.2</version>
-            </dependency>
-            <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>servlet-api</artifactId>
                 <version>2.4</version>
@@ -127,6 +122,43 @@
                 <groupId>net.sf.taverna.t2.activities</groupId>
                 <artifactId>interaction-activity</artifactId>
                 <version>${t2.taverna.interaction.version}</version>
+            </dependency>
+        </profile>
+        <compatibility>
+            <application>
+                <version>${project.version}</version>
+            </application>
+        </compatibility>
+    </plugin>
+
+    <plugin>
+        <provider>net.sf.taverna.t2.component</provider>
+        <identifier>net.sf.taverna.t2.component.component-plugin</identifier>
+        <version>${t2.taverna.component.version}</version>
+        <name>Component Taverna plugin</name>
+        <description/>
+        <enabled>false</enabled>
+        <repositories>
+            <repository>file:///Users/alanrw/.m2/repository/</repository>
+            <repository>http://www.mygrid.org.uk/maven/repository/</repository>
+            <repository>http://repo1.maven.org/maven2/</repository>
+            <repository>http://www.mygrid.org.uk/maven/snapshot-repository/</repository>
+            <repository>http://uk.maven.org/maven2/</repository>
+            <repository>http://download.java.net/maven/2/</repository>
+            <repository>http://www.mygrid.org.uk/maven/biomoby/moby-dev.inab.org/m2/</repository>
+            <repository>http://repository.apache.org/snapshots/</repository>
+            <repository>http://nexus.codehaus.org/snapshots/</repository>
+        </repositories>
+        <profile>
+            <dependency>
+                <groupId>net.sf.taverna.t2.component</groupId>
+                <artifactId>component-registry</artifactId>
+                <version>${t2.taverna.component.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.taverna.t2.component</groupId>
+                <artifactId>component-activity</artifactId>
+                <version>${t2.taverna.component.version}</version>
             </dependency>
         </profile>
         <compatibility>
