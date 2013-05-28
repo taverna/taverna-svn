@@ -116,6 +116,7 @@ public class ComponentCopyAction extends AbstractAction {
 						targetFamily.createComponentBasedOn(componentName, sourceComponent.getDescription(), sourceVersion.getDataflow());
 					}
 				} catch (ComponentRegistryException e) {
+					JOptionPane.showMessageDialog(null, "Unable to create component", "Component Copy Problem", JOptionPane.ERROR_MESSAGE);
 					logger.error(e);
 				}
 		}
