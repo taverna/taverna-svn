@@ -251,7 +251,7 @@ public class MyExperimentClient {
           this.LOGGED_IN = true;
           logger.info("this.LOGGED_IN set to true");
           this.AUTH_STRING = Base64.encodeBytes((userPass.getUsername() + ":" + userPass.getPasswordAsString())
-              .getBytes());
+              .getBytes("UTF-8"));
 
     	response = this.doMyExperimentGET(this.BASE_URL + "/whoami.xml");
     } catch (Exception e) {
