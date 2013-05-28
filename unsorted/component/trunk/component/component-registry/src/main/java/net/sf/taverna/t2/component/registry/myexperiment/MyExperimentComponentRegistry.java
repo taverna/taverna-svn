@@ -20,6 +20,7 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.myexperiment;
 
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -299,7 +300,7 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 	}
 
 	private String prepareWorkflowPostContent(String dataflow, String title, String description,
-			License license, String permissionsString) {
+			License license, String permissionsString) throws ComponentRegistryException {
 		StringBuilder contentXml = new StringBuilder("<workflow>");
 		if (title.length() > 0) contentXml.append("<title>").append(title).append("</title>");
 		if (description.length() > 0) {
@@ -313,7 +314,12 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 		if (dataflow.length() > 0) {
 			contentXml.append("<content-type>application/vnd.taverna.t2flow+xml</content-type>");
 			contentXml.append("<content encoding=\"base64\" type=\"binary\">");
-			contentXml.append(Base64.encodeBytes(dataflow.getBytes())).append("</content>");
+			try {
+				contentXml.append(Base64.encodeBytes(dataflow.getBytes("UTF-8"))).append("</content>");
+			} catch (UnsupportedEncodingException e) {
+				logger.error(e);
+				throw new ComponentRegistryException("Unable to encode workflow", e);
+			}
 		}
 
 		contentXml.append("</workflow>");
@@ -343,7 +349,11 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 		contentXml.append("<description>").append(description).append("</description>");
 		contentXml.append("<type>").append(type).append("</type>");
 		contentXml.append("<content encoding=\"base64\" type=\"binary\">");
-		contentXml.append(Base64.encodeBytes(content.getBytes()));
+		try {
+			contentXml.append(Base64.encodeBytes(content.getBytes("UTF-8")));
+		} catch (UnsupportedEncodingException e1) {
+			throw new ComponentRegistryException("Unknown encoding", e1);
+		}
 		contentXml.append("</content>");
 		if (license != null) {
 			contentXml.append("<license-type>").append(license.getAbbreviation()).append("</license-type>");
