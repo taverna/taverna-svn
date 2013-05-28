@@ -83,7 +83,7 @@ public class Util {
 	  PBEKeySpec keySpec = new PBEKeySpec(Util.PBE_PASSWORD.toCharArray());
 	  SecretKey key = keyFactory.generateSecret(keySpec);
 	  MessageDigest md = MessageDigest.getInstance("MD5");
-	  md.update(Util.PBE_SALT.getBytes());
+	  md.update(Util.PBE_SALT.getBytes("UTF-8"));
 	  byte[] digest = md.digest();
 	  byte[] salt = new byte[8];
 	  for (int i = 0; i < 8; ++i)
@@ -93,7 +93,7 @@ public class Util {
 	  Cipher cipher = Cipher.getInstance("PBEWithMD5AndDES");
 	  cipher.init(mode, key, paramSpec);
 
-	  byte[] encrypted = cipher.doFinal(str.getBytes());
+	  byte[] encrypted = cipher.doFinal(str.getBytes("UTF-8"));
 	  return (encrypted);
 	} catch (Exception e) {
 	  logger.error("Could not encrypt and store password");
