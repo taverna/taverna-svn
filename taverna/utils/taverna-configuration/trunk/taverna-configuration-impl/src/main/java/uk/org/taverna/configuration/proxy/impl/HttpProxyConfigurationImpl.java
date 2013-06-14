@@ -36,8 +36,10 @@ import uk.org.taverna.configuration.proxy.HttpProxyConfiguration;
  * proxy when Taverna is launched.
  *
  * @author alanrw
+ * @author David Withers
  */
-public class HttpProxyConfigurationImpl extends AbstractConfigurable implements HttpProxyConfiguration {
+public class HttpProxyConfigurationImpl extends AbstractConfigurable implements
+		HttpProxyConfiguration {
 
 	private Map<String, String> defaultPropertyMap;
 
@@ -124,12 +126,21 @@ public class HttpProxyConfigurationImpl extends AbstractConfigurable implements 
 		AxisProperties.setProperty(key, (value == null ? "" : value));
 	}
 
-
 	@Override
 	public Map<String, String> getDefaultPropertyMap() {
 		if (defaultPropertyMap == null) {
 			defaultPropertyMap = new HashMap<String, String>();
 			defaultPropertyMap.put(PROXY_USE_OPTION, USE_SYSTEM_PROPERTIES_OPTION);
+			defaultPropertyMap.put(SYSTEM_PROXY_HOST, getOriginalSystemSetting(PROXY_HOST));
+			defaultPropertyMap.put(SYSTEM_PROXY_PORT, getOriginalSystemSetting(PROXY_PORT));
+			defaultPropertyMap.put(SYSTEM_PROXY_USER, getOriginalSystemSetting(PROXY_USER));
+			defaultPropertyMap.put(SYSTEM_PROXY_PASSWORD, getOriginalSystemSetting(PROXY_PASSWORD));
+			defaultPropertyMap.put(SYSTEM_NON_PROXY_HOSTS, getOriginalSystemSetting(NON_PROXY_HOSTS));
+			defaultPropertyMap.put(TAVERNA_PROXY_HOST, "");
+			defaultPropertyMap.put(TAVERNA_PROXY_PORT, "");
+			defaultPropertyMap.put(TAVERNA_PROXY_USER, "");
+			defaultPropertyMap.put(TAVERNA_PROXY_PASSWORD, "");
+			defaultPropertyMap.put(TAVERNA_NON_PROXY_HOSTS, "");
 		}
 		return defaultPropertyMap;
 	}
