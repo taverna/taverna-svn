@@ -8,4 +8,9 @@
 		<constructor-arg name="applicationConfiguration" ref="applicationConfiguration" />
 	</bean>
 
+	<bean id="httpProxyConfiguration" class="uk.org.taverna.configuration.proxy.impl.HttpProxyConfigurationImpl">
+		<constructor-arg name="configurationManager" ref="configurationManager" />
+	</bean>
+
+
 </beans>
