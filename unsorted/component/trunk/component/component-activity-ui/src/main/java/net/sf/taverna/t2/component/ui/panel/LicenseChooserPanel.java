@@ -40,13 +40,16 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
+import javax.swing.SwingWorker;
 import javax.swing.border.TitledBorder;
 
 import org.apache.log4j.Logger;
 
 import net.sf.taverna.t2.component.profile.ComponentProfile;
+import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.registry.ComponentVersion;
 import net.sf.taverna.t2.component.registry.License;
 import net.sf.taverna.t2.component.registry.SharingPolicy;
 import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
@@ -71,6 +74,8 @@ public class LicenseChooserPanel extends JPanel implements Observer<RegistryChoi
 	private JComboBox licenseBox = new JComboBox();
 
 	private SortedMap<String, License> licenseMap = new TreeMap<String, License>();
+
+	private ComponentRegistry registry;
 
 	public LicenseChooserPanel() {
 		super();
@@ -113,63 +118,21 @@ public class LicenseChooserPanel extends JPanel implements Observer<RegistryChoi
 	public void notify(Observable<RegistryChoiceMessage> sender,
 			RegistryChoiceMessage message) throws Exception {
 		try {
-			this.setRegistry(message.getChosenRegistry());
+			this.registry = message.getChosenRegistry();
+			this.updateLicenseModel();
 		}
 		catch (Exception e) {
 			logger.error(e);
 		}
 	}
 
-	private void setRegistry(ComponentRegistry chosenRegistry) {
+	private void updateLicenseModel() {
 		licenseMap.clear();
 		licenseBox.removeAllItems();
 		licenseBox.setToolTipText(null);
-		List<License> licenses;
-		if (chosenRegistry != null) {
-		try {
-			licenses = chosenRegistry.getLicenses();
-		} catch (ComponentRegistryException e) {
-			logger.error(e);
-			return;
-		} catch (NullPointerException e) {
-			logger.error(e);
-			return;
-		}
-		if (licenses != null) {
-		for (License p : licenses) {
-			try {
-				String name = p.getName();
-				licenseMap.put(name, p);
-			} catch (NullPointerException e) {
-				logger.error(e);
-
-			}
-		}
-		}
-		}
-		for (String name : licenseMap.keySet()) {
-			licenseBox.addItem(name);
-		}
-		if (!licenseMap.isEmpty()) {
-			String firstKey = licenseMap.firstKey();
-			License preferredLicense = null;
-			try {
-				preferredLicense = chosenRegistry.getPreferredLicense();
-			} catch (ComponentRegistryException e) {
-				logger.error(e);
-			}
-			if (preferredLicense != null) {
-				licenseBox.setSelectedItem(preferredLicense.getName());
-				setLicense(preferredLicense);
-			} else {
-				licenseBox.setSelectedItem(firstKey);
-				setLicense(licenseMap.get(firstKey));
-			}
-			licenseBox.setEnabled(true);
-		} else {
-			licenseBox.addItem("No licenses available");
-			licenseBox.setEnabled(false);
-		}
+		licenseBox.addItem("Reading licenses");
+		licenseBox.setEnabled(false);
+		(new LicenseUpdater()).execute();
 	}
 
 	public License getChosenLicense() {
@@ -180,4 +143,65 @@ public class LicenseChooserPanel extends JPanel implements Observer<RegistryChoi
 			return null;
 		}
 	}
+	
+	private class LicenseUpdater extends SwingWorker<String, Object> {
+
+		@Override
+		protected String doInBackground() throws Exception {
+			List<License> licenses;
+			if (registry != null) {
+			try {
+				licenses = registry.getLicenses();
+			} catch (ComponentRegistryException e) {
+				logger.error(e);
+				return null;
+			} catch (NullPointerException e) {
+				logger.error(e);
+				return null;
+			}
+			if (licenses != null) {
+			for (License p : licenses) {
+				try {
+					String name = p.getName();
+					licenseMap.put(name, p);
+				} catch (NullPointerException e) {
+					logger.error(e);
+
+				}
+			}
+			}
+			}
+			return null;
+		}
+
+		@Override
+	    protected void done() {
+			licenseBox.removeAllItems();
+			for (String name : licenseMap.keySet()) {
+				licenseBox.addItem(name);
+			}
+			if (!licenseMap.isEmpty()) {
+				String firstKey = licenseMap.firstKey();
+				License preferredLicense = null;
+				try {
+					preferredLicense = registry.getPreferredLicense();
+				} catch (ComponentRegistryException e) {
+					logger.error(e);
+				}
+				if (preferredLicense != null) {
+					licenseBox.setSelectedItem(preferredLicense.getName());
+					setLicense(preferredLicense);
+				} else {
+					licenseBox.setSelectedItem(firstKey);
+					setLicense(licenseMap.get(firstKey));
+				}
+				licenseBox.setEnabled(true);
+			} else {
+				licenseBox.addItem("No licenses available");
+				licenseBox.setEnabled(false);
+			}
+		}
+
+	}
+
 }

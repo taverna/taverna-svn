@@ -67,9 +67,15 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 
 	 	private MyExperimentComponentRegistry(URL registryURL) throws ComponentRegistryException {
 	 		super (registryURL);
+	 		try {
 		myExperimentClient = new MyExperimentClient(logger);
 		myExperimentClient.setBaseURL(registryURL.toExternalForm());
 		myExperimentClient.doLogin();
+	 		}
+	 		catch (Exception e) {
+	 			logger.error(e);
+	 			throw new ComponentRegistryException("Unable to access registry", e);
+	 		}
 	}
 
 	public static synchronized MyExperimentComponentRegistry getComponentRegistry(URL registryURL) throws ComponentRegistryException {

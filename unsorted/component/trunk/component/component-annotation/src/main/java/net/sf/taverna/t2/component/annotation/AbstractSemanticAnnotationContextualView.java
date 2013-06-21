@@ -8,14 +8,19 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.SwingWorker;
 
 import org.apache.log4j.Logger;
 
@@ -29,6 +34,8 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.annotation.annotationbeans.SemanticAnnotation;
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
+import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.registry.SharingPolicy;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
@@ -91,68 +98,15 @@ public abstract class AbstractSemanticAnnotationContextualView extends Contextua
 	}
 	
 	protected final void initialise() {
+		populateModel();
 		if (panel == null) {
 			panel = new JPanel(new GridBagLayout());
 		} else {
 			panel.removeAll();
 		}
 		populatePanel(panel);
-		revalidate();		
 	}
 
-	private void populatePanel(JPanel panel) {
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.anchor = GridBagConstraints.NORTHWEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridx = 0;
-		gbc.weightx = 1;
-		gbc.weighty = 0;
-		gbc.insets = new Insets(5,5,5,5);
-
-		Set<Statement> statements = model.listStatements(subject, null, (RDFNode) null).toSet();
-//		Set<Statement> statements = new HashSet<Statement>();
-//		for (Statement s : allStatements) {
-//			if (s.getSubject().equals(subject)) {
-//				statements.add(s);
-//			}
-//		}
-		for (SemanticAnnotationProfile semanticAnnotationProfile : semanticAnnotationProfiles) {
-			OntProperty predicate = semanticAnnotationProfile.getPredicate();
-			if (predicate != null) {
-				Set<Statement> statementsWithPredicate = model.listStatements(subject, predicate, (RDFNode) null).toSet();
-//				for (Statement statement : statements) {
-//					Resource r = statement.getSubject();
-//					String s = r.getLocalName();
-//					if (r.isAnon()) {
-//						String t = "anon";
-//					}
-//					if (statement.getPredicate().equals(predicate)) {
-//						statementsWithPredicate.add(statement);
-//					}
-//				}
-				if (!statementsWithPredicate.isEmpty() || allowChange) {
-				panel.add(new SemanticAnnotationPanel(this, semanticAnnotationProfile,
-						statementsWithPredicate, allowChange), gbc);
-				panel.add(new JSeparator(), gbc);
-				}
-				statements.removeAll(statementsWithPredicate);
-			} else {
-				panel.add(new UnresolveablePredicatePanel(semanticAnnotationProfile), gbc);
-				panel.add(new JSeparator(), gbc);
-			}
-			
-		}
-		
-		if (semanticAnnotationProfiles.isEmpty()) {
-			panel.add(new JLabel("No annotations possible"), gbc);
-		}
-		for (Statement s : statements) {
-			panel.add(new UnrecognizedStatementPanel(s), gbc);
-		}
-
-		gbc.weighty = 1;
-		panel.add(new JPanel(), gbc);
-	}
 
 	public void removeStatement(Statement statement) {
 		model.remove(statement);
@@ -216,7 +170,7 @@ public abstract class AbstractSemanticAnnotationContextualView extends Contextua
 	}
 
 
-	public void populateModel() {
+	private void populateModel() {
 		this.model = SemanticAnnotationUtils.populateModel(getAnnotated());
 		this.subject = SemanticAnnotationUtils.createBaseResource(this.model);
 	}
@@ -226,5 +180,85 @@ public abstract class AbstractSemanticAnnotationContextualView extends Contextua
 		return annotated;
 	}
 
+	private void populatePanel(JPanel panel) {
+		panel.removeAll();
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.anchor = GridBagConstraints.NORTHWEST;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 0;
+		gbc.weightx = 1;
+		gbc.weighty = 0;
+		gbc.insets = new Insets(5,5,5,5);
+		panel.add(new JLabel("Reading semantic annotations"), gbc);
+		AbstractSemanticAnnotationContextualView.this.revalidate();		
+		AbstractSemanticAnnotationContextualView.this.initView();
+		(new StatementsReader()).execute();
+	}
+	
+	private class StatementsReader extends SwingWorker<String, Object> {
+		
+		private Map<SemanticAnnotationProfile, Set<Statement>> statementsWithPredicateMap;
+		private Set<Statement> statements;
+		private Set<SemanticAnnotationProfile> unresolvablePredicates;
+
+		@Override
+		protected String doInBackground() throws Exception {
+			try {
+			statements = model.listStatements(subject, null, (RDFNode) null).toSet();
+			statementsWithPredicateMap = new HashMap<SemanticAnnotationProfile, Set<Statement>>();
+			unresolvablePredicates = new HashSet<SemanticAnnotationProfile>();
+			for (SemanticAnnotationProfile semanticAnnotationProfile : semanticAnnotationProfiles) {
+				OntProperty predicate = semanticAnnotationProfile.getPredicate();
+				if (predicate != null) {
+					Set<Statement> statementsWithPredicate = model.listStatements(subject, predicate, (RDFNode) null).toSet();
+					statementsWithPredicateMap.put(semanticAnnotationProfile, statementsWithPredicate);
+					statements.removeAll(statementsWithPredicate);
+				} else {
+					unresolvablePredicates.add(semanticAnnotationProfile);
+				}
+				
+			}
+			}
+			catch (Exception e) {
+				logger.error(e);
+			}
+			return null;
+		}
+
+		@Override
+	    protected void done() {
+			panel.removeAll();
+			GridBagConstraints gbc = new GridBagConstraints();
+			gbc.anchor = GridBagConstraints.NORTHWEST;
+			gbc.fill = GridBagConstraints.HORIZONTAL;
+			gbc.gridx = 0;
+			gbc.weightx = 1;
+			gbc.weighty = 0;
+			gbc.insets = new Insets(5,5,5,5);
+
+			for (SemanticAnnotationProfile semanticAnnotationProfile : statementsWithPredicateMap.keySet()) {
+					panel.add(new SemanticAnnotationPanel(AbstractSemanticAnnotationContextualView.this, semanticAnnotationProfile,
+							statementsWithPredicateMap.get(semanticAnnotationProfile), allowChange), gbc);
+					panel.add(new JSeparator(), gbc);
+					}
+			for (SemanticAnnotationProfile semanticAnnotationProfile : unresolvablePredicates) {
+					panel.add(new UnresolveablePredicatePanel(semanticAnnotationProfile), gbc);
+					panel.add(new JSeparator(), gbc);
+				}
+			
+			if (semanticAnnotationProfiles.isEmpty()) {
+				panel.add(new JLabel("No annotations possible"), gbc);
+			}
+			for (Statement s : statements) {
+				panel.add(new UnrecognizedStatementPanel(s), gbc);
+			}
+
+			gbc.weighty = 1;
+			panel.add(new JPanel(), gbc);
+			AbstractSemanticAnnotationContextualView.this.revalidate();		
+			AbstractSemanticAnnotationContextualView.this.initView();
+
+	}
+	}
 
 }

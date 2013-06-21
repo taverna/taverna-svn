@@ -112,10 +112,7 @@ public class SemanticAnnotationContextualView extends AbstractSemanticAnnotation
 			super.setSemanticAnnotationProfiles(new ArrayList<SemanticAnnotationProfile>());
 		}
 
-		super.populateModel();
-
 		super.initialise();
-		super.initView();
 	}
 
 	private ComponentProfile getComponentProfile() {

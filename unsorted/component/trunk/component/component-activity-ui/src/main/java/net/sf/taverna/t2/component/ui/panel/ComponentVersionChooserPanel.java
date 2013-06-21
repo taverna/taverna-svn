@@ -15,6 +15,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingWorker;
 
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
@@ -95,24 +96,9 @@ public class ComponentVersionChooserPanel extends JPanel implements Observer<Com
 		componentVersionMap.clear();
 		componentVersionChoice.removeAllItems();
 		componentVersionChoice.setToolTipText(null);
-		try {
-			if (chosenComponent != null) {
-			for (ComponentVersion version : chosenComponent.getComponentVersionMap().values()) {
-				Integer versionNumber = version.getVersionNumber();
-				componentVersionMap.put(versionNumber, version);
-				componentVersionChoice.addItem(versionNumber);
-			}
-			}
-			componentVersionChoice.setEnabled(!componentVersionMap.isEmpty());
-			if (!componentVersionMap.isEmpty()) {
-				componentVersionChoice.setSelectedItem(componentVersionMap.lastKey());
-				updateToolTipText();
-			} else {
-				componentVersionChoice.addItem("No versions available");
-			}
-		} catch (NullPointerException e) {
-			logger.error("Unable to read component versions", e);
-		}
+		componentVersionChoice.addItem("Reading component versions");
+		componentVersionChoice.setEnabled(false);
+		(new ComponentVersionUpdater()).execute();
 	}
 
 	public ComponentVersion getChosenComponentVersion() {
@@ -145,5 +131,38 @@ public class ComponentVersionChooserPanel extends JPanel implements Observer<Com
 		return componentChooserPanel.getChosenComponent();
 	}
 
+	private class ComponentVersionUpdater extends SwingWorker<String, Object> {
+
+		@Override
+		protected String doInBackground() throws Exception {
+			Component chosenComponent = componentChooserPanel.getChosenComponent();
+			if (chosenComponent != null) {
+				for (ComponentVersion version : chosenComponent.getComponentVersionMap().values()) {
+					Integer versionNumber = version.getVersionNumber();
+					componentVersionMap.put(versionNumber, version);
+				}
+				}
+			return null;
+		}
+
+		@Override
+	    protected void done() {
+			componentVersionChoice.removeAllItems();
+			for (Integer versionNumber : componentVersionMap.keySet()) {
+				componentVersionChoice.addItem(versionNumber);
+
+			}
+			
+			if (!componentVersionMap.isEmpty()) {
+				componentVersionChoice.setSelectedItem(componentVersionMap.lastKey());
+				updateToolTipText();
+			} else {
+				componentVersionChoice.addItem("No versions available");
+			}
+			componentVersionChoice.setEnabled(!componentVersionMap.isEmpty());
+		}
+
+	}
+	
 
 }

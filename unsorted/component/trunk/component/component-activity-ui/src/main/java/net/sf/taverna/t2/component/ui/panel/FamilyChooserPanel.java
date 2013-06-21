@@ -17,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingWorker;
 import javax.swing.border.TitledBorder;
 
 import net.sf.taverna.t2.component.profile.ComponentProfile;
@@ -118,41 +119,13 @@ public class FamilyChooserPanel extends JPanel implements Observer, Observable<F
 	}
 
 	private void updateList() {
-		try {
 		familyMap.clear();
 		familyBox.removeAllItems();
 		familyBox.setToolTipText(null);
-		try {
-			if (chosenRegistry != null ) {
-				for (ComponentFamily f : chosenRegistry.getComponentFamilies()) {
-					ComponentProfile componentProfile = f.getComponentProfile();
-					if (componentProfile != null) {
-					String id = componentProfile.getId();
-					if ((profileFilter == null) || id.equals(profileFilter.getId())) {
-						familyMap.put(f.getName(), f);
-					}
-					}
-				}
-			}
-			for (String name : familyMap.keySet()) {
-				familyBox.addItem(name);
-			}
-			if (!familyMap.isEmpty()) {
-				String firstKey = familyMap.firstKey();
-				familyBox.setSelectedItem(firstKey);
-				updateDescription();
-			} else {
-				familyBox.addItem("No families available");
-			}
-			notifyObservers();
-			familyBox.setEnabled(!familyMap.isEmpty());
-		} catch (ComponentRegistryException e) {
-			logger.error(e);
-		}
-		}
-		catch (Exception e) {
-			logger.error(e);
-		}
+		notifyObservers();
+		familyBox.addItem("Reading families");
+		familyBox.setEnabled(false);
+		(new FamilyUpdater()).execute();
 	}
 
 	private void notifyObservers() {
@@ -195,6 +168,42 @@ public class FamilyChooserPanel extends JPanel implements Observer, Observable<F
 	@Override
 	public void removeObserver(Observer<FamilyChoiceMessage> observer) {
 		observers.remove(observer);
+	}
+	
+	private class FamilyUpdater extends SwingWorker<String, Object> {
+
+		@Override
+		protected String doInBackground() throws Exception {
+			if (chosenRegistry != null ) {
+				for (ComponentFamily f : chosenRegistry.getComponentFamilies()) {
+					ComponentProfile componentProfile = f.getComponentProfile();
+					if (componentProfile != null) {
+					String id = componentProfile.getId();
+					if ((profileFilter == null) || id.equals(profileFilter.getId())) {
+						familyMap.put(f.getName(), f);
+					}
+					}
+				}
+			}
+			return null;
+		}
+		
+		@Override
+	       protected void done() {
+			familyBox.removeAllItems();
+	        	   for (String name : familyMap.keySet()) {
+	   				familyBox.addItem(name);
+	   			}
+	   			if (!familyMap.isEmpty()) {
+	   				String firstKey = familyMap.firstKey();
+	   				familyBox.setSelectedItem(firstKey);
+	   				updateDescription();
+	   			} else {
+	   				familyBox.addItem("No families available");
+	   			}
+	   			notifyObservers();
+	   			familyBox.setEnabled(!familyMap.isEmpty());
+	       }
 	}
 
 }

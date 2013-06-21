@@ -91,10 +91,9 @@ public class ComponentActivitySemanticAnnotationContextualView extends AbstractS
 				super.setSemanticAnnotationProfiles(componentProfile.getOutputSemanticAnnotationProfiles());
 			}
 		} 
-		super.populateModel();
 
 		super.initialise();
-		super.initView();
+
 		} catch (ComponentRegistryException e) {
 			logger.error(e);
 		}

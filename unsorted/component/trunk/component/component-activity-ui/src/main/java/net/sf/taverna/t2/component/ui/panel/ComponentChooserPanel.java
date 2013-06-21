@@ -17,6 +17,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingWorker;
 
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.Component;
@@ -116,27 +117,10 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 		componentMap.clear();
 		componentChoice.removeAllItems();
 		componentChoice.setToolTipText(null);
-		try {
-			if (chosenFamily != null) {
-				for (Component component : chosenFamily.getComponents()) {
-					componentChoice.addItem(component.getName());
-					componentMap.put(component.getName(), component);
-				}
-			}
-			if (!componentMap.isEmpty()) {
-				componentChoice.setSelectedItem(componentMap.firstKey());
-				updateToolTipText();
-			} else {
-				componentChoice.addItem("No components available");
-
-			}
-			notifyObservers();
-			componentChoice.setEnabled(!componentMap.isEmpty());
-		} catch (ComponentRegistryException e) {
-			logger.error("Unable to read components", e);
-		} catch (NullPointerException e) {
-			logger.error("Unable to read components", e);
-		}
+		notifyObservers();
+		componentChoice.addItem("Reading components");
+		componentChoice.setEnabled(false);
+		(new ComponentUpdater()).execute();
 	}
 
 	public Component getChosenComponent() {
@@ -190,5 +174,37 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 	public ComponentFamily getChosenFamily() {
 		return registryAndFamilyChooserPanel.getChosenFamily();
 	}
+	
+	private class ComponentUpdater extends SwingWorker<String, Object> {
 
+		@Override
+		protected String doInBackground() throws Exception {
+			ComponentFamily chosenFamily = registryAndFamilyChooserPanel.getChosenFamily();
+			if (chosenFamily != null) {
+				for (Component component : chosenFamily.getComponents()) {
+					componentMap.put(component.getName(), component);
+				}
+			}
+			return null;
+		}
+
+		@Override
+	    protected void done() {
+			componentChoice.removeAllItems();
+				for (String componentName : componentMap.keySet()) {
+					componentChoice.addItem(componentName);
+				}
+			if (!componentMap.isEmpty()) {
+				componentChoice.setSelectedItem(componentMap.firstKey());
+				updateToolTipText();
+			} else {
+				componentChoice.addItem("No components available");
+
+			}
+			notifyObservers();
+			componentChoice.setEnabled(!componentMap.isEmpty());
+		}
+
+	}
+	
 }

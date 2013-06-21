@@ -40,6 +40,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
+import javax.swing.SwingWorker;
 import javax.swing.border.TitledBorder;
 
 import org.apache.log4j.Logger;
@@ -71,6 +72,8 @@ public class SharingPolicyChooserPanel extends JPanel implements Observer<Regist
 
 	private SortedMap<String, SharingPolicy> permissionMap = new TreeMap<String, SharingPolicy>();
 
+	private ComponentRegistry registry;
+
 	public SharingPolicyChooserPanel() {
 		super();
 		permissionBox.setPrototypeDisplayValue(Utils.LONG_STRING);
@@ -95,50 +98,20 @@ public class SharingPolicyChooserPanel extends JPanel implements Observer<Regist
 	public void notify(Observable<RegistryChoiceMessage> sender,
 			RegistryChoiceMessage message) throws Exception {
 		try {
-			this.setRegistry(message.getChosenRegistry());
+			this.registry = message.getChosenRegistry();
+			this.updateProfileModel();
 		}
 		catch (Exception e) {
 			logger.error(e);
 		}
 	}
 
-	private void setRegistry(ComponentRegistry chosenRegistry) {
+	private void updateProfileModel() {
 		permissionMap.clear();
 		permissionBox.removeAllItems();
-		List<SharingPolicy> sharingPolicies;
-		if (chosenRegistry != null) {
-		try {
-			sharingPolicies = chosenRegistry.getPermissions();
-		} catch (ComponentRegistryException e) {
-			logger.error(e);
-			return;
-		} catch (NullPointerException e) {
-			logger.error(e);
-			return;
-		}
-		if (sharingPolicies != null) {
-		for (SharingPolicy p : sharingPolicies) {
-			try {
-				String name = p.getName();
-				permissionMap.put(name, p);
-			} catch (NullPointerException e) {
-				logger.error(e);
-
-			}
-		}
-		}
-		}
-		for (String name : permissionMap.keySet()) {
-			permissionBox.addItem(name);
-		}
-		if (!permissionMap.isEmpty()) {
-			String firstKey = permissionMap.firstKey();
-			permissionBox.setSelectedItem(firstKey);
-			permissionBox.setEnabled(true);
-		} else {
-			permissionBox.addItem("No permissions available");
-			permissionBox.setEnabled(false);
-		}
+		permissionBox.addItem("Reading sharing policies");
+		permissionBox.setEnabled(false);
+		(new SharingPolicyUpdater()).execute();
 	}
 
 	public SharingPolicy getChosenPermission() {
@@ -149,4 +122,53 @@ public class SharingPolicyChooserPanel extends JPanel implements Observer<Regist
 			return null;
 		}
 	}
+	
+	private class SharingPolicyUpdater extends SwingWorker<String, Object> {
+
+		@Override
+		protected String doInBackground() throws Exception {
+			List<SharingPolicy> sharingPolicies;
+			if (registry != null) {
+			try {
+				sharingPolicies = registry.getPermissions();
+			} catch (ComponentRegistryException e) {
+				logger.error(e);
+				return null;
+			} catch (NullPointerException e) {
+				logger.error(e);
+				return null;
+			}
+			if (sharingPolicies != null) {
+			for (SharingPolicy p : sharingPolicies) {
+				try {
+					String name = p.getName();
+					permissionMap.put(name, p);
+				} catch (NullPointerException e) {
+					logger.error(e);
+
+				}
+			}
+			}
+			}
+			return null;
+		}
+
+		@Override
+	    protected void done() {
+			permissionBox.removeAllItems();
+			for (String name : permissionMap.keySet()) {
+				permissionBox.addItem(name);
+			}
+			if (!permissionMap.isEmpty()) {
+				String firstKey = permissionMap.firstKey();
+				permissionBox.setSelectedItem(firstKey);
+				permissionBox.setEnabled(true);
+			} else {
+				permissionBox.addItem("No permissions available");
+				permissionBox.setEnabled(false);
+			}
+		}
+
+	}
+
 }

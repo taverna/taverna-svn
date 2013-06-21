@@ -13,6 +13,7 @@ import java.util.SortedMap;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -133,12 +134,15 @@ public class ComponentPreferencePanel extends JPanel {
 				vuid.addTextComponentValidation(inputPanel.getRegistryNameField(), "Set the registry name", tableModel.getRegistryMap().keySet(), "Duplicate registry name", "[\\p{L}\\p{Digit}_.]+", "Invalid registry name");
 				vuid.setSize(new Dimension(400, 250));
 				if (vuid.show(ComponentPreferencePanel.this)) {
-					File newDir = new File(inputPanel.getLocationField().getText());
+					String location = inputPanel.getLocationField().getText();
+					File newDir = new File(location);
 					ComponentRegistry newRegistry;
 					try {
 						newRegistry = LocalComponentRegistry.getComponentRegistry(newDir);
 						tableModel.insertRegistry(inputPanel.getRegistryNameField().getText(), newRegistry);
 					} catch (ComponentRegistryException e) {
+						JOptionPane.showMessageDialog(null, "Unable to access registry at " + location,
+								"Component registry problem", JOptionPane.ERROR_MESSAGE);
 						logger.error(e);
 					}
 				}
@@ -160,12 +164,17 @@ public class ComponentPreferencePanel extends JPanel {
 				vuid.setSize(new Dimension(400, 250));
 				if (vuid.show(ComponentPreferencePanel.this)) {
 					ComponentRegistry newRegistry;
+					String location = inputPanel.getLocationField().getText();
 					try {
-						newRegistry = MyExperimentComponentRegistry.getComponentRegistry(new URL(inputPanel.getLocationField().getText()));
+						newRegistry = MyExperimentComponentRegistry.getComponentRegistry(new URL(location));
 						tableModel.insertRegistry(inputPanel.getRegistryNameField().getText(), newRegistry);
 					} catch (MalformedURLException e) {
+						JOptionPane.showMessageDialog(null, "Unable to access registry at " + location,
+								"Component registry problem", JOptionPane.ERROR_MESSAGE);
 						logger.error(e);
 					} catch (ComponentRegistryException e) {
+						JOptionPane.showMessageDialog(null, "Unable to access registry at " + location,
+								"Component registry problem", JOptionPane.ERROR_MESSAGE);
 						logger.error(e);
 					}
 				}

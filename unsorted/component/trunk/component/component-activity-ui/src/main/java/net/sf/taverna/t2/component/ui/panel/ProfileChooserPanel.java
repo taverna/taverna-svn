@@ -14,8 +14,7 @@ import java.util.TreeMap;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.border.TitledBorder;
+import javax.swing.SwingWorker;
 
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
@@ -42,6 +41,8 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 	private JComboBox profileBox = new JComboBox();
 
 	private SortedMap<String, ComponentProfile> profileMap = new TreeMap<String, ComponentProfile>();
+
+	private ComponentRegistry registry;
 
 	public ProfileChooserPanel() {
 		super();
@@ -76,50 +77,21 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 	public void notify(Observable<RegistryChoiceMessage> sender,
 			RegistryChoiceMessage message) throws Exception {
 		try {
-			this.setRegistry(message.getChosenRegistry());
+			this.registry = message.getChosenRegistry();
+			this.updateProfileModel();
 		}
 		catch (Exception e) {
 			logger.error(e);
 		}
 	}
 
-	private void setRegistry(ComponentRegistry chosenRegistry) {
+	private void updateProfileModel() {
 		profileMap.clear();
 		profileBox.removeAllItems();
 		profileBox.setToolTipText(null);
-		List<ComponentProfile> componentProfiles;
-		if (chosenRegistry != null) {
-		try {
-			componentProfiles = chosenRegistry.getComponentProfiles();
-		} catch (ComponentRegistryException e) {
-			logger.error(e);
-			return;
-		} catch (NullPointerException e) {
-			logger.error(e);
-			return;
-		}
-		for (ComponentProfile p : componentProfiles) {
-			try {
-				String name = p.getName();
-				profileMap.put(name, p);
-			} catch (NullPointerException e) {
-				logger.error(e);
-
-			}
-		}
-		}
-		for (String name : profileMap.keySet()) {
-			profileBox.addItem(name);
-		}
-		if (!profileMap.isEmpty()) {
-			String firstKey = profileMap.firstKey();
-			profileBox.setSelectedItem(firstKey);
-			setProfile(profileMap.get(firstKey));
-			profileBox.setEnabled(true);
-		} else {
-			profileBox.addItem("No profiles available");
-			profileBox.setEnabled(false);
-		}
+		profileBox.addItem("Reading profiles");
+		profileBox.setEnabled(false);
+		(new ProfileUpdater()).execute();
 	}
 
 	private void setProfile(ComponentProfile componentProfile) {
@@ -137,6 +109,53 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 		} else {
 			return null;
 		}
+	}
+
+	private class ProfileUpdater extends SwingWorker<String, Object> {
+
+		@Override
+		protected String doInBackground() throws Exception {
+			List<ComponentProfile> componentProfiles;
+			if (registry != null) {
+			try {
+				componentProfiles = registry.getComponentProfiles();
+			} catch (ComponentRegistryException e) {
+				logger.error(e);
+				return null;
+			} catch (NullPointerException e) {
+				logger.error(e);
+				return null;
+			}
+			for (ComponentProfile p : componentProfiles) {
+				try {
+					String name = p.getName();
+					profileMap.put(name, p);
+				} catch (NullPointerException e) {
+					logger.error(e);
+
+				}
+			}
+			}
+			return null;
+		}
+
+		@Override
+	    protected void done() {
+			profileBox.removeAllItems();
+			for (String name : profileMap.keySet()) {
+				profileBox.addItem(name);
+			}
+			if (!profileMap.isEmpty()) {
+				String firstKey = profileMap.firstKey();
+				profileBox.setSelectedItem(firstKey);
+				setProfile(profileMap.get(firstKey));
+				profileBox.setEnabled(true);
+			} else {
+				profileBox.addItem("No profiles available");
+				profileBox.setEnabled(false);
+			}
+		}
+
 	}
 
 }
