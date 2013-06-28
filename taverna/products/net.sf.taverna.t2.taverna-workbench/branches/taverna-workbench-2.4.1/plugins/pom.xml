@@ -4,13 +4,13 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>taverna-workbench</artifactId>
-		<version>2.4.1</version>
+		<version>2.4.2</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.taverna-workbench</groupId>
 	<artifactId>plugins</artifactId>
 	<packaging>pom</packaging>
 	<name>Taverna workbench plugins</name>
-	<version>2.4.1</version>
+	<version>2.4.2</version>
 	<modules>
 		<module>activities-plugin</module>
 		<module>components-plugin</module>
