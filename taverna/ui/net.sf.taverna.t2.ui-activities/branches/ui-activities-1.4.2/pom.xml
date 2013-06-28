@@ -11,30 +11,31 @@
 
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>ui-activities</artifactId>
-	<version>1.4.1</version>
+	<version>1.4.2</version>
 	<packaging>pom</packaging>
 
 	<name>Taverna 2 Activities UI</name>
 	<description>UI for Taverna 2 activities</description>
 
 	<modules>
-		<module>all-activity-uis</module>
+<!-- 		<module>all-activity-uis</module> -->
 <!-- 		<module>apiconsumer-activity-ui</module>  -->
-		<module>beanshell-activity-ui</module>
-<!--		<module>biomart-activity-ui</module>
-		<module>biomoby-activity-ui</module>   -->
-		<module>dataflow-activity-ui</module>
-<!--		<module>disabled-activity-ui</module>   -->
-		<module>external-tool-activity-ui</module>
-		<module>localworker-activity-ui</module>
-		<module>rest-activity-ui</module>
-		<module>rshell-activity-ui</module>
-<!--		<module>soaplab-activity-ui</module>  -->
-		<module>spreadsheet-import-activity-ui</module>
-		<module>stringconstant-activity-ui</module>
-<!-- 		<module>unrecognized-activity-ui</module>
-		<module>wsdl-activity-ui</module> -->
-		<module>xpath-activity-ui</module>
+<!-- 		<module>beanshell-activity-ui</module> -->
+<!-- 		<module>biomart-activity-ui</module> -->
+<!-- 		<module>biomoby-activity-ui</module>   -->
+<!-- 		<module>dataflow-activity-ui</module> -->
+<!-- 		<module>disabled-activity-ui</module>   -->
+<!-- 		<module>external-tool-activity-ui</module> -->
+<!-- 		<module>localworker-activity-ui</module> -->
+<!-- 		<module>rest-activity-ui</module> -->
+<!-- 		<module>rshell-activity-ui</module> -->
+<!-- 		<module>soaplab-activity-ui</module>  -->
+<!-- 		<module>spreadsheet-import-activity-ui</module> -->
+<!-- 		<module>stringconstant-activity-ui</module> -->
+<!-- 		<module>unrecognized-activity-ui</module> -->
+<!-- 		<module>wsdl-activity-ui</module> -->
+<!-- 		<module>xpath-activity-ui</module> -->
+		<module>default-provider-updater</module>
 	</modules>
 	<repositories>
 		<repository>
