@@ -4,22 +4,33 @@
 	<parent>
 		<groupId>net.sf.taverna.t2.taverna-workbench</groupId>
 		<artifactId>plugins</artifactId>
-		<version>2.4.1</version>
+		<version>2.4.2</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
 	<artifactId>activities-plugin</artifactId>
 	<name>Taverna activities plugin</name>
-	<version>2.4.1</version>
+	<version>2.4.2</version>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>all-activities</artifactId>
 			<version>${t2.activities.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>tools</artifactId>
+					<groupId>sun.jdk</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-activities</groupId>
 			<artifactId>all-activity-uis</artifactId>
 			<version>1.4.1</version>
 		</dependency>
+	<dependency>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>default-provider-updater</artifactId>
+		<version>1.4.2</version>
+	</dependency>
 	</dependencies>
 </project>
