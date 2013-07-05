@@ -7,7 +7,7 @@
 	<groupId>com.github.lookfirst</groupId>
 	<artifactId>sardine</artifactId>
 	<packaging>jar</packaging>
-	<version>5.0</version>
+	<version>5.0_1_6</version>
 	<description>An easy to use webdav client for java</description>
 	<name>Sardine WEBDAV client</name>
 	<url>https://github.com/lookfirst/sardine</url>
@@ -30,18 +30,6 @@
 			<name>David Kocher</name>
 		</developer>
 	</developers>
-	<distributionManagement>
-		<repository>
-			<id>nexus-releases</id>
-			<name>Nexus Release Repository</name>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-		</repository>
-		<snapshotRepository>
-			<id>sonatype-nexus-snapshots</id>
-			<name>Sonatype Nexus snapshot repository</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
 	<build>
 		<plugins>
 			<plugin>
