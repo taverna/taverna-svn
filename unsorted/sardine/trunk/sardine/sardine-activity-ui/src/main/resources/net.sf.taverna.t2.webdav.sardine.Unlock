@@ -62,6 +62,6 @@ try {
   <dependencies>
     <string>org.apache.httpcomponents:httpcore:4.2.3</string>
     <string>org.apache.httpcomponents:httpclient:4.2.3</string>
-    <string>com.github.lookfirst:sardine:5.0</string>
+    <string>com.github.lookfirst:sardine:5.0_1_6</string>
   </dependencies>
 </net.sf.taverna.t2.activities.localworker.LocalworkerActivityConfigurationBean></configBean><annotations /></activity>

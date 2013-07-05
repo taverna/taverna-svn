@@ -4,7 +4,7 @@
 
 	<groupId>net.sf.taverna.t2.webdav</groupId>
 	<artifactId>sardine</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Sardine Taverna project</name>
 
