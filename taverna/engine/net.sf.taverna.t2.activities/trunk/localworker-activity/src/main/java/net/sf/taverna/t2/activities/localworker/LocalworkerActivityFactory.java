@@ -20,11 +20,19 @@
  ******************************************************************************/
 package net.sf.taverna.t2.activities.localworker;
 
+import java.io.IOException;
 import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import uk.org.taverna.configuration.app.ApplicationConfiguration;
 
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityFactory;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityOutputPort;
 
 /**
  * An {@link ActivityFactory} for creating <code>LocalworkerActivity</code>.
@@ -41,17 +49,32 @@ public class LocalworkerActivityFactory implements ActivityFactory {
 	}
 
 	@Override
-	public URI getActivityURI() {
+	public URI getActivityType() {
 		return URI.create(LocalworkerActivity.URI);
 	}
 
 	@Override
-	public Object createActivityConfiguration() {
-		return new LocalworkerActivityConfigurationBean();
+	public JsonNode getActivityConfigurationSchema() {
+		ObjectMapper objectMapper = new ObjectMapper();
+		try {
+ 			return objectMapper.readTree(getClass().getResource("/schema.json"));
+		} catch (IOException e) {
+			return objectMapper.createObjectNode();
+		}
 	}
 
 	public void setApplicationConfiguration(ApplicationConfiguration applicationConfiguration) {
 		this.applicationConfiguration = applicationConfiguration;
+	}
+
+	@Override
+	public Set<ActivityInputPort> getInputPorts(JsonNode configuration) {
+		return new HashSet<>();
+	}
+
+	@Override
+	public Set<ActivityOutputPort> getOutputPorts(JsonNode configuration) {
+		return new HashSet<>();
 	}
 
 }

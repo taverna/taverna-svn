@@ -49,12 +49,10 @@ import net.sf.taverna.t2.workflowmodel.Port;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityOutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
-import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
-import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 
 import org.apache.commons.lang.StringUtils;
-//import org.apache.log4j.Logger;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPDouble;
 import org.rosuda.REngine.REXPInteger;
@@ -67,12 +65,14 @@ import org.rosuda.REngine.Rserve.RFileInputStream;
 import org.rosuda.REngine.Rserve.RFileOutputStream;
 import org.rosuda.REngine.Rserve.RserveException;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 /**
  * An Activity providing Rshell functionality.
  *
  */
 public class RshellActivity extends
-		AbstractAsynchronousActivity<RshellActivityConfigurationBean> {
+		AbstractAsynchronousActivity<JsonNode> {
 
 	public static final String URI = "http://ns.taverna.org.uk/2010/activity/rshell";
 
@@ -80,7 +80,7 @@ public class RshellActivity extends
 
 	private static int BUF_SIZE = 1024;
 
-	private RshellActivityConfigurationBean configurationBean;
+	private JsonNode configurationBean;
 
 	private Map<String, SemanticTypes> inputSymanticTypes = new HashMap<String, SemanticTypes>();
 
@@ -99,34 +99,34 @@ public class RshellActivity extends
 	}
 
 	@Override
-	public synchronized void configure(RshellActivityConfigurationBean configurationBean)
-	throws ActivityConfigurationException {
+	public synchronized void configure(JsonNode configurationBean) throws ActivityConfigurationException {
 		this.configurationBean = configurationBean;
 		configureSymanticTypes(configurationBean);
-		for (ActivityInputPortDefinitionBean ip : configurationBean.getInputPortDefinitions()) {
-			String name = ip.getName();
-			if (name != null) {
-				SemanticTypes symanticType = inputSymanticTypes.get(name);
-				if (symanticType != null) {
-					ip.setDepth(symanticType.getDepth());
-				}
-			}
-		}
-		for (ActivityOutputPortDefinitionBean op : configurationBean.getOutputPortDefinitions()) {
-			String name = op.getName();
-			if (name != null) {
-				SemanticTypes symanticType = outputSymanticTypes.get(name);
-				if (symanticType != null) {
-					op.setDepth(symanticType.getDepth());
-					op.setGranularDepth(symanticType.getDepth());
-				}
-			}
-		}
-		configurePorts(configurationBean);
+
+//		for (ActivityInputPortDefinitionBean ip : configurationBean.getInputPortDefinitions()) {
+//			String name = ip.getName();
+//			if (name != null) {
+//				SemanticTypes symanticType = inputSymanticTypes.get(name);
+//				if (symanticType != null) {
+//					ip.setDepth(symanticType.getDepth());
+//				}
+//			}
+//		}
+//		for (ActivityOutputPortDefinitionBean op : configurationBean.getOutputPortDefinitions()) {
+//			String name = op.getName();
+//			if (name != null) {
+//				SemanticTypes symanticType = outputSymanticTypes.get(name);
+//				if (symanticType != null) {
+//					op.setDepth(symanticType.getDepth());
+//					op.setGranularDepth(symanticType.getDepth());
+//				}
+//			}
+//		}
+//		configurePorts(configurationBean);
 	}
 
 	@Override
-	public RshellActivityConfigurationBean getConfiguration() {
+	public JsonNode getConfiguration() {
 		return configurationBean;
 	}
 
@@ -142,8 +142,7 @@ public class RshellActivity extends
 
 				RshellConnection connection = null;
 
-				RshellConnectionSettings settings = configurationBean
-				.getConnectionSettings();
+				RshellConnectionSettings settings = getConnectionSettings();
 
 				Object lock = getLock(settings);
 
@@ -214,7 +213,7 @@ public class RshellActivity extends
 					}
 
 					try {
-						String script = configurationBean.getScript();
+						String script = configurationBean.get("script").textValue();
 
 						// pass input form input ports to RServe
 						for (ActivityInputPort inputPort : getInputPorts()) {
@@ -289,10 +288,10 @@ public class RshellActivity extends
 
 						// create last statement for getting output for output
 						// ports
-						Set<OutputPort> outputPorts = getOutputPorts();
+						Set<ActivityOutputPort> outputPorts = getOutputPorts();
 						StringBuffer returnString = new StringBuffer("list(");
 						boolean first = true;
-						for (OutputPort outputPort : outputPorts) {
+						for (ActivityOutputPort outputPort : outputPorts) {
 							if (first) {
 								first = false;
 							} else {
@@ -390,6 +389,18 @@ public class RshellActivity extends
 
 	}
 
+	public RshellConnectionSettings getConnectionSettings() {
+		JsonNode connectionSettings = configurationBean.get("connectionSettings");
+		RshellConnectionSettings settings = new RshellConnectionSettings();
+		settings.setHost(connectionSettings.get("hostname").textValue());
+		settings.setPort(connectionSettings.get("port").intValue());
+		settings.setUsername(connectionSettings.get("username").textValue());
+		settings.setPassword(connectionSettings.get("password").textValue());
+		settings.setNewRVersion(connectionSettings.get("newRVersion").booleanValue());
+		settings.setKeepSessionAlive(connectionSettings.get("keepSessionAlive").booleanValue());
+		return settings;
+	}
+
 	private static Object getLock(RshellConnectionSettings settings) {
 		Object result = null;
 		result = lockMap.get(settings);
@@ -410,17 +421,18 @@ public class RshellActivity extends
 
 	}
 
-	private void configureSymanticTypes(
-			RshellActivityConfigurationBean configurationBean) {
-		for (RShellPortSymanticTypeBean portSymanticType : configurationBean
-				.getInputSymanticTypes()) {
-			inputSymanticTypes.put(portSymanticType.getName(), portSymanticType
-					.getSymanticType());
+	private void configureSymanticTypes(JsonNode json) {
+		if (json.has("inputSemanticTypes")) {
+			for (JsonNode portSymanticType : json.get("inputSemanticTypes")) {
+				inputSymanticTypes.put(portSymanticType.get("name").textValue(),
+						SemanticTypes.valueOf(portSymanticType.get("symanticType").textValue()));
+			}
 		}
-		for (RShellPortSymanticTypeBean symanticType : configurationBean
-				.getOutputSymanticTypes()) {
-			outputSymanticTypes.put(symanticType.getName(), symanticType
-					.getSymanticType());
+		if (json.has("outputSemanticTypes")) {
+			for (JsonNode portSymanticType : json.get("outputSemanticTypes")) {
+				outputSymanticTypes.put(portSymanticType.get("name").textValue(),
+						SemanticTypes.valueOf(portSymanticType.get("symanticType").textValue()));
+			}
 		}
 	}
 

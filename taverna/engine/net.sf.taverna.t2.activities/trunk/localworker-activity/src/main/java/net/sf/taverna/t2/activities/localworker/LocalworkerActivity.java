@@ -20,13 +20,15 @@
  ******************************************************************************/
 package net.sf.taverna.t2.activities.localworker;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import uk.org.taverna.configuration.app.ApplicationConfiguration;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.annotation.AnnotationAssertion;
 import net.sf.taverna.t2.annotation.AnnotationChain;
 import net.sf.taverna.t2.annotation.annotationbeans.HostInstitution;
 
-public class LocalworkerActivity extends BeanshellActivity{
+public class LocalworkerActivity extends BeanshellActivity {
 
 	public static final String URI = "http://ns.taverna.org.uk/2010/activity/localworker";
 
@@ -36,30 +38,6 @@ public class LocalworkerActivity extends BeanshellActivity{
 	 */
 	public LocalworkerActivity(ApplicationConfiguration applicationConfiguration) {
 		super(applicationConfiguration);
-	}
-
-	@Override
-	public LocalworkerActivityConfigurationBean getConfiguration() {
-		super.getConfiguration();
-		LocalworkerActivityConfigurationBean result = null;
-		if (configurationBean == null) {
-			return result;
-		}
-
-		if (configurationBean instanceof LocalworkerActivityConfigurationBean) {
-			result = (LocalworkerActivityConfigurationBean) configurationBean;
-		} else {
-			result = new LocalworkerActivityConfigurationBean();
-			result.setScript(configurationBean.getScript());
-			result.setDependencies(configurationBean.getDependencies());
-			result.setLocalworkerName(null);
-			result.setClassLoaderSharing(configurationBean.getClassLoaderSharing());
-			result.setLocalDependencies(configurationBean.getLocalDependencies());
-			result.setInputPortDefinitions(configurationBean.getInputPortDefinitions());
-			result.setOutputPortDefinitions(configurationBean.getOutputPortDefinitions());
-			configurationBean = result;
-		}
-		return result;
 	}
 
 	/**
@@ -80,9 +58,9 @@ public class LocalworkerActivity extends BeanshellActivity{
 
 	@Override
 	public String toString() {
-		LocalworkerActivityConfigurationBean configuration = getConfiguration();
-		if (configuration != null) {
-			return "Local service " + configuration.getLocalworkerName();
+		JsonNode configuration = getConfiguration();
+		if (configuration != null && configuration.has("localworkerName")) {
+			return "Local service " + configuration.get("localworkerName").textValue();
 		} else {
 			return "Local service";
 		}

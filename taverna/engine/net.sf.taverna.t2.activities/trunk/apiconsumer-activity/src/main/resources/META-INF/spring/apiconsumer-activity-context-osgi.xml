@@ -11,5 +11,6 @@
 	<service ref="apiconsumerActivityFactory" interface="net.sf.taverna.t2.workflowmodel.processor.activity.ActivityFactory" />
 
 	<reference id="applicationConfiguration" interface="uk.org.taverna.configuration.app.ApplicationConfiguration" />
+	<reference id="edits" interface="net.sf.taverna.t2.workflowmodel.Edits" />
 
 </beans:beans>

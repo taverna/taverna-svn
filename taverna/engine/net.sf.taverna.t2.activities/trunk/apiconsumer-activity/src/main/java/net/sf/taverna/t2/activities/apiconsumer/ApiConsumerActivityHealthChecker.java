@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import net.sf.taverna.t2.activities.dependencyactivity.AbstractAsynchronousDependencyActivity.FileExtFilter;
 import net.sf.taverna.t2.workflowmodel.Processor;
 
@@ -53,7 +55,7 @@ public class ApiConsumerActivityHealthChecker implements HealthChecker<ApiConsum
 		}
 
 		List<VisitReport> reports = new ArrayList<VisitReport>();
-		ApiConsumerActivityConfigurationBean configuration = subject.getConfiguration();
+		JsonNode configuration = subject.getConfiguration();
 
 /*		String className = configuration.getClassName();
 		try {
@@ -69,8 +71,10 @@ public class ApiConsumerActivityHealthChecker implements HealthChecker<ApiConsum
 		}
 */
 		// Check if we can find all the API consumer's dependencies
-		LinkedHashSet<String> localDependencies = new LinkedHashSet<String>();
-		localDependencies.addAll(configuration.getLocalDependencies());
+		LinkedHashSet<String> localDependencies = new LinkedHashSet<>();
+		for (JsonNode localDependency : configuration.get("localDependency")) {
+			localDependencies.add(localDependency.textValue());
+		}
 
 		if (!localDependencies.isEmpty()) {
 		String[] jarArray = subject.libDir.list(new FileExtFilter(".jar"));

@@ -33,8 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import uk.org.taverna.configuration.app.ApplicationConfiguration;
-
 import net.sf.taverna.t2.activities.dependencyactivity.AbstractAsynchronousDependencyActivity;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.reference.ReferenceService;
@@ -45,6 +43,9 @@ import net.sf.taverna.t2.reference.impl.external.object.VMObjectReference;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
+import uk.org.taverna.configuration.app.ApplicationConfiguration;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * API consumer activity enables users to execute a method on a class
@@ -53,15 +54,14 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCa
  * @author Alex Nenadic
  * @author Tom Oinn
  */
-public class ApiConsumerActivity extends
-	AbstractAsynchronousDependencyActivity<ApiConsumerActivityConfigurationBean> {
+public class ApiConsumerActivity extends AbstractAsynchronousDependencyActivity {
 
 	public static final String URI = "http://ns.taverna.org.uk/2010/activity/apiconsumer";
 
 	/**
-	 * Configuration bean containing API consumer activity-specific settigs.
+	 * Configuration containing API consumer activity-specific settings.
 	 */
-	private ApiConsumerActivityConfigurationBean configurationBean;
+	private JsonNode json;
 
 	/**
 	 * Constructs a new <code>ApiConsumerActivity</code>.
@@ -72,18 +72,13 @@ public class ApiConsumerActivity extends
 	}
 
 	@Override
-	public void configure(ApiConsumerActivityConfigurationBean bean)
-			throws ActivityConfigurationException {
-
-		configurationBean = bean;
-
-		// Configure activity's input and output ports
-		configurePorts();
+	public JsonNode getConfiguration() {
+		return json;
 	}
 
 	@Override
-	public ApiConsumerActivityConfigurationBean getConfiguration() {
-		return configurationBean;
+	public void configure(JsonNode json) {
+		this.json = json;
 	}
 
 	@Override
@@ -106,7 +101,7 @@ public class ApiConsumerActivity extends
 				// Configure the classloader for executing the API consumer
 				if (classLoader == null){ // This is just for junit test to work and set its own classloader - classLoader will always be null at this point normally
 					try{
-						classLoader = findClassLoader(configurationBean, workflowRunID);
+						classLoader = findClassLoader(json, workflowRunID);
 					}catch(RuntimeException rex){
 						String message = "Unable to obtain the classloader for the API consumer service";
 						callback.fail(message, rex);
@@ -124,7 +119,7 @@ public class ApiConsumerActivity extends
 				// configured from {@link #configure()}
 				if (classLoader == null){
 					try{
-						classLoader = findClassLoader(configurationBean, workflowRunID);
+						classLoader = findClassLoader(json, workflowRunID);
 					}catch(RuntimeException rex){
 						callback.fail(rex.getMessage(), rex);
 						return;
@@ -132,24 +127,26 @@ public class ApiConsumerActivity extends
 				}
 
 				// The class of the target object where the method is to be invoked on
+				String className = json.get("className").textValue();
+				String methodName = json.get("methodName").textValue();
 				Class<?> targetClass = null;
 				try {
-					targetClass = classLoader.loadClass(configurationBean.getClassName());
+					targetClass = classLoader.loadClass(className);
 				} catch (ClassNotFoundException cnfe) {
 					callback.fail("API Consumer "
-							+ configurationBean.getClassName() + "."
-							+ configurationBean.getMethodName() + " error: "
-							+ "No class " + configurationBean.getClassName() + " found!", cnfe);
+							+ className + "."
+							+ methodName + " error: "
+							+ "No class " + className + " found!", cnfe);
 					return;
 				}
 
 				// Non-constructor method
-				if (!configurationBean.isMethodConstructor()) {
+				if (!json.get("isMethodConstructor").asBoolean()) {
 					// The target object where the method is to be invoked on
 					Object targetObject = null;
 					// If this isn't a static method then get the target object from
 					// the incoming data - it will be on the input port called 'object'
-					if (!configurationBean.isMethodStatic()) {
+					if (!json.get("isMethodStatic").asBoolean()) {
 						// The expected object must have been registered as a VMObjectReference
 						// Get the reference set for the VMObjectReference
 						ReferenceSet vmObjectReferenceSet = (ReferenceSet) referenceService
@@ -167,8 +164,8 @@ public class ApiConsumerActivity extends
 
 						if (vmObjectReference == null) {
 							callback.fail("API Consumer "
-									+ configurationBean.getClassName() + "."
-									+ configurationBean.getMethodName() + " error: "
+									+ className + "."
+									+ methodName + " error: "
 									+ "Referenced a non static method but no object supplied to act on!");
 							return;
 						}
@@ -180,8 +177,8 @@ public class ApiConsumerActivity extends
 						Class<?> objectClass = targetObject.getClass();
 						if (!targetClass.isAssignableFrom(objectClass)) {
 							callback.fail("API Consumer "
-									+ configurationBean.getClassName() + "."
-									+ configurationBean.getMethodName() + " error: "
+									+ className + "."
+									+ methodName + " error: "
 									+"Class of " + objectClass.getName() + " not assignable to "
 									+ targetClass.getName() + ".");
 							return;
@@ -210,13 +207,13 @@ public class ApiConsumerActivity extends
 					// Method
 					Method method = null;
 					try {
-						method = targetClass.getMethod(configurationBean.getMethodName(), inputClasses);
+						method = targetClass.getMethod(methodName, inputClasses);
 					} catch (NoSuchMethodException nsme) {
 						callback.fail("API Consumer "
-								+ configurationBean.getClassName() + "."
-								+ configurationBean.getMethodName() + " error: "
+								+ className + "."
+								+ methodName + " error: "
 								+ "No method with name "
-								+ configurationBean.getMethodName() + " found.", nsme);
+								+ methodName + " found.", nsme);
 						return;
 					}
 					// Invoke the method
@@ -236,10 +233,12 @@ public class ApiConsumerActivity extends
 								// T2 reference to the result
 								T2Reference reference = null;
 
-								if (canRegisterAsString(configurationBean.getReturnType())) {
+								String returnType = json.get("returnType").textValue();
+								int returnDimension = json.get("returnDimension").intValue();
+								if (canRegisterAsString(returnType)) {
 									// Char type is a bit special so we deal with it separately
-									if(configurationBean.getReturnType().equals("char")) {
-										if(configurationBean.getReturnDimension() == 0){
+									if(returnType.equals("char")) {
+										if(returnDimension == 0){
 											// Return object is Character that needs to
 											// be converted to a char[] with only one element
 											char[] array = new char[1];
@@ -247,14 +246,14 @@ public class ApiConsumerActivity extends
 											reference = referenceService.register(convertObjectToString(array), 0, true, callback.getContext());
 										}
 										// Return object is char[]
-										else if(configurationBean.getReturnDimension() == 1){
+										else if(returnDimension == 1){
 											reference = referenceService.register(
 													convertObjectToString(resultObject), 0, true, callback.getContext());
 										}
 										// Return object is char[][], char[][][], etc.
 										else{
 											// Convert char[][] to a list of strings, char[][][] to a list of lists of strings, etc.
-											ArrayList<Object>list = convertArrayToListOfStrings(resultObject, configurationBean.getReturnDimension()-1); //list contains char[]s
+											ArrayList<Object>list = convertArrayToListOfStrings(resultObject, returnDimension-1); //list contains char[]s
 											reference = referenceService.register(
 													list,
 													outputPort.getDepth()-1, true,
@@ -262,7 +261,7 @@ public class ApiConsumerActivity extends
 										}
 									}
 									else{// Any other type that can be converted to string
-										if(configurationBean.getReturnDimension() == 0){
+										if(returnDimension == 0){
 											reference = referenceService.register(
 													convertObjectToString(resultObject),
 													outputPort.getDepth(), true,
@@ -272,7 +271,7 @@ public class ApiConsumerActivity extends
 										// list of (list of ...) strings
 										else {
 											// Convert to list of (list of ...) strings
-											ArrayList<Object> list = convertArrayToListOfStrings(resultObject, configurationBean.getReturnDimension()); // list contains strings
+											ArrayList<Object> list = convertArrayToListOfStrings(resultObject, returnDimension); // list contains strings
 											reference = referenceService.register(
 													list,
 													outputPort.getDepth(), true,
@@ -280,8 +279,8 @@ public class ApiConsumerActivity extends
 										}
 									}
 								}
-								else if(configurationBean.getReturnType().equals("byte")) {
-									if(configurationBean.getReturnDimension() == 0){
+								else if(returnType.equals("byte")) {
+									if(returnDimension == 0){
 										// Return object is Byte that needs to
 										// be converted to a byte[] with only one element
 										byte[] array = new byte[1];
@@ -289,7 +288,7 @@ public class ApiConsumerActivity extends
 										reference = referenceService.register(array, 0, true, callback.getContext());
 									}
 									// Return object is byte[]
-									else if(configurationBean.getReturnDimension() == 1){
+									else if(returnDimension == 1){
 										reference = referenceService.register(resultObject, 0, true, callback.getContext());
 									}
 									// Return object is byte[][], byte[][][], etc.
@@ -316,7 +315,7 @@ public class ApiConsumerActivity extends
 							}
 						}
 
-						if (!configurationBean.isMethodStatic()) {
+						if (!json.get("isMethodStatic").asBoolean()) {
 							if (outputPort.getName().equals("object")){
 								// Put the original object back into the return values
 								// after the method has been called on it
@@ -355,8 +354,8 @@ public class ApiConsumerActivity extends
 						constructor = targetClass.getConstructor(inputClasses);
 					} catch (NoSuchMethodException nsme) {
 						callback.fail("API Consumer "
-								+ configurationBean.getClassName() + "."
-								+ configurationBean.getMethodName() + " error: "
+								+ className + "."
+								+ methodName + " error: "
 								+"Cannot locate constructor method.", nsme);
 						return;
 					}
@@ -366,15 +365,15 @@ public class ApiConsumerActivity extends
 						resultObject = constructor.newInstance(inputObjects);
 					} catch (Exception ex) {
 						callback.fail("API Consumer "
-								+ configurationBean.getClassName() + "."
-								+ configurationBean.getMethodName() + " error: "
+								+ className + "."
+								+ methodName + " error: "
 								+"Problem calling constructor method.", ex);
 						return;
 
 					} catch(LinkageError le){
 						callback.fail("API Consumer "
-								+ configurationBean.getClassName() + "."
-								+ configurationBean.getMethodName() + " error: "
+								+ className + "."
+								+ methodName + " error: "
 								+"Problem finding dynamic libraries - "
 								+"most probably the user did not set the operating system's dynamic library search path", le);
 						return;
@@ -408,7 +407,7 @@ public class ApiConsumerActivity extends
 	 *
 	 * @throws ClassNotFoundException
 	 */
-	private void configurePorts() throws ActivityConfigurationException{
+	private void configurePorts() throws ActivityConfigurationException {
 
 		removeInputs();
 		removeOutputs();
@@ -416,67 +415,72 @@ public class ApiConsumerActivity extends
 			// All non-static methods need the object to invoke the method on and it is
 			// passed through the input port called 'object'. Non-static methods and constructors
 			// also return the same object through the output port called 'object'
-			if (!configurationBean.isMethodStatic()) {
-				if (!configurationBean.isMethodConstructor()) {
+			if (!json.get("isMethodStatic").asBoolean()) {
+				if (!json.get("isMethodConstructor").asBoolean()) {
 						addInput("object", 0, false, null, null);
 				}
 				addOutput("object", 0);
 			}
 
 			// Add output port 'result' for the return value of non-void methods
-			if (!configurationBean.getReturnType().equals("void") && !configurationBean.isMethodConstructor()) {
+			String returnType = json.get("returnType").textValue();
+			int returnDimension = json.get("returnDimension").intValue();
+			if (!returnType.equals("void") && !json.get("isMethodConstructor").asBoolean()) {
 				// byte[] return type maps to port dimension 0! It is treated as a stream rather than a list of bytes.
 				// Similar for char and char[] - not implemented yet
-				if (configurationBean.getReturnType().equals("byte") && configurationBean.getReturnDimension()==1){
+				if (returnType.equals("byte") && returnDimension==1){
 					addOutput("result", 0);
 				}
 				else
-					addOutput("result", configurationBean.getReturnDimension());
+					addOutput("result", returnDimension);
 			}
 
 			// Add input ports for method's parameters
-			for (int i = 0; i < configurationBean.getParameterNames().length; i++) {
+			JsonNode parameterNames = json.get("parameterNames");
+			JsonNode parameterTypes = json.get("parameterTypes");
+			JsonNode parameterDimensions = json.get("parameterDimensions");
+			for (int i = 0; i < parameterNames.size(); i++) {
 				// Create input ports...
-				if (canRegisterAsString(configurationBean.getParameterTypes()[i])) {
-					if(configurationBean.getParameterTypes()[i].equals("char")) {
+				if (canRegisterAsString(parameterTypes.get(i).textValue())) {
+					if(parameterTypes.get(i).textValue().equals("char")) {
 						// char, char[] are treated as a string (where char is a string with only one character),
 						// so the port depth for char[] is 0 rather than 1 as is expected for an array
-						if(configurationBean.getParameterDimensions()[i] == 0 ||
-								configurationBean.getParameterDimensions()[i] == 1){
-							addInput(configurationBean.getParameterNames()[i],
+						if(parameterDimensions.get(i).intValue() == 0 ||
+								parameterDimensions.get(i).intValue() == 1){
+							addInput(parameterNames.get(i).textValue(),
 									0, true, null,
 									String.class);
 						}// char[][], etc.
 						else {
-							addInput(configurationBean.getParameterNames()[i],
-									configurationBean.getParameterDimensions()[i]-1, true, null,
+							addInput(parameterNames.get(i).textValue(),
+									parameterDimensions.get(i).intValue()-1, true, null,
 								String.class);
 						}
 					}
 					else{
-						addInput(configurationBean.getParameterNames()[i],
-								configurationBean.getParameterDimensions()[i], true,
+						addInput(parameterNames.get(i).textValue(),
+								parameterDimensions.get(i).intValue(), true,
 								null, String.class);
 					}
 				}
-				else if(configurationBean.getParameterTypes()[i].equals("byte")) {
+				else if(parameterTypes.get(i).textValue().equals("byte")) {
 					// byte, byte[] are treated as a stream of depth 0 rather that array of bytes of depth 1.
 					// byte is treated as byte[] with only one element.
 					// Note that the port depth is set to 0 rather than 1 as is expected for an array
-					if(configurationBean.getParameterDimensions()[i] == 0 ||
-							configurationBean.getParameterDimensions()[i] == 1){
-						addInput(configurationBean.getParameterNames()[i],
+					if(parameterDimensions.get(i).intValue() == 0 ||
+							parameterDimensions.get(i).intValue() == 1){
+						addInput(parameterNames.get(i).textValue(),
 								0, true, null, byte[].class);
 					}
 					// byte[][], etc.
 					else {
-						addInput(configurationBean.getParameterNames()[i],
-								configurationBean.getParameterDimensions()[i]-1, true, null, byte[].class);
+						addInput(parameterNames.get(i).textValue(),
+								parameterDimensions.get(i).intValue()-1, true, null, byte[].class);
 					}
 				}
 				else{  //POJO
-					addInput(configurationBean.getParameterNames()[i],
-						configurationBean.getParameterDimensions()[i], false, null,
+					addInput(parameterNames.get(i).textValue(),
+							parameterDimensions.get(i).intValue(), false, null,
 						null);
 				}
 			}
@@ -489,7 +493,7 @@ public class ApiConsumerActivity extends
 	 * @param parameterType
 	 * @return
 	 */
-	private boolean canRegisterAsString(String parameterType){
+	static boolean canRegisterAsString(String parameterType){
 		//TODO org.w3c.dom.Document
 		if (parameterType.equals("java.math.BigInteger") ||
 				parameterType.equals("java.math.BigDecimal") ||
@@ -662,24 +666,30 @@ public class ApiConsumerActivity extends
 	 */
 	private Class<?>[] argumentClasses() throws Exception {
 		// Create an array of Class objects corresponding to the arguments
-		Class<?>[] inputClasses = new Class[configurationBean.getParameterNames().length];
+		String className = json.get("className").textValue();
+		String methodName = json.get("methodName").textValue();
+		JsonNode parameterNames = json.get("parameterNames");
+		JsonNode parameterTypes = json.get("parameterTypes");
+		JsonNode parameterDimensions = json.get("parameterDimensions");
+		Class<?>[] inputClasses = new Class[parameterNames.size()];
 		for (int i = 0; i < inputClasses.length; i++) {
-			String className = configurationBean.getParameterTypes()[i];
+			String parameterType = parameterTypes.get(i).textValue();
+			int parameterDimension = parameterDimensions.get(i).intValue();
 			Class<?> baseClass;
 			try {
-				baseClass = classLoader.loadClass(className);
+				baseClass = classLoader.loadClass(parameterType);
 			} catch (ClassNotFoundException cnfe) {
 				// If it is not a class, it must be a primitive then
-				baseClass = classForPrimitive(className);
+				baseClass = classForPrimitive(parameterType);
 				if (baseClass == null) {
 					throw new Exception("API Consumer "
-							+ configurationBean.getClassName() + "."
-							+ configurationBean.getMethodName() + " error: "
-							+ "Can't locate parameter class " + configurationBean.getParameterTypes()[i] +".");
+							+ className + "."
+							+ methodName + " error: "
+							+ "Can't locate parameter class " + parameterType +".");
 				}
 			}
-			if (configurationBean.getParameterDimensions()[i] > 0) {
-				int[] temp = new int[configurationBean.getParameterDimensions()[i]];
+			if (parameterDimension > 0) {
+				int[] temp = new int[parameterDimension];
 				inputClasses[i] = Array.newInstance(baseClass, temp).getClass();
 			} else {
 				inputClasses[i] = baseClass;
@@ -712,91 +722,99 @@ public class ApiConsumerActivity extends
 		ReferenceService referenceService = callback.getContext().getReferenceService();
 
 		// Argument objects
-		Object[] inputObjects = new Object[configurationBean.getParameterTypes().length];
+		String className = json.get("className").textValue();
+		String methodName = json.get("methodName").textValue();
+		JsonNode parameterNames = json.get("parameterNames");
+		JsonNode parameterTypes = json.get("parameterTypes");
+		JsonNode parameterDimensions = json.get("parameterDimensions");
+		Object[] inputObjects = new Object[parameterTypes.size()];
 		for (int i = 0; i < inputObjects.length; i++) {
 			// Get the argument object from the reference service
+			String parameterName = parameterNames.get(i).textValue();
+			String parameterType = parameterTypes.get(i).textValue();
+			int parameterDimension = parameterDimensions.get(i).intValue();
 			Object argument = null;
 
-			if (canRegisterAsString(configurationBean.getParameterTypes()[i])){
+			if (canRegisterAsString(parameterType)){
 				// Parameter was registered as a String with the Reference Service -
 				// try to get it as String or list (of lists of ...) Strings and parse it internally
 				try{
 					 argument = referenceService.renderIdentifier(data
-					.get(configurationBean.getParameterNames()[i]), String.class, callback
+					.get(parameterName), String.class, callback
 					.getContext());
 				}catch(ReferenceServiceException rse){
 					throw new Exception("API Consumer "
-							+ configurationBean.getClassName() + "."
-							+ configurationBean.getMethodName() + " error: "
-							+ "Could not fetch the input argument " + configurationBean.getParameterNames()[i]
-							+ " of type " + configurationBean.getParameterTypes()[i]
+							+ className + "."
+							+ methodName + " error: "
+							+ "Could not fetch the input argument " + parameterName
+							+ " of type " + parameterType
 							+ " from the Reference Service.");
 				}
 
 				if (argument == null) {
 				throw new Exception("API Consumer "
-						+ configurationBean.getClassName() + "."
-						+ configurationBean.getMethodName() + " error: "
-						+ "Required input argument " + configurationBean.getParameterNames()[i]
-						+ " of type " + configurationBean.getParameterTypes()[i] + " not found.");
+						+ className + "."
+						+ methodName + " error: "
+						+ "Required input argument " + parameterName
+						+ " of type " + parameterType + " not found.");
 				}
 
-				if (configurationBean.getParameterTypes()[i] == "char"){
+				if (parameterType == "char"){
 					// char
-					if(configurationBean.getParameterDimensions()[i] == 0){
+					if(parameterDimension == 0){
 						inputObjects[i] = new Character(((String)argument).charAt(0));
 					}
 					//char[]
-					else if(configurationBean.getParameterDimensions()[i] == 1){
+					else if(parameterDimension == 1){
 						inputObjects[i] = ((String)argument).toCharArray();
 					}
 					else // char[][] is returned as a list of Strings, char[][][] is returned as a list of lists of Strings etc.
 					{
 						// Convert the list (of lists of ...) Strings to char[][]...[]
 						inputObjects[i] = createInputObject(
-								argument, "char[]", configurationBean.getParameterDimensions()[i]-1);
+								argument, "char[]", parameterDimension-1);
 					}
 				}
 				else{
 					inputObjects[i] = createInputObject(
-						argument, configurationBean.getParameterTypes()[i], configurationBean.getParameterDimensions()[i]);
+						argument, parameterType, parameterDimension);
 				}
 			}
-			else if (configurationBean.getParameterTypes()[i] == "byte"){
+			else if (parameterType == "byte"){
 				// Parameter was registered as byte, byte[], byte[][], etc.
 				try{
 					 argument = referenceService.renderIdentifier(data
-					.get(configurationBean.getParameterNames()[i]), byte[].class, callback
+					.get(parameterName), byte[].class, callback
 					.getContext());
 
 				}catch(ReferenceServiceException rse){
 					throw new Exception("API Consumer "
-							+ configurationBean.getClassName() + "."
-							+ configurationBean.getMethodName() + " error: "
-							+ "Could not fetch the input argument " + configurationBean.getParameterNames()[i]
-							+ " of type " + configurationBean.getParameterTypes()[i]
+							+ className + "."
+							+ methodName + " error: "
+							+ "Could not fetch the input argument " + parameterName
+							+ " of type " + parameterType
 							+ " from the Reference Service.");
 				}
 
 				if (argument == null) {
 					throw new Exception("API Consumer "
-							+ configurationBean.getClassName() + "."
-							+ configurationBean.getMethodName() + " error: "
-							+ "Required input argument " + configurationBean.getParameterNames()[i]
-							+ " of type " + configurationBean.getParameterTypes()[i] + " not found.");
+							+ className + "."
+							+ methodName + " error: "
+							+ "Required input argument " + parameterName
+							+ " of type " + parameterType + " not found.");
 					}
 
-				if(configurationBean.getParameterDimensions()[i] == 0){
+				if(parameterDimension == 0){
 					inputObjects[i] = new Byte(((byte[])argument)[0]);
 				}
-				else if(configurationBean.getParameterDimensions()[i] == 1){
+				else if(parameterDimension == 1){
 					inputObjects[i] = (byte[])argument;
 				}
 				else // byte[][] is returned as a list of byte[]s, byte[][][] is returned as a list of lists of byte[]s, etc.
 				{
 					// Convert the list (of lists of ...) byte[] to byte[][]...[]
 					inputObjects[i] = createInputObject(
-							argument, "byte[]", configurationBean.getParameterDimensions()[i]-1);
+							argument, "byte[]", parameterDimension-1);
 				}
 			}
 			else{
@@ -804,7 +822,7 @@ public class ApiConsumerActivity extends
 				try{
 					// Get the reference set for the VMObjectReference
 					ReferenceSet vmObjectReferenceSet = (ReferenceSet) referenceService
-							.resolveIdentifier(data.get(configurationBean.getParameterNames()[i]), null,
+							.resolveIdentifier(data.get(parameterName), null,
 									callback.getContext());
 					// The set should contain only one external reference, i.e. VMObjectReference
 					Set<ExternalReferenceSPI> externalReferences = vmObjectReferenceSet.getExternalReferences();
@@ -816,19 +834,19 @@ public class ApiConsumerActivity extends
 					}
 				}catch(ReferenceServiceException rse){
 					throw new Exception("API Consumer "
-							+ configurationBean.getClassName() + "."
-							+ configurationBean.getMethodName() + " error: "
-							+ "Could not fetch the input argument " + configurationBean.getParameterNames()[i]
-							+ " of type " + configurationBean.getParameterTypes()[i]
+							+ className + "."
+							+ methodName + " error: "
+							+ "Could not fetch the input argument " + parameterName
+							+ " of type " + parameterType
 							+ " from the Reference Service.");
 				}
 
 				if (argument == null) {
 					throw new Exception("API Consumer "
-							+ configurationBean.getClassName() + "."
-							+ configurationBean.getMethodName() + " error: "
-							+ "Required input argument " + configurationBean.getParameterNames()[i]
-							+ " of type " + configurationBean.getParameterTypes()[i] + " not found.");
+							+ className + "."
+							+ methodName + " error: "
+							+ "Required input argument " + parameterName
+							+ " of type " + parameterType + " not found.");
 					}
 				// Get the actual object from the wrapper
 				inputObjects[i] = ((VMObjectReference)argument).getObject();

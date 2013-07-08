@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema#",
+    "id": "http://ns.taverna.org.uk/2010/activity/localworker.schema.json",
+    "title": "Beanshell activity configuration",
+    "type": "object",
+    "extends" : "http://ns.taverna.org.uk/2010/activity/beanshell.schema.json",
+    "properties": {
+        "@context": {
+            "description": "JSON-LD context for interpreting the configuration as RDF",
+            "required": true,
+            "enum": ["http://ns.taverna.org.uk/2010/activity/localworker.context.json"]
+        },
+        "localworkerName": {
+            "title": "Localworker Name",
+            "description": "The name of the localworker",
+            "type": "string",
+            "required": true
+        }
+    }
+}

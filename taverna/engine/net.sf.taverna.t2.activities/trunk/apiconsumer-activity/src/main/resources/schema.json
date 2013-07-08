@@ -1,0 +1,91 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema#",
+    "id": "http://ns.taverna.org.uk/2010/activity/apiconsumer.schema.json",
+    "title": "API consumer activity configuration",
+    "type": "object",
+    "extends" : "http://ns.taverna.org.uk/2010/activity/dependency.schema.json",
+    "properties": {
+        "@context": {
+            "description": "JSON-LD context for interpreting the configuration as RDF",
+            "required": true,
+            "enum": ["http://ns.taverna.org.uk/2010/activity/apiconsumer.context.json"]
+        },
+        "apiConsumerDescription": {
+            "title": "API Consumer Description",
+            "description": "The description of the API consumer that wrapped the method to be invoked",
+            "type": "string",
+            "required": false
+        },
+        "apiConsumerName": {
+            "title": "API Consumer Name",
+            "description": "The name of the API consumer that wrapped the method to be invoked",
+            "type": "string",
+            "required": false
+        },
+        "description": {
+            "title": "Method Description",
+            "description": "The description of the method to invoke",
+            "type": "string",
+            "required": false
+        },
+        "className": {
+            "title": "Class Name",
+            "description": "The name of the class the method will be invoked on",
+            "type": "string",
+            "required": true
+        },
+        "methodName": {
+            "title": "Method Name",
+            "description": "The name of the method to invoke",
+            "type": "string",
+            "required": true
+        },
+        "parameterNames": {
+            "title": "Parameter Names",
+            "description": "List of parameter names",
+            "type": "array",
+            "items": { "type" : "string" },
+            "required": false
+        },
+        "parameterDimensions": {
+            "title": "Parameter Dimensions",
+            "description": "List of parameter dimensions (0 for single object, 1 for a list of objects, etc.)",
+            "type": "array",
+            "items": { "type" : "integer", "minimum" : 0 },
+            "required": false
+        },
+        "parameterTypes": {
+            "title": "Parameter Types",
+            "description": "List of parameter types",
+            "type": "array",
+            "items": { "type" : "string" },
+            "required": false
+        },
+        "returnType": {
+            "title": "Return Type",
+            "description": "Method's return parameter type",
+            "type": "string",
+            "required": false
+        },
+        "returnDimension": {
+            "title": "Return Dimension",
+            "description": "Method's return parameter dimension",
+            "type": "integer",
+            "required": false
+        },
+        "isMethodConstructor": {
+            "title": "Is Method Constructor?",
+            "description": "Is the method  to be invoked a contructor?",
+            "type": "boolean",
+            "required": true,
+            "default": false
+        },
+        "isMethodStatic": {
+            "title": "Is Method Static?",
+            "description": "Is the method  to be invoked static?",
+            "type": "boolean",
+            "required": true,
+            "default": false
+        }
+    }
+}

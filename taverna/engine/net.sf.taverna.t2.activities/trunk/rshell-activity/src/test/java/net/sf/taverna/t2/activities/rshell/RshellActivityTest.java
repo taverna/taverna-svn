@@ -24,24 +24,25 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import net.sf.taverna.t2.activities.testutils.ActivityInvoker;
-import net.sf.taverna.t2.reference.ExternalReferenceSPI;
-import net.sf.taverna.t2.workflowmodel.OutputPort;
+import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
-import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
-import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityOutputPort;
+import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityInputPortImpl;
+import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityOutputPortImpl;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Unit tests for RshellActivity.
@@ -51,27 +52,18 @@ public class RshellActivityTest {
 
 	private RshellActivity activity;
 
-	private RshellActivityConfigurationBean configurationBean;
+	private ObjectNode configurationBean;
 
 	@Before
 	public void setUp() throws Exception {
+		Edits edits = new EditsImpl();
 		activity = new RshellActivity(null);
 		activity.setEdits(new EditsImpl());
-		configurationBean = new RshellActivityConfigurationBean();
 
-		ActivityInputPortDefinitionBean inputPortBean = new ActivityInputPortDefinitionBean();
-		inputPortBean.setDepth(0);
-		inputPortBean.setName("example_input");
-		inputPortBean.setHandledReferenceSchemes(new ArrayList<Class<? extends ExternalReferenceSPI>>());
-		inputPortBean.setTranslatedElementType(String.class);
-		inputPortBean.setAllowsLiteralValues(true);
-		configurationBean.setInputPortDefinitions(Collections.singletonList(inputPortBean));
+		edits.getAddActivityInputPortEdit(activity, new ActivityInputPortImpl("example_input", 0, false, null, String.class)).doEdit();
+		edits.getAddActivityOutputPortEdit(activity, new ActivityOutputPortImpl("example_output", 0, 0)).doEdit();
+		configurationBean = JsonNodeFactory.instance.objectNode();
 
-		ActivityOutputPortDefinitionBean outputPortBean = new ActivityOutputPortDefinitionBean();
-		outputPortBean.setDepth(0);
-		outputPortBean.setName("example_output");
-		outputPortBean.setMimeTypes(new ArrayList<String>());
-		configurationBean.setOutputPortDefinitions(Collections.singletonList(outputPortBean));
 	}
 
 	@Test
@@ -111,9 +103,9 @@ public class RshellActivityTest {
 					expectedInputs.remove(inputPort.getName()));
 		}
 
-		Set<OutputPort> outputPorts = activity.getOutputPorts();
+		Set<ActivityOutputPort> outputPorts = activity.getOutputPorts();
 		assertEquals(expectedOutputs.size(), outputPorts.size());
-		for (OutputPort outputPort : outputPorts) {
+		for (ActivityOutputPort outputPort : outputPorts) {
 			assertTrue("Wrong output : " + outputPort.getName(),
 					expectedOutputs.remove(outputPort.getName()));
 		}
