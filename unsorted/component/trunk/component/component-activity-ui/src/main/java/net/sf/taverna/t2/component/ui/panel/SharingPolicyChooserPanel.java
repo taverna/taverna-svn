@@ -22,38 +22,23 @@ package net.sf.taverna.t2.component.ui.panel;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
-import javax.swing.border.TitledBorder;
 
-import org.apache.log4j.Logger;
-
-import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.SharingPolicy;
-import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
-import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentGroup;
 import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
+
+import org.apache.log4j.Logger;
 
 /**
  * @author alanrw
@@ -68,12 +53,14 @@ public class SharingPolicyChooserPanel extends JPanel implements Observer<Regist
 
 	private static Logger logger = Logger.getLogger(SharingPolicyChooserPanel.class);
 
+	@SuppressWarnings("rawtypes")
 	private JComboBox permissionBox = new JComboBox();
 
 	private SortedMap<String, SharingPolicy> permissionMap = new TreeMap<String, SharingPolicy>();
 
 	private ComponentRegistry registry;
 
+	@SuppressWarnings("unchecked")
 	public SharingPolicyChooserPanel() {
 		super();
 		permissionBox.setPrototypeDisplayValue(Utils.LONG_STRING);
@@ -106,6 +93,7 @@ public class SharingPolicyChooserPanel extends JPanel implements Observer<Regist
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void updateProfileModel() {
 		permissionMap.clear();
 		permissionBox.removeAllItems();
@@ -153,6 +141,7 @@ public class SharingPolicyChooserPanel extends JPanel implements Observer<Regist
 			return null;
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 	    protected void done() {
 			permissionBox.removeAllItems();

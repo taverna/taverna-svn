@@ -3,7 +3,6 @@
  */
 package net.sf.taverna.t2.component.ui.file;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 

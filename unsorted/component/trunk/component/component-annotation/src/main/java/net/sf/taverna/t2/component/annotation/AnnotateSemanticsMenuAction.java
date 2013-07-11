@@ -23,7 +23,6 @@ import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.lang.ui.DeselectingButton;
 import net.sf.taverna.t2.ui.menu.AbstractContextualMenuAction;
-import net.sf.taverna.t2.ui.menu.ContextualSelection;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPort;
@@ -41,6 +40,7 @@ public class AnnotateSemanticsMenuAction extends AbstractContextualMenuAction {
 
 	private static final FileManager fileManager = FileManager.getInstance();
 
+	@SuppressWarnings("unused")
 	private static Log logger = Log.getLogger(AnnotateSemanticsMenuAction.class);
 
 	public AnnotateSemanticsMenuAction() {
@@ -63,7 +63,7 @@ public class AnnotateSemanticsMenuAction extends AbstractContextualMenuAction {
 	protected Action createAction() {
 		return new AbstractAction(ANNOTATE_SEMANTICS) {
 			public void actionPerformed(ActionEvent e) {
-				SemanticAnnotationContextualView view = new SemanticAnnotationContextualView((Annotated) getContextualSelection().getSelection());
+				SemanticAnnotationContextualView view = new SemanticAnnotationContextualView((Annotated<?>) getContextualSelection().getSelection());
 				
 				final JDialog dialog = new JDialog((Frame) null, "Annotate semantics");
 				dialog.setLayout(new BorderLayout());

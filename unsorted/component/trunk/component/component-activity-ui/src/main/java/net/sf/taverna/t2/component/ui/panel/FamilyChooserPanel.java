@@ -15,15 +15,11 @@ import java.util.TreeMap;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
-import javax.swing.border.TitledBorder;
 
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
-import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
@@ -34,7 +30,7 @@ import org.apache.log4j.Logger;
  * @author alanrw
  *
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class FamilyChooserPanel extends JPanel implements Observer, Observable<FamilyChoiceMessage> {
 
 	/**
@@ -176,12 +172,20 @@ public class FamilyChooserPanel extends JPanel implements Observer, Observable<F
 		protected String doInBackground() throws Exception {
 			if (chosenRegistry != null ) {
 				for (ComponentFamily f : chosenRegistry.getComponentFamilies()) {
-					ComponentProfile componentProfile = f.getComponentProfile();
+					ComponentProfile componentProfile = null;
+					try {
+						componentProfile = f.getComponentProfile();
+					}
+					catch (Exception e) {
+						logger.error(e);
+					}
 					if (componentProfile != null) {
 					String id = componentProfile.getId();
 					if ((profileFilter == null) || id.equals(profileFilter.getId())) {
 						familyMap.put(f.getName(), f);
 					}
+					} else {
+						logger.info("Ignoring " + f.getName());
 					}
 				}
 			}

@@ -8,7 +8,12 @@ import java.io.Serializable;
  * @author Jiten Bhagat, Emmanuel Tagarira
  */
 public class License implements Serializable {
-  private String type;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3767624013287985308L;
+
+private String type;
 
   private String text;
 

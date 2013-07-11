@@ -25,14 +25,15 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -40,21 +41,23 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
-
+import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
-import net.sf.taverna.t2.component.registry.local.LocalComponent;
 import net.sf.taverna.t2.visit.VisitReport;
 import net.sf.taverna.t2.workflowmodel.health.HealthCheck;
 import net.sf.taverna.t2.workflowmodel.health.RemoteHealthChecker;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
+
 import uk.org.taverna.ns._2012.component.profile.Activity;
+import uk.org.taverna.ns._2012.component.profile.Extends;
 import uk.org.taverna.ns._2012.component.profile.Ontology;
 import uk.org.taverna.ns._2012.component.profile.Port;
 import uk.org.taverna.ns._2012.component.profile.Profile;
 import uk.org.taverna.ns._2012.component.profile.SemanticAnnotation;
 
+import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -74,25 +77,35 @@ public class ComponentProfile {
 	private JAXBContext jaxbContext;
 	private Profile profile;
 	private ExceptionHandling exceptionHandling;
+	
+	private static ComponentProfile baseProfile = BaseProfile.getInstance().getProfile();
+	
+	private static ComponentRegistry parentRegistry = null;
 
-	public ComponentProfile(URL profileURL) throws ComponentRegistryException {
+	public ComponentProfile(ComponentRegistry registry, URL profileURL) throws ComponentRegistryException {
 		try {
 			jaxbContext = JAXBContext.newInstance(Profile.class);
 			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 			profile = (Profile) unmarshaller.unmarshal(profileURL);
+			this.parentRegistry = registry;
 		} catch (JAXBException e) {
 			throw new ComponentRegistryException("Unable to read profile", e);
 		}
 	}
 
-	public ComponentProfile(String profileString) throws ComponentRegistryException {
+	public ComponentProfile(ComponentRegistry registry, String profileString) throws ComponentRegistryException {
 		try {
 			jaxbContext = JAXBContext.newInstance(Profile.class);
 			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 			profile = (Profile) unmarshaller.unmarshal(new StreamSource( new StringReader(profileString)));
+			this.parentRegistry = registry;
 		} catch (JAXBException e) {
 			throw new ComponentRegistryException("Unable to read profile", e);
 		}
+	}
+
+	public ComponentRegistry getComponentRegistry() {
+		return parentRegistry;
 	}
 
 	public String getXML() throws ComponentRegistryException {
@@ -121,6 +134,20 @@ public class ComponentProfile {
 	public String getDescription() {
 		return profile.getDescription();
 	}
+	
+	public ComponentProfile getExtends() throws ComponentRegistryException {
+		ComponentProfile result = null;
+		Extends extends_ = profile.getExtends();
+		if (extends_ != null) {
+			for (ComponentProfile p : parentRegistry.getComponentProfiles()) {
+				if (p.getId().equals(extends_.getProfileId())) {
+					result = p;
+					break;
+				}
+			}
+		}
+		return result;
+	}
 
 	public String getOntologyLocation(String ontologyId) {
 		String ontologyURI = null;
@@ -130,7 +157,38 @@ public class ComponentProfile {
 				ontologyURI = ontology.getValue();
 			}
 		}
+		if ((ontologyURI == null) && ((baseProfile != null) && (baseProfile != this))){
+			ontologyURI = baseProfile.getOntologyLocation(ontologyId);
+		}
 		return ontologyURI;
+	}
+	
+	private TreeMap<String, String> internalGetPrefixMap() throws ComponentRegistryException {
+		TreeMap<String, String> result = new TreeMap<String, String>();
+		List<Ontology> ontologies = profile.getOntology();
+		for (Ontology ontology : ontologies) {
+			result.put(ontology.getId(), ontology.getValue());
+		}
+		ComponentProfile extends_ = getExtends();
+		if (extends_ != null) {
+			TreeMap<String, String> extensionMap = extends_.internalGetPrefixMap();
+			for (Entry<String, String> entry : extensionMap.entrySet()) {
+				result.put(entry.getKey(), entry.getValue());
+			}
+		}
+		
+		return result;
+	}
+	
+	public TreeMap<String, String> getPrefixMap() throws ComponentRegistryException {
+		TreeMap<String, String> result = internalGetPrefixMap();
+		if (baseProfile != null) {
+			TreeMap<String, String> extensionMap = baseProfile.internalGetPrefixMap();
+			for (Entry<String, String> entry : extensionMap.entrySet()) {
+				result.put(entry.getKey(), entry.getValue());
+			}			
+		}
+		return result;
 	}
 
 	public OntModel getOntology(String ontologyId) {
@@ -142,22 +200,22 @@ public class ComponentProfile {
 				return null;
 			}
 			InputStream in;
-			String ontologyAsString;
+			String ontologyAsString = "";
 			try {
 				in = new URL(ontologyURI).openStream();
 			ontologyAsString = IOUtils.toString(in);
 			IOUtils.closeQuietly(in);
 			} catch (MalformedURLException e) {
-				logger.error(e);
-				return null;
+				logger.error("Problem reading ontology " + ontologyId, e);
 			} catch (IOException e) {
-				logger.error(e);
-				return null;
-			}
-			if (!ontologyAsString.startsWith("<?")) {
-				return null;
-			}
-			ontologyModel.read(new StringReader(ontologyAsString), null);
+				logger.error("Problem reading ontology " + ontologyId, e);			}
+				try {
+					ontologyModel.read(new StringReader(ontologyAsString), null);
+				}
+				catch (NullPointerException e) {
+					logger.error("Problem reading ontology " + ontologyId, e);
+					ontologyModel.removeAll();
+					}
 			ontologyModels.put(ontologyURI, ontologyModel);
 		}
 		return ontologyModels.get(ontologyURI);
@@ -169,14 +227,24 @@ public class ComponentProfile {
 		for (Port port : ports) {
 			portProfiles.add(new PortProfile(this, port));
 		}
+		if ((baseProfile != null) && (baseProfile != this)){
+			portProfiles.addAll(baseProfile.getInputPortProfiles());
+		}
 		return portProfiles;
 	}
 
-	public List<SemanticAnnotationProfile> getInputSemanticAnnotationProfiles() {
+	public List<SemanticAnnotationProfile> getInputSemanticAnnotationProfiles() throws ComponentRegistryException {
 		List<SemanticAnnotationProfile> semanticAnnotationsProfiles = new ArrayList<SemanticAnnotationProfile>();
 		List<PortProfile> portProfiles = getInputPortProfiles();
+		ComponentProfile extends_ = getExtends();
+		if (extends_ != null) {
+			portProfiles.addAll(extends_.getInputPortProfiles());
+		}
 		for (PortProfile portProfile : portProfiles) {
 			semanticAnnotationsProfiles.addAll(portProfile.getSemanticAnnotations());
+		}
+		if ((baseProfile != null) && (baseProfile != this)){
+			semanticAnnotationsProfiles.addAll(baseProfile.getInputSemanticAnnotationProfiles());
 		}
 		return getUniqueSemanticAnnotationProfiles(semanticAnnotationsProfiles);
 	}
@@ -187,14 +255,24 @@ public class ComponentProfile {
 		for (Port port : ports) {
 			portProfiles.add(new PortProfile(this, port));
 		}
+		if ((baseProfile != null) && (baseProfile != this)){
+			portProfiles.addAll(baseProfile.getOutputPortProfiles());
+		}
 		return portProfiles;
 	}
 
-	public List<SemanticAnnotationProfile> getOutputSemanticAnnotationProfiles() {
+	public List<SemanticAnnotationProfile> getOutputSemanticAnnotationProfiles() throws ComponentRegistryException {
 		List<SemanticAnnotationProfile> semanticAnnotationsProfiles = new ArrayList<SemanticAnnotationProfile>();
 		List<PortProfile> portProfiles = getOutputPortProfiles();
+		ComponentProfile extends_ = getExtends();
+		if (extends_ != null) {
+			portProfiles.addAll(extends_.getOutputPortProfiles());
+		}
 		for (PortProfile portProfile : portProfiles) {
 			semanticAnnotationsProfiles.addAll(portProfile.getSemanticAnnotations());
+		}
+		if ((baseProfile != null) && (baseProfile != this)){
+			semanticAnnotationsProfiles.addAll(baseProfile.getOutputSemanticAnnotationProfiles());
 		}
 		return getUniqueSemanticAnnotationProfiles(semanticAnnotationsProfiles);
 	}
@@ -208,17 +286,37 @@ public class ComponentProfile {
 		return activityProfiles;
 	}
 
-	public List<SemanticAnnotationProfile> getActivitySemanticAnnotationProfiles() {
+	public List<SemanticAnnotationProfile> getActivitySemanticAnnotationProfiles() throws ComponentRegistryException {
 		List<SemanticAnnotationProfile> semanticAnnotationsProfiles = new ArrayList<SemanticAnnotationProfile>();
 		List<ActivityProfile> activityProfiles = getActivityProfiles();
+		ComponentProfile extends_ = getExtends();
+		if (extends_ != null) {
+			activityProfiles.addAll(extends_.getActivityProfiles());
+		}
 		for (ActivityProfile activityProfile : activityProfiles) {
 			semanticAnnotationsProfiles.addAll(activityProfile.getSemanticAnnotations());
+		}
+		if ((baseProfile != null) && (baseProfile != this)){
+			semanticAnnotationsProfiles.addAll(baseProfile.getActivitySemanticAnnotationProfiles());
 		}
 		return getUniqueSemanticAnnotationProfiles(semanticAnnotationsProfiles);
 	}
 
-	public List<SemanticAnnotationProfile> getSemanticAnnotationProfiles() {
+	public List<SemanticAnnotationProfile> getSemanticAnnotationProfiles() throws ComponentRegistryException {
+		List<SemanticAnnotationProfile> semanticAnnotationsProfiles = getComponentProfiles();
+		ComponentProfile extends_ = getExtends();
+		if (extends_ != null) {
+			semanticAnnotationsProfiles.addAll(extends_.getSemanticAnnotationProfiles());
+		}
+		if ((baseProfile != null) && (baseProfile != this)){
+			semanticAnnotationsProfiles.addAll(baseProfile.getSemanticAnnotationProfiles());
+		}
+		return semanticAnnotationsProfiles;
+	}
+
+	private List<SemanticAnnotationProfile> getComponentProfiles() {
 		List<SemanticAnnotationProfile> semanticAnnotationsProfiles = new ArrayList<SemanticAnnotationProfile>();
+		
 		for (SemanticAnnotation semanticAnnotation : profile.getComponent().getSemanticAnnotation()) {
 			semanticAnnotationsProfiles
 					.add(new SemanticAnnotationProfile(this, semanticAnnotation));
@@ -279,6 +377,22 @@ public class ComponentProfile {
 		} else if (!getId().equals(other.getId()))
 			return false;
 		return true;
+	}
+	
+	public OntClass getClass(String className) {
+		OntClass result = null;
+		List<Ontology> ontologies = profile.getOntology();
+		for (Ontology ontology : ontologies) {
+			String id = ontology.getId();
+			OntModel ontModel = this.getOntology(id);
+			if (ontModel != null) {
+			result = ontModel.getOntClass(className);
+			if (result != null) {
+				break;
+			}
+			}
+		}
+		return result;
 	}
 
 }

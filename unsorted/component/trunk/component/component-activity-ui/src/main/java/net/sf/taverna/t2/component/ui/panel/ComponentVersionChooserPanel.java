@@ -5,13 +5,11 @@ package net.sf.taverna.t2.component.ui.panel;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -40,6 +38,7 @@ public class ComponentVersionChooserPanel extends JPanel implements Observer<Com
 
 	private static Logger logger = Logger.getLogger(ComponentVersionChooserPanel.class);
 
+	@SuppressWarnings("rawtypes")
 	private final JComboBox componentVersionChoice = new JComboBox();
 
 	private SortedMap<Integer, ComponentVersion> componentVersionMap =
@@ -47,6 +46,7 @@ public class ComponentVersionChooserPanel extends JPanel implements Observer<Com
 
 	private ComponentChooserPanel componentChooserPanel = new ComponentChooserPanel();
 
+	@SuppressWarnings("unchecked")
 	public ComponentVersionChooserPanel() {
 		super();
 		this.setLayout(new GridBagLayout());
@@ -91,8 +91,8 @@ public class ComponentVersionChooserPanel extends JPanel implements Observer<Com
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void updateComponentVersionModel() {
-		Component chosenComponent = componentChooserPanel.getChosenComponent();
 		componentVersionMap.clear();
 		componentVersionChoice.removeAllItems();
 		componentVersionChoice.setToolTipText(null);
@@ -145,6 +145,7 @@ public class ComponentVersionChooserPanel extends JPanel implements Observer<Com
 			return null;
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 	    protected void done() {
 			componentVersionChoice.removeAllItems();

@@ -187,7 +187,7 @@ public class MyExperimentClient {
     try {
       // === READ SETTINGS ===
       FileInputStream fIniInputStream = new FileInputStream(new java.io.File(
-          this.fIniFileDir, this.INI_FILE_NAME));
+          this.fIniFileDir, INI_FILE_NAME));
       this.iniSettings.load(fIniInputStream);
       fIniInputStream.close();
 
@@ -210,7 +210,7 @@ public class MyExperimentClient {
     try {
       this.fIniFileDir.mkdirs();
       FileOutputStream fIniOutputStream = new FileOutputStream(
-          new java.io.File(this.fIniFileDir, this.INI_FILE_NAME));
+          new java.io.File(this.fIniFileDir, INI_FILE_NAME));
       this.iniSettings.store(fIniOutputStream, "Test comment");
       fIniOutputStream.close();
     } catch (IOException e) {
@@ -264,6 +264,7 @@ public class MyExperimentClient {
 	if (response.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
 		logger.info("Unauthorized");
 		try {
+			@SuppressWarnings("deprecation")
 			List<String> toDelete = CredentialManager.getInstance().getServiceURLsforAllUsernameAndPasswordPairs();
 			for (String uri : toDelete) {
 				if (uri.startsWith(BASE_URL)) {
@@ -685,7 +686,8 @@ public class MyExperimentClient {
         user.getTags().clear();
         Document doc = this.getResource(Resource.USER, user.getURI(),
             Resource.REQUEST_USER_APPLIED_TAGS_ONLY);
-        Iterator<Element> iNewUserTags = doc.getRootElement().getChild(
+        @SuppressWarnings("unchecked")
+		Iterator<Element> iNewUserTags = doc.getRootElement().getChild(
             "tags-applied").getChildren().iterator();
         Util.getResourceCollectionFromXMLIterator(iNewUserTags, user.getTags());
       }
@@ -902,17 +904,6 @@ public class MyExperimentClient {
           + resource.getURI() + "\n" + e);
       return (new ServerResponse(ServerResponse.LOCAL_FAILURE, null));
     }
-  }
-
-  private void afterMyExperimentPost(ServerResponse response) {
-    // if (response.getResponseCode() == HttpURLConnection.HTTP_OK) {
-    // // XML response should contain the new workflow that was posted
-    // Workflow newWorkflow = Workflow.buildFromXML(response.getResponseBody(),
-    // logger);
-    //
-    // System.out.println("* *** *** *** *" + response.getResponseBody()
-    // + "* *** *** *** *");
-    // }
   }
 
   public ServerResponse addFavourite(Resource resource) {

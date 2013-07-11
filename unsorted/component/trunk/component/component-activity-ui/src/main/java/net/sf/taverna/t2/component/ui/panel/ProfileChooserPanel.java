@@ -7,6 +7,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -29,7 +30,7 @@ import org.apache.log4j.Logger;
  * @author alanrw
  *
  */
-public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoiceMessage> {
+public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoiceMessage>, Observable<ProfileChoiceMessage> {
 
 	/**
 	 *
@@ -37,13 +38,19 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 	private static final long serialVersionUID = 2175274929391537032L;
 
 	private static Logger logger = Logger.getLogger(ProfileChooserPanel.class);
+	
+	private List<Observer<ProfileChoiceMessage>> observers = new ArrayList<Observer<ProfileChoiceMessage>>();
 
+
+
+	@SuppressWarnings("rawtypes")
 	private JComboBox profileBox = new JComboBox();
 
 	private SortedMap<String, ComponentProfile> profileMap = new TreeMap<String, ComponentProfile>();
 
 	private ComponentRegistry registry;
 
+	@SuppressWarnings("unchecked")
 	public ProfileChooserPanel() {
 		super();
 		profileBox.setPrototypeDisplayValue(Utils.LONG_STRING);
@@ -85,6 +92,7 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void updateProfileModel() {
 		profileMap.clear();
 		profileBox.removeAllItems();
@@ -99,6 +107,15 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 			profileBox.setToolTipText(componentProfile.getDescription());
 		} else {
 			profileBox.setToolTipText(null);
+		}
+		ComponentProfile chosenProfile = getChosenProfile();
+		ProfileChoiceMessage message = new ProfileChoiceMessage(chosenProfile);
+		for (Observer<ProfileChoiceMessage> o : getObservers()) {
+			try {
+				o.notify(ProfileChooserPanel.this, message);
+			} catch (Exception e) {
+				logger.error(e);
+			}
 		}
 	}
 
@@ -139,6 +156,7 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 			return null;
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 	    protected void done() {
 			profileBox.removeAllItems();
@@ -156,6 +174,28 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 			}
 		}
 
+	}
+
+	@Override
+	public void addObserver(Observer<ProfileChoiceMessage> observer) {
+		observers.add(observer);
+		ComponentProfile chosenProfile = getChosenProfile();
+			ProfileChoiceMessage message = new ProfileChoiceMessage(chosenProfile);
+			try {
+				observer.notify(this, message);
+			} catch (Exception e) {
+				logger.error(e);
+			}
+	}
+
+	@Override
+	public void removeObserver(Observer<ProfileChoiceMessage> observer) {
+		observers.remove(observer);
+		}
+
+	@Override
+	public List<Observer<ProfileChoiceMessage>> getObservers() {
+		return observers;
 	}
 
 }

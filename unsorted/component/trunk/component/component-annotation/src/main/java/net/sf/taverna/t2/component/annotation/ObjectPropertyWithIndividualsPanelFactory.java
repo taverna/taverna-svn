@@ -20,6 +20,7 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.annotation;
 
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -27,7 +28,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -42,11 +42,11 @@ import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 /**
  *
@@ -77,22 +77,30 @@ public class ObjectPropertyWithIndividualsPanelFactory extends PropertyPanelFact
 
 
 	@Override
-	public RDFNode getNewTargetNode(JComponent component) {
+	public RDFNode getNewTargetNode(Statement originalStatement, JComponent component) {
 		ComboBoxWithAdd panel = (ComboBoxWithAdd) component;
-		return (RDFNode) panel.getSelectedItem();
+		RDFNode newNode = panel.getSelectedItem();
+		if ((originalStatement == null) ||
+				!originalStatement.getObject().equals(newNode)) {
+		return newNode;
+		}
+		return null;
 	}
 	
 	private static class ComboBoxWithAdd extends JPanel {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -9156213096428945270L;
 		OntClass rangeClass = null;
+		@SuppressWarnings("rawtypes")
 		JComboBox resources;
+		@SuppressWarnings({ "rawtypes", "unchecked" })
 		public ComboBoxWithAdd(final SemanticAnnotationProfile semanticAnnotationProfile, Statement statement) {
 			super(new GridBagLayout());
 			
-			OntResource range = semanticAnnotationProfile.getPredicate().getRange();
-			if (range.isClass()) {
-				rangeClass = range.asClass();
-			}
+			rangeClass = semanticAnnotationProfile.getRangeClass();
 			
 			GridBagConstraints gbc = new GridBagConstraints();
 			gbc.gridx = 0;
@@ -119,17 +127,26 @@ public class ObjectPropertyWithIndividualsPanelFactory extends PropertyPanelFact
 			gbc.gridy++;
 
 			JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-			buttonPanel.add(new DeselectingButton("Add existing", new ActionListener() {
+			buttonPanel.add(new DeselectingButton("Add external", new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					String answer = JOptionPane.showInputDialog("Please enter the URL for the resource");
 					resources.addItem(localWorld.createIndividual(answer, rangeClass));
 				}}));
-			buttonPanel.add(new DeselectingButton("Add new", new ActionListener() {
+			buttonPanel.add(new DeselectingButton("Add local", new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
+					TurtleInputPanel turtlePanel = new TurtleInputPanel(rangeClass);
+					int answer = JOptionPane.showConfirmDialog(null, turtlePanel, "Turtle input", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+					if (answer == JOptionPane.OK_OPTION) {
+						OntModel addedModel = turtlePanel.getContentAsModel();
+						for (Individual i : addedModel.listIndividuals(rangeClass).toList()) {
+							resources.addItem(i);
+						}
+						localWorld.addModelFromString(turtlePanel.getContentAsString());
+					}
 				}}));
 			gbc.anchor = GridBagConstraints.EAST;
 			this.add(buttonPanel, gbc);
@@ -138,6 +155,14 @@ public class ObjectPropertyWithIndividualsPanelFactory extends PropertyPanelFact
 		public RDFNode getSelectedItem() {
 			return (RDFNode) resources.getSelectedItem();
 		}
+	}
+
+	@Override
+	public JComponent getDisplayComponent(
+			SemanticAnnotationProfile semanticAnnotationProfile,
+			Statement statement) {
+		JComponent result = getDefaultDisplayComponent(semanticAnnotationProfile, statement);
+		return result;
 	}
 
 }

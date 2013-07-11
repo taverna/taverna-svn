@@ -221,6 +221,7 @@ public class Util {
 	int iAccessType = Resource.ACCESS_VIEWING;
 
 	// pick the highest allowed access type
+	@SuppressWarnings("unchecked")
 	Iterator<Element> iPrivileges = privileges.getChildren("privilege").iterator();
 	while (iPrivileges.hasNext()) {
 	  Element privilege = iPrivileges.next();

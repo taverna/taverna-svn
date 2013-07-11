@@ -20,62 +20,23 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.annotation;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 import net.sf.taverna.t2.annotation.Annotated;
-import net.sf.taverna.t2.annotation.AnnotationAssertion;
-import net.sf.taverna.t2.annotation.AnnotationBeanSPI;
-import net.sf.taverna.t2.annotation.AnnotationChain;
-import net.sf.taverna.t2.annotation.annotationbeans.SemanticAnnotation;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
-import net.sf.taverna.t2.component.registry.ComponentFileType;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentUtil;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
-import net.sf.taverna.t2.component.registry.local.LocalComponentRegistry;
-import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
-import net.sf.taverna.t2.lang.observer.Observable;
-import net.sf.taverna.t2.lang.observer.Observer;
-import net.sf.taverna.t2.workbench.edits.EditManager;
-import net.sf.taverna.t2.workbench.edits.EditManager.EditManagerEvent;
-import net.sf.taverna.t2.workbench.file.DataflowInfo;
 import net.sf.taverna.t2.workbench.file.FileManager;
-import net.sf.taverna.t2.workbench.file.exceptions.OpenException;
-import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
-import net.sf.taverna.t2.workflowmodel.EditException;
-import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.Processor;
-import net.sf.taverna.t2.workflowmodel.utils.AnnotationTools;
 
 import org.apache.log4j.Logger;
-
-import com.hp.hpl.jena.ontology.OntProperty;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
  *
@@ -83,6 +44,11 @@ import com.hp.hpl.jena.rdf.model.Statement;
  * @author David Withers
  */
 public class SemanticAnnotationContextualView extends AbstractSemanticAnnotationContextualView {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -322165507536778154L;
 
 	public static final String VIEW_TITLE = "Semantic Annotations";
 
@@ -96,6 +62,7 @@ public class SemanticAnnotationContextualView extends AbstractSemanticAnnotation
 		super.setAnnotated(selection);
 		componentProfile = getComponentProfile();
 		if (componentProfile != null) {
+			try {
 			if (selection instanceof Dataflow) {
 				super.setSemanticAnnotationProfiles(componentProfile.getSemanticAnnotationProfiles());
 			} else if (selection instanceof DataflowInputPort) {
@@ -107,6 +74,10 @@ public class SemanticAnnotationContextualView extends AbstractSemanticAnnotation
 						.getActivitySemanticAnnotationProfiles());
 			} else {
 				super.setSemanticAnnotationProfiles(new ArrayList<SemanticAnnotationProfile>());
+			}
+			}
+			catch (ComponentRegistryException e) {
+				logger.error(e);
 			}
 		} else {
 			super.setSemanticAnnotationProfiles(new ArrayList<SemanticAnnotationProfile>());

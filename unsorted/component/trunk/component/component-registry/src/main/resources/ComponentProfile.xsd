@@ -202,6 +202,10 @@
 			<xs:element name="exceptionHandling" type="exceptionHandling" minOccurs="0" maxOccurs="1"/>
 		</xs:sequence>
 	</xs:complexType>
+	
+	<xs:complexType name="extends">
+	  <xs:attribute name="profileId" type="xs:string" use="required"/>
+	</xs:complexType>
 
 	<xs:element name="profile">
 		<xs:complexType>
@@ -209,6 +213,7 @@
 				<xs:element name="id" type="xs:string" />
 				<xs:element name="name" type="xs:string" />
 				<xs:element name="description" type="xs:string" />
+				<xs:element name="extends" type="extends" minOccurs = "0" />
 				<xs:element name="ontology" type="ontology" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element name="component" type="component" >
 					<xs:unique name="inputPortUnique">

@@ -5,16 +5,7 @@ package net.sf.taverna.t2.component.registry.local;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Collections;
-import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
 
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
@@ -23,6 +14,9 @@ import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
 import net.sf.taverna.t2.workbench.file.impl.T2DataflowSaver;
 import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 
 /**
  * @author alanrw

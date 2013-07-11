@@ -52,10 +52,7 @@ public class FileManagerObserver implements StartupSPI {
 	}
 
 	public class FileManagerObserverRunnable implements Runnable {
-		private final FileManagerEvent message;
-
-	    public FileManagerObserverRunnable(FileManagerEvent message) {
-			this.message = message;
+		public FileManagerObserverRunnable(FileManagerEvent message) {
 		}
 
 		public void run() {

@@ -16,7 +16,11 @@ import org.jdom.Element;
  * @author Jiten Bhagat, Sergejs Aleksejevs
  */
 public class User extends Resource {
-  private String name;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6143018077882192560L;
+private String name;
   private String city;
   private String country;
   private String email;

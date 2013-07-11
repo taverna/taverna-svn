@@ -19,15 +19,11 @@ import javax.swing.border.TitledBorder;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
-import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
 import net.sf.taverna.t2.component.ui.panel.LicenseChooserPanel;
-import net.sf.taverna.t2.component.ui.panel.SharingPolicyChooserPanel;
 import net.sf.taverna.t2.component.ui.panel.ProfileChooserPanel;
-import net.sf.taverna.t2.component.ui.panel.RegistryChoiceMessage;
 import net.sf.taverna.t2.component.ui.panel.RegistryChooserPanel;
+import net.sf.taverna.t2.component.ui.panel.SharingPolicyChooserPanel;
 import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceIcon;
-import net.sf.taverna.t2.lang.observer.Observable;
-import net.sf.taverna.t2.lang.observer.Observer;
 
 import org.apache.log4j.Logger;
 
@@ -146,6 +142,7 @@ public class ComponentFamilyCreateAction extends AbstractAction {
 							licensePanel.getChosenLicense(), permissionPanel.getChosenPermission());
 				}
 			} catch (ComponentRegistryException e) {
+				JOptionPane.showMessageDialog(null, "Unable to create family", "Family creation problem", JOptionPane.ERROR_MESSAGE);
 				logger.error(e);
 			}
 		}

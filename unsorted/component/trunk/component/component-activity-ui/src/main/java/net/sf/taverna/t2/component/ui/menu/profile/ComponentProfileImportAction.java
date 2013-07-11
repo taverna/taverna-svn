@@ -19,9 +19,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.apache.log4j.Logger;
-
-import net.sf.taverna.t2.component.ComponentActivity;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
@@ -30,6 +27,8 @@ import net.sf.taverna.t2.component.ui.panel.RegistryChooserPanel;
 import net.sf.taverna.t2.component.ui.panel.SharingPolicyChooserPanel;
 import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceIcon;
 import net.sf.taverna.t2.lang.ui.DeselectingButton;
+
+import org.apache.log4j.Logger;
 
 /**
  * @author alanrw
@@ -87,6 +86,12 @@ public class ComponentProfileImportAction extends AbstractAction {
 		gbc.gridy++;
 		JButton browseButton = new DeselectingButton(new AbstractAction("Browse"){
 
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1574330610799117697L;
+
+			@SuppressWarnings("deprecation")
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
@@ -128,7 +133,7 @@ public class ComponentProfileImportAction extends AbstractAction {
 					return;
 					}
 					URL componentProfileURL = new URL(profileLocation.getText());
-					ComponentProfile newProfile = new ComponentProfile(componentProfileURL);
+					ComponentProfile newProfile = new ComponentProfile(null, componentProfileURL);
 					String newName = newProfile.getName();
 					boolean alreadyUsed = false;
 					for (ComponentProfile p : chosenRegistry.getComponentProfiles()) {

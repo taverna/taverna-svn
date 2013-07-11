@@ -56,7 +56,7 @@ public class ComponentVersionTest {
 		dataflow = FileManager.getInstance().openDataflowSilently(new T2FlowFileType(), dataflowUrl).getDataflow();
 		URL componentProfileUrl = getClass().getClassLoader().getResource("ValidationComponent.xml");
 		assertNotNull(componentProfileUrl);
-		ComponentProfile componentProfile = new ComponentProfile(componentProfileUrl);
+		ComponentProfile componentProfile = new ComponentProfile(null, componentProfileUrl);
 		componentFamily = componentRegistry.createComponentFamily("Test Component Family", componentProfile, "Some description", null, null);
 		componentVersion = componentFamily.createComponentBasedOn("Test Component", "Some description", dataflow);
 	}

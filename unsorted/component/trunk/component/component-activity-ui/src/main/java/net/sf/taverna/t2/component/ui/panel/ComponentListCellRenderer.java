@@ -16,6 +16,7 @@ import net.sf.taverna.t2.component.registry.ComponentVersion;
  * @author alanrw
  *
  */
+@SuppressWarnings("rawtypes")
 public class ComponentListCellRenderer implements ListCellRenderer {
 
 	private static DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();

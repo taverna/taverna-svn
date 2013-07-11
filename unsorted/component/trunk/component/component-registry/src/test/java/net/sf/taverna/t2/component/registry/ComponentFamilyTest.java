@@ -28,7 +28,6 @@ import static org.junit.Assert.assertTrue;
 import java.net.URL;
 
 import net.sf.taverna.t2.component.profile.ComponentProfile;
-import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.file.impl.FileManagerImpl;
 import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -56,7 +55,7 @@ public class ComponentFamilyTest {
 	public void setup() throws Exception {
 		URL componentProfileUrl = getClass().getClassLoader().getResource("ValidationComponent.xml");
 		assertNotNull(componentProfileUrl);
-		componentProfile = new ComponentProfile(componentProfileUrl);
+		componentProfile = new ComponentProfile(null, componentProfileUrl);
 		componentRegistry.addComponentProfile(componentProfile, null, null);
 		URL dataflowUrl = getClass().getClassLoader().getResource("beanshell_test.t2flow");
 		assertNotNull(dataflowUrl);

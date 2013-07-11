@@ -20,9 +20,6 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.myexperiment;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sf.taverna.t2.component.registry.SharingPolicy;
 
 /**

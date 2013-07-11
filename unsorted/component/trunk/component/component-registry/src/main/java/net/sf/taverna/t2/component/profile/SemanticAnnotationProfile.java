@@ -20,9 +20,14 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.profile;
 
-import java.math.BigInteger;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+
+import org.apache.commons.io.FileUtils;
 
 import uk.org.taverna.ns._2012.component.profile.SemanticAnnotation;
 
@@ -70,8 +75,26 @@ public class SemanticAnnotationProfile {
 	public OntProperty getPredicate() {
 		OntModel ontology = getOntology();
 		String predicate = semanticAnnotation.getPredicate();
+		if (predicate.contains("foaf")) {
+			StringWriter sw = new StringWriter();
+			ontology.writeAll(sw, null, "RDF/XML");
+			String jim = sw.toString();
+			try {
+				File f = File.createTempFile("foaf", null);
+				FileUtils.writeStringToFile(f, jim);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		for (Iterator<OntProperty> i = ontology.listOntProperties(); i.hasNext();) {
+			OntProperty p = i.next();
+			String fred = p.getURI();
+			String bob = fred;
+		}
+		}
 		if (ontology != null && predicate != null) {
-			return ontology.getOntProperty(predicate);
+			OntProperty ontProperty = ontology.getOntProperty(predicate);
+			return ontProperty;
 		} else {
 			return null;
 		}
@@ -133,6 +156,21 @@ public class SemanticAnnotationProfile {
 	public String toString() {
 		return "SemanticAnnotation " + "\n Predicate : " + getPredicate() + "\n Individual : "
 				+ getIndividual() + "\n Individuals : " + getIndividuals();
+	}
+
+	public OntClass getRangeClass() {
+		OntClass result = null;
+		String clazz = this.getClassString();
+		if (clazz != null) {
+			result = componentProfile.getClass(clazz);
+		} else {
+			OntProperty predicate = this.getPredicate();
+			OntResource range = predicate.getRange();
+			if ((range != null) && range.isClass()) {
+				result = range.asClass();
+			}
+		}
+		return result;
 	}
 
 }

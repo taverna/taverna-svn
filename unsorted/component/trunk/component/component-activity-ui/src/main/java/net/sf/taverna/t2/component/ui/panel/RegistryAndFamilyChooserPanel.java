@@ -5,17 +5,16 @@ package net.sf.taverna.t2.component.ui.panel;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.util.List;
 
 import javax.swing.JPanel;
-
-import org.apache.log4j.Logger;
 
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
+
+import org.apache.log4j.Logger;
 
 /**
  * @author alanrw

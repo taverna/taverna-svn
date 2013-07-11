@@ -26,6 +26,11 @@ import net.sf.taverna.t2.lang.ui.DeselectingButton;
  */
 public class LocalRegistryPanel extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 732945735813617327L;
+
 	private final Logger logger = Logger.getLogger(LocalRegistryPanel.class);
 	
 	private JTextField registryNameField = new JTextField(20);
@@ -69,6 +74,11 @@ public class LocalRegistryPanel extends JPanel {
 		constraints.ipadx = 20;
 		constraints.fill = GridBagConstraints.NONE;
 		JButton chooseButton = new DeselectingButton(new AbstractAction("Browse") {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -8676803966947261009L;
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {

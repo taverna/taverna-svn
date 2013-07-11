@@ -289,6 +289,7 @@ public class PatchedInvoke extends AbstractDispatchLayer<Object> {
 				String processorOutputName = asyncActivity
 						.getOutputPortMapping().get(outputName);
 				if (processorOutputName != null) {
+					@SuppressWarnings("unused")
 					T2Reference ref = data.get(outputName);
 //					if (ref.containsErrors()) {
 //						Processor p = getProcessor();

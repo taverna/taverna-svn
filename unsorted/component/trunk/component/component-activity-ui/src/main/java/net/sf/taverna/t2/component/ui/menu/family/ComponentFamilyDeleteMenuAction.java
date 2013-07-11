@@ -7,7 +7,6 @@ import java.net.URI;
 
 import javax.swing.Action;
 
-import net.sf.taverna.t2.component.ui.menu.ComponentMenu;
 import net.sf.taverna.t2.ui.menu.AbstractMenuAction;
 
 /**

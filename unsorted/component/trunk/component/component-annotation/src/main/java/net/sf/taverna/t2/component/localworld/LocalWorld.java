@@ -79,4 +79,9 @@ public class LocalWorld {
 		return model.listIndividuals(clazz).toList();
 	}
 
+	public void addModelFromString(String addedModel) {
+		SemanticAnnotationUtils.populateModelFromString(model, addedModel);
+		saveModel();
+	}
+
 }

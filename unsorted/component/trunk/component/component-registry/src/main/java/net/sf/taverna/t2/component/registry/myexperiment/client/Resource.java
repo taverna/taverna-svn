@@ -15,7 +15,11 @@ import org.jdom.Element;
  * @author Jiten Bhagat, Sergejs Aleksejevs
  */
 public class Resource implements Comparable<Resource>, Serializable {
-  // CONSTANTS
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = -4529311100092445437L;
+// CONSTANTS
   // (integer resource types)
   public static final int UNEXPECTED_TYPE = -1; // erroneous type
   public static final int UNKNOWN = 0;

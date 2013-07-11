@@ -15,7 +15,11 @@ import org.jdom.Element;
  * @author Jiten Bhagat, Sergejs Aleksejevs
  */
 public class Workflow extends Resource {
-  // CONSTANTS
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1156851369689820288L;
+// CONSTANTS
   public static final String MIME_TYPE_TAVERNA_1 = "application/vnd.taverna.scufl+xml";
   public static final String MIME_TYPE_TAVERNA_2 = "application/vnd.taverna.t2flow+xml";
 

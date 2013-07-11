@@ -27,11 +27,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import org.jdom.Element;
-
+import net.sf.taverna.t2.component.profile.BaseProfile;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
-import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentFamily;
 
 /**
  * A ComponentRegistry contains ComponentFamilies and ComponentProfiles.
@@ -71,7 +70,7 @@ public abstract class ComponentRegistry {
 	 */
 	public final List<ComponentFamily> getComponentFamilies() throws ComponentRegistryException {
 		checkFamilyCache();
-		return new ArrayList(familyCache.values());
+		return new ArrayList<ComponentFamily>(familyCache.values());
 	}
 	
 	private void checkFamilyCache() throws ComponentRegistryException {
@@ -293,5 +292,7 @@ public abstract class ComponentRegistry {
 	}
 	
 	public abstract License getPreferredLicense() throws ComponentRegistryException;
+
+	public abstract Set<ComponentVersionIdentification> searchForComponents(String prefixString, String text) throws ComponentRegistryException;
 
 }

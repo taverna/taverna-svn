@@ -52,7 +52,7 @@ public abstract class ComponentRegistryTest {
 	public void setup() throws Exception {
 		URL componentProfileUrl = getClass().getClassLoader().getResource("ValidationComponent.xml");
 		assertNotNull(componentProfileUrl);
-		componentProfile = new ComponentProfile(componentProfileUrl);
+		componentProfile = new ComponentProfile(null, componentProfileUrl);
 	}
 
 	@After

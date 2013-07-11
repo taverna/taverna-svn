@@ -40,6 +40,7 @@ public class RegistryChooserPanel extends JPanel implements Observable<RegistryC
 
 	private List<Observer<RegistryChoiceMessage>> observers = new ArrayList<Observer<RegistryChoiceMessage>>();
 
+	@SuppressWarnings("rawtypes")
 	private final JComboBox registryBox;
 
 	Map<String, String> toolTipMap = new HashMap<String, String>();
@@ -48,6 +49,7 @@ public class RegistryChooserPanel extends JPanel implements Observable<RegistryC
 
 	final SortedMap<String, ComponentRegistry> registryMap;
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public RegistryChooserPanel() {
 		super();
 		this.setLayout(new GridBagLayout());

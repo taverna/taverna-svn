@@ -60,6 +60,12 @@ import org.jdom.JDOMException;
  */
 public class ComponentServiceCreatorAction extends AbstractAction {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2611514696254112190L;
+
+
 	private static Logger logger = Logger.getLogger(ComponentServiceCreatorAction.class);
 
 	
@@ -248,11 +254,6 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 			editList.add(renameEdit);
 		}
 		
-		Activity<?> activity = null;
-		if (result.getActivityList().size() > 0) {
-			activity = result.getActivityList().get(0);
-		}
-
 		final Edit<?> edit = edits.getAddProcessorEdit(d, result);
 		editList.add(edit);
 		em.doDataflowEdit(d, new CompoundEdit(editList));

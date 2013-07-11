@@ -20,8 +20,6 @@ import net.sf.taverna.t2.component.ui.panel.ComponentVersionChooserPanel;
 import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceIcon;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.file.exceptions.OpenException;
-import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
-import net.sf.taverna.t2.workbench.models.graph.Graph;
 import net.sf.taverna.t2.workbench.models.graph.GraphController;
 import net.sf.taverna.t2.workbench.models.graph.svg.SVGGraph;
 import net.sf.taverna.t2.workbench.views.graph.GraphViewComponent;
@@ -35,6 +33,12 @@ import org.apache.log4j.Logger;
  */
 public class OpenWorkflowFromComponentAction extends AbstractAction {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7382677337746318211L;
+
+
 	private static Logger logger = Logger.getLogger(OpenWorkflowFromComponentAction.class);
 
 	

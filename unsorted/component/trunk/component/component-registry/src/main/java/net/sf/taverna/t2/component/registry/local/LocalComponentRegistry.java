@@ -4,30 +4,24 @@
 package net.sf.taverna.t2.component.registry.local;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.taverna.t2.component.profile.ComponentProfile;
+import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.component.registry.License;
 import net.sf.taverna.t2.component.registry.SharingPolicy;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -42,24 +36,12 @@ public class LocalComponentRegistry extends ComponentRegistry {
 
 	private File baseDir;
 	
-	private static String EMPTY_PROFILE_ID = "net.sf.taverna.t2.component.profile.empty";
-	private static String EMPTY_PROFILE_FILENAME = "EmptyProfile.xml";
-	
-	private static String DC_PROFILE_ID = "net.sf.taverna.t2.component.profile.dublincore";
-	private static String DC_PROFILE_FILENAME = "DublinCoreProfile.xml";
+	private static String BASE_PROFILE_ID = "http://purl.org/wfever/workflow-base-profile";
+	private static String BASE_PROFILE_FILENAME = "BaseProfile.xml";
 
 	public LocalComponentRegistry(File registryDir) throws ComponentRegistryException {
 		super (registryDir);
 		baseDir = registryDir;
-/*		if (!profileCache.containsKey(EMPTY_PROFILE_ID)) {
-			addComponentProfile( new ComponentProfile(
-					getClass().getClassLoader().getResource(EMPTY_PROFILE_FILENAME)));			
-		}
-		if (!profileCache.containsKey(DC_PROFILE_ID)) {
-			addComponentProfile( new ComponentProfile(
-					getClass().getClassLoader().getResource(DC_PROFILE_FILENAME)));			
-		}*/
-
 	}
 
 	public static synchronized ComponentRegistry getComponentRegistry(File registryDir) throws ComponentRegistryException {
@@ -117,7 +99,7 @@ public class LocalComponentRegistry extends ComponentRegistry {
 				if (subFile.isFile() && (!subFile.isHidden())
 						&& subFile.getName().endsWith(".xml")) {
 					try {
-						ComponentProfile newProfile = new ComponentProfile(
+						ComponentProfile newProfile = new ComponentProfile(this, 
 								subFile.toURI().toURL());
 						profileCache.add(newProfile);
 					} catch (MalformedURLException e) {
@@ -164,6 +146,7 @@ public class LocalComponentRegistry extends ComponentRegistry {
 
 	public static ComponentRegistry getComponentRegistry(URL componentRegistryBase) throws ComponentRegistryException {
 		String path = componentRegistryBase.getPath();
+		@SuppressWarnings("deprecation")
 		String hackedPath = URLDecoder.decode(path);
 			return getComponentRegistry(new File(hackedPath));
 	}
@@ -182,7 +165,7 @@ public class LocalComponentRegistry extends ComponentRegistry {
 		}
 
 		try {
-			ComponentProfile newProfile = new ComponentProfile(outputFile.toURI().toURL());
+			ComponentProfile newProfile = new ComponentProfile(this, outputFile.toURI().toURL());
 			return newProfile;
 		} catch (MalformedURLException e) {
 			throw new ComponentRegistryException("Unable to create profile", e);
@@ -239,14 +222,9 @@ public class LocalComponentRegistry extends ComponentRegistry {
 	public License getPreferredLicense() {
 		return null;
 	}
-	
-	private static String calculatePath(File dir) {
-		String result = "";
-		try {
-			result = dir.getCanonicalPath();
-		} catch (IOException e) {
-			logger.error(e);
-		}
-		return result;
+
+	@Override
+	public Set<ComponentVersionIdentification> searchForComponents(String prefixString, String text) throws ComponentRegistryException {
+		throw new ComponentRegistryException("Local registries cannot be searched yet");
 	}
 }

@@ -23,6 +23,7 @@ package net.sf.taverna.t2.component.registry.myexperiment;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,9 +32,12 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.taverna.t2.component.profile.ComponentProfile;
+import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.registry.ComponentVersion;
+import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.component.registry.License;
 import net.sf.taverna.t2.component.registry.SharingPolicy;
 import net.sf.taverna.t2.component.registry.myexperiment.client.Base64;
@@ -178,8 +182,10 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 		}
 		contentXml.append(permissionsString);
 		contentXml.append("</pack>");
+		ServerResponse response;
 		try {
-			ServerResponse response = myExperimentClient.doMyExperimentPOST(getRegistryBaseString() + "/pack.xml", contentXml.toString());
+
+			response = myExperimentClient.doMyExperimentPOST(getRegistryBaseString() + "/pack.xml", contentXml.toString());
 			checkResponseCode(response);
 			return response.getResponseBody().getRootElement();
 		} catch (Exception e) {
@@ -338,7 +344,7 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 			ServerResponse response = myExperimentClient.doMyExperimentGET(url);
 			checkResponseCode(response);
 			Document responseBody = response.getResponseBody();
-			Element root = responseBody.getRootElement();
+
 			String content = new XMLOutputter().outputString(responseBody);
 			return content;
 		} catch (Exception e) {
@@ -481,6 +487,43 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 	public License getPreferredLicense() throws ComponentRegistryException {
 		return getLicenseByAbbreviation("by-nd");
 
+	}
+
+	@Override
+	public Set<ComponentVersionIdentification> searchForComponents(String prefixString, String text)
+			throws ComponentRegistryException {
+		Set<ComponentVersionIdentification> result = new HashSet<ComponentVersionIdentification>();
+			Element resultElement = this.getResource(getRegistryBaseString() + "/components.xml", "prefixes=" + URLEncoder.encode(prefixString), "query=" + URLEncoder.encode(text));
+			if (resultElement == null) {
+				throw new ComponentRegistryException("ComponentRegistry could not perform search");
+			}
+			for (Object child : resultElement.getChildren("workflow")) {
+				if (child instanceof Element) {
+					ComponentVersionIdentification foundComponentIdentification = null;
+					foundComponentIdentification = findComponentVersionWithWorkflow((Element) child);
+					if (foundComponentIdentification != null) {
+						result.add(foundComponentIdentification);
+					}
+				}
+			}
+		return result;
+	}
+
+	private ComponentVersionIdentification findComponentVersionWithWorkflow(
+			Element wfElement) throws ComponentRegistryException {
+		String resourceUri = wfElement.getAttributeValue("resource");
+		for (ComponentFamily f : this.getComponentFamilies()) {
+			for (Component c : f.getComponents()) {
+				for (ComponentVersion cv : c.getComponentVersionMap().values()) {
+					if (cv instanceof MyExperimentComponentVersion) {
+						if (((MyExperimentComponentVersion)cv).hasWorkflowUri(resourceUri)) {
+							return new ComponentVersionIdentification(this.getRegistryBase(), f.getName(), c.getName(), cv.getVersionNumber());
+						}
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 

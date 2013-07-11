@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -14,16 +13,13 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.border.AbstractBorder;
 import javax.swing.border.EmptyBorder;
 
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
@@ -31,21 +27,25 @@ import net.sf.taverna.t2.lang.ui.DeselectingButton;
 import net.sf.taverna.t2.spi.SPIRegistry;
 
 import com.hp.hpl.jena.ontology.OntProperty;
-import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 
 public class SemanticAnnotationPanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5949183295606132775L;
 	private final AbstractSemanticAnnotationContextualView semanticAnnotationContextualView;
 	private final SemanticAnnotationProfile semanticAnnotationProfile;
 	private final Set<Statement> statements;
 	
-	private static PropertyPanelFactorySPI FALLBACK_FACTORY = new FallbackPropertyPanelFactory();
+	@SuppressWarnings("unused")
 
 	protected SPIRegistry<PropertyPanelFactorySPI> propertyPanelFactoryRegistry = new SPIRegistry<PropertyPanelFactorySPI>(
 			PropertyPanelFactorySPI.class);
 	private final boolean allowChange;
+	private PropertyPanelFactorySPI bestFactory;
 
 	public SemanticAnnotationPanel(
 			AbstractSemanticAnnotationContextualView semanticAnnotationContextualView,
@@ -55,10 +55,11 @@ public class SemanticAnnotationPanel extends JPanel {
 		this.semanticAnnotationProfile = semanticAnnotationProfile;
 		this.statements = statements;
 		this.allowChange = allowChange;
-		initialize();
+		this.bestFactory = findBestPanelFactory();
+		initialise();
 	}
 
-	private void initialize() {
+	private void initialise() {
 		setLayout(new GridBagLayout());
 //		setBorder(new AbstractBorder() {
 //			@Override
@@ -95,22 +96,27 @@ public class SemanticAnnotationPanel extends JPanel {
 			for (Statement statement : statements) {
 				c.gridx = 0;
 				c.weightx = 1;
-				JTextArea value = new JTextArea(SemanticAnnotationUtils.getDisplayName(statement.getObject()));
-				value.setLineWrap(true);
-				value.setWrapStyleWord(true);
-				value.setEditable(false);
-				value.setBackground(Color.WHITE);
-				value.setOpaque(true);
-				value.setBorder(new EmptyBorder(2,4,2,4));
-				add(value, c);
-
+				if (bestFactory != null) {
+					add(bestFactory.getDisplayComponent(semanticAnnotationProfile, statement), c);
+				} else {
+					JTextArea value = new JTextArea(
+							SemanticAnnotationUtils.getDisplayName(statement
+									.getObject()));
+					value.setLineWrap(true);
+					value.setWrapStyleWord(true);
+					value.setEditable(false);
+					value.setBackground(Color.WHITE);
+					value.setOpaque(true);
+					value.setBorder(new EmptyBorder(2, 4, 2, 4));
+					add(value, c);
+				}
 				if (allowChange) {
-				c.gridx = 1;
-				c.weightx = 0;
-				add(createChangeButton(predicate, statement), c);
-				
-				c.gridx = 2;
-				add(createDeleteButton(statement), c);
+					c.gridx = 1;
+					c.weightx = 0;
+					add(createChangeButton(statement), c);
+
+					c.gridx = 2;
+					add(createDeleteButton(statement), c);
 				}
 			}
 		}
@@ -120,7 +126,7 @@ public class SemanticAnnotationPanel extends JPanel {
 		c.gridwidth = 3;
 		c.anchor = GridBagConstraints.SOUTHEAST;
 		c.fill = GridBagConstraints.NONE;
-		add(createAddButton(predicate), c);
+		add(createAddButton(), c);
 		}
 
 	}
@@ -133,11 +139,11 @@ public class SemanticAnnotationPanel extends JPanel {
 		return (statements.size() >= maxOccurs);
 	}
 
-	private JButton createChangeButton(final OntProperty predicate, final Statement statement) {
+	private JButton createChangeButton(final Statement statement) {
 		return new DeselectingButton("Change", new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				addOrChangeAnnotation(predicate, statement);
+				addOrChangeAnnotation(statement);
 			}
 		});
 	}
@@ -151,42 +157,28 @@ public class SemanticAnnotationPanel extends JPanel {
 		});
 	}
 
-	private JButton createAddButton(final OntProperty predicate) {
+	private JButton createAddButton() {
 		return new DeselectingButton("Add Annotation", new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				addOrChangeAnnotation(predicate, null);
+				addOrChangeAnnotation(null);
 			}
 		});
 	}
 
-	private void addOrChangeAnnotation(final OntProperty predicate, Statement statement) {
+	private void addOrChangeAnnotation(Statement statement) {
 		JPanel annotationPanel = null;
-		PropertyPanelFactorySPI chosenFactory = null;
 		JComponent inputComponent = null;
-		List<PropertyPanelFactorySPI> instances = propertyPanelFactoryRegistry.getInstances();
-		int currentRating = Integer.MIN_VALUE;
-		for (PropertyPanelFactorySPI factory : instances) {
-			int ratingForSemanticAnnotation = factory.getRatingForSemanticAnnotation(semanticAnnotationProfile);
-			if (ratingForSemanticAnnotation > currentRating) {
-				currentRating = ratingForSemanticAnnotation;
-				chosenFactory = factory;
-			}
-		}
-		
-//		if (chosenFactory == null) {
-//			chosenFactory = FALLBACK_FACTORY;
-//		}
 
-		if (chosenFactory != null) {
-			inputComponent = chosenFactory.getInputComponent(semanticAnnotationProfile, statement);
+		if (bestFactory != null) {
+			inputComponent = bestFactory.getInputComponent(semanticAnnotationProfile, statement);
 			annotationPanel = getPropertyPanel(SemanticAnnotationUtils.getDisplayName(semanticAnnotationProfile.getPredicate()), inputComponent);
 		}
 		
 		if (annotationPanel != null) {
 			int answer = JOptionPane.showConfirmDialog(null, annotationPanel, "Add/change annotation", JOptionPane.OK_CANCEL_OPTION);
 			if (answer == JOptionPane.OK_OPTION) {
-				RDFNode response = chosenFactory.getNewTargetNode(inputComponent);
+				RDFNode response = bestFactory.getNewTargetNode(statement, inputComponent);
 				if (response != null) {
 					if (statement != null) {
 						semanticAnnotationContextualView.changeStatement(statement, semanticAnnotationProfile.getPredicate(), response);
@@ -201,10 +193,24 @@ public class SemanticAnnotationPanel extends JPanel {
 			JOptionPane.showMessageDialog(null, "Unable to handle " + semanticAnnotationProfile.getPredicateString(), "Annotation problem", JOptionPane.ERROR_MESSAGE);
 		}
 	}
+
+	private PropertyPanelFactorySPI findBestPanelFactory() {
+		PropertyPanelFactorySPI result = null;
+		List<PropertyPanelFactorySPI> instances = propertyPanelFactoryRegistry.getInstances();
+		int currentRating = Integer.MIN_VALUE;
+		for (PropertyPanelFactorySPI factory : instances) {
+			int ratingForSemanticAnnotation = factory.getRatingForSemanticAnnotation(semanticAnnotationProfile);
+			if (ratingForSemanticAnnotation > currentRating) {
+				currentRating = ratingForSemanticAnnotation;
+				result = factory;
+			}
+		}
+		return result;
+	}
 	
 	public static JPanel getPropertyPanel(
 			String displayName,
-			JComponent inputComponent) {
+			Component inputComponent) {
 		JPanel result = new JPanel();
 		result.setLayout(new BorderLayout());
 		JPanel messagePanel = new JPanel(new BorderLayout());

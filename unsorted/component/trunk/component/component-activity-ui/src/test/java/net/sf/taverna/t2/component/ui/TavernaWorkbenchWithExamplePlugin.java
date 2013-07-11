@@ -19,7 +19,6 @@ import net.sf.taverna.raven.launcher.Launcher;
 public class TavernaWorkbenchWithExamplePlugin {
 	public static void main(String[] args) throws Exception {
 		URL dir = TavernaWorkbenchWithExamplePlugin.class.getResource("/conf/current-profile.xml");
-//		System.setProperty("raven.launcher.app.main", "net.sf.taverna.t2.commandline.CommandLineLauncher");
 		System.setProperty("taverna.startup", dir.toURI().resolve("../").getPath());
 		System.setProperty("raven.launcher.app.name", "taverna-2.4.0SNAPSHOT");
 		System.setProperty("raven.launcher.app.title", "Taverna Workbench 2.4.0-SNAPSHOT");

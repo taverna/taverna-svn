@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.taverna.t2.component.profile.BaseProfile;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
-import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 /**
@@ -98,6 +98,12 @@ public abstract class ComponentFamily {
 		if (componentProfile == null) {
 			componentProfile = internalGetComponentProfile();
 		}
+		if (componentProfile != null) {
+			ComponentProfile baseProfile = BaseProfile.getInstance().getProfile();
+			if ((baseProfile != null) && componentProfile.getName().equals(baseProfile.getName())) {
+				return baseProfile;
+			}
+		}
 		return componentProfile;
 	}
 
@@ -115,7 +121,7 @@ public abstract class ComponentFamily {
 	 */
 	public final List<Component> getComponents() throws ComponentRegistryException {
 		checkComponentCache();
-		return new ArrayList(componentCache.values());
+		return new ArrayList<Component>(componentCache.values());
 	}
 	
 	private void checkComponentCache() throws ComponentRegistryException {

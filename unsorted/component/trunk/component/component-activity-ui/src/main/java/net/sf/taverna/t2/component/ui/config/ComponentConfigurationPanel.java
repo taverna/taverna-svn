@@ -6,9 +6,7 @@ import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.SortedMap;
-import java.util.TreeMap;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
@@ -37,8 +35,10 @@ public class ComponentConfigurationPanel
 	private ComponentActivity activity;
 	private ComponentActivityConfigurationBean configBean;
 	
+	@SuppressWarnings("rawtypes")
 	private final JComboBox componentVersionChoice = new JComboBox();
 
+	@SuppressWarnings("unchecked")
 	public ComponentConfigurationPanel(ComponentActivity activity) {
 		this.activity = activity;
 		componentVersionChoice.setPrototypeDisplayValue(Utils.SHORT_STRING);
@@ -46,6 +46,7 @@ public class ComponentConfigurationPanel
 		initGui();
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void initGui() {
 		removeAll();
 		setLayout(new GridLayout(0, 2));
@@ -126,6 +127,7 @@ public class ComponentConfigurationPanel
 		updateComponentVersionChoice();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void updateComponentVersionChoice() {
 		Component component;
 		componentVersionChoice.removeAllItems();

@@ -33,18 +33,15 @@ import net.sf.taverna.t2.component.registry.ComponentRegistryException;
  */
 public class MyExperimentComponentProfile extends ComponentProfile {
 
-	private final ComponentRegistry componentRegistry;
 	private final String uri;
 
 	public MyExperimentComponentProfile(MyExperimentComponentRegistry componentRegistry, String uri, URL profileURL) throws ComponentRegistryException {
-		super(profileURL);
-		this.componentRegistry = componentRegistry;
+		super(componentRegistry, profileURL);
 		this.uri = uri;
 	}
 
 	public MyExperimentComponentProfile(MyExperimentComponentRegistry componentRegistry, String uri, String profileString) throws ComponentRegistryException {
-		super(profileString);
-		this.componentRegistry = componentRegistry;
+		super(componentRegistry, profileString);
 		this.uri = uri;
 	}
 
@@ -52,10 +49,6 @@ public class MyExperimentComponentProfile extends ComponentProfile {
 		return uri;
 	}
 
-	public ComponentRegistry getComponentRegistry() {
-		return componentRegistry;
-	}
-	
 	public String toString() {
 		return ("MyExperimentComponentProfile at " + uri);
 	}

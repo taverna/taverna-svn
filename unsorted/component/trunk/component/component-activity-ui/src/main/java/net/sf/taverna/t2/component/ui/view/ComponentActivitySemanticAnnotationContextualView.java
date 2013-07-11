@@ -20,13 +20,9 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.ui.view;
 
-import java.io.StringReader;
-
-import net.sf.taverna.t2.annotation.annotationbeans.SemanticAnnotation;
 import net.sf.taverna.t2.component.ComponentActivity;
 import net.sf.taverna.t2.component.ComponentActivityConfigurationBean;
 import net.sf.taverna.t2.component.annotation.AbstractSemanticAnnotationContextualView;
-import net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.ComponentDataflowCache;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
@@ -39,14 +35,17 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityOutputPort;
 
 import org.apache.log4j.Logger;
 
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-
 /**
  *
  *
  * @author David Withers
  */
 public class ComponentActivitySemanticAnnotationContextualView extends AbstractSemanticAnnotationContextualView {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7403728889085410126L;
 
 	public static final String VIEW_TITLE = "Inherited Semantic Annotations";
 

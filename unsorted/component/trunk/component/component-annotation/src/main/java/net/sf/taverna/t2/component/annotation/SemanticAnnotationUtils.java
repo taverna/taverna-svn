@@ -33,7 +33,10 @@ import net.sf.taverna.t2.annotation.AnnotationChain;
 import net.sf.taverna.t2.annotation.annotationbeans.SemanticAnnotation;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
+import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
+
+import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
@@ -53,6 +56,8 @@ public class SemanticAnnotationUtils {
 	protected static final String ENCODING = "TURTLE";
 	/* Pretend-base for making relative URIs */
 	private static String BASE = "widget://4aa8c93c-3212-487c-a505-3e337adf54a3/";
+	
+	private static Logger logger = Logger.getLogger(SemanticAnnotationUtils.class);
 
 	public static String getDisplayName(RDFNode node) {
 		if (node == null) {
@@ -117,14 +122,26 @@ public class SemanticAnnotationUtils {
 		return turtle;
 	}
 
-	public static Model populateModel(Annotated annotated) {
+	public static Model populateModel(Annotated<?> annotated) {
 		Model result = ModelFactory.createDefaultModel();
-		SemanticAnnotation annotation = SemanticAnnotationUtils.findSemanticAnnotation(annotated);
-		if (annotation != null && !annotation.getContent().isEmpty()) {
-			StringReader stringReader = new StringReader(annotation.getContent());
-			result.read(stringReader, BASE, ENCODING);
+		SemanticAnnotation annotation = SemanticAnnotationUtils
+				.findSemanticAnnotation(annotated);
+		try {
+			if (annotation != null) {
+				String content = annotation.getContent();
+				if (!content.isEmpty()) {
+					populateModelFromString(result, content);
+				}
+			}
+		} catch (Exception e) {
+			logger.error(e);
 		}
 		return result;
+	}
+
+	public static void populateModelFromString(Model result, String content) {
+		StringReader stringReader = new StringReader(content);
+		result.read(stringReader, BASE, ENCODING);
 	}
 
 	public static Resource createBaseResource(Model model) {
@@ -136,25 +153,29 @@ public class SemanticAnnotationUtils {
 		Set<SemanticAnnotationProfile> problemProfiles = new HashSet<SemanticAnnotationProfile> ();
 		Model model = SemanticAnnotationUtils.populateModel(dataflow);
 		Set<Statement> statements = model.listStatements().toSet();
-		for (SemanticAnnotationProfile semanticAnnotationProfile : componentProfile.getSemanticAnnotationProfiles()) {
-			OntProperty predicate = semanticAnnotationProfile.getPredicate();
-			if (predicate != null) {
-				int count = 0;
-				for (Statement statement : statements) {
-					if (statement.getPredicate().equals(predicate)) {
-						count++;
+		try {
+			for (SemanticAnnotationProfile semanticAnnotationProfile : componentProfile.getSemanticAnnotationProfiles()) {
+				OntProperty predicate = semanticAnnotationProfile.getPredicate();
+				if (predicate != null) {
+					int count = 0;
+					for (Statement statement : statements) {
+						if (statement.getPredicate().equals(predicate)) {
+							count++;
+						}
 					}
-				}
-				if (count < semanticAnnotationProfile.getMinOccurs()) {
-					problemProfiles.add(semanticAnnotationProfile);
-				}
-				if (semanticAnnotationProfile.getMaxOccurs() != null) {
-					if (count > semanticAnnotationProfile.getMaxOccurs()) {
-						// The UI should prevent this, but check anyway
+					if (count < semanticAnnotationProfile.getMinOccurs()) {
 						problemProfiles.add(semanticAnnotationProfile);
+					}
+					if (semanticAnnotationProfile.getMaxOccurs() != null) {
+						if (count > semanticAnnotationProfile.getMaxOccurs()) {
+							// The UI should prevent this, but check anyway
+							problemProfiles.add(semanticAnnotationProfile);
+						}
 					}
 				}
 			}
+		} catch (ComponentRegistryException e) {
+			logger.error(e);
 		}
 		return problemProfiles;
 	}

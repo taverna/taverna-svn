@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.component.ui.serviceprovider;
 
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,6 +16,7 @@ import org.apache.log4j.Logger;
 
 public class ComponentServiceDesc extends ServiceDescription<ComponentActivityConfigurationBean> {
 	
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(ComponentServiceDesc.class);
 	
 	private ComponentVersionIdentification identification;

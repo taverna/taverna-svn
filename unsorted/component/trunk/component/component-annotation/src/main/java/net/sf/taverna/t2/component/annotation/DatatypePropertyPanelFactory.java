@@ -20,6 +20,8 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.annotation;
 
+import java.awt.Component;
+
 import javax.swing.JComponent;
 import javax.swing.JTextArea;
 
@@ -43,23 +45,19 @@ public class DatatypePropertyPanelFactory extends PropertyPanelFactorySPI{
 
 	@Override
 	public JComponent getInputComponent(SemanticAnnotationProfile semanticAnnotationProfile, Statement statement) {
-		JComponent result = null;
-			JTextArea inputText = new JTextArea(20, 80);
-			if (statement != null) {
-				inputText.setText(SemanticAnnotationUtils.getDisplayName(statement.getObject()));
-			}
-			inputText.setLineWrap(true);
-			inputText.setWrapStyleWord(true);
-			result = inputText;
-		return result;
+		return getDefaultInputComponent(semanticAnnotationProfile, statement);
 	}
 
 
 		@Override
-		public RDFNode getNewTargetNode(JComponent component) {
+		public RDFNode getNewTargetNode(Statement originalStatement, JComponent component) {
 			JTextArea inputText = (JTextArea) component;
-			return ResourceFactory.createTypedLiteral(inputText.getText());
-		}
+			String newText = inputText.getText();
+			if ((originalStatement == null) ||
+					!SemanticAnnotationUtils.getDisplayName(originalStatement.getObject()).equals(newText)) {
+			return ResourceFactory.createTypedLiteral(newText);
+			}
+			return null;		}
 
 		@Override
 		public int getRatingForSemanticAnnotation(
@@ -69,6 +67,13 @@ public class DatatypePropertyPanelFactory extends PropertyPanelFactorySPI{
 				return 100;
 			}
 			return Integer.MIN_VALUE;
+		}
+
+		@Override
+		public JComponent getDisplayComponent(
+				SemanticAnnotationProfile semanticAnnotationProfile,
+				Statement statement) {
+			return getDefaultDisplayComponent(semanticAnnotationProfile, statement);
 		}
 
 

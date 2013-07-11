@@ -29,7 +29,6 @@ import net.sf.taverna.t2.annotation.annotationbeans.DescriptiveTitle;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
-import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
 import net.sf.taverna.t2.component.registry.License;
@@ -128,6 +127,9 @@ public final class MyExperimentComponentFamily extends ComponentFamily {
 				String uri = fileElement.getAttributeValue("uri");
 				String withoutVersion = StringUtils.substringBeforeLast(uri, "&");
 				for (ComponentProfile p : componentRegistry.getComponentProfiles()) {
+					if (!(p instanceof MyExperimentComponentProfile)) {
+						continue;
+					}
 					String uri2 = ((MyExperimentComponentProfile) p).getUri();
 					if (uri2.equals(withoutVersion)) {
 						result = p;
@@ -147,7 +149,7 @@ public final class MyExperimentComponentFamily extends ComponentFamily {
 				try {
 					String downloadUri = componentRegistry.getExternalPackItem(uri, "component profile");
 					try {
-						result = new ComponentProfile(new URL(downloadUri));
+						result = new ComponentProfile(super.getComponentRegistry(), new URL(downloadUri));
 					} catch (MalformedURLException ex) {
 						throw new ComponentRegistryException("Unable to open profile from " + downloadUri, ex);
 					}
@@ -212,8 +214,7 @@ public final class MyExperimentComponentFamily extends ComponentFamily {
 		component = new MyExperimentComponent(componentRegistry, this.license, this.permissionsString, componentPack.getAttributeValue("uri"));
 
 		// add the component to the family
-		Element resource = componentRegistry.getResource(uri);
-		String attributeValue = resource.getAttributeValue("resource");
+
 		componentRegistry.addPackItem(componentRegistry.getResource(uri), componentPack);
 
 		// add the workflow to the pack

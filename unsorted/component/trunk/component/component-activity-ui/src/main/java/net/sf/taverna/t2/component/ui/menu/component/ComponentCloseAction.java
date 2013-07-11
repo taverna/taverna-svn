@@ -29,6 +29,7 @@ public class ComponentCloseAction extends AbstractAction implements Observer<Fil
 	 */
 	private static final long serialVersionUID = -153986599735293879L;
 
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(ComponentCloseAction.class);
 	
 	private static Action closeWorkflowAction = new CloseWorkflowAction();

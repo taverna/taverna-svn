@@ -13,7 +13,6 @@ import net.sf.taverna.t2.component.registry.License;
  */
 public class MyExperimentLicense implements License {
 
-	private final MyExperimentComponentRegistry componentRegistry;
 	private String name;
 	private String description;
 	private String abbreviation;
@@ -21,8 +20,6 @@ public class MyExperimentLicense implements License {
 	public MyExperimentLicense(
 			MyExperimentComponentRegistry componentRegistry,
 			String uri) {
-				this.componentRegistry = componentRegistry;
-				
 				Element licenseElement = componentRegistry.getResource(uri);
 				name = licenseElement.getChildTextTrim("title");
 				description = licenseElement.getChildTextTrim("description");

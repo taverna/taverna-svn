@@ -3,9 +3,6 @@
  */
 package net.sf.taverna.t2.component.ui.preference;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -19,6 +16,10 @@ import net.sf.taverna.t2.component.registry.ComponentRegistry;
  */
 public class RegistryTableModel extends DefaultTableModel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7789666945764974370L;
 	private SortedMap<String, ComponentRegistry> registryMap = new TreeMap<String, ComponentRegistry>();
 	
 	public RegistryTableModel() {

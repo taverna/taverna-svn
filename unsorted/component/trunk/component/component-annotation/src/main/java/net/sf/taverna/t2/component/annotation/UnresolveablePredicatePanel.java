@@ -20,10 +20,20 @@ import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
  */
 public class UnresolveablePredicatePanel extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6697222230069693882L;
+
 	public UnresolveablePredicatePanel(SemanticAnnotationProfile semanticAnnotationProfile) {
 		super();
 		setLayout(new BorderLayout());
 		setBorder(new AbstractBorder() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -6217562768253967301L;
+
 			@Override
 			public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
 				g.setColor(Color.GRAY);

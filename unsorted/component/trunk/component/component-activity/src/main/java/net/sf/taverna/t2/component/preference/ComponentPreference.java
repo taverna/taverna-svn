@@ -15,14 +15,11 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
-
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentUtil;
 
 import org.apache.log4j.Logger;
-
-import com.hp.hpl.jena.ontology.OntModel;
 
 /**
  * @author alanrw
@@ -42,8 +39,6 @@ public class ComponentPreference {
 	
 	private SortedMap<String, ComponentRegistry> registryMap = new TreeMap<String, ComponentRegistry> ();
 	
-	private OntModel cacheModel;
-
 	public static ComponentPreference getInstance() {
 		if (instance == null) {
 			instance = new ComponentPreference();

@@ -33,7 +33,12 @@ import org.jdom.Element;
  */
 public class Pack extends Resource
 {
-  private int accessType;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3977736206990103689L;
+
+private int accessType;
   
   private User creator;
   private List<Tag> tags;
@@ -184,8 +189,6 @@ public class Pack extends Resource
       
       // === All items will be stored together in one array ===
       p.items = new ArrayList<PackItem>();
-      int iCount = 0;
-      
       // adding internal items first
       Element itemsElement = docRootElement.getChild("internal-pack-items");
       if (itemsElement != null) {
@@ -195,7 +198,6 @@ public class Pack extends Resource
           PackItem piCurrentItem = PackItem.buildFromXML(docCurrentItem, logger);
           
           p.getItems().add(piCurrentItem);
-          iCount++;
         }
       }
       
@@ -208,7 +210,6 @@ public class Pack extends Resource
           PackItem piCurrentItem = PackItem.buildFromXML(docCurrentItem, logger);
           
           p.getItems().add(piCurrentItem);
-          iCount++;
         }
       }
       

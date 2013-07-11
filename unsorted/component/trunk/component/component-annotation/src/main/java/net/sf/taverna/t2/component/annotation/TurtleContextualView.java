@@ -4,25 +4,14 @@
 package net.sf.taverna.t2.component.annotation;
 
 import java.awt.BorderLayout;
-import java.awt.GridBagLayout;
-import java.io.StringReader;
-import java.util.ArrayList;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-
 import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.annotation.annotationbeans.SemanticAnnotation;
-import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
-import net.sf.taverna.t2.workflowmodel.Dataflow;
-import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
-import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
-import net.sf.taverna.t2.workflowmodel.Processor;
 
 /**
  * @author alanrw
@@ -30,6 +19,10 @@ import net.sf.taverna.t2.workflowmodel.Processor;
  */
 public class TurtleContextualView extends ContextualView {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3401885589263647202L;
 	private JPanel panel;
 	private String annotationContent = "";
 	

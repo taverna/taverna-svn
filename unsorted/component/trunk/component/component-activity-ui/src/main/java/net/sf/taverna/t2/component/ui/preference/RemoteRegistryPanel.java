@@ -5,12 +5,7 @@ package net.sf.taverna.t2.component.ui.preference;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.io.IOException;
 
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -18,14 +13,18 @@ import javax.swing.border.EmptyBorder;
 
 import org.apache.log4j.Logger;
 
-import net.sf.taverna.t2.lang.ui.DeselectingButton;
-
 /**
  * @author alanrw
  *
  */
 public class RemoteRegistryPanel extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8833815753329010062L;
+
+	@SuppressWarnings("unused")
 	private final Logger logger = Logger.getLogger(RemoteRegistryPanel.class);
 	
 	private JTextField registryNameField = new JTextField(20);

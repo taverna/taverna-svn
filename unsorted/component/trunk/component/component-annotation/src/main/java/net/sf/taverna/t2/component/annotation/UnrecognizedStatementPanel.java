@@ -14,18 +14,26 @@ import javax.swing.border.AbstractBorder;
 
 import com.hp.hpl.jena.rdf.model.Statement;
 
-import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
-
 /**
  * @author alanrw
  *
  */
 public class UnrecognizedStatementPanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 513310371296907202L;
+
 	public UnrecognizedStatementPanel(Statement statement) {
 		super();
 		setLayout(new BorderLayout());
 		setBorder(new AbstractBorder() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 4069500537350893389L;
+
 			@Override
 			public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
 				g.setColor(Color.GRAY);

@@ -6,13 +6,8 @@ import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.util.List;
 import java.util.Set;
 
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -21,21 +16,22 @@ import javax.swing.border.EmptyBorder;
 
 import net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils;
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
-import net.sf.taverna.t2.spi.SPIRegistry;
 
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.Statement;
 
 public class ComponentActivitySemanticAnnotationPanel extends JPanel {
 
-	private final ComponentActivitySemanticAnnotationContextualView semanticAnnotationContextualView;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3599768150252711758L;
 	private SemanticAnnotationProfile semanticAnnotationProfile;
 	private final Set<Statement> statements;
 
 	public ComponentActivitySemanticAnnotationPanel(
 			ComponentActivitySemanticAnnotationContextualView semanticAnnotationContextualView,
 			SemanticAnnotationProfile semanticAnnotationProfile, Set<Statement> statements) {
-		this.semanticAnnotationContextualView = semanticAnnotationContextualView;
 		this.semanticAnnotationProfile = semanticAnnotationProfile;
 		this.statements = statements;
 		initialize();
@@ -44,6 +40,11 @@ public class ComponentActivitySemanticAnnotationPanel extends JPanel {
 	private void initialize() {
 		setLayout(new GridBagLayout());
 		setBorder(new AbstractBorder() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -5921448975807056953L;
+
 			@Override
 			public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
 				g.setColor(Color.GRAY);

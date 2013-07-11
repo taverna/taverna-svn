@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 public class ComponentServiceProviderConfig {
 	
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger
 	.getLogger(ComponentServiceProviderConfig.class);
 	

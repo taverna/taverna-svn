@@ -47,6 +47,7 @@ public class ComponentDataflowHealthCheckExplainer implements VisitExplainer {
 	 */
 	@Override
 	public JComponent getExplanation(VisitReport vr) {
+		@SuppressWarnings("unchecked")
 		Set<SemanticAnnotationProfile> problemProfiles = (Set<SemanticAnnotationProfile>) vr.getProperty("problemProfiles");
 		List<SemanticAnnotationProfile> sortedList = new ArrayList<SemanticAnnotationProfile>(problemProfiles);
 		Collections.sort(sortedList, comparator);

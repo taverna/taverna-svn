@@ -20,7 +20,6 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.myexperiment;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -28,7 +27,6 @@ import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
 import net.sf.taverna.t2.workbench.file.DataflowInfo;
-import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.file.exceptions.OpenException;
 import net.sf.taverna.t2.workbench.file.impl.T2DataflowOpener;
 import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
@@ -36,7 +34,6 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.jdom.Attribute;
 import org.jdom.Element;
 
 /**
@@ -95,8 +92,7 @@ public class MyExperimentComponentVersion extends ComponentVersion {
 
 	@Override
 	protected final Dataflow internalGetDataflow() throws ComponentRegistryException {
-		Dataflow dataflow;
-			Element workflowElement = componentRegistry.getPackItem(uri, "workflow");
+		Element workflowElement = componentRegistry.getPackItem(uri, "workflow");
 			String resourceUri = workflowElement.getAttributeValue("resource");
 			resourceUri = StringUtils.substringBeforeLast(resourceUri, "?");
 			String version = workflowElement.getAttributeValue("version");
@@ -129,6 +125,23 @@ public class MyExperimentComponentVersion extends ComponentVersion {
 //				throw new ComponentRegistryException("Unable to open dataflow from " + downloadUri, e);
 //			}
 		return info.getDataflow();
+	}
+
+	public boolean hasWorkflowUri(String resourceUri) throws ComponentRegistryException {
+		Element workflowElement = null;
+		try {
+			workflowElement = componentRegistry.getPackItem(uri, "workflow");
+			if (workflowElement == null) {
+				return false;
+			}
+		}
+		catch (ComponentRegistryException e) {
+			logger.error(e);
+			return false;
+		}
+		String wfUri = workflowElement.getAttributeValue("resource");
+		wfUri = StringUtils.substringBeforeLast(wfUri, "?");
+		return wfUri.equals(resourceUri);
 	}
 
 }

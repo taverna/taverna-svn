@@ -34,7 +34,12 @@ import org.jdom.Element;
  */
 public class Group extends Resource
 {
-  private User admin;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = -1115193144192642722L;
+
+private User admin;
   
   private List<Tag> tags;
   private List<Comment> comments;

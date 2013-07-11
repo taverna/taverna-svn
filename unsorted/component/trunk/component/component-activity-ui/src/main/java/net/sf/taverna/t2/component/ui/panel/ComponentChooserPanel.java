@@ -5,7 +5,6 @@ package net.sf.taverna.t2.component.ui.panel;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
@@ -13,17 +12,14 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
-import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
-import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
@@ -34,7 +30,7 @@ import org.apache.log4j.Logger;
  * @author alanrw
  *
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class ComponentChooserPanel extends JPanel implements Observable<ComponentChoiceMessage>, Observer{
 
 	/**
@@ -113,7 +109,6 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 	}
 
 	private void updateComponentModel() {
-		ComponentFamily chosenFamily = registryAndFamilyChooserPanel.getChosenFamily();
 		componentMap.clear();
 		componentChoice.removeAllItems();
 		componentChoice.setToolTipText(null);

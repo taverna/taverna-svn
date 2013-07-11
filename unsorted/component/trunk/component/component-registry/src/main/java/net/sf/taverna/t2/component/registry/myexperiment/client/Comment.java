@@ -28,7 +28,11 @@ import org.jdom.Element;
  * @author Sergejs Aleksejevs
  */
 public class Comment extends Resource {
-  private User user;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5564200571354269958L;
+private User user;
   private String comment;
   private int typeOfCommentedResource;
   private String uriOfCommetedResource;

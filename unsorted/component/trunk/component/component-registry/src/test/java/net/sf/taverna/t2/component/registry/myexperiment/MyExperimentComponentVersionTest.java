@@ -27,6 +27,7 @@ public class MyExperimentComponentVersionTest extends ComponentTest {
 		componentRegistry = MyExperimentComponentRegistry.getComponentRegistry(componentRegistryUrl);
 	}
 
+	@SuppressWarnings("unchecked")
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 		MyExperimentComponentRegistry registry = MyExperimentComponentRegistry.getComponentRegistry(componentRegistryUrl);

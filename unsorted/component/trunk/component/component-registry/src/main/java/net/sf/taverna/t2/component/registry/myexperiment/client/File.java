@@ -31,7 +31,12 @@ import org.jdom.Element;
  * @author Sergejs Aleksejevs
  */
 public class File extends Resource {
-  private int accessType;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = -9051574197214290716L;
+
+private int accessType;
 
   private User uploader;
   private License license;

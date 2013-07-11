@@ -13,7 +13,6 @@ import javax.swing.Action;
 import net.sf.taverna.t2.activities.dataflow.servicedescriptions.DataflowActivityIcon;
 import net.sf.taverna.t2.ui.menu.AbstractContextualMenuAction;
 import net.sf.taverna.t2.workbench.file.FileManager;
-import net.sf.taverna.t2.workbench.helper.HelpEnabledDialog;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Processor;
 
@@ -60,6 +59,11 @@ public class NestedWorkflowCreatorMenuAction extends AbstractContextualMenuActio
 	@Override
 	protected Action createAction() {
 		return new AbstractAction("Create nested workflow...", DataflowActivityIcon.getDataflowIcon()) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -3121307982540205215L;
+
 			public void actionPerformed(ActionEvent e) {
 				Object o = getContextualSelection().getSelection();
 				final Dialog dialog = new NestedWorkflowCreationDialog(null, o, fm.getCurrentDataflow());		

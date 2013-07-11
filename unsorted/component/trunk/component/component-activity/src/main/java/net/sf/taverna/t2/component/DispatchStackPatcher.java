@@ -1,20 +1,15 @@
 package net.sf.taverna.t2.component;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
-import net.sf.taverna.t2.activities.dataflow.DataflowActivityHealthChecker;
 import net.sf.taverna.t2.visit.VisitReport;
-import net.sf.taverna.t2.visit.VisitReport.Status;
 import net.sf.taverna.t2.workflowmodel.Processor;
-import net.sf.taverna.t2.workflowmodel.health.HealthCheck;
 import net.sf.taverna.t2.workflowmodel.health.HealthChecker;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
-import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DispatchStackImpl;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke;
+
+import org.apache.log4j.Logger;
 
 public class DispatchStackPatcher implements
 		HealthChecker<ComponentActivity> {
@@ -36,7 +31,7 @@ public class DispatchStackPatcher implements
 		Processor p = (Processor) VisitReport.findAncestor(ancestry, Processor.class);
 		DispatchStackImpl ds = (DispatchStackImpl) p.getDispatchStack();
 		List<DispatchLayer<?>> layers = ds.getLayers();
-		DispatchLayer oldLayer = null;
+		DispatchLayer<?> oldLayer = null;
 		for (DispatchLayer<?> dl : layers) {
 			if ((dl instanceof Invoke) && !(dl instanceof PatchedInvoke)){
 				oldLayer = dl;

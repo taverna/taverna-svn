@@ -36,7 +36,6 @@ import net.sf.taverna.t2.annotation.annotationbeans.AbstractTextualValueAssertio
 import net.sf.taverna.t2.component.ui.menu.component.ComponentServiceCreatorAction;
 import net.sf.taverna.t2.lang.ui.DeselectingButton;
 import net.sf.taverna.t2.workbench.edits.EditManager;
-import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.helper.HelpEnabledDialog;
 import net.sf.taverna.t2.workbench.models.graph.GraphController;
 import net.sf.taverna.t2.workbench.views.graph.GraphViewComponent;
@@ -72,10 +71,14 @@ import org.apache.log4j.Logger;
  */
 public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 727059218457420449L;
+
 	private static Logger logger = Logger
 	.getLogger(NestedWorkflowCreationDialog.class);
 	
-	private static FileManager fm = FileManager.getInstance();
 	private static EditManager em = EditManager.getInstance();
 	private static Edits edits = em.getEdits();
 	
@@ -92,9 +95,12 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 			return o1.getLocalName().compareTo(o2.getLocalName());
 		}};
 		
+	@SuppressWarnings("rawtypes")
 	private static ListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+	@SuppressWarnings("rawtypes")
 	private static ListCellRenderer processorRenderer = new ListCellRenderer() {
 
+		@SuppressWarnings({ "unchecked" })
 		@Override
 		public Component getListCellRendererComponent(JList list, Object value,
 				int index, boolean isSelected, boolean cellHasFocus) {
@@ -102,16 +108,27 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 			return defaultRenderer.getListCellRendererComponent(list, p.getLocalName(), index, isSelected, cellHasFocus);
 		}};
 
+	@SuppressWarnings("rawtypes")
 	private JList includableList = new JList();
+	@SuppressWarnings("rawtypes")
 	private JList includedList = new JList();
-	private Object selectedObject;
+
 	private final Dataflow currentDataflow;
+
+	private JButton excludeButton;
+
+	private JButton includeButton;
+
+	private JButton okButton;
+
+	private JButton resetButton;
 	
 	public NestedWorkflowCreationDialog(Frame owner, Object o, Dataflow dataflow) {
 		super(owner, "Nested workflow creation", true, null);
 		
-		
-		selectedObject = o;
+		if (o instanceof TokenProcessingEntity) {
+			includedProcessors.add((TokenProcessingEntity) o);
+		}
 		this.currentDataflow = dataflow;
 		
 		allProcessors = dataflow.getProcessors();
@@ -120,35 +137,36 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout());
 		
-		JPanel processorChoice = createProcessorChoicePanel(o, dataflow);
-		this.add(processorChoice, BorderLayout.CENTER);
-
-		JButton okButton = new DeselectingButton(new OKAction(this));
+		okButton = new DeselectingButton(new OKAction(this));
 		buttonPanel.add(okButton);
 
-		JButton resetButton = new DeselectingButton(new ResetAction(this));
+		resetButton = new DeselectingButton(new ResetAction(this));
 		buttonPanel.add(resetButton);
 
 		JButton cancelButton = new DeselectingButton(new CancelAction(this));
 		buttonPanel.add(cancelButton);
+		
+		JPanel processorChoice = createProcessorChoicePanel(dataflow);
+		this.add(processorChoice, BorderLayout.CENTER);
 
 		this.add(buttonPanel, BorderLayout.SOUTH);
 		this.pack();
 		this.setSize(new Dimension(500, 800));
 	}
 
-	private JPanel createProcessorChoicePanel(Object o, Dataflow dataflow) {
+	private JPanel createProcessorChoicePanel(Dataflow dataflow) {
 		JPanel result = new JPanel();
 		result.setLayout(new GridLayout(0,2));
 			
-		JPanel includedProcessors = createIncludedProcessorsPanel();
-		JPanel includableProcessors = createIncludableProcessorsPanel();
-		result.add(includableProcessors);
-		result.add(includedProcessors);
-		resetLists();
+		JPanel includedProcessorsPanel = createIncludedProcessorsPanel();
+		JPanel includableProcessorsPanel = createIncludableProcessorsPanel();
+		result.add(includableProcessorsPanel);
+		result.add(includedProcessorsPanel);
+		updateLists();
 		return result;
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private JPanel createIncludableProcessorsPanel() {
 		JPanel result = new JPanel();
 		result.setLayout(new BorderLayout());
@@ -157,8 +175,9 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 		includableList.setCellRenderer(processorRenderer);
 		result.add(new JScrollPane(includableList), BorderLayout.CENTER);
 		
-		JButton includeButton = new DeselectingButton("Include", new ActionListener() {
+		includeButton = new DeselectingButton("Include", new ActionListener() {
 
+			@SuppressWarnings("deprecation")
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				for (Object o : includableList.getSelectedValues()) {
@@ -182,6 +201,7 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 		updateLists();		
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private JPanel createIncludedProcessorsPanel() {
 		JPanel result = new JPanel();
 		result.setLayout(new BorderLayout());
@@ -190,8 +210,9 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 		includedList.setCellRenderer(processorRenderer);
 		result.add(new JScrollPane(includedList), BorderLayout.CENTER);
 		
-		JButton excludeButton = new DeselectingButton("Exclude", new ActionListener() {
+		excludeButton = new DeselectingButton("Exclude", new ActionListener() {
 
+			@SuppressWarnings("deprecation")
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				for (Object o : includedList.getSelectedValues()) {
@@ -205,18 +226,25 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout());
 		buttonPanel.add(excludeButton);
-		excludeButton.setEnabled(false);
+
 		result.add(buttonPanel, BorderLayout.SOUTH);
 		return result;
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void updateLists() {
 		calculateIncludableProcessors();
 		Collections.sort(includedProcessors, processorComparator);
 		Collections.sort(includableProcessors, processorComparator);
 		includedList.setModel(new DefaultComboBoxModel(includedProcessors.toArray()));
 		includableList.setModel(new DefaultComboBoxModel(includableProcessors.toArray()));
-	}
+		boolean someIncludedProcessors = includedProcessors.size() > 0;
+		excludeButton.setEnabled(someIncludedProcessors);
+		okButton.setEnabled(someIncludedProcessors);
+		resetButton.setEnabled(someIncludedProcessors);
+		boolean someIncludableProcessors = includableProcessors.size() > 0;
+		includeButton.setEnabled(someIncludableProcessors);
+		}
 	
 	public void calculateIncludableProcessors() {
 		includableProcessors.clear();
@@ -299,6 +327,10 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 	}
 
 	private final class OKAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 6516891432445682857L;
 		private final JDialog dialog;
 
 		private OKAction(JDialog dialog) {
@@ -324,7 +356,7 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 				TokenProcessingEntity includedEntity = includedProcessors.get(0);
 				if (includedEntity instanceof Processor) {
 					Processor includedProcessor = (Processor) includedEntity;
-					for (Class c : at.getAnnotatingClasses(includedProcessor)) {
+					for (Class<?> c : at.getAnnotatingClasses(includedProcessor)) {
 						AnnotationBeanSPI annotation = at.getAnnotation(includedProcessor, c);
 						if ((annotation != null) && (annotation instanceof AbstractTextualValueAssertion)){
 							currentWorkflowEditList.add(at.setAnnotationString(nestingProcessor, c, ((AbstractTextualValueAssertion)annotation).getText()));
@@ -517,11 +549,12 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 	}
 	
 	private final class ResetAction extends AbstractAction {
-		private final JDialog dialog;
-
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 7296742769289881218L;
 		private ResetAction(JDialog dialog) {
 			super("Reset");
-			this.dialog = dialog;
 		}
 
 		public void actionPerformed(ActionEvent e) {
@@ -531,6 +564,10 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 	}
 
 	private final class CancelAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -7842176979437027091L;
 		private final JDialog dialog;
 
 		private CancelAction(JDialog dialog) {

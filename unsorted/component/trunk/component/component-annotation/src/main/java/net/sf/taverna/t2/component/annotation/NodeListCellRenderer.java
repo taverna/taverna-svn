@@ -15,6 +15,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
  * @author alanrw
  *
  */
+@SuppressWarnings("rawtypes")
 public class NodeListCellRenderer implements ListCellRenderer {
 	
 	private static DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();

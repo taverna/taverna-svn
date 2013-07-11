@@ -9,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.SortedMap;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -20,9 +19,6 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
-
-import org.apache.log4j.Logger;
 
 import net.sf.taverna.t2.component.preference.ComponentPreference;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
@@ -30,13 +26,19 @@ import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.local.LocalComponentRegistry;
 import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
 import net.sf.taverna.t2.component.ui.util.Utils;
-
 import net.sf.taverna.t2.lang.ui.DeselectingButton;
 import net.sf.taverna.t2.lang.ui.ValidatingUserInputDialog;
 import net.sf.taverna.t2.workbench.helper.Helper;
 
+import org.apache.log4j.Logger;
+
 public class ComponentPreferencePanel extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1310173658718093383L;
+
 	private final Logger logger = Logger.getLogger(ComponentPreferencePanel.class);
 	
 	private RegistryTableModel tableModel = new RegistryTableModel();
@@ -116,6 +118,11 @@ public class ComponentPreferencePanel extends JPanel {
 		final JPanel panel = new JPanel();
 
 		JButton removeButton = new DeselectingButton(new AbstractAction("Remove registry") {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1506913889704140541L;
+
 			public void actionPerformed(ActionEvent arg0) {
 				int selectedRow = registryTable.getSelectedRow();
 				if (selectedRow != -1) {
@@ -126,6 +133,11 @@ public class ComponentPreferencePanel extends JPanel {
 		panel.add(removeButton);
 
 		JButton addLocalButton = new DeselectingButton(new AbstractAction("Add local registry") {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 855395154244911211L;
+
 			public void actionPerformed(ActionEvent arg0) {
 				
 				LocalRegistryPanel inputPanel = new LocalRegistryPanel();
@@ -155,6 +167,11 @@ public class ComponentPreferencePanel extends JPanel {
 		 * {@link HttpProxyConfiguration} and saves them for future.
 		 */
 		JButton addRemoteButton = new DeselectingButton(new AbstractAction("Add remote registry") {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 7790264169310979116L;
+
 			public void actionPerformed(ActionEvent arg0) {
 				RemoteRegistryPanel inputPanel = new RemoteRegistryPanel();
 				

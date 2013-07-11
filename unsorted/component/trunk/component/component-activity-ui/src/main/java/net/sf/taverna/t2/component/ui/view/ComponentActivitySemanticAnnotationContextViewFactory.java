@@ -30,14 +30,14 @@ public class ComponentActivitySemanticAnnotationContextViewFactory implements
 			Processor p = null;
 			Dataflow d = FileManager.getInstance().getCurrentDataflow();
 			p = Tools.getFirstProcessorWithActivityInputPort(d, (ActivityInputPort) selection);
-			Activity a = p.getActivityList().get(0);
+			Activity<?> a = p.getActivityList().get(0);
 			return getContainingComponentActivity(a);
 		}
 		if (selection instanceof ActivityOutputPort) {
 			Processor p = null;
 			Dataflow d = FileManager.getInstance().getCurrentDataflow();
 			p = Tools.getFirstProcessorWithActivityOutputPort(d, (ActivityOutputPort) selection);
-			Activity a = p.getActivityList().get(0);
+			Activity<?> a = p.getActivityList().get(0);
 			return getContainingComponentActivity(a);
 		}
 		return null;

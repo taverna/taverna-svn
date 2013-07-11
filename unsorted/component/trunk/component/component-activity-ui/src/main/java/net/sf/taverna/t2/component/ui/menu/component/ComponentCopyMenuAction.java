@@ -7,10 +7,7 @@ import java.net.URI;
 
 import javax.swing.Action;
 
-import net.sf.taverna.t2.component.ui.menu.ComponentMenu;
 import net.sf.taverna.t2.ui.menu.AbstractMenuAction;
-import net.sf.taverna.t2.workbench.file.impl.actions.SaveWorkflowAction;
-import net.sf.taverna.t2.workbench.file.impl.menu.FileOpenMenuSection;
 
 /**
  * @author alanrw

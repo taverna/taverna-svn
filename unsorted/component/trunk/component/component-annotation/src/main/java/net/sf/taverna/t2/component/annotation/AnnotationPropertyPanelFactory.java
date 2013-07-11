@@ -20,17 +20,14 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.annotation;
 
-import java.io.StringReader;
+import java.awt.Component;
 
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
 
 import com.hp.hpl.jena.ontology.OntProperty;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -48,19 +45,18 @@ public class AnnotationPropertyPanelFactory extends PropertyPanelFactorySPI{
 
 	@Override
 	public JComponent getInputComponent(SemanticAnnotationProfile semanticAnnotationProfile, Statement statement) {
-			JTextArea inputText = new JTextArea(20, 80);
-		if (statement != null) {
-			inputText.setText(SemanticAnnotationUtils.getDisplayName(statement.getObject()));
-		}
-		inputText.setLineWrap(true);
-		inputText.setWrapStyleWord(true);
-		return inputText;
+		return getDefaultInputComponent(semanticAnnotationProfile, statement);
 	}
 
 	@Override
-	public RDFNode getNewTargetNode(JComponent component) {
+	public RDFNode getNewTargetNode(Statement originalStatement, JComponent component) {
 		JTextArea inputText = (JTextArea) component;
-		return ResourceFactory.createTypedLiteral(inputText.getText());
+		String newText = inputText.getText();
+		if ((originalStatement == null) ||
+				!SemanticAnnotationUtils.getDisplayName(originalStatement.getObject()).equals(newText)) {
+		return ResourceFactory.createTypedLiteral(newText);
+		}
+		return null;
 	}
 
 	@Override
@@ -71,6 +67,13 @@ public class AnnotationPropertyPanelFactory extends PropertyPanelFactorySPI{
 			return 100;
 		}
 		return Integer.MIN_VALUE;
+	}
+
+	@Override
+	public JComponent getDisplayComponent(
+			SemanticAnnotationProfile semanticAnnotationProfile,
+			Statement statement) {
+		return getDefaultDisplayComponent(semanticAnnotationProfile, statement);
 	}
 
 }

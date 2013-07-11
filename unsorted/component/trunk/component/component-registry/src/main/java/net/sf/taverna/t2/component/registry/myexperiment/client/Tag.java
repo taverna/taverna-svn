@@ -9,7 +9,11 @@ import java.util.Comparator;
  * @author Jiten Bhagat, Sergejs Aleksejevs
  */
 public class Tag extends Resource implements Serializable {
-  private String tagName;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8199085099046578707L;
+private String tagName;
   private int count;
 
   public Tag() {

@@ -575,8 +575,6 @@ public class Base64
         
         // Isolate options
         int gzip           = (options & GZIP);
-        int dontBreakLines = (options & DONT_BREAK_LINES);
-        
         try
         {
             // ObjectOutputStream -> (GZIP) -> Base64 -> ByteArrayOutputStream
@@ -1356,7 +1354,6 @@ public class Base64
         private int     lineLength;
         private boolean breakLines;     // Break lines at less than 80 characters
 		private int     options;        // Record options used to create the stream.
-		private byte[]  alphabet;	    // Local copies to avoid extra method calls
 		private byte[]  decodabet;		// Local copies to avoid extra method calls
         
         
@@ -1403,7 +1400,7 @@ public class Base64
             this.position     = -1;
             this.lineLength   = 0;
 			this.options      = options; // Record for later, mostly to determine which alphabet to use
-			this.alphabet     = getAlphabet(options);
+			getAlphabet(options);
 			this.decodabet    = getDecodabet(options);
         }   // end constructor
         
@@ -1593,7 +1590,6 @@ public class Base64
         private byte[]  b4; // Scratch used in a few places
         private boolean suspendEncoding;
 		private int options; // Record for later
-		private byte[]  alphabet;	    // Local copies to avoid extra method calls
 		private byte[]  decodabet;		// Local copies to avoid extra method calls
         
         /**
@@ -1640,7 +1636,7 @@ public class Base64
             this.suspendEncoding = false;
             this.b4           = new byte[4];
 			this.options      = options;
-			this.alphabet     = getAlphabet(options);
+			getAlphabet(options);
 			this.decodabet    = getDecodabet(options);
         }   // end constructor
         

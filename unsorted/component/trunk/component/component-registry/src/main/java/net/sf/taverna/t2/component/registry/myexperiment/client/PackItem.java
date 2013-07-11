@@ -28,7 +28,11 @@ import org.jdom.Element;
  * @author Sergejs Aleksejevs
  */
 public class PackItem extends Resource {
-  private int id;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = -4022813839129785667L;
+private int id;
   private User userWhoAddedThisItem;
   private String strComment;
 

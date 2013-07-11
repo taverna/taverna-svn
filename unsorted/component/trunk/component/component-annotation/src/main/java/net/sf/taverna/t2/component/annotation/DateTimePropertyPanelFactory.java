@@ -20,6 +20,7 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.annotation;
 
+import java.awt.Component;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -61,7 +62,11 @@ public class DateTimePropertyPanelFactory extends PropertyPanelFactorySPI{
 		    // Suggested hack from http://www.coderanch.com/t/345684/GUI/java/JSpinner-DateEditor-Set-default-focus
 		    
 		    de.getTextField().setCaret(new DefaultCaret() {  
-		    	private boolean diverted = false;  
+		    	/**
+				 * 
+				 */
+				private static final long serialVersionUID = 6779256780590610172L;
+				private boolean diverted = false;  
 		    	  
 		    	public void setDot( int dot )  
 		    	{  
@@ -94,10 +99,14 @@ public class DateTimePropertyPanelFactory extends PropertyPanelFactorySPI{
 
 
 		@Override
-		public RDFNode getNewTargetNode(JComponent component) {
+		public RDFNode getNewTargetNode(Statement originalStatement, JComponent component) {
 			JSpinner spinner = (JSpinner) component;
 			Date d = (Date) spinner.getValue();
-			return ResourceFactory.createTypedLiteral(d);
+			if ((originalStatement == null) ||
+					!originalStatement.getObject().asLiteral().getValue().equals(d)) {
+				return ResourceFactory.createTypedLiteral(d);
+			}
+			return null;
 		}
 
 		@Override
@@ -108,6 +117,15 @@ public class DateTimePropertyPanelFactory extends PropertyPanelFactorySPI{
 				return 200;
 			}
 			return Integer.MIN_VALUE;
+		}
+
+		@Override
+		public JComponent getDisplayComponent(
+				SemanticAnnotationProfile semanticAnnotationProfile,
+				Statement statement) {
+			JComponent result = getInputComponent(semanticAnnotationProfile, statement);
+			result.setEnabled(false);
+			return result;
 		}
 
 

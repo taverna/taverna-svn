@@ -15,7 +15,6 @@ public class ComponentConfigureMenuAction extends
 
 	@Override
 	protected Action createAction() {
-		ComponentActivity a = findActivity();
 		Action result = null;
 		result = new ComponentConfigureAction(findActivity(),
 				getParentFrame());
