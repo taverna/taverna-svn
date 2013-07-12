@@ -23,6 +23,7 @@ package net.sf.taverna.t2.component.annotation;
 import java.awt.Component;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import javax.swing.JComponent;
 import javax.swing.JSpinner;
@@ -104,7 +105,9 @@ public class DateTimePropertyPanelFactory extends PropertyPanelFactorySPI{
 			Date d = (Date) spinner.getValue();
 			if ((originalStatement == null) ||
 					!originalStatement.getObject().asLiteral().getValue().equals(d)) {
-				return ResourceFactory.createTypedLiteral(d);
+				Calendar cal = GregorianCalendar.getInstance();
+				cal.setTime(d);
+				return ResourceFactory.createTypedLiteral(cal);
 			}
 			return null;
 		}
