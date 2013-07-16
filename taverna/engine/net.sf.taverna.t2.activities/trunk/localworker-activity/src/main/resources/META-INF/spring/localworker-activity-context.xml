@@ -5,6 +5,7 @@
 
 	<bean id="localworkerActivityFactory" class="net.sf.taverna.t2.activities.localworker.LocalworkerActivityFactory">
 		<property name="applicationConfiguration" ref="applicationConfiguration" />
+		<property name="edits" ref="edits" />
 	</bean>
 
 </beans>
