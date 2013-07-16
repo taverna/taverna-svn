@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import uk.org.taverna.configuration.app.ApplicationConfiguration;
 
+import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityFactory;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityOutputPort;
@@ -42,6 +43,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityOutputPort;
 public class LocalworkerActivityFactory implements ActivityFactory {
 
 	private ApplicationConfiguration applicationConfiguration;
+	private Edits edits;
 
 	@Override
 	public LocalworkerActivity createActivity() {
@@ -57,7 +59,7 @@ public class LocalworkerActivityFactory implements ActivityFactory {
 	public JsonNode getActivityConfigurationSchema() {
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
- 			return objectMapper.readTree(getClass().getResource("/schema.json"));
+			return objectMapper.readTree(getClass().getResource("/schema.json"));
 		} catch (IOException e) {
 			return objectMapper.createObjectNode();
 		}
@@ -69,12 +71,34 @@ public class LocalworkerActivityFactory implements ActivityFactory {
 
 	@Override
 	public Set<ActivityInputPort> getInputPorts(JsonNode configuration) {
-		return new HashSet<>();
+		Set<ActivityInputPort> inputPorts = new HashSet<>();
+		if (!configuration.get("isAltered").booleanValue()) {
+			if (configuration.has("inputPorts")) {
+				for (JsonNode inputPort : configuration.get("inputPorts")) {
+					inputPorts.add(edits.createActivityInputPort(inputPort.get("name").textValue(),
+							inputPort.get("depth").intValue(), true, null, String.class));
+				}
+			}
+		}
+		return inputPorts;
 	}
 
 	@Override
 	public Set<ActivityOutputPort> getOutputPorts(JsonNode configuration) {
-		return new HashSet<>();
+		Set<ActivityOutputPort> outputPorts = new HashSet<>();
+		if (!configuration.get("isAltered").booleanValue()) {
+			if (configuration.has("outputPorts")) {
+				for (JsonNode inputPort : configuration.get("outputPorts")) {
+					outputPorts.add(edits.createActivityOutputPort(inputPort.get("name").textValue(),
+							inputPort.get("depth").intValue(), inputPort.get("granularDepth").intValue()));
+				}
+			}
+		}
+		return outputPorts;
+	}
+
+	public void setEdits(Edits edits) {
+		this.edits = edits;
 	}
 
 }
