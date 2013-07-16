@@ -15,6 +15,13 @@
             "description": "The name of the localworker",
             "type": "string",
             "required": true
+        }.
+        "isAltered": {
+            "title": "Is Localworker Altered",
+            "description": "Has the localworker been altered",
+            "type": "boolean",
+            "default": false,
+            "required": true
         }
     }
 }
