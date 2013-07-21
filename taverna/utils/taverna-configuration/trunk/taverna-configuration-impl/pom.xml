@@ -26,10 +26,11 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.axis</groupId>
-			<artifactId>com.springsource.org.apache.axis</artifactId>
-			<version>${axis.version}</version>
+			<groupId>net.sf.taverna</groupId>
+			<artifactId>wsdl-generic</artifactId>
+			<version>1.10.0</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.log4j</groupId>
 			<artifactId>com.springsource.org.apache.log4j</artifactId>
