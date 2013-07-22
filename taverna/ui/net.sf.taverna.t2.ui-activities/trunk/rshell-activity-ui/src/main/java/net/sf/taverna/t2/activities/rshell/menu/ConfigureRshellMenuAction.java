@@ -20,11 +20,11 @@
  ******************************************************************************/
 package net.sf.taverna.t2.activities.rshell.menu;
 
-import java.net.URI;
-
 import javax.swing.Action;
 
-import net.sf.taverna.t2.activities.rshell.views.RshellActivityConfigurationAction;
+import net.sf.taverna.t2.activities.rshell.actions.RshellActivityConfigurationAction;
+import net.sf.taverna.t2.activities.rshell.servicedescriptions.RshellTemplateService;
+import net.sf.taverna.t2.servicedescriptions.ServiceDescriptionRegistry;
 import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
 import net.sf.taverna.t2.workbench.activitytools.AbstractConfigureActivityMenuAction;
 import net.sf.taverna.t2.workbench.edits.EditManager;
@@ -32,19 +32,20 @@ import net.sf.taverna.t2.workbench.file.FileManager;
 
 public class ConfigureRshellMenuAction extends AbstractConfigureActivityMenuAction {
 
-	private static final URI ACTIVITY_TYPE = URI.create("http://ns.taverna.org.uk/2010/activity/rshell");
 	private EditManager editManager;
 	private FileManager fileManager;
 	private ActivityIconManager activityIconManager;
+	private ServiceDescriptionRegistry serviceDescriptionRegistry;
 
 	public ConfigureRshellMenuAction() {
-		super(ACTIVITY_TYPE);
+		super(RshellTemplateService.ACTIVITY_TYPE);
 	}
 
 	@Override
 	protected Action createAction() {
 		RshellActivityConfigurationAction configAction = new RshellActivityConfigurationAction(
-				findActivity(), getParentFrame(), editManager, fileManager, activityIconManager);
+				findActivity(), getParentFrame(), editManager, fileManager, activityIconManager,
+				serviceDescriptionRegistry);
 		addMenuDots(configAction);
 		return configAction;
 	}
@@ -59,6 +60,10 @@ public class ConfigureRshellMenuAction extends AbstractConfigureActivityMenuActi
 
 	public void setActivityIconManager(ActivityIconManager activityIconManager) {
 		this.activityIconManager = activityIconManager;
+	}
+
+	public void setServiceDescriptionRegistry(ServiceDescriptionRegistry serviceDescriptionRegistry) {
+		this.serviceDescriptionRegistry = serviceDescriptionRegistry;
 	}
 
 }

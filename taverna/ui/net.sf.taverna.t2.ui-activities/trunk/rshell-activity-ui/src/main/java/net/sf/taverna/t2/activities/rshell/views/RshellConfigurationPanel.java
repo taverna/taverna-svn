@@ -27,69 +27,67 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
 
-import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
 import javax.swing.JTextField;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 
-import net.sf.taverna.t2.activities.rshell.RshellConnectionSettings;
+import net.sf.taverna.t2.activities.rshell.RshellPortTypes;
+import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SemanticTypes;
 import net.sf.taverna.t2.lang.ui.EditorKeySetUtil;
-import net.sf.taverna.t2.servicedescriptions.ServiceDescription;
+import net.sf.taverna.t2.workbench.ui.credentialmanager.CredentialManagerUI;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityPortConfiguration;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ListConfigurationComponent;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.MultiPageActivityConfigurationPanel;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ScriptConfigurationComponent;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ValidatingTextField;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ValidatingTextGroup;
-
-import org.apache.log4j.Logger;
-
 import uk.org.taverna.scufl2.api.activity.Activity;
-import uk.org.taverna.scufl2.api.common.Scufl2Tools;
-import uk.org.taverna.scufl2.api.property.PropertyLiteral;
-import uk.org.taverna.scufl2.api.property.PropertyResource;
-import uk.org.taverna.scufl2.api.property.UnexpectedPropertyException;
+import uk.org.taverna.scufl2.api.port.InputActivityPort;
+import uk.org.taverna.scufl2.api.port.OutputActivityPort;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Component for configuring an Rshell activity.
  *
  * @author David Withers
  */
+@SuppressWarnings("serial")
 public class RshellConfigurationPanel extends MultiPageActivityConfigurationPanel {
 
-	private static final Logger logger = Logger.getLogger(RshellConfigurationPanel.class);
-	private static final URI ACTIVITY_TYPE = URI.create("http://ns.taverna.org.uk/2010/activity/rshell");
-
-	private ServiceDescription serviceDescription;
-
 	private ScriptConfigurationComponent scriptConfigurationComponent;
-	private List<PropertyResource> inputPortDefinitions, outputPortDefinitions;
 	private ValidatingTextGroup inputTextGroup, outputTextGroup;
+	protected CredentialManagerUI credManagerUI;
 
-	public RshellConfigurationPanel(Activity activity, ServiceDescription serviceDescription) {
+	public RshellConfigurationPanel(Activity activity) {
 		super(activity);
-		this.serviceDescription = serviceDescription;
 		initialise();
 	}
 
 	@Override
 	protected void initialise() {
-		inputPortDefinitions = getPortDefinitions(activity.getInputPorts());
-		outputPortDefinitions = getPortDefinitions(activity.getOutputPorts());
+		json = getConfiguration().getJson().deepCopy();
+		List<ActivityPortConfiguration> inputPorts = getInputPorts();
+		inputPorts.clear();
+		for (InputActivityPort activityPort : getActivity().getInputPorts()) {
+			inputPorts.add(new RshellActivityPortConfiguration(activityPort, getInputSemanticType(activityPort.getName())));
+		}
+		List<ActivityPortConfiguration> outputPorts = getOutputPorts();
+		outputPorts.clear();
+		for (OutputActivityPort activityPort : getActivity().getOutputPorts()) {
+			outputPorts.add(new RshellActivityPortConfiguration(activityPort, getOutputSemanticType(activityPort.getName())));
+		}
 		removeAllPages();
 		addPage("Script", createScriptEditPanel());
 		addPage("Input ports", createInputPanel());
@@ -99,43 +97,68 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 
 	@Override
 	public boolean checkValues() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public void noteConfiguration() {
-		setPropertyResource(serviceDescription.getActivityConfiguration().getPropertyResource());
 		setProperty("script", scriptConfigurationComponent.getScript());
-		for (PropertyResource propertyResource : inputPortDefinitions) {
-			propertyResource.addProperty(Scufl2Tools.PORT_DEFINITION.resolve("#inputPortDefinition"), propertyResource);
+		ObjectNode json = getJson();
+		List<ActivityPortConfiguration> inputPorts = getInputPorts();
+		if (inputPorts.isEmpty()) {
+			json.remove("inputSemanticTypes");
+		} else {
+			ArrayNode semanticTypes = json.arrayNode();
+			for (ActivityPortConfiguration activityPortConfiguration : inputPorts) {
+				RshellActivityPortConfiguration portConfiguration = (RshellActivityPortConfiguration) activityPortConfiguration;
+				ObjectNode semanticType = json.objectNode();
+				semanticTypes.add(semanticType);
+				semanticType.put("name", portConfiguration.getName());
+				semanticType.put("semanticType", portConfiguration.getSemanticType().name());
+			}
+			json.put("inputSemanticTypes", semanticTypes);
 		}
-		for (PropertyResource propertyResource : outputPortDefinitions) {
-			propertyResource.addProperty(Scufl2Tools.PORT_DEFINITION.resolve("#outputPortDefinition"), propertyResource);
+		List<ActivityPortConfiguration> outputPorts = getOutputPorts();
+		if (outputPorts.isEmpty()) {
+			json.remove("outputSemanticTypes");
+		} else {
+			ArrayNode semanticTypes = json.arrayNode();
+			for (ActivityPortConfiguration activityPortConfiguration : outputPorts) {
+				RshellActivityPortConfiguration portConfiguration = (RshellActivityPortConfiguration) activityPortConfiguration;
+				ObjectNode semanticType = json.objectNode();
+				semanticTypes.add(semanticType);
+				semanticType.put("name", portConfiguration.getName());
+				semanticType.put("semanticType", portConfiguration.getSemanticType().name());
+			}
+			json.put("outputSemanticTypes", semanticTypes);
 		}
 	}
 
 	private Component createScriptEditPanel() {
 		Set<String> keywords = EditorKeySetUtil.loadKeySet(getClass().getResourceAsStream("keys.txt"));
-		scriptConfigurationComponent = new ScriptConfigurationComponent(getProperty("script"), keywords, "Rshell", ".r");
+		Set<String> ports = new HashSet<>();
+		for (InputActivityPort ip : getActivity().getInputPorts()) {
+			ports.add(ip.getName());
+		}
+		for (OutputActivityPort op : getActivity().getOutputPorts()) {
+			ports.add(op.getName());
+		}
+		scriptConfigurationComponent = new ScriptConfigurationComponent(getProperty("script"), keywords, ports, "Rshell", ".r");
 		return scriptConfigurationComponent;
 	}
 
 	private Component createInputPanel() {
 		inputTextGroup = new ValidatingTextGroup();
-		ListConfigurationComponent<PropertyResource> inputPanel = new ListConfigurationComponent<PropertyResource>("Input Port", inputPortDefinitions) {
+		ListConfigurationComponent<ActivityPortConfiguration> inputPanel = new ListConfigurationComponent<ActivityPortConfiguration>(
+				"Input Port", getInputPorts()) {
 			@Override
-			protected Component createItemComponent(PropertyResource portDefinition) {
-				return new PortComponent(portDefinition, inputTextGroup);
+			protected Component createItemComponent(ActivityPortConfiguration port) {
+				return new PortComponent(port, inputTextGroup);
 			}
 
 			@Override
-			protected PropertyResource createDefaultItem() {
-				PropertyResource portDefinition = new PropertyResource();
-				portDefinition.setTypeURI(Scufl2Tools.PORT_DEFINITION.resolve("#InputPortDefinition"));
-				portDefinition.addProperty(Scufl2Tools.PORT_DEFINITION.resolve("#name"), new PropertyLiteral("in"));
-				portDefinition.addProperty(Scufl2Tools.PORT_DEFINITION.resolve("#depth"), new PropertyLiteral(0));
-				return portDefinition;
+			protected ActivityPortConfiguration createDefaultItem() {
+				return new RshellActivityPortConfiguration("in", SemanticTypes.STRING);
 			}
 		};
 		return inputPanel;
@@ -143,22 +166,19 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 
 	private Component createOutputPanel() {
 		outputTextGroup = new ValidatingTextGroup();
-		ListConfigurationComponent<PropertyResource> inputPanel = new ListConfigurationComponent<PropertyResource>("Output Port", outputPortDefinitions) {
+		ListConfigurationComponent<ActivityPortConfiguration> outputPanel = new ListConfigurationComponent<ActivityPortConfiguration>(
+				"Output Port", getOutputPorts()) {
 			@Override
-			protected Component createItemComponent(PropertyResource portDefinition) {
-				return new PortComponent(portDefinition, outputTextGroup);
+			protected Component createItemComponent(ActivityPortConfiguration port) {
+				return new PortComponent(port, outputTextGroup);
 			}
 
 			@Override
-			protected PropertyResource createDefaultItem() {
-				PropertyResource portDefinition = new PropertyResource();
-				portDefinition.setTypeURI(Scufl2Tools.PORT_DEFINITION.resolve("#OutputPortDefinition"));
-				portDefinition.addProperty(Scufl2Tools.PORT_DEFINITION.resolve("#name"), new PropertyLiteral("out"));
-				portDefinition.addProperty(Scufl2Tools.PORT_DEFINITION.resolve("#depth"), new PropertyLiteral(0));
-				return portDefinition;
+			protected ActivityPortConfiguration createDefaultItem() {
+				return new RshellActivityPortConfiguration("out", SemanticTypes.STRING);
 			}
 		};
-		return inputPanel;
+		return outputPanel;
 	}
 
 	private Component createSettingsPanel() {
@@ -186,22 +206,21 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 
 		Dimension dimension = new Dimension(0, 0);
 
-		JTextField hostnameField = new JTextField();
+		final JTextField hostnameField = new JTextField();
 		JLabel hostnameLabel = new JLabel("Hostname");
 		hostnameField.setSize(dimension);
 		hostnameLabel.setSize(dimension);
 		hostnameLabel.setLabelFor(hostnameField);
-		RshellConnectionSettings connectionSettings = configuration
-				.getConnectionSettings();
+		JsonNode connectionSettings = getJson().get("connection");
 
-		hostnameField.setText(connectionSettings.getHost());
+		hostnameField.setText(connectionSettings.get("hostname").textValue());
 
-		JTextField portField = new JTextField();
+		final JTextField portField = new JTextField();
 		JLabel portLabel = new JLabel("Port");
 		portField.setSize(dimension);
 		portLabel.setSize(dimension);
 		portLabel.setLabelFor(portField);
-		portField.setText(Integer.toString(connectionSettings.getPort()));
+		portField.setText(connectionSettings.get("port").asText());
 
 		// "Set username and password" button
 		ActionListener usernamePasswordListener = new ActionListener() {
@@ -216,7 +235,7 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 
 		JCheckBox keepSessionAliveCheckBox = new JCheckBox("Keep Session Alive");
 		keepSessionAliveCheckBox.setSelected(connectionSettings
-					.isKeepSessionAlive());
+					.get("keepSessionAlive").booleanValue());
 
 		settingsPanel.add(hostnameLabel, labelConstraints);
 		labelConstraints.gridy++;
@@ -238,61 +257,63 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 		return settingsPanel;
 	}
 
+	private SemanticTypes getInputSemanticType(String name) {
+		for (JsonNode jsonNode : getJson().get("inputSemanticTypes")) {
+			if (jsonNode.get("name").textValue().equals(name)) {
+				return SemanticTypes.valueOf(jsonNode.get("semanticType").textValue());
+			}
+		}
+		return null;
+	}
+
+	private SemanticTypes getOutputSemanticType(String name) {
+		for (JsonNode jsonNode : getJson().get("outputSemanticTypes")) {
+			if (jsonNode.get("name").textValue().equals(name)) {
+				return SemanticTypes.valueOf(jsonNode.get("semanticType").textValue());
+			}
+		}
+		return null;
+	}
+
 	class PortComponent extends JPanel {
 
 		private ValidatingTextField nameField;
-		private JComboBox comboBox;
-		private PropertyLiteral nameProperty;
-		private PropertyLiteral dataTypeProperty;
+		private JComboBox<SemanticTypes> semanticTypeSelector;
 		private final ValidatingTextGroup validatingTextGroup;
 
-		public PortComponent(PropertyResource portDefinition, ValidatingTextGroup validatingTextGroup) {
+		public PortComponent(final ActivityPortConfiguration portConfiguration,
+				ValidatingTextGroup validatingTextGroup) {
+			final RshellActivityPortConfiguration rshellPortConfiguration = (RshellActivityPortConfiguration) portConfiguration;
 			this.validatingTextGroup = validatingTextGroup;
-			try {
-				SortedSet<PropertyLiteral> properties = portDefinition.getPropertiesAsLiterals(Scufl2Tools.PORT_DEFINITION.resolve("#name"));
-				for (PropertyLiteral propertyLiteral : properties) {
-					nameProperty = propertyLiteral;
-					break;
-				}
-			} catch (UnexpectedPropertyException e) {
-				logger.warn(e);
-			}
-			try {
-				SortedSet<PropertyLiteral> properties = portDefinition.getPropertiesAsLiterals(Scufl2Tools.PORT_DEFINITION.resolve("#dataType"));
-				for (PropertyLiteral propertyLiteral : properties) {
-					dataTypeProperty = propertyLiteral;
-					break;
-				}
-			} catch (UnexpectedPropertyException e) {
-				logger.warn(e);
-			}
 
-			nameField = new ValidatingTextField(nameProperty.getLiteralValue());
+			nameField = new ValidatingTextField(portConfiguration.getName());
 			validatingTextGroup.addValidTextComponent(nameField);
 			nameField.getDocument().addDocumentListener(new DocumentListener() {
 				@Override
 				public void removeUpdate(DocumentEvent e) {
-					nameProperty.setLiteralValue(nameField.getText());
+					portConfiguration.setName(nameField.getText());
 				}
 
 				@Override
 				public void insertUpdate(DocumentEvent e) {
-					nameProperty.setLiteralValue(nameField.getText());
+					portConfiguration.setName(nameField.getText());
 				}
 
 				@Override
 				public void changedUpdate(DocumentEvent e) {
-					nameProperty.setLiteralValue(nameField.getText());
+					portConfiguration.setName(nameField.getText());
 				}
 			});
 
-			comboBox = new JComboBox();
-			comboBox.addActionListener(new ActionListener() {
+			semanticTypeSelector = new JComboBox<SemanticTypes>(RshellPortTypes.getInputSymanticTypes());
+			semanticTypeSelector.setSelectedItem(rshellPortConfiguration.getSemanticType());
+			semanticTypeSelector.setRenderer(new PortTypesListCellRenderer());
+			semanticTypeSelector.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					dataTypeProperty.setLiteralValue(comboBox.getSelectedItem());
+					rshellPortConfiguration.setSemanticType((SemanticTypes) semanticTypeSelector.getSelectedItem());
 				}
-			})
+			});
 
 			setLayout(new GridBagLayout());
 			GridBagConstraints c = new GridBagConstraints();
@@ -304,7 +325,7 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 			c.fill = GridBagConstraints.NONE;
 			c.weightx = 0;
 			add(new JLabel("Type"), c);
-			add(comboBox, c);
+			add(semanticTypeSelector, c);
 
 		}
 
@@ -313,4 +334,5 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 		}
 
 	}
+
 }

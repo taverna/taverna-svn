@@ -57,7 +57,7 @@ public class RshellActivityContextualViewFactory implements ContextualViewFactor
 	private ServiceDescriptionRegistry serviceDescriptionRegistry;
 
 	public boolean canHandle(Object object) {
-		return object instanceof Activity && ((Activity) object).getConfigurableType().equals(ACTIVITY_TYPE);
+		return object instanceof Activity && ((Activity) object).getType().equals(ACTIVITY_TYPE);
 	}
 
 	public List<ContextualView> getViews(Activity activity) {

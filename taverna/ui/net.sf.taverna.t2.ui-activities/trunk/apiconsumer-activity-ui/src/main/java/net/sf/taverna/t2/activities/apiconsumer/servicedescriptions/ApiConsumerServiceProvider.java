@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package net.sf.taverna.t2.activities.apiconsumer.servicedescriptions;
 
@@ -16,7 +16,6 @@ import javax.swing.Icon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivity;
 import net.sf.taverna.t2.lang.ui.ExtensionFileFilter;
 import net.sf.taverna.t2.servicedescriptions.AbstractConfigurableServiceProvider;
 import net.sf.taverna.t2.servicedescriptions.CustomizedConfigurePanelProvider;
@@ -27,30 +26,32 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 
+import uk.org.taverna.configuration.app.ApplicationConfiguration;
+
 /**
  * @author alanrw
- *
+ * @author David Withers
  */
-public class ApiConsumerServiceProvider  extends
-AbstractConfigurableServiceProvider<ApiConsumerServiceProviderConfig>
-implements
-CustomizedConfigurePanelProvider<ApiConsumerServiceProviderConfig>{
+public class ApiConsumerServiceProvider extends
+		AbstractConfigurableServiceProvider<ApiConsumerServiceProviderConfig> implements
+		CustomizedConfigurePanelProvider<ApiConsumerServiceProviderConfig> {
 
 	private static Logger logger = Logger.getLogger(ApiConsumerServiceProvider.class);
-	
+
 	private static final URI providerId = URI
-	.create("http://taverna.sf.net/2010/service-provider/apiconsumer");
-	
+			.create("http://taverna.sf.net/2010/service-provider/apiconsumer");
+
+	private File libDir;
+
 	public ApiConsumerServiceProvider() {
 		super(new ApiConsumerServiceProviderConfig());
 	}
 
 	public void createCustomizedConfigurePanel(
-			net.sf.taverna.t2.servicedescriptions.CustomizedConfigurePanelProvider.CustomizedConfigureCallBack<ApiConsumerServiceProviderConfig> callBack) {
+			CustomizedConfigurePanelProvider.CustomizedConfigureCallBack<ApiConsumerServiceProviderConfig> callBack) {
 		JFileChooser fc = new JFileChooser();
 		Preferences prefs = Preferences.userNodeForPackage(getClass());
-		String curDir = prefs
-				.get("currentDir", System.getProperty("user.home"));
+		String curDir = prefs.get("currentDir", System.getProperty("user.home"));
 		fc.setDialogTitle("Select API consumer definition file");
 		fc.resetChoosableFileFilters();
 		fc.setFileFilter(new ExtensionFileFilter(new String[] { "xml" }));
@@ -59,25 +60,23 @@ CustomizedConfigurePanelProvider<ApiConsumerServiceProviderConfig>{
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			prefs.put("currentDir", fc.getCurrentDirectory().toString());
 			File file = fc.getSelectedFile();
-			callBack.newProviderConfiguration(new ApiConsumerServiceProviderConfig(file.getAbsolutePath()));
-			JOptionPane
-					.showMessageDialog(
-							null,
-							"Make sure you also copy the API jar,\nand any jars it depends on, to\n" +  ApiConsumerActivity.libDir + "\n\n" +
-							"and configure any API consumer services\nto select those jars",
-							"Information message",
-							JOptionPane.INFORMATION_MESSAGE);
+			callBack.newProviderConfiguration(new ApiConsumerServiceProviderConfig(file
+					.getAbsolutePath()));
+			JOptionPane.showMessageDialog(null,
+					"Make sure you also copy the API jar,\nand any jars it depends on, to\n"
+							+ libDir + "\n\n"
+							+ "and configure any API consumer services\nto select those jars",
+					"Information message", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 
-	public void findServiceDescriptionsAsync(
-			FindServiceDescriptionsCallBack callback) {
+	public void findServiceDescriptionsAsync(FindServiceDescriptionsCallBack callback) {
 		ApiConsumerServiceProviderConfig config = getConfiguration();
-		logger.info("About to parse API Consumer definition: "+ config.getAbsolutePath());
+		logger.info("About to parse API Consumer definition: " + config.getAbsolutePath());
 
 		try {
 			File apiconsumerDefinitionFile = new File(config.getAbsolutePath());
-			
+
 			List<ApiConsumerServiceDescription> descriptions = new ArrayList<ApiConsumerServiceDescription>();
 
 			// Load the XML document into a JDOM Document
@@ -102,15 +101,12 @@ CustomizedConfigurePanelProvider<ApiConsumerServiceProviderConfig>{
 
 					String methodName = methodElement.getAttributeValue("name");
 					String methodType = methodElement.getAttributeValue("type");
-					boolean methodStatic = methodElement.getAttributeValue(
-							"static", "false").equals("true");
-					boolean methodConstructor = methodElement
-							.getAttributeValue("constructor", "false").equals(
-									"true");
-					int dimension = Integer.parseInt(methodElement
-							.getAttributeValue("dimension"));
-					String description = methodElement.getChild("Description")
-							.getTextTrim();
+					boolean methodStatic = methodElement.getAttributeValue("static", "false")
+							.equals("true");
+					boolean methodConstructor = methodElement.getAttributeValue("constructor",
+							"false").equals("true");
+					int dimension = Integer.parseInt(methodElement.getAttributeValue("dimension"));
+					String description = methodElement.getChild("Description").getTextTrim();
 					List<?> paramList = methodElement.getChildren("Parameter");
 					String[] pNames = new String[paramList.size()];
 					String[] pTypes = new String[paramList.size()];
@@ -118,15 +114,13 @@ CustomizedConfigurePanelProvider<ApiConsumerServiceProviderConfig>{
 					int count = 0;
 					for (Iterator<?> k = paramList.iterator(); k.hasNext();) {
 						Element parameterElement = (Element) k.next();
-						pNames[count] = parameterElement
-								.getAttributeValue("name");
-						pTypes[count] = parameterElement
-								.getAttributeValue("type");
+						pNames[count] = parameterElement.getAttributeValue("name");
+						pTypes[count] = parameterElement.getAttributeValue("type");
 						pDimensions[count] = Integer.parseInt(parameterElement
 								.getAttributeValue("dimension"));
 						count++;
 					}
-					
+
 					ApiConsumerServiceDescription serviceDescription = new ApiConsumerServiceDescription();
 					serviceDescription.setApiConsumerName(apiConsumerName);
 					serviceDescription.setApiConsumerDescription(apiConsumerDescription);
@@ -161,7 +155,8 @@ CustomizedConfigurePanelProvider<ApiConsumerServiceProviderConfig>{
 	@Override
 	public String toString() {
 		if (getConfiguration() != null) {
-		return ApiConsumerServiceDescription.API_CONSUMER_SERVICE + " " + getConfiguration().getAbsolutePath();
+			return ApiConsumerServiceDescription.API_CONSUMER_SERVICE + " "
+					+ getConfiguration().getAbsolutePath();
 		}
 		return ApiConsumerServiceDescription.API_CONSUMER_SERVICE;
 	}
@@ -177,4 +172,7 @@ CustomizedConfigurePanelProvider<ApiConsumerServiceProviderConfig>{
 		return providerId.toString();
 	}
 
+	public void setApplicationConfiguration(ApplicationConfiguration applicationConfiguration) {
+		libDir = new File(applicationConfiguration.getApplicationHomeDir(), "lib");
+	}
 }

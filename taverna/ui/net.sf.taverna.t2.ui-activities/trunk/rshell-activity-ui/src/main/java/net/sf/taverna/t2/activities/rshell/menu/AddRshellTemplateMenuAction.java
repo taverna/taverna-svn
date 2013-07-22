@@ -25,10 +25,12 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.net.URI;
 
+import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.KeyStroke;
 
 import net.sf.taverna.t2.activities.rshell.servicedescriptions.RshellTemplateService;
+import net.sf.taverna.t2.servicedescriptions.ServiceDescriptionRegistry;
 import net.sf.taverna.t2.ui.menu.AbstractMenuAction;
 import net.sf.taverna.t2.ui.menu.DesignOnlyAction;
 import net.sf.taverna.t2.ui.menu.MenuManager;
@@ -37,8 +39,7 @@ import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.selection.SelectionManager;
 import net.sf.taverna.t2.workbench.ui.workflowview.WorkflowView;
 import net.sf.taverna.t2.workbench.views.graph.menu.InsertMenu;
-
-import org.apache.log4j.Logger;
+import uk.org.taverna.commons.services.ServiceRegistry;
 
 /**
  * An action to add a Rshell activity + a wrapping processor to the workflow.
@@ -50,14 +51,10 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("serial")
 public class AddRshellTemplateMenuAction extends AbstractMenuAction {
 
-	private static final URI ACTIVITY_TYPE = URI.create("http://ns.taverna.org.uk/2010/activity/rshell");
-
 	private static final String ADD_RSHELL = "RShell";
 
 	private static final URI ADD_RSHELL_URI = URI
 			.create("http://taverna.sf.net/2008/t2workbench/menu#graphMenuAddRShell");
-
-	private static Logger logger = Logger.getLogger(AddRshellTemplateMenuAction.class);
 
 	private EditManager editManager;
 
@@ -66,6 +63,10 @@ public class AddRshellTemplateMenuAction extends AbstractMenuAction {
 	private SelectionManager selectionManager;
 
 	private ActivityIconManager activityIconManager;
+
+	private ServiceDescriptionRegistry serviceDescriptionRegistry;
+
+	private ServiceRegistry serviceRegistry;
 
 	public AddRshellTemplateMenuAction() {
 		super(InsertMenu.INSERT, 600, ADD_RSHELL_URI);
@@ -76,10 +77,10 @@ public class AddRshellTemplateMenuAction extends AbstractMenuAction {
 		return new AddRShellMenuAction();
 	}
 
-	protected class AddRShellMenuAction extends DesignOnlyAction {
+	protected class AddRShellMenuAction extends AbstractAction implements DesignOnlyAction {
 		AddRShellMenuAction() {
 			super();
-			putValue(SMALL_ICON, activityIconManager.iconForActivity(ACTIVITY_TYPE));
+			putValue(SMALL_ICON, activityIconManager.iconForActivity(RshellTemplateService.ACTIVITY_TYPE));
 			putValue(NAME, ADD_RSHELL);
 			putValue(SHORT_DESCRIPTION, "RShell");
 			putValue(
@@ -90,8 +91,9 @@ public class AddRshellTemplateMenuAction extends AbstractMenuAction {
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			WorkflowView.importServiceDescription(RshellTemplateService.getServiceDescription(),
-					false, editManager, menuManager, selectionManager);
+			WorkflowView.importServiceDescription(
+					serviceDescriptionRegistry.getServiceDescription(RshellTemplateService.ACTIVITY_TYPE), false, editManager,
+					menuManager, selectionManager, serviceRegistry);
 		}
 	}
 
@@ -109,6 +111,14 @@ public class AddRshellTemplateMenuAction extends AbstractMenuAction {
 
 	public void setActivityIconManager(ActivityIconManager activityIconManager) {
 		this.activityIconManager = activityIconManager;
+	}
+
+	public void setServiceDescriptionRegistry(ServiceDescriptionRegistry serviceDescriptionRegistry) {
+		this.serviceDescriptionRegistry = serviceDescriptionRegistry;
+	}
+
+	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+		this.serviceRegistry = serviceRegistry;
 	}
 
 }

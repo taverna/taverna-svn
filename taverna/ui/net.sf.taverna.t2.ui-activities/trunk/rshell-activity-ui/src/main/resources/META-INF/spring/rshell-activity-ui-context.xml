@@ -12,17 +12,22 @@
 			<property name="menuManager" ref="menuManager" />
 			<property name="selectionManager" ref="selectionManager" />
 			<property name="activityIconManager" ref="activityIconManager" />
+			<property name="serviceDescriptionRegistry" ref="serviceDescriptionRegistry" />
+			<property name="serviceRegistry" ref="serviceRegistry" />
 	</bean>
 	<bean id="AddRshellTemplateMenuAction" class="net.sf.taverna.t2.activities.rshell.menu.AddRshellTemplateMenuAction">
 			<property name="editManager" ref="editManager" />
 			<property name="menuManager" ref="menuManager" />
 			<property name="selectionManager" ref="selectionManager" />
 			<property name="activityIconManager" ref="activityIconManager" />
+			<property name="serviceDescriptionRegistry" ref="serviceDescriptionRegistry" />
+			<property name="serviceRegistry" ref="serviceRegistry" />
 	</bean>
 	<bean id="ConfigureRshellMenuAction" class="net.sf.taverna.t2.activities.rshell.menu.ConfigureRshellMenuAction">
 			<property name="editManager" ref="editManager" />
 			<property name="fileManager" ref="fileManager" />
 			<property name="activityIconManager" ref="activityIconManager" />
+			<property name="serviceDescriptionRegistry" ref="serviceDescriptionRegistry" />
 	</bean>
 
 	<bean id="RshellActivityContextualViewFactory" class="net.sf.taverna.t2.activities.rshell.views.RshellActivityContextualViewFactory">
@@ -30,6 +35,7 @@
 			<property name="fileManager" ref="fileManager" />
 			<property name="activityIconManager" ref="activityIconManager" />
 			<property name="colourManager" ref="colourManager" />
+			<property name="serviceDescriptionRegistry" ref="serviceDescriptionRegistry" />
 	</bean>
 
 </beans>

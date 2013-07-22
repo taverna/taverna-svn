@@ -18,20 +18,20 @@
 
 	<modules>
 		<!-- <module>all-activity-uis</module> -->
-		<!-- <module>apiconsumer-activity-ui</module> -->
+		<module>apiconsumer-activity-ui</module>
 		<module>beanshell-activity-ui</module>
-		<!-- <module>biomart-activity-ui</module> -->
+		<module>biomart-activity-ui</module>
 		<!-- <module>biomoby-activity-ui</module> -->
 		<!-- <module>dataflow-activity-ui</module> -->
 		<!-- <module>disabled-activity-ui</module> -->
 		<!-- <module>external-tool-activity-ui</module> -->
-		<!-- <module>localworker-activity-ui</module> -->
+		<module>localworker-activity-ui</module>
 		<!-- <module>rest-activity-ui</module> -->
-		<!-- <module>rshell-activity-ui</module> -->
-		<!-- <module>soaplab-activity-ui</module> -->
-		<!-- <module>spreadsheet-import-activity-ui</module> -->
+		<module>rshell-activity-ui</module>
+		<module>soaplab-activity-ui</module>
+		<module>spreadsheet-import-activity-ui</module>
 		<module>stringconstant-activity-ui</module>
-		<!-- <module>unrecognized-activity-ui</module> -->
+		<module>unrecognized-activity-ui</module>
 		<!-- <module>wsdl-activity-ui</module> -->
 		<!-- <module>xpath-activity-ui</module> -->
 	</modules>
@@ -54,7 +54,6 @@
 			<name>myGrid Snapshot Repository</name>
 			<url>http://www.mygrid.org.uk/maven/snapshot-repository</url>
 		</repository>
-
 	</repositories>
 	<scm>
 		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/ui/net.sf.taverna.t2.ui-activities/trunk/</connection>

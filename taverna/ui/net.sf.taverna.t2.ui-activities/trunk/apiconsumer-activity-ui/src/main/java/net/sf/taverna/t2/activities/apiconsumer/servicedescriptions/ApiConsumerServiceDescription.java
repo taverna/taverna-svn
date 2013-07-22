@@ -20,21 +20,25 @@
  ******************************************************************************/
 package net.sf.taverna.t2.activities.apiconsumer.servicedescriptions;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.Icon;
 
-import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivity;
-import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivityConfigurationBean;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescription;
-import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import uk.org.taverna.scufl2.api.configurations.Configuration;
+
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * @author alanrw
- *
+ * @author David Withers
  */
 public class ApiConsumerServiceDescription extends ServiceDescription {
+
+	public static final URI ACTIVITY_TYPE = URI.create("http://ns.taverna.org.uk/2010/activity/apiconsumer");
 
 	static final String API_CONSUMER_SERVICE = "ApiConsumer service";
 
@@ -102,26 +106,40 @@ public class ApiConsumerServiceDescription extends ServiceDescription {
 
 
 	@Override
-	public Class<? extends Activity<ApiConsumerActivityConfigurationBean>> getActivityClass() {
-		return ApiConsumerActivity.class;
+	public URI getActivityType() {
+		return ACTIVITY_TYPE;
 	}
 
 	@Override
-	public ApiConsumerActivityConfigurationBean getActivityConfiguration() {
-		ApiConsumerActivityConfigurationBean bean = new ApiConsumerActivityConfigurationBean();
-		bean.setApiConsumerName(apiConsumerName);
-		bean.setApiConsumerDescription(apiConsumerDescription);
-		bean.setDescription(description);
-		bean.setClassName(className);
-		bean.setMethodName(methodName);
-		bean.setParameterNames(parameterNames);
-		bean.setParameterTypes(parameterTypes);
-		bean.setParameterDimensions(parameterDimensions);
-		bean.setReturnType(returnType);
-		bean.setReturnDimension(returnDimension);
-		bean.setIsMethodConstructor(isConstructor);
-		bean.setIsMethodStatic(isStatic);
-		return bean;
+	public Configuration getActivityConfiguration() {
+		Configuration configuration = new Configuration();
+		configuration.setType(ACTIVITY_TYPE.resolve("#Config"));
+		ObjectNode json = (ObjectNode) configuration.getJson();
+		json.put("apiConsumerName", apiConsumerName);
+		json.put("apiConsumerDescription", apiConsumerDescription);
+		json.put("description", description);
+		json.put("className", className);
+		json.put("methodName", methodName);
+		ArrayNode parameterNamesArray = json.arrayNode();
+		for (String parameterName : parameterNames) {
+			parameterNamesArray.add(parameterName);
+		}
+		json.put("parameterNames", parameterNamesArray);
+		ArrayNode parameterTypesArray = json.arrayNode();
+		for (String parameterType : parameterTypes) {
+			parameterTypesArray.add(parameterType);
+		}
+		json.put("parameterTypes", parameterTypesArray);
+		ArrayNode parameterDimensionsArray = json.arrayNode();
+		for (int parameterDimension : parameterDimensions) {
+			parameterDimensionsArray.add(parameterDimension);
+		}
+		json.put("parameterDimensions", parameterDimensionsArray);
+		json.put("returnType", returnType);
+		json.put("returnDimension", returnDimension);
+		json.put("isMethodConstructor", isConstructor);
+		json.put("isMethodStatic", isStatic);
+		return configuration;
 	}
 
 	@Override
@@ -139,9 +157,8 @@ public class ApiConsumerServiceDescription extends ServiceDescription {
 		return getMethodName();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public List<? extends Comparable> getPath() {
+	public List<? extends Comparable<?>> getPath() {
 		List<String> result;
 		result = Arrays.asList(API_CONSUMER_SERVICE + " : " + getApiConsumerName(), getClassName());
 		return result;

@@ -34,12 +34,13 @@ import javax.swing.Icon;
 import net.sf.taverna.t2.servicedescriptions.AbstractTemplateService;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescription;
 import uk.org.taverna.scufl2.api.configurations.Configuration;
-import uk.org.taverna.scufl2.api.property.PropertyLiteral;
-import uk.org.taverna.scufl2.api.property.PropertyResource;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class RshellTemplateService extends AbstractTemplateService {
 
-	private static final URI ACTIVITY_TYPE = URI.create("http://ns.taverna.org.uk/2010/activity/rshell");
+	public static final URI ACTIVITY_TYPE = URI.create("http://ns.taverna.org.uk/2010/activity/rshell");
+
 	private static final String RSHELL = "Rshell";
 
 	private static final URI providerId = URI
@@ -54,14 +55,17 @@ public class RshellTemplateService extends AbstractTemplateService {
 	public Configuration getActivityConfiguration() {
 		Configuration configuration = new Configuration();
 		configuration.setType(ACTIVITY_TYPE.resolve("#Config"));
-		configuration.getPropertyResource().addPropertyAsString(ACTIVITY_TYPE.resolve("#script"), "");
-		PropertyResource connection = configuration.getPropertyResource().addPropertyAsNewResource(
-				ACTIVITY_TYPE.resolve("#connection"),
-				ACTIVITY_TYPE.resolve("#Connection"));
-		connection.addProperty(ACTIVITY_TYPE.resolve("#hostname"), new PropertyLiteral("localhost"));
-		connection.addProperty(ACTIVITY_TYPE.resolve("#port"), new PropertyLiteral(6311));
-		connection.addProperty(ACTIVITY_TYPE.resolve("#keepSessionAlive"), new PropertyLiteral(false));
-
+		ObjectNode json = (ObjectNode) configuration.getJson();
+		json.put("script", "");
+		json.put("classLoaderSharing", "workflow");
+		ObjectNode connection = json.objectNode();
+		connection.put("hostname", "localhost");
+		connection.put("port", 6311);
+		connection.put("username", "");
+		connection.put("password", "");
+		connection.put("keepSessionAlive", false);
+		connection.put("newRVersion", false);
+		json.put("connection", connection);
 		return configuration;
 	}
 
@@ -79,7 +83,6 @@ public class RshellTemplateService extends AbstractTemplateService {
 		return "A service that allows the calling of R scripts on an R server";
 	}
 
-	@SuppressWarnings("unchecked")
 	public static ServiceDescription getServiceDescription() {
 		RshellTemplateService rts = new RshellTemplateService();
 		return rts.templateService;

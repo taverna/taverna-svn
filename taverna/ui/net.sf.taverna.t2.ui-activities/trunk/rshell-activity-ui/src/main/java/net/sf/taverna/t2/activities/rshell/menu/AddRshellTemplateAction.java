@@ -33,6 +33,7 @@ import java.net.URI;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
+import net.sf.taverna.t2.activities.rshell.servicedescriptions.RshellTemplateService;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescriptionRegistry;
 import net.sf.taverna.t2.ui.menu.AbstractContextualMenuAction;
 import net.sf.taverna.t2.ui.menu.MenuManager;
@@ -40,9 +41,7 @@ import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.selection.SelectionManager;
 import net.sf.taverna.t2.workbench.ui.workflowview.WorkflowView;
-
-import org.apache.log4j.Logger;
-
+import uk.org.taverna.commons.services.ServiceRegistry;
 import uk.org.taverna.scufl2.api.core.Workflow;
 
 /**
@@ -54,18 +53,15 @@ import uk.org.taverna.scufl2.api.core.Workflow;
 @SuppressWarnings("serial")
 public class AddRshellTemplateAction extends AbstractContextualMenuAction {
 
-	private static final URI ACTIVITY_TYPE = URI.create("http://ns.taverna.org.uk/2010/activity/rshell");
-
 	private static final URI insertSection = URI
 			.create("http://taverna.sf.net/2009/contextMenu/insert");
-
-	private static Logger logger = Logger.getLogger(AddRshellTemplateAction.class);
 
 	private EditManager editManager;
 	private MenuManager menuManager;
 	private SelectionManager selectionManager;
 	private ActivityIconManager activityIconManager;
 	private ServiceDescriptionRegistry serviceDescriptionRegistry;
+	private ServiceRegistry serviceRegistry;
 
 	public AddRshellTemplateAction() {
 		super(insertSection, 600);
@@ -80,12 +76,12 @@ public class AddRshellTemplateAction extends AbstractContextualMenuAction {
 	protected Action createAction() {
 
 		AbstractAction action = new AbstractAction("Rshell",
-				activityIconManager.iconForActivity(ACTIVITY_TYPE)) {
+				activityIconManager.iconForActivity(RshellTemplateService.ACTIVITY_TYPE)) {
 
 			public void actionPerformed(ActionEvent e) {
 				WorkflowView.importServiceDescription(
-						serviceDescriptionRegistry.getServiceDescription(ACTIVITY_TYPE), false, editManager,
-						menuManager, selectionManager);
+						serviceDescriptionRegistry.getServiceDescription(RshellTemplateService.ACTIVITY_TYPE), false, editManager,
+						menuManager, selectionManager, serviceRegistry);
 			}
 
 		};
@@ -111,6 +107,10 @@ public class AddRshellTemplateAction extends AbstractContextualMenuAction {
 
 	public void setServiceDescriptionRegistry(ServiceDescriptionRegistry serviceDescriptionRegistry) {
 		this.serviceDescriptionRegistry = serviceDescriptionRegistry;
+	}
+
+	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+		this.serviceRegistry = serviceRegistry;
 	}
 
 }

@@ -25,7 +25,7 @@
  * @author Ian Dunlop
  * @author Alan R Williams
  */
-package net.sf.taverna.t2.activities.rshell.views;
+package net.sf.taverna.t2.activities.rshell.actions;
 
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -34,6 +34,7 @@ import javax.swing.Action;
 import javax.swing.JDialog;
 
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
+import net.sf.taverna.t2.activities.rshell.views.RshellConfigurationPanel;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescriptionRegistry;
 import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
 import net.sf.taverna.t2.workbench.edits.EditManager;
@@ -50,6 +51,7 @@ import uk.org.taverna.scufl2.api.activity.Activity;
  * @author Ian Dunlop
  *
  */
+@SuppressWarnings("serial")
 public class RshellActivityConfigurationAction extends ActivityConfigurationAction {
 
 	public static final String EDIT_RSHELL_SCRIPT = "Edit Rshell script";
@@ -75,8 +77,8 @@ public class RshellActivityConfigurationAction extends ActivityConfigurationActi
 			currentDialog.toFront();
 			return;
 		}
-		final ActivityConfigurationPanel rshellConfigView = new RshellConfigurationPanel(getActivity(), getServiceDescription());
-		final ActivityConfigurationDialog dialog = new ActivityConfigurationDialog(getActivity(), rshellConfigView, editManager, fileManager);
+		final ActivityConfigurationPanel rshellConfigView = new RshellConfigurationPanel(getActivity());
+		final ActivityConfigurationDialog dialog = new ActivityConfigurationDialog(getActivity(), rshellConfigView, editManager);
 
 		ActivityConfigurationAction.setDialog(getActivity(), dialog, fileManager);
 

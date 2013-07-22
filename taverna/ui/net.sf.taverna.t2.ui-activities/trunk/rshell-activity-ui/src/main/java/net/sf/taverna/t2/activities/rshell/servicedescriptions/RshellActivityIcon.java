@@ -34,11 +34,10 @@ import net.sf.taverna.t2.workbench.activityicons.ActivityIconSPI;
  */
 public class RshellActivityIcon implements ActivityIconSPI{
 
-	private static final URI ACTIVITY_TYPE = URI.create("http://ns.taverna.org.uk/2010/activity/rshell");
 	private static Icon icon;
 
 	public int canProvideIconScore(URI activityType) {
-		if (ACTIVITY_TYPE.equals(activityType))
+		if (RshellTemplateService.ACTIVITY_TYPE.equals(activityType))
 			return DEFAULT_ICON + 1;
 		else
 			return NO_ICON;

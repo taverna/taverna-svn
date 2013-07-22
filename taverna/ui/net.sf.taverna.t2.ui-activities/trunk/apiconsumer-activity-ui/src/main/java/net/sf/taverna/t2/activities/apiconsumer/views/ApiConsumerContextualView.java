@@ -21,84 +21,99 @@
 package net.sf.taverna.t2.activities.apiconsumer.views;
 
 import java.awt.Frame;
+import java.util.Iterator;
 
-import javax.help.CSH;
 import javax.swing.Action;
 
-import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivity;
-import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivityConfigurationBean;
 import net.sf.taverna.t2.activities.apiconsumer.actions.ApiConsumerActivityConfigurationAction;
+import net.sf.taverna.t2.servicedescriptions.ServiceDescriptionRegistry;
 import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
 import net.sf.taverna.t2.workbench.configuration.colour.ColourManager;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.ui.actions.activity.HTMLBasedActivityContextualView;
-import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import uk.org.taverna.commons.services.ServiceRegistry;
+import uk.org.taverna.configuration.app.ApplicationConfiguration;
+import uk.org.taverna.scufl2.api.activity.Activity;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * A simple non editable HTML table view over a {@link ApiConsumerActivity}.
- * Clicking on the 'Configure' button shows the editable
- * {@link ApiConsumerConfigView}
+ * Clicking on the 'Configure' button shows the editable {@link ApiConsumerConfigView}
  *
  * @author Alex Nenadic
- *
+ * @author David Withers
  */
 @SuppressWarnings("serial")
-public class ApiConsumerContextualView extends
-		HTMLBasedActivityContextualView<ApiConsumerActivityConfigurationBean> {
+public class ApiConsumerContextualView extends HTMLBasedActivityContextualView {
 
 	private EditManager editManager;
 	private FileManager fileManager;
 	private final ActivityIconManager activityIconManager;
+	private final ServiceDescriptionRegistry serviceDescriptionRegistry;
+	private final ApplicationConfiguration applicationConfiguration;
+	private final ServiceRegistry serviceRegistry;
 
-	public ApiConsumerContextualView(Activity<?> activity, EditManager editManager, FileManager fileManager,
-			ActivityIconManager activityIconManager, ColourManager colourManager) {
+	public ApiConsumerContextualView(Activity activity, EditManager editManager,
+			FileManager fileManager, ActivityIconManager activityIconManager,
+			ColourManager colourManager, ServiceDescriptionRegistry serviceDescriptionRegistry,
+			ApplicationConfiguration applicationConfiguration, ServiceRegistry serviceRegistry) {
 		super(activity, colourManager);
 		this.activityIconManager = activityIconManager;
+		this.serviceDescriptionRegistry = serviceDescriptionRegistry;
+		this.applicationConfiguration = applicationConfiguration;
+		this.serviceRegistry = serviceRegistry;
 		init();
 	}
 
 	private void init() {
-		CSH
-		.setHelpIDString(
-				this,
-		"net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ApiConsumerContextualView");
+		// CSH.setHelpIDString(this,
+		// "net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ApiConsumerContextualView");
 	}
 
 	@Override
 	protected String getRawTableRowsHtml() {
 
-		ApiConsumerActivityConfigurationBean bean = getConfigBean();
+		JsonNode bean = getConfigBean().getJson();
 		String html = "";
 
-		html += "<tr><td>Class name</td>"
-		+ "<td>" + bean.getClassName() + "</td></tr>";
+		html += "<tr><td>Class name</td>" + "<td>" + bean.get("className").textValue()
+				+ "</td></tr>";
 
-		html += "<tr><td>Method name</td>"
-		+ "<td>" + bean.getMethodName() + "</td></tr>";
+		html += "<tr><td>Method name</td>" + "<td>" + bean.get("methodName").textValue()
+				+ "</td></tr>";
 
-		html += "<tr><td>Method description</td>"
-		+ "<td>" + bean.getDescription() + "</td></tr>";
+		html += "<tr><td>Method description</td>" + "<td>" + bean.get("description").textValue()
+				+ "</td></tr>";
 
-		html += "<tr><td>Is method constructor?</td>"
-		+ "<td>" + bean.isMethodConstructor() + "</td></tr>";
+		html += "<tr><td>Is method constructor?</td>" + "<td>"
+				+ bean.get("isMethodConstructor").booleanValue() + "</td></tr>";
 
-		html += "<tr><td>Is method static?</td>"
-		+ "<td>" + bean.isMethodStatic() + "</td></tr>";
+		html += "<tr><td>Is method static?</td>" + "<td>"
+				+ bean.get("isMethodStatic").booleanValue() + "</td></tr>";
 
 		html += "<tr><td>Method parameters</td><td> ";
-		for (int i = 0; i< bean.getParameterTypes().length; i++){
-			html += bean.getParameterNames()[i] +": " + bean.getParameterTypes()[i];
-			for (int j=0;j<bean.getParameterDimensions()[i];j++){
-				html += "[]";
+		if (bean.has("parameterTypes")) {
+			Iterator<JsonNode> parameterNames = bean.get("parameterNames").elements();
+			Iterator<JsonNode> parameterTypes = bean.get("parameterTypes").elements();
+			Iterator<JsonNode> parameterDimensions = bean.get("parameterDimensions").elements();
+			while (parameterTypes.hasNext()) {
+				html += parameterNames.next().textValue() + ": "
+						+ parameterTypes.next().textValue();
+				int parameterDimension = parameterDimensions.next().intValue();
+				for (int j = 0; j < parameterDimension; j++) {
+					html += "[]";
+				}
+				html += "<br>";
 			}
-			html += "<br>";
 		}
 		html += "</td></tr>";
 
 		html += "<tr><td>Method return type</td><td> ";
-		html += bean.getReturnType() ;
-		for (int j=0;j<bean.getReturnDimension();j++){
+		html += bean.get("returnType").textValue();
+		int returnDimension = bean.get("returnDimension").intValue();
+		for (int j = 0; j < returnDimension; j++) {
 			html += "[]";
 		}
 		html += "</td></tr>";
@@ -113,8 +128,9 @@ public class ApiConsumerContextualView extends
 
 	@Override
 	public Action getConfigureAction(Frame owner) {
-		return new ApiConsumerActivityConfigurationAction(
-				(ApiConsumerActivity) getActivity(), owner, editManager, fileManager, activityIconManager);
+		return new ApiConsumerActivityConfigurationAction(getActivity(), owner, editManager,
+				fileManager, activityIconManager, serviceDescriptionRegistry,
+				applicationConfiguration, serviceRegistry);
 	}
 
 	@Override
