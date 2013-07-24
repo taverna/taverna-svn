@@ -65,6 +65,8 @@ import org.rosuda.REngine.Rserve.RFileInputStream;
 import org.rosuda.REngine.Rserve.RFileOutputStream;
 import org.rosuda.REngine.Rserve.RserveException;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 /**
  * An Activity providing Rshell functionality.
  * 
