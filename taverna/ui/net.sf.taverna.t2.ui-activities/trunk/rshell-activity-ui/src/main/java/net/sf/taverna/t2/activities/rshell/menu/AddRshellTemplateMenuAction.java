@@ -29,6 +29,8 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.KeyStroke;
 
+import uk.org.taverna.commons.services.ServiceRegistry;
+
 import net.sf.taverna.t2.activities.rshell.servicedescriptions.RshellTemplateService;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescriptionRegistry;
 import net.sf.taverna.t2.ui.menu.AbstractMenuAction;
@@ -39,7 +41,6 @@ import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.selection.SelectionManager;
 import net.sf.taverna.t2.workbench.ui.workflowview.WorkflowView;
 import net.sf.taverna.t2.workbench.views.graph.menu.InsertMenu;
-import uk.org.taverna.commons.services.ServiceRegistry;
 
 /**
  * An action to add a Rshell activity + a wrapping processor to the workflow.
