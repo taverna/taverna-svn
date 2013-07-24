@@ -25,11 +25,11 @@
 			<artifactId>biomart-activity</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>biomoby-activity</artifactId>
 			<version>${project.version}</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>dataflow-activity</artifactId>

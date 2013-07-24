@@ -26,7 +26,7 @@
 		<module>apiconsumer-activity</module>
 		<module>beanshell-activity</module>
 		<module>biomart-activity</module>
-		<module>biomoby-activity</module>
+		<!-- <module>biomoby-activity</module> -->
 		<module>dataflow-activity</module>
 		<module>dependency-activity</module>
 		<module>external-tool-activity</module>
