@@ -52,32 +52,32 @@ public abstract class RshellPortTypes {
     private static final String PLAIN_TEXT_LIST_MIME_TYPE = "l('text/plain')";
 
     private static final String PNG_IMAGE_MIME_TYPE = "'image/png'";
-    
+
     private static final String TEXT_FILE_MIME_TYPE = "'text/plain'";
 
     // PDF is currently not supported by Taverna
     // private static final String PDF_APPLICATION_MIME_TYPE =
     // "'application/pdf'";
 
-	private static final List<SemanticTypes> inputSymanticTypes;
-	
-	private static final List<SemanticTypes> outputSymanticTypes;
+    private static final List<SemanticTypes> inputSymanticTypes;
 
-	/**
-	 * The enumeration type for symantic port types
-	 */
+    private static final List<SemanticTypes> outputSymanticTypes;
+
+    /**
+     * The enumeration type for symantic port types
+     */
     public static enum SemanticTypes {
-        BOOL("Logical", PLAIN_TEXT_MIME_TYPE, String.class, 0),
-        DOUBLE("Numeric", PLAIN_TEXT_MIME_TYPE, Double.class, 0),
-        INTEGER("Integer", PLAIN_TEXT_MIME_TYPE, Integer.class, 0),
-        R_EXP("R-expression", PLAIN_TEXT_LIST_MIME_TYPE, String.class, 1),
-        STRING("String", PLAIN_TEXT_MIME_TYPE, String.class, 0),
-        BOOL_LIST("Logical vector", PLAIN_TEXT_LIST_MIME_TYPE, String.class, 1),
-        DOUBLE_LIST("Numeric vector", PLAIN_TEXT_LIST_MIME_TYPE, Double.class, 1),
-        INTEGER_LIST("Integer vector", PLAIN_TEXT_LIST_MIME_TYPE, Integer.class, 1),
-        STRING_LIST("String vector", PLAIN_TEXT_LIST_MIME_TYPE, String.class, 1),
-        PNG_FILE("PNG-image", PNG_IMAGE_MIME_TYPE, byte[].class, 0, true),
-        TEXT_FILE("Text-file", TEXT_FILE_MIME_TYPE, String.class, 0, true)
+        BOOL("Logical", PLAIN_TEXT_MIME_TYPE, String.class, 0), DOUBLE(
+                "Numeric", PLAIN_TEXT_MIME_TYPE, Double.class, 0), INTEGER(
+                "Integer", PLAIN_TEXT_MIME_TYPE, Integer.class, 0), R_EXP(
+                "R-expression", PLAIN_TEXT_LIST_MIME_TYPE, String.class, 1), STRING(
+                "String", PLAIN_TEXT_MIME_TYPE, String.class, 0), BOOL_LIST(
+                "Logical vector", PLAIN_TEXT_LIST_MIME_TYPE, String.class, 1), DOUBLE_LIST(
+                "Numeric vector", PLAIN_TEXT_LIST_MIME_TYPE, Double.class, 1), INTEGER_LIST(
+                "Integer vector", PLAIN_TEXT_LIST_MIME_TYPE, Integer.class, 1), STRING_LIST(
+                "String vector", PLAIN_TEXT_LIST_MIME_TYPE, String.class, 1), PNG_FILE(
+                "PNG-image", PNG_IMAGE_MIME_TYPE, byte[].class, 0, true), TEXT_FILE(
+                "Text-file", TEXT_FILE_MIME_TYPE, String.class, 0, true)
         // PDF is currently not supported by Taverna
         // PDF("PDF-file", PDF_APPLICATION_MIME_TYPE, true)
         ;
@@ -85,62 +85,66 @@ public abstract class RshellPortTypes {
         public final String description;
 
         public final String syntacticType;
-        
+
         public final boolean isFile;
 
-		private final Class semanticClass;
+        private final Class semanticClass;
 
-		private final int depth;
+        private final int depth;
 
-        SemanticTypes(String description, String syntacticType, Class semanticClass, int depth) {
+        SemanticTypes(String description, String syntacticType,
+                Class semanticClass, int depth) {
             this(description, syntacticType, semanticClass, depth, false);
         }
-        
-        SemanticTypes(String description, String syntacticType, Class semanticClass, int depth, boolean isFile) {
+
+        SemanticTypes(String description, String syntacticType,
+                Class semanticClass, int depth, boolean isFile) {
             this.description = description;
             this.syntacticType = syntacticType;
-			this.semanticClass = semanticClass;
-			this.depth = depth;
+            this.semanticClass = semanticClass;
+            this.depth = depth;
             this.isFile = isFile;
         }
 
-		/**
-		 * @return the semanticClass
-		 */
-		public Class getSemanticClass() {
-			return semanticClass;
-		}
+        /**
+         * @return the semanticClass
+         */
+        public Class getSemanticClass() {
+            return semanticClass;
+        }
 
-		/**
-		 * @return the depth
-		 */
-		public int getDepth() {
-			return depth;
-		}
-		
+        /**
+         * @return the depth
+         */
+        public int getDepth() {
+            return depth;
+        }
 
     }
-    
-	static {
-		inputSymanticTypes = new ArrayList<SemanticTypes>(Arrays.asList(SemanticTypes.values()));		
-//		inputSymanticTypes.remove(SemanticTypes.PDF_FILE);
-		inputSymanticTypes.remove(SemanticTypes.PNG_FILE);
-		
-		outputSymanticTypes = new ArrayList<SemanticTypes>(Arrays.asList(SemanticTypes.values()));
-   }
 
-	/**
-	 * @return the inputSymanticTypes
-	 */
-	public static SemanticTypes[] getInputSymanticTypes() {
-		return inputSymanticTypes.toArray(new SemanticTypes[]{});
-	}
+    static {
+        inputSymanticTypes = new ArrayList<SemanticTypes>(
+                Arrays.asList(SemanticTypes.values()));
+        // inputSymanticTypes.remove(SemanticTypes.PDF_FILE);
+        inputSymanticTypes.remove(SemanticTypes.PNG_FILE);
 
-	/**
-	 * @return the outputSymanticTypes
-	 */
-	public static SemanticTypes[] getOutputSymanticTypes() {
-		SemanticTypes[] result = outputSymanticTypes.toArray(new SemanticTypes[]{});
-		return (result);
-	};
+        outputSymanticTypes = new ArrayList<SemanticTypes>(
+                Arrays.asList(SemanticTypes.values()));
+    }
+
+    /**
+     * @return the inputSymanticTypes
+     */
+    public static SemanticTypes[] getInputSymanticTypes() {
+        return inputSymanticTypes.toArray(new SemanticTypes[] {});
+    }
+
+    /**
+     * @return the outputSymanticTypes
+     */
+    public static SemanticTypes[] getOutputSymanticTypes() {
+        SemanticTypes[] result = outputSymanticTypes
+                .toArray(new SemanticTypes[] {});
+        return (result);
+    };
 }

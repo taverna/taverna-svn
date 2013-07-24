@@ -35,45 +35,45 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * An {@link ActivityFactory} for creating <code>RshellActivity</code>.
- *
+ * 
  * @author David Withers
  */
 public class RshellActivityFactory implements ActivityFactory {
 
-	private CredentialManager credentialManager;
+    private CredentialManager credentialManager;
 
-	@Override
-	public RshellActivity createActivity() {
-		return new RshellActivity(credentialManager);
-	}
+    @Override
+    public RshellActivity createActivity() {
+        return new RshellActivity(credentialManager);
+    }
 
-	@Override
-	public URI getActivityType() {
-		return URI.create(RshellActivity.URI);
-	}
+    @Override
+    public URI getActivityType() {
+        return URI.create(RshellActivity.URI);
+    }
 
-	@Override
-	public JsonNode getActivityConfigurationSchema() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try {
- 			return objectMapper.readTree(getClass().getResource("/schema.json"));
-		} catch (IOException e) {
-			return objectMapper.createObjectNode();
-		}
-	}
+    @Override
+    public JsonNode getActivityConfigurationSchema() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper
+                    .readTree(getClass().getResource("/schema.json"));
+        } catch (IOException e) {
+            return objectMapper.createObjectNode();
+        }
+    }
 
-	public void setCredentialManager(CredentialManager credentialManager) {
-		this.credentialManager = credentialManager;
-	}
+    public void setCredentialManager(CredentialManager credentialManager) {
+        this.credentialManager = credentialManager;
+    }
 
-	@Override
+    @Override
 	public Set<ActivityInputPort> getInputPorts(JsonNode configuration) {
 		return new HashSet<>();
 	}
 
-	@Override
+    @Override
 	public Set<ActivityOutputPort> getOutputPorts(JsonNode configuration) {
 		return new HashSet<>();
 	}
-
 }

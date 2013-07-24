@@ -34,46 +34,48 @@ import net.sf.taverna.t2.workflowmodel.processor.config.ConfigurationProperty;
 @ConfigurationBean(uri = RshellActivity.URI + "/port/configuration")
 public class RShellPortSymanticTypeBean {
 
-	private String name;
-	
-	private SemanticTypes symanticType;
+    private String name;
 
-	/**
-	 * Returns the name.
-	 *
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
+    private SemanticTypes symanticType;
 
-	/**
-	 * Sets the name.
-	 *
-	 * @param name the new name
-	 */
-	@ConfigurationProperty(name = "name", label = "Port Name", description = "The name of the port")
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * Returns the name.
+     * 
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * Returns the symanticType.
-	 *
-	 * @return the symanticType
-	 */
-	public SemanticTypes getSymanticType() {
-		return symanticType;
-	}
+    /**
+     * Sets the name.
+     * 
+     * @param name
+     *            the new name
+     */
+    @ConfigurationProperty(name = "name", label = "Port Name", description = "The name of the port")
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	/**
-	 * Sets the symanticType.
-	 *
-	 * @param symanticType the new symanticType
-	 */
-	@ConfigurationProperty(name = "semanticType", label = "Semantic Type", description = "The semantic type of the port")
-	public void setSymanticType(SemanticTypes symanticType) {
-		this.symanticType = symanticType;
-	}
+    /**
+     * Returns the symanticType.
+     * 
+     * @return the symanticType
+     */
+    public SemanticTypes getSymanticType() {
+        return symanticType;
+    }
+
+    /**
+     * Sets the symanticType.
+     * 
+     * @param symanticType
+     *            the new symanticType
+     */
+    @ConfigurationProperty(name = "semanticType", label = "Semantic Type", description = "The semantic type of the port")
+    public void setSymanticType(SemanticTypes symanticType) {
+        this.symanticType = symanticType;
+    }
 
 }

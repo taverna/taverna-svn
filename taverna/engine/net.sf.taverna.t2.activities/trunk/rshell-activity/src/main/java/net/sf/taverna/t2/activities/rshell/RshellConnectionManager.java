@@ -31,89 +31,89 @@ import java.util.HashMap;
 
 import org.rosuda.REngine.Rserve.RserveException;
 
-
 /**
  * Class for managing connections with RServe Now, it is possible to persist a
  * connection and to keep the session
  * 
  */
-public class RshellConnectionManager /*extends WorkflowEventAdapter*/ {
-	public static final RshellConnectionManager INSTANCE = new RshellConnectionManager();
+public class RshellConnectionManager /* extends WorkflowEventAdapter */{
+    public static final RshellConnectionManager INSTANCE = new RshellConnectionManager();
 
-	private HashMap<RshellConnectionSettings, RshellConnection> settingsToConnectionsMap;
+    private HashMap<RshellConnectionSettings, RshellConnection> settingsToConnectionsMap;
 
-//	private int numberOfWorkflowInstances;
+    // private int numberOfWorkflowInstances;
 
-	private RshellConnectionManager() {
-		settingsToConnectionsMap = new HashMap<RshellConnectionSettings, RshellConnection>();
-//		numberOfWorkflowInstances = 0;
-	}
+    private RshellConnectionManager() {
+        settingsToConnectionsMap = new HashMap<RshellConnectionSettings, RshellConnection>();
+        // numberOfWorkflowInstances = 0;
+    }
 
-//	/**
-//	 * 
-//	 */
-//	public void workflowCreated(WorkflowCreationEvent e) {
-//		numberOfWorkflowInstances++;
-//	}
-//
-//	/**
-//	 * Method which is called when a workflow is completed
-//	 */
-//	public void workflowCompleted(WorkflowCompletionEvent e) {
-//		assert (numberOfWorkflowInstances > 0);
-//
-//		if (--numberOfWorkflowInstances == 0)
-//			releaseConnections();
-//	}
+    // /**
+    // *
+    // */
+    // public void workflowCreated(WorkflowCreationEvent e) {
+    // numberOfWorkflowInstances++;
+    // }
+    //
+    // /**
+    // * Method which is called when a workflow is completed
+    // */
+    // public void workflowCompleted(WorkflowCompletionEvent e) {
+    // assert (numberOfWorkflowInstances > 0);
+    //
+    // if (--numberOfWorkflowInstances == 0)
+    // releaseConnections();
+    // }
 
-	/**
-	 * Method for creating a new r shell connection
-	 * 
-	 * @param settings
-	 *            the connection settings
-	 * @return the connection
-	 * @throws RserveException 
-	 */
-	public RshellConnection createConnection(RshellConnectionSettings settings) throws RserveException {
+    /**
+     * Method for creating a new r shell connection
+     * 
+     * @param settings
+     *            the connection settings
+     * @return the connection
+     * @throws RserveException
+     */
+    public RshellConnection createConnection(RshellConnectionSettings settings)
+            throws RserveException {
 
-		RshellConnection connection;
-		if (settings.isKeepSessionAlive()) {
-			connection = settingsToConnectionsMap.get(settings);
-			if (connection == null) {
-				connection = new RshellConnection(settings);
-				settingsToConnectionsMap.put(settings, connection);
-			}
-		} else {
-			connection = new RshellConnection(settings);
-		}
-		return connection;
-	}
+        RshellConnection connection;
+        if (settings.isKeepSessionAlive()) {
+            connection = settingsToConnectionsMap.get(settings);
+            if (connection == null) {
+                connection = new RshellConnection(settings);
+                settingsToConnectionsMap.put(settings, connection);
+            }
+        } else {
+            connection = new RshellConnection(settings);
+        }
+        return connection;
+    }
 
-	/**
-	 * Method for releasing the connection
-	 * 
-	 * @param connection
-	 *            the connection to be released
-	 */
-	public void releaseConnection(RshellConnection connection) {
-		if (!connection.isKeepSessionAlive())
-			connection.close();
-	}
+    /**
+     * Method for releasing the connection
+     * 
+     * @param connection
+     *            the connection to be released
+     */
+    public void releaseConnection(RshellConnection connection) {
+        if (!connection.isKeepSessionAlive())
+            connection.close();
+    }
 
-	/**
-	 * Method for removing all connections
-	 */
-	public void releaseConnections() {
-		for (RshellConnection connection : settingsToConnectionsMap.values()) {
-			connection.close();
-		}
-		settingsToConnectionsMap.clear();
-	}
+    /**
+     * Method for removing all connections
+     */
+    public void releaseConnections() {
+        for (RshellConnection connection : settingsToConnectionsMap.values()) {
+            connection.close();
+        }
+        settingsToConnectionsMap.clear();
+    }
 
-//	/**
-//	 * Initialize static instance
-//	 */
-//	static {
-//		WorkflowEventDispatcher.DISPATCHER.addListener(INSTANCE);
-//	}
+    // /**
+    // * Initialize static instance
+    // */
+    // static {
+    // WorkflowEventDispatcher.DISPATCHER.addListener(INSTANCE);
+    // }
 }

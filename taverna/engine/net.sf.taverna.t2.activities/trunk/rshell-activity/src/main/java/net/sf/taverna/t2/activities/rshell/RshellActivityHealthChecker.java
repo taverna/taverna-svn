@@ -41,39 +41,43 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * A health checker for the Rshell activity.
  */
-public class RshellActivityHealthChecker implements HealthChecker<RshellActivity> {
+public class RshellActivityHealthChecker implements
+        HealthChecker<RshellActivity> {
 
-	public boolean canVisit(Object subject) {
-		return (subject != null) && (subject instanceof RshellActivity);
-	}
+    public boolean canVisit(Object subject) {
+        return (subject != null) && (subject instanceof RshellActivity);
+    }
 
-	public VisitReport visit(RshellActivity activity, List<Object> ancestors) {
-		VisitReport vr = null;
+    public VisitReport visit(RshellActivity activity, List<Object> ancestors) {
+        VisitReport vr = null;
 
-		JsonNode config = activity.getConfiguration();
-		if (config != null) {
-			RshellConnectionSettings settings = activity.getConnectionSettings();
-			RshellConnection connection = null;
-			try {
-				connection = RshellConnectionManager.INSTANCE.createConnection(settings);
-			} catch (RserveException e) {
-				vr = new VisitReport(HealthCheck.getInstance(), activity, "Read problem",
-						HealthCheck.IO_PROBLEM, Status.SEVERE);
-				vr.setProperty("exception", e);
-				vr.setProperty("endpoint",
-						"http://" + settings.getHost() + ":" + settings.getPort());
-				return vr;
-			} finally {
-				if (connection != null && connection.isConnected()) {
-					RshellConnectionManager.INSTANCE.releaseConnection(connection);
-				}
-			}
-		}
-		return null;
-	}
+        JsonNode config = activity.getConfiguration();
+        if (config != null) {
+            RshellConnectionSettings settings = activity
+                    .getConnectionSettings();
+            RshellConnection connection = null;
+            try {
+                connection = RshellConnectionManager.INSTANCE
+                        .createConnection(settings);
+            } catch (RserveException e) {
+                vr = new VisitReport(HealthCheck.getInstance(), activity,
+                        "Read problem", HealthCheck.IO_PROBLEM, Status.SEVERE);
+                vr.setProperty("exception", e);
+                vr.setProperty("endpoint", "http://" + settings.getHost() + ":"
+                        + settings.getPort());
+                return vr;
+            } finally {
+                if (connection != null && connection.isConnected()) {
+                    RshellConnectionManager.INSTANCE
+                            .releaseConnection(connection);
+                }
+            }
+        }
+        return null;
+    }
 
-	public boolean isTimeConsuming() {
-		return true;
-	}
+    public boolean isTimeConsuming() {
+        return true;
+    }
 
 }

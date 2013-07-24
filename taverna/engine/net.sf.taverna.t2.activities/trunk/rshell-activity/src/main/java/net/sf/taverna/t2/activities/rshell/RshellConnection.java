@@ -36,33 +36,34 @@ import org.rosuda.REngine.Rserve.RserveException;
  * 
  */
 public class RshellConnection extends RConnection {
-	private boolean keepSessionAlive;
+    private boolean keepSessionAlive;
 
-	/**
-	 * Constructor of the Rshell Connection
-	 * 
-	 * @param connectionSettings
-	 *            the connection settings for the connection
-	 * @throws RserveException 
-	 * @throws RSrvException
-	 */
-	public RshellConnection(RshellConnectionSettings connectionSettings) throws RserveException {
-		super(connectionSettings.getHost(), connectionSettings.getPort());
+    /**
+     * Constructor of the Rshell Connection
+     * 
+     * @param connectionSettings
+     *            the connection settings for the connection
+     * @throws RserveException
+     * @throws RSrvException
+     */
+    public RshellConnection(RshellConnectionSettings connectionSettings)
+            throws RserveException {
+        super(connectionSettings.getHost(), connectionSettings.getPort());
 
-		this.keepSessionAlive = connectionSettings.isKeepSessionAlive();
+        this.keepSessionAlive = connectionSettings.isKeepSessionAlive();
 
-		String username = connectionSettings.getUsername();
-		if (!username.equals("")) {
-			this.login(username, connectionSettings.getPassword());
-		}
-	}
+        String username = connectionSettings.getUsername();
+        if (!username.equals("")) {
+            this.login(username, connectionSettings.getPassword());
+        }
+    }
 
-	/**
-	 * Method for getting the keep session alive value
-	 * 
-	 * @return session alive value
-	 */
-	public boolean isKeepSessionAlive() {
-		return keepSessionAlive;
-	}
+    /**
+     * Method for getting the keep session alive value
+     * 
+     * @return session alive value
+     */
+    public boolean isKeepSessionAlive() {
+        return keepSessionAlive;
+    }
 }
