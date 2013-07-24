@@ -32,7 +32,7 @@ import java.awt.Component;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 
-import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SemanticTypes;
+import net.sf.taverna.t2.activities.rshell.RshellPortTypes.DataTypes;
 
 /**
  * Class which calls the 'getDescription' method instead of the toString. Was an
@@ -48,7 +48,7 @@ public class PortTypesListCellRenderer extends DefaultListCellRenderer {
 			boolean isSelected, boolean cellHasFocus) {
 		super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
-		this.setText(((SemanticTypes) value).description);
+		this.setText(((DataTypes) value).description);
 		return this;
 	}
 

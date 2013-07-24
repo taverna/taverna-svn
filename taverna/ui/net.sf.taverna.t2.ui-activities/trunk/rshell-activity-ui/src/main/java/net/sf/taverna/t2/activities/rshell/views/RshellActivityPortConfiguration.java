@@ -21,7 +21,7 @@
 package net.sf.taverna.t2.activities.rshell.views;
 
 import uk.org.taverna.scufl2.api.port.ActivityPort;
-import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SemanticTypes;
+import net.sf.taverna.t2.activities.rshell.RshellPortTypes.DataTypes;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityPortConfiguration;
 
 /**
@@ -31,36 +31,36 @@ import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityPor
  */
 public class RshellActivityPortConfiguration extends ActivityPortConfiguration {
 
-	private SemanticTypes semanticType;
+	private DataTypes dataType;
 
 	/**
 	 * Constructs a new <code>RshellActivityPortConfiguration</code>.
 	 * @param activityPort
 	 */
-	public RshellActivityPortConfiguration(ActivityPort activityPort, SemanticTypes semanticType) {
+	public RshellActivityPortConfiguration(ActivityPort activityPort, DataTypes dataType) {
 		super(activityPort);
-		this.semanticType = semanticType;
+		this.dataType = dataType;
 	}
 
-	public RshellActivityPortConfiguration(String name, SemanticTypes semanticType) {
-		super(name, semanticType.getDepth(), semanticType.getDepth());
-		this.semanticType = semanticType;
+	public RshellActivityPortConfiguration(String port, DataTypes dataType) {
+		super(port, dataType.getDepth(), dataType.getDepth());
+		this.dataType = dataType;
 	}
 
-	public SemanticTypes getSemanticType() {
-		return semanticType;
+	public DataTypes getDataType() {
+		return dataType;
 	}
 
-	public void setSemanticType(SemanticTypes semanticType) {
-		this.semanticType = semanticType;
+	public void setDataType(DataTypes dataType) {
+		this.dataType = dataType;
 	}
 
 	public int getDepth() {
-		return semanticType.getDepth();
+		return dataType.getDepth();
 	}
 
 	public int getGranularDepth() {
-		return semanticType.getDepth();
+		return dataType.getDepth();
 	}
 
 }

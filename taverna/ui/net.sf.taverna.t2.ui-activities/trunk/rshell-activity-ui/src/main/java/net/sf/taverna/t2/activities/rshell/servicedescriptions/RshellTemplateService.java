@@ -57,14 +57,13 @@ public class RshellTemplateService extends AbstractTemplateService {
 		configuration.setType(ACTIVITY_TYPE.resolve("#Config"));
 		ObjectNode json = (ObjectNode) configuration.getJson();
 		json.put("script", "");
-		json.put("classLoaderSharing", "workflow");
+	    json.put("inputTypes", json.arrayNode());
+	    json.put("outputTypes", json.arrayNode());
+	    
 		ObjectNode connection = json.objectNode();
 		connection.put("hostname", "localhost");
 		connection.put("port", 6311);
-		connection.put("username", "");
-		connection.put("password", "");
 		connection.put("keepSessionAlive", false);
-		connection.put("newRVersion", false);
 		json.put("connection", connection);
 		return configuration;
 	}

@@ -41,7 +41,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import net.sf.taverna.t2.activities.rshell.RshellPortTypes;
-import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SemanticTypes;
+import net.sf.taverna.t2.activities.rshell.RshellPortTypes.DataTypes;
 import net.sf.taverna.t2.lang.ui.EditorKeySetUtil;
 import net.sf.taverna.t2.workbench.ui.credentialmanager.CredentialManagerUI;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityPortConfiguration;
@@ -81,12 +81,12 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 		List<ActivityPortConfiguration> inputPorts = getInputPorts();
 		inputPorts.clear();
 		for (InputActivityPort activityPort : getActivity().getInputPorts()) {
-			inputPorts.add(new RshellActivityPortConfiguration(activityPort, getInputSemanticType(activityPort.getName())));
+			inputPorts.add(new RshellActivityPortConfiguration(activityPort, getInputDataType(activityPort.getName())));
 		}
 		List<ActivityPortConfiguration> outputPorts = getOutputPorts();
 		outputPorts.clear();
 		for (OutputActivityPort activityPort : getActivity().getOutputPorts()) {
-			outputPorts.add(new RshellActivityPortConfiguration(activityPort, getOutputSemanticType(activityPort.getName())));
+			outputPorts.add(new RshellActivityPortConfiguration(activityPort, getOutputDataType(activityPort.getName())));
 		}
 		removeAllPages();
 		addPage("Script", createScriptEditPanel());
@@ -106,31 +106,31 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 		ObjectNode json = getJson();
 		List<ActivityPortConfiguration> inputPorts = getInputPorts();
 		if (inputPorts.isEmpty()) {
-			json.remove("inputSemanticTypes");
+			json.remove("inputTypes");
 		} else {
-			ArrayNode semanticTypes = json.arrayNode();
+			ArrayNode DataTypes = json.arrayNode();
 			for (ActivityPortConfiguration activityPortConfiguration : inputPorts) {
 				RshellActivityPortConfiguration portConfiguration = (RshellActivityPortConfiguration) activityPortConfiguration;
 				ObjectNode semanticType = json.objectNode();
-				semanticTypes.add(semanticType);
-				semanticType.put("name", portConfiguration.getName());
-				semanticType.put("semanticType", portConfiguration.getSemanticType().name());
+				DataTypes.add(semanticType);
+				semanticType.put("port", portConfiguration.getName());
+				semanticType.put("dataType", portConfiguration.getDataType().name());
 			}
-			json.put("inputSemanticTypes", semanticTypes);
+			json.put("inputTypes", DataTypes);
 		}
 		List<ActivityPortConfiguration> outputPorts = getOutputPorts();
 		if (outputPorts.isEmpty()) {
-			json.remove("outputSemanticTypes");
+			json.remove("outputTypes");
 		} else {
-			ArrayNode semanticTypes = json.arrayNode();
+			ArrayNode DataTypes = json.arrayNode();
 			for (ActivityPortConfiguration activityPortConfiguration : outputPorts) {
 				RshellActivityPortConfiguration portConfiguration = (RshellActivityPortConfiguration) activityPortConfiguration;
 				ObjectNode semanticType = json.objectNode();
-				semanticTypes.add(semanticType);
-				semanticType.put("name", portConfiguration.getName());
-				semanticType.put("semanticType", portConfiguration.getSemanticType().name());
+				DataTypes.add(semanticType);
+				semanticType.put("port", portConfiguration.getName());
+				semanticType.put("dataType", portConfiguration.getDataType().name());
 			}
-			json.put("outputSemanticTypes", semanticTypes);
+			json.put("outputTypes", DataTypes);
 		}
 	}
 
@@ -158,7 +158,7 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 
 			@Override
 			protected ActivityPortConfiguration createDefaultItem() {
-				return new RshellActivityPortConfiguration("in", SemanticTypes.STRING);
+				return new RshellActivityPortConfiguration("in", DataTypes.STRING);
 			}
 		};
 		return inputPanel;
@@ -175,7 +175,7 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 
 			@Override
 			protected ActivityPortConfiguration createDefaultItem() {
-				return new RshellActivityPortConfiguration("out", SemanticTypes.STRING);
+				return new RshellActivityPortConfiguration("out", DataTypes.STRING);
 			}
 		};
 		return outputPanel;
@@ -257,19 +257,19 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 		return settingsPanel;
 	}
 
-	private SemanticTypes getInputSemanticType(String name) {
-		for (JsonNode jsonNode : getJson().get("inputSemanticTypes")) {
-			if (jsonNode.get("name").textValue().equals(name)) {
-				return SemanticTypes.valueOf(jsonNode.get("semanticType").textValue());
+	private DataTypes getInputDataType(String name) {
+		for (JsonNode jsonNode : getJson().get("inputTypes")) {
+			if (jsonNode.get("port").textValue().equals(name)) {
+				return DataTypes.valueOf(jsonNode.get("dataType").textValue());
 			}
 		}
 		return null;
 	}
 
-	private SemanticTypes getOutputSemanticType(String name) {
-		for (JsonNode jsonNode : getJson().get("outputSemanticTypes")) {
-			if (jsonNode.get("name").textValue().equals(name)) {
-				return SemanticTypes.valueOf(jsonNode.get("semanticType").textValue());
+	private DataTypes getOutputDataType(String name) {
+		for (JsonNode jsonNode : getJson().get("outputTypes")) {
+			if (jsonNode.get("port").textValue().equals(name)) {
+				return DataTypes.valueOf(jsonNode.get("dataType").textValue());
 			}
 		}
 		return null;
@@ -278,7 +278,7 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 	class PortComponent extends JPanel {
 
 		private ValidatingTextField nameField;
-		private JComboBox<SemanticTypes> semanticTypeSelector;
+		private JComboBox<DataTypes> dataTypeselector;
 		private final ValidatingTextGroup validatingTextGroup;
 
 		public PortComponent(final ActivityPortConfiguration portConfiguration,
@@ -305,27 +305,27 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 				}
 			});
 
-			semanticTypeSelector = new JComboBox<SemanticTypes>(RshellPortTypes.getInputSymanticTypes());
-			semanticTypeSelector.setSelectedItem(rshellPortConfiguration.getSemanticType());
-			semanticTypeSelector.setRenderer(new PortTypesListCellRenderer());
-			semanticTypeSelector.addActionListener(new ActionListener() {
+			dataTypeselector = new JComboBox<DataTypes>(RshellPortTypes.getInputTypes());
+			dataTypeselector.setSelectedItem(rshellPortConfiguration.getDataType());
+			dataTypeselector.setRenderer(new PortTypesListCellRenderer());
+			dataTypeselector.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					rshellPortConfiguration.setSemanticType((SemanticTypes) semanticTypeSelector.getSelectedItem());
+					rshellPortConfiguration.setDataType((DataTypes) dataTypeselector.getSelectedItem());
 				}
 			});
 
 			setLayout(new GridBagLayout());
 			GridBagConstraints c = new GridBagConstraints();
 			c.anchor = GridBagConstraints.WEST;
-			add(new JLabel("Name"), c);
+			add(new JLabel("Port name"), c);
 			c.fill = GridBagConstraints.HORIZONTAL;
 			c.weightx = 1;
 			add(nameField, c);
 			c.fill = GridBagConstraints.NONE;
 			c.weightx = 0;
 			add(new JLabel("Type"), c);
-			add(semanticTypeSelector, c);
+			add(dataTypeselector, c);
 
 		}
 

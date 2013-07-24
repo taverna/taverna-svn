@@ -32,7 +32,7 @@ import java.awt.Frame;
 import javax.swing.Action;
 
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
-import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SemanticTypes;
+import net.sf.taverna.t2.activities.rshell.RshellPortTypes.DataTypes;
 import net.sf.taverna.t2.activities.rshell.actions.RshellActivityConfigurationAction;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescriptionRegistry;
 import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
@@ -82,12 +82,12 @@ public class RshellActivityContextualView extends HTMLBasedActivityContextualVie
 		html.append("<tr><th>Input Port Name</th><th>Semantic Type</th></tr>");
 		for (InputActivityPort inputActivityPort : getActivity().getInputPorts()) {
 			html.append("<tr><td>" + inputActivityPort.getName() + "</td><td>");
-			if (json.has("inputSemanticTypes")) {
-				for (JsonNode inputType : json.get("inputSemanticTypes")) {
+			if (json.has("inputTypes")) {
+				for (JsonNode inputType : json.get("inputTypes")) {
 					if (inputActivityPort.getName().equalsIgnoreCase(
-							inputType.get("name").textValue())) {
-						html.append(SemanticTypes
-								.valueOf(inputType.get("semanticType").textValue()).description
+							inputType.get("port").textValue())) {
+						html.append(DataTypes
+								.valueOf(inputType.get("dataType").textValue()).description
 								+ "</td></tr>");
 						break;
 					}
@@ -97,11 +97,11 @@ public class RshellActivityContextualView extends HTMLBasedActivityContextualVie
 		html.append("<tr><th>Output Port Name</th><th>Depth</th></tr>");
 		for (OutputActivityPort outputActivityPort : getActivity().getOutputPorts()) {
 			html.append("<tr><td>" + outputActivityPort.getName() + "</td><td>");
-			if (json.has("inputSemanticTypes")) {
-				for (JsonNode outputType : json.get("inputSemanticTypes")) {
-					if (outputActivityPort.getName().equalsIgnoreCase(outputType.get("name").textValue())) {
-						html.append(SemanticTypes
-								.valueOf(outputType.get("semanticType").textValue()).description + "</td></tr>");
+			if (json.has("outputTypes")) {
+				for (JsonNode outputType : json.get("outputTypes")) {
+					if (outputActivityPort.getName().equalsIgnoreCase(outputType.get("port").textValue())) {
+						html.append(DataTypes
+								.valueOf(outputType.get("dataType").textValue()).description + "</td></tr>");
 						break;
 					}
 				}
