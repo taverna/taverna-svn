@@ -63,8 +63,6 @@ public class RshellConnectionSettings implements Serializable {
 
     private boolean keepSessionAlive = false;
 
-    private boolean newRVersion = false;
-
     /**
      * Constructor of the rshell connection settings
      */
@@ -78,20 +76,10 @@ public class RshellConnectionSettings implements Serializable {
      *            the host name
      * @param port
      *            the port number
-     * @param username
-     *            the username
-     * @param password
-     *            the password
-     * @param newRVersion
-     *            what R version the connection is for 2.4-2.5 or 2.6+
      */
-    public RshellConnectionSettings(String host, int port, String username,
-            String Password, boolean newRVersion) {
+    public RshellConnectionSettings(String host, int port) {
         setHost(host);
         setPort(port);
-        setUsername(username);
-        setPassword(password);
-        setNewRVersion(newRVersion);
     }
 
     /**
@@ -232,8 +220,6 @@ public class RshellConnectionSettings implements Serializable {
         } else {
             RshellConnectionSettings aConnection = (RshellConnectionSettings) anObject;
             return host.equals(aConnection.host) && port == aConnection.port
-                    && username.equals(aConnection.username)
-                    && password.equals(aConnection.password)
                     && keepSessionAlive == aConnection.keepSessionAlive;
         }
     }
@@ -247,28 +233,15 @@ public class RshellConnectionSettings implements Serializable {
         StringBuffer stringRepresentation = new StringBuffer();
         stringRepresentation.append(host);
         stringRepresentation.append(port);
-        stringRepresentation.append(username);
-        stringRepresentation.append(password);
         stringRepresentation.append(keepSessionAlive);
 
         return stringRepresentation.toString().hashCode();
-    }
-
-    @ConfigurationProperty(name = "newRVersion", label = "Is New R Version", description = "If the R version is 2.4-2.5 or 2.6+", required = false)
-    public void setNewRVersion(boolean newRVersion) {
-        this.newRVersion = newRVersion;
-    }
-
-    public boolean isNewRVersion() {
-        return newRVersion;
     }
 
     public static RshellConnectionSettings defaultSettings() {
         RshellConnectionSettings result = new RshellConnectionSettings();
         result.setHost(DEFAULT_HOST);
         result.setPort(DEFAULT_PORT);
-        result.setUsername(DEFAULT_USERNAME);
-        result.setPassword(DEFAULT_PASSWORD);
         result.setKeepSessionAlive(DEFAULT_KEEP_SESSION_ALIVE);
         return result;
     }

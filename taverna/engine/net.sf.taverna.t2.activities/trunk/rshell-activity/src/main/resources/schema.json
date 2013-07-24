@@ -38,63 +38,42 @@
 		            "required": true,
         		    "default": "6311"
         		},
-         		"username": {
-					"title": "Username",
-        		    "description": "The username to connect with",
-		            "type": "string",
-		            "required": true,
-        		    "default": ""
-        		},
-         		"password": {
-					"title": "Password",
-        		    "description": "The password to connect with",
-		            "type": "string",
-		            "required": true,
-        		    "default": ""
-        		},
          		"keepSessionAlive": {
 					"title": "Keep Session Alive",
         		    "description": "If the session should be kept alive",
 		            "type": "boolean",
 		            "required": true,
         		    "default": false
-        		},
-         		"newRVersion": {
-					"title": "Is New R Version",
-        		    "description": "If the R version is 2.4-2.5 or 2.6+",
-		            "type": "boolean",
-		            "required": true,
-        		    "default": false
         		}
-            }
+             }
         },
-        "inputSemanticTypes": {
-            "title": "Semantic Input Ports",
+        "inputTypes": {
+            "title": "Typing of Input Ports",
             "description": "Inputs to the R script",
             "type": "array",
             "required": false,
-            "items": { "type": "object", "$ref": "#/definitions/semanticPort" }
+            "items": { "type": "object", "$ref": "#/definitions/portType" }
         },
-        "outputSemanticTypes": {
-            "title": "Semantic Output Ports",
+        "outputTypes": {
+            "title": "Typing of Output Ports",
             "description": "Outputs from the R script",
             "type": "array",
             "required": false,
-            "items": { "type": "object", "$ref": "#/definitions/semanticPort" }
+            "items": { "type": "object", "$ref": "#/definitions/portType" }
         }
     },
     "definitions": {
-    	"semanticPort": {
+    	"portType": {
             "properties": {
-           		"name": {
+           		"port": {
             		"title": "Port Name",
             		"description": "The name of the port",
             		"type": "string",
 		          	"required": true
            		},
-           		"semanticType": {
+           		"dataType": {
             		"title": "Semantic Type",
-            		"description": "The semantic type of the port",
+            		"description": "The data type of the port",
             		"enum": ["BOOL", "DOUBLE", "INTEGER", "R_EXP", "STRING", "BOOL_LIST", "DOUBLE_LIST", "INTEGER_LIST", "STRING_LIST", "PNG_FILE", "TEXT_FILE"],
  		         	"required": true
             	}

@@ -27,7 +27,7 @@
  */
 package net.sf.taverna.t2.activities.rshell;
 
-import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SemanticTypes;
+import net.sf.taverna.t2.activities.rshell.RshellPortTypes.DataTypes;
 import net.sf.taverna.t2.workflowmodel.processor.config.ConfigurationBean;
 import net.sf.taverna.t2.workflowmodel.processor.config.ConfigurationProperty;
 
@@ -36,7 +36,7 @@ public class RShellPortSymanticTypeBean {
 
     private String name;
 
-    private SemanticTypes symanticType;
+    private DataTypes symanticType;
 
     /**
      * Returns the name.
@@ -63,7 +63,7 @@ public class RShellPortSymanticTypeBean {
      * 
      * @return the symanticType
      */
-    public SemanticTypes getSymanticType() {
+    public DataTypes getSymanticType() {
         return symanticType;
     }
 
@@ -74,7 +74,7 @@ public class RShellPortSymanticTypeBean {
      *            the new symanticType
      */
     @ConfigurationProperty(name = "semanticType", label = "Semantic Type", description = "The semantic type of the port")
-    public void setSymanticType(SemanticTypes symanticType) {
+    public void setSymanticType(DataTypes symanticType) {
         this.symanticType = symanticType;
     }
 

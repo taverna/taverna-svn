@@ -34,11 +34,9 @@
  */
 package net.sf.taverna.t2.activities.rshell;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Class containing the conversion of java type stirngs to classes
@@ -59,14 +57,14 @@ public abstract class RshellPortTypes {
     // private static final String PDF_APPLICATION_MIME_TYPE =
     // "'application/pdf'";
 
-    private static final List<SemanticTypes> inputSymanticTypes;
+    private static final List<DataTypes> inputTypes;
 
-    private static final List<SemanticTypes> outputSymanticTypes;
+    private static final List<DataTypes> outputTypes;
 
     /**
-     * The enumeration type for symantic port types
+     * The enumeration type for data port types
      */
-    public static enum SemanticTypes {
+    public static enum DataTypes {
         BOOL("Logical", PLAIN_TEXT_MIME_TYPE, String.class, 0), DOUBLE(
                 "Numeric", PLAIN_TEXT_MIME_TYPE, Double.class, 0), INTEGER(
                 "Integer", PLAIN_TEXT_MIME_TYPE, Integer.class, 0), R_EXP(
@@ -84,23 +82,20 @@ public abstract class RshellPortTypes {
 
         public final String description;
 
-        public final String syntacticType;
-
         public final boolean isFile;
 
         private final Class semanticClass;
 
         private final int depth;
 
-        SemanticTypes(String description, String syntacticType,
+        DataTypes(String description, String syntacticType,
                 Class semanticClass, int depth) {
             this(description, syntacticType, semanticClass, depth, false);
         }
 
-        SemanticTypes(String description, String syntacticType,
+        DataTypes(String description, String syntacticType,
                 Class semanticClass, int depth, boolean isFile) {
             this.description = description;
-            this.syntacticType = syntacticType;
             this.semanticClass = semanticClass;
             this.depth = depth;
             this.isFile = isFile;
@@ -109,7 +104,7 @@ public abstract class RshellPortTypes {
         /**
          * @return the semanticClass
          */
-        public Class getSemanticClass() {
+        public Class getJavaClass() {
             return semanticClass;
         }
 
@@ -123,28 +118,28 @@ public abstract class RshellPortTypes {
     }
 
     static {
-        inputSymanticTypes = new ArrayList<SemanticTypes>(
-                Arrays.asList(SemanticTypes.values()));
+        inputTypes = new ArrayList<DataTypes>(
+                Arrays.asList(DataTypes.values()));
         // inputSymanticTypes.remove(SemanticTypes.PDF_FILE);
-        inputSymanticTypes.remove(SemanticTypes.PNG_FILE);
+        inputTypes.remove(DataTypes.PNG_FILE);
 
-        outputSymanticTypes = new ArrayList<SemanticTypes>(
-                Arrays.asList(SemanticTypes.values()));
+        outputTypes = new ArrayList<DataTypes>(
+                Arrays.asList(DataTypes.values()));
     }
 
     /**
      * @return the inputSymanticTypes
      */
-    public static SemanticTypes[] getInputSymanticTypes() {
-        return inputSymanticTypes.toArray(new SemanticTypes[] {});
+    public static DataTypes[] getInputTypes() {
+        return inputTypes.toArray(new DataTypes[] {});
     }
 
     /**
      * @return the outputSymanticTypes
      */
-    public static SemanticTypes[] getOutputSymanticTypes() {
-        SemanticTypes[] result = outputSymanticTypes
-                .toArray(new SemanticTypes[] {});
+    public static DataTypes[] getOutputTypes() {
+        DataTypes[] result = outputTypes
+                .toArray(new DataTypes[] {});
         return (result);
     };
 }

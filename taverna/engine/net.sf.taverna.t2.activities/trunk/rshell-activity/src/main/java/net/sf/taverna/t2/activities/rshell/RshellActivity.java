@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SemanticTypes;
+import net.sf.taverna.t2.activities.rshell.RshellPortTypes.DataTypes;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceServiceException;
 import net.sf.taverna.t2.reference.T2Reference;
@@ -65,8 +65,6 @@ import org.rosuda.REngine.Rserve.RFileInputStream;
 import org.rosuda.REngine.Rserve.RFileOutputStream;
 import org.rosuda.REngine.Rserve.RserveException;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 /**
  * An Activity providing Rshell functionality.
  * 
@@ -81,9 +79,9 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
 
     private JsonNode configurationBean;
 
-    private Map<String, SemanticTypes> inputSymanticTypes = new HashMap<String, SemanticTypes>();
+    private Map<String, DataTypes> inputTypes = new HashMap<String, DataTypes>();
 
-    private Map<String, SemanticTypes> outputSymanticTypes = new HashMap<String, SemanticTypes>();
+    private Map<String, DataTypes> outputTypes = new HashMap<String, DataTypes>();
 
     private static HashMap<RshellConnectionSettings, Object> lockMap = new HashMap<RshellConnectionSettings, Object>();
 
@@ -101,7 +99,7 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
     public synchronized void configure(JsonNode configurationBean)
             throws ActivityConfigurationException {
         this.configurationBean = configurationBean;
-        configureSymanticTypes(configurationBean);
+        configureDataTypes(configurationBean);
     }
 
     @Override
@@ -209,7 +207,7 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
                         // pass input form input ports to RServe
                         for (ActivityInputPort inputPort : getInputPorts()) {
                             String inputName = inputPort.getName();
-                            SemanticTypes symanticType = inputSymanticTypes
+                            DataTypes dataType = inputTypes
                                     .get(inputName);
                             T2Reference inputId = data.get(inputName);
                             if (inputId == null) {
@@ -220,20 +218,20 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
                             }
 
                             Object input = referenceService.renderIdentifier(
-                                    inputId, symanticType.getSemanticClass(),
+                                    inputId, dataType.getJavaClass(),
                                     callback.getContext());
-                            if (symanticType.isFile) {
+                            if (dataType.isFile) {
                                 connection.assign(inputName,
                                         generateFilename(inputPort));
                                 writeRServeFile(inputPort, connection, input);
                             } else {
 
-                                REXP value = javaToRExp(input, symanticType);
+                                REXP value = javaToRExp(input, dataType);
                                 if (value == null) {
                                     callback.fail("Input to web service '"
                                             + inputName
                                             + "' could not be interpreted as a "
-                                            + symanticType + ", it is a "
+                                            + dataType + ", it is a "
                                             + input.getClass());
                                     closeConnection(connection);
                                     return;
@@ -253,7 +251,7 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
                                                 + completeString + ";\n"
                                                 + script;
                                     }
-                                } else if (symanticType == SemanticTypes.R_EXP) {
+                                } else if (dataType == DataTypes.R_EXP) {
                                     connection.assign(inputName, value);
                                     script = inputName + " <- "
                                             + "eval(parse(text=" + inputName
@@ -267,11 +265,11 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
                         // create filename variables for output ports that are
                         // files
                         for (OutputPort outputPort : getOutputPorts()) {
-                            if (outputSymanticTypes.get(outputPort.getName()).isFile) {
+                            if (outputTypes.get(outputPort.getName()).isFile) {
                                 connection.assign(outputPort.getName(),
                                         generateFilename(outputPort));
-                            } else if (outputSymanticTypes.get(outputPort
-                                    .getName()) == SemanticTypes.R_EXP) {
+                            } else if (outputTypes.get(outputPort
+                                    .getName()) == DataTypes.R_EXP) {
                                 script = script + outputPort.getName()
                                         + " <- deparse(" + outputPort.getName()
                                         + ");\n";
@@ -331,10 +329,10 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
                                     .size());
                             for (OutputPort outputPort : outputPorts) {
                                 String portName = outputPort.getName();
-                                SemanticTypes symanticType = outputSymanticTypes
+                                DataTypes dataType = outputTypes
                                         .get(portName);
 
-                                switch (symanticType) {
+                                switch (dataType) {
                                 case PNG_FILE: {
                                     Object data = readRServeFile(outputPort,
                                             connection);
@@ -354,7 +352,7 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
                                 default: {
                                     REXP expression = resultList.at(portName);
                                     Object object = rExpToJava(expression,
-                                            symanticType);
+                                            dataType);
                                     outputData.put(
                                             portName,
                                             referenceService.register(object,
@@ -403,15 +401,10 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
     }
 
     public RshellConnectionSettings getConnectionSettings() {
-        JsonNode connectionSettings = configurationBean
-                .get("connectionSettings");
+        JsonNode connectionSettings = configurationBean.get("connection");
         RshellConnectionSettings settings = new RshellConnectionSettings();
         settings.setHost(connectionSettings.get("hostname").textValue());
         settings.setPort(connectionSettings.get("port").intValue());
-        settings.setUsername(connectionSettings.get("username").textValue());
-        settings.setPassword(connectionSettings.get("password").textValue());
-        settings.setNewRVersion(connectionSettings.get("newRVersion")
-                .booleanValue());
         settings.setKeepSessionAlive(connectionSettings.get("keepSessionAlive")
                 .booleanValue());
         return settings;
@@ -436,20 +429,20 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
 
     }
 
-    private void configureSymanticTypes(JsonNode json) {
-        if (json.has("inputSemanticTypes")) {
-            for (JsonNode portSymanticType : json.get("inputSemanticTypes")) {
-                inputSymanticTypes.put(
-                        portSymanticType.get("name").textValue(),
-                        SemanticTypes.valueOf(portSymanticType.get(
-                                "symanticType").textValue()));
+    private void configureDataTypes(JsonNode json) {
+        if (json.has("inputTypes")) {
+            for (JsonNode portdataType : json.get("inputSemanticTypes")) {
+                inputTypes.put(
+                        portdataType.get("port").textValue(), DataTypes
+                                .valueOf(portdataType.get("dataType")
+                                        .textValue()));
             }
         }
-        if (json.has("outputSemanticTypes")) {
-            for (JsonNode portSymanticType : json.get("outputSemanticTypes")) {
-                outputSymanticTypes.put(portSymanticType.get("name")
-                        .textValue(), SemanticTypes.valueOf(portSymanticType
-                        .get("symanticType").textValue()));
+        if (json.has("outputTypes")) {
+            for (JsonNode portdataType : json.get("outputSemanticTypes")) {
+                outputTypes.put(portdataType.get("port")
+                        .textValue(), DataTypes.valueOf(portdataType
+                        .get("dataType").textValue()));
             }
         }
     }
@@ -463,7 +456,7 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
     private void cleanUpServerFiles(RshellConnection connection) {
         for (ActivityInputPort inputPort : getInputPorts()) {
 
-            if (inputSymanticTypes.get(inputPort.getName()).isFile) {
+            if (inputTypes.get(inputPort.getName()).isFile) {
                 try {
                     connection.removeFile(generateFilename(inputPort));
                 } catch (RserveException rse) {
@@ -474,7 +467,7 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
 
         for (OutputPort outputPort : getOutputPorts()) {
 
-            if (outputSymanticTypes.get(outputPort.getName()).isFile) {
+            if (outputTypes.get(outputPort.getName()).isFile) {
                 try {
                     connection.removeFile(generateFilename(outputPort));
                 } catch (RserveException rse) {
@@ -495,12 +488,12 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
     private String generateFilename(Port port) {
 
         String portName = port.getName();
-        SemanticTypes semanticType = outputSymanticTypes.get(portName);
+        DataTypes semanticType = outputTypes.get(portName);
 
         String extension;
-        if (semanticType == RshellPortTypes.SemanticTypes.PNG_FILE) {
+        if (semanticType == RshellPortTypes.DataTypes.PNG_FILE) {
             extension = ".png";
-        } else if (semanticType == RshellPortTypes.SemanticTypes.TEXT_FILE) {
+        } else if (semanticType == RshellPortTypes.DataTypes.TEXT_FILE) {
             extension = ".txt";
         }
         // else if (semanticType == RshellPortTypes.SemanticTypes.PDF_FILE) {
@@ -522,12 +515,12 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
      * @param symantic
      *            type to which the rExp should be converted
      * @throws ActivityConfigurationException
-     *             if symantictype is not supported
+     *             if dataType is not supported
      */
     @SuppressWarnings("unchecked")
-    private REXP javaToRExp(Object value, SemanticTypes symanticType)
+    private REXP javaToRExp(Object value, DataTypes dataType)
             throws ActivityConfigurationException {
-        switch (symanticType) {
+        switch (dataType) {
         case BOOL:
             if (value instanceof String) {
                 return stringToREXPLogical((String) value);
@@ -578,7 +571,7 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
 
         default:
             throw new ActivityConfigurationException("Symantic type "
-                    + symanticType + " not supported");
+                    + dataType + " not supported");
         }
     }
 
@@ -641,7 +634,7 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
         }
 
         Object value;
-        switch (outputSymanticTypes.get(outputPort.getName())) {
+        switch (outputTypes.get(outputPort.getName())) {
         case TEXT_FILE:
             value = new String(bytes);
             break;
@@ -656,16 +649,16 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
      * 
      * @param rExp
      *            the r expression
-     * @param symanticType
+     * @param dataType
      *            the type of the output port
      * @return a Java object which is a representation of the rExpression
      * @throws REXPMismatchException
      * @throw TaskExecutionException if rExp type is unsupported
      */
-    private Object rExpToJava(REXP rExp, SemanticTypes symanticType)
+    private Object rExpToJava(REXP rExp, DataTypes dataType)
             throws ActivityConfigurationException, REXPMismatchException {
 
-        switch (symanticType) {
+        switch (dataType) {
         case BOOL:
             if (rExp.isNull()) {
                 return stringNA;
@@ -880,7 +873,7 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
         // can end here with strange R scripts
         throw new ActivityConfigurationException(
                 "Cannot convert R expression '" + rExp.toString()
-                        + "' to the semantic type '" + symanticType.description
+                        + "' to the semantic type '" + dataType.description
                         + "'");
 
     }
@@ -904,7 +897,7 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
         try {
 
             byte[] bytes;
-            switch (inputSymanticTypes.get(inputPort.getName())) {
+            switch (inputTypes.get(inputPort.getName())) {
             case TEXT_FILE:
                 bytes = ((String) data).getBytes();
                 break;
