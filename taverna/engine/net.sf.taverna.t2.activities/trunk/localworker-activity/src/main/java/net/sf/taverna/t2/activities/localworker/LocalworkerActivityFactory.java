@@ -88,9 +88,9 @@ public class LocalworkerActivityFactory implements ActivityFactory {
 		Set<ActivityOutputPort> outputPorts = new HashSet<>();
 		if (!configuration.get("isAltered").booleanValue()) {
 			if (configuration.has("outputPorts")) {
-				for (JsonNode inputPort : configuration.get("outputPorts")) {
-					outputPorts.add(edits.createActivityOutputPort(inputPort.get("name").textValue(),
-							inputPort.get("depth").intValue(), inputPort.get("granularDepth").intValue()));
+				for (JsonNode outputPort : configuration.get("outputPorts")) {
+					outputPorts.add(edits.createActivityOutputPort(outputPort.get("name").textValue(),
+							outputPort.get("depth").intValue(), outputPort.get("granularDepth").intValue()));
 				}
 			}
 		}
