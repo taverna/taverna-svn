@@ -69,7 +69,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * An Activity providing Rshell functionality.
- * 
+ *
  */
 public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
 
@@ -129,17 +129,8 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
                 synchronized (lock) {
 
                     URI rServerURI = java.net.URI.create("rserve://"
-                            + settings.getHost() + ":" + settings.getPort()); // this
-                                                                              // URI
-                                                                              // is
-                                                                              // used
-                                                                              // to
-                                                                              // identify
-                                                                              // Rshell
-                                                                              // service
-                                                                              // in
-                                                                              // Credential
-                                                                              // Manager
+                            + settings.getHost() + ":" + settings.getPort());
+                    // this URI is used to identify Rshell service in Credential Manager
                     // create connection
                     try {
                         // If Credential Manager has username and password for
@@ -451,7 +442,7 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
 
     /**
      * Method for cleaing up all generated files
-     * 
+     *
      * @param connection
      *            the connection to be used
      */
@@ -481,11 +472,11 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
 
     /**
      * Method for generating a valid filename for a port
-     * 
+     *
      * @param Port
      *            the port to generate a filename for
      * @return the filename
-     * 
+     *
      */
     private String generateFilename(Port port) {
 
@@ -511,7 +502,7 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
      * Convert workflow input to an REXP using the given javaType. For instance,
      * if javaType is double[], and input is a list of strings, each string will
      * be converted to a double, and the array will be wrapped in an REXP.
-     * 
+     *
      * @param input
      *            the input object to be converted
      * @param symantic
@@ -594,7 +585,7 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
 
     /**
      * Method for reading the png image
-     * 
+     *
      * @param outputPort
      *            the output port to read the file from
      * @param connection
@@ -648,7 +639,7 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
 
     /**
      * Convert REXP to suitable (list of)
-     * 
+     *
      * @param rExp
      *            the r expression
      * @param dataType
@@ -882,7 +873,7 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
 
     /**
      * Method for writing the server file
-     * 
+     *
      * @param inputPort
      *            the input port to write a file to
      * @param connection
