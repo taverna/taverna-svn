@@ -20,13 +20,10 @@
  ******************************************************************************/
 package net.sf.taverna.t2.activities.localworker;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
-import uk.org.taverna.configuration.app.ApplicationConfiguration;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
-import net.sf.taverna.t2.annotation.AnnotationAssertion;
-import net.sf.taverna.t2.annotation.AnnotationChain;
-import net.sf.taverna.t2.annotation.annotationbeans.HostInstitution;
+import uk.org.taverna.configuration.app.ApplicationConfiguration;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class LocalworkerActivity extends BeanshellActivity {
 
@@ -45,13 +42,9 @@ public class LocalworkerActivity extends BeanshellActivity {
 	 * @return
 	 */
 	public boolean isAltered() {
-		for (AnnotationChain chain : getAnnotations()) {
-			for (AnnotationAssertion<?> assertion : chain.getAssertions()) {
-				Object detail = assertion.getDetail();
-				if (detail instanceof HostInstitution) {
-					return true;
-				}
-			}
+		JsonNode configuration = getConfiguration();
+		if (configuration != null && configuration.has("isAltered")) {
+			return configuration.get("isAltered").booleanValue();
 		}
 		return false;
 	}
