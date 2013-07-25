@@ -60,6 +60,7 @@ public class ApiConsumerContextualView extends HTMLBasedActivityContextualView {
 			ColourManager colourManager, ServiceDescriptionRegistry serviceDescriptionRegistry,
 			ApplicationConfiguration applicationConfiguration, ServiceRegistry serviceRegistry) {
 		super(activity, colourManager);
+		this.editManager = editManager;
 		this.activityIconManager = activityIconManager;
 		this.serviceDescriptionRegistry = serviceDescriptionRegistry;
 		this.applicationConfiguration = applicationConfiguration;
