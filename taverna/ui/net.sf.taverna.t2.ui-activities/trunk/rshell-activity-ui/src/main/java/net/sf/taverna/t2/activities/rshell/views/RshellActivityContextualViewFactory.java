@@ -31,6 +31,7 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
+import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescriptionRegistry;
 import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
 import net.sf.taverna.t2.workbench.configuration.colour.ColourManager;
@@ -44,11 +45,11 @@ import uk.org.taverna.scufl2.api.activity.Activity;
  * RshellActivity contextual view factory.
  *
  * @author Alex Nenadic
- *
  */
 public class RshellActivityContextualViewFactory implements ContextualViewFactory<Activity> {
 
-	private static final URI ACTIVITY_TYPE = URI.create("http://ns.taverna.org.uk/2010/activity/rshell");
+	private static final URI ACTIVITY_TYPE = URI
+			.create("http://ns.taverna.org.uk/2010/activity/rshell");
 
 	private EditManager editManager;
 	private FileManager fileManager;
@@ -56,13 +57,16 @@ public class RshellActivityContextualViewFactory implements ContextualViewFactor
 	private ColourManager colourManager;
 	private ServiceDescriptionRegistry serviceDescriptionRegistry;
 
+	private CredentialManager credentialManager;
+
 	public boolean canHandle(Object object) {
 		return object instanceof Activity && ((Activity) object).getType().equals(ACTIVITY_TYPE);
 	}
 
 	public List<ContextualView> getViews(Activity activity) {
 		return Arrays.asList(new ContextualView[] { new RshellActivityContextualView(activity,
-				editManager, fileManager, activityIconManager, colourManager, serviceDescriptionRegistry) });
+				editManager, fileManager, activityIconManager, colourManager,
+				serviceDescriptionRegistry, credentialManager) });
 	}
 
 	public void setEditManager(EditManager editManager) {
@@ -83,6 +87,10 @@ public class RshellActivityContextualViewFactory implements ContextualViewFactor
 
 	public void setServiceDescriptionRegistry(ServiceDescriptionRegistry serviceDescriptionRegistry) {
 		this.serviceDescriptionRegistry = serviceDescriptionRegistry;
+	}
+
+	public void setCredentialManager(CredentialManager credentialManager) {
+		this.credentialManager = credentialManager;
 	}
 
 }

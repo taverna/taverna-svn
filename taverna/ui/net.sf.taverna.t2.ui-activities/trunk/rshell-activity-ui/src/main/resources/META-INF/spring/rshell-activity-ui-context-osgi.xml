@@ -24,5 +24,6 @@
 	<reference id="colourManager" interface="net.sf.taverna.t2.workbench.configuration.colour.ColourManager" />
 	<reference id="serviceDescriptionRegistry" interface="net.sf.taverna.t2.servicedescriptions.ServiceDescriptionRegistry" />
 	<reference id="serviceRegistry" interface="uk.org.taverna.commons.services.ServiceRegistry" />
+	<reference id="credentialManager" interface="net.sf.taverna.t2.security.credentialmanager.CredentialManager" />
 
 </beans:beans>

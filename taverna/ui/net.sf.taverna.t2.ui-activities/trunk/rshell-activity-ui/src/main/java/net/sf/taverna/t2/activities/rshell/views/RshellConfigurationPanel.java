@@ -43,6 +43,7 @@ import javax.swing.event.DocumentListener;
 import net.sf.taverna.t2.activities.rshell.RshellPortTypes;
 import net.sf.taverna.t2.activities.rshell.RshellPortTypes.DataTypes;
 import net.sf.taverna.t2.lang.ui.EditorKeySetUtil;
+import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
 import net.sf.taverna.t2.workbench.ui.credentialmanager.CredentialManagerUI;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityPortConfiguration;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ListConfigurationComponent;
@@ -68,10 +69,12 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 
 	private ScriptConfigurationComponent scriptConfigurationComponent;
 	private ValidatingTextGroup inputTextGroup, outputTextGroup;
-	protected CredentialManagerUI credManagerUI;
+	private CredentialManagerUI credManagerUI;
+	private CredentialManager credentialManager;
 
-	public RshellConfigurationPanel(Activity activity) {
+	public RshellConfigurationPanel(Activity activity, CredentialManager credentialManager) {
 		super(activity);
+		this.credentialManager = credentialManager;
 		initialise();
 	}
 
@@ -225,8 +228,10 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 		// "Set username and password" button
 		ActionListener usernamePasswordListener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (credManagerUI != null)
-					credManagerUI.newPasswordForService(URI.create("rserve://"+hostnameField.getText()+":"+portField.getText())); // this is used as a key for the service in Credential Manager
+				if (credManagerUI == null) {
+					credManagerUI = new CredentialManagerUI(credentialManager);
+				}
+				credManagerUI.newPasswordForService(URI.create("rserve://"+hostnameField.getText()+":"+portField.getText())); // this is used as a key for the service in Credential Manager
 			}
 		};
 		JButton setHttpUsernamePasswordButton = new JButton("Set username and password");

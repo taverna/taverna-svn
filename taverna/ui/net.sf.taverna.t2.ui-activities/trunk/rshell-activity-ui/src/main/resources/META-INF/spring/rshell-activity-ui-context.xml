@@ -28,6 +28,7 @@
 			<property name="fileManager" ref="fileManager" />
 			<property name="activityIconManager" ref="activityIconManager" />
 			<property name="serviceDescriptionRegistry" ref="serviceDescriptionRegistry" />
+			<property name="credentialManager" ref="credentialManager" />
 	</bean>
 
 	<bean id="RshellActivityContextualViewFactory" class="net.sf.taverna.t2.activities.rshell.views.RshellActivityContextualViewFactory">
@@ -36,6 +37,7 @@
 			<property name="activityIconManager" ref="activityIconManager" />
 			<property name="colourManager" ref="colourManager" />
 			<property name="serviceDescriptionRegistry" ref="serviceDescriptionRegistry" />
+			<property name="credentialManager" ref="credentialManager" />
 	</bean>
 
 </beans>

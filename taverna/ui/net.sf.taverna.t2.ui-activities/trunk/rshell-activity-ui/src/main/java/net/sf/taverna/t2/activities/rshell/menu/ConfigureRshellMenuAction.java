@@ -24,6 +24,7 @@ import javax.swing.Action;
 
 import net.sf.taverna.t2.activities.rshell.actions.RshellActivityConfigurationAction;
 import net.sf.taverna.t2.activities.rshell.servicedescriptions.RshellTemplateService;
+import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescriptionRegistry;
 import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
 import net.sf.taverna.t2.workbench.activitytools.AbstractConfigureActivityMenuAction;
@@ -36,6 +37,7 @@ public class ConfigureRshellMenuAction extends AbstractConfigureActivityMenuActi
 	private FileManager fileManager;
 	private ActivityIconManager activityIconManager;
 	private ServiceDescriptionRegistry serviceDescriptionRegistry;
+	private CredentialManager credentialManager;
 
 	public ConfigureRshellMenuAction() {
 		super(RshellTemplateService.ACTIVITY_TYPE);
@@ -45,7 +47,7 @@ public class ConfigureRshellMenuAction extends AbstractConfigureActivityMenuActi
 	protected Action createAction() {
 		RshellActivityConfigurationAction configAction = new RshellActivityConfigurationAction(
 				findActivity(), getParentFrame(), editManager, fileManager, activityIconManager,
-				serviceDescriptionRegistry);
+				serviceDescriptionRegistry, credentialManager);
 		addMenuDots(configAction);
 		return configAction;
 	}
@@ -64,6 +66,10 @@ public class ConfigureRshellMenuAction extends AbstractConfigureActivityMenuActi
 
 	public void setServiceDescriptionRegistry(ServiceDescriptionRegistry serviceDescriptionRegistry) {
 		this.serviceDescriptionRegistry = serviceDescriptionRegistry;
+	}
+
+	public void setCredentialManager(CredentialManager credentialManager) {
+		this.credentialManager = credentialManager;
 	}
 
 }

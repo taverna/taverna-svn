@@ -34,6 +34,7 @@ import javax.swing.Action;
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
 import net.sf.taverna.t2.activities.rshell.RshellPortTypes.DataTypes;
 import net.sf.taverna.t2.activities.rshell.actions.RshellActivityConfigurationAction;
+import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescriptionRegistry;
 import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
 import net.sf.taverna.t2.workbench.configuration.colour.ColourManager;
@@ -59,15 +60,18 @@ public class RshellActivityContextualView extends HTMLBasedActivityContextualVie
 	private final FileManager fileManager;
 	private final ActivityIconManager activityIconManager;
 	private final ServiceDescriptionRegistry serviceDescriptionRegistry;
+	private final CredentialManager credentialManager;
 
 	public RshellActivityContextualView(Activity activity, EditManager editManager,
 			FileManager fileManager, ActivityIconManager activityIconManager,
-			ColourManager colourManager, ServiceDescriptionRegistry serviceDescriptionRegistry) {
+			ColourManager colourManager, ServiceDescriptionRegistry serviceDescriptionRegistry,
+			CredentialManager credentialManager) {
 		super(activity, colourManager);
 		this.editManager = editManager;
 		this.fileManager = fileManager;
 		this.activityIconManager = activityIconManager;
 		this.serviceDescriptionRegistry = serviceDescriptionRegistry;
+		this.credentialManager = credentialManager;
 		init();
 	}
 
@@ -131,7 +135,7 @@ public class RshellActivityContextualView extends HTMLBasedActivityContextualVie
 	@Override
 	public Action getConfigureAction(Frame owner) {
 		return new RshellActivityConfigurationAction(getActivity(), owner, editManager,
-				fileManager, activityIconManager, serviceDescriptionRegistry);
+				fileManager, activityIconManager, serviceDescriptionRegistry, credentialManager);
 	}
 
 	@Override

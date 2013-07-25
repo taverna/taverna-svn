@@ -35,6 +35,7 @@ import javax.swing.JDialog;
 
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
 import net.sf.taverna.t2.activities.rshell.views.RshellConfigurationPanel;
+import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescriptionRegistry;
 import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
 import net.sf.taverna.t2.workbench.edits.EditManager;
@@ -49,7 +50,6 @@ import uk.org.taverna.scufl2.api.activity.Activity;
  * settings when the user clicks OK on the view
  *
  * @author Ian Dunlop
- *
  */
 @SuppressWarnings("serial")
 public class RshellActivityConfigurationAction extends ActivityConfigurationAction {
@@ -57,13 +57,17 @@ public class RshellActivityConfigurationAction extends ActivityConfigurationActi
 	public static final String EDIT_RSHELL_SCRIPT = "Edit Rshell script";
 	private final EditManager editManager;
 	private final FileManager fileManager;
+	private final CredentialManager credentialManager;
 
 	public RshellActivityConfigurationAction(Activity activity, Frame owner,
 			EditManager editManager, FileManager fileManager,
-			ActivityIconManager activityIconManager, ServiceDescriptionRegistry serviceDescriptionRegistry) {
+			ActivityIconManager activityIconManager,
+			ServiceDescriptionRegistry serviceDescriptionRegistry,
+			CredentialManager credentialManager) {
 		super(activity, activityIconManager, serviceDescriptionRegistry);
 		this.editManager = editManager;
 		this.fileManager = fileManager;
+		this.credentialManager = credentialManager;
 		putValue(Action.NAME, EDIT_RSHELL_SCRIPT);
 	}
 
@@ -77,8 +81,10 @@ public class RshellActivityConfigurationAction extends ActivityConfigurationActi
 			currentDialog.toFront();
 			return;
 		}
-		final ActivityConfigurationPanel rshellConfigView = new RshellConfigurationPanel(getActivity());
-		final ActivityConfigurationDialog dialog = new ActivityConfigurationDialog(getActivity(), rshellConfigView, editManager);
+		final ActivityConfigurationPanel rshellConfigView = new RshellConfigurationPanel(
+				getActivity(), credentialManager);
+		final ActivityConfigurationDialog dialog = new ActivityConfigurationDialog(getActivity(),
+				rshellConfigView, editManager);
 
 		ActivityConfigurationAction.setDialog(getActivity(), dialog, fileManager);
 
