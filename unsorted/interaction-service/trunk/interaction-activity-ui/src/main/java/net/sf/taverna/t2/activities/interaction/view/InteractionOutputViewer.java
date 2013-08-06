@@ -28,18 +28,9 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
-import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 
-/**
- * A view representing {@link ActivityInputPortDefinitionBean}s of a
- * {@link BeanshellActivity} and the various parts which can be edited,
- * primarily the name, depth and granular depth.
- * 
- * @author Ian Dunlop
- * 
- */
 @SuppressWarnings("serial")
 public class InteractionOutputViewer extends JPanel {
 	/** The bean which defines this view */
