@@ -13,71 +13,70 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 
-
 @SuppressWarnings("serial")
-public class InteractionActivityContextualView extends HTMLBasedActivityContextualView<InteractionActivityConfigurationBean> {
+public class InteractionActivityContextualView extends
+		HTMLBasedActivityContextualView<InteractionActivityConfigurationBean> {
 	public InteractionActivityContextualView(final Activity<?> activity) {
-        super(activity);
-        init();
-}
+		super(activity);
+		this.init();
+	}
 
-private void init() {
-}
+	private void init() {
+	}
 
-@Override
-protected String getRawTableRowsHtml() {
-    	final InteractionActivityConfigurationBean configBean = getConfigBean();
-        String html = "<tr><td colspan=\"2\" align=\"center\"><strong>";
-        html += "Interaction defined by ";
-        if (configBean.getInteractionActivityType().equals(InteractionActivityType.VelocityTemplate)) {
-        	html += "Velocity template : ";
-        } else {
-        	html += "HTML page : ";
-        }
-        html += configBean.getPresentationOrigin() + "</strong></td></tr>";
-        html = html
-        + "<tr><th>Input Port Name</th>"
-                +       "<th>Depth</th>"
-        +"</tr>";
+	@Override
+	protected String getRawTableRowsHtml() {
+		final InteractionActivityConfigurationBean configBean = this
+				.getConfigBean();
+		String html = "<tr><td colspan=\"2\" align=\"center\"><strong>";
+		html += "Interaction defined by ";
+		if (configBean.getInteractionActivityType().equals(
+				InteractionActivityType.VelocityTemplate)) {
+			html += "Velocity template : ";
+		} else {
+			html += "HTML page : ";
+		}
+		html += configBean.getPresentationOrigin() + "</strong></td></tr>";
+		html = html + "<tr><th>Input Port Name</th>" + "<th>Depth</th>"
+				+ "</tr>";
 		for (final ActivityInputPortDefinitionBean bean : configBean
-                        .getInputPortDefinitions()) {
-                html = html + "<tr><td>" + bean.getName() + "</td><td>"
-                                + bean.getDepth() + "</td></tr>";
-        }
-        html = html
-                        + "<tr><th>Output Port Name</th>"
-                                +       "<th>Depth</th>"
-                        +"</tr>";
-        for (final ActivityOutputPortDefinitionBean bean : configBean
-                        .getOutputPortDefinitions()) {
-                html = html + "<tr><td>" + bean.getName() + "</td><td>"
-                                + bean.getDepth() + "</td>"
-//                                              + "<td>" + bean.getGranularDepth()
-//                              + "</td>"
-                                + "</tr>";
-        }
-        return html;
-}
+				.getInputPortDefinitions()) {
+			html = html + "<tr><td>" + bean.getName() + "</td><td>"
+					+ bean.getDepth() + "</td></tr>";
+		}
+		html = html + "<tr><th>Output Port Name</th>" + "<th>Depth</th>"
+				+ "</tr>";
+		for (final ActivityOutputPortDefinitionBean bean : configBean
+				.getOutputPortDefinitions()) {
+			html = html + "<tr><td>" + bean.getName() + "</td><td>"
+					+ bean.getDepth() + "</td>"
+					// + "<td>" + bean.getGranularDepth()
+					// + "</td>"
+					+ "</tr>";
+		}
+		return html;
+	}
 
-@Override
-public String getViewTitle() {
-        return "Interaction service";
-}
+	@Override
+	public String getViewTitle() {
+		return "Interaction service";
+	}
 
-@Override
-public Action getConfigureAction(final Frame owner) {
-		final InteractionActivity interactionActivity = (InteractionActivity) getActivity();
+	@Override
+	public Action getConfigureAction(final Frame owner) {
+		final InteractionActivity interactionActivity = (InteractionActivity) this
+				.getActivity();
 		if (interactionActivity.getConfiguration().getInteractionActivityType()
 				.equals(InteractionActivityType.LocallyPresentedHtml)) {
 			return new InteractionActivityConfigurationAction(
 					interactionActivity, owner);
 		}
 		return null;
-}
+	}
 
-@Override
-public int getPreferredPosition() {
-        return 100;
-}
+	@Override
+	public int getPreferredPosition() {
+		return 100;
+	}
 
 }

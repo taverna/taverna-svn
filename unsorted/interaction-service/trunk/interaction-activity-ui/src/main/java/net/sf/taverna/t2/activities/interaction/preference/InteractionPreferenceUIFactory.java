@@ -13,36 +13,48 @@ import net.sf.taverna.t2.workbench.configuration.ConfigurationUIFactory;
 
 /**
  * @author alanrw
- *
+ * 
  */
-public class InteractionPreferenceUIFactory extends AbstractConfigurable implements ConfigurationUIFactory  {
+public class InteractionPreferenceUIFactory extends AbstractConfigurable
+		implements ConfigurationUIFactory {
 
 	private final JPanel configPanel;
-	private static InteractionPreference pref = InteractionPreference.getInstance();
+	private static InteractionPreference pref = InteractionPreference
+			.getInstance();
 
 	public InteractionPreferenceUIFactory() {
 		super();
 		this.configPanel = new InteractionPreferencePanel();
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.workbench.configuration.ConfigurationUIFactory#canHandle(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * net.sf.taverna.t2.workbench.configuration.ConfigurationUIFactory#canHandle
+	 * (java.lang.String)
 	 */
 	@Override
 	public boolean canHandle(final String uuid) {
 		return uuid.equals(pref.getUUID());
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.workbench.configuration.ConfigurationUIFactory#getConfigurable()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.sf.taverna.t2.workbench.configuration.ConfigurationUIFactory#
+	 * getConfigurable()
 	 */
 	@Override
 	public Configurable getConfigurable() {
 		return this;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.workbench.configuration.ConfigurationUIFactory#getConfigurationPanel()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.sf.taverna.t2.workbench.configuration.ConfigurationUIFactory#
+	 * getConfigurationPanel()
 	 */
 	@Override
 	public JPanel getConfigurationPanel() {

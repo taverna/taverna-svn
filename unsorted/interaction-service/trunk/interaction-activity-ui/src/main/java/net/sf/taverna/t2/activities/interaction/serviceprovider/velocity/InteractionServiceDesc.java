@@ -12,13 +12,12 @@ import net.sf.taverna.t2.activities.interaction.serviceprovider.InteractionServi
 import net.sf.taverna.t2.servicedescriptions.ServiceDescription;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
-
-public class InteractionServiceDesc extends ServiceDescription<InteractionActivityConfigurationBean> {
-
+public class InteractionServiceDesc extends
+		ServiceDescription<InteractionActivityConfigurationBean> {
 
 	/**
-	 * The subclass of Activity which should be instantiated when adding a service
-	 * for this description
+	 * The subclass of Activity which should be instantiated when adding a
+	 * service for this description
 	 */
 	@Override
 	public Class<? extends Activity<InteractionActivityConfigurationBean>> getActivityClass() {
@@ -26,10 +25,11 @@ public class InteractionServiceDesc extends ServiceDescription<InteractionActivi
 	}
 
 	/**
-	 * The configuration bean which is to be used for configuring the instantiated activity.
-	 * Making this bean will typically require some of the fields set on this service
-	 * description, like an endpoint URL or method name.
-	 *
+	 * The configuration bean which is to be used for configuring the
+	 * instantiated activity. Making this bean will typically require some of
+	 * the fields set on this service description, like an endpoint URL or
+	 * method name.
+	 * 
 	 */
 	@Override
 	public InteractionActivityConfigurationBean getActivityConfiguration() {
@@ -48,8 +48,8 @@ public class InteractionServiceDesc extends ServiceDescription<InteractionActivi
 	}
 
 	/**
-	 * The display name that will be shown in service palette and will
-	 * be used as a template for processor name when added to workflow.
+	 * The display name that will be shown in service palette and will be used
+	 * as a template for processor name when added to workflow.
 	 */
 	@Override
 	public String getName() {
@@ -57,8 +57,8 @@ public class InteractionServiceDesc extends ServiceDescription<InteractionActivi
 	}
 
 	/**
-	 * The path to this service description in the service palette. Folders
-	 * will be created for each element of the returned path.
+	 * The path to this service description in the service palette. Folders will
+	 * be created for each element of the returned path.
 	 */
 	@Override
 	public List<String> getPath() {
@@ -74,12 +74,10 @@ public class InteractionServiceDesc extends ServiceDescription<InteractionActivi
 	@Override
 	protected List<? extends Object> getIdentifyingData() {
 		// FIXME: Use your fields instead of example fields
-		return Arrays.<Object>asList(this.templateName);
+		return Arrays.<Object> asList(this.templateName);
 	}
 
-
 	private String templateName;
-
 
 	public String getTemplateName() {
 		return this.templateName;
@@ -88,6 +86,5 @@ public class InteractionServiceDesc extends ServiceDescription<InteractionActivi
 	public void setTemplateName(final String templateName) {
 		this.templateName = templateName;
 	}
-
 
 }

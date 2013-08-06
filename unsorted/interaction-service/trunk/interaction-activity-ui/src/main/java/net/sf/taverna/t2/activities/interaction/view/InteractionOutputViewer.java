@@ -28,6 +28,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
+import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 
@@ -35,9 +36,9 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputP
  * A view representing {@link ActivityInputPortDefinitionBean}s of a
  * {@link BeanshellActivity} and the various parts which can be edited,
  * primarily the name, depth and granular depth.
- *
+ * 
  * @author Ian Dunlop
- *
+ * 
  */
 @SuppressWarnings("serial")
 public class InteractionOutputViewer extends JPanel {
@@ -54,7 +55,7 @@ public class InteractionOutputViewer extends JPanel {
 	/**
 	 * Sets the look and feel of the view through {@link #initView()} and sets
 	 * the edit state using {@link #editable}
-	 *
+	 * 
 	 * @param bean
 	 *            One of the output ports of the overall activity
 	 * @param editable
@@ -64,9 +65,9 @@ public class InteractionOutputViewer extends JPanel {
 			final boolean editable) {
 		this.bean = bean;
 		this.editable = editable;
-		setBorder(javax.swing.BorderFactory.createEtchedBorder());
-		initView();
-		setEditable(editable);
+		this.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+		this.initView();
+		this.setEditable(editable);
 	}
 
 	/**
@@ -74,7 +75,7 @@ public class InteractionOutputViewer extends JPanel {
 	 * name, depth and granular depth
 	 */
 	private void initView() {
-		setLayout(new GridBagLayout());
+		this.setLayout(new GridBagLayout());
 		final GridBagConstraints outerConstraint = new GridBagConstraints();
 		outerConstraint.anchor = GridBagConstraints.FIRST_LINE_START;
 		outerConstraint.gridx = 0;
@@ -84,21 +85,23 @@ public class InteractionOutputViewer extends JPanel {
 		outerConstraint.fill = GridBagConstraints.BOTH;
 
 		this.nameField = new JTextField(this.bean.getName());
-		add(this.nameField, outerConstraint);
+		this.add(this.nameField, outerConstraint);
 
 		outerConstraint.gridx = 1;
-		final SpinnerNumberModel depthModel = new SpinnerNumberModel(new Integer(this.bean
-				.getDepth()), new Integer(0), new Integer(100), new Integer(1));
+		final SpinnerNumberModel depthModel = new SpinnerNumberModel(
+				new Integer(this.bean.getDepth()), new Integer(0), new Integer(
+						100), new Integer(1));
 		this.depthSpinner = new JSpinner(depthModel);
-		this.depthSpinner.setToolTipText("A depth of 0 means a simple value, like a string. Depth 1 is a list of simple values, while depth 2 is a list of a list of simple values");
+		this.depthSpinner
+				.setToolTipText("A depth of 0 means a simple value, like a string. Depth 1 is a list of simple values, while depth 2 is a list of a list of simple values");
 		// depthSpinner.setValue(bean.getDepth());
-		add(this.depthSpinner, outerConstraint);
+		this.add(this.depthSpinner, outerConstraint);
 	}
 
 	/**
 	 * Get the component which edits the name of the
 	 * {@link ActivityOutputPortDefinitionBean}
-	 *
+	 * 
 	 * @return
 	 */
 	public JTextField getNameField() {
@@ -108,7 +111,7 @@ public class InteractionOutputViewer extends JPanel {
 	/**
 	 * The component which allows the depth of the
 	 * {@link ActivityOutputPortDefinitionBean} to be changed
-	 *
+	 * 
 	 * @return
 	 */
 	public JSpinner getDepthSpinner() {
@@ -118,7 +121,7 @@ public class InteractionOutputViewer extends JPanel {
 	/**
 	 * The actual {@link ActivityOutputPortDefinitionBean} described by this
 	 * view
-	 *
+	 * 
 	 * @return
 	 */
 	public ActivityOutputPortDefinitionBean getBean() {
@@ -127,7 +130,7 @@ public class InteractionOutputViewer extends JPanel {
 
 	/**
 	 * Can the bean be edited by this view?
-	 *
+	 * 
 	 * @return
 	 */
 	public boolean isEditable() {
@@ -136,12 +139,12 @@ public class InteractionOutputViewer extends JPanel {
 
 	/**
 	 * Set the editable state of the view
-	 *
+	 * 
 	 * @param editable
 	 */
 	public void setEditable(final boolean editable) {
 		this.editable = editable;
-		setEditMode();
+		this.setEditMode();
 	}
 
 	/**

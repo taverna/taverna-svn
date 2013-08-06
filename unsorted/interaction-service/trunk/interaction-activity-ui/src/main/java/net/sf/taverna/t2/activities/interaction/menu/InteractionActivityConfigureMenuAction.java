@@ -16,13 +16,14 @@ public class InteractionActivityConfigureMenuAction extends
 
 	@Override
 	protected Action createAction() {
-		final InteractionActivity a = findActivity();
+		final InteractionActivity a = this.findActivity();
 		Action result = null;
-		if (a.getConfiguration().getInteractionActivityType().equals(InteractionActivityType.LocallyPresentedHtml)) {
-			result = new InteractionActivityConfigureAction(findActivity(),
-				getParentFrame());
+		if (a.getConfiguration().getInteractionActivityType()
+				.equals(InteractionActivityType.LocallyPresentedHtml)) {
+			result = new InteractionActivityConfigureAction(
+					this.findActivity(), this.getParentFrame());
 			result.putValue(Action.NAME, "Configure interaction service");
-			addMenuDots(result);
+			this.addMenuDots(result);
 		}
 		return result;
 	}

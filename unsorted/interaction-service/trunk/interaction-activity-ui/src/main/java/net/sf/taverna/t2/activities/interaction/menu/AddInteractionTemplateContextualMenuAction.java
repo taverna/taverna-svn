@@ -37,19 +37,22 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 import org.apache.log4j.Logger;
 
 /**
- * An action to add a interaction activity + a wrapping processor to the workflow.
- *
+ * An action to add a interaction activity + a wrapping processor to the
+ * workflow.
+ * 
  * @author Alex Nenadic
- *
+ * 
  */
 @SuppressWarnings("serial")
-public class AddInteractionTemplateContextualMenuAction extends AbstractContextualMenuAction {
+public class AddInteractionTemplateContextualMenuAction extends
+		AbstractContextualMenuAction {
 
 	private static final String ADD_INTERACTION = "Interaction";
 
 	private static final URI insertSection = URI
 			.create("http://taverna.sf.net/2009/contextMenu/insert");
 
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger
 			.getLogger(AddInteractionTemplateContextualMenuAction.class);
 
@@ -60,7 +63,7 @@ public class AddInteractionTemplateContextualMenuAction extends AbstractContextu
 	@Override
 	public boolean isEnabled() {
 		return super.isEnabled()
-				&& (getContextualSelection().getSelection() instanceof Dataflow);
+				&& (this.getContextualSelection().getSelection() instanceof Dataflow);
 	}
 
 	@Override
@@ -70,17 +73,18 @@ public class AddInteractionTemplateContextualMenuAction extends AbstractContextu
 	}
 
 	protected class AddInteractionAction extends AbstractAction {
-		AddInteractionAction () {
-			super (ADD_INTERACTION, ActivityIconManager.getInstance().iconForActivity(
-						new InteractionActivity()));
+		AddInteractionAction() {
+			super(ADD_INTERACTION, ActivityIconManager.getInstance()
+					.iconForActivity(new InteractionActivity()));
 		}
 
+		@Override
 		public void actionPerformed(final ActionEvent e) {
-			FileManager.getInstance()
-			.getCurrentDataflow();
+			FileManager.getInstance().getCurrentDataflow();
 
-	WorkflowView.importServiceDescription(InteractionServiceHtmlTemplateService.getServiceDescription(),
-			false);
+			WorkflowView.importServiceDescription(
+					InteractionServiceHtmlTemplateService
+							.getServiceDescription(), false);
 		}
 	}
 

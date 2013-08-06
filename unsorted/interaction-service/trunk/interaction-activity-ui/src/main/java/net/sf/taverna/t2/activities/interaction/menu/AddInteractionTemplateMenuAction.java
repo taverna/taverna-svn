@@ -39,10 +39,10 @@ import org.apache.log4j.Logger;
 
 /**
  * An action to add a beanshell activity + a wrapping processor to the workflow.
- *
+ * 
  * @author Alex Nenadic
  * @author alanrw
- *
+ * 
  */
 @SuppressWarnings("serial")
 public class AddInteractionTemplateMenuAction extends AbstractMenuAction {
@@ -50,13 +50,15 @@ public class AddInteractionTemplateMenuAction extends AbstractMenuAction {
 	private static final String ADD_INTERACTION = "Interaction";
 
 	private static final URI ADD_INTERACTION_URI = URI
-	.create("http://taverna.sf.net/2008/t2workbench/menu#graphMenuAddInteraction");
+			.create("http://taverna.sf.net/2008/t2workbench/menu#graphMenuAddInteraction");
 
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger
 			.getLogger(AddInteractionTemplateMenuAction.class);
 
 	public AddInteractionTemplateMenuAction() {
-		super(URI.create("http://taverna.sf.net/2008/t2workbench/menu#insert"), 350, ADD_INTERACTION_URI);
+		super(URI.create("http://taverna.sf.net/2008/t2workbench/menu#insert"),
+				350, ADD_INTERACTION_URI);
 	}
 
 	@Override
@@ -66,19 +68,22 @@ public class AddInteractionTemplateMenuAction extends AbstractMenuAction {
 	}
 
 	protected class AddInteractionMenuAction extends DesignOnlyAction {
-		AddInteractionMenuAction () {
-			super ();
-			putValue(SMALL_ICON, ActivityIconManager.getInstance().iconForActivity(
-					new InteractionActivity()));
-			putValue(NAME, ADD_INTERACTION);
-			putValue(SHORT_DESCRIPTION, "Interaction service");
-			putValue(Action.ACCELERATOR_KEY,
-					KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.SHIFT_DOWN_MASK | InputEvent.ALT_DOWN_MASK));
+		AddInteractionMenuAction() {
+			super();
+			this.putValue(SMALL_ICON, ActivityIconManager.getInstance()
+					.iconForActivity(new InteractionActivity()));
+			this.putValue(NAME, ADD_INTERACTION);
+			this.putValue(SHORT_DESCRIPTION, "Interaction service");
+			this.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(
+					KeyEvent.VK_I, InputEvent.SHIFT_DOWN_MASK
+							| InputEvent.ALT_DOWN_MASK));
 		}
 
+		@Override
 		public void actionPerformed(final ActionEvent e) {
-			WorkflowView.importServiceDescription(InteractionServiceHtmlTemplateService.getServiceDescription(),
-			false);
+			WorkflowView.importServiceDescription(
+					InteractionServiceHtmlTemplateService
+							.getServiceDescription(), false);
 		}
 	}
 

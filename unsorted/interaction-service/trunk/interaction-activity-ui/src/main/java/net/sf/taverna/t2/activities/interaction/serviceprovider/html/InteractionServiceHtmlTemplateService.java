@@ -17,15 +17,13 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 /**
  * @author alanrw
- *
+ * 
  */
 public class InteractionServiceHtmlTemplateService extends
 		AbstractTemplateService<InteractionActivityConfigurationBean> {
 
 	private static final URI providerId = URI
-    .create("http://taverna.sf.net/2012/service-provider/interaction");
-
-
+			.create("http://taverna.sf.net/2012/service-provider/interaction");
 
 	@Override
 	public Class<? extends Activity<InteractionActivityConfigurationBean>> getActivityClass() {
@@ -35,7 +33,8 @@ public class InteractionServiceHtmlTemplateService extends
 	@Override
 	public InteractionActivityConfigurationBean getActivityConfiguration() {
 		final InteractionActivityConfigurationBean configBean = new InteractionActivityConfigurationBean();
-		configBean.setInteractionActivityType(InteractionActivityType.LocallyPresentedHtml);
+		configBean
+				.setInteractionActivityType(InteractionActivityType.LocallyPresentedHtml);
 		return configBean;
 	}
 
@@ -54,11 +53,10 @@ public class InteractionServiceHtmlTemplateService extends
 		return ("Interaction");
 	}
 
-	@SuppressWarnings("unchecked")
-    public static ServiceDescription getServiceDescription() {
-            final InteractionServiceHtmlTemplateService bts = new InteractionServiceHtmlTemplateService();
-            return bts.templateService;
-    }
-
+	@SuppressWarnings({ "rawtypes" })
+	public static ServiceDescription getServiceDescription() {
+		final InteractionServiceHtmlTemplateService bts = new InteractionServiceHtmlTemplateService();
+		return bts.templateService;
+	}
 
 }

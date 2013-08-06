@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
 
 /**
  * @author alanrw
- *
+ * 
  */
 public class InteractionPreferencePanel extends JPanel {
 
@@ -41,9 +41,11 @@ public class InteractionPreferencePanel extends JPanel {
 	 */
 	private static final long serialVersionUID = 8570351700324719204L;
 
-	private static Logger logger = Logger.getLogger(InteractionPreferencePanel.class);
+	private static Logger logger = Logger
+			.getLogger(InteractionPreferencePanel.class);
 
-	private static InteractionPreference pref = InteractionPreference.getInstance();
+	private static InteractionPreference pref = InteractionPreference
+			.getInstance();
 
 	private String hostCache = pref.getHost();
 	private String feedPathCache = pref.getFeedPath();
@@ -55,7 +57,7 @@ public class InteractionPreferencePanel extends JPanel {
 	private JTextField feedPathField;
 	private JTextField webDavPathField;
 	private JCheckBox useUsernameField;
-//	private JCheckBox useHttpsField;
+	// private JCheckBox useHttpsField;
 
 	/**
 	 * The size of the field for the JTextFields.
@@ -64,8 +66,8 @@ public class InteractionPreferencePanel extends JPanel {
 
 	public InteractionPreferencePanel() {
 		super();
-		initComponents();
-		setFields();
+		this.initComponents();
+		this.setFields();
 	}
 
 	private void initComponents() {
@@ -75,117 +77,118 @@ public class InteractionPreferencePanel extends JPanel {
 		final GridBagConstraints gbc = new GridBagConstraints();
 
 		// Title describing what kind of settings we are configuring here
-        final JTextArea descriptionText = new JTextArea("Interaction preference");
-        descriptionText.setLineWrap(true);
-        descriptionText.setWrapStyleWord(true);
-        descriptionText.setEditable(false);
-        descriptionText.setFocusable(false);
-        descriptionText.setBorder(new EmptyBorder(10, 10, 10, 10));
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        gbc.weightx = 1.0;
-        gbc.weighty = 0.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        everything.add(descriptionText, gbc);
+		final JTextArea descriptionText = new JTextArea(
+				"Interaction preference");
+		descriptionText.setLineWrap(true);
+		descriptionText.setWrapStyleWord(true);
+		descriptionText.setEditable(false);
+		descriptionText.setFocusable(false);
+		descriptionText.setBorder(new EmptyBorder(10, 10, 10, 10));
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.gridwidth = 2;
+		gbc.weightx = 1.0;
+		gbc.weighty = 0.0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		everything.add(descriptionText, gbc);
 
 		this.useJettyField = new JCheckBox("Use internal Jetty");
-        gbc.gridx = 0;
-        gbc.gridy++;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.insets = new Insets(10,0,0,0);
-        everything.add(this.useJettyField, gbc);
-        this.useJettyField.addActionListener(new ActionListener() {
+		gbc.gridx = 0;
+		gbc.gridy++;
+		gbc.gridwidth = 1;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.insets = new Insets(10, 0, 0, 0);
+		everything.add(this.useJettyField, gbc);
+		this.useJettyField.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				updateSelectability();
-			}});
+				InteractionPreferencePanel.this.updateSelectability();
+			}
+		});
 
-        this.useUsernameField = new JCheckBox("Secure with usename and password");
-        gbc.gridx = 0;
-        gbc.gridy++;
-        gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.insets = new Insets(10,0,0,0);
-        everything.add(this.useUsernameField, gbc);
+		this.useUsernameField = new JCheckBox(
+				"Secure with usename and password");
+		gbc.gridx = 0;
+		gbc.gridy++;
+		gbc.gridwidth = 2;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.insets = new Insets(10, 0, 0, 0);
+		everything.add(this.useUsernameField, gbc);
 
-/*        useHttpsField = new JCheckBox("Secure communication with HTTPS");
-        gbc.gridx = 0;
-        gbc.gridy++;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.insets = new Insets(10,0,0,0);
-        everything.add(useHttpsField, gbc);
-*/
-        this.hostField = new JTextField(TEXTFIELD_SIZE);
-        gbc.gridx = 0;
-        gbc.gridy++;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.insets = new Insets(10,0,0,0);
-        everything.add(new JLabel("Host"), gbc);
-        gbc.gridx = 1;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        everything.add(this.hostField, gbc);
+		/*
+		 * useHttpsField = new JCheckBox("Secure communication with HTTPS");
+		 * gbc.gridx = 0; gbc.gridy++; gbc.gridwidth = 1; gbc.fill =
+		 * GridBagConstraints.NONE; gbc.insets = new Insets(10,0,0,0);
+		 * everything.add(useHttpsField, gbc);
+		 */
+		this.hostField = new JTextField(TEXTFIELD_SIZE);
+		gbc.gridx = 0;
+		gbc.gridy++;
+		gbc.gridwidth = 1;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.insets = new Insets(10, 0, 0, 0);
+		everything.add(new JLabel("Host"), gbc);
+		gbc.gridx = 1;
+		gbc.gridwidth = 1;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		everything.add(this.hostField, gbc);
 
 		this.portField = new JTextField(TEXTFIELD_SIZE);
-        gbc.gridx = 0;
-        gbc.gridy++;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.insets = new Insets(10,0,0,0);
-        everything.add(new JLabel("Port"), gbc);
-        gbc.gridx = 1;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        everything.add(this.portField, gbc);
+		gbc.gridx = 0;
+		gbc.gridy++;
+		gbc.gridwidth = 1;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.insets = new Insets(10, 0, 0, 0);
+		everything.add(new JLabel("Port"), gbc);
+		gbc.gridx = 1;
+		gbc.gridwidth = 1;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		everything.add(this.portField, gbc);
 
 		this.feedPathField = new JTextField(TEXTFIELD_SIZE);
-        gbc.gridx = 0;
-        gbc.gridy++;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.insets = new Insets(10,0,0,0);
-        everything.add(new JLabel("Feed Path"), gbc);
-        gbc.gridx = 1;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        everything.add(this.feedPathField, gbc);
+		gbc.gridx = 0;
+		gbc.gridy++;
+		gbc.gridwidth = 1;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.insets = new Insets(10, 0, 0, 0);
+		everything.add(new JLabel("Feed Path"), gbc);
+		gbc.gridx = 1;
+		gbc.gridwidth = 1;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		everything.add(this.feedPathField, gbc);
 
 		this.webDavPathField = new JTextField(TEXTFIELD_SIZE);
-        gbc.gridx = 0;
-        gbc.gridy++;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.insets = new Insets(10,0,0,0);
-        everything.add(new JLabel("WebDav Path"), gbc);
-        gbc.gridx = 1;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        everything.add(this.webDavPathField, gbc);
+		gbc.gridx = 0;
+		gbc.gridy++;
+		gbc.gridwidth = 1;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.insets = new Insets(10, 0, 0, 0);
+		everything.add(new JLabel("WebDav Path"), gbc);
+		gbc.gridx = 1;
+		gbc.gridwidth = 1;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		everything.add(this.webDavPathField, gbc);
 
-        // Add buttons panel
-        gbc.gridx = 0;
-        gbc.gridy++;
-        gbc.weightx = 0.0;
-        gbc.weighty = 0.0;
-        gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(10, 0, 0, 0);
-        everything.add(createButtonPanel(), gbc);
+		// Add buttons panel
+		gbc.gridx = 0;
+		gbc.gridy++;
+		gbc.weightx = 0.0;
+		gbc.weighty = 0.0;
+		gbc.gridwidth = 2;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.anchor = GridBagConstraints.CENTER;
+		gbc.insets = new Insets(10, 0, 0, 0);
+		everything.add(this.createButtonPanel(), gbc);
 
-        this.setLayout(new BorderLayout());
-        this.add(everything, BorderLayout.NORTH);
+		this.setLayout(new BorderLayout());
+		this.add(everything, BorderLayout.NORTH);
 	}
 
 	/**
 	 * Create the panel to contain the buttons
-	 *
+	 * 
 	 * @return
 	 */
 	@SuppressWarnings("serial")
@@ -196,6 +199,7 @@ public class InteractionPreferencePanel extends JPanel {
 		 * The helpButton shows help about the current component
 		 */
 		final JButton helpButton = new JButton(new AbstractAction("Help") {
+			@Override
 			public void actionPerformed(final ActionEvent arg0) {
 				Helper.showHelp(panel);
 			}
@@ -207,8 +211,9 @@ public class InteractionPreferencePanel extends JPanel {
 		 * corresponding to the configuration currently applied.
 		 */
 		final JButton resetButton = new JButton(new AbstractAction("Reset") {
+			@Override
 			public void actionPerformed(final ActionEvent arg0) {
-				setFields();
+				InteractionPreferencePanel.this.setFields();
 			}
 		});
 		panel.add(resetButton);
@@ -218,9 +223,10 @@ public class InteractionPreferencePanel extends JPanel {
 		 * {@link HttpProxyConfiguration} and saves them for future.
 		 */
 		final JButton applyButton = new JButton(new AbstractAction("Apply") {
+			@Override
 			public void actionPerformed(final ActionEvent arg0) {
-				applySettings();
-				setFields();
+				InteractionPreferencePanel.this.applySettings();
+				InteractionPreferencePanel.this.setFields();
 			}
 		});
 		panel.add(applyButton);
@@ -228,6 +234,7 @@ public class InteractionPreferencePanel extends JPanel {
 		return panel;
 	}
 
+	@SuppressWarnings("deprecation")
 	protected void applySettings() {
 		pref.setUseJetty(this.useJettyField.isSelected());
 		pref.setHost(this.hostField.getText());
@@ -237,20 +244,26 @@ public class InteractionPreferencePanel extends JPanel {
 		pref.setWebDavPath(this.webDavPathField.getText());
 		this.webDavPathCache = this.webDavPathField.getText();
 		if (pref.getUseJetty()) {
-			if (this.useUsernameField.isSelected() && (!pref.getUseUsername() || !pref.getPort().equals(this.portField.getText()))) {
+			if (this.useUsernameField.isSelected()
+					&& (!pref.getUseUsername() || !pref.getPort().equals(
+							this.portField.getText()))) {
 				try {
-					final URI serviceURI = InteractionJetty.createServiceURI(this.portField.getText());
+					final URI serviceURI = InteractionJetty
+							.createServiceURI(this.portField.getText());
 
-					final CredentialManager credMan = CredentialManager.getInstance();
+					final CredentialManager credMan = CredentialManager
+							.getInstance();
 					if (!credMan.hasUsernamePasswordForService(serviceURI)) {
-						final GetPasswordDialog getPasswordDialog = new GetPasswordDialog("Please enter the username and password\nto secure the interaction",
+						final GetPasswordDialog getPasswordDialog = new GetPasswordDialog(
+								"Please enter the username and password\nto secure the interaction",
 								true);
 						getPasswordDialog.setLocationRelativeTo(this);
 						getPasswordDialog.setVisible(true);
 
 						final String username = getPasswordDialog.getUsername();
 						final String password = getPasswordDialog.getPassword();
-						credMan.saveUsernameAndPasswordForService(username, password, serviceURI.toString());
+						credMan.saveUsernameAndPasswordForService(username,
+								password, serviceURI.toString());
 					}
 				} catch (final URISyntaxException e) {
 					logger.error(e);
@@ -261,9 +274,10 @@ public class InteractionPreferencePanel extends JPanel {
 		}
 		pref.setPort(this.portField.getText());
 		pref.setUseUsername(this.useUsernameField.isSelected());
-//		pref.setUseHttps(useHttpsField.isSelected());
+		// pref.setUseHttps(useHttpsField.isSelected());
 		pref.store();
-		JOptionPane.showMessageDialog(this, "The changes will not take effect until Taverna is restarted",
+		JOptionPane.showMessageDialog(this,
+				"The changes will not take effect until Taverna is restarted",
 				"Interaction Preference", JOptionPane.WARNING_MESSAGE);
 	}
 
@@ -274,8 +288,8 @@ public class InteractionPreferencePanel extends JPanel {
 		this.feedPathField.setText(pref.getFeedPath());
 		this.webDavPathField.setText(pref.getWebDavPath());
 		this.useUsernameField.setSelected(pref.getUseUsername());
-//		useHttpsField.setSelected(pref.getUseHttps());
-		updateSelectability();
+		// useHttpsField.setSelected(pref.getUseHttps());
+		this.updateSelectability();
 	}
 
 	private void updateSelectability() {
@@ -294,7 +308,7 @@ public class InteractionPreferencePanel extends JPanel {
 
 			this.useUsernameField.setEnabled(true);
 
-//			useHttpsField.setEnabled(true);
+			// useHttpsField.setEnabled(true);
 
 		} else {
 			this.hostField.setText(this.hostCache);
@@ -307,9 +321,8 @@ public class InteractionPreferencePanel extends JPanel {
 			this.webDavPathField.setEnabled(true);
 
 			this.useUsernameField.setEnabled(false);
-//			useHttpsField.setEnabled(false);
+			// useHttpsField.setEnabled(false);
 		}
 	}
-
 
 }

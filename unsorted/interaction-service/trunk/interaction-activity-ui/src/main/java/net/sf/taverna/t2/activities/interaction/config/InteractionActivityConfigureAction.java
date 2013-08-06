@@ -9,32 +9,31 @@ import net.sf.taverna.t2.activities.interaction.view.InteractionActivityConfigVi
 import net.sf.taverna.t2.workbench.ui.actions.activity.ActivityConfigurationAction;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationDialog;
 
-
 @SuppressWarnings("serial")
 public class InteractionActivityConfigureAction
 		extends
-		ActivityConfigurationAction<InteractionActivity,
-        InteractionActivityConfigurationBean> {
+		ActivityConfigurationAction<InteractionActivity, InteractionActivityConfigurationBean> {
 
-	public InteractionActivityConfigureAction(final InteractionActivity activity, final Frame owner) {
+	public InteractionActivityConfigureAction(
+			final InteractionActivity activity, final Frame owner) {
 		super(activity);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public void actionPerformed(final ActionEvent e) {
 		final ActivityConfigurationDialog<InteractionActivity, InteractionActivityConfigurationBean> currentDialog = ActivityConfigurationAction
-				.getDialog(getActivity());
+				.getDialog(this.getActivity());
 		if (currentDialog != null) {
 			currentDialog.toFront();
 			return;
 		}
 		final InteractionActivityConfigView panel = new InteractionActivityConfigView(
-				getActivity());
-		final ActivityConfigurationDialog<InteractionActivity,
-        InteractionActivityConfigurationBean> dialog = new ActivityConfigurationDialog<InteractionActivity, InteractionActivityConfigurationBean>(
-				getActivity(), panel);
+				this.getActivity());
+		final ActivityConfigurationDialog<InteractionActivity, InteractionActivityConfigurationBean> dialog = new ActivityConfigurationDialog<InteractionActivity, InteractionActivityConfigurationBean>(
+				this.getActivity(), panel);
 
-		ActivityConfigurationAction.setDialog(getActivity(), dialog);
+		ActivityConfigurationAction.setDialog(this.getActivity(), dialog);
 
 	}
 

@@ -4,17 +4,17 @@
 package net.sf.taverna.t2.activities.interaction.hook;
 
 import net.sf.taverna.t2.activities.interaction.InteractionRecorder;
-import net.sf.taverna.t2.activities.interaction.InteractionRunDeletionListener;
 import net.sf.taverna.t2.workbench.ShutdownSPI;
-import net.sf.taverna.t2.workbench.StartupSPI;
 
 /**
  * @author alanrw
- *
+ * 
  */
 public class InteractionShutdownHook implements ShutdownSPI {
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see net.sf.taverna.t2.workbench.ShutdownSPI#positionHint()
 	 */
 	@Override
@@ -22,7 +22,9 @@ public class InteractionShutdownHook implements ShutdownSPI {
 		return 900;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see net.sf.taverna.t2.workbench.ShutdownSPI#shutdown()
 	 */
 	@Override

@@ -29,15 +29,16 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
+import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 
 /**
  * A view representing {@link ActivityInputPortDefinitionBean}s of a
  * {@link BeanshellActivity} and the various parts which can be edited,
  * primarily the name and the depth.
- *
+ * 
  * @author Ian Dunlop
- *
+ * 
  */
 @SuppressWarnings("serial")
 public class InteractionInputViewer extends JPanel {
@@ -55,7 +56,7 @@ public class InteractionInputViewer extends JPanel {
 	/**
 	 * Calls {@link #initView()} to set the look and feel and sets the
 	 * components to be editable or not
-	 *
+	 * 
 	 * @param bean
 	 *            the {@link ActivityInputPortDefinitionBean} which represents
 	 *            the view
@@ -66,10 +67,11 @@ public class InteractionInputViewer extends JPanel {
 			final boolean editable) {
 		this.bean = bean;
 		this.editable = editable;
-		setBorder(javax.swing.BorderFactory.createEtchedBorder());
-		initView();
-		this.publishField.setSelected(!bean.getTranslatedElementType().equals(String.class));
-		setEditMode();
+		this.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+		this.initView();
+		this.publishField.setSelected(!bean.getTranslatedElementType().equals(
+				String.class));
+		this.setEditMode();
 	}
 
 	/**
@@ -78,7 +80,7 @@ public class InteractionInputViewer extends JPanel {
 	 * {@link ActivityInputPortDefinitionBean} to be changeD
 	 */
 	private void initView() {
-		setLayout(new GridBagLayout());
+		this.setLayout(new GridBagLayout());
 		final GridBagConstraints outerConstraint = new GridBagConstraints();
 		outerConstraint.anchor = GridBagConstraints.FIRST_LINE_START;
 		outerConstraint.gridx = 0;
@@ -88,38 +90,39 @@ public class InteractionInputViewer extends JPanel {
 		outerConstraint.fill = GridBagConstraints.BOTH;
 
 		this.nameField = new JTextField(this.bean.getName());
-		add(this.nameField, outerConstraint);
+		this.add(this.nameField, outerConstraint);
 
 		this.publishField = new JCheckBox();
 		outerConstraint.gridx = 1;
-		add(this.publishField, outerConstraint);
+		this.add(this.publishField, outerConstraint);
 
 		outerConstraint.gridx = 2;
-		final SpinnerNumberModel model = new SpinnerNumberModel(new Integer(this.bean
-				.getDepth()), new Integer(0), new Integer(100), new Integer(1));
+		final SpinnerNumberModel model = new SpinnerNumberModel(new Integer(
+				this.bean.getDepth()), new Integer(0), new Integer(100),
+				new Integer(1));
 		this.depthSpinner = new JSpinner(model);
 		this.depthSpinner.setEnabled(false);
-		this.depthSpinner.setToolTipText("A depth of 0 means a simple value, like a string. Depth 1 is a list of simple values, while depth 2 is a list of a list of simple values");
+		this.depthSpinner
+				.setToolTipText("A depth of 0 means a simple value, like a string. Depth 1 is a list of simple values, while depth 2 is a list of a list of simple values");
 		this.depthSpinner.setValue(this.bean.getDepth());
 
-		add(this.depthSpinner, outerConstraint);
+		this.add(this.depthSpinner, outerConstraint);
 
 	}
 
 	/**
 	 * Get the component which allows the
 	 * {@link ActivityInputPortDefinitionBean} name to be edited
-	 *
+	 * 
 	 * @return
 	 */
 	public JTextField getNameField() {
 		return this.nameField;
 	}
 
-
 	/**
 	 * Change the depth of the {@link ActivityInputPortDefinitionBean}
-	 *
+	 * 
 	 * @return
 	 */
 	public JSpinner getDepthSpinner() {
@@ -129,7 +132,7 @@ public class InteractionInputViewer extends JPanel {
 	/**
 	 * Get the actual {@link ActivityInputPortDefinitionBean} which is
 	 * represented by this view
-	 *
+	 * 
 	 * @return
 	 */
 	public ActivityInputPortDefinitionBean getBean() {
@@ -138,7 +141,7 @@ public class InteractionInputViewer extends JPanel {
 
 	/**
 	 * Can the components on this view be edited?
-	 *
+	 * 
 	 * @return
 	 */
 	public boolean isEditable() {
@@ -147,12 +150,12 @@ public class InteractionInputViewer extends JPanel {
 
 	/**
 	 * Set all the components to be editable or not
-	 *
+	 * 
 	 * @param editable
 	 */
 	public void setEditable(final boolean editable) {
 		this.editable = editable;
-		setEditMode();
+		this.setEditMode();
 	}
 
 	/**
