@@ -44,8 +44,8 @@ public class FeedClientStartupHook implements StartupSPI {
 
 			@Override
 			protected void setClassLoader() {
-				Thread.currentThread().setContextClassLoader(
-						FeedClientStartupHook.class.getClassLoader());
+//				Thread.currentThread().setContextClassLoader(
+//						FeedClientStartupHook.class.getClassLoader());
 			}
 
 			@Override
