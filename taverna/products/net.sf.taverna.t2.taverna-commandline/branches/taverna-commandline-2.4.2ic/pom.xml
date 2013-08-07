@@ -363,6 +363,48 @@
                                     <outputDirectory>${project.build.directory}/repository/commons-codec/commons-codec/1.3</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
+                                    <groupId>commons-codec</groupId>
+                                    <artifactId>commons-codec</artifactId>
+                                    <version>1.4</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-codec/commons-codec/1.4</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-httpclient</groupId>
+                                    <artifactId>commons-httpclient</artifactId>
+                                    <version>3.1-rc1</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-httpclient/commons-httpclient/3.1-rc1</outputDirectory>
+                                </artifactItem>
+                                    <artifactItem>
+                                    <groupId>commons-httpclient</groupId>
+                                    <artifactId>commons-httpclient</artifactId>
+                                    <version>3.1-rc1</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-httpclient/commons-httpclient/3.1-rc1</outputDirectory>
+                                </artifactItem>
+                            <artifactItem>
+                                    <groupId>jaxen</groupId>
+                                    <artifactId>jaxen</artifactId>
+                                    <version>1.1-beta-9</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/jaxen/jaxen/1.1-beta-9</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>jaxen</groupId>
+                                    <artifactId>jaxen</artifactId>
+                                    <version>1.1-beta-9</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/jaxen/jaxen/1.1-beta-9</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-codec</groupId>
+                                    <artifactId>commons-codec</artifactId>
+                                    <version>1.4</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/commons-codec/commons-codec/1.4</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
                                     <groupId>commons-collections</groupId>
                                     <artifactId>commons-collections</artifactId>
                                     <version>2.0</version>
@@ -729,6 +771,20 @@
                                 <artifactItem>
                                     <groupId>junit</groupId>
                                     <artifactId>junit</artifactId>
+                                    <version>4.3</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/junit/junit/4.3</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>junit</groupId>
+                                    <artifactId>junit</artifactId>
+                                    <version>4.3</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/junit/junit/4.3</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>junit</groupId>
+                                    <artifactId>junit</artifactId>
                                     <version>4.8.1</version>
                                     <type>jar</type>
                                     <outputDirectory>${project.build.directory}/repository/junit/junit/4.8.1</outputDirectory>
@@ -753,6 +809,20 @@
                                     <version>4.8.2</version>
                                     <type>pom</type>
                                     <outputDirectory>${project.build.directory}/repository/junit/junit/4.8.2</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.ccil.cowan.tagsoup</groupId>
+                                    <artifactId>tagsoup</artifactId>
+                                    <version>0.9.7</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/ccil/cowan/tagsoup/tagsoup/0.9.7</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.ccil.cowan.tagsoup</groupId>
+                                    <artifactId>tagsoup</artifactId>
+                                    <version>0.9.7</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/org/ccil/cowan/tagsoup/tagsoup/0.9.7</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>log4j</groupId>
@@ -1105,6 +1175,48 @@
                                     <outputDirectory>${project.build.directory}/repository/xerces/xercesImpl/2.6.2</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
+                                    <groupId>xerces</groupId>
+                                    <artifactId>xercesImpl</artifactId>
+                                    <version>2.2.1</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/xerces/xercesImpl/2.2.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>xerces</groupId>
+                                    <artifactId>xercesImpl</artifactId>
+                                    <version>2.2.1</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/xerces/xercesImpl/2.2.1</outputDirectory>
+                                </artifactItem>
+                               <artifactItem>
+                                    <groupId>xerces</groupId>
+                                    <artifactId>xmlParserAPIs</artifactId>
+                                    <version>2.6.1</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/xerces/xmlParserAPIs/2.6.1</outputDirectory>
+                                </artifactItem>
+                               <artifactItem>
+                                    <groupId>xerces</groupId>
+                                    <artifactId>xmlParserAPIs</artifactId>
+                                    <version>2.6.1</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/xerces/xmlParserAPIs/2.6.1</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>xom</groupId>
+                                    <artifactId>xom</artifactId>
+                                    <version>1.0b3</version>
+                                    <type>pom</type>
+                                    <outputDirectory>${project.build.directory}/repository/xom/xom/1.0b3</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>xom</groupId>
+                                    <artifactId>xom</artifactId>
+                                    <version>1.0b3</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/repository/xom/xom/1.0b3</outputDirectory>
+                                </artifactItem>
+                                 <artifactItem>
                                     <groupId>xerces</groupId>
                                     <artifactId>xercesImpl</artifactId>
                                     <version>2.6.2</version>
