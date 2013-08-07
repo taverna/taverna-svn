@@ -12,7 +12,7 @@
 	<name>Taverna command line utillity</name>
 	<properties>
           <t2.taverna-commandline.version>1.4.2-SNAPSHOT</t2.taverna-commandline.version>
-	  <t2.taverna.interaction.version>1.0.3</t2.taverna.interaction.version>
+	  <t2.taverna.interaction.version>1.0.4</t2.taverna.interaction.version>
 	  <t2.taverna.component.version>1.0.2</t2.taverna.component.version>
           <t2.taverna.workbench.version>2.4.1</t2.taverna.workbench.version>
 	</properties>
