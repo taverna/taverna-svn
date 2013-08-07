@@ -43,12 +43,6 @@ public class FeedClientStartupHook implements StartupSPI {
 		final Thread feedClientThread = new FeedReader("UI Feed Reader") {
 
 			@Override
-			protected void setClassLoader() {
-//				Thread.currentThread().setContextClassLoader(
-//						FeedClientStartupHook.class.getClassLoader());
-			}
-
-			@Override
 			protected void considerEntry(final Entry entry) {
 				final Link presentationLink = entry.getLink("presentation");
 				if (presentationLink != null) {
