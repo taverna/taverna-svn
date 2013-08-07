@@ -79,61 +79,7 @@
 			<version>1.4.1</version>
 		</dependency>
 		
-		<dependency>
-			<groupId>org.apache.abdera</groupId>
-			<artifactId>abdera-core</artifactId>
-			<version>1.1.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.abdera</groupId>
-			<artifactId>abdera-client</artifactId>
-			<version>1.1.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.abdera</groupId>
-			<artifactId>abdera-server</artifactId>
-			<version>1.1.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.abdera</groupId>
-			<artifactId>abdera-extensions-main</artifactId>
-			<version>1.1.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.abdera</groupId>
-			<artifactId>abdera-extensions-html</artifactId>
-			<version>1.1.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.abdera</groupId>
-			<artifactId>abdera-extensions-json</artifactId>
-			<version>1.1.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.abdera</groupId>
-			<artifactId>abdera-filesystem</artifactId>
-			<version>1.1.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.abdera</groupId>
-			<artifactId>abdera-i18n</artifactId>
-			<version>1.1.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.abdera</groupId>
-			<artifactId>abdera-parser</artifactId>
-			<version>1.1.2</version>
-		</dependency>
-
-		<dependency>
+	<dependency>
 			<groupId>net.sf.taverna.t2.taverna-commandline</groupId>
 			<artifactId>taverna-commandline-common</artifactId>
 			<version>1.4</version>
