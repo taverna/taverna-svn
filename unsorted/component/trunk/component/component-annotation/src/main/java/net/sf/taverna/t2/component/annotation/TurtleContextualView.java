@@ -59,7 +59,7 @@ public class TurtleContextualView extends ContextualView {
 	 */
 	@Override
 	public String getViewTitle() {
-		return "Turtle annotations";
+		return "Turtle representation";
 	}
 
 	/* (non-Javadoc)

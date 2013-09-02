@@ -33,6 +33,7 @@ import javax.swing.text.DefaultCaret;
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
@@ -89,8 +90,8 @@ public class DateTimePropertyPanelFactory extends PropertyPanelFactorySPI{
 		    s.setEditor(de);
 		    if (statement != null) {
 		    	Object o = statement.getObject().asLiteral().getValue();
-		    	if (o instanceof Date) {
-		    		dateModel.setValue(o);
+		    	if (o instanceof XSDDateTime) {
+		    		dateModel.setValue(((XSDDateTime) o).asCalendar().getTime());
 		    	}
 		    }
 		    result = s;

@@ -111,26 +111,26 @@ public abstract class AbstractSemanticAnnotationContextualView extends Contextua
 
 	public void removeStatement(Statement statement) {
 		model.remove(statement);
-		populatePanel(panel);
+//		populatePanel(panel);
 		updateSemanticAnnotation();
 	}
 
 	public void addStatement(Statement statement) {
 		model.add(statement);
-		populatePanel(panel);
+//		populatePanel(panel);
 		updateSemanticAnnotation();
 	}
 	
 	public void changeStatement(Statement origStatement, OntProperty predicate, RDFNode node) {
 		model.remove(origStatement);
 		model.add(subject, predicate, node);
-		populatePanel(panel);
+//		populatePanel(panel);
 		updateSemanticAnnotation();
 	}
 
 	public void addStatement(OntProperty predicate, RDFNode node) {
 		model.add(subject, predicate, node);
-		populatePanel(panel);
+//		populatePanel(panel);
 		updateSemanticAnnotation();
 	}
 	
