@@ -133,7 +133,7 @@ public class ComponentSearchAction extends AbstractAction {
 		        searchChoicePanel, 
 		        "Matching components", 
 		        JOptionPane.OK_CANCEL_OPTION, 
-		        JOptionPane.INFORMATION_MESSAGE, 
+		        JOptionPane.QUESTION_MESSAGE, 
 		        null, 
 		        new String[]{"Add to workflow", "Cancel"}, // this is the array
 		        "Cancel");
