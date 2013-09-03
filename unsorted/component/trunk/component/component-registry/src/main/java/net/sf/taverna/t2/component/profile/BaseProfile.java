@@ -112,7 +112,10 @@ public class BaseProfile {
 		if ((profile == null) && configFile.exists()) {
 			try {
 				profile = new ComponentProfile(null, configFile.toURI().toURL());
-			} catch (MalformedURLException | ComponentRegistryException e) {
+			} catch (MalformedURLException e) {
+				logger.error("URI problem", e);
+				profile = null;
+			} catch (ComponentRegistryException e) {
 				logger.error("URI problem", e);
 				profile = null;
 			}

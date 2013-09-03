@@ -6,7 +6,7 @@
 
 	<id>net.sf.taverna.t2.component.profile.empty</id>
 	<name>Empty profile</name>
-	<description>A basic empty profile that does not allow semantic annotation</description>
+	<description>A basic empty profile that does not allow additional semantic annotation</description>
 	<component>
 	</component>
 </profile>

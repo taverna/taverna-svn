@@ -157,7 +157,14 @@ public class SearchChoicePanel extends JPanel {
 					updateComponentBox(matches, componentBox, (String) familyBox.getSelectedItem());
 			          updateVersionBox (matches, versionBox, (String) componentBox.getSelectedItem(), (String) familyBox.getSelectedItem());
 				}
-			} catch (InterruptedException | ExecutionException e) {
+			} catch (InterruptedException  e) {
+				logger.error(e);
+				registryURLLabel.setText(SEARCH_FAILED);
+				familyBox.addItem(SEARCH_FAILED);
+				componentBox.addItem(SEARCH_FAILED);
+				versionBox.addItem(SEARCH_FAILED);
+				
+			} catch (ExecutionException e) {
 				logger.error(e);
 				registryURLLabel.setText(SEARCH_FAILED);
 				familyBox.addItem(SEARCH_FAILED);

@@ -98,7 +98,7 @@ public abstract class ComponentFamily {
 		if (componentProfile == null) {
 			componentProfile = internalGetComponentProfile();
 		}
-		if (componentProfile != null) {
+		if (componentProfile == null) {
 			ComponentProfile baseProfile = BaseProfile.getInstance().getProfile();
 			if ((baseProfile != null) && componentProfile.getName().equals(baseProfile.getName())) {
 				return baseProfile;
