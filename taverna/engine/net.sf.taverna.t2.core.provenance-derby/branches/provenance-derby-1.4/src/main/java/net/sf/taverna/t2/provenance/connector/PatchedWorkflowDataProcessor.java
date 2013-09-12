@@ -1,13 +1,11 @@
 package net.sf.taverna.t2.provenance.connector;
 
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade.State;
 import net.sf.taverna.t2.provenance.item.DataflowRunComplete;
@@ -42,10 +40,8 @@ public class PatchedWorkflowDataProcessor extends
     // may occur in multiple nested workflows 
     Map<String, List<WorkflowDataNode>> workflowDataTrees = new HashMap<String, List<WorkflowDataNode>>();  
 
-    protected Map<String, Timestamp> workflowStarted = new ConcurrentHashMap<String, Timestamp>(); 
-
-    ProvenanceQuery pq=null;
-    ProvenanceWriter pw = null;
+    private ProvenanceQuery pq=null;
+    private ProvenanceWriter pw = null;
 
     /**
      * adds the input ProvenanceItem event to the tree structure corresponding to the portName found in the item. 
