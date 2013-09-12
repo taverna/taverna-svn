@@ -27,6 +27,9 @@ import java.util.List;
 
 import net.sf.taverna.t2.provenance.api.ProvenanceConnectorType;
 import net.sf.taverna.t2.provenance.item.ProvenanceItem;
+import net.sf.taverna.t2.provenance.lineageservice.EventProcessor;
+import net.sf.taverna.t2.provenance.lineageservice.Provenance;
+import net.sf.taverna.t2.provenance.lineageservice.ProvenanceAnalysis;
 import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceWriter;
 
@@ -173,4 +176,35 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 		return getName();
 	}
 
+    @Override
+    public void init() {
+            
+        createDatabase();
+        try {
+            // Use a modified WorkflowDataProcessor to work around
+            // T2-2104.
+            setWfdp(new PatchedWorkflowDataProcessor());
+            getWfdp().setPq(getQuery());
+            getWfdp().setPw(getWriter());
+
+            setEventProcessor(new EventProcessor());
+            getEventProcessor().setPw(getWriter());
+            getEventProcessor().setPq(getQuery());
+            getEventProcessor().setWfdp(getWfdp());
+
+            setProvenanceAnalysis(new ProvenanceAnalysis(getQuery()));
+            setProvenance(new Provenance(getEventProcessor()));
+        } catch (InstantiationException e) {
+            logger.error("Problem with provenance initialisation: ",e);
+        } catch (IllegalAccessException e) {
+            logger.error("Problem with provenance initialisation: ",e);
+        } catch (ClassNotFoundException e) {
+            logger.error("Problem with provenance initialisation: ",e);
+        } catch (SQLException e) {
+            logger.error("Problem with provenance initialisation: ",e);
+        }
+    }
+    
+
+	
 }
