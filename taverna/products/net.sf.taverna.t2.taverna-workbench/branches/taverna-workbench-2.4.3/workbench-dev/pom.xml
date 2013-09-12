@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>taverna-workbench</artifactId>
+		<version>2.4.2</version>
+	</parent>
+	<groupId>net.sf.taverna.t2.taverna-workbench</groupId>
+	<artifactId>workbench-dev</artifactId>
+	<name>Taverna workbench development distribution</name>
+	<version>2.4.2</version>
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.taverna.t2.taverna-workbench</groupId>
+			<artifactId>workbench-common</artifactId>
+			<version>2.4.2</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
+			<artifactId>activities-plugin</artifactId>
+			<version>2.4.2</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>axis-wss4j</artifactId>
+					<groupId>axis</groupId>
+				</exclusion>
+				
+				<!-- activities with a bit too many dependencies  -->
+				<exclusion>
+					<groupId>net.sf.taverna.t2.activities</groupId>
+					<artifactId>biomart-activity</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.sf.taverna.t2.activities</groupId>
+					<artifactId>biomoby-activity</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.sf.taverna.t2.activities</groupId>
+					<artifactId>soaplab-activity</artifactId>
+				</exclusion>
+
+
+				<!--  and UI -->
+				<exclusion>
+					<groupId>net.sf.taverna.t2.ui-activities</groupId>
+					<artifactId>biomart-activity-ui</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.sf.taverna.t2.ui-activities</groupId>
+					<artifactId>biomoby-activity-ui</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.sf.taverna.t2.ui-activities</groupId>
+					<artifactId>soaplab-activity-ui</artifactId>
+				</exclusion>
+				
+
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
+			<artifactId>externaltool-plugin</artifactId>
+			<version>2.4.2</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
+			<artifactId>components-plugin</artifactId>
+			<version>2.4.2</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
+			<artifactId>provenanceconnectors-plugin</artifactId>
+			<version>2.4.2</version>
+		</dependency>
+				<dependency>
+			<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
+			<artifactId>servicecatalogue-plugin</artifactId>
+			<version>2.4.2</version>
+		</dependency>
+	</dependencies>
+</project>
