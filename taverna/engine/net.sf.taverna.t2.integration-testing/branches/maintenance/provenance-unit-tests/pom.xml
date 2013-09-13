@@ -6,7 +6,7 @@
 	<parent>
 		<artifactId>integration-testing</artifactId>
 		<groupId>net.sf.taverna.t2</groupId>
-		<version>1.4-SNAPSHOT</version>
+		<version>1.5-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.integration-testing</groupId>
 	<artifactId>provenance-unit-tests</artifactId>
