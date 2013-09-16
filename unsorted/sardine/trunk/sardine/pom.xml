@@ -4,7 +4,7 @@
 
 	<groupId>net.sf.taverna.t2.webdav</groupId>
 	<artifactId>sardine</artifactId>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>0.0.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Sardine Taverna project</name>
 
@@ -128,6 +128,7 @@
 	</distributionManagement>
 
   <modules>
+    <module>sardine-activity</module>
     <module>sardine-activity-ui</module>
     <module>sardine-plugin</module>
   </modules>

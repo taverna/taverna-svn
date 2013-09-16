@@ -1,8 +1,8 @@
 package net.sf.taverna.t2.webdav.sardine.ui;
 
 import java.net.URL;
+
 import net.sf.taverna.raven.launcher.Launcher;
-import net.sf.taverna.t2.workbench.dev.DeveloperWorkbench;
 
 /**
  * Run with parameters:
