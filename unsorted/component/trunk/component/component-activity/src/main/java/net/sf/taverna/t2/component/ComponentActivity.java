@@ -17,6 +17,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousAc
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
+import net.sf.taverna.t2.workflowmodel.processor.activity.NestedDataflow;
 import net.sf.taverna.t2.workflowmodel.utils.AnnotationTools;
 
 import org.apache.log4j.Logger;
@@ -61,14 +62,9 @@ public class ComponentActivity extends
 //		}
 		try {
 			ExceptionHandling exceptionHandling = configBean.getExceptionHandling();
-			if (callback instanceof PatchedInvokeCallBack) {
 				InvocationContextImpl newContext = copyInvocationContext(callback);
-				((PatchedInvokeCallBack) callback).overrideContext(newContext);
-			}
-			AsynchronousActivityCallback useCallback = callback;
-			if (exceptionHandling != null) {
-				useCallback = new ProxyCallback(callback, exceptionHandling);
-			}
+
+			AsynchronousActivityCallback useCallback = new ProxyCallback(callback, newContext, exceptionHandling);
 			getComponentRealization().executeAsynch (inputs, useCallback);
 		} catch (ActivityConfigurationException e) {
 			callback.fail("Unable to execute component", e);
@@ -80,9 +76,9 @@ public class ComponentActivity extends
 		InvocationContext originalContext = callback.getContext();
 		ReferenceService rs = originalContext.getReferenceService();
 		InvocationContextImpl newContext = new InvocationContextImpl(rs, null);
-		for (Object o : originalContext.getEntities(Object.class)) {
-			newContext.addEntity(o);
-		}
+//		for (Object o : originalContext.getEntities(Object.class)) {
+//			newContext.addEntity(o);
+//		}
 		return newContext;
 	}
 
@@ -118,6 +114,5 @@ public class ComponentActivity extends
 		}
 		return componentRealization;
 	}
-
 
 }

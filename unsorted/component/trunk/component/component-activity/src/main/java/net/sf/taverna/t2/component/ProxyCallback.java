@@ -15,6 +15,7 @@ import net.sf.taverna.t2.component.profile.ExceptionHandling;
 import net.sf.taverna.t2.component.profile.ExceptionReplacement;
 import net.sf.taverna.t2.component.profile.HandleException;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.invocation.impl.InvocationContextImpl;
 import net.sf.taverna.t2.reference.ErrorDocument;
 import net.sf.taverna.t2.reference.ErrorDocumentService;
 import net.sf.taverna.t2.reference.IdentifiedList;
@@ -46,13 +47,14 @@ public class ProxyCallback implements AsynchronousActivityCallback {
 
 	/**
 	 * @param originalCallback
+	 * @param newContext 
 	 * @param exceptionHandling2 
 	 */
-	public ProxyCallback(AsynchronousActivityCallback originalCallback, ExceptionHandling exceptionHandling2) {
+	public ProxyCallback(AsynchronousActivityCallback originalCallback, InvocationContextImpl newContext, ExceptionHandling exceptionHandling2) {
 		super();
 		this.originalCallback = originalCallback;
 		this.exceptionHandling = exceptionHandling2;
-		context = originalCallback.getContext();
+		context = newContext;
 		referenceService = context.getReferenceService();
 		listService = referenceService.getListService();
 		errorService = referenceService.getErrorDocumentService();
@@ -63,7 +65,7 @@ public class ProxyCallback implements AsynchronousActivityCallback {
 	 */
 	@Override
 	public InvocationContext getContext() {
-		return originalCallback.getContext();
+		return context;
 	}
 
 	/* (non-Javadoc)
@@ -79,8 +81,12 @@ public class ProxyCallback implements AsynchronousActivityCallback {
 	 */
 	@Override
 	public void receiveResult(Map<String, T2Reference> data, int[] index) {
+		if (exceptionHandling == null) {
+			originalCallback.receiveResult(data, index);
+		} else {
 		Map<String, T2Reference> errorReplacedData = replaceErrors(data);
 		originalCallback.receiveResult(errorReplacedData, index);
+		}
 	}
 
 	private Map<String, T2Reference> replaceErrors(Map<String, T2Reference> data) {
@@ -273,7 +279,8 @@ try {
 	 */
 	@Override
 	public String getParentProcessIdentifier() {
-		return originalCallback.getParentProcessIdentifier();
+		return "";
+//		return originalCallback.getParentProcessIdentifier();
 	}
 
 }
