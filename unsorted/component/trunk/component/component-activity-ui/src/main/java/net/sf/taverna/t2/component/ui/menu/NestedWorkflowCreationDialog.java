@@ -28,11 +28,13 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 
 import net.sf.taverna.t2.activities.dataflow.DataflowActivity;
 import net.sf.taverna.t2.annotation.AnnotationBeanSPI;
 import net.sf.taverna.t2.annotation.annotationbeans.AbstractTextualValueAssertion;
+import net.sf.taverna.t2.annotation.annotationbeans.DescriptiveTitle;
 import net.sf.taverna.t2.component.ui.menu.component.ComponentServiceCreatorAction;
 import net.sf.taverna.t2.lang.ui.DeselectingButton;
 import net.sf.taverna.t2.workbench.edits.EditManager;
@@ -58,6 +60,7 @@ import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
 import net.sf.taverna.t2.workflowmodel.TokenProcessingEntity;
+import net.sf.taverna.t2.workflowmodel.impl.DataflowImpl;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.utils.AnnotationTools;
@@ -123,10 +126,12 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 
 	private JButton resetButton;
 	
+	private JTextField nameField = new JTextField(30);
+	
 	public NestedWorkflowCreationDialog(Frame owner, Object o, Dataflow dataflow) {
 		super(owner, "Nested workflow creation", true, null);
 		
-		if (o instanceof TokenProcessingEntity) {
+		if (o instanceof Processor) {
 			includedProcessors.add((TokenProcessingEntity) o);
 		}
 		this.currentDataflow = dataflow;
@@ -146,8 +151,17 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 		JButton cancelButton = new DeselectingButton(new CancelAction(this));
 		buttonPanel.add(cancelButton);
 		
+		JPanel innerPanel = new JPanel(new BorderLayout());
 		JPanel processorChoice = createProcessorChoicePanel(dataflow);
-		this.add(processorChoice, BorderLayout.CENTER);
+		innerPanel.add(processorChoice, BorderLayout.CENTER);
+		
+		JPanel namePanel = new JPanel(new FlowLayout());
+		namePanel.add(new JLabel("Workflow name: "));
+		nameField.setText("nested");
+		namePanel.add(nameField);
+		innerPanel.add(namePanel, BorderLayout.SOUTH);
+		
+		this.add(innerPanel, BorderLayout.CENTER);
 
 		this.add(buttonPanel, BorderLayout.SOUTH);
 		this.pack();
@@ -351,7 +365,10 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 			
 			HashMap<Datalink, String> linkProcessorPortMapping = new HashMap<Datalink, String> ();
 			
-			Processor nestingProcessor = edits.createProcessor(Tools.uniqueProcessorName("nested", currentDataflow));
+			HashMap<EventForwardingOutputPort, DataflowOutputPort> outputPortMap = new HashMap<EventForwardingOutputPort, DataflowOutputPort>();
+			HashMap<EventHandlingInputPort, DataflowInputPort> inputPortMap = new HashMap<EventHandlingInputPort, DataflowInputPort>();
+			
+			Processor nestingProcessor = edits.createProcessor(Tools.uniqueProcessorName(nameField.getText(), currentDataflow));
 			if (includedProcessors.size() == 1) {
 				TokenProcessingEntity includedEntity = includedProcessors.get(0);
 				if (includedEntity instanceof Processor) {
@@ -366,6 +383,13 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 			}
 			
 			Dataflow nestedDataflow = edits.createDataflow();
+			((DataflowImpl) nestedDataflow).setLocalName(nameField.getText());
+			AnnotationTools at = new AnnotationTools();
+			try {
+				at.setAnnotationString(nestedDataflow, DescriptiveTitle.class, nameField.getText()).doEdit();
+			} catch (EditException e2) {
+				logger.error(e);
+			}
 			for (TokenProcessingEntity p : includedProcessors) {
 				try {
 					if (p instanceof Processor) {
@@ -407,40 +431,53 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 			HashSet<String> inputPortNames = new HashSet<String>();
 			HashSet<String> outputPortNames = new HashSet<String>();
 			for (Datalink dl : currentDataflow.getLinks()) {
-				if (oldNewMapping.containsKey(dl.getSource()) && oldNewMapping.containsKey(dl.getSink())) {
+				final EventForwardingOutputPort datalinkSource = dl.getSource();
+				final EventHandlingInputPort datalinkSink = dl.getSink();
+				if (oldNewMapping.containsKey(datalinkSource) && oldNewMapping.containsKey(datalinkSink)) {
 					// Internal to nested workflow
-					Datalink newDatalink = edits.createDatalink((EventForwardingOutputPort) oldNewMapping.get(dl.getSource()),
-							(EventHandlingInputPort) oldNewMapping.get(dl.getSink()));
+					Datalink newDatalink = edits.createDatalink((EventForwardingOutputPort) oldNewMapping.get(datalinkSource),
+							(EventHandlingInputPort) oldNewMapping.get(datalinkSink));
 					try {
 						edits.getConnectDatalinkEdit(newDatalink).doEdit();
 					} catch (EditException e1) {
 						logger.error(e1);
 					}
-				} else if (oldNewMapping.containsKey(dl.getSource())) {
+				} else if (oldNewMapping.containsKey(datalinkSource)) {
+					DataflowOutputPort dop = null;
+					if (!outputPortMap.containsKey(datalinkSource)) {
+						String portName = Tools.uniqueObjectName(datalinkSource.getName(), outputPortNames);
+						outputPortNames.add(portName);
+						outputPortMap.put(datalinkSource,edits.createDataflowOutputPort(portName, nestedDataflow));
+					}
+					dop = outputPortMap.get(datalinkSource);
+					String portName = dop.getName();
 					// Coming out of nested workflow
-					String portName = Tools.uniqueObjectName(dl.getSource().getName(), outputPortNames);
-					outputPortNames.add(portName);
 					linkProcessorPortMapping.put(dl, portName);
-					DataflowOutputPort dop = edits.createDataflowOutputPort(portName, nestedDataflow);
 					try {
 						edits.getAddDataflowOutputPortEdit(nestedDataflow, dop).doEdit();
-						Datalink newDatalink = edits.createDatalink((EventForwardingOutputPort) oldNewMapping.get(dl.getSource()),
+						Datalink newDatalink = edits.createDatalink((EventForwardingOutputPort) oldNewMapping.get(datalinkSource),
 																	dop.getInternalInputPort());
 						edits.getConnectDatalinkEdit(newDatalink).doEdit();
 					} catch (EditException e1) {
 						logger.error(e1);
 					}
-				} else if (oldNewMapping.containsKey(dl.getSink())) {
+				} else if (oldNewMapping.containsKey(datalinkSink)) {
+					DataflowInputPort dip = null;
+					if (!inputPortMap.containsKey(datalinkSink)) {
+						String portName = Tools.uniqueObjectName(datalinkSink.getName(), inputPortNames);
+						inputPortNames.add(portName);
+						inputPortMap.put(datalinkSink, edits.createDataflowInputPort(portName,
+								dl.getResolvedDepth(), dl.getResolvedDepth(), nestedDataflow));
+						
+					}
+					dip = inputPortMap.get(datalinkSink);
+					String portName = dip.getName();
 					// Coming into nested workflow
-					String portName = Tools.uniqueObjectName(dl.getSink().getName(), inputPortNames);
-					inputPortNames.add(portName);
 					linkProcessorPortMapping.put(dl, portName);
-					DataflowInputPort dip = edits.createDataflowInputPort(portName,
-								dl.getResolvedDepth(), dl.getResolvedDepth(), nestedDataflow);
 					try {
 						edits.getAddDataflowInputPortEdit(nestedDataflow, dip).doEdit();
 						Datalink newDatalink = edits.createDatalink(dip.getInternalOutputPort(),
-								(EventHandlingInputPort) oldNewMapping.get(dl.getSink()));
+								(EventHandlingInputPort) oldNewMapping.get(datalinkSink));
 						edits.getConnectDatalinkEdit(newDatalink).doEdit();
 					} catch (EditException e1) {
 						logger.error(e1);
