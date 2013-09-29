@@ -25,7 +25,8 @@ public class ComponentDataflowCache {
 	}
 	
 	public static Dataflow getDataflow(ComponentVersionIdentification id) throws ComponentRegistryException {
-//		if (!cache.containsKey(id)) {
+		synchronized (id) {
+		if (!cache.containsKey(id)) {
 		logger.info("Before Calculate component version");
 			ComponentVersion componentVersion;
 			try {
@@ -39,7 +40,8 @@ public class ComponentDataflowCache {
 			Dataflow dataflow = componentVersion.getDataflow();
 			dataflow.checkValidity();
 			cache.put(id, dataflow);
-//		}
+		}
+		}
 		return cache.get(id);
 	}
 

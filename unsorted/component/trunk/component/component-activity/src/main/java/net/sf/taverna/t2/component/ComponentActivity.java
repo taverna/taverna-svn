@@ -11,10 +11,17 @@ import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.impl.InvocationContextImpl;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.T2Reference;
+import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
+import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
+import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.EditException;
+import net.sf.taverna.t2.workflowmodel.Edits;
+import net.sf.taverna.t2.workflowmodel.OutputPort;
+import net.sf.taverna.t2.workflowmodel.impl.DataflowImpl;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 import net.sf.taverna.t2.workflowmodel.processor.activity.NestedDataflow;
@@ -24,7 +31,7 @@ import org.apache.log4j.Logger;
 
 public class ComponentActivity extends
 		AbstractAsynchronousActivity<ComponentActivityConfigurationBean>
-		implements AsynchronousActivity<ComponentActivityConfigurationBean> {
+		implements AsynchronousActivity<ComponentActivityConfigurationBean>, NestedDataflow {
 	
 	private static Logger logger = Logger.getLogger(ComponentActivity.class);
 
@@ -32,7 +39,12 @@ public class ComponentActivity extends
 	
 	private ComponentActivityConfigurationBean configBean;
 	
+	private static EditManager em = EditManager.getInstance();
+
+	private static final Edits EDITS = em.getEdits();
+	
 	private static AnnotationTools aTools = new AnnotationTools();
+	private DataflowImpl skeletonDataflow = null;
 
 	@Override
 	public void configure(ComponentActivityConfigurationBean configBean)
@@ -42,7 +54,24 @@ public class ComponentActivity extends
 
 		configurePorts(configBean.getPorts());
 		
-
+		skeletonDataflow = (DataflowImpl) EDITS.createDataflow();
+		skeletonDataflow.setLocalName(configBean.getComponentName());
+		for (ActivityInputPort aip : this.getInputPorts()) {
+			DataflowInputPort dip = EDITS.createDataflowInputPort(aip.getName(), aip.getDepth(), aip.getDepth(), skeletonDataflow);
+			try {
+				EDITS.getAddDataflowInputPortEdit(skeletonDataflow, dip).doEdit();
+			} catch (EditException e) {
+				logger.error(e);
+			}
+		}
+		for (OutputPort aop : this.getOutputPorts()) {
+			DataflowOutputPort dop = EDITS.createDataflowOutputPort(aop.getName(), skeletonDataflow);
+			try {
+				EDITS.getAddDataflowOutputPortEdit(skeletonDataflow, dop).doEdit();
+			} catch (EditException e) {
+				logger.error(e);
+			}
+		}
 	}
 
 	@Override
@@ -62,9 +91,9 @@ public class ComponentActivity extends
 //		}
 		try {
 			ExceptionHandling exceptionHandling = configBean.getExceptionHandling();
-				InvocationContextImpl newContext = copyInvocationContext(callback);
+//				InvocationContextImpl newContext = copyInvocationContext(callback);
 
-			AsynchronousActivityCallback useCallback = new ProxyCallback(callback, newContext, exceptionHandling);
+			AsynchronousActivityCallback useCallback = new ProxyCallback(callback, callback.getContext(), exceptionHandling);
 			getComponentRealization().executeAsynch (inputs, useCallback);
 		} catch (ActivityConfigurationException e) {
 			callback.fail("Unable to execute component", e);
@@ -113,6 +142,23 @@ public class ComponentActivity extends
 		}
 		}
 		return componentRealization;
+	}
+
+	@Override
+	public Dataflow getNestedDataflow() {
+		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+		boolean insideGraph = false;
+		for (StackTraceElement elem : stackTrace) {
+			if (elem.getClassName().contains("GraphController")) {
+				return skeletonDataflow;
+			}
+		}
+		try {
+			return ComponentDataflowCache.getDataflow(configBean);
+		} catch (ComponentRegistryException e) {
+			logger.error(e);
+		}
+		return skeletonDataflow;
 	}
 
 }

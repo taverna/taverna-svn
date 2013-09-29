@@ -47,14 +47,14 @@ public class ProxyCallback implements AsynchronousActivityCallback {
 
 	/**
 	 * @param originalCallback
-	 * @param newContext 
+	 * @param invocationContext 
 	 * @param exceptionHandling2 
 	 */
-	public ProxyCallback(AsynchronousActivityCallback originalCallback, InvocationContextImpl newContext, ExceptionHandling exceptionHandling2) {
+	public ProxyCallback(AsynchronousActivityCallback originalCallback, InvocationContext invocationContext, ExceptionHandling exceptionHandling2) {
 		super();
 		this.originalCallback = originalCallback;
 		this.exceptionHandling = exceptionHandling2;
-		context = newContext;
+		context = invocationContext;
 		referenceService = context.getReferenceService();
 		listService = referenceService.getListService();
 		errorService = referenceService.getErrorDocumentService();
@@ -279,8 +279,8 @@ try {
 	 */
 	@Override
 	public String getParentProcessIdentifier() {
-		return "";
-//		return originalCallback.getParentProcessIdentifier();
+//		return "";
+		return originalCallback.getParentProcessIdentifier();
 	}
 
 }
