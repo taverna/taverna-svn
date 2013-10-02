@@ -30,7 +30,7 @@ public class TestDerbyProvenanceConnector {
 	@Test
 	@Ignore
 	public void testCreateDataBase() throws Exception {
-		DerbyProvenanceConnector connector = new DerbyProvenanceConnector(databaseManager);
+		DerbyProvenanceConnector connector = new DerbyProvenanceConnector(databaseManager, null);
 		Connection con = databaseManager.getConnection();
 		try {
 			assertFalse(con.prepareStatement("select * from Datalink").execute());

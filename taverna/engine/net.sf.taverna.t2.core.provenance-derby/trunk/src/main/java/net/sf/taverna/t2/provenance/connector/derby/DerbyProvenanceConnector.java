@@ -30,6 +30,7 @@ import net.sf.taverna.t2.provenance.connector.ProvenanceConnector;
 import net.sf.taverna.t2.provenance.item.ProvenanceItem;
 import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.derby.DerbyProvenanceWriter;
+import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLSerializer;
 
 import org.apache.log4j.Logger;
 
@@ -42,8 +43,8 @@ public class DerbyProvenanceConnector extends ProvenanceConnector {
 
 	private final String TABLE_EXISTS_STATE = "X0Y32";
 
-	public DerbyProvenanceConnector(DatabaseManager databaseManager) {
-		super(databaseManager);
+	public DerbyProvenanceConnector(DatabaseManager databaseManager, XMLSerializer xmlSerializer) {
+		super(databaseManager, xmlSerializer);
 		setWriter(new DerbyProvenanceWriter(databaseManager));
 		setQuery(new DerbyProvenanceQuery(databaseManager));
 	}

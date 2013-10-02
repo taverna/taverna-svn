@@ -31,6 +31,7 @@ import net.sf.taverna.t2.provenance.connector.ProvenanceConnector;
 import net.sf.taverna.t2.provenance.item.ProvenanceItem;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceQuery;
 import net.sf.taverna.t2.provenance.lineageservice.mysql.MySQLProvenanceWriter;
+import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLSerializer;
 
 import org.apache.log4j.Logger;
 
@@ -45,8 +46,8 @@ public class MySQLProvenanceConnector extends ProvenanceConnector {
 
 	private static final String createDB = "CREATE DATABASE IF NOT EXISTS T2Provenance";
 
-    public MySQLProvenanceConnector(DatabaseManager databaseManager) {
-    	super(databaseManager);
+    public MySQLProvenanceConnector(DatabaseManager databaseManager, XMLSerializer xmlSerializer) {
+    	super(databaseManager, xmlSerializer);
 		setWriter(new MySQLProvenanceWriter(databaseManager));
 		setQuery(new MySQLProvenanceQuery(databaseManager));
     }
