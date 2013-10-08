@@ -32,6 +32,7 @@
 		<module>dataflow-activity</module>
 		<module>dependency-activity</module>
 		<module>external-tool-activity</module>
+		<module>interaction-activity</module>
 		<module>localworker-activity</module>
 		<module>rest-activity</module>
 		<module>rshell-activity</module>

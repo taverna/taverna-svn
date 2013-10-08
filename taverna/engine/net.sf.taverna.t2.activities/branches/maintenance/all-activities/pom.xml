@@ -43,6 +43,11 @@
 		-->
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
+			<artifactId>interaction-activity</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>localworker-activity</artifactId>
 			<version>${project.version}</version>
 		</dependency>

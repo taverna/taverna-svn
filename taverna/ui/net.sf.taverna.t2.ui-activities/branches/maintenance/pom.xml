@@ -26,6 +26,7 @@
 		<module>dataflow-activity-ui</module>
 		<module>disabled-activity-ui</module>
 		<module>external-tool-activity-ui</module>
+		<module>interaction-activity-ui</module>
 		<module>localworker-activity-ui</module>
 		<module>rest-activity-ui</module>
 		<module>rshell-activity-ui</module>
