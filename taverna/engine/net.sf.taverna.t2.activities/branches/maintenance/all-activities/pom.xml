@@ -10,21 +10,21 @@
 	<artifactId>all-activities</artifactId>
 	<name>Taverna 2 All official activities (meta artifact)</name>
 	<dependencies>
-		<dependency>
+<!-- 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>apiconsumer-activity</artifactId>
 			<version>${project.version}</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>beanshell-activity</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
+<!-- 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>biomart-activity</artifactId>
 			<version>${project.version}</version>
-		</dependency>
+		</dependency> -->
 <!-- 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>biomoby-activity</artifactId>
@@ -61,11 +61,11 @@
 			<artifactId>rshell-activity</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
+<!-- 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>soaplab-activity</artifactId>
 			<version>${project.version}</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
 			<artifactId>spreadsheet-import-activity</artifactId>
