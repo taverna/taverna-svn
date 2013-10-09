@@ -20,6 +20,7 @@ import javax.swing.SwingWorker;
 import net.sf.taverna.t2.component.api.Family;
 import net.sf.taverna.t2.component.api.Profile;
 import net.sf.taverna.t2.component.api.Registry;
+import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
@@ -164,28 +165,33 @@ public class FamilyChooserPanel extends JPanel implements Observer,
 		observers.remove(observer);
 	}
 
-	private class FamilyUpdater extends SwingWorker<String, Object> {
+	
 
+	private void updateFamiliesFromRegistry() throws RegistryException {
+		for (Family f : chosenRegistry.getComponentFamilies()) {
+			Profile componentProfile = null;
+			try {
+				componentProfile = f.getComponentProfile();
+			} catch (Exception e) {
+				logger.error(e);
+			}
+			if (componentProfile != null) {
+				String id = componentProfile.getId();
+				if ((profileFilter == null)
+						|| id.equals(profileFilter.getId())) {
+					familyMap.put(f.getName(), f);
+				}
+			} else {
+				logger.info("Ignoring " + f.getName());
+			}
+		}
+	}
+
+	private class FamilyUpdater extends SwingWorker<String, Object> {
 		@Override
 		protected String doInBackground() throws Exception {
 			if (chosenRegistry != null) {
-				for (Family f : chosenRegistry.getComponentFamilies()) {
-					Profile componentProfile = null;
-					try {
-						componentProfile = f.getComponentProfile();
-					} catch (Exception e) {
-						logger.error(e);
-					}
-					if (componentProfile != null) {
-						String id = componentProfile.getId();
-						if ((profileFilter == null)
-								|| id.equals(profileFilter.getId())) {
-							familyMap.put(f.getName(), f);
-						}
-					} else {
-						logger.info("Ignoring " + f.getName());
-					}
-				}
+				updateFamiliesFromRegistry();
 			}
 			return null;
 		}

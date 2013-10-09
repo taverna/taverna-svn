@@ -26,20 +26,24 @@ import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 
 /**
- *
- *
+ * 
+ * 
  * @author David Withers
  */
 public class MyExperimentComponentProfile extends ComponentProfile {
 
 	private final String uri;
 
-	public MyExperimentComponentProfile(MyExperimentComponentRegistry componentRegistry, String uri, URL profileURL) throws RegistryException {
+	public MyExperimentComponentProfile(
+			MyExperimentComponentRegistry componentRegistry, String uri,
+			URL profileURL) throws RegistryException {
 		super(componentRegistry, profileURL);
 		this.uri = uri;
 	}
 
-	public MyExperimentComponentProfile(MyExperimentComponentRegistry componentRegistry, String uri, String profileString) throws RegistryException {
+	public MyExperimentComponentProfile(
+			MyExperimentComponentRegistry componentRegistry, String uri,
+			String profileString) throws RegistryException {
 		super(componentRegistry, profileString);
 		this.uri = uri;
 	}
