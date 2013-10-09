@@ -247,7 +247,7 @@ public class ResultsUtils {
 		}
 	}
 
-	private static String getStackTraceElementString(StackTraceElementBean stackTraceElement) {
+	public static String getStackTraceElementString(StackTraceElementBean stackTraceElement) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(stackTraceElement.getClassName());
 		sb.append('.');
