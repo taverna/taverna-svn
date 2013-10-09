@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="1.0"
+	elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<xs:annotation>
+		<xs:appinfo>
+			<jxb:schemaBindings>
+				<jxb:package name="uk.org.taverna.component.api" />
+			</jxb:schemaBindings>
+		</xs:appinfo>
+	</xs:annotation>
+
+	<xs:complexType name="CreateComponent">
+		<xs:sequence>
+			<xs:element name="title" type="xs:string" minOccurs="1" />
+			<xs:element name="description" type="xs:string" minOccurs="1" />
+			<xs:element name="component-family" type="xs:anyURI" minOccurs="1" />
+			<xs:element name="license-type" type="xs:string" minOccurs="1" />
+			<xs:element name="content-type" type="xs:string" minOccurs="1" />
+			<xs:element name="content" type="xs:base64Binary" minOccurs="1" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CreateFamily">
+		<xs:sequence>
+			<xs:element name="title" type="xs:string" minOccurs="1" />
+			<xs:element name="description" type="xs:string" minOccurs="1" />
+			<xs:element name="component-profile" type="xs:anyURI" minOccurs="1" />
+			<xs:element name="license-type" type="xs:string" minOccurs="1" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CreateProfile">
+		<xs:sequence>
+			<xs:element name="title" type="xs:string" minOccurs="1" />
+			<xs:element name="filename" type="xs:string" minOccurs="1" />
+			<xs:element name="description" type="xs:string" minOccurs="1" />
+			<xs:element name="content-type" type="xs:string" minOccurs="1" />
+			<xs:element name="content" type="xs:base64Binary" minOccurs="1" />
+			<xs:element name="license-type" type="xs:string" minOccurs="1" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ComponentDescription">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="resource" type="xs:anyURI" use="required"/>
+				<xs:attribute name="uri" type="xs:anyURI" use="required"/>
+				<xs:attribute name="version" type="xs:int" use="required"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="ComponentDescriptionList">
+		<xs:sequence>
+			<xs:element name="workflow" type="ComponentDescription" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ComponentFamilyDescription">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="resource" type="xs:anyURI" use="required"/>
+				<xs:attribute name="uri" type="xs:anyURI" use="required"/>
+				<xs:attribute name="version" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="ComponentFamilyList">
+		<xs:sequence>
+			<xs:element name="pack" type="ComponentFamilyDescription" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ComponentProfileDescription">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="resource" type="xs:anyURI" use="required"/>
+				<xs:attribute name="uri" type="xs:anyURI" use="required"/>
+				<xs:attribute name="version" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="ComponentProfileList">
+		<xs:sequence>
+			<xs:element name="file" type="ComponentProfileDescription" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="component-profiles" type="ComponentProfileList" />
+	<xs:element name="component-families" type="ComponentFamilyList" />
+	<xs:element name="workflows" type="ComponentDescriptionList" />
+	<xs:element name="workflow" type="CreateComponent" />
+	<xs:element name="pack" type="CreateFamily" />
+	<xs:element name="file" type="CreateProfile" />
+
+</xs:schema>
