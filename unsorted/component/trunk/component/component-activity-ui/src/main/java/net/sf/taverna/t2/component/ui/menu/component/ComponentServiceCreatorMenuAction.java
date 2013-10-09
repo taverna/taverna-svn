@@ -14,12 +14,12 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 /**
  * @author alanrw
- *
+ * 
  */
-public class ComponentServiceCreatorMenuAction extends AbstractContextualMenuAction {
-	
+public class ComponentServiceCreatorMenuAction extends
+		AbstractContextualMenuAction {
 	private static final URI configureSection = URI
-	.create("http://taverna.sf.net/2009/contextMenu/configure");
+			.create("http://taverna.sf.net/2009/contextMenu/configure");
 
 	public ComponentServiceCreatorMenuAction() {
 		super(configureSection, 60);
@@ -28,17 +28,16 @@ public class ComponentServiceCreatorMenuAction extends AbstractContextualMenuAct
 	@Override
 	public boolean isEnabled() {
 		Activity<?> a = findActivity();
-		return super.isEnabled() && (a != null) && !(a instanceof ComponentActivity);
+		return super.isEnabled() && (a != null)
+				&& !(a instanceof ComponentActivity);
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.ui.menu.AbstractMenuAction#createAction()
-	 */
 	@Override
 	protected Action createAction() {
-		return new ComponentServiceCreatorAction((Processor) getContextualSelection().getSelection());
+		return new ComponentServiceCreatorAction(
+				(Processor) getContextualSelection().getSelection());
 	}
-	
+
 	protected Activity<?> findActivity() {
 		if (getContextualSelection() == null) {
 			return null;
@@ -54,6 +53,5 @@ public class ComponentServiceCreatorMenuAction extends AbstractContextualMenuAct
 		}
 		return null;
 	}
-
 
 }

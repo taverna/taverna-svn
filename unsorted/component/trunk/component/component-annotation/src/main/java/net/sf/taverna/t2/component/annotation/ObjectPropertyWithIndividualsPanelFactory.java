@@ -20,7 +20,12 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.annotation;
 
-import java.awt.Component;
+import static javax.swing.JOptionPane.OK_CANCEL_OPTION;
+import static javax.swing.JOptionPane.OK_OPTION;
+import static javax.swing.JOptionPane.QUESTION_MESSAGE;
+import static javax.swing.JOptionPane.showConfirmDialog;
+import static javax.swing.JOptionPane.showInputDialog;
+
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -30,7 +35,6 @@ import java.util.List;
 
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import net.sf.taverna.t2.component.localworld.LocalWorld;
@@ -41,17 +45,15 @@ import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
-import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
- *
- *
- * @author David Withers, Alan Williams
+ * 
+ * 
+ * @author David Withers
+ * @author Alan Williams
  */
 public class ObjectPropertyWithIndividualsPanelFactory extends PropertyPanelFactorySPI {
 	
@@ -94,10 +96,8 @@ public class ObjectPropertyWithIndividualsPanelFactory extends PropertyPanelFact
 		 */
 		private static final long serialVersionUID = -9156213096428945270L;
 		OntClass rangeClass = null;
-		@SuppressWarnings("rawtypes")
 		JComboBox resources;
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		public ComboBoxWithAdd(final SemanticAnnotationProfile semanticAnnotationProfile, Statement statement) {
+		public ComboBoxWithAdd(SemanticAnnotationProfile semanticAnnotationProfile, Statement statement) {
 			super(new GridBagLayout());
 			
 			rangeClass = semanticAnnotationProfile.getRangeClass();
@@ -128,19 +128,17 @@ public class ObjectPropertyWithIndividualsPanelFactory extends PropertyPanelFact
 
 			JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 			buttonPanel.add(new DeselectingButton("Add external", new ActionListener() {
-
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					String answer = JOptionPane.showInputDialog("Please enter the URL for the resource");
+					String answer = showInputDialog("Please enter the URL for the resource");
 					resources.addItem(localWorld.createIndividual(answer, rangeClass));
 				}}));
 			buttonPanel.add(new DeselectingButton("Add local", new ActionListener() {
-
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					TurtleInputPanel turtlePanel = new TurtleInputPanel(rangeClass);
-					int answer = JOptionPane.showConfirmDialog(null, turtlePanel, "Turtle input", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-					if (answer == JOptionPane.OK_OPTION) {
+					int answer = showConfirmDialog(null, turtlePanel, "Turtle input", OK_CANCEL_OPTION, QUESTION_MESSAGE);
+					if (answer == OK_OPTION) {
 						OntModel addedModel = turtlePanel.getContentAsModel();
 						for (Individual i : addedModel.listIndividuals(rangeClass).toList()) {
 							resources.addItem(i);

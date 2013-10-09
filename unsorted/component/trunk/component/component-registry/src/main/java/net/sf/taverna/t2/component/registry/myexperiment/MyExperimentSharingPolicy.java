@@ -20,7 +20,7 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.myexperiment;
 
-import net.sf.taverna.t2.component.registry.SharingPolicy;
+import net.sf.taverna.t2.component.api.SharingPolicy;
 
 /**
  *

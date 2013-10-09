@@ -17,9 +17,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
-import net.sf.taverna.t2.component.registry.Component;
-import net.sf.taverna.t2.component.registry.ComponentFamily;
-import net.sf.taverna.t2.component.registry.ComponentRegistry;
+import net.sf.taverna.t2.component.api.Component;
+import net.sf.taverna.t2.component.api.Family;
+import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
@@ -28,24 +28,24 @@ import org.apache.log4j.Logger;
 
 /**
  * @author alanrw
- *
+ * 
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class ComponentChooserPanel extends JPanel implements Observable<ComponentChoiceMessage>, Observer{
+public class ComponentChooserPanel extends JPanel implements
+		Observable<ComponentChoiceMessage>, Observer {
 
 	/**
 	 *
 	 */
 	private static final long serialVersionUID = -4459660016225074302L;
 
-	private static Logger logger = Logger.getLogger(ComponentChooserPanel.class);
+	private static Logger logger = Logger
+			.getLogger(ComponentChooserPanel.class);
 
 	private List<Observer<ComponentChoiceMessage>> observers = new ArrayList<Observer<ComponentChoiceMessage>>();
 
-
-
 	private final JComboBox componentChoice = new JComboBox();
-	
+
 	private SortedMap<String, Component> componentMap = new TreeMap<String, Component>();
 
 	private RegistryAndFamilyChooserPanel registryAndFamilyChooserPanel = new RegistryAndFamilyChooserPanel();
@@ -83,21 +83,24 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 					notifyObservers();
 				}
 
-			}});
+			}
+		});
 	}
 
 	protected void updateToolTipText() {
-		Component chosenComponent = componentMap.get(componentChoice.getSelectedItem());
+		Component chosenComponent = componentMap.get(componentChoice
+				.getSelectedItem());
 		if (chosenComponent == null) {
 			componentChoice.setToolTipText(null);
-		}
-		else {
+		} else {
 			componentChoice.setToolTipText(chosenComponent.getDescription());
 		}
 	}
 
 	private void notifyObservers() {
-		ComponentChoiceMessage message = new ComponentChoiceMessage(registryAndFamilyChooserPanel.getChosenFamily(), getChosenComponent());
+		ComponentChoiceMessage message = new ComponentChoiceMessage(
+				registryAndFamilyChooserPanel.getChosenFamily(),
+				getChosenComponent());
 		for (Observer<ComponentChoiceMessage> o : getObservers()) {
 			try {
 				o.notify(ComponentChooserPanel.this, message);
@@ -126,16 +129,15 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 	}
 
 	@Override
-	public void notify(Observable sender,
-			Object message) throws Exception {
+	public void notify(Observable sender, Object message) throws Exception {
 		try {
-		if (message instanceof FamilyChoiceMessage) {
-			updateComponentModel();
-		} else if (message instanceof ProfileChoiceMessage) {
-			registryAndFamilyChooserPanel.notify(null, (ProfileChoiceMessage) message);
-		}
-		}
-		catch (Exception e) {
+			if (message instanceof FamilyChoiceMessage) {
+				updateComponentModel();
+			} else if (message instanceof ProfileChoiceMessage) {
+				registryAndFamilyChooserPanel.notify(null,
+						(ProfileChoiceMessage) message);
+			}
+		} catch (Exception e) {
 			logger.error(e);
 		}
 	}
@@ -144,12 +146,14 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 	public void addObserver(Observer<ComponentChoiceMessage> observer) {
 		observers.add(observer);
 		Component chosenComponent = getChosenComponent();
-			ComponentChoiceMessage message = new ComponentChoiceMessage(registryAndFamilyChooserPanel.getChosenFamily(), chosenComponent);
-			try {
-				observer.notify(this, message);
-			} catch (Exception e) {
-				logger.error(e);
-			}
+		ComponentChoiceMessage message = new ComponentChoiceMessage(
+				registryAndFamilyChooserPanel.getChosenFamily(),
+				chosenComponent);
+		try {
+			observer.notify(this, message);
+		} catch (Exception e) {
+			logger.error(e);
+		}
 	}
 
 	@Override
@@ -162,19 +166,20 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 		observers.remove(observer);
 	}
 
-	public ComponentRegistry getChosenRegistry() {
+	public Registry getChosenRegistry() {
 		return registryAndFamilyChooserPanel.getChosenRegistry();
 	}
 
-	public ComponentFamily getChosenFamily() {
+	public Family getChosenFamily() {
 		return registryAndFamilyChooserPanel.getChosenFamily();
 	}
-	
+
 	private class ComponentUpdater extends SwingWorker<String, Object> {
 
 		@Override
 		protected String doInBackground() throws Exception {
-			ComponentFamily chosenFamily = registryAndFamilyChooserPanel.getChosenFamily();
+			Family chosenFamily = registryAndFamilyChooserPanel
+					.getChosenFamily();
 			if (chosenFamily != null) {
 				for (Component component : chosenFamily.getComponents()) {
 					componentMap.put(component.getName(), component);
@@ -184,11 +189,11 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 		}
 
 		@Override
-	    protected void done() {
+		protected void done() {
 			componentChoice.removeAllItems();
-				for (String componentName : componentMap.keySet()) {
-					componentChoice.addItem(componentName);
-				}
+			for (String componentName : componentMap.keySet()) {
+				componentChoice.addItem(componentName);
+			}
 			if (!componentMap.isEmpty()) {
 				componentChoice.setSelectedItem(componentMap.firstKey());
 				updateToolTipText();
@@ -201,5 +206,5 @@ public class ComponentChooserPanel extends JPanel implements Observable<Componen
 		}
 
 	}
-	
+
 }

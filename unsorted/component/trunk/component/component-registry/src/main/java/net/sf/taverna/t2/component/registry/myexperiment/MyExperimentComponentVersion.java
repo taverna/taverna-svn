@@ -23,8 +23,8 @@ package net.sf.taverna.t2.component.registry.myexperiment;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import net.sf.taverna.t2.component.registry.Component;
-import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.api.Component;
+import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
 import net.sf.taverna.t2.workbench.file.DataflowInfo;
 import net.sf.taverna.t2.workbench.file.exceptions.OpenException;
@@ -82,7 +82,7 @@ public class MyExperimentComponentVersion extends ComponentVersion {
 				String resourceUri = workflowElement.getAttributeValue("uri");
 				Element descriptionElement = componentRegistry.getResourceElement(resourceUri, "description");
 				description = descriptionElement.getTextTrim();
-			} catch (ComponentRegistryException e) {
+			} catch (RegistryException e) {
 				logger.error(e);
 				return ("");
 			}
@@ -91,7 +91,7 @@ public class MyExperimentComponentVersion extends ComponentVersion {
 	}
 
 	@Override
-	protected final Dataflow internalGetDataflow() throws ComponentRegistryException {
+	protected final Dataflow internalGetDataflow() throws RegistryException {
 		Element workflowElement = componentRegistry.getPackItem(uri, "workflow");
 			String resourceUri = workflowElement.getAttributeValue("resource");
 			resourceUri = StringUtils.substringBeforeLast(resourceUri, "?");
@@ -104,10 +104,10 @@ public class MyExperimentComponentVersion extends ComponentVersion {
 				info = opener.openDataflow(T2_FLOW_FILE_TYPE, new URL(downloadUri));
 			} catch (OpenException e) {
 				logger.error(e);
-				throw new ComponentRegistryException("Unable to open dataflow", e);
+				throw new RegistryException("Unable to open dataflow", e);
 			} catch (MalformedURLException e) {
 				logger.error(e);
-				throw new ComponentRegistryException("Unable to open dataflow", e);
+				throw new RegistryException("Unable to open dataflow", e);
 			}
 
 //			try {
@@ -127,7 +127,7 @@ public class MyExperimentComponentVersion extends ComponentVersion {
 		return info.getDataflow();
 	}
 
-	public boolean hasWorkflowUri(String resourceUri) throws ComponentRegistryException {
+	public boolean hasWorkflowUri(String resourceUri) throws RegistryException {
 		Element workflowElement = null;
 		try {
 			workflowElement = componentRegistry.getPackItem(uri, "workflow");
@@ -135,7 +135,7 @@ public class MyExperimentComponentVersion extends ComponentVersion {
 				return false;
 			}
 		}
-		catch (ComponentRegistryException e) {
+		catch (RegistryException e) {
 			logger.error(e);
 			return false;
 		}

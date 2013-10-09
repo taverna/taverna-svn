@@ -3,10 +3,9 @@ package net.sf.taverna.t2.component;
 import java.util.Map;
 
 import net.sf.taverna.t2.activities.dataflow.DataflowActivity;
-import net.sf.taverna.t2.component.PatchedInvoke.PatchedInvokeCallBack;
+import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.profile.ExceptionHandling;
 import net.sf.taverna.t2.component.registry.ComponentDataflowCache;
-import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.impl.InvocationContextImpl;
 import net.sf.taverna.t2.reference.ReferenceService;
@@ -123,7 +122,7 @@ public class ComponentActivity extends
 			Dataflow d;
 			try {
 				d = ComponentDataflowCache.getDataflow(configBean);
-			} catch (ComponentRegistryException e) {
+			} catch (RegistryException e) {
 				throw new ActivityConfigurationException("Unable to read dataflow", e);
 			}
 			componentRealization.configure(d);
@@ -146,8 +145,8 @@ public class ComponentActivity extends
 
 	@Override
 	public Dataflow getNestedDataflow() {
+		// FIXME To go when integrated into Taverna properly
 		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-		boolean insideGraph = false;
 		for (StackTraceElement elem : stackTrace) {
 			if (elem.getClassName().contains("GraphController")) {
 				return skeletonDataflow;
@@ -155,7 +154,7 @@ public class ComponentActivity extends
 		}
 		try {
 			return ComponentDataflowCache.getDataflow(configBean);
-		} catch (ComponentRegistryException e) {
+		} catch (RegistryException e) {
 			logger.error(e);
 		}
 		return skeletonDataflow;

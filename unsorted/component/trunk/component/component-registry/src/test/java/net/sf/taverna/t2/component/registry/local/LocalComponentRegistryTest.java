@@ -21,46 +21,34 @@
 package net.sf.taverna.t2.component.registry.local;
 
 import static org.junit.Assert.assertSame;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.UUID;
-
-import net.sf.taverna.t2.component.registry.ComponentRegistry;
+import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.component.registry.ComponentRegistryTest;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- *
- *
+ * 
+ * 
  * @author David Withers
  */
 public class LocalComponentRegistryTest extends ComponentRegistryTest {
-
-	private static File testRegistry;
-
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		testRegistry = new File(System.getProperty("java.io.tmpdir"), "TestRegistry" + UUID.randomUUID());
-		testRegistry.mkdir();
-		componentRegistryUrl = testRegistry.toURI().toURL();
-		componentRegistry = LocalComponentRegistry.getComponentRegistry(componentRegistryUrl);
+		RegistrySupport.pre();
 	}
 
 	@AfterClass
-	public static void tearDownAfterClass() throws IOException {
-		FileUtils.deleteDirectory(testRegistry);
+	public static void tearDownAfterClass() throws Exception {
+		RegistrySupport.post();
 	}
 
 	@Test
 	public void testGetComponentRegistry() throws Exception {
-		ComponentRegistry getAgain = LocalComponentRegistry.getComponentRegistry(componentRegistryUrl);
-		assertSame(componentRegistry,
-				getAgain);
+		Registry getAgain = LocalComponentRegistry
+				.getComponentRegistry(componentRegistryUrl);
+		assertSame(componentRegistry, getAgain);
 	}
 
 }

@@ -24,12 +24,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
 import java.io.ByteArrayOutputStream;
-import java.net.Authenticator;
 import java.net.URL;
-import java.util.List;
 
 import net.sf.taverna.t2.component.registry.ComponentRegistryTest;
-import net.sf.taverna.t2.security.credentialmanager.CredentialManagerAuthenticator;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -47,30 +44,14 @@ import org.junit.Test;
  */
 @Ignore
 public class MyExperimentComponentRegistryTest extends ComponentRegistryTest {
-
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		componentRegistryUrl = new URL("http://aeon.cs.man.ac.uk:3006");
-		Authenticator.setDefault(new CredentialManagerAuthenticator());
-		componentRegistry = MyExperimentComponentRegistry.getComponentRegistry(componentRegistryUrl);
+		RegistrySupport.pre();
 	}
 
-	@SuppressWarnings("unchecked")
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		MyExperimentComponentRegistry registry = MyExperimentComponentRegistry.getComponentRegistry(componentRegistryUrl);
-		Element element = registry.getResource(componentRegistryUrl + "/files.xml", "tag=component%20profile");
-		for (Element child : (List<Element>) element.getChildren()) {
-			registry.deleteResource(child.getAttributeValue("uri"));
-		}
-		element = registry.getResource(componentRegistryUrl + "/packs.xml", "tag=component%20family");
-		for (Element child : (List<Element>) element.getChildren()) {
-			registry.deleteResource(child.getAttributeValue("uri"));
-		}
-		element = registry.getResource(componentRegistryUrl + "/packs.xml", "tag=component");
-		for (Element child : (List<Element>) element.getChildren()) {
-			registry.deleteResource(child.getAttributeValue("uri"));
-		}
+		RegistrySupport.post();
 	}
 
 	@Test

@@ -20,8 +20,9 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.annotation;
 
+import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.getObjectName;
+
 import java.awt.Color;
-import java.awt.Component;
 
 import javax.swing.JComponent;
 import javax.swing.JTextArea;
@@ -33,14 +34,16 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
- *
- *
+ * 
+ * 
  * @author David Withers
  */
 public abstract class PropertyPanelFactorySPI {
 
-	public abstract JComponent getInputComponent(SemanticAnnotationProfile semanticAnnotationProfile, Statement statement);
-	
+	public abstract JComponent getInputComponent(
+			SemanticAnnotationProfile semanticAnnotationProfile,
+			Statement statement);
+
 	/**
 	 * Returns null if the target node is the same as the original statement
 	 * 
@@ -48,20 +51,22 @@ public abstract class PropertyPanelFactorySPI {
 	 * @param inputComponent
 	 * @return
 	 */
-	public abstract RDFNode getNewTargetNode(Statement origStatement, JComponent inputComponent);
+	public abstract RDFNode getNewTargetNode(Statement origStatement,
+			JComponent inputComponent);
 
 	public abstract int getRatingForSemanticAnnotation(
 			SemanticAnnotationProfile semanticAnnotationProfile);
-	
-	public abstract JComponent getDisplayComponent(SemanticAnnotationProfile semanticAnnotationProfile, Statement statement);
+
+	public abstract JComponent getDisplayComponent(
+			SemanticAnnotationProfile semanticAnnotationProfile,
+			Statement statement);
 
 	public static JComponent getDefaultInputComponent(
 			SemanticAnnotationProfile semanticAnnotationProfile,
 			Statement statement) {
 		JTextArea inputText = new JTextArea(20, 80);
 		if (statement != null) {
-			inputText.setText(SemanticAnnotationUtils.getDisplayName(statement
-					.getObject()));
+			inputText.setText(getObjectName(statement));
 		}
 		inputText.setLineWrap(true);
 		inputText.setWrapStyleWord(true);
@@ -71,13 +76,13 @@ public abstract class PropertyPanelFactorySPI {
 	public static JComponent getDefaultDisplayComponent(
 			SemanticAnnotationProfile semanticAnnotationProfile,
 			Statement statement) {
-		JTextArea value = new JTextArea(SemanticAnnotationUtils.getDisplayName(statement.getObject()));
+		JTextArea value = new JTextArea(getObjectName(statement));
 		value.setLineWrap(true);
 		value.setWrapStyleWord(true);
 		value.setEditable(false);
 		value.setBackground(Color.WHITE);
 		value.setOpaque(true);
-		value.setBorder(new EmptyBorder(2,4,2,4));
+		value.setBorder(new EmptyBorder(2, 4, 2, 4));
 		return value;
 	}
 

@@ -20,7 +20,8 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.annotation;
 
-import java.awt.Component;
+import static com.hp.hpl.jena.rdf.model.ResourceFactory.createTypedLiteral;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -36,16 +37,15 @@ import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
- *
- *
+ * 
+ * 
  * @author Alan Williams
  */
-public class DateTimePropertyPanelFactory extends PropertyPanelFactorySPI{
-	
+public class DateTimePropertyPanelFactory extends PropertyPanelFactorySPI {
+
 	private static String DateTimeString = XSDDatatype.XSDdateTime.getURI();
 
 	public DateTimePropertyPanelFactory() {
@@ -53,84 +53,87 @@ public class DateTimePropertyPanelFactory extends PropertyPanelFactorySPI{
 	}
 
 	@Override
-	public JComponent getInputComponent(SemanticAnnotationProfile semanticAnnotationProfile, Statement statement) {
+	public JComponent getInputComponent(
+			SemanticAnnotationProfile semanticAnnotationProfile,
+			Statement statement) {
 		JComponent result = null;
 		Date now = new Date();
 		SpinnerDateModel dateModel = new SpinnerDateModel(now, null, now,
-				        Calendar.DAY_OF_MONTH);
+				Calendar.DAY_OF_MONTH);
 		JSpinner s = new JSpinner(dateModel);
-		    JSpinner.DateEditor de = new JSpinner.DateEditor(s, "yyyy-MM-dd-HH-mm-ss");
-		    
-		    // Suggested hack from http://www.coderanch.com/t/345684/GUI/java/JSpinner-DateEditor-Set-default-focus
-		    
-		    de.getTextField().setCaret(new DefaultCaret() {  
-		    	/**
-				 * 
-				 */
-				private static final long serialVersionUID = 6779256780590610172L;
-				private boolean diverted = false;  
-		    	  
-		    	public void setDot( int dot )  
-		    	{  
-		    	diverted = (dot == 0);  
-		    	if (diverted) {  
-		    	dot = getComponent().getDocument().getLength();  
-		    	}  
-		    	super.setDot( dot );  
-		    	}  
-		    	public void moveDot( int dot )  
-		    	{  
-		    	if (diverted) {  
-		    	super.setDot(0);  
-		    	diverted = false;  
-		    	}  
-		    	super.moveDot( dot );  
-		    	}  
-		    	});  
-		    s.setEditor(de);
-		    if (statement != null) {
-		    	Object o = statement.getObject().asLiteral().getValue();
-		    	if (o instanceof XSDDateTime) {
-		    		dateModel.setValue(((XSDDateTime) o).asCalendar().getTime());
-		    	}
-		    }
-		    result = s;
+		JSpinner.DateEditor de = new JSpinner.DateEditor(s,
+				"yyyy-MM-dd-HH-mm-ss");
+
+		// Suggested hack from
+		// http://www.coderanch.com/t/345684/GUI/java/JSpinner-DateEditor-Set-default-focus
+
+		de.getTextField().setCaret(new DefaultCaret() {
+			private static final long serialVersionUID = 6779256780590610172L;
+			private boolean diverted = false;
+
+			public void setDot(int dot) {
+				diverted = (dot == 0);
+				if (diverted) {
+					dot = getComponent().getDocument().getLength();
+				}
+				super.setDot(dot);
+			}
+
+			public void moveDot(int dot) {
+				if (diverted) {
+					super.setDot(0);
+					diverted = false;
+				}
+				super.moveDot(dot);
+			}
+		});
+		s.setEditor(de);
+		if (statement != null) {
+			Object o = statement.getObject().asLiteral().getValue();
+			if (o instanceof XSDDateTime) {
+				dateModel.setValue(((XSDDateTime) o).asCalendar().getTime());
+			}
+		}
+		result = s;
 
 		return result;
 	}
 
-
-		@Override
-		public RDFNode getNewTargetNode(Statement originalStatement, JComponent component) {
-			JSpinner spinner = (JSpinner) component;
-			Date d = (Date) spinner.getValue();
-			if ((originalStatement == null) ||
-					!originalStatement.getObject().asLiteral().getValue().equals(d)) {
-				Calendar cal = GregorianCalendar.getInstance();
-				cal.setTime(d);
-				return ResourceFactory.createTypedLiteral(cal);
-			}
-			return null;
+	@Override
+	public RDFNode getNewTargetNode(Statement originalStatement,
+			JComponent component) {
+		JSpinner spinner = (JSpinner) component;
+		Date d = (Date) spinner.getValue();
+		if ((originalStatement == null)
+				|| !originalStatement.getObject().asLiteral().getValue()
+						.equals(d)) {
+			Calendar cal = GregorianCalendar.getInstance();
+			cal.setTime(d);
+			return createTypedLiteral(cal);
 		}
+		return null;
+	}
 
-		@Override
-		public int getRatingForSemanticAnnotation(
-				SemanticAnnotationProfile semanticAnnotationProfile) {
-			OntProperty property = semanticAnnotationProfile.getPredicate();
-			if (property.isDatatypeProperty() && DateTimeString.equals(semanticAnnotationProfile.getClassString())) {
-				return 200;
-			}
-			return Integer.MIN_VALUE;
+	@Override
+	public int getRatingForSemanticAnnotation(
+			SemanticAnnotationProfile semanticAnnotationProfile) {
+		OntProperty property = semanticAnnotationProfile.getPredicate();
+		if (property.isDatatypeProperty()
+				&& DateTimeString.equals(semanticAnnotationProfile
+						.getClassString())) {
+			return 200;
 		}
+		return Integer.MIN_VALUE;
+	}
 
-		@Override
-		public JComponent getDisplayComponent(
-				SemanticAnnotationProfile semanticAnnotationProfile,
-				Statement statement) {
-			JComponent result = getInputComponent(semanticAnnotationProfile, statement);
-			result.setEnabled(false);
-			return result;
-		}
-
+	@Override
+	public JComponent getDisplayComponent(
+			SemanticAnnotationProfile semanticAnnotationProfile,
+			Statement statement) {
+		JComponent result = getInputComponent(semanticAnnotationProfile,
+				statement);
+		result.setEnabled(false);
+		return result;
+	}
 
 }

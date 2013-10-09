@@ -39,7 +39,7 @@ import com.hp.hpl.jena.ontology.OntResource;
 
 /**
  * Definition of a semantic annotation for a component element.
- *
+ * 
  * @author David Withers
  */
 public class SemanticAnnotationProfile {
@@ -55,7 +55,7 @@ public class SemanticAnnotationProfile {
 
 	/**
 	 * Returns the ontology that defines semantic annotation.
-	 *
+	 * 
 	 * @return the ontology that defines semantic annotation
 	 */
 	public OntModel getOntology() {
@@ -69,7 +69,7 @@ public class SemanticAnnotationProfile {
 
 	/**
 	 * Returns the predicate for the semantic annotation.
-	 *
+	 * 
 	 * @return the predicate for the semantic annotation
 	 */
 	public OntProperty getPredicate() {
@@ -86,11 +86,14 @@ public class SemanticAnnotationProfile {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		for (Iterator<OntProperty> i = ontology.listOntProperties(); i.hasNext();) {
-			OntProperty p = i.next();
-			String fred = p.getURI();
-			String bob = fred;
-		}
+			// FIXME What on earth is this code doing???
+			for (Iterator<OntProperty> i = ontology.listOntProperties(); i
+					.hasNext();) {
+				OntProperty p = i.next();
+				String fred = p.getURI();
+				@SuppressWarnings("unused")
+				String bob = fred;
+			}
 		}
 		if (ontology != null && predicate != null) {
 			OntProperty ontProperty = ontology.getOntProperty(predicate);
@@ -99,20 +102,20 @@ public class SemanticAnnotationProfile {
 			return null;
 		}
 	}
-	
+
 	public String getPredicateString() {
 		return semanticAnnotation.getPredicate();
 	}
-	
+
 	public String getClassString() {
 		return semanticAnnotation.getClazz();
 	}
 
 	/**
 	 * Returns the individual that the semantic annotation must use.
-	 *
+	 * 
 	 * May be null if no explicit individual is required.
-	 *
+	 * 
 	 * @return the individual that the semantic annotation must use
 	 */
 	public Individual getIndividual() {
@@ -125,9 +128,11 @@ public class SemanticAnnotationProfile {
 	}
 
 	/**
-	 * Returns the individuals in the range of the predicate defined in the ontology.
-	 *
-	 * @return the individuals in the range of the predicate defined in the ontology
+	 * Returns the individuals in the range of the predicate defined in the
+	 * ontology.
+	 * 
+	 * @return the individuals in the range of the predicate defined in the
+	 *         ontology
 	 */
 	public List<Individual> getIndividuals() {
 		OntModel ontology = getOntology();
@@ -138,24 +143,24 @@ public class SemanticAnnotationProfile {
 			return new ArrayList<Individual>();
 		}
 	}
-	
+
 	public Integer getMinOccurs() {
 		return semanticAnnotation.getMinOccurs().intValue();
 	}
-	
+
 	public Integer getMaxOccurs() {
 		try {
 			return Integer.valueOf(semanticAnnotation.getMaxOccurs());
-		}
-		catch (NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			return null;
 		}
 	}
 
 	@Override
 	public String toString() {
-		return "SemanticAnnotation " + "\n Predicate : " + getPredicate() + "\n Individual : "
-				+ getIndividual() + "\n Individuals : " + getIndividuals();
+		return "SemanticAnnotation " + "\n Predicate : " + getPredicate()
+				+ "\n Individual : " + getIndividual() + "\n Individuals : "
+				+ getIndividuals();
 	}
 
 	public OntClass getRangeClass() {

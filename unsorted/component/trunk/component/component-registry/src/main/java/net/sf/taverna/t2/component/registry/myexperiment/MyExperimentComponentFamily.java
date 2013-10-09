@@ -26,12 +26,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import net.sf.taverna.t2.annotation.annotationbeans.DescriptiveTitle;
+import net.sf.taverna.t2.component.api.Component;
+import net.sf.taverna.t2.component.api.License;
+import net.sf.taverna.t2.component.api.Profile;
+import net.sf.taverna.t2.component.api.RegistryException;
+import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
-import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
-import net.sf.taverna.t2.component.registry.ComponentRegistryException;
-import net.sf.taverna.t2.component.registry.ComponentVersion;
-import net.sf.taverna.t2.component.registry.License;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.file.exceptions.OverwriteException;
 import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
@@ -45,24 +46,27 @@ import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 
 /**
- *
- *
+ * 
+ * 
  * @author David Withers
  */
 public final class MyExperimentComponentFamily extends ComponentFamily {
-	
-	private static Logger logger = Logger.getLogger(MyExperimentComponentFamily.class);
+
+	private static Logger logger = Logger
+			.getLogger(MyExperimentComponentFamily.class);
 
 	private final String uri;
 	private final AnnotationTools annotationTools;
 
 	private String permissionsString;
 	private License license;
-	
+
 	private static XMLOutputter outputter = new XMLOutputter();
 
-	public MyExperimentComponentFamily(MyExperimentComponentRegistry componentRegistry, License license,
-			MyExperimentSharingPolicy permissions, String uri) throws ComponentRegistryException {
+	public MyExperimentComponentFamily(
+			MyExperimentComponentRegistry componentRegistry, License license,
+			MyExperimentSharingPolicy permissions, String uri)
+			throws RegistryException {
 		super(componentRegistry);
 		this.license = license;
 		this.uri = uri;
@@ -72,22 +76,25 @@ public final class MyExperimentComponentFamily extends ComponentFamily {
 		} else {
 			this.permissionsString = permissions.getPolicyString();
 		}
-		
+
 		if (license == null) {
 			this.license = componentRegistry.getLicenseOnObject(uri);
 		}
 	}
 
 	private synchronized String getPermissionsString() {
-		MyExperimentComponentRegistry componentRegistry = (MyExperimentComponentRegistry) this.getComponentRegistry();
-		Element permissionsElement = componentRegistry.getResourceElement(uri, "permissions");
+		MyExperimentComponentRegistry componentRegistry = (MyExperimentComponentRegistry) this
+				.getComponentRegistry();
+		Element permissionsElement = componentRegistry.getResourceElement(uri,
+				"permissions");
 		if (permissionsElement == null) {
 			return "";
 		}
 		String permissionsUri = permissionsElement.getAttributeValue("uri");
 		String type = permissionsElement.getAttributeValue("policy-type");
 		if (type.equals("group")) {
-			Element policyElement = componentRegistry.getResource(permissionsUri);	
+			Element policyElement = componentRegistry
+					.getResource(permissionsUri);
 			String name = policyElement.getChildTextTrim("name");
 			String id = policyElement.getChildTextTrim("id");
 			return new MyExperimentGroupPolicy(name, id).getPolicyString();
@@ -97,143 +104,175 @@ public final class MyExperimentComponentFamily extends ComponentFamily {
 
 	@Override
 	public synchronized String internalGetName() {
-		MyExperimentComponentRegistry componentRegistry = (MyExperimentComponentRegistry) this.getComponentRegistry();
+		MyExperimentComponentRegistry componentRegistry = (MyExperimentComponentRegistry) this
+				.getComponentRegistry();
 		String result = "";
-			Element titleElement = componentRegistry.getResourceElement(uri, "title");
-			if (titleElement != null) {
-				result = titleElement.getTextTrim();
-			}
+		Element titleElement = componentRegistry.getResourceElement(uri,
+				"title");
+		if (titleElement != null) {
+			result = titleElement.getTextTrim();
+		}
 		return result;
 	}
 
 	@Override
 	public synchronized String internalGetDescription() {
-		MyExperimentComponentRegistry componentRegistry = (MyExperimentComponentRegistry) this.getComponentRegistry();
+		MyExperimentComponentRegistry componentRegistry = (MyExperimentComponentRegistry) this
+				.getComponentRegistry();
 		String result = "";
-			Element descriptionElement = componentRegistry.getResourceElement(uri, "description");
-			if (descriptionElement != null) {
-				result = descriptionElement.getTextTrim();
-			}
+		Element descriptionElement = componentRegistry.getResourceElement(uri,
+				"description");
+		if (descriptionElement != null) {
+			result = descriptionElement.getTextTrim();
+		}
 
 		return result;
 	}
 
 	@Override
-	public synchronized ComponentProfile internalGetComponentProfile() throws ComponentRegistryException {
-		MyExperimentComponentRegistry componentRegistry = (MyExperimentComponentRegistry) this.getComponentRegistry();
-		ComponentProfile result = null;
+	public synchronized Profile internalGetComponentProfile()
+			throws RegistryException {
+		MyExperimentComponentRegistry componentRegistry = (MyExperimentComponentRegistry) this
+				.getComponentRegistry();
+		Profile result = null;
+		try {
+			Element fileElement = componentRegistry.getPackItem(uri, "file",
+					"component profile");
+			String uri = fileElement.getAttributeValue("uri");
+			String withoutVersion = StringUtils.substringBeforeLast(uri, "&");
+			for (Profile p : componentRegistry.getComponentProfiles()) {
+				if (!(p instanceof MyExperimentComponentProfile)) {
+					continue;
+				}
+				String uri2 = ((MyExperimentComponentProfile) p).getUri();
+				if (uri2.equals(withoutVersion)) {
+					result = p;
+					break;
+				}
+			}
+			if (result == null) {
+				// Assume it is external
+				String resource = fileElement.getAttributeValue("resource");
+				String version = fileElement.getAttributeValue("version");
+				resource = StringUtils.substringBeforeLast(resource, "?");
+				String downloadUri = resource + "/download?version=" + version;
+				String profileString = componentRegistry
+						.getFileAsString(downloadUri);
+				result = new MyExperimentComponentProfile(componentRegistry,
+						uri, profileString);
+			}
+		} catch (RegistryException e) {
 			try {
-				Element fileElement = componentRegistry.getPackItem(uri, "file", "component profile");
-				String uri = fileElement.getAttributeValue("uri");
-				String withoutVersion = StringUtils.substringBeforeLast(uri, "&");
-				for (ComponentProfile p : componentRegistry.getComponentProfiles()) {
-					if (!(p instanceof MyExperimentComponentProfile)) {
-						continue;
-					}
-					String uri2 = ((MyExperimentComponentProfile) p).getUri();
-					if (uri2.equals(withoutVersion)) {
-						result = p;
+				String downloadUri = componentRegistry.getExternalPackItem(uri,
+						"component profile");
+				try {
+					result = new ComponentProfile(super.getComponentRegistry(),
+							new URL(downloadUri));
+				} catch (MalformedURLException ex) {
+					throw new RegistryException("Unable to open profile from "
+							+ downloadUri, ex);
+				}
+			} catch (RegistryException cre) {
+				// no component profile present
+			}
+		}
+		return result;
+	}
+
+	@Override
+	protected synchronized void populateComponentCache()
+			throws RegistryException {
+
+		MyExperimentComponentRegistry componentRegistry = (MyExperimentComponentRegistry) this
+				.getComponentRegistry();
+		for (Element internalPackItem : componentRegistry.getResourceElements(
+				uri, "internal-pack-items")) {
+			if (internalPackItem.getName().equals("pack")) {
+				String resourceUri = internalPackItem
+						.getAttributeValue("resource");
+				Element resource = componentRegistry.getResource(resourceUri
+						+ ".xml");
+				logger.info("Getting resource " + resourceUri + ".xml");
+				String packUri = resource.getAttributeValue("uri");
+				for (Element tag : componentRegistry.getResourceElements(
+						packUri, "tags")) {
+					String tagText = tag.getTextTrim();
+					if ("component".equals(tagText)) {
+						MyExperimentComponent newComponent = new MyExperimentComponent(
+								componentRegistry, license, permissionsString,
+								packUri);
+						componentCache
+								.put(newComponent.getName(), newComponent);
 						break;
 					}
 				}
-				if (result == null) {
-					// Assume it is external
-					String resource = fileElement.getAttributeValue("resource");
-					String version = fileElement.getAttributeValue("version");
-					resource = StringUtils.substringBeforeLast(resource, "?");
-					String downloadUri = resource + "/download?version=" + version;
-						String profileString = componentRegistry.getFileAsString(downloadUri);
-						result = new MyExperimentComponentProfile(componentRegistry, uri, profileString);
-				}
-			} catch (ComponentRegistryException e) {
-				try {
-					String downloadUri = componentRegistry.getExternalPackItem(uri, "component profile");
-					try {
-						result = new ComponentProfile(super.getComponentRegistry(), new URL(downloadUri));
-					} catch (MalformedURLException ex) {
-						throw new ComponentRegistryException("Unable to open profile from " + downloadUri, ex);
-					}
-				} catch (ComponentRegistryException cre) {
-					// no component profile present
-				}
 			}
-		return result;
-	}
-
-	protected synchronized void populateComponentCache() throws ComponentRegistryException {
-
-		MyExperimentComponentRegistry componentRegistry = (MyExperimentComponentRegistry) this.getComponentRegistry();
-			for (Element internalPackItem : componentRegistry.getResourceElements(uri,
-					"internal-pack-items")) {
-				if (internalPackItem.getName().equals("pack")) {
-					String resourceUri = internalPackItem.getAttributeValue("resource");
-					Element resource = componentRegistry.getResource(resourceUri + ".xml");
-					logger.info("Getting resource " + resourceUri + ".xml");
-					String packUri = resource.getAttributeValue("uri");
-					for (Element tag : componentRegistry.getResourceElements(packUri, "tags")) {
-						String tagText = tag.getTextTrim();
-						if ("component".equals(tagText)) {
-							MyExperimentComponent newComponent = new MyExperimentComponent(componentRegistry, license, permissionsString, packUri);
-							componentCache.put(newComponent.getName(), newComponent);
-							break;
-						}
-					}
-				}
-			}
+		}
 	}
 
 	@Override
-	public ComponentVersion internalCreateComponentBasedOn(String componentName, String description, Dataflow dataflow) throws ComponentRegistryException {
+	public Version internalCreateComponentBasedOn(String componentName,
+			String description, Dataflow dataflow) throws RegistryException {
 		Component component;
-		
-		MyExperimentComponentRegistry componentRegistry = (MyExperimentComponentRegistry) this.getComponentRegistry();
+
+		MyExperimentComponentRegistry componentRegistry = (MyExperimentComponentRegistry) this
+				.getComponentRegistry();
 		// upload the workflow
-		String title = annotationTools.getAnnotationString(dataflow, DescriptiveTitle.class, "Untitled");
-//		String description = annotationTools.getAnnotationString(dataflow, FreeTextDescription.class, "No description");
+		String title = annotationTools.getAnnotationString(dataflow,
+				DescriptiveTitle.class, "Untitled");
+		// String description = annotationTools.getAnnotationString(dataflow,
+		// FreeTextDescription.class, "No description");
 		String dataflowString;
 		try {
 			ByteArrayOutputStream dataflowStream = new ByteArrayOutputStream();
-			FileManager.getInstance().saveDataflowSilently(dataflow, new T2FlowFileType(),
-					dataflowStream, false);
+			FileManager.getInstance().saveDataflowSilently(dataflow,
+					new T2FlowFileType(), dataflowStream, false);
 			dataflowString = dataflowStream.toString("UTF-8");
 		} catch (OverwriteException e) {
-			throw new ComponentRegistryException(e);
+			throw new RegistryException(e);
 		} catch (SaveException e) {
-			throw new ComponentRegistryException(e);
+			throw new RegistryException(e);
 		} catch (IllegalStateException e) {
-			throw new ComponentRegistryException(e);
+			throw new RegistryException(e);
 		} catch (UnsupportedEncodingException e) {
-			throw new ComponentRegistryException(e);
+			throw new RegistryException(e);
 		}
-		Element componentWorkflow = componentRegistry.uploadWorkflow(dataflowString, title,
-				"Initial version", license, this.permissionsString);
+		Element componentWorkflow = componentRegistry.uploadWorkflow(
+				dataflowString, title, "Initial version", license,
+				this.permissionsString);
 
 		// create the component
-		Element componentPack = componentRegistry.createPack(componentName, description, this.license, this.permissionsString);
-		componentRegistry.tagResource("component", componentPack.getAttributeValue("resource"));
-		component = new MyExperimentComponent(componentRegistry, this.license, this.permissionsString, componentPack.getAttributeValue("uri"));
+		Element componentPack = componentRegistry.createPack(componentName,
+				description, this.license, this.permissionsString);
+		componentRegistry.tagResource("component",
+				componentPack.getAttributeValue("resource"));
+		component = new MyExperimentComponent(componentRegistry, this.license,
+				this.permissionsString, componentPack.getAttributeValue("uri"));
 
 		// add the component to the family
 
-		componentRegistry.addPackItem(componentRegistry.getResource(uri), componentPack);
+		componentRegistry.addPackItem(componentRegistry.getResource(uri),
+				componentPack);
 
 		// add the workflow to the pack
 		componentRegistry.addPackItem(componentPack, componentWorkflow);
 
-
-		componentPack = componentRegistry.snapshotPack(componentPack.getAttributeValue("uri"));
+		componentPack = componentRegistry.snapshotPack(componentPack
+				.getAttributeValue("uri"));
 		String uri = componentPack.getAttributeValue("uri");
 		String version = componentPack.getAttributeValue("version");
-		return new MyExperimentComponentVersion(componentRegistry, component, uri+"&version="+version);
+		return new MyExperimentComponentVersion(componentRegistry, component,
+				uri + "&version=" + version);
 	}
 
 	String getUri() {
 		return uri;
 	}
 
+	@Override
 	public void internalRemoveComponent(Component component)
-			throws ComponentRegistryException {
-		throw new ComponentRegistryException("Not yet implemented");
+			throws RegistryException {
+		throw new RegistryException("Not yet implemented");
 	}
 
 }

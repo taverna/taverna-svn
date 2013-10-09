@@ -5,20 +5,19 @@ package net.sf.taverna.t2.component.registry;
 
 import java.net.URL;
 
+import net.sf.taverna.t2.component.api.Version;
+
 /**
  * @author alanrw
- *
+ * 
  */
-public class ComponentVersionIdentification {
-	
+public class ComponentVersionIdentification implements
+		net.sf.taverna.t2.component.api.Version.ID {
 	private URL registryBase;
-	
 	private String familyName;
-	
 	private String componentName;
-	
 	private Integer componentVersion;
-	
+
 	public ComponentVersionIdentification(URL registryBase, String familyName,
 			String componentName, Integer componentVersion) {
 		super();
@@ -28,88 +27,80 @@ public class ComponentVersionIdentification {
 		this.componentVersion = componentVersion;
 	}
 
-
-
-	public ComponentVersionIdentification(
-			ComponentVersionIdentification toBeCopied) {
+	public ComponentVersionIdentification(Version.ID toBeCopied) {
 		this.registryBase = toBeCopied.getRegistryBase();
 		this.familyName = toBeCopied.getFamilyName();
 		this.componentName = toBeCopied.getComponentName();
 		this.componentVersion = toBeCopied.getComponentVersion();
 	}
 
-
-
 	/**
 	 * @return the registryBase
 	 */
+	@Override
 	public URL getRegistryBase() {
 		return registryBase;
 	}
 
-
 	/**
 	 * @return the familyName
 	 */
+	@Override
 	public String getFamilyName() {
 		return familyName;
 	}
 
-
 	/**
 	 * @return the componentName
 	 */
+	@Override
 	public String getComponentName() {
 		return componentName;
 	}
 
-
 	/**
 	 * @return the componentVersion
 	 */
+	@Override
 	public Integer getComponentVersion() {
 		return componentVersion;
 	}
 
-
-
 	/**
-	 * @param componentVersion the componentVersion to set
+	 * @param componentVersion
+	 *            the componentVersion to set
 	 */
 	public void setComponentVersion(Integer componentVersion) {
 		this.componentVersion = componentVersion;
 	}
 
-
-
 	/**
-	 * @param registryBase the registryBase to set
+	 * @param registryBase
+	 *            the registryBase to set
 	 */
 	public void setRegistryBase(URL registryBase) {
 		this.registryBase = registryBase;
 	}
 
-
-
 	/**
-	 * @param familyName the familyName to set
+	 * @param familyName
+	 *            the familyName to set
 	 */
 	public void setFamilyName(String familyName) {
 		this.familyName = familyName;
 	}
 
-
-
 	/**
-	 * @param componentName the componentName to set
+	 * @param componentName
+	 *            the componentName to set
 	 */
 	public void setComponentName(String componentName) {
 		this.componentName = componentName;
 	}
 
-
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -128,9 +119,9 @@ public class ComponentVersionIdentification {
 		return result;
 	}
 
-
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -166,6 +157,8 @@ public class ComponentVersionIdentification {
 	}
 
 	public String toString() {
-		return getComponentName() + " V. " + getComponentVersion() + " in family " + getFamilyName() + " on " + getRegistryBase().toExternalForm();
+		return getComponentName() + " V. " + getComponentVersion()
+				+ " in family " + getFamilyName() + " on "
+				+ getRegistryBase().toExternalForm();
 	}
 }

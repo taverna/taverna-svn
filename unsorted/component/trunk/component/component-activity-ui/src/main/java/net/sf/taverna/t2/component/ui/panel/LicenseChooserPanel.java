@@ -33,9 +33,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
-import net.sf.taverna.t2.component.registry.ComponentRegistry;
-import net.sf.taverna.t2.component.registry.ComponentRegistryException;
-import net.sf.taverna.t2.component.registry.License;
+import net.sf.taverna.t2.component.api.License;
+import net.sf.taverna.t2.component.api.Registry;
+import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
@@ -44,9 +44,10 @@ import org.apache.log4j.Logger;
 
 /**
  * @author alanrw
- *
+ * 
  */
-public class LicenseChooserPanel extends JPanel implements Observer<RegistryChoiceMessage> {
+public class LicenseChooserPanel extends JPanel implements
+		Observer<RegistryChoiceMessage> {
 
 	/**
 	 *
@@ -55,14 +56,12 @@ public class LicenseChooserPanel extends JPanel implements Observer<RegistryChoi
 
 	private static Logger logger = Logger.getLogger(LicenseChooserPanel.class);
 
-	@SuppressWarnings("rawtypes")
 	private JComboBox licenseBox = new JComboBox();
 
 	private SortedMap<String, License> licenseMap = new TreeMap<String, License>();
 
-	private ComponentRegistry registry;
+	private Registry registry;
 
-	@SuppressWarnings("unchecked")
 	public LicenseChooserPanel() {
 		super();
 		licenseBox.setPrototypeDisplayValue(Utils.LONG_STRING);
@@ -89,12 +88,14 @@ public class LicenseChooserPanel extends JPanel implements Observer<RegistryChoi
 
 					setLicense(licenseMap.get(licenseBox.getSelectedItem()));
 				}
-			}});
+			}
+		});
 	}
 
 	protected void setLicense(License license) {
 		if (license != null) {
-			licenseBox.setToolTipText("<html>" + license.getDescription() + "</html>");
+			licenseBox.setToolTipText("<html>" + license.getDescription()
+					+ "</html>");
 		} else {
 			licenseBox.setToolTipText(null);
 		}
@@ -106,13 +107,11 @@ public class LicenseChooserPanel extends JPanel implements Observer<RegistryChoi
 		try {
 			this.registry = message.getChosenRegistry();
 			this.updateLicenseModel();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			logger.error(e);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void updateLicenseModel() {
 		licenseMap.clear();
 		licenseBox.removeAllItems();
@@ -130,40 +129,39 @@ public class LicenseChooserPanel extends JPanel implements Observer<RegistryChoi
 			return null;
 		}
 	}
-	
+
 	private class LicenseUpdater extends SwingWorker<String, Object> {
 
 		@Override
 		protected String doInBackground() throws Exception {
 			List<License> licenses;
 			if (registry != null) {
-			try {
-				licenses = registry.getLicenses();
-			} catch (ComponentRegistryException e) {
-				logger.error(e);
-				return null;
-			} catch (NullPointerException e) {
-				logger.error(e);
-				return null;
-			}
-			if (licenses != null) {
-			for (License p : licenses) {
 				try {
-					String name = p.getName();
-					licenseMap.put(name, p);
+					licenses = registry.getLicenses();
+				} catch (RegistryException e) {
+					logger.error(e);
+					return null;
 				} catch (NullPointerException e) {
 					logger.error(e);
-
+					return null;
 				}
-			}
-			}
+				if (licenses != null) {
+					for (License p : licenses) {
+						try {
+							String name = p.getName();
+							licenseMap.put(name, p);
+						} catch (NullPointerException e) {
+							logger.error(e);
+
+						}
+					}
+				}
 			}
 			return null;
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
-	    protected void done() {
+		protected void done() {
 			licenseBox.removeAllItems();
 			for (String name : licenseMap.keySet()) {
 				licenseBox.addItem(name);
@@ -173,7 +171,7 @@ public class LicenseChooserPanel extends JPanel implements Observer<RegistryChoi
 				License preferredLicense = null;
 				try {
 					preferredLicense = registry.getPreferredLicense();
-				} catch (ComponentRegistryException e) {
+				} catch (RegistryException e) {
 					logger.error(e);
 				}
 				if (preferredLicense != null) {

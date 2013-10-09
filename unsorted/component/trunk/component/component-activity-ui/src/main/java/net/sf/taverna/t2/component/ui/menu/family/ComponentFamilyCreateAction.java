@@ -3,22 +3,29 @@
  */
 package net.sf.taverna.t2.component.ui.menu.family;
 
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.OK_CANCEL_OPTION;
+import static javax.swing.JOptionPane.OK_OPTION;
+import static javax.swing.JOptionPane.showConfirmDialog;
+import static javax.swing.JOptionPane.showMessageDialog;
+
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
-import net.sf.taverna.t2.component.profile.ComponentProfile;
-import net.sf.taverna.t2.component.registry.ComponentRegistry;
-import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.api.License;
+import net.sf.taverna.t2.component.api.Profile;
+import net.sf.taverna.t2.component.api.Registry;
+import net.sf.taverna.t2.component.api.RegistryException;
+import net.sf.taverna.t2.component.api.SharingPolicy;
 import net.sf.taverna.t2.component.ui.panel.LicenseChooserPanel;
 import net.sf.taverna.t2.component.ui.panel.ProfileChooserPanel;
 import net.sf.taverna.t2.component.ui.panel.RegistryChooserPanel;
@@ -29,30 +36,25 @@ import org.apache.log4j.Logger;
 
 /**
  * @author alanrw
- *
+ * 
  */
 public class ComponentFamilyCreateAction extends AbstractAction {
-
 	private static final long serialVersionUID = -7780471499146286881L;
 
-	private static Logger logger = Logger.getLogger(ComponentFamilyCreateAction.class);
+	private static Logger logger = Logger
+			.getLogger(ComponentFamilyCreateAction.class);
 
 	private static final String CREATE_FAMILY = "Create family...";
 
 	private JPanel overallPanel;
 	private GridBagConstraints gbc;
-	
+
 	public ComponentFamilyCreateAction() {
-		super (CREATE_FAMILY, ComponentServiceIcon.getIcon());
+		super(CREATE_FAMILY, ComponentServiceIcon.getIcon());
 	}
 
-
-	/* (non-Javadoc)
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-	 */
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-
 		overallPanel = new JPanel();
 		overallPanel.setLayout(new GridBagLayout());
 
@@ -88,13 +90,13 @@ public class ComponentFamilyCreateAction extends AbstractAction {
 		gbc.weightx = 1;
 		JTextField familyNameField = new JTextField(60);
 		overallPanel.add(familyNameField, gbc);
-		
+
 		gbc.gridx = 0;
 		gbc.gridwidth = 2;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		gbc.gridy++;
-		JTextArea familyDescription = new JTextArea(10,60);
+		JTextArea familyDescription = new JTextArea(10, 60);
 		JScrollPane familyDescriptionPane = new JScrollPane(familyDescription);
 		familyDescriptionPane.setBorder(new TitledBorder("Family description"));
 		overallPanel.add(familyDescriptionPane, gbc);
@@ -112,41 +114,51 @@ public class ComponentFamilyCreateAction extends AbstractAction {
 		LicenseChooserPanel licensePanel = new LicenseChooserPanel();
 		registryPanel.addObserver(licensePanel);
 		overallPanel.add(licensePanel, gbc);
-		
-		int answer = JOptionPane.showConfirmDialog(null, overallPanel, "Create Component Family", JOptionPane.OK_CANCEL_OPTION);
-		if (answer == JOptionPane.OK_OPTION) {
-			ComponentRegistry chosenRegistry = registryPanel.getChosenRegistry();
-			if (chosenRegistry == null) {
-				JOptionPane.showMessageDialog(null, "Unable to determine registry", "Component Registry Problem", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-			ComponentProfile chosenProfile = profilePanel.getChosenProfile();
-			if (chosenProfile == null) {
-				JOptionPane.showMessageDialog(null, "Unable to determine profile", "Component Profile Problem", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-			String newName = familyNameField.getText();
-			
-			if ((newName == null) || newName.isEmpty()) {
-				JOptionPane.showMessageDialog(null, "Name must be specified", "Missing component family name", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
 
-			try {
-				boolean alreadyUsed = (chosenRegistry.getComponentFamily(newName) != null);
-				if (alreadyUsed) {
-					JOptionPane.showMessageDialog(null, newName + " is already used", "Duplicate component family name", JOptionPane.ERROR_MESSAGE);
-					return;
-				} else {
-					chosenRegistry.createComponentFamily(newName, chosenProfile, familyDescription.getText(),
-							licensePanel.getChosenLicense(), permissionPanel.getChosenPermission());
-				}
-			} catch (ComponentRegistryException e) {
-				JOptionPane.showMessageDialog(null, "Unable to create family", "Family creation problem", JOptionPane.ERROR_MESSAGE);
-				logger.error(e);
-			}
+		int answer = showConfirmDialog(null, overallPanel,
+				"Create Component Family", OK_CANCEL_OPTION);
+		if (answer == OK_OPTION) {
+			doCreate(registryPanel.getChosenRegistry(),
+					profilePanel.getChosenProfile(), familyNameField.getText(),
+					familyDescription.getText(),
+					permissionPanel.getChosenPermission(),
+					licensePanel.getChosenLicense());
 		}
 
+	}
+
+	private void doCreate(Registry chosenRegistry, Profile chosenProfile,
+			String newName, String familyDescription, SharingPolicy permission,
+			License license) {
+		if (chosenRegistry == null) {
+			showMessageDialog(null, "Unable to determine registry",
+					"Component Registry Problem", ERROR_MESSAGE);
+			return;
+		}
+		if (chosenProfile == null) {
+			showMessageDialog(null, "Unable to determine profile",
+					"Component Profile Problem", ERROR_MESSAGE);
+			return;
+		}
+		if ((newName == null) || newName.isEmpty()) {
+			showMessageDialog(null, "Name must be specified",
+					"Missing component family name", ERROR_MESSAGE);
+			return;
+		}
+
+		try {
+			if (chosenRegistry.getComponentFamily(newName) != null) {
+				showMessageDialog(null, newName + " is already used",
+						"Duplicate component family name", ERROR_MESSAGE);
+				return;
+			}
+			chosenRegistry.createComponentFamily(newName, chosenProfile,
+					familyDescription, license, permission);
+		} catch (RegistryException e) {
+			showMessageDialog(null, "Unable to create family",
+					"Family creation problem", ERROR_MESSAGE);
+			logger.error(e);
+		}
 	}
 
 }

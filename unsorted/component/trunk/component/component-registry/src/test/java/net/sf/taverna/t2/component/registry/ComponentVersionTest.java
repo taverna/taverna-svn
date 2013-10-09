@@ -25,7 +25,9 @@ import static org.junit.Assert.assertNotNull;
 
 import java.net.URL;
 
-import net.sf.taverna.t2.component.profile.ComponentProfile;
+import net.sf.taverna.t2.component.api.Family;
+import net.sf.taverna.t2.component.api.Profile;
+import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -36,29 +38,34 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- *
- *
+ * 
+ * 
  * @author David Withers
  */
 @Ignore
-public class ComponentVersionTest {
-
-	protected static URL componentRegistryUrl;
-	protected static ComponentRegistry componentRegistry;
-	private ComponentFamily componentFamily;
+public class ComponentVersionTest extends Harness {
+	private Family componentFamily;
 	private Dataflow dataflow;
-	private ComponentVersion componentVersion;
+	private Version componentVersion;
 
 	@Before
 	public void setUp() throws Exception {
-		URL dataflowUrl = getClass().getClassLoader().getResource("beanshell_test.t2flow");
+		URL dataflowUrl = getClass().getClassLoader().getResource(
+				"beanshell_test.t2flow");
 		assertNotNull(dataflowUrl);
-		dataflow = FileManager.getInstance().openDataflowSilently(new T2FlowFileType(), dataflowUrl).getDataflow();
-		URL componentProfileUrl = getClass().getClassLoader().getResource("ValidationComponent.xml");
+		dataflow = FileManager.getInstance()
+				.openDataflowSilently(new T2FlowFileType(), dataflowUrl)
+				.getDataflow();
+		URL componentProfileUrl = getClass().getClassLoader().getResource(
+				"ValidationComponent.xml");
 		assertNotNull(componentProfileUrl);
-		ComponentProfile componentProfile = new ComponentProfile(null, componentProfileUrl);
-		componentFamily = componentRegistry.createComponentFamily("Test Component Family", componentProfile, "Some description", null, null);
-		componentVersion = componentFamily.createComponentBasedOn("Test Component", "Some description", dataflow);
+		Profile componentProfile = ComponentUtil
+				.makeProfile(componentProfileUrl);
+		componentFamily = componentRegistry.createComponentFamily(
+				"Test Component Family", componentProfile, "Some description",
+				null, null);
+		componentVersion = componentFamily.createComponentBasedOn(
+				"Test Component", "Some description", dataflow);
 	}
 
 	@After
@@ -69,7 +76,8 @@ public class ComponentVersionTest {
 	@Test
 	public void testGetVersionNumber() throws Exception {
 		assertNotNull(componentVersion.getVersionNumber());
-		assertEquals(componentVersion.getVersionNumber(), componentVersion.getVersionNumber());
+		assertEquals(componentVersion.getVersionNumber(),
+				componentVersion.getVersionNumber());
 	}
 
 	@Test
@@ -80,7 +88,8 @@ public class ComponentVersionTest {
 	@Test
 	public void testGetDataflow() throws Exception {
 		assertNotNull(componentVersion.getDataflow());
-		assertEquals(dataflow.getIdentifier(), componentVersion.getDataflow().getIdentifier());
+		assertEquals(dataflow.getIdentifier(), componentVersion.getDataflow()
+				.getIdentifier());
 	}
 
 	@Test

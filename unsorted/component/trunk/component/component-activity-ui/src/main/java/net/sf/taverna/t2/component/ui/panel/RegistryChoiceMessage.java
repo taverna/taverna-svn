@@ -3,24 +3,24 @@
  */
 package net.sf.taverna.t2.component.ui.panel;
 
-import net.sf.taverna.t2.component.registry.ComponentRegistry;
+import net.sf.taverna.t2.component.api.Registry;
 
 /**
  * @author alanrw
- *
+ * 
  */
 public class RegistryChoiceMessage {
 
-	private final ComponentRegistry chosenRegistry;
+	private final Registry chosenRegistry;
 
-	public RegistryChoiceMessage(ComponentRegistry chosenRegistry) {
+	public RegistryChoiceMessage(Registry chosenRegistry) {
 		this.chosenRegistry = chosenRegistry;
 	}
 
 	/**
 	 * @return the chosenRegistry
 	 */
-	public ComponentRegistry getChosenRegistry() {
+	public Registry getChosenRegistry() {
 		return chosenRegistry;
 	}
 

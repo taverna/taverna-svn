@@ -20,29 +20,29 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.profile;
 
+import static net.sf.taverna.t2.component.profile.BaseProfileLocator.getBaseProfile;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
-import net.sf.taverna.t2.component.registry.ComponentRegistry;
-import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.api.Registry;
+import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.visit.VisitReport;
 import net.sf.taverna.t2.workflowmodel.health.HealthCheck;
 import net.sf.taverna.t2.workflowmodel.health.RemoteHealthChecker;
@@ -65,81 +65,112 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 /**
  * A ComponentProfile specifies the inputs, outputs and semantic annotations
  * that a Component must contain.
- *
+ * 
  * @author David Withers
  */
-public class ComponentProfile {
+public class ComponentProfile implements
+		net.sf.taverna.t2.component.api.Profile {
 
 	private static Logger logger = Logger.getLogger(ComponentProfile.class);
 
 	private static Map<String, OntModel> ontologyModels = new HashMap<String, OntModel>();
 
-	private JAXBContext jaxbContext;
+	private static JAXBContext jaxbContext;
+	static {
+		try {
+			jaxbContext = JAXBContext.newInstance(Profile.class);
+		} catch (JAXBException e) {
+			// Should never happen! Represents a critical error
+			throw new Error(
+					"failed to initialize profile deserialization engine", e);
+		}
+	}
 	private Profile profile;
 	private ExceptionHandling exceptionHandling;
-	
-	private static ComponentProfile baseProfile = BaseProfile.getInstance().getProfile();
-	
-	private static ComponentRegistry parentRegistry = null;
 
-	public ComponentProfile(ComponentRegistry registry, URL profileURL) throws ComponentRegistryException {
+	private static net.sf.taverna.t2.component.api.Profile baseProfile = getBaseProfile();
+
+	private Registry parentRegistry = null;
+
+	public ComponentProfile(URL profileURL) throws RegistryException {
+		this(null, profileURL);
+	}
+
+	public ComponentProfile(String profileString) throws RegistryException {
+		this(null, profileString);
+	}
+
+	public ComponentProfile(Registry registry, URI profileURI)
+			throws RegistryException, MalformedURLException {
+		this(registry, profileURI.toURL());
+	}
+
+	public ComponentProfile(Registry registry, URL profileURL)
+			throws RegistryException {
 		try {
-			jaxbContext = JAXBContext.newInstance(Profile.class);
-			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-			profile = (Profile) unmarshaller.unmarshal(profileURL);
-			this.parentRegistry = registry;
+			profile = (Profile) jaxbContext.createUnmarshaller().unmarshal(
+					profileURL);
+			parentRegistry = registry;
 		} catch (JAXBException e) {
-			throw new ComponentRegistryException("Unable to read profile", e);
+			throw new RegistryException("Unable to read profile", e);
 		}
 	}
 
-	public ComponentProfile(ComponentRegistry registry, String profileString) throws ComponentRegistryException {
+	public ComponentProfile(Registry registry, String profileString)
+			throws RegistryException {
 		try {
-			jaxbContext = JAXBContext.newInstance(Profile.class);
-			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-			profile = (Profile) unmarshaller.unmarshal(new StreamSource( new StringReader(profileString)));
+			profile = (Profile) jaxbContext.createUnmarshaller().unmarshal(
+					new StreamSource(new StringReader(profileString)));
 			this.parentRegistry = registry;
 		} catch (JAXBException e) {
-			throw new ComponentRegistryException("Unable to read profile", e);
+			throw new RegistryException("Unable to read profile", e);
 		}
 	}
 
-	public ComponentRegistry getComponentRegistry() {
+	@Override
+	public Registry getComponentRegistry() {
 		return parentRegistry;
 	}
 
-	public String getXML() throws ComponentRegistryException {
-		StringWriter stringWriter = new StringWriter();
+	@Override
+	public String getXML() throws RegistryException {
 		try {
-			Marshaller marshaller = jaxbContext.createMarshaller();
-			marshaller.marshal(profile, stringWriter);
+			StringWriter stringWriter = new StringWriter();
+			jaxbContext.createMarshaller().marshal(profile, stringWriter);
+			return stringWriter.toString();
 		} catch (JAXBException e) {
-			throw new ComponentRegistryException("Unable to read profile", e);
+			throw new RegistryException("Unable to read profile", e);
 		}
-		return stringWriter.toString();
 	}
 
-	public Profile getProfile() {
+	@Override
+	public Profile getProfileDocument() {
 		return profile;
 	}
 
+	@Override
 	public String getId() {
 		return profile.getId();
 	}
 
+	@Override
 	public String getName() {
 		return profile.getName();
 	}
 
+	@Override
 	public String getDescription() {
 		return profile.getDescription();
 	}
-	
-	public ComponentProfile getExtends() throws ComponentRegistryException {
-		ComponentProfile result = null;
+
+	@Override
+	public net.sf.taverna.t2.component.api.Profile getExtends()
+			throws RegistryException {
+		net.sf.taverna.t2.component.api.Profile result = null;
 		Extends extends_ = profile.getExtends();
 		if (extends_ != null) {
-			for (ComponentProfile p : parentRegistry.getComponentProfiles()) {
+			for (net.sf.taverna.t2.component.api.Profile p : parentRegistry
+					.getComponentProfiles()) {
 				if (p.getId().equals(extends_.getProfileId())) {
 					result = p;
 					break;
@@ -149,6 +180,7 @@ public class ComponentProfile {
 		return result;
 	}
 
+	@Override
 	public String getOntologyLocation(String ontologyId) {
 		String ontologyURI = null;
 		List<Ontology> ontologies = profile.getOntology();
@@ -157,126 +189,146 @@ public class ComponentProfile {
 				ontologyURI = ontology.getValue();
 			}
 		}
-		if ((ontologyURI == null) && ((baseProfile != null) && (baseProfile != this))){
+		if ((ontologyURI == null)
+				&& ((baseProfile != null) && (baseProfile != this))) {
 			ontologyURI = baseProfile.getOntologyLocation(ontologyId);
 		}
 		return ontologyURI;
 	}
-	
-	private TreeMap<String, String> internalGetPrefixMap() throws ComponentRegistryException {
+
+	private TreeMap<String, String> internalGetPrefixMap()
+			throws RegistryException {
 		TreeMap<String, String> result = new TreeMap<String, String>();
 		List<Ontology> ontologies = profile.getOntology();
 		for (Ontology ontology : ontologies) {
 			result.put(ontology.getId(), ontology.getValue());
 		}
-		ComponentProfile extends_ = getExtends();
+		net.sf.taverna.t2.component.api.Profile extends_ = getExtends();
 		if (extends_ != null) {
-			TreeMap<String, String> extensionMap = extends_.internalGetPrefixMap();
-			for (Entry<String, String> entry : extensionMap.entrySet()) {
-				result.put(entry.getKey(), entry.getValue());
-			}
+			result.putAll(extends_.getPrefixMap());
 		}
-		
+
 		return result;
 	}
-	
-	public TreeMap<String, String> getPrefixMap() throws ComponentRegistryException {
+
+	@Override
+	public TreeMap<String, String> getPrefixMap() throws RegistryException {
 		TreeMap<String, String> result = internalGetPrefixMap();
-		if (baseProfile != null) {
-			TreeMap<String, String> extensionMap = baseProfile.internalGetPrefixMap();
-			for (Entry<String, String> entry : extensionMap.entrySet()) {
-				result.put(entry.getKey(), entry.getValue());
-			}			
+		if (baseProfile != null && baseProfile != this) {
+			result.putAll(baseProfile.getPrefixMap());
 		}
 		return result;
 	}
 
+	private OntModel readOntologyFromURI(String ontologyId, String ontologyURI)
+			throws MalformedURLException, IOException {
+		InputStream in = null;
+		try {
+			OntModel ontologyModel = ModelFactory.createOntologyModel();
+			in = new URL(ontologyURI).openStream();
+			ontologyModel.read(new StringReader(IOUtils.toString(in)), null);
+			return ontologyModel;
+		} finally {
+			if (in != null)
+				IOUtils.closeQuietly(in);
+		}
+	}
+
+	@Override
 	public OntModel getOntology(String ontologyId) {
 		String ontologyURI = getOntologyLocation(ontologyId);
 		if (!ontologyModels.containsKey(ontologyURI)) {
-			OntModel ontologyModel = ModelFactory.createOntologyModel();
-			VisitReport report = RemoteHealthChecker.contactEndpoint(null, ontologyURI);
+			VisitReport report = RemoteHealthChecker.contactEndpoint(null,
+					ontologyURI);
 			if (report.getResultId() != HealthCheck.NO_PROBLEM) {
 				return null;
 			}
-			InputStream in;
-			String ontologyAsString = "";
 			try {
-				in = new URL(ontologyURI).openStream();
-			ontologyAsString = IOUtils.toString(in);
-			IOUtils.closeQuietly(in);
+				ontologyModels.put(ontologyURI,
+						readOntologyFromURI(ontologyId, ontologyURI));
 			} catch (MalformedURLException e) {
 				logger.error("Problem reading ontology " + ontologyId, e);
+				return null;
 			} catch (IOException e) {
-				logger.error("Problem reading ontology " + ontologyId, e);			}
-				try {
-					ontologyModel.read(new StringReader(ontologyAsString), null);
-				}
-				catch (NullPointerException e) {
-					logger.error("Problem reading ontology " + ontologyId, e);
-					ontologyModel.removeAll();
-					}
-			ontologyModels.put(ontologyURI, ontologyModel);
+				logger.error("Problem reading ontology " + ontologyId, e);
+				return null;
+			} catch (NullPointerException e) {
+				logger.error("Problem reading ontology " + ontologyId, e);
+				// TODO Why is this different?
+				ontologyModels.put(ontologyURI,
+						ModelFactory.createOntologyModel());
+			}
 		}
 		return ontologyModels.get(ontologyURI);
 	}
 
+	@Override
 	public List<PortProfile> getInputPortProfiles() {
 		List<PortProfile> portProfiles = new ArrayList<PortProfile>();
 		List<Port> ports = profile.getComponent().getInputPort();
 		for (Port port : ports) {
 			portProfiles.add(new PortProfile(this, port));
 		}
-		if ((baseProfile != null) && (baseProfile != this)){
+		if ((baseProfile != null) && (baseProfile != this)) {
 			portProfiles.addAll(baseProfile.getInputPortProfiles());
 		}
 		return portProfiles;
 	}
 
-	public List<SemanticAnnotationProfile> getInputSemanticAnnotationProfiles() throws ComponentRegistryException {
+	@Override
+	public List<SemanticAnnotationProfile> getInputSemanticAnnotationProfiles()
+			throws RegistryException {
 		List<SemanticAnnotationProfile> semanticAnnotationsProfiles = new ArrayList<SemanticAnnotationProfile>();
 		List<PortProfile> portProfiles = getInputPortProfiles();
-		ComponentProfile extends_ = getExtends();
+		net.sf.taverna.t2.component.api.Profile extends_ = getExtends();
 		if (extends_ != null) {
 			portProfiles.addAll(extends_.getInputPortProfiles());
 		}
 		for (PortProfile portProfile : portProfiles) {
-			semanticAnnotationsProfiles.addAll(portProfile.getSemanticAnnotations());
+			semanticAnnotationsProfiles.addAll(portProfile
+					.getSemanticAnnotations());
 		}
-		if ((baseProfile != null) && (baseProfile != this)){
-			semanticAnnotationsProfiles.addAll(baseProfile.getInputSemanticAnnotationProfiles());
+		if ((baseProfile != null) && (baseProfile != this)) {
+			semanticAnnotationsProfiles.addAll(baseProfile
+					.getInputSemanticAnnotationProfiles());
 		}
 		return getUniqueSemanticAnnotationProfiles(semanticAnnotationsProfiles);
 	}
 
+	@Override
 	public List<PortProfile> getOutputPortProfiles() {
 		List<PortProfile> portProfiles = new ArrayList<PortProfile>();
 		List<Port> ports = profile.getComponent().getOutputPort();
 		for (Port port : ports) {
 			portProfiles.add(new PortProfile(this, port));
 		}
-		if ((baseProfile != null) && (baseProfile != this)){
+		if ((baseProfile != null) && (baseProfile != this)) {
 			portProfiles.addAll(baseProfile.getOutputPortProfiles());
 		}
 		return portProfiles;
 	}
 
-	public List<SemanticAnnotationProfile> getOutputSemanticAnnotationProfiles() throws ComponentRegistryException {
+	@Override
+	public List<SemanticAnnotationProfile> getOutputSemanticAnnotationProfiles()
+			throws RegistryException {
 		List<SemanticAnnotationProfile> semanticAnnotationsProfiles = new ArrayList<SemanticAnnotationProfile>();
 		List<PortProfile> portProfiles = getOutputPortProfiles();
-		ComponentProfile extends_ = getExtends();
+		net.sf.taverna.t2.component.api.Profile extends_ = getExtends();
 		if (extends_ != null) {
 			portProfiles.addAll(extends_.getOutputPortProfiles());
 		}
 		for (PortProfile portProfile : portProfiles) {
-			semanticAnnotationsProfiles.addAll(portProfile.getSemanticAnnotations());
+			semanticAnnotationsProfiles.addAll(portProfile
+					.getSemanticAnnotations());
 		}
-		if ((baseProfile != null) && (baseProfile != this)){
-			semanticAnnotationsProfiles.addAll(baseProfile.getOutputSemanticAnnotationProfiles());
+		if ((baseProfile != null) && (baseProfile != this)) {
+			semanticAnnotationsProfiles.addAll(baseProfile
+					.getOutputSemanticAnnotationProfiles());
 		}
 		return getUniqueSemanticAnnotationProfiles(semanticAnnotationsProfiles);
 	}
 
+	@Override
 	public List<ActivityProfile> getActivityProfiles() {
 		List<ActivityProfile> activityProfiles = new ArrayList<ActivityProfile>();
 		List<Activity> activities = profile.getComponent().getActivity();
@@ -286,40 +338,49 @@ public class ComponentProfile {
 		return activityProfiles;
 	}
 
-	public List<SemanticAnnotationProfile> getActivitySemanticAnnotationProfiles() throws ComponentRegistryException {
+	@Override
+	public List<SemanticAnnotationProfile> getActivitySemanticAnnotationProfiles()
+			throws RegistryException {
 		List<SemanticAnnotationProfile> semanticAnnotationsProfiles = new ArrayList<SemanticAnnotationProfile>();
 		List<ActivityProfile> activityProfiles = getActivityProfiles();
-		ComponentProfile extends_ = getExtends();
+		net.sf.taverna.t2.component.api.Profile extends_ = getExtends();
 		if (extends_ != null) {
 			activityProfiles.addAll(extends_.getActivityProfiles());
 		}
 		for (ActivityProfile activityProfile : activityProfiles) {
-			semanticAnnotationsProfiles.addAll(activityProfile.getSemanticAnnotations());
+			semanticAnnotationsProfiles.addAll(activityProfile
+					.getSemanticAnnotations());
 		}
-		if ((baseProfile != null) && (baseProfile != this)){
-			semanticAnnotationsProfiles.addAll(baseProfile.getActivitySemanticAnnotationProfiles());
+		if ((baseProfile != null) && (baseProfile != this)) {
+			semanticAnnotationsProfiles.addAll(baseProfile
+					.getActivitySemanticAnnotationProfiles());
 		}
 		return getUniqueSemanticAnnotationProfiles(semanticAnnotationsProfiles);
 	}
 
-	public List<SemanticAnnotationProfile> getSemanticAnnotationProfiles() throws ComponentRegistryException {
+	@Override
+	public List<SemanticAnnotationProfile> getSemanticAnnotationProfiles()
+			throws RegistryException {
 		List<SemanticAnnotationProfile> semanticAnnotationsProfiles = getComponentProfiles();
-		ComponentProfile extends_ = getExtends();
+		net.sf.taverna.t2.component.api.Profile extends_ = getExtends();
 		if (extends_ != null) {
-			semanticAnnotationsProfiles.addAll(extends_.getSemanticAnnotationProfiles());
+			semanticAnnotationsProfiles.addAll(extends_
+					.getSemanticAnnotationProfiles());
 		}
-		if ((baseProfile != null) && (baseProfile != this)){
-			semanticAnnotationsProfiles.addAll(baseProfile.getSemanticAnnotationProfiles());
+		if ((baseProfile != null) && (baseProfile != this)) {
+			semanticAnnotationsProfiles.addAll(baseProfile
+					.getSemanticAnnotationProfiles());
 		}
 		return semanticAnnotationsProfiles;
 	}
 
 	private List<SemanticAnnotationProfile> getComponentProfiles() {
 		List<SemanticAnnotationProfile> semanticAnnotationsProfiles = new ArrayList<SemanticAnnotationProfile>();
-		
-		for (SemanticAnnotation semanticAnnotation : profile.getComponent().getSemanticAnnotation()) {
-			semanticAnnotationsProfiles
-					.add(new SemanticAnnotationProfile(this, semanticAnnotation));
+
+		for (SemanticAnnotation semanticAnnotation : profile.getComponent()
+				.getSemanticAnnotation()) {
+			semanticAnnotationsProfiles.add(new SemanticAnnotationProfile(this,
+					semanticAnnotation));
 		}
 		return semanticAnnotationsProfiles;
 	}
@@ -336,10 +397,12 @@ public class ComponentProfile {
 		}
 		return uniqueSemanticAnnotations;
 	}
-	
+
+	@Override
 	public ExceptionHandling getExceptionHandling() {
 		if (exceptionHandling == null) {
-			uk.org.taverna.ns._2012.component.profile.ExceptionHandling proxied = profile.getComponent().getExceptionHandling();
+			uk.org.taverna.ns._2012.component.profile.ExceptionHandling proxied = profile
+					.getComponent().getExceptionHandling();
 			if (proxied != null) {
 				exceptionHandling = new ExceptionHandling(proxied);
 			}
@@ -349,8 +412,9 @@ public class ComponentProfile {
 
 	@Override
 	public String toString() {
-		return "ComponentProfile" + "\n  Name : " + getName() + "\n  Description : "
-				+ getDescription() + "\n  InputPortProfiles : " + getInputPortProfiles()
+		return "ComponentProfile" + "\n  Name : " + getName()
+				+ "\n  Description : " + getDescription()
+				+ "\n  InputPortProfiles : " + getInputPortProfiles()
 				+ "\n  OutputPortProfiles : " + getOutputPortProfiles();
 	}
 
@@ -378,7 +442,7 @@ public class ComponentProfile {
 			return false;
 		return true;
 	}
-	
+
 	public OntClass getClass(String className) {
 		OntClass result = null;
 		List<Ontology> ontologies = profile.getOntology();
@@ -386,10 +450,10 @@ public class ComponentProfile {
 			String id = ontology.getId();
 			OntModel ontModel = this.getOntology(id);
 			if (ontModel != null) {
-			result = ontModel.getOntClass(className);
-			if (result != null) {
-				break;
-			}
+				result = ontModel.getOntClass(className);
+				if (result != null) {
+					break;
+				}
 			}
 		}
 		return result;

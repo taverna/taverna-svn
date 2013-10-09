@@ -20,11 +20,8 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.local;
 
-import java.io.File;
-
 import net.sf.taverna.t2.component.registry.ComponentVersionTest;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -34,20 +31,13 @@ import org.junit.BeforeClass;
  * @author David Withers
  */
 public class LocalComponentVersionTest extends ComponentVersionTest {
-
-	private static File testRegistry;
-
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		testRegistry = new File(System.getProperty("java.io.tmpdir"), "TestRegistry");
-		testRegistry.mkdir();
-		componentRegistryUrl = testRegistry.toURI().toURL();
-		componentRegistry = LocalComponentRegistry.getComponentRegistry(componentRegistryUrl);
+		RegistrySupport.pre();
 	}
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		FileUtils.deleteDirectory(testRegistry);
+		RegistrySupport.post();
 	}
-
 }

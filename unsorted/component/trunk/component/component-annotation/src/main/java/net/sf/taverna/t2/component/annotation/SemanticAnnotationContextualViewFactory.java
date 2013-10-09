@@ -32,17 +32,18 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPort;
 
 /**
- *
- *
+ * 
+ * 
  * @author David Withers
- *
+ * 
  */
-public class SemanticAnnotationContextualViewFactory implements ContextualViewFactory<Annotated<?>> {
-
+public class SemanticAnnotationContextualViewFactory implements
+		ContextualViewFactory<Annotated<?>> {
 	private static final FileManager fileManager = FileManager.getInstance();
 
 	public boolean canHandle(Object selection) {
-		Object dataflowSource = fileManager.getDataflowSource(fileManager.getCurrentDataflow());
+		Object dataflowSource = fileManager.getDataflowSource(fileManager
+				.getCurrentDataflow());
 		if (dataflowSource instanceof ComponentVersionIdentification) {
 			return ((selection instanceof Annotated) && !(selection instanceof Activity || selection instanceof ActivityPort));
 		}
@@ -50,7 +51,8 @@ public class SemanticAnnotationContextualViewFactory implements ContextualViewFa
 	}
 
 	public List<ContextualView> getViews(Annotated<?> selection) {
-		return Arrays.asList(new ContextualView[] {new SemanticAnnotationContextualView(selection), new TurtleContextualView(selection)});
+		return Arrays.asList(new ContextualView[] {
+				new SemanticAnnotationContextualView(selection),
+				new TurtleContextualView(selection) });
 	}
-
 }

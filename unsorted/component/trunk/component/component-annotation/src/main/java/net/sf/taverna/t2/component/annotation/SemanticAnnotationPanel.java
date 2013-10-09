@@ -1,5 +1,14 @@
 package net.sf.taverna.t2.component.annotation;
 
+import static java.lang.Integer.MIN_VALUE;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.OK_CANCEL_OPTION;
+import static javax.swing.JOptionPane.OK_OPTION;
+import static javax.swing.JOptionPane.showConfirmDialog;
+import static javax.swing.JOptionPane.showMessageDialog;
+import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.getDisplayName;
+import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.getObjectName;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -16,7 +25,6 @@ import java.util.Set;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -39,8 +47,6 @@ public class SemanticAnnotationPanel extends JPanel {
 	private final AbstractSemanticAnnotationContextualView semanticAnnotationContextualView;
 	private final SemanticAnnotationProfile semanticAnnotationProfile;
 	private final Set<Statement> statements;
-	
-	@SuppressWarnings("unused")
 
 	protected SPIRegistry<PropertyPanelFactorySPI> propertyPanelFactoryRegistry = new SPIRegistry<PropertyPanelFactorySPI>(
 			PropertyPanelFactorySPI.class);
@@ -61,13 +67,14 @@ public class SemanticAnnotationPanel extends JPanel {
 
 	private void initialise() {
 		setLayout(new GridBagLayout());
-//		setBorder(new AbstractBorder() {
-//			@Override
-//			public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-//				g.setColor(Color.GRAY);
-//				g.drawLine(x, y+height-1, x+width-1, y+height-1);
-//			}
-//		});
+		// setBorder(new AbstractBorder() {
+		// @Override
+		// public void paintBorder(Component c, Graphics g, int x, int y, int
+		// width, int height) {
+		// g.setColor(Color.GRAY);
+		// g.drawLine(x, y+height-1, x+width-1, y+height-1);
+		// }
+		// });
 
 		GridBagConstraints c = new GridBagConstraints();
 		c.anchor = GridBagConstraints.SOUTHEAST;
@@ -77,7 +84,8 @@ public class SemanticAnnotationPanel extends JPanel {
 
 		OntProperty predicate = semanticAnnotationProfile.getPredicate();
 		c.gridwidth = 3;
-		JLabel label = new JLabel("Annotation type : " + SemanticAnnotationUtils.getDisplayName(predicate));
+		JLabel label = new JLabel("Annotation type : "
+				+ getDisplayName(predicate));
 		label.setBorder(new EmptyBorder(5, 5, 5, 5));
 		label.setBackground(Color.WHITE);
 		label.setOpaque(true);
@@ -97,11 +105,10 @@ public class SemanticAnnotationPanel extends JPanel {
 				c.gridx = 0;
 				c.weightx = 1;
 				if (bestFactory != null) {
-					add(bestFactory.getDisplayComponent(semanticAnnotationProfile, statement), c);
+					add(bestFactory.getDisplayComponent(
+							semanticAnnotationProfile, statement), c);
 				} else {
-					JTextArea value = new JTextArea(
-							SemanticAnnotationUtils.getDisplayName(statement
-									.getObject()));
+					JTextArea value = new JTextArea(getObjectName(statement));
 					value.setLineWrap(true);
 					value.setWrapStyleWord(true);
 					value.setEditable(false);
@@ -121,18 +128,19 @@ public class SemanticAnnotationPanel extends JPanel {
 			}
 		}
 
-		if (allowChange && !enoughAlready(statements, semanticAnnotationProfile.getMaxOccurs())) {
-		c.gridx = 0;
-		c.gridwidth = 3;
-		c.anchor = GridBagConstraints.SOUTHEAST;
-		c.fill = GridBagConstraints.NONE;
-		add(createAddButton(), c);
+		if (allowChange
+				&& !enoughAlready(statements,
+						semanticAnnotationProfile.getMaxOccurs())) {
+			c.gridx = 0;
+			c.gridwidth = 3;
+			c.anchor = GridBagConstraints.SOUTHEAST;
+			c.fill = GridBagConstraints.NONE;
+			add(createAddButton(), c);
 		}
 
 	}
 
-	private boolean enoughAlready(Set<Statement> statements,
-			Integer maxOccurs) {
+	private boolean enoughAlready(Set<Statement> statements, Integer maxOccurs) {
 		if (maxOccurs == null) {
 			return false;
 		}
@@ -159,7 +167,7 @@ public class SemanticAnnotationPanel extends JPanel {
 
 	private JButton createAddButton() {
 		return new DeselectingButton("Add Annotation", new ActionListener() {
-
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				addOrChangeAnnotation(null);
 			}
@@ -171,35 +179,45 @@ public class SemanticAnnotationPanel extends JPanel {
 		JComponent inputComponent = null;
 
 		if (bestFactory != null) {
-			inputComponent = bestFactory.getInputComponent(semanticAnnotationProfile, statement);
-			annotationPanel = getPropertyPanel(SemanticAnnotationUtils.getDisplayName(semanticAnnotationProfile.getPredicate()), inputComponent);
+			inputComponent = bestFactory.getInputComponent(
+					semanticAnnotationProfile, statement);
+			annotationPanel = getPropertyPanel(
+					getDisplayName(semanticAnnotationProfile.getPredicate()),
+					inputComponent);
 		}
-		
-		if (annotationPanel != null) {
-			int answer = JOptionPane.showConfirmDialog(null, annotationPanel, "Add/change annotation", JOptionPane.OK_CANCEL_OPTION);
-			if (answer == JOptionPane.OK_OPTION) {
-				RDFNode response = bestFactory.getNewTargetNode(statement, inputComponent);
-				if (response != null) {
-					if (statement != null) {
-						semanticAnnotationContextualView.changeStatement(statement, semanticAnnotationProfile.getPredicate(), response);
-					}
-					else {
-						semanticAnnotationContextualView.addStatement(semanticAnnotationProfile.getPredicate(),
-								response);
-					}
+
+		if (annotationPanel == null) {
+			showMessageDialog(null, "Unable to handle "
+					+ semanticAnnotationProfile.getPredicateString(),
+					"Annotation problem", ERROR_MESSAGE);
+			return;
+		}
+
+		int answer = showConfirmDialog(null, annotationPanel,
+				"Add/change annotation", OK_CANCEL_OPTION);
+		if (answer == OK_OPTION) {
+			RDFNode response = bestFactory.getNewTargetNode(statement,
+					inputComponent);
+			if (response != null) {
+				if (statement != null) {
+					semanticAnnotationContextualView.changeStatement(statement,
+							semanticAnnotationProfile.getPredicate(), response);
+				} else {
+					semanticAnnotationContextualView.addStatement(
+							semanticAnnotationProfile.getPredicate(), response);
 				}
 			}
-		} else {
-			JOptionPane.showMessageDialog(null, "Unable to handle " + semanticAnnotationProfile.getPredicateString(), "Annotation problem", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
 	private PropertyPanelFactorySPI findBestPanelFactory() {
 		PropertyPanelFactorySPI result = null;
-		List<PropertyPanelFactorySPI> instances = propertyPanelFactoryRegistry.getInstances();
-		int currentRating = Integer.MIN_VALUE;
+		List<PropertyPanelFactorySPI> instances = propertyPanelFactoryRegistry
+				.getInstances();
+		int currentRating = MIN_VALUE;
 		for (PropertyPanelFactorySPI factory : instances) {
-			int ratingForSemanticAnnotation = factory.getRatingForSemanticAnnotation(semanticAnnotationProfile);
+			int ratingForSemanticAnnotation = factory
+					.getRatingForSemanticAnnotation(semanticAnnotationProfile);
 			if (ratingForSemanticAnnotation > currentRating) {
 				currentRating = ratingForSemanticAnnotation;
 				result = factory;
@@ -207,9 +225,8 @@ public class SemanticAnnotationPanel extends JPanel {
 		}
 		return result;
 	}
-	
-	public static JPanel getPropertyPanel(
-			String displayName,
+
+	public static JPanel getPropertyPanel(String displayName,
 			Component inputComponent) {
 		JPanel result = new JPanel();
 		result.setLayout(new BorderLayout());
@@ -224,20 +241,16 @@ public class SemanticAnnotationPanel extends JPanel {
 		inputLabel.setFont(baseFont.deriveFont(Font.BOLD));
 		messagePanel.add(inputLabel, BorderLayout.NORTH);
 
-		JTextArea messageText = new JTextArea("Enter a value for the annotation '"
-				+ displayName
-				+ "'");
+		JTextArea messageText = new JTextArea(
+				"Enter a value for the annotation '" + displayName + "'");
 		messageText.setMargin(new Insets(5, 10, 10, 10));
 		messageText.setMinimumSize(new Dimension(0, 30));
 		messageText.setFont(baseFont.deriveFont(11f));
 		messageText.setEditable(false);
 		messageText.setFocusable(false);
 		messagePanel.add(messageText, BorderLayout.CENTER);
-		
+
 		result.add(new JScrollPane(inputComponent), BorderLayout.CENTER);
 		return result;
 	}
-
-
-
 }

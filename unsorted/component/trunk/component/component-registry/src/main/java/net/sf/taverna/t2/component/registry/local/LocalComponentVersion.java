@@ -6,7 +6,7 @@ package net.sf.taverna.t2.component.registry.local;
 import java.io.File;
 import java.io.IOException;
 
-import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
 import net.sf.taverna.t2.workbench.file.DataflowInfo;
 import net.sf.taverna.t2.workbench.file.exceptions.OpenException;
@@ -60,7 +60,7 @@ public class LocalComponentVersion extends ComponentVersion {
 	}
 
 	@Override
-	protected final Dataflow internalGetDataflow() throws ComponentRegistryException {
+	protected final Dataflow internalGetDataflow() throws RegistryException {
 		T2DataflowOpener opener = new T2DataflowOpener();
 		
 		DataflowInfo info;
@@ -68,7 +68,7 @@ public class LocalComponentVersion extends ComponentVersion {
 			info = opener.openDataflow(T2_FLOW_FILE_TYPE, new File(componentVersionDir, "dataflow.t2flow"));
 		} catch (OpenException e) {
 			logger.error(e);
-			throw new ComponentRegistryException("Unable to open dataflow", e);
+			throw new RegistryException("Unable to open dataflow", e);
 		}
 		
 		return info.getDataflow();

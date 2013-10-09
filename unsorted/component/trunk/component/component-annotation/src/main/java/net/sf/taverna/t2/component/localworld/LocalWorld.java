@@ -3,51 +3,52 @@
  */
 package net.sf.taverna.t2.component.localworld;
 
+import static com.hp.hpl.jena.rdf.model.ModelFactory.createOntologyModel;
+import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.createTurtle;
+import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.populateModelFromString;
+import static org.apache.commons.io.FileUtils.readFileToString;
+import static org.apache.commons.io.FileUtils.writeStringToFile;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
 
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
-import net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
  * @author alanrw
- *
+ * 
  */
 public class LocalWorld {
-	
+	private static final String FILENAME = "localWorld.ttl";
 	private static Logger logger = Logger.getLogger(LocalWorld.class);
-	
 	protected static final String ENCODING = "TURTLE";
-	
-	private OntModel model;
-	
 	private static LocalWorld instance = null;
-	
+
+	private OntModel model;
+
 	public synchronized static LocalWorld getInstance() {
 		if (instance == null) {
 			instance = new LocalWorld();
 		}
 		return instance;
 	}
-	
+
 	private LocalWorld() {
 		super();
-		File modelFile = new File(calculateComponentsDirectory(), "localWorld.ttl");
-		model = ModelFactory.createOntologyModel();
+		File modelFile = new File(calculateComponentsDirectory(), FILENAME);
+		model = createOntologyModel();
 		if (modelFile.exists()) {
 			try {
-				String content = FileUtils.readFileToString (modelFile);
+				String content = readFileToString(modelFile);
 				StringReader stringReader = new StringReader(content);
 				model.read(stringReader, null, ENCODING);
 			} catch (IOException e) {
@@ -55,9 +56,10 @@ public class LocalWorld {
 			}
 		}
 	}
-	
+
 	public File calculateComponentsDirectory() {
-		return (new File(ApplicationRuntime.getInstance().getApplicationHomeDir(), "components"));
+		return (new File(ApplicationRuntime.getInstance()
+				.getApplicationHomeDir(), "components"));
 	}
 
 	public Individual createIndividual(String urlString, OntClass rangeClass) {
@@ -67,9 +69,9 @@ public class LocalWorld {
 	}
 
 	private void saveModel() {
-		File modelFile = new File(calculateComponentsDirectory(), "localWorld.ttl");
+		File modelFile = new File(calculateComponentsDirectory(), FILENAME);
 		try {
-			FileUtils.writeStringToFile(modelFile, SemanticAnnotationUtils.createTurtle(model));
+			writeStringToFile(modelFile, createTurtle(model));
 		} catch (IOException e) {
 			logger.error(e);
 		}
@@ -80,8 +82,7 @@ public class LocalWorld {
 	}
 
 	public void addModelFromString(String addedModel) {
-		SemanticAnnotationUtils.populateModelFromString(model, addedModel);
+		populateModelFromString(model, addedModel);
 		saveModel();
 	}
-
 }

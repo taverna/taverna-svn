@@ -17,9 +17,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
-import net.sf.taverna.t2.component.profile.ComponentProfile;
-import net.sf.taverna.t2.component.registry.ComponentFamily;
-import net.sf.taverna.t2.component.registry.ComponentRegistry;
+import net.sf.taverna.t2.component.api.Family;
+import net.sf.taverna.t2.component.api.Profile;
+import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
@@ -28,10 +28,11 @@ import org.apache.log4j.Logger;
 
 /**
  * @author alanrw
- *
+ * 
  */
-@SuppressWarnings({ "unchecked", "rawtypes" })
-public class FamilyChooserPanel extends JPanel implements Observer, Observable<FamilyChoiceMessage> {
+@SuppressWarnings({ "rawtypes" })
+public class FamilyChooserPanel extends JPanel implements Observer,
+		Observable<FamilyChoiceMessage> {
 
 	/**
 	 *
@@ -42,17 +43,15 @@ public class FamilyChooserPanel extends JPanel implements Observer, Observable<F
 
 	private List<Observer<FamilyChoiceMessage>> observers = new ArrayList<Observer<FamilyChoiceMessage>>();
 
-
-
 	private JComboBox familyBox = new JComboBox();
 
-//	private JTextArea familyDescription = new JTextArea(10,60);
+	// private JTextArea familyDescription = new JTextArea(10,60);
 
-	private SortedMap<String, ComponentFamily> familyMap = new TreeMap<String, ComponentFamily>();
+	private SortedMap<String, Family> familyMap = new TreeMap<String, Family>();
 
-	private ComponentRegistry chosenRegistry = null;
+	private Registry chosenRegistry = null;
 
-	private ComponentProfile profileFilter = null;
+	private Profile profileFilter = null;
 
 	public FamilyChooserPanel() {
 		super();
@@ -78,14 +77,15 @@ public class FamilyChooserPanel extends JPanel implements Observer, Observable<F
 					updateDescription();
 					notifyObservers();
 				}
-			}});
+			}
+		});
 
 		familyBox.setEditable(false);
 
 	}
 
 	protected void updateDescription() {
-		ComponentFamily chosenFamily = getChosenFamily();
+		Family chosenFamily = getChosenFamily();
 		if (chosenFamily != null) {
 			familyBox.setToolTipText(chosenFamily.getDescription());
 		} else {
@@ -94,8 +94,7 @@ public class FamilyChooserPanel extends JPanel implements Observer, Observable<F
 	}
 
 	@Override
-	public void notify(Observable sender,
-			Object message) throws Exception {
+	public void notify(Observable sender, Object message) throws Exception {
 		try {
 			if (message instanceof RegistryChoiceMessage) {
 				this.chosenRegistry = ((RegistryChoiceMessage) message)
@@ -125,19 +124,18 @@ public class FamilyChooserPanel extends JPanel implements Observer, Observable<F
 	}
 
 	private void notifyObservers() {
-		ComponentFamily chosenFamily = getChosenFamily();
+		Family chosenFamily = getChosenFamily();
 		FamilyChoiceMessage message = new FamilyChoiceMessage(chosenFamily);
 		for (Observer<FamilyChoiceMessage> o : getObservers()) {
 			try {
 				o.notify(FamilyChooserPanel.this, message);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				logger.error(e);
 			}
 		}
 	}
 
-	public ComponentFamily getChosenFamily() {
+	public Family getChosenFamily() {
 		if (familyBox.getSelectedIndex() >= 0) {
 			return familyMap.get(familyBox.getSelectedItem());
 		}
@@ -147,7 +145,7 @@ public class FamilyChooserPanel extends JPanel implements Observer, Observable<F
 	@Override
 	public void addObserver(Observer<FamilyChoiceMessage> observer) {
 		observers.add(observer);
-		ComponentFamily chosenFamily = getChosenFamily();
+		Family chosenFamily = getChosenFamily();
 		FamilyChoiceMessage message = new FamilyChoiceMessage(chosenFamily);
 		try {
 			observer.notify(this, message);
@@ -165,25 +163,25 @@ public class FamilyChooserPanel extends JPanel implements Observer, Observable<F
 	public void removeObserver(Observer<FamilyChoiceMessage> observer) {
 		observers.remove(observer);
 	}
-	
+
 	private class FamilyUpdater extends SwingWorker<String, Object> {
 
 		@Override
 		protected String doInBackground() throws Exception {
-			if (chosenRegistry != null ) {
-				for (ComponentFamily f : chosenRegistry.getComponentFamilies()) {
-					ComponentProfile componentProfile = null;
+			if (chosenRegistry != null) {
+				for (Family f : chosenRegistry.getComponentFamilies()) {
+					Profile componentProfile = null;
 					try {
 						componentProfile = f.getComponentProfile();
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						logger.error(e);
 					}
 					if (componentProfile != null) {
-					String id = componentProfile.getId();
-					if ((profileFilter == null) || id.equals(profileFilter.getId())) {
-						familyMap.put(f.getName(), f);
-					}
+						String id = componentProfile.getId();
+						if ((profileFilter == null)
+								|| id.equals(profileFilter.getId())) {
+							familyMap.put(f.getName(), f);
+						}
 					} else {
 						logger.info("Ignoring " + f.getName());
 					}
@@ -191,23 +189,23 @@ public class FamilyChooserPanel extends JPanel implements Observer, Observable<F
 			}
 			return null;
 		}
-		
+
 		@Override
-	       protected void done() {
+		protected void done() {
 			familyBox.removeAllItems();
-	        	   for (String name : familyMap.keySet()) {
-	   				familyBox.addItem(name);
-	   			}
-	   			if (!familyMap.isEmpty()) {
-	   				String firstKey = familyMap.firstKey();
-	   				familyBox.setSelectedItem(firstKey);
-	   				updateDescription();
-	   			} else {
-	   				familyBox.addItem("No families available");
-	   			}
-	   			notifyObservers();
-	   			familyBox.setEnabled(!familyMap.isEmpty());
-	       }
+			for (String name : familyMap.keySet()) {
+				familyBox.addItem(name);
+			}
+			if (!familyMap.isEmpty()) {
+				String firstKey = familyMap.firstKey();
+				familyBox.setSelectedItem(firstKey);
+				updateDescription();
+			} else {
+				familyBox.addItem("No families available");
+			}
+			notifyObservers();
+			familyBox.setEnabled(!familyMap.isEmpty());
+		}
 	}
 
 }

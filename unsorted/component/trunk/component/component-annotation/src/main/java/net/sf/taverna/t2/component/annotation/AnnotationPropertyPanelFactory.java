@@ -20,7 +20,8 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.annotation;
 
-import java.awt.Component;
+import static com.hp.hpl.jena.rdf.model.ResourceFactory.createTypedLiteral;
+import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.getObjectName;
 
 import javax.swing.JComponent;
 import javax.swing.JTextArea;
@@ -29,32 +30,34 @@ import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
 
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
- *
- *
+ * 
+ * 
  * @author Alan Williams
  */
-public class AnnotationPropertyPanelFactory extends PropertyPanelFactorySPI{
+public class AnnotationPropertyPanelFactory extends PropertyPanelFactorySPI {
 
 	public AnnotationPropertyPanelFactory() {
 		super();
 	}
 
 	@Override
-	public JComponent getInputComponent(SemanticAnnotationProfile semanticAnnotationProfile, Statement statement) {
+	public JComponent getInputComponent(
+			SemanticAnnotationProfile semanticAnnotationProfile,
+			Statement statement) {
 		return getDefaultInputComponent(semanticAnnotationProfile, statement);
 	}
 
 	@Override
-	public RDFNode getNewTargetNode(Statement originalStatement, JComponent component) {
+	public RDFNode getNewTargetNode(Statement originalStatement,
+			JComponent component) {
 		JTextArea inputText = (JTextArea) component;
 		String newText = inputText.getText();
-		if ((originalStatement == null) ||
-				!SemanticAnnotationUtils.getDisplayName(originalStatement.getObject()).equals(newText)) {
-		return ResourceFactory.createTypedLiteral(newText);
+		if ((originalStatement == null)
+				|| !getObjectName(originalStatement).equals(newText)) {
+			return createTypedLiteral(newText);
 		}
 		return null;
 	}

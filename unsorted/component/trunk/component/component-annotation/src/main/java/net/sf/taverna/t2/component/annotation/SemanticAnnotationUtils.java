@@ -31,9 +31,9 @@ import net.sf.taverna.t2.annotation.AnnotationAssertion;
 import net.sf.taverna.t2.annotation.AnnotationBeanSPI;
 import net.sf.taverna.t2.annotation.AnnotationChain;
 import net.sf.taverna.t2.annotation.annotationbeans.SemanticAnnotation;
-import net.sf.taverna.t2.component.profile.ComponentProfile;
+import net.sf.taverna.t2.component.api.Profile;
+import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
-import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.apache.log4j.Logger;
@@ -47,18 +47,22 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
- *
- *
+ * 
+ * 
  * @author David Withers
  */
 public class SemanticAnnotationUtils {
-	
+
 	protected static final String ENCODING = "TURTLE";
 	/* Pretend-base for making relative URIs */
 	private static String BASE = "widget://4aa8c93c-3212-487c-a505-3e337adf54a3/";
-	
-	private static Logger logger = Logger.getLogger(SemanticAnnotationUtils.class);
 
+	private static Logger logger = Logger
+			.getLogger(SemanticAnnotationUtils.class);
+
+	public static String getObjectName(Statement statement) {
+		return getDisplayName(statement.getObject());
+	}
 	public static String getDisplayName(RDFNode node) {
 		if (node == null) {
 			return "unknown";
@@ -84,8 +88,9 @@ public class SemanticAnnotationUtils {
 			return "unknown";
 		}
 	}
-	
-	public static SemanticAnnotation findSemanticAnnotation(Annotated<?> annotated) {
+
+	public static SemanticAnnotation findSemanticAnnotation(
+			Annotated<?> annotated) {
 		Date latestDate = null;
 		SemanticAnnotation annotation = null;
 		for (AnnotationChain chain : annotated.getAnnotations()) {
@@ -93,7 +98,8 @@ public class SemanticAnnotationUtils {
 				AnnotationBeanSPI detail = assertion.getDetail();
 				if (detail instanceof SemanticAnnotation) {
 					Date assertionDate = assertion.getCreationDate();
-					if ((latestDate == null) || latestDate.before(assertionDate)) {
+					if ((latestDate == null)
+							|| latestDate.before(assertionDate)) {
 						annotation = (SemanticAnnotation) detail;
 						latestDate = assertionDate;
 					}
@@ -118,7 +124,8 @@ public class SemanticAnnotationUtils {
 		StringWriter stringWriter = new StringWriter();
 		model.write(stringWriter, ENCODING, BASE);
 		// Workaround for https://issues.apache.org/jira/browse/JENA-132
-		String turtle = stringWriter.toString().replace("widget://4aa8c93c-3212-487c-a505-3e337adf54a3/", "");
+		String turtle = stringWriter.toString().replace(
+				"widget://4aa8c93c-3212-487c-a505-3e337adf54a3/", "");
 		return turtle;
 	}
 
@@ -147,15 +154,17 @@ public class SemanticAnnotationUtils {
 	public static Resource createBaseResource(Model model) {
 		return model.createResource(BASE);
 	}
-	
-	public static Set<SemanticAnnotationProfile> checkComponent(Dataflow dataflow,
-			ComponentProfile componentProfile) {
-		Set<SemanticAnnotationProfile> problemProfiles = new HashSet<SemanticAnnotationProfile> ();
+
+	public static Set<SemanticAnnotationProfile> checkComponent(
+			Dataflow dataflow, Profile componentProfile) {
+		Set<SemanticAnnotationProfile> problemProfiles = new HashSet<SemanticAnnotationProfile>();
 		Model model = SemanticAnnotationUtils.populateModel(dataflow);
 		Set<Statement> statements = model.listStatements().toSet();
 		try {
-			for (SemanticAnnotationProfile semanticAnnotationProfile : componentProfile.getSemanticAnnotationProfiles()) {
-				OntProperty predicate = semanticAnnotationProfile.getPredicate();
+			for (SemanticAnnotationProfile semanticAnnotationProfile : componentProfile
+					.getSemanticAnnotationProfiles()) {
+				OntProperty predicate = semanticAnnotationProfile
+						.getPredicate();
 				if (predicate != null) {
 					int count = 0;
 					for (Statement statement : statements) {
@@ -174,12 +183,10 @@ public class SemanticAnnotationUtils {
 					}
 				}
 			}
-		} catch (ComponentRegistryException e) {
+		} catch (RegistryException e) {
 			logger.error(e);
 		}
 		return problemProfiles;
 	}
-
-
 
 }

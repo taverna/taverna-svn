@@ -28,7 +28,7 @@ import uk.org.taverna.ns._2012.component.profile.SemanticAnnotation;
 
 /**
  * Specifies the semantic annotations that an activity must have.
- *
+ * 
  * @author David Withers
  */
 public class ActivityProfile {
@@ -43,10 +43,10 @@ public class ActivityProfile {
 
 	public List<SemanticAnnotationProfile> getSemanticAnnotations() {
 		List<SemanticAnnotationProfile> semanticAnnotationProfiles = new ArrayList<SemanticAnnotationProfile>();
-		List<SemanticAnnotation> semanticAnnotations = activity.getSemanticAnnotation();
-		for (SemanticAnnotation semanticAnnotation : semanticAnnotations) {
-			semanticAnnotationProfiles.add(new SemanticAnnotationProfile(componentProfile,
-					semanticAnnotation));
+		for (SemanticAnnotation semanticAnnotation : activity
+				.getSemanticAnnotation()) {
+			semanticAnnotationProfiles.add(new SemanticAnnotationProfile(
+					componentProfile, semanticAnnotation));
 		}
 		return semanticAnnotationProfiles;
 	}

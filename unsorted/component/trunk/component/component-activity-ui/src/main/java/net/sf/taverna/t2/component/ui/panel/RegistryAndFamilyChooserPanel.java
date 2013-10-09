@@ -9,8 +9,8 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
-import net.sf.taverna.t2.component.registry.ComponentFamily;
-import net.sf.taverna.t2.component.registry.ComponentRegistry;
+import net.sf.taverna.t2.component.api.Family;
+import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 
@@ -18,11 +18,13 @@ import org.apache.log4j.Logger;
 
 /**
  * @author alanrw
- *
+ * 
  */
-public class RegistryAndFamilyChooserPanel extends JPanel implements Observer<ProfileChoiceMessage>, Observable<FamilyChoiceMessage> {
+public class RegistryAndFamilyChooserPanel extends JPanel implements
+		Observer<ProfileChoiceMessage>, Observable<FamilyChoiceMessage> {
 
-	private static Logger logger = Logger.getLogger(RegistryAndFamilyChooserPanel.class);
+	private static Logger logger = Logger
+			.getLogger(RegistryAndFamilyChooserPanel.class);
 
 	/**
 	 *
@@ -53,11 +55,11 @@ public class RegistryAndFamilyChooserPanel extends JPanel implements Observer<Pr
 
 	}
 
-	public ComponentRegistry getChosenRegistry() {
+	public Registry getChosenRegistry() {
 		return registryPanel.getChosenRegistry();
 	}
 
-	public ComponentFamily getChosenFamily() {
+	public Family getChosenFamily() {
 		return familyPanel.getChosenFamily();
 	}
 
@@ -81,8 +83,7 @@ public class RegistryAndFamilyChooserPanel extends JPanel implements Observer<Pr
 			ProfileChoiceMessage message) throws Exception {
 		try {
 			familyPanel.notify(sender, message);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			logger.error(e);
 		}
 	}

@@ -12,13 +12,13 @@ import net.sf.taverna.t2.workflowmodel.Processor;
 
 /**
  * @author alanrw
- *
+ * 
  */
 public class ReplaceByComponentMenuAction extends AbstractContextualMenuAction {
-	
+
 	private static final URI configureSection = URI
-	.create("http://taverna.sf.net/2009/contextMenu/configure");
-	
+			.create("http://taverna.sf.net/2009/contextMenu/configure");
+
 	private static ReplaceByComponentAction action = new ReplaceByComponentAction();
 
 	public ReplaceByComponentMenuAction() {
@@ -33,13 +33,9 @@ public class ReplaceByComponentMenuAction extends AbstractContextualMenuAction {
 		return (selection instanceof Processor);
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.ui.menu.AbstractMenuAction#createAction()
-	 */
 	@Override
 	protected Action createAction() {
-		action.setSelection((Processor)getContextualSelection().getSelection());
+		action.setSelection((Processor) getContextualSelection().getSelection());
 		return action;
 	}
-
 }

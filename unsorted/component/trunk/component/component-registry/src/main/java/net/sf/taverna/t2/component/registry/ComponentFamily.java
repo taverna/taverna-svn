@@ -20,51 +20,45 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry;
 
+import static net.sf.taverna.t2.component.profile.BaseProfileLocator.getBaseProfile;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.taverna.t2.component.profile.BaseProfile;
-import net.sf.taverna.t2.component.profile.ComponentProfile;
+import net.sf.taverna.t2.component.api.Component;
+import net.sf.taverna.t2.component.api.Profile;
+import net.sf.taverna.t2.component.api.Registry;
+import net.sf.taverna.t2.component.api.RegistryException;
+import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 /**
  * A ComponentFamily is a collection of Components that share the same
  * ComponentProfile.
- *
+ * 
  * @author David Withers
  */
-public abstract class ComponentFamily {
-	
-	private ComponentRegistry parentRegistry;
-	
+public abstract class ComponentFamily implements
+		net.sf.taverna.t2.component.api.Family {
+	private Registry parentRegistry;
 	private String name;
-	
 	private String description;
-	
-	private ComponentProfile componentProfile;
-	
+	private Profile componentProfile;
+
 	protected Map<String, Component> componentCache = new HashMap<String, Component>();
 
-	public ComponentFamily(ComponentRegistry componentRegistry) {
+	public ComponentFamily(Registry componentRegistry) {
 		this.parentRegistry = componentRegistry;
 	}
 
-	/**
-	 * Returns the ComponentRegistry that contains this ComponentFamily.
-	 *
-	 * @return the ComponentRegistry that contains this ComponentFamily.
-	 */
-	public ComponentRegistry getComponentRegistry() {
+	@Override
+	public Registry getComponentRegistry() {
 		return parentRegistry;
 	}
 
-	/**
-	 * Returns the name of the ComponentFamily.
-	 *
-	 * @return the name of the ComponentFamily.
-	 */
+	@Override
 	public final synchronized String getName() {
 		if (name == null) {
 			name = internalGetName();
@@ -74,144 +68,96 @@ public abstract class ComponentFamily {
 
 	protected abstract String internalGetName();
 
-	/**
-	 * Returns the description of the ComponentFamily.
-	 *
-	 * @return the description of the ComponentFamily.
-	 */
+	@Override
 	public final synchronized String getDescription() {
 		if (description == null) {
 			description = internalGetDescription();
 		}
 		return description;
 	}
-	
+
 	protected abstract String internalGetDescription();
 
-	/**
-	 * Returns the ComponentProfile for this ComponentFamily.
-	 *
-	 * @return the ComponentProfile for this ComponentFamily.
-	 * @throws ComponentRegistryException
-	 */
-	public final synchronized ComponentProfile getComponentProfile() throws ComponentRegistryException {
+	@Override
+	public final synchronized Profile getComponentProfile()
+			throws RegistryException {
 		if (componentProfile == null) {
 			componentProfile = internalGetComponentProfile();
 		}
 		if (componentProfile == null) {
-			ComponentProfile baseProfile = BaseProfile.getInstance().getProfile();
-			if ((baseProfile != null) && componentProfile.getName().equals(baseProfile.getName())) {
+			Profile baseProfile = getBaseProfile();
+			if ((baseProfile != null)
+					&& componentProfile.getName().equals(baseProfile.getName())) {
 				return baseProfile;
 			}
 		}
 		return componentProfile;
 	}
 
-	protected abstract ComponentProfile internalGetComponentProfile() throws ComponentRegistryException;
+	protected abstract Profile internalGetComponentProfile()
+			throws RegistryException;
 
-	/**
-	 * Returns all the Components in this ComponentFamily.
-	 * <p>
-	 * If this ComponentFamily does not contain any Components an empty list is
-	 * returned.
-	 *
-	 * @return all the Components in this ComponentFamilies.
-	 * @throws ComponentRegistryException
-	 *             if there is a problem accessing the ComponentRegistry.
-	 */
-	public final List<Component> getComponents() throws ComponentRegistryException {
+	@Override
+	public final List<Component> getComponents() throws RegistryException {
 		checkComponentCache();
 		return new ArrayList<Component>(componentCache.values());
 	}
-	
-	private void checkComponentCache() throws ComponentRegistryException {
-		synchronized(componentCache) {
+
+	private void checkComponentCache() throws RegistryException {
+		synchronized (componentCache) {
 			if (componentCache.isEmpty()) {
 				populateComponentCache();
 			}
 		}
 	}
 
-	protected abstract void populateComponentCache() throws ComponentRegistryException;
+	protected abstract void populateComponentCache() throws RegistryException;
 
-	/**
-	 * Returns the Component with the specified name.
-	 * <p>
-	 * If this ComponentFamily does not contain a Component with the specified
-	 * name <code>null</code> is returned.
-	 *
-	 * @param componentName
-	 *            the name of the Component to return. Must not be null.
-	 * @return the Component with the specified name.
-	 * @throws ComponentRegistryException
-	 *             if there is a problem accessing the ComponentRegistry.
-	 */
-	public final Component getComponent(String componentName) throws ComponentRegistryException {
+	@Override
+	public final Component getComponent(String componentName)
+			throws RegistryException {
 		checkComponentCache();
 		return componentCache.get(componentName);
 	}
 
-	/**
-	 * Creates a new Component and adds it to this ComponentFamily.
-	 *
-	 * @param componentName
-	 *            the name of the Component to create. Must not be null.
-	 * @param dataflow
-	 *            the Dataflow for the Component. Must not be null.
-	 * @return the new Component.
-	 * @throws ComponentRegistryException
-	 *             <ul>
-	 *             <li>if componentName is null,
-	 *             <li>if dataflow is null,
-	 *             <li>if a Component with this name already exists,
-	 *             <li>if there is a problem accessing the ComponentRegistry.
-	 *             </ul>
-	 */
-	public final ComponentVersion createComponentBasedOn(String componentName, String description, Dataflow dataflow)
-			throws ComponentRegistryException {
+	@Override
+	public final Version createComponentBasedOn(String componentName,
+			String description, Dataflow dataflow) throws RegistryException {
 		if (componentName == null) {
-			throw new ComponentRegistryException("Component name must not be null");
+			throw new RegistryException("Component name must not be null");
 		}
 		if (dataflow == null) {
-			throw new ComponentRegistryException("Dataflow must not be null");
+			throw new RegistryException("Dataflow must not be null");
 		}
 		checkComponentCache();
 		if (componentCache.containsKey(componentName)) {
-			throw new ComponentRegistryException("Component name already used");
+			throw new RegistryException("Component name already used");
 		}
-		ComponentVersion version = internalCreateComponentBasedOn(componentName, description, dataflow);
-		synchronized(componentCache) {
+		Version version = internalCreateComponentBasedOn(componentName,
+				description, dataflow);
+		synchronized (componentCache) {
 			Component c = version.getComponent();
 			componentCache.put(componentName, c);
 		}
 		return version;
 	}
 
-	protected abstract ComponentVersion internalCreateComponentBasedOn(String componentName, String description, Dataflow dataflow)
-	throws ComponentRegistryException;
-	
-	/**
-	 * Removes the specified Component from this
-	 * ComponentFamily.
-	 * <p>
-	 * If this ComponentFamily does not contain the Component this method has no effect.
-	 *
-	 * @param component
-	 *            the Component to remove.
-	 * @throws ComponentRegistryException
-	 *             if there is a problem accessing the ComponentRegistry.
-	 */
+	protected abstract Version internalCreateComponentBasedOn(
+			String componentName, String description, Dataflow dataflow)
+			throws RegistryException;
+
+	@Override
 	public final void removeComponent(Component component)
-			throws ComponentRegistryException {
+			throws RegistryException {
 		if (component != null) {
 			checkComponentCache();
-			synchronized(componentCache) {
+			synchronized (componentCache) {
 				componentCache.remove(component.getName());
 			}
 			internalRemoveComponent(component);
 		}
 	}
 
-	protected abstract void internalRemoveComponent (Component component)
-	throws ComponentRegistryException;
+	protected abstract void internalRemoveComponent(Component component)
+			throws RegistryException;
 }

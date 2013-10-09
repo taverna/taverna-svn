@@ -10,15 +10,16 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import net.sf.taverna.t2.component.registry.ComponentFamily;
-import net.sf.taverna.t2.component.registry.ComponentRegistry;
+import net.sf.taverna.t2.component.api.Family;
+import net.sf.taverna.t2.component.api.Registry;
+import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 
 import org.apache.commons.lang.StringUtils;
 
 /**
  * @author alanrw
- *
+ * 
  */
 public class RegisteryAndFamilyChooserComponentEntryPanel extends JPanel {
 
@@ -66,20 +67,22 @@ public class RegisteryAndFamilyChooserComponentEntryPanel extends JPanel {
 		componentNameField.setText(name);
 	}
 
-
-	public ComponentVersionIdentification getComponentVersionIdentification() {
+	public Version.ID getComponentVersionIdentification() {
 		String componentName = getComponentName();
 
-			ComponentFamily familyChoice = registryAndFamilyChooserPanel.getChosenFamily();
+		Family familyChoice = registryAndFamilyChooserPanel.getChosenFamily();
 
-			ComponentRegistry registry = registryAndFamilyChooserPanel.getChosenRegistry();
-			
-			if ((familyChoice == null) || (registry == null) || (componentName == null) || componentName.isEmpty()) {
-				return null;
-			}
+		Registry registry = registryAndFamilyChooserPanel.getChosenRegistry();
 
-			componentName = StringUtils.remove(componentName, T2FLOW);
-			ComponentVersionIdentification ident = new ComponentVersionIdentification(registry.getRegistryBase(), familyChoice.getName(), componentName, -1);
+		if ((familyChoice == null) || (registry == null)
+				|| (componentName == null) || componentName.isEmpty()) {
+			return null;
+		}
+
+		componentName = StringUtils.remove(componentName, T2FLOW);
+		Version.ID ident = new ComponentVersionIdentification(
+				registry.getRegistryBase(), familyChoice.getName(),
+				componentName, -1);
 		return ident;
 	}
 }

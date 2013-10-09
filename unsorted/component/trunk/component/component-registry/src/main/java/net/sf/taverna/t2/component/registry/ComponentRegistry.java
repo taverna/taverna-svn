@@ -29,259 +29,198 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.taverna.t2.component.profile.BaseProfile;
-import net.sf.taverna.t2.component.profile.ComponentProfile;
+import net.sf.taverna.t2.component.api.Family;
+import net.sf.taverna.t2.component.api.License;
+import net.sf.taverna.t2.component.api.Profile;
+import net.sf.taverna.t2.component.api.RegistryException;
+import net.sf.taverna.t2.component.api.SharingPolicy;
+import net.sf.taverna.t2.component.api.Version;
 
 /**
  * A ComponentRegistry contains ComponentFamilies and ComponentProfiles.
- *
+ * 
  * @author David Withers
  */
-public abstract class ComponentRegistry {
-	
-	protected Map<String, ComponentFamily> familyCache = new HashMap<String, ComponentFamily> ();
-	protected List<ComponentProfile> profileCache = new ArrayList<ComponentProfile>();
+public abstract class ComponentRegistry implements
+		net.sf.taverna.t2.component.api.Registry {
+
+	protected Map<String, Family> familyCache = new HashMap<String, Family>();
+	protected List<Profile> profileCache = new ArrayList<Profile>();
 	protected List<SharingPolicy> permissionCache = new ArrayList<SharingPolicy>();
 	protected List<License> licenseCache = new ArrayList<License>();
-	
+
 	private URL registryBase;
-	
-	protected ComponentRegistry (URL registryBase) throws ComponentRegistryException {
+
+	protected ComponentRegistry(URL registryBase) throws RegistryException {
 		this.registryBase = registryBase;
 	}
-	
-	protected ComponentRegistry (File fileDir) throws ComponentRegistryException {
-			try {
-				this.registryBase = fileDir.toURI().toURL();
-			} catch (MalformedURLException e) {
-				throw new ComponentRegistryException (e);
-			}
+
+	protected ComponentRegistry(File fileDir) throws RegistryException {
+		try {
+			this.registryBase = fileDir.toURI().toURL();
+		} catch (MalformedURLException e) {
+			throw new RegistryException(e);
+		}
 	}
 
-	/**
-	 * Returns all the ComponentFamilies in this ComponetRegistry.
-	 * <p>
-	 * If this ComponentRegistry does not contain any ComponentFamilies an empty
-	 * list is returned.
-	 *
-	 * @return all the ComponentFamilies in this ComponetRegistry.
-	 * @throws ComponentRegistryException
-	 *             if there is a problem accessing the ComponentRegistry.
-	 */
-	public final List<ComponentFamily> getComponentFamilies() throws ComponentRegistryException {
+	@Override
+	public final List<Family> getComponentFamilies() throws RegistryException {
 		checkFamilyCache();
-		return new ArrayList<ComponentFamily>(familyCache.values());
+		return new ArrayList<Family>(familyCache.values());
 	}
-	
-	private void checkFamilyCache() throws ComponentRegistryException {
-		synchronized(familyCache) {
+
+	private void checkFamilyCache() throws RegistryException {
+		synchronized (familyCache) {
 			if (familyCache.isEmpty()) {
 				populateFamilyCache();
 			}
 		}
 	}
-	
-	protected abstract void populateFamilyCache() throws ComponentRegistryException;
 
-	/**
-	 * Returns the ComponentFamily with the specified name.
-	 * <p>
-	 * If this ComponentRegistry does not contain a ComponentFamily with the
-	 * specified name <code>null</code> is returned.
-	 *
-	 * @param familyName
-	 *            the name of the ComponentFamily to return. Must not be null.
-	 * @return the ComponentFamily with the specified name in this
-	 *         ComponentRepository or null if none exists.
-	 * @throws ComponentRegistryException
-	 *             if there is a problem accessing the ComponentRegistry.
-	 */
-	public final ComponentFamily getComponentFamily(String familyName) throws ComponentRegistryException {
+	protected abstract void populateFamilyCache() throws RegistryException;
+
+	@Override
+	public final Family getComponentFamily(String familyName)
+			throws RegistryException {
 		checkFamilyCache();
 		return familyCache.get(familyName);
 	}
 
-	/**
-	 * Creates a new ComponentFamily and adds it to this ComponentRegistry.
-	 *
-	 * @param familyName
-	 *            the name of the ComponentFamily to create. Must not be null.
-	 * @param componentProfile
-	 *            the ComponentProfile for the new ComponentFamily. Must not be
-	 *            null.
-	 * @param sharingPolicy 
-	 * 			  the SharingPolicy to use for the new ComponentFamily.
-	 * @return the new ComponentFamily
-	 * @throws ComponentRegistryException
-	 *             <ul>
-	 *             <li>if familyName is null,
-	 *             <li>if componentProfile is null,
-	 *             <li>if a ComponentFamily with this name already exists,
-	 *             <li>if there is a problem accessing the ComponentRegistry.
-	 *             </ul>
-	 */
-	public final ComponentFamily createComponentFamily(String familyName,
-			ComponentProfile componentProfile, String description,
-			License license, SharingPolicy sharingPolicy) throws ComponentRegistryException {
+	@Override
+	public final Family createComponentFamily(String familyName,
+			Profile componentProfile, String description, License license,
+			SharingPolicy sharingPolicy) throws RegistryException {
 		if (familyName == null) {
-			throw new ComponentRegistryException(("Component family name must not be null"));
+			throw new RegistryException(
+					("Component family name must not be null"));
 		}
 		if (componentProfile == null) {
-			throw new ComponentRegistryException(("Component profile must not be null"));
+			throw new RegistryException(("Component profile must not be null"));
 		}
 		if (getComponentFamily(familyName) != null) {
-			throw new ComponentRegistryException(("Component family already exists"));
+			throw new RegistryException(("Component family already exists"));
 		}
-		ComponentFamily result = internalCreateComponentFamily(familyName, componentProfile, description, license, sharingPolicy);
+		Family result = internalCreateComponentFamily(familyName,
+				componentProfile, description, license, sharingPolicy);
 		checkFamilyCache();
-		synchronized(familyCache) {
+		synchronized (familyCache) {
 			familyCache.put(familyName, result);
 		}
 		return result;
 	}
-	
-	protected abstract ComponentFamily internalCreateComponentFamily(String familyName,
-			ComponentProfile componentProfile, String description,
-			License license, SharingPolicy sharingPolicy) throws ComponentRegistryException;
 
-	/**
-	 * Removes a the ComponentFamily with the specified name from this
-	 * ComponentRegistry.
-	 * <p>
-	 * If this ComponentRegistry does not contain a ComponentFamily with the
-	 * specified name this method has no effect.
-	 *
-	 * @param componentFamily
-	 *            the ComponentFamily to remove.
-	 * @throws ComponentRegistryException
-	 *             if there is a problem accessing the ComponentRegistry.
-	 */
-	public final void removeComponentFamily(ComponentFamily componentFamily)
-			throws ComponentRegistryException {
+	protected abstract Family internalCreateComponentFamily(String familyName,
+			Profile componentProfile, String description, License license,
+			SharingPolicy sharingPolicy) throws RegistryException;
+
+	@Override
+	public final void removeComponentFamily(Family componentFamily)
+			throws RegistryException {
 		if (componentFamily != null) {
 			checkFamilyCache();
-			synchronized(familyCache) {
+			synchronized (familyCache) {
 				familyCache.remove(componentFamily.getName());
 			}
 		}
 		internalRemoveComponentFamily(componentFamily);
 	}
 
-	protected abstract void internalRemoveComponentFamily(ComponentFamily componentFamily)
-	throws ComponentRegistryException;
+	protected abstract void internalRemoveComponentFamily(Family componentFamily)
+			throws RegistryException;
 
-	/**
-	 * Returns the location of this ComponentRepository.
-	 *
-	 * @return the location of this ComponentRepository
-	 */
+	@Override
 	public final URL getRegistryBase() {
 		return registryBase;
 	}
-	
+
+	@Override
 	public final String getRegistryBaseString() {
-            String urlString = getRegistryBase().toString();
-            if (urlString.endsWith("/")) {
-                    urlString = urlString.substring(0, urlString.length() - 1);
-            }
-            return urlString;
+		String urlString = getRegistryBase().toString();
+		if (urlString.endsWith("/")) {
+			urlString = urlString.substring(0, urlString.length() - 1);
+		}
+		return urlString;
 	}
 
-	private void checkProfileCache() throws ComponentRegistryException {
-		synchronized(profileCache) {
+	private void checkProfileCache() throws RegistryException {
+		synchronized (profileCache) {
 			if (profileCache.isEmpty()) {
 				populateProfileCache();
 			}
 		}
 	}
-	
-	protected abstract void populateProfileCache() throws ComponentRegistryException;
-	
-	/**
-	 * Returns all the ComponentProfiles in this ComponetRegistry.
-	 * <p>
-	 * If this ComponentRegistry does not contain any ComponentProfiles an empty
-	 * list is returned.
-	 *
-	 * @return all the ComponentProfiles in this ComponetRegistry.
-	 * @throws ComponentRegistryException
-	 *             if there is a problem accessing the ComponentRegistry.
-	 */
-	public final List<ComponentProfile> getComponentProfiles() throws ComponentRegistryException {
+
+	protected abstract void populateProfileCache() throws RegistryException;
+
+	@Override
+	public final List<Profile> getComponentProfiles() throws RegistryException {
 		checkProfileCache();
 		return profileCache;
 	}
 
-	/**
-	 * Adds a ComponentProfile to this ComponentRegistry.
-	 *
-	 * @param componentProfile
-	 *            the ComponentProfile to add. Must not be null.
-	 * @param sharingPolicy 
-	 * @param license 
-	 * @return the ComponentProfile added to this ComponentRegistry.
-	 * @throws ComponentRegistryException
-	 *             <ul>
-	 *             <li>if componentProfile is null,
-	 *             <li>if there is a problem accessing the ComponentRegistry.
-	 *             </ul>
-	 */
-	public final ComponentProfile addComponentProfile(ComponentProfile componentProfile, License license, SharingPolicy sharingPolicy)
-			throws ComponentRegistryException {
+	@Override
+	public final Profile addComponentProfile(Profile componentProfile,
+			License license, SharingPolicy sharingPolicy)
+			throws RegistryException {
 		if (componentProfile == null) {
-			throw new ComponentRegistryException("componentProfile is null");
+			throw new RegistryException("componentProfile is null");
 		}
-		ComponentProfile result = null;
+		Profile result = null;
 		checkProfileCache();
-		for (ComponentProfile p : this.getComponentProfiles()) {
+		for (Profile p : getComponentProfiles()) {
 			if (p.getId().equals(componentProfile.getId())) {
 				result = p;
 				break;
 			}
 		}
 		if (result == null) {
-			result = internalAddComponentProfile(componentProfile, license, sharingPolicy);
-			synchronized(profileCache) {
+			result = internalAddComponentProfile(componentProfile, license,
+					sharingPolicy);
+			synchronized (profileCache) {
 				profileCache.add(result);
 			}
 		}
 		return result;
 	}
 
-	protected abstract ComponentProfile internalAddComponentProfile(ComponentProfile componentProfile, License license, SharingPolicy sharingPolicy) throws ComponentRegistryException;
-	
+	protected abstract Profile internalAddComponentProfile(
+			Profile componentProfile, License license,
+			SharingPolicy sharingPolicy) throws RegistryException;
+
 	private void checkPermissionCache() {
-		synchronized(permissionCache) {
+		synchronized (permissionCache) {
 			if (permissionCache.isEmpty()) {
 				populatePermissionCache();
 			}
 		}
 	}
-	
+
 	protected abstract void populatePermissionCache();
-	
-	public final List<SharingPolicy> getPermissions() throws ComponentRegistryException {
+
+	@Override
+	public final List<SharingPolicy> getPermissions() throws RegistryException {
 		checkPermissionCache();
 		return permissionCache;
 	}
 
 	private void checkLicenseCache() {
-		synchronized(licenseCache) {
+		synchronized (licenseCache) {
 			if (licenseCache.isEmpty()) {
 				populateLicenseCache();
 			}
 		}
 	}
-	
+
 	protected abstract void populateLicenseCache();
-	
-	public final List<License> getLicenses() throws ComponentRegistryException {
+
+	@Override
+	public final List<License> getLicenses() throws RegistryException {
 		checkLicenseCache();
 		return licenseCache;
 	}
 
 	protected License getLicenseByAbbreviation(String licenseString)
-			throws ComponentRegistryException {
+			throws RegistryException {
 		checkLicenseCache();
 		for (License l : getLicenses()) {
 			if (l.getAbbreviation().equals(licenseString)) {
@@ -290,9 +229,12 @@ public abstract class ComponentRegistry {
 		}
 		return null;
 	}
-	
-	public abstract License getPreferredLicense() throws ComponentRegistryException;
 
-	public abstract Set<ComponentVersionIdentification> searchForComponents(String prefixString, String text) throws ComponentRegistryException;
+	@Override
+	public abstract License getPreferredLicense() throws RegistryException;
+
+	@Override
+	public abstract Set<Version.ID> searchForComponents(String prefixString,
+			String text) throws RegistryException;
 
 }

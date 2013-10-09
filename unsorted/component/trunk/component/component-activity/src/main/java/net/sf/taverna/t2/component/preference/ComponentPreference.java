@@ -15,18 +15,18 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
-import net.sf.taverna.t2.component.registry.ComponentRegistry;
-import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.api.Registry;
+import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.registry.ComponentUtil;
 
 import org.apache.log4j.Logger;
 
 /**
  * @author alanrw
- *
+ * 
  */
 public class ComponentPreference {
-	
+
 	private static final String MYEXPERIMENT_NAME = "myExperiment";
 
 	private static final String MYEXPERIMENT_SITE = "http://www.myexperiment.org";
@@ -34,18 +34,18 @@ public class ComponentPreference {
 	private final Logger logger = Logger.getLogger(ComponentPreference.class);
 
 	private static ComponentPreference instance = null;
-	
+
 	private final Properties properties;
-	
-	private SortedMap<String, ComponentRegistry> registryMap = new TreeMap<String, ComponentRegistry> ();
-	
+
+	private SortedMap<String, Registry> registryMap = new TreeMap<String, Registry>();
+
 	public static ComponentPreference getInstance() {
 		if (instance == null) {
 			instance = new ComponentPreference();
 		}
 		return instance;
 	}
-	
+
 	private ComponentPreference() {
 		File configFile = getConfigFile();
 		this.properties = new Properties();
@@ -59,54 +59,59 @@ public class ComponentPreference {
 			} catch (final IOException e) {
 				this.logger.error(e);
 			}
-		}
-		else {
+		} else {
 			fillDefaultProperties();
 		}
 		updateRegistryMap();
 	}
-	
+
 	private void updateRegistryMap() {
 		registryMap.clear();
 		for (Object key : properties.keySet()) {
 			String name = (String) key;
 			try {
-				registryMap.put(name, ComponentUtil.calculateRegistry(new URL((String) properties.get(name))));
+				registryMap.put(name, ComponentUtil.calculateRegistry(new URL(
+						(String) properties.get(name))));
 			} catch (MalformedURLException e) {
 				logger.error(e);
-			} catch (ComponentRegistryException e) {
+			} catch (RegistryException e) {
 				logger.error(e);
 			}
 		}
 	}
 
 	private void fillDefaultProperties() {
-			properties.setProperty("local registry", calculateComponentsDirectoryPath());
+		properties.setProperty("local registry",
+				calculateComponentsDirectoryPath());
 		properties.setProperty(MYEXPERIMENT_NAME, MYEXPERIMENT_SITE);
 	}
 
 	public String calculateComponentsDirectoryPath() {
-		return (new File(ApplicationRuntime.getInstance().getApplicationHomeDir(), "components")).toURI().toASCIIString();
+		return (new File(ApplicationRuntime.getInstance()
+				.getApplicationHomeDir(), "components")).toURI()
+				.toASCIIString();
 	}
 
 	private File getConfigFile() {
-		final File home = ApplicationRuntime.getInstance().getApplicationHomeDir();
-		final File config = new File(home,"conf");
+		final File home = ApplicationRuntime.getInstance()
+				.getApplicationHomeDir();
+		final File config = new File(home, "conf");
 		if (!config.exists()) {
 			config.mkdir();
 		}
-		final File configFile = new File(config,
-				this.getFilePrefix() + "-" + this.getUUID() + ".config");
+		final File configFile = new File(config, this.getFilePrefix() + "-"
+				+ this.getUUID() + ".config");
 		return configFile;
-		
+
 	}
-	
+
 	public void store() {
-		
+
 		this.properties.clear();
-		
+
 		for (String key : registryMap.keySet()) {
-			this.properties.put(key, registryMap.get(key).getRegistryBase().toString());
+			this.properties.put(key, registryMap.get(key).getRegistryBase()
+					.toString());
 		}
 		try {
 			final FileOutputStream out = new FileOutputStream(getConfigFile());
@@ -119,7 +124,6 @@ public class ComponentPreference {
 		}
 	}
 
-
 	public String getFilePrefix() {
 		return "Component";
 	}
@@ -131,22 +135,23 @@ public class ComponentPreference {
 	/**
 	 * @return the registryMap
 	 */
-	public SortedMap<String, ComponentRegistry> getRegistryMap() {
+	public SortedMap<String, Registry> getRegistryMap() {
 		return registryMap;
 	}
 
 	public String getRegistryName(URL registryBase) {
 		String result = registryBase.toString();
 		for (String name : registryMap.keySet()) {
-			if (registryMap.get(name).getRegistryBase().toString().equals(registryBase.toString())) {
+			if (registryMap.get(name).getRegistryBase().toString()
+					.equals(registryBase.toString())) {
 				result = name;
 				break;
 			}
 		}
 		return result;
 	}
-	
-	public void setRegistryMap(SortedMap<String, ComponentRegistry> registries) {
+
+	public void setRegistryMap(SortedMap<String, Registry> registries) {
 		registryMap.clear();
 		for (String s : registries.keySet()) {
 			registryMap.put(s, registries.get(s));

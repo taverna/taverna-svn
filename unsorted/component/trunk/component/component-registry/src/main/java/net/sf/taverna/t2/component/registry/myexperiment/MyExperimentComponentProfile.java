@@ -22,9 +22,8 @@ package net.sf.taverna.t2.component.registry.myexperiment;
 
 import java.net.URL;
 
+import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
-import net.sf.taverna.t2.component.registry.ComponentRegistry;
-import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 
 /**
  *
@@ -35,12 +34,12 @@ public class MyExperimentComponentProfile extends ComponentProfile {
 
 	private final String uri;
 
-	public MyExperimentComponentProfile(MyExperimentComponentRegistry componentRegistry, String uri, URL profileURL) throws ComponentRegistryException {
+	public MyExperimentComponentProfile(MyExperimentComponentRegistry componentRegistry, String uri, URL profileURL) throws RegistryException {
 		super(componentRegistry, profileURL);
 		this.uri = uri;
 	}
 
-	public MyExperimentComponentProfile(MyExperimentComponentRegistry componentRegistry, String uri, String profileString) throws ComponentRegistryException {
+	public MyExperimentComponentProfile(MyExperimentComponentRegistry componentRegistry, String uri, String profileString) throws RegistryException {
 		super(componentRegistry, profileString);
 		this.uri = uri;
 	}

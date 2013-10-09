@@ -7,9 +7,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
+import net.sf.taverna.t2.component.api.RegistryException;
+import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.registry.Component;
-import net.sf.taverna.t2.component.registry.ComponentRegistryException;
-import net.sf.taverna.t2.component.registry.ComponentVersion;
 import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
 import net.sf.taverna.t2.workbench.file.impl.T2DataflowSaver;
 import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
@@ -39,7 +39,7 @@ public class LocalComponent extends Component {
 	 * @see net.sf.taverna.t2.component.registry.Component#addVersionBasedOn(net.sf.taverna.t2.workflowmodel.Dataflow)
 	 */
 	@Override
-	protected final ComponentVersion internalAddVersionBasedOn(Dataflow dataflow, String revisionComment) throws ComponentRegistryException {
+	protected final Version internalAddVersionBasedOn(Dataflow dataflow, String revisionComment) throws RegistryException {
 		Integer nextVersionNumber = Integer.valueOf(1);
 		try {
 			nextVersionNumber = getComponentVersionMap().lastKey() + 1;
@@ -55,13 +55,13 @@ public class LocalComponent extends Component {
 			saver.saveDataflow(dataflow, T2_FLOW_FILE_TYPE, dataflowFile);
 		} catch (SaveException e) {
 			logger.error("Unable to save component version", e);
-			throw new ComponentRegistryException("Unable to save component version", e);
+			throw new RegistryException("Unable to save component version", e);
 		}
 		File revisionCommentFile = new File(newVersionDir, "description");
 		try {
 			FileUtils.writeStringToFile(revisionCommentFile, revisionComment, "utf-8");
 		} catch (IOException e) {
-			throw new ComponentRegistryException("Could not write out description", e);
+			throw new RegistryException("Could not write out description", e);
 		}
 
 		return newComponentVersion;

@@ -15,15 +15,15 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 /**
  * @author alanrw
- *
+ * 
  */
-public class OpenComponentFromComponentActivityMenuAction extends AbstractContextualMenuAction {
-	
+public class OpenComponentFromComponentActivityMenuAction extends
+		AbstractContextualMenuAction {
 	private static final URI configureSection = URI
-	.create("http://taverna.sf.net/2009/contextMenu/configure");
-	
+			.create("http://taverna.sf.net/2009/contextMenu/configure");
+
 	private static OpenComponentFromComponentActivityAction action = new OpenComponentFromComponentActivityAction();
-	
+
 	public OpenComponentFromComponentActivityMenuAction() {
 		super(configureSection, 75);
 	}
@@ -32,12 +32,8 @@ public class OpenComponentFromComponentActivityMenuAction extends AbstractContex
 		return (getSelectedActivity() != null);
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.ui.menu.AbstractMenuAction#createAction()
-	 */
 	@Override
 	protected Action createAction() {
-
 		action.setSelection(getSelectedActivity());
 		return action;
 	}
@@ -55,9 +51,9 @@ public class OpenComponentFromComponentActivityMenuAction extends AbstractContex
 		if (activities.isEmpty()) {
 			return null;
 		}
-		Activity a = activities.get(0);
+		Activity<?> a = activities.get(0);
 		if (a instanceof ComponentActivity) {
-			return (ComponentActivity)a;
+			return (ComponentActivity) a;
 		}
 		return null;
 	}

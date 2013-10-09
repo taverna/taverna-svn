@@ -20,10 +20,10 @@ import org.apache.log4j.Logger;
 
 /**
  * @author alanrw
- *
+ * 
  */
-public class ComponentSaveAction extends AbstractAction implements Observer<FileManagerEvent> {
-	
+public class ComponentSaveAction extends AbstractAction implements
+		Observer<FileManagerEvent> {
 	/**
 	 * 
 	 */
@@ -31,33 +31,28 @@ public class ComponentSaveAction extends AbstractAction implements Observer<File
 
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(ComponentSaveAction.class);
-	
+
 	private static Action saveWorkflowAction = new SaveWorkflowAction();
-	
+
 	private static FileManager fileManager = FileManager.getInstance();
-	
+
 	private static final String SAVE_COMPONENT = "Save component";
-	
+
 	public ComponentSaveAction() {
-		super (SAVE_COMPONENT, ComponentServiceIcon.getIcon());
+		super(SAVE_COMPONENT, ComponentServiceIcon.getIcon());
 		fileManager.addObserver(this);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-	 */
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		
 		saveWorkflowAction.actionPerformed(arg0);
 	}
-
 
 	@Override
 	public void notify(Observable<FileManagerEvent> sender,
 			FileManagerEvent message) throws Exception {
-		this.setEnabled(/* saveWorkflowAction.isEnabled() && */ Utils.currentDataflowIsComponent());
+		setEnabled(/* saveWorkflowAction.isEnabled() && */Utils
+				.currentDataflowIsComponent());
 	}
 
 }

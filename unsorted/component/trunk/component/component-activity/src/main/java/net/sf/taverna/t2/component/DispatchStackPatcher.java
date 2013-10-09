@@ -11,40 +11,37 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke;
 
 import org.apache.log4j.Logger;
 
-public class DispatchStackPatcher implements
-		HealthChecker<ComponentActivity> {
-	
-	private static Logger logger = Logger.getLogger(DispatchStackPatcher.class);
-	
+public class DispatchStackPatcher implements HealthChecker<ComponentActivity> {
 
+	private static Logger logger = Logger.getLogger(DispatchStackPatcher.class);
 
 	public boolean canVisit(Object o) {
 		return false;
-//		return o instanceof ComponentActivity;
+		// return o instanceof ComponentActivity;
 	}
 
 	public boolean isTimeConsuming() {
-	return false;
+		return false;
 	}
 
 	public VisitReport visit(ComponentActivity a, List<Object> ancestry) {
-		Processor p = (Processor) VisitReport.findAncestor(ancestry, Processor.class);
+		Processor p = (Processor) VisitReport.findAncestor(ancestry,
+				Processor.class);
 		DispatchStackImpl ds = (DispatchStackImpl) p.getDispatchStack();
 		List<DispatchLayer<?>> layers = ds.getLayers();
 		DispatchLayer<?> oldLayer = null;
 		for (DispatchLayer<?> dl : layers) {
-			if ((dl instanceof Invoke) && !(dl instanceof PatchedInvoke)){
+			if ((dl instanceof Invoke) && !(dl instanceof PatchedInvoke)) {
 				oldLayer = dl;
 			}
 		}
 		try {
-		if (oldLayer != null) {
-			int oldIndex = ds.removeLayer(oldLayer);
+			if (oldLayer != null) {
+				int oldIndex = ds.removeLayer(oldLayer);
 
-			ds.addLayer(new PatchedInvoke(), oldIndex);
-		}
-		}
-		catch (Exception e) {
+				ds.addLayer(new PatchedInvoke(), oldIndex);
+			}
+		} catch (Exception e) {
 			logger.error(e);
 		}
 		return null;

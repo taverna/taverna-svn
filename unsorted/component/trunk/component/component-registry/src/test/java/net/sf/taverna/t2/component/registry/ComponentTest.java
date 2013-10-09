@@ -26,7 +26,10 @@ import static org.junit.Assert.assertNull;
 
 import java.net.URL;
 
-import net.sf.taverna.t2.component.profile.ComponentProfile;
+import net.sf.taverna.t2.component.api.Component;
+import net.sf.taverna.t2.component.api.Family;
+import net.sf.taverna.t2.component.api.Profile;
+import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -37,29 +40,34 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- *
- *
+ * 
+ * 
  * @author David Withers
  */
 @Ignore
-public class ComponentTest {
-
-	protected static URL componentRegistryUrl;
-	protected static ComponentRegistry componentRegistry;
-	private ComponentFamily componentFamily;
+public class ComponentTest extends Harness {
+	private Family componentFamily;
 	private Component component;
 	private Dataflow dataflow;
 
 	@Before
 	public void setUp() throws Exception {
-		URL dataflowUrl = getClass().getClassLoader().getResource("beanshell_test.t2flow");
+		URL dataflowUrl = getClass().getClassLoader().getResource(
+				"beanshell_test.t2flow");
 		assertNotNull(dataflowUrl);
-		dataflow = FileManager.getInstance().openDataflowSilently(new T2FlowFileType(), dataflowUrl).getDataflow();
-		URL componentProfileUrl = getClass().getClassLoader().getResource("ValidationComponent.xml");
+		dataflow = FileManager.getInstance()
+				.openDataflowSilently(new T2FlowFileType(), dataflowUrl)
+				.getDataflow();
+		URL componentProfileUrl = getClass().getClassLoader().getResource(
+				"ValidationComponent.xml");
 		assertNotNull(componentProfileUrl);
-		ComponentProfile componentProfile = new ComponentProfile(null, componentProfileUrl);
-		componentFamily = componentRegistry.createComponentFamily("Test Component Family", componentProfile, "Some description", null, null);
-		component = componentFamily.createComponentBasedOn("Test Component", "Some description", dataflow).getComponent();
+		Profile componentProfile = ComponentUtil
+				.makeProfile(componentProfileUrl);
+		componentFamily = componentRegistry.createComponentFamily(
+				"Test Component Family", componentProfile, "Some description",
+				null, null);
+		component = componentFamily.createComponentBasedOn("Test Component",
+				"Some description", dataflow).getComponent();
 	}
 
 	@After
@@ -77,7 +85,8 @@ public class ComponentTest {
 	public void testGetComponentVersionMap() throws Exception {
 		assertNotNull(component.getComponentVersionMap());
 		assertEquals(1, component.getComponentVersionMap().size());
-		assertEquals(component, component.getComponentVersionMap().get(1).getComponent());
+		assertEquals(component, component.getComponentVersionMap().get(1)
+				.getComponent());
 	}
 
 	@Test
@@ -90,11 +99,13 @@ public class ComponentTest {
 	public void testAddVersionBasedOn() throws Exception {
 		assertNotNull(component.getComponentVersion(1));
 		assertNull(component.getComponentVersion(2));
-		ComponentVersion componentVersion = component.addVersionBasedOn(dataflow, "Some description");
+		Version componentVersion = component.addVersionBasedOn(dataflow,
+				"Some description");
 		assertNotNull(componentVersion);
 		assertEquals(component, componentVersion.getComponent());
 		assertEquals(2, componentVersion.getVersionNumber().intValue());
-		assertEquals(dataflow.getIdentifier(), componentVersion.getDataflow().getIdentifier());
+		assertEquals(dataflow.getIdentifier(), componentVersion.getDataflow()
+				.getIdentifier());
 	}
 
 	@Test

@@ -11,8 +11,7 @@ import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityCon
 @SuppressWarnings("serial")
 public class ComponentConfigureAction
 		extends
-		ActivityConfigurationAction<ComponentActivity,
-        ComponentActivityConfigurationBean> {
+		ActivityConfigurationAction<ComponentActivity, ComponentActivityConfigurationBean> {
 
 	public ComponentConfigureAction(ComponentActivity activity, Frame owner) {
 		super(activity);
@@ -28,8 +27,7 @@ public class ComponentConfigureAction
 		}
 		ComponentConfigurationPanel panel = new ComponentConfigurationPanel(
 				getActivity());
-		ActivityConfigurationDialog<ComponentActivity,
-        ComponentActivityConfigurationBean> dialog = new ActivityConfigurationDialog<ComponentActivity, ComponentActivityConfigurationBean>(
+		ActivityConfigurationDialog<ComponentActivity, ComponentActivityConfigurationBean> dialog = new ActivityConfigurationDialog<ComponentActivity, ComponentActivityConfigurationBean>(
 				getActivity(), panel);
 
 		ActivityConfigurationAction.setDialog(getActivity(), dialog);

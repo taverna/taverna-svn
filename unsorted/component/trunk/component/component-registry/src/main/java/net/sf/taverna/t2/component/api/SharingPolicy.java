@@ -1,7 +1,7 @@
 /**
  * 
  */
-package net.sf.taverna.t2.component.registry;
+package net.sf.taverna.t2.component.api;
 
 /**
  * @author alanrw

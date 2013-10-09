@@ -5,7 +5,7 @@ import java.awt.Color;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 
-import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
+import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.lang.ui.HtmlUtils;
 import net.sf.taverna.t2.workbench.ui.impl.configuration.colour.ColourManager;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
@@ -14,9 +14,9 @@ import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 public class ComponentContextualView extends ContextualView {
 
 	private JEditorPane editorPane;
-	private final ComponentVersionIdentification component;
+	private final Version.ID component;
 
-	public ComponentContextualView(ComponentVersionIdentification component) {
+	public ComponentContextualView(Version.ID component) {
 		this.component = component;
 		initView();
 	}
@@ -31,10 +31,14 @@ public class ComponentContextualView extends ContextualView {
 		String html = HtmlUtils.getHtmlHead(getBackgroundColour());
 		html += HtmlUtils.buildTableOpeningTag();
 
-		html += "<tr><td>Registry base</td><td title=\"Hello Alan\">" + component.getRegistryBase().toString() + "</td></tr>";
-		html += "<tr><td>Family</td><td>" + component.getFamilyName() + "</td></tr>";
-		html += "<tr><td>Name</td><td>" + component.getComponentName() + "</td></tr>";
-		html += "<tr><td>Version</td><td>" + component.getComponentVersion() + "</td></tr>";
+		html += "<tr><td>Registry base</td><td title=\"Hello Alan\">"
+				+ component.getRegistryBase().toString() + "</td></tr>";
+		html += "<tr><td>Family</td><td>" + component.getFamilyName()
+				+ "</td></tr>";
+		html += "<tr><td>Name</td><td>" + component.getComponentName()
+				+ "</td></tr>";
+		html += "<tr><td>Version</td><td>" + component.getComponentVersion()
+				+ "</td></tr>";
 
 		html += "</table>";
 		html += "</body></html>";
@@ -42,8 +46,10 @@ public class ComponentContextualView extends ContextualView {
 	}
 
 	public String getBackgroundColour() {
-		Color colour = ColourManager.getInstance().getPreferredColour("net.sf.taverna.t2.component.registry.Component");
-		return String.format("#%1$2x%2$2x%3$2x", colour.getRed(),colour.getGreen(),colour.getBlue());
+		Color colour = ColourManager.getInstance().getPreferredColour(
+				"net.sf.taverna.t2.component.registry.Component");
+		return String.format("#%1$2x%2$2x%3$2x", colour.getRed(),
+				colour.getGreen(), colour.getBlue());
 	}
 
 	@Override

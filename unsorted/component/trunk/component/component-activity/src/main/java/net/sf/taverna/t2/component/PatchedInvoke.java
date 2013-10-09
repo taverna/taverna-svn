@@ -53,7 +53,6 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchResultE
 
 import org.apache.log4j.Logger;
 
-
 /**
  * Context free invoker layer, does not pass index arrays of jobs into activity
  * instances.
@@ -71,10 +70,10 @@ import org.apache.log4j.Logger;
 @DispatchLayerJobReaction(emits = { ERROR, RESULT_COMPLETION, RESULT }, relaysUnmodified = false, stateEffects = {})
 @ControlBoundary
 public class PatchedInvoke extends AbstractDispatchLayer<Object> {
-
-	private static Logger logger = Logger.getLogger(PatchedInvoke.class);
-	
+	private static final Logger logger = Logger.getLogger(PatchedInvoke.class);
 	private static Long invocationCount = 0L;
+	private static final MonitorManager monitorManager = MonitorManager
+			.getInstance();
 
 	private static String getNextProcessID() {
 		synchronized (invocationCount) {
@@ -116,7 +115,7 @@ public class PatchedInvoke extends AbstractDispatchLayer<Object> {
 				final String invocationProcessIdentifier = jobEvent
 						.pushOwningProcess(getNextProcessID())
 						.getOwningProcess();
-				MonitorManager.getInstance().registerNode(activity,
+				monitorManager.registerNode(activity,
 						invocationProcessIdentifier.split(":"),
 						new HashSet<MonitorableProperty<?>>());
 
@@ -133,7 +132,7 @@ public class PatchedInvoke extends AbstractDispatchLayer<Object> {
 				InvocationContext context = jobEvent.getContext();
 				final ReferenceService refService = context
 						.getReferenceService();
-				
+
 				// Create a Map of EntityIdentifiers named appropriately given
 				// the activity mapping
 				Map<String, T2Reference> inputData = new HashMap<String, T2Reference>();
@@ -158,7 +157,7 @@ public class PatchedInvoke extends AbstractDispatchLayer<Object> {
 					MonitorableAsynchronousActivity<?> maa = (MonitorableAsynchronousActivity<?>) asyncActivity;
 					Set<MonitorableProperty<?>> props = maa
 							.executeAsynchWithMonitoring(inputData, callback);
-					MonitorManager.getInstance().addPropertiesToNode(
+					monitorManager.addPropertiesToNode(
 							invocationProcessIdentifier.split(":"), props);
 				} else {
 					// Run the job, passing in the callback we've just created
@@ -170,7 +169,8 @@ public class PatchedInvoke extends AbstractDispatchLayer<Object> {
 		}
 	}
 
-	protected class PatchedInvokeCallBack implements AsynchronousActivityCallback {
+	protected class PatchedInvokeCallBack implements
+			AsynchronousActivityCallback {
 		protected final AsynchronousActivity<?> asyncActivity;
 		protected final String invocationProcessIdentifier;
 		protected final DispatchJobEvent jobEvent;
@@ -201,8 +201,7 @@ public class PatchedInvoke extends AbstractDispatchLayer<Object> {
 				DispatchErrorType errorType) {
 			logger.warn("Failed (" + errorType + ") invoking " + asyncActivity
 					+ " for job " + jobEvent + ": " + message, t);
-			MonitorManager.getInstance().deregisterNode(
-					invocationProcessIdentifier);
+			monitorManager.deregisterNode(invocationProcessIdentifier);
 			getAbove().receiveError(
 					new DispatchErrorEvent(jobEvent.getOwningProcess(),
 							jobEvent.getIndex(), jobEvent.getContext(),
@@ -220,8 +219,7 @@ public class PatchedInvoke extends AbstractDispatchLayer<Object> {
 		public void receiveCompletion(int[] completionIndex) {
 			if (completionIndex.length == 0) {
 				// Final result, clean up monitor state
-				MonitorManager.getInstance().deregisterNode(
-						invocationProcessIdentifier);
+				monitorManager.deregisterNode(invocationProcessIdentifier);
 			}
 			if (sentJob) {
 				int[] newIndex;
@@ -239,8 +237,8 @@ public class PatchedInvoke extends AbstractDispatchLayer<Object> {
 					}
 				}
 				DispatchCompletionEvent c = new DispatchCompletionEvent(
-						jobEvent.getOwningProcess(), newIndex, jobEvent
-								.getContext());
+						jobEvent.getOwningProcess(), newIndex,
+						jobEvent.getContext());
 				getAbove().receiveResultCompletion(c);
 			} else {
 				// We haven't sent any 'real' data prior to
@@ -254,8 +252,12 @@ public class PatchedInvoke extends AbstractDispatchLayer<Object> {
 				for (OutputPort op : asyncActivity.getOutputPorts()) {
 					String portName = op.getName();
 					int portDepth = op.getDepth();
-					emptyListMap.put(portName, refService.getListService()
-							.registerEmptyList(portDepth, jobEvent.getContext()).getId());
+					emptyListMap.put(
+							portName,
+							refService
+									.getListService()
+									.registerEmptyList(portDepth,
+											jobEvent.getContext()).getId());
 				}
 				receiveResult(emptyListMap, new int[0]);
 			}
@@ -264,19 +266,20 @@ public class PatchedInvoke extends AbstractDispatchLayer<Object> {
 
 		public void receiveResult(Map<String, T2Reference> data, int[] index) {
 
-			ErrorDocumentService errorDocumentService = refService.getErrorDocumentService();
+			ErrorDocumentService errorDocumentService = refService
+					.getErrorDocumentService();
 
 			if (index.length == 0) {
 				// Final result, clean up monitor state
-				MonitorManager.getInstance().deregisterNode(
-						invocationProcessIdentifier);
-				
+				monitorManager.deregisterNode(invocationProcessIdentifier);
+
 				// Fill in missing port values
 				for (OutputPort activityOutput : asyncActivity.getOutputPorts()) {
 					String name = activityOutput.getName();
 					if (!data.containsKey(name)) {
 						ErrorDocument errorDoc = errorDocumentService
-						.registerError("No data returned on port" , activityOutput.getDepth(), null);
+								.registerError("No data returned on port",
+										activityOutput.getDepth(), null);
 						data.put(name, errorDoc.getId());
 					}
 				}
@@ -291,15 +294,18 @@ public class PatchedInvoke extends AbstractDispatchLayer<Object> {
 				if (processorOutputName != null) {
 					@SuppressWarnings("unused")
 					T2Reference ref = data.get(outputName);
-//					if (ref.containsErrors()) {
-//						Processor p = getProcessor();
-//						String message = "Processor '" + getProcessor().getLocalName() + "' - Port '" + processorOutputName + "'";
-//						resultMap.put (processorOutputName,
-//								errorDocumentService
-//						.registerError(message , Collections.singleton(ref), ref.getDepth(), null).getId());
-//					} else {
-						resultMap.put(processorOutputName, data.get(outputName));
-//					}
+					// if (ref.containsErrors()) {
+					// Processor p = getProcessor();
+					// String message = "Processor '" +
+					// getProcessor().getLocalName() + "' - Port '" +
+					// processorOutputName + "'";
+					// resultMap.put (processorOutputName,
+					// errorDocumentService
+					// .registerError(message , Collections.singleton(ref),
+					// ref.getDepth(), null).getId());
+					// } else {
+					resultMap.put(processorOutputName, data.get(outputName));
+					// }
 				}
 			}
 			// Construct a new index array if the specified index is
@@ -320,27 +326,30 @@ public class PatchedInvoke extends AbstractDispatchLayer<Object> {
 					newIndex[i++] = indexValue;
 				}
 			}
-			DispatchResultEvent resultEvent = new DispatchResultEvent(jobEvent
-					.getOwningProcess(), newIndex, jobEvent.getContext(),
-					resultMap, streaming);
+			DispatchResultEvent resultEvent = new DispatchResultEvent(
+					jobEvent.getOwningProcess(), newIndex,
+					jobEvent.getContext(), resultMap, streaming);
 			// Push the modified data to the layer above in the
 			// dispatch stack
 			getAbove().receiveResult(resultEvent);
 
 			sentJob = true;
-		}	
+		}
 
 		public void requestRun(Runnable runMe) {
 			String newThreadName = jobEvent.toString();
 			Thread thread = new Thread(runMe, newThreadName);
-			thread.setContextClassLoader(asyncActivity.getClass().getClassLoader());
-			thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler(){
+			thread.setContextClassLoader(asyncActivity.getClass()
+					.getClassLoader());
+			thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
 				public void uncaughtException(Thread t, Throwable e) {
-					fail("Uncaught exception while invoking " + asyncActivity, e);
-				}});
+					fail("Uncaught exception while invoking " + asyncActivity,
+							e);
+				}
+			});
 			thread.start();
 		}
-		
+
 		public void overrideContext(InvocationContext newContext) {
 			this.context = newContext;
 		}

@@ -28,7 +28,7 @@ import uk.org.taverna.ns._2012.component.profile.SemanticAnnotation;
 
 /**
  * Specifies the semantic annotations that a port must have.
- *
+ * 
  * @author David Withers
  */
 public class PortProfile {
@@ -43,16 +43,19 @@ public class PortProfile {
 
 	public List<SemanticAnnotationProfile> getSemanticAnnotations() {
 		List<SemanticAnnotationProfile> semanticAnnotationProfiles = new ArrayList<SemanticAnnotationProfile>();
-		List<SemanticAnnotation> semanticAnnotations = port.getSemanticAnnotation();
+		List<SemanticAnnotation> semanticAnnotations = port
+				.getSemanticAnnotation();
 		for (SemanticAnnotation semanticAnnotation : semanticAnnotations) {
-			semanticAnnotationProfiles.add(new SemanticAnnotationProfile(componentProfile, semanticAnnotation));
+			semanticAnnotationProfiles.add(new SemanticAnnotationProfile(
+					componentProfile, semanticAnnotation));
 		}
 		return semanticAnnotationProfiles;
 	}
 
 	@Override
 	public String toString() {
-		return "PortProfile \n  SemanticAnnotations : " + getSemanticAnnotations();
+		return "PortProfile \n  SemanticAnnotations : "
+				+ getSemanticAnnotations();
 	}
 
 }

@@ -12,10 +12,10 @@ import javax.swing.JLabel;
 
 import net.sf.taverna.t2.component.ComponentActivity;
 import net.sf.taverna.t2.component.ComponentActivityConfigurationBean;
-import net.sf.taverna.t2.component.registry.Component;
-import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.api.Component;
+import net.sf.taverna.t2.component.api.RegistryException;
+import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.registry.ComponentUtil;
-import net.sf.taverna.t2.component.registry.ComponentVersion;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.component.ui.panel.ComponentListCellRenderer;
 import net.sf.taverna.t2.component.ui.util.Utils;
@@ -23,22 +23,19 @@ import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityCon
 
 import org.apache.log4j.Logger;
 
-
 @SuppressWarnings("serial")
 public class ComponentConfigurationPanel
 		extends
-		ActivityConfigurationPanel<ComponentActivity, 
-        ComponentActivityConfigurationBean> {
-	
-	private static Logger logger = Logger.getLogger(ComponentConfigurationPanel.class);
+		ActivityConfigurationPanel<ComponentActivity, ComponentActivityConfigurationBean> {
+
+	private static Logger logger = Logger
+			.getLogger(ComponentConfigurationPanel.class);
 
 	private ComponentActivity activity;
 	private ComponentActivityConfigurationBean configBean;
-	
-	@SuppressWarnings("rawtypes")
+
 	private final JComboBox componentVersionChoice = new JComboBox();
 
-	@SuppressWarnings("unchecked")
 	public ComponentConfigurationPanel(ComponentActivity activity) {
 		this.activity = activity;
 		componentVersionChoice.setPrototypeDisplayValue(Utils.SHORT_STRING);
@@ -46,7 +43,6 @@ public class ComponentConfigurationPanel
 		initGui();
 	}
 
-	@SuppressWarnings("unchecked")
 	protected void initGui() {
 		removeAll();
 		setLayout(new GridLayout(0, 2));
@@ -60,7 +56,8 @@ public class ComponentConfigurationPanel
 					updateToolTipText();
 				}
 
-			}});
+			}
+		});
 		updateComponentVersionChoice();
 
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -101,7 +98,8 @@ public class ComponentConfigurationPanel
 	 */
 	@Override
 	public boolean isConfigurationChanged() {
-		Integer version = ((ComponentVersion) componentVersionChoice.getSelectedItem()).getVersionNumber();
+		Integer version = ((Version) componentVersionChoice.getSelectedItem())
+				.getVersionNumber();
 		return (!version.equals(configBean.getComponentVersion()));
 	}
 
@@ -111,8 +109,10 @@ public class ComponentConfigurationPanel
 	 */
 	@Override
 	public void noteConfiguration() {
-		ComponentVersionIdentification newIdent = new ComponentVersionIdentification(configBean);
-		newIdent.setComponentVersion(((ComponentVersion) componentVersionChoice.getSelectedItem()).getVersionNumber());
+		ComponentVersionIdentification newIdent = new ComponentVersionIdentification(
+				configBean);
+		newIdent.setComponentVersion(((Version) componentVersionChoice
+				.getSelectedItem()).getVersionNumber());
 		configBean = new ComponentActivityConfigurationBean(newIdent);
 	}
 
@@ -123,33 +123,34 @@ public class ComponentConfigurationPanel
 	@Override
 	public void refreshConfiguration() {
 		configBean = activity.getConfiguration();
-		
+
 		updateComponentVersionChoice();
 	}
 
-	@SuppressWarnings("unchecked")
 	private void updateComponentVersionChoice() {
 		Component component;
 		componentVersionChoice.removeAllItems();
 		componentVersionChoice.setToolTipText(null);
 		try {
 			component = ComponentUtil.calculateComponent(configBean);
-		} catch (ComponentRegistryException e) {
+		} catch (RegistryException e) {
 			logger.error(e);
 			return;
 		}
-		SortedMap<Integer, ComponentVersion> componentVersionMap = component.getComponentVersionMap();
-		for (Integer i : componentVersionMap.keySet()) {
-			componentVersionChoice.addItem(componentVersionMap.get(i));
+		SortedMap<Integer, Version> componentVersionMap = component
+				.getComponentVersionMap();
+		for (Version v : componentVersionMap.values()) {
+			componentVersionChoice.addItem(v);
 		}
-		componentVersionChoice.setSelectedItem(componentVersionMap.get(configBean.getComponentVersion()));
+		componentVersionChoice.setSelectedItem(componentVersionMap
+				.get(configBean.getComponentVersion()));
 		updateToolTipText();
 	}
 
 	private void updateToolTipText() {
-		ComponentVersion selectedVersion = (ComponentVersion) componentVersionChoice.getSelectedItem();
+		Version selectedVersion = (Version) componentVersionChoice
+				.getSelectedItem();
 		componentVersionChoice.setToolTipText(selectedVersion.getDescription());
 	}
-	
-	
+
 }

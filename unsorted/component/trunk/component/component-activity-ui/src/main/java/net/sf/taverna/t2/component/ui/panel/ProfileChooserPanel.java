@@ -3,6 +3,8 @@
  */
 package net.sf.taverna.t2.component.ui.panel;
 
+import static java.awt.event.ItemEvent.SELECTED;
+
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
@@ -17,9 +19,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
-import net.sf.taverna.t2.component.profile.ComponentProfile;
-import net.sf.taverna.t2.component.registry.ComponentRegistry;
-import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.api.Profile;
+import net.sf.taverna.t2.component.api.Registry;
+import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
@@ -28,9 +30,10 @@ import org.apache.log4j.Logger;
 
 /**
  * @author alanrw
- *
+ * 
  */
-public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoiceMessage>, Observable<ProfileChoiceMessage> {
+public class ProfileChooserPanel extends JPanel implements
+		Observer<RegistryChoiceMessage>, Observable<ProfileChoiceMessage> {
 
 	/**
 	 *
@@ -38,19 +41,15 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 	private static final long serialVersionUID = 2175274929391537032L;
 
 	private static Logger logger = Logger.getLogger(ProfileChooserPanel.class);
-	
+
 	private List<Observer<ProfileChoiceMessage>> observers = new ArrayList<Observer<ProfileChoiceMessage>>();
 
-
-
-	@SuppressWarnings("rawtypes")
 	private JComboBox profileBox = new JComboBox();
 
-	private SortedMap<String, ComponentProfile> profileMap = new TreeMap<String, ComponentProfile>();
+	private SortedMap<String, Profile> profileMap = new TreeMap<String, Profile>();
 
-	private ComponentRegistry registry;
+	private Registry registry;
 
-	@SuppressWarnings("unchecked")
 	public ProfileChooserPanel() {
 		super();
 		profileBox.setPrototypeDisplayValue(Utils.LONG_STRING);
@@ -68,14 +67,13 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 		gbc.fill = GridBagConstraints.BOTH;
 		this.add(profileBox, gbc);
 		profileBox.addItemListener(new ItemListener() {
-
 			@Override
 			public void itemStateChanged(ItemEvent arg0) {
-				if (arg0.getStateChange() == ItemEvent.SELECTED) {
-
+				if (arg0.getStateChange() == SELECTED) {
 					setProfile(profileMap.get(profileBox.getSelectedItem()));
 				}
-			}});
+			}
+		});
 
 		profileBox.setEditable(false);
 	}
@@ -86,13 +84,11 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 		try {
 			this.registry = message.getChosenRegistry();
 			this.updateProfileModel();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			logger.error(e);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void updateProfileModel() {
 		profileMap.clear();
 		profileBox.removeAllItems();
@@ -102,13 +98,13 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 		(new ProfileUpdater()).execute();
 	}
 
-	private void setProfile(ComponentProfile componentProfile) {
+	private void setProfile(Profile componentProfile) {
 		if (componentProfile != null) {
 			profileBox.setToolTipText(componentProfile.getDescription());
 		} else {
 			profileBox.setToolTipText(null);
 		}
-		ComponentProfile chosenProfile = getChosenProfile();
+		Profile chosenProfile = getChosenProfile();
 		ProfileChoiceMessage message = new ProfileChoiceMessage(chosenProfile);
 		for (Observer<ProfileChoiceMessage> o : getObservers()) {
 			try {
@@ -119,7 +115,7 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 		}
 	}
 
-	public ComponentProfile getChosenProfile() {
+	public Profile getChosenProfile() {
 		if (profileBox.getSelectedIndex() >= 0) {
 			Object selectedItem = profileBox.getSelectedItem();
 			return profileMap.get(selectedItem);
@@ -132,33 +128,32 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 
 		@Override
 		protected String doInBackground() throws Exception {
-			List<ComponentProfile> componentProfiles;
+			List<Profile> componentProfiles;
 			if (registry != null) {
-			try {
-				componentProfiles = registry.getComponentProfiles();
-			} catch (ComponentRegistryException e) {
-				logger.error(e);
-				return null;
-			} catch (NullPointerException e) {
-				logger.error(e);
-				return null;
-			}
-			for (ComponentProfile p : componentProfiles) {
 				try {
-					String name = p.getName();
-					profileMap.put(name, p);
+					componentProfiles = registry.getComponentProfiles();
+				} catch (RegistryException e) {
+					logger.error(e);
+					return null;
 				} catch (NullPointerException e) {
 					logger.error(e);
-
+					return null;
 				}
-			}
+				for (Profile p : componentProfiles) {
+					try {
+						String name = p.getName();
+						profileMap.put(name, p);
+					} catch (NullPointerException e) {
+						logger.error(e);
+
+					}
+				}
 			}
 			return null;
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
-	    protected void done() {
+		protected void done() {
 			profileBox.removeAllItems();
 			for (String name : profileMap.keySet()) {
 				profileBox.addItem(name);
@@ -179,19 +174,19 @@ public class ProfileChooserPanel extends JPanel implements Observer<RegistryChoi
 	@Override
 	public void addObserver(Observer<ProfileChoiceMessage> observer) {
 		observers.add(observer);
-		ComponentProfile chosenProfile = getChosenProfile();
-			ProfileChoiceMessage message = new ProfileChoiceMessage(chosenProfile);
-			try {
-				observer.notify(this, message);
-			} catch (Exception e) {
-				logger.error(e);
-			}
+		Profile chosenProfile = getChosenProfile();
+		ProfileChoiceMessage message = new ProfileChoiceMessage(chosenProfile);
+		try {
+			observer.notify(this, message);
+		} catch (Exception e) {
+			logger.error(e);
+		}
 	}
 
 	@Override
 	public void removeObserver(Observer<ProfileChoiceMessage> observer) {
 		observers.remove(observer);
-		}
+	}
 
 	@Override
 	public List<Observer<ProfileChoiceMessage>> getObservers() {

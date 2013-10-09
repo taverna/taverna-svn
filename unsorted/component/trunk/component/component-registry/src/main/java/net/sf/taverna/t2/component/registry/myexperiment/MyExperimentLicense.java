@@ -5,7 +5,7 @@ package net.sf.taverna.t2.component.registry.myexperiment;
 
 import org.jdom.Element;
 
-import net.sf.taverna.t2.component.registry.License;
+import net.sf.taverna.t2.component.api.License;
 
 /**
  * @author alson

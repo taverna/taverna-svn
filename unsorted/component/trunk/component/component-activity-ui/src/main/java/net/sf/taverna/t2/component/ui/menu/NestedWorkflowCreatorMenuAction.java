@@ -18,14 +18,15 @@ import net.sf.taverna.t2.workflowmodel.Processor;
 
 /**
  * @author alanrw
- *
+ * 
  */
-public class NestedWorkflowCreatorMenuAction extends AbstractContextualMenuAction {
-	
+public class NestedWorkflowCreatorMenuAction extends
+		AbstractContextualMenuAction {
+
 	FileManager fm = FileManager.getInstance();
-	
+
 	private static final URI configureSection = URI
-	.create("http://taverna.sf.net/2009/contextMenu/configure");
+			.create("http://taverna.sf.net/2009/contextMenu/configure");
 
 	public NestedWorkflowCreatorMenuAction() {
 		super(configureSection, 70);
@@ -53,20 +54,16 @@ public class NestedWorkflowCreatorMenuAction extends AbstractContextualMenuActio
 		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.ui.menu.AbstractMenuAction#createAction()
-	 */
 	@Override
 	protected Action createAction() {
-		return new AbstractAction("Create nested workflow...", DataflowActivityIcon.getDataflowIcon()) {
-			/**
-			 * 
-			 */
+		return new AbstractAction("Create nested workflow...",
+				DataflowActivityIcon.getDataflowIcon()) {
 			private static final long serialVersionUID = -3121307982540205215L;
 
 			public void actionPerformed(ActionEvent e) {
 				Object o = getContextualSelection().getSelection();
-				final Dialog dialog = new NestedWorkflowCreationDialog(null, o, fm.getCurrentDataflow());		
+				final Dialog dialog = new NestedWorkflowCreationDialog(null, o,
+						fm.getCurrentDataflow());
 				dialog.setVisible(true);
 			}
 		};

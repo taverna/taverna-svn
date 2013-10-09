@@ -20,7 +20,9 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.annotation;
 
-import java.awt.Component;
+import static com.hp.hpl.jena.rdf.model.ResourceFactory.createTypedLiteral;
+import static java.lang.Integer.MIN_VALUE;
+import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.getObjectName;
 
 import javax.swing.JComponent;
 import javax.swing.JTextArea;
@@ -29,52 +31,50 @@ import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
 
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
- *
- *
  * @author Alan Williams
  */
-public class DatatypePropertyPanelFactory extends PropertyPanelFactorySPI{
-
+public class DatatypePropertyPanelFactory extends PropertyPanelFactorySPI {
 	public DatatypePropertyPanelFactory() {
 		super();
 	}
 
 	@Override
-	public JComponent getInputComponent(SemanticAnnotationProfile semanticAnnotationProfile, Statement statement) {
+	public JComponent getInputComponent(
+			SemanticAnnotationProfile semanticAnnotationProfile,
+			Statement statement) {
 		return getDefaultInputComponent(semanticAnnotationProfile, statement);
 	}
 
-
-		@Override
-		public RDFNode getNewTargetNode(Statement originalStatement, JComponent component) {
-			JTextArea inputText = (JTextArea) component;
-			String newText = inputText.getText();
-			if ((originalStatement == null) ||
-					!SemanticAnnotationUtils.getDisplayName(originalStatement.getObject()).equals(newText)) {
-			return ResourceFactory.createTypedLiteral(newText);
-			}
-			return null;		}
-
-		@Override
-		public int getRatingForSemanticAnnotation(
-				SemanticAnnotationProfile semanticAnnotationProfile) {
-			OntProperty property = semanticAnnotationProfile.getPredicate();
-			if (property.isDatatypeProperty()) {
-				return 100;
-			}
-			return Integer.MIN_VALUE;
+	@Override
+	public RDFNode getNewTargetNode(Statement originalStatement,
+			JComponent component) {
+		JTextArea inputText = (JTextArea) component;
+		String newText = inputText.getText();
+		if ((originalStatement == null)
+				|| !getObjectName(originalStatement).equals(newText)) {
+			return createTypedLiteral(newText);
 		}
+		return null;
+	}
 
-		@Override
-		public JComponent getDisplayComponent(
-				SemanticAnnotationProfile semanticAnnotationProfile,
-				Statement statement) {
-			return getDefaultDisplayComponent(semanticAnnotationProfile, statement);
+	@Override
+	public int getRatingForSemanticAnnotation(
+			SemanticAnnotationProfile semanticAnnotationProfile) {
+		OntProperty property = semanticAnnotationProfile.getPredicate();
+		if (property.isDatatypeProperty()) {
+			return 100;
 		}
+		return MIN_VALUE;
+	}
 
+	@Override
+	public JComponent getDisplayComponent(
+			SemanticAnnotationProfile semanticAnnotationProfile,
+			Statement statement) {
+		return getDefaultDisplayComponent(semanticAnnotationProfile, statement);
+	}
 
 }

@@ -3,6 +3,9 @@
  */
 package net.sf.taverna.t2.component.ui.preference;
 
+import static javax.swing.JFileChooser.APPROVE_OPTION;
+import static javax.swing.JFileChooser.DIRECTORIES_ONLY;
+
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -22,25 +25,21 @@ import net.sf.taverna.t2.lang.ui.DeselectingButton;
 
 /**
  * @author alanrw
- *
+ * 
  */
 public class LocalRegistryPanel extends JPanel {
-	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 732945735813617327L;
 
 	private final Logger logger = Logger.getLogger(LocalRegistryPanel.class);
-	
+
 	private JTextField registryNameField = new JTextField(20);
 	private JTextField locationField = new JTextField(20);
-	
+
 	public LocalRegistryPanel() {
 		super(new GridBagLayout());
 
 		setBorder(new EmptyBorder(10, 10, 10, 10));
-		
+
 		GridBagConstraints constraints = new GridBagConstraints();
 
 		constraints.anchor = GridBagConstraints.WEST;
@@ -55,13 +54,13 @@ public class LocalRegistryPanel extends JPanel {
 		constraints.weightx = 1d;
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		add(registryNameField, constraints);
-		
+
 		constraints.gridy++;
 		constraints.gridx = 0;
 		constraints.ipadx = 20;
 		constraints.fill = GridBagConstraints.NONE;
 		add(new JLabel("Location:"), constraints);
-		
+
 		constraints.gridx = 1;
 		constraints.gridwidth = 2;
 		constraints.ipadx = 0;
@@ -73,29 +72,26 @@ public class LocalRegistryPanel extends JPanel {
 		constraints.gridx = 0;
 		constraints.ipadx = 20;
 		constraints.fill = GridBagConstraints.NONE;
-		JButton chooseButton = new DeselectingButton(new AbstractAction("Browse") {
-
-			/**
-			 * 
-			 */
+		JButton chooseButton = new DeselectingButton(new AbstractAction(
+				"Browse") {
 			private static final long serialVersionUID = -8676803966947261009L;
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				JFileChooser chooser = new JFileChooser();
-				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				chooser.setFileSelectionMode(DIRECTORIES_ONLY);
 				int returnVal = chooser.showOpenDialog(LocalRegistryPanel.this);
-				if(returnVal == JFileChooser.APPROVE_OPTION) {
-				       try {
-						locationField.setText(chooser.getSelectedFile().getCanonicalPath());
-					} catch (IOException e) {
-						logger.error(e);
+				try {
+					if (returnVal == APPROVE_OPTION) {
+						locationField.setText(chooser.getSelectedFile()
+								.getCanonicalPath());
 					}
-				    }
-			}});
+				} catch (IOException e) {
+					logger.error(e);
+				}
+			}
+		});
 		add(chooseButton, constraints);
-		
-
 	}
 
 	/**

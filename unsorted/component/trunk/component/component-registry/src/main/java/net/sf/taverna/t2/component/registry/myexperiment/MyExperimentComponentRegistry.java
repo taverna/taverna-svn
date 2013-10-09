@@ -31,19 +31,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.taverna.t2.component.profile.ComponentProfile;
-import net.sf.taverna.t2.component.registry.Component;
-import net.sf.taverna.t2.component.registry.ComponentFamily;
+import net.sf.taverna.t2.component.api.Component;
+import net.sf.taverna.t2.component.api.Family;
+import net.sf.taverna.t2.component.api.License;
+import net.sf.taverna.t2.component.api.Profile;
+import net.sf.taverna.t2.component.api.RegistryException;
+import net.sf.taverna.t2.component.api.SharingPolicy;
+import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
-import net.sf.taverna.t2.component.registry.ComponentRegistryException;
-import net.sf.taverna.t2.component.registry.ComponentVersion;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
-import net.sf.taverna.t2.component.registry.License;
-import net.sf.taverna.t2.component.registry.SharingPolicy;
 import net.sf.taverna.t2.component.registry.myexperiment.client.Base64;
 import net.sf.taverna.t2.component.registry.myexperiment.client.MyExperimentClient;
 import net.sf.taverna.t2.component.registry.myexperiment.client.ServerResponse;
-
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -53,12 +52,13 @@ import org.jdom.output.XMLOutputter;
 
 /**
  * Implementation of a ComponentRegistry that uses myExperiment.
- *
+ * 
  * @author David Withers
  */
 public class MyExperimentComponentRegistry extends ComponentRegistry {
 
-	private static Logger logger = Logger.getLogger(MyExperimentComponentRegistry.class);
+	private static Logger logger = Logger
+			.getLogger(MyExperimentComponentRegistry.class);
 
 	private static Map<String, MyExperimentComponentRegistry> componentRegistries = new HashMap<String, MyExperimentComponentRegistry>();
 
@@ -69,97 +69,121 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 
 	private final String DO_PUT = "_DO_UPDATE_SIGNAL_";
 
-	 	private MyExperimentComponentRegistry(URL registryURL) throws ComponentRegistryException {
-	 		super (registryURL);
-	 		try {
-		myExperimentClient = new MyExperimentClient(logger);
-		myExperimentClient.setBaseURL(registryURL.toExternalForm());
-		myExperimentClient.doLogin();
-	 		}
-	 		catch (Exception e) {
-	 			logger.error(e);
-	 			throw new ComponentRegistryException("Unable to access registry", e);
-	 		}
+	private MyExperimentComponentRegistry(URL registryURL)
+			throws RegistryException {
+		super(registryURL);
+		try {
+			myExperimentClient = new MyExperimentClient(logger);
+			myExperimentClient.setBaseURL(registryURL.toExternalForm());
+			myExperimentClient.doLogin();
+		} catch (Exception e) {
+			logger.error(e);
+			throw new RegistryException("Unable to access registry", e);
+		}
 	}
 
-	public static synchronized MyExperimentComponentRegistry getComponentRegistry(URL registryURL) throws ComponentRegistryException {
+	public static synchronized MyExperimentComponentRegistry getComponentRegistry(
+			URL registryURL) throws RegistryException {
 		if (!componentRegistries.containsKey(registryURL.toExternalForm())) {
-			componentRegistries.put(registryURL.toExternalForm(), new MyExperimentComponentRegistry(registryURL));
+			componentRegistries.put(registryURL.toExternalForm(),
+					new MyExperimentComponentRegistry(registryURL));
 		}
 		return componentRegistries.get(registryURL.toExternalForm());
 	}
 
-	protected void populateFamilyCache() throws ComponentRegistryException {
-				Element packsElement = getResource(getRegistryBaseString() + "/packs.xml", "tag=component%20family", "elements=permissions");
-				for (Object child : packsElement.getChildren("pack")) {
-					if (child instanceof Element) {
-						Element packElement = (Element) child;
-						String packUri = packElement.getAttributeValue("uri");
-						if (getResource(packUri) != null) {
-							MyExperimentComponentFamily newFamily = new MyExperimentComponentFamily(this, null, null, packUri);
-							familyCache.put(newFamily.getName(), newFamily);
-						}
-					}
+	protected void populateFamilyCache() throws RegistryException {
+		Element packsElement = getResource(getRegistryBaseString()
+				+ "/packs.xml", "tag=component%20family",
+				"elements=permissions");
+		for (Object child : packsElement.getChildren("pack")) {
+			if (child instanceof Element) {
+				Element packElement = (Element) child;
+				String packUri = packElement.getAttributeValue("uri");
+				if (getResource(packUri) != null) {
+					MyExperimentComponentFamily newFamily = new MyExperimentComponentFamily(
+							this, null, null, packUri);
+					familyCache.put(newFamily.getName(), newFamily);
 				}
+			}
+		}
 	}
 
-	public ComponentFamily internalCreateComponentFamily(String name, ComponentProfile componentProfile, String description, License license, SharingPolicy sharingPolicy) throws ComponentRegistryException {
+	@Override
+	protected Family internalCreateComponentFamily(String name,
+			Profile componentProfile, String description, License license,
+			SharingPolicy sharingPolicy) throws RegistryException {
 		MyExperimentSharingPolicy permissions = (MyExperimentSharingPolicy) sharingPolicy;
 		if (permissions == null) {
 			permissions = MyExperimentComponentRegistry.PRIVATE;
 		}
-		Element packElement = createPack(name, description, license, permissions.getPolicyString());
-		tagResource("component family", packElement.getAttributeValue("resource"));
-		ComponentFamily componentFamily = new MyExperimentComponentFamily(this, license, permissions, packElement.getAttributeValue("uri"));
+		Element packElement = createPack(name, description, license,
+				permissions.getPolicyString());
+		tagResource("component family",
+				packElement.getAttributeValue("resource"));
+		Family componentFamily = new MyExperimentComponentFamily(this, license,
+				permissions, packElement.getAttributeValue("uri"));
 
-		Element profileElement = addComponentProfileInternal(componentProfile, license, permissions);
+		Element profileElement = addComponentProfileInternal(componentProfile,
+				license, permissions);
 		addPackItem(packElement, profileElement);
 		return componentFamily;
 	}
 
 	@Override
-	public void internalRemoveComponentFamily(ComponentFamily componentFamily) throws ComponentRegistryException {
+	protected void internalRemoveComponentFamily(Family componentFamily)
+			throws RegistryException {
 		if (componentFamily instanceof MyExperimentComponentFamily) {
 			MyExperimentComponentFamily myExperimentComponentFamily = (MyExperimentComponentFamily) componentFamily;
 			deleteResource(myExperimentComponentFamily.getUri());
-		}		
+		}
 	}
 
-	protected void populateProfileCache() throws ComponentRegistryException {
-				Element filesElement = getResource(getRegistryBaseString() + "/files.xml", "tag=component%20profile");
-				for (Object child : filesElement.getChildren("file")) {
-					if (child instanceof Element) {
-						Element fileElement = (Element) child;
-						String fileUri = fileElement.getAttributeValue("uri");
-						String resourceUri = fileElement.getAttributeValue("resource");
-						String version = fileElement.getAttributeValue("version");
-						resourceUri = StringUtils.substringBeforeLast(resourceUri, "?");
-						String downloadUri = resourceUri + "/download?version=" + version;
-						if (getResource(fileUri) != null) {
-								String profileString = getFileAsString(downloadUri);
-								profileCache.add(new MyExperimentComponentProfile(this, fileUri, profileString));
-						}
-					}
+	protected void populateProfileCache() throws RegistryException {
+		Element filesElement = getResource(getRegistryBaseString()
+				+ "/files.xml", "tag=component%20profile");
+		for (Object child : filesElement.getChildren("file")) {
+			if (child instanceof Element) {
+				Element fileElement = (Element) child;
+				String fileUri = fileElement.getAttributeValue("uri");
+				String resourceUri = fileElement.getAttributeValue("resource");
+				String version = fileElement.getAttributeValue("version");
+				resourceUri = StringUtils.substringBeforeLast(resourceUri, "?");
+				String downloadUri = resourceUri + "/download?version="
+						+ version;
+				if (getResource(fileUri) != null) {
+					String profileString = getFileAsString(downloadUri);
+					profileCache.add(new MyExperimentComponentProfile(this,
+							fileUri, profileString));
 				}
+			}
+		}
 	}
-	
+
 	@Override
-	public ComponentProfile internalAddComponentProfile(ComponentProfile componentProfile, License license, SharingPolicy sharingPolicy) throws ComponentRegistryException {
-		Element element = addComponentProfileInternal(componentProfile, license, sharingPolicy);
+	public Profile internalAddComponentProfile(Profile componentProfile,
+			License license, SharingPolicy sharingPolicy)
+			throws RegistryException {
+		Element element = addComponentProfileInternal(componentProfile,
+				license, sharingPolicy);
 		String fileUri = element.getAttributeValue("uri");
-		ComponentProfile result = new MyExperimentComponentProfile(this, fileUri, componentProfile.getXML());
+		Profile result = new MyExperimentComponentProfile(this, fileUri,
+				componentProfile.getXML());
 		return result;
 	}
 
-	private Element addComponentProfileInternal(ComponentProfile componentProfile, License license, SharingPolicy sharingPolicy) throws ComponentRegistryException {
+	private Element addComponentProfileInternal(Profile componentProfile,
+			License license, SharingPolicy sharingPolicy)
+			throws RegistryException {
 		if (componentProfile == null) {
-			throw new ComponentRegistryException(("Component profile must not be null"));
+			throw new RegistryException(("Component profile must not be null"));
 		}
 		Element profileElement = null;
 		if (componentProfile instanceof MyExperimentComponentProfile) {
 			MyExperimentComponentProfile myExperimentComponentProfile = (MyExperimentComponentProfile) componentProfile;
-			if (myExperimentComponentProfile.getComponentRegistry().getRegistryBase().equals(getRegistryBase())) {
-				profileElement = getResource(myExperimentComponentProfile.getUri());
+			if (myExperimentComponentProfile.getComponentRegistry()
+					.getRegistryBase().equals(getRegistryBase())) {
+				profileElement = getResource(myExperimentComponentProfile
+						.getUri());
 			}
 		}
 		MyExperimentSharingPolicy permissions = (MyExperimentSharingPolicy) sharingPolicy;
@@ -167,47 +191,62 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 			permissions = MyExperimentComponentRegistry.PRIVATE;
 		}
 		if (profileElement == null) {
-			profileElement = uploadFile(componentProfile.getName(), componentProfile.getDescription(), "XML", componentProfile.getXML(), license, permissions.getPolicyString());
-			tagResource("component profile", profileElement.getAttributeValue("resource"));
+			profileElement = uploadFile(componentProfile.getName(),
+					componentProfile.getDescription(), "XML",
+					componentProfile.getXML(), license,
+					permissions.getPolicyString());
+			tagResource("component profile",
+					profileElement.getAttributeValue("resource"));
 		}
 		return profileElement;
 	}
 
-	public Element createPack(String title, String description, License license, String permissionsString) throws ComponentRegistryException {
+	public Element createPack(String title, String description,
+			License license, String permissionsString) throws RegistryException {
 		StringBuilder contentXml = new StringBuilder("<pack>");
 		contentXml.append("<description>" + description + "</description>");
 		contentXml.append("<title>" + title + "</title>");
 		if (license != null) {
-			contentXml.append("<license-type>").append(license.getAbbreviation()).append("</license-type>");
+			contentXml.append("<license-type>")
+					.append(license.getAbbreviation())
+					.append("</license-type>");
 		}
 		contentXml.append(permissionsString);
 		contentXml.append("</pack>");
 		ServerResponse response;
 		try {
 
-			response = myExperimentClient.doMyExperimentPOST(getRegistryBaseString() + "/pack.xml", contentXml.toString());
+			response = myExperimentClient.doMyExperimentPOST(
+					getRegistryBaseString() + "/pack.xml",
+					contentXml.toString());
 			checkResponseCode(response);
 			return response.getResponseBody().getRootElement();
 		} catch (Exception e) {
-			throw new ComponentRegistryException("Error while creating a pack with title : " + title, e);
+			throw new RegistryException(
+					"Error while creating a pack with title : " + title, e);
 		}
 	}
 
-	public Element snapshotPack(String packUri) throws ComponentRegistryException {
+	public Element snapshotPack(String packUri) throws RegistryException {
 		try {
-			ServerResponse response = myExperimentClient.doMyExperimentPOST(packUri, "<snapshot/>");
+			ServerResponse response = myExperimentClient.doMyExperimentPOST(
+					packUri, "<snapshot/>");
 			checkResponseCode(response);
 			return response.getResponseBody().getRootElement();
 		} catch (Exception e) {
-			throw new ComponentRegistryException(e);
+			throw new RegistryException(e);
 		}
 	}
 
-	public void addPackItem(Element packElement, Element itemElement) throws ComponentRegistryException {
+	public void addPackItem(Element packElement, Element itemElement)
+			throws RegistryException {
 		StringBuilder item = new StringBuilder();
 		item.append("<internal-pack-item>");
-		item.append("<pack resource=\"").append(packElement.getAttributeValue("resource")).append("\"/>");
-		item.append("<item resource=\"").append(itemElement.getAttributeValue("resource")).append("\"");
+		item.append("<pack resource=\"")
+				.append(packElement.getAttributeValue("resource"))
+				.append("\"/>");
+		item.append("<item resource=\"")
+				.append(itemElement.getAttributeValue("resource")).append("\"");
 		String version = itemElement.getAttributeValue("version");
 		if ((version == null) || version.isEmpty()) {
 			item.append("/>");
@@ -216,21 +255,27 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 		}
 		item.append("</internal-pack-item>");
 		try {
-			ServerResponse response = myExperimentClient.doMyExperimentPOST(getRegistryBaseString() + "/internal-pack-item.xml", item.toString());
+			ServerResponse response = myExperimentClient.doMyExperimentPOST(
+					getRegistryBaseString() + "/internal-pack-item.xml",
+					item.toString());
 			checkResponseCode(response);
 		} catch (Exception e) {
-			throw new ComponentRegistryException(e);
-		}
-	}
-	
-	public void checkResponseCode(ServerResponse response) throws ComponentRegistryException {
-		if (response.getResponseCode() >= 400) {
-			throw new ComponentRegistryException("Unable to perform request " + response.getResponseCode());
+			throw new RegistryException(e);
 		}
 	}
 
-	public void deletePackItem(Element packElement, String item) throws ComponentRegistryException {
-		for (Element internalPackItem : getResourceElements(packElement.getAttributeValue("uri"), "internal-pack-items")) {
+	public void checkResponseCode(ServerResponse response)
+			throws RegistryException {
+		if (response.getResponseCode() >= 400) {
+			throw new RegistryException("Unable to perform request "
+					+ response.getResponseCode());
+		}
+	}
+
+	public void deletePackItem(Element packElement, String item)
+			throws RegistryException {
+		for (Element internalPackItem : getResourceElements(
+				packElement.getAttributeValue("uri"), "internal-pack-items")) {
 			if (item.equals(internalPackItem.getName())) {
 				deleteResource(internalPackItem.getAttributeValue("uri"));
 				break;
@@ -238,34 +283,46 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 		}
 	}
 
-	public Element getPackItem(String packUri, String item, String... tags) throws ComponentRegistryException {
-		for (Element internalPackItem : getResourceElements(packUri, "internal-pack-items")) {
+	public Element getPackItem(String packUri, String item, String... tags)
+			throws RegistryException {
+		for (Element internalPackItem : getResourceElements(packUri,
+				"internal-pack-items")) {
 			if (item.equals(internalPackItem.getName())) {
-				String internalPackItemUri = internalPackItem.getAttributeValue("uri");
-				Element itemElement = getResourceElement(internalPackItemUri, "item");
+				String internalPackItemUri = internalPackItem
+						.getAttributeValue("uri");
+				Element itemElement = getResourceElement(internalPackItemUri,
+						"item");
 				if (itemElement == null) {
-					throw new ComponentRegistryException("Element 'item' not found in internal-pack-item at " + packUri);
+					throw new RegistryException(
+							"Element 'item' not found in internal-pack-item at "
+									+ packUri);
 				}
 				Element itemResourceElement = itemElement.getChild(item);
 				if (itemResourceElement == null) {
-					throw new ComponentRegistryException("Element 'item' does not contain " + item + " at " + packUri);
+					throw new RegistryException(
+							"Element 'item' does not contain " + item + " at "
+									+ packUri);
 				}
 				if (hasTags(itemResourceElement.getAttributeValue("uri"), tags)) {
 					return itemResourceElement;
 				}
 			}
 		}
-		throw new ComponentRegistryException("Item " + item + " not found in internal-pack-items at " + packUri);
+		throw new RegistryException("Item " + item
+				+ " not found in internal-pack-items at " + packUri);
 	}
 
-	public String getExternalPackItem(String packUri, String title) throws ComponentRegistryException {
-		for (Element externalPackItem : getResourceElements(packUri, "external-pack-items")) {
+	public String getExternalPackItem(String packUri, String title)
+			throws RegistryException {
+		for (Element externalPackItem : getResourceElements(packUri,
+				"external-pack-items")) {
 			String itemTitle = externalPackItem.getTextTrim();
 			if (title.equals(itemTitle)) {
 				return externalPackItem.getAttributeValue("resource");
 			}
 		}
-		throw new ComponentRegistryException("Item " + title + " not found in external-pack-items at " + packUri);
+		throw new RegistryException("Item " + title
+				+ " not found in external-pack-items at " + packUri);
 	}
 
 	public boolean hasTags(String uri, String... tags) {
@@ -283,54 +340,67 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 		return true;
 	}
 
-	public Element uploadWorkflow(String dataflow, String title, String description,
-			License license,
-			String permissionsString) throws ComponentRegistryException {
-		String workflowElement = prepareWorkflowPostContent(dataflow, title, "Initial version", license, permissionsString);
+	public Element uploadWorkflow(String dataflow, String title,
+			String description, License license, String permissionsString)
+			throws RegistryException {
+		String workflowElement = prepareWorkflowPostContent(dataflow, title,
+				"Initial version", license, permissionsString);
 		try {
 			logger.info("Uploading " + workflowElement);
-			ServerResponse response = myExperimentClient.doMyExperimentPOST(getRegistryBaseString() + "/workflow.xml", workflowElement);
+			ServerResponse response = myExperimentClient.doMyExperimentPOST(
+					getRegistryBaseString() + "/workflow.xml", workflowElement);
 			checkResponseCode(response);
 			return response.getResponseBody().getRootElement();
 		} catch (Exception e) {
-			throw new ComponentRegistryException("Unable to upload workflow", e);
+			throw new RegistryException("Unable to upload workflow", e);
 		}
 	}
 
-	public Element updateWorkflow(String uri, String dataflow, String title, String revisionComment,
-			License license,
-			String permissionsString) throws ComponentRegistryException {
-		String workflowElement = prepareWorkflowPostContent(dataflow, title, revisionComment, license, permissionsString);
+	public Element updateWorkflow(String uri, String dataflow, String title,
+			String revisionComment, License license, String permissionsString)
+			throws RegistryException {
+		String workflowElement = prepareWorkflowPostContent(dataflow, title,
+				revisionComment, license, permissionsString);
 		try {
 			logger.info("Uploading " + workflowElement);
-			ServerResponse response = myExperimentClient.doMyExperimentPOST(uri + DO_PUT, workflowElement);
+			ServerResponse response = myExperimentClient.doMyExperimentPOST(uri
+					+ DO_PUT, workflowElement);
 			checkResponseCode(response);
 			return response.getResponseBody().getRootElement();
 		} catch (Exception e) {
-			throw new ComponentRegistryException("Unable to update workflow at " + uri, e);
+			throw new RegistryException("Unable to update workflow at " + uri,
+					e);
 		}
 	}
 
-	private String prepareWorkflowPostContent(String dataflow, String title, String description,
-			License license, String permissionsString) throws ComponentRegistryException {
+	private String prepareWorkflowPostContent(String dataflow, String title,
+			String description, License license, String permissionsString)
+			throws RegistryException {
 		StringBuilder contentXml = new StringBuilder("<workflow>");
-		if (title.length() > 0) contentXml.append("<title>").append(title).append("</title>");
+		if (title.length() > 0)
+			contentXml.append("<title>").append(title).append("</title>");
 		if (description.length() > 0) {
-			contentXml.append("<description>").append(description).append("</description>");
+			contentXml.append("<description>").append(description)
+					.append("</description>");
 		}
 		if (license != null) {
-			contentXml.append("<license-type>").append(license.getAbbreviation()).append("</license-type>");
+			contentXml.append("<license-type>")
+					.append(license.getAbbreviation())
+					.append("</license-type>");
 		}
 		contentXml.append(permissionsString);
 
 		if (dataflow.length() > 0) {
-			contentXml.append("<content-type>application/vnd.taverna.t2flow+xml</content-type>");
+			contentXml
+					.append("<content-type>application/vnd.taverna.t2flow+xml</content-type>");
 			contentXml.append("<content encoding=\"base64\" type=\"binary\">");
 			try {
-				contentXml.append(Base64.encodeBytes(dataflow.getBytes("UTF-8"))).append("</content>");
+				contentXml.append(
+						Base64.encodeBytes(dataflow.getBytes("UTF-8"))).append(
+						"</content>");
 			} catch (UnsupportedEncodingException e) {
 				logger.error(e);
-				throw new ComponentRegistryException("Unable to encode workflow", e);
+				throw new RegistryException("Unable to encode workflow", e);
 			}
 		}
 
@@ -338,7 +408,7 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 
 		return contentXml.toString();
 	}
-	
+
 	public String getFileAsString(String url) {
 		try {
 			ServerResponse response = myExperimentClient.doMyExperimentGET(url);
@@ -353,41 +423,51 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 		}
 	}
 
-	public Element uploadFile(String title, String description, String type, String content, License license, String permissionsString) throws ComponentRegistryException {
+	public Element uploadFile(String title, String description, String type,
+			String content, License license, String permissionsString)
+			throws RegistryException {
 		StringBuilder contentXml = new StringBuilder();
 		contentXml.append("<file>");
 		contentXml.append("<filename>").append(title).append(".xml</filename>");
 		contentXml.append("<title>").append(title).append("</title>");
-		contentXml.append("<description>").append(description).append("</description>");
+		contentXml.append("<description>").append(description)
+				.append("</description>");
 		contentXml.append("<type>").append(type).append("</type>");
 		contentXml.append("<content encoding=\"base64\" type=\"binary\">");
 		try {
 			contentXml.append(Base64.encodeBytes(content.getBytes("UTF-8")));
 		} catch (UnsupportedEncodingException e1) {
-			throw new ComponentRegistryException("Unknown encoding", e1);
+			throw new RegistryException("Unknown encoding", e1);
 		}
 		contentXml.append("</content>");
 		if (license != null) {
-			contentXml.append("<license-type>").append(license.getAbbreviation()).append("</license-type>");
+			contentXml.append("<license-type>")
+					.append(license.getAbbreviation())
+					.append("</license-type>");
 		}
 		contentXml.append(permissionsString);
 		contentXml.append("</file>");
 		try {
-			ServerResponse response = myExperimentClient.doMyExperimentPOST(getRegistryBaseString() + "/file.xml", contentXml.toString());
+			ServerResponse response = myExperimentClient.doMyExperimentPOST(
+					getRegistryBaseString() + "/file.xml",
+					contentXml.toString());
 			checkResponseCode(response);
 			return response.getResponseBody().getRootElement();
 		} catch (Exception e) {
-			throw new ComponentRegistryException(e);
+			throw new RegistryException(e);
 		}
 	}
 
-	public void tagResource(String tag, String resource) throws ComponentRegistryException {
-		String taggingToSend = "<tagging><subject resource=\"" + resource + "\"/><label>"+tag+"</label></tagging>";
+	public void tagResource(String tag, String resource)
+			throws RegistryException {
+		String taggingToSend = "<tagging><subject resource=\"" + resource
+				+ "\"/><label>" + tag + "</label></tagging>";
 		try {
-			ServerResponse response = myExperimentClient.doMyExperimentPOST(getRegistryBaseString() + "/tagging.xml", taggingToSend);
+			ServerResponse response = myExperimentClient.doMyExperimentPOST(
+					getRegistryBaseString() + "/tagging.xml", taggingToSend);
 			checkResponseCode(response);
 		} catch (Exception e) {
-			throw new ComponentRegistryException(e);
+			throw new RegistryException(e);
 		}
 	}
 
@@ -398,7 +478,8 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 			uriBuilder.append(queryElement);
 		}
 		try {
-			ServerResponse response = myExperimentClient.doMyExperimentGET(uriBuilder.toString());
+			ServerResponse response = myExperimentClient
+					.doMyExperimentGET(uriBuilder.toString());
 			if (response.getResponseCode() != HttpURLConnection.HTTP_OK) {
 				return null;
 			} else {
@@ -409,12 +490,13 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 		}
 	}
 
-	public void deleteResource(String uri) throws ComponentRegistryException {
+	public void deleteResource(String uri) throws RegistryException {
 		try {
-			ServerResponse response = myExperimentClient.doMyExperimentDELETE(uri);
+			ServerResponse response = myExperimentClient
+					.doMyExperimentDELETE(uri);
 			checkResponseCode(response);
 		} catch (Exception e) {
-			throw new ComponentRegistryException("Failed to delete " + uri, e);
+			throw new RegistryException("Failed to delete " + uri, e);
 		}
 	}
 
@@ -450,74 +532,85 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 		}
 		return urlString;
 	}
-	
+
 	protected void populatePermissionCache() {
-				permissionCache.add(PUBLIC);
-				Element policiesElement = getResource(getRegistryBaseString() + "/policies.xml", "type=group");
-				for (Object child : policiesElement.getChildren("policy")) {
-					if (child instanceof Element) {
-						Element policyElement = (Element) child;
-						String fullId = policyElement.getAttributeValue("uri");
-						String id = StringUtils.substringAfterLast(fullId, "=");
-						String name = policyElement.getTextTrim();
-						permissionCache.add(new MyExperimentGroupPolicy(name, id));
-					}
-				}
-				permissionCache.add(PRIVATE);
-				
+		permissionCache.add(PUBLIC);
+		Element policiesElement = getResource(getRegistryBaseString()
+				+ "/policies.xml", "type=group");
+		for (Object child : policiesElement.getChildren("policy")) {
+			if (child instanceof Element) {
+				Element policyElement = (Element) child;
+				String fullId = policyElement.getAttributeValue("uri");
+				String id = StringUtils.substringAfterLast(fullId, "=");
+				String name = policyElement.getTextTrim();
+				permissionCache.add(new MyExperimentGroupPolicy(name, id));
+			}
+		}
+		permissionCache.add(PRIVATE);
+
 	}
 
 	protected void populateLicenseCache() {
-				Element licensesElement = getResource(getRegistryBaseString() + "/licenses.xml");
-				for (Object child : licensesElement.getChildren("license")) {
-					if (child instanceof Element) {
-						Element licenseElement = (Element) child;
-						String uri = licenseElement.getAttributeValue("uri");
-						License newLicense = new MyExperimentLicense(this, uri);
-						licenseCache.add(newLicense);
-					}
-				}				
+		Element licensesElement = getResource(getRegistryBaseString()
+				+ "/licenses.xml");
+		for (Object child : licensesElement.getChildren("license")) {
+			if (child instanceof Element) {
+				Element licenseElement = (Element) child;
+				String uri = licenseElement.getAttributeValue("uri");
+				License newLicense = new MyExperimentLicense(this, uri);
+				licenseCache.add(newLicense);
+			}
+		}
 	}
 
-	public License getLicenseOnObject(String uri) throws ComponentRegistryException {
-		String licenseString = getResource(uri).getChildTextTrim("license-type");
+	public License getLicenseOnObject(String uri) throws RegistryException {
+		String licenseString = getResource(uri)
+				.getChildTextTrim("license-type");
 		return getLicenseByAbbreviation(licenseString);
 	}
-	
-	public License getPreferredLicense() throws ComponentRegistryException {
+
+	public License getPreferredLicense() throws RegistryException {
 		return getLicenseByAbbreviation("by-nd");
 
 	}
 
 	@Override
-	public Set<ComponentVersionIdentification> searchForComponents(String prefixString, String text)
-			throws ComponentRegistryException {
-		Set<ComponentVersionIdentification> result = new HashSet<ComponentVersionIdentification>();
-			Element resultElement = this.getResource(getRegistryBaseString() + "/components.xml", "prefixes=" + URLEncoder.encode(prefixString), "query=" + URLEncoder.encode(text));
-			if (resultElement == null) {
-				throw new ComponentRegistryException("ComponentRegistry could not perform search");
-			}
-			for (Object child : resultElement.getChildren("workflow")) {
-				if (child instanceof Element) {
-					ComponentVersionIdentification foundComponentIdentification = null;
-					foundComponentIdentification = findComponentVersionWithWorkflow((Element) child);
-					if (foundComponentIdentification != null) {
-						result.add(foundComponentIdentification);
-					}
+	public Set<Version.ID> searchForComponents(String prefixString, String text)
+			throws RegistryException {
+		Set<Version.ID> result = new HashSet<Version.ID>();
+		@SuppressWarnings("deprecation")
+		Element resultElement = this.getResource(getRegistryBaseString()
+				+ "/components.xml",
+				"prefixes=" + URLEncoder.encode(prefixString), "query="
+						+ URLEncoder.encode(text));
+		if (resultElement == null) {
+			throw new RegistryException(
+					"ComponentRegistry could not perform search");
+		}
+		for (Object child : resultElement.getChildren("workflow")) {
+			if (child instanceof Element) {
+				Version.ID foundComponentIdentification = null;
+				foundComponentIdentification = findComponentVersionWithWorkflow((Element) child);
+				if (foundComponentIdentification != null) {
+					result.add(foundComponentIdentification);
 				}
 			}
+		}
 		return result;
 	}
 
-	private ComponentVersionIdentification findComponentVersionWithWorkflow(
-			Element wfElement) throws ComponentRegistryException {
+	private Version.ID findComponentVersionWithWorkflow(Element wfElement)
+			throws RegistryException {
 		String resourceUri = wfElement.getAttributeValue("resource");
-		for (ComponentFamily f : this.getComponentFamilies()) {
+		for (Family f : this.getComponentFamilies()) {
 			for (Component c : f.getComponents()) {
-				for (ComponentVersion cv : c.getComponentVersionMap().values()) {
+				for (Version cv : c.getComponentVersionMap().values()) {
 					if (cv instanceof MyExperimentComponentVersion) {
-						if (((MyExperimentComponentVersion)cv).hasWorkflowUri(resourceUri)) {
-							return new ComponentVersionIdentification(this.getRegistryBase(), f.getName(), c.getName(), cv.getVersionNumber());
+						if (((MyExperimentComponentVersion) cv)
+								.hasWorkflowUri(resourceUri)) {
+							return new ComponentVersionIdentification(
+									this.getRegistryBase(), f.getName(),
+									c.getName(), cv.getVersionNumber());
 						}
 					}
 				}
@@ -525,6 +618,5 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 		}
 		return null;
 	}
-
 
 }

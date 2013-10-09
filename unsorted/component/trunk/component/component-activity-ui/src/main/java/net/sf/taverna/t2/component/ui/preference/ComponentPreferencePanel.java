@@ -20,9 +20,9 @@ import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
+import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.preference.ComponentPreference;
-import net.sf.taverna.t2.component.registry.ComponentRegistry;
-import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.component.registry.local.LocalComponentRegistry;
 import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
 import net.sf.taverna.t2.component.ui.util.Utils;
@@ -33,91 +33,92 @@ import net.sf.taverna.t2.workbench.helper.Helper;
 import org.apache.log4j.Logger;
 
 public class ComponentPreferencePanel extends JPanel {
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1310173658718093383L;
 
-	private final Logger logger = Logger.getLogger(ComponentPreferencePanel.class);
-	
+	private final Logger logger = Logger
+			.getLogger(ComponentPreferencePanel.class);
+
 	private RegistryTableModel tableModel = new RegistryTableModel();
 
 	private JTable registryTable = new JTable(tableModel);
-	
+
 	public ComponentPreferencePanel() {
 		super();
 		initialize();
 	}
-	
+
 	private void initialize() {
 
 		this.setLayout(new GridBagLayout());
 
 		GridBagConstraints gbc = new GridBagConstraints();
-		
+
 		// Title describing what kind of settings we are configuring here
-        JTextArea descriptionText = new JTextArea("Component registry management");
-        descriptionText.setLineWrap(true);
-        descriptionText.setWrapStyleWord(true);
-        descriptionText.setEditable(false);
-        descriptionText.setFocusable(false);
-        descriptionText.setBorder(new EmptyBorder(10, 10, 10, 10));
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 1;
-        gbc.weightx = 1.0;
-        gbc.weighty = 0.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        this.add(descriptionText, gbc);
-        
-        gbc.gridy++;
-        gbc.insets = new Insets(10,0,0,0);
-        
-        registryTable.getColumnModel().getColumn(0).setPreferredWidth(20);
-        registryTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        registryTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        JScrollPane scrollPane = new JScrollPane(registryTable);
- //       registryTable.setFillsViewportHeight(true);
-        
-        gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.BOTH;
+		JTextArea descriptionText = new JTextArea(
+				"Component registry management");
+		descriptionText.setLineWrap(true);
+		descriptionText.setWrapStyleWord(true);
+		descriptionText.setEditable(false);
+		descriptionText.setFocusable(false);
+		descriptionText.setBorder(new EmptyBorder(10, 10, 10, 10));
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.gridwidth = 1;
+		gbc.weightx = 1.0;
+		gbc.weighty = 0.0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		this.add(descriptionText, gbc);
 
-        this.add(scrollPane, gbc);
-        
-		// Add buttons panel
-        gbc.gridx = 0;
-        gbc.gridy++;
-        gbc.weightx = 0.0;
-        gbc.weighty = 0.0;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(10, 0, 0, 0);
-        this.add(createRegistryButtonPanel(), gbc);
+		gbc.gridy++;
+		gbc.insets = new Insets(10, 0, 0, 0);
 
-        
+		registryTable.getColumnModel().getColumn(0).setPreferredWidth(20);
+		registryTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+		registryTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		JScrollPane scrollPane = new JScrollPane(registryTable);
+		// registryTable.setFillsViewportHeight(true);
+
+		gbc.weighty = 1.0;
+		gbc.fill = GridBagConstraints.BOTH;
+
+		this.add(scrollPane, gbc);
+
 		// Add buttons panel
-        gbc.gridx = 0;
-        gbc.gridy++;
-        gbc.weightx = 0.0;
-        gbc.weighty = 0.0;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(10, 0, 0, 0);
-        this.add(createButtonPanel(), gbc);
+		gbc.gridx = 0;
+		gbc.gridy++;
+		gbc.weightx = 0.0;
+		gbc.weighty = 0.0;
+		gbc.gridwidth = 1;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.anchor = GridBagConstraints.CENTER;
+		gbc.insets = new Insets(10, 0, 0, 0);
+		this.add(createRegistryButtonPanel(), gbc);
+
+		// Add buttons panel
+		gbc.gridx = 0;
+		gbc.gridy++;
+		gbc.weightx = 0.0;
+		gbc.weighty = 0.0;
+		gbc.gridwidth = 1;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.anchor = GridBagConstraints.CENTER;
+		gbc.insets = new Insets(10, 0, 0, 0);
+		this.add(createButtonPanel(), gbc);
 
 		setFields();
-       
 
 	}
-	
+
 	private Component createRegistryButtonPanel() {
 		final JPanel panel = new JPanel();
 
-		JButton removeButton = new DeselectingButton(new AbstractAction("Remove registry") {
+		JButton removeButton = new DeselectingButton(new AbstractAction(
+				"Remove registry") {
 			/**
 			 * 
 			 */
@@ -132,29 +133,39 @@ public class ComponentPreferencePanel extends JPanel {
 		});
 		panel.add(removeButton);
 
-		JButton addLocalButton = new DeselectingButton(new AbstractAction("Add local registry") {
+		JButton addLocalButton = new DeselectingButton(new AbstractAction(
+				"Add local registry") {
 			/**
 			 * 
 			 */
 			private static final long serialVersionUID = 855395154244911211L;
 
 			public void actionPerformed(ActionEvent arg0) {
-				
+
 				LocalRegistryPanel inputPanel = new LocalRegistryPanel();
-				
-				ValidatingUserInputDialog vuid = new ValidatingUserInputDialog("Add Local Component Registry", inputPanel);
-				vuid.addTextComponentValidation(inputPanel.getRegistryNameField(), "Set the registry name", tableModel.getRegistryMap().keySet(), "Duplicate registry name", "[\\p{L}\\p{Digit}_.]+", "Invalid registry name");
+
+				ValidatingUserInputDialog vuid = new ValidatingUserInputDialog(
+						"Add Local Component Registry", inputPanel);
+				vuid.addTextComponentValidation(inputPanel
+						.getRegistryNameField(), "Set the registry name",
+						tableModel.getRegistryMap().keySet(),
+						"Duplicate registry name", "[\\p{L}\\p{Digit}_.]+",
+						"Invalid registry name");
 				vuid.setSize(new Dimension(400, 250));
 				if (vuid.show(ComponentPreferencePanel.this)) {
 					String location = inputPanel.getLocationField().getText();
 					File newDir = new File(location);
-					ComponentRegistry newRegistry;
+					Registry newRegistry;
 					try {
-						newRegistry = LocalComponentRegistry.getComponentRegistry(newDir);
-						tableModel.insertRegistry(inputPanel.getRegistryNameField().getText(), newRegistry);
-					} catch (ComponentRegistryException e) {
-						JOptionPane.showMessageDialog(null, "Unable to access registry at " + location,
-								"Component registry problem", JOptionPane.ERROR_MESSAGE);
+						newRegistry = LocalComponentRegistry
+								.getComponentRegistry(newDir);
+						tableModel.insertRegistry(inputPanel
+								.getRegistryNameField().getText(), newRegistry);
+					} catch (RegistryException e) {
+						JOptionPane.showMessageDialog(null,
+								"Unable to access registry at " + location,
+								"Component registry problem",
+								JOptionPane.ERROR_MESSAGE);
 						logger.error(e);
 					}
 				}
@@ -166,7 +177,8 @@ public class ComponentPreferencePanel extends JPanel {
 		 * The applyButton applies the shown field values to the
 		 * {@link HttpProxyConfiguration} and saves them for future.
 		 */
-		JButton addRemoteButton = new DeselectingButton(new AbstractAction("Add remote registry") {
+		JButton addRemoteButton = new DeselectingButton(new AbstractAction(
+				"Add remote registry") {
 			/**
 			 * 
 			 */
@@ -174,24 +186,37 @@ public class ComponentPreferencePanel extends JPanel {
 
 			public void actionPerformed(ActionEvent arg0) {
 				RemoteRegistryPanel inputPanel = new RemoteRegistryPanel();
-				
-				ValidatingUserInputDialog vuid = new ValidatingUserInputDialog("Add Remote Component Registry", inputPanel);
-				vuid.addTextComponentValidation(inputPanel.getRegistryNameField(), "Set the registry name", tableModel.getRegistryMap().keySet(), "Duplicate registry name", "[\\p{L}\\p{Digit}_.]+", "Invalid registry name");
-				vuid.addTextComponentValidation(inputPanel.getLocationField(), "Set the URL of the profile", null, "", Utils.URL_PATTERN, "Invalid URL");
+
+				ValidatingUserInputDialog vuid = new ValidatingUserInputDialog(
+						"Add Remote Component Registry", inputPanel);
+				vuid.addTextComponentValidation(inputPanel
+						.getRegistryNameField(), "Set the registry name",
+						tableModel.getRegistryMap().keySet(),
+						"Duplicate registry name", "[\\p{L}\\p{Digit}_.]+",
+						"Invalid registry name");
+				vuid.addTextComponentValidation(inputPanel.getLocationField(),
+						"Set the URL of the profile", null, "",
+						Utils.URL_PATTERN, "Invalid URL");
 				vuid.setSize(new Dimension(400, 250));
 				if (vuid.show(ComponentPreferencePanel.this)) {
-					ComponentRegistry newRegistry;
+					Registry newRegistry;
 					String location = inputPanel.getLocationField().getText();
 					try {
-						newRegistry = MyExperimentComponentRegistry.getComponentRegistry(new URL(location));
-						tableModel.insertRegistry(inputPanel.getRegistryNameField().getText(), newRegistry);
+						newRegistry = MyExperimentComponentRegistry
+								.getComponentRegistry(new URL(location));
+						tableModel.insertRegistry(inputPanel
+								.getRegistryNameField().getText(), newRegistry);
 					} catch (MalformedURLException e) {
-						JOptionPane.showMessageDialog(null, "Unable to access registry at " + location,
-								"Component registry problem", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null,
+								"Unable to access registry at " + location,
+								"Component registry problem",
+								JOptionPane.ERROR_MESSAGE);
 						logger.error(e);
-					} catch (ComponentRegistryException e) {
-						JOptionPane.showMessageDialog(null, "Unable to access registry at " + location,
-								"Component registry problem", JOptionPane.ERROR_MESSAGE);
+					} catch (RegistryException e) {
+						JOptionPane.showMessageDialog(null,
+								"Unable to access registry at " + location,
+								"Component registry problem",
+								JOptionPane.ERROR_MESSAGE);
 						logger.error(e);
 					}
 				}
@@ -225,23 +250,25 @@ public class ComponentPreferencePanel extends JPanel {
 		 * The resetButton changes the property values shown to those
 		 * corresponding to the configuration currently applied.
 		 */
-		JButton resetButton = new DeselectingButton(new AbstractAction("Reset") {
-			public void actionPerformed(ActionEvent arg0) {
-				setFields();
-			}
-		});
+		JButton resetButton = new DeselectingButton(
+				new AbstractAction("Reset") {
+					public void actionPerformed(ActionEvent arg0) {
+						setFields();
+					}
+				});
 		panel.add(resetButton);
 
 		/**
 		 * The applyButton applies the shown field values to the
 		 * {@link HttpProxyConfiguration} and saves them for future.
 		 */
-		JButton applyButton = new DeselectingButton(new AbstractAction("Apply") {
-			public void actionPerformed(ActionEvent arg0) {
-				applySettings();
-				setFields();
-			}
-		});
+		JButton applyButton = new DeselectingButton(
+				new AbstractAction("Apply") {
+					public void actionPerformed(ActionEvent arg0) {
+						applySettings();
+						setFields();
+					}
+				});
 		panel.add(applyButton);
 
 		return panel;
@@ -268,6 +295,5 @@ public class ComponentPreferencePanel extends JPanel {
 		ComponentPreference pref = ComponentPreference.getInstance();
 		pref.store();
 	}
-
 
 }

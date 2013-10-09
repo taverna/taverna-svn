@@ -23,27 +23,30 @@ package net.sf.taverna.t2.component.registry;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import net.sf.taverna.t2.component.api.RegistryException;
+import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 /**
  * A Component is a building block for creating Taverna workflows. Components
  * and must comply with the ComponentProfile of their ComponentFamily.
- *
+ * 
  * @author David Withers
  */
-public abstract class Component {
-	
+public abstract class Component implements
+		net.sf.taverna.t2.component.api.Component {
 	private String name;
-	
 	private String description;
-	
 	private URL url;
-	
-	protected SortedMap<Integer, ComponentVersion> versionMap = new TreeMap<Integer, ComponentVersion>();
-	
+	/**
+	 * Mapping from version numbers to version implementations.
+	 */
+	protected SortedMap<Integer, Version> versionMap = new TreeMap<Integer, Version>();
+
 	protected Component(String url) {
 		try {
 			this.url = new URL(url);
@@ -51,7 +54,7 @@ public abstract class Component {
 			// nothing
 		}
 	}
-	
+
 	protected Component(File fileDir) {
 		try {
 			this.url = fileDir.toURI().toURL();
@@ -60,97 +63,92 @@ public abstract class Component {
 		}
 	}
 
-	/**
-	 * Returns the name of the Component.
-	 *
-	 * @return the name of the Component.
-	 */
+	@Override
 	public final synchronized String getName() {
 		if (name == null) {
 			name = internalGetName();
 		}
 		return name;
 	}
-	
-	protected abstract String internalGetName();
 
 	/**
-	 * Returns the description of the Component.
-	 *
-	 * @return the description of the Component.
+	 * The real implementation of the name fetching. Caching already handled.
+	 * 
+	 * @return The name of the component.
 	 */
+	protected abstract String internalGetName();
+
+	@Override
 	public final synchronized String getDescription() {
 		if (description == null) {
 			description = internalGetDescription();
 		}
 		return description;
 	}
-	
+
+	/**
+	 * The real implementation of the description fetching. Caching already
+	 * handled.
+	 * 
+	 * @return The description of the component.
+	 */
 	protected abstract String internalGetDescription();
 
-	/**
-	 * Returns a SortedMap of version number to ComponentVersion.
-	 * <p>
-	 * The returned map is sorted increasing numeric order.
-	 *
-	 * @return a SortedMap of version number to ComponentVersion.
-	 */
-	public final SortedMap<Integer, ComponentVersion> getComponentVersionMap() {
-		checkComponentVersionMap();
-		return versionMap;
-	}
-	
-	private void checkComponentVersionMap() {
+	@Override
+	public final SortedMap<Integer, Version> getComponentVersionMap() {
 		synchronized (versionMap) {
-			if (versionMap.isEmpty()) {
-				populateComponentVersionMap();
-			}
+			checkComponentVersionMap();
+			return Collections.synchronizedSortedMap(versionMap);
 		}
 	}
-	
-	protected abstract void populateComponentVersionMap();
 
-	/**
-	 * Returns the ComponentVersion that has the specified version number.
-	 *
-	 * @param version
-	 *            the version number of the ComponentVersion to return.
-	 * @return the ComponentVersion that has the specified version number.
-	 * @throws ComponentRegistryException
-	 *             if there is a problem accessing the ComponentRegistry.
-	 */
-	public final ComponentVersion getComponentVersion(Integer version) throws ComponentRegistryException {
-		checkComponentVersionMap();
-		return versionMap.get(version);
+	private void checkComponentVersionMap() {
+		if (versionMap.isEmpty()) {
+			populateComponentVersionMap();
+		}
 	}
 
 	/**
-	 * Creates a new version of this Component.
-	 *
-	 * @param dataflow
-	 *            the Dataflow that the new ComponentVersion will use.
-	 * @return a new version of this Component.
-	 * @throws ComponentRegistryException
-	 *             if there is a problem accessing the ComponentRegistry.
+	 * Create the contents of the {@link #versionMap} field.
 	 */
-	public final ComponentVersion addVersionBasedOn(Dataflow dataflow, String revisionComment) throws ComponentRegistryException {
-		ComponentVersion result = internalAddVersionBasedOn(dataflow, revisionComment);
-		checkComponentVersionMap();
-		synchronized(versionMap) {
+	protected abstract void populateComponentVersionMap();
+
+	@Override
+	public final Version getComponentVersion(Integer version)
+			throws RegistryException {
+		synchronized (versionMap) {
+			checkComponentVersionMap();
+			return versionMap.get(version);
+		}
+	}
+
+	@Override
+	public final Version addVersionBasedOn(Dataflow dataflow,
+			String revisionComment) throws RegistryException {
+		Version result = internalAddVersionBasedOn(dataflow, revisionComment);
+		synchronized (versionMap) {
+			checkComponentVersionMap();
 			versionMap.put(result.getVersionNumber(), result);
 		}
 		return result;
 	}
 
-	protected abstract ComponentVersion internalAddVersionBasedOn(Dataflow dataflow, String revisionComment) throws ComponentRegistryException;
-	
 	/**
-	 * Returns the URL for the Component.
-	 *
-	 * @return the URL for the Component.
+	 * Manufacture a new version of a component. Does not add to the overall
+	 * version map.
+	 * 
+	 * @param dataflow
+	 *            The definition of the component.
+	 * @param revisionComment
+	 *            The description of the version.
+	 * @return The new version of the component.
+	 * @throws RegistryException
 	 */
+	protected abstract Version internalAddVersionBasedOn(Dataflow dataflow,
+			String revisionComment) throws RegistryException;
+
+	@Override
 	public final synchronized URL getComponentURL() {
 		return url;
 	}
-
 }

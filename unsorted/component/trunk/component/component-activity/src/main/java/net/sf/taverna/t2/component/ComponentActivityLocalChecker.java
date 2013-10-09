@@ -1,9 +1,11 @@
 package net.sf.taverna.t2.component;
 
+import static net.sf.taverna.t2.component.ComponentHealthCheck.NON_SHAREABLE;
+import static net.sf.taverna.t2.visit.VisitReport.Status.WARNING;
+
 import java.util.List;
 
 import net.sf.taverna.t2.visit.VisitReport;
-import net.sf.taverna.t2.visit.VisitReport.Status;
 import net.sf.taverna.t2.workflowmodel.health.HealthChecker;
 
 /**
@@ -30,11 +32,11 @@ public class ComponentActivityLocalChecker implements
 	}
 
 	public VisitReport visit(ComponentActivity activity, List<Object> ancestry) {
-		if (!activity.getConfiguration().getRegistryBase().getProtocol().startsWith("http")) {
+		if (!activity.getConfiguration().getRegistryBase().getProtocol()
+				.startsWith("http")) {
 			return new VisitReport(ComponentHealthCheck.getInstance(),
-					activity,
-					"Local component makes workflow non-shareable",
-					ComponentHealthCheck.NON_SHAREABLE, Status.WARNING);
+					activity, "Local component makes workflow non-shareable",
+					NON_SHAREABLE, WARNING);
 		}
 		return null;
 	}

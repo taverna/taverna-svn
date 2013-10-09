@@ -3,8 +3,8 @@
  */
 package net.sf.taverna.t2.component.ui.panel;
 
-import net.sf.taverna.t2.component.registry.Component;
-import net.sf.taverna.t2.component.registry.ComponentFamily;
+import net.sf.taverna.t2.component.api.Component;
+import net.sf.taverna.t2.component.api.Family;
 
 /**
  * @author alanrw
@@ -13,9 +13,9 @@ import net.sf.taverna.t2.component.registry.ComponentFamily;
 public class ComponentChoiceMessage {
 
 	private final Component chosenComponent;
-	private final ComponentFamily componentFamily;
+	private final Family componentFamily;
 
-	public ComponentChoiceMessage(ComponentFamily componentFamily, Component chosenComponent) {
+	public ComponentChoiceMessage(Family componentFamily, Component chosenComponent) {
 		this.componentFamily = componentFamily;
 		this.chosenComponent = chosenComponent;
 	}
@@ -30,7 +30,7 @@ public class ComponentChoiceMessage {
 	/**
 	 * @return the componentFamily
 	 */
-	public ComponentFamily getComponentFamily() {
+	public Family getComponentFamily() {
 		return componentFamily;
 	}
 

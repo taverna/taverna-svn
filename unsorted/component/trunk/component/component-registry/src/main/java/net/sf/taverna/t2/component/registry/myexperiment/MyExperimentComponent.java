@@ -24,10 +24,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 
 import net.sf.taverna.t2.annotation.annotationbeans.DescriptiveTitle;
+import net.sf.taverna.t2.component.api.License;
+import net.sf.taverna.t2.component.api.RegistryException;
+import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.registry.Component;
-import net.sf.taverna.t2.component.registry.ComponentRegistryException;
-import net.sf.taverna.t2.component.registry.ComponentVersion;
-import net.sf.taverna.t2.component.registry.License;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.file.exceptions.OverwriteException;
 import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
@@ -87,17 +87,17 @@ public class MyExperimentComponent extends Component {
 	protected final void populateComponentVersionMap() {
 		for (Element version : componentRegistry.getResourceElements(urlString, "versions")) {
 			String versionUri = version.getAttributeValue("uri");
-			ComponentVersion componentVersion = new MyExperimentComponentVersion(componentRegistry, this, versionUri);
+			Version componentVersion = new MyExperimentComponentVersion(componentRegistry, this, versionUri);
 			versionMap.put(componentVersion.getVersionNumber(), componentVersion);
 		}
 	}
 
 	@Override
-	protected final MyExperimentComponentVersion internalAddVersionBasedOn(Dataflow dataflow, String revisionComment) throws ComponentRegistryException {
+	protected final MyExperimentComponentVersion internalAddVersionBasedOn(Dataflow dataflow, String revisionComment) throws RegistryException {
 		return internalAddVersionBasedOn(dataflow, revisionComment, this.permissionsString);
 	}
 
-	private MyExperimentComponentVersion internalAddVersionBasedOn(Dataflow dataflow, String revisionComment, String permissionsString) throws ComponentRegistryException {
+	private MyExperimentComponentVersion internalAddVersionBasedOn(Dataflow dataflow, String revisionComment, String permissionsString) throws RegistryException {
 		String title = annotationTools.getAnnotationString(dataflow, DescriptiveTitle.class, "Untitled");
 		String dataflowString;
 		try {
@@ -106,13 +106,13 @@ public class MyExperimentComponent extends Component {
 					dataflowStream, false);
 			dataflowString = dataflowStream.toString("UTF-8");
 		} catch (OverwriteException e) {
-			throw new ComponentRegistryException(e);
+			throw new RegistryException(e);
 		} catch (SaveException e) {
-			throw new ComponentRegistryException(e);
+			throw new RegistryException(e);
 		} catch (IllegalStateException e) {
-			throw new ComponentRegistryException(e);
+			throw new RegistryException(e);
 		} catch (UnsupportedEncodingException e) {
-			throw new ComponentRegistryException(e);
+			throw new RegistryException(e);
 		}
 
 		Element workflowElement = componentRegistry.getPackItem(urlString, "workflow");

@@ -15,10 +15,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
-import net.sf.taverna.t2.component.registry.Component;
-import net.sf.taverna.t2.component.registry.ComponentFamily;
-import net.sf.taverna.t2.component.registry.ComponentRegistry;
-import net.sf.taverna.t2.component.registry.ComponentVersion;
+import net.sf.taverna.t2.component.api.Component;
+import net.sf.taverna.t2.component.api.Family;
+import net.sf.taverna.t2.component.api.Registry;
+import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
@@ -27,26 +27,25 @@ import org.apache.log4j.Logger;
 
 /**
  * @author alanrw
- *
+ * 
  */
-public class ComponentVersionChooserPanel extends JPanel implements Observer<ComponentChoiceMessage>{
+public class ComponentVersionChooserPanel extends JPanel implements
+		Observer<ComponentChoiceMessage> {
 
 	/**
 	 *
 	 */
 	private static final long serialVersionUID = 5125907010496468219L;
 
-	private static Logger logger = Logger.getLogger(ComponentVersionChooserPanel.class);
+	private static Logger logger = Logger
+			.getLogger(ComponentVersionChooserPanel.class);
 
-	@SuppressWarnings("rawtypes")
 	private final JComboBox componentVersionChoice = new JComboBox();
 
-	private SortedMap<Integer, ComponentVersion> componentVersionMap =
-		new TreeMap<Integer, ComponentVersion>();
+	private SortedMap<Integer, Version> componentVersionMap = new TreeMap<Integer, Version>();
 
 	private ComponentChooserPanel componentChooserPanel = new ComponentChooserPanel();
 
-	@SuppressWarnings("unchecked")
 	public ComponentVersionChooserPanel() {
 		super();
 		this.setLayout(new GridBagLayout());
@@ -78,20 +77,20 @@ public class ComponentVersionChooserPanel extends JPanel implements Observer<Com
 					updateToolTipText();
 				}
 
-			}});
+			}
+		});
 	}
 
 	protected void updateToolTipText() {
-		ComponentVersion chosenComponentVersion = getChosenComponentVersion();
+		Version chosenComponentVersion = getChosenComponentVersion();
 		if (chosenComponentVersion != null) {
-			componentVersionChoice.setToolTipText(chosenComponentVersion.getDescription());
-		}
-		else {
+			componentVersionChoice.setToolTipText(chosenComponentVersion
+					.getDescription());
+		} else {
 			componentVersionChoice.setToolTipText(null);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void updateComponentVersionModel() {
 		componentVersionMap.clear();
 		componentVersionChoice.removeAllItems();
@@ -101,9 +100,10 @@ public class ComponentVersionChooserPanel extends JPanel implements Observer<Com
 		(new ComponentVersionUpdater()).execute();
 	}
 
-	public ComponentVersion getChosenComponentVersion() {
+	public Version getChosenComponentVersion() {
 		if (!componentVersionMap.isEmpty()) {
-			return componentVersionMap.get(componentVersionChoice.getSelectedItem());
+			return componentVersionMap.get(componentVersionChoice
+					.getSelectedItem());
 		}
 		return null;
 	}
@@ -112,18 +112,17 @@ public class ComponentVersionChooserPanel extends JPanel implements Observer<Com
 	public void notify(Observable<ComponentChoiceMessage> sender,
 			ComponentChoiceMessage message) throws Exception {
 		try {
-		updateComponentVersionModel();
-		}
-		catch (Exception e) {
+			updateComponentVersionModel();
+		} catch (Exception e) {
 			logger.error(e);
 		}
 	}
 
-	public ComponentRegistry getChosenRegistry() {
+	public Registry getChosenRegistry() {
 		return componentChooserPanel.getChosenRegistry();
 	}
 
-	public ComponentFamily getChosenFamily() {
+	public Family getChosenFamily() {
 		return componentChooserPanel.getChosenFamily();
 	}
 
@@ -135,27 +134,29 @@ public class ComponentVersionChooserPanel extends JPanel implements Observer<Com
 
 		@Override
 		protected String doInBackground() throws Exception {
-			Component chosenComponent = componentChooserPanel.getChosenComponent();
+			Component chosenComponent = componentChooserPanel
+					.getChosenComponent();
 			if (chosenComponent != null) {
-				for (ComponentVersion version : chosenComponent.getComponentVersionMap().values()) {
+				for (Version version : chosenComponent
+						.getComponentVersionMap().values()) {
 					Integer versionNumber = version.getVersionNumber();
 					componentVersionMap.put(versionNumber, version);
 				}
-				}
+			}
 			return null;
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
-	    protected void done() {
+		protected void done() {
 			componentVersionChoice.removeAllItems();
 			for (Integer versionNumber : componentVersionMap.keySet()) {
 				componentVersionChoice.addItem(versionNumber);
 
 			}
-			
+
 			if (!componentVersionMap.isEmpty()) {
-				componentVersionChoice.setSelectedItem(componentVersionMap.lastKey());
+				componentVersionChoice.setSelectedItem(componentVersionMap
+						.lastKey());
 				updateToolTipText();
 			} else {
 				componentVersionChoice.addItem("No versions available");
@@ -164,6 +165,5 @@ public class ComponentVersionChooserPanel extends JPanel implements Observer<Com
 		}
 
 	}
-	
 
 }

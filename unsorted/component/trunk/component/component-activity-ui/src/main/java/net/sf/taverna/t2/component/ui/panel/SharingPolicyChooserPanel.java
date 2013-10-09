@@ -31,9 +31,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
-import net.sf.taverna.t2.component.registry.ComponentRegistry;
-import net.sf.taverna.t2.component.registry.ComponentRegistryException;
-import net.sf.taverna.t2.component.registry.SharingPolicy;
+import net.sf.taverna.t2.component.api.RegistryException;
+import net.sf.taverna.t2.component.api.SharingPolicy;
+import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
@@ -42,25 +42,24 @@ import org.apache.log4j.Logger;
 
 /**
  * @author alanrw
- *
+ * 
  */
-public class SharingPolicyChooserPanel extends JPanel implements Observer<RegistryChoiceMessage> {
+public class SharingPolicyChooserPanel extends JPanel implements
+		Observer<RegistryChoiceMessage> {
 
 	/**
 	 *
 	 */
 	private static final long serialVersionUID = 2175274929391537032L;
 
-	private static Logger logger = Logger.getLogger(SharingPolicyChooserPanel.class);
+	private Logger logger = Logger.getLogger(SharingPolicyChooserPanel.class);
 
-	@SuppressWarnings("rawtypes")
 	private JComboBox permissionBox = new JComboBox();
 
 	private SortedMap<String, SharingPolicy> permissionMap = new TreeMap<String, SharingPolicy>();
 
-	private ComponentRegistry registry;
+	private Registry registry;
 
-	@SuppressWarnings("unchecked")
 	public SharingPolicyChooserPanel() {
 		super();
 		permissionBox.setPrototypeDisplayValue(Utils.LONG_STRING);
@@ -87,13 +86,11 @@ public class SharingPolicyChooserPanel extends JPanel implements Observer<Regist
 		try {
 			this.registry = message.getChosenRegistry();
 			this.updateProfileModel();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			logger.error(e);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void updateProfileModel() {
 		permissionMap.clear();
 		permissionBox.removeAllItems();
@@ -110,40 +107,37 @@ public class SharingPolicyChooserPanel extends JPanel implements Observer<Regist
 			return null;
 		}
 	}
-	
-	private class SharingPolicyUpdater extends SwingWorker<String, Object> {
 
+	private class SharingPolicyUpdater extends SwingWorker<String, Object> {
 		@Override
 		protected String doInBackground() throws Exception {
 			List<SharingPolicy> sharingPolicies;
 			if (registry != null) {
-			try {
-				sharingPolicies = registry.getPermissions();
-			} catch (ComponentRegistryException e) {
-				logger.error(e);
-				return null;
-			} catch (NullPointerException e) {
-				logger.error(e);
-				return null;
-			}
-			if (sharingPolicies != null) {
-			for (SharingPolicy p : sharingPolicies) {
 				try {
-					String name = p.getName();
-					permissionMap.put(name, p);
+					sharingPolicies = registry.getPermissions();
+				} catch (RegistryException e) {
+					logger.error(e);
+					return null;
 				} catch (NullPointerException e) {
 					logger.error(e);
-
+					return null;
 				}
-			}
-			}
+				if (sharingPolicies != null) {
+					for (SharingPolicy p : sharingPolicies) {
+						try {
+							String name = p.getName();
+							permissionMap.put(name, p);
+						} catch (NullPointerException e) {
+							logger.error(e);
+						}
+					}
+				}
 			}
 			return null;
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
-	    protected void done() {
+		protected void done() {
 			permissionBox.removeAllItems();
 			for (String name : permissionMap.keySet()) {
 				permissionBox.addItem(name);
@@ -157,7 +151,5 @@ public class SharingPolicyChooserPanel extends JPanel implements Observer<Regist
 				permissionBox.setEnabled(false);
 			}
 		}
-
 	}
-
 }

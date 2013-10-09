@@ -3,6 +3,8 @@
  */
 package net.sf.taverna.t2.component.annotation;
 
+import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.getDisplayName;
+
 import java.awt.Component;
 
 import javax.swing.DefaultListCellRenderer;
@@ -13,20 +15,17 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 
 /**
  * @author alanrw
- *
+ * 
  */
-@SuppressWarnings("rawtypes")
 public class NodeListCellRenderer implements ListCellRenderer {
-	
 	private static DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 
-	/* (non-Javadoc)
-	 * @see javax.swing.ListCellRenderer#getListCellRendererComponent(javax.swing.JList, java.lang.Object, int, boolean, boolean)
-	 */
 	@Override
 	public Component getListCellRendererComponent(JList list, Object value,
 			int index, boolean isSelected, boolean cellHasFocus) {
-		return defaultRenderer.getListCellRendererComponent(list, SemanticAnnotationUtils.getDisplayName((RDFNode) value), index, isSelected, cellHasFocus);
+		return defaultRenderer.getListCellRendererComponent(list,
+				getDisplayName((RDFNode) value), index, isSelected,
+				cellHasFocus);
 	}
 
 }

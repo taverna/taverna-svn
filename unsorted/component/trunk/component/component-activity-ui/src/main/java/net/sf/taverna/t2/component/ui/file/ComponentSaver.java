@@ -12,14 +12,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils;
+import net.sf.taverna.t2.component.api.Component;
+import net.sf.taverna.t2.component.api.ComponentFileType;
+import net.sf.taverna.t2.component.api.Family;
+import net.sf.taverna.t2.component.api.Registry;
+import net.sf.taverna.t2.component.api.RegistryException;
+import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
-import net.sf.taverna.t2.component.registry.Component;
-import net.sf.taverna.t2.component.registry.ComponentFamily;
-import net.sf.taverna.t2.component.registry.ComponentFileType;
-import net.sf.taverna.t2.component.registry.ComponentRegistry;
-import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentUtil;
-import net.sf.taverna.t2.component.registry.ComponentVersion;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceProviderConfig;
 import net.sf.taverna.t2.component.ui.util.Utils;
@@ -40,7 +40,7 @@ import org.apache.log4j.Logger;
 public class ComponentSaver extends AbstractDataflowPersistenceHandler
 		implements DataflowPersistenceHandler {
 
-	private static final ComponentFileType COMPONENT_FILE_TYPE = new ComponentFileType();
+	private static final FileType COMPONENT_FILE_TYPE = ComponentFileType.instance;
 	
 	private static Logger logger = Logger.getLogger(ComponentSaver.class);
 	
@@ -51,11 +51,11 @@ public class ComponentSaver extends AbstractDataflowPersistenceHandler
 			throw new IllegalArgumentException("Unsupported file type "
 					+ fileType);
 		}
-		if (!(destination instanceof ComponentVersionIdentification)) {
+		if (!(destination instanceof Version.ID)) {
 			throw new IllegalArgumentException("Unsupported destination type " + destination.getClass().getName());
 		}
 		
-		ComponentVersionIdentification ident = (ComponentVersionIdentification) destination;
+		Version.ID ident = (Version.ID) destination;
 		
 		if (ident.getComponentVersion() == -1) {
 			ComponentVersionIdentification newIdent = new ComponentVersionIdentification(ident);
@@ -63,15 +63,15 @@ public class ComponentSaver extends AbstractDataflowPersistenceHandler
 			return new DataflowInfo(COMPONENT_FILE_TYPE, newIdent, dataflow);
 		}
 		
-		ComponentFamily family;
+		Family family;
 		try {
-			ComponentRegistry registry = ComponentUtil.calculateRegistry(ident.getRegistryBase());
+			Registry registry = ComponentUtil.calculateRegistry(ident.getRegistryBase());
 			family = registry.getComponentFamily(ident.getFamilyName());
-		} catch (ComponentRegistryException e1) {
+		} catch (RegistryException e1) {
 			throw new SaveException("Unable to read component", e1);
 		}
 	
-		ComponentVersion newVersion = null;
+		Version newVersion = null;
 		try {
 			List<SemanticAnnotationProfile> problemProfiles = new ArrayList<SemanticAnnotationProfile>(SemanticAnnotationUtils.checkComponent(dataflow, family.getComponentProfile()));
 			
@@ -100,7 +100,7 @@ public class ComponentSaver extends AbstractDataflowPersistenceHandler
 					throw new SaveException("Saving cancelled");
 				}
 			}
-		} catch (ComponentRegistryException e) {
+		} catch (RegistryException e) {
 			logger.error("Unable to save new version of component", e);
 			throw new SaveException("Unable to save new version of component", e);
 		}

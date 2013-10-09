@@ -23,9 +23,9 @@ package net.sf.taverna.t2.component.ui.view;
 import net.sf.taverna.t2.component.ComponentActivity;
 import net.sf.taverna.t2.component.ComponentActivityConfigurationBean;
 import net.sf.taverna.t2.component.annotation.AbstractSemanticAnnotationContextualView;
-import net.sf.taverna.t2.component.profile.ComponentProfile;
+import net.sf.taverna.t2.component.api.Profile;
+import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.registry.ComponentDataflowCache;
-import net.sf.taverna.t2.component.registry.ComponentRegistryException;
 import net.sf.taverna.t2.component.registry.ComponentUtil;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
@@ -51,7 +51,7 @@ public class ComponentActivitySemanticAnnotationContextualView extends AbstractS
 
 	private static Logger logger = Logger.getLogger(ComponentActivitySemanticAnnotationContextualView.class);
 
-	private ComponentProfile componentProfile;
+	private Profile componentProfile;
 
 	public ComponentActivitySemanticAnnotationContextualView(Object selection) {
 		super(false);
@@ -93,7 +93,7 @@ public class ComponentActivitySemanticAnnotationContextualView extends AbstractS
 
 		super.initialise();
 
-		} catch (ComponentRegistryException e) {
+		} catch (RegistryException e) {
 			logger.error(e);
 		}
 	}

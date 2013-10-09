@@ -3,8 +3,6 @@
  */
 package net.sf.taverna.t2.component.annotation;
 
-import java.awt.Component;
-
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
@@ -15,25 +13,20 @@ import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
  * @author alanrw
- *
+ * 
  */
 public class FallbackPropertyPanelFactory extends PropertyPanelFactorySPI {
-
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.component.annotation.PropertyPanelFactorySPI#getInputComponent(net.sf.taverna.t2.component.profile.SemanticAnnotationProfile, com.hp.hpl.jena.rdf.model.Statement)
-	 */
 	@Override
 	public JComponent getInputComponent(
 			SemanticAnnotationProfile semanticAnnotationProfile,
 			Statement statement) {
-		return new JLabel("Unable to handle " + semanticAnnotationProfile.getPredicateString());
+		return new JLabel("Unable to handle "
+				+ semanticAnnotationProfile.getPredicateString());
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.component.annotation.PropertyPanelFactorySPI#getNewTargetNode(javax.swing.JComponent)
-	 */
 	@Override
-	public RDFNode getNewTargetNode(Statement originalStatement, JComponent component) {
+	public RDFNode getNewTargetNode(Statement originalStatement,
+			JComponent component) {
 		return null;
 	}
 
@@ -48,8 +41,5 @@ public class FallbackPropertyPanelFactory extends PropertyPanelFactorySPI {
 			SemanticAnnotationProfile semanticAnnotationProfile,
 			Statement statement) {
 		return getDefaultDisplayComponent(semanticAnnotationProfile, statement);
-
 	}
-
-
 }

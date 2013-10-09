@@ -7,8 +7,8 @@ import javax.swing.Icon;
 
 import net.sf.taverna.t2.component.ComponentActivity;
 import net.sf.taverna.t2.component.ComponentActivityConfigurationBean;
+import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.preference.ComponentPreference;
-import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescription;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
@@ -19,12 +19,12 @@ public class ComponentServiceDesc extends ServiceDescription<ComponentActivityCo
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(ComponentServiceDesc.class);
 	
-	private ComponentVersionIdentification identification;
+	private Version.ID identification;
 	
 	private static ComponentPreference preference = ComponentPreference.getInstance();
 
 	
-	public ComponentServiceDesc(ComponentVersionIdentification identification) {
+	public ComponentServiceDesc(Version.ID identification) {
 		super();
 		this.identification = identification;
 	}
@@ -95,14 +95,14 @@ public class ComponentServiceDesc extends ServiceDescription<ComponentActivityCo
 	/**
 	 * @return the identification
 	 */
-	public ComponentVersionIdentification getIdentification() {
+	public Version.ID getIdentification() {
 		return identification;
 	}
 
 	/**
 	 * @param identification the identification to set
 	 */
-	public void setIdentification(ComponentVersionIdentification identification) {
+	public void setIdentification(Version.ID identification) {
 		this.identification = identification;
 	}
 

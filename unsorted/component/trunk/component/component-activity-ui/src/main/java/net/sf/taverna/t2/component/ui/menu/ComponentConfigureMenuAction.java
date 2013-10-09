@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.component.ui.menu;
 
+import static javax.swing.Action.NAME;
+
 import javax.swing.Action;
 
 import net.sf.taverna.t2.workbench.activitytools.AbstractConfigureActivityMenuAction;
@@ -16,9 +18,8 @@ public class ComponentConfigureMenuAction extends
 	@Override
 	protected Action createAction() {
 		Action result = null;
-		result = new ComponentConfigureAction(findActivity(),
-				getParentFrame());
-		result.putValue(Action.NAME, "Configure component");
+		result = new ComponentConfigureAction(findActivity(), getParentFrame());
+		result.putValue(NAME, "Configure component");
 		addMenuDots(result);
 		return result;
 	}

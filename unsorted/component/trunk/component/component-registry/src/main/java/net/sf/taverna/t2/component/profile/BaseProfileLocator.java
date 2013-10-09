@@ -3,6 +3,9 @@
  */
 package net.sf.taverna.t2.component.profile;
 
+import static org.apache.commons.httpclient.HttpStatus.SC_OK;
+import static org.apache.commons.io.FileUtils.writeStringToFile;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -13,45 +16,48 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
-import net.sf.taverna.t2.component.registry.ComponentRegistryException;
+import net.sf.taverna.t2.component.api.RegistryException;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 /**
  * @author alanrw
- *
+ * 
  */
-public class BaseProfile {
+public class BaseProfileLocator {
 
-	private final Logger logger = Logger.getLogger(BaseProfile.class);
+	private final Logger logger = Logger.getLogger(BaseProfileLocator.class);
 
-	private static BaseProfile instance = null;
-	
+	private static BaseProfileLocator instance = null;
+
 	private static String BASE_PROFILE_PATH = "BaseProfile.xml";
-	
+
 	private static String BASE_PROFILE_URI = "http://build.mygrid.org.uk/taverna/BaseProfile.xml";
-	
+
 	private static int TIMEOUT = 5000;
 
 	private static String pattern = "EEE, dd MMM yyyy HH:mm:ss Z";
 	private static SimpleDateFormat format = new SimpleDateFormat(pattern);
-	
+
 	private ComponentProfile profile = null;
-	
-	public static synchronized BaseProfile getInstance() {
+
+	public static synchronized BaseProfileLocator getInstance() {
 		if (instance == null) {
-			instance = new BaseProfile();
+			instance = new BaseProfileLocator();
 		}
 		return instance;
 	}
-	
-	private BaseProfile() {
+
+	public static ComponentProfile getBaseProfile() {
+		return getInstance().getProfile();
+	}
+
+	@SuppressWarnings("deprecation")
+	private BaseProfileLocator() {
 		File configFile = getBaseProfileFile();
 		boolean load = false;
 		long noticeTime = -1;
@@ -68,17 +74,17 @@ public class BaseProfile {
 			URI noticeURI = new URI(BASE_PROFILE_URI);
 			HttpMethod method = new GetMethod(noticeURI.toString());
 			int statusCode = client.executeMethod(method);
-			if (statusCode != HttpStatus.SC_OK) {
+			if (statusCode != SC_OK) {
 				logger.warn("HTTP status " + statusCode + " while getting "
 						+ noticeURI);
 			} else {
-			Header h = method.getResponseHeader("Last-Modified");
-			message = method.getResponseBodyAsString();
-			if (h != null) {
-				noticeTimeString = h.getValue();
-				noticeTime = format.parse(noticeTimeString).getTime();
-				logger.info("NoticeTime is " + noticeTime);
-			}
+				Header h = method.getResponseHeader("Last-Modified");
+				message = method.getResponseBodyAsString();
+				if (h != null) {
+					noticeTimeString = h.getValue();
+					noticeTime = format.parse(noticeTimeString).getTime();
+					logger.info("NoticeTime is " + noticeTime);
+				}
 			}
 		} catch (URISyntaxException e) {
 			logger.error("URI problem", e);
@@ -94,12 +100,13 @@ public class BaseProfile {
 		if ((noticeTimeString != null) && (noticeTime != -1)) {
 			if (noticeTime > lastCheckedTime) {
 				try {
-					profile = new ComponentProfile(null, new URL(BASE_PROFILE_URI));
-					FileUtils.writeStringToFile(configFile, profile.getXML());
+					profile = new ComponentProfile(null, new URL(
+							BASE_PROFILE_URI));
+					writeStringToFile(configFile, profile.getXML());
 				} catch (MalformedURLException e) {
 					logger.error("URI problem", e);
 					profile = null;
-				} catch (ComponentRegistryException e) {
+				} catch (RegistryException e) {
 					logger.error("Component Registry problem", e);
 					profile = null;
 				} catch (IOException e) {
@@ -108,35 +115,35 @@ public class BaseProfile {
 				}
 			}
 		}
-		
+
 		if ((profile == null) && configFile.exists()) {
 			try {
 				profile = new ComponentProfile(null, configFile.toURI().toURL());
 			} catch (MalformedURLException e) {
 				logger.error("URI problem", e);
 				profile = null;
-			} catch (ComponentRegistryException e) {
+			} catch (RegistryException e) {
 				logger.error("URI problem", e);
 				profile = null;
 			}
 		}
 
 	}
-	
+
 	private File getBaseProfileFile() {
-		final File home = ApplicationRuntime.getInstance().getApplicationHomeDir();
-		final File config = new File(home,"conf");
+		final File home = ApplicationRuntime.getInstance()
+				.getApplicationHomeDir();
+		final File config = new File(home, "conf");
 		if (!config.exists()) {
 			config.mkdir();
 		}
-		final File configFile = new File(config,
-				BASE_PROFILE_PATH);
+		final File configFile = new File(config, BASE_PROFILE_PATH);
 		return configFile;
-		
+
 	}
 
 	public ComponentProfile getProfile() {
 		return profile;
 	}
-	
+
 }

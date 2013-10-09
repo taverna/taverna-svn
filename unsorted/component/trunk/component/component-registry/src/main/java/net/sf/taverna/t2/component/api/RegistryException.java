@@ -18,30 +18,30 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
-package net.sf.taverna.t2.component.registry;
+package net.sf.taverna.t2.component.api;
 
 /**
  * Thrown when there is a problem interacting with a ComponentRegistry.
  *
  * @author David Withers
  */
-public class ComponentRegistryException extends Exception {
+public class RegistryException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
-	public ComponentRegistryException() {
+	public RegistryException() {
 		super();
 	}
 
-	public ComponentRegistryException(String arg0, Throwable arg1) {
+	public RegistryException(String arg0, Throwable arg1) {
 		super(arg0, arg1);
 	}
 
-	public ComponentRegistryException(String arg0) {
+	public RegistryException(String arg0) {
 		super(arg0);
 	}
 
-	public ComponentRegistryException(Throwable arg0) {
+	public RegistryException(Throwable arg0) {
 		super(arg0);
 	}
 
