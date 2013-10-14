@@ -23,6 +23,9 @@ public abstract class Policy implements SharingPolicy {
 			return PRIVATE;
 		if (perm.getGroupPolicyId() != null)
 			return new Group(perm.getGroupPolicyId());
+		for (Permission p : perm.getPermission())
+			if (p.getId() != null)
+				return new Group(p.getId().toString(), perm);
 		return PUBLIC;
 	}
 
@@ -52,7 +55,7 @@ public abstract class Policy implements SharingPolicy {
 			perm.getPrivilege().add(privView);
 			perm.getPrivilege().add(privDownload);
 			Permissions result = new Permissions();
-			result.setPermission(perm);
+			result.getPermission().add(perm);
 			return result;
 		}
 
@@ -81,9 +84,15 @@ public abstract class Policy implements SharingPolicy {
 
 	public static class Group extends Policy {
 		private String id;
+		private Permissions p;
 
 		public Group(String id) {
 			this.id = id;
+		}
+
+		public Group(String id, Permissions p) {
+			this.id = id;
+			this.p = p;
 		}
 
 		@Override
@@ -93,6 +102,8 @@ public abstract class Policy implements SharingPolicy {
 
 		@Override
 		public Permissions getPermissionsElement() {
+			if (p != null)
+				return p;
 			Permissions result = new Permissions();
 			result.setGroupPolicyId(id);
 			return result;
