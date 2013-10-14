@@ -2,6 +2,9 @@ package net.sf.taverna.t2.component.registry.standard;
 
 import static net.sf.taverna.t2.component.registry.standard.Utils.getAnnotation;
 import static net.sf.taverna.t2.component.registry.standard.Utils.getElementString;
+
+import java.util.List;
+
 import net.sf.taverna.t2.annotation.annotationbeans.DescriptiveTitle;
 import net.sf.taverna.t2.annotation.annotationbeans.FreeTextDescription;
 import net.sf.taverna.t2.component.api.Component;
@@ -11,6 +14,7 @@ import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import uk.org.taverna.component.api.ComponentFamilyDescription;
+import uk.org.taverna.component.api.ComponentFamilyType;
 
 /**
  * A family of components in the new-interface registry.
@@ -20,11 +24,11 @@ import uk.org.taverna.component.api.ComponentFamilyDescription;
 public class NewComponentFamily extends ComponentFamily {
 	static final String ELEMENTS = "title,description";
 
-	NewComponentRegistry registry;
-	NewComponentProfile profile;
-	String id;
-	String name;
-	String description;
+	private final NewComponentRegistry registry;
+	private final NewComponentProfile profile;
+	private final String id;
+	private final String name;
+	private final String description;
 	private final String uri;
 
 	NewComponentFamily(NewComponentRegistry componentRegistry,
@@ -33,10 +37,21 @@ public class NewComponentFamily extends ComponentFamily {
 		super(componentRegistry);
 		uri = familyDesc.getUri();
 		registry = componentRegistry;
+		this.profile = profile;
 		id = familyDesc.getId().trim();
 		name = getElementString(familyDesc, "title");
 		description = getElementString(familyDesc, "description");
+	}
+
+	public NewComponentFamily(NewComponentRegistry componentRegistry,
+			NewComponentProfile profile, ComponentFamilyType post) {
+		super(componentRegistry);
+		uri = post.getUri();
+		registry = componentRegistry;
 		this.profile = profile;
+		id = post.getId();
+		name = post.getTitle();
+		description = post.getDescription();
 	}
 
 	@Override
@@ -54,9 +69,13 @@ public class NewComponentFamily extends ComponentFamily {
 		return profile;
 	}
 
+	public List<Component> getMemberComponents() throws RegistryException {
+		return registry.listComponents(this);
+	}
+
 	@Override
 	protected void populateComponentCache() throws RegistryException {
-		for (Component c : registry.listComponents(this)) {
+		for (Component c : getMemberComponents()) {
 			NewComponent component = (NewComponent) c;
 			componentCache.put(component.getName(), component);
 		}
@@ -87,5 +106,21 @@ public class NewComponentFamily extends ComponentFamily {
 
 	public String getUri() {
 		return uri;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof NewComponentFamily) {
+			NewComponentFamily other = (NewComponentFamily) o;
+			return registry.equals(other.registry) && id.equals(other.id);
+		}
+		return false;
+	}
+
+	private static final int BASEHASH = NewComponentFamily.class.hashCode();
+
+	@Override
+	public int hashCode() {
+		return BASEHASH ^ registry.hashCode() ^ id.hashCode();
 	}
 }

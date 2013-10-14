@@ -15,6 +15,7 @@ public class NewComponentProfile extends ComponentProfile {
 	private static final String LOCATION = "content-uri";
 	static final String ELEMENTS = LOCATION;
 
+	private final NewComponentRegistry registry;
 	private String id;
 	private String location;
 	private final String uri;
@@ -22,6 +23,7 @@ public class NewComponentProfile extends ComponentProfile {
 	NewComponentProfile(NewComponentRegistry registry,
 			ComponentProfileType profile) throws RegistryException {
 		super(registry, profile.getContentUri());
+		this.registry = registry;
 		uri = profile.getUri();
 		id = profile.getId();
 		location = profile.getContentUri();
@@ -30,9 +32,14 @@ public class NewComponentProfile extends ComponentProfile {
 	NewComponentProfile(NewComponentRegistry registry,
 			ComponentProfileDescription cpd) throws RegistryException {
 		super(registry, getElementString(cpd, LOCATION));
+		this.registry = registry;
 		uri = cpd.getUri();
 		id = cpd.getId();
 		location = getElementString(cpd, LOCATION);
+	}
+
+	public ComponentProfileType get(String elements) throws RegistryException {
+		return registry.getComponentProfile(id, elements);
 	}
 
 	public String getLocation() {
@@ -45,6 +52,22 @@ public class NewComponentProfile extends ComponentProfile {
 
 	public String getUri() {
 		return uri;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof NewComponentProfile) {
+			NewComponentProfile other = (NewComponentProfile) o;
+			return registry.equals(other.registry) && id.equals(other.id);
+		}
+		return false;
+	}
+
+	private static final int BASEHASH = NewComponentProfile.class.hashCode();
+
+	@Override
+	public int hashCode() {
+		return BASEHASH ^ registry.hashCode() ^ id.hashCode();
 	}
 
 	@Override

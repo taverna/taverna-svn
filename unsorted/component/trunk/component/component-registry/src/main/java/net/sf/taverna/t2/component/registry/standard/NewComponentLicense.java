@@ -33,9 +33,11 @@ public class NewComponentLicense implements License {
 		return (registry == other.registry) && id.equals(other.id);
 	}
 
+	private static final int BASEHASH = NewComponentLicense.class.hashCode();
+
 	@Override
 	public int hashCode() {
-		return registry.hashCode() ^ id.hashCode();
+		return BASEHASH ^ registry.hashCode() ^ id.hashCode();
 	}
 
 	@Override

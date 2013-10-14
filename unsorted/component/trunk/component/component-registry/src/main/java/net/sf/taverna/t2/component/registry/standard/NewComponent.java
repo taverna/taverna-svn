@@ -6,6 +6,9 @@ import static net.sf.taverna.t2.component.registry.standard.Policy.getPolicy;
 import static net.sf.taverna.t2.component.registry.standard.Utils.getDataflowFromUri;
 import static net.sf.taverna.t2.component.registry.standard.Utils.getElementString;
 import static net.sf.taverna.t2.component.registry.standard.Utils.getValue;
+
+import java.lang.ref.SoftReference;
+
 import net.sf.taverna.t2.component.api.License;
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.api.SharingPolicy;
@@ -15,22 +18,20 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 import uk.org.taverna.component.api.ComponentDescription;
 import uk.org.taverna.component.api.ComponentType;
 import uk.org.taverna.component.api.Description;
-import uk.org.taverna.component.api.Versions;
 
 public class NewComponent extends Component {
 	static final String ELEMENTS = "title,description,license-type,permissions";
 
-	NewComponentRegistry registry;
-	NewComponentFamily family;
-	private String id;
-	private String title;
-	private String description;
-	private License license;
+	final NewComponentRegistry registry;
+	final NewComponentFamily family;
+	private final String id;
+	private final String title;
+	private final String description;
+	private final License license;
 	private SharingPolicy sharingPolicy;
 
-	protected NewComponent(NewComponentRegistry registry,
-			NewComponentFamily family, ComponentDescription cd)
-			throws RegistryException {
+	NewComponent(NewComponentRegistry registry, NewComponentFamily family,
+			ComponentDescription cd) throws RegistryException {
 		super(cd.getUri());
 		this.registry = registry;
 		this.family = family;
@@ -40,16 +41,15 @@ public class NewComponent extends Component {
 		license = registry.getLicense(getElementString(cd, "license-type"));
 		try {
 			// UGLY! Can't get the sharing policy back with the aggregate query
-			sharingPolicy = getPolicy(registry.getComponent(id, "permissions")
+			sharingPolicy = getPolicy(getCurrent("permissions")
 					.getPermissions());
 		} catch (RegistryException e) {
 			sharingPolicy = PRIVATE;
 		}
 	}
 
-	public NewComponent(NewComponentRegistry registry,
-			NewComponentFamily family, ComponentType ct)
-			throws RegistryException {
+	NewComponent(NewComponentRegistry registry, NewComponentFamily family,
+			ComponentType ct) throws RegistryException {
 		super(ct.getUri());
 		this.registry = registry;
 		this.family = family;
@@ -58,6 +58,10 @@ public class NewComponent extends Component {
 		description = ct.getDescription().trim();
 		license = registry.getLicense(getValue(ct.getLicenseType()).trim());
 		sharingPolicy = getPolicy(ct.getPermissions());
+	}
+
+	public ComponentType getCurrent(String elements) throws RegistryException {
+		return registry.getComponent(id, null, elements);
 	}
 
 	@Override
@@ -72,16 +76,14 @@ public class NewComponent extends Component {
 
 	@Override
 	protected void populateComponentVersionMap() {
-		Versions versions;
 		try {
-			versions = registry.getComponent(id, "versions").getVersions();
+			for (Description d : getCurrent("versions").getVersions()
+					.getVersion())
+				versionMap.put(d.getVersion(), new Version(d.getVersion(),
+						getValue(d)));
 		} catch (RegistryException e) {
 			logger.warn("failed to retrieve version list: " + e.getMessage());
-			return;
 		}
-		for (Description d : versions.getVersion())
-			versionMap.put(d.getVersion(), new Version(d.getVersion(),
-					getValue(d)));
 	}
 
 	@Override
@@ -95,22 +97,53 @@ public class NewComponent extends Component {
 		return id;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof NewComponent) {
+			NewComponent other = (NewComponent) o;
+			return registry.equals(other.registry) && id.equals(other.id);
+		}
+		return false;
+	}
+
+	private static final int BASEHASH = NewComponent.class.hashCode();
+
+	@Override
+	public int hashCode() {
+		return BASEHASH ^ registry.hashCode() ^ id.hashCode();
+	}
+
 	class Version extends ComponentVersion {
-		private Integer version;
+		private int version;
 		private String description;
-		private Dataflow dataflow;
+		SoftReference<Dataflow> dataflow;
 
 		protected Version(Integer version, String description, Dataflow dataflow) {
 			super(NewComponent.this);
 			this.version = version;
 			this.description = description;
-			this.dataflow = dataflow;
+			this.dataflow = new SoftReference<Dataflow>(dataflow);
 		}
 
 		protected Version(Integer version, String description) {
 			super(NewComponent.this);
 			this.version = version;
 			this.description = description;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o instanceof Version) {
+				Version other = (Version) o;
+				return version == other.version
+						&& NewComponent.this.equals(other.getComponent());
+			}
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			return NewComponent.this.hashCode() ^ (version << 16) ^ (version >> 16);
 		}
 
 		@Override
@@ -124,19 +157,21 @@ public class NewComponent extends Component {
 		}
 
 		@Override
-		protected Dataflow internalGetDataflow() throws RegistryException {
-			if (dataflow == null) {
-				String contentUri = registry.getComponent(id, "content-uri")
-						.getContentUri();
+		protected synchronized Dataflow internalGetDataflow()
+				throws RegistryException {
+			if (dataflow == null || dataflow.get() == null) {
+				String contentUri = registry.getComponent(id, version,
+						"content-uri").getContentUri();
 				try {
-					dataflow = getDataflowFromUri(contentUri + "?version="
-							+ version);
+					dataflow = new SoftReference<Dataflow>(
+							getDataflowFromUri(contentUri + "?version="
+									+ version));
 				} catch (Exception e) {
 					logger.error(e);
 					throw new RegistryException("Unable to open dataflow", e);
 				}
 			}
-			return dataflow;
+			return dataflow.get();
 		}
 	}
 }

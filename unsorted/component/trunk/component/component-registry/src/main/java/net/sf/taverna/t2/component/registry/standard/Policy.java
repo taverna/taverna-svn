@@ -2,9 +2,6 @@ package net.sf.taverna.t2.component.registry.standard;
 
 import static uk.org.taverna.component.api.Privilege.DOWNLOAD;
 import static uk.org.taverna.component.api.Privilege.VIEW;
-
-import javax.xml.bind.JAXBElement;
-
 import net.sf.taverna.t2.component.api.SharingPolicy;
 import uk.org.taverna.component.api.Permissions;
 import uk.org.taverna.component.api.Permissions.Permission;
@@ -114,9 +111,11 @@ public abstract class Policy implements SharingPolicy {
 			return (p instanceof Group) && id.equals(((Group) p).id);
 		}
 
+		private static final int BASEHASH = Group.class.hashCode();
+
 		@Override
 		public int hashCode() {
-			return id.hashCode();
+			return BASEHASH ^ id.hashCode();
 		}
 	}
 }

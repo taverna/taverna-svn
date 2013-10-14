@@ -20,8 +20,10 @@ import net.sf.taverna.t2.component.api.RegistryException;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.log4j.Logger;
 
 /**
@@ -29,26 +31,21 @@ import org.apache.log4j.Logger;
  * 
  */
 public class BaseProfileLocator {
-
-	private final Logger logger = Logger.getLogger(BaseProfileLocator.class);
+	private static final Logger logger = Logger
+			.getLogger(BaseProfileLocator.class);
+	private static final String BASE_PROFILE_PATH = "BaseProfile.xml";
+	private static final String BASE_PROFILE_URI = "http://build.mygrid.org.uk/taverna/BaseProfile.xml";
+	private static final int TIMEOUT = 5000;
+	private static final String pattern = "EEE, dd MMM yyyy HH:mm:ss Z";
+	private static final SimpleDateFormat format = new SimpleDateFormat(pattern);
 
 	private static BaseProfileLocator instance = null;
-
-	private static String BASE_PROFILE_PATH = "BaseProfile.xml";
-
-	private static String BASE_PROFILE_URI = "http://build.mygrid.org.uk/taverna/BaseProfile.xml";
-
-	private static int TIMEOUT = 5000;
-
-	private static String pattern = "EEE, dd MMM yyyy HH:mm:ss Z";
-	private static SimpleDateFormat format = new SimpleDateFormat(pattern);
 
 	private ComponentProfile profile = null;
 
 	public static synchronized BaseProfileLocator getInstance() {
-		if (instance == null) {
+		if (instance == null)
 			instance = new BaseProfileLocator();
-		}
 		return instance;
 	}
 
@@ -56,36 +53,21 @@ public class BaseProfileLocator {
 		return getInstance().getProfile();
 	}
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings("unused")
 	private BaseProfileLocator() {
 		File configFile = getBaseProfileFile();
 		boolean load = false;
 		long noticeTime = -1;
 		long lastCheckedTime = -1;
 
-		HttpClient client = new HttpClient();
-		client.setConnectionTimeout(TIMEOUT);
-		client.setTimeout(TIMEOUT);
-
-		String message = null;
-		String noticeTimeString = null;
+		HttpClientParams params = new HttpClientParams();
+		params.setConnectionManagerTimeout(TIMEOUT);
+		params.setSoTimeout(TIMEOUT);
+		HttpClient client = new HttpClient(params);
 
 		try {
-			URI noticeURI = new URI(BASE_PROFILE_URI);
-			HttpMethod method = new GetMethod(noticeURI.toString());
-			int statusCode = client.executeMethod(method);
-			if (statusCode != SC_OK) {
-				logger.warn("HTTP status " + statusCode + " while getting "
-						+ noticeURI);
-			} else {
-				Header h = method.getResponseHeader("Last-Modified");
-				message = method.getResponseBodyAsString();
-				if (h != null) {
-					noticeTimeString = h.getValue();
-					noticeTime = format.parse(noticeTimeString).getTime();
-					logger.info("NoticeTime is " + noticeTime);
-				}
-			}
+			noticeTime = getNoticeTimestamp(noticeTime, client);
+			logger.info("NoticeTime is " + noticeTime);
 		} catch (URISyntaxException e) {
 			logger.error("URI problem", e);
 		} catch (IOException e) {
@@ -93,57 +75,60 @@ public class BaseProfileLocator {
 		} catch (ParseException e) {
 			logger.error("Could not parse last-modified time", e);
 		}
-		if (configFile.exists()) {
+		if (configFile.exists())
 			lastCheckedTime = configFile.lastModified();
-		}
 
-		if ((noticeTimeString != null) && (noticeTime != -1)) {
-			if (noticeTime > lastCheckedTime) {
-				try {
-					profile = new ComponentProfile(null, new URL(
-							BASE_PROFILE_URI));
-					writeStringToFile(configFile, profile.getXML());
-				} catch (MalformedURLException e) {
-					logger.error("URI problem", e);
-					profile = null;
-				} catch (RegistryException e) {
-					logger.error("Component Registry problem", e);
-					profile = null;
-				} catch (IOException e) {
-					logger.error("Unable to write profile", e);
-					profile = null;
-				}
+		try {
+			if ((noticeTime != -1) && (noticeTime > lastCheckedTime)) {
+				profile = new ComponentProfile(null, new URL(BASE_PROFILE_URI));
+				writeStringToFile(configFile, profile.getXML());
 			}
+		} catch (MalformedURLException e) {
+			logger.error("URI problem", e);
+			profile = null;
+		} catch (RegistryException e) {
+			logger.error("Component Registry problem", e);
+			profile = null;
+		} catch (IOException e) {
+			logger.error("Unable to write profile", e);
+			profile = null;
 		}
 
-		if ((profile == null) && configFile.exists()) {
-			try {
+		try {
+			if ((profile == null) && configFile.exists())
 				profile = new ComponentProfile(null, configFile.toURI().toURL());
-			} catch (MalformedURLException e) {
-				logger.error("URI problem", e);
-				profile = null;
-			} catch (RegistryException e) {
-				logger.error("URI problem", e);
-				profile = null;
-			}
+		} catch (Exception e) {
+			logger.error("URI problem", e);
+			profile = null;
 		}
+	}
 
+	private long getNoticeTimestamp(long noticeTime, HttpClient client)
+			throws URISyntaxException, IOException, HttpException,
+			ParseException {
+		URI noticeURI = new URI(BASE_PROFILE_URI);
+		HttpMethod method = new GetMethod(noticeURI.toString());
+		int statusCode = client.executeMethod(method);
+		if (statusCode != SC_OK) {
+			logger.warn("HTTP status " + statusCode + " while getting "
+					+ noticeURI);
+			return -1;
+		}
+		Header h = method.getResponseHeader("Last-Modified");
+		if (h != null)
+			return format.parse(h.getValue()).getTime();
+		return -1;
 	}
 
 	private File getBaseProfileFile() {
-		final File home = ApplicationRuntime.getInstance()
-				.getApplicationHomeDir();
-		final File config = new File(home, "conf");
-		if (!config.exists()) {
+		File home = ApplicationRuntime.getInstance().getApplicationHomeDir();
+		File config = new File(home, "conf");
+		if (!config.exists())
 			config.mkdir();
-		}
-		final File configFile = new File(config, BASE_PROFILE_PATH);
-		return configFile;
-
+		return new File(config, BASE_PROFILE_PATH);
 	}
 
 	public ComponentProfile getProfile() {
 		return profile;
 	}
-
 }

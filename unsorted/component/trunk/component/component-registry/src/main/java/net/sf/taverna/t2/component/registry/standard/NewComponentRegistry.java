@@ -179,8 +179,11 @@ public class NewComponentRegistry extends ComponentRegistry {
 		}
 	}
 
-	ComponentType getComponent(String id, String elements)
+	ComponentType getComponent(String id, Integer version, String elements)
 			throws RegistryException {
+		if (version != null)
+			return get(ComponentType.class, "/component.xml", "id=" + id,
+					"version=" + version, "elements=" + elements);
 		return get(ComponentType.class, "/component.xml", "id=" + id,
 				"elements=" + elements);
 	}
@@ -225,7 +228,7 @@ public class NewComponentRegistry extends ComponentRegistry {
 		NewComponentProfile profile = (NewComponentProfile) componentProfile;
 
 		return new NewComponentFamily(this, profile, post(
-				ComponentFamilyDescription.class,
+				ComponentFamilyType.class,
 				makeComponentFamilyCreateRequest(profile, familyName,
 						description, license, sharingPolicy),
 				"/component-family.xml", "elements="
@@ -468,10 +471,9 @@ public class NewComponentRegistry extends ComponentRegistry {
 
 	public static synchronized NewComponentRegistry getComponentRegistry(
 			URL registryBase) throws RegistryException {
-		if (!componentRegistries.containsKey(registryBase.toExternalForm())) {
+		if (!componentRegistries.containsKey(registryBase.toExternalForm()))
 			componentRegistries.put(registryBase.toExternalForm(),
 					new NewComponentRegistry(registryBase));
-		}
 		return componentRegistries.get(registryBase.toExternalForm());
 	}
 
@@ -493,5 +495,21 @@ public class NewComponentRegistry extends ComponentRegistry {
 			if (l.getAbbreviation().equals(name))
 				return l;
 		return null;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof NewComponentRegistry) {
+			NewComponentRegistry other = (NewComponentRegistry) o;
+			return getRegistryBase().equals(other.getRegistryBase());
+		}
+		return false;
+	}
+
+	private static final int BASEHASH = NewComponentRegistry.class.hashCode();
+
+	@Override
+	public int hashCode() {
+		return BASEHASH ^ getRegistryBase().hashCode();
 	}
 }
