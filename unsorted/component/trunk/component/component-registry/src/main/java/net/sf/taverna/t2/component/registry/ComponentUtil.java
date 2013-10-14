@@ -14,6 +14,7 @@ import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import net.sf.taverna.t2.component.registry.local.LocalComponentRegistry;
 import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
+import net.sf.taverna.t2.component.registry.standard.NewComponentRegistry;
 
 import org.apache.log4j.Logger;
 
@@ -30,9 +31,12 @@ public class ComponentUtil {
 		logger.info("Into calculateRegistry");
 		Registry registry;
 		if (registryBase.getProtocol().startsWith("http")) {
-			// FIXME Assumes that the URL refers to a deployment of myExperiment's old API
-			registry = MyExperimentComponentRegistry
-					.getComponentRegistry(registryBase);
+			if (NewComponentRegistry.verifyBase(registryBase))
+				registry = NewComponentRegistry
+						.getComponentRegistry(registryBase);
+			else
+				registry = MyExperimentComponentRegistry
+						.getComponentRegistry(registryBase);
 		} else {
 			registry = LocalComponentRegistry
 					.getComponentRegistry(registryBase);
