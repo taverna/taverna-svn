@@ -111,8 +111,6 @@ public class MyExperimentClient {
 	public static final String INI_MY_STUFF_FILES = "show_files_in_my_stuff";
 	public static final String INI_MY_STUFF_PACKS = "show_packs_in_my_stuff";
 
-	private final String DO_PUT = "_DO_UPDATE_SIGNAL_";
-
 	public static boolean baseChangedSinceLastStart = false;
 
 	// old format
@@ -395,8 +393,7 @@ public class MyExperimentClient {
 		HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
 
 		// "tune" the connection
-		urlConn.setRequestMethod((strURL.contains(DO_PUT) ? "PUT" : "POST"));
-		strURL = strURL.replace(DO_PUT, "");
+		urlConn.setRequestMethod("POST");
 		urlConn.setDoOutput(true);
 		urlConn.setRequestProperty("Content-Type", "application/xml");
 		urlConn.setRequestProperty("User-Agent", PLUGIN_USER_AGENT);
@@ -564,8 +561,7 @@ public class MyExperimentClient {
 				uri += "&elements=" + User.getRequiredAPIElements(requestType);
 				break;
 			case GROUP:
-				uri += "&elements="
-						+ Group.getRequiredAPIElements(requestType);
+				uri += "&elements=" + Group.getRequiredAPIElements(requestType);
 				break;
 			case TAG:
 				// this should set no elements, because default is desired at
@@ -1003,5 +999,29 @@ public class MyExperimentClient {
 			// do nothing
 			return "";
 		}
+	}
+
+	public ServerResponse doMyExperimentPUT(String strURL, String strXMLDataBody)
+			throws Exception {
+		if (!LOGGED_IN)
+			return null;
+
+		URL url = new URL(strURL);
+		HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
+
+		urlConn.setRequestMethod("PUT");
+		urlConn.setDoOutput(true);
+		urlConn.setRequestProperty("Content-Type", "application/xml");
+		urlConn.setRequestProperty("User-Agent", PLUGIN_USER_AGENT);
+		urlConn.setRequestProperty("Authorization", "Basic " + AUTH_STRING);
+
+		String strPOSTContent = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
+				+ strXMLDataBody;
+		OutputStreamWriter out = new OutputStreamWriter(
+				urlConn.getOutputStream());
+		out.write(strPOSTContent);
+		out.close();
+
+		return doMyExperimentReceiveServerResponse(urlConn, strURL, false);
 	}
 }

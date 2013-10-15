@@ -91,7 +91,8 @@ public class NewComponentFamily extends ComponentFamily {
 			description = getAnnotation(dataflow, FreeTextDescription.class,
 					"Undescribed");
 		return registry.createComponentFrom(this, componentName, description,
-				dataflow, null, null);
+				dataflow, registry.getPreferredLicense(),
+				registry.getDefaultSharingPolicy());
 	}
 
 	@Override

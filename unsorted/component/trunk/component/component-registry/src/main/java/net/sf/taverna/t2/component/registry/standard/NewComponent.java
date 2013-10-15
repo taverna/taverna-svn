@@ -1,7 +1,6 @@
 package net.sf.taverna.t2.component.registry.standard;
 
 import static net.sf.taverna.t2.component.registry.standard.NewComponentRegistry.logger;
-import static net.sf.taverna.t2.component.registry.standard.Policy.PRIVATE;
 import static net.sf.taverna.t2.component.registry.standard.Policy.getPolicy;
 import static net.sf.taverna.t2.component.registry.standard.Utils.getDataflowFromUri;
 import static net.sf.taverna.t2.component.registry.standard.Utils.getElementString;
@@ -20,15 +19,14 @@ import uk.org.taverna.component.api.ComponentType;
 import uk.org.taverna.component.api.Description;
 
 public class NewComponent extends Component {
-	static final String ELEMENTS = "title,description,license-type,permissions";
+	static final String ELEMENTS = "title,description";
+	static final String EXTRA = "license-type,permissions";
 
 	final NewComponentRegistry registry;
 	final NewComponentFamily family;
 	private final String id;
 	private final String title;
 	private final String description;
-	private final License license;
-	private SharingPolicy sharingPolicy;
 
 	NewComponent(NewComponentRegistry registry, NewComponentFamily family,
 			ComponentDescription cd) throws RegistryException {
@@ -38,30 +36,20 @@ public class NewComponent extends Component {
 		id = cd.getId().trim();
 		title = getElementString(cd, "title");
 		description = getElementString(cd, "description");
-		license = registry.getLicense(getElementString(cd, "license-type"));
-		try {
-			// UGLY! Can't get the sharing policy back with the aggregate query
-			sharingPolicy = getPolicy(getCurrent("permissions")
-					.getPermissions());
-		} catch (RegistryException e) {
-			sharingPolicy = PRIVATE;
-		}
 	}
 
 	NewComponent(NewComponentRegistry registry, NewComponentFamily family,
-			ComponentType ct) throws RegistryException {
+			ComponentType ct) {
 		super(ct.getUri());
 		this.registry = registry;
 		this.family = family;
 		id = ct.getId().trim();
 		title = ct.getTitle().trim();
 		description = ct.getDescription().trim();
-		license = registry.getLicense(getValue(ct.getLicenseType()).trim());
-		sharingPolicy = getPolicy(ct.getPermissions());
 	}
 
 	public ComponentType getCurrent(String elements) throws RegistryException {
-		return registry.getComponent(id, null, elements);
+		return registry.getComponentById(id, null, elements);
 	}
 
 	@Override
@@ -89,6 +77,15 @@ public class NewComponent extends Component {
 	@Override
 	protected Version internalAddVersionBasedOn(Dataflow dataflow,
 			String revisionComment) throws RegistryException {
+		/*
+		 * Only fetch the license and sharing policy now; user might have
+		 * updated them on the site and we want to duplicate.
+		 */
+		ComponentType ct = getCurrent(EXTRA);
+		License license = registry.getLicense(getValue(ct.getLicenseType())
+				.trim());
+		SharingPolicy sharingPolicy = getPolicy(ct.getPermissions());
+
 		return (Version) registry.createComponentVersionFrom(this, title,
 				revisionComment, dataflow, license, sharingPolicy);
 	}
@@ -143,7 +140,8 @@ public class NewComponent extends Component {
 
 		@Override
 		public int hashCode() {
-			return NewComponent.this.hashCode() ^ (version << 16) ^ (version >> 16);
+			return NewComponent.this.hashCode() ^ (version << 16)
+					^ (version >> 16);
 		}
 
 		@Override
@@ -160,7 +158,7 @@ public class NewComponent extends Component {
 		protected synchronized Dataflow internalGetDataflow()
 				throws RegistryException {
 			if (dataflow == null || dataflow.get() == null) {
-				String contentUri = registry.getComponent(id, version,
+				String contentUri = registry.getComponentById(id, version,
 						"content-uri").getContentUri();
 				try {
 					dataflow = new SoftReference<Dataflow>(

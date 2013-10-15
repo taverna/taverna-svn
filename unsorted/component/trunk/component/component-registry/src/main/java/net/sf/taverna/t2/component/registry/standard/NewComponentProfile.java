@@ -39,7 +39,7 @@ public class NewComponentProfile extends ComponentProfile {
 	}
 
 	public ComponentProfileType get(String elements) throws RegistryException {
-		return registry.getComponentProfile(id, elements);
+		return registry.getComponentProfileById(id, elements);
 	}
 
 	public String getLocation() {
