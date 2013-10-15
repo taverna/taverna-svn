@@ -1,5 +1,8 @@
 package net.sf.taverna.t2.component.ui.preference;
 
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -12,7 +15,6 @@ import java.net.URL;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -20,11 +22,10 @@ import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
+import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.preference.ComponentPreference;
-import net.sf.taverna.t2.component.api.Registry;
-import net.sf.taverna.t2.component.registry.local.LocalComponentRegistry;
-import net.sf.taverna.t2.component.registry.myexperiment.MyExperimentComponentRegistry;
+import net.sf.taverna.t2.component.registry.ComponentUtil;
 import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.ui.DeselectingButton;
 import net.sf.taverna.t2.lang.ui.ValidatingUserInputDialog;
@@ -135,9 +136,6 @@ public class ComponentPreferencePanel extends JPanel {
 
 		JButton addLocalButton = new DeselectingButton(new AbstractAction(
 				"Add local registry") {
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 855395154244911211L;
 
 			public void actionPerformed(ActionEvent arg0) {
@@ -155,17 +153,19 @@ public class ComponentPreferencePanel extends JPanel {
 				if (vuid.show(ComponentPreferencePanel.this)) {
 					String location = inputPanel.getLocationField().getText();
 					File newDir = new File(location);
-					Registry newRegistry;
 					try {
-						newRegistry = LocalComponentRegistry
-								.getComponentRegistry(newDir);
 						tableModel.insertRegistry(inputPanel
-								.getRegistryNameField().getText(), newRegistry);
+								.getRegistryNameField().getText(),
+								getLocalRegistry(newDir));
+					} catch (MalformedURLException e) {
+						showMessageDialog(null, "Unable to access registry at "
+								+ location, "Component registry problem",
+								ERROR_MESSAGE);
+						logger.error(e);
 					} catch (RegistryException e) {
-						JOptionPane.showMessageDialog(null,
-								"Unable to access registry at " + location,
-								"Component registry problem",
-								JOptionPane.ERROR_MESSAGE);
+						showMessageDialog(null, "Unable to access registry at "
+								+ location, "Component registry problem",
+								ERROR_MESSAGE);
 						logger.error(e);
 					}
 				}
@@ -199,24 +199,20 @@ public class ComponentPreferencePanel extends JPanel {
 						Utils.URL_PATTERN, "Invalid URL");
 				vuid.setSize(new Dimension(400, 250));
 				if (vuid.show(ComponentPreferencePanel.this)) {
-					Registry newRegistry;
 					String location = inputPanel.getLocationField().getText();
 					try {
-						newRegistry = MyExperimentComponentRegistry
-								.getComponentRegistry(new URL(location));
 						tableModel.insertRegistry(inputPanel
-								.getRegistryNameField().getText(), newRegistry);
+								.getRegistryNameField().getText(),
+								getRemoteRegistry(location));
 					} catch (MalformedURLException e) {
-						JOptionPane.showMessageDialog(null,
-								"Unable to access registry at " + location,
-								"Component registry problem",
-								JOptionPane.ERROR_MESSAGE);
+						showMessageDialog(null, "Unable to access registry at "
+								+ location, "Component registry problem",
+								ERROR_MESSAGE);
 						logger.error(e);
 					} catch (RegistryException e) {
-						JOptionPane.showMessageDialog(null,
-								"Unable to access registry at " + location,
-								"Component registry problem",
-								JOptionPane.ERROR_MESSAGE);
+						showMessageDialog(null, "Unable to access registry at "
+								+ location, "Component registry problem",
+								ERROR_MESSAGE);
 						logger.error(e);
 					}
 				}
@@ -225,6 +221,20 @@ public class ComponentPreferencePanel extends JPanel {
 		panel.add(addRemoteButton);
 
 		return panel;
+	}
+
+	Registry getLocalRegistry(File location) throws RegistryException,
+			MalformedURLException {
+		return ComponentUtil.calculateRegistry(location.toURI().toURL());
+	}
+
+	Registry getRemoteRegistry(String location) throws MalformedURLException,
+			RegistryException {
+		URL url = new URL(location);
+		if (url.getProtocol() == null || url.getProtocol().equals("file"))
+			throw new MalformedURLException(
+					"may not use relative or local URLs for locating registry");
+		return ComponentUtil.calculateRegistry(url);
 	}
 
 	/**

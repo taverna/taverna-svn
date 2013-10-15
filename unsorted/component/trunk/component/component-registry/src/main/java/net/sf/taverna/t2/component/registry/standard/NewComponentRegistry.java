@@ -88,7 +88,7 @@ public class NewComponentRegistry extends ComponentRegistry {
 		}
 	}
 
-	private final Client client;
+	final Client client;
 
 	protected NewComponentRegistry(URL registryBase) throws RegistryException {
 		super(registryBase);
@@ -248,7 +248,8 @@ public class NewComponentRegistry extends ComponentRegistry {
 
 		comp.setTitle(title);
 		comp.setDescription(description);
-		comp.setComponentFamily(family.getUri());
+		if (family != null)
+			comp.setComponentFamily(family.getUri());
 		comp.setContentType("application/vnd.taverna.t2flow+xml");
 		comp.setContent(new Content());
 		comp.getContent().setEncoding("base64");

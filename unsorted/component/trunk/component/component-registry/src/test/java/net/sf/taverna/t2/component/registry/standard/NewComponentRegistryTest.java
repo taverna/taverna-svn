@@ -18,12 +18,23 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  ******************************************************************************/
-package net.sf.taverna.t2.component.registry.local;
+package net.sf.taverna.t2.component.registry.standard;
 
+import static net.sf.taverna.t2.component.registry.standard.NewComponentRegistry.getComponentRegistry;
+import static net.sf.taverna.t2.component.registry.standard.Utils.getDataflowFromUri;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
-import net.sf.taverna.t2.component.api.Registry;
-import net.sf.taverna.t2.component.registry.ComponentRegistryTest;
 
+import java.io.ByteArrayOutputStream;
+import java.net.URL;
+
+import net.sf.taverna.t2.component.api.Version;
+import net.sf.taverna.t2.component.registry.ComponentRegistryTest;
+import net.sf.taverna.t2.workbench.file.FileManager;
+import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
+import net.sf.taverna.t2.workflowmodel.Dataflow;
+
+import org.jdom.Element;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -34,7 +45,8 @@ import org.junit.Test;
  * 
  * @author David Withers
  */
-public class LocalComponentRegistryTest extends ComponentRegistryTest {
+@Ignore
+public class NewComponentRegistryTest extends ComponentRegistryTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		RegistrySupport.pre();
@@ -47,15 +59,21 @@ public class LocalComponentRegistryTest extends ComponentRegistryTest {
 
 	@Test
 	public void testGetComponentRegistry() throws Exception {
-		Registry getAgain = LocalComponentRegistry
-				.getComponentRegistry(componentRegistryUrl);
-		assertSame(componentRegistry, getAgain);
+		assertSame(componentRegistry,
+				getComponentRegistry(componentRegistryUrl));
 	}
 
 	@Test
-	@Ignore("broken")
-	@Override
-	public void testAddComponentProfile() throws Exception {
-	super.testAddComponentProfile();
+	public void testUploadWorkflow() throws Exception {
+		URL dataflowUrl = getClass().getClassLoader().getResource(
+				"beanshell_test.t2flow");
+		Dataflow dataflow = getDataflowFromUri(dataflowUrl.toString());
+
+		NewComponentRegistry registry = getComponentRegistry(componentRegistryUrl);
+		Version v = registry.createComponentFrom(null, "Test Workflow",
+				"test description", dataflow, null, Policy.PRIVATE);
+		assertEquals("test description", v.getDescription());
+		registry.deleteComponent((NewComponent) v.getComponent());
 	}
+
 }
