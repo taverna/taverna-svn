@@ -3,6 +3,8 @@
  */
 package net.sf.taverna.t2.component.ui.panel;
 
+import static java.awt.event.ItemEvent.SELECTED;
+
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
@@ -34,10 +36,6 @@ import org.apache.log4j.Logger;
 @SuppressWarnings({ "rawtypes" })
 public class FamilyChooserPanel extends JPanel implements Observer,
 		Observable<FamilyChoiceMessage> {
-
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = -2608831126562927778L;
 
 	private static Logger logger = Logger.getLogger(FamilyChooserPanel.class);
@@ -71,10 +69,9 @@ public class FamilyChooserPanel extends JPanel implements Observer,
 		gbc.fill = GridBagConstraints.BOTH;
 		this.add(familyBox, gbc);
 		familyBox.addItemListener(new ItemListener() {
-
 			@Override
-			public void itemStateChanged(ItemEvent arg0) {
-				if (arg0.getStateChange() == ItemEvent.SELECTED) {
+			public void itemStateChanged(ItemEvent event) {
+				if (event.getStateChange() == SELECTED) {
 					updateDescription();
 					notifyObservers();
 				}
@@ -87,23 +84,21 @@ public class FamilyChooserPanel extends JPanel implements Observer,
 
 	protected void updateDescription() {
 		Family chosenFamily = getChosenFamily();
-		if (chosenFamily != null) {
+		if (chosenFamily != null)
 			familyBox.setToolTipText(chosenFamily.getDescription());
-		} else {
+		else
 			familyBox.setToolTipText(null);
-		}
 	}
 
 	@Override
 	public void notify(Observable sender, Object message) throws Exception {
 		try {
-			if (message instanceof RegistryChoiceMessage) {
+			if (message instanceof RegistryChoiceMessage)
 				this.chosenRegistry = ((RegistryChoiceMessage) message)
 						.getChosenRegistry();
-			} else if (message instanceof ProfileChoiceMessage) {
+			else if (message instanceof ProfileChoiceMessage)
 				this.profileFilter = ((ProfileChoiceMessage) message)
 						.getChosenProfile();
-			}
 		} catch (Exception e) {
 			logger.error(e);
 		}
@@ -121,25 +116,24 @@ public class FamilyChooserPanel extends JPanel implements Observer,
 		notifyObservers();
 		familyBox.addItem("Reading families");
 		familyBox.setEnabled(false);
-		(new FamilyUpdater()).execute();
+		new FamilyUpdater().execute();
 	}
 
 	private void notifyObservers() {
 		Family chosenFamily = getChosenFamily();
 		FamilyChoiceMessage message = new FamilyChoiceMessage(chosenFamily);
-		for (Observer<FamilyChoiceMessage> o : getObservers()) {
+		for (Observer<FamilyChoiceMessage> o : getObservers())
 			try {
 				o.notify(FamilyChooserPanel.this, message);
 			} catch (Exception e) {
 				logger.error(e);
 			}
-		}
 	}
 
 	public Family getChosenFamily() {
-		if (familyBox.getSelectedIndex() >= 0) {
+		if (familyBox.getSelectedIndex() >= 0)
 			return familyMap.get(familyBox.getSelectedItem());
-		}
+
 		return null;
 	}
 
@@ -165,8 +159,6 @@ public class FamilyChooserPanel extends JPanel implements Observer,
 		observers.remove(observer);
 	}
 
-	
-
 	private void updateFamiliesFromRegistry() throws RegistryException {
 		for (Family f : chosenRegistry.getComponentFamilies()) {
 			Profile componentProfile = null;
@@ -177,10 +169,8 @@ public class FamilyChooserPanel extends JPanel implements Observer,
 			}
 			if (componentProfile != null) {
 				String id = componentProfile.getId();
-				if ((profileFilter == null)
-						|| id.equals(profileFilter.getId())) {
+				if ((profileFilter == null) || id.equals(profileFilter.getId()))
 					familyMap.put(f.getName(), f);
-				}
 			} else {
 				logger.info("Ignoring " + f.getName());
 			}
@@ -190,25 +180,22 @@ public class FamilyChooserPanel extends JPanel implements Observer,
 	private class FamilyUpdater extends SwingWorker<String, Object> {
 		@Override
 		protected String doInBackground() throws Exception {
-			if (chosenRegistry != null) {
+			if (chosenRegistry != null)
 				updateFamiliesFromRegistry();
-			}
 			return null;
 		}
 
 		@Override
 		protected void done() {
 			familyBox.removeAllItems();
-			for (String name : familyMap.keySet()) {
+			for (String name : familyMap.keySet())
 				familyBox.addItem(name);
-			}
 			if (!familyMap.isEmpty()) {
 				String firstKey = familyMap.firstKey();
 				familyBox.setSelectedItem(firstKey);
 				updateDescription();
-			} else {
+			} else
 				familyBox.addItem("No families available");
-			}
 			notifyObservers();
 			familyBox.setEnabled(!familyMap.isEmpty());
 		}

@@ -6,10 +6,6 @@ public class ComponentServiceProviderConfig {
 	private URL registryBase;
 	private String familyName;
 
-	public ComponentServiceProviderConfig() {
-		super();
-	}
-
 	/**
 	 * @return the registryBase
 	 */

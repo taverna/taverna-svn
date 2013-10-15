@@ -12,20 +12,19 @@ public class ComponentServiceIcon implements ActivityIconSPI {
 	private static Icon icon;
 
 	public int canProvideIconScore(Activity<?> activity) {
-		if (activity instanceof ComponentActivity) {
+		if (activity instanceof ComponentActivity)
 			return DEFAULT_ICON + 1;
-		}
 		return NO_ICON;
 	}
 
 	public Icon getIcon(Activity<?> activity) {
 		return getIcon();
 	}
-	
+
 	public static Icon getIcon() {
-		if (icon == null) {
-			icon = new ImageIcon(ComponentServiceIcon.class.getResource("/brick.png"));
-		}
+		if (icon == null)
+			icon = new ImageIcon(
+					ComponentServiceIcon.class.getResource("/brick.png"));
 		return icon;
 	}
 

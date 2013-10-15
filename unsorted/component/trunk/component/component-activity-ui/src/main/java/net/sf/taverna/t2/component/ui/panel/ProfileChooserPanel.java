@@ -34,10 +34,6 @@ import org.apache.log4j.Logger;
  */
 public class ProfileChooserPanel extends JPanel implements
 		Observer<RegistryChoiceMessage>, Observable<ProfileChoiceMessage> {
-
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 2175274929391537032L;
 
 	private static Logger logger = Logger.getLogger(ProfileChooserPanel.class);
@@ -68,10 +64,9 @@ public class ProfileChooserPanel extends JPanel implements
 		this.add(profileBox, gbc);
 		profileBox.addItemListener(new ItemListener() {
 			@Override
-			public void itemStateChanged(ItemEvent arg0) {
-				if (arg0.getStateChange() == SELECTED) {
+			public void itemStateChanged(ItemEvent event) {
+				if (event.getStateChange() == SELECTED)
 					setProfile(profileMap.get(profileBox.getSelectedItem()));
-				}
 			}
 		});
 
@@ -95,15 +90,15 @@ public class ProfileChooserPanel extends JPanel implements
 		profileBox.setToolTipText(null);
 		profileBox.addItem("Reading profiles");
 		profileBox.setEnabled(false);
-		(new ProfileUpdater()).execute();
+		new ProfileUpdater().execute();
 	}
 
 	private void setProfile(Profile componentProfile) {
-		if (componentProfile != null) {
+		if (componentProfile != null)
 			profileBox.setToolTipText(componentProfile.getDescription());
-		} else {
+		else
 			profileBox.setToolTipText(null);
-		}
+
 		Profile chosenProfile = getChosenProfile();
 		ProfileChoiceMessage message = new ProfileChoiceMessage(chosenProfile);
 		for (Observer<ProfileChoiceMessage> o : getObservers()) {
@@ -116,48 +111,42 @@ public class ProfileChooserPanel extends JPanel implements
 	}
 
 	public Profile getChosenProfile() {
-		if (profileBox.getSelectedIndex() >= 0) {
-			Object selectedItem = profileBox.getSelectedItem();
-			return profileMap.get(selectedItem);
-		} else {
+		if (profileBox.getSelectedIndex() < 0)
 			return null;
-		}
+		Object selectedItem = profileBox.getSelectedItem();
+		return profileMap.get(selectedItem);
 	}
 
 	private class ProfileUpdater extends SwingWorker<String, Object> {
-
 		@Override
 		protected String doInBackground() throws Exception {
+			if (registry == null)
+				return null;
 			List<Profile> componentProfiles;
-			if (registry != null) {
+			try {
+				componentProfiles = registry.getComponentProfiles();
+			} catch (RegistryException e) {
+				logger.error(e);
+				return null;
+			} catch (NullPointerException e) {
+				logger.error(e);
+				return null;
+			}
+			for (Profile p : componentProfiles)
 				try {
-					componentProfiles = registry.getComponentProfiles();
-				} catch (RegistryException e) {
-					logger.error(e);
-					return null;
+					profileMap.put(p.getName(), p);
 				} catch (NullPointerException e) {
 					logger.error(e);
-					return null;
 				}
-				for (Profile p : componentProfiles) {
-					try {
-						String name = p.getName();
-						profileMap.put(name, p);
-					} catch (NullPointerException e) {
-						logger.error(e);
 
-					}
-				}
-			}
 			return null;
 		}
 
 		@Override
 		protected void done() {
 			profileBox.removeAllItems();
-			for (String name : profileMap.keySet()) {
+			for (String name : profileMap.keySet())
 				profileBox.addItem(name);
-			}
 			if (!profileMap.isEmpty()) {
 				String firstKey = profileMap.firstKey();
 				profileBox.setSelectedItem(firstKey);
@@ -192,5 +181,4 @@ public class ProfileChooserPanel extends JPanel implements
 	public List<Observer<ProfileChoiceMessage>> getObservers() {
 		return observers;
 	}
-
 }

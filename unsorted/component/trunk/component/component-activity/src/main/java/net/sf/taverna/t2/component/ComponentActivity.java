@@ -31,24 +31,18 @@ import org.apache.log4j.Logger;
 public class ComponentActivity extends
 		AbstractAsynchronousActivity<ComponentActivityConfigurationBean>
 		implements AsynchronousActivity<ComponentActivityConfigurationBean>, NestedDataflow {
-	
-	private static Logger logger = Logger.getLogger(ComponentActivity.class);
+	private static final Logger logger = Logger.getLogger(ComponentActivity.class);
+	private static final EditManager em = EditManager.getInstance();
+	private static final Edits EDITS = em.getEdits();
+	private static final AnnotationTools aTools = new AnnotationTools();
 
 	private volatile DataflowActivity componentRealization = new DataflowActivity();
-	
 	private ComponentActivityConfigurationBean configBean;
-	
-	private static EditManager em = EditManager.getInstance();
-
-	private static final Edits EDITS = em.getEdits();
-	
-	private static AnnotationTools aTools = new AnnotationTools();
 	private DataflowImpl skeletonDataflow = null;
 
 	@Override
 	public void configure(ComponentActivityConfigurationBean configBean)
 			throws ActivityConfigurationException {
-		
 		this.configBean = configBean;
 
 		configurePorts(configBean.getPorts());
@@ -99,6 +93,7 @@ public class ComponentActivity extends
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private InvocationContextImpl copyInvocationContext(
 			final AsynchronousActivityCallback callback) {
 		InvocationContext originalContext = callback.getContext();
@@ -114,44 +109,45 @@ public class ComponentActivity extends
 	public ComponentActivityConfigurationBean getConfiguration() {
 		return this.configBean;
 	}
-	
-	public DataflowActivity getComponentRealization() throws ActivityConfigurationException {
-		synchronized(componentRealization) {
+
+	public DataflowActivity getComponentRealization()
+			throws ActivityConfigurationException {
+		synchronized (componentRealization) {
 			if (componentRealization.getConfiguration() == null) {
+				Dataflow d;
+				try {
+					d = ComponentDataflowCache.getDataflow(configBean);
+				} catch (RegistryException e) {
+					throw new ActivityConfigurationException(
+							"Unable to read dataflow", e);
+				}
+				componentRealization.configure(d);
 
-			Dataflow d;
-			try {
-				d = ComponentDataflowCache.getDataflow(configBean);
-			} catch (RegistryException e) {
-				throw new ActivityConfigurationException("Unable to read dataflow", e);
-			}
-			componentRealization.configure(d);
-
-			for (Class<?> c : aTools.getAnnotatingClasses(this)) {
-				String annotationValue = aTools.getAnnotationString(d, c, null);
-				if (annotationValue != null) {
+				for (Class<?> c : aTools.getAnnotatingClasses(this)) {
+					String annotationValue = aTools.getAnnotationString(d, c,
+							null);
+					if (annotationValue == null)
+						continue;
 					try {
-						aTools.setAnnotationString(this, c, annotationValue).doEdit();
+						aTools.setAnnotationString(this, c, annotationValue)
+								.doEdit();
 					} catch (EditException e) {
 						logger.error(e);
 					}
 				}
-			}
 
+			}
+			return componentRealization;
 		}
-		}
-		return componentRealization;
 	}
 
 	@Override
 	public Dataflow getNestedDataflow() {
 		// FIXME To go when integrated into Taverna properly
 		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-		for (StackTraceElement elem : stackTrace) {
-			if (elem.getClassName().contains("GraphController")) {
+		for (StackTraceElement elem : stackTrace)
+			if (elem.getClassName().contains("GraphController"))
 				return skeletonDataflow;
-			}
-		}
 		try {
 			return ComponentDataflowCache.getDataflow(configBean);
 		} catch (RegistryException e) {

@@ -1,20 +1,23 @@
 package net.sf.taverna.t2.component.ui.serviceprovider;
 
+import static javax.swing.JOptionPane.OK_CANCEL_OPTION;
+import static javax.swing.JOptionPane.OK_OPTION;
+import static javax.swing.JOptionPane.showConfirmDialog;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.Icon;
-import javax.swing.JOptionPane;
 
-import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.api.Component;
 import net.sf.taverna.t2.component.api.Family;
 import net.sf.taverna.t2.component.api.Registry;
+import net.sf.taverna.t2.component.api.RegistryException;
+import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.registry.ComponentUtil;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
-import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.ui.panel.RegistryAndFamilyChooserPanel;
 import net.sf.taverna.t2.servicedescriptions.AbstractConfigurableServiceProvider;
 import net.sf.taverna.t2.servicedescriptions.CustomizedConfigurePanelProvider;
@@ -25,10 +28,8 @@ public class ComponentServiceProvider extends
 		AbstractConfigurableServiceProvider<ComponentServiceProviderConfig>
 		implements
 		CustomizedConfigurePanelProvider<ComponentServiceProviderConfig> {
-
 	private static final URI providerId = URI
 			.create("http://taverna.sf.net/2012/service-provider/component");
-
 	private static Logger logger = Logger
 			.getLogger(ComponentServiceProvider.class);
 
@@ -57,10 +58,9 @@ public class ComponentServiceProvider extends
 
 		try {
 			for (Family family : registry.getComponentFamilies()) {
-
 				// TODO get check on family name in there
-				if (family.getName().equals(config.getFamilyName())) {
-					for (Component component : family.getComponents()) {
+				if (family.getName().equals(config.getFamilyName()))
+					for (Component component : family.getComponents())
 						try {
 							Version.ID ident = new ComponentVersionIdentification(
 									config.getRegistryBase(), family.getName(),
@@ -72,8 +72,6 @@ public class ComponentServiceProvider extends
 						} catch (Exception e) {
 							logger.error(e);
 						}
-					}
-				}
 				callBack.partialResults(results);
 				callBack.finished();
 			}
@@ -109,36 +107,27 @@ public class ComponentServiceProvider extends
 
 	@Override
 	protected List<? extends Object> getIdentifyingData() {
-		return Arrays.asList(new Object[] {
-				getConfiguration().getRegistryBase().toString(),
-				getConfiguration().getFamilyName() });
+		return Arrays.asList(getConfiguration().getRegistryBase().toString(),
+				getConfiguration().getFamilyName());
 	}
 
 	@Override
 	public void createCustomizedConfigurePanel(
 			CustomizedConfigureCallBack<ComponentServiceProviderConfig> callBack) {
-
 		RegistryAndFamilyChooserPanel panel = new RegistryAndFamilyChooserPanel();
 
-		int result = JOptionPane.showConfirmDialog(null, panel,
-				"Component family import", JOptionPane.OK_CANCEL_OPTION);
-		if (result == JOptionPane.OK_OPTION) {
+		if (showConfirmDialog(null, panel, "Component family import",
+				OK_CANCEL_OPTION) != OK_OPTION)
+			return;
 
-			ComponentServiceProviderConfig newConfig = new ComponentServiceProviderConfig();
-			Registry chosenRegistry = panel.getChosenRegistry();
-			Family chosenFamily = panel.getChosenFamily();
-			if ((chosenRegistry == null) || (chosenFamily == null)) {
-				newConfig = null;
-			} else {
-				newConfig.setRegistryBase(chosenRegistry.getRegistryBase());
-				newConfig.setFamilyName(chosenFamily.getName());
-			}
-			if (newConfig != null) {
-				callBack.newProviderConfiguration(newConfig);
-			}
-		}
-		return;
+		Registry chosenRegistry = panel.getChosenRegistry();
+		Family chosenFamily = panel.getChosenFamily();
+		if ((chosenRegistry == null) || (chosenFamily == null))
+			return;
 
+		ComponentServiceProviderConfig newConfig = new ComponentServiceProviderConfig();
+		newConfig.setRegistryBase(chosenRegistry.getRegistryBase());
+		newConfig.setFamilyName(chosenFamily.getName());
+		callBack.newProviderConfiguration(newConfig);
 	}
-
 }

@@ -46,13 +46,9 @@ import org.apache.log4j.Logger;
  */
 public class SharingPolicyChooserPanel extends JPanel implements
 		Observer<RegistryChoiceMessage> {
-
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 2175274929391537032L;
-
-	private Logger logger = Logger.getLogger(SharingPolicyChooserPanel.class);
+	private static final Logger logger = Logger
+			.getLogger(SharingPolicyChooserPanel.class);
 
 	private JComboBox permissionBox = new JComboBox();
 
@@ -96,52 +92,47 @@ public class SharingPolicyChooserPanel extends JPanel implements
 		permissionBox.removeAllItems();
 		permissionBox.addItem("Reading sharing policies");
 		permissionBox.setEnabled(false);
-		(new SharingPolicyUpdater()).execute();
+		new SharingPolicyUpdater().execute();
 	}
 
 	public SharingPolicy getChosenPermission() {
-		if (permissionBox.getSelectedIndex() >= 0) {
-			Object selectedItem = permissionBox.getSelectedItem();
-			return permissionMap.get(selectedItem);
-		} else {
+		if (permissionBox.getSelectedIndex() < 0)
 			return null;
-		}
+		return permissionMap.get(permissionBox.getSelectedItem());
 	}
 
 	private class SharingPolicyUpdater extends SwingWorker<String, Object> {
 		@Override
 		protected String doInBackground() throws Exception {
 			List<SharingPolicy> sharingPolicies;
-			if (registry != null) {
-				try {
-					sharingPolicies = registry.getPermissions();
-				} catch (RegistryException e) {
-					logger.error(e);
+			if (registry == null)
+				return null;
+			try {
+				sharingPolicies = registry.getPermissions();
+				if (sharingPolicies == null)
 					return null;
+			} catch (RegistryException e) {
+				logger.error(e);
+				return null;
+			} catch (NullPointerException e) {
+				logger.error(e);
+				return null;
+			}
+
+			for (SharingPolicy p : sharingPolicies)
+				try {
+					permissionMap.put(p.getName(), p);
 				} catch (NullPointerException e) {
 					logger.error(e);
-					return null;
 				}
-				if (sharingPolicies != null) {
-					for (SharingPolicy p : sharingPolicies) {
-						try {
-							String name = p.getName();
-							permissionMap.put(name, p);
-						} catch (NullPointerException e) {
-							logger.error(e);
-						}
-					}
-				}
-			}
 			return null;
 		}
 
 		@Override
 		protected void done() {
 			permissionBox.removeAllItems();
-			for (String name : permissionMap.keySet()) {
+			for (String name : permissionMap.keySet())
 				permissionBox.addItem(name);
-			}
 			if (!permissionMap.isEmpty()) {
 				String firstKey = permissionMap.firstKey();
 				permissionBox.setSelectedItem(firstKey);

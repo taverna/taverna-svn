@@ -1,5 +1,8 @@
 package net.sf.taverna.t2.component;
 
+import static net.sf.taverna.t2.component.registry.ComponentDataflowCache.getDataflow;
+import static net.sf.taverna.t2.component.registry.ComponentUtil.calculateFamily;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,8 +11,6 @@ import java.util.List;
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.profile.ExceptionHandling;
-import net.sf.taverna.t2.component.registry.ComponentDataflowCache;
-import net.sf.taverna.t2.component.registry.ComponentUtil;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
@@ -27,24 +28,18 @@ import org.apache.log4j.Logger;
 public class ComponentActivityConfigurationBean extends
 		ComponentVersionIdentification implements Serializable {
 	public static final String ERROR_CHANNEL = "error_channel";
-
-	public static List<String> ignorableNames = Arrays.asList(ERROR_CHANNEL);
-
-	/**
-	 * 
-	 */
+	public static final List<String> ignorableNames = Arrays
+			.asList(ERROR_CHANNEL);
 	private static final long serialVersionUID = 5774901665863468058L;
-
-	private static Logger logger = Logger.getLogger(ComponentActivity.class);
+	private static final Logger logger = Logger
+			.getLogger(ComponentActivity.class);
 
 	private transient ActivityPortsDefinitionBean ports = null;
-
 	private transient ExceptionHandling eh;
 
 	public ComponentActivityConfigurationBean(Version.ID toBeCopied) {
 		super(toBeCopied);
 		getPorts();
-
 	}
 
 	private ActivityPortsDefinitionBean getPortsDefinition(Dataflow d) {
@@ -78,10 +73,8 @@ public class ComponentActivityConfigurationBean extends
 
 		}
 		try {
-			eh = ComponentUtil
-					.calculateFamily(this.getRegistryBase(),
-							this.getFamilyName()).getComponentProfile()
-					.getExceptionHandling();
+			eh = calculateFamily(getRegistryBase(), getFamilyName())
+					.getComponentProfile().getExceptionHandling();
 			if (eh != null) {
 				ActivityOutputPortDefinitionBean activityOutputPortDefinitionBean = new ActivityOutputPortDefinitionBean();
 				activityOutputPortDefinitionBean
@@ -90,7 +83,6 @@ public class ComponentActivityConfigurationBean extends
 				activityOutputPortDefinitionBean.setGranularDepth(1);
 				activityOutputPortDefinitionBean.setName(ERROR_CHANNEL);
 				outputs.add(activityOutputPortDefinitionBean);
-
 			}
 		} catch (RegistryException e) {
 			logger.error(e);
@@ -102,13 +94,11 @@ public class ComponentActivityConfigurationBean extends
 	 * @return the ports
 	 */
 	public ActivityPortsDefinitionBean getPorts() {
-		if (ports == null) {
-			try {
-				ports = getPortsDefinition(ComponentDataflowCache
-						.getDataflow(this));
-			} catch (RegistryException e) {
-				logger.error(e);
-			}
+		try {
+			if (ports == null)
+				ports = getPortsDefinition(getDataflow(this));
+		} catch (RegistryException e) {
+			logger.error(e);
 		}
 		return ports;
 	}
@@ -116,5 +106,4 @@ public class ComponentActivityConfigurationBean extends
 	public ExceptionHandling getExceptionHandling() {
 		return eh;
 	}
-
 }

@@ -3,24 +3,27 @@
  */
 package net.sf.taverna.t2.component;
 
+import static net.sf.taverna.t2.component.ComponentHealthCheck.OUT_OF_DATE;
+import static net.sf.taverna.t2.component.registry.ComponentUtil.calculateComponent;
+import static net.sf.taverna.t2.visit.VisitReport.Status.WARNING;
+
 import java.util.List;
 
 import net.sf.taverna.t2.component.api.RegistryException;
-import net.sf.taverna.t2.component.registry.ComponentUtil;
 import net.sf.taverna.t2.visit.VisitReport;
-import net.sf.taverna.t2.visit.VisitReport.Status;
 import net.sf.taverna.t2.workflowmodel.health.HealthChecker;
 
 import org.apache.log4j.Logger;
 
 /**
  * @author alanrw
- *
+ * 
  */
-public class ComponentActivityUpgradeChecker implements HealthChecker<ComponentActivity> {
-	
-	private static Logger logger = Logger.getLogger(ComponentActivityUpgradeChecker.class);
+public class ComponentActivityUpgradeChecker implements
+		HealthChecker<ComponentActivity> {
 
+	private static Logger logger = Logger
+			.getLogger(ComponentActivityUpgradeChecker.class);
 
 	@Override
 	public boolean canVisit(Object o) {
@@ -35,21 +38,21 @@ public class ComponentActivityUpgradeChecker implements HealthChecker<ComponentA
 	@Override
 	public VisitReport visit(ComponentActivity activity, List<Object> ancestry) {
 		ComponentActivityConfigurationBean config = activity.getConfiguration();
-		
+
 		Integer versionNumber = config.getComponentVersion();
-		
+
 		Integer latestVersion = 0;
 		try {
-			latestVersion = ComponentUtil.calculateComponent(config.getRegistryBase(), config.getFamilyName(), config.getComponentName()).getComponentVersionMap().lastKey();
+			latestVersion = calculateComponent(config.getRegistryBase(),
+					config.getFamilyName(), config.getComponentName())
+					.getComponentVersionMap().lastKey();
 		} catch (RegistryException e) {
 			logger.error(e);
 		}
-		
-		if (latestVersion > versionNumber) {
-			return new VisitReport(ComponentHealthCheck.getInstance(), activity, 
-                    "Component out of date", 
-                    ComponentHealthCheck.OUT_OF_DATE, Status.WARNING);
-		}
+
+		if (latestVersion > versionNumber)
+			return new VisitReport(ComponentHealthCheck.getInstance(),
+					activity, "Component out of date", OUT_OF_DATE, WARNING);
 		return null;
 	}
 

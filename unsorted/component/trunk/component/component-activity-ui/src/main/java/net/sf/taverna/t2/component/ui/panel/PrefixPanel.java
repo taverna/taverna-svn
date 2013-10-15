@@ -27,7 +27,6 @@ import net.sf.taverna.t2.lang.observer.Observer;
 @SuppressWarnings("serial")
 public class PrefixPanel extends JPanel implements
 		Observer<ProfileChoiceMessage> {
-
 	private DefaultTableModel prefixModel = new DefaultTableModel(10, 2) {
 		@Override
 		public boolean isCellEditable(int row, int column) {
@@ -52,27 +51,23 @@ public class PrefixPanel extends JPanel implements
 			ProfileChoiceMessage message) throws Exception {
 		Profile newProfile = message.getChosenProfile();
 		prefixModel.setRowCount(0);
-		if (newProfile != null) {
+		if (newProfile != null)
 			for (Entry<String, String> entry : newProfile.getPrefixMap()
 					.entrySet()) {
 				String key = entry.getKey();
 				String value = entry.getValue();
-				if (!value.endsWith("#")) {
+				if (!value.endsWith("#"))
 					value += "#";
-				}
 				prefixModel.addRow(new String[] { key, value });
 			}
-		}
 		this.validate();
 	}
 
 	public TreeMap<String, String> getPrefixMap() {
 		TreeMap<String, String> result = new TreeMap<String, String>();
-		for (int i = 0; i < prefixModel.getRowCount(); i++) {
+		for (int i = 0; i < prefixModel.getRowCount(); i++)
 			result.put((String) prefixModel.getValueAt(i, 0),
 					(String) prefixModel.getValueAt(i, 1));
-		}
 		return result;
 	}
-
 }

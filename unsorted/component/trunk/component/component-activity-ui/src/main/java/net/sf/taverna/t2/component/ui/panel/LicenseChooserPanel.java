@@ -20,6 +20,8 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.ui.panel;
 
+import static java.awt.event.ItemEvent.SELECTED;
+
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
@@ -48,10 +50,6 @@ import org.apache.log4j.Logger;
  */
 public class LicenseChooserPanel extends JPanel implements
 		Observer<RegistryChoiceMessage> {
-
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 2175274929391537032L;
 
 	private static Logger logger = Logger.getLogger(LicenseChooserPanel.class);
@@ -81,24 +79,20 @@ public class LicenseChooserPanel extends JPanel implements
 
 		licenseBox.setEditable(false);
 		licenseBox.addItemListener(new ItemListener() {
-
 			@Override
-			public void itemStateChanged(ItemEvent arg0) {
-				if (arg0.getStateChange() == ItemEvent.SELECTED) {
-
+			public void itemStateChanged(ItemEvent event) {
+				if (event.getStateChange() == SELECTED)
 					setLicense(licenseMap.get(licenseBox.getSelectedItem()));
-				}
 			}
 		});
 	}
 
 	protected void setLicense(License license) {
-		if (license != null) {
+		if (license != null)
 			licenseBox.setToolTipText("<html>" + license.getDescription()
 					+ "</html>");
-		} else {
+		else
 			licenseBox.setToolTipText(null);
-		}
 	}
 
 	@Override
@@ -118,16 +112,14 @@ public class LicenseChooserPanel extends JPanel implements
 		licenseBox.setToolTipText(null);
 		licenseBox.addItem("Reading licenses");
 		licenseBox.setEnabled(false);
-		(new LicenseUpdater()).execute();
+		new LicenseUpdater().execute();
 	}
 
 	public License getChosenLicense() {
-		if (licenseBox.getSelectedIndex() >= 0) {
-			Object selectedItem = licenseBox.getSelectedItem();
-			return licenseMap.get(selectedItem);
-		} else {
+		if (licenseBox.getSelectedIndex() < 0)
 			return null;
-		}
+		Object selectedItem = licenseBox.getSelectedItem();
+		return licenseMap.get(selectedItem);
 	}
 
 	private class LicenseUpdater extends SwingWorker<String, Object> {
@@ -135,37 +127,34 @@ public class LicenseChooserPanel extends JPanel implements
 		@Override
 		protected String doInBackground() throws Exception {
 			List<License> licenses;
-			if (registry != null) {
-				try {
-					licenses = registry.getLicenses();
-				} catch (RegistryException e) {
-					logger.error(e);
+			if (registry == null)
+				return null;
+			try {
+				licenses = registry.getLicenses();
+				if (licenses == null)
 					return null;
+			} catch (RegistryException e) {
+				logger.error(e);
+				return null;
+			} catch (NullPointerException e) {
+				logger.error(e);
+				return null;
+			}
+			for (License p : licenses)
+				try {
+					String name = p.getName();
+					licenseMap.put(name, p);
 				} catch (NullPointerException e) {
 					logger.error(e);
-					return null;
 				}
-				if (licenses != null) {
-					for (License p : licenses) {
-						try {
-							String name = p.getName();
-							licenseMap.put(name, p);
-						} catch (NullPointerException e) {
-							logger.error(e);
-
-						}
-					}
-				}
-			}
 			return null;
 		}
 
 		@Override
 		protected void done() {
 			licenseBox.removeAllItems();
-			for (String name : licenseMap.keySet()) {
+			for (String name : licenseMap.keySet())
 				licenseBox.addItem(name);
-			}
 			if (!licenseMap.isEmpty()) {
 				String firstKey = licenseMap.firstKey();
 				License preferredLicense = null;
@@ -187,7 +176,5 @@ public class LicenseChooserPanel extends JPanel implements
 				licenseBox.setEnabled(false);
 			}
 		}
-
 	}
-
 }

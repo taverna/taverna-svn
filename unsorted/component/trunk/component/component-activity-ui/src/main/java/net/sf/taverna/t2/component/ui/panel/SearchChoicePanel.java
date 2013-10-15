@@ -3,6 +3,8 @@
  */
 package net.sf.taverna.t2.component.ui.panel;
 
+import static java.awt.event.ItemEvent.SELECTED;
+
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
@@ -32,7 +34,6 @@ import org.apache.log4j.Logger;
  */
 @SuppressWarnings("serial")
 public class SearchChoicePanel extends JPanel {
-
 	private Logger logger = Logger.getLogger(SearchChoicePanel.class);
 
 	private static final String SEARCHING = "Searching...";
@@ -106,6 +107,12 @@ public class SearchChoicePanel extends JPanel {
 	}
 
 	private class Searcher extends SwingWorker<Set<Version.ID>, Object> {
+		private void setAll(String text) {
+			registryURLLabel.setText(text);
+			familyBox.addItem(text);
+			componentBox.addItem(text);
+			versionBox.addItem(text);
+		}
 
 		@Override
 		protected Set<Version.ID> doInBackground() throws Exception {
@@ -117,74 +124,61 @@ public class SearchChoicePanel extends JPanel {
 			familyBox.removeAllItems();
 			componentBox.removeAllItems();
 			versionBox.removeAllItems();
+
+			final Set<Version.ID> matches;
 			try {
-				final Set<Version.ID> matches = this.get();
-				if (matches.isEmpty()) {
-					registryURLLabel.setText(NO_MATCHES);
-					familyBox.addItem(NO_MATCHES);
-					componentBox.addItem(NO_MATCHES);
-					versionBox.addItem(NO_MATCHES);
-				} else {
-					Version.ID one = (Version.ID) matches.toArray()[0];
-					registryURLLabel.setText(ComponentPreference.getInstance()
-							.getRegistryName(one.getRegistryBase()));
-					String[] componentFamilyNames = calculateMatchingFamilyNames(matches);
-					for (String familyName : componentFamilyNames) {
-						familyBox.addItem(familyName);
-					}
-					familyBox.addItemListener(new ItemListener() {
-
-						@Override
-						public void itemStateChanged(ItemEvent e) {
-							if (e.getStateChange() == ItemEvent.SELECTED) {
-								updateComponentBox(matches, componentBox,
-										(String) familyBox.getSelectedItem());
-							}
-						}
-					});
-					componentBox.addItemListener(new ItemListener() {
-
-						@Override
-						public void itemStateChanged(ItemEvent e) {
-							if (e.getStateChange() == ItemEvent.SELECTED) {
-								updateVersionBox(
-										matches,
-										versionBox,
-										(String) componentBox.getSelectedItem(),
-										(String) familyBox.getSelectedItem());
-							}
-						}
-					});
-					familyBox.setSelectedIndex(0);
-					updateComponentBox(matches, componentBox,
-							(String) familyBox.getSelectedItem());
-					updateVersionBox(matches, versionBox,
-							(String) componentBox.getSelectedItem(),
-							(String) familyBox.getSelectedItem());
-				}
+				matches = this.get();
 			} catch (InterruptedException e) {
 				logger.error(e);
-				registryURLLabel.setText(SEARCH_FAILED);
-				familyBox.addItem(SEARCH_FAILED);
-				componentBox.addItem(SEARCH_FAILED);
-				versionBox.addItem(SEARCH_FAILED);
-
+				setAll(SEARCH_FAILED);
+				return;
 			} catch (ExecutionException e) {
 				logger.error(e);
-				registryURLLabel.setText(SEARCH_FAILED);
-				familyBox.addItem(SEARCH_FAILED);
-				componentBox.addItem(SEARCH_FAILED);
-				versionBox.addItem(SEARCH_FAILED);
+				setAll(SEARCH_FAILED);
+				return;
 			}
+			if (matches.isEmpty()) {
+				setAll(NO_MATCHES);
+				return;
+			}
+
+			Version.ID one = (Version.ID) matches.toArray()[0];
+			registryURLLabel.setText(ComponentPreference.getInstance()
+					.getRegistryName(one.getRegistryBase()));
+			String[] componentFamilyNames = calculateMatchingFamilyNames(matches);
+			for (String familyName : componentFamilyNames)
+				familyBox.addItem(familyName);
+			familyBox.addItemListener(new ItemListener() {
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					if (e.getStateChange() == SELECTED)
+						updateComponentBox(matches, componentBox,
+								(String) familyBox.getSelectedItem());
+				}
+			});
+			componentBox.addItemListener(new ItemListener() {
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					if (e.getStateChange() == SELECTED)
+						updateVersionBox(matches, versionBox,
+								(String) componentBox.getSelectedItem(),
+								(String) familyBox.getSelectedItem());
+				}
+			});
+			familyBox.setSelectedIndex(0);
+			updateComponentBox(matches, componentBox,
+					(String) familyBox.getSelectedItem());
+			updateVersionBox(matches, versionBox,
+					(String) componentBox.getSelectedItem(),
+					(String) familyBox.getSelectedItem());
 		}
 	}
 
 	private String[] calculateMatchingFamilyNames(
 			Set<Version.ID> matchingComponents) {
 		TreeSet<String> result = new TreeSet<String>();
-		for (Version.ID v : matchingComponents) {
+		for (Version.ID v : matchingComponents)
 			result.add(v.getFamilyName());
-		}
 		return result.toArray(new String[0]);
 	}
 
@@ -193,31 +187,26 @@ public class SearchChoicePanel extends JPanel {
 		componentBox.removeAllItems();
 		String[] matchingComponentNames = calculateMatchingComponentNames(
 				matchingComponents, selectedItem);
-		for (String componentName : matchingComponentNames) {
+		for (String componentName : matchingComponentNames)
 			componentBox.addItem(componentName);
-		}
 		componentBox.setSelectedIndex(0);
 	}
 
 	private String[] calculateMatchingComponentNames(
 			Set<Version.ID> matchingComponents, String familyName) {
 		TreeSet<String> result = new TreeSet<String>();
-		for (Version.ID v : matchingComponents) {
-			if (v.getFamilyName().equals(familyName)) {
+		for (Version.ID v : matchingComponents)
+			if (v.getFamilyName().equals(familyName))
 				result.add(v.getComponentName());
-			}
-		}
 		return result.toArray(new String[0]);
 	}
 
 	private void updateVersionBox(Set<Version.ID> matchingComponents,
 			JComboBox versionBox, String componentName, String familyName) {
 		versionBox.removeAllItems();
-		Integer[] matchingVersionNumbers = calculateMatchingVersionNumbers(
-				matchingComponents, componentName, familyName);
-		for (Integer v : matchingVersionNumbers) {
+		for (Integer v : calculateMatchingVersionNumbers(matchingComponents,
+				componentName, familyName))
 			versionBox.addItem(v);
-		}
 		versionBox.setSelectedIndex(0);
 	}
 
@@ -225,20 +214,18 @@ public class SearchChoicePanel extends JPanel {
 			Set<Version.ID> matchingComponents, String componentName,
 			String familyName) {
 		TreeSet<Integer> result = new TreeSet<Integer>();
-		for (Version.ID v : matchingComponents) {
+		for (Version.ID v : matchingComponents)
 			if (v.getFamilyName().equals(familyName)
-					&& v.getComponentName().equals(componentName)) {
+					&& v.getComponentName().equals(componentName))
 				result.add(v.getComponentVersion());
-			}
-		}
 		return result.toArray(new Integer[0]);
 	}
 
 	public Version.ID getVersionIdentification() {
 		String registryString = registryURLLabel.getText();
-		if (RESERVED_WORDS.contains(registryString)) {
+		if (RESERVED_WORDS.contains(registryString))
 			return null;
-		}
+
 		return new ComponentVersionIdentification(registry.getRegistryBase(),
 				(String) familyBox.getSelectedItem(),
 				(String) componentBox.getSelectedItem(),

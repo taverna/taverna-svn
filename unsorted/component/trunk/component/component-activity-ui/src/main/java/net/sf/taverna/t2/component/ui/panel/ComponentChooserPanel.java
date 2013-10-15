@@ -33,10 +33,6 @@ import org.apache.log4j.Logger;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class ComponentChooserPanel extends JPanel implements
 		Observable<ComponentChoiceMessage>, Observer {
-
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = -4459660016225074302L;
 
 	private static Logger logger = Logger
@@ -75,14 +71,12 @@ public class ComponentChooserPanel extends JPanel implements
 		registryAndFamilyChooserPanel.addObserver(this);
 
 		componentChoice.addItemListener(new ItemListener() {
-
 			@Override
 			public void itemStateChanged(ItemEvent arg0) {
 				if (arg0.getStateChange() == ItemEvent.SELECTED) {
 					updateToolTipText();
 					notifyObservers();
 				}
-
 			}
 		});
 	}
@@ -90,25 +84,22 @@ public class ComponentChooserPanel extends JPanel implements
 	protected void updateToolTipText() {
 		Component chosenComponent = componentMap.get(componentChoice
 				.getSelectedItem());
-		if (chosenComponent == null) {
+		if (chosenComponent == null)
 			componentChoice.setToolTipText(null);
-		} else {
+		else
 			componentChoice.setToolTipText(chosenComponent.getDescription());
-		}
 	}
 
 	private void notifyObservers() {
 		ComponentChoiceMessage message = new ComponentChoiceMessage(
 				registryAndFamilyChooserPanel.getChosenFamily(),
 				getChosenComponent());
-		for (Observer<ComponentChoiceMessage> o : getObservers()) {
+		for (Observer<ComponentChoiceMessage> o : getObservers())
 			try {
 				o.notify(ComponentChooserPanel.this, message);
 			} catch (Exception e) {
 				logger.error(e);
 			}
-		}
-
 	}
 
 	private void updateComponentModel() {
@@ -118,25 +109,23 @@ public class ComponentChooserPanel extends JPanel implements
 		notifyObservers();
 		componentChoice.addItem("Reading components");
 		componentChoice.setEnabled(false);
-		(new ComponentUpdater()).execute();
+		new ComponentUpdater().execute();
 	}
 
 	public Component getChosenComponent() {
-		if (!componentMap.isEmpty()) {
-			return componentMap.get(componentChoice.getSelectedItem());
-		}
-		return null;
+		if (componentMap.isEmpty())
+			return null;
+		return componentMap.get(componentChoice.getSelectedItem());
 	}
 
 	@Override
 	public void notify(Observable sender, Object message) throws Exception {
 		try {
-			if (message instanceof FamilyChoiceMessage) {
+			if (message instanceof FamilyChoiceMessage)
 				updateComponentModel();
-			} else if (message instanceof ProfileChoiceMessage) {
+			else if (message instanceof ProfileChoiceMessage)
 				registryAndFamilyChooserPanel.notify(null,
 						(ProfileChoiceMessage) message);
-			}
 		} catch (Exception e) {
 			logger.error(e);
 		}
@@ -175,32 +164,28 @@ public class ComponentChooserPanel extends JPanel implements
 	}
 
 	private class ComponentUpdater extends SwingWorker<String, Object> {
-
 		@Override
 		protected String doInBackground() throws Exception {
 			Family chosenFamily = registryAndFamilyChooserPanel
 					.getChosenFamily();
-			if (chosenFamily != null) {
-				for (Component component : chosenFamily.getComponents()) {
+			if (chosenFamily != null)
+				for (Component component : chosenFamily.getComponents())
 					componentMap.put(component.getName(), component);
-				}
-			}
+
 			return null;
 		}
 
 		@Override
 		protected void done() {
 			componentChoice.removeAllItems();
-			for (String componentName : componentMap.keySet()) {
+			for (String componentName : componentMap.keySet())
 				componentChoice.addItem(componentName);
-			}
 			if (!componentMap.isEmpty()) {
 				componentChoice.setSelectedItem(componentMap.firstKey());
 				updateToolTipText();
-			} else {
+			} else
 				componentChoice.addItem("No components available");
 
-			}
 			notifyObservers();
 			componentChoice.setEnabled(!componentMap.isEmpty());
 		}

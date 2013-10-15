@@ -3,6 +3,8 @@
  */
 package net.sf.taverna.t2.component.ui.panel;
 
+import static java.awt.event.ItemEvent.SELECTED;
+
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
@@ -31,13 +33,9 @@ import org.apache.log4j.Logger;
  */
 public class RegistryChooserPanel extends JPanel implements
 		Observable<RegistryChoiceMessage> {
-
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 8390860727800654604L;
-
-	private static Logger logger = Logger.getLogger(RegistryChooserPanel.class);
+	private static final Logger logger = Logger
+			.getLogger(RegistryChooserPanel.class);
 
 	private List<Observer<RegistryChoiceMessage>> observers = new ArrayList<Observer<RegistryChoiceMessage>>();
 
@@ -71,10 +69,9 @@ public class RegistryChooserPanel extends JPanel implements
 
 		registryBox.addItemListener(new ItemListener() {
 			@Override
-			public void itemStateChanged(ItemEvent arg0) {
-				if (arg0.getStateChange() == ItemEvent.SELECTED) {
+			public void itemStateChanged(ItemEvent event) {
+				if (event.getStateChange() == SELECTED)
 					dealWithSelection();
-				}
 			}
 		});
 
@@ -94,13 +91,12 @@ public class RegistryChooserPanel extends JPanel implements
 		Registry chosenRegistry = getChosenRegistry();
 		RegistryChoiceMessage message = new RegistryChoiceMessage(
 				chosenRegistry);
-		for (Observer<RegistryChoiceMessage> o : getObservers()) {
+		for (Observer<RegistryChoiceMessage> o : getObservers())
 			try {
 				o.notify(RegistryChooserPanel.this, message);
 			} catch (Exception e) {
 				logger.error(e);
 			}
-		}
 	}
 
 	@Override
@@ -127,12 +123,8 @@ public class RegistryChooserPanel extends JPanel implements
 	}
 
 	public Registry getChosenRegistry() {
-		if (registryBox.getSelectedIndex() >= 0) {
-			String name = (String) registryBox.getSelectedItem();
-			Registry chosenRegistry = registryMap.get(name);
-			return chosenRegistry;
-		}
-		return null;
+		if (registryBox.getSelectedIndex() < 0)
+			return null;
+		return registryMap.get(registryBox.getSelectedItem());
 	}
-
 }

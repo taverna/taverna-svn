@@ -2,6 +2,10 @@ package net.sf.taverna.t2.component.ui.preference;
 
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN;
+import static javax.swing.ListSelectionModel.SINGLE_SELECTION;
+import static net.sf.taverna.t2.component.registry.ComponentUtil.calculateRegistry;
+import static net.sf.taverna.t2.workbench.helper.Helper.showHelp;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -19,25 +23,23 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
 import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.preference.ComponentPreference;
-import net.sf.taverna.t2.component.registry.ComponentUtil;
 import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.ui.DeselectingButton;
 import net.sf.taverna.t2.lang.ui.ValidatingUserInputDialog;
-import net.sf.taverna.t2.workbench.helper.Helper;
 
 import org.apache.log4j.Logger;
 
 public class ComponentPreferencePanel extends JPanel {
-
-	/**
-	 * 
-	 */
+	private static final String VALIDATION_MESSAGE = "Set the registry name";
+	private static final String EXCEPTION_MESSAGE = "Unable to access registry at ";
+	private static final String EXCEPTION_TITLE = "Component registry problem";
+	private static final String INVALID_NAME = "Invalid registry name";
+	private static final String DUPLICATE = "Duplicate registry name";
 	private static final long serialVersionUID = 1310173658718093383L;
 
 	private final Logger logger = Logger
@@ -79,8 +81,8 @@ public class ComponentPreferencePanel extends JPanel {
 		gbc.insets = new Insets(10, 0, 0, 0);
 
 		registryTable.getColumnModel().getColumn(0).setPreferredWidth(20);
-		registryTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-		registryTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		registryTable.setAutoResizeMode(AUTO_RESIZE_LAST_COLUMN);
+		registryTable.setSelectionMode(SINGLE_SELECTION);
 		JScrollPane scrollPane = new JScrollPane(registryTable);
 		// registryTable.setFillsViewportHeight(true);
 
@@ -120,9 +122,6 @@ public class ComponentPreferencePanel extends JPanel {
 
 		JButton removeButton = new DeselectingButton(new AbstractAction(
 				"Remove registry") {
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 1506913889704140541L;
 
 			public void actionPerformed(ActionEvent arg0) {
@@ -139,16 +138,14 @@ public class ComponentPreferencePanel extends JPanel {
 			private static final long serialVersionUID = 855395154244911211L;
 
 			public void actionPerformed(ActionEvent arg0) {
-
 				LocalRegistryPanel inputPanel = new LocalRegistryPanel();
 
 				ValidatingUserInputDialog vuid = new ValidatingUserInputDialog(
 						"Add Local Component Registry", inputPanel);
-				vuid.addTextComponentValidation(inputPanel
-						.getRegistryNameField(), "Set the registry name",
-						tableModel.getRegistryMap().keySet(),
-						"Duplicate registry name", "[\\p{L}\\p{Digit}_.]+",
-						"Invalid registry name");
+				vuid.addTextComponentValidation(
+						inputPanel.getRegistryNameField(), VALIDATION_MESSAGE,
+						tableModel.getRegistryMap().keySet(), DUPLICATE,
+						"[\\p{L}\\p{Digit}_.]+", INVALID_NAME);
 				vuid.setSize(new Dimension(400, 250));
 				if (vuid.show(ComponentPreferencePanel.this)) {
 					String location = inputPanel.getLocationField().getText();
@@ -158,14 +155,12 @@ public class ComponentPreferencePanel extends JPanel {
 								.getRegistryNameField().getText(),
 								getLocalRegistry(newDir));
 					} catch (MalformedURLException e) {
-						showMessageDialog(null, "Unable to access registry at "
-								+ location, "Component registry problem",
-								ERROR_MESSAGE);
+						showMessageDialog(null, EXCEPTION_MESSAGE + location,
+								EXCEPTION_TITLE, ERROR_MESSAGE);
 						logger.error(e);
 					} catch (RegistryException e) {
-						showMessageDialog(null, "Unable to access registry at "
-								+ location, "Component registry problem",
-								ERROR_MESSAGE);
+						showMessageDialog(null, EXCEPTION_MESSAGE + location,
+								EXCEPTION_TITLE, ERROR_MESSAGE);
 						logger.error(e);
 					}
 				}
@@ -179,9 +174,6 @@ public class ComponentPreferencePanel extends JPanel {
 		 */
 		JButton addRemoteButton = new DeselectingButton(new AbstractAction(
 				"Add remote registry") {
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 7790264169310979116L;
 
 			public void actionPerformed(ActionEvent arg0) {
@@ -189,11 +181,10 @@ public class ComponentPreferencePanel extends JPanel {
 
 				ValidatingUserInputDialog vuid = new ValidatingUserInputDialog(
 						"Add Remote Component Registry", inputPanel);
-				vuid.addTextComponentValidation(inputPanel
-						.getRegistryNameField(), "Set the registry name",
-						tableModel.getRegistryMap().keySet(),
-						"Duplicate registry name", "[\\p{L}\\p{Digit}_.]+",
-						"Invalid registry name");
+				vuid.addTextComponentValidation(
+						inputPanel.getRegistryNameField(), VALIDATION_MESSAGE,
+						tableModel.getRegistryMap().keySet(), DUPLICATE,
+						"[\\p{L}\\p{Digit}_.]+", INVALID_NAME);
 				vuid.addTextComponentValidation(inputPanel.getLocationField(),
 						"Set the URL of the profile", null, "",
 						Utils.URL_PATTERN, "Invalid URL");
@@ -205,14 +196,12 @@ public class ComponentPreferencePanel extends JPanel {
 								.getRegistryNameField().getText(),
 								getRemoteRegistry(location));
 					} catch (MalformedURLException e) {
-						showMessageDialog(null, "Unable to access registry at "
-								+ location, "Component registry problem",
-								ERROR_MESSAGE);
+						showMessageDialog(null, EXCEPTION_MESSAGE + location,
+								EXCEPTION_TITLE, ERROR_MESSAGE);
 						logger.error(e);
 					} catch (RegistryException e) {
-						showMessageDialog(null, "Unable to access registry at "
-								+ location, "Component registry problem",
-								ERROR_MESSAGE);
+						showMessageDialog(null, EXCEPTION_MESSAGE + location,
+								EXCEPTION_TITLE, ERROR_MESSAGE);
 						logger.error(e);
 					}
 				}
@@ -225,7 +214,7 @@ public class ComponentPreferencePanel extends JPanel {
 
 	Registry getLocalRegistry(File location) throws RegistryException,
 			MalformedURLException {
-		return ComponentUtil.calculateRegistry(location.toURI().toURL());
+		return calculateRegistry(location.toURI().toURL());
 	}
 
 	Registry getRemoteRegistry(String location) throws MalformedURLException,
@@ -234,7 +223,7 @@ public class ComponentPreferencePanel extends JPanel {
 		if (url.getProtocol() == null || url.getProtocol().equals("file"))
 			throw new MalformedURLException(
 					"may not use relative or local URLs for locating registry");
-		return ComponentUtil.calculateRegistry(url);
+		return calculateRegistry(url);
 	}
 
 	/**
@@ -251,7 +240,7 @@ public class ComponentPreferencePanel extends JPanel {
 		 */
 		JButton helpButton = new DeselectingButton(new AbstractAction("Help") {
 			public void actionPerformed(ActionEvent arg0) {
-				Helper.showHelp(panel);
+				showHelp(panel);
 			}
 		});
 		panel.add(helpButton);

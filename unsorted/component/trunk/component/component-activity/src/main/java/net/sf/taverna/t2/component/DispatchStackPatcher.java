@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.component;
 
+import static net.sf.taverna.t2.visit.VisitReport.findAncestor;
+
 import java.util.List;
 
 import net.sf.taverna.t2.visit.VisitReport;
@@ -25,16 +27,13 @@ public class DispatchStackPatcher implements HealthChecker<ComponentActivity> {
 	}
 
 	public VisitReport visit(ComponentActivity a, List<Object> ancestry) {
-		Processor p = (Processor) VisitReport.findAncestor(ancestry,
-				Processor.class);
+		Processor p = (Processor) findAncestor(ancestry, Processor.class);
 		DispatchStackImpl ds = (DispatchStackImpl) p.getDispatchStack();
 		List<DispatchLayer<?>> layers = ds.getLayers();
 		DispatchLayer<?> oldLayer = null;
-		for (DispatchLayer<?> dl : layers) {
-			if ((dl instanceof Invoke) && !(dl instanceof PatchedInvoke)) {
+		for (DispatchLayer<?> dl : layers)
+			if ((dl instanceof Invoke) && !(dl instanceof PatchedInvoke))
 				oldLayer = dl;
-			}
-		}
 		try {
 			if (oldLayer != null) {
 				int oldIndex = ds.removeLayer(oldLayer);

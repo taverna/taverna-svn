@@ -37,7 +37,6 @@ import org.apache.log4j.Logger;
  * 
  */
 public class ProxyCallback implements AsynchronousActivityCallback {
-
 	private static final Logger logger = Logger.getLogger(ProxyCallback.class);
 
 	private AsynchronousActivityCallback originalCallback;
@@ -104,41 +103,32 @@ public class ProxyCallback implements AsynchronousActivityCallback {
 			List<T2Reference> exceptions) {
 		if (!value.containsErrors()) {
 			return value;
-		}
-
-		if (value.getReferenceType().equals(IdentifiedList)) {
-			if (exceptionHandling.failLists()) {
-				T2Reference failure = findFirstFailure(value);
-				T2Reference replacement = replaceErrors(failure,
-						value.getDepth(), exceptions);
-				return replacement;
-			} else {
-				IdentifiedList<T2Reference> originalList = listService
-						.getList(value);
-				List<T2Reference> replacementList = new ArrayList<T2Reference>();
-				for (T2Reference subValue : originalList) {
-					replacementList
-							.add(considerReference(subValue, exceptions));
-				}
-				return referenceService.register(replacementList,
-						value.getDepth(), true, context);
-			}
-		} else {
+		} else if (!value.getReferenceType().equals(IdentifiedList)) {
 			return replaceErrors(value, exceptions);
+		} else if (exceptionHandling.failLists()) {
+			T2Reference failure = findFirstFailure(value);
+			T2Reference replacement = replaceErrors(failure, value.getDepth(),
+					exceptions);
+			return replacement;
+		} else {
+			IdentifiedList<T2Reference> originalList = listService
+					.getList(value);
+			List<T2Reference> replacementList = new ArrayList<T2Reference>();
+			for (T2Reference subValue : originalList)
+				replacementList.add(considerReference(subValue, exceptions));
+			return referenceService.register(replacementList, value.getDepth(),
+					true, context);
 		}
 	}
 
 	private T2Reference findFirstFailure(T2Reference value) {
 		IdentifiedList<T2Reference> originalList = listService.getList(value);
 		for (T2Reference subValue : originalList) {
-			if (subValue.getReferenceType().equals(ErrorDocument)) {
+			if (subValue.getReferenceType().equals(ErrorDocument))
 				return subValue;
-			}
-			if (subValue.getReferenceType().equals(IdentifiedList)) {
-				if (subValue.containsErrors()) {
+			if (subValue.getReferenceType().equals(IdentifiedList))
+				if (subValue.containsErrors())
 					return findFirstFailure(subValue);
-				}
-			}
 			// No need to consider value
 		}
 		return null;
@@ -169,29 +159,22 @@ public class ProxyCallback implements AsynchronousActivityCallback {
 				toConsider.remove(errorDoc);
 				String exceptionMessage = errorDoc.getExceptionMessage();
 				for (HandleException he : exceptionHandling
-						.getHandleExceptions()) {
+						.getHandleExceptions())
 					if (he.matches(exceptionMessage)) {
 						found = true;
 						matchingHandleException = he;
 						matchingDoc = errorDoc;
 					}
-				}
-				if (!errorDoc.getErrorReferences().isEmpty()) {
-					for (T2Reference subRef : errorDoc.getErrorReferences()) {
-						Set<T2Reference> newErrors = getErrors(subRef);
-						for (T2Reference newErrorRef : newErrors) {
+				if (!errorDoc.getErrorReferences().isEmpty())
+					for (T2Reference subRef : errorDoc.getErrorReferences())
+						for (T2Reference newErrorRef : getErrors(subRef)) {
 							ErrorDocument subDoc = errorService
 									.getError(newErrorRef);
-							if (subDoc == null) {
+							if (subDoc == null)
 								logger.error("Error document contains references to non-existent sub-errors");
-							} else {
-								if (!considered.contains(subDoc)) {
-									toConsider.add(subDoc);
-								}
-							}
+							else if (!considered.contains(subDoc))
+								toConsider.add(subDoc);
 						}
-					}
-				}
 			} catch (Exception e) {
 				logger.error(e);
 			}
@@ -240,11 +223,9 @@ public class ProxyCallback implements AsynchronousActivityCallback {
 			// nothing
 		} else if (ref.getReferenceType().equals(IdentifiedList)) {
 			IdentifiedList<T2Reference> originalList = listService.getList(ref);
-			for (T2Reference subValue : originalList) {
-				if (subValue.containsErrors()) {
+			for (T2Reference subValue : originalList)
+				if (subValue.containsErrors())
 					result.addAll(getErrors(subValue));
-				}
-			}
 		} else {
 			result.add(ref);
 		}

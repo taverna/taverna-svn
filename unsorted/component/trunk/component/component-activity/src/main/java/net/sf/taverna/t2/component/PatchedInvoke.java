@@ -109,63 +109,60 @@ public class PatchedInvoke extends AbstractDispatchLayer<Object> {
 	@Override
 	public void receiveJob(final DispatchJobEvent jobEvent) {
 		for (Activity<?> activity : jobEvent.getActivities()) {
+			if (!(activity instanceof AsynchronousActivity))
+				continue;
 
-			if (activity instanceof AsynchronousActivity) {
-				// Register with the monitor
-				final String invocationProcessIdentifier = jobEvent
-						.pushOwningProcess(getNextProcessID())
-						.getOwningProcess();
-				monitorManager.registerNode(activity,
-						invocationProcessIdentifier.split(":"),
-						new HashSet<MonitorableProperty<?>>());
+			// Register with the monitor
+			final String invocationProcessIdentifier = jobEvent
+					.pushOwningProcess(getNextProcessID()).getOwningProcess();
+			monitorManager.registerNode(activity,
+					invocationProcessIdentifier.split(":"),
+					new HashSet<MonitorableProperty<?>>());
 
-				// The activity is an AsynchronousActivity so we invoke it with
-				// an AsynchronousActivityCallback object containing appropriate
-				// callback methods to push results, completions and failures
-				// back to the invocation layer.
-				final AsynchronousActivity<?> asyncActivity = (AsynchronousActivity<?>) activity;
+			// The activity is an AsynchronousActivity so we invoke it with
+			// an AsynchronousActivityCallback object containing appropriate
+			// callback methods to push results, completions and failures
+			// back to the invocation layer.
+			final AsynchronousActivity<?> asyncActivity = (AsynchronousActivity<?>) activity;
 
-				// Get the registered DataManager for this process. In most
-				// cases this will just be a single DataManager for the entire
-				// workflow system but it never hurts to generalize
+			// Get the registered DataManager for this process. In most
+			// cases this will just be a single DataManager for the entire
+			// workflow system but it never hurts to generalize
 
-				InvocationContext context = jobEvent.getContext();
-				final ReferenceService refService = context
-						.getReferenceService();
+			InvocationContext context = jobEvent.getContext();
+			final ReferenceService refService = context.getReferenceService();
 
-				// Create a Map of EntityIdentifiers named appropriately given
-				// the activity mapping
-				Map<String, T2Reference> inputData = new HashMap<String, T2Reference>();
-				for (String inputName : jobEvent.getData().keySet()) {
-					String activityInputName = asyncActivity
-							.getInputPortMapping().get(inputName);
-					if (activityInputName != null) {
-						inputData.put(activityInputName, jobEvent.getData()
-								.get(inputName));
-					}
-				}
-
-				// Create a callback object to receive events, completions and
-				// failure notifications from the activity
-				AsynchronousActivityCallback callback = new PatchedInvokeCallBack(
-						jobEvent, refService, invocationProcessIdentifier,
-						asyncActivity);
-
-				if (asyncActivity instanceof MonitorableAsynchronousActivity<?>) {
-					// Monitorable activity so get the monitorable properties
-					// and push them into the state tree after launching the job
-					MonitorableAsynchronousActivity<?> maa = (MonitorableAsynchronousActivity<?>) asyncActivity;
-					Set<MonitorableProperty<?>> props = maa
-							.executeAsynchWithMonitoring(inputData, callback);
-					monitorManager.addPropertiesToNode(
-							invocationProcessIdentifier.split(":"), props);
-				} else {
-					// Run the job, passing in the callback we've just created
-					// along with the (possibly renamed) input data map
-					asyncActivity.executeAsynch(inputData, callback);
-				}
-				return;
+			// Create a Map of EntityIdentifiers named appropriately given
+			// the activity mapping
+			Map<String, T2Reference> inputData = new HashMap<String, T2Reference>();
+			for (String inputName : jobEvent.getData().keySet()) {
+				String activityInputName = asyncActivity.getInputPortMapping()
+						.get(inputName);
+				if (activityInputName != null)
+					inputData.put(activityInputName,
+							jobEvent.getData().get(inputName));
 			}
+
+			// Create a callback object to receive events, completions and
+			// failure notifications from the activity
+			AsynchronousActivityCallback callback = new PatchedInvokeCallBack(
+					jobEvent, refService, invocationProcessIdentifier,
+					asyncActivity);
+
+			if (asyncActivity instanceof MonitorableAsynchronousActivity<?>) {
+				// Monitorable activity so get the monitorable properties
+				// and push them into the state tree after launching the job
+				MonitorableAsynchronousActivity<?> maa = (MonitorableAsynchronousActivity<?>) asyncActivity;
+				Set<MonitorableProperty<?>> props = maa
+						.executeAsynchWithMonitoring(inputData, callback);
+				monitorManager.addPropertiesToNode(
+						invocationProcessIdentifier.split(":"), props);
+			} else {
+				// Run the job, passing in the callback we've just created
+				// along with the (possibly renamed) input data map
+				asyncActivity.executeAsynch(inputData, callback);
+			}
+			return;
 		}
 	}
 

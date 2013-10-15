@@ -22,13 +22,8 @@ import org.apache.log4j.Logger;
  */
 public class RegistryAndFamilyChooserPanel extends JPanel implements
 		Observer<ProfileChoiceMessage>, Observable<FamilyChoiceMessage> {
-
 	private static Logger logger = Logger
 			.getLogger(RegistryAndFamilyChooserPanel.class);
-
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = -535518473593617735L;
 	RegistryChooserPanel registryPanel = new RegistryChooserPanel();
 	FamilyChooserPanel familyPanel = new FamilyChooserPanel();
@@ -52,7 +47,6 @@ public class RegistryAndFamilyChooserPanel extends JPanel implements
 		gbc.gridy = 1;
 		gbc.weighty = 1;
 		this.add(familyPanel, gbc);
-
 	}
 
 	public Registry getChosenRegistry() {

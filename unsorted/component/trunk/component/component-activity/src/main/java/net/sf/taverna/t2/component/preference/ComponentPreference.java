@@ -3,6 +3,8 @@
  */
 package net.sf.taverna.t2.component.preference;
 
+import static net.sf.taverna.t2.component.registry.ComponentUtil.calculateRegistry;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -17,7 +19,6 @@ import java.util.TreeMap;
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.component.api.RegistryException;
-import net.sf.taverna.t2.component.registry.ComponentUtil;
 
 import org.apache.log4j.Logger;
 
@@ -26,23 +27,18 @@ import org.apache.log4j.Logger;
  * 
  */
 public class ComponentPreference {
-
 	private static final String MYEXPERIMENT_NAME = "myExperiment";
-
 	private static final String MYEXPERIMENT_SITE = "http://www.myexperiment.org";
-
 	private final Logger logger = Logger.getLogger(ComponentPreference.class);
 
 	private static ComponentPreference instance = null;
 
 	private final Properties properties;
-
-	private SortedMap<String, Registry> registryMap = new TreeMap<String, Registry>();
+	private final SortedMap<String, Registry> registryMap = new TreeMap<String, Registry>();
 
 	public static ComponentPreference getInstance() {
-		if (instance == null) {
+		if (instance == null)
 			instance = new ComponentPreference();
-		}
 		return instance;
 	}
 
@@ -67,17 +63,16 @@ public class ComponentPreference {
 
 	private void updateRegistryMap() {
 		registryMap.clear();
-		for (Object key : properties.keySet()) {
-			String name = (String) key;
+		for (Object key : properties.keySet())
 			try {
-				registryMap.put(name, ComponentUtil.calculateRegistry(new URL(
+				String name = (String) key;
+				registryMap.put(name, calculateRegistry(new URL(
 						(String) properties.get(name))));
 			} catch (MalformedURLException e) {
 				logger.error(e);
 			} catch (RegistryException e) {
 				logger.error(e);
 			}
-		}
 	}
 
 	private void fillDefaultProperties() {
@@ -87,32 +82,24 @@ public class ComponentPreference {
 	}
 
 	public String calculateComponentsDirectoryPath() {
-		return (new File(ApplicationRuntime.getInstance()
-				.getApplicationHomeDir(), "components")).toURI()
-				.toASCIIString();
+		return new File(ApplicationRuntime.getInstance()
+				.getApplicationHomeDir(), "components").toURI().toASCIIString();
 	}
 
 	private File getConfigFile() {
-		final File home = ApplicationRuntime.getInstance()
-				.getApplicationHomeDir();
-		final File config = new File(home, "conf");
-		if (!config.exists()) {
+		File home = ApplicationRuntime.getInstance().getApplicationHomeDir();
+		File config = new File(home, "conf");
+		if (!config.exists())
 			config.mkdir();
-		}
-		final File configFile = new File(config, this.getFilePrefix() + "-"
-				+ this.getUUID() + ".config");
-		return configFile;
-
+		return new File(config, getFilePrefix() + "-" + getUUID() + ".config");
 	}
 
 	public void store() {
-
 		this.properties.clear();
-
-		for (String key : registryMap.keySet()) {
+		for (String key : registryMap.keySet())
 			this.properties.put(key, registryMap.get(key).getRegistryBase()
 					.toString());
-		}
+
 		try {
 			final FileOutputStream out = new FileOutputStream(getConfigFile());
 			this.properties.store(out, "");
@@ -141,21 +128,17 @@ public class ComponentPreference {
 
 	public String getRegistryName(URL registryBase) {
 		String result = registryBase.toString();
-		for (String name : registryMap.keySet()) {
+		for (String name : registryMap.keySet())
 			if (registryMap.get(name).getRegistryBase().toString()
 					.equals(registryBase.toString())) {
 				result = name;
 				break;
 			}
-		}
 		return result;
 	}
 
 	public void setRegistryMap(SortedMap<String, Registry> registries) {
 		registryMap.clear();
-		for (String s : registries.keySet()) {
-			registryMap.put(s, registries.get(s));
-		}
+		registryMap.putAll(registries);
 	}
-
 }
