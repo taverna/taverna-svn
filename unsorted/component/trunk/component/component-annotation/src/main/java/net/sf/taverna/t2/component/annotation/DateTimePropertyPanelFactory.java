@@ -56,7 +56,6 @@ public class DateTimePropertyPanelFactory extends PropertyPanelFactorySPI {
 	public JComponent getInputComponent(
 			SemanticAnnotationProfile semanticAnnotationProfile,
 			Statement statement) {
-		JComponent result = null;
 		Date now = new Date();
 		SpinnerDateModel dateModel = new SpinnerDateModel(now, null, now,
 				Calendar.DAY_OF_MONTH);
@@ -64,8 +63,10 @@ public class DateTimePropertyPanelFactory extends PropertyPanelFactorySPI {
 		JSpinner.DateEditor de = new JSpinner.DateEditor(s,
 				"yyyy-MM-dd-HH-mm-ss");
 
-		// Suggested hack from
-		// http://www.coderanch.com/t/345684/GUI/java/JSpinner-DateEditor-Set-default-focus
+		/*
+		 * Suggested hack from
+		 * http://www.coderanch.com/t/345684/GUI/java/JSpinner-DateEditor-Set-default-focus
+		 */
 
 		de.getTextField().setCaret(new DefaultCaret() {
 			private static final long serialVersionUID = 6779256780590610172L;
@@ -90,13 +91,10 @@ public class DateTimePropertyPanelFactory extends PropertyPanelFactorySPI {
 		s.setEditor(de);
 		if (statement != null) {
 			Object o = statement.getObject().asLiteral().getValue();
-			if (o instanceof XSDDateTime) {
+			if (o instanceof XSDDateTime)
 				dateModel.setValue(((XSDDateTime) o).asCalendar().getTime());
-			}
 		}
-		result = s;
-
-		return result;
+		return s;
 	}
 
 	@Override
@@ -120,9 +118,8 @@ public class DateTimePropertyPanelFactory extends PropertyPanelFactorySPI {
 		OntProperty property = semanticAnnotationProfile.getPredicate();
 		if (property.isDatatypeProperty()
 				&& DateTimeString.equals(semanticAnnotationProfile
-						.getClassString())) {
+						.getClassString()))
 			return 200;
-		}
 		return Integer.MIN_VALUE;
 	}
 
@@ -135,5 +132,4 @@ public class DateTimePropertyPanelFactory extends PropertyPanelFactorySPI {
 		result.setEnabled(false);
 		return result;
 	}
-
 }

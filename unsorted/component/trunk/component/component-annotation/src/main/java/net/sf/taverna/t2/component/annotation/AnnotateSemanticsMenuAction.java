@@ -13,7 +13,6 @@ import java.net.URI;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -45,10 +44,9 @@ public class AnnotateSemanticsMenuAction extends AbstractContextualMenuAction {
 		Object selection = getContextualSelection().getSelection();
 		Object dataflowSource = fileManager.getDataflowSource(fileManager
 				.getCurrentDataflow());
-		if (dataflowSource instanceof ComponentVersionIdentification) {
+		if (dataflowSource instanceof ComponentVersionIdentification)
 			return (selection instanceof Annotated)
 					&& !(selection instanceof Activity || selection instanceof ActivityPort);
-		}
 		return false;
 	}
 
@@ -64,20 +62,17 @@ public class AnnotateSemanticsMenuAction extends AbstractContextualMenuAction {
 						"Annotate semantics");
 				dialog.setLayout(new BorderLayout());
 
-				JScrollPane scrollPane = new JScrollPane(view);
-
-				dialog.add(scrollPane, BorderLayout.CENTER);
+				dialog.add(new JScrollPane(view), BorderLayout.CENTER);
 
 				JPanel buttonPanel = new JPanel(new FlowLayout(
 						FlowLayout.TRAILING));
 
-				JButton okButton = new DeselectingButton("OK",
+				buttonPanel.add(new DeselectingButton("OK",
 						new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
 								dialog.setVisible(false);
 							}
-						});
-				buttonPanel.add(okButton);
+						}));
 
 				dialog.add(buttonPanel, BorderLayout.SOUTH);
 				dialog.setSize(new Dimension(400, 300));
@@ -87,5 +82,4 @@ public class AnnotateSemanticsMenuAction extends AbstractContextualMenuAction {
 			}
 		};
 	}
-
 }

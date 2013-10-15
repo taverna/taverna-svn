@@ -25,12 +25,9 @@ public class TurtleContextualView extends ContextualView {
 	private String annotationContent = "";
 
 	public TurtleContextualView(Annotated<?> selection) {
-		super();
-
 		SemanticAnnotation annotation = findSemanticAnnotation(selection);
-		if (annotation != null) {
+		if (annotation != null) 
 			annotationContent = annotation.getContent();
-		}
 		initialise();
 		initView();
 	}
@@ -56,11 +53,10 @@ public class TurtleContextualView extends ContextualView {
 	}
 
 	protected final void initialise() {
-		if (panel == null) {
+		if (panel == null)
 			panel = new JPanel(new BorderLayout());
-		} else {
+		else
 			panel.removeAll();
-		}
 		JTextArea textArea = new JTextArea(20, 80);
 		textArea.setEditable(false);
 		textArea.setText(annotationContent);

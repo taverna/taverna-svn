@@ -39,7 +39,6 @@ import com.hp.hpl.jena.rdf.model.Statement;
  * @author David Withers
  */
 public abstract class PropertyPanelFactorySPI {
-
 	public abstract JComponent getInputComponent(
 			SemanticAnnotationProfile semanticAnnotationProfile,
 			Statement statement);
@@ -65,9 +64,8 @@ public abstract class PropertyPanelFactorySPI {
 			SemanticAnnotationProfile semanticAnnotationProfile,
 			Statement statement) {
 		JTextArea inputText = new JTextArea(20, 80);
-		if (statement != null) {
+		if (statement != null)
 			inputText.setText(getObjectName(statement));
-		}
 		inputText.setLineWrap(true);
 		inputText.setWrapStyleWord(true);
 		return inputText;
@@ -85,5 +83,4 @@ public abstract class PropertyPanelFactorySPI {
 		value.setBorder(new EmptyBorder(2, 4, 2, 4));
 		return value;
 	}
-
 }

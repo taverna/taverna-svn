@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.component.annotation;
 
 import static java.lang.Integer.MIN_VALUE;
+import static java.lang.String.format;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.OK_CANCEL_OPTION;
 import static javax.swing.JOptionPane.OK_OPTION;
@@ -39,19 +40,15 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 
 public class SemanticAnnotationPanel extends JPanel {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -5949183295606132775L;
+
 	private final AbstractSemanticAnnotationContextualView semanticAnnotationContextualView;
 	private final SemanticAnnotationProfile semanticAnnotationProfile;
 	private final Set<Statement> statements;
-
-	protected SPIRegistry<PropertyPanelFactorySPI> propertyPanelFactoryRegistry = new SPIRegistry<PropertyPanelFactorySPI>(
+	protected final SPIRegistry<PropertyPanelFactorySPI> propertyPanelFactoryRegistry = new SPIRegistry<PropertyPanelFactorySPI>(
 			PropertyPanelFactorySPI.class);
 	private final boolean allowChange;
-	private PropertyPanelFactorySPI bestFactory;
+	private final PropertyPanelFactorySPI bestFactory;
 
 	public SemanticAnnotationPanel(
 			AbstractSemanticAnnotationContextualView semanticAnnotationContextualView,
@@ -137,14 +134,10 @@ public class SemanticAnnotationPanel extends JPanel {
 			c.fill = GridBagConstraints.NONE;
 			add(createAddButton(), c);
 		}
-
 	}
 
 	private boolean enoughAlready(Set<Statement> statements, Integer maxOccurs) {
-		if (maxOccurs == null) {
-			return false;
-		}
-		return (statements.size() >= maxOccurs);
+		return (maxOccurs != null) && (statements.size() >= maxOccurs);
 	}
 
 	private JButton createChangeButton(final Statement statement) {
@@ -198,15 +191,14 @@ public class SemanticAnnotationPanel extends JPanel {
 		if (answer == OK_OPTION) {
 			RDFNode response = bestFactory.getNewTargetNode(statement,
 					inputComponent);
-			if (response != null) {
-				if (statement != null) {
-					semanticAnnotationContextualView.changeStatement(statement,
-							semanticAnnotationProfile.getPredicate(), response);
-				} else {
-					semanticAnnotationContextualView.addStatement(
-							semanticAnnotationProfile.getPredicate(), response);
-				}
-			}
+			if (response == null)
+				return;
+			if (statement != null)
+				semanticAnnotationContextualView.changeStatement(statement,
+						semanticAnnotationProfile.getPredicate(), response);
+			else
+				semanticAnnotationContextualView.addStatement(
+						semanticAnnotationProfile.getPredicate(), response);
 		}
 	}
 
@@ -241,8 +233,8 @@ public class SemanticAnnotationPanel extends JPanel {
 		inputLabel.setFont(baseFont.deriveFont(Font.BOLD));
 		messagePanel.add(inputLabel, BorderLayout.NORTH);
 
-		JTextArea messageText = new JTextArea(
-				"Enter a value for the annotation '" + displayName + "'");
+		JTextArea messageText = new JTextArea(format(
+				"Enter a value for the annotation '%s'", displayName));
 		messageText.setMargin(new Insets(5, 10, 10, 10));
 		messageText.setMinimumSize(new Dimension(0, 30));
 		messageText.setFont(baseFont.deriveFont(11f));

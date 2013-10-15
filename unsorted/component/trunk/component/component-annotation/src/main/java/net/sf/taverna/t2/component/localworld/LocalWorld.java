@@ -29,43 +29,41 @@ import com.hp.hpl.jena.rdf.model.Resource;
  */
 public class LocalWorld {
 	private static final String FILENAME = "localWorld.ttl";
-	private static Logger logger = Logger.getLogger(LocalWorld.class);
+	private static final Logger logger = Logger.getLogger(LocalWorld.class);
 	protected static final String ENCODING = "TURTLE";
 	private static LocalWorld instance = null;
 
 	private OntModel model;
 
 	public synchronized static LocalWorld getInstance() {
-		if (instance == null) {
+		if (instance == null)
 			instance = new LocalWorld();
-		}
 		return instance;
 	}
 
 	private LocalWorld() {
-		super();
 		File modelFile = new File(calculateComponentsDirectory(), FILENAME);
 		model = createOntologyModel();
-		if (modelFile.exists()) {
-			try {
-				String content = readFileToString(modelFile);
-				StringReader stringReader = new StringReader(content);
-				model.read(stringReader, null, ENCODING);
-			} catch (IOException e) {
-				logger.error(e);
-			}
+		try {
+			if (modelFile.exists())
+				model.read(new StringReader(readFileToString(modelFile)), null,
+						ENCODING);
+		} catch (IOException e) {
+			logger.error(e);
 		}
 	}
 
 	public File calculateComponentsDirectory() {
-		return (new File(ApplicationRuntime.getInstance()
-				.getApplicationHomeDir(), "components"));
+		return new File(ApplicationRuntime.getInstance()
+				.getApplicationHomeDir(), "components");
 	}
 
 	public Individual createIndividual(String urlString, OntClass rangeClass) {
-		Individual result = model.createIndividual(urlString, rangeClass);
-		saveModel();
-		return result;
+		try {
+			return model.createIndividual(urlString, rangeClass);
+		} finally {
+			saveModel();
+		}
 	}
 
 	private void saveModel() {
@@ -82,7 +80,10 @@ public class LocalWorld {
 	}
 
 	public void addModelFromString(String addedModel) {
-		populateModelFromString(model, addedModel);
-		saveModel();
+		try {
+			populateModelFromString(model, addedModel);
+		} finally {
+			saveModel();
+		}
 	}
 }

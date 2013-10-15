@@ -46,7 +46,6 @@ import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
@@ -56,100 +55,109 @@ import com.hp.hpl.jena.rdf.model.Statement;
  * @author Alan Williams
  */
 public class ObjectPropertyWithIndividualsPanelFactory extends PropertyPanelFactorySPI {
-	
+	/*
+	 * TODO Consider what sort of sharing model is appropriate for the local
+	 * world
+	 */
 	private static LocalWorld localWorld = LocalWorld.getInstance();
 
 	@Override
 	public int getRatingForSemanticAnnotation(
 			SemanticAnnotationProfile semanticAnnotationProfile) {
 		OntProperty property = semanticAnnotationProfile.getPredicate();
-		if (property.isObjectProperty()) {
-//			if (!semanticAnnotationProfile.getIndividuals().isEmpty()) {
+		if (property.isObjectProperty())
+//			if (!semanticAnnotationProfile.getIndividuals().isEmpty())
 				return 100;
-//			}
-		}
 		return Integer.MIN_VALUE;
 	}
 
-
 	@Override
-	public JComponent getInputComponent(SemanticAnnotationProfile semanticAnnotationProfile, Statement statement) {
+	public JComponent getInputComponent(
+			SemanticAnnotationProfile semanticAnnotationProfile,
+			Statement statement) {
 		return new ComboBoxWithAdd(semanticAnnotationProfile, statement);
 	}
-
 
 	@Override
 	public RDFNode getNewTargetNode(Statement originalStatement, JComponent component) {
 		ComboBoxWithAdd panel = (ComboBoxWithAdd) component;
 		RDFNode newNode = panel.getSelectedItem();
-		if ((originalStatement == null) ||
-				!originalStatement.getObject().equals(newNode)) {
-		return newNode;
-		}
+		if ((originalStatement == null)
+				|| !originalStatement.getObject().equals(newNode))
+			return newNode;
 		return null;
 	}
 	
 	private static class ComboBoxWithAdd extends JPanel {
-		
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = -9156213096428945270L;
 		OntClass rangeClass = null;
 		JComboBox resources;
-		public ComboBoxWithAdd(SemanticAnnotationProfile semanticAnnotationProfile, Statement statement) {
+
+		public ComboBoxWithAdd(
+				SemanticAnnotationProfile semanticAnnotationProfile,
+				Statement statement) {
 			super(new GridBagLayout());
-			
+
 			rangeClass = semanticAnnotationProfile.getRangeClass();
-			
+
 			GridBagConstraints gbc = new GridBagConstraints();
 			gbc.gridx = 0;
 			gbc.gridy = 0;
 			gbc.anchor = GridBagConstraints.NORTHWEST;
-			List<Individual> individuals = semanticAnnotationProfile.getIndividuals();
-			if (rangeClass != null) {
-				individuals.addAll(localWorld.getIndividualsOfClass(rangeClass));
-			}
-			
-			Resource origResource = null;
+			List<Individual> individuals = semanticAnnotationProfile
+					.getIndividuals();
+			if (rangeClass != null)
+				individuals
+						.addAll(localWorld.getIndividualsOfClass(rangeClass));
 
-			if (statement != null) {
-				origResource = (Resource) statement.getObject();
-			}
 			resources = new JComboBox(individuals.toArray());
 			resources.setRenderer(new NodeListCellRenderer());
 			resources.setEditable(false);
-			if (origResource != null) {
-				resources.setSelectedItem(origResource);
+			if (statement != null) {
+				Object origResource = statement.getObject();
+				if (origResource != null)
+					resources.setSelectedItem(origResource);
 			}
 			this.add(resources, gbc);
-			
+
 			gbc.gridy++;
 
 			JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-			buttonPanel.add(new DeselectingButton("Add external", new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					String answer = showInputDialog("Please enter the URL for the resource");
-					resources.addItem(localWorld.createIndividual(answer, rangeClass));
-				}}));
-			buttonPanel.add(new DeselectingButton("Add local", new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					TurtleInputPanel turtlePanel = new TurtleInputPanel(rangeClass);
-					int answer = showConfirmDialog(null, turtlePanel, "Turtle input", OK_CANCEL_OPTION, QUESTION_MESSAGE);
-					if (answer == OK_OPTION) {
-						OntModel addedModel = turtlePanel.getContentAsModel();
-						for (Individual i : addedModel.listIndividuals(rangeClass).toList()) {
-							resources.addItem(i);
+			buttonPanel.add(new DeselectingButton("Add external",
+					new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent arg0) {
+							addExternal();
 						}
-						localWorld.addModelFromString(turtlePanel.getContentAsString());
-					}
-				}}));
+					}));
+			buttonPanel.add(new DeselectingButton("Add local",
+					new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent arg0) {
+							addLocal();
+						}
+					}));
 			gbc.anchor = GridBagConstraints.EAST;
 			this.add(buttonPanel, gbc);
 		}
-		
+
+		private void addExternal() {
+			String answer = showInputDialog("Please enter the URL for the resource");
+			resources.addItem(localWorld.createIndividual(answer, rangeClass));
+		}
+
+		private void addLocal() {
+			TurtleInputPanel turtlePanel = new TurtleInputPanel(rangeClass);
+			if (showConfirmDialog(null, turtlePanel, "Turtle input",
+					OK_CANCEL_OPTION, QUESTION_MESSAGE) == OK_OPTION) {
+				OntModel addedModel = turtlePanel.getContentAsModel();
+				for (Individual i : addedModel.listIndividuals(rangeClass)
+						.toList())
+					resources.addItem(i);
+				localWorld.addModelFromString(turtlePanel.getContentAsString());
+			}
+		}
+
 		public RDFNode getSelectedItem() {
 			return (RDFNode) resources.getSelectedItem();
 		}
@@ -159,8 +167,8 @@ public class ObjectPropertyWithIndividualsPanelFactory extends PropertyPanelFact
 	public JComponent getDisplayComponent(
 			SemanticAnnotationProfile semanticAnnotationProfile,
 			Statement statement) {
-		JComponent result = getDefaultDisplayComponent(semanticAnnotationProfile, statement);
+		JComponent result = getDefaultDisplayComponent(
+				semanticAnnotationProfile, statement);
 		return result;
 	}
-
 }

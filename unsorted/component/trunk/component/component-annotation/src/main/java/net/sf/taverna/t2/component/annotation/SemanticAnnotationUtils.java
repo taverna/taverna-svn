@@ -20,6 +20,8 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.annotation;
 
+import static com.hp.hpl.jena.rdf.model.ModelFactory.createDefaultModel;
+
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Date;
@@ -41,7 +43,6 @@ import org.apache.log4j.Logger;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -63,14 +64,15 @@ public class SemanticAnnotationUtils {
 	public static String getObjectName(Statement statement) {
 		return getDisplayName(statement.getObject());
 	}
+
 	public static String getDisplayName(RDFNode node) {
-		if (node == null) {
+		if (node == null)
 			return "unknown";
-		} else if (node.isAnon()) {
+		else if (node.isAnon())
 			return "anon";
-		} else if (node.isLiteral()) {
+		else if (node.isLiteral())
 			return node.asLiteral().getLexicalForm();
-		} else if (node.isResource()) {
+		else if (node.isResource()) {
 			Resource resource = node.asResource();
 			if (resource instanceof OntResource) {
 				String label = ((OntResource) resource).getLabel(null);
@@ -83,17 +85,15 @@ public class SemanticAnnotationUtils {
 				return localName;
 			}
 			return resource.toString();
-
-		} else {
+		} else
 			return "unknown";
-		}
 	}
 
 	public static SemanticAnnotation findSemanticAnnotation(
 			Annotated<?> annotated) {
 		Date latestDate = null;
 		SemanticAnnotation annotation = null;
-		for (AnnotationChain chain : annotated.getAnnotations()) {
+		for (AnnotationChain chain : annotated.getAnnotations())
 			for (AnnotationAssertion<?> assertion : chain.getAssertions()) {
 				AnnotationBeanSPI detail = assertion.getDetail();
 				if (detail instanceof SemanticAnnotation) {
@@ -105,7 +105,6 @@ public class SemanticAnnotationUtils {
 					}
 				}
 			}
-		}
 		return annotation;
 	}
 
@@ -130,15 +129,13 @@ public class SemanticAnnotationUtils {
 	}
 
 	public static Model populateModel(Annotated<?> annotated) {
-		Model result = ModelFactory.createDefaultModel();
-		SemanticAnnotation annotation = SemanticAnnotationUtils
-				.findSemanticAnnotation(annotated);
+		Model result = createDefaultModel();
+		SemanticAnnotation annotation = findSemanticAnnotation(annotated);
 		try {
 			if (annotation != null) {
 				String content = annotation.getContent();
-				if (!content.isEmpty()) {
+				if (!content.isEmpty())
 					populateModelFromString(result, content);
-				}
 			}
 		} catch (Exception e) {
 			logger.error(e);
@@ -147,8 +144,7 @@ public class SemanticAnnotationUtils {
 	}
 
 	public static void populateModelFromString(Model result, String content) {
-		StringReader stringReader = new StringReader(content);
-		result.read(stringReader, BASE, ENCODING);
+		result.read(new StringReader(content), BASE, ENCODING);
 	}
 
 	public static Resource createBaseResource(Model model) {
@@ -158,35 +154,29 @@ public class SemanticAnnotationUtils {
 	public static Set<SemanticAnnotationProfile> checkComponent(
 			Dataflow dataflow, Profile componentProfile) {
 		Set<SemanticAnnotationProfile> problemProfiles = new HashSet<SemanticAnnotationProfile>();
-		Model model = SemanticAnnotationUtils.populateModel(dataflow);
+		Model model = populateModel(dataflow);
 		Set<Statement> statements = model.listStatements().toSet();
 		try {
 			for (SemanticAnnotationProfile semanticAnnotationProfile : componentProfile
 					.getSemanticAnnotationProfiles()) {
 				OntProperty predicate = semanticAnnotationProfile
 						.getPredicate();
-				if (predicate != null) {
-					int count = 0;
-					for (Statement statement : statements) {
-						if (statement.getPredicate().equals(predicate)) {
-							count++;
-						}
-					}
-					if (count < semanticAnnotationProfile.getMinOccurs()) {
+				if (predicate == null)
+					continue;
+				int count = 0;
+				for (Statement statement : statements)
+					if (statement.getPredicate().equals(predicate))
+						count++;
+				if (count < semanticAnnotationProfile.getMinOccurs())
+					problemProfiles.add(semanticAnnotationProfile);
+				if (semanticAnnotationProfile.getMaxOccurs() != null)
+					if (count > semanticAnnotationProfile.getMaxOccurs())
+						// The UI should prevent this, but check anyway
 						problemProfiles.add(semanticAnnotationProfile);
-					}
-					if (semanticAnnotationProfile.getMaxOccurs() != null) {
-						if (count > semanticAnnotationProfile.getMaxOccurs()) {
-							// The UI should prevent this, but check anyway
-							problemProfiles.add(semanticAnnotationProfile);
-						}
-					}
-				}
 			}
 		} catch (RegistryException e) {
 			logger.error(e);
 		}
 		return problemProfiles;
 	}
-
 }

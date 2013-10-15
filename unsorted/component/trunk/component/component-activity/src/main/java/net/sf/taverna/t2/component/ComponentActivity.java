@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.component;
 
+import static net.sf.taverna.t2.component.registry.ComponentDataflowCache.getDataflow;
+
 import java.util.Map;
 
 import net.sf.taverna.t2.activities.dataflow.DataflowActivity;
@@ -30,8 +32,10 @@ import org.apache.log4j.Logger;
 
 public class ComponentActivity extends
 		AbstractAsynchronousActivity<ComponentActivityConfigurationBean>
-		implements AsynchronousActivity<ComponentActivityConfigurationBean>, NestedDataflow {
-	private static final Logger logger = Logger.getLogger(ComponentActivity.class);
+		implements AsynchronousActivity<ComponentActivityConfigurationBean>,
+		NestedDataflow {
+	private static final Logger logger = Logger
+			.getLogger(ComponentActivity.class);
 	private static final EditManager em = EditManager.getInstance();
 	private static final Edits EDITS = em.getEdits();
 	private static final AnnotationTools aTools = new AnnotationTools();
@@ -46,21 +50,26 @@ public class ComponentActivity extends
 		this.configBean = configBean;
 
 		configurePorts(configBean.getPorts());
-		
+
 		skeletonDataflow = (DataflowImpl) EDITS.createDataflow();
 		skeletonDataflow.setLocalName(configBean.getComponentName());
 		for (ActivityInputPort aip : this.getInputPorts()) {
-			DataflowInputPort dip = EDITS.createDataflowInputPort(aip.getName(), aip.getDepth(), aip.getDepth(), skeletonDataflow);
+			DataflowInputPort dip = EDITS.createDataflowInputPort(
+					aip.getName(), aip.getDepth(), aip.getDepth(),
+					skeletonDataflow);
 			try {
-				EDITS.getAddDataflowInputPortEdit(skeletonDataflow, dip).doEdit();
+				EDITS.getAddDataflowInputPortEdit(skeletonDataflow, dip)
+						.doEdit();
 			} catch (EditException e) {
 				logger.error(e);
 			}
 		}
 		for (OutputPort aop : this.getOutputPorts()) {
-			DataflowOutputPort dop = EDITS.createDataflowOutputPort(aop.getName(), skeletonDataflow);
+			DataflowOutputPort dop = EDITS.createDataflowOutputPort(
+					aop.getName(), skeletonDataflow);
 			try {
-				EDITS.getAddDataflowOutputPortEdit(skeletonDataflow, dop).doEdit();
+				EDITS.getAddDataflowOutputPortEdit(skeletonDataflow, dop)
+						.doEdit();
 			} catch (EditException e) {
 				logger.error(e);
 			}
@@ -70,24 +79,29 @@ public class ComponentActivity extends
 	@Override
 	public void executeAsynch(final Map<String, T2Reference> inputs,
 			final AsynchronousActivityCallback callback) {
-//		try {
-//
-//		Field field = callback.getClass().getDeclaredField("this$0");
-//		field.setAccessible(true);
-//		AbstractDispatchLayer container = (AbstractDispatchLayer) field.get(callback);
-//
-//		Processor containingProcessor = container.getProcessor();
-//
-//		String description = aTools.getAnnotationString(containingProcessor, FreeTextDescription.class, null);
-//		} catch (Exception e) {
-//			logger.error(e);
-//		}
+		// try {
+		//
+		// Field field = callback.getClass().getDeclaredField("this$0");
+		// field.setAccessible(true);
+		// AbstractDispatchLayer container = (AbstractDispatchLayer)
+		// field.get(callback);
+		//
+		// Processor containingProcessor = container.getProcessor();
+		//
+		// String description = aTools.getAnnotationString(containingProcessor,
+		// FreeTextDescription.class, null);
+		// } catch (Exception e) {
+		// logger.error(e);
+		// }
 		try {
-			ExceptionHandling exceptionHandling = configBean.getExceptionHandling();
-//				InvocationContextImpl newContext = copyInvocationContext(callback);
+			ExceptionHandling exceptionHandling = configBean
+					.getExceptionHandling();
+			// InvocationContextImpl newContext =
+			// copyInvocationContext(callback);
 
-			AsynchronousActivityCallback useCallback = new ProxyCallback(callback, callback.getContext(), exceptionHandling);
-			getComponentRealization().executeAsynch (inputs, useCallback);
+			AsynchronousActivityCallback useCallback = new ProxyCallback(
+					callback, callback.getContext(), exceptionHandling);
+			getComponentRealization().executeAsynch(inputs, useCallback);
 		} catch (ActivityConfigurationException e) {
 			callback.fail("Unable to execute component", e);
 		}
@@ -99,9 +113,9 @@ public class ComponentActivity extends
 		InvocationContext originalContext = callback.getContext();
 		ReferenceService rs = originalContext.getReferenceService();
 		InvocationContextImpl newContext = new InvocationContextImpl(rs, null);
-//		for (Object o : originalContext.getEntities(Object.class)) {
-//			newContext.addEntity(o);
-//		}
+		// for (Object o : originalContext.getEntities(Object.class)) {
+		// newContext.addEntity(o);
+		// }
 		return newContext;
 	}
 
@@ -116,7 +130,7 @@ public class ComponentActivity extends
 			if (componentRealization.getConfiguration() == null) {
 				Dataflow d;
 				try {
-					d = ComponentDataflowCache.getDataflow(configBean);
+					d = getDataflow(configBean);
 				} catch (RegistryException e) {
 					throw new ActivityConfigurationException(
 							"Unable to read dataflow", e);

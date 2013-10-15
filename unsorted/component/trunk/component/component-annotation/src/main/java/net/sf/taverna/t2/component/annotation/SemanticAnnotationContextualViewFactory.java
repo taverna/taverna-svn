@@ -44,15 +44,13 @@ public class SemanticAnnotationContextualViewFactory implements
 	public boolean canHandle(Object selection) {
 		Object dataflowSource = fileManager.getDataflowSource(fileManager
 				.getCurrentDataflow());
-		if (dataflowSource instanceof ComponentVersionIdentification) {
-			return ((selection instanceof Annotated) && !(selection instanceof Activity || selection instanceof ActivityPort));
-		}
-		return false;
+		return (dataflowSource instanceof ComponentVersionIdentification)
+				&& (selection instanceof Annotated)
+				&& !(selection instanceof Activity || selection instanceof ActivityPort);
 	}
 
 	public List<ContextualView> getViews(Annotated<?> selection) {
-		return Arrays.asList(new ContextualView[] {
-				new SemanticAnnotationContextualView(selection),
-				new TurtleContextualView(selection) });
+		return Arrays.asList(new SemanticAnnotationContextualView(selection),
+				new TurtleContextualView(selection));
 	}
 }

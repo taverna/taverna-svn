@@ -49,45 +49,43 @@ public class ComponentActivityConfigurationBean extends
 		List<ActivityOutputPortDefinitionBean> outputs = result
 				.getOutputPortDefinitions();
 
-		for (DataflowInputPort dip : d.getInputPorts()) {
-			ActivityInputPortDefinitionBean activityInputPortDefinitionBean = new ActivityInputPortDefinitionBean();
-			activityInputPortDefinitionBean.setHandledReferenceSchemes(null);
-			activityInputPortDefinitionBean.setMimeTypes(null);
-			activityInputPortDefinitionBean
-					.setTranslatedElementType(String.class);
-			activityInputPortDefinitionBean.setAllowsLiteralValues(true);
-			activityInputPortDefinitionBean.setDepth(dip.getDepth());
-			activityInputPortDefinitionBean.setName(dip.getName());
-			inputs.add(activityInputPortDefinitionBean);
-		}
+		for (DataflowInputPort dip : d.getInputPorts())
+			inputs.add(makeInputDefinition(dip));
 
-		for (DataflowOutputPort dop : d.getOutputPorts()) {
+		for (DataflowOutputPort dop : d.getOutputPorts())
+			outputs.add(makeOutputDefinition(dop.getDepth(), dop.getName()));
 
-			ActivityOutputPortDefinitionBean activityOutputPortDefinitionBean = new ActivityOutputPortDefinitionBean();
-			activityOutputPortDefinitionBean
-					.setMimeTypes(new ArrayList<String>());
-			activityOutputPortDefinitionBean.setDepth(dop.getDepth());
-			activityOutputPortDefinitionBean.setGranularDepth(dop.getDepth());
-			activityOutputPortDefinitionBean.setName(dop.getName());
-			outputs.add(activityOutputPortDefinitionBean);
-
-		}
 		try {
 			eh = calculateFamily(getRegistryBase(), getFamilyName())
 					.getComponentProfile().getExceptionHandling();
-			if (eh != null) {
-				ActivityOutputPortDefinitionBean activityOutputPortDefinitionBean = new ActivityOutputPortDefinitionBean();
-				activityOutputPortDefinitionBean
-						.setMimeTypes(new ArrayList<String>());
-				activityOutputPortDefinitionBean.setDepth(1);
-				activityOutputPortDefinitionBean.setGranularDepth(1);
-				activityOutputPortDefinitionBean.setName(ERROR_CHANNEL);
-				outputs.add(activityOutputPortDefinitionBean);
-			}
+			if (eh != null)
+				outputs.add(makeOutputDefinition(1, ERROR_CHANNEL));
 		} catch (RegistryException e) {
 			logger.error(e);
 		}
 		return result;
+	}
+
+	private ActivityInputPortDefinitionBean makeInputDefinition(
+			DataflowInputPort dip) {
+		ActivityInputPortDefinitionBean activityInputPortDefinitionBean = new ActivityInputPortDefinitionBean();
+		activityInputPortDefinitionBean.setHandledReferenceSchemes(null);
+		activityInputPortDefinitionBean.setMimeTypes(null);
+		activityInputPortDefinitionBean.setTranslatedElementType(String.class);
+		activityInputPortDefinitionBean.setAllowsLiteralValues(true);
+		activityInputPortDefinitionBean.setDepth(dip.getDepth());
+		activityInputPortDefinitionBean.setName(dip.getName());
+		return activityInputPortDefinitionBean;
+	}
+
+	private ActivityOutputPortDefinitionBean makeOutputDefinition(int depth,
+			String name) {
+		ActivityOutputPortDefinitionBean activityOutputPortDefinitionBean = new ActivityOutputPortDefinitionBean();
+		activityOutputPortDefinitionBean.setMimeTypes(new ArrayList<String>());
+		activityOutputPortDefinitionBean.setDepth(depth);
+		activityOutputPortDefinitionBean.setGranularDepth(depth);
+		activityOutputPortDefinitionBean.setName(name);
+		return activityOutputPortDefinitionBean;
 	}
 
 	/**

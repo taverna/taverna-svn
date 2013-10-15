@@ -54,9 +54,8 @@ public class DatatypePropertyPanelFactory extends PropertyPanelFactorySPI {
 		JTextArea inputText = (JTextArea) component;
 		String newText = inputText.getText();
 		if ((originalStatement == null)
-				|| !getObjectName(originalStatement).equals(newText)) {
+				|| !getObjectName(originalStatement).equals(newText))
 			return createTypedLiteral(newText);
-		}
 		return null;
 	}
 
@@ -64,9 +63,8 @@ public class DatatypePropertyPanelFactory extends PropertyPanelFactorySPI {
 	public int getRatingForSemanticAnnotation(
 			SemanticAnnotationProfile semanticAnnotationProfile) {
 		OntProperty property = semanticAnnotationProfile.getPredicate();
-		if (property.isDatatypeProperty()) {
+		if (property.isDatatypeProperty())
 			return 100;
-		}
 		return MIN_VALUE;
 	}
 
@@ -76,5 +74,4 @@ public class DatatypePropertyPanelFactory extends PropertyPanelFactorySPI {
 			Statement statement) {
 		return getDefaultDisplayComponent(semanticAnnotationProfile, statement);
 	}
-
 }

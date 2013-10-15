@@ -29,13 +29,11 @@ import com.hp.hpl.jena.ontology.OntModel;
  */
 @SuppressWarnings("serial")
 public class TurtleInputPanel extends JPanel {
-
 	JTextArea turtleTextArea = new JTextArea(30, 80);
 	ReadOnlyTextArea errors = new ReadOnlyTextArea(1, 80);
 	private OntClass clazz;
 
 	public TurtleInputPanel(OntClass clazz) {
-		super();
 		this.clazz = clazz;
 
 		this.setLayout(new BorderLayout());
@@ -69,20 +67,18 @@ public class TurtleInputPanel extends JPanel {
 				errors.setText("No valid individuals");
 				return null;
 			}
-			for (Individual i : individuals) {
-				String individualUri = i.getURI();
-				if (individualUri.endsWith("changeme")) {
+			for (Individual i : individuals)
+				if (i.getURI().endsWith("changeme")) {
 					errors.setText("Name has not been changed");
 					return null;
 				}
-			}
+
 			errors.setText("No errors found");
 			return result;
 		} catch (Throwable ex) { // syntax error?
 			errors.setText(ex.getMessage());
 			return null;
 		}
-
 	}
 
 	public String getContentAsString() {

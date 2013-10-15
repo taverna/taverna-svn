@@ -21,6 +21,7 @@
 package net.sf.taverna.t2.component.annotation;
 
 import static com.hp.hpl.jena.rdf.model.ResourceFactory.createTypedLiteral;
+import static java.lang.Integer.MIN_VALUE;
 import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.getObjectName;
 
 import javax.swing.JComponent;
@@ -38,11 +39,6 @@ import com.hp.hpl.jena.rdf.model.Statement;
  * @author Alan Williams
  */
 public class AnnotationPropertyPanelFactory extends PropertyPanelFactorySPI {
-
-	public AnnotationPropertyPanelFactory() {
-		super();
-	}
-
 	@Override
 	public JComponent getInputComponent(
 			SemanticAnnotationProfile semanticAnnotationProfile,
@@ -53,12 +49,10 @@ public class AnnotationPropertyPanelFactory extends PropertyPanelFactorySPI {
 	@Override
 	public RDFNode getNewTargetNode(Statement originalStatement,
 			JComponent component) {
-		JTextArea inputText = (JTextArea) component;
-		String newText = inputText.getText();
+		String newText = ((JTextArea) component).getText();
 		if ((originalStatement == null)
-				|| !getObjectName(originalStatement).equals(newText)) {
+				|| !getObjectName(originalStatement).equals(newText))
 			return createTypedLiteral(newText);
-		}
 		return null;
 	}
 
@@ -66,10 +60,9 @@ public class AnnotationPropertyPanelFactory extends PropertyPanelFactorySPI {
 	public int getRatingForSemanticAnnotation(
 			SemanticAnnotationProfile semanticAnnotationProfile) {
 		OntProperty property = semanticAnnotationProfile.getPredicate();
-		if (property.isAnnotationProperty()) {
+		if (property.isAnnotationProperty())
 			return 100;
-		}
-		return Integer.MIN_VALUE;
+		return MIN_VALUE;
 	}
 
 	@Override
@@ -78,5 +71,4 @@ public class AnnotationPropertyPanelFactory extends PropertyPanelFactorySPI {
 			Statement statement) {
 		return getDefaultDisplayComponent(semanticAnnotationProfile, statement);
 	}
-
 }
