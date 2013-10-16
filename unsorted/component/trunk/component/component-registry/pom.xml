@@ -72,19 +72,16 @@
 			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>workflowmodel-impl</artifactId>
 			<version>1.4</version>
-			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-impl</groupId>
 			<artifactId>file-impl</artifactId>
 			<version>1.4</version>
-			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-impl</groupId>
 			<artifactId>edits-impl</artifactId>
 			<version>1.4</version>
-			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 </project>
