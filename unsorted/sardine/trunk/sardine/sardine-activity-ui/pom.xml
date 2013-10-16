@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>net.sf.taverna.t2.webdav</groupId>
 		<artifactId>sardine</artifactId>
-		<version>0.0.4-SNAPSHOT</version>
+		<version>0.1.0</version>
 	</parent>
 	<artifactId>sardine-activity-ui</artifactId>
 	<name>Sardine Taverna activity UI bindings</name>
