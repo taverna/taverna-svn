@@ -22,6 +22,7 @@ package net.sf.taverna.t2.component.registry.standard.myexpclient;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Integer.parseInt;
+import static java.lang.String.format;
 import static java.lang.System.getProperty;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_OK;
@@ -123,11 +124,16 @@ public class MyExperimentClient {
 			"yyyy-MM-dd HH:mm:ss Z");
 
 	// SETTINGS
-	private String BASE_URL; // myExperiment base URL to use
-	private java.io.File fIniFileDir; // a folder, where the INI file will be
-	// stored
-	private Properties iniSettings; // settings that are read/stored from/to INI
-	// file
+	/** myExperiment base URL to use */
+	private String BASE_URL;
+	/**
+	 * a folder, where the INI file will be / stored
+	 */
+	private java.io.File fIniFileDir;
+	/**
+	 * settings that are read/stored from/to INI file
+	 */
+	private Properties iniSettings;
 
 	// the logger
 	private Logger logger;
@@ -149,32 +155,40 @@ public class MyExperimentClient {
 		this.logger = logger;
 
 		// === Load INI settings ===
-		// but loading settings from INI file, determine what folder is to be
-		// used
-		// for INI file
+		/*
+		 * but loading settings from INI file, determine what folder is to be
+		 * used for INI file
+		 */
 		if (isRunningInTaverna()) {
-			// running inside Taverna - use its folder to place the config file
+			/* running inside Taverna - use its folder to place the config file */
 			fIniFileDir = new java.io.File(ApplicationRuntime.getInstance()
 					.getApplicationHomeDir(), "conf");
 		} else {
-			// running outside Taverna, place config file into the user's home
-			// directory
+			/*
+			 * running outside Taverna, place config file into the user's home
+			 * directory
+			 */
 			fIniFileDir = new java.io.File(getProperty("user.home"),
 					".Taverna2-myExperiment Plugin");
 		}
 
-		// load preferences if the INI file exists
+		/* load preferences if the INI file exists */
 		iniSettings = new Properties();
 		loadSettings();
 
-		// === Check if defaults should be applied to override not sensible
-		// settings
-		// from INI file ===
-		// verify that myExperiment BASE URL was read - use default otherwise
+		/*
+		 * === Check if defaults should be applied to override not sensible
+		 * settings from INI file ===
+		 * 
+		 * verify that myExperiment BASE URL was read - use default otherwise
+		 */
 		if (BASE_URL == null || BASE_URL.length() == 0)
 			BASE_URL = DEFAULT_BASE_URL;
-		iniSettings.put(INI_BASE_URL, BASE_URL); // store this to settings (if
-		// no changes were made - same as before, alternatively default URL)
+		/*
+		 * store this to settings (if no changes were made - same as before,
+		 * alternatively default URL)
+		 */
+		iniSettings.put(INI_BASE_URL, BASE_URL);
 
 		logger.info("Created myExperiment client");
 
@@ -207,12 +221,15 @@ public class MyExperimentClient {
 		return iniSettings;
 	}
 
+	private java.io.File getIniFile() {
+		return new java.io.File(fIniFileDir, INI_FILE_NAME);
+	}
+
 	// loads all plugin settings from the INI file
 	public synchronized void loadSettings() {
 		try {
 			// === READ SETTINGS ===
-			FileInputStream fIniInputStream = new FileInputStream(
-					new java.io.File(fIniFileDir, INI_FILE_NAME));
+			FileInputStream fIniInputStream = new FileInputStream(getIniFile());
 			iniSettings.load(fIniInputStream);
 			fIniInputStream.close();
 
@@ -222,25 +239,24 @@ public class MyExperimentClient {
 		} catch (FileNotFoundException e) {
 			logger.debug("myExperiment plugin INI file was not found, defaults will be used.");
 		} catch (IOException e) {
-			logger.error("Error on reading settings from INI file:\n" + e);
+			logger.error("failed to read settings from INI file: "
+					+ getIniFile(), e);
 		}
 	}
 
 	// writes all plugin settings to the INI file
 	private void storeSettings() {
-
 		// === STORE THE SETTINGS ===
 		try {
 			fIniFileDir.mkdirs();
 			FileOutputStream fIniOutputStream = new FileOutputStream(
-					new java.io.File(fIniFileDir, INI_FILE_NAME));
+					getIniFile());
 			iniSettings.store(fIniOutputStream, "Test comment");
 			fIniOutputStream.close();
 		} catch (IOException e) {
-			logger.error("Error while trying to store settings to INI file:\n"
-					+ e);
+			logger.error(
+					"failed to store settings to INI file " + getIniFile(), e);
 		}
-
 	}
 
 	public void storeHistoryAndSettings() {
@@ -277,8 +293,9 @@ public class MyExperimentClient {
 
 			response = doMyExperimentGET(BASE_URL + "/whoami.xml");
 		} catch (Exception e) {
-			logger.error("Error while attempting to verify login credentials from INI file:\n"
-					+ e);
+			logger.error(
+					"failed when verifying login credentials from INI file: "
+							+ getIniFile(), e);
 		}
 
 		if (response.getResponseCode() == HTTP_UNAUTHORIZED) {
@@ -302,10 +319,12 @@ public class MyExperimentClient {
 
 		// verify outcomes
 		if (doc == null) {
-			// login credentials were invalid - revert to not logged in state
-			// and disable autologin function; stored credentials will be kept
-			// to allow the user to verify and edit them (login screen will be
-			// displayed as usual + an error message box will appear)
+			/*
+			 * login credentials were invalid - revert to not logged in state
+			 * and disable autologin function; stored credentials will be kept
+			 * to allow the user to verify and edit them (login screen will be
+			 * displayed as usual + an error message box will appear)
+			 */
 
 			LOGGED_IN = false;
 			AUTH_STRING = "";
@@ -321,19 +340,24 @@ public class MyExperimentClient {
 			logger.debug("Logged in to myExperiment successfully with credentials that were loaded from INI file.");
 			return true;
 		} catch (Exception e) {
-			// this is highly unlikely because the login credentials were
-			// validated successfully just before this
-			logger.error("Couldn't fetch user data from myExperiment ("
-					+ strCurrentUserURI + ")", e);
+			/*
+			 * this is highly unlikely because the login credentials were
+			 * validated successfully just before this
+			 */
+			logger.error(
+					format("failed fetching user data from myExperiment (%s)",
+							strCurrentUserURI), e);
 			return false;
 		}
 	}
 
-	// Simulates a "logout" action. Logging in and out in the plugin is only an
-	// abstraction created for user convenience; it is a purely virtual concept,
-	// because the myExperiment API is completely stateless - hence, logging out
-	// simply consists of "forgetting" the authentication details and updating
-	// the state.
+	/**
+	 * Simulates a "logout" action. Logging in and out in the plugin is only an
+	 * abstraction created for user convenience; it is a purely virtual concept,
+	 * because the myExperiment API is completely stateless - hence, logging out
+	 * simply consists of "forgetting" the authentication details and updating
+	 * the state.
+	 */
 	public void doLogout() throws Exception {
 		LOGGED_IN = false;
 		AUTH_STRING = "";
@@ -351,8 +375,10 @@ public class MyExperimentClient {
 	 * @throws Exception
 	 */
 	public ServerResponse doMyExperimentGET(String strURL) throws Exception {
-		// open server connection using provided URL (with no modifications to
-		// it)
+		/*
+		 * open server connection using provided URL (with no modifications to
+		 * it)
+		 */
 		URL url = new URL(strURL);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setRequestProperty("User-Agent", PLUGIN_USER_AGENT);
@@ -387,8 +413,10 @@ public class MyExperimentClient {
 		if (!LOGGED_IN)
 			return null;
 
-		// open server connection using provided URL (with no modifications to
-		// it)
+		/*
+		 * open server connection using provided URL (with no modifications to
+		 * it)
+		 */
 		URL url = new URL(strURL);
 		HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
 
@@ -398,8 +426,10 @@ public class MyExperimentClient {
 		urlConn.setRequestProperty("Content-Type", "application/xml");
 		urlConn.setRequestProperty("User-Agent", PLUGIN_USER_AGENT);
 		urlConn.setRequestProperty("Authorization", "Basic " + AUTH_STRING);
-		// the last line wouldn't be executed if the user wasn't logged in (see
-		// above code), so safe to run
+		/*
+		 * the last line wouldn't be executed if the user wasn't logged in (see
+		 * above code), so safe to run
+		 */
 
 		// prepare and PUT/POST XML data
 		String strPOSTContent = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
@@ -426,8 +456,10 @@ public class MyExperimentClient {
 	 * @throws Exception
 	 */
 	public ServerResponse doMyExperimentDELETE(String strURL) throws Exception {
-		// open server connection using provided URL (with no modifications to
-		// it)
+		/*
+		 * open server connection using provided URL (with no modifications to
+		 * it)
+		 */
 		URL url = new URL(strURL);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -475,17 +507,21 @@ public class MyExperimentClient {
 
 		switch (iResponseCode) {
 		case HTTP_OK:
-			// data retrieval was successful - parse the response XML and return
-			// it along with response code
+			/*
+			 * data retrieval was successful - parse the response XML and return
+			 * it along with response code
+			 */
 			Document doc = getDocumentFromStream(conn.getInputStream());
 			return new ServerResponse(iResponseCode, doc);
 
 		case HTTP_BAD_REQUEST:
-			// this was a bad XML request - need full XML response to retrieve
-			// the error message from it; Java throws IOException if
-			// getInputStream() is used when non HTTP_OK response code was
-			// received - hence can use getErrorStream() straight away to fetch
-			// the error document
+			/*
+			 * this was a bad XML request - need full XML response to retrieve
+			 * the error message from it; Java throws IOException if
+			 * getInputStream() is used when non HTTP_OK response code was
+			 * received - hence can use getErrorStream() straight away to fetch
+			 * the error document
+			 */
 			Document edoc = getDocumentFromStream(conn.getErrorStream());
 			return new ServerResponse(iResponseCode, edoc);
 
@@ -495,25 +531,25 @@ public class MyExperimentClient {
 
 		default:
 			// unexpected response code - raise an exception
-			throw new IOException(
-					"Received unexpected HTTP response code ("
-							+ conn.getResponseCode()
-							+ ") while "
-							+ (bIsGETRequest ? "fetching data at "
-									: "posting data to ") + strURL);
+			throw new IOException(format(
+					"Received unexpected HTTP response code (%d) while %s %s",
+					conn.getResponseCode(), (bIsGETRequest ? "fetching data at"
+							: "posting data to"), strURL));
 		}
 	}
 
-	// a method to fetch a user instance with full details (including avatar
-	// image)
+	/**
+	 * a method to fetch a user instance with full details (including avatar
+	 * image)
+	 */
 	public User fetchCurrentUser(String uri) {
 		// fetch user data
 		try {
 			return buildFromXML(getResource(USER, uri, REQUEST_FULL_PREVIEW),
 					logger);
 		} catch (Exception ex) {
-			logger.error("Failed to fetch user data from myExperiment (" + uri
-					+ "); exception:\n" + ex);
+			logger.error("problem fetching user data from myExperiment (" + uri
+					+ ")", ex);
 			return null;
 		}
 	}
@@ -534,12 +570,16 @@ public class MyExperimentClient {
 	public Document getResource(int resourceType, String uri, int requestType)
 			throws Exception {
 		if (requestType == REQUEST_ALL_DATA) {
-			// it doesn't matter what kind of resource this is if all available
-			// data is requested anyway
+			/*
+			 * it doesn't matter what kind of resource this is if all available
+			 * data is requested anyway
+			 */
 			uri += "&all_elements=yes";
 		} else {
-			// only required metadata is to be fetched; this depends on the type
-			// of the resource
+			/*
+			 * only required metadata is to be fetched; this depends on the type
+			 * of the resource
+			 */
 			switch (resourceType) {
 			case WORKFLOW:
 				uri += "&elements="
@@ -564,17 +604,21 @@ public class MyExperimentClient {
 				uri += "&elements=" + Group.getRequiredAPIElements(requestType);
 				break;
 			case TAG:
-				// this should set no elements, because default is desired at
-				// the moment - but even having "&elements=" with and empty
-				// string at the end will still retrieve default fields from the
-				// API
+				/*
+				 * this should set no elements, because default is desired at
+				 * the moment - but even having "&elements=" with and empty
+				 * string at the end will still retrieve default fields from the
+				 * API
+				 */
 				uri += "&elements=" + Tag.getRequiredAPIElements(requestType);
 				break;
 			case COMMENT:
-				// this should set no elements, because default is desired at
-				// the moment - but even having "&elements=" with and empty
-				// string at the end will still retrieve default fields from the
-				// API
+				/*
+				 * this should set no elements, because default is desired at
+				 * the moment - but even having "&elements=" with and empty
+				 * string at the end will still retrieve default fields from the
+				 * API
+				 */
 				uri += "&elements="
 						+ Comment.getRequiredAPIElements(requestType);
 				break;
@@ -593,7 +637,7 @@ public class MyExperimentClient {
 	 */
 	public Workflow fetchWorkflowBinary(String strWorkflowURI) throws Exception {
 		// fetch workflows data
-		Document doc = this.getResource(WORKFLOW, strWorkflowURI,
+		Document doc = getResource(WORKFLOW, strWorkflowURI,
 				REQUEST_WORKFLOW_CONTENT_ONLY);
 
 		// verify that the type of the workflow data is correct
@@ -602,28 +646,26 @@ public class MyExperimentClient {
 		w.setVisibleType(getChildText(root, "type"));
 		w.setContentType(getChildText(root, "content-type"));
 
-		if (!w.isTavernaWorkflow()) {
+		if (!w.isTavernaWorkflow())
 			throw new Exception(
 					"Unsupported workflow type. Details:\nWorkflow type: "
 							+ w.getVisibleType() + "\nMime type: "
 							+ w.getContentType());
-		}
 
 		// check that content encoding is correct
 		String strEncoding = getChild(root, "content").getAttribute("encoding");
 		String strDataFormat = getChild(root, "content").getAttribute("type");
 		if (!strEncoding.toLowerCase().equals("base64")
-				|| !strDataFormat.toLowerCase().equals("binary")) {
+				|| !strDataFormat.toLowerCase().equals("binary"))
 			throw new Exception(
 					"Unsupported workflow data format. Details:\nContent encoding: "
 							+ strEncoding + "\nFormat: " + strDataFormat);
-		}
 
 		// all checks seem to be fine, decode workflow data
 		byte[] arrWorkflowData = Base64.decode(getChildText(root, "content"));
 		w.setContent(arrWorkflowData);
 
-		return (w);
+		return w;
 	}
 
 	public List<Workflow> getExampleWorkflows() {
@@ -655,7 +697,7 @@ public class MyExperimentClient {
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Failed to retrieve example workflows", e);
+			logger.error("problem retrieving example workflows", e);
 		}
 
 		logger.debug(workflows.size()
@@ -690,25 +732,30 @@ public class MyExperimentClient {
 					tcCloud.getTags().add(t);
 				}
 			}
+			logger.debug(format(
+					"Tag cloud retrieval successful; fetched %d tags from myExperiment",
+					tcCloud.getTags().size()));
 		} catch (Exception e) {
-			this.logger.error("ERROR: Failed to get tag cloud.\n", e);
+			logger.error("problem getting tag cloud", e);
 		}
 
-		logger.debug("Tag cloud retrieval successful; fetched "
-				+ tcCloud.getTags().size() + " tags from myExperiment");
-		return (tcCloud);
+		return tcCloud;
 	}
 
 	public TagCloud getUserTagCloud(User user, int size) {
 		TagCloud tcCloud = new TagCloud();
 
-		// iterate through all tags that the user has applied;
-		// fetch the title and the number of times that this tag
-		// was applied across myExperiment (e.g. overall popularity)
+		/*
+		 * iterate through all tags that the user has applied; fetch the title
+		 * and the number of times that this tag was applied across myExperiment
+		 * (e.g. overall popularity)
+		 */
 		try {
-			// update user tags first (this happens concurrently with the other
-			// threads during the load time, hence needs to be synchronised
-			// properly)
+			/*
+			 * update user tags first (this happens concurrently with the other
+			 * threads during the load time, hence needs to be synchronised
+			 * properly)
+			 */
 			synchronized (user.getTags()) {
 				user.getTags().clear();
 				Document doc = getResource(USER, user.getURI(),
@@ -720,9 +767,11 @@ public class MyExperimentClient {
 
 			// fetch additional required data about the tags
 			for (Map<String, String> tagResources : user.getTags()) {
-				// get the tag object uri in myExperiment API and fetch tag data
-				// from myExperiment (namely, number of times that this tag was
-				// applied)
+				/*
+				 * get the tag object uri in myExperiment API and fetch tag data
+				 * from myExperiment (namely, number of times that this tag was
+				 * applied)
+				 */
 				Element root = doMyExperimentGET(tagResources.get("uri"))
 						.getResponseBody().getDocumentElement();
 
@@ -734,9 +783,11 @@ public class MyExperimentClient {
 				tcCloud.add(t);
 			}
 
-			// a little preprocessing before tag selection - if "size" is set to
-			// 0, -1 or any negative number, assume the request is for ALL user
-			// tags
+			/*
+			 * a little preprocessing before tag selection - if "size" is set to
+			 * 0, -1 or any negative number, assume the request is for ALL user
+			 * tags
+			 */
 			if (size <= 0)
 				size = tcCloud.getTags().size();
 
@@ -752,14 +803,17 @@ public class MyExperimentClient {
 				tagListOfRequiredSize.add(tag);
 			}
 
-			// purge the original tag collection; add only selected tags to it;
-			// then sort back in alphabetical order again
+			/*
+			 * purge the original tag collection; add only selected tags to it;
+			 * then sort back in alphabetical order again
+			 */
 			tcCloud.clear();
 			tcCloud.addAll(tagListOfRequiredSize);
 			tcCloud.sort(new Tag.AlphanumericComparator());
 		} catch (Exception e) {
-			logger.error("Failed midway through fetching user tags for user ID = "
-					+ user.getID() + "\n" + e);
+			logger.error(
+					format("problem fetching user tags for user ID = %d",
+							user.getID()), e);
 		}
 
 		return tcCloud;
@@ -812,7 +866,7 @@ public class MyExperimentClient {
 			strURL += urlEncodeQuery(user.getResource()) + strElements;
 			doc = this.doMyExperimentGET(strURL).getResponseBody();
 		} catch (Exception e) {
-			logger.error("ERROR: Failed to fetch user's contributions.");
+			logger.error("problem fetching user's contributions", e);
 		}
 
 		return doc;
@@ -835,7 +889,7 @@ public class MyExperimentClient {
 				t.setCount(parseInt(getChildText(rootElement, "count")));
 			}
 		} catch (Exception e) {
-			logger.error("Failed while getting tag application counts "
+			logger.error("problem getting tag application counts "
 					+ "when turning tag list into tag cloud data", e);
 		}
 	}
@@ -889,7 +943,7 @@ public class MyExperimentClient {
 					c.setCreatedAt(createdAt);
 			}
 		} catch (Exception e) {
-			logger.error("Failed while updating comment list for preview", e);
+			logger.error("problem updating comment list for preview", e);
 		}
 	}
 
@@ -905,19 +959,22 @@ public class MyExperimentClient {
 				// XML response should contain the new comment that was posted
 				Comment cNew = new Comment(response.getResponseBody(), logger);
 
-				// this resource should be commentable on as the comment was
-				// posted
+				/*
+				 * this resource should be commentable on as the comment was
+				 * posted
+				 */
 				resource.getComments().add(cNew);
 			}
 
-			// will return the whole response object so that the application
-			// could
-			// decide
-			// on the next steps
+			/*
+			 * will return the whole response object so that the application
+			 * could decide on the next steps
+			 */
 			return response;
 		} catch (Exception e) {
-			logger.error("Failed while trying to post a comment for "
-					+ resource.getURI() + "\n" + e);
+			logger.error(
+					"problem trying to post a comment for " + resource.getURI(),
+					e);
 			return new ServerResponse(LOCAL_FAILURE, null);
 		}
 	}
@@ -929,21 +986,19 @@ public class MyExperimentClient {
 			return doMyExperimentPOST(BASE_URL + "/favourite.xml", strData);
 			// return full server response
 		} catch (Exception e) {
-			logger.error(
-					"Failed while trying to add an item (" + resource.getURI()
-							+ ") to favourites4", e);
+			logger.error("problem trying to add an item (" + resource.getURI()
+					+ ") to favourites", e);
 			return new ServerResponse(LOCAL_FAILURE, null);
 		}
 	}
 
 	public ServerResponse deleteFavourite(Resource resource) {
 		try {
-			// deleting a favourite is a two-step process - first need to
-			// retrieve the
-			// the
-			// actual "favourite" object by current user's URL and favourited
-			// item's
-			// URL
+			/*
+			 * deleting a favourite is a two-step process - first need to
+			 * retrieve the the actual "favourite" object by current user's URL
+			 * and favourited item's URL
+			 */
 			String strGetFavouriteObjectURL = BASE_URL
 					+ "/favourites.xml?user="
 					+ urlEncodeQuery(getCurrentUser().getResource())
@@ -959,8 +1014,9 @@ public class MyExperimentClient {
 			return doMyExperimentDELETE(strFavouriteURI);
 			// return full server response
 		} catch (Exception e) {
-			logger.error("Failed while trying to remove an item ("
-					+ resource.getURI() + ") from favourites\n" + e);
+			logger.error(
+					"problem trying to remove an item (" + resource.getURI()
+							+ ") from favourites", e);
 			return new ServerResponse(LOCAL_FAILURE, null);
 		}
 	}

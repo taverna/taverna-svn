@@ -4,10 +4,11 @@
 	<parent>
 		<groupId>net.sf.taverna.t2.component</groupId>
 		<artifactId>component</artifactId>
-		<version>1.0.8</version>
+		<version>1.1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>component-registry</artifactId>
 	<name>Component Registry</name>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -24,65 +25,66 @@
 			</plugin>
 		</plugins>
 	</build>
-	<dependencies>
-	                 <dependency>
-                        <groupId>org.jdom</groupId>
-                        <artifactId>jdom</artifactId>
-			<version>1.1</version>
-                </dependency>
-  
-<!-- 		<dependency> -->
-<!-- 			<groupId>net.sf.taverna.t2.ui-exts</groupId> -->
-<!-- 			<artifactId>perspective-myexperiment</artifactId> -->
-<!-- 			<version>1.4.1</version> -->
-<!-- 		</dependency> -->
 
+	<dependencies>
+		<dependency>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom</artifactId>
+			<version>1.1</version>
+		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>net.sf.taverna.t2.ui-exts</groupId> -->
+		<!-- <artifactId>perspective-myexperiment</artifactId> -->
+		<!-- <version>1.4.1</version> -->
+		<!-- </dependency> -->
 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-core</artifactId>
 			<version>2.7.4</version>
 		</dependency>
-		                        <dependency>
-                                <groupId>commons-io</groupId>
-                                <artifactId>commons-io</artifactId>
-                                <version>1.4</version>
-                        </dependency>
-		
-
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.4</version>
+		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
 			<artifactId>workflowmodel-api</artifactId>
 			<version>1.4</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.core</groupId>
-			<artifactId>workflowmodel-impl</artifactId>
+			<groupId>net.sf.taverna.t2.ui-api</groupId>
+			<artifactId>file-api</artifactId>
 			<version>1.4</version>
 		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2.ui-api</groupId>
-        	<artifactId>file-api</artifactId>
-			<version>1.4</version>
-		</dependency>		
-		<dependency>
-			<groupId>net.sf.taverna.t2.ui-impl</groupId>
-        	<artifactId>file-impl</artifactId>
-			<version>1.4</version>
-		</dependency>		
-                <dependency>
-                        <groupId>net.sf.taverna.t2.ui-impl</groupId>
-                        <artifactId>edits-impl</artifactId>
-                        <version>1.4</version>
-                </dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.security</groupId>
 			<artifactId>credential-manager</artifactId>
 			<version>1.4</version>
 		</dependency>
-<dependency>
-	<groupId>commons-httpclient</groupId>
-	<artifactId>commons-httpclient</artifactId>
-	<version>3.1</version>
-</dependency>		
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>workflowmodel-impl</artifactId>
+			<version>1.4</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-impl</groupId>
+			<artifactId>file-impl</artifactId>
+			<version>1.4</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-impl</groupId>
+			<artifactId>edits-impl</artifactId>
+			<version>1.4</version>
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
 </project>
