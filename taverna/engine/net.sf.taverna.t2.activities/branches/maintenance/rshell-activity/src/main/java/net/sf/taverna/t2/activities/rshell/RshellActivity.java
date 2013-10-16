@@ -206,7 +206,7 @@ AbstractAsynchronousActivity<RshellActivityConfigurationBean> {
 					}
 
 					try {
-						String script = configurationBean.getScript();
+						String script = "\n" + configurationBean.getScript() + "\n";
 
 						// pass input form input ports to RServe
 						for (ActivityInputPort inputPort : getInputPorts()) {
