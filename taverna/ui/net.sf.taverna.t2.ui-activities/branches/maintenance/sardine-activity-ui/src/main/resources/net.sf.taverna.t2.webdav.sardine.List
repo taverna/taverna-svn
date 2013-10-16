@@ -1,0 +1,86 @@
+<activity  xmlns="http://taverna.sf.net/2008/xml/t2flow"><class>net.sf.taverna.t2.activities.localworker.LocalworkerActivity</class><inputMap/><outputMap/><configBean encoding="xstream"><net.sf.taverna.t2.activities.localworker.LocalworkerActivityConfigurationBean xmlns="">
+  <inputs>
+    <net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean>
+      <name>baseUrl</name>
+      <depth>0</depth>
+      <mimeTypes>
+        <string>text/plain</string>
+      </mimeTypes>
+      <handledReferenceSchemes />
+      <translatedElementType>java.lang.String</translatedElementType>
+      <allowsLiteralValues>true</allowsLiteralValues>
+    </net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean>
+    <net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean>
+      <name>path</name>
+      <depth>0</depth>
+      <mimeTypes>
+        <string>text/plain</string>
+      </mimeTypes>
+      <handledReferenceSchemes />
+      <translatedElementType>java.lang.String</translatedElementType>
+      <allowsLiteralValues>true</allowsLiteralValues>
+    </net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean>
+    <net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean>
+      <name>depth</name>
+      <depth>0</depth>
+      <mimeTypes>
+        <string>text/plain</string>
+      </mimeTypes>
+      <handledReferenceSchemes />
+      <translatedElementType>java.lang.String</translatedElementType>
+      <allowsLiteralValues>true</allowsLiteralValues>
+    </net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean>
+  </inputs>
+  <outputs>
+    <net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean>
+      <name>resources</name>
+      <depth>1</depth>
+      <mimeTypes />
+      <granularDepth>1</granularDepth>
+    </net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean>
+    <net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean>
+      <name>status</name>
+      <depth>0</depth>
+      <mimeTypes />
+      <granularDepth>0</granularDepth>
+    </net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean>
+  </outputs>
+  <script>import com.github.sardine.*;
+
+String url = baseUrl;
+if (!url.endsWith("/")) {
+	url += "/";
+}
+
+if ((path != void) &amp;&amp; (path != null) &amp;&amp; !path.isEmpty()) {
+	url += path;
+}
+
+Sardine sardine = SardineFactory.begin();
+List webDavResources;
+
+String status = "OK";
+List resources = new ArrayList();
+
+try {
+	if ((depth != void) &amp;&amp; (depth != null)) {
+		int intDepth = Integer.parseInt(depth);
+		webDavResources = sardine.list(url, intDepth);
+	} else {
+		webDavResources = sardine.list(url);	
+	}
+	for (DavResource res : webDavResources)
+	{
+     		resources.add(res.toString());
+	}
+}  catch (IOException e) {
+	status = e.toString();
+}
+
+</script>
+  <dependencies>
+    <string>org.apache.httpcomponents:httpcore:4.2.3</string>
+    <string>org.apache.httpcomponents:httpclient:4.2.3</string>
+    <string>com.github.lookfirst:sardine:5.0_1_6</string>
+  </dependencies>
+</net.sf.taverna.t2.activities.localworker.LocalworkerActivityConfigurationBean></configBean><annotations /></activity>
