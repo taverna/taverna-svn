@@ -33,7 +33,7 @@
 		<module>stringconstant-activity-ui</module>
 		<module>unrecognized-activity-ui</module>
 		<module>wsdl-activity-ui</module>
-		<!-- <module>xpath-activity-ui</module> -->
+		<module>xpath-activity-ui</module>
 	</modules>
 	<repositories>
 		<repository>
