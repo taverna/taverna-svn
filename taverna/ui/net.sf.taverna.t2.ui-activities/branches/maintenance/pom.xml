@@ -30,6 +30,7 @@
 		<module>localworker-activity-ui</module>
 		<module>rest-activity-ui</module>
 		<module>rshell-activity-ui</module>
+		<module>sardine-activity-ui</module>
 		<module>soaplab-activity-ui</module>
 		<module>spreadsheet-import-activity-ui</module>
 		<module>stringconstant-activity-ui</module>

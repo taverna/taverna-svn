@@ -61,6 +61,11 @@
 			<artifactId>rshell-activity-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.ui-activities</groupId>
+			<artifactId>sardine-activity-ui</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 <!-- 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-activities</groupId>
 			<artifactId>soaplab-activity-ui</artifactId>
