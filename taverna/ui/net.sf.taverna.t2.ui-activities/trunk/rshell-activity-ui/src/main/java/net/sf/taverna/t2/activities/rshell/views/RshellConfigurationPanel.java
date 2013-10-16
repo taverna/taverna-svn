@@ -71,6 +71,9 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 	private ValidatingTextGroup inputTextGroup, outputTextGroup;
 	private CredentialManagerUI credManagerUI;
 	private CredentialManager credentialManager;
+	private JTextField hostnameField;
+	private JTextField portField;
+	private JCheckBox keepSessionAliveCheckBox;
 
 	public RshellConfigurationPanel(Activity activity, CredentialManager credentialManager) {
 		super(activity);
@@ -107,6 +110,17 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 	public void noteConfiguration() {
 		setProperty("script", scriptConfigurationComponent.getScript());
 		ObjectNode json = getJson();
+
+		ObjectNode connection = json.objectNode();
+		connection.put("hostname", hostnameField.getText());
+		try {
+			connection.put("port", Integer.parseInt(portField.getText()));
+		} catch (NumberFormatException e) {
+			connection.put("port", json.get("connection").get("port").asInt());
+		}
+		connection.put("keepSessionAlive", keepSessionAliveCheckBox.isSelected());
+		json.put("connection", connection);
+
 		List<ActivityPortConfiguration> inputPorts = getInputPorts();
 		if (inputPorts.isEmpty()) {
 			json.remove("inputTypes");
@@ -121,6 +135,7 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 			}
 			json.put("inputTypes", DataTypes);
 		}
+
 		List<ActivityPortConfiguration> outputPorts = getOutputPorts();
 		if (outputPorts.isEmpty()) {
 			json.remove("outputTypes");
@@ -209,7 +224,7 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 
 		Dimension dimension = new Dimension(0, 0);
 
-		final JTextField hostnameField = new JTextField();
+		hostnameField = new JTextField();
 		JLabel hostnameLabel = new JLabel("Hostname");
 		hostnameField.setSize(dimension);
 		hostnameLabel.setSize(dimension);
@@ -218,7 +233,7 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 
 		hostnameField.setText(connectionSettings.get("hostname").textValue());
 
-		final JTextField portField = new JTextField();
+		portField = new JTextField();
 		JLabel portLabel = new JLabel("Port");
 		portField.setSize(dimension);
 		portLabel.setSize(dimension);
@@ -238,7 +253,7 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 		setHttpUsernamePasswordButton.setSize(dimension);
 		setHttpUsernamePasswordButton.addActionListener(usernamePasswordListener);
 
-		JCheckBox keepSessionAliveCheckBox = new JCheckBox("Keep Session Alive");
+		keepSessionAliveCheckBox = new JCheckBox("Keep Session Alive");
 		keepSessionAliveCheckBox.setSelected(connectionSettings
 					.get("keepSessionAlive").booleanValue());
 
