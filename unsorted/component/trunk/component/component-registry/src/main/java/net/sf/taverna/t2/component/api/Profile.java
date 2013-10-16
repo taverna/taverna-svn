@@ -1,7 +1,7 @@
 package net.sf.taverna.t2.component.api;
 
 import java.util.List;
-import java.util.SortedMap;
+import java.util.Map;
 
 import net.sf.taverna.t2.component.profile.ActivityProfile;
 import net.sf.taverna.t2.component.profile.ExceptionHandling;
@@ -20,11 +20,9 @@ public interface Profile extends NamedItem {
 
 	String getId();
 
-	Profile getExtends() throws RegistryException;
-
 	String getOntologyLocation(String ontologyId);
 
-	SortedMap<String, String> getPrefixMap() throws RegistryException;
+	Map<String, String> getPrefixMap() throws RegistryException;
 
 	OntModel getOntology(String ontologyId);
 

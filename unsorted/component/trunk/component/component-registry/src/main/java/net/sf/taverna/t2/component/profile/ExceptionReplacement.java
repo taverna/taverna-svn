@@ -7,22 +7,21 @@ import uk.org.taverna.ns._2012.component.profile.Replacement;
 
 /**
  * @author alanrw
- *
+ * 
  */
 public class ExceptionReplacement {
-
-	private Replacement proxied;
+	private final String id, message;
 
 	public ExceptionReplacement(Replacement replacement) {
-		this.proxied = replacement;
-	}
-	
-	public String getReplacementId() {
-		return proxied.getReplacementId();
-	}
-	
-	public String getReplacementMessage() {
-		return proxied.getReplacementMessage();
+		id = replacement.getReplacementId();
+		message = replacement.getReplacementMessage();
 	}
 
+	public String getReplacementId() {
+		return id;
+	}
+
+	public String getReplacementMessage() {
+		return message;
+	}
 }

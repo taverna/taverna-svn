@@ -43,7 +43,6 @@ import net.sf.taverna.t2.component.api.Version;
  */
 public abstract class ComponentRegistry implements
 		net.sf.taverna.t2.component.api.Registry {
-
 	protected Map<String, Family> familyCache = new HashMap<String, Family>();
 	protected List<Profile> profileCache = new ArrayList<Profile>();
 	protected List<SharingPolicy> permissionCache = new ArrayList<SharingPolicy>();
@@ -71,9 +70,8 @@ public abstract class ComponentRegistry implements
 
 	private void checkFamilyCache() throws RegistryException {
 		synchronized (familyCache) {
-			if (familyCache.isEmpty()) {
+			if (familyCache.isEmpty())
 				populateFamilyCache();
-			}
 		}
 	}
 
@@ -90,16 +88,14 @@ public abstract class ComponentRegistry implements
 	public final Family createComponentFamily(String familyName,
 			Profile componentProfile, String description, License license,
 			SharingPolicy sharingPolicy) throws RegistryException {
-		if (familyName == null) {
+		if (familyName == null)
 			throw new RegistryException(
 					("Component family name must not be null"));
-		}
-		if (componentProfile == null) {
+		if (componentProfile == null)
 			throw new RegistryException(("Component profile must not be null"));
-		}
-		if (getComponentFamily(familyName) != null) {
+		if (getComponentFamily(familyName) != null)
 			throw new RegistryException(("Component family already exists"));
-		}
+
 		Family result = internalCreateComponentFamily(familyName,
 				componentProfile, description, license, sharingPolicy);
 		checkFamilyCache();
@@ -136,17 +132,15 @@ public abstract class ComponentRegistry implements
 	@Override
 	public final String getRegistryBaseString() {
 		String urlString = getRegistryBase().toString();
-		if (urlString.endsWith("/")) {
+		if (urlString.endsWith("/"))
 			urlString = urlString.substring(0, urlString.length() - 1);
-		}
 		return urlString;
 	}
 
 	private void checkProfileCache() throws RegistryException {
 		synchronized (profileCache) {
-			if (profileCache.isEmpty()) {
+			if (profileCache.isEmpty())
 				populateProfileCache();
-			}
 		}
 	}
 
@@ -159,6 +153,16 @@ public abstract class ComponentRegistry implements
 	}
 
 	@Override
+	public final Profile getComponentProfile(String id)
+			throws RegistryException {
+		// TODO use a map instead of a *linear search*...
+		for (Profile p : getComponentProfiles())
+			if (p.getId().equals(id))
+				return p;
+		return null;
+	}
+
+	@Override
 	public final Profile addComponentProfile(Profile componentProfile,
 			License license, SharingPolicy sharingPolicy)
 			throws RegistryException {
@@ -167,12 +171,12 @@ public abstract class ComponentRegistry implements
 		}
 		Profile result = null;
 		checkProfileCache();
-		for (Profile p : getComponentProfiles()) {
+		for (Profile p : getComponentProfiles())
 			if (p.getId().equals(componentProfile.getId())) {
 				result = p;
 				break;
 			}
-		}
+
 		if (result == null) {
 			result = internalAddComponentProfile(componentProfile, license,
 					sharingPolicy);
@@ -189,9 +193,8 @@ public abstract class ComponentRegistry implements
 
 	private void checkPermissionCache() {
 		synchronized (permissionCache) {
-			if (permissionCache.isEmpty()) {
+			if (permissionCache.isEmpty())
 				populatePermissionCache();
-			}
 		}
 	}
 
@@ -205,9 +208,8 @@ public abstract class ComponentRegistry implements
 
 	private void checkLicenseCache() {
 		synchronized (licenseCache) {
-			if (licenseCache.isEmpty()) {
+			if (licenseCache.isEmpty())
 				populateLicenseCache();
-			}
 		}
 	}
 
@@ -222,11 +224,9 @@ public abstract class ComponentRegistry implements
 	protected License getLicenseByAbbreviation(String licenseString)
 			throws RegistryException {
 		checkLicenseCache();
-		for (License l : getLicenses()) {
-			if (l.getAbbreviation().equals(licenseString)) {
+		for (License l : getLicenses())
+			if (l.getAbbreviation().equals(licenseString))
 				return l;
-			}
-		}
 		return null;
 	}
 

@@ -56,6 +56,19 @@ public interface Registry {
 	 */
 	List<Profile> getComponentProfiles() throws RegistryException;
 
+	/**
+	 * Returns the ComponentProfile with the given ID in this ComponetRegistry.
+	 * <p>
+	 * If this ComponentRegistry does not contain the ComponentProfile, a
+	 * <tt>null</tt> is returned.
+	 * 
+	 * @return the matching ComponentProfile in this ComponetRegistry, or
+	 *         <tt>null</tt> if there is no such thing.
+	 * @throws RegistryException
+	 *             if there is a problem accessing the ComponentRegistry.
+	 */
+	Profile getComponentProfile(String id) throws RegistryException;
+
 	String getRegistryBaseString();
 
 	/**

@@ -30,7 +30,6 @@ import java.util.Set;
 
 import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.annotation.AnnotationAssertion;
-import net.sf.taverna.t2.annotation.AnnotationBeanSPI;
 import net.sf.taverna.t2.annotation.AnnotationChain;
 import net.sf.taverna.t2.annotation.annotationbeans.SemanticAnnotation;
 import net.sf.taverna.t2.component.api.Profile;
@@ -76,14 +75,12 @@ public class SemanticAnnotationUtils {
 			Resource resource = node.asResource();
 			if (resource instanceof OntResource) {
 				String label = ((OntResource) resource).getLabel(null);
-				if (label != null) {
+				if (label != null)
 					return label;
-				}
 			}
 			String localName = resource.getLocalName();
-			if ((localName != null) && !localName.isEmpty()) {
+			if ((localName != null) && !localName.isEmpty())
 				return localName;
-			}
 			return resource.toString();
 		} else
 			return "unknown";
@@ -91,20 +88,16 @@ public class SemanticAnnotationUtils {
 
 	public static SemanticAnnotation findSemanticAnnotation(
 			Annotated<?> annotated) {
-		Date latestDate = null;
+		Date latestDate = new Date(Long.MIN_VALUE);
 		SemanticAnnotation annotation = null;
+		// Need to scan all assertions...
 		for (AnnotationChain chain : annotated.getAnnotations())
-			for (AnnotationAssertion<?> assertion : chain.getAssertions()) {
-				AnnotationBeanSPI detail = assertion.getDetail();
-				if (detail instanceof SemanticAnnotation) {
-					Date assertionDate = assertion.getCreationDate();
-					if ((latestDate == null)
-							|| latestDate.before(assertionDate)) {
-						annotation = (SemanticAnnotation) detail;
-						latestDate = assertionDate;
-					}
+			for (AnnotationAssertion<?> assertion : chain.getAssertions())
+				if (assertion.getDetail() instanceof SemanticAnnotation
+						&& latestDate.before(assertion.getCreationDate())) {
+					annotation = (SemanticAnnotation) assertion.getDetail();
+					latestDate = assertion.getCreationDate();
 				}
-			}
 		return annotation;
 	}
 
@@ -132,11 +125,8 @@ public class SemanticAnnotationUtils {
 		Model result = createDefaultModel();
 		SemanticAnnotation annotation = findSemanticAnnotation(annotated);
 		try {
-			if (annotation != null) {
-				String content = annotation.getContent();
-				if (!content.isEmpty())
-					populateModelFromString(result, content);
-			}
+			if (annotation != null && !annotation.getContent().isEmpty())
+				populateModelFromString(result, annotation.getContent());
 		} catch (Exception e) {
 			logger.error(e);
 		}
@@ -151,28 +141,38 @@ public class SemanticAnnotationUtils {
 		return model.createResource(BASE);
 	}
 
+	/**
+	 * Check if a profile is satisfied by a component.
+	 * 
+	 * @param dataflow
+	 *            The component definition.
+	 * @param componentProfile
+	 *            The profile definition.
+	 * @return The set of failed constraints. If empty, the profile is satisfied
+	 *         by the component.
+	 */
 	public static Set<SemanticAnnotationProfile> checkComponent(
 			Dataflow dataflow, Profile componentProfile) {
+		// TODO Check port presence by name
 		Set<SemanticAnnotationProfile> problemProfiles = new HashSet<SemanticAnnotationProfile>();
 		Model model = populateModel(dataflow);
 		Set<Statement> statements = model.listStatements().toSet();
 		try {
-			for (SemanticAnnotationProfile semanticAnnotationProfile : componentProfile
+			for (SemanticAnnotationProfile saProfile : componentProfile
 					.getSemanticAnnotationProfiles()) {
-				OntProperty predicate = semanticAnnotationProfile
-						.getPredicate();
+				OntProperty predicate = saProfile.getPredicate();
 				if (predicate == null)
 					continue;
 				int count = 0;
 				for (Statement statement : statements)
 					if (statement.getPredicate().equals(predicate))
 						count++;
-				if (count < semanticAnnotationProfile.getMinOccurs())
-					problemProfiles.add(semanticAnnotationProfile);
-				if (semanticAnnotationProfile.getMaxOccurs() != null)
-					if (count > semanticAnnotationProfile.getMaxOccurs())
-						// The UI should prevent this, but check anyway
-						problemProfiles.add(semanticAnnotationProfile);
+				if (count < saProfile.getMinOccurs())
+					problemProfiles.add(saProfile);
+				if (saProfile.getMaxOccurs() != null
+						&& count > saProfile.getMaxOccurs())
+					// The UI should prevent this, but check anyway
+					problemProfiles.add(saProfile);
 			}
 		} catch (RegistryException e) {
 			logger.error(e);

@@ -11,27 +11,22 @@ import java.util.List;
  * 
  */
 public class ExceptionHandling {
-	private final uk.org.taverna.ns._2012.component.profile.ExceptionHandling proxied;
-
-	private List<HandleException> handleExceptions = new ArrayList<HandleException>();
+	private final boolean failLists;
+	private final List<HandleException> remapped = new ArrayList<HandleException>();
 
 	public ExceptionHandling(
 			uk.org.taverna.ns._2012.component.profile.ExceptionHandling proxied) {
-		this.proxied = proxied;
+		for (uk.org.taverna.ns._2012.component.profile.HandleException he : proxied
+				.getHandleException())
+			remapped.add(new HandleException(he));
+		this.failLists = proxied.getFailLists() != null;
 	}
 
 	public boolean failLists() {
-		return (proxied.getFailLists() != null);
+		return failLists;
 	}
 
 	public List<HandleException> getHandleExceptions() {
-		if (handleExceptions.isEmpty()
-				&& !proxied.getHandleException().isEmpty()) {
-			for (uk.org.taverna.ns._2012.component.profile.HandleException he : proxied
-					.getHandleException()) {
-				handleExceptions.add(new HandleException(he));
-			}
-		}
-		return handleExceptions;
+		return remapped;
 	}
 }

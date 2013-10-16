@@ -20,6 +20,9 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.profile;
 
+import static java.io.File.createTempFile;
+import static org.apache.commons.io.FileUtils.writeStringToFile;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -27,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 
 import uk.org.taverna.ns._2012.component.profile.SemanticAnnotation;
 
@@ -43,7 +46,8 @@ import com.hp.hpl.jena.ontology.OntResource;
  * @author David Withers
  */
 public class SemanticAnnotationProfile {
-
+	private static final Logger log = Logger
+			.getLogger(SemanticAnnotationProfile.class);
 	private final ComponentProfile componentProfile;
 	private final SemanticAnnotation semanticAnnotation;
 
@@ -60,11 +64,9 @@ public class SemanticAnnotationProfile {
 	 */
 	public OntModel getOntology() {
 		String ontology = semanticAnnotation.getOntology();
-		if (ontology != null) {
-			return componentProfile.getOntology(ontology);
-		} else {
+		if (ontology == null)
 			return null;
-		}
+		return componentProfile.getOntology(ontology);
 	}
 
 	/**
@@ -78,13 +80,11 @@ public class SemanticAnnotationProfile {
 		if (predicate.contains("foaf")) {
 			StringWriter sw = new StringWriter();
 			ontology.writeAll(sw, null, "RDF/XML");
-			String jim = sw.toString();
 			try {
-				File f = File.createTempFile("foaf", null);
-				FileUtils.writeStringToFile(f, jim);
+				File f = createTempFile("foaf", null);
+				writeStringToFile(f, sw.toString());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.info("failed to write foaf ontology to temporary file", e);
 			}
 			// FIXME What on earth is this code doing???
 			for (Iterator<OntProperty> i = ontology.listOntProperties(); i
@@ -95,12 +95,10 @@ public class SemanticAnnotationProfile {
 				String bob = fred;
 			}
 		}
-		if (ontology != null && predicate != null) {
-			OntProperty ontProperty = ontology.getOntProperty(predicate);
-			return ontProperty;
-		} else {
+		if (ontology == null || predicate == null)
 			return null;
-		}
+		OntProperty ontProperty = ontology.getOntProperty(predicate);
+		return ontProperty;
 	}
 
 	public String getPredicateString() {
@@ -120,11 +118,9 @@ public class SemanticAnnotationProfile {
 	 */
 	public Individual getIndividual() {
 		String individual = semanticAnnotation.getValue();
-		if (individual.isEmpty()) {
+		if (individual == null || individual.isEmpty())
 			return null;
-		} else {
-			return getOntology().getIndividual(individual);
-		}
+		return getOntology().getIndividual(individual);
 	}
 
 	/**
@@ -137,11 +133,9 @@ public class SemanticAnnotationProfile {
 	public List<Individual> getIndividuals() {
 		OntModel ontology = getOntology();
 		OntResource range = getPredicate().getRange();
-		if (ontology != null && range != null) {
-			return ontology.listIndividuals(range).toList();
-		} else {
+		if (ontology == null || range == null)
 			return new ArrayList<Individual>();
-		}
+		return ontology.listIndividuals(range).toList();
 	}
 
 	public Integer getMinOccurs() {
@@ -164,18 +158,13 @@ public class SemanticAnnotationProfile {
 	}
 
 	public OntClass getRangeClass() {
-		OntClass result = null;
 		String clazz = this.getClassString();
-		if (clazz != null) {
-			result = componentProfile.getClass(clazz);
-		} else {
-			OntProperty predicate = this.getPredicate();
-			OntResource range = predicate.getRange();
-			if ((range != null) && range.isClass()) {
-				result = range.asClass();
-			}
-		}
-		return result;
-	}
+		if (clazz != null)
+			return componentProfile.getClass(clazz);
 
+		OntResource range = getPredicate().getRange();
+		if ((range != null) && range.isClass())
+			return range.asClass();
+		return null;
+	}
 }

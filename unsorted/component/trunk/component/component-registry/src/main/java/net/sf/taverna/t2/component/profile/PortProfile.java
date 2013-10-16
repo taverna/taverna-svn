@@ -32,7 +32,6 @@ import uk.org.taverna.ns._2012.component.profile.SemanticAnnotation;
  * @author David Withers
  */
 public class PortProfile {
-
 	private final ComponentProfile componentProfile;
 	private final Port port;
 
@@ -42,14 +41,11 @@ public class PortProfile {
 	}
 
 	public List<SemanticAnnotationProfile> getSemanticAnnotations() {
-		List<SemanticAnnotationProfile> semanticAnnotationProfiles = new ArrayList<SemanticAnnotationProfile>();
-		List<SemanticAnnotation> semanticAnnotations = port
-				.getSemanticAnnotation();
-		for (SemanticAnnotation semanticAnnotation : semanticAnnotations) {
-			semanticAnnotationProfiles.add(new SemanticAnnotationProfile(
-					componentProfile, semanticAnnotation));
-		}
-		return semanticAnnotationProfiles;
+		List<SemanticAnnotationProfile> saProfiles = new ArrayList<SemanticAnnotationProfile>();
+		for (SemanticAnnotation annotation : port.getSemanticAnnotation())
+			saProfiles.add(new SemanticAnnotationProfile(componentProfile,
+					annotation));
+		return saProfiles;
 	}
 
 	@Override
@@ -57,5 +53,4 @@ public class PortProfile {
 		return "PortProfile \n  SemanticAnnotations : "
 				+ getSemanticAnnotations();
 	}
-
 }

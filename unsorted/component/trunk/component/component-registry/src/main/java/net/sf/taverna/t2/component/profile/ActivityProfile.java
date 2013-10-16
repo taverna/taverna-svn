@@ -32,7 +32,6 @@ import uk.org.taverna.ns._2012.component.profile.SemanticAnnotation;
  * @author David Withers
  */
 public class ActivityProfile {
-
 	private final ComponentProfile componentProfile;
 	private final Activity activity;
 
@@ -42,13 +41,10 @@ public class ActivityProfile {
 	}
 
 	public List<SemanticAnnotationProfile> getSemanticAnnotations() {
-		List<SemanticAnnotationProfile> semanticAnnotationProfiles = new ArrayList<SemanticAnnotationProfile>();
-		for (SemanticAnnotation semanticAnnotation : activity
-				.getSemanticAnnotation()) {
-			semanticAnnotationProfiles.add(new SemanticAnnotationProfile(
-					componentProfile, semanticAnnotation));
-		}
-		return semanticAnnotationProfiles;
+		List<SemanticAnnotationProfile> saProfiles = new ArrayList<SemanticAnnotationProfile>();
+		for (SemanticAnnotation annotation : activity.getSemanticAnnotation())
+			saProfiles.add(new SemanticAnnotationProfile(componentProfile,
+					annotation));
+		return saProfiles;
 	}
-
 }
