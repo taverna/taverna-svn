@@ -38,25 +38,25 @@ import org.w3c.dom.NodeList;
 public class Pack extends Resource {
 	private static final long serialVersionUID = -3977736206990103689L;
 
-	private int accessType;
+	private Access accessType;
 	private User creator;
 	private List<Tag> tags;
-	private List<Comment> comments;
 	private List<PackItem> items;
 
 	public Pack() {
 		super();
-		this.setItemType(PACK);
+		this.setItemType(Type.PACK);
 	}
 
-	public int getAccessType() {
-		return this.accessType;
+	public Access getAccessType() {
+		return accessType;
 	}
 
-	public void setAccessType(int accessType) {
+	public void setAccessType(Access accessType) {
 		this.accessType = accessType;
 	}
 
+	@Override
 	public User getCreator() {
 		return creator;
 	}
@@ -66,11 +66,7 @@ public class Pack extends Resource {
 	}
 
 	public List<Tag> getTags() {
-		return (this.tags);
-	}
-
-	public List<Comment> getComments() {
-		return this.comments;
+		return this.tags;
 	}
 
 	public int getItemCount() {
@@ -91,19 +87,21 @@ public class Pack extends Resource {
 	 * @return Comma-separated string containing values of required API
 	 *         elements.
 	 */
-	public static String getRequiredAPIElements(int requestType) {
+	@SuppressWarnings("incomplete-switch")
+	public static String getRequiredAPIElements(RequestType requestType) {
 		String elements = "";
 
-		// cases higher up in the list are supersets of those that come below -
-		// hence no "break" statements are required, because 'falling through'
-		// the
-		// switch statement is the desired behaviour in this case
+		/*
+		 * cases higher up in the list are supersets of those that come below -
+		 * hence no "break" statements are required, because 'falling through'
+		 * the switch statement is the desired behaviour in this case
+		 */
 		switch (requestType) {
-		case REQUEST_FULL_PREVIEW:
+		case PREVIEW:
 			elements += "created-at,updated-at,internal-pack-items,external-pack-items,tags,comments,";
-		case REQUEST_FULL_LISTING:
+		case FULL_LISTING:
 			elements += "owner,";
-		case REQUEST_SHORT_LISTING:
+		case SHORT_LISTING:
 			elements += "id,title,description,privileges";
 		}
 
@@ -175,10 +173,6 @@ public class Pack extends Resource {
 			p.tags = new ArrayList<Tag>();
 			p.getTags().addAll(Util.retrieveTags(docRootElement));
 
-			// Comments
-			p.comments = new ArrayList<Comment>();
-			p.getComments().addAll(Util.retrieveComments(docRootElement, p));
-
 			// === All items will be stored together in one array ===
 			p.items = new ArrayList<PackItem>();
 			// adding internal items first
@@ -188,9 +182,8 @@ public class Pack extends Resource {
 				NodeList itemsNodes = itemsElement.getChildNodes();
 				for (int i = 0; i < itemsNodes.getLength(); i++) {
 					Element e = (Element) itemsNodes.item(i);
-					Document docCurrentItem = client.getResource(
-							PACK_INTERNAL_ITEM, e.getAttribute("uri"),
-							REQUEST_DEFAULT_FROM_API);
+					Document docCurrentItem = client.getResource(Type.INTERNAL,
+							e.getAttribute("uri"), RequestType.DEFAULT);
 					PackItem piCurrentItem = PackItem.buildFromXML(
 							docCurrentItem, logger);
 
@@ -204,9 +197,8 @@ public class Pack extends Resource {
 				NodeList itemsNodes = itemsElement.getChildNodes();
 				for (int i = 0; i < itemsNodes.getLength(); i++) {
 					Element e = (Element) itemsNodes.item(i);
-					Document docCurrentItem = client.getResource(
-							PACK_EXTERNAL_ITEM, e.getAttribute("uri"),
-							REQUEST_DEFAULT_FROM_API);
+					Document docCurrentItem = client.getResource(Type.EXTERNAL,
+							e.getAttribute("uri"), RequestType.DEFAULT);
 					p.items.add(PackItem.buildFromXML(docCurrentItem, logger));
 				}
 			}

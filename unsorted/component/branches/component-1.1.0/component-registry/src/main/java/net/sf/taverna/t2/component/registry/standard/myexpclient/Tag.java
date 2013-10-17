@@ -15,7 +15,7 @@ public class Tag extends Resource implements Serializable {
 
 	public Tag() {
 		super();
-		this.setItemType(TAG);
+		this.setItemType(Type.TAG);
 	}
 
 	public String getTagName() {
@@ -39,13 +39,16 @@ public class Tag extends Resource implements Serializable {
 			super();
 		}
 
+		@Override
 		public int compare(Tag t1, Tag t2) {
-			if (t1.getCount() == t2.getCount()) {
+			if (t1.getCount() == t2.getCount())
 				// in case of the same popularity, compare by tag name
 				return t1.getTagName().compareTo(t2.getTagName());
-			}
-			// popularity isn't the same; arrange by popularity (more
-			// popular first)
+
+			/*
+			 * popularity isn't the same; arrange by popularity (more popular
+			 * first)
+			 */
 			return t2.getCount() - t1.getCount();
 		}
 	}
@@ -55,6 +58,7 @@ public class Tag extends Resource implements Serializable {
 			super();
 		}
 
+		@Override
 		public int compare(Tag t1, Tag t2) {
 			return t1.getTagName().compareTo(t2.getTagName());
 		}
@@ -66,17 +70,21 @@ public class Tag extends Resource implements Serializable {
 	 * if they store identical data, rather than they simply hold the same
 	 * reference.
 	 */
+	@Override
 	public boolean equals(Object other) {
 		// could only be equal to another Tag object, not anything else
 		if (!(other instanceof Tag))
-			return (false);
+			return false;
 
-		// 'other' object is a Tag; equality is based on the data stored
-		// in the current and 'other' Tag instances
+		/*
+		 * 'other' object is a Tag; equality is based on the data stored in the
+		 * current and 'other' Tag instances
+		 */
 		Tag otherTag = (Tag) other;
 		return count == otherTag.count && tagName.equals(otherTag.tagName);
 	}
 
+	@Override
 	public String toString() {
 		return "Tag (" + tagName + ", " + count + ")";
 	}
@@ -86,23 +94,24 @@ public class Tag extends Resource implements Serializable {
 	 * satisfy request of a particular type - e.g. creating a listing of
 	 * resources or populating full preview, etc.
 	 * 
-	 * @param iRequestType
+	 * @param requestType
 	 *            A constant value from Resource class.
 	 * @return Comma-separated string containing values of required API
 	 *         elements.
 	 */
-	public static String getRequiredAPIElements(int iRequestType) {
+	@SuppressWarnings("incomplete-switch")
+	public static String getRequiredAPIElements(RequestType requestType) {
 		String strElements = "";
 
 		// cases higher up in the list are supersets of those that come below -
 		// hence no "break" statements are required, because 'falling through'
 		// the switch statement is the desired behaviour in this case
-		switch (iRequestType) {
-		case REQUEST_DEFAULT_FROM_API:
+		switch (requestType) {
+		case DEFAULT:
 			strElements += ""; // no change needed - defaults will be used
 		}
 
-		return (strElements);
+		return strElements;
 	}
 
 	/**
@@ -115,9 +124,9 @@ public class Tag extends Resource implements Serializable {
 	 * @return A Tab object instance or null if action command was invalid.
 	 */
 	public static Tag instantiateTagFromActionCommand(String strActionCommand) {
-		if (!strActionCommand.startsWith("tag:")) {
+		if (!strActionCommand.startsWith("tag:"))
 			return null;
-		}
+
 		// instantiate the Tag object, strip out the leading "tag:" and
 		// return result
 		Tag t = new Tag();

@@ -3,11 +3,12 @@ package net.sf.taverna.t2.component.registry.standard.myexpclient;
 // Copyright (C) 2008 The University of Manchester, University of Southampton
 // and Cardiff University
 
+import static java.lang.String.format;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.MyExperimentClient.parseDate;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChildText;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -18,68 +19,113 @@ import org.w3c.dom.Element;
  */
 public class Resource implements Comparable<Resource>, Serializable {
 	private static final long serialVersionUID = -4529311100092445437L;
-	// CONSTANTS
-	// (integer resource types)
-	public static final int UNEXPECTED_TYPE = -1; // erroneous type
-	public static final int UNKNOWN = 0;
-	public static final int WORKFLOW = 10;
-	public static final int FILE = 11;
-	public static final int PACK = 12;
-	public static final int PACK_INTERNAL_ITEM = 14;
-	public static final int PACK_EXTERNAL_ITEM = 15;
-	public static final int USER = 20;
-	public static final int GROUP = 21;
-	public static final int TAG = 30;
-	public static final int COMMENT = 31;
 
-	// (string resource types)
-	public static final String WORKFLOW_VISIBLE_NAME = "Workflow";
-	public static final String FILE_VISIBLE_NAME = "File";
-	public static final String PACK_VISIBLE_NAME = "Pack";
-	public static final String USER_VISIBLE_NAME = "User";
-	public static final String GROUP_VISIBLE_NAME = "Group";
-	public static final String TAG_VISIBLE_NAME = "Tag";
-	public static final String COMMENT_VISIBLE_NAME = "Comment";
-	public static final String UNKWNOWN_VISIBLE_NAME = "Unknown";
-	public static final String UNEXPECTED_TYPE_VISIBLE_NAME = "ERROR: Unexpected unknown type!";
+	// CONSTANTS
+	// (resource types)
+	public static enum Type {
+		WORKFLOW(10, "Workflow"), FILE(11, "File"), PACK(12, "Pack"), INTERNAL(
+				14, "Internal item"), EXTERNAL(15, "External item"), USER(20,
+				"User"), GROUP(21, "Group"), TAG(30, "Tag"), UNKNOWN(0,
+				"Unknown"), ERROR(-1, "ERROR: Unexpected unknown type!");
+		private int value;
+		private String name;
+
+		private Type(int value, String name) {
+			this.value = value;
+			this.name = name;
+		}
+
+		public int getValue() {
+			return value;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		private String getLower() {
+			return name.toLowerCase();
+		}
+
+		/**
+		 * Translates resource visible name into the type codes.
+		 */
+		public static Type forName(String name) {
+			for (Type t : values())
+				if (t.getLower().equals(name.toLowerCase()))
+					return t;
+			return Type.UNKNOWN;
+		}
+
+	}
 
 	// (integer access types)
-	public static final int ACCESS_VIEWING = 1000;
-	public static final int ACCESS_DOWNLOADING = 1001;
-	public static final int ACCESS_EDITING = 1002;
+	public static enum Access {
+		VIEWING(1), DOWNLOADING(2), EDITING(3);
+		private int value;
+
+		private Access(int value) {
+			this.value = value;
+		}
+
+		public int value() {
+			return value;
+		}
+	}
 
 	// (categories for selecting required elements for every resource type for a
 	// particular purpose)
-	/**
-	 * essentially obtains all data that API provides
-	 */
-	public static final int REQUEST_ALL_DATA = 5000;
-	/**
-	 * used to get all data for preview in a browser window
-	 */
-	public static final int REQUEST_FULL_PREVIEW = 5005;
-	/**
-	 * used for displaying results of searches by query / by tag
-	 */
-	public static final int REQUEST_FULL_LISTING = 5010;
-	/**
-	 * used for displaying items in 'My Stuff' tab
-	 */
-	public static final int REQUEST_SHORT_LISTING = 5015;
-	public static final int REQUEST_USER_FAVOURITES_ONLY = 5050;
-	public static final int REQUEST_USER_APPLIED_TAGS_ONLY = 5051;
-	public static final int REQUEST_WORKFLOW_CONTENT_ONLY = 5055;
-	/**
-	 * used when default fields that come from the API are acceptable
-	 */
-	public static final int REQUEST_DEFAULT_FROM_API = 5100;
+	public static enum RequestType {
+		/**
+		 * essentially obtains all data that API provides
+		 */
+		ALL(5000),
+		/**
+		 * used to get all data for preview in a browser window
+		 */
+		PREVIEW(5005),
+		/**
+		 * used for displaying results of searches by query / by tag
+		 */
+		FULL_LISTING(5010),
+		/**
+		 * used for displaying items in 'My Stuff' tab
+		 */
+		SHORT_LISTING(5015),
+		/**
+		 * Just the favourites
+		 */
+		FAVOURITES(5050),
+		/**
+		 * Just the tags.
+		 */
+		TAGS(5051),
+		/**
+		 * Just the workflow content.
+		 */
+		CONTENT(5055),
+		/**
+		 * used when default fields that come from the API are acceptable
+		 */
+		DEFAULT(5100);
+		private int code;
+
+		private RequestType(int code) {
+			this.code = code;
+		}
+
+		public int getCode() {
+			return code;
+		}
+	}
+
 	// instance variables
 	private int iID;
 	private String uri;
 	private String resource;
 	private String title;
 
-	private int itemType;
+	private Type itemType;
 
 	private Date createdAt;
 	private Date updatedAt;
@@ -101,6 +147,22 @@ public class Resource implements Comparable<Resource>, Serializable {
 		this.iID = Integer.parseInt(id);
 	}
 
+	protected void setID(Element element, Logger logger) {
+		String id = element.getAttribute("id");
+		if (id == null || id.isEmpty())
+			id = getChildText(element, "id");
+		if (id == null || id.isEmpty()) {
+			id = "API Error - No file ID supplied";
+			String message = format("Error while parsing workflow XML data:"
+					+ " no ID provided for workflow with title: \"%s\"",
+					getChildText(element, "title"));
+			if (logger == null)
+				throw new RuntimeException(message);
+			logger.error(message);
+		}
+		setID(id);
+	}
+
 	public String getURI() {
 		return uri;
 	}
@@ -109,12 +171,12 @@ public class Resource implements Comparable<Resource>, Serializable {
 		return resource;
 	}
 
-	public int getItemType() {
+	public Type getItemType() {
 		return itemType;
 	}
 
 	public String getItemTypeName() {
-		return getResourceTypeName(itemType);
+		return itemType.getName();
 	}
 
 	public String getTitle() {
@@ -137,12 +199,12 @@ public class Resource implements Comparable<Resource>, Serializable {
 		this.resource = resource;
 	}
 
-	public void setItemType(int type) {
+	public void setItemType(Type type) {
 		this.itemType = type;
 	}
 
 	public void setItemType(String type) {
-		this.itemType = getResourceTypeFromVisibleName(type);
+		this.itemType = Type.forName(type);
 	}
 
 	public void setTitle(String title) {
@@ -183,17 +245,18 @@ public class Resource implements Comparable<Resource>, Serializable {
 	 * This method is needed to sort Resource instances.
 	 */
 	public int compareTo(Resource other) {
-		int itemTypesCompared = this.getItemType() - other.getItemType();
+		int itemTypesCompared = getItemType().getValue()
+				- other.getItemType().getValue();
 
-		if (itemTypesCompared == 0) {
+		if (itemTypesCompared == 0)
 			// types are identical, compare by title
 			return getTitle().compareTo(other.getTitle());
-		}
-		// types are different - this is sufficient to order these two
-		// resources
-		// (NB! This presumes that type constants were set in a way that
-		// produces correct
-		// ordering of the types for sorting operations!)
+
+		/*
+		 * types are different - this is sufficient to order these two resources
+		 * (NB! This presumes that type constants were set in a way that
+		 * produces correct ordering of the types for sorting operations!)
+		 */
 		return itemTypesCompared;
 	}
 
@@ -209,10 +272,12 @@ public class Resource implements Comparable<Resource>, Serializable {
 		if (!(other instanceof Resource))
 			return false;
 
-		// 'other' object is a Resource; equality is based on the data stored
-		// in the current and 'other' Resource instances - the main data of the
-		// Resource: item type, URI in the API and resource URL on myExperiment
-		// (these fields will always be present in every Resource instance)
+		/*
+		 * 'other' object is a Resource; equality is based on the data stored in
+		 * the current and 'other' Resource instances - the main data of the
+		 * Resource: item type, URI in the API and resource URL on myExperiment
+		 * (these fields will always be present in every Resource instance)
+		 */
 		Resource otherRes = (Resource) other;
 		return itemType == otherRes.itemType && uri.equals(otherRes.uri)
 				&& resource.equals(otherRes.resource);
@@ -222,40 +287,28 @@ public class Resource implements Comparable<Resource>, Serializable {
 	 * Check if the current type of resource is supposed to have an uploader.
 	 */
 	public boolean hasUploader() {
-		return (itemType == WORKFLOW || itemType == FILE);
+		return (itemType == Type.WORKFLOW || itemType == Type.FILE);
 	}
 
 	/**
 	 * Casts the resource to one of the specialist types to get the uploader.
 	 */
 	public User getUploader() {
-		switch (itemType) {
-		case WORKFLOW:
-			return ((Workflow) this).getUploader();
-		case FILE:
-			return ((File) this).getUploader();
-		default:
-			return null;
-		}
+		return null;
 	}
 
 	/**
 	 * Check if the current type of resource is supposed to have a creator.
 	 */
 	public boolean hasCreator() {
-		return (itemType == PACK);
+		return (itemType == Type.PACK);
 	}
 
 	/**
 	 * Casts the resource to one of the specialist types to get the creator.
 	 */
 	public User getCreator() {
-		switch (itemType) {
-		case PACK:
-			return ((Pack) this).getCreator();
-		default:
-			return null;
-		}
+		return null;
 	}
 
 	/**
@@ -263,7 +316,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 	 * administrator.
 	 */
 	public boolean hasAdmin() {
-		return (itemType == GROUP);
+		return (itemType == Type.GROUP);
 	}
 
 	/**
@@ -271,12 +324,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 	 * administrator.
 	 */
 	public User getAdmin() {
-		switch (itemType) {
-		case GROUP:
-			return ((Group) this).getAdmin();
-		default:
-			return null;
-		}
+		return null;
 	}
 
 	/**
@@ -294,16 +342,6 @@ public class Resource implements Comparable<Resource>, Serializable {
 	}
 
 	/**
-	 * Determines whether the current resource is favourited by specified user.
-	 */
-	public boolean isFavouritedBy(User user) {
-		for (Resource r : user.getFavourites())
-			if (r.getURI().equals(getURI()))
-				return true;
-		return false;
-	}
-
-	/**
 	 * Determines whether the current type of resource can be commented on.
 	 */
 	public boolean isCommentableOn() {
@@ -312,27 +350,9 @@ public class Resource implements Comparable<Resource>, Serializable {
 		case FILE:
 		case PACK:
 		case GROUP:
-			return (true);
+			return true;
 		default:
-			return (false);
-		}
-	}
-
-	/**
-	 * Retrieves the collection of comments for the current resource.
-	 */
-	public List<Comment> getComments() {
-		switch (itemType) {
-		case WORKFLOW:
-			return ((Workflow) this).getComments();
-		case FILE:
-			return ((File) this).getComments();
-		case PACK:
-			return ((Pack) this).getComments();
-		case GROUP:
-			return ((Group) this).getComments();
-		default:
-			return (null);
+			return false;
 		}
 	}
 
@@ -341,7 +361,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 	 * general.
 	 */
 	public boolean isDownloadable() {
-		return (itemType == WORKFLOW || itemType == FILE || itemType == PACK);
+		return (itemType == Type.WORKFLOW || itemType == Type.FILE || itemType == Type.PACK);
 	}
 
 	/**
@@ -349,30 +369,30 @@ public class Resource implements Comparable<Resource>, Serializable {
 	 * current user.
 	 */
 	public boolean isDownloadAllowed() {
-		int iAccessType = 0;
+		Access accessType;
 
 		switch (itemType) {
 		case WORKFLOW:
-			iAccessType = ((Workflow) this).getAccessType();
+			accessType = ((Workflow) this).getAccessType();
 			break;
 		case FILE:
-			iAccessType = ((File) this).getAccessType();
+			accessType = ((File) this).getAccessType();
 			break;
 		case PACK:
-			iAccessType = ((Pack) this).getAccessType();
+			accessType = ((Pack) this).getAccessType();
 			break;
 		default:
-			iAccessType = 0;
+			return false;
 		}
 
-		return (iAccessType >= ACCESS_DOWNLOADING);
+		return accessType.value() >= Access.DOWNLOADING.value();
 	}
 
 	/**
 	 * Only workflows (and files?) have visible types.
 	 */
 	public boolean hasVisibleType() {
-		return (itemType == WORKFLOW || itemType == FILE);
+		return (itemType == Type.WORKFLOW || itemType == Type.FILE);
 	}
 
 	public String getVisibleType() {
@@ -384,59 +404,6 @@ public class Resource implements Comparable<Resource>, Serializable {
 		default:
 			return null;
 		}
-	}
-
-	/**
-	 * Translates resource type codes into a textual representation.
-	 * 
-	 * @param resourceTypeCode
-	 *            This code should be one of the resource type constants defined
-	 *            in Resource class.
-	 * @return Textual translation of the resource type code.
-	 */
-	public static String getResourceTypeName(int resourceTypeCode) {
-		switch (resourceTypeCode) {
-		case WORKFLOW:
-			return WORKFLOW_VISIBLE_NAME;
-		case FILE:
-			return FILE_VISIBLE_NAME;
-		case PACK:
-			return PACK_VISIBLE_NAME;
-		case USER:
-			return USER_VISIBLE_NAME;
-		case GROUP:
-			return GROUP_VISIBLE_NAME;
-		case TAG:
-			return TAG_VISIBLE_NAME;
-		case COMMENT:
-			return COMMENT_VISIBLE_NAME;
-		case UNKNOWN:
-			return UNKWNOWN_VISIBLE_NAME;
-		default:
-			return UNEXPECTED_TYPE_VISIBLE_NAME;
-		}
-	}
-
-	/**
-	 * Translates resource visible name into the type codes.
-	 */
-	public static int getResourceTypeFromVisibleName(String name) {
-		if (name.toLowerCase().equals(WORKFLOW_VISIBLE_NAME.toLowerCase()))
-			return WORKFLOW;
-		else if (name.toLowerCase().equals(FILE_VISIBLE_NAME.toLowerCase()))
-			return FILE;
-		else if (name.toLowerCase().equals(PACK_VISIBLE_NAME.toLowerCase()))
-			return PACK;
-		else if (name.toLowerCase().equals(USER_VISIBLE_NAME.toLowerCase()))
-			return USER;
-		else if (name.toLowerCase().equals(GROUP_VISIBLE_NAME.toLowerCase()))
-			return GROUP;
-		else if (name.toLowerCase().equals(TAG_VISIBLE_NAME.toLowerCase()))
-			return TAG;
-		else if (name.toLowerCase().equals(COMMENT_VISIBLE_NAME.toLowerCase()))
-			return COMMENT;
-		else
-			return UNKNOWN;
 	}
 
 	/**
@@ -457,7 +424,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 	 */
 	public static Resource buildFromXML(Element docRootElement,
 			MyExperimentClient client, Logger logger) {
-		switch (getResourceTypeFromVisibleName(docRootElement.getLocalName())) {
+		switch (Type.forName(docRootElement.getLocalName())) {
 		case WORKFLOW:
 			return Workflow.buildFromXML(docRootElement, logger);
 		case FILE:

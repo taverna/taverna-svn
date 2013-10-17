@@ -20,14 +20,16 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.standard.myexpclient;
 
+import static java.lang.String.format;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.MyExperimentClient.parseDate;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChild;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChildText;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.makeUser;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.retrieveAttributions;
-import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.retrieveComments;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.retrieveCredits;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.retrieveTags;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -38,33 +40,29 @@ import org.w3c.dom.Element;
  * @author Sergejs Aleksejevs
  */
 public class File extends Resource {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -9051574197214290716L;
 
-	private int accessType;
+	private Access accessType;
 
 	private User uploader;
 	private License license;
 	private String filename;
 	private String visibleType;
 	private String contentType;
-	private List<Tag> tags;
-	private List<Comment> comments;
-	private List<Resource> credits;
-	private List<Resource> attributions;
+	private final List<Tag> tags = new ArrayList<Tag>();
+	private final List<Resource> credits = new ArrayList<Resource>();
+	private final List<Resource> attributions = new ArrayList<Resource>();
 
 	public File() {
 		super();
-		this.setItemType(FILE);
+		this.setItemType(Type.FILE);
 	}
 
-	public int getAccessType() {
-		return this.accessType;
+	public Access getAccessType() {
+		return accessType;
 	}
 
-	public void setAccessType(int accessType) {
+	public void setAccessType(Access accessType) {
 		this.accessType = accessType;
 	}
 
@@ -72,6 +70,7 @@ public class File extends Resource {
 		return tags;
 	}
 
+	@Override
 	public User getUploader() {
 		return uploader;
 	}
@@ -89,7 +88,7 @@ public class File extends Resource {
 	}
 
 	public String getFilename() {
-		return this.filename;
+		return filename;
 	}
 
 	public void setFilename(String filename) {
@@ -104,24 +103,21 @@ public class File extends Resource {
 		this.contentType = contentType;
 	}
 
+	@Override
 	public String getVisibleType() {
-		return this.visibleType;
+		return visibleType;
 	}
 
 	public void setVisibleType(String visibleType) {
 		this.visibleType = visibleType;
 	}
 
-	public List<Comment> getComments() {
-		return this.comments;
-	}
-
 	public List<Resource> getCredits() {
-		return this.credits;
+		return credits;
 	}
 
 	public List<Resource> getAttributions() {
-		return this.attributions;
+		return attributions;
 	}
 
 	/**
@@ -134,20 +130,22 @@ public class File extends Resource {
 	 * @return Comma-separated string containing values of required API
 	 *         elements.
 	 */
-	public static String getRequiredAPIElements(int iRequestType) {
+	@SuppressWarnings("incomplete-switch")
+	public static String getRequiredAPIElements(RequestType type) {
 		String elements = "";
 
-		// cases higher up in the list are supersets of those that come below -
-		// hence no "break" statements are required, because 'falling through'
-		// the
-		// switch statement is the desired behaviour in this case
-		switch (iRequestType) {
-		case REQUEST_FULL_PREVIEW:
+		/*
+		 * cases higher up in the list are supersets of those that come below -
+		 * hence no "break" statements are required, because 'falling through'
+		 * the switch statement is the desired behaviour in this case
+		 */
+		switch (type) {
+		case PREVIEW:
 			elements += "filename,content-type,created-at,updated-at,"
-					+ "license-type,tags,comments,credits,attributions,";
-		case REQUEST_FULL_LISTING:
+					+ "license-type,tags,credits,attributions,";
+		case FULL_LISTING:
 			elements += "uploader,type,";
-		case REQUEST_SHORT_LISTING:
+		case SHORT_LISTING:
 			elements += "id,title,description,privileges";
 		}
 
@@ -173,74 +171,28 @@ public class File extends Resource {
 		File f = new File();
 
 		try {
-			// Access type
-			Element privs = (Element) docRootElement.getElementsByTagName(
-					"privileges").item(0);
-			f.setAccessType(Util.getAccessType(privs));
-
-			// URI
 			f.setURI(docRootElement.getAttribute("uri"));
-
-			// Resource URI
 			f.setResource(docRootElement.getAttribute("resource"));
-
-			// Id
-			String id = getChildText(docRootElement, "id");
-			if (id == null || id.equals("")) {
-				id = "API Error - No file ID supplied";
-				logger.error("Error while parsing file XML data - no ID provided for file with title: \""
-						+ getChildText(docRootElement, "title") + "\"");
-			}
-			f.setID(id);
-
-			// Filename
+			f.setID(docRootElement, logger);
 			f.setFilename(getChildText(docRootElement, "filename"));
-
-			// Title
 			f.setTitle(getChildText(docRootElement, "title"));
-
-			// Description
 			f.setDescription(getChildText(docRootElement, "description"));
-
-			// Uploader
-			Element uploaderElement = (Element) docRootElement
-					.getElementsByTagName("uploader").item(0);
-			f.setUploader(makeUser(uploaderElement));
-
-			// Created at
-			String createdAt = getChildText(docRootElement, "created-at");
-			if (createdAt != null && !createdAt.equals("")) {
-				f.setCreatedAt(parseDate(createdAt));
-			}
-
-			// Updated at
-			String updatedAt = getChildText(docRootElement, "updated-at");
-			if (updatedAt != null && !updatedAt.equals("")) {
-				f.setUpdatedAt(parseDate(updatedAt));
-			}
-
-			// License
+			f.setUploader(makeUser(getChild(docRootElement, "uploader")));
+			f.setCreatedAt(parseDate(getChildText(docRootElement, "created-at")));
+			f.setUpdatedAt(parseDate(getChildText(docRootElement, "updated-at")));
+			f.setAccessType(Util.getAccessType(getChild(docRootElement,
+					"privileges")));
 			f.setLicense(License.getInstance(getChildText(docRootElement,
 					"license-type")));
-
-			// Type and Content-Type
 			f.setVisibleType(getChildText(docRootElement, "type"));
 			f.setContentType(getChildText(docRootElement, "content-type"));
+			f.getTags().addAll(retrieveTags(docRootElement));
+			f.getCredits().addAll(retrieveCredits(docRootElement));
+			f.getAttributions().addAll(retrieveAttributions(docRootElement));
 
-			// Tags
-			f.tags = retrieveTags(docRootElement);
-
-			// Comments
-			f.comments = retrieveComments(docRootElement, f);
-
-			// Credits
-			f.credits = retrieveCredits(docRootElement);
-
-			// Attributions
-			f.attributions = retrieveAttributions(docRootElement);
-
-			logger.debug("Found information for file with ID: " + f.getID()
-					+ ", Title: " + f.getTitle());
+			logger.debug(format(
+					"Found information for file with ID: %s, Title: %s",
+					f.getID(), f.getTitle()));
 		} catch (Exception e) {
 			logger.error("Failed midway through creating file object from XML",
 					e);

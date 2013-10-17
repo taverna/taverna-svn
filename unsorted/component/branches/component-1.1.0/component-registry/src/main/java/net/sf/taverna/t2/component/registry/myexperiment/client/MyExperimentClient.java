@@ -46,6 +46,7 @@ import java.util.Locale;
 import java.util.Properties;
 
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
+import net.sf.taverna.t2.component.registry.ClientVersion;
 import net.sf.taverna.t2.security.credentialmanager.CMException;
 import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
 import net.sf.taverna.t2.security.credentialmanager.UsernamePassword;
@@ -63,7 +64,7 @@ public class MyExperimentClient {
   // CONSTANTS
   public static final String DEFAULT_BASE_URL = "http://www.myexperiment.org";
   public static final String PLUGIN_USER_AGENT = "Taverna2-myExperiment-plugin/"
-      + "0.2beta"
+      + ClientVersion.VERSION
       + " Java/"
       + System.getProperty("java.version");
   private static final String INI_FILE_NAME = "myexperiment-plugin.ini";

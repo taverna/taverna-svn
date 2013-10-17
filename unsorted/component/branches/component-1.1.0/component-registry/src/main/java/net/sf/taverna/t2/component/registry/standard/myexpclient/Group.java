@@ -26,7 +26,6 @@ import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.get
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChildText;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.makeResource;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.makeUser;
-import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.retrieveComments;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.retrieveTags;
 
 import java.util.ArrayList;
@@ -46,15 +45,15 @@ public class Group extends Resource {
 	private User admin;
 
 	private List<Tag> tags;
-	private List<Comment> comments;
 	private List<User> members;
 	private List<Resource> sharedItems;
 
 	public Group() {
 		super();
-		this.setItemType(GROUP);
+		this.setItemType(Type.GROUP);
 	}
 
+	@Override
 	public User getAdmin() {
 		return admin;
 	}
@@ -65,10 +64,6 @@ public class Group extends Resource {
 
 	public List<Tag> getTags() {
 		return this.tags;
-	}
-
-	public List<Comment> getComments() {
-		return this.comments;
 	}
 
 	public int getSharedItemCount() {
@@ -97,19 +92,21 @@ public class Group extends Resource {
 	 * @return Comma-separated string containing values of required API
 	 *         elements.
 	 */
-	public static String getRequiredAPIElements(int requestType) {
+	@SuppressWarnings("incomplete-switch")
+	public static String getRequiredAPIElements(RequestType requestType) {
 		String elements = "";
 
-		// cases higher up in the list are supersets of those that come below -
-		// hence no "break" statements are required, because 'falling through'
-		// the
-		// switch statement is the desired behaviour in this case
+		/*
+		 * cases higher up in the list are supersets of those that come below -
+		 * hence no "break" statements are required, because 'falling through'
+		 * the switch statement is the desired behaviour in this case
+		 */
 		switch (requestType) {
-		case REQUEST_FULL_PREVIEW:
+		case PREVIEW:
 			elements += "created-at,updated-at,members,shared-items,tags,comments,";
-		case REQUEST_FULL_LISTING:
+		case FULL_LISTING:
 			elements += "owner,";
-		case REQUEST_SHORT_LISTING:
+		case SHORT_LISTING:
 			elements += "id,title,description";
 		}
 
@@ -171,9 +168,6 @@ public class Group extends Resource {
 
 			// Tags
 			g.tags = retrieveTags(docRootElement);
-
-			// Comments
-			g.comments = retrieveComments(docRootElement, g);
 
 			// Members
 			g.members = new ArrayList<User>();

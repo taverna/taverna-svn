@@ -15,15 +15,15 @@ import javax.xml.bind.JAXBException;
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.registry.standard.annotations.Unused;
 import net.sf.taverna.t2.component.registry.standard.myexpclient.MyExperimentClient;
-import net.sf.taverna.t2.component.registry.standard.myexpclient.ServerResponse;
+import net.sf.taverna.t2.component.registry.standard.myexpclient.MyExperimentClient.ServerResponse;
 
 import org.apache.log4j.Logger;
 
 class Client {
-	private Logger logger;
-	private MyExperimentClient myE_Client;
-	private URL registryBase;
-	private JAXBContext jaxbContext;
+	private final Logger logger;
+	private final MyExperimentClient myE_Client;
+	private final URL registryBase;
+	private final JAXBContext jaxbContext;
 
 	Client(JAXBContext context, Logger logger, URL repository) throws Exception {
 		this.logger = logger;
@@ -33,6 +33,7 @@ class Client {
 		myE_Client = new MyExperimentClient(logger);
 		myE_Client.setBaseURL(repository.toExternalForm());
 		myE_Client.doLogin();
+		logger.info("instantiated client connection engine to " + repository);
 	}
 
 	public boolean verify() {

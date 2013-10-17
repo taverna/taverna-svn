@@ -6,7 +6,6 @@ import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.get
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChildText;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.makeUser;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.retrieveAttributions;
-import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.retrieveComments;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.retrieveCredits;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.retrieveTags;
 
@@ -30,14 +29,10 @@ public class Workflow extends Resource {
 	public static final String MIME_TYPE_TAVERNA_1 = "application/vnd.taverna.scufl+xml";
 	public static final String MIME_TYPE_TAVERNA_2 = "application/vnd.taverna.t2flow+xml";
 
-	private int accessType;
+	private Access accessType;
 
 	private int version;
 	private User uploader;
-	private URI preview;
-	private URI thumbnail;
-	private URI thumbnailBig;
-	private URI svg;
 	private License license;
 
 	private String visibleType;
@@ -45,119 +40,50 @@ public class Workflow extends Resource {
 	private URI contentUri;
 	byte[] content;
 
-	private List<Tag> tags;
-	private List<Comment> comments;
-	private List<Resource> credits;
-	private List<Resource> attributions;
-	private Map<String, List<Map<String, String>>> components;
+	private final List<Tag> tags = new ArrayList<Tag>();
+	private final List<Resource> credits = new ArrayList<Resource>();
+	private final List<Resource> attributions = new ArrayList<Resource>();
+	private final Map<String, List<Map<String, String>>> components = new HashMap<String, List<Map<String, String>>>();
 
 	public Workflow() {
 		super();
-		this.setItemType(WORKFLOW);
+		this.setItemType(Type.WORKFLOW);
 	}
 
 	public Workflow(Element docRootElement) throws URISyntaxException {
 		this();
-		// Access type
-		setAccessType(Util
-				.getAccessType(getChild(docRootElement, "privileges")));
-
-		// URI
 		setURI(docRootElement.getAttribute("uri"));
-
-		// Resource URI
 		setResource(docRootElement.getAttribute("resource"));
-
-		// Version
 		String version = docRootElement.getAttribute("version");
 		if (version != null && !version.equals(""))
 			setVersion(Integer.parseInt(version));
+		setID(docRootElement, null);
 
-		// Id
-		String id = getChildText(docRootElement, "id");
-		if (id == null || id.isEmpty())
-			throw new RuntimeException("Error while parsing workflow XML data:"
-					+ " no ID provided for workflow with title: \""
-					+ getChildText(docRootElement, "title") + "\"");
-		setID(id);
-
-		// Title
 		setTitle(getChildText(docRootElement, "title"));
-
-		// Description
 		setDescription(getChildText(docRootElement, "description"));
-
-		// Uploader
 		setUploader(makeUser(getChild(docRootElement, "uploader")));
-
-		// Created at
-		String createdAt = getChildText(docRootElement, "created-at");
-		if (createdAt != null && !createdAt.equals(""))
-			setCreatedAt(createdAt);
-
-		// Updated at
-		String updatedAt = getChildText(docRootElement, "updated-at");
-		if (updatedAt != null && !updatedAt.equals(""))
-			setUpdatedAt(updatedAt);
-
-		// Preview
-		String preview = getChildText(docRootElement, "preview");
-		if (preview != null && !preview.equals(""))
-			setPreview(new URI(preview));
-
-		// Thumbnail
-		String thumbnail = getChildText(docRootElement, "thumbnail");
-		if (thumbnail != null && !thumbnail.equals(""))
-			setThumbnail(new URI(thumbnail));
-
-		// Thumbnail (big)
-		String thumbnailBig = getChildText(docRootElement, "thumbnail-big");
-		if (thumbnailBig != null && !thumbnailBig.equals(""))
-			setThumbnailBig(new URI(thumbnailBig));
-
-		// SVG
-		String svg = getChildText(docRootElement, "svg");
-		if (svg != null && !svg.equals(""))
-			setSvg(new URI(svg));
-
-		// License
+		setCreatedAt(getChildText(docRootElement, "created-at"));
+		setUpdatedAt(getChildText(docRootElement, "updated-at"));
+		setAccessType(Util
+				.getAccessType(getChild(docRootElement, "privileges")));
 		setLicense(License.getInstance(getChildText(docRootElement,
 				"license-type")));
-
-		// Content URI
 		String contentUri = getChildText(docRootElement, "content-uri");
-		if (contentUri != null && !contentUri.equals(""))
+		if (contentUri != null && !contentUri.isEmpty())
 			setContentUri(new URI(contentUri));
-
-		// Type and Content-Type
 		setVisibleType(getChildText(docRootElement, "type"));
 		setContentType(getChildText(docRootElement, "content-type"));
-
-		// Tags
-		tags = new ArrayList<Tag>();
 		tags.addAll(retrieveTags(docRootElement));
-
-		// Comments
-		comments = new ArrayList<Comment>(
-				retrieveComments(docRootElement, this));
-
-		// Credits
-		credits = new ArrayList<Resource>(retrieveCredits(docRootElement));
-
-		// Attributions
-		attributions = new ArrayList<Resource>(
-				retrieveAttributions(docRootElement));
-
-		// Components
-		components = new HashMap<String, List<Map<String, String>>>();
+		credits.addAll(retrieveCredits(docRootElement));
+		attributions.addAll(retrieveAttributions(docRootElement));
 		extractStructure(docRootElement, components);
 	}
 
-	public int getAccessType() {
-		return this.accessType;
+	public Access getAccessType() {
+		return accessType;
 	}
 
-	public void setAccessType(int accessType) {
+	public void setAccessType(Access accessType) {
 		this.accessType = accessType;
 	}
 
@@ -169,36 +95,13 @@ public class Workflow extends Resource {
 		this.version = version;
 	}
 
+	@Override
 	public User getUploader() {
 		return uploader;
 	}
 
 	public void setUploader(User uploader) {
 		this.uploader = uploader;
-	}
-
-	public URI getPreview() {
-		return preview;
-	}
-
-	public void setPreview(URI preview) {
-		this.preview = preview;
-	}
-
-	public URI getThumbnail() {
-		return thumbnail;
-	}
-
-	public void setThumbnail(URI thumbnail) {
-		this.thumbnail = thumbnail;
-	}
-
-	public URI getSvg() {
-		return svg;
-	}
-
-	public void setSvg(URI svg) {
-		this.svg = svg;
 	}
 
 	public License getLicense() {
@@ -217,6 +120,7 @@ public class Workflow extends Resource {
 		this.contentUri = contentUri;
 	}
 
+	@Override
 	public String getVisibleType() {
 		return this.visibleType;
 	}
@@ -245,10 +149,6 @@ public class Workflow extends Resource {
 		return tags;
 	}
 
-	public List<Comment> getComments() {
-		return comments;
-	}
-
 	public List<Resource> getCredits() {
 		return credits;
 	}
@@ -259,14 +159,6 @@ public class Workflow extends Resource {
 
 	public Map<String, List<Map<String, String>>> getComponents() {
 		return this.components;
-	}
-
-	public URI getThumbnailBig() {
-		return thumbnailBig;
-	}
-
-	public void setThumbnailBig(URI thumbnailBig) {
-		this.thumbnailBig = thumbnailBig;
 	}
 
 	/**
@@ -296,26 +188,29 @@ public class Workflow extends Resource {
 	 * @return Comma-separated string containing values of required API
 	 *         elements.
 	 */
-	public static String getRequiredAPIElements(int iRequestType) {
+	@SuppressWarnings("incomplete-switch")
+	public static String getRequiredAPIElements(RequestType requestType) {
 		String elements = "";
 
-		// cases higher up in the list are supersets of those that come below -
-		// hence no "break" statements are required, because 'falling through'
-		// the switch statement is the desired behaviour in this case
-		//
-		// cases that follow after the first 'break' statement are to be treated
-		// separately - these require individual processing and have nothing to
-		// do with joining different elements for various listings / previews
-		switch (iRequestType) {
-		case REQUEST_FULL_PREVIEW:
-			elements += "created-at,updated-at,preview,thumbnail-big,svg,license-type,content-uri,"
-					+ "tags,comments,ratings,credits,attributions,components,";
-		case REQUEST_FULL_LISTING:
+		/*
+		 * cases higher up in the list are supersets of those that come below -
+		 * hence no "break" statements are required, because 'falling through'
+		 * the switch statement is the desired behaviour in this case
+		 * 
+		 * cases that follow after the first 'break' statement are to be treated
+		 * separately - these require individual processing and have nothing to
+		 * do with joining different elements for various listings / previews
+		 */
+		switch (requestType) {
+		case PREVIEW: //preview,thumbnail,thumbnail-big,svg,
+			elements += "created-at,updated-at,license-type,content-uri,"
+					+ "tags,ratings,credits,attributions,components,";
+		case FULL_LISTING:
 			elements += "uploader,type,";
-		case REQUEST_SHORT_LISTING:
-			elements += "id,title,thumbnail,description,privileges,content-type";
+		case SHORT_LISTING:
+			elements += "id,title,description,privileges,content-type";
 			break;
-		case REQUEST_WORKFLOW_CONTENT_ONLY:
+		case CONTENT:
 			elements += "type,content-type,content";
 			break;
 		}

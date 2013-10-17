@@ -45,19 +45,24 @@ public class PackItem extends Resource {
 
 	public PackItem() {
 		super();
-		this.setItemType(UNKNOWN);
-		// set to unknown originally; will be changed as soon as the type is
-		// known
+		this.setItemType(Type.UNKNOWN);
+		/*
+		 * set to unknown originally; will be changed as soon as the type is
+		 * known
+		 */
 	}
 
+	@Override
 	public int getID() {
 		return id;
 	}
 
+	@Override
 	public void setID(int id) {
 		this.id = id;
 	}
 
+	@Override
 	public void setID(String id) {
 		this.id = Integer.parseInt(id);
 	}
@@ -162,10 +167,11 @@ public class PackItem extends Resource {
 				if (itemElement != null)
 					p.setItem(makeResource(itemElement));
 
-				// now need to replicate title and item type attributes to the
-				// pack item object
-				// itself - this is required to allow proper sorting of the
-				// items
+				/*
+				 * now need to replicate title and item type attributes to the
+				 * pack item object itself - this is required to allow proper
+				 * sorting of the items
+				 */
 				p.setItemType(p.getItem().getItemType());
 				p.setTitle(p.getItem().getTitle());
 			} else {
@@ -173,7 +179,7 @@ public class PackItem extends Resource {
 				p.setInternalItem(false);
 
 				// add links to the external resource for external items
-				p.setItemType(PACK_EXTERNAL_ITEM);
+				p.setItemType(Type.EXTERNAL);
 				p.setTitle(getChildText(root, "title"));
 				p.setLink(getChildText(root, "uri"));
 				p.setAlternateLink(getChildText(root, "alternate-uri"));

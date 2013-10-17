@@ -23,9 +23,6 @@ package net.sf.taverna.t2.component.registry.standard.myexpclient;
 import static java.net.InetAddress.getLocalHost;
 import static javax.crypto.Cipher.DECRYPT_MODE;
 import static javax.crypto.Cipher.ENCRYPT_MODE;
-import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.ACCESS_DOWNLOADING;
-import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.ACCESS_EDITING;
-import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.ACCESS_VIEWING;
 
 import java.lang.reflect.InvocationTargetException;
 import java.net.UnknownHostException;
@@ -40,6 +37,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
+
+import net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Access;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -81,36 +80,67 @@ class Util {
 		return doEncryption(str, DECRYPT_MODE);
 	}
 
+	private static final String CRYPTOSUITE = "PBEWithMD5AndDES";
+
 	private static byte[] doEncryption(String str, int mode) {
-		// password-based encryption uses 2 parameters for processing:
-		// a *password*, which is then hashed with a *salt* to generate
-		// a strong key - these 2 are defined as class constants
+		/*
+		 * password-based encryption uses 2 parameters for processing: a
+		 * *password*, which is then hashed with a *salt* to generate a strong
+		 * key - these 2 are defined as class constants
+		 */
 		try {
 			SecretKeyFactory keyFactory = SecretKeyFactory
-					.getInstance("PBEWithMD5AndDES");
-			PBEKeySpec keySpec = new PBEKeySpec(PBE_PASSWORD.toCharArray());
-			SecretKey key = keyFactory.generateSecret(keySpec);
+					.getInstance(CRYPTOSUITE);
+			SecretKey key = keyFactory.generateSecret(new PBEKeySpec(
+					PBE_PASSWORD.toCharArray()));
 			MessageDigest md = MessageDigest.getInstance("MD5");
-			md.update(Util.PBE_SALT.getBytes("UTF-8"));
+			md.update(PBE_SALT.getBytes("UTF-8"));
 			byte[] digest = md.digest();
 			byte[] salt = new byte[8];
 			for (int i = 0; i < 8; ++i)
 				salt[i] = digest[i];
-			PBEParameterSpec paramSpec = new PBEParameterSpec(salt, 20);
 
-			Cipher cipher = Cipher.getInstance("PBEWithMD5AndDES");
-			cipher.init(mode, key, paramSpec);
+			Cipher cipher = Cipher.getInstance(CRYPTOSUITE);
+			cipher.init(mode, key, new PBEParameterSpec(salt, 20));
 
 			return cipher.doFinal(str.getBytes("UTF-8"));
 		} catch (Exception e) {
 			logger.error("Could not encrypt and store password");
 			logger.error(e.getCause() + "\n" + e.getMessage());
-			return (new byte[1]);
+			return new byte[1];
 		}
-
 	}
 
 	// ******** DATA RETRIEVAL FROM XML DOCUMENT FRAGMENTS ********
+
+	private static List<Element> children(NodeList nl) {
+		List<Element> result = new ArrayList<Element>(nl.getLength());
+		for (int i = 0; i < nl.getLength(); i++) {
+			Node n = nl.item(i);
+			if (n instanceof Node)
+				result.add((Element) n);
+		}
+		return result;
+	}
+
+	private static List<Element> children(Element element) {
+		NodeList nl = element.getChildNodes();
+		List<Element> result = new ArrayList<Element>(nl.getLength());
+		for (int i = 0; i < nl.getLength(); i++) {
+			Node n = nl.item(i);
+			if (n instanceof Node)
+				result.add((Element) n);
+		}
+		return result;
+	}
+
+	private static List<Element> children(Element element, String name) {
+		NodeList nl = element.getElementsByTagName(name);
+		List<Element> result = new ArrayList<Element>(nl.getLength());
+		for (int i = 0; i < nl.getLength(); i++)
+			result.add((Element) nl.item(i));
+		return result;
+	}
 
 	/**
 	 * Instantiates primitive Resource object from XML element. This is very
@@ -163,26 +193,6 @@ class Util {
 	}
 
 	/**
-	 * Instantiates primitive Comment object from XML element. Very lightweight
-	 * method - faster and requires less data than Comment.buildFromXML().
-	 * 
-	 * Can only be used if known which resource is being commented.
-	 */
-	public static Comment makeComment(Element e, Resource r) {
-		if (e == null)
-			return null;
-
-		Comment c = new Comment();
-		c.setTitle(e.getTextContent());
-		c.setComment(e.getTextContent());
-		c.setTypeOfCommentedResource(r.getItemType());
-		c.setURIOfCommentedResource(r.getURI());
-		c.setResource(e.getAttribute("resource"));
-		c.setURI(e.getAttribute("uri"));
-		return c;
-	}
-
-	/**
 	 * Generic method that accepts the iterator over a collection of resources
 	 * in XML format (obtained from myExperiment API) and an ArrayList to store
 	 * the processed results in.
@@ -195,18 +205,17 @@ class Util {
 	 */
 	public static int getResourceCollection(NodeList nodes,
 			List<Map<String, String>> collection) {
-		int i;
-		for (i = 0; i < nodes.getLength(); i++) {
-			Element element = (Element) nodes.item(i);
-
+		int i = 0;
+		for (Element element : children(nodes)) {
 			// store all details of current group into a hash map
-			HashMap<String, String> itemDetails = new HashMap<String, String>();
+			Map<String, String> itemDetails = new HashMap<String, String>();
 			itemDetails.put("name", element.getTextContent());
 			itemDetails.put("uri", element.getAttribute("uri"));
 			itemDetails.put("resource", element.getAttribute("resource"));
 
 			// add current item to the complete list of items
 			collection.add(itemDetails);
+			i++;
 		}
 		return i;
 	}
@@ -215,26 +224,27 @@ class Util {
 	 * Takes XML Element instance with privilege listing for an item and returns
 	 * an integer value for that access type.
 	 */
-	public static int getAccessType(Element privileges) {
-		// if the item for which the privileges are processed got received,
-		// there definitely is viewing access to it
-		int accessType = ACCESS_VIEWING;
+	public static Access getAccessType(Element privileges) {
+		/*
+		 * if the item for which the privileges are processed got received,
+		 * there definitely is viewing access to it
+		 */
+		Access accessType = Access.VIEWING;
 
 		// pick the highest allowed access type
-		NodeList nl = privileges.getElementsByTagName("privilege");
-		for (int i = 0; i < nl.getLength(); i++) {
-			Element privilege = (Element) nl.item(i);
-			String strValue = privilege.getAttribute("type");
+		if (privileges != null)
+			for (Element privilege : children(privileges, "privilege")) {
+				String strValue = privilege.getAttribute("type");
 
-			int thisPrivilege = ACCESS_VIEWING;
-			if (strValue.equals("download"))
-				thisPrivilege = ACCESS_DOWNLOADING;
-			else if (strValue.equals("edit"))
-				thisPrivilege = ACCESS_EDITING;
+				Access thisPrivilege = Access.VIEWING;
+				if (strValue.equals("download"))
+					thisPrivilege = Access.DOWNLOADING;
+				else if (strValue.equals("edit"))
+					thisPrivilege = Access.EDITING;
 
-			if (thisPrivilege > accessType)
-				accessType = thisPrivilege;
-		}
+				if (thisPrivilege.value() > accessType.value())
+					accessType = thisPrivilege;
+			}
 
 		return accessType;
 	}
@@ -245,33 +255,17 @@ class Util {
 	public static String retrieveReasonFromError(Document doc) {
 		if (doc == null)
 			return "unknown reason";
-		Element root = doc.getDocumentElement();
-		NodeList nl = root.getElementsByTagName("reason");
-		if (nl == null || nl.getLength() == 0)
-			return "unknown reason";
-		return nl.item(0).getTextContent();
+		for (Element r : children(doc.getDocumentElement(), "reason"))
+			return r.getTextContent();
+		return "unknown reason";
 	}
 
-	private static List<Resource> getResourcesFromChild(Element rootElement,
+	private static List<Resource> childResources(Element rootElement,
 			String childName) {
 		List<Resource> itemList = new ArrayList<Resource>();
-		Element favouritesElement = (Element) rootElement.getElementsByTagName(
-				childName).item(0);
-		if (favouritesElement != null) {
-			NodeList nl = favouritesElement.getChildNodes();
-			for (int i = 0; i < nl.getLength(); i++)
-				itemList.add(makeResource((Element) nl.item(i)));
-		}
+		for (Element e : children(getChild(rootElement, childName)))
+			itemList.add(makeResource(e));
 		return itemList;
-	}
-
-	/**
-	 * Parses an XML document containing resources favourited by a User. These
-	 * resources are instantiated with the basic data available in the XML
-	 * document and collected into a single List object.
-	 */
-	public static List<Resource> retrieveUserFavourites(Element docRootElement) {
-		return getResourcesFromChild(docRootElement, "favourited");
 	}
 
 	/**
@@ -279,7 +273,7 @@ class Util {
 	 * contains "credits" element.
 	 */
 	public static List<Resource> retrieveCredits(Element docRootElement) {
-		return getResourcesFromChild(docRootElement, "credits");
+		return childResources(docRootElement, "credits");
 	}
 
 	/**
@@ -287,7 +281,7 @@ class Util {
 	 * contains "attributions" element.
 	 */
 	public static List<Resource> retrieveAttributions(Element docRootElement) {
-		return getResourcesFromChild(docRootElement, "attributions");
+		return childResources(docRootElement, "attributions");
 	}
 
 	/**
@@ -296,31 +290,8 @@ class Util {
 	 */
 	public static List<Tag> retrieveTags(Element docRootElement) {
 		List<Tag> itemList = new ArrayList<Tag>();
-		Element tagsElement = (Element) docRootElement.getElementsByTagName(
-				"tags").item(0);
-		if (tagsElement != null) {
-			NodeList nl = tagsElement.getChildNodes();
-			for (int i = 0; i < nl.getLength(); i++)
-				itemList.add(makeTag((Element) nl.item(i)));
-		}
-		return itemList;
-	}
-
-	/**
-	 * Returns a list of comments - can be applied to any XML document which
-	 * contains "comments" element. This should be called when the Resource
-	 * object (for which the list of comments is being obtained) is known.
-	 */
-	public static List<Comment> retrieveComments(Element docRootElement,
-			Resource r) {
-		List<Comment> itemList = new ArrayList<Comment>();
-		Element tagsElement = (Element) docRootElement.getElementsByTagName(
-				"comments").item(0);
-		if (tagsElement != null) {
-			NodeList nl = tagsElement.getChildNodes();
-			for (int i = 0; i < nl.getLength(); i++)
-				itemList.add(makeComment((Element) nl.item(i), r));
-		}
+		for (Element tag : children(getChild(docRootElement, "tags")))
+			itemList.add(makeTag(tag));
 		return itemList;
 	}
 
@@ -363,8 +334,10 @@ class Util {
 		if (source == null)
 			return "";
 
-		// need to preserve at least all line breaks
-		// (ending and starting paragraph also make a line break)
+		/*
+		 * need to preserve at least all line breaks (ending and starting
+		 * paragraph also make a line break)
+		 */
 		source = source.replaceAll("</p>[\r\n]*<p>", "<br>");
 		source = source.replaceAll("\\<br/?\\>", "[-=BR=-]");
 
@@ -385,7 +358,7 @@ class Util {
 	public static String stripAllHTML(String source) {
 		// don't do anything if not string is provided
 		if (source == null)
-			return ("");
+			return "";
 
 		// need to preserve at least all line breaks
 		// (ending and starting paragraph also make a line break)
@@ -397,7 +370,7 @@ class Util {
 		source = source.replaceAll("&\\w{1,4};", ""); // this is for things like
 														// "&nbsp;", "&gt;", etc
 
-		return (source);
+		return source;
 	}
 
 	// ******** VARIOUS HELPERS ********
@@ -412,13 +385,13 @@ class Util {
 	public static String getBaseClassName(String strClassName) {
 		// strip out the class name part after the $ sign; return
 		// the original value if the dollar sign wasn't found
-		String strResult = strClassName;
+		String result = strClassName;
 
-		int iDollarIdx = strResult.indexOf("$");
+		int iDollarIdx = result.indexOf("$");
 		if (iDollarIdx != -1)
-			strResult = strResult.substring(0, iDollarIdx);
+			result = result.substring(0, iDollarIdx);
 
-		return (strResult);
+		return result;
 	}
 
 	/**
@@ -427,8 +400,10 @@ class Util {
 	 */
 	public static boolean isRunningInTaverna() {
 		try {
-			// ApplicationRuntime class is defined within Taverna API. If this
-			// is available, it should mean that the plugin runs within Taverna.
+			/*
+			 * ApplicationRuntime class is defined within Taverna API. If this
+			 * is available, it should mean that the plugin runs within Taverna.
+			 */
 			Class.forName("net.sf.taverna.raven.appconfig.ApplicationRuntime")
 					.getMethod("getInstance", new Class<?>[0]).invoke(null);
 			return true;
