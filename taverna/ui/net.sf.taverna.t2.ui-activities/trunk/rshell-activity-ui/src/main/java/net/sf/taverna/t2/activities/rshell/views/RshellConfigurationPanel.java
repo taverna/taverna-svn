@@ -99,6 +99,7 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 		addPage("Input ports", createInputPanel());
 		addPage("Output ports", createOutputPanel());
 		addPage("Connection", createSettingsPanel());
+		setPreferredSize(new Dimension(600, 500));
 	}
 
 	@Override
