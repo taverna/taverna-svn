@@ -53,9 +53,9 @@ public class BaseProfileLocator {
 		return getInstance().getProfile();
 	}
 
-	@SuppressWarnings("unused")
 	private BaseProfileLocator() {
 		File configFile = getBaseProfileFile();
+		@SuppressWarnings("unused")
 		boolean load = false;
 		long noticeTime = -1;
 		long lastCheckedTime = -1;

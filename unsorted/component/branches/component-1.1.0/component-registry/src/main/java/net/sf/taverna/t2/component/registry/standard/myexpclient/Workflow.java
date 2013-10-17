@@ -2,6 +2,7 @@
 // and Cardiff University
 package net.sf.taverna.t2.component.registry.standard.myexpclient;
 
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.children;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChild;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChildText;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.makeUser;
@@ -19,7 +20,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 /**
  * @author Jiten Bhagat, Sergejs Aleksejevs
@@ -259,9 +259,7 @@ public class Workflow extends Resource {
 		Element sourcesElement = getChild(componentsElement, "sources");
 		if (sourcesElement != null) {
 			List<Map<String, String>> inputs = new ArrayList<Map<String, String>>();
-			NodeList sourcesNodes = sourcesElement.getChildNodes();
-			for (int i = 0; i < sourcesNodes.getLength(); i++) {
-				Element e = (Element) sourcesNodes.item(i);
+			for (Element e : children(sourcesElement)) {
 				Map<String, String> curInput = new HashMap<String, String>();
 				curInput.put("name", getChildText(e, "name"));
 				curInput.put("description", getChildText(e, "description"));
@@ -277,9 +275,7 @@ public class Workflow extends Resource {
 		Element outputsElement = getChild(componentsElement, "sinks");
 		if (outputsElement != null) {
 			List<Map<String, String>> sinks = new ArrayList<Map<String, String>>();
-			NodeList outputsNodes = outputsElement.getChildNodes();
-			for (int i = 0; i < outputsNodes.getLength(); i++) {
-				Element e = (Element) outputsNodes.item(i);
+			for (Element e : children(outputsElement)) {
 				Map<String, String> curOutput = new HashMap<String, String>();
 				curOutput.put("name", getChildText(e, "name"));
 				curOutput.put("description", getChildText(e, "description"));
@@ -295,9 +291,7 @@ public class Workflow extends Resource {
 		Element processorsElement = getChild(componentsElement, "processors");
 		if (processorsElement != null) {
 			List<Map<String, String>> processors = new ArrayList<Map<String, String>>();
-			NodeList processorsNodes = processorsElement.getChildNodes();
-			for (int i = 0; i < processorsNodes.getLength(); i++) {
-				Element e = (Element) processorsNodes.item(i);
+			for (Element e: children(processorsElement)) {
 				Map<String, String> curProcessor = new HashMap<String, String>();
 				curProcessor.put("name", getChildText(e, "name"));
 				curProcessor.put("type", getChildText(e, "type"));
@@ -314,9 +308,7 @@ public class Workflow extends Resource {
 		Element linksElement = getChild(componentsElement, "links");
 		if (linksElement != null) {
 			List<Map<String, String>> links = new ArrayList<Map<String, String>>();
-			NodeList linksNodes = linksElement.getChildNodes();
-			for (int i = 0; i < linksNodes.getLength(); i++) {
-				Element e = (Element) linksNodes.item(i);
+			for (Element e : children(linksElement)) {
 				Map<String, String> curLink = new HashMap<String, String>();
 				String sourcePort = getChildText(e, "source", "port");
 				String strSource = getChildText(e, "source", "node")

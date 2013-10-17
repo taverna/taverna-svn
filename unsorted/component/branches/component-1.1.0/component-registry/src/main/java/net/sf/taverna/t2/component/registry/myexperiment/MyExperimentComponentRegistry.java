@@ -578,14 +578,19 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 	public Set<Version.ID> searchForComponents(String prefixString, String text)
 			throws RegistryException {
 		Set<Version.ID> result = new HashSet<Version.ID>();
-		@SuppressWarnings("deprecation")
-		Element resultElement = this.getResource(getRegistryBaseString()
-				+ "/components.xml",
-				"prefixes=" + URLEncoder.encode(prefixString), "query="
-						+ URLEncoder.encode(text));
-		if (resultElement == null) {
+		Element resultElement;
+		try {
+			resultElement = getResource(
+					getRegistryBaseString() + "/components.xml", "prefixes="
+							+ URLEncoder.encode(prefixString, "UTF-8"), "query="
+							+ URLEncoder.encode(text, "UTF-8"));
+			if (resultElement == null) {
+				throw new RegistryException(
+						"ComponentRegistry could not perform search");
+			}
+		} catch (UnsupportedEncodingException e) {
 			throw new RegistryException(
-					"ComponentRegistry could not perform search");
+					"ComponentRegistry could not perform search", e);
 		}
 		for (Object child : resultElement.getChildren("workflow")) {
 			if (child instanceof Element) {

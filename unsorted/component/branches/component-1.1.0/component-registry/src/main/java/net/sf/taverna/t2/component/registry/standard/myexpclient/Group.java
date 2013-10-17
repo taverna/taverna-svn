@@ -22,6 +22,7 @@ package net.sf.taverna.t2.component.registry.standard.myexpclient;
 
 import static java.util.Collections.sort;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.MyExperimentClient.parseDate;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.children;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChild;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChildText;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.makeResource;
@@ -34,7 +35,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 /**
  * @author Sergejs Aleksejevs
@@ -44,9 +44,9 @@ public class Group extends Resource {
 
 	private User admin;
 
-	private List<Tag> tags;
-	private List<User> members;
-	private List<Resource> sharedItems;
+	private final List<Tag> tags = new ArrayList<Tag>();
+	private final List<User> members = new ArrayList<User>();
+	private final List<Resource> sharedItems = new ArrayList<Resource>();
 
 	public Group() {
 		super();
@@ -167,33 +167,16 @@ public class Group extends Resource {
 				g.setUpdatedAt(parseDate(updatedAt));
 
 			// Tags
-			g.tags = retrieveTags(docRootElement);
+			g.tags.addAll(retrieveTags(docRootElement));
 
 			// Members
-			g.members = new ArrayList<User>();
-			Element membersElement = getChild(docRootElement, "members");
-			if (membersElement != null) {
-				NodeList memberNodes = membersElement.getChildNodes();
-				for (int i = 0; i < memberNodes.getLength(); i++) {
-					Element e = (Element) memberNodes.item(i);
-					g.members.add(makeUser(e));
-				}
-			}
-			// sort the items after all items have been added
+			for (Element e : children(getChild(docRootElement, "members")))
+				g.members.add(makeUser(e));
 			sort(g.members);
 
 			// Shared Items
-			g.sharedItems = new ArrayList<Resource>();
-			Element sharedItemsElement = getChild(docRootElement,
-					"shared-items");
-			if (sharedItemsElement != null) {
-				NodeList itemsNodes = sharedItemsElement.getChildNodes();
-				for (int i = 0; i < itemsNodes.getLength(); i++) {
-					Element e = (Element) itemsNodes.item(i);
-					g.sharedItems.add(makeResource(e));
-				}
-			}
-			// sort the items after all items have been added
+			for (Element e : children(getChild(docRootElement, "shared-items")))
+				g.sharedItems.add(makeResource(e));
 			sort(g.sharedItems);
 
 			logger.debug("Found information for group with ID: " + g.getID()

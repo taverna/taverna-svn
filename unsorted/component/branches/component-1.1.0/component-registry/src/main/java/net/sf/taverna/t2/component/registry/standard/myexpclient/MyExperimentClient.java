@@ -760,11 +760,10 @@ public class MyExperimentClient {
 			return docResponseBody.getDocumentElement();
 		}
 
-		@SuppressWarnings("unchecked")
 		public <T> T getResponse(JAXBContext context, Class<T> clazz)
 				throws JAXBException {
-			return (T) context.createUnmarshaller().unmarshal(getResponse(),
-					clazz);
+			return context.createUnmarshaller().unmarshal(getResponse(),
+					clazz).getValue();
 		}
 
 		public void setResponseBody(Document responseBody) {

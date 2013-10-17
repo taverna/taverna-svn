@@ -21,6 +21,7 @@
 package net.sf.taverna.t2.component.registry.standard.myexpclient;
 
 import static java.util.Collections.sort;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.children;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChild;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChildText;
 
@@ -30,7 +31,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 /**
  * @author Sergejs Aleksejevs
@@ -176,32 +176,19 @@ public class Pack extends Resource {
 			// === All items will be stored together in one array ===
 			p.items = new ArrayList<PackItem>();
 			// adding internal items first
-			Element itemsElement = getChild(docRootElement,
-					"internal-pack-items");
-			if (itemsElement != null) {
-				NodeList itemsNodes = itemsElement.getChildNodes();
-				for (int i = 0; i < itemsNodes.getLength(); i++) {
-					Element e = (Element) itemsNodes.item(i);
-					Document docCurrentItem = client.getResource(Type.INTERNAL,
-							e.getAttribute("uri"), RequestType.DEFAULT);
-					PackItem piCurrentItem = PackItem.buildFromXML(
-							docCurrentItem, logger);
-
-					p.getItems().add(piCurrentItem);
-				}
-			}
+			for (Element e : children(getChild(docRootElement,
+					"internal-pack-items")))
+				p.getItems().add(
+						PackItem.buildFromXML(client.getResource(Type.INTERNAL,
+								e.getAttribute("uri"), RequestType.DEFAULT),
+								logger));
 
 			// now adding external items
-			itemsElement = getChild(docRootElement, "external-pack-items");
-			if (itemsElement != null) {
-				NodeList itemsNodes = itemsElement.getChildNodes();
-				for (int i = 0; i < itemsNodes.getLength(); i++) {
-					Element e = (Element) itemsNodes.item(i);
-					Document docCurrentItem = client.getResource(Type.EXTERNAL,
-							e.getAttribute("uri"), RequestType.DEFAULT);
-					p.items.add(PackItem.buildFromXML(docCurrentItem, logger));
-				}
-			}
+			for (Element e : children(getChild(docRootElement,
+					"external-pack-items")))
+				p.items.add(PackItem.buildFromXML(client.getResource(
+						Type.EXTERNAL, e.getAttribute("uri"),
+						RequestType.DEFAULT), logger));
 
 			// sort the items after all of those have been added
 			sort(p.items);

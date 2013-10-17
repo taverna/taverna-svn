@@ -28,6 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,33 +114,24 @@ class Util {
 
 	// ******** DATA RETRIEVAL FROM XML DOCUMENT FRAGMENTS ********
 
-	private static List<Element> children(NodeList nl) {
+	private static List<Element> elements(NodeList nl) {
 		List<Element> result = new ArrayList<Element>(nl.getLength());
-		for (int i = 0; i < nl.getLength(); i++) {
-			Node n = nl.item(i);
-			if (n instanceof Node)
-				result.add((Element) n);
-		}
+		for (int i = 0; i < nl.getLength(); i++)
+			if (nl.item(i) instanceof Element)
+				result.add((Element) nl.item(i));
 		return result;
 	}
 
-	private static List<Element> children(Element element) {
-		NodeList nl = element.getChildNodes();
-		List<Element> result = new ArrayList<Element>(nl.getLength());
-		for (int i = 0; i < nl.getLength(); i++) {
-			Node n = nl.item(i);
-			if (n instanceof Node)
-				result.add((Element) n);
-		}
-		return result;
+	static List<Element> children(Element element) {
+		if (element == null)
+			return Collections.emptyList();
+		return elements(element.getChildNodes());
 	}
 
 	private static List<Element> children(Element element, String name) {
-		NodeList nl = element.getElementsByTagName(name);
-		List<Element> result = new ArrayList<Element>(nl.getLength());
-		for (int i = 0; i < nl.getLength(); i++)
-			result.add((Element) nl.item(i));
-		return result;
+		if (element == null)
+			return Collections.emptyList();
+		return elements(element.getElementsByTagName(name));
 	}
 
 	/**
@@ -206,7 +198,7 @@ class Util {
 	public static int getResourceCollection(NodeList nodes,
 			List<Map<String, String>> collection) {
 		int i = 0;
-		for (Element element : children(nodes)) {
+		for (Element element : elements(nodes)) {
 			// store all details of current group into a hash map
 			Map<String, String> itemDetails = new HashMap<String, String>();
 			itemDetails.put("name", element.getTextContent());
@@ -260,8 +252,7 @@ class Util {
 		return "unknown reason";
 	}
 
-	private static List<Resource> childResources(Element rootElement,
-			String childName) {
+	static List<Resource> childResources(Element rootElement, String childName) {
 		List<Resource> itemList = new ArrayList<Resource>();
 		for (Element e : children(getChild(rootElement, childName)))
 			itemList.add(makeResource(e));
