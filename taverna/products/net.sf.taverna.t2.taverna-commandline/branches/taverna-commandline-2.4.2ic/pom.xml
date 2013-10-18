@@ -56,7 +56,7 @@
 			<version>${t2.taverna.component.version}</version>
                 </dependency>
                <dependency>
-			<groupId>net.sf.taverna.t2.activities</groupId>
+			<groupId>net.sf.taverna.t2.webdav</groupId>
 			<artifactId>sardine-activity</artifactId>
 			<version>${t2.taverna.webdav.version}</version>
                 </dependency>
