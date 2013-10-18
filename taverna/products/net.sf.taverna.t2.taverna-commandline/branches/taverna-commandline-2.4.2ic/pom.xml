@@ -144,7 +144,6 @@
 		  <overWriteReleases>false</overWriteReleases>
 		  <overWriteSnapshots>true</overWriteSnapshots>
 		  <artifactItems>
-		  <artifactItem>
                                <artifactItem>
                                      <groupId>com.github.lookfirst</groupId>
                                     <artifactId>sardine</artifactId>
