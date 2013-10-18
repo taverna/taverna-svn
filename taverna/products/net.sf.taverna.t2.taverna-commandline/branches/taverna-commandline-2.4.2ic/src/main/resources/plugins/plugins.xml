@@ -131,6 +131,44 @@
         </compatibility>
     </plugin>
 
+	<plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:plugins="http://taverna.sf.net/2008/xml/plugins" xsi:schemaLocation="http://taverna.sf.net/2008/xml/plugins http://taverna.sourceforge.net/2008/xml/plugins/plugins-2008-10-16.xsd">
+		<provider>biovel.eu</provider>
+		<identifier>eu.biovel.taverna.sardineplugin</identifier>
+		<version>0.1.0</version>
+		<name>WebDAV plugin</name>
+	<description>
+	The WebDAV plugin was developed in the BioVeL project http://www.biovel.eu The plugin uses Sardine from https://github.com//lookfirst/sardine
+	</description>
+	<enabled>true</enabled>
+	<repositories>
+		<repository>http://www.mygrid.org.uk/maven/repository</repository>
+		<repository>http://repo1.maven.org/maven2</repository>
+		<repository>http://www.mygrid.org.uk/maven/snapshot-repository</repository>
+		<repository>http://uk.maven.org/maven2</repository>
+		<repository>http://download.java.net/maven/2</repository>
+		<repository>http://www.mygrid.org.uk/maven/biomoby/biomoby.org/m2repo</repository>
+		<repository>http://openprovenance.org/java/maven-releases</repository>
+		<repository>http://people.apache.org/repo/m2-snapshot-repository</repository>
+		<repository>http://repository.apache.org/snapshots</repository>
+	</repositories>
+	<profile>
+		<dependency>
+			<groupId>net.sf.taverna.t2.webdav</groupId>
+			<artifactId>sardine-activity</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.2</version>
+		</dependency>
+	</profile>
+	<compatibility>
+		<application>
+			<version>${project.version}</version>
+		</application>
+		</compatibility>
+	</plugin>
     <plugin>
         <provider>net.sf.taverna.t2.component</provider>
         <identifier>net.sf.taverna.t2.component.component-plugin</identifier>
