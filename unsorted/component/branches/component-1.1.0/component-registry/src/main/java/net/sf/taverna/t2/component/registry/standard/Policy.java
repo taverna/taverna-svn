@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.component.registry.standard;
 
+import static java.lang.System.identityHashCode;
 import static uk.org.taverna.component.api.Privilege.DOWNLOAD;
 import static uk.org.taverna.component.api.Privilege.VIEW;
 import net.sf.taverna.t2.component.api.SharingPolicy;
@@ -33,6 +34,9 @@ public abstract class Policy implements SharingPolicy {
 		return equals((Policy) o);
 	}
 
+	@Override
+	public abstract int hashCode();
+
 	protected abstract boolean equals(Policy p);
 
 	public static class Public extends Policy {
@@ -60,6 +64,11 @@ public abstract class Policy implements SharingPolicy {
 		protected boolean equals(Policy p) {
 			return p instanceof Public;
 		}
+
+		@Override
+		public int hashCode() {
+			return identityHashCode(PUBLIC);
+		}
 	}
 
 	public static class Private extends Policy {
@@ -76,6 +85,11 @@ public abstract class Policy implements SharingPolicy {
 		@Override
 		protected boolean equals(Policy p) {
 			return p instanceof Private;
+		}
+
+		@Override
+		public int hashCode() {
+			return identityHashCode(PRIVATE);
 		}
 	}
 

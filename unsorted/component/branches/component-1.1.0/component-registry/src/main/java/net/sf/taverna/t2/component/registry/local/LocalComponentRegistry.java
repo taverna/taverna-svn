@@ -86,6 +86,7 @@ public class LocalComponentRegistry extends ComponentRegistry {
 		return new LocalComponentFamily(this, newFamilyDir);
 	}
 
+	@Override
 	protected void populateFamilyCache() throws RegistryException {
 		File familiesDir = getComponentFamiliesDir();
 		for (File subFile : familiesDir.listFiles()) {
@@ -97,6 +98,7 @@ public class LocalComponentRegistry extends ComponentRegistry {
 		}
 	}
 
+	@Override
 	protected void populateProfileCache() throws RegistryException {
 		File profilesDir = getComponentProfilesDir();
 		for (File subFile : profilesDir.listFiles()) {

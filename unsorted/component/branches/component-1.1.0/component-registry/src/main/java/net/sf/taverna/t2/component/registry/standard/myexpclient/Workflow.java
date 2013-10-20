@@ -2,6 +2,8 @@
 // and Cardiff University
 package net.sf.taverna.t2.component.registry.standard.myexpclient;
 
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Access.access;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Type.WORKFLOW;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.children;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChild;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChildText;
@@ -30,11 +32,9 @@ public class Workflow extends Resource {
 	public static final String MIME_TYPE_TAVERNA_2 = "application/vnd.taverna.t2flow+xml";
 
 	private Access accessType;
-
 	private int version;
 	private User uploader;
 	private License license;
-
 	private String visibleType;
 	private String contentType;
 	private URI contentUri;
@@ -44,41 +44,43 @@ public class Workflow extends Resource {
 	private final List<Resource> credits = new ArrayList<Resource>();
 	private final List<Resource> attributions = new ArrayList<Resource>();
 	private final Map<String, List<Map<String, String>>> components = new HashMap<String, List<Map<String, String>>>();
+	private static Cache<Workflow> existing = new Cache<Workflow>();
 
 	public Workflow() {
-		super();
-		this.setItemType(Type.WORKFLOW);
+		super(WORKFLOW);
 	}
 
-	public Workflow(Element docRootElement) throws URISyntaxException {
-		this();
-		setURI(docRootElement.getAttribute("uri"));
-		setResource(docRootElement.getAttribute("resource"));
-		String version = docRootElement.getAttribute("version");
-		if (version != null && !version.equals(""))
+	public Workflow(Element root, Logger logger) throws URISyntaxException {
+		super(WORKFLOW, root, logger);
+		String version = root.getAttribute("version");
+		if (version != null && !version.isEmpty())
 			setVersion(Integer.parseInt(version));
-		setID(docRootElement, null);
 
-		setTitle(getChildText(docRootElement, "title"));
-		setDescription(getChildText(docRootElement, "description"));
-		setUploader(makeUser(getChild(docRootElement, "uploader")));
-		setCreatedAt(getChildText(docRootElement, "created-at"));
-		setUpdatedAt(getChildText(docRootElement, "updated-at"));
-		setAccessType(Util
-				.getAccessType(getChild(docRootElement, "privileges")));
-		setLicense(License.getInstance(getChildText(docRootElement,
-				"license-type")));
-		String contentUri = getChildText(docRootElement, "content-uri");
-		if (contentUri != null && !contentUri.isEmpty())
-			setContentUri(new URI(contentUri));
-		setVisibleType(getChildText(docRootElement, "type"));
-		setContentType(getChildText(docRootElement, "content-type"));
-		tags.addAll(retrieveTags(docRootElement));
-		credits.addAll(retrieveCredits(docRootElement));
-		attributions.addAll(retrieveAttributions(docRootElement));
-		extractStructure(docRootElement, components);
+		setUploader(makeUser(getChild(root, "uploader")));
+		setCreatedAt(getChildText(root, "created-at"));
+		setUpdatedAt(getChildText(root, "updated-at"));
+		setAccessType(access(getChild(root, "privileges")));
+		setLicense(License.getInstance(getChildText(root, "license-type")));
+		setVisibleType(getChildText(root, "type"));
+		setContentType(getChildText(root, "content-type"));
+		tags.addAll(retrieveTags(root));
+		credits.addAll(retrieveCredits(root));
+		attributions.addAll(retrieveAttributions(root));
+		try {
+			String contentUri = getChildText(root, "content-uri");
+			if (contentUri != null && !contentUri.isEmpty())
+				setContentUri(new URI(contentUri));
+		} catch (Exception e) {
+			logger.warn("failed to extract content", e);
+		}
+		try {
+			extractStructure(root, components);
+		} catch (Exception e) {
+			logger.warn("failed to extract structure description", e);
+		}
 	}
 
+	@Override
 	public Access getAccessType() {
 		return accessType;
 	}
@@ -202,7 +204,7 @@ public class Workflow extends Resource {
 		 * do with joining different elements for various listings / previews
 		 */
 		switch (requestType) {
-		case PREVIEW: //preview,thumbnail,thumbnail-big,svg,
+		case PREVIEW: // preview,thumbnail,thumbnail-big,svg,
 			elements += "created-at,updated-at,license-type,content-uri,"
 					+ "tags,ratings,credits,attributions,components,";
 		case FULL_LISTING:
@@ -228,21 +230,27 @@ public class Workflow extends Resource {
 	}
 
 	// class method to build a workflow instance from XML
-	public static Workflow buildFromXML(Element docRootElement, Logger logger) {
+	public static Workflow buildFromXML(Element root, Logger logger) {
 		// return null to indicate an error if XML document contains no root
 		// element
-		if (docRootElement == null)
+		if (root == null)
 			return null;
 
-		Workflow w = new Workflow();
+		Workflow w = existing.get(root);
+		if (w != null) {
+			logger.debug("found existing workflow instance for " + w.getID());
+			return w;
+		}
 		try {
-			w = new Workflow(docRootElement);
+			w = new Workflow(root, logger);
 			logger.debug("Found information for worklow with ID: " + w.getID()
 					+ ", Title: " + w.getTitle());
+			existing.put(w);
 		} catch (Exception e) {
 			logger.error(
 					"Failed midway through creating workflow object from XML",
 					e);
+			return new Workflow();
 		}
 
 		// return created workflow instance
@@ -291,7 +299,7 @@ public class Workflow extends Resource {
 		Element processorsElement = getChild(componentsElement, "processors");
 		if (processorsElement != null) {
 			List<Map<String, String>> processors = new ArrayList<Map<String, String>>();
-			for (Element e: children(processorsElement)) {
+			for (Element e : children(processorsElement)) {
 				Map<String, String> curProcessor = new HashMap<String, String>();
 				curProcessor.put("name", getChildText(e, "name"));
 				curProcessor.put("type", getChildText(e, "type"));

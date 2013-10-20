@@ -14,8 +14,7 @@ public class Tag extends Resource implements Serializable {
 	private int count;
 
 	public Tag() {
-		super();
-		this.setItemType(Type.TAG);
+		super(Type.TAG);
 	}
 
 	public String getTagName() {

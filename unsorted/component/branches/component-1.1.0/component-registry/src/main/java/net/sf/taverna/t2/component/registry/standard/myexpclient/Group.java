@@ -21,11 +21,10 @@
 package net.sf.taverna.t2.component.registry.standard.myexpclient;
 
 import static java.util.Collections.sort;
-import static net.sf.taverna.t2.component.registry.standard.myexpclient.MyExperimentClient.parseDate;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.childResources;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.children;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChild;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChildText;
-import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.makeResource;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.makeUser;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.retrieveTags;
 
@@ -49,8 +48,11 @@ public class Group extends Resource {
 	private final List<Resource> sharedItems = new ArrayList<Resource>();
 
 	public Group() {
-		super();
-		this.setItemType(Type.GROUP);
+		super(Type.GROUP);
+	}
+
+	Group(Element root, Logger logger) {
+		super(Type.GROUP, root, logger);
 	}
 
 	@Override
@@ -103,11 +105,11 @@ public class Group extends Resource {
 		 */
 		switch (requestType) {
 		case PREVIEW:
-			elements += "created-at,updated-at,members,shared-items,tags,comments,";
+			elements += "created-at,updated-at,members,shared-items,tags,";
 		case FULL_LISTING:
 			elements += "owner,";
 		case SHORT_LISTING:
-			elements += "id,title,description";
+			elements += "title,description";
 		}
 
 		return elements;
@@ -127,46 +129,14 @@ public class Group extends Resource {
 		// return null to indicate an error if XML document contains no root
 		// element
 		if (docRootElement == null)
-			return (null);
-
-		Group g = new Group();
+			return null;
 
 		try {
-			// URI
-			g.setURI(docRootElement.getAttribute("uri"));
+			Group g = new Group(docRootElement, logger);
 
-			// Resource URI
-			g.setResource(docRootElement.getAttribute("resource"));
-
-			// Id
-			String id = getChildText(docRootElement, "id");
-			if (id == null || id.equals("")) {
-				id = "API Error - No group ID supplied";
-				logger.error("Error while parsing group XML data - no ID provided for group with title: \""
-						+ getChildText(docRootElement, "title") + "\"");
-			}
-			g.setID(Integer.parseInt(id));
-
-			// Title
-			g.setTitle(getChildText(docRootElement, "title"));
-
-			// Description
-			g.setDescription(getChildText(docRootElement, "description"));
-
-			// Owner
 			g.setAdmin(makeUser(getChild(docRootElement, "owner")));
-
-			// Created at
-			String createdAt = getChildText(docRootElement, "created-at");
-			if (createdAt != null && !createdAt.equals(""))
-				g.setCreatedAt(parseDate(createdAt));
-
-			// Updated at
-			String updatedAt = getChildText(docRootElement, "updated-at");
-			if (updatedAt != null && !updatedAt.equals(""))
-				g.setUpdatedAt(parseDate(updatedAt));
-
-			// Tags
+			g.setCreatedAt(getChildText(docRootElement, "created-at"));
+			g.setUpdatedAt(getChildText(docRootElement, "updated-at"));
 			g.tags.addAll(retrieveTags(docRootElement));
 
 			// Members
@@ -175,18 +145,19 @@ public class Group extends Resource {
 			sort(g.members);
 
 			// Shared Items
-			for (Element e : children(getChild(docRootElement, "shared-items")))
-				g.sharedItems.add(makeResource(e));
+			g.sharedItems
+					.addAll(childResources(docRootElement, "shared-items"));
 			sort(g.sharedItems);
 
 			logger.debug("Found information for group with ID: " + g.getID()
 					+ ", Title: " + g.getTitle());
+			
+			// return created group instance
+			return g;
 		} catch (Exception e) {
 			logger.error(
 					"Failed midway through creating group object from XML", e);
+			return new Group();
 		}
-
-		// return created group instance
-		return g;
 	}
 }

@@ -1,14 +1,18 @@
 package net.sf.taverna.t2.component.registry.standard.myexpclient;
 
-// Copyright (C) 2008 The University of Manchester, University of Southampton
+// Copyright (C) 2008-2013 The University of Manchester, University of Southampton
 // and Cardiff University
 
 import static java.lang.String.format;
-import static net.sf.taverna.t2.component.registry.standard.myexpclient.MyExperimentClient.parseDate;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Access.DOWNLOADING;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.children;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChildText;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.parseDate;
 
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.util.Date;
+import java.util.WeakHashMap;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -17,26 +21,19 @@ import org.w3c.dom.Element;
 /**
  * @author Jiten Bhagat, Sergejs Aleksejevs
  */
-public class Resource implements Comparable<Resource>, Serializable {
-	private static final long serialVersionUID = -4529311100092445437L;
-
+@SuppressWarnings("serial")
+public abstract class Resource implements Comparable<Resource>, Serializable {
 	// CONSTANTS
 	// (resource types)
 	public static enum Type {
-		WORKFLOW(10, "Workflow"), FILE(11, "File"), PACK(12, "Pack"), INTERNAL(
-				14, "Internal item"), EXTERNAL(15, "External item"), USER(20,
-				"User"), GROUP(21, "Group"), TAG(30, "Tag"), UNKNOWN(0,
-				"Unknown"), ERROR(-1, "ERROR: Unexpected unknown type!");
-		private int value;
+		ERROR("ERROR: Unexpected unknown type!"), UNKNOWN("Unknown"), WORKFLOW(
+				"Workflow"), FILE("File"), PACK("Pack"), INTERNAL(
+				"Internal item"), EXTERNAL("External item"), USER("User"), GROUP(
+				"Group"), TAG("Tag");
 		private String name;
 
-		private Type(int value, String name) {
-			this.value = value;
+		private Type(String name) {
 			this.name = name;
-		}
-
-		public int getValue() {
-			return value;
 		}
 
 		public String getName() {
@@ -54,23 +51,44 @@ public class Resource implements Comparable<Resource>, Serializable {
 			for (Type t : values())
 				if (t.getLower().equals(name.toLowerCase()))
 					return t;
-			return Type.UNKNOWN;
+			return UNKNOWN;
 		}
-
 	}
 
 	// (integer access types)
 	public static enum Access {
-		VIEWING(1), DOWNLOADING(2), EDITING(3);
-		private int value;
+		VIEWING, DOWNLOADING, EDITING;
+		/**
+		 * Takes XML Element instance with privilege listing for an item and
+		 * returns an integer value for that access type.
+		 */
+		public static Access access(Element privileges) {
+			if (privileges == null)
+				return Access.VIEWING;
 
-		private Access(int value) {
-			this.value = value;
+			/*
+			 * if the item for which the privileges are processed got received,
+			 * there definitely is viewing access to it. We need to pick the
+			 * highest level of access assigned.
+			 */
+			Access accessType = Access.VIEWING;
+
+			for (Element privilege : children(privileges, "privilege")) {
+				String strValue = privilege.getAttribute("type");
+
+				Access thisPrivilege = Access.VIEWING;
+				if (strValue.equals("download"))
+					thisPrivilege = Access.DOWNLOADING;
+				else if (strValue.equals("edit"))
+					thisPrivilege = Access.EDITING;
+
+				if (thisPrivilege.compareTo(accessType) > 0)
+					accessType = thisPrivilege;
+			}
+
+			return accessType;
 		}
 
-		public int value() {
-			return value;
-		}
 	}
 
 	// (categories for selecting required elements for every resource type for a
@@ -79,43 +97,112 @@ public class Resource implements Comparable<Resource>, Serializable {
 		/**
 		 * essentially obtains all data that API provides
 		 */
-		ALL(5000),
+		ALL,
 		/**
 		 * used to get all data for preview in a browser window
 		 */
-		PREVIEW(5005),
+		PREVIEW,
 		/**
 		 * used for displaying results of searches by query / by tag
 		 */
-		FULL_LISTING(5010),
+		FULL_LISTING,
 		/**
 		 * used for displaying items in 'My Stuff' tab
 		 */
-		SHORT_LISTING(5015),
+		SHORT_LISTING,
 		/**
 		 * Just the favourites
 		 */
-		FAVOURITES(5050),
+		FAVOURITES,
 		/**
 		 * Just the tags.
 		 */
-		TAGS(5051),
+		TAGS,
 		/**
 		 * Just the workflow content.
 		 */
-		CONTENT(5055),
+		CONTENT,
 		/**
 		 * used when default fields that come from the API are acceptable
 		 */
-		DEFAULT(5100);
-		private int code;
+		DEFAULT
+	}
 
-		private RequestType(int code) {
-			this.code = code;
+	/**
+	 * @author Jiten Bhagat, Emmanuel Tagarira
+	 */
+	public enum License {
+		BY_ND("by-nd", "Creative Commons Attribution-NoDerivs 3.0 License",
+				"http://creativecommons.org/licenses/by-nd/3.0/"), BY("by",
+				"Creative Commons Attribution 3.0 License",
+				"http://creativecommons.org/licenses/by/3.0/"), BY_SA("by-sa",
+				"Creative Commons Attribution-Share Alike 3.0 License",
+				"http://creativecommons.org/licenses/by-sa/3.0/"), BY_NC_ND(
+				"by-nc-nd",
+				"Creative Commons Attribution-Noncommercial-NoDerivs 3.0 License",
+				"http://creativecommons.org/licenses/by-nc-nd/3.0/"), BY_NC(
+				"by-nc",
+				"Creative Commons Attribution-Noncommercial 3.0 License",
+				"http://creativecommons.org/licenses/by-nc/3.0/"), BY_NC_SA(
+				"by-nc-sa",
+				"Creative Commons Attribution-Noncommercial-Share Alike 3.0 License",
+				"http://creativecommons.org/licenses/by-nc-sa/3.0/");
+		private String type;
+		private String text;
+		private String link;
+		public static License[] SUPPORTED_TYPES = { BY_ND, BY, BY_SA, BY_NC_ND,
+				BY_NC, BY_NC_SA };
+		public static License DEFAULT_LICENSE = BY_SA;
+
+		private License(String type, String text, String link) {
+			this.type = type;
+			this.text = text;
+			this.link = link;
 		}
 
-		public int getCode() {
-			return code;
+		public String getType() {
+			return type;
+		}
+
+		public String getText() {
+			return text;
+		}
+
+		public String getLink() {
+			return link;
+		}
+
+		public static License getInstance(String type) {
+			if (type == null)
+				return null;
+
+			if (type.equalsIgnoreCase("by-nd")) {
+				return BY_ND;
+			} else if (type.equalsIgnoreCase("by")) {
+				return BY;
+			} else if (type.equalsIgnoreCase("by-sa")) {
+				return BY_SA;
+			} else if (type.equalsIgnoreCase("by-nc-nd")) {
+				return BY_NC_ND;
+			} else if (type.equalsIgnoreCase("by-nc")) {
+				return BY_NC;
+			} else if (type.equalsIgnoreCase("by-nc-sa")) {
+				return BY_NC_SA;
+			} else {
+				return null;
+			}
+		}
+	}
+
+	static class Cache<T extends Resource> {
+		private final WeakHashMap<String, WeakReference<T>> cache = new WeakHashMap<String, WeakReference<T>>();
+
+		public synchronized void put(T item) {
+			cache.put(item.getURI(), new WeakReference<T>(item));
+		}
+
+		public synchronized T get(Element element) {
+			return cache.get(element.getAttribute("uri")).get();
 		}
 	}
 
@@ -124,15 +211,22 @@ public class Resource implements Comparable<Resource>, Serializable {
 	private String uri;
 	private String resource;
 	private String title;
-
 	private Type itemType;
-
 	private Date createdAt;
 	private Date updatedAt;
 	private String description;
 
-	public Resource() {
-		// empty constructor
+	public Resource(Type type) {
+		itemType = type;
+	}
+
+	protected Resource(Type type, Element docRootElement, Logger logger) {
+		itemType = type;
+		setURI(docRootElement.getAttribute("uri"));
+		setResource(docRootElement.getAttribute("resource"));
+		setID(docRootElement, logger);
+		setTitle(getChildText(docRootElement, "title"));
+		setDescription(getChildText(docRootElement, "description"));
 	}
 
 	public int getID() {
@@ -235,6 +329,10 @@ public class Resource implements Comparable<Resource>, Serializable {
 		this.updatedAt = parseDate(updatedAt);
 	}
 
+	protected Access getAccessType() {
+		return Access.VIEWING;
+	}
+
 	@Override
 	public String toString() {
 		return "(" + getItemTypeName() + ", " + getURI() + "," + getTitle()
@@ -244,20 +342,20 @@ public class Resource implements Comparable<Resource>, Serializable {
 	/**
 	 * This method is needed to sort Resource instances.
 	 */
+	@Override
 	public int compareTo(Resource other) {
-		int itemTypesCompared = getItemType().getValue()
-				- other.getItemType().getValue();
+		int itemTypesCompared = getItemType().compareTo(other.getItemType());
+		if (itemTypesCompared != 0)
+			/*
+			 * types are different - this is sufficient to order these two
+			 * resources (NB! This presumes that type constants were set in a
+			 * way that produces correct ordering of the types for sorting
+			 * operations!)
+			 */
+			return itemTypesCompared;
 
-		if (itemTypesCompared == 0)
-			// types are identical, compare by title
-			return getTitle().compareTo(other.getTitle());
-
-		/*
-		 * types are different - this is sufficient to order these two resources
-		 * (NB! This presumes that type constants were set in a way that
-		 * produces correct ordering of the types for sorting operations!)
-		 */
-		return itemTypesCompared;
+		// types are identical, compare by title
+		return getTitle().compareTo(other.getTitle());
 	}
 
 	/**
@@ -281,6 +379,11 @@ public class Resource implements Comparable<Resource>, Serializable {
 		Resource otherRes = (Resource) other;
 		return itemType == otherRes.itemType && uri.equals(otherRes.uri)
 				&& resource.equals(otherRes.resource);
+	}
+
+	@Override
+	public int hashCode() {
+		return itemType.hashCode() ^ uri.hashCode() ^ resource.hashCode();
 	}
 
 	/**
@@ -369,23 +472,15 @@ public class Resource implements Comparable<Resource>, Serializable {
 	 * current user.
 	 */
 	public boolean isDownloadAllowed() {
-		Access accessType;
-
 		switch (itemType) {
 		case WORKFLOW:
-			accessType = ((Workflow) this).getAccessType();
-			break;
 		case FILE:
-			accessType = ((File) this).getAccessType();
-			break;
 		case PACK:
-			accessType = ((Pack) this).getAccessType();
-			break;
+			return getAccessType().compareTo(DOWNLOADING) >= 0;
 		default:
 			return false;
 		}
 
-		return accessType.value() >= Access.DOWNLOADING.value();
 	}
 
 	/**
@@ -396,14 +491,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 	}
 
 	public String getVisibleType() {
-		switch (itemType) {
-		case WORKFLOW:
-			return ((Workflow) this).getVisibleType();
-		case FILE:
-			return ((File) this).getVisibleType();
-		default:
-			return null;
-		}
+		return null;
 	}
 
 	/**

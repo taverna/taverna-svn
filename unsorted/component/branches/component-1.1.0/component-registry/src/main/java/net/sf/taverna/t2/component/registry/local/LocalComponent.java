@@ -75,6 +75,7 @@ public class LocalComponent extends Component {
 		return componentDir.getName();
 	}
 
+	@Override
 	protected final void populateComponentVersionMap() {
 
 		for (File subFile : componentDir.listFiles()) {

@@ -21,7 +21,7 @@
 package net.sf.taverna.t2.component.registry.standard.myexpclient;
 
 import static java.lang.String.format;
-import static net.sf.taverna.t2.component.registry.standard.myexpclient.MyExperimentClient.parseDate;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Access.access;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChild;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChildText;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.makeUser;
@@ -54,10 +54,14 @@ public class File extends Resource {
 	private final List<Resource> attributions = new ArrayList<Resource>();
 
 	public File() {
-		super();
-		this.setItemType(Type.FILE);
+		super(Type.FILE);
 	}
 
+	File(Element root, Logger logger) {
+		super(Type.FILE, root, logger);
+	}
+
+	@Override
 	public Access getAccessType() {
 		return accessType;
 	}
@@ -171,17 +175,12 @@ public class File extends Resource {
 		File f = new File();
 
 		try {
-			f.setURI(docRootElement.getAttribute("uri"));
-			f.setResource(docRootElement.getAttribute("resource"));
-			f.setID(docRootElement, logger);
+			f = new File(docRootElement, logger);
 			f.setFilename(getChildText(docRootElement, "filename"));
-			f.setTitle(getChildText(docRootElement, "title"));
-			f.setDescription(getChildText(docRootElement, "description"));
 			f.setUploader(makeUser(getChild(docRootElement, "uploader")));
-			f.setCreatedAt(parseDate(getChildText(docRootElement, "created-at")));
-			f.setUpdatedAt(parseDate(getChildText(docRootElement, "updated-at")));
-			f.setAccessType(Util.getAccessType(getChild(docRootElement,
-					"privileges")));
+			f.setCreatedAt(getChildText(docRootElement, "created-at"));
+			f.setUpdatedAt(getChildText(docRootElement, "updated-at"));
+			f.setAccessType(access(getChild(docRootElement, "privileges")));
 			f.setLicense(License.getInstance(getChildText(docRootElement,
 					"license-type")));
 			f.setVisibleType(getChildText(docRootElement, "type"));

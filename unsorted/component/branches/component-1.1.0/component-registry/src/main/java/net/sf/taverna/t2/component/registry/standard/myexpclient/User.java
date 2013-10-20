@@ -2,7 +2,6 @@
 // and Cardiff University
 package net.sf.taverna.t2.component.registry.standard.myexpclient;
 
-import static net.sf.taverna.t2.component.registry.standard.myexpclient.MyExperimentClient.parseDate;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChild;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChildText;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getResourceCollection;
@@ -27,9 +26,10 @@ public class User extends Resource {
 	private final List<Map<String, String>> packs = new ArrayList<Map<String, String>>();
 	private final List<Map<String, String>> groups = new ArrayList<Map<String, String>>();
 
+	private static final Cache<User> existing = new Cache<User>();
+
 	public User() {
-		super();
-		this.setItemType(Type.USER);
+		super(Type.USER);
 	}
 
 	public String getName() {
@@ -80,11 +80,11 @@ public class User extends Resource {
 		 * treated individually
 		 */
 		switch (requestType) {
-		case PREVIEW://email,website,city,country,friends,tags-applied,favourited,
+		case PREVIEW:// email,website,city,country,friends,tags-applied,favourited,
 			strElements += "created-at,updated-at,groups,workflows,files,packs,";
 		case FULL_LISTING:
 			// essentially the same as short listing
-		case SHORT_LISTING://,avatar
+		case SHORT_LISTING:// ,avatar
 			strElements += "id,name,description";
 			break;
 		case FAVOURITES:
@@ -108,9 +108,9 @@ public class User extends Resource {
 	}
 
 	// class method to build a user instance from XML
-	public static User buildFromXML(Element docRootElement, Logger logger) {
+	public static User buildFromXML(Element root, Logger logger) {
 		// can't make any processing if root element is NULL
-		if (docRootElement == null)
+		if (root == null)
 			return null;
 
 		// create instance and parse the XML otherwise
@@ -118,49 +118,52 @@ public class User extends Resource {
 
 		try {
 			// store all simple values
-			user.setURI(docRootElement.getAttribute("uri"));
-			user.setResource(docRootElement.getAttribute("resource"));
-			user.setID(docRootElement, logger);
-			user.setName(getChildText(docRootElement, "name"));
+			user.setURI(root.getAttribute("uri"));
+			user.setResource(root.getAttribute("resource"));
+			user.setID(root, logger);
+			user.setName(getChildText(root, "name"));
 			/*
 			 * to allow generic handling of all resources - for users 'title'
 			 * will replicate the 'name'
 			 */
 			user.setTitle(user.getName());
-			user.setDescription(getChildText(docRootElement, "description"));
+			user.setDescription(getChildText(root, "description"));
 
 			// Created at
-			user.setCreatedAt(parseDate(getChildText(docRootElement, "created-at")));
+			user.setCreatedAt(getChildText(root, "created-at"));
 
 			// Updated at
-			user.setUpdatedAt(parseDate(getChildText(docRootElement, "updated-at")));
+			user.setUpdatedAt(getChildText(root, "updated-at"));
 
 			// store workflows
-			Element workflowsElement = getChild(docRootElement, "workflows");
-			if (workflowsElement != null)
-				getResourceCollection(workflowsElement.getChildNodes(),
-						user.workflows);
+			Element workflows = getChild(root, "workflows");
+			if (workflows != null)
+				getResourceCollection(workflows.getChildNodes(), user.workflows);
 
 			// store files
-			Element filesElement = getChild(docRootElement, "files");
-			if (filesElement != null)
-				getResourceCollection(filesElement.getChildNodes(), user.files);
+			Element files = getChild(root, "files");
+			if (files != null)
+				getResourceCollection(files.getChildNodes(), user.files);
 
 			// store packs
-			Element packsElement = getChild(docRootElement, "packs");
-			if (packsElement != null)
-				getResourceCollection(packsElement.getChildNodes(), user.packs);
+			Element packs = getChild(root, "packs");
+			if (packs != null)
+				getResourceCollection(packs.getChildNodes(), user.packs);
 
 			// store groups
-			Element groupsElement = getChild(docRootElement, "groups");
-			if (groupsElement != null)
-				getResourceCollection(groupsElement.getChildNodes(),
-						user.groups);
+			Element groups = getChild(root, "groups");
+			if (groups != null)
+				getResourceCollection(groups.getChildNodes(), user.groups);
+			existing.put(user);
 		} catch (Exception e) {
 			logger.error("Failed midway through creating user object from XML",
 					e);
 		}
 
 		return user;
+	}
+
+	static User getExisting(Element elem) {
+		return existing.get(elem);
 	}
 }

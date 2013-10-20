@@ -21,6 +21,10 @@
 package net.sf.taverna.t2.component.registry.standard.myexpclient;
 
 import static java.util.Collections.sort;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Access.access;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.RequestType.DEFAULT;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Type.EXTERNAL;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Type.INTERNAL;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.children;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChild;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChildText;
@@ -40,14 +44,14 @@ public class Pack extends Resource {
 
 	private Access accessType;
 	private User creator;
-	private List<Tag> tags;
-	private List<PackItem> items;
+	private final List<Tag> tags = new ArrayList<Tag>();
+	private final List<PackItem> items = new ArrayList<PackItem>();
 
 	public Pack() {
-		super();
-		this.setItemType(Type.PACK);
+		super(Type.PACK);
 	}
 
+	@Override
 	public Access getAccessType() {
 		return accessType;
 	}
@@ -130,8 +134,7 @@ public class Pack extends Resource {
 
 		try {
 			// Access type
-			p.setAccessType(Util.getAccessType(getChild(docRootElement,
-					"privileges")));
+			p.setAccessType(access(getChild(docRootElement, "privileges")));
 
 			// URI
 			p.setURI(docRootElement.getAttribute("uri"));
@@ -158,37 +161,26 @@ public class Pack extends Resource {
 			p.setCreator(Util.makeUser(getChild(docRootElement, "owner")));
 
 			// Created at
-			String createdAt = getChildText(docRootElement, "created-at");
-			if (createdAt != null && !createdAt.equals("")) {
-				p.setCreatedAt(MyExperimentClient.parseDate(createdAt));
-			}
+			p.setCreatedAt(getChildText(docRootElement, "created-at"));
 
 			// Updated at
-			String updatedAt = getChildText(docRootElement, "updated-at");
-			if (updatedAt != null && !updatedAt.equals("")) {
-				p.setUpdatedAt(MyExperimentClient.parseDate(updatedAt));
-			}
+			p.setUpdatedAt(getChildText(docRootElement, "updated-at"));
 
 			// Tags
-			p.tags = new ArrayList<Tag>();
-			p.getTags().addAll(Util.retrieveTags(docRootElement));
+			p.tags.addAll(Util.retrieveTags(docRootElement));
 
 			// === All items will be stored together in one array ===
-			p.items = new ArrayList<PackItem>();
 			// adding internal items first
 			for (Element e : children(getChild(docRootElement,
 					"internal-pack-items")))
-				p.getItems().add(
-						PackItem.buildFromXML(client.getResource(Type.INTERNAL,
-								e.getAttribute("uri"), RequestType.DEFAULT),
-								logger));
+				p.items.add(PackItem.buildFromXML(client.getResource(INTERNAL,
+						e.getAttribute("uri"), DEFAULT), logger));
 
 			// now adding external items
 			for (Element e : children(getChild(docRootElement,
 					"external-pack-items")))
-				p.items.add(PackItem.buildFromXML(client.getResource(
-						Type.EXTERNAL, e.getAttribute("uri"),
-						RequestType.DEFAULT), logger));
+				p.items.add(PackItem.buildFromXML(client.getResource(EXTERNAL,
+						e.getAttribute("uri"), DEFAULT), logger));
 
 			// sort the items after all of those have been added
 			sort(p.items);

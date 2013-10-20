@@ -17,15 +17,18 @@ public class DispatchStackPatcher implements HealthChecker<ComponentActivity> {
 
 	private static Logger logger = Logger.getLogger(DispatchStackPatcher.class);
 
+	@Override
 	public boolean canVisit(Object o) {
 		return false;
 		// return o instanceof ComponentActivity;
 	}
 
+	@Override
 	public boolean isTimeConsuming() {
 		return false;
 	}
 
+	@Override
 	public VisitReport visit(ComponentActivity a, List<Object> ancestry) {
 		Processor p = (Processor) findAncestor(ancestry, Processor.class);
 		DispatchStackImpl ds = (DispatchStackImpl) p.getDispatchStack();

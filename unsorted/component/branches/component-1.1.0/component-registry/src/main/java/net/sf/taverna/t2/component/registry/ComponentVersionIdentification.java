@@ -156,6 +156,7 @@ public class ComponentVersionIdentification implements
 		return true;
 	}
 
+	@Override
 	public String toString() {
 		return getComponentName() + " V. " + getComponentVersion()
 				+ " in family " + getFamilyName() + " on "

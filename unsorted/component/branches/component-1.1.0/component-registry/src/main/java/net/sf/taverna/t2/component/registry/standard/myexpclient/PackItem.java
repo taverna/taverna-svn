@@ -20,6 +20,7 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.standard.myexpclient;
 
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.children;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChild;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChildText;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.makeResource;
@@ -44,8 +45,7 @@ public class PackItem extends Resource {
 	private String strAlternateLink; // for external items
 
 	public PackItem() {
-		super();
-		this.setItemType(Type.UNKNOWN);
+		super(Type.UNKNOWN);
 		/*
 		 * set to unknown originally; will be changed as soon as the type is
 		 * known
@@ -146,9 +146,7 @@ public class PackItem extends Resource {
 			p.setUserWhoAddedTheItem(makeUser(ownerElement));
 
 			// Date when the item was added to the pack
-			String createdAt = getChildText(root, "created-at");
-			if (createdAt != null && !createdAt.equals(""))
-				p.setCreatedAt(MyExperimentClient.parseDate(createdAt));
+			p.setCreatedAt(getChildText(root, "created-at"));
 
 			// Comment
 			Element commentElement = getChild(root, "comment");
@@ -162,10 +160,12 @@ public class PackItem extends Resource {
 				p.setInternalItem(true);
 
 				// add a link to a resource for internal items
-				Element itemElement = (Element) getChild(root, "item")
-						.getChildNodes().item(0);
-				if (itemElement != null)
-					p.setItem(makeResource(itemElement));
+				try {
+					p.setItem(makeResource(children(getChild(root, "item"))
+							.get(0)));
+				} catch (IndexOutOfBoundsException e) {
+					// Do nothing
+				}
 
 				/*
 				 * now need to replicate title and item type attributes to the

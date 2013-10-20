@@ -20,17 +20,24 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.standard.myexpclient;
 
+import static java.io.File.separatorChar;
 import static java.lang.Boolean.FALSE;
 import static java.lang.String.format;
 import static java.lang.System.getProperty;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
-import static net.sf.taverna.t2.component.registry.standard.myexpclient.Base64.encodeBytes;
+import static javax.xml.bind.DatatypeConverter.parseBase64Binary;
+import static javax.xml.bind.DatatypeConverter.printBase64Binary;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.RequestType.CONTENT;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.RequestType.PREVIEW;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.RequestType.SHORT_LISTING;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Type.USER;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Type.WORKFLOW;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.User.buildFromXML;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChild;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChildText;
-import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.isRunningInTaverna;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getTavernaHomeDir;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -44,12 +51,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Properties;
 
 import javax.xml.bind.JAXBContext;
@@ -57,7 +59,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.t2.component.registry.ClientVersion;
 import net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.RequestType;
 import net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Type;
@@ -77,9 +78,8 @@ import org.xml.sax.SAXException;
 public class MyExperimentClient {
 	// CONSTANTS
 	public static final String DEFAULT_BASE_URL = "http://www.myexperiment.org";
-	public static final String PLUGIN_USER_AGENT = "Taverna2-myExperiment-plugin/"
-			+ ClientVersion.VERSION
-			+ " Java/"
+	public static final String PLUGIN_USER_AGENT = "Taverna2-Component-plugin/"
+			+ ClientVersion.VERSION + " Java/"
 			+ System.getProperty("java.version");
 	private static final String INI_FILE_NAME = "myexperiment-plugin.ini";
 	public static final String INI_BASE_URL = "my_experiment_base_url";
@@ -87,18 +87,19 @@ public class MyExperimentClient {
 
 	public static boolean baseChangedSinceLastStart = false;
 
-	// old format
-	private static final DateFormat OLD_DATE_FORMATTER = new SimpleDateFormat(
-			"EEE MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH);
-	private static final DateFormat OLD_SHORT_DATE_FORMATTER = new SimpleDateFormat(
-			"HH:mm 'on' dd/MM/yyyy", Locale.ENGLISH);
-	// universal date formatter
-	private static final DateFormat NEW_DATE_FORMATTER = new SimpleDateFormat(
-			"yyyy-MM-dd HH:mm:ss Z");
+	public static class URIs {
+		public static final String WHOAMI = "/whoami.xml";
+		public static final String WORKFLOW_LIST = "/workflows.xml";
+		public static final String PACK_LIST = "/packs.xml";
+		public static final String FILE_LIST = "/files.xml";
+	}
+
+	private static final String DIR_NAME = (separatorChar == '\\' ? ".Taverna2 Component Plugin"
+			: ".taverna2ComponentPlugin");
 
 	// SETTINGS
 	/** myExperiment base URL to use */
-	private String BASE_URL;
+	private String baseURL;
 	/**
 	 * a folder, where the INI file will be / stored
 	 */
@@ -106,46 +107,42 @@ public class MyExperimentClient {
 	/**
 	 * settings that are read/stored from/to INI file
 	 */
-	private Properties iniSettings;
+	private final Properties iniSettings;
 
 	// the logger
 	private Logger logger;
 
 	// authentication settings (and the current user)
-	private boolean LOGGED_IN = false;
-	private String AUTH_STRING = "";
+	private String authString = null;
 
 	// default constructor
 	public MyExperimentClient() {
+		iniSettings = new Properties();
 	}
 
 	public MyExperimentClient(Logger logger) {
 		this();
+		this.logger = logger;
 
 		logger.info("Starting myExperiment client");
-
-		this.logger = logger;
 
 		// === Load INI settings ===
 		/*
 		 * but loading settings from INI file, determine what folder is to be
 		 * used for INI file
 		 */
-		if (isRunningInTaverna()) {
+		java.io.File f = getTavernaHomeDir();
+		if (f != null)
 			/* running inside Taverna - use its folder to place the config file */
-			fIniFileDir = new java.io.File(ApplicationRuntime.getInstance()
-					.getApplicationHomeDir(), "conf");
-		} else {
+			fIniFileDir = new java.io.File(f, "conf");
+		else
 			/*
 			 * running outside Taverna, place config file into the user's home
 			 * directory
 			 */
-			fIniFileDir = new java.io.File(getProperty("user.home"),
-					".Taverna2-myExperiment Plugin");
-		}
+			fIniFileDir = new java.io.File(getProperty("user.home"), DIR_NAME);
 
 		/* load preferences if the INI file exists */
-		iniSettings = new Properties();
 		loadSettings();
 
 		/*
@@ -154,29 +151,29 @@ public class MyExperimentClient {
 		 * 
 		 * verify that myExperiment BASE URL was read - use default otherwise
 		 */
-		if (BASE_URL == null || BASE_URL.length() == 0)
-			BASE_URL = DEFAULT_BASE_URL;
+		if (baseURL == null || baseURL.length() == 0)
+			baseURL = DEFAULT_BASE_URL;
+
 		/*
 		 * store this to settings (if no changes were made - same as before,
 		 * alternatively default URL)
 		 */
-		iniSettings.put(INI_BASE_URL, BASE_URL);
+		iniSettings.put(INI_BASE_URL, baseURL);
 
 		logger.info("Created myExperiment client");
-
 	}
 
 	// getter for the current status
 	public boolean isLoggedIn() {
-		return LOGGED_IN;
+		return authString != null;
 	}
 
 	public String getBaseURL() {
-		return BASE_URL;
+		return baseURL;
 	}
 
 	public void setBaseURL(String baseURL) {
-		this.BASE_URL = baseURL;
+		this.baseURL = baseURL;
 	}
 
 	private java.io.File getIniFile() {
@@ -192,7 +189,7 @@ public class MyExperimentClient {
 			fIniInputStream.close();
 
 			// set BASE_URL if from INI settings
-			BASE_URL = iniSettings.getProperty(INI_BASE_URL);
+			baseURL = iniSettings.getProperty(INI_BASE_URL);
 
 		} catch (FileNotFoundException e) {
 			logger.debug("myExperiment plugin INI file was not found, defaults will be used.");
@@ -202,14 +199,17 @@ public class MyExperimentClient {
 		}
 	}
 
-	private static UsernamePassword getUserPass(String urlString) {
+	private static String getCredentials(String urlString) {
 		try {
-			URI userpassUrl = URI.create(urlString);
 			UsernamePassword userAndPass = CredentialManager.getInstance()
-					.getUsernameAndPasswordForService(userpassUrl, true, null);
-			return userAndPass;
+					.getUsernameAndPasswordForService(URI.create(urlString),
+							true, null);
+			return printBase64Binary((userAndPass.getUsername() + ":" + userAndPass
+					.getPasswordAsString()).getBytes("UTF-8"));
 		} catch (CMException e) {
 			throw new RuntimeException("Error in Taverna Credential Manager", e);
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException("Error in encoding", e);
 		}
 	}
 
@@ -218,36 +218,32 @@ public class MyExperimentClient {
 		ServerResponse response = null;
 		Document doc = null;
 		try {
-			UsernamePassword userPass = getUserPass(BASE_URL);
+			String userPass = getCredentials(baseURL);
 			if (userPass == null) {
-				logger.info("UserPass is null for " + BASE_URL);
+				logger.info("UserPass is null for " + baseURL);
 				return false;
 			}
 
 			// set the system to the "logged in" state from INI file properties
-			LOGGED_IN = true;
-			logger.info("this.LOGGED_IN set to true");
-			AUTH_STRING = encodeBytes((userPass.getUsername() + ":" + userPass
-					.getPasswordAsString()).getBytes("UTF-8"));
-
-			response = doMyExperimentGET(BASE_URL + "/whoami.xml");
+			logger.info("loggedIn set to true");
+			authString = userPass;
+			response = doMyExperimentGET(baseURL + URIs.WHOAMI);
 		} catch (Exception e) {
 			logger.error(
 					"failed when verifying login credentials from INI file: "
 							+ getIniFile(), e);
 		}
 
-		if (response.getResponseCode() == HTTP_UNAUTHORIZED) {
+		if (response == null || response.getResponseCode() == HTTP_UNAUTHORIZED) {
 			logger.info("Unauthorized");
 			try {
 				clearCredentials();
-				doc = null;
 			} catch (Exception e) {
 				logger.error(e);
 			}
-		} else {
+			doc = null;
+		} else
 			doc = response.getResponseBody();
-		}
 
 		// verify outcomes
 		if (doc == null) {
@@ -258,18 +254,17 @@ public class MyExperimentClient {
 			 * displayed as usual + an error message box will appear)
 			 */
 
-			LOGGED_IN = false;
-			AUTH_STRING = "";
+			authString = null;
 			iniSettings.put(INI_AUTO_LOGIN, FALSE.toString());
-
 			return false;
 		}
 
 		// login credentials were verified successfully; load current user
 		String strCurrentUserURI = doc.getDocumentElement().getAttribute("uri");
 		try {
-			fetchCurrentUser(strCurrentUserURI, RequestType.SHORT_LISTING);
-			logger.debug("Logged in to myExperiment successfully with credentials that were loaded from INI file.");
+			fetchCurrentUser(strCurrentUserURI, SHORT_LISTING);
+			logger.debug("Logged in to myExperiment successfully with credentials "
+					+ "that were loaded from INI file");
 			return true;
 		} catch (Exception e) {
 			/*
@@ -289,7 +284,7 @@ public class MyExperimentClient {
 		List<String> toDelete = cm
 				.getServiceURLsforAllUsernameAndPasswordPairs();
 		for (String uri : toDelete)
-			if (uri.startsWith(BASE_URL))
+			if (uri.startsWith(baseURL))
 				cm.deleteUsernameAndPasswordForService(uri);
 		// cm.resetAuthCache();
 	}
@@ -302,8 +297,7 @@ public class MyExperimentClient {
 	 * the state.
 	 */
 	public void doLogout() throws Exception {
-		LOGGED_IN = false;
-		AUTH_STRING = "";
+		authString = null;
 	}
 
 	private HttpURLConnection connect(String strURL)
@@ -311,6 +305,8 @@ public class MyExperimentClient {
 		HttpURLConnection conn = (HttpURLConnection) new URL(strURL)
 				.openConnection();
 		conn.setRequestProperty("User-Agent", PLUGIN_USER_AGENT);
+		if (authString != null)
+			conn.setRequestProperty("Authorization", "Basic " + authString);
 		return conn;
 	}
 
@@ -331,13 +327,8 @@ public class MyExperimentClient {
 		 * it)
 		 */
 		HttpURLConnection conn = connect(strURL);
-		if (LOGGED_IN) {
-			logger.info("It is logged in");
-			// if the user has "logged in", also add authentication details
-			conn.setRequestProperty("Authorization", "Basic " + AUTH_STRING);
-		} else {
-			logger.info("It is not logged in");
-		}
+		if (!isLoggedIn())
+			logger.info("is NOT logged in");
 
 		// check server's response
 		return doMyExperimentReceiveServerResponse(conn, strURL, true);
@@ -346,9 +337,9 @@ public class MyExperimentClient {
 	/**
 	 * Generic method to execute GET requests to myExperiment server.
 	 * 
-	 * @param strURL
+	 * @param url
 	 *            The URL on myExperiment to POST to.
-	 * @param strXMLDataBody
+	 * @param xmlDataBody
 	 *            Body of the XML data to be POSTed to strURL.
 	 * @return An object containing XML Document with server's response body and
 	 *         a response code. Response body XML document might be null if
@@ -356,45 +347,39 @@ public class MyExperimentClient {
 	 *         certain action. Response code will always be set.
 	 * @throws Exception
 	 */
-	public ServerResponse doMyExperimentPOST(String strURL,
-			String strXMLDataBody) throws Exception {
+	public ServerResponse doMyExperimentPOST(String url, String xmlDataBody)
+			throws Exception {
 		// POSTing to myExperiment is only allowed for authorised users
-		if (!LOGGED_IN)
+		if (!isLoggedIn())
 			return null;
 
 		/*
 		 * open server connection using provided URL (with no modifications to
 		 * it)
 		 */
-		HttpURLConnection conn = connect(strURL);
+		HttpURLConnection conn = connect(url);
 
 		// "tune" the connection
 		conn.setRequestMethod("POST");
 		conn.setDoOutput(true);
 		conn.setRequestProperty("Content-Type", "application/xml");
-		conn.setRequestProperty("Authorization", "Basic " + AUTH_STRING);
-		/*
-		 * the last line wouldn't be executed if the user wasn't logged in (see
-		 * above code), so safe to run
-		 */
 
 		// prepare and PUT/POST XML data
 		String strPOSTContent = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
-				+ strXMLDataBody;
-		OutputStreamWriter out = new OutputStreamWriter(
-				conn.getOutputStream());
+				+ xmlDataBody;
+		OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
 		out.write(strPOSTContent);
 		out.close();
 
 		// check server's response
-		return doMyExperimentReceiveServerResponse(conn, strURL, false);
+		return doMyExperimentReceiveServerResponse(conn, url, false);
 	}
 
 	/**
 	 * Generic method to execute DELETE requests to myExperiment server. This is
 	 * only to be called when a user is logged in.
 	 * 
-	 * @param strURL
+	 * @param url
 	 *            The URL on myExperiment to direct DELETE request to.
 	 * @return An object containing XML Document with server's response body and
 	 *         a response code. Response body XML document might be null if
@@ -402,19 +387,19 @@ public class MyExperimentClient {
 	 *         certain action. Response code will always be set.
 	 * @throws Exception
 	 */
-	public ServerResponse doMyExperimentDELETE(String strURL) throws Exception {
+	public ServerResponse doMyExperimentDELETE(String url) throws Exception {
+		if (!isLoggedIn())
+			return null;
+
 		/*
 		 * open server connection using provided URL (with no modifications to
 		 * it)
 		 */
-		HttpURLConnection conn = connect(strURL);
-
-		// "tune" the connection
+		HttpURLConnection conn = connect(url);
 		conn.setRequestMethod("DELETE");
-		conn.setRequestProperty("Authorization", "Basic " + AUTH_STRING);
 
 		// check server's response
-		return doMyExperimentReceiveServerResponse(conn, strURL, true);
+		return doMyExperimentReceiveServerResponse(conn, url, true);
 	}
 
 	private static Document getDocumentFromStream(InputStream inputStream)
@@ -448,16 +433,14 @@ public class MyExperimentClient {
 	private ServerResponse doMyExperimentReceiveServerResponse(
 			HttpURLConnection conn, String strURL, boolean bIsGETRequest)
 			throws Exception {
-		int iResponseCode = conn.getResponseCode();
-
-		switch (iResponseCode) {
+		switch (conn.getResponseCode()) {
 		case HTTP_OK:
 			/*
 			 * data retrieval was successful - parse the response XML and return
 			 * it along with response code
 			 */
-			Document doc = getDocumentFromStream(conn.getInputStream());
-			return new ServerResponse(iResponseCode, doc);
+			return new ServerResponse(conn.getResponseCode(),
+					getDocumentFromStream(conn.getInputStream()));
 
 		case HTTP_BAD_REQUEST:
 			/*
@@ -467,12 +450,12 @@ public class MyExperimentClient {
 			 * received - hence can use getErrorStream() straight away to fetch
 			 * the error document
 			 */
-			Document edoc = getDocumentFromStream(conn.getErrorStream());
-			return new ServerResponse(iResponseCode, edoc);
+			return new ServerResponse(conn.getResponseCode(),
+					getDocumentFromStream(conn.getErrorStream()));
 
 		case HTTP_UNAUTHORIZED:
 			// this content is not authorised for current user
-			return new ServerResponse(iResponseCode, null);
+			return new ServerResponse(conn.getResponseCode(), null);
 
 		default:
 			// unexpected response code - raise an exception
@@ -490,7 +473,7 @@ public class MyExperimentClient {
 	public User fetchCurrentUser(String uri) {
 		// fetch user data
 		try {
-			return fetchCurrentUser(uri, RequestType.PREVIEW);
+			return fetchCurrentUser(uri, PREVIEW);
 		} catch (Exception ex) {
 			logger.error("problem fetching user data from myExperiment (" + uri
 					+ ")", ex);
@@ -500,7 +483,7 @@ public class MyExperimentClient {
 
 	public User fetchCurrentUser(String uri, RequestType requestType)
 			throws Exception {
-		return buildFromXML(getResource(Type.USER, uri, requestType), logger);
+		return buildFromXML(getResource(USER, uri, requestType), logger);
 	}
 
 	/**
@@ -540,10 +523,10 @@ public class MyExperimentClient {
 				uri += "&elements=" + Pack.getRequiredAPIElements(reqtype);
 				break;
 			case INTERNAL:
-				uri += "&all_elements=yes"; // TODO determine which are required
+				uri += "&all_elements=yes";
 				break;
 			case EXTERNAL:
-				uri += "&all_elements=yes"; // TODO determine which are required
+				uri += "&all_elements=yes";
 				break;
 			case USER:
 				uri += "&elements=" + User.getRequiredAPIElements(reqtype);
@@ -578,8 +561,7 @@ public class MyExperimentClient {
 	 */
 	public Workflow fetchWorkflowBinary(String strWorkflowURI) throws Exception {
 		// fetch workflows data
-		Document doc = getResource(Type.WORKFLOW, strWorkflowURI,
-				RequestType.CONTENT);
+		Document doc = getResource(WORKFLOW, strWorkflowURI, CONTENT);
 
 		// verify that the type of the workflow data is correct
 		Element root = doc.getDocumentElement();
@@ -603,8 +585,7 @@ public class MyExperimentClient {
 							+ strEncoding + "\nFormat: " + strDataFormat);
 
 		// all checks seem to be fine, decode workflow data
-		byte[] arrWorkflowData = Base64.decode(getChildText(root, "content"));
-		w.setContent(arrWorkflowData);
+		w.setContent(parseBase64Binary(getChildText(root, "content")));
 
 		return w;
 	}
@@ -617,33 +598,37 @@ public class MyExperimentClient {
 	 * @param user
 	 *            User instance for which the items are to be fetched.
 	 * @param type
-	 *            One of Resource.WORKFLOW, Resource.FILE, Resource.PACK
-	 * @param iRequestType
+	 *            One of {@link Type#WORKFLOW}, {@link Type#FILE},
+	 *            {@link Type#PACK}
+	 * @param requestType
 	 *            Type of the request - i.e. amount of data to fetch. One of
-	 *            Resource.REQUEST_SHORT_LISTING, Resource.REQUEST_FULL_LISTING,
-	 *            Resource.REQUEST_FULL_PREVIEW, Resource.REQUEST_ALL_DATA.
+	 *            {@link RequestType#SHORT_LISTING},
+	 *            {@link RequestType#FULL_LISTING}, {@link RequestType#PREVIEW},
+	 *            {@link RequestType#ALL}.
+	 * @param page
+	 *            Which page to fetch. Fetches produce 100 items at a time, and
+	 *            pages are numbered from 0.
 	 * @return An XML document containing data about all items in the amount
 	 *         that was specified.
 	 */
 	public Document getUserContributions(User user, Type type,
 			RequestType requestType, int page) {
-		Document doc = null;
-		String strURL = BASE_URL;
+		String strURL = baseURL;
 		String strElements = "&elements=";
 
 		try {
 			// determine query parameters
 			switch (type) {
 			case WORKFLOW:
-				strURL += "/workflows.xml?uploader=";
+				strURL += URIs.WORKFLOW_LIST + "?uploader=";
 				strElements += Workflow.getRequiredAPIElements(requestType);
 				break;
 			case FILE:
-				strURL += "/files.xml?uploader=";
+				strURL += URIs.FILE_LIST + "?uploader=";
 				strElements += File.getRequiredAPIElements(requestType);
 				break;
 			case PACK:
-				strURL += "/packs.xml?owner=";
+				strURL += URIs.PACK_LIST + "?owner=";
 				strElements += Workflow.getRequiredAPIElements(requestType);
 				break;
 			default:
@@ -651,40 +636,16 @@ public class MyExperimentClient {
 						"cannot get user contributions for " + type.getName());
 			}
 
-			if (page != 0) {
+			if (page != 0)
 				strElements += "&num=100&page=" + page;
-			}
 
 			// create final query URL and retrieve data
 			strURL += urlEncodeQuery(user.getResource()) + strElements;
-			doc = doMyExperimentGET(strURL).getResponseBody();
+			return doMyExperimentGET(strURL).getResponseBody();
 		} catch (Exception e) {
 			logger.error("problem fetching user's contributions", e);
-		}
-
-		return doc;
-	}
-
-	public static Date parseDate(String date) {
-		if (date == null || date.isEmpty())
 			return null;
-		try {
-			return OLD_DATE_FORMATTER.parse(date);
-		} catch (ParseException e) {
 		}
-		try {
-			return OLD_SHORT_DATE_FORMATTER.parse(date);
-		} catch (ParseException e) {
-		}
-		try {
-			return NEW_DATE_FORMATTER.parse(date);
-		} catch (ParseException e2) {
-		}
-		return null;
-	}
-
-	public static String formatDate(Date date) {
-		return NEW_DATE_FORMATTER.format(date);
 	}
 
 	/**
@@ -705,20 +666,17 @@ public class MyExperimentClient {
 
 	public ServerResponse doMyExperimentPUT(String strURL, String strXMLDataBody)
 			throws Exception {
-		if (!LOGGED_IN)
+		if (!isLoggedIn())
 			return null;
 
 		HttpURLConnection conn = connect(strURL);
-
 		conn.setRequestMethod("PUT");
 		conn.setDoOutput(true);
 		conn.setRequestProperty("Content-Type", "application/xml");
-		conn.setRequestProperty("Authorization", "Basic " + AUTH_STRING);
 
 		String strPOSTContent = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
 				+ strXMLDataBody;
-		OutputStreamWriter out = new OutputStreamWriter(
-				conn.getOutputStream());
+		OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
 		out.write(strPOSTContent);
 		out.close();
 
@@ -727,11 +685,11 @@ public class MyExperimentClient {
 
 	public static class ServerResponse {
 		// CONSTANTS
-		public static int LOCAL_FAILURE = -1;
+		public static final int LOCAL_FAILURE = -1;
 
 		// STORAGE
-		private int iResponseCode;
-		private Document docResponseBody;
+		private int responseCode;
+		private Document responseBody;
 
 		public ServerResponse() {
 			// do nothing - empty constructor
@@ -740,34 +698,34 @@ public class MyExperimentClient {
 		public ServerResponse(int responseCode, Document responseBody) {
 			super();
 
-			this.iResponseCode = responseCode;
-			this.docResponseBody = responseBody;
+			this.responseCode = responseCode;
+			this.responseBody = responseBody;
 		}
 
 		public int getResponseCode() {
-			return iResponseCode;
+			return responseCode;
 		}
 
 		public void setResponseCode(int responseCode) {
-			this.iResponseCode = responseCode;
+			this.responseCode = responseCode;
 		}
 
 		public Document getResponseBody() {
-			return docResponseBody;
+			return responseBody;
 		}
 
 		public Element getResponse() {
-			return docResponseBody.getDocumentElement();
+			return responseBody.getDocumentElement();
 		}
 
 		public <T> T getResponse(JAXBContext context, Class<T> clazz)
 				throws JAXBException {
-			return context.createUnmarshaller().unmarshal(getResponse(),
-					clazz).getValue();
+			return context.createUnmarshaller().unmarshal(getResponse(), clazz)
+					.getValue();
 		}
 
 		public void setResponseBody(Document responseBody) {
-			this.docResponseBody = responseBody;
+			this.responseBody = responseBody;
 		}
 	}
 }

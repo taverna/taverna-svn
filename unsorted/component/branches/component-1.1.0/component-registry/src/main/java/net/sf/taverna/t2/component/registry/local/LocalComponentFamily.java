@@ -63,6 +63,7 @@ public class LocalComponentFamily extends ComponentFamily {
 		return result;
 	}
 
+	@Override
 	protected void populateComponentCache() throws RegistryException {
 
 		for (File subFile : componentFamilyDir.listFiles()) {

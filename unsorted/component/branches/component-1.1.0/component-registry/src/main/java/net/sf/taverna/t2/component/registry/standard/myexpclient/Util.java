@@ -20,26 +20,20 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.standard.myexpclient;
 
-import static java.net.InetAddress.getLocalHost;
-import static javax.crypto.Cipher.DECRYPT_MODE;
-import static javax.crypto.Cipher.ENCRYPT_MODE;
-
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.net.UnknownHostException;
-import java.security.MessageDigest;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.PBEParameterSpec;
-
-import net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Access;
+import net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Type;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -51,68 +45,20 @@ import org.w3c.dom.NodeList;
  * @author Sergejs Aleksejevs
  */
 class Util {
-	private static Logger logger = Logger.getLogger(Util.class);
-
-	// ******** DATA ENCRYPTION ********
-
-	private static final String PBE_PASSWORD = System.getProperty("user.home");
-	private static final String PBE_SALT;
-
-	static {
-		String host_name = "";
-		try {
-			host_name = getLocalHost().toString();
-		} catch (UnknownHostException e) {
-			host_name = "unknown_localhost";
-		}
-		PBE_SALT = host_name;
-	}
-
 	/**
-	 * The following section (encrypt(), decrypt() and doEncryption() methods)
-	 * is used to store user passwords in an encrypted way within the settings
-	 * file.
+	 * Soft-bound reference to
+	 * {@link net.sf.taverna.raven.appconfig.ApplicationRuntime
+	 * ApplicationRuntime}.
 	 */
-	public static byte[] encrypt(String str) {
-		return doEncryption(str, ENCRYPT_MODE);
-	}
-
-	public static byte[] decrypt(String str) {
-		return doEncryption(str, DECRYPT_MODE);
-	}
-
-	private static final String CRYPTOSUITE = "PBEWithMD5AndDES";
-
-	private static byte[] doEncryption(String str, int mode) {
-		/*
-		 * password-based encryption uses 2 parameters for processing: a
-		 * *password*, which is then hashed with a *salt* to generate a strong
-		 * key - these 2 are defined as class constants
-		 */
-		try {
-			SecretKeyFactory keyFactory = SecretKeyFactory
-					.getInstance(CRYPTOSUITE);
-			SecretKey key = keyFactory.generateSecret(new PBEKeySpec(
-					PBE_PASSWORD.toCharArray()));
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			md.update(PBE_SALT.getBytes("UTF-8"));
-			byte[] digest = md.digest();
-			byte[] salt = new byte[8];
-			for (int i = 0; i < 8; ++i)
-				salt[i] = digest[i];
-
-			Cipher cipher = Cipher.getInstance(CRYPTOSUITE);
-			cipher.init(mode, key, new PBEParameterSpec(salt, 20));
-
-			return cipher.doFinal(str.getBytes("UTF-8"));
-		} catch (Exception e) {
-			logger.error("Could not encrypt and store password");
-			logger.error(e.getCause() + "\n" + e.getMessage());
-			return new byte[1];
-		}
-	}
-
-	// ******** DATA RETRIEVAL FROM XML DOCUMENT FRAGMENTS ********
+	private static final String APPLICATION_RUNTIME = "net.sf.taverna.raven.appconfig.ApplicationRuntime";
+	// old format
+	private static final DateFormat OLD_DATE_FORMATTER = new SimpleDateFormat(
+			"EEE MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH);
+	private static final DateFormat OLD_SHORT_DATE_FORMATTER = new SimpleDateFormat(
+			"HH:mm 'on' dd/MM/yyyy", Locale.ENGLISH);
+	// universal date formatter
+	private static final DateFormat NEW_DATE_FORMATTER = new SimpleDateFormat(
+			"yyyy-MM-dd HH:mm:ss Z");
 
 	private static List<Element> elements(NodeList nl) {
 		List<Element> result = new ArrayList<Element>(nl.getLength());
@@ -128,7 +74,7 @@ class Util {
 		return elements(element.getChildNodes());
 	}
 
-	private static List<Element> children(Element element, String name) {
+	static List<Element> children(Element element, String name) {
 		if (element == null)
 			return Collections.emptyList();
 		return elements(element.getElementsByTagName(name));
@@ -143,7 +89,8 @@ class Util {
 		if (e == null)
 			return null;
 
-		Resource r = new Resource();
+		@SuppressWarnings("serial")
+		Resource r = new Resource(Type.UNKNOWN){};
 		r.setItemType(e.getTagName());
 		r.setTitle(e.getTextContent());
 		r.setURI(e.getAttribute("uri"));
@@ -160,11 +107,16 @@ class Util {
 		if (e == null)
 			return null;
 
-		User u = new User();
+		User u = User.getExisting(e);
+		if (u != null)
+			return u;
+
+		u = new User();
 		u.setName(e.getTextContent());
 		u.setTitle(e.getTextContent());
 		u.setURI(e.getAttribute("uri"));
 		u.setResource(e.getAttribute("resource"));
+		u.setID(e, null);
 		return u;
 	}
 
@@ -210,35 +162,6 @@ class Util {
 			i++;
 		}
 		return i;
-	}
-
-	/**
-	 * Takes XML Element instance with privilege listing for an item and returns
-	 * an integer value for that access type.
-	 */
-	public static Access getAccessType(Element privileges) {
-		/*
-		 * if the item for which the privileges are processed got received,
-		 * there definitely is viewing access to it
-		 */
-		Access accessType = Access.VIEWING;
-
-		// pick the highest allowed access type
-		if (privileges != null)
-			for (Element privilege : children(privileges, "privilege")) {
-				String strValue = privilege.getAttribute("type");
-
-				Access thisPrivilege = Access.VIEWING;
-				if (strValue.equals("download"))
-					thisPrivilege = Access.DOWNLOADING;
-				else if (strValue.equals("edit"))
-					thisPrivilege = Access.EDITING;
-
-				if (thisPrivilege.value() > accessType.value())
-					accessType = thisPrivilege;
-			}
-
-		return accessType;
 	}
 
 	/**
@@ -313,99 +236,62 @@ class Util {
 		return value == null || value.isEmpty() ? null : value;
 	}
 
-	// ******** STRIPPING OUT HTML FROM STRINGS ********
-
-	/**
-	 * Tiny helper to strip out HTML tags. Basic HTML tags like &nbsp; and <br>
-	 * are left in place, because these can be rendered by JLabel. This helps to
-	 * present HTML content inside JAVA easier.
-	 */
-	public static String stripHTML(String source) {
-		// don't do anything if not string is provided
-		if (source == null)
-			return "";
-
-		/*
-		 * need to preserve at least all line breaks (ending and starting
-		 * paragraph also make a line break)
-		 */
-		source = source.replaceAll("</p>[\r\n]*<p>", "<br>");
-		source = source.replaceAll("\\<br/?\\>", "[-=BR=-]");
-
-		// strip all HTML
-		source = source.replaceAll("\\<.*?\\>", "");
-
-		// put the line breaks back
-		source = source.replaceAll("\\[-=BR=-\\]", "<br><br>");
-
-		return source;
+	public static Date parseDate(String date) {
+		if (date == null || date.isEmpty())
+			return null;
+		try {
+			return OLD_DATE_FORMATTER.parse(date);
+		} catch (ParseException e) {
+		}
+		try {
+			return OLD_SHORT_DATE_FORMATTER.parse(date);
+		} catch (ParseException e) {
+		}
+		try {
+			return NEW_DATE_FORMATTER.parse(date);
+		} catch (ParseException e) {
+		}
+		return null;
 	}
 
-	/**
-	 * Tiny helper to strip out all HTML tags. This will not leave any HTML tags
-	 * at all (so that the content can be displayed in DialogTextArea - and the
-	 * like - components. This helps to present HTML content inside JAVA easier.
-	 */
-	public static String stripAllHTML(String source) {
-		// don't do anything if not string is provided
-		if (source == null)
-			return "";
-
-		// need to preserve at least all line breaks
-		// (ending and starting paragraph also make a line break)
-		source = source.replaceAll("</p>[\r\n]*<p>", "<br>");
-		source = source.replaceAll("\\<br/?\\>", "\n\n");
-
-		// strip all HTML
-		source = source.replaceAll("\\<.*?\\>", ""); // any HTML tags
-		source = source.replaceAll("&\\w{1,4};", ""); // this is for things like
-														// "&nbsp;", "&gt;", etc
-
-		return source;
-	}
-
-	// ******** VARIOUS HELPERS ********
-
-	/**
-	 * The parameter is the class name to be processed; class name is likely to
-	 * be in the form <class_name>$<integer_value>, where the trailing part
-	 * starting with the $ sign indicates the anonymous inner class within the
-	 * base class. This will strip out that part of the class name to get the
-	 * base class name.
-	 */
-	public static String getBaseClassName(String strClassName) {
-		// strip out the class name part after the $ sign; return
-		// the original value if the dollar sign wasn't found
-		String result = strClassName;
-
-		int iDollarIdx = result.indexOf("$");
-		if (iDollarIdx != -1)
-			result = result.substring(0, iDollarIdx);
-
-		return result;
+	public static String formatDate(Date date) {
+		return NEW_DATE_FORMATTER.format(date);
 	}
 
 	/**
 	 * Determines whether the plugin is running as a standalone JFrame or inside
 	 * Taverna Workbench.
 	 */
-	public static boolean isRunningInTaverna() {
+	public static File getTavernaHomeDir() {
+		Logger log = Logger.getLogger(Util.class);
 		try {
 			/*
 			 * ApplicationRuntime class is defined within Taverna API. If this
 			 * is available, it should mean that the plugin runs within Taverna.
 			 */
-			Class.forName("net.sf.taverna.raven.appconfig.ApplicationRuntime")
-					.getMethod("getInstance", new Class<?>[0]).invoke(null);
-			return true;
+			Class<?> appRuntimeClass = Class.forName(APPLICATION_RUNTIME);
+			Object runtime = appRuntimeClass.getMethod("getInstance",
+					new Class<?>[0]).invoke(null);
+			if (runtime == null)
+				return null;
+			return (File) appRuntimeClass.getMethod("getApplicationHomeDir",
+					new Class<?>[0]).invoke(runtime);
 		} catch (NoClassDefFoundError e) {
+			log.info("could not find ApplicationRuntime or a support class");
 		} catch (ClassNotFoundException e) {
+			log.info("could not find ApplicationRuntime");
 		} catch (IllegalArgumentException e) {
+			log.info("could not find valid ApplicationRuntime");
 		} catch (SecurityException e) {
+			log.info("could not access ApplicationRuntime");
 		} catch (IllegalAccessException e) {
+			log.info("could not find valid ApplicationRuntime");
 		} catch (InvocationTargetException e) {
+			log.info("ApplicationRuntime threw unexpected exception",
+					e.getCause());
 		} catch (NoSuchMethodException e) {
+			log.info("could not find valid ApplicationRuntime");
 		}
-		return false;
+		return null;
 	}
 }

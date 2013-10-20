@@ -18,6 +18,7 @@ public class ComponentActivityLocalChecker implements
 	private static final VisitKind visitKind = ComponentHealthCheck
 			.getInstance();
 
+	@Override
 	public boolean canVisit(Object o) {
 		/*
 		 * Return True if we can visit the object. We could do deeper (but not
@@ -28,6 +29,7 @@ public class ComponentActivityLocalChecker implements
 		return o instanceof ComponentActivity;
 	}
 
+	@Override
 	public boolean isTimeConsuming() {
 		/*
 		 * Return true if the health checker does a network lookup or similar
@@ -37,13 +39,13 @@ public class ComponentActivityLocalChecker implements
 		return false;
 	}
 
+	@Override
 	public VisitReport visit(ComponentActivity activity, List<Object> ancestry) {
 		if (!activity.getConfiguration().getRegistryBase().getProtocol()
-				.startsWith("http")) {
+				.startsWith("http"))
 			return new VisitReport(visitKind, activity,
 					"Local component makes workflow non-shareable",
 					NON_SHAREABLE, WARNING);
-		}
 		return null;
 	}
 
