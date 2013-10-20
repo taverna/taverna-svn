@@ -90,7 +90,8 @@ class Util {
 			return null;
 
 		@SuppressWarnings("serial")
-		Resource r = new Resource(Type.UNKNOWN){};
+		Resource r = new Resource(Type.UNKNOWN) {
+		};
 		r.setItemType(e.getTagName());
 		r.setTitle(e.getTextContent());
 		r.setURI(e.getAttribute("uri"));
@@ -144,13 +145,10 @@ class Util {
 	 * The method will extract 3 attributes for every item in the collection: 1)
 	 * name of the item; 2) URI of the item (to access this item via the API);
 	 * 3) URI of the item (to access via WEB);
-	 * 
-	 * @return Returns the number of processed elements in the collection.
 	 */
-	public static int getResourceCollection(NodeList nodes,
+	public static void getResourceCollection(List<Element> elements,
 			List<Map<String, String>> collection) {
-		int i = 0;
-		for (Element element : elements(nodes)) {
+		for (Element element : elements) {
 			// store all details of current group into a hash map
 			Map<String, String> itemDetails = new HashMap<String, String>();
 			itemDetails.put("name", element.getTextContent());
@@ -159,9 +157,7 @@ class Util {
 
 			// add current item to the complete list of items
 			collection.add(itemDetails);
-			i++;
 		}
-		return i;
 	}
 
 	/**
@@ -217,6 +213,8 @@ class Util {
 	}
 
 	static String getChildText(Element elem, String childName) {
+		if (elem == null)
+			return null;
 		Node n = elem.getElementsByTagName(childName).item(0);
 		if (n == null)
 			return null;

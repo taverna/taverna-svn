@@ -21,10 +21,10 @@
 package net.sf.taverna.t2.component.registry.standard.myexpclient;
 
 import static java.util.Collections.sort;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Type.GROUP;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.childResources;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.children;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChild;
-import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChildText;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.makeUser;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.retrieveTags;
 
@@ -42,17 +42,16 @@ public class Group extends Resource {
 	private static final long serialVersionUID = -1115193144192642722L;
 
 	private User admin;
-
 	private final List<Tag> tags = new ArrayList<Tag>();
 	private final List<User> members = new ArrayList<User>();
 	private final List<Resource> sharedItems = new ArrayList<Resource>();
 
 	public Group() {
-		super(Type.GROUP);
+		super(GROUP);
 	}
 
 	Group(Element root, Logger logger) {
-		super(Type.GROUP, root, logger);
+		super(GROUP, root, logger);
 	}
 
 	@Override
@@ -124,34 +123,34 @@ public class Group extends Resource {
 		return buildFromXML(doc.getDocumentElement(), logger);
 	}
 
-	// class method to build a group instance from XML
-	public static Group buildFromXML(Element docRootElement, Logger logger) {
-		// return null to indicate an error if XML document contains no root
-		// element
-		if (docRootElement == null)
+	/** build a group instance from XML */
+	public static Group buildFromXML(Element root, Logger logger) {
+		/*
+		 * return null to indicate an error if XML document contains no root
+		 * element
+		 */
+		if (root == null)
 			return null;
 
 		try {
-			Group g = new Group(docRootElement, logger);
+			Group g = new Group(root, logger);
 
-			g.setAdmin(makeUser(getChild(docRootElement, "owner")));
-			g.setCreatedAt(getChildText(docRootElement, "created-at"));
-			g.setUpdatedAt(getChildText(docRootElement, "updated-at"));
-			g.tags.addAll(retrieveTags(docRootElement));
+			g.setAdmin(makeUser(getChild(root, "owner")));
+			g.tags.addAll(retrieveTags(root));
 
 			// Members
-			for (Element e : children(getChild(docRootElement, "members")))
+			for (Element e : children(getChild(root, "members")))
 				g.members.add(makeUser(e));
 			sort(g.members);
 
 			// Shared Items
-			g.sharedItems
-					.addAll(childResources(docRootElement, "shared-items"));
+			g.sharedItems.addAll(childResources(root, "shared-items"));
 			sort(g.sharedItems);
 
-			logger.debug("Found information for group with ID: " + g.getID()
-					+ ", Title: " + g.getTitle());
-			
+			logger.debug(String.format(
+					"Found information for group with ID: %s, Title: %s",
+					g.getID(), g.getTitle()));
+
 			// return created group instance
 			return g;
 		} catch (Exception e) {

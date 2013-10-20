@@ -5,6 +5,10 @@ package net.sf.taverna.t2.component.registry.standard.myexpclient;
 
 import static java.lang.String.format;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Access.DOWNLOADING;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Type.FILE;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Type.GROUP;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Type.PACK;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Type.WORKFLOW;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.children;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChildText;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.parseDate;
@@ -64,23 +68,23 @@ public abstract class Resource implements Comparable<Resource>, Serializable {
 		 */
 		public static Access access(Element privileges) {
 			if (privileges == null)
-				return Access.VIEWING;
+				return VIEWING;
 
 			/*
 			 * if the item for which the privileges are processed got received,
 			 * there definitely is viewing access to it. We need to pick the
 			 * highest level of access assigned.
 			 */
-			Access accessType = Access.VIEWING;
+			Access accessType = VIEWING;
 
 			for (Element privilege : children(privileges, "privilege")) {
 				String strValue = privilege.getAttribute("type");
 
-				Access thisPrivilege = Access.VIEWING;
+				Access thisPrivilege = VIEWING;
 				if (strValue.equals("download"))
-					thisPrivilege = Access.DOWNLOADING;
+					thisPrivilege = DOWNLOADING;
 				else if (strValue.equals("edit"))
-					thisPrivilege = Access.EDITING;
+					thisPrivilege = EDITING;
 
 				if (thisPrivilege.compareTo(accessType) > 0)
 					accessType = thisPrivilege;
@@ -91,8 +95,10 @@ public abstract class Resource implements Comparable<Resource>, Serializable {
 
 	}
 
-	// (categories for selecting required elements for every resource type for a
-	// particular purpose)
+	/**
+	 * categories for selecting required elements for every resource type for a
+	 * particular purpose
+	 */
 	public static enum RequestType {
 		/**
 		 * essentially obtains all data that API provides
@@ -227,6 +233,8 @@ public abstract class Resource implements Comparable<Resource>, Serializable {
 		setID(docRootElement, logger);
 		setTitle(getChildText(docRootElement, "title"));
 		setDescription(getChildText(docRootElement, "description"));
+		setCreatedAt(getChildText(docRootElement, "created-at"));
+		setUpdatedAt(getChildText(docRootElement, "updated-at"));
 	}
 
 	public int getID() {
@@ -390,7 +398,7 @@ public abstract class Resource implements Comparable<Resource>, Serializable {
 	 * Check if the current type of resource is supposed to have an uploader.
 	 */
 	public boolean hasUploader() {
-		return (itemType == Type.WORKFLOW || itemType == Type.FILE);
+		return (itemType == WORKFLOW || itemType == FILE);
 	}
 
 	/**
@@ -404,7 +412,7 @@ public abstract class Resource implements Comparable<Resource>, Serializable {
 	 * Check if the current type of resource is supposed to have a creator.
 	 */
 	public boolean hasCreator() {
-		return (itemType == Type.PACK);
+		return (itemType == PACK);
 	}
 
 	/**
@@ -419,7 +427,7 @@ public abstract class Resource implements Comparable<Resource>, Serializable {
 	 * administrator.
 	 */
 	public boolean hasAdmin() {
-		return (itemType == Type.GROUP);
+		return (itemType == GROUP);
 	}
 
 	/**
@@ -464,7 +472,7 @@ public abstract class Resource implements Comparable<Resource>, Serializable {
 	 * general.
 	 */
 	public boolean isDownloadable() {
-		return (itemType == Type.WORKFLOW || itemType == Type.FILE || itemType == Type.PACK);
+		return (itemType == WORKFLOW || itemType == FILE || itemType == PACK);
 	}
 
 	/**
@@ -487,7 +495,7 @@ public abstract class Resource implements Comparable<Resource>, Serializable {
 	 * Only workflows (and files?) have visible types.
 	 */
 	public boolean hasVisibleType() {
-		return (itemType == Type.WORKFLOW || itemType == Type.FILE);
+		return (itemType == WORKFLOW || itemType == FILE);
 	}
 
 	public String getVisibleType() {

@@ -52,20 +52,22 @@ public class Workflow extends Resource {
 
 	public Workflow(Element root, Logger logger) throws URISyntaxException {
 		super(WORKFLOW, root, logger);
-		String version = root.getAttribute("version");
-		if (version != null && !version.isEmpty())
-			setVersion(Integer.parseInt(version));
+		try {
+			String version = root.getAttribute("version");
+			if (version != null && !version.isEmpty())
+				setVersion(Integer.parseInt(version));
 
-		setUploader(makeUser(getChild(root, "uploader")));
-		setCreatedAt(getChildText(root, "created-at"));
-		setUpdatedAt(getChildText(root, "updated-at"));
-		setAccessType(access(getChild(root, "privileges")));
-		setLicense(License.getInstance(getChildText(root, "license-type")));
-		setVisibleType(getChildText(root, "type"));
-		setContentType(getChildText(root, "content-type"));
-		tags.addAll(retrieveTags(root));
-		credits.addAll(retrieveCredits(root));
-		attributions.addAll(retrieveAttributions(root));
+			setUploader(makeUser(getChild(root, "uploader")));
+			setAccessType(access(getChild(root, "privileges")));
+			setLicense(License.getInstance(getChildText(root, "license-type")));
+			setVisibleType(getChildText(root, "type"));
+			setContentType(getChildText(root, "content-type"));
+			tags.addAll(retrieveTags(root));
+			credits.addAll(retrieveCredits(root));
+			attributions.addAll(retrieveAttributions(root));
+		} catch (Exception e) {
+			logger.warn("failed to extract metadata", e);
+		}
 		try {
 			String contentUri = getChildText(root, "content-uri");
 			if (contentUri != null && !contentUri.isEmpty())
@@ -231,8 +233,10 @@ public class Workflow extends Resource {
 
 	// class method to build a workflow instance from XML
 	public static Workflow buildFromXML(Element root, Logger logger) {
-		// return null to indicate an error if XML document contains no root
-		// element
+		/*
+		 * return null to indicate an error if XML document contains no root
+		 * element
+		 */
 		if (root == null)
 			return null;
 
@@ -274,8 +278,10 @@ public class Workflow extends Resource {
 				inputs.add(curInput);
 			}
 
-			// put all inputs that were found into the overall component
-			// collection
+			/*
+			 * put all inputs that were found into the overall component
+			 * collection
+			 */
 			components.put("inputs", inputs);
 		}
 
@@ -290,8 +296,10 @@ public class Workflow extends Resource {
 				sinks.add(curOutput);
 			}
 
-			// put all outputs that were found into the overall
-			// component collection
+			/*
+			 * put all outputs that were found into the overall component
+			 * collection
+			 */
 			components.put("outputs", sinks);
 		}
 
@@ -307,8 +315,10 @@ public class Workflow extends Resource {
 				processors.add(curProcessor);
 			}
 
-			// put all processors that were found into the overall
-			// component collection
+			/*
+			 * put all processors that were found into the overall component
+			 * collection
+			 */
 			components.put("processors", processors);
 		}
 
@@ -319,18 +329,18 @@ public class Workflow extends Resource {
 			for (Element e : children(linksElement)) {
 				Map<String, String> curLink = new HashMap<String, String>();
 				String sourcePort = getChildText(e, "source", "port");
-				String strSource = getChildText(e, "source", "node")
-						+ (sourcePort == null ? "" : ":" + sourcePort);
-				curLink.put("source", strSource);
+				curLink.put("source", getChildText(e, "source", "node")
+						+ (sourcePort == null ? "" : ":" + sourcePort));
 				String sinkPort = getChildText(e, "sink", "port");
-				String strSink = getChildText(e, "sink", "node")
-						+ (sinkPort == null ? "" : ":" + sinkPort);
-				curLink.put("sink", strSink);
+				curLink.put("sink", getChildText(e, "sink", "node")
+						+ (sinkPort == null ? "" : ":" + sinkPort));
 				links.add(curLink);
 			}
 
-			// put all links that were found into the overall component
-			// collection
+			/*
+			 * put all links that were found into the overall component
+			 * collection
+			 */
 			components.put("links", links);
 		}
 	}

@@ -20,14 +20,17 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.standard.myexpclient;
 
+import static java.lang.String.format;
 import static java.util.Collections.sort;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Access.access;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.RequestType.DEFAULT;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Type.EXTERNAL;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Type.INTERNAL;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Type.PACK;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.children;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChild;
-import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChildText;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.makeUser;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.retrieveTags;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +51,11 @@ public class Pack extends Resource {
 	private final List<PackItem> items = new ArrayList<PackItem>();
 
 	public Pack() {
-		super(Type.PACK);
+		super(PACK);
+	}
+
+	Pack(Element root, Logger logger) {
+		super(PACK, root, logger);
 	}
 
 	@Override
@@ -123,76 +130,43 @@ public class Pack extends Resource {
 	}
 
 	// class method to build a pack instance from XML
-	public static Pack buildFromXML(Element docRootElement,
-			MyExperimentClient client, Logger logger) {
+	public static Pack buildFromXML(Element root, MyExperimentClient client,
+			Logger logger) {
 		// return null to indicate an error if XML document contains no root
 		// element
-		if (docRootElement == null)
-			return (null);
+		if (root == null)
+			return null;
 
 		Pack p = new Pack();
 
 		try {
-			// Access type
-			p.setAccessType(access(getChild(docRootElement, "privileges")));
+			p = new Pack(root, logger);
 
-			// URI
-			p.setURI(docRootElement.getAttribute("uri"));
-
-			// Resource URI
-			p.setResource(docRootElement.getAttribute("resource"));
-
-			// Id
-			String id = getChildText(docRootElement, "id");
-			if (id == null || id.equals("")) {
-				id = "API Error - No pack ID supplied";
-				logger.error("Error while parsing pack XML data - no ID provided for pack with title: \""
-						+ getChildText(docRootElement, "title") + "\"");
-			}
-			p.setID(Integer.parseInt(id));
-
-			// Title
-			p.setTitle(getChildText(docRootElement, "title"));
-
-			// Description
-			p.setDescription(getChildText(docRootElement, "description"));
-
-			// Owner
-			p.setCreator(Util.makeUser(getChild(docRootElement, "owner")));
-
-			// Created at
-			p.setCreatedAt(getChildText(docRootElement, "created-at"));
-
-			// Updated at
-			p.setUpdatedAt(getChildText(docRootElement, "updated-at"));
-
-			// Tags
-			p.tags.addAll(Util.retrieveTags(docRootElement));
+			p.setAccessType(access(getChild(root, "privileges")));
+			p.setCreator(makeUser(getChild(root, "owner")));
+			p.tags.addAll(retrieveTags(root));
 
 			// === All items will be stored together in one array ===
 			// adding internal items first
-			for (Element e : children(getChild(docRootElement,
-					"internal-pack-items")))
+			for (Element e : children(getChild(root, "internal-pack-items")))
 				p.items.add(PackItem.buildFromXML(client.getResource(INTERNAL,
 						e.getAttribute("uri"), DEFAULT), logger));
-
 			// now adding external items
-			for (Element e : children(getChild(docRootElement,
-					"external-pack-items")))
+			for (Element e : children(getChild(root, "external-pack-items")))
 				p.items.add(PackItem.buildFromXML(client.getResource(EXTERNAL,
 						e.getAttribute("uri"), DEFAULT), logger));
-
 			// sort the items after all of those have been added
 			sort(p.items);
 
-			logger.debug("Found information for pack with ID: " + p.getID()
-					+ ", Title: " + p.getTitle());
+			logger.debug(format(
+					"Found information for pack with ID: %s, Title: %s",
+					p.getID(), p.getTitle()));
 		} catch (Exception e) {
 			logger.error("Failed midway through creating pack object from XML",
 					e);
 		}
 
 		// return created pack instance
-		return (p);
+		return p;
 	}
 }

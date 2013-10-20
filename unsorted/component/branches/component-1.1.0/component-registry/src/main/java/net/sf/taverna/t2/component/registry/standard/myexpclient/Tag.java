@@ -2,8 +2,9 @@
 // and Cardiff University
 package net.sf.taverna.t2.component.registry.standard.myexpclient;
 
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Type.TAG;
+
 import java.io.Serializable;
-import java.util.Comparator;
 
 /**
  * @author Jiten Bhagat, Sergejs Aleksejevs
@@ -14,7 +15,7 @@ public class Tag extends Resource implements Serializable {
 	private int count;
 
 	public Tag() {
-		super(Type.TAG);
+		super(TAG);
 	}
 
 	public String getTagName() {
@@ -31,36 +32,6 @@ public class Tag extends Resource implements Serializable {
 
 	public void setCount(int count) {
 		this.count = count;
-	}
-
-	public static class ReversePopularityComparator implements Comparator<Tag> {
-		public ReversePopularityComparator() {
-			super();
-		}
-
-		@Override
-		public int compare(Tag t1, Tag t2) {
-			if (t1.getCount() == t2.getCount())
-				// in case of the same popularity, compare by tag name
-				return t1.getTagName().compareTo(t2.getTagName());
-
-			/*
-			 * popularity isn't the same; arrange by popularity (more popular
-			 * first)
-			 */
-			return t2.getCount() - t1.getCount();
-		}
-	}
-
-	public static class AlphanumericComparator implements Comparator<Tag> {
-		public AlphanumericComparator() {
-			super();
-		}
-
-		@Override
-		public int compare(Tag t1, Tag t2) {
-			return t1.getTagName().compareTo(t2.getTagName());
-		}
 	}
 
 	/**
@@ -100,17 +71,19 @@ public class Tag extends Resource implements Serializable {
 	 */
 	@SuppressWarnings("incomplete-switch")
 	public static String getRequiredAPIElements(RequestType requestType) {
-		String strElements = "";
+		String elements = "";
 
-		// cases higher up in the list are supersets of those that come below -
-		// hence no "break" statements are required, because 'falling through'
-		// the switch statement is the desired behaviour in this case
+		/*
+		 * cases higher up in the list are supersets of those that come below -
+		 * hence no "break" statements are required, because 'falling through'
+		 * the switch statement is the desired behaviour in this case
+		 */
 		switch (requestType) {
 		case DEFAULT:
-			strElements += ""; // no change needed - defaults will be used
+			elements += ""; // no change needed - defaults will be used
 		}
 
-		return strElements;
+		return elements;
 	}
 
 	/**
@@ -118,18 +91,18 @@ public class Tag extends Resource implements Serializable {
 	 * trigger tag search events in the plugin. These action commands should
 	 * look like "tag:<tag_name>".
 	 * 
-	 * @param strActionCommand
+	 * @param actionCommand
 	 *            The action command to parse.
 	 * @return A Tab object instance or null if action command was invalid.
 	 */
-	public static Tag instantiateTagFromActionCommand(String strActionCommand) {
-		if (!strActionCommand.startsWith("tag:"))
+	public static Tag instantiateTagFromActionCommand(String actionCommand) {
+		if (!actionCommand.startsWith("tag:"))
 			return null;
 
 		// instantiate the Tag object, strip out the leading "tag:" and
 		// return result
 		Tag t = new Tag();
-		t.setTagName(strActionCommand.replaceFirst("tag:", ""));
+		t.setTagName(actionCommand.replaceFirst("tag:", ""));
 		return t;
 	}
 

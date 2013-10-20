@@ -2,6 +2,8 @@
 // and Cardiff University
 package net.sf.taverna.t2.component.registry.standard.myexpclient;
 
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Type.USER;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.children;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChild;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChildText;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getResourceCollection;
@@ -29,7 +31,11 @@ public class User extends Resource {
 	private static final Cache<User> existing = new Cache<User>();
 
 	public User() {
-		super(Type.USER);
+		super(USER);
+	}
+
+	User(Element root, Logger logger) {
+		super(USER, root, logger);
 	}
 
 	public String getName() {
@@ -117,43 +123,17 @@ public class User extends Resource {
 		User user = new User();
 
 		try {
-			// store all simple values
-			user.setURI(root.getAttribute("uri"));
-			user.setResource(root.getAttribute("resource"));
-			user.setID(root, logger);
+			user = new User(root, logger);
+
 			user.setName(getChildText(root, "name"));
-			/*
-			 * to allow generic handling of all resources - for users 'title'
-			 * will replicate the 'name'
-			 */
-			user.setTitle(user.getName());
 			user.setDescription(getChildText(root, "description"));
 
-			// Created at
-			user.setCreatedAt(getChildText(root, "created-at"));
-
-			// Updated at
-			user.setUpdatedAt(getChildText(root, "updated-at"));
-
-			// store workflows
-			Element workflows = getChild(root, "workflows");
-			if (workflows != null)
-				getResourceCollection(workflows.getChildNodes(), user.workflows);
-
-			// store files
-			Element files = getChild(root, "files");
-			if (files != null)
-				getResourceCollection(files.getChildNodes(), user.files);
-
-			// store packs
-			Element packs = getChild(root, "packs");
-			if (packs != null)
-				getResourceCollection(packs.getChildNodes(), user.packs);
-
-			// store groups
-			Element groups = getChild(root, "groups");
-			if (groups != null)
-				getResourceCollection(groups.getChildNodes(), user.groups);
+			getResourceCollection(children(getChild(root, "workflows")),
+					user.workflows);
+			getResourceCollection(children(getChild(root, "files")), user.files);
+			getResourceCollection(children(getChild(root, "packs")), user.packs);
+			getResourceCollection(children(getChild(root, "groups")),
+					user.groups);
 			existing.put(user);
 		} catch (Exception e) {
 			logger.error("Failed midway through creating user object from XML",

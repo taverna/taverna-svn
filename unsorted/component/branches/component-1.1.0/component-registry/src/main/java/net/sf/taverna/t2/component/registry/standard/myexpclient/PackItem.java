@@ -20,6 +20,8 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.standard.myexpclient;
 
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Type.EXTERNAL;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Type.UNKNOWN;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.children;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChild;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChildText;
@@ -36,43 +38,34 @@ import org.w3c.dom.Element;
 public class PackItem extends Resource {
 	private static final long serialVersionUID = -4022813839129785667L;
 
-	private int id;
 	private User userWhoAddedThisItem;
-	private String strComment;
-	private boolean bInternalItem;
+	private String comment;
+	private boolean internalItem;
 	private Resource item; // for internal items
-	private String strLink; // for external items
-	private String strAlternateLink; // for external items
+	private String link; // for external items
+	private String alternateLink; // for external items
 
 	public PackItem() {
-		super(Type.UNKNOWN);
+		super(UNKNOWN);
+		/*
+		 * set to unknown originally; will be changed as soon as the type is
+		 * known
+		 */
+	}
+	PackItem(Element root, Logger logger) {
+		super(UNKNOWN, root, logger);
 		/*
 		 * set to unknown originally; will be changed as soon as the type is
 		 * known
 		 */
 	}
 
-	@Override
-	public int getID() {
-		return id;
-	}
-
-	@Override
-	public void setID(int id) {
-		this.id = id;
-	}
-
-	@Override
-	public void setID(String id) {
-		this.id = Integer.parseInt(id);
-	}
-
 	public boolean isInternalItem() {
-		return this.bInternalItem;
+		return this.internalItem;
 	}
 
-	public void setInternalItem(boolean bIsInternalItem) {
-		this.bInternalItem = bIsInternalItem;
+	public void setInternalItem(boolean isInternalItem) {
+		this.internalItem = isInternalItem;
 	}
 
 	public User getUserWhoAddedTheItem() {
@@ -84,11 +77,11 @@ public class PackItem extends Resource {
 	}
 
 	public String getComment() {
-		return this.strComment;
+		return this.comment;
 	}
 
-	public void setComment(String strComment) {
-		this.strComment = strComment;
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 
 	public Resource getItem() {
@@ -100,19 +93,19 @@ public class PackItem extends Resource {
 	}
 
 	public String getLink() {
-		return this.strLink;
+		return this.link;
 	}
 
-	public void setLink(String strLink) {
-		this.strLink = strLink;
+	public void setLink(String link) {
+		this.link = link;
 	}
 
 	public String getAlternateLink() {
-		return this.strAlternateLink;
+		return this.alternateLink;
 	}
 
-	public void setAlternateLink(String strAlternateLink) {
-		this.strAlternateLink = strAlternateLink;
+	public void setAlternateLink(String alternateLink) {
+		this.alternateLink = alternateLink;
 	}
 
 	public static PackItem buildFromXML(Document doc, Logger logger) {
@@ -124,29 +117,11 @@ public class PackItem extends Resource {
 
 		try {
 			Element root = doc.getDocumentElement();
-
-			// URI
-			p.setURI(root.getAttribute("uri"));
-
-			// Resource URI
-			p.setResource(root.getAttribute("resource"));
-
-			// Id
-			String strID = getChildText(root, "id");
-			if (strID == null || strID.equals("")) {
-				strID = "API Error - No pack item ID supplied";
-				logger.error("Error while parsing pack item XML data - no ID provided for pack item with uri: \""
-						+ p.getURI() + "\"");
-			} else {
-				p.setID(strID);
-			}
+			p = new PackItem(root, logger);
 
 			// User who added the item to the pack
 			Element ownerElement = getChild(root, "owner");
 			p.setUserWhoAddedTheItem(makeUser(ownerElement));
-
-			// Date when the item was added to the pack
-			p.setCreatedAt(getChildText(root, "created-at"));
 
 			// Comment
 			Element commentElement = getChild(root, "comment");
@@ -179,7 +154,7 @@ public class PackItem extends Resource {
 				p.setInternalItem(false);
 
 				// add links to the external resource for external items
-				p.setItemType(Type.EXTERNAL);
+				p.setItemType(EXTERNAL);
 				p.setTitle(getChildText(root, "title"));
 				p.setLink(getChildText(root, "uri"));
 				p.setAlternateLink(getChildText(root, "alternate-uri"));

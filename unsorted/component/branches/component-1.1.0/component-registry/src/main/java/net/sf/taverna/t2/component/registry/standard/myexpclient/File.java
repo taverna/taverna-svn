@@ -22,6 +22,7 @@ package net.sf.taverna.t2.component.registry.standard.myexpclient;
 
 import static java.lang.String.format;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Access.access;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.Resource.Type.FILE;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChild;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChildText;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.makeUser;
@@ -43,7 +44,6 @@ public class File extends Resource {
 	private static final long serialVersionUID = -9051574197214290716L;
 
 	private Access accessType;
-
 	private User uploader;
 	private License license;
 	private String filename;
@@ -54,11 +54,11 @@ public class File extends Resource {
 	private final List<Resource> attributions = new ArrayList<Resource>();
 
 	public File() {
-		super(Type.FILE);
+		super(FILE);
 	}
 
 	File(Element root, Logger logger) {
-		super(Type.FILE, root, logger);
+		super(FILE, root, logger);
 	}
 
 	@Override
@@ -165,29 +165,29 @@ public class File extends Resource {
 		return buildFromXML(doc.getDocumentElement(), logger);
 	}
 
-	// class method to build a file instance from XML
-	public static File buildFromXML(Element docRootElement, Logger logger) {
-		// return null to indicate an error if XML document contains no root
-		// element
-		if (docRootElement == null)
+	/** build a file instance from XML */
+	public static File buildFromXML(Element root, Logger logger) {
+		/*
+		 * return null to indicate an error if XML document contains no root
+		 * element
+		 */
+		if (root == null)
 			return null;
 
 		File f = new File();
 
 		try {
-			f = new File(docRootElement, logger);
-			f.setFilename(getChildText(docRootElement, "filename"));
-			f.setUploader(makeUser(getChild(docRootElement, "uploader")));
-			f.setCreatedAt(getChildText(docRootElement, "created-at"));
-			f.setUpdatedAt(getChildText(docRootElement, "updated-at"));
-			f.setAccessType(access(getChild(docRootElement, "privileges")));
-			f.setLicense(License.getInstance(getChildText(docRootElement,
-					"license-type")));
-			f.setVisibleType(getChildText(docRootElement, "type"));
-			f.setContentType(getChildText(docRootElement, "content-type"));
-			f.getTags().addAll(retrieveTags(docRootElement));
-			f.getCredits().addAll(retrieveCredits(docRootElement));
-			f.getAttributions().addAll(retrieveAttributions(docRootElement));
+			f = new File(root, logger);
+			f.setFilename(getChildText(root, "filename"));
+			f.setUploader(makeUser(getChild(root, "uploader")));
+			f.setAccessType(access(getChild(root, "privileges")));
+			f.setLicense(License
+					.getInstance(getChildText(root, "license-type")));
+			f.setVisibleType(getChildText(root, "type"));
+			f.setContentType(getChildText(root, "content-type"));
+			f.getTags().addAll(retrieveTags(root));
+			f.getCredits().addAll(retrieveCredits(root));
+			f.getAttributions().addAll(retrieveAttributions(root));
 
 			logger.debug(format(
 					"Found information for file with ID: %s, Title: %s",
