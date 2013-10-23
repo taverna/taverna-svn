@@ -186,7 +186,10 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	
 	public boolean isConfigurationChanged() {
 		String configurationString = convertBeanToString(activity.getConfiguration());
-		return (!convertBeanToString(calculateConfiguration()).equals(configurationString));
+		final RshellActivityConfigurationBean calculatedConfiguration = calculateConfiguration();
+		final String calculatedConfigurationString = convertBeanToString(calculatedConfiguration);
+		final boolean equals = calculatedConfigurationString.equals(configurationString);
+		return (!equals);
 	}
 
     public void whenOpened() {
@@ -976,13 +979,13 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 			ActivityInputPortDefinitionBean activityInputPortDefinitionBean = new ActivityInputPortDefinitionBean();
 			activityInputPortDefinitionBean.setName(inputView
 					.getNameField().getText());
-			inputBeanList.add(activityInputPortDefinitionBean);
 			RShellPortSymanticTypeBean bean = new RShellPortSymanticTypeBean();
 			bean.setName(inputView.getNameField().getText());
 			SemanticTypes selectedItem = (SemanticTypes) inputView
 					.getSemanticSelector().getSelectedItem();
-//			activityInputPortDefinitionBean.setDepth(selectedItem.getDepth());
+			activityInputPortDefinitionBean.setDepth(selectedItem.getDepth());
 			bean.setSymanticType(selectedItem);
+			inputBeanList.add(activityInputPortDefinitionBean);
 			inputSemanticTypes.add(bean);
 		}
 
@@ -992,13 +995,14 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 			activityOutputPortDefinitionBean.setName(outputView
 					.getNameField().getText());
 			activityOutputPortDefinitionBean.setMimeTypes(new ArrayList<String>());
-			outputBeanList.add(activityOutputPortDefinitionBean);
 			RShellPortSymanticTypeBean bean = new RShellPortSymanticTypeBean();
 			SemanticTypes selectedItem = (SemanticTypes) outputView
 					.getSemanticTypeSelector().getSelectedItem();
-//			activityOutputPortDefinitionBean.setDepth(selectedItem.getDepth());
+			activityOutputPortDefinitionBean.setDepth(selectedItem.getDepth());
+			activityOutputPortDefinitionBean.setGranularDepth(selectedItem.getDepth());
 			bean.setSymanticType(selectedItem);
 			bean.setName(outputView.getNameField().getText());
+			outputBeanList.add(activityOutputPortDefinitionBean);
 			outputSemanticTypes.add(bean);
 		}
 		rshellActivityConfigurationBean
