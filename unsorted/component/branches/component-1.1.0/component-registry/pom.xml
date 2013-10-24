@@ -20,6 +20,9 @@
 						<goals>
 							<goal>generate</goal>
 						</goals>
+						<configuration>
+							<catalog>${basedir}/src/main/catalog/catalog.xml</catalog>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
