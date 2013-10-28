@@ -143,30 +143,17 @@ AbstractAsynchronousActivity<RshellActivityConfigurationBean> {
 
 					URI rServerURI = URI.create("rserve://"
 							+ settings.getHost() + ":" + settings.getPort()); // this URI is used to identify Rshell service in Credential Manager
-					// create connection
 					try {
-						// If Credential Manager has username and password for this service - use it to open a connection
-						if (hasUsernameAndPasswordForService(rServerURI)) {
-							UsernamePassword username_password = getUsernameAndPasswordForService(rServerURI);
-							settings.setUsername(username_password
-									.getUsername());
-							settings.setPassword(new String(username_password
-									.getPassword()));
-							connection = RshellConnectionManager.INSTANCE
-									.createConnection(settings);
+						// Try without credentials - just do a simple assign and watch for any
+						// authentication exceptions
+						connection = RshellConnectionManager.INSTANCE
+								.createConnection(settings);
+						// Hack to check if credentials are required to
+						// access this R server
+						connection.assign("x", "3");
 
-						} 
-						else {
-							// Try without credentials - just do a simple assign and watch for any
-							// authentication exceptions
-							connection = RshellConnectionManager.INSTANCE
-									.createConnection(settings);
-							// Hack to check if credentials are required to
-							// access this R server
-							connection.assign("x", "3");
-						}
-					} catch (RserveException rSrvException) {
-						if (rSrvException.getMessage().toLowerCase().contains(
+					}  catch (RserveException e) {
+						if (e.getMessage().toLowerCase().contains(
 								"authorization failed")) {
 							// The simple assign test failed because the connection
 							// requires user's credentials
@@ -193,8 +180,8 @@ AbstractAsynchronousActivity<RshellActivityConfigurationBean> {
 						} else {
 							callback
 									.fail("Invalid RShell connection: "
-											+ rSrvException.getMessage(),
-											rSrvException);
+											+ e.getMessage(),
+											e);
 						}
 
 					} catch (Exception ex) {
