@@ -25,10 +25,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import net.sf.taverna.t2.component.api.Component;
@@ -55,12 +53,10 @@ import org.jdom.output.XMLOutputter;
  * 
  * @author David Withers
  */
-public class MyExperimentComponentRegistry extends ComponentRegistry {
+class MyExperimentComponentRegistry extends ComponentRegistry {
 
 	private static Logger logger = Logger
 			.getLogger(MyExperimentComponentRegistry.class);
-
-	private static Map<String, MyExperimentComponentRegistry> componentRegistries = new HashMap<String, MyExperimentComponentRegistry>();
 
 	private final MyExperimentClient myExperimentClient;
 
@@ -69,8 +65,7 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 
 	private final String DO_PUT = "_DO_UPDATE_SIGNAL_";
 
-	private MyExperimentComponentRegistry(URL registryURL)
-			throws RegistryException {
+	MyExperimentComponentRegistry(URL registryURL) throws RegistryException {
 		super(registryURL);
 		try {
 			myExperimentClient = new MyExperimentClient(logger);
@@ -82,15 +77,7 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 		}
 	}
 
-	public static synchronized MyExperimentComponentRegistry getComponentRegistry(
-			URL registryURL) throws RegistryException {
-		if (!componentRegistries.containsKey(registryURL.toExternalForm())) {
-			componentRegistries.put(registryURL.toExternalForm(),
-					new MyExperimentComponentRegistry(registryURL));
-		}
-		return componentRegistries.get(registryURL.toExternalForm());
-	}
-
+	@Override
 	protected void populateFamilyCache() throws RegistryException {
 		Element packsElement = getResource(getRegistryBaseString()
 				+ "/packs.xml", "tag=component%20family",
@@ -138,6 +125,7 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 		}
 	}
 
+	@Override
 	protected void populateProfileCache() throws RegistryException {
 		Element filesElement = getResource(getRegistryBaseString()
 				+ "/files.xml", "tag=component%20profile");
@@ -533,6 +521,7 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 		return urlString;
 	}
 
+	@Override
 	protected void populatePermissionCache() {
 		permissionCache.add(PUBLIC);
 		Element policiesElement = getResource(getRegistryBaseString()
@@ -550,6 +539,7 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 
 	}
 
+	@Override
 	protected void populateLicenseCache() {
 		Element licensesElement = getResource(getRegistryBaseString()
 				+ "/licenses.xml");
@@ -569,6 +559,7 @@ public class MyExperimentComponentRegistry extends ComponentRegistry {
 		return getLicenseByAbbreviation(licenseString);
 	}
 
+	@Override
 	public License getPreferredLicense() throws RegistryException {
 		return getLicenseByAbbreviation("by-nd");
 

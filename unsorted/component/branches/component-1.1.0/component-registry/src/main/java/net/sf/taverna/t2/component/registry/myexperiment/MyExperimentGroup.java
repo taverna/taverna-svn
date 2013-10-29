@@ -22,7 +22,7 @@ package net.sf.taverna.t2.component.registry.myexperiment;
 
 import org.jdom.Element;
 
-public class MyExperimentGroup {
+class MyExperimentGroup {
 
 	private String id, name, description;
 	private boolean editPermission;

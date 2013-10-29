@@ -3,7 +3,7 @@ package net.sf.taverna.t2.component.registry.standard;
 import uk.org.taverna.component.api.LicenseType;
 import net.sf.taverna.t2.component.api.License;
 
-public class NewComponentLicense implements License {
+class NewComponentLicense implements License {
 	private NewComponentRegistry registry;
 	private String id;
 	private String title;

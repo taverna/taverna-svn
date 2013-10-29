@@ -21,7 +21,7 @@ import uk.org.taverna.component.api.ComponentFamilyType;
  * 
  * @author Donal Fellows
  */
-public class NewComponentFamily extends ComponentFamily {
+class NewComponentFamily extends ComponentFamily {
 	static final String ELEMENTS = "title,description";
 
 	private final NewComponentRegistry registry;

@@ -7,7 +7,7 @@ import net.sf.taverna.t2.component.api.SharingPolicy;
 import uk.org.taverna.component.api.Permissions;
 import uk.org.taverna.component.api.Permissions.Permission;
 
-public abstract class Policy implements SharingPolicy {
+abstract class Policy implements SharingPolicy {
 	public static final SharingPolicy PUBLIC = new Public();
 	public static final SharingPolicy PRIVATE = new Private();
 
@@ -39,7 +39,7 @@ public abstract class Policy implements SharingPolicy {
 
 	protected abstract boolean equals(Policy p);
 
-	public static class Public extends Policy {
+	static class Public extends Policy {
 		@Override
 		public String getName() {
 			return "Public";
@@ -71,7 +71,7 @@ public abstract class Policy implements SharingPolicy {
 		}
 	}
 
-	public static class Private extends Policy {
+	static class Private extends Policy {
 		@Override
 		public String getName() {
 			return "Private";
@@ -93,7 +93,7 @@ public abstract class Policy implements SharingPolicy {
 		}
 	}
 
-	public static class Group extends Policy {
+	static class Group extends Policy {
 		private String id;
 		private Permissions p;
 

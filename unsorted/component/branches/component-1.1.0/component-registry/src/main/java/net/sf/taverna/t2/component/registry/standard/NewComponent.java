@@ -18,7 +18,7 @@ import uk.org.taverna.component.api.ComponentDescription;
 import uk.org.taverna.component.api.ComponentType;
 import uk.org.taverna.component.api.Description;
 
-public class NewComponent extends Component {
+class NewComponent extends Component {
 	static final String ELEMENTS = "title,description";
 	static final String EXTRA = "license-type,permissions";
 

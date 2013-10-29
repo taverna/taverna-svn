@@ -11,7 +11,7 @@ import uk.org.taverna.component.api.ComponentProfileType;
  * 
  * @author Donal Fellows
  */
-public class NewComponentProfile extends ComponentProfile {
+class NewComponentProfile extends ComponentProfile {
 	private static final String LOCATION = "content-uri";
 	static final String ELEMENTS = LOCATION;
 

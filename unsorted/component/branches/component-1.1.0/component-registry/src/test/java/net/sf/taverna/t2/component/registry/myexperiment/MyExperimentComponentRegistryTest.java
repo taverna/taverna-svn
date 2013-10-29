@@ -20,6 +20,7 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.myexperiment;
 
+import static net.sf.taverna.t2.component.registry.myexperiment.OldComponentRegistryLocator.getComponentRegistry;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
@@ -38,8 +39,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- *
- *
+ * 
+ * 
  * @author David Withers
  */
 @Ignore
@@ -57,20 +58,24 @@ public class MyExperimentComponentRegistryTest extends ComponentRegistryTest {
 	@Test
 	public void testGetComponentRegistry() throws Exception {
 		assertSame(componentRegistry,
-				MyExperimentComponentRegistry.getComponentRegistry(componentRegistryUrl));
+				getComponentRegistry(componentRegistryUrl));
 	}
 
 	@Test
 	public void testUploadWorkflow() throws Exception {
-		MyExperimentComponentRegistry registry = MyExperimentComponentRegistry.getComponentRegistry(componentRegistryUrl);
-		URL dataflowUrl = getClass().getClassLoader().getResource("beanshell_test.t2flow");
+		MyExperimentComponentRegistry registry = (MyExperimentComponentRegistry) getComponentRegistry(componentRegistryUrl);
+		URL dataflowUrl = getClass().getClassLoader().getResource(
+				"beanshell_test.t2flow");
 		Dataflow dataflow = FileManager.getInstance()
-				.openDataflowSilently(new T2FlowFileType(), dataflowUrl).getDataflow();
+				.openDataflowSilently(new T2FlowFileType(), dataflowUrl)
+				.getDataflow();
 		ByteArrayOutputStream dataflowStream = new ByteArrayOutputStream();
-		FileManager.getInstance().saveDataflowSilently(dataflow, new T2FlowFileType(),
-				dataflowStream, false);
+		FileManager.getInstance().saveDataflowSilently(dataflow,
+				new T2FlowFileType(), dataflowStream, false);
 		String dataflowString = dataflowStream.toString("UTF-8");
-		Element element = registry.uploadWorkflow(dataflowString, "Test Workflow", "Test description", null, MyExperimentComponentRegistry.PUBLIC.getPolicyString());
+		Element element = registry.uploadWorkflow(dataflowString,
+				"Test Workflow", "Test description", null,
+				MyExperimentComponentRegistry.PUBLIC.getPolicyString());
 		assertEquals("Test Workflow", element.getChild("title").getValue());
 		registry.deleteResource(element.getAttributeValue("uri"));
 	}

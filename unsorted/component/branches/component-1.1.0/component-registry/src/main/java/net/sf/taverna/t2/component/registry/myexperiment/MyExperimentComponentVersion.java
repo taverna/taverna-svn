@@ -41,11 +41,9 @@ import org.jdom.Element;
  *
  * @author David Withers
  */
-public class MyExperimentComponentVersion extends ComponentVersion {
-	
-	private static Logger logger = Logger.getLogger(MyExperimentComponentVersion.class);
-
-
+class MyExperimentComponentVersion extends ComponentVersion {
+	private static final Logger logger = Logger
+			.getLogger(MyExperimentComponentVersion.class);
 
 	private static final T2FlowFileType T2_FLOW_FILE_TYPE = new T2FlowFileType();
 
@@ -66,9 +64,9 @@ public class MyExperimentComponentVersion extends ComponentVersion {
 	protected final Integer internalGetVersionNumber() {
 		if (versionNumber == null) {
 			Element resource = componentRegistry.getResource(uri);
-			if (resource != null) {
-				versionNumber = new Integer(resource.getAttributeValue("version"));
-			}
+			if (resource != null)
+				versionNumber = new Integer(
+						resource.getAttributeValue("version"));
 		}
 		return versionNumber;
 	}
@@ -84,7 +82,7 @@ public class MyExperimentComponentVersion extends ComponentVersion {
 				description = descriptionElement.getTextTrim();
 			} catch (RegistryException e) {
 				logger.error(e);
-				return ("");
+				return "";
 			}
 		}
 		return description;
@@ -131,11 +129,9 @@ public class MyExperimentComponentVersion extends ComponentVersion {
 		Element workflowElement = null;
 		try {
 			workflowElement = componentRegistry.getPackItem(uri, "workflow");
-			if (workflowElement == null) {
+			if (workflowElement == null)
 				return false;
-			}
-		}
-		catch (RegistryException e) {
+		} catch (RegistryException e) {
 			logger.error(e);
 			return false;
 		}
@@ -143,5 +139,4 @@ public class MyExperimentComponentVersion extends ComponentVersion {
 		wfUri = StringUtils.substringBeforeLast(wfUri, "?");
 		return wfUri.equals(resourceUri);
 	}
-
 }

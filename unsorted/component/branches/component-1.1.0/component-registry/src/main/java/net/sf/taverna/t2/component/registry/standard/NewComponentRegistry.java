@@ -9,10 +9,8 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
@@ -48,8 +46,7 @@ import uk.org.taverna.component.api.ObjectFactory;
 import uk.org.taverna.component.api.Permissions;
 import uk.org.taverna.component.api.PolicyList;
 
-public class NewComponentRegistry extends ComponentRegistry {
-	private static final Map<String, NewComponentRegistry> componentRegistries = new HashMap<String, NewComponentRegistry>();
+class NewComponentRegistry extends ComponentRegistry {
 	static final Logger logger = Logger.getLogger(NewComponentRegistry.class);
 	static final JAXBContext jaxbContext;
 	static final Charset utf8;
@@ -409,24 +406,6 @@ public class NewComponentRegistry extends ComponentRegistry {
 						license, sharingPolicy)), COMPONENT_SERVICE, "id="
 				+ component.getId(), "elements=" + NewComponent.ELEMENTS);
 		return component.new Version(ct.getVersion(), description, dataflow);
-	}
-
-	public static synchronized NewComponentRegistry getComponentRegistry(
-			URL registryBase) throws RegistryException {
-		if (!componentRegistries.containsKey(registryBase.toExternalForm()))
-			componentRegistries.put(registryBase.toExternalForm(),
-					new NewComponentRegistry(registryBase));
-		return componentRegistries.get(registryBase.toExternalForm());
-	}
-
-	public static boolean verifyBase(URL registryBase) {
-		try {
-			return new Client(jaxbContext, logger, registryBase).verify();
-		} catch (Exception e) {
-			logger.info("failed to construct connection client to "
-					+ registryBase, e);
-			return false;
-		}
 	}
 
 	public License getLicense(String name) throws RegistryException {

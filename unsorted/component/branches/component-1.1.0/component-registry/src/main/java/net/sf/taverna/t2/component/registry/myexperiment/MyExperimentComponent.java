@@ -43,7 +43,7 @@ import org.jdom.Element;
  *
  * @author David Withers
  */
-public class MyExperimentComponent extends Component {
+class MyExperimentComponent extends Component {
 
 	private final MyExperimentComponentRegistry componentRegistry;
 	private final AnnotationTools annotationTools;

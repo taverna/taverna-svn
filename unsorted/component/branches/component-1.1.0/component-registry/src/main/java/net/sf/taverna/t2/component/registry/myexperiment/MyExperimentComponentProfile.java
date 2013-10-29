@@ -30,8 +30,7 @@ import net.sf.taverna.t2.component.profile.ComponentProfile;
  * 
  * @author David Withers
  */
-public class MyExperimentComponentProfile extends ComponentProfile {
-
+class MyExperimentComponentProfile extends ComponentProfile {
 	private final String uri;
 
 	public MyExperimentComponentProfile(
@@ -52,8 +51,8 @@ public class MyExperimentComponentProfile extends ComponentProfile {
 		return uri;
 	}
 
+	@Override
 	public String toString() {
-		return ("MyExperimentComponentProfile at " + uri);
+		return "MyExperimentComponentProfile at " + uri;
 	}
-
 }

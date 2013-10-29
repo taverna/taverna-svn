@@ -50,8 +50,7 @@ import org.jdom.output.XMLOutputter;
  * 
  * @author David Withers
  */
-public final class MyExperimentComponentFamily extends ComponentFamily {
-
+final class MyExperimentComponentFamily extends ComponentFamily {
 	private static Logger logger = Logger
 			.getLogger(MyExperimentComponentFamily.class);
 
