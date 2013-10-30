@@ -239,7 +239,7 @@ public abstract class ComponentRegistry implements
 
 	@Override
 	public String toString() {
-		String[] names = getClass().toString().split(".");
+		String[] names = getClass().getName().split("\\.");
 		return names[names.length-1] + ": " + registryBase;
 	}
 }
