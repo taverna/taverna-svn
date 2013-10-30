@@ -237,4 +237,9 @@ public abstract class ComponentRegistry implements
 	public abstract Set<Version.ID> searchForComponents(String prefixString,
 			String text) throws RegistryException;
 
+	@Override
+	public String toString() {
+		String[] names = getClass().toString().split(".");
+		return names[names.length-1] + ": " + registryBase;
+	}
 }

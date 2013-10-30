@@ -76,7 +76,7 @@ public class ComponentUtil {
 
 	public static Registry calculateRegistry(URL registryBase)
 			throws RegistryException {
-		logger.info("Into calculateRegistry");
+		logger.info("Into calculateRegistry for " + registryBase);
 		try {
 			return impl.getRegistry(registryBase);
 		} finally {
