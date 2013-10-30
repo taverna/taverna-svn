@@ -20,7 +20,7 @@ public class RegistryTableModel extends DefaultTableModel {
 	private SortedMap<String, Registry> registryMap = new TreeMap<String, Registry>();
 
 	public RegistryTableModel() {
-		super(new String[] { "Registry name", "Registry location" }, 0);
+		super(new String[] { "Registry name", "Registry type", "Registry location" }, 0);
 	}
 
 	public void setRegistryMap(SortedMap<String, Registry> registries) {
@@ -33,7 +33,8 @@ public class RegistryTableModel extends DefaultTableModel {
 		super.setRowCount(0);
 		for (Entry<String, Registry> entry : registryMap.entrySet())
 			super.addRow(new Object[] { entry.getKey(),
-					entry.getValue().toString() });
+					entry.getValue().getRegistryTypeName(),
+					entry.getValue().getRegistryBaseString() });
 	}
 
 	@Override

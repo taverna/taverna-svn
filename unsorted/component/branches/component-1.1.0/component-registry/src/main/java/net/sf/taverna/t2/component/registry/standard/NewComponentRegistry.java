@@ -430,4 +430,9 @@ class NewComponentRegistry extends ComponentRegistry {
 	public int hashCode() {
 		return BASEHASH ^ getRegistryBase().hashCode();
 	}
+
+	@Override
+	public String getRegistryTypeName() {
+		return "Component API";
+	}
 }

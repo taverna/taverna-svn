@@ -67,13 +67,12 @@ class LocalComponentRegistry extends ComponentRegistry {
 	@Override
 	protected void populateFamilyCache() throws RegistryException {
 		File familiesDir = getComponentFamiliesDir();
-		for (File subFile : familiesDir.listFiles()) {
+		for (File subFile : familiesDir.listFiles())
 			if (subFile.isDirectory()) {
 				LocalComponentFamily newFamily = new LocalComponentFamily(this,
 						subFile);
 				familyCache.put(newFamily.getName(), newFamily);
 			}
-		}
 	}
 
 	@Override
@@ -187,5 +186,10 @@ class LocalComponentRegistry extends ComponentRegistry {
 	public Set<Version.ID> searchForComponents(String prefixString, String text)
 			throws RegistryException {
 		throw new RegistryException("Local registries cannot be searched yet");
+	}
+
+	@Override
+	public String getRegistryTypeName() {
+		return "File System";
 	}
 }

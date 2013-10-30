@@ -3,6 +3,10 @@
  */
 package net.sf.taverna.t2.component.ui.preference;
 
+import static java.awt.GridBagConstraints.HORIZONTAL;
+import static java.awt.GridBagConstraints.NONE;
+import static java.awt.GridBagConstraints.WEST;
+
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
@@ -28,7 +32,7 @@ public class RemoteRegistryPanel extends JPanel {
 		
 		GridBagConstraints constraints = new GridBagConstraints();
 
-		constraints.anchor = GridBagConstraints.WEST;
+		constraints.anchor = WEST;
 		constraints.gridx = 0;
 		constraints.gridy = 0;
 		constraints.ipadx = 20;
@@ -38,20 +42,20 @@ public class RemoteRegistryPanel extends JPanel {
 		constraints.gridwidth = 2;
 		constraints.ipadx = 0;
 		constraints.weightx = 1d;
-		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.fill = HORIZONTAL;
 		add(registryNameField, constraints);
 		
 		constraints.gridy++;
 		constraints.gridx = 0;
 		constraints.ipadx = 20;
-		constraints.fill = GridBagConstraints.NONE;
+		constraints.fill = NONE;
 		add(new JLabel("Location:"), constraints);
 		
 		constraints.gridx = 1;
 		constraints.gridwidth = 2;
 		constraints.ipadx = 0;
 		constraints.weightx = 1d;
-		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.fill = HORIZONTAL;
 		add(locationField, constraints);
 	}
 
