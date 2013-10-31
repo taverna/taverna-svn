@@ -30,7 +30,7 @@ class NewComponentLicense implements License {
 		if (!(o instanceof NewComponentLicense))
 			return false;
 		NewComponentLicense other = (NewComponentLicense) o;
-		return (registry == other.registry) && id.equals(other.id);
+		return registry.equals(other.registry) && id.equals(other.id);
 	}
 
 	private static final int BASEHASH = NewComponentLicense.class.hashCode();

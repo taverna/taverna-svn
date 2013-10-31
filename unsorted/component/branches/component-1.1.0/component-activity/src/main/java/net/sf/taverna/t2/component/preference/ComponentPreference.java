@@ -138,7 +138,7 @@ public class ComponentPreference {
 	public String getRegistryName(URL registryBase) {
 		String result = registryBase.toString();
 		for (String name : registryMap.keySet())
-			if (registryMap.get(name).getRegistryBase().toString()
+			if (registryMap.get(name).getRegistryBaseString()
 					.equals(registryBase.toString())) {
 				result = name;
 				break;

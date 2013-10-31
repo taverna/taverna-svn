@@ -1,12 +1,17 @@
 package net.sf.taverna.t2.component.ui.view;
 
+import static java.lang.String.format;
+import static net.sf.taverna.t2.lang.ui.HtmlUtils.buildTableOpeningTag;
+import static net.sf.taverna.t2.lang.ui.HtmlUtils.createEditorPane;
+import static net.sf.taverna.t2.lang.ui.HtmlUtils.getHtmlHead;
+import static net.sf.taverna.t2.lang.ui.HtmlUtils.panelForHtml;
+
 import java.awt.Color;
 
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 
 import net.sf.taverna.t2.component.api.Version;
-import net.sf.taverna.t2.lang.ui.HtmlUtils;
 import net.sf.taverna.t2.workbench.ui.impl.configuration.colour.ColourManager;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 
@@ -23,13 +28,13 @@ public class ComponentContextualView extends ContextualView {
 
 	@Override
 	public JComponent getMainFrame() {
-		editorPane = HtmlUtils.createEditorPane(buildHtml());
-		return HtmlUtils.panelForHtml(editorPane);
+		editorPane = createEditorPane(buildHtml());
+		return panelForHtml(editorPane);
 	}
 
 	private String buildHtml() {
-		String html = HtmlUtils.getHtmlHead(getBackgroundColour());
-		html += HtmlUtils.buildTableOpeningTag();
+		String html = getHtmlHead(getBackgroundColour());
+		html += buildTableOpeningTag();
 
 		html += "<tr><td>Registry base</td><td title=\"Hello Alan\">"
 				+ component.getRegistryBase().toString() + "</td></tr>";
@@ -48,8 +53,8 @@ public class ComponentContextualView extends ContextualView {
 	public String getBackgroundColour() {
 		Color colour = ColourManager.getInstance().getPreferredColour(
 				"net.sf.taverna.t2.component.registry.Component");
-		return String.format("#%1$2x%2$2x%3$2x", colour.getRed(),
-				colour.getGreen(), colour.getBlue());
+		return format("#%1$2x%2$2x%3$2x", colour.getRed(), colour.getGreen(),
+				colour.getBlue());
 	}
 
 	@Override

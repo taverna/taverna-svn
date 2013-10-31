@@ -4,7 +4,6 @@ import static net.sf.taverna.t2.component.registry.standard.Policy.PRIVATE;
 import static net.sf.taverna.t2.component.registry.standard.Utils.getElementString;
 import static net.sf.taverna.t2.component.registry.standard.Utils.serializeDataflow;
 
-import java.io.Serializable;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
@@ -25,6 +24,7 @@ import net.sf.taverna.t2.component.api.SharingPolicy;
 import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.api.Version.ID;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
+import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.apache.log4j.Logger;
@@ -170,8 +170,7 @@ class NewComponentRegistry extends ComponentRegistry {
 		try {
 			if (componentProfile instanceof NewComponentProfile) {
 				NewComponentProfile profile = (NewComponentProfile) componentProfile;
-				if (profile.getComponentRegistry().getRegistryBase()
-						.equals(getRegistryBase()))
+				if (profile.getComponentRegistry().equals(this))
 					return new NewComponentProfile(this,
 							getComponentProfileById(profile.getId(),
 									NewComponentProfile.ELEMENTS));
@@ -333,37 +332,10 @@ class NewComponentRegistry extends ComponentRegistry {
 		return versions;
 	}
 
-	static class VersionId implements ID, Serializable {
-		private static final long serialVersionUID = 398785161396817963L;
-		private URL registry;
-		private String family, name;
-		private int version;
-
+	static class VersionId extends ComponentVersionIdentification {
 		VersionId(NewComponent component, Integer version) {
-			registry = component.registry.getRegistryBase();
-			family = component.family.getName();
-			name = component.getName();
-			this.version = version;
-		}
-
-		@Override
-		public String getFamilyName() {
-			return family;
-		}
-
-		@Override
-		public URL getRegistryBase() {
-			return registry;
-		}
-
-		@Override
-		public String getComponentName() {
-			return name;
-		}
-
-		@Override
-		public Integer getComponentVersion() {
-			return version;
+			super(component.registry.getRegistryBase(), component.family
+					.getName(), component.getName(), version);
 		}
 	}
 
@@ -417,9 +389,11 @@ class NewComponentRegistry extends ComponentRegistry {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof NewComponentRegistry) {
+		// Careful! Java's URL equality IS BROKEN!
+		if (o != null && o instanceof NewComponentRegistry) {
 			NewComponentRegistry other = (NewComponentRegistry) o;
-			return getRegistryBase().equals(other.getRegistryBase());
+			return getRegistryBaseString()
+					.equals(other.getRegistryBaseString());
 		}
 		return false;
 	}
@@ -428,7 +402,7 @@ class NewComponentRegistry extends ComponentRegistry {
 
 	@Override
 	public int hashCode() {
-		return BASEHASH ^ getRegistryBase().hashCode();
+		return BASEHASH ^ getRegistryBaseString().hashCode();
 	}
 
 	@Override

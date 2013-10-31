@@ -15,21 +15,19 @@ import net.sf.taverna.t2.workflowmodel.Processor;
  * 
  */
 public class ReplaceByComponentMenuAction extends AbstractContextualMenuAction {
-
 	private static final URI configureSection = URI
 			.create("http://taverna.sf.net/2009/contextMenu/configure");
-
-	private static ReplaceByComponentAction action = new ReplaceByComponentAction();
+	private static final ReplaceByComponentAction action = new ReplaceByComponentAction();
 
 	public ReplaceByComponentMenuAction() {
 		super(configureSection, 75);
 	}
 
+	@Override
 	public boolean isEnabled() {
 		Object selection = getContextualSelection().getSelection();
-		if (!super.isEnabled()) {
+		if (!super.isEnabled())
 			return false;
-		}
 		return (selection instanceof Processor);
 	}
 

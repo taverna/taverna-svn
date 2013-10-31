@@ -23,6 +23,19 @@ public interface Version {
 		String getComponentName();
 
 		Integer getComponentVersion();
-		
+
+		/**
+		 * Tests whether this ID is equal to the given one, <i>excluding</i> the version.
+		 * @param id The ID to compare to.
+		 * @return A boolean
+		 */
+		boolean mostlyEqualTo(ID id);
+
+		/**
+		 * Tests whether this ID is equal to the given component, <i>excluding</i> the version.
+		 * @param component The component to compare to.
+		 * @return A boolean
+		 */
+		boolean mostlyEqualTo(Component component);
 	}
 }

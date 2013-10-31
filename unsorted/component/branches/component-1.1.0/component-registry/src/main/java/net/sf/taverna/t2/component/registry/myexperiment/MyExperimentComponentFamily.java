@@ -198,7 +198,7 @@ final class MyExperimentComponentFamily extends ComponentFamily {
 					String tagText = tag.getTextTrim();
 					if ("component".equals(tagText)) {
 						MyExperimentComponent newComponent = new MyExperimentComponent(
-								componentRegistry, license, permissionsString,
+								componentRegistry, this, license, permissionsString,
 								packUri);
 						componentCache
 								.put(newComponent.getName(), newComponent);
@@ -245,7 +245,7 @@ final class MyExperimentComponentFamily extends ComponentFamily {
 				description, this.license, this.permissionsString);
 		componentRegistry.tagResource("component",
 				componentPack.getAttributeValue("resource"));
-		component = new MyExperimentComponent(componentRegistry, this.license,
+		component = new MyExperimentComponent(componentRegistry, this, this.license,
 				this.permissionsString, componentPack.getAttributeValue("uri"));
 
 		// add the component to the family

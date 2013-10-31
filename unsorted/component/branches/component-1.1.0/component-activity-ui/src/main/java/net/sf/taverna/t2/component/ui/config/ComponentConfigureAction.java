@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.component.ui.config;
 
+
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 
@@ -17,21 +18,17 @@ public class ComponentConfigureAction
 		super(activity);
 	}
 
-	@SuppressWarnings("unchecked")
+	@Override
 	public void actionPerformed(ActionEvent e) {
-		ActivityConfigurationDialog<ComponentActivity, ComponentActivityConfigurationBean> currentDialog = ActivityConfigurationAction
-				.getDialog(getActivity());
+		@SuppressWarnings("unchecked")
+		ActivityConfigurationDialog<ComponentActivity, ComponentActivityConfigurationBean> currentDialog = getDialog(getActivity());
 		if (currentDialog != null) {
 			currentDialog.toFront();
 			return;
 		}
-		ComponentConfigurationPanel panel = new ComponentConfigurationPanel(
-				getActivity());
 		ActivityConfigurationDialog<ComponentActivity, ComponentActivityConfigurationBean> dialog = new ActivityConfigurationDialog<ComponentActivity, ComponentActivityConfigurationBean>(
-				getActivity(), panel);
-
-		ActivityConfigurationAction.setDialog(getActivity(), dialog);
-
+				getActivity(), new ComponentConfigurationPanel(getActivity()));
+		setDialog(getActivity(), dialog);
 	}
 
 }

@@ -24,7 +24,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 
 import net.sf.taverna.t2.annotation.annotationbeans.DescriptiveTitle;
+import net.sf.taverna.t2.component.api.Family;
 import net.sf.taverna.t2.component.api.License;
+import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.registry.Component;
@@ -46,17 +48,19 @@ import org.jdom.Element;
 class MyExperimentComponent extends Component {
 
 	private final MyExperimentComponentRegistry componentRegistry;
+	private final MyExperimentComponentFamily componentFamily;
 	private final AnnotationTools annotationTools;
 	
 	private final String permissionsString;
 	private License license;
 	private String urlString;
 
-	public MyExperimentComponent(MyExperimentComponentRegistry componentRegistry,
+	public MyExperimentComponent(MyExperimentComponentRegistry componentRegistry, MyExperimentComponentFamily family,
 			License license, String permissionsString, String uri) {
 		super(uri);
 		this.urlString = uri;
 		this.componentRegistry = componentRegistry;
+		this.componentFamily = family;
 		this.permissionsString = permissionsString;
 		this.license = license;
 		annotationTools = new AnnotationTools();
@@ -129,6 +133,16 @@ class MyExperimentComponent extends Component {
 		String version = componentPack.getAttributeValue("version");
 		MyExperimentComponentVersion myExperimentComponentVersion = new MyExperimentComponentVersion(componentRegistry, this, urlString+"&version="+version);
 		return myExperimentComponentVersion;
+	}
+
+	@Override
+	public Registry getRegistry() {
+		return componentRegistry;
+	}
+
+	@Override
+	public Family getFamily() {
+		return componentFamily;
 	}
 
 }

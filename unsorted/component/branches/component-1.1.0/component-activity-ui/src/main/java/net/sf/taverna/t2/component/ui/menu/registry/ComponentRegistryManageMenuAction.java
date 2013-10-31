@@ -3,6 +3,8 @@
  */
 package net.sf.taverna.t2.component.ui.menu.registry;
 
+import static net.sf.taverna.t2.component.ui.menu.registry.ComponentRegistryMenuSection.COMPONENT_REGISTRY_SECTION;
+
 import java.net.URI;
 
 import javax.swing.Action;
@@ -19,10 +21,10 @@ public class ComponentRegistryManageMenuAction extends AbstractMenuAction {
 	private static final Action registryManageAction = new ComponentRegistryManageAction();
 
 	public ComponentRegistryManageMenuAction() {
-		super(ComponentRegistryMenuSection.COMPONENT_REGISTRY_SECTION, 100,
-				COMPONENT_REGISTRY_MANAGE_URI);
+		super(COMPONENT_REGISTRY_SECTION, 100, COMPONENT_REGISTRY_MANAGE_URI);
 	}
 
+	@Override
 	public boolean isEnabled() {
 		return true;
 	}

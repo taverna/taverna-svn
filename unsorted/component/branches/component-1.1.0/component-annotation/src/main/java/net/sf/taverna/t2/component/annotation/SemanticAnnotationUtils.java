@@ -21,6 +21,8 @@
 package net.sf.taverna.t2.component.annotation;
 
 import static com.hp.hpl.jena.rdf.model.ModelFactory.createDefaultModel;
+import static java.lang.Long.MIN_VALUE;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -57,8 +59,7 @@ public class SemanticAnnotationUtils {
 	/* Pretend-base for making relative URIs */
 	private static String BASE = "widget://4aa8c93c-3212-487c-a505-3e337adf54a3/";
 
-	private static Logger logger = Logger
-			.getLogger(SemanticAnnotationUtils.class);
+	private static Logger logger = getLogger(SemanticAnnotationUtils.class);
 
 	public static String getObjectName(Statement statement) {
 		return getDisplayName(statement.getObject());
@@ -88,7 +89,7 @@ public class SemanticAnnotationUtils {
 
 	public static SemanticAnnotation findSemanticAnnotation(
 			Annotated<?> annotated) {
-		Date latestDate = new Date(Long.MIN_VALUE);
+		Date latestDate = new Date(MIN_VALUE);
 		SemanticAnnotation annotation = null;
 		// Need to scan all assertions...
 		for (AnnotationChain chain : annotated.getAnnotations())

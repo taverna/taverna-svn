@@ -1,12 +1,13 @@
 package net.sf.taverna.t2.component.ui.file;
 
+import static java.awt.Color.WHITE;
+import static java.awt.Font.BOLD;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.SwingUtilities.isEventDispatchThread;
 import static net.sf.taverna.t2.component.ui.util.Utils.currentDataflowIsComponent;
 import static net.sf.taverna.t2.workbench.views.graph.GraphViewComponent.graphControllerMap;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
 
@@ -25,9 +26,7 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 import org.apache.batik.swing.JSVGCanvas;
 
 public class FileManagerObserver implements StartupSPI {
-
 	private static final Color COLOR = new Color(230, 147, 210);
-
 	private static FileManager fileManager = FileManager.getInstance();
 
 	@Override
@@ -40,13 +39,11 @@ public class FileManagerObserver implements StartupSPI {
 			@Override
 			public void notify(Observable<FileManagerEvent> observable,
 					FileManagerEvent event) throws Exception {
-				FileManagerObserverRunnable runnable = new FileManagerObserverRunnable(
-						event);
-				if (isEventDispatchThread()) {
+				FileManagerObserverRunnable runnable = new FileManagerObserverRunnable();
+				if (isEventDispatchThread())
 					runnable.run();
-				} else {
+				else
 					invokeLater(runnable);
-				}
 			}
 		});
 		return true;
@@ -58,9 +55,7 @@ public class FileManagerObserver implements StartupSPI {
 	}
 
 	public class FileManagerObserverRunnable implements Runnable {
-		public FileManagerObserverRunnable(FileManagerEvent message) {
-		}
-
+		@Override
 		public void run() {
 			Dataflow currentDataflow = fileManager.getCurrentDataflow();
 			if (currentDataflow == null)
@@ -83,8 +78,7 @@ public class FileManagerObserver implements StartupSPI {
 		}
 	}
 
-	class ComponentBorder implements Border {
-
+	static class ComponentBorder implements Border {
 		private final Insets insets = new Insets(25, 0, 0, 0);
 		private final String text;
 
@@ -107,10 +101,9 @@ public class FileManagerObserver implements StartupSPI {
 				int width, int height) {
 			g.setColor(COLOR);
 			g.fillRect(x, y, width, 20);
-			g.setFont(g.getFont().deriveFont(Font.BOLD));
-			g.setColor(Color.WHITE);
+			g.setFont(g.getFont().deriveFont(BOLD));
+			g.setColor(WHITE);
 			g.drawString(text, x + 5, y + 15);
 		}
 	}
-
 }

@@ -54,7 +54,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
  * 
  */
 public class ReplaceByComponentAction extends AbstractAction {
-
+	private static final long serialVersionUID = 7364648399658711574L;
 	private static final FileManager fileManager = FileManager.getInstance();
 	private static EditManager em = EditManager.getInstance();
 	private static Edits edits = em.getEdits();
@@ -63,10 +63,6 @@ public class ReplaceByComponentAction extends AbstractAction {
 		super("Replace by component...", ComponentServiceIcon.getIcon());
 	}
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7364648399658711574L;
 	private Processor selection;
 
 	@Override
@@ -79,10 +75,9 @@ public class ReplaceByComponentAction extends AbstractAction {
 		overallPanel.add(replaceAllCheckBox, BorderLayout.SOUTH);
 		int answer = showConfirmDialog(null, overallPanel, "Component choice",
 				OK_CANCEL_OPTION);
-		if (answer == OK_OPTION) {
+		if (answer == OK_OPTION)
 			doReplace(panel.getChosenRegistry(), panel.getChosenFamily(),
 					replaceAllCheckBox.isSelected(), panel.getChosenComponent());
-		}
 	}
 
 	private void doReplace(Registry chosenRegistry, Family chosenFamily,
@@ -127,12 +122,12 @@ public class ReplaceByComponentAction extends AbstractAction {
 		for (Processor p : d.getProcessors()) {
 			Activity<?> a = p.getActivityList().get(0);
 			if (a.getClass().equals(activityClass)
-					&& getConfigString(a).equals(configString)) {
+					&& getConfigString(a).equals(configString))
 				replaceActivity(cacb, p, d);
-			} else if (a instanceof NestedDataflow) {
+			else if (a instanceof NestedDataflow)
 				replaceAllMatchingActivities(activityClass, cacb, configString,
 						((NestedDataflow) a).getNestedDataflow());
-			}
+
 		}
 	}
 
@@ -148,35 +143,32 @@ public class ReplaceByComponentAction extends AbstractAction {
 					"Unable to configure component");
 		}
 		if (originalActivity.getInputPorts().size() != replacementActivity
-				.getInputPorts().size()) {
+				.getInputPorts().size())
 			throw new ActivityConfigurationException(
 					"Component does not have matching ports");
-		}
+
 		int replacementOutputSize = replacementActivity.getOutputPorts().size();
 		int originalOutputSize = originalActivity.getOutputPorts().size();
 		for (String name : ignorableNames) {
-			if (getActivityOutputPort(originalActivity, name) != null) {
+			if (getActivityOutputPort(originalActivity, name) != null)
 				originalOutputSize--;
-			}
-			if (getActivityOutputPort(replacementActivity, name) != null) {
+			if (getActivityOutputPort(replacementActivity, name) != null)
 				replacementOutputSize--;
-			}
 		}
 
 		int sizeDifference = replacementOutputSize - originalOutputSize;
-		if (sizeDifference != 0) {
+		if (sizeDifference != 0)
 			throw new ActivityConfigurationException(
 					"Component does not have matching ports");
-		}
+
 		for (ActivityInputPort aip : originalActivity.getInputPorts()) {
 			String aipName = aip.getName();
 			int aipDepth = aip.getDepth();
 			ActivityInputPort caip = getActivityInputPort(replacementActivity,
 					aipName);
-			if ((caip == null) || (caip.getDepth() != aipDepth)) {
+			if ((caip == null) || (caip.getDepth() != aipDepth))
 				throw new ActivityConfigurationException("Original input port "
 						+ aipName + " is not matched");
-			}
 		}
 		for (OutputPort aop : originalActivity.getOutputPorts()) {
 			String aopName = aop.getName();
@@ -184,26 +176,22 @@ public class ReplaceByComponentAction extends AbstractAction {
 			OutputPort caop = getActivityOutputPort(replacementActivity,
 					aopName);
 			if (((caop == null) || (aopDepth != caop.getDepth()))
-					&& !ComponentActivityConfigurationBean.ignorableNames
-							.contains(aopName)) {
+					&& !ignorableNames.contains(aopName))
 				throw new ActivityConfigurationException(
 						"Original output port " + aopName + " is not matched");
-			}
 		}
 
 		final List<Edit<?>> currentWorkflowEditList = new ArrayList<Edit<?>>();
 
-		for (ProcessorInputPort pip : p.getInputPorts()) {
+		for (ProcessorInputPort pip : p.getInputPorts())
 			currentWorkflowEditList.add(edits
 					.getAddActivityInputPortMappingEdit(replacementActivity,
 							pip.getName(), pip.getName()));
-		}
 
-		for (ProcessorOutputPort pop : p.getOutputPorts()) {
+		for (ProcessorOutputPort pop : p.getOutputPorts())
 			currentWorkflowEditList.add(edits
 					.getAddActivityOutputPortMappingEdit(replacementActivity,
 							pop.getName(), pop.getName()));
-		}
 
 		currentWorkflowEditList.add(edits.getAddActivityEdit(p,
 				replacementActivity));

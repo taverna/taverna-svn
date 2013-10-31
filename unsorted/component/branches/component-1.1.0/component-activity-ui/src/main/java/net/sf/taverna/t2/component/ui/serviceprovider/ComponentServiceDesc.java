@@ -90,6 +90,7 @@ public class ComponentServiceDesc extends
 				identification.getComponentName());
 	}
 
+	@Override
 	public String toString() {
 		return "Component " + getName();
 	}

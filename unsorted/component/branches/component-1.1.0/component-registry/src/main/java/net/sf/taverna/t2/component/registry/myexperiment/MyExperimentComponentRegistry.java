@@ -165,8 +165,7 @@ class MyExperimentComponentRegistry extends ComponentRegistry {
 		Element profileElement = null;
 		if (componentProfile instanceof MyExperimentComponentProfile) {
 			MyExperimentComponentProfile myExperimentComponentProfile = (MyExperimentComponentProfile) componentProfile;
-			if (myExperimentComponentProfile.getComponentRegistry()
-					.getRegistryBase().equals(getRegistryBase()))
+			if (myExperimentComponentProfile.getComponentRegistry().equals(this))
 				profileElement = getResource(myExperimentComponentProfile
 						.getUri());
 		}
@@ -574,6 +573,23 @@ class MyExperimentComponentRegistry extends ComponentRegistry {
 									this.getRegistryBase(), f.getName(),
 									c.getName(), cv.getVersionNumber());
 		return null;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o != null && o instanceof MyExperimentComponentRegistry) {
+			MyExperimentComponentRegistry other = (MyExperimentComponentRegistry) o;
+			return getRegistryBaseString()
+					.equals(other.getRegistryBaseString());
+		}
+		return false;
+	}
+
+	private static final int BASEHASH = MyExperimentComponentRegistry.class.hashCode();
+
+	@Override
+	public int hashCode() {
+		return BASEHASH ^ getRegistryBaseString().hashCode();
 	}
 
 	@Override

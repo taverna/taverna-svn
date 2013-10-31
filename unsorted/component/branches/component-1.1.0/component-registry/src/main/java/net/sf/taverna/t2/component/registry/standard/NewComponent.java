@@ -8,7 +8,9 @@ import static net.sf.taverna.t2.component.registry.standard.Utils.getValue;
 
 import java.lang.ref.SoftReference;
 
+import net.sf.taverna.t2.component.api.Family;
 import net.sf.taverna.t2.component.api.License;
+import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.api.SharingPolicy;
 import net.sf.taverna.t2.component.registry.Component;
@@ -171,5 +173,15 @@ class NewComponent extends Component {
 			}
 			return dataflow.get();
 		}
+	}
+
+	@Override
+	public Registry getRegistry() {
+		return registry;
+	}
+
+	@Override
+	public Family getFamily() {
+		return family;
 	}
 }

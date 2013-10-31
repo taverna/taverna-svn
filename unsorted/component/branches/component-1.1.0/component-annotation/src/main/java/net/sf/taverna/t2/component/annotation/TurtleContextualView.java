@@ -3,6 +3,7 @@
  */
 package net.sf.taverna.t2.component.annotation;
 
+import static java.awt.BorderLayout.CENTER;
 import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.findSemanticAnnotation;
 
 import java.awt.BorderLayout;
@@ -60,7 +61,7 @@ public class TurtleContextualView extends ContextualView {
 		JTextArea textArea = new JTextArea(20, 80);
 		textArea.setEditable(false);
 		textArea.setText(annotationContent);
-		panel.add(textArea, BorderLayout.CENTER);
+		panel.add(textArea, CENTER);
 		revalidate();
 	}
 }

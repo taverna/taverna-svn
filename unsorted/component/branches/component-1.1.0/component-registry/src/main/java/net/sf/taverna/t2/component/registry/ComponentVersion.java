@@ -23,9 +23,8 @@ public abstract class ComponentVersion implements
 
 	@Override
 	public final synchronized Integer getVersionNumber() {
-		if (versionNumber == null) {
+		if (versionNumber == null)
 			versionNumber = internalGetVersionNumber();
-		}
 		return versionNumber;
 	}
 
@@ -33,9 +32,9 @@ public abstract class ComponentVersion implements
 
 	@Override
 	public final synchronized String getDescription() {
-		if (description == null) {
+		if (description == null)
 			description = internalGetDescription();
-		}
+
 		return description;
 	}
 
@@ -53,5 +52,4 @@ public abstract class ComponentVersion implements
 	public final Component getComponent() {
 		return component;
 	}
-
 }

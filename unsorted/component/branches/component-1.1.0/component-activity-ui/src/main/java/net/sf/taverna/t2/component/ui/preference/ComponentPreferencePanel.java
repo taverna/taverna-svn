@@ -1,5 +1,9 @@
 package net.sf.taverna.t2.component.ui.preference;
 
+import static java.awt.GridBagConstraints.BOTH;
+import static java.awt.GridBagConstraints.CENTER;
+import static java.awt.GridBagConstraints.HORIZONTAL;
+import static java.awt.GridBagConstraints.WEST;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN;
@@ -35,6 +39,9 @@ import net.sf.taverna.t2.lang.ui.ValidatingUserInputDialog;
 import org.apache.log4j.Logger;
 
 public class ComponentPreferencePanel extends JPanel {
+	private static final String BAD_URL_MESSAGE = "Invalid URL";
+	private static final String SET_URL_MESSAGE = "Set the URL of the profile";
+	private static final String HELP_LABEL = "Help";
 	private static final String RESET_LABEL = "Reset";
 	private static final String APPLY_LABEL = "Apply";
 	private static final String ADD_REMOTE_TITLE = "Add Remote Component Registry";
@@ -73,13 +80,13 @@ public class ComponentPreferencePanel extends JPanel {
 		descriptionText.setEditable(false);
 		descriptionText.setFocusable(false);
 		descriptionText.setBorder(new EmptyBorder(10, 10, 10, 10));
-		gbc.anchor = GridBagConstraints.WEST;
+		gbc.anchor = WEST;
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.gridwidth = 1;
 		gbc.weightx = 1.0;
 		gbc.weighty = 0.0;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.fill = HORIZONTAL;
 		this.add(descriptionText, gbc);
 
 		gbc.gridy++;
@@ -92,7 +99,7 @@ public class ComponentPreferencePanel extends JPanel {
 		// registryTable.setFillsViewportHeight(true);
 
 		gbc.weighty = 1.0;
-		gbc.fill = GridBagConstraints.BOTH;
+		gbc.fill = BOTH;
 
 		this.add(scrollPane, gbc);
 
@@ -102,8 +109,8 @@ public class ComponentPreferencePanel extends JPanel {
 		gbc.weightx = 0.0;
 		gbc.weighty = 0.0;
 		gbc.gridwidth = 1;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.anchor = GridBagConstraints.CENTER;
+		gbc.fill = HORIZONTAL;
+		gbc.anchor = CENTER;
 		gbc.insets = new Insets(10, 0, 0, 0);
 		this.add(createRegistryButtonPanel(), gbc);
 
@@ -113,8 +120,8 @@ public class ComponentPreferencePanel extends JPanel {
 		gbc.weightx = 0.0;
 		gbc.weighty = 0.0;
 		gbc.gridwidth = 1;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.anchor = GridBagConstraints.CENTER;
+		gbc.fill = HORIZONTAL;
+		gbc.anchor = CENTER;
 		gbc.insets = new Insets(10, 0, 0, 0);
 		this.add(createButtonPanel(), gbc);
 
@@ -157,7 +164,7 @@ public class ComponentPreferencePanel extends JPanel {
 	@SuppressWarnings("serial")
 	private JPanel createButtonPanel() {
 		final JPanel panel = new JPanel();
-		panel.add(new DeselectingButton(new AbstractAction("Help") {
+		panel.add(new DeselectingButton(new AbstractAction(HELP_LABEL) {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				showHelp(panel);
@@ -222,8 +229,8 @@ public class ComponentPreferencePanel extends JPanel {
 				VALIDATION_MESSAGE, tableModel.getRegistryMap().keySet(),
 				DUPLICATE, "[\\p{L}\\p{Digit}_.]+", INVALID_NAME);
 		vuid.addTextComponentValidation(inputPanel.getLocationField(),
-				"Set the URL of the profile", null, "", URL_PATTERN,
-				"Invalid URL");
+				SET_URL_MESSAGE, null, "", URL_PATTERN,
+ BAD_URL_MESSAGE);
 		vuid.setSize(new Dimension(400, 250));
 		if (!vuid.show(ComponentPreferencePanel.this))
 			return;

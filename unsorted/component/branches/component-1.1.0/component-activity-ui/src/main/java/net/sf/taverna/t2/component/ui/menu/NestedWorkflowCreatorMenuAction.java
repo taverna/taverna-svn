@@ -22,11 +22,10 @@ import net.sf.taverna.t2.workflowmodel.Processor;
  */
 public class NestedWorkflowCreatorMenuAction extends
 		AbstractContextualMenuAction {
-
-	FileManager fm = FileManager.getInstance();
-
 	private static final URI configureSection = URI
 			.create("http://taverna.sf.net/2009/contextMenu/configure");
+
+	FileManager fm = FileManager.getInstance();
 
 	public NestedWorkflowCreatorMenuAction() {
 		super(configureSection, 70);
@@ -35,23 +34,14 @@ public class NestedWorkflowCreatorMenuAction extends
 	@Override
 	public boolean isEnabled() {
 		Object selection = getContextualSelection().getSelection();
-		if (!super.isEnabled()) {
+		if (!super.isEnabled() || selection == null)
 			return false;
-		}
-		if (selection == null) {
-			return false;
-		}
-		if (selection instanceof Processor) {
+		if (selection instanceof Processor)
 			return true;
-		}
-		if (!(selection instanceof Dataflow)) {
+		if (!(selection instanceof Dataflow))
 			return false;
-		}
 		Dataflow d = (Dataflow) selection;
-		if (d.getProcessors().isEmpty()) {
-			return false;
-		}
-		return true;
+		return !(d.getProcessors().isEmpty());
 	}
 
 	@Override
@@ -60,6 +50,7 @@ public class NestedWorkflowCreatorMenuAction extends
 				DataflowActivityIcon.getDataflowIcon()) {
 			private static final long serialVersionUID = -3121307982540205215L;
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				Object o = getContextualSelection().getSelection();
 				final Dialog dialog = new NestedWorkflowCreationDialog(null, o,
@@ -68,5 +59,4 @@ public class NestedWorkflowCreatorMenuAction extends
 			}
 		};
 	}
-
 }

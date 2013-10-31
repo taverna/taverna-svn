@@ -3,6 +3,7 @@
  */
 package net.sf.taverna.t2.component.ui.menu.component;
 
+import static net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceIcon.getIcon;
 import static net.sf.taverna.t2.component.ui.util.Utils.currentDataflowIsComponent;
 
 import java.awt.event.ActionEvent;
@@ -10,7 +11,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceIcon;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 import net.sf.taverna.t2.workbench.file.FileManager;
@@ -26,18 +26,15 @@ import org.apache.log4j.Logger;
 public class ComponentCloseAction extends AbstractAction implements
 		Observer<FileManagerEvent> {
 	private static final long serialVersionUID = -153986599735293879L;
+	private static final String CLOSE_COMPONENT = "Close component";
 
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(ComponentCloseAction.class);
-
 	private static Action closeWorkflowAction = new CloseWorkflowAction();
-
 	private static FileManager fileManager = FileManager.getInstance();
 
-	private static final String CLOSE_COMPONENT = "Close component";
-
 	public ComponentCloseAction() {
-		super(CLOSE_COMPONENT, ComponentServiceIcon.getIcon());
+		super(CLOSE_COMPONENT, getIcon());
 		fileManager.addObserver(this);
 	}
 
@@ -46,6 +43,7 @@ public class ComponentCloseAction extends AbstractAction implements
 		closeWorkflowAction.actionPerformed(arg0);
 	}
 
+	@Override
 	public boolean isEnabled() {
 		return currentDataflowIsComponent();
 	}

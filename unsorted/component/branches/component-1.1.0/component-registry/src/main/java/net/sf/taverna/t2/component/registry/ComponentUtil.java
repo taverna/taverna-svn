@@ -25,16 +25,16 @@ import org.apache.log4j.Logger;
  */
 public class ComponentUtil {
 	private ComponentUtil() {
-		cache = new WeakHashMap<URL, WeakReference<Registry>>();
+		cache = new WeakHashMap<String, WeakReference<Registry>>();
 	}
 
 	private static Logger logger = getLogger(ComponentUtil.class);
 	private static ComponentUtil impl = new ComponentUtil();
-	private final WeakHashMap<URL, WeakReference<Registry>> cache;
+	private final WeakHashMap<String, WeakReference<Registry>> cache;
 
 	private Registry getRegistry(URL registryBase) throws RegistryException {
 		Registry registry = null;
-		WeakReference<Registry> regref = cache.get(registryBase);
+		WeakReference<Registry> regref = cache.get(registryBase.toString());
 		if (regref != null)
 			registry = regref.get();
 		if (registry != null)
@@ -51,7 +51,8 @@ public class ComponentUtil {
 			registry = LocalComponentRegistryLocator
 					.getComponentRegistry(registryBase);
 		}
-		cache.put(registryBase, new WeakReference<Registry>(registry));
+		cache.put(registryBase.toString(),
+				new WeakReference<Registry>(registry));
 		return registry;
 	}
 

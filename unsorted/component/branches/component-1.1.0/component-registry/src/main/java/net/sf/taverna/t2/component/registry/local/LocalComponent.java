@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
+import net.sf.taverna.t2.component.api.Family;
+import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.registry.Component;
@@ -30,13 +32,19 @@ class LocalComponent extends Component {
 
 	private final File componentDir;
 
+	private final LocalComponentRegistry registry;
+
+	private final LocalComponentFamily family;
+
 	private static final T2FlowFileType T2_FLOW_FILE_TYPE = new T2FlowFileType();
 
 	private static Logger logger = getLogger(LocalComponent.class);
 
-	public LocalComponent(File componentDir) {
+	public LocalComponent(File componentDir, LocalComponentRegistry registry, LocalComponentFamily family) {
 		super(componentDir);
 		this.componentDir = componentDir;
+		this.registry = registry;
+		this.family = family;
 	}
 
 	@Override
@@ -126,4 +134,13 @@ class LocalComponent extends Component {
 		return "";
 	}
 
+	@Override
+	public Registry getRegistry() {
+		return registry;
+	}
+
+	@Override
+	public Family getFamily() {
+		return family;
+	}
 }

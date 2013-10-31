@@ -30,6 +30,9 @@ import org.apache.log4j.Logger;
  * 
  */
 public class LocalRegistryPanel extends JPanel {
+	private static final String BROWSE_LABEL = "Browse";
+	private static final String LOCATION_LABEL = "Location:";
+	private static final String NAME_LABEL = "Name:";
 	private static final long serialVersionUID = 732945735813617327L;
 
 	private final Logger logger = Logger.getLogger(LocalRegistryPanel.class);
@@ -48,7 +51,7 @@ public class LocalRegistryPanel extends JPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 0;
 		constraints.ipadx = 20;
-		add(new JLabel("Name:"), constraints);
+		add(new JLabel(NAME_LABEL), constraints);
 
 		constraints.gridx = 1;
 		constraints.gridwidth = 2;
@@ -61,7 +64,7 @@ public class LocalRegistryPanel extends JPanel {
 		constraints.gridx = 0;
 		constraints.ipadx = 20;
 		constraints.fill = NONE;
-		add(new JLabel("Location:"), constraints);
+		add(new JLabel(LOCATION_LABEL), constraints);
 
 		constraints.gridx = 1;
 		constraints.gridwidth = 2;
@@ -74,7 +77,7 @@ public class LocalRegistryPanel extends JPanel {
 		constraints.gridx = 0;
 		constraints.ipadx = 20;
 		constraints.fill = NONE;
-		add(new DeselectingButton(new AbstractAction("Browse") {
+		add(new DeselectingButton(new AbstractAction(BROWSE_LABEL) {
 			private static final long serialVersionUID = -8676803966947261009L;
 
 			@Override

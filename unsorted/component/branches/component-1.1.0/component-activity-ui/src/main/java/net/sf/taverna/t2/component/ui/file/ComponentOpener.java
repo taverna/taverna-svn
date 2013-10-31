@@ -3,13 +3,14 @@
  */
 package net.sf.taverna.t2.component.ui.file;
 
+import static net.sf.taverna.t2.component.registry.ComponentDataflowCache.getDataflow;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import net.sf.taverna.t2.component.api.ComponentFileType;
 import net.sf.taverna.t2.component.api.RegistryException;
-import net.sf.taverna.t2.component.registry.ComponentDataflowCache;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.workbench.file.AbstractDataflowPersistenceHandler;
 import net.sf.taverna.t2.workbench.file.DataflowInfo;
@@ -22,27 +23,26 @@ import org.apache.log4j.Logger;
 
 /**
  * @author alanrw
- *
+ * 
  */
 public class ComponentOpener extends AbstractDataflowPersistenceHandler
 		implements DataflowPersistenceHandler {
-	
 	private static final FileType COMPONENT_FILE_TYPE = ComponentFileType.instance;
-	
 	private static Logger logger = Logger.getLogger(ComponentOpener.class);
-	
-	public DataflowInfo openDataflow(FileType fileType, Object source) throws OpenException {
-		if (!getOpenFileTypes().contains(fileType)) {
+
+	@Override
+	public DataflowInfo openDataflow(FileType fileType, Object source)
+			throws OpenException {
+		if (!getOpenFileTypes().contains(fileType))
 			throw new IllegalArgumentException("Unsupported file type "
 					+ fileType);
-		}
-		if (!(source instanceof ComponentVersionIdentification)) {
-			throw new IllegalArgumentException("Unsupported source type " + source.getClass().getName());
-		}
-		
+		if (!(source instanceof ComponentVersionIdentification))
+			throw new IllegalArgumentException("Unsupported source type "
+					+ source.getClass().getName());
+
 		Dataflow d;
 		try {
-			d = ComponentDataflowCache.getDataflow((ComponentVersionIdentification) source);
+			d = getDataflow((ComponentVersionIdentification) source);
 		} catch (RegistryException e) {
 			logger.error("Unable to read dataflow", e);
 			throw new OpenException("Unable to read dataflow", e);

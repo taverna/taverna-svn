@@ -62,7 +62,9 @@ class LocalComponentFamily extends ComponentFamily {
 	protected void populateComponentCache() throws RegistryException {
 		for (File subFile : componentFamilyDir.listFiles())
 			if (subFile.isDirectory()) {
-				LocalComponent newComponent = new LocalComponent(subFile);
+				LocalComponent newComponent = new LocalComponent(subFile,
+						(LocalComponentRegistry) this.getComponentRegistry(),
+						this);
 				componentCache.put(newComponent.getName(), newComponent);
 			}
 	}
@@ -87,7 +89,8 @@ class LocalComponentFamily extends ComponentFamily {
 		} catch (IOException e) {
 			throw new RegistryException("Could not write out description", e);
 		}
-		LocalComponent newComponent = new LocalComponent(newSubFile);
+		LocalComponent newComponent = new LocalComponent(newSubFile,
+				(LocalComponentRegistry) this.getComponentRegistry(), this);
 
 		return newComponent.addVersionBasedOn(dataflow, "Initial version");
 	}

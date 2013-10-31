@@ -20,7 +20,9 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.annotation;
 
+import static com.hp.hpl.jena.datatypes.xsd.XSDDatatype.XSDdateTime;
 import static com.hp.hpl.jena.rdf.model.ResourceFactory.createTypedLiteral;
+import static java.lang.Integer.MIN_VALUE;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -33,7 +35,6 @@ import javax.swing.text.DefaultCaret;
 
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
 
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -46,7 +47,7 @@ import com.hp.hpl.jena.rdf.model.Statement;
  */
 public class DateTimePropertyPanelFactory extends PropertyPanelFactorySPI {
 
-	private static String DateTimeString = XSDDatatype.XSDdateTime.getURI();
+	private static String DateTimeString = XSDdateTime.getURI();
 
 	public DateTimePropertyPanelFactory() {
 		super();
@@ -72,14 +73,15 @@ public class DateTimePropertyPanelFactory extends PropertyPanelFactorySPI {
 			private static final long serialVersionUID = 6779256780590610172L;
 			private boolean diverted = false;
 
+			@Override
 			public void setDot(int dot) {
 				diverted = (dot == 0);
-				if (diverted) {
+				if (diverted)
 					dot = getComponent().getDocument().getLength();
-				}
 				super.setDot(dot);
 			}
 
+			@Override
 			public void moveDot(int dot) {
 				if (diverted) {
 					super.setDot(0);
@@ -120,7 +122,7 @@ public class DateTimePropertyPanelFactory extends PropertyPanelFactorySPI {
 				&& DateTimeString.equals(semanticAnnotationProfile
 						.getClassString()))
 			return 200;
-		return Integer.MIN_VALUE;
+		return MIN_VALUE;
 	}
 
 	@Override

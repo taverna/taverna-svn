@@ -20,6 +20,8 @@ import javax.swing.border.EmptyBorder;
  *
  */
 public class RemoteRegistryPanel extends JPanel {
+	private static final String LOCATION_LABEL = "Location:";
+	private static final String NAME_LABEL = "Name:";
 	private static final long serialVersionUID = 8833815753329010062L;
 
 	private JTextField registryNameField = new JTextField(20);
@@ -36,7 +38,7 @@ public class RemoteRegistryPanel extends JPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 0;
 		constraints.ipadx = 20;
-		add(new JLabel("Name:"), constraints);
+		add(new JLabel(NAME_LABEL), constraints);
 
 		constraints.gridx = 1;
 		constraints.gridwidth = 2;
@@ -49,7 +51,7 @@ public class RemoteRegistryPanel extends JPanel {
 		constraints.gridx = 0;
 		constraints.ipadx = 20;
 		constraints.fill = NONE;
-		add(new JLabel("Location:"), constraints);
+		add(new JLabel(LOCATION_LABEL), constraints);
 		
 		constraints.gridx = 1;
 		constraints.gridwidth = 2;
