@@ -12,6 +12,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -27,6 +29,7 @@ import org.apache.log4j.Logger;
  * 
  */
 public class ComponentPreference {
+	private static final String LOCAL_NAME = "local registry";
 	private static final String MYEXPERIMENT_NAME = "myExperiment";
 	private static final String MYEXPERIMENT_SITE = "http://www.myexperiment.org";
 	private final Logger logger = Logger.getLogger(ComponentPreference.class);
@@ -75,10 +78,16 @@ public class ComponentPreference {
 			}
 	}
 
+	public Map<String,String> getDefaultProperties() {
+		// Capacity = 2; we know that this is going to have 2 entries
+		Map<String,String> defaults = new LinkedHashMap<String, String>(2);
+		defaults.put(LOCAL_NAME, calculateComponentsDirectoryPath());
+		defaults.put(MYEXPERIMENT_NAME, MYEXPERIMENT_SITE);
+		return defaults;
+	}
+
 	private void fillDefaultProperties() {
-		properties.setProperty("local registry",
-				calculateComponentsDirectoryPath());
-		properties.setProperty(MYEXPERIMENT_NAME, MYEXPERIMENT_SITE);
+		properties.putAll(getDefaultProperties());
 	}
 
 	public String calculateComponentsDirectoryPath() {

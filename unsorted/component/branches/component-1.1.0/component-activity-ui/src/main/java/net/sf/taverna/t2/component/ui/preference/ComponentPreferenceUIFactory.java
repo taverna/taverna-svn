@@ -3,7 +3,6 @@
  */
 package net.sf.taverna.t2.component.ui.preference;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JPanel;
@@ -51,7 +50,7 @@ public class ComponentPreferenceUIFactory extends AbstractConfigurable
 
 	@Override
 	public Map<String, String> getDefaultPropertyMap() {
-		return new HashMap<String, String>();
+		return pref.getDefaultProperties();
 	}
 
 	@Override

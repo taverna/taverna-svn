@@ -204,6 +204,9 @@ public class MyExperimentClient {
 			UsernamePassword userAndPass = CredentialManager.getInstance()
 					.getUsernameAndPasswordForService(URI.create(urlString),
 							true, null);
+			// Check for user didn't log in...
+			if (userAndPass == null)
+				return null;
 			return printBase64Binary((userAndPass.getUsername() + ":" + userAndPass
 					.getPasswordAsString()).getBytes("UTF-8"));
 		} catch (CMException e) {
